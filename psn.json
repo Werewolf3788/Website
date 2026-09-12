@@ -62,12 +62,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Gold%20Rush%3A%20The%20Game&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": false,
-          "progress": 14,
-          "ratio": "10/43",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy"
+          "earnedTotal": 0,
+          "isPermanent": false,
+          "npServiceName": "trophy",
+          "progress": 14,
+          "ratio": "10/43"
         },
         {
           "npCommunicationId": "NPWR26028_00",
@@ -81,12 +81,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Fishing%3A%20North%20Atlantic&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": true,
-          "progress": 69,
-          "ratio": "35/52",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy2"
+          "earnedTotal": 0,
+          "isPermanent": true,
+          "npServiceName": "trophy2",
+          "progress": 69,
+          "ratio": "35/52"
         },
         {
           "npCommunicationId": "NPWR51841_00",
@@ -100,12 +100,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Deadliest%20Deep%20Sea%20Catch%20Fishing%20Simulator&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": true,
-          "progress": 79,
-          "ratio": "21/25",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy"
+          "earnedTotal": 0,
+          "isPermanent": true,
+          "npServiceName": "trophy",
+          "progress": 79,
+          "ratio": "21/25"
         },
         {
           "npCommunicationId": "NPWR28264_00",
@@ -119,12 +119,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Call%20of%20the%20Wild%3A%20The%20Angler&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": false,
-          "progress": 20,
-          "ratio": "11/51",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy2"
+          "earnedTotal": 0,
+          "isPermanent": false,
+          "npServiceName": "trophy2",
+          "progress": 20,
+          "ratio": "11/51"
         },
         {
           "npCommunicationId": "NPWR59811_00",
@@ -138,12 +138,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Call%20of%20Duty%3A%20Black%20Ops&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": false,
-          "progress": 5,
-          "ratio": "5/70",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy2"
+          "earnedTotal": 0,
+          "isPermanent": false,
+          "npServiceName": "trophy2",
+          "progress": 5,
+          "ratio": "5/70"
         },
         {
           "npCommunicationId": "NPWR40778_00",
@@ -157,12 +157,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Undisputed&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": true,
-          "progress": 76,
-          "ratio": "24/37",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy2"
+          "earnedTotal": 0,
+          "isPermanent": true,
+          "npServiceName": "trophy2",
+          "progress": 76,
+          "ratio": "24/37"
         },
         {
           "npCommunicationId": "NPWR22432_00",
@@ -176,12 +176,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=SKULL%20AND%20BONES&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": true,
-          "progress": 67,
-          "ratio": "32/51",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy2"
+          "earnedTotal": 0,
+          "isPermanent": true,
+          "npServiceName": "trophy2",
+          "progress": 67,
+          "ratio": "32/51"
         }
       ],
       "activeHunt": {
@@ -1054,7 +1054,7 @@
       ],
       "streamHistory": [],
       "lastHeavySyncTimestamp": null,
-      "lastUpdated": "9/12/2026, 01:35:43"
+      "lastUpdated": "9/12/2026, 05:38:02"
     },
     "DesdemonaTiger": {
       "accountId": "",
@@ -1065,7 +1065,7 @@
       "handshakeState": "EXPIRED",
       "handshakeText": "DESDEMONATIGER HANDSHAKE: NPSSO EXPIRED",
       "inboundFriendRequestsCount": 0,
-      "lastUpdated": "9/12/2026, 01:35:44",
+      "lastUpdated": "9/12/2026, 05:38:03",
       "level": 0,
       "note": "PSN Auth Inactive or Token Expired",
       "npssoStatus": "EXPIRED / UPDATE NEEDED",
@@ -1120,8 +1120,8 @@
       "gamesPlayed": 65,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/UP20461012H06_493460208836B9CBA8BE_S.png",
       "bio": "exo-ONELIVIDMANKDFC3",
-      "psnAccountAge": "8 years, 9 months",
-      "earliestTrophyDate": "2017-12-05T03:09:29.000Z",
+      "psnAccountAge": "1 years, 8 months",
+      "earliestTrophyDate": "2024-12-22T04:17:47.000Z",
       "latestTrophyDate": 1789187815000,
       "plus": true,
       "level": 209,
@@ -1147,12 +1147,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%205&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": true,
-          "progress": 66,
-          "ratio": "58/72",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy2"
+          "earnedTotal": 0,
+          "isPermanent": true,
+          "npServiceName": "trophy2",
+          "progress": 66,
+          "ratio": "58/72"
         },
         {
           "npCommunicationId": "NPWR39117_00",
@@ -1166,12 +1166,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Expeditions%3A%20A%20Mudrunner%20Game&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": false,
-          "progress": 7,
-          "ratio": "5/21",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy2"
+          "earnedTotal": 0,
+          "isPermanent": false,
+          "npServiceName": "trophy2",
+          "progress": 7,
+          "ratio": "5/21"
         },
         {
           "npCommunicationId": "NPWR36496_00",
@@ -1185,12 +1185,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=LEGO%20Star%20Wars%20II%3A%20The%20Original%20Trilogy&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": false,
-          "progress": 22,
-          "ratio": "13/30",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy2"
+          "earnedTotal": 0,
+          "isPermanent": false,
+          "npServiceName": "trophy2",
+          "progress": 22,
+          "ratio": "13/30"
         },
         {
           "npCommunicationId": "NPWR22138_00",
@@ -1204,12 +1204,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Poker%20Club&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": false,
-          "progress": 20,
-          "ratio": "13/43",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy2"
+          "earnedTotal": 0,
+          "isPermanent": false,
+          "npServiceName": "trophy2",
+          "progress": 20,
+          "ratio": "13/43"
         },
         {
           "npCommunicationId": "NPWR33770_00",
@@ -1223,12 +1223,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=The%20Rex%20T&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": true,
-          "progress": 100,
-          "ratio": "21/21",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy2"
+          "earnedTotal": 0,
+          "isPermanent": true,
+          "npServiceName": "trophy2",
+          "progress": 100,
+          "ratio": "21/21"
         },
         {
           "npCommunicationId": "NPWR28141_00",
@@ -1242,12 +1242,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Mahjong&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": true,
-          "progress": 100,
-          "ratio": "10/10",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy2"
+          "earnedTotal": 0,
+          "isPermanent": true,
+          "npServiceName": "trophy2",
+          "progress": 100,
+          "ratio": "10/10"
         },
         {
           "npCommunicationId": "NPWR44827_00",
@@ -1261,12 +1261,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": true,
-          "progress": 100,
-          "ratio": "46/46",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy2"
+          "earnedTotal": 0,
+          "isPermanent": true,
+          "npServiceName": "trophy2",
+          "progress": 100,
+          "ratio": "46/46"
         },
         {
           "npCommunicationId": "NPWR22969_00",
@@ -1280,12 +1280,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2022&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": true,
-          "progress": 97,
-          "ratio": "44/46",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy"
+          "earnedTotal": 0,
+          "isPermanent": true,
+          "npServiceName": "trophy",
+          "progress": 97,
+          "ratio": "44/46"
         },
         {
           "npCommunicationId": "NPWR06510_00",
@@ -1299,12 +1299,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=LEGO%20Batman%203&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": true,
-          "progress": 100,
-          "ratio": "71/71",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy"
+          "earnedTotal": 0,
+          "isPermanent": true,
+          "npServiceName": "trophy",
+          "progress": 100,
+          "ratio": "71/71"
         },
         {
           "npCommunicationId": "NPWR07054_00",
@@ -1318,12 +1318,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=MONOPOLY%20FAMILY%20FUN%20PACK&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": true,
-          "progress": 100,
-          "ratio": "15/15",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy"
+          "earnedTotal": 0,
+          "isPermanent": true,
+          "npServiceName": "trophy",
+          "progress": 100,
+          "ratio": "15/15"
         }
       ],
       "activeHunt": {
@@ -1411,7 +1411,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 04:39:34",
-            "earnedAge": "3 months, 1 week, 6 days, 20 hours, 56 mins",
+            "earnedAge": "3 months, 2 weeks, 58 mins",
             "timestamp": 1780220374000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -1431,7 +1431,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 06:10:37",
-            "earnedAge": "3 months, 1 week, 6 days, 19 hours, 25 mins",
+            "earnedAge": "3 months, 1 week, 6 days, 23 hours, 27 mins",
             "timestamp": 1780225837000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -1451,7 +1451,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 08:22:57",
-            "earnedAge": "3 months, 1 week, 6 days, 17 hours, 12 mins",
+            "earnedAge": "3 months, 1 week, 6 days, 21 hours, 15 mins",
             "timestamp": 1780233777000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -1471,7 +1471,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/6/2026, 23:30:03",
-            "earnedAge": "3 months, 1 week, 2 hours, 5 mins",
+            "earnedAge": "3 months, 1 week, 6 hours, 7 mins",
             "timestamp": 1780806603000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -1491,7 +1491,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 01:31:33",
-            "earnedAge": "3 months, 1 week, 4 mins",
+            "earnedAge": "3 months, 1 week, 4 hours, 6 mins",
             "timestamp": 1780813893000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -1511,7 +1511,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 03:37:01",
-            "earnedAge": "3 months, 6 days, 21 hours, 58 mins",
+            "earnedAge": "3 months, 1 week, 2 hours",
             "timestamp": 1780821421000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -1531,7 +1531,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 05:01:02",
-            "earnedAge": "2 months, 4 days, 20 hours, 34 mins",
+            "earnedAge": "2 months, 5 days, 36 mins",
             "timestamp": 1783591262000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -1551,7 +1551,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 02:09:14",
-            "earnedAge": "2 months, 1 day, 23 hours, 26 mins",
+            "earnedAge": "2 months, 2 days, 3 hours, 28 mins",
             "timestamp": 1783840154000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -1571,7 +1571,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/21/2026, 18:58:34",
-            "earnedAge": "3 weeks, 6 hours, 37 mins",
+            "earnedAge": "3 weeks, 10 hours, 39 mins",
             "timestamp": 1787356714000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -1591,7 +1591,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 01:29:22",
-            "earnedAge": "2 months, 2 days, 6 mins",
+            "earnedAge": "2 months, 2 days, 4 hours, 8 mins",
             "timestamp": 1783837762000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -1611,7 +1611,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 02:21:21",
-            "earnedAge": "2 months, 1 day, 23 hours, 14 mins",
+            "earnedAge": "2 months, 2 days, 3 hours, 16 mins",
             "timestamp": 1783840881000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -1651,7 +1651,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 00:44:51",
-            "earnedAge": "2 months, 2 days, 50 mins",
+            "earnedAge": "2 months, 2 days, 4 hours, 53 mins",
             "timestamp": 1783835091000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -1671,7 +1671,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/25/2026, 01:27:33",
-            "earnedAge": "1 month, 2 weeks, 5 days, 8 mins",
+            "earnedAge": "1 month, 2 weeks, 5 days, 4 hours, 10 mins",
             "timestamp": 1784960853000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -1691,7 +1691,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/22/2026, 03:25:24",
-            "earnedAge": "1 month, 3 weeks, 22 hours, 10 mins",
+            "earnedAge": "1 month, 3 weeks, 1 day, 2 hours, 12 mins",
             "timestamp": 1784708724000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -1711,7 +1711,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/11/2026, 23:36:55",
-            "earnedAge": "1 hour, 58 mins",
+            "earnedAge": "6 hours, 1 min",
             "timestamp": 1789187815000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -1731,7 +1731,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 04:39:35",
-            "earnedAge": "3 months, 1 week, 6 days, 20 hours, 56 mins",
+            "earnedAge": "3 months, 2 weeks, 58 mins",
             "timestamp": 1780220375000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -1751,7 +1751,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 08:08:00",
-            "earnedAge": "3 months, 1 week, 6 days, 17 hours, 27 mins",
+            "earnedAge": "3 months, 1 week, 6 days, 21 hours, 30 mins",
             "timestamp": 1780232880000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -1771,7 +1771,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 00:09:35",
-            "earnedAge": "2 months, 2 days, 1 hour, 26 mins",
+            "earnedAge": "2 months, 2 days, 5 hours, 28 mins",
             "timestamp": 1783832975000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -1871,7 +1871,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/28/2026, 18:42:16",
-            "earnedAge": "1 month, 2 weeks, 1 day, 6 hours, 53 mins",
+            "earnedAge": "1 month, 2 weeks, 1 day, 10 hours, 55 mins",
             "timestamp": 1785282136000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -1891,7 +1891,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/7/2026, 19:48:36",
-            "earnedAge": "1 month, 5 days, 5 hours, 47 mins",
+            "earnedAge": "1 month, 5 days, 9 hours, 49 mins",
             "timestamp": 1786150116000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -1911,7 +1911,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 22:45:56",
-            "earnedAge": "2 months, 2 days, 2 hours, 49 mins",
+            "earnedAge": "2 months, 2 days, 6 hours, 52 mins",
             "timestamp": 1783827956000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -1931,7 +1931,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/30/2026, 00:37:10",
-            "earnedAge": "1 month, 2 weeks, 58 mins",
+            "earnedAge": "1 month, 2 weeks, 5 hours",
             "timestamp": 1785389830000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -1951,7 +1951,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 01:47:40",
-            "earnedAge": "2 months, 4 days, 23 hours, 48 mins",
+            "earnedAge": "2 months, 5 days, 3 hours, 50 mins",
             "timestamp": 1783579660000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -1971,7 +1971,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/20/2026, 07:08:27",
-            "earnedAge": "1 month, 3 weeks, 2 days, 18 hours, 27 mins",
+            "earnedAge": "1 month, 3 weeks, 2 days, 22 hours, 29 mins",
             "timestamp": 1784549307000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -1994,9 +1994,9 @@
             "earnedAge": null,
             "timestamp": 0,
             "hasSubProgress": true,
-            "currentValue": "42",
+            "currentValue": "56",
             "targetValue": "150",
-            "subProgressRatio": "42/150"
+            "subProgressRatio": "56/150"
           },
           {
             "trophyId": 31,
@@ -2011,7 +2011,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/8/2026, 22:47:08",
-            "earnedAge": "2 months, 5 days, 2 hours, 48 mins",
+            "earnedAge": "2 months, 5 days, 6 hours, 50 mins",
             "timestamp": 1783568828000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -2031,7 +2031,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 01:28:49",
-            "earnedAge": "2 months, 2 days, 6 mins",
+            "earnedAge": "2 months, 2 days, 4 hours, 9 mins",
             "timestamp": 1783837729000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -2051,7 +2051,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/8/2026, 23:57:10",
-            "earnedAge": "2 months, 5 days, 1 hour, 38 mins",
+            "earnedAge": "2 months, 5 days, 5 hours, 40 mins",
             "timestamp": 1783573030000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -2071,7 +2071,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 18:56:27",
-            "earnedAge": "2 months, 2 days, 6 hours, 39 mins",
+            "earnedAge": "2 months, 2 days, 10 hours, 41 mins",
             "timestamp": 1783814187000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -2091,7 +2091,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 02:17:32",
-            "earnedAge": "2 months, 1 day, 23 hours, 18 mins",
+            "earnedAge": "2 months, 2 days, 3 hours, 20 mins",
             "timestamp": 1783840652000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -2111,7 +2111,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 19:50:07",
-            "earnedAge": "2 months, 2 days, 5 hours, 45 mins",
+            "earnedAge": "2 months, 2 days, 9 hours, 47 mins",
             "timestamp": 1783817407000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -2131,7 +2131,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 22:30:33",
-            "earnedAge": "2 months, 2 days, 3 hours, 5 mins",
+            "earnedAge": "2 months, 2 days, 7 hours, 7 mins",
             "timestamp": 1783827033000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -2151,7 +2151,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 23:11:02",
-            "earnedAge": "2 months, 2 days, 2 hours, 24 mins",
+            "earnedAge": "2 months, 2 days, 6 hours, 26 mins",
             "timestamp": 1783829462000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -2171,7 +2171,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 17:38:04",
-            "earnedAge": "2 months, 2 days, 7 hours, 57 mins",
+            "earnedAge": "2 months, 2 days, 11 hours, 59 mins",
             "timestamp": 1783809484000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -2191,7 +2191,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/24/2026, 20:07:07",
-            "earnedAge": "1 month, 2 weeks, 5 days, 5 hours, 28 mins",
+            "earnedAge": "1 month, 2 weeks, 5 days, 9 hours, 30 mins",
             "timestamp": 1784941627000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -2211,7 +2211,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 01:26:14",
-            "earnedAge": "2 months, 2 days, 9 mins",
+            "earnedAge": "2 months, 2 days, 4 hours, 11 mins",
             "timestamp": 1783837574000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -2231,7 +2231,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 18:59:36",
-            "earnedAge": "2 months, 2 days, 6 hours, 36 mins",
+            "earnedAge": "2 months, 2 days, 10 hours, 38 mins",
             "timestamp": 1783814376000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -2251,7 +2251,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 01:55:08",
-            "earnedAge": "2 months, 1 day, 23 hours, 40 mins",
+            "earnedAge": "2 months, 2 days, 3 hours, 42 mins",
             "timestamp": 1783839308000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -2271,7 +2271,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/20/2026, 02:52:37",
-            "earnedAge": "1 month, 3 weeks, 2 days, 22 hours, 43 mins",
+            "earnedAge": "1 month, 3 weeks, 3 days, 2 hours, 45 mins",
             "timestamp": 1784533957000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -2291,7 +2291,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/29/2026, 02:59:45",
-            "earnedAge": "1 month, 2 weeks, 22 hours, 35 mins",
+            "earnedAge": "1 month, 2 weeks, 1 day, 2 hours, 38 mins",
             "timestamp": 1785311985000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -2311,7 +2311,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/21/2026, 23:55:17",
-            "earnedAge": "3 weeks, 1 hour, 40 mins",
+            "earnedAge": "3 weeks, 5 hours, 42 mins",
             "timestamp": 1787374517000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -2331,7 +2331,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/6/2026, 22:57:12",
-            "earnedAge": "3 months, 1 week, 2 hours, 38 mins",
+            "earnedAge": "3 months, 1 week, 6 hours, 40 mins",
             "timestamp": 1780804632000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -2351,7 +2351,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 04:57:02",
-            "earnedAge": "3 months, 6 days, 20 hours, 38 mins",
+            "earnedAge": "3 months, 1 week, 40 mins",
             "timestamp": 1780826222000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -2371,7 +2371,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/5/2026, 17:05:50",
-            "earnedAge": "6 days, 8 hours, 29 mins",
+            "earnedAge": "6 days, 12 hours, 32 mins",
             "timestamp": 1788645950000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -2391,7 +2391,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 05:38:40",
-            "earnedAge": "2 weeks, 5 days, 19 hours, 57 mins",
+            "earnedAge": "2 weeks, 5 days, 23 hours, 59 mins",
             "timestamp": 1787481520000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -2411,7 +2411,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/22/2026, 00:01:45",
-            "earnedAge": "1 month, 3 weeks, 1 day, 1 hour, 33 mins",
+            "earnedAge": "1 month, 3 weeks, 1 day, 5 hours, 36 mins",
             "timestamp": 1784696505000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -2431,7 +2431,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/21/2026, 19:35:24",
-            "earnedAge": "3 weeks, 6 hours",
+            "earnedAge": "3 weeks, 10 hours, 2 mins",
             "timestamp": 1787358924000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -2471,7 +2471,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/29/2026, 00:39:48",
-            "earnedAge": "2 weeks, 55 mins",
+            "earnedAge": "2 weeks, 4 hours, 58 mins",
             "timestamp": 1787981988000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -2491,7 +2491,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/29/2026, 01:09:47",
-            "earnedAge": "2 weeks, 25 mins",
+            "earnedAge": "2 weeks, 4 hours, 28 mins",
             "timestamp": 1787983787000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -2511,7 +2511,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/23/2026, 06:20:28",
-            "earnedAge": "2 weeks, 5 days, 19 hours, 15 mins",
+            "earnedAge": "2 weeks, 5 days, 23 hours, 17 mins",
             "timestamp": 1787484028000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -2531,7 +2531,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/29/2026, 01:35:54",
-            "earnedAge": "1 week, 6 days, 23 hours, 59 mins",
+            "earnedAge": "2 weeks, 4 hours, 2 mins",
             "timestamp": 1787985354000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -2571,7 +2571,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/8/2026, 03:12:07",
-            "earnedAge": "1 month, 4 days, 22 hours, 23 mins",
+            "earnedAge": "1 month, 5 days, 2 hours, 25 mins",
             "timestamp": 1786176727000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -2591,7 +2591,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/8/2026, 03:12:08",
-            "earnedAge": "1 month, 4 days, 22 hours, 23 mins",
+            "earnedAge": "1 month, 5 days, 2 hours, 25 mins",
             "timestamp": 1786176728000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -2631,7 +2631,7 @@
             "groupName": "Landing Force",
             "earned": true,
             "earnedDate": "7/20/2026, 08:21:29",
-            "earnedAge": "1 month, 3 weeks, 2 days, 17 hours, 14 mins",
+            "earnedAge": "1 month, 3 weeks, 2 days, 21 hours, 16 mins",
             "timestamp": 1784553689000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -2651,7 +2651,7 @@
             "groupName": "Conqueror",
             "earned": true,
             "earnedDate": "8/26/2026, 22:30:24",
-            "earnedAge": "2 weeks, 2 days, 3 hours, 5 mins",
+            "earnedAge": "2 weeks, 2 days, 7 hours, 7 mins",
             "timestamp": 1787801424000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -2671,7 +2671,7 @@
             "groupName": "Conqueror",
             "earned": true,
             "earnedDate": "8/26/2026, 22:30:19",
-            "earnedAge": "2 weeks, 2 days, 3 hours, 5 mins",
+            "earnedAge": "2 weeks, 2 days, 7 hours, 7 mins",
             "timestamp": 1787801419000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -2711,7 +2711,7 @@
             "groupName": "Rough Landing",
             "earned": true,
             "earnedDate": "9/2/2026, 22:20:08",
-            "earnedAge": "1 week, 2 days, 3 hours, 15 mins",
+            "earnedAge": "1 week, 2 days, 7 hours, 17 mins",
             "timestamp": 1788405608000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -2731,7 +2731,7 @@
             "groupName": "Rough Landing",
             "earned": true,
             "earnedDate": "9/2/2026, 22:20:05",
-            "earnedAge": "1 week, 2 days, 3 hours, 15 mins",
+            "earnedAge": "1 week, 2 days, 7 hours, 17 mins",
             "timestamp": 1788405605000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -2771,7 +2771,7 @@
             "groupName": "Kraken Awakes",
             "earned": true,
             "earnedDate": "7/20/2026, 15:28:46",
-            "earnedAge": "1 month, 3 weeks, 2 days, 10 hours, 6 mins",
+            "earnedAge": "1 month, 3 weeks, 2 days, 14 hours, 9 mins",
             "timestamp": 1784579326000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -2791,7 +2791,7 @@
             "groupName": "Kraken Awakes",
             "earned": true,
             "earnedDate": "7/20/2026, 15:28:45",
-            "earnedAge": "1 month, 3 weeks, 2 days, 10 hours, 6 mins",
+            "earnedAge": "1 month, 3 weeks, 2 days, 14 hours, 9 mins",
             "timestamp": 1784579325000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -2835,7 +2835,7 @@
           "groupName": "Sniper Elite 5",
           "earned": true,
           "earnedDate": "9/11/2026, 23:36:55",
-          "earnedAge": "1 hour, 58 mins",
+          "earnedAge": "6 hours, 1 min",
           "timestamp": 1789187815000,
           "hasSubProgress": false,
           "currentValue": 0,
@@ -2855,7 +2855,7 @@
           "groupName": "Sniper Elite 5",
           "earned": true,
           "earnedDate": "9/5/2026, 17:05:50",
-          "earnedAge": "6 days, 8 hours, 29 mins",
+          "earnedAge": "6 days, 12 hours, 32 mins",
           "timestamp": 1788645950000,
           "hasSubProgress": false,
           "currentValue": 0,
@@ -2875,7 +2875,7 @@
           "groupName": "Rough Landing",
           "earned": true,
           "earnedDate": "9/2/2026, 22:20:08",
-          "earnedAge": "1 week, 2 days, 3 hours, 15 mins",
+          "earnedAge": "1 week, 2 days, 7 hours, 17 mins",
           "timestamp": 1788405608000,
           "hasSubProgress": false,
           "currentValue": 0,
@@ -2895,7 +2895,7 @@
           "groupName": "Rough Landing",
           "earned": true,
           "earnedDate": "9/2/2026, 22:20:05",
-          "earnedAge": "1 week, 2 days, 3 hours, 15 mins",
+          "earnedAge": "1 week, 2 days, 7 hours, 17 mins",
           "timestamp": 1788405605000,
           "hasSubProgress": false,
           "currentValue": 0,
@@ -2915,7 +2915,7 @@
           "groupName": "Wolf Mountain",
           "earned": true,
           "earnedDate": "8/29/2026, 01:35:54",
-          "earnedAge": "1 week, 6 days, 23 hours, 59 mins",
+          "earnedAge": "2 weeks, 4 hours, 2 mins",
           "timestamp": 1787985354000,
           "hasSubProgress": false,
           "currentValue": 0,
@@ -2935,7 +2935,7 @@
           "groupName": "Wolf Mountain",
           "earned": true,
           "earnedDate": "8/29/2026, 01:09:47",
-          "earnedAge": "2 weeks, 25 mins",
+          "earnedAge": "2 weeks, 4 hours, 28 mins",
           "timestamp": 1787983787000,
           "hasSubProgress": false,
           "currentValue": 0,
@@ -2955,7 +2955,7 @@
           "groupName": "Wolf Mountain",
           "earned": true,
           "earnedDate": "8/29/2026, 00:39:48",
-          "earnedAge": "2 weeks, 55 mins",
+          "earnedAge": "2 weeks, 4 hours, 58 mins",
           "timestamp": 1787981988000,
           "hasSubProgress": true,
           "currentValue": 0,
@@ -2975,7 +2975,7 @@
           "groupName": "Conqueror",
           "earned": true,
           "earnedDate": "8/26/2026, 22:30:24",
-          "earnedAge": "2 weeks, 2 days, 3 hours, 5 mins",
+          "earnedAge": "2 weeks, 2 days, 7 hours, 7 mins",
           "timestamp": 1787801424000,
           "hasSubProgress": false,
           "currentValue": 0,
@@ -2995,7 +2995,7 @@
           "groupName": "Conqueror",
           "earned": true,
           "earnedDate": "8/26/2026, 22:30:19",
-          "earnedAge": "2 weeks, 2 days, 3 hours, 5 mins",
+          "earnedAge": "2 weeks, 2 days, 7 hours, 7 mins",
           "timestamp": 1787801419000,
           "hasSubProgress": false,
           "currentValue": 0,
@@ -3015,7 +3015,7 @@
           "groupName": "Wolf Mountain",
           "earned": true,
           "earnedDate": "8/23/2026, 06:20:28",
-          "earnedAge": "2 weeks, 5 days, 19 hours, 15 mins",
+          "earnedAge": "2 weeks, 5 days, 23 hours, 17 mins",
           "timestamp": 1787484028000,
           "hasSubProgress": true,
           "currentValue": 0,
@@ -3025,7 +3025,7 @@
       ],
       "streamHistory": [],
       "lastHeavySyncTimestamp": null,
-      "lastUpdated": "9/12/2026, 01:35:41"
+      "lastUpdated": "9/12/2026, 05:38:00"
     },
     "WildHorse_Spirit": {
       "onlineId": "WildHorse_Spirit",
@@ -3053,8 +3053,8 @@
         "age": "3 years, 5 months",
         "bio": null,
         "statusMessage": "Sssshhhhh we sneakin",
-        "uptime": "3 hours, 52 minutes, 36 seconds",
-        "viewers": "1",
+        "uptime": null,
+        "viewers": "0",
         "subCount": "werewolf3788 needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
         "channelCreationRaw": "Apr 6. 2023 - 06:58:17 AM (UTC)"
@@ -3089,12 +3089,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%205&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": false,
-          "progress": 45,
-          "ratio": "41/72",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy2"
+          "earnedTotal": 0,
+          "isPermanent": false,
+          "npServiceName": "trophy2",
+          "progress": 45,
+          "ratio": "41/72"
         },
         {
           "npCommunicationId": "NPWR40072_00",
@@ -3108,12 +3108,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Ready%20or%20Not&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": false,
-          "progress": 3,
-          "ratio": "4/67",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy2"
+          "earnedTotal": 0,
+          "isPermanent": false,
+          "npServiceName": "trophy2",
+          "progress": 3,
+          "ratio": "4/67"
         },
         {
           "npCommunicationId": "NPWR09395_00",
@@ -3127,12 +3127,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Tom%20Clancy%E2%80%99s%20Ghost%20Recon%20Wildlands&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": false,
-          "progress": 3,
-          "ratio": "3/58",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy"
+          "earnedTotal": 0,
+          "isPermanent": false,
+          "npServiceName": "trophy",
+          "progress": 3,
+          "ratio": "3/58"
         },
         {
           "npCommunicationId": "NPWR33770_00",
@@ -3146,12 +3146,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=The%20Rex%20T&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": true,
-          "progress": 100,
-          "ratio": "21/21",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy2"
+          "earnedTotal": 0,
+          "isPermanent": true,
+          "npServiceName": "trophy2",
+          "progress": 100,
+          "ratio": "21/21"
         },
         {
           "npCommunicationId": "NPWR04914_00",
@@ -3165,12 +3165,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=THE%20PLAYROOM&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": true,
-          "progress": 63,
-          "ratio": "12/24",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy"
+          "earnedTotal": 0,
+          "isPermanent": true,
+          "npServiceName": "trophy",
+          "progress": 63,
+          "ratio": "12/24"
         },
         {
           "npCommunicationId": "NPWR01813_00",
@@ -3184,12 +3184,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Need%20for%20Speed%20Most%20Wanted&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": true,
-          "progress": 74,
-          "ratio": "45/61",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy"
+          "earnedTotal": 0,
+          "isPermanent": true,
+          "npServiceName": "trophy",
+          "progress": 74,
+          "ratio": "45/61"
         },
         {
           "npCommunicationId": "NPWR02859_00",
@@ -3203,12 +3203,12 @@
           "hoursFormatted": "0 hrs",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Jurassic%20Park%3A%20The%20Depths&tag=moviesanywhere02-20",
           "bootCount": 1,
-          "isPermanent": true,
-          "progress": 57,
-          "ratio": "9/12",
-          "earnedTotal": 0,
           "definedTotal": 0,
-          "npServiceName": "trophy"
+          "earnedTotal": 0,
+          "isPermanent": true,
+          "npServiceName": "trophy",
+          "progress": 57,
+          "ratio": "9/12"
         }
       ],
       "activeHunt": {
@@ -3296,7 +3296,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/28/2026, 19:56:24",
-            "earnedAge": "1 month, 2 weeks, 1 day, 5 hours, 39 mins",
+            "earnedAge": "1 month, 2 weeks, 1 day, 9 hours, 41 mins",
             "timestamp": 1785286584000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -3316,7 +3316,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/7/2026, 23:55:01",
-            "earnedAge": "1 month, 5 days, 1 hour, 40 mins",
+            "earnedAge": "1 month, 5 days, 5 hours, 42 mins",
             "timestamp": 1786164901000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -3336,7 +3336,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/9/2026, 01:26:13",
-            "earnedAge": "1 month, 4 days, 9 mins",
+            "earnedAge": "1 month, 4 days, 4 hours, 11 mins",
             "timestamp": 1786256773000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -3356,7 +3356,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/16/2026, 21:58:25",
-            "earnedAge": "3 weeks, 5 days, 3 hours, 37 mins",
+            "earnedAge": "3 weeks, 5 days, 7 hours, 39 mins",
             "timestamp": 1786935505000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -3376,7 +3376,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/22/2026, 22:40:54",
-            "earnedAge": "2 weeks, 6 days, 2 hours, 54 mins",
+            "earnedAge": "2 weeks, 6 days, 6 hours, 57 mins",
             "timestamp": 1787456454000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -3396,7 +3396,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 01:06:19",
-            "earnedAge": "2 weeks, 6 days, 29 mins",
+            "earnedAge": "2 weeks, 6 days, 4 hours, 31 mins",
             "timestamp": 1787465179000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -3416,7 +3416,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 03:16:29",
-            "earnedAge": "2 weeks, 5 days, 22 hours, 19 mins",
+            "earnedAge": "2 weeks, 6 days, 2 hours, 21 mins",
             "timestamp": 1787472989000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -3436,7 +3436,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 05:17:00",
-            "earnedAge": "2 weeks, 5 days, 20 hours, 18 mins",
+            "earnedAge": "2 weeks, 6 days, 20 mins",
             "timestamp": 1787480220000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -3456,7 +3456,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/29/2026, 16:31:01",
-            "earnedAge": "1 week, 6 days, 9 hours, 4 mins",
+            "earnedAge": "1 week, 6 days, 13 hours, 6 mins",
             "timestamp": 1788039061000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -3476,7 +3476,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/22/2026, 23:04:30",
-            "earnedAge": "2 weeks, 6 days, 2 hours, 31 mins",
+            "earnedAge": "2 weeks, 6 days, 6 hours, 33 mins",
             "timestamp": 1787457870000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -3496,7 +3496,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 05:19:32",
-            "earnedAge": "2 weeks, 5 days, 20 hours, 16 mins",
+            "earnedAge": "2 weeks, 6 days, 18 mins",
             "timestamp": 1787480372000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -3536,7 +3536,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 01:44:35",
-            "earnedAge": "2 weeks, 5 days, 23 hours, 51 mins",
+            "earnedAge": "2 weeks, 6 days, 3 hours, 53 mins",
             "timestamp": 1787467475000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -3596,7 +3596,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/11/2026, 23:36:52",
-            "earnedAge": "1 hour, 58 mins",
+            "earnedAge": "6 hours, 1 min",
             "timestamp": 1789187812000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -3616,7 +3616,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/16/2026, 21:58:26",
-            "earnedAge": "3 weeks, 5 days, 3 hours, 37 mins",
+            "earnedAge": "3 weeks, 5 days, 7 hours, 39 mins",
             "timestamp": 1786935506000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -3636,7 +3636,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/7/2026, 22:36:30",
-            "earnedAge": "1 month, 5 days, 2 hours, 59 mins",
+            "earnedAge": "1 month, 5 days, 7 hours, 1 min",
             "timestamp": 1786160190000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -3656,7 +3656,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 01:31:03",
-            "earnedAge": "2 weeks, 6 days, 4 mins",
+            "earnedAge": "2 weeks, 6 days, 4 hours, 6 mins",
             "timestamp": 1787466663000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -3756,7 +3756,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/5/2026, 21:51:40",
-            "earnedAge": "6 days, 3 hours, 43 mins",
+            "earnedAge": "6 days, 7 hours, 46 mins",
             "timestamp": 1788663100000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -3796,7 +3796,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/8/2026, 21:07:19",
-            "earnedAge": "1 month, 4 days, 4 hours, 28 mins",
+            "earnedAge": "1 month, 4 days, 8 hours, 30 mins",
             "timestamp": 1786241239000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -3836,7 +3836,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/8/2026, 04:25:29",
-            "earnedAge": "1 month, 4 days, 21 hours, 10 mins",
+            "earnedAge": "1 month, 5 days, 1 hour, 12 mins",
             "timestamp": 1786181129000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -3856,7 +3856,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/22/2026, 22:58:11",
-            "earnedAge": "2 weeks, 6 days, 2 hours, 37 mins",
+            "earnedAge": "2 weeks, 6 days, 6 hours, 39 mins",
             "timestamp": 1787457491000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -3876,7 +3876,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/29/2026, 17:48:49",
-            "earnedAge": "1 week, 6 days, 7 hours, 46 mins",
+            "earnedAge": "1 week, 6 days, 11 hours, 49 mins",
             "timestamp": 1788043729000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -3896,7 +3896,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/16/2026, 19:03:45",
-            "earnedAge": "3 weeks, 5 days, 6 hours, 31 mins",
+            "earnedAge": "3 weeks, 5 days, 10 hours, 34 mins",
             "timestamp": 1786925025000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -3936,7 +3936,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/16/2026, 19:01:09",
-            "earnedAge": "3 weeks, 5 days, 6 hours, 34 mins",
+            "earnedAge": "3 weeks, 5 days, 10 hours, 36 mins",
             "timestamp": 1786924869000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -3956,7 +3956,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/8/2026, 03:23:45",
-            "earnedAge": "1 month, 4 days, 22 hours, 11 mins",
+            "earnedAge": "1 month, 5 days, 2 hours, 14 mins",
             "timestamp": 1786177425000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -3976,7 +3976,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/22/2026, 23:15:42",
-            "earnedAge": "2 weeks, 6 days, 2 hours, 19 mins",
+            "earnedAge": "2 weeks, 6 days, 6 hours, 22 mins",
             "timestamp": 1787458542000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -3996,7 +3996,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/16/2026, 20:52:18",
-            "earnedAge": "3 weeks, 5 days, 4 hours, 43 mins",
+            "earnedAge": "3 weeks, 5 days, 8 hours, 45 mins",
             "timestamp": 1786931538000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -4016,7 +4016,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/22/2026, 22:48:21",
-            "earnedAge": "2 weeks, 6 days, 2 hours, 47 mins",
+            "earnedAge": "2 weeks, 6 days, 6 hours, 49 mins",
             "timestamp": 1787456901000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -4036,7 +4036,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/20/2026, 18:17:03",
-            "earnedAge": "3 weeks, 1 day, 7 hours, 18 mins",
+            "earnedAge": "3 weeks, 1 day, 11 hours, 20 mins",
             "timestamp": 1787267823000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -4056,7 +4056,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/16/2026, 19:35:50",
-            "earnedAge": "3 weeks, 5 days, 5 hours, 59 mins",
+            "earnedAge": "3 weeks, 5 days, 10 hours, 2 mins",
             "timestamp": 1786926950000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -4076,7 +4076,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/29/2026, 16:57:54",
-            "earnedAge": "1 week, 6 days, 8 hours, 37 mins",
+            "earnedAge": "1 week, 6 days, 12 hours, 40 mins",
             "timestamp": 1788040674000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -4096,7 +4096,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 03:13:17",
-            "earnedAge": "2 weeks, 5 days, 22 hours, 22 mins",
+            "earnedAge": "2 weeks, 6 days, 2 hours, 24 mins",
             "timestamp": 1787472797000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -4116,7 +4116,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 02:30:41",
-            "earnedAge": "2 weeks, 5 days, 23 hours, 4 mins",
+            "earnedAge": "2 weeks, 6 days, 3 hours, 7 mins",
             "timestamp": 1787470241000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -4136,7 +4136,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 04:21:47",
-            "earnedAge": "2 weeks, 5 days, 21 hours, 13 mins",
+            "earnedAge": "2 weeks, 6 days, 1 hour, 16 mins",
             "timestamp": 1787476907000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -4156,7 +4156,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 02:38:49",
-            "earnedAge": "2 weeks, 5 days, 22 hours, 56 mins",
+            "earnedAge": "2 weeks, 6 days, 2 hours, 59 mins",
             "timestamp": 1787470729000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -4276,7 +4276,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 05:16:11",
-            "earnedAge": "2 weeks, 5 days, 20 hours, 19 mins",
+            "earnedAge": "2 weeks, 6 days, 21 mins",
             "timestamp": 1787480171000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -4296,7 +4296,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 05:40:07",
-            "earnedAge": "2 weeks, 5 days, 19 hours, 55 mins",
+            "earnedAge": "2 weeks, 5 days, 23 hours, 57 mins",
             "timestamp": 1787481607000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -4356,7 +4356,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/29/2026, 01:22:33",
-            "earnedAge": "2 weeks, 13 mins",
+            "earnedAge": "2 weeks, 4 hours, 15 mins",
             "timestamp": 1787984553000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -4376,7 +4376,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/29/2026, 01:09:47",
-            "earnedAge": "2 weeks, 25 mins",
+            "earnedAge": "2 weeks, 4 hours, 28 mins",
             "timestamp": 1787983787000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -4396,7 +4396,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/23/2026, 06:27:26",
-            "earnedAge": "2 weeks, 5 days, 19 hours, 8 mins",
+            "earnedAge": "2 weeks, 5 days, 23 hours, 10 mins",
             "timestamp": 1787484446000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -4416,7 +4416,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "9/11/2026, 23:10:18",
-            "earnedAge": "2 hours, 25 mins",
+            "earnedAge": "6 hours, 27 mins",
             "timestamp": 1789186218000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -4456,7 +4456,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/8/2026, 03:11:59",
-            "earnedAge": "1 month, 4 days, 22 hours, 23 mins",
+            "earnedAge": "1 month, 5 days, 2 hours, 25 mins",
             "timestamp": 1786176719000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -4476,7 +4476,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/8/2026, 03:12:00",
-            "earnedAge": "1 month, 4 days, 22 hours, 23 mins",
+            "earnedAge": "1 month, 5 days, 2 hours, 25 mins",
             "timestamp": 1786176720000,
             "hasSubProgress": true,
             "currentValue": 0,
@@ -4496,7 +4496,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/29/2026, 01:22:31",
-            "earnedAge": "2 weeks, 13 mins",
+            "earnedAge": "2 weeks, 4 hours, 15 mins",
             "timestamp": 1787984551000,
             "hasSubProgress": false,
             "currentValue": 0,
@@ -4720,7 +4720,7 @@
           "groupName": "Sniper Elite 5",
           "earned": true,
           "earnedDate": "9/11/2026, 23:36:52",
-          "earnedAge": "1 hour, 58 mins",
+          "earnedAge": "6 hours, 1 min",
           "timestamp": 1789187812000,
           "hasSubProgress": false,
           "currentValue": 0,
@@ -4740,7 +4740,7 @@
           "groupName": "Wolf Mountain",
           "earned": true,
           "earnedDate": "9/11/2026, 23:10:18",
-          "earnedAge": "2 hours, 25 mins",
+          "earnedAge": "6 hours, 27 mins",
           "timestamp": 1789186218000,
           "hasSubProgress": false,
           "currentValue": 0,
@@ -4760,7 +4760,7 @@
           "groupName": "Sniper Elite 5",
           "earned": true,
           "earnedDate": "9/5/2026, 21:51:40",
-          "earnedAge": "6 days, 3 hours, 43 mins",
+          "earnedAge": "6 days, 7 hours, 46 mins",
           "timestamp": 1788663100000,
           "hasSubProgress": true,
           "currentValue": 0,
@@ -4780,7 +4780,7 @@
           "groupName": "Sniper Elite 5",
           "earned": true,
           "earnedDate": "8/29/2026, 17:48:49",
-          "earnedAge": "1 week, 6 days, 7 hours, 46 mins",
+          "earnedAge": "1 week, 6 days, 11 hours, 49 mins",
           "timestamp": 1788043729000,
           "hasSubProgress": true,
           "currentValue": 0,
@@ -4800,7 +4800,7 @@
           "groupName": "Sniper Elite 5",
           "earned": true,
           "earnedDate": "8/29/2026, 16:57:54",
-          "earnedAge": "1 week, 6 days, 8 hours, 37 mins",
+          "earnedAge": "1 week, 6 days, 12 hours, 40 mins",
           "timestamp": 1788040674000,
           "hasSubProgress": true,
           "currentValue": 0,
@@ -4820,7 +4820,7 @@
           "groupName": "Sniper Elite 5",
           "earned": true,
           "earnedDate": "8/29/2026, 16:31:01",
-          "earnedAge": "1 week, 6 days, 9 hours, 4 mins",
+          "earnedAge": "1 week, 6 days, 13 hours, 6 mins",
           "timestamp": 1788039061000,
           "hasSubProgress": true,
           "currentValue": 0,
@@ -4840,7 +4840,7 @@
           "groupName": "Wolf Mountain",
           "earned": true,
           "earnedDate": "8/29/2026, 01:22:33",
-          "earnedAge": "2 weeks, 13 mins",
+          "earnedAge": "2 weeks, 4 hours, 15 mins",
           "timestamp": 1787984553000,
           "hasSubProgress": true,
           "currentValue": 0,
@@ -4860,7 +4860,7 @@
           "groupName": "Wolf Mountain",
           "earned": true,
           "earnedDate": "8/29/2026, 01:22:31",
-          "earnedAge": "2 weeks, 13 mins",
+          "earnedAge": "2 weeks, 4 hours, 15 mins",
           "timestamp": 1787984551000,
           "hasSubProgress": false,
           "currentValue": 0,
@@ -4880,7 +4880,7 @@
           "groupName": "Wolf Mountain",
           "earned": true,
           "earnedDate": "8/29/2026, 01:09:47",
-          "earnedAge": "2 weeks, 25 mins",
+          "earnedAge": "2 weeks, 4 hours, 28 mins",
           "timestamp": 1787983787000,
           "hasSubProgress": false,
           "currentValue": 0,
@@ -4900,7 +4900,7 @@
           "groupName": "Wolf Mountain",
           "earned": true,
           "earnedDate": "8/23/2026, 06:27:26",
-          "earnedAge": "2 weeks, 5 days, 19 hours, 8 mins",
+          "earnedAge": "2 weeks, 5 days, 23 hours, 10 mins",
           "timestamp": 1787484446000,
           "hasSubProgress": true,
           "currentValue": 0,
@@ -4910,1029 +4910,1029 @@
       ],
       "streamHistory": [],
       "lastHeavySyncTimestamp": null,
-      "lastUpdated": "9/12/2026, 01:35:38"
+      "lastUpdated": "9/12/2026, 05:37:57"
     }
   },
   "games": {
-    "NPWR21465_00": {
-      "commId": "NPWR21465_00",
-      "name": "Sniper Elite 5",
-      "platform": "PS5",
-      "totalTrophies": 72,
-      "trophies": [
-        {
-          "trophyId": 0,
-          "name": "Sniper Elite",
-          "type": "platinum",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4426c421-cb2a-47c4-b1eb-8713c5826aaf.png",
-          "detail": "Obtain all Trophies.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 1,
-          "name": "Meeting Resistance",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/17d25bb5-bc66-4bb1-b738-0222980cdc4a.png",
-          "detail": "Weaken the Atlantic wall and rendezvous with Blue Viper.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 2,
-          "name": "Confirming Suspicions",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/1aa67e71-276b-41ac-a5c7-f3387add22d5.png",
-          "detail": "Raid Chateau de Berengar and Möller's Office.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 3,
-          "name": "The Kraken Wakes",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f238c8de-14fb-40b1-92f3-486f1b8e4e81.png",
-          "detail": "Infiltrate Beaumont-Saint-Denis and Uncover Operation Kraken.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 4,
-          "name": "It's Starting to Crack",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/31726dcd-86f5-4e53-9357-7348e9a3d072.png",
-          "detail": "Destroy Operation Kraken's production facility at Martressac.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 5,
-          "name": "Change the Channel",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c603cb71-3a6d-4f20-8b7c-284cd8b1a8e4.png",
-          "detail": "Destroy the Prototype Stealth U-Boat hidden in Festung Guernsey.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 6,
-          "name": "Taking it back",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d439e89b-1afb-408d-8257-e1922809047b.png",
-          "detail": "Liberate Desponts-sur-Douve and secure Allied transport routes.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 7,
-          "name": "Target America",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
-          "detail": "Destroy the V2 Launch Sites and Uncover the target of Operation Kraken.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 8,
-          "name": "The Kraken Sleeps",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/ba205084-5d0a-4648-8657-aaa38dd43533.png",
-          "detail": "Stop Operation Kraken and sink its deadly fleet.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 9,
-          "name": "Can't Outrun A Bullet",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/8dc0e66c-4e79-44fd-95c5-9447c8ca0008.png",
-          "detail": "Kill Möller with a rifle at a distance of 600 meters or more.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 10,
-          "name": "Climbing the Ladder",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/761c0fa3-7ed7-4f99-a0e1-3de4d8157aae.png",
-          "detail": "Reach rank 40.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 11,
-          "name": "Liberté",
-          "type": "gold",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c6fe9f95-9c4b-463c-bad5-e797cc3a39f7.png",
-          "detail": "Complete the campaign.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 12,
-          "name": "Best of the Best",
-          "type": "gold",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/87712b89-9024-449a-a49f-6dde1525dbc1.png",
-          "detail": "Complete the entire campaign on Authentic difficulty.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 13,
-          "name": "No Stone Unturned",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/8c66d9c8-46f8-4612-b3be-9d4c98df287a.png",
-          "detail": "Complete 16 optional objectives.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 14,
-          "name": "Opposing Force",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c95870e7-4545-4eb0-9c94-26d48461b9fc.png",
-          "detail": "Win one Axis Invasion as an Invader.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 15,
-          "name": "Enemy at the Gates",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d30e7fed-73bb-427e-80f2-5b199eb625ee.png",
-          "detail": "Defeat an invading Sniper Jager.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 16,
-          "name": "Fields of Glory",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/5c6a440a-5675-42b0-8105-b8f611dcc67d.png",
-          "detail": "Play one team-based PVP match",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 17,
-          "name": "Just a Flesh Wound",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f8fadef6-3e73-4368-952e-89549e26cd42.png",
-          "detail": "Complete a mission, excluding the \"Loose Ends\" mission, in any difficulty without healing.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 18,
-          "name": "Organ Grinder",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c2d66ad9-d7cc-4e79-a4dd-ef6bdc0f5ed8.png",
-          "detail": "Hit every organ at least once with a rifle.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 19,
-          "name": "Strategist",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/eb1b1d0e-ccc9-4294-9410-e81aa1821dfe.png",
-          "detail": "Make a tank shoot and destroy another enemy vehicle.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 20,
-          "name": "Master of Pistols",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c2d3b605-6157-4096-8a41-d6f92a40e5cf.png",
-          "detail": "Obtain six pistol-related mastery medals.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 21,
-          "name": "Master of Secondaries",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e8a96b81-4b53-48d9-bf61-9163168b9994.png",
-          "detail": "Obtain six secondary-related mastery medals.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 22,
-          "name": "Master of Rifles",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/81573a9b-8e89-4c91-8d41-d820f767377e.png",
-          "detail": "Obtain six rifle-related mastery medals.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 23,
-          "name": "Master-at-arms",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/0439ecde-a54d-43d0-9073-73e4fd68d197.png",
-          "detail": "Become the Master of each weapon.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 24,
-          "name": "Gunslinger",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e1cbccd2-5c90-41ec-9653-3e39e56ae689.png",
-          "detail": "Kill 150 enemies with a Pistol.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 25,
-          "name": "Skirmisher",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e2e38296-39e7-46f8-ac29-64746b727036.png",
-          "detail": "Kill 300 enemies with a Secondary Weapon.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 26,
-          "name": "Sharpshooter",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/179b85d2-7b74-4bee-8d07-28e5710738a0.png",
-          "detail": "Kill 350 enemies with a Rifle.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 27,
-          "name": "The Long Game",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/fe3a0ec8-7699-4fae-b840-85670b1cf11b.png",
-          "detail": "Total kill distance of 100000 meters.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 28,
-          "name": "Set Europe Ablaze",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
-          "detail": "Kill 50 enemies with traps.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 29,
-          "name": "Precision Is Key",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f0446d48-10f4-4bde-be46-d8019bea9311.png",
-          "detail": "Kill 150  enemies with any weapon while in Iron Sights.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 30,
-          "name": "Out of Scope",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/8e8778a5-cd3f-48c1-a6e4-a8920316dbc6.png",
-          "detail": "Kill 150 enemies with a rifle while in Iron Sights.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 31,
-          "name": "Rigged to Blow",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
-          "detail": "Kill 20 soldiers using booby traps.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 32,
-          "name": "My Little Friend",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6f30398b-e22a-406e-8858-b724b01ddcf5.png",
-          "detail": "Kill 50 soldiers with heavy weapons.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 33,
-          "name": "Explosive Efficiency",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
-          "detail": "Kill 3 on-foot soldiers with one grenade.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 34,
-          "name": "Lord of War",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/134f9030-0fee-4b0e-9efc-79a603aee163.png",
-          "detail": "Get a kill with 20 different weapons.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 35,
-          "name": "Die Nussknacker Sweet!",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/0bb96f58-bc48-404f-b396-33995fdd456d.png",
-          "detail": "Get a testicle shot with a rifle from a distance of 100 meters or more.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 36,
-          "name": "Resourceful",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/ecd5a5ce-ab47-4165-b965-4704b194e2af.png",
-          "detail": "Kill 50 enemy soldiers with Found Weapons.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 37,
-          "name": "Der Geist",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/af2c0033-427c-4fff-befc-59eb5ac6a0ca.png",
-          "detail": "Achieve 250 ghost kills.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 38,
-          "name": "As Quiet as a Mouse",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb867a5e-ac51-44d3-89a0-8e35a4f6d191.png",
-          "detail": "Kill 50 enemies during a Sound Mask.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 39,
-          "name": "Close Quarters",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40109781-5a63-4f98-abc0-263fc65548e0.png",
-          "detail": "Perform 100 lethal takedowns.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 40,
-          "name": "Snake in the Grass",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c5f3010a-c566-4bc9-8ea8-aad2c53c7b21.png",
-          "detail": "While in Tall Grass, kill 50 soldiers.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 41,
-          "name": "From Paris with Love",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f3a31a12-29c7-4f70-899e-2d800aec3489.png",
-          "detail": "Collect 41 Personal letters.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 42,
-          "name": "Burn after reading",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c7fd0246-3d96-47fd-8ea8-4f6a96aec5c2.png",
-          "detail": "Collect 39 classified documents.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 43,
-          "name": "Souvenir hunter",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d1b43e92-5d28-4cc9-9ac5-d3ce63f7b8bf.png",
-          "detail": "Collect 24 Hidden Items.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 44,
-          "name": "Eagle Eyed",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/83ec1770-119f-4cda-b294-cf93cfc5bdb3.png",
-          "detail": "Destroy 24 Dead-eye Targets.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 45,
-          "name": "Tinkerer",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/3183744c-91c8-4340-ac4a-5e429c0a61f4.png",
-          "detail": "Interact with 24 workbenches.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 46,
-          "name": "It'll Buff Right Out",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c2bc77bf-3b96-4b1f-8bbf-9035d5c424a4.png",
-          "detail": "Destroy Möller's shiny new car.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 47,
-          "name": "Locomotion Commotion",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/fce57d1c-e739-4be9-9d6e-f0e72a3f6834.png",
-          "detail": "In Martressac, create an accident that destroys the train in the storage area.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 48,
-          "name": "Up Close and Personal",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb348a13-2723-45cc-abba-50a1b68d1838.png",
-          "detail": "Melee takedown each one of the three snipers guarding the bridge.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 49,
-          "name": "Road Rage",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/19e22a01-afc5-4a75-8bc0-13fd4ab00e26.png",
-          "detail": "In Secret Weapons, find and destroy one of each type of vehicle present in this mission.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 50,
-          "name": "Don't hold your breath",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/99edab93-7005-4634-b8ce-0de72d8c7df9.png",
-          "detail": "Make the final shot in St Nazaire without using Empty Lung.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 51,
-          "name": "Brains of the Operation",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/368221f5-a2a4-4696-9bcb-cdea5a482b82.png",
-          "detail": "Kill Möller with a headshot.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 52,
-          "name": "Sight Beyond Sights",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/48b54ce3-510d-4cd1-a6d6-81fa7e864ada.png",
-          "detail": "Kill Möller with a rifle, while in Iron Sights.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 53,
-          "name": "Shoot for the Moon",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/0178d710-329a-4535-9acb-4e6e7661f29a.png",
-          "detail": "Complete three Survival missions.",
-          "groupId": "default"
-        },
-        {
-          "trophyId": 54,
-          "name": "Führerious Repetition",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/66508739-96e8-487d-94fc-1a4d6fff188b.png",
-          "detail": "Wolf Mountain - Kill Hitler 5 times.",
-          "groupId": "001"
-        },
-        {
-          "trophyId": 55,
-          "name": "Reich To The Point",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d1b0be2c-a414-410e-abc2-7754676cc9fc.png",
-          "detail": "Wolf Mountain - Kill only Hitler and exfiltrate.",
-          "groupId": "001"
-        },
-        {
-          "trophyId": 56,
-          "name": "From Führer Away",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4aceafe9-e503-40b1-b709-085a2530f25f.png",
-          "detail": "Wolf Mountain - Kill Hitler at a distance of 300 meters or more.",
-          "groupId": "001"
-        },
-        {
-          "trophyId": 57,
-          "name": "Covert Elimination",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/881d5abb-ffe0-4f1c-adb8-e21d526acc33.png",
-          "detail": "Wolf Mountain - Kill Hitler and exfiltrate without ever being detected.",
-          "groupId": "001"
-        },
-        {
-          "trophyId": 58,
-          "name": "Alpha",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/85bd7b47-ee24-4444-9184-bdf08bc27d8a.png",
-          "detail": "Wolf Mountain - Complete the mission on Authentic difficulty.",
-          "groupId": "001"
-        },
-        {
-          "trophyId": 59,
-          "name": "Herr Today, Gone Tomorrow",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/3552602f-8568-4f5a-98bd-ff686db0a6fc.png",
-          "detail": "Wolf Mountain - Complete the mission.",
-          "groupId": "001"
-        },
-        {
-          "trophyId": 60,
-          "name": "Operation Foxley",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c212cf07-0bf2-4b56-a617-e10e7f524dbe.png",
-          "detail": "Wolf Mountain - Complete the mission with a 2 star rating.",
-          "groupId": "001"
-        },
-        {
-          "trophyId": 61,
-          "name": "Das Familienjuwel",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/58c913a6-18d0-4739-bee3-089c95040b77.png",
-          "detail": "Wolf Mountain - Kill Hitler with a testicle shot.",
-          "groupId": "001"
-        },
-        {
-          "trophyId": 62,
-          "name": "Last Resort",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/702698d3-3b28-443f-a6da-0bf8087a7456.png",
-          "detail": "Complete the campaign mission - Landing Force.",
-          "groupId": "002"
-        },
-        {
-          "trophyId": 63,
-          "name": "Siegebreaker",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/9492857a-51c1-40f6-badc-5f4974b15679.png",
-          "detail": "Complete the campaign mission - Conqueror.",
-          "groupId": "003"
-        },
-        {
-          "trophyId": 64,
-          "name": "Ghost of Falaise",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/48139b34-ced4-4c93-9e98-6f22b1701bd1.png",
-          "detail": "Conqueror - Complete the mission with a 2 star rating.",
-          "groupId": "003"
-        },
-        {
-          "trophyId": 65,
-          "name": "Operation Overlord",
-          "type": "gold",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d085c761-9f11-459b-b712-46169c7b5f21.png",
-          "detail": "Conqueror - Complete the mission on Authentic difficulty.",
-          "groupId": "003"
-        },
-        {
-          "trophyId": 66,
-          "name": "If You Go Down To The Woods Today",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e0029b2f-dc59-4f2f-9781-b744f4b1804b.png",
-          "detail": "Complete the campaign mission - Rough Landing",
-          "groupId": "004"
-        },
-        {
-          "trophyId": 67,
-          "name": "Fight Another Day",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/43bb4783-28ca-4f35-9b74-3b0c56dd8994.png",
-          "detail": "Rough Landing - Complete the mission with a 2 star rating.",
-          "groupId": "004"
-        },
-        {
-          "trophyId": 68,
-          "name": "Stroll in the Woods",
-          "type": "gold",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/73b5263e-3a2f-4874-8739-e2dc9c386e7b.png",
-          "detail": "Rough Landing - Complete the mission on Authentic difficulty.",
-          "groupId": "004"
-        },
-        {
-          "trophyId": 69,
-          "name": "Shipbreaker",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f8c33498-f881-44bd-843c-2bf78141c1ab.png",
-          "detail": "Complete the campaign mission - Kraken Awakes.",
-          "groupId": "005"
-        },
-        {
-          "trophyId": 70,
-          "name": "Sink or Swim",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c1842419-7765-45a0-9ccd-3358032dcb8f.png",
-          "detail": "Kraken Awakes - Complete the mission with a 2 star rating.",
-          "groupId": "005"
-        },
-        {
-          "trophyId": 71,
-          "name": "Going Overboard",
-          "type": "gold",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/789513b5-16b8-4d8f-8b42-546218d08fa8.png",
-          "detail": "Kraken Awakes - Complete the mission on Authentic difficulty.",
-          "groupId": "005"
-        }
-      ],
-      "groups": [
-        {
-          "trophyGroupId": "default",
-          "trophyGroupName": "Sniper Elite 5",
-          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
-          "definedTrophies": {
-            "bronze": 44,
-            "silver": 7,
-            "gold": 2,
-            "platinum": 1
-          }
-        },
-        {
-          "trophyGroupId": "001",
-          "trophyGroupName": "Wolf Mountain",
-          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/835342ce-169d-4ae2-a705-eac2eedf7df5.png",
-          "definedTrophies": {
-            "bronze": 5,
-            "silver": 3,
-            "gold": 0,
-            "platinum": 0
-          }
-        },
-        {
-          "trophyGroupId": "002",
-          "trophyGroupName": "Landing Force",
-          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/50620b78-b94d-4630-9dfa-f516d5e31a9e.png",
-          "definedTrophies": {
-            "bronze": 1,
-            "silver": 0,
-            "gold": 0,
-            "platinum": 0
-          }
-        },
-        {
-          "trophyGroupId": "003",
-          "trophyGroupName": "Conqueror",
-          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c524026c-8684-4196-bce7-ce90f3e791e3.png",
-          "definedTrophies": {
-            "bronze": 1,
-            "silver": 1,
-            "gold": 1,
-            "platinum": 0
-          }
-        },
-        {
-          "trophyGroupId": "004",
-          "trophyGroupName": "Rough Landing",
-          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9d6702b-fae7-4ddb-b8ab-92bb83cecd40.png",
-          "definedTrophies": {
-            "bronze": 1,
-            "silver": 1,
-            "gold": 1,
-            "platinum": 0
-          }
-        },
-        {
-          "trophyGroupId": "005",
-          "trophyGroupName": "Kraken Awakes",
-          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/35ec92a3-403e-4c74-bcf1-3c64575e6521.png",
-          "definedTrophies": {
-            "bronze": 1,
-            "silver": 1,
-            "gold": 1,
-            "platinum": 0
-          }
-        }
-      ],
-      "createdTimestamp": "2026-09-12T06:35:37.087Z"
-    },
     "NPWR18502_00": {
       "commId": "NPWR18502_00",
+      "createdTimestamp": "2026-09-12T06:35:43.397Z",
+      "groups": [
+        {
+          "definedTrophies": {
+            "bronze": 26,
+            "gold": 3,
+            "platinum": 1,
+            "silver": 13
+          },
+          "trophyGroupDetail": "Gold Rush: The Game Trophies",
+          "trophyGroupIconUrl": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/251C7B09C5CEB77B13D7D32616878E7179340ABF.PNG",
+          "trophyGroupId": "default",
+          "trophyGroupName": "Gold Rush: The Game"
+        }
+      ],
       "name": "Gold Rush: The Game",
       "platform": "PS4",
       "totalTrophies": 43,
       "trophies": [
         {
-          "trophyId": 0,
-          "name": "Hard Work Pays Off",
-          "type": "platinum",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/1D5FAA931AC7306C0BA8DFB82CDEC919A9B628A9.PNG",
           "detail": "Obtain every trophy",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/1D5FAA931AC7306C0BA8DFB82CDEC919A9B628A9.PNG",
+          "name": "Hard Work Pays Off",
+          "trophyId": 0,
+          "type": "platinum"
         },
         {
-          "trophyId": 1,
-          "name": "I'm Ready",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/BF4A48EF429C5D8FEF482DA60CFD27E513F5BBA0.PNG",
           "detail": "Complete the Tutorial",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/BF4A48EF429C5D8FEF482DA60CFD27E513F5BBA0.PNG",
+          "name": "I'm Ready",
+          "trophyId": 1,
+          "type": "bronze"
         },
         {
-          "trophyId": 2,
-          "name": "Wash It All Away I",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/ECBD760389283FC07D0CB8D5886CF8396B171882.PNG",
           "detail": "Setup Fully Upgraded Tier 1 Wash Plant",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/ECBD760389283FC07D0CB8D5886CF8396B171882.PNG",
+          "name": "Wash It All Away I",
+          "trophyId": 2,
+          "type": "bronze"
         },
         {
-          "trophyId": 3,
-          "name": "Wash It All Away II",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/D1817438265A3AD409B791F0D43F5B04FE0D2586.PNG",
           "detail": "Setup Fully Upgraded Tier 2 Wash Plant",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/D1817438265A3AD409B791F0D43F5B04FE0D2586.PNG",
+          "name": "Wash It All Away II",
+          "trophyId": 3,
+          "type": "bronze"
         },
         {
-          "trophyId": 4,
-          "name": "Work From Home I",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/FF62485B82C4B9F9821BB4C285349D3704F29B0F.PNG",
           "detail": "Hire 1 Worker",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/FF62485B82C4B9F9821BB4C285349D3704F29B0F.PNG",
+          "name": "Work From Home I",
+          "trophyId": 4,
+          "type": "bronze"
         },
         {
-          "trophyId": 5,
-          "name": "Gold Digger I",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/A7BDC997787D911A7C389876E3C4D78E63D4979D.PNG",
           "detail": "Collect 10 oz of Gold",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/A7BDC997787D911A7C389876E3C4D78E63D4979D.PNG",
+          "name": "Gold Digger I",
+          "trophyId": 5,
+          "type": "bronze"
         },
         {
-          "trophyId": 6,
-          "name": "I Can't Drive 55 I",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/0D663D2079B001B4FD6BC4E4001BB7936D2C4471.PNG",
           "detail": "Drive 10 km with Vehicles",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/0D663D2079B001B4FD6BC4E4001BB7936D2C4471.PNG",
+          "name": "I Can't Drive 55 I",
+          "trophyId": 6,
+          "type": "bronze"
         },
         {
-          "trophyId": 7,
-          "name": "Dismantle, Repair I",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/253F923DDAFE91037EF14994E1F5119D93F02616.PNG",
           "detail": "Repair 1 Part",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/253F923DDAFE91037EF14994E1F5119D93F02616.PNG",
+          "name": "Dismantle, Repair I",
+          "trophyId": 7,
+          "type": "bronze"
         },
         {
-          "trophyId": 8,
-          "name": "I Melt With You I",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/FC4852077D90509FD6E85184D26E48B6F65B3927.PNG",
           "detail": "Smelt a 1 oz Gold Bar",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/FC4852077D90509FD6E85184D26E48B6F65B3927.PNG",
+          "name": "I Melt With You I",
+          "trophyId": 8,
+          "type": "bronze"
         },
         {
-          "trophyId": 9,
-          "name": "I Melt With You II",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/AAA3E6F9E2587DA78BA5DF21DB7E457DD00A81F1.PNG",
           "detail": "Smelt a 10 oz Gold Bar",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/AAA3E6F9E2587DA78BA5DF21DB7E457DD00A81F1.PNG",
+          "name": "I Melt With You II",
+          "trophyId": 9,
+          "type": "bronze"
         },
         {
-          "trophyId": 10,
-          "name": "I Can't Drive 55 II",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/5C2CEF0B1712DCCBAB130256C9A18C5AEC035E93.PNG",
           "detail": "Drive 100 km with Vehicles",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/5C2CEF0B1712DCCBAB130256C9A18C5AEC035E93.PNG",
+          "name": "I Can't Drive 55 II",
+          "trophyId": 10,
+          "type": "bronze"
         },
         {
-          "trophyId": 11,
-          "name": "Get That Gasoline Blues I",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/1E8E1326399050723C7CCF231E15158257D1B960.PNG",
           "detail": "Use 100 L of Fuel",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/1E8E1326399050723C7CCF231E15158257D1B960.PNG",
+          "name": "Get That Gasoline Blues I",
+          "trophyId": 11,
+          "type": "bronze"
         },
         {
-          "trophyId": 12,
-          "name": "Gold Digger II",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/131A51DE118E80AB8669A9881B4973D42459E888.PNG",
           "detail": "Collect 100 oz of Gold",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/131A51DE118E80AB8669A9881B4973D42459E888.PNG",
+          "name": "Gold Digger II",
+          "trophyId": 12,
+          "type": "bronze"
         },
         {
-          "trophyId": 13,
-          "name": "Magnetised I",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/62644AFB74113091431E0DA11FA81F86963219E5.PNG",
           "detail": "Collect 10 oz of Magnetite",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/62644AFB74113091431E0DA11FA81F86963219E5.PNG",
+          "name": "Magnetised I",
+          "trophyId": 13,
+          "type": "bronze"
         },
         {
-          "trophyId": 14,
-          "name": "Wash It All Away III",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/90AD70F6403B6F87445334D173EA7141ED16EFDC.PNG",
           "detail": "Setup Fully Upgraded Tier 3 Wash Plant",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/90AD70F6403B6F87445334D173EA7141ED16EFDC.PNG",
+          "name": "Wash It All Away III",
+          "trophyId": 14,
+          "type": "bronze"
         },
         {
-          "trophyId": 15,
-          "name": "All Night Long",
-          "type": "silver",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/2D62411DF5C878AE42FC54C365D30D2FF9F1BAA5.PNG",
           "detail": "Collect 70 oz of Gold during a Night",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/2D62411DF5C878AE42FC54C365D30D2FF9F1BAA5.PNG",
+          "name": "All Night Long",
+          "trophyId": 15,
+          "type": "silver"
         },
         {
-          "trophyId": 16,
-          "name": "Gold on the Ceiling I",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/C51CEF1F35F9CBD1E69146664F88D1C88EFC9064.PNG",
           "detail": "Collect 1M $",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/C51CEF1F35F9CBD1E69146664F88D1C88EFC9064.PNG",
+          "name": "Gold on the Ceiling I",
+          "trophyId": 16,
+          "type": "bronze"
         },
         {
-          "trophyId": 17,
-          "name": "Work From Home II",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/7014BD2A8CDEDDA16B2C9024E8DE58E972DC3407.PNG",
           "detail": "Hire 10 Workers",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/7014BD2A8CDEDDA16B2C9024E8DE58E972DC3407.PNG",
+          "name": "Work From Home II",
+          "trophyId": 17,
+          "type": "bronze"
         },
         {
-          "trophyId": 18,
-          "name": "Magnetised II",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/E95CE56C7AFB632551D88B1AFFAEAFCDF3F2DF79.PNG",
           "detail": "Collect 100 oz of Magnetite",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/E95CE56C7AFB632551D88B1AFFAEAFCDF3F2DF79.PNG",
+          "name": "Magnetised II",
+          "trophyId": 18,
+          "type": "bronze"
         },
         {
-          "trophyId": 19,
-          "name": "All I Wanted Was a Car",
-          "type": "silver",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/8B9F024BA21B0BE9D5144B03669AD5710A530695.PNG",
           "detail": "Buy each Vehicle",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/8B9F024BA21B0BE9D5144B03669AD5710A530695.PNG",
+          "name": "All I Wanted Was a Car",
+          "trophyId": 19,
+          "type": "silver"
         },
         {
-          "trophyId": 20,
-          "name": "Drill Instructor I",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/444156B2D37033872D4814A1B92B350AED5078CA.PNG",
           "detail": "Make 10 Drills",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/444156B2D37033872D4814A1B92B350AED5078CA.PNG",
+          "name": "Drill Instructor I",
+          "trophyId": 20,
+          "type": "bronze"
         },
         {
-          "trophyId": 21,
-          "name": "I Can't Drive 55 III",
-          "type": "silver",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/FDFE1ACB987307AC6F145769DD42ED18367299B7.PNG",
           "detail": "Drive 1000 km with Vehicles",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/FDFE1ACB987307AC6F145769DD42ED18367299B7.PNG",
+          "name": "I Can't Drive 55 III",
+          "trophyId": 21,
+          "type": "silver"
         },
         {
-          "trophyId": 22,
-          "name": "Don't Worry, Be Happy!",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/8CE0EA5138162E5E4E439A77C37616094D09139F.PNG",
           "detail": "End Season at Hotel",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/8CE0EA5138162E5E4E439A77C37616094D09139F.PNG",
+          "name": "Don't Worry, Be Happy!",
+          "trophyId": 22,
+          "type": "bronze"
         },
         {
-          "trophyId": 23,
-          "name": "Till I Collapse",
-          "type": "silver",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/0A26D512BF3C805BD3F799F7AF652F1C262BBE7A.PNG",
           "detail": "Play 10 hours non stop",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/0A26D512BF3C805BD3F799F7AF652F1C262BBE7A.PNG",
+          "name": "Till I Collapse",
+          "trophyId": 23,
+          "type": "silver"
         },
         {
-          "trophyId": 24,
-          "name": "Gold Digger III",
-          "type": "silver",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/128E52B65C44B1663953D71C3AFFAE9DDDD64D88.PNG",
           "detail": "Collect 1000 oz of Gold",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/128E52B65C44B1663953D71C3AFFAE9DDDD64D88.PNG",
+          "name": "Gold Digger III",
+          "trophyId": 24,
+          "type": "silver"
         },
         {
-          "trophyId": 25,
-          "name": "I Melt With You III",
-          "type": "silver",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/C7D7EAAE0FA26D0A28F3D7F9137708B277276EFB.PNG",
           "detail": "Smelt a 100 oz Gold Bar",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/C7D7EAAE0FA26D0A28F3D7F9137708B277276EFB.PNG",
+          "name": "I Melt With You III",
+          "trophyId": 25,
+          "type": "silver"
         },
         {
-          "trophyId": 26,
-          "name": "Magnetised III",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/2622FADF3AD19352F0DA2DABC62785687525202B.PNG",
           "detail": "Collect 1000 oz of Magnetite",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/2622FADF3AD19352F0DA2DABC62785687525202B.PNG",
+          "name": "Magnetised III",
+          "trophyId": 26,
+          "type": "bronze"
         },
         {
-          "trophyId": 27,
-          "name": "Gold on the Ceiling II",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/49CAC926F088484985B6535C4AA445FE02A160DE.PNG",
           "detail": "Collect 5 M$",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/49CAC926F088484985B6535C4AA445FE02A160DE.PNG",
+          "name": "Gold on the Ceiling II",
+          "trophyId": 27,
+          "type": "bronze"
         },
         {
-          "trophyId": 28,
-          "name": "Gold on the Ceiling III",
-          "type": "silver",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/5CABC92C4720B0B6D732161A8D4780622BAE5912.PNG",
           "detail": "Collect 10 M$",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/5CABC92C4720B0B6D732161A8D4780622BAE5912.PNG",
+          "name": "Gold on the Ceiling III",
+          "trophyId": 28,
+          "type": "silver"
         },
         {
-          "trophyId": 29,
-          "name": "Life for Rent",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/FED35CD47A84B7C68C3980855E4690AFEBF6BD83.PNG",
           "detail": "Rent All Claims",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/FED35CD47A84B7C68C3980855E4690AFEBF6BD83.PNG",
+          "name": "Life for Rent",
+          "trophyId": 29,
+          "type": "bronze"
         },
         {
-          "trophyId": 30,
-          "name": "My Claim to Fame",
-          "type": "silver",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/2C3400D7D15C31CF6E3F7445A18AE0858F4BEC5D.PNG",
           "detail": "Buy All Claims",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/2C3400D7D15C31CF6E3F7445A18AE0858F4BEC5D.PNG",
+          "name": "My Claim to Fame",
+          "trophyId": 30,
+          "type": "silver"
         },
         {
-          "trophyId": 31,
-          "name": "Is That For Me?",
-          "type": "gold",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/D4C4DA231DAAA74719DD7A9C520EE97EDB200E28.PNG",
           "detail": "Buy each possible thing in the Game",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/D4C4DA231DAAA74719DD7A9C520EE97EDB200E28.PNG",
+          "name": "Is That For Me?",
+          "trophyId": 31,
+          "type": "gold"
         },
         {
-          "trophyId": 32,
-          "name": "Drill Instructor II",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/AEB02E76CC76B55F3369AD1DE706F695E4F17985.PNG",
           "detail": "Make 100 Drills",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/AEB02E76CC76B55F3369AD1DE706F695E4F17985.PNG",
+          "name": "Drill Instructor II",
+          "trophyId": 32,
+          "type": "bronze"
         },
         {
-          "trophyId": 33,
-          "name": "Drill Instructor III",
-          "type": "silver",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/AFF5BCA1B7A6D4787183613355A579ED7D210EC4.PNG",
           "detail": "Make 1000 Drills",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/AFF5BCA1B7A6D4787183613355A579ED7D210EC4.PNG",
+          "name": "Drill Instructor III",
+          "trophyId": 33,
+          "type": "silver"
         },
         {
-          "trophyId": 34,
-          "name": "In 2 Deep",
-          "type": "gold",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/7FF11EE066FB1B6C4BDFF806E58674DB6AC97294.PNG",
           "detail": "Drill 90% of every Claim",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/7FF11EE066FB1B6C4BDFF806E58674DB6AC97294.PNG",
+          "name": "In 2 Deep",
+          "trophyId": 34,
+          "type": "gold"
         },
         {
-          "trophyId": 35,
-          "name": "Deep Enough",
-          "type": "gold",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/A22A2B1E8313AA854447D8FC0E8CF38F8A70A84B.PNG",
           "detail": "Dig 70% of every Claim",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/A22A2B1E8313AA854447D8FC0E8CF38F8A70A84B.PNG",
+          "name": "Deep Enough",
+          "trophyId": 35,
+          "type": "gold"
         },
         {
-          "trophyId": 36,
-          "name": "Work From Home III",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/A9D30D200C517A6834ABB13D8936B12AF99F6ACD.PNG",
           "detail": "Hire 20 Workers",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/A9D30D200C517A6834ABB13D8936B12AF99F6ACD.PNG",
+          "name": "Work From Home III",
+          "trophyId": 36,
+          "type": "bronze"
         },
         {
-          "trophyId": 37,
-          "name": "Get That Gasoline Blues II",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/602DAC69140C4C236ADA1CD583F4C3ACC8CB829A.PNG",
           "detail": "Use 1000 L of Fuel",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/602DAC69140C4C236ADA1CD583F4C3ACC8CB829A.PNG",
+          "name": "Get That Gasoline Blues II",
+          "trophyId": 37,
+          "type": "bronze"
         },
         {
-          "trophyId": 38,
-          "name": "Get That Gasoline Blues III",
-          "type": "silver",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/3230EEEA87ED3D3B8B7E508195F962C780A74F15.PNG",
           "detail": "Use 10000 L of Fuel",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/3230EEEA87ED3D3B8B7E508195F962C780A74F15.PNG",
+          "name": "Get That Gasoline Blues III",
+          "trophyId": 38,
+          "type": "silver"
         },
         {
-          "trophyId": 39,
-          "name": "I Break Everything I Touch",
-          "type": "silver",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/C2EC8B54AFCB291CAF8C6FFF1A7D0CD067CAB691.PNG",
           "detail": "Destroy each possible Part",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/C2EC8B54AFCB291CAF8C6FFF1A7D0CD067CAB691.PNG",
+          "name": "I Break Everything I Touch",
+          "trophyId": 39,
+          "type": "silver"
         },
         {
-          "trophyId": 40,
-          "name": "Dismantle, Repair II",
-          "type": "bronze",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/7AFBD5E74799B12C6609E297B94A3A879C5F4C2A.PNG",
           "detail": "Repair 10 Parts",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/7AFBD5E74799B12C6609E297B94A3A879C5F4C2A.PNG",
+          "name": "Dismantle, Repair II",
+          "trophyId": 40,
+          "type": "bronze"
         },
         {
-          "trophyId": 41,
-          "name": "Dismantle, Repair III",
-          "type": "silver",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/1AF614C6FEB7135EAB0C53A2BBE9F2A905D83DD7.PNG",
           "detail": "Repair 100 Parts",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/1AF614C6FEB7135EAB0C53A2BBE9F2A905D83DD7.PNG",
+          "name": "Dismantle, Repair III",
+          "trophyId": 41,
+          "type": "silver"
         },
         {
-          "trophyId": 42,
-          "name": "My Name Is",
-          "type": "silver",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/7EE57B14AA18B43A4DAB918DC564A0619E4A7C81.PNG",
           "detail": "Collect All Stories",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/7EE57B14AA18B43A4DAB918DC564A0619E4A7C81.PNG",
+          "name": "My Name Is",
+          "trophyId": 42,
+          "type": "silver"
         }
-      ],
+      ]
+    },
+    "NPWR21465_00": {
+      "commId": "NPWR21465_00",
+      "createdTimestamp": "2026-09-12T06:35:37.087Z",
       "groups": [
         {
-          "trophyGroupId": "default",
-          "trophyGroupName": "Gold Rush: The Game",
-          "trophyGroupDetail": "Gold Rush: The Game Trophies",
-          "trophyGroupIconUrl": "https://image.api.playstation.com/trophy/np/NPWR18502_00_004AE667476D1383F1F5F2A64271174EF8E35F5489/251C7B09C5CEB77B13D7D32616878E7179340ABF.PNG",
           "definedTrophies": {
-            "bronze": 26,
-            "silver": 13,
-            "gold": 3,
-            "platinum": 1
-          }
+            "bronze": 44,
+            "gold": 2,
+            "platinum": 1,
+            "silver": 7
+          },
+          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
+          "trophyGroupId": "default",
+          "trophyGroupName": "Sniper Elite 5"
+        },
+        {
+          "definedTrophies": {
+            "bronze": 5,
+            "gold": 0,
+            "platinum": 0,
+            "silver": 3
+          },
+          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/835342ce-169d-4ae2-a705-eac2eedf7df5.png",
+          "trophyGroupId": "001",
+          "trophyGroupName": "Wolf Mountain"
+        },
+        {
+          "definedTrophies": {
+            "bronze": 1,
+            "gold": 0,
+            "platinum": 0,
+            "silver": 0
+          },
+          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/50620b78-b94d-4630-9dfa-f516d5e31a9e.png",
+          "trophyGroupId": "002",
+          "trophyGroupName": "Landing Force"
+        },
+        {
+          "definedTrophies": {
+            "bronze": 1,
+            "gold": 1,
+            "platinum": 0,
+            "silver": 1
+          },
+          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c524026c-8684-4196-bce7-ce90f3e791e3.png",
+          "trophyGroupId": "003",
+          "trophyGroupName": "Conqueror"
+        },
+        {
+          "definedTrophies": {
+            "bronze": 1,
+            "gold": 1,
+            "platinum": 0,
+            "silver": 1
+          },
+          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9d6702b-fae7-4ddb-b8ab-92bb83cecd40.png",
+          "trophyGroupId": "004",
+          "trophyGroupName": "Rough Landing"
+        },
+        {
+          "definedTrophies": {
+            "bronze": 1,
+            "gold": 1,
+            "platinum": 0,
+            "silver": 1
+          },
+          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/35ec92a3-403e-4c74-bcf1-3c64575e6521.png",
+          "trophyGroupId": "005",
+          "trophyGroupName": "Kraken Awakes"
         }
       ],
-      "createdTimestamp": "2026-09-12T06:35:43.397Z"
+      "name": "Sniper Elite 5",
+      "platform": "PS5",
+      "totalTrophies": 72,
+      "trophies": [
+        {
+          "detail": "Obtain all Trophies.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4426c421-cb2a-47c4-b1eb-8713c5826aaf.png",
+          "name": "Sniper Elite",
+          "trophyId": 0,
+          "type": "platinum"
+        },
+        {
+          "detail": "Weaken the Atlantic wall and rendezvous with Blue Viper.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/17d25bb5-bc66-4bb1-b738-0222980cdc4a.png",
+          "name": "Meeting Resistance",
+          "trophyId": 1,
+          "type": "bronze"
+        },
+        {
+          "detail": "Raid Chateau de Berengar and Möller's Office.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/1aa67e71-276b-41ac-a5c7-f3387add22d5.png",
+          "name": "Confirming Suspicions",
+          "trophyId": 2,
+          "type": "bronze"
+        },
+        {
+          "detail": "Infiltrate Beaumont-Saint-Denis and Uncover Operation Kraken.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f238c8de-14fb-40b1-92f3-486f1b8e4e81.png",
+          "name": "The Kraken Wakes",
+          "trophyId": 3,
+          "type": "bronze"
+        },
+        {
+          "detail": "Destroy Operation Kraken's production facility at Martressac.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/31726dcd-86f5-4e53-9357-7348e9a3d072.png",
+          "name": "It's Starting to Crack",
+          "trophyId": 4,
+          "type": "bronze"
+        },
+        {
+          "detail": "Destroy the Prototype Stealth U-Boat hidden in Festung Guernsey.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c603cb71-3a6d-4f20-8b7c-284cd8b1a8e4.png",
+          "name": "Change the Channel",
+          "trophyId": 5,
+          "type": "bronze"
+        },
+        {
+          "detail": "Liberate Desponts-sur-Douve and secure Allied transport routes.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d439e89b-1afb-408d-8257-e1922809047b.png",
+          "name": "Taking it back",
+          "trophyId": 6,
+          "type": "bronze"
+        },
+        {
+          "detail": "Destroy the V2 Launch Sites and Uncover the target of Operation Kraken.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
+          "name": "Target America",
+          "trophyId": 7,
+          "type": "bronze"
+        },
+        {
+          "detail": "Stop Operation Kraken and sink its deadly fleet.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/ba205084-5d0a-4648-8657-aaa38dd43533.png",
+          "name": "The Kraken Sleeps",
+          "trophyId": 8,
+          "type": "bronze"
+        },
+        {
+          "detail": "Kill Möller with a rifle at a distance of 600 meters or more.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/8dc0e66c-4e79-44fd-95c5-9447c8ca0008.png",
+          "name": "Can't Outrun A Bullet",
+          "trophyId": 9,
+          "type": "silver"
+        },
+        {
+          "detail": "Reach rank 40.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/761c0fa3-7ed7-4f99-a0e1-3de4d8157aae.png",
+          "name": "Climbing the Ladder",
+          "trophyId": 10,
+          "type": "silver"
+        },
+        {
+          "detail": "Complete the campaign.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c6fe9f95-9c4b-463c-bad5-e797cc3a39f7.png",
+          "name": "Liberté",
+          "trophyId": 11,
+          "type": "gold"
+        },
+        {
+          "detail": "Complete the entire campaign on Authentic difficulty.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/87712b89-9024-449a-a49f-6dde1525dbc1.png",
+          "name": "Best of the Best",
+          "trophyId": 12,
+          "type": "gold"
+        },
+        {
+          "detail": "Complete 16 optional objectives.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/8c66d9c8-46f8-4612-b3be-9d4c98df287a.png",
+          "name": "No Stone Unturned",
+          "trophyId": 13,
+          "type": "bronze"
+        },
+        {
+          "detail": "Win one Axis Invasion as an Invader.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c95870e7-4545-4eb0-9c94-26d48461b9fc.png",
+          "name": "Opposing Force",
+          "trophyId": 14,
+          "type": "bronze"
+        },
+        {
+          "detail": "Defeat an invading Sniper Jager.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d30e7fed-73bb-427e-80f2-5b199eb625ee.png",
+          "name": "Enemy at the Gates",
+          "trophyId": 15,
+          "type": "bronze"
+        },
+        {
+          "detail": "Play one team-based PVP match",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/5c6a440a-5675-42b0-8105-b8f611dcc67d.png",
+          "name": "Fields of Glory",
+          "trophyId": 16,
+          "type": "bronze"
+        },
+        {
+          "detail": "Complete a mission, excluding the \"Loose Ends\" mission, in any difficulty without healing.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f8fadef6-3e73-4368-952e-89549e26cd42.png",
+          "name": "Just a Flesh Wound",
+          "trophyId": 17,
+          "type": "silver"
+        },
+        {
+          "detail": "Hit every organ at least once with a rifle.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c2d66ad9-d7cc-4e79-a4dd-ef6bdc0f5ed8.png",
+          "name": "Organ Grinder",
+          "trophyId": 18,
+          "type": "bronze"
+        },
+        {
+          "detail": "Make a tank shoot and destroy another enemy vehicle.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/eb1b1d0e-ccc9-4294-9410-e81aa1821dfe.png",
+          "name": "Strategist",
+          "trophyId": 19,
+          "type": "bronze"
+        },
+        {
+          "detail": "Obtain six pistol-related mastery medals.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c2d3b605-6157-4096-8a41-d6f92a40e5cf.png",
+          "name": "Master of Pistols",
+          "trophyId": 20,
+          "type": "bronze"
+        },
+        {
+          "detail": "Obtain six secondary-related mastery medals.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e8a96b81-4b53-48d9-bf61-9163168b9994.png",
+          "name": "Master of Secondaries",
+          "trophyId": 21,
+          "type": "bronze"
+        },
+        {
+          "detail": "Obtain six rifle-related mastery medals.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/81573a9b-8e89-4c91-8d41-d820f767377e.png",
+          "name": "Master of Rifles",
+          "trophyId": 22,
+          "type": "bronze"
+        },
+        {
+          "detail": "Become the Master of each weapon.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/0439ecde-a54d-43d0-9073-73e4fd68d197.png",
+          "name": "Master-at-arms",
+          "trophyId": 23,
+          "type": "silver"
+        },
+        {
+          "detail": "Kill 150 enemies with a Pistol.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e1cbccd2-5c90-41ec-9653-3e39e56ae689.png",
+          "name": "Gunslinger",
+          "trophyId": 24,
+          "type": "bronze"
+        },
+        {
+          "detail": "Kill 300 enemies with a Secondary Weapon.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e2e38296-39e7-46f8-ac29-64746b727036.png",
+          "name": "Skirmisher",
+          "trophyId": 25,
+          "type": "bronze"
+        },
+        {
+          "detail": "Kill 350 enemies with a Rifle.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/179b85d2-7b74-4bee-8d07-28e5710738a0.png",
+          "name": "Sharpshooter",
+          "trophyId": 26,
+          "type": "bronze"
+        },
+        {
+          "detail": "Total kill distance of 100000 meters.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/fe3a0ec8-7699-4fae-b840-85670b1cf11b.png",
+          "name": "The Long Game",
+          "trophyId": 27,
+          "type": "silver"
+        },
+        {
+          "detail": "Kill 50 enemies with traps.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
+          "name": "Set Europe Ablaze",
+          "trophyId": 28,
+          "type": "bronze"
+        },
+        {
+          "detail": "Kill 150  enemies with any weapon while in Iron Sights.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f0446d48-10f4-4bde-be46-d8019bea9311.png",
+          "name": "Precision Is Key",
+          "trophyId": 29,
+          "type": "bronze"
+        },
+        {
+          "detail": "Kill 150 enemies with a rifle while in Iron Sights.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/8e8778a5-cd3f-48c1-a6e4-a8920316dbc6.png",
+          "name": "Out of Scope",
+          "trophyId": 30,
+          "type": "bronze"
+        },
+        {
+          "detail": "Kill 20 soldiers using booby traps.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
+          "name": "Rigged to Blow",
+          "trophyId": 31,
+          "type": "bronze"
+        },
+        {
+          "detail": "Kill 50 soldiers with heavy weapons.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6f30398b-e22a-406e-8858-b724b01ddcf5.png",
+          "name": "My Little Friend",
+          "trophyId": 32,
+          "type": "bronze"
+        },
+        {
+          "detail": "Kill 3 on-foot soldiers with one grenade.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
+          "name": "Explosive Efficiency",
+          "trophyId": 33,
+          "type": "bronze"
+        },
+        {
+          "detail": "Get a kill with 20 different weapons.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/134f9030-0fee-4b0e-9efc-79a603aee163.png",
+          "name": "Lord of War",
+          "trophyId": 34,
+          "type": "bronze"
+        },
+        {
+          "detail": "Get a testicle shot with a rifle from a distance of 100 meters or more.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/0bb96f58-bc48-404f-b396-33995fdd456d.png",
+          "name": "Die Nussknacker Sweet!",
+          "trophyId": 35,
+          "type": "bronze"
+        },
+        {
+          "detail": "Kill 50 enemy soldiers with Found Weapons.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/ecd5a5ce-ab47-4165-b965-4704b194e2af.png",
+          "name": "Resourceful",
+          "trophyId": 36,
+          "type": "bronze"
+        },
+        {
+          "detail": "Achieve 250 ghost kills.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/af2c0033-427c-4fff-befc-59eb5ac6a0ca.png",
+          "name": "Der Geist",
+          "trophyId": 37,
+          "type": "bronze"
+        },
+        {
+          "detail": "Kill 50 enemies during a Sound Mask.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb867a5e-ac51-44d3-89a0-8e35a4f6d191.png",
+          "name": "As Quiet as a Mouse",
+          "trophyId": 38,
+          "type": "bronze"
+        },
+        {
+          "detail": "Perform 100 lethal takedowns.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40109781-5a63-4f98-abc0-263fc65548e0.png",
+          "name": "Close Quarters",
+          "trophyId": 39,
+          "type": "bronze"
+        },
+        {
+          "detail": "While in Tall Grass, kill 50 soldiers.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c5f3010a-c566-4bc9-8ea8-aad2c53c7b21.png",
+          "name": "Snake in the Grass",
+          "trophyId": 40,
+          "type": "bronze"
+        },
+        {
+          "detail": "Collect 41 Personal letters.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f3a31a12-29c7-4f70-899e-2d800aec3489.png",
+          "name": "From Paris with Love",
+          "trophyId": 41,
+          "type": "bronze"
+        },
+        {
+          "detail": "Collect 39 classified documents.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c7fd0246-3d96-47fd-8ea8-4f6a96aec5c2.png",
+          "name": "Burn after reading",
+          "trophyId": 42,
+          "type": "bronze"
+        },
+        {
+          "detail": "Collect 24 Hidden Items.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d1b43e92-5d28-4cc9-9ac5-d3ce63f7b8bf.png",
+          "name": "Souvenir hunter",
+          "trophyId": 43,
+          "type": "bronze"
+        },
+        {
+          "detail": "Destroy 24 Dead-eye Targets.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/83ec1770-119f-4cda-b294-cf93cfc5bdb3.png",
+          "name": "Eagle Eyed",
+          "trophyId": 44,
+          "type": "bronze"
+        },
+        {
+          "detail": "Interact with 24 workbenches.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/3183744c-91c8-4340-ac4a-5e429c0a61f4.png",
+          "name": "Tinkerer",
+          "trophyId": 45,
+          "type": "silver"
+        },
+        {
+          "detail": "Destroy Möller's shiny new car.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c2bc77bf-3b96-4b1f-8bbf-9035d5c424a4.png",
+          "name": "It'll Buff Right Out",
+          "trophyId": 46,
+          "type": "bronze"
+        },
+        {
+          "detail": "In Martressac, create an accident that destroys the train in the storage area.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/fce57d1c-e739-4be9-9d6e-f0e72a3f6834.png",
+          "name": "Locomotion Commotion",
+          "trophyId": 47,
+          "type": "bronze"
+        },
+        {
+          "detail": "Melee takedown each one of the three snipers guarding the bridge.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb348a13-2723-45cc-abba-50a1b68d1838.png",
+          "name": "Up Close and Personal",
+          "trophyId": 48,
+          "type": "bronze"
+        },
+        {
+          "detail": "In Secret Weapons, find and destroy one of each type of vehicle present in this mission.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/19e22a01-afc5-4a75-8bc0-13fd4ab00e26.png",
+          "name": "Road Rage",
+          "trophyId": 49,
+          "type": "bronze"
+        },
+        {
+          "detail": "Make the final shot in St Nazaire without using Empty Lung.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/99edab93-7005-4634-b8ce-0de72d8c7df9.png",
+          "name": "Don't hold your breath",
+          "trophyId": 50,
+          "type": "bronze"
+        },
+        {
+          "detail": "Kill Möller with a headshot.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/368221f5-a2a4-4696-9bcb-cdea5a482b82.png",
+          "name": "Brains of the Operation",
+          "trophyId": 51,
+          "type": "bronze"
+        },
+        {
+          "detail": "Kill Möller with a rifle, while in Iron Sights.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/48b54ce3-510d-4cd1-a6d6-81fa7e864ada.png",
+          "name": "Sight Beyond Sights",
+          "trophyId": 52,
+          "type": "bronze"
+        },
+        {
+          "detail": "Complete three Survival missions.",
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/0178d710-329a-4535-9acb-4e6e7661f29a.png",
+          "name": "Shoot for the Moon",
+          "trophyId": 53,
+          "type": "silver"
+        },
+        {
+          "detail": "Wolf Mountain - Kill Hitler 5 times.",
+          "groupId": "001",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/66508739-96e8-487d-94fc-1a4d6fff188b.png",
+          "name": "Führerious Repetition",
+          "trophyId": 54,
+          "type": "bronze"
+        },
+        {
+          "detail": "Wolf Mountain - Kill only Hitler and exfiltrate.",
+          "groupId": "001",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d1b0be2c-a414-410e-abc2-7754676cc9fc.png",
+          "name": "Reich To The Point",
+          "trophyId": 55,
+          "type": "bronze"
+        },
+        {
+          "detail": "Wolf Mountain - Kill Hitler at a distance of 300 meters or more.",
+          "groupId": "001",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4aceafe9-e503-40b1-b709-085a2530f25f.png",
+          "name": "From Führer Away",
+          "trophyId": 56,
+          "type": "bronze"
+        },
+        {
+          "detail": "Wolf Mountain - Kill Hitler and exfiltrate without ever being detected.",
+          "groupId": "001",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/881d5abb-ffe0-4f1c-adb8-e21d526acc33.png",
+          "name": "Covert Elimination",
+          "trophyId": 57,
+          "type": "silver"
+        },
+        {
+          "detail": "Wolf Mountain - Complete the mission on Authentic difficulty.",
+          "groupId": "001",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/85bd7b47-ee24-4444-9184-bdf08bc27d8a.png",
+          "name": "Alpha",
+          "trophyId": 58,
+          "type": "silver"
+        },
+        {
+          "detail": "Wolf Mountain - Complete the mission.",
+          "groupId": "001",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/3552602f-8568-4f5a-98bd-ff686db0a6fc.png",
+          "name": "Herr Today, Gone Tomorrow",
+          "trophyId": 59,
+          "type": "bronze"
+        },
+        {
+          "detail": "Wolf Mountain - Complete the mission with a 2 star rating.",
+          "groupId": "001",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c212cf07-0bf2-4b56-a617-e10e7f524dbe.png",
+          "name": "Operation Foxley",
+          "trophyId": 60,
+          "type": "silver"
+        },
+        {
+          "detail": "Wolf Mountain - Kill Hitler with a testicle shot.",
+          "groupId": "001",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/58c913a6-18d0-4739-bee3-089c95040b77.png",
+          "name": "Das Familienjuwel",
+          "trophyId": 61,
+          "type": "bronze"
+        },
+        {
+          "detail": "Complete the campaign mission - Landing Force.",
+          "groupId": "002",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/702698d3-3b28-443f-a6da-0bf8087a7456.png",
+          "name": "Last Resort",
+          "trophyId": 62,
+          "type": "bronze"
+        },
+        {
+          "detail": "Complete the campaign mission - Conqueror.",
+          "groupId": "003",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/9492857a-51c1-40f6-badc-5f4974b15679.png",
+          "name": "Siegebreaker",
+          "trophyId": 63,
+          "type": "bronze"
+        },
+        {
+          "detail": "Conqueror - Complete the mission with a 2 star rating.",
+          "groupId": "003",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/48139b34-ced4-4c93-9e98-6f22b1701bd1.png",
+          "name": "Ghost of Falaise",
+          "trophyId": 64,
+          "type": "silver"
+        },
+        {
+          "detail": "Conqueror - Complete the mission on Authentic difficulty.",
+          "groupId": "003",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d085c761-9f11-459b-b712-46169c7b5f21.png",
+          "name": "Operation Overlord",
+          "trophyId": 65,
+          "type": "gold"
+        },
+        {
+          "detail": "Complete the campaign mission - Rough Landing",
+          "groupId": "004",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e0029b2f-dc59-4f2f-9781-b744f4b1804b.png",
+          "name": "If You Go Down To The Woods Today",
+          "trophyId": 66,
+          "type": "bronze"
+        },
+        {
+          "detail": "Rough Landing - Complete the mission with a 2 star rating.",
+          "groupId": "004",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/43bb4783-28ca-4f35-9b74-3b0c56dd8994.png",
+          "name": "Fight Another Day",
+          "trophyId": 67,
+          "type": "silver"
+        },
+        {
+          "detail": "Rough Landing - Complete the mission on Authentic difficulty.",
+          "groupId": "004",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/73b5263e-3a2f-4874-8739-e2dc9c386e7b.png",
+          "name": "Stroll in the Woods",
+          "trophyId": 68,
+          "type": "gold"
+        },
+        {
+          "detail": "Complete the campaign mission - Kraken Awakes.",
+          "groupId": "005",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f8c33498-f881-44bd-843c-2bf78141c1ab.png",
+          "name": "Shipbreaker",
+          "trophyId": 69,
+          "type": "bronze"
+        },
+        {
+          "detail": "Kraken Awakes - Complete the mission with a 2 star rating.",
+          "groupId": "005",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c1842419-7765-45a0-9ccd-3358032dcb8f.png",
+          "name": "Sink or Swim",
+          "trophyId": 70,
+          "type": "silver"
+        },
+        {
+          "detail": "Kraken Awakes - Complete the mission on Authentic difficulty.",
+          "groupId": "005",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/789513b5-16b8-4d8f-8b42-546218d08fa8.png",
+          "name": "Going Overboard",
+          "trophyId": 71,
+          "type": "gold"
+        }
+      ]
     }
   },
   "mutualSquadFollowers": [],
@@ -5941,9 +5941,9 @@
     "wildhorse_spirit_status": "EXPIRED_NPSSO",
     "ray_active": "yes",
     "ray_status": "ACTIVE",
-    "lastCheck": "9/12/2026, 01:35:33"
+    "lastCheck": "9/12/2026, 05:37:51"
   },
-  "lastGlobalUpdate": "9/12/2026, 01:35:33",
+  "lastGlobalUpdate": "9/12/2026, 05:37:52",
   "engineVersion": "24.0.0",
   "codeTimestamp": "Saturday, September 12, 2026 | 02:34 EDT"
 }
