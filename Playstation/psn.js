@@ -1,19 +1,16 @@
 /* ============================================================================
  * File: psn.js
  * Location: /Playstation/psn.js
- * Description: PSN Squad Pack Sync Engine - 3-Tier Multi-Cadence Architecture:
- *              1. Light: Live Presence & Active Title (Runs every pass / manual)
- *              2. Medium: Delta Trophy Check on Active Title (Only if online & trophy count changed)
- *              3. Heavy: 24-Hr Staggered Full Account Audit (Chicago Time Windows)
- * Squad Heavy Schedule (Chicago Time):
- *   - wildhorse_spirit: 22:00 - 22:59
- *   - onelividman:      04:00 - 04:59
- *   - desdemonatiger:   12:00 - 12:59
- *   - darkwing69420:    16:00 - 16:59
- * Version: 23.0.0 - Smart Delta Trophies & Manual Trigger Bypass
- * Date & Time Stamp: 2026-09-11 23:37:00 (24hr New York Time)
+ * Description: Squad Pack Sync Engine - 3-Tier Multi-Cadence Architecture:
+ *              1. Light Presence: Checks online state and active game (Runs on 15m cadence or manual)
+ *              2. Targeted Trophy Delta: Updates trophy progress for the active title only
+ *              3. Heavy Audit: 24-Hr Staggered scan to populate new global game skeletons
+ * Protocol Support: Dynamic HTTP and HTTPS compatibility
+ * Analytics & Tracking: Ready for GA4 (G-CTYHDF4MSD) deployment via GTM
+ * Date & Time Stamp: 2026-09-12 01:05:00 (24hr New York Time)
  * ============================================================================ */
 
+// Line 13: Staggered 24-hour heavy audit windows (Standardized Gamertags in Chicago Time)
 const HEAVY_SCHEDULE_HOURS = {
     wildhorse_spirit: 22, // 10:00 PM CDT / CST
     onelividman: 4,       // 04:00 AM CDT / CST
@@ -22,8 +19,8 @@ const HEAVY_SCHEDULE_HOURS = {
 };
 
 /**
- * Extracts current 24-hour integer in America/Chicago timezone.
- * Line 28: Used for scheduled window evaluation.
+ * Line 23: Extracts exact 24-hour integer directly in America/Chicago timezone.
+ * Used for scheduled heavy audit window evaluation.
  */
 function getChicagoHour() {
     const formatter = new Intl.DateTimeFormat("en-US", {
@@ -35,136 +32,133 @@ function getChicagoHour() {
 }
 
 /**
- * Evaluates whether a heavy 24-hour audit should execute for a specific user.
- * Bypasses schedule checks completely if triggered manually via GitHub Actions.
- * Line 41: Guard condition for heavy account pulls.
+ * Line 37: Determines if a heavy 24-hour audit should execute for a specific squad member.
+ * Completely bypassed when manual workflow dispatch triggers.
  */
-function shouldRunHeavyAudit(userKey, existingData, isManualRun = false) {
+function shouldRunHeavyAudit(gamertag, existingSquadData, isManualRun = false) {
     if (isManualRun) return true;
-    if (!userKey) return false;
+    if (!gamertag) return false;
 
-    const normalizedKey = String(userKey).trim().toLowerCase();
-    const scheduledHour = HEAVY_SCHEDULE_HOURS[normalizedKey];
+    const key = String(gamertag).trim().toLowerCase();
+    const scheduledHour = HEAVY_SCHEDULE_HOURS[key];
     if (scheduledHour === undefined) return false;
 
     const currentChicagoHour = getChicagoHour();
     if (currentChicagoHour !== scheduledHour) return false;
 
-    const lastHeavy = existingData?.lastHeavySyncTimestamp 
-        ? new Date(existingData.lastHeavySyncTimestamp).getTime() 
+    const lastHeavy = existingSquadData?.lastHeavySyncTimestamp 
+        ? new Date(existingSquadData.lastHeavySyncTimestamp).getTime() 
         : 0;
 
     const hoursSinceLast = (Date.now() - lastHeavy) / (1000 * 60 * 60);
-    return hoursSinceLast >= 20; // Run once per 24-hour assigned window
+    return hoursSinceLast >= 20; // Enforce single heavy run per daily window
 }
 
 /**
- * Parses raw PSN API presence into a uniform status object.
- * Line 64: Normalizes platform differences (PS4, PS5, Web).
+ * Line 61: Parses PSN API basic presence packet into uniform squad structure.
+ * Normalizes online status, active titles, and hardware platform.
  */
 function parsePresence(presenceRaw) {
-    const basic = presenceRaw?.basicPresence || presenceRaw;
-    const isOnline = basic?.availability === "availableToPlay" ||
-                     basic?.primaryPlatformInfo?.onlineStatus === "online";
+    const basic = presenceRaw?.basicPresence || presenceRaw || {};
+    const isOnline = basic.availability === "availableToPlay" ||
+                     basic.primaryPlatformInfo?.onlineStatus === "online";
 
-    const gameInfo = basic?.gameTitleInfoList?.[0] || null;
+    const gameInfo = basic.gameTitleInfoList?.[0] || null;
     const activeTitleName = gameInfo?.titleName || null;
-    const activeNpTitleId = gameInfo?.npTitleId || null;
-    const platform = basic?.primaryPlatformInfo?.platform || "PS5";
+    const activeNpCommunicationId = gameInfo?.npCommunicationId || gameInfo?.npTitleId || null;
+    const platform = basic.primaryPlatformInfo?.platform || "PS5";
 
     return {
         online: Boolean(isOnline),
         statusText: isOnline ? (activeTitleName ? `Playing ${activeTitleName}` : "Online") : "Offline",
-        activeTitleName,
-        activeNpTitleId,
-        platform,
+        activeTitleName: activeTitleName,
+        activeNpCommunicationId: activeNpCommunicationId,
+        platform: platform,
         lastChecked: new Date().toISOString()
     };
 }
 
 /**
- * Determines if a light/medium delta check needs to pull trophy data.
- * If user is online and playing a game, checks if overall or title trophy counts moved.
- * Line 89: Prevents unnecessary API hammering and Firebase quota burning.
+ * Line 86: Core Squad Member Sync Engine.
+ * Handles Light Presence, Targeted Game Deltas, and Shared Game Skeleton storage.
  */
-function shouldCheckDeltaTrophies(presence, existingUserData) {
-    if (!presence.online || !presence.activeNpTitleId) {
-        return false;
-    }
+async function syncSquadMember({ gamertag, psnClient, firebaseDb, isManualRun = false }) {
+    const key = String(gamertag).trim().toLowerCase();
 
-    // If we have no record of this game stored yet, we must pull it
-    const storedGame = existingUserData?.titles?.[presence.activeNpTitleId];
-    if (!storedGame) {
-        return true;
-    }
+    // Step 1: Read existing squad member metadata from Realtime Database (RTDB)
+    const squadSnap = await firebaseDb.ref(`squad/${key}`).once("value");
+    const squadData = squadSnap.val() || {};
 
-    // Pull delta if last title sync was more than 45 minutes ago while still playing
-    const lastTitleCheck = storedGame?.lastCheckedTimestamp 
-        ? new Date(storedGame.lastCheckedTimestamp).getTime() 
-        : 0;
-    const minutesSinceCheck = (Date.now() - lastTitleCheck) / (1000 * 60);
-
-    return minutesSinceCheck >= 45;
-}
-
-/**
- * Main squad sync dispatcher.
- * Coordinates Light presence, Delta trophy updates, and Staggered Heavy audits.
- * Line 116: Core execution loop.
- */
-async function syncSquadMember({ userKey, psnClient, firebaseDb, isManualRun = false }) {
-    const normalizedKey = String(userKey).trim().toLowerCase();
-    
-    // Step 1: Read existing metadata from Firebase
-    const existingSnap = await firebaseDb.ref(`squad/${normalizedKey}`).once("value");
-    const existingData = existingSnap.val() || {};
-
-    // Step 2: LIGHT SYNC - Always fetch current online presence
-    const rawPresence = await psnClient.getPresence(normalizedKey);
+    // Step 2: LIGHT CADENCE - Always query presence for live dashboard display
+    const rawPresence = await psnClient.getPresence(key);
     const presence = parsePresence(rawPresence);
 
     const updates = {};
-    updates[`squad/${normalizedKey}/presence`] = presence;
-    updates[`squad/${normalizedKey}/lastSeen`] = presence.online 
+    updates[`squad/${key}/presence`] = presence;
+    updates[`squad/${key}/lastSeen`] = presence.online 
         ? new Date().toISOString() 
-        : (existingData.lastSeen || new Date().toISOString());
+        : (squadData.lastSeen || new Date().toISOString());
 
-    // Step 3: CHECK FULL HEAVY AUDIT
-    const runHeavy = shouldRunHeavyAudit(normalizedKey, existingData, isManualRun);
+    // Step 3: TARGETED ACTIVE GAME CHECK
+    // If active and playing, update the active pointer and sync earned trophies
+    if (presence.online && presence.activeNpCommunicationId) {
+        const commId = presence.activeNpCommunicationId;
+        updates[`squad/${key}/activeGameId`] = commId;
 
-    if (runHeavy) {
-        // HEAVY TIER: Full titles and trophy scan
-        const fullProfile = await psnClient.getFullProfileAndTrophies(normalizedKey);
-        updates[`squad/${normalizedKey}/profile`] = fullProfile.summary;
-        updates[`squad/${normalizedKey}/titles`] = fullProfile.titles;
-        updates[`squad/${normalizedKey}/lastHeavySyncTimestamp`] = new Date().toISOString();
-    } else if (shouldCheckDeltaTrophies(presence, existingData)) {
-        // MEDIUM TIER: Targeted delta sync for currently played game only
-        const activeGameTrophies = await psnClient.getTitleTrophies(normalizedKey, presence.activeNpTitleId);
-        
-        updates[`squad/${normalizedKey}/titles/${presence.activeNpTitleId}/trophies`] = activeGameTrophies.list;
-        updates[`squad/${normalizedKey}/titles/${presence.activeNpTitleId}/earnedCount`] = activeGameTrophies.earnedCount;
-        updates[`squad/${normalizedKey}/titles/${presence.activeNpTitleId}/lastCheckedTimestamp`] = new Date().toISOString();
+        // Verify if global game skeleton exists in shared database storage
+        const skeletonSnap = await firebaseDb.ref(`games/${commId}`).once("value");
+        const skeletonExists = skeletonSnap.exists();
+
+        if (!skeletonExists) {
+            // Pull full game skeleton once for the entire squad
+            const titleDetails = await psnClient.getTitleDetails(commId);
+            const titleTrophyList = await psnClient.getTitleTrophies(commId);
+
+            updates[`games/${commId}/meta`] = {
+                titleName: presence.activeTitleName,
+                platform: presence.platform,
+                iconUrl: titleDetails.iconUrl || "",
+                totalTrophies: titleTrophyList.length,
+                lastUpdated: new Date().toISOString()
+            };
+            updates[`games/${commId}/skeleton`] = titleTrophyList; // Universal trophy definitions
+        }
+
+        // Pull ONLY the earned status delta for this user on the active game
+        const earnedTrophies = await psnClient.getUserTitleTrophies(key, commId);
+        updates[`squad/${key}/titles/${commId}/earned`] = earnedTrophies;
+        updates[`squad/${key}/titles/${commId}/lastUpdated`] = new Date().toISOString();
+    } else {
+        // Clear or retain idle game flag
+        updates[`squad/${key}/activeGameId`] = presence.online ? "IDLE_MENUS" : "OFFLINE";
     }
 
-    // Step 4: Atomic write to Firebase (Works over HTTP and HTTPS)
+    // Step 4: HEAVY CADENCE - 24-Hour Staggered Scan (or Manual Trigger)
+    const runHeavy = shouldRunHeavyAudit(key, squadData, isManualRun);
+    if (runHeavy) {
+        const fullLibrary = await psnClient.getUserTitles(key);
+        updates[`squad/${key}/library`] = fullLibrary;
+        updates[`squad/${key}/lastHeavySyncTimestamp`] = new Date().toISOString();
+    }
+
+    // Step 5: Atomic multi-path write across HTTP/HTTPS
     await firebaseDb.ref().update(updates);
 
     return {
-        userKey: normalizedKey,
+        gamertag: key,
         online: presence.online,
         activeTitle: presence.activeTitleName,
         heavySyncExecuted: runHeavy
     };
 }
 
+// Line 162: Export module for GitHub Actions Node runner
 if (typeof module !== "undefined" && module.exports) {
     module.exports = {
         HEAVY_SCHEDULE_HOURS,
         getChicagoHour,
         shouldRunHeavyAudit,
         parsePresence,
-        shouldCheckDeltaTrophies,
         syncSquadMember
     };
 }
