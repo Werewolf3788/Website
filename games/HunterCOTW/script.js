@@ -3,18 +3,35 @@
    Location: /script.js
    Description: theHunter: Call of the Wild Pure Firestore Engine
    Database: Cloud Firestore (entertainment-71888)
-   Target Firestore Path: /users/{userId}/platform/playstation/progress/COTW
+   Target Firestore Path: /users/{userId}/platform/{platform}/progress/COTW
    Analytics Tag: G-CTYHDF4MSD
-   Last Updated: 2026-08-08 17:50:00 (America/Chicago)
+   Date & Time Stamp: 2026-09-12 21:10:18 EDT (America/New_York)
    ============================================================================ */
+
+/* ----------------------------------------------------
+ * SECTION 0: Line Reference Guide for HTML & CSS
+ * HTML Elements Targeted:
+ * - Line ~20: GA4 gtag setup & Event Tracking
+ * - Line ~33: #dynamic-nav-links (Navigation Bar Container)
+ * - Line ~43: #hunter-name (Hunter Display Label)
+ * - Line ~48: #platform-selector (Platform Selector Dropdown)
+ * - Line ~78: #game-title (COTW Main Title)
+ * - Line ~79: #percent-text (Overall Progress Text)
+ * - Line ~82: #overall-bar (Progress Bar Fill)
+ * - Line ~86: #reserve-selector (Reserve Jump Dropdown)
+ * - Line ~89: #stat-line (Status / Audit Line)
+ * - Line ~93: #section-container (Trophy & Collectibles Grid)
+ * CSS Classes Targeted:
+ * - Line ~125: .profile-select (Platform Selector Dropdown Styling)
+ * - Line ~175: .trophy-card, .completed, .trophy-grid
+ * ---------------------------------------------------- */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 /* ----------------------------------------------------
- * SECTION 1: Firebase Configuration
- * Project: entertainment-71888
+ * SECTION 1: Firebase & App Configuration
  * ---------------------------------------------------- */
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -26,6 +43,8 @@ const firebaseConfig = {
 };
 
 const GAME_ID = 'COTW';
+// Support both HTTP and HTTPS automatically
+const currentProto = window.location.protocol === 'http:' ? 'http:' : 'https:';
 const MENU_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv';
 
 const USER_DATA_MAP = {
@@ -45,7 +64,7 @@ const ICONS = {
 };
 
 /* ----------------------------------------------------
- * SECTION 2: Helper Functions
+ * SECTION 2: Master Helpers (Deep Cloners & Checklists)
  * ---------------------------------------------------- */
 const checkSet = (items) => items.map(name => ({ name, done: false }));
 
@@ -66,7 +85,7 @@ const formatAlphaCheckset = (items) => {
 };
 
 /* ----------------------------------------------------
- * SECTION 3: Full Trophy & DLC Master Array
+ * SECTION 3: Raw Static Trophy Baseline
  * ---------------------------------------------------- */
 const trophyData = [
     // --- BASE GAME ---
@@ -648,8 +667,7 @@ const trophyData = [
 ];
 
 /* ----------------------------------------------------
- * SECTION 4: Helper Methods for Platform Normalization
- * Force PSN references -> playstation
+ * SECTION 4: Platform Normalization
  * ---------------------------------------------------- */
 const normalizePlatform = (inputPlatform) => {
     if (!inputPlatform) return 'playstation';
@@ -661,12 +679,12 @@ const normalizePlatform = (inputPlatform) => {
 };
 
 /* ----------------------------------------------------
- * SECTION 5: Main Application State & Isolation Logic
+ * SECTION 5: Main Application Engine
  * ---------------------------------------------------- */
 const appState = {
     activeHunter: localStorage.getItem('active_gaming_nickname') || 'Werewolf3788',
     activePlatform: normalizePlatform(localStorage.getItem('active_gaming_platform')),
-    hunterData: JSON.parse(JSON.stringify(trophyData)),
+    hunterData: [],
     animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 },
     auth: null,
     db: null,
@@ -674,6 +692,11 @@ const appState = {
     openDropdowns: {},
     masterUnsub: null,
     legacyUnsub: null,
+
+    // Deep-clone utility to create completely untouched trophy templates
+    getFreshTrophyTemplate: function() {
+        return JSON.parse(JSON.stringify(trophyData));
+    },
 
     parseCSV: function(str) {
         const arr = [];
@@ -695,7 +718,14 @@ const appState = {
 
     loadNavigation: async function() {
         try {
-            const response = await fetch(MENU_SHEET_CSV_URL + `?v=${Date.now()}`);
+            // Fix: Use '&v=' to prevent 400 Bad Request on Google Sheets
+            const cacheBuster = MENU_SHEET_CSV_URL.includes('?') ? `&v=${Date.now()}` : `?v=${Date.now()}`;
+            const response = await fetch(MENU_SHEET_CSV_URL + cacheBuster);
+            
+            if (!response.ok) {
+                throw new Error(`Sheets HTTP Error: ${response.status}`);
+            }
+
             const csvText = await response.text();
             const rows = this.parseCSV(csvText);
 
@@ -716,7 +746,8 @@ const appState = {
                 const url = row[2]?.trim();
                 let image = row[3]?.trim();
 
-                if (!name || !url) return;
+                // Validation guard: reject scripts, javascript: links, or corrupted entries
+                if (!name || !url || url.toLowerCase().startsWith('javascript:') || name.includes('(') && name.includes(')')) return;
 
                 if (image) {
                     const driveMatch = image.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || image.match(/id=([a-zA-Z0-9_-]+)/);
@@ -737,7 +768,9 @@ const appState = {
 
             Object.keys(groups).forEach(groupName => {
                 let dropItems = groups[groupName].map(item => {
-                    const imgTag = item.image ? `<img src="${item.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
+                    const imgTag = (item.image && item.image.startsWith('http')) 
+                        ? `<img src="${item.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` 
+                        : '';
                     return `<a href="${item.url}">${imgTag}${item.name}</a>`;
                 }).join('');
 
@@ -752,7 +785,9 @@ const appState = {
             });
 
             standalone.forEach(item => {
-                const imgTag = item.image ? `<img src="${item.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
+                const imgTag = (item.image && item.image.startsWith('http')) 
+                    ? `<img src="${item.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` 
+                    : '';
                 navHTML += `<a href="${item.url}">${imgTag}${item.name}</a>`;
             });
 
@@ -760,12 +795,13 @@ const appState = {
         } catch (e) {
             console.error("Failed to load dynamic navigation", e);
             if (document.getElementById('dynamic-nav-links')) {
-                document.getElementById('dynamic-nav-links').innerHTML = `<span style="color: #ef4444; font-size: 0.8rem; padding: 8px;">Menu Sync Error</span>`;
+                document.getElementById('dynamic-nav-links').innerHTML = `<span style="color: #ef4444; font-size: 0.8rem; padding: 8px;">Menu Offline</span>`;
             }
         }
     },
 
     init: async function() {
+        this.hunterData = this.getFreshTrophyTemplate();
         this.setupControlDropdowns();
         this.loadNavigation();
 
@@ -810,12 +846,12 @@ const appState = {
     },
 
     /* ----------------------------------------------------
-     * SECTION 6: Firestore Document Loader
-     * Path: /users/{userId}/platform/{platform}/progress/COTW
+     * SECTION 6: Isolated Firestore Hunter Loading
      * ---------------------------------------------------- */
     loadHunter: function(userName, platform) {
         if (!this.auth || !this.auth.currentUser) return;
 
+        // Clean up any previously attached active snapshot listeners
         if (this.masterUnsub) {
             this.masterUnsub();
             this.masterUnsub = null;
@@ -825,14 +861,13 @@ const appState = {
             this.legacyUnsub = null;
         }
 
-        this.hunterData = JSON.parse(JSON.stringify(trophyData));
-        this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
-
         const dbDocName = USER_DATA_MAP[userName] || userName || 'Werewolf3788';
         this.activeHunter = dbDocName;
-        
-        // Force platform mapping to lower-case 'playstation' (never 'psn')
         this.activePlatform = normalizePlatform(platform);
+
+        // Always reset hunter data from an untouched deep copy of baseline trophies
+        this.hunterData = this.getFreshTrophyTemplate();
+        this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
 
         localStorage.setItem('active_gaming_nickname', dbDocName);
         localStorage.setItem('active_gaming_platform', this.activePlatform);
@@ -846,25 +881,29 @@ const appState = {
             platformSelector.value = this.activePlatform;
         }
 
+        // Render zeroed canvas immediately so the screen changes instantly on click
         this.render();
         this.updateRankUI();
 
-        // Exact Firestore Target Path
+        // 1. COTW Master Progress Snapshot
         const docRef = doc(this.db, 'users', dbDocName, 'platform', this.activePlatform, 'progress', GAME_ID);
 
         this.masterUnsub = onSnapshot(docRef, (snap) => {
+            // Fresh template copy per incoming payload to prevent shared references
+            const freshList = this.getFreshTrophyTemplate();
+
             if (snap.exists()) {
                 const data = snap.data();
-                let incoming = data.trophies || [];
+                const incoming = data.trophies || [];
 
-                this.hunterData = trophyData.map(dt => {
+                this.hunterData = freshList.map(dt => {
                     const found = incoming.find(it => it.id === dt.id);
                     if (found) {
                         if (dt.type === 'checklist' && found.subItems) {
                             dt.subItems = dt.subItems.map((si, i) => {
                                 const dbMatch = found.subItems.find(x => x.name === si.name) || found.subItems[i];
                                 const isDone = dbMatch?.done === true || dbMatch?.done === "true";
-                                return {...si, done: isDone};
+                                return { ...si, done: isDone };
                             });
                             dt.current = dt.subItems.filter(s => s.done).length;
                         } else {
@@ -881,6 +920,7 @@ const appState = {
                 });
                 this.setStatus(`✓ Loaded Cloud Data for ${dbDocName} [${this.activePlatform.toUpperCase()}]`, "#10b981");
             } else {
+                this.hunterData = freshList;
                 this.setStatus(`⚠️ Blank Canvas for ${dbDocName} [${this.activePlatform.toUpperCase()}]`, "#ff8800");
             }
             this.render();
@@ -890,7 +930,7 @@ const appState = {
             this.render();
         });
 
-        // Animal Rank Reference
+        // 2. Animal Rank Reference Snapshot
         const rankRef = doc(this.db, 'users', dbDocName, 'platform', this.activePlatform, 'progress', `${GAME_ID}_Ranks`);
         this.legacyUnsub = onSnapshot(rankRef, (snap) => {
             if (snap.exists()) {
@@ -932,7 +972,8 @@ const appState = {
             cats.forEach(cat => {
                 const opt = document.createElement('option');
                 opt.value = cat.replace(/[^a-zA-Z0-9]/g, '');
-                opt.innerText = cat; selector.appendChild(opt);
+                opt.innerText = cat; 
+                selector.appendChild(opt);
             });
         }
 
@@ -950,7 +991,7 @@ const appState = {
 
             const sectionId = cat.replace(/[^a-zA-Z0-9]/g, '');
             const isCollapsed = this.collapsedSections[sectionId] !== false;
-            const percent = Math.round((catMet / items.length) * 100);
+            const percent = items.length > 0 ? Math.round((catMet / items.length) * 100) : 0;
 
             const section = document.createElement('div');
             section.className = `category-section ${isCollapsed ? 'section-collapsed' : ''}`;
@@ -1013,11 +1054,29 @@ const appState = {
 
     getIcon: (t) => t.playstationImage ? t.playstationImage : (t.cat.includes('Collectibles') ? ICONS.TRACK : t.name.includes('Arc') || t.name.includes('Master') || t.name.includes('Missions') ? ICONS.ARC : t.name.includes('Mile') ? ICONS.TRAVEL : t.name.includes('Marksman') ? ICONS.MARK : ICONS.GAME),
 
-    adj: function(id, val) { const t = this.hunterData.find(x => x.id === id); t.current = Math.max(0, t.current + val); this.sync(); },
+    adj: function(id, val) { 
+        const t = this.hunterData.find(x => x.id === id); 
+        if (t) {
+            t.current = Math.max(0, t.current + val); 
+            this.sync(); 
+        }
+    },
 
-    tog: function(id) { const t = this.hunterData.find(x => x.id === id); t.current = t.current === 0 ? 1 : 0; this.sync(); },
+    tog: function(id) { 
+        const t = this.hunterData.find(x => x.id === id); 
+        if (t) {
+            t.current = t.current === 0 ? 1 : 0; 
+            this.sync(); 
+        }
+    },
 
-    check: function(id, idx) { const t = this.hunterData.find(x => x.id === id); t.subItems[idx].done = !t.subItems[idx].done; this.sync(); },
+    check: function(id, idx) { 
+        const t = this.hunterData.find(x => x.id === id); 
+        if (t && t.subItems && t.subItems[idx]) {
+            t.subItems[idx].done = !t.subItems[idx].done; 
+            this.sync(); 
+        }
+    },
 
     adjRank: async function(tier, val) {
         this.animalRankData[tier] = Math.max(0, (this.animalRankData[tier] || 0) + val);
@@ -1040,7 +1099,11 @@ const appState = {
         }); 
     },
 
-    toggleSection: function(id) { const cur = this.collapsedSections[id] !== false; this.collapsedSections[id] = !cur; this.render(); },
+    toggleSection: function(id) { 
+        const cur = this.collapsedSections[id] !== false; 
+        this.collapsedSections[id] = !cur; 
+        this.render(); 
+    },
 
     toggleDrop: function(id) {
         const el = document.getElementById('drop-' + id);
@@ -1050,11 +1113,18 @@ const appState = {
         }
     },
 
-    scrollToCategory: function(id) { if(!id) return; this.collapsedSections[id] = false; this.render(); setTimeout(() => { if(document.getElementById(id)) document.getElementById(id).scrollIntoView({ behavior: 'smooth' }) }, 100); },
+    scrollToCategory: function(id) { 
+        if(!id) return; 
+        this.collapsedSections[id] = false; 
+        this.render(); 
+        setTimeout(() => { 
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 100); 
+    },
 
     /* ----------------------------------------------------
      * SECTION 7: Cloud Firestore Sync Writer
-     * Target: /users/{userId}/platform/{platform}/progress/COTW
      * ---------------------------------------------------- */
     sync: async function() {
         this.render();
@@ -1065,7 +1135,7 @@ const appState = {
         this.setStatus("⏳ Saving to Cloud Firestore...", "#e67e22");
 
         try {
-            // Track Event in GA4
+            // GA4 Event Trigger for custom conversions
             if (typeof gtag === 'function') {
                 gtag('event', 'tracker_sync', {
                     'event_category': 'Tracker',
@@ -1085,7 +1155,7 @@ const appState = {
             };
 
             await setDoc(ref, payload, { merge: true });
-            const timeStr = new Date().toLocaleTimeString();
+            const timeStr = new Date().toLocaleTimeString('en-US', { hour12: false });
             this.setStatus(`✓ Saved to Cloud Firestore at ${timeStr}`, "#10b981");
             console.log(`✓ Cloud Firestore updated: /users/${this.activeHunter}/platform/${this.activePlatform}/progress/${GAME_ID}`);
         } catch (error) {
