@@ -2,7 +2,7 @@
   File: index.html
   Location: /index.html
   Description: COTW Master Tracker Main Interface & GA4 Setup
-  Last Updated: 2026-08-08 17:50:00 (America/Chicago)
+  Last Updated: 2026-09-12 21:26:00 (America/New_York)
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -24,16 +24,16 @@
       });
     </script>
 
-    <link rel="stylesheet" href="./style.css?v=1.4">
+    <link rel="stylesheet" href="./style.css?v=2.0">
 </head>
 <body id="master-body" class="theme-werewolf">
     <div class="background-overlay"></div>
 
-    <!-- Navigation Bar Section -->
-    <nav class="master-nav" target="main-content-window">
+    <!-- Navigation Bar Section (Layered on top of everything) -->
+    <nav class="master-nav">
         <a href="https://werewolf3788.firebaseapp.com" class="nav-logo">WEREWOLF3788</a>
         <div id="dynamic-nav-links" class="nav-links">
-            <span style="color: #94a3b8; font-size: 0.8rem; padding: 8px;">Loading Menu...</span>
+            <span style="color: #94a3b8; font-size: 0.8rem; padding: 8px;">Loading RTDB Navigation...</span>
         </div>
     </nav>
 
@@ -42,12 +42,12 @@
         <!-- Profile & Platform Controls Header -->
         <div class="profile-header">
             <div class="active-info">
-                <div style="font-size: 0.7rem; text-transform: uppercase; color: #94a3b8;">Master Hunter Console</div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 1px;">Master Hunter Console</div>
                 <span id="hunter-name" class="hunter-glow">WEREWOLF3788 [PLAYSTATION]</span>
             </div>
             
             <div class="profile-actions">
-                <!-- Platform Selector Dropdown (PlayStation mapped explicitly to 'playstation') -->
+                <!-- Platform Selector Dropdown -->
                 <select id="platform-selector" class="profile-select">
                     <option value="playstation">PlayStation</option>
                     <option value="xbox">Xbox</option>
@@ -58,6 +58,7 @@
                 <button class="profile-btn" onclick="appState.switchHunter('Werewolf3788')">Werewolf</button>
                 <button class="profile-btn" onclick="appState.switchHunter('Raymystyro')">Ray</button>
                 <button class="profile-btn" onclick="appState.switchHunter('terrdog420')">TJ</button>
+                <button class="profile-btn" onclick="appState.switchHunter('OneLIVIDMAN')">OneLIVIDMAN</button>
             </div>
         </div>
 
@@ -103,11 +104,11 @@
             
             <!-- Reserve Jump Selector -->
             <div style="margin-top: 20px;">
-                <div style="font-size: 0.7rem; font-weight: 900; display: block; margin-bottom: 5px; text-transform: uppercase;">Jump to Reserve:</div>
+                <div style="font-size: 0.75rem; font-weight: 900; display: block; margin-bottom: 6px; text-transform: uppercase;">Jump to Reserve:</div>
                 <select id="reserve-selector" onchange="appState.scrollToCategory(this.value)"><option value="">-- Select Section --</option></select>
             </div>
             
-            <p id="stat-line" style="font-family: monospace; font-size: 10px; margin-top: 20px; opacity: 0.6;">AUDIT STATUS: INITIALIZING FIRESTORE SYNC...</p>
+            <p id="stat-line" style="font-family: monospace; font-size: 11px; margin-top: 20px; opacity: 0.7;">AUDIT STATUS: INITIALIZING RTDB & FIRESTORE SYNC...</p>
         </header>
 
         <!-- Dynamic Category Containers -->
@@ -116,11 +117,11 @@
         <!-- Footer -->
         <footer class="tracker-footer">
             <p>Support the hunt: <a href="https://www.amazon.com/gp/goldbox?tag=moviesanywhere02-20" target="_blank">Today's Deals</a> | <a href="https://www.amazon.com/s?k=hunting&tag=moviesanywhere02-20" target="_blank">Hunting Gear</a></p>
-            <p style="margin-top: 15px; font-size: 0.7rem;">Lead Developer: Werewolf3788 | Collaborators: Raymystyro, terrdog420</p>
+            <p style="margin-top: 15px; font-size: 0.75rem;">Lead Developer: Werewolf3788 | Collaborators: Raymystyro, terrdog420, OneLIVIDMAN</p>
         </footer>
     </div>
 
     <!-- Modular Script Import -->
-    <script type="module" src="./script.js?v=1.4"></script>
+    <script type="module" src="./script.js?v=2.0"></script>
 </body>
 </html>
