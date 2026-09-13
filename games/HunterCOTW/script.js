@@ -1,41 +1,27 @@
 /* ============================================================================
    File: script.js
    Location: /script.js
-   Description: theHunter: Call of the Wild Pure Firestore Engine
-   Database: Cloud Firestore (entertainment-71888)
-   Target Firestore Path: /users/{userId}/platform/{platform}/progress/COTW
+   Description: theHunter: Call of the Wild Responsive RTDB + Firestore Engine
+   Database: Cloud Firestore & Realtime Database (entertainment-71888)
+   Firestore Target: /users/{userId}/platform/{platform}/progress/COTW
+   RTDB Trophy Source: /psn/gamertags/{hunter}/liveTrophyProgress/NPWR21465_00
+   RTDB Navigation Source: /utm_links
    Analytics Tag: G-CTYHDF4MSD
-   Date & Time Stamp: 2026-09-12 21:10:18 EDT (America/New_York)
+   Date & Time Stamp: 2026-09-12 21:26:00 EDT (America/New_York)
    ============================================================================ */
-
-/* ----------------------------------------------------
- * SECTION 0: Line Reference Guide for HTML & CSS
- * HTML Elements Targeted:
- * - Line ~20: GA4 gtag setup & Event Tracking
- * - Line ~33: #dynamic-nav-links (Navigation Bar Container)
- * - Line ~43: #hunter-name (Hunter Display Label)
- * - Line ~48: #platform-selector (Platform Selector Dropdown)
- * - Line ~78: #game-title (COTW Main Title)
- * - Line ~79: #percent-text (Overall Progress Text)
- * - Line ~82: #overall-bar (Progress Bar Fill)
- * - Line ~86: #reserve-selector (Reserve Jump Dropdown)
- * - Line ~89: #stat-line (Status / Audit Line)
- * - Line ~93: #section-container (Trophy & Collectibles Grid)
- * CSS Classes Targeted:
- * - Line ~125: .profile-select (Platform Selector Dropdown Styling)
- * - Line ~175: .trophy-card, .completed, .trophy-grid
- * ---------------------------------------------------- */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getDatabase, ref as rtdbRef, onValue, off } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
 /* ----------------------------------------------------
- * SECTION 1: Firebase & App Configuration
+ * SECTION 1: Firebase Configuration
  * ---------------------------------------------------- */
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
+    databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
     projectId: "entertainment-71888",
     storageBucket: "entertainment-71888.firebasestorage.app",
     messagingSenderId: "660524340277",
@@ -43,14 +29,13 @@ const firebaseConfig = {
 };
 
 const GAME_ID = 'COTW';
-// Support both HTTP and HTTPS automatically
-const currentProto = window.location.protocol === 'http:' ? 'http:' : 'https:';
-const MENU_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv';
+const NPWR_ID = 'NPWR21465_00';
 
 const USER_DATA_MAP = {
     'Werewolf3788': 'Werewolf3788',
     'Raymystyro': 'Raymystyro',
     'terrdog420': 'terrdog420',
+    'OneLIVIDMAN': 'OneLIVIDMAN',
     'DesdemonaTiger': 'DesdemonaTiger'
 };
 
@@ -64,7 +49,7 @@ const ICONS = {
 };
 
 /* ----------------------------------------------------
- * SECTION 2: Master Helpers (Deep Cloners & Checklists)
+ * SECTION 2: Master Helpers
  * ---------------------------------------------------- */
 const checkSet = (items) => items.map(name => ({ name, done: false }));
 
@@ -85,7 +70,7 @@ const formatAlphaCheckset = (items) => {
 };
 
 /* ----------------------------------------------------
- * SECTION 3: Raw Static Trophy Baseline
+ * SECTION 3: Raw Static Master Data Baseline
  * ---------------------------------------------------- */
 const trophyData = [
     // --- BASE GAME ---
@@ -688,95 +673,74 @@ const appState = {
     animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 },
     auth: null,
     db: null,
+    rtdb: null,
     collapsedSections: {},
     openDropdowns: {},
     masterUnsub: null,
     legacyUnsub: null,
+    rtdbTrophyRef: null,
 
-    // Deep-clone utility to create completely untouched trophy templates
     getFreshTrophyTemplate: function() {
         return JSON.parse(JSON.stringify(trophyData));
     },
 
-    parseCSV: function(str) {
-        const arr = [];
-        let quote = false;
-        for (let row = 0, col = 0, c = 0; c < str.length; c++) {
-            let cc = str[c], nc = str[c+1];
-            arr[row] = arr[row] || [];
-            arr[row][col] = arr[row][col] || '';
-            if (cc == '"' && quote && nc == '"') { arr[row][col] += cc; ++c; continue; }
-            if (cc == '"') { quote = !quote; continue; }
-            if (cc == ',' && !quote) { ++col; continue; }
-            if (cc == '\r' && nc == '\n' && !quote) { ++row; col = 0; ++c; continue; }
-            if (cc == '\n' && !quote) { ++row; col = 0; continue; }
-            if (cc == '\r' && !quote) { ++row; col = 0; continue; }
-            arr[row][col] += cc;
-        }
-        return arr;
-    },
+    /* ----------------------------------------------------
+     * SECTION 5A: Dynamic RTDB Navigation Loader (/utm_links)
+     * Groups shared folders; keeps 'home' or root items standalone.
+     * ---------------------------------------------------- */
+    loadNavigationFromRTDB: function() {
+        const navContainer = document.getElementById('dynamic-nav-links');
+        if (!this.rtdb) return;
 
-    loadNavigation: async function() {
-        try {
-            // Fix: Use '&v=' to prevent 400 Bad Request on Google Sheets
-            const cacheBuster = MENU_SHEET_CSV_URL.includes('?') ? `&v=${Date.now()}` : `?v=${Date.now()}`;
-            const response = await fetch(MENU_SHEET_CSV_URL + cacheBuster);
-            
-            if (!response.ok) {
-                throw new Error(`Sheets HTTP Error: ${response.status}`);
+        const linksRef = rtdbRef(this.rtdb, 'utm_links');
+        onValue(linksRef, (snapshot) => {
+            if (!snapshot.exists()) {
+                if (navContainer) navContainer.innerHTML = `<span style="color: #94a3b8; font-size: 0.8rem; padding: 8px;">No Navigation Items Found</span>`;
+                return;
             }
 
-            const csvText = await response.text();
-            const rows = this.parseCSV(csvText);
-
-            let data = rows;
-            if (data[0] && data[0][0] && data[0][0].toLowerCase().includes('name')) {
-                data.shift();
-            }
-
-            const navContainer = document.getElementById('dynamic-nav-links');
-            let navHTML = '';
+            const rawData = snapshot.val();
             const groups = {};
             const standalone = [];
 
-            data.forEach(row => {
-                if (row.length < 3) return;
-                const name = row[0]?.trim();
-                const group = row[1]?.trim();
-                const url = row[2]?.trim();
-                let image = row[3]?.trim();
+            Object.keys(rawData).forEach(key => {
+                const item = rawData[key];
+                if (!item) return;
 
-                // Validation guard: reject scripts, javascript: links, or corrupted entries
-                if (!name || !url || url.toLowerCase().startsWith('javascript:') || name.includes('(') && name.includes(')')) return;
+                const name = item.name || item.title || key;
+                const url = item.url || item.link || '#';
+                const folder = (item.folder || item.group || '').trim();
+                const icon = item.icon || item.image || '';
 
-                if (image) {
-                    const driveMatch = image.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || image.match(/id=([a-zA-Z0-9_-]+)/);
-                    if (image.includes('drive.google.com') && driveMatch) {
-                        image = `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
-                    }
-                }
-                
-                const itemObj = { name, url, image };
+                const navItem = { name, url, icon };
 
-                if (group) {
-                    if (!groups[group]) groups[group] = [];
-                    groups[group].push(itemObj);
+                if (!folder || folder.toLowerCase() === 'home') {
+                    standalone.push(navItem);
                 } else {
-                    standalone.push(itemObj);
+                    if (!groups[folder]) groups[folder] = [];
+                    groups[folder].push(navItem);
                 }
             });
 
-            Object.keys(groups).forEach(groupName => {
-                let dropItems = groups[groupName].map(item => {
-                    const imgTag = (item.image && item.image.startsWith('http')) 
-                        ? `<img src="${item.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` 
-                        : '';
-                    return `<a href="${item.url}">${imgTag}${item.name}</a>`;
+            let navHTML = '';
+
+            // Standalone top-level links (like Home)
+            standalone.forEach(item => {
+                const iconTag = item.icon ? `<img src="${item.icon}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
+                navHTML += `<a href="${item.url}">${iconTag}${item.name}</a>`;
+            });
+
+            // Folders with persistent dropdown controls
+            Object.keys(groups).forEach(folderName => {
+                const folderId = folderName.replace(/[^a-zA-Z0-9]/g, '_');
+                const dropItems = groups[folderName].map(item => {
+                    const iconTag = item.icon ? `<img src="${item.icon}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
+                    return `<a href="${item.url}">${iconTag}${item.name}</a>`;
                 }).join('');
 
                 navHTML += `
-                    <div class="nav-dropdown">
-                        <button class="nav-dropbtn">${groupName} ▾</button>
+                    <div class="nav-dropdown" id="dropdown-${folderId}">
+                        <button type="button" class="nav-dropbtn" onclick="appState.toggleNavFolder('dropdown-${folderId}', event)">${folderName} ▾</button>
                         <div class="nav-dropdown-content">
                             ${dropItems}
                         </div>
@@ -784,44 +748,61 @@ const appState = {
                 `;
             });
 
-            standalone.forEach(item => {
-                const imgTag = (item.image && item.image.startsWith('http')) 
-                    ? `<img src="${item.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` 
-                    : '';
-                navHTML += `<a href="${item.url}">${imgTag}${item.name}</a>`;
-            });
-
             if (navContainer) navContainer.innerHTML = navHTML;
-        } catch (e) {
-            console.error("Failed to load dynamic navigation", e);
-            if (document.getElementById('dynamic-nav-links')) {
-                document.getElementById('dynamic-nav-links').innerHTML = `<span style="color: #ef4444; font-size: 0.8rem; padding: 8px;">Menu Offline</span>`;
+        }, (err) => {
+            console.error("RTDB Navigation Read Error:", err);
+            if (navContainer) {
+                navContainer.innerHTML = `<span style="color: #ef4444; font-size: 0.8rem; padding: 8px;">Menu Offline</span>`;
             }
+        });
+    },
+
+    /* ----------------------------------------------------
+     * SECTION 5B: Persistent Click-to-Toggle Dropdown Handler
+     * ---------------------------------------------------- */
+    toggleNavFolder: function(folderId, event) {
+        if (event) {
+            event.stopPropagation();
+        }
+        const targetEl = document.getElementById(folderId);
+        if (!targetEl) return;
+
+        const isAlreadyActive = targetEl.classList.contains('active');
+
+        // Close other dropdowns to keep UI clean, but leave this one persistent
+        document.querySelectorAll('.nav-dropdown').forEach(el => {
+            el.classList.remove('active');
+        });
+
+        if (!isAlreadyActive) {
+            targetEl.classList.add('active');
         }
     },
 
     init: async function() {
         this.hunterData = this.getFreshTrophyTemplate();
         this.setupControlDropdowns();
-        this.loadNavigation();
 
         try {
             const app = initializeApp(firebaseConfig, 'COTW-Firestore-Engine');
             this.auth = getAuth(app);
             this.db = getFirestore(app);
+            this.rtdb = getDatabase(app);
+
+            this.loadNavigationFromRTDB();
 
             await signInAnonymously(this.auth);
 
             onAuthStateChanged(this.auth, (user) => {
                 if (user) {
-                    this.setStatus(`✓ Connected to Firestore [${this.activeHunter} - ${this.activePlatform.toUpperCase()}]`, "#10b981");
+                    this.setStatus(`✓ Connected to Database [${this.activeHunter} - ${this.activePlatform.toUpperCase()}]`, "#10b981");
                     this.loadHunter(this.activeHunter, this.activePlatform);
                 } else {
                     this.setStatus("❌ Auth Failed", "#ef4444");
                 }
             });
         } catch (err) {
-            console.error("Firestore Init Error:", err);
+            console.error("Init Error:", err);
             this.setStatus(`❌ Connection Error: ${err.message}`, "#ef4444");
             this.render();
         }
@@ -846,26 +827,23 @@ const appState = {
     },
 
     /* ----------------------------------------------------
-     * SECTION 6: Isolated Firestore Hunter Loading
+     * SECTION 6: Multi-Hunter Firestore & RTDB Sync Engine
      * ---------------------------------------------------- */
     loadHunter: function(userName, platform) {
         if (!this.auth || !this.auth.currentUser) return;
 
-        // Clean up any previously attached active snapshot listeners
-        if (this.masterUnsub) {
-            this.masterUnsub();
-            this.masterUnsub = null;
-        }
-        if (this.legacyUnsub) {
-            this.legacyUnsub();
-            this.legacyUnsub = null;
+        if (this.masterUnsub) { this.masterUnsub(); this.masterUnsub = null; }
+        if (this.legacyUnsub) { this.legacyUnsub(); this.legacyUnsub = null; }
+
+        if (this.rtdbTrophyRef) {
+            off(this.rtdbTrophyRef);
+            this.rtdbTrophyRef = null;
         }
 
         const dbDocName = USER_DATA_MAP[userName] || userName || 'Werewolf3788';
         this.activeHunter = dbDocName;
         this.activePlatform = normalizePlatform(platform);
 
-        // Always reset hunter data from an untouched deep copy of baseline trophies
         this.hunterData = this.getFreshTrophyTemplate();
         this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
 
@@ -881,15 +859,13 @@ const appState = {
             platformSelector.value = this.activePlatform;
         }
 
-        // Render zeroed canvas immediately so the screen changes instantly on click
         this.render();
         this.updateRankUI();
 
-        // 1. COTW Master Progress Snapshot
+        // 1. Firestore Progress Snapshot
         const docRef = doc(this.db, 'users', dbDocName, 'platform', this.activePlatform, 'progress', GAME_ID);
 
         this.masterUnsub = onSnapshot(docRef, (snap) => {
-            // Fresh template copy per incoming payload to prevent shared references
             const freshList = this.getFreshTrophyTemplate();
 
             if (snap.exists()) {
@@ -918,11 +894,13 @@ const appState = {
                     }
                     return dt;
                 });
-                this.setStatus(`✓ Loaded Cloud Data for ${dbDocName} [${this.activePlatform.toUpperCase()}]`, "#10b981");
+                this.setStatus(`✓ Live Firestore Sync [${dbDocName} - ${this.activePlatform.toUpperCase()}]`, "#10b981");
             } else {
                 this.hunterData = freshList;
-                this.setStatus(`⚠️ Blank Canvas for ${dbDocName} [${this.activePlatform.toUpperCase()}]`, "#ff8800");
+                this.setStatus(`⚠️ Initial State for ${dbDocName} [${this.activePlatform.toUpperCase()}]`, "#ff8800");
             }
+
+            this.bindRTDBTrophyWatcher(dbDocName);
             this.render();
         }, (err) => {
             console.error("Firestore Listen Error:", err);
@@ -949,6 +927,55 @@ const appState = {
             this.updateRankUI();
         }, (err) => {
             console.error("Rank Sync Error:", err);
+        });
+    },
+
+    /* ----------------------------------------------------
+     * SECTION 6B: RTDB Automated Trophy Sync
+     * Path: /psn/gamertags/{hunter}/liveTrophyProgress/NPWR21465_00
+     * Only auto-completes earned trophies without altering manual checklists!
+     * ---------------------------------------------------- */
+    bindRTDBTrophyWatcher: function(hunterGamertag) {
+        if (!this.rtdb) return;
+
+        const trophyPath = `psn/gamertags/${hunterGamertag}/liveTrophyProgress/${NPWR_ID}`;
+        this.rtdbTrophyRef = rtdbRef(this.rtdb, trophyPath);
+
+        onValue(this.rtdbTrophyRef, (snapshot) => {
+            if (!snapshot.exists()) return;
+
+            const rtdbTrophies = snapshot.val();
+            let stateMutated = false;
+
+            const trophyEntries = Array.isArray(rtdbTrophies) ? rtdbTrophies : Object.values(rtdbTrophies);
+
+            trophyEntries.forEach(rItem => {
+                if (!rItem) return;
+                const isEarned = rItem.earned === true || rItem.unlocked === true || rItem.achieved === 1;
+                const rName = (rItem.trophyName || rItem.name || '').trim().toLowerCase();
+
+                if (isEarned && rName) {
+                    const match = this.hunterData.find(t => 
+                        t.name.trim().toLowerCase() === rName || 
+                        t.id.toLowerCase() === rName
+                    );
+
+                    if (match && match.current < match.goal) {
+                        match.current = match.goal;
+                        if (match.type === 'checklist' && match.subItems) {
+                            match.subItems.forEach(si => si.done = true);
+                        }
+                        stateMutated = true;
+                    }
+                }
+            });
+
+            if (stateMutated) {
+                console.log(`[RTDB Auto-Sync] Automatically verified trophies for ${hunterGamertag}`);
+                this.sync(true);
+            }
+        }, (err) => {
+            console.warn("RTDB Trophy watcher notice:", err.message);
         });
     },
 
@@ -1015,9 +1042,9 @@ const appState = {
                     const btnClass = isDone ? 'controls lock-badge' : 'controls';
                     const displayVal = isDone ? `AUDIT VERIFIED (${t.current}/${t.goal})` : `${t.current}/${t.goal}`;
                     ctrl = `<div class="${btnClass}">
-                        <button style="background:none; border:none; color:inherit; font-size:1.2rem; cursor:pointer; padding:0 10px;" onclick="appState.adj('${t.id}', -1)">-</button>
+                        <button type="button" style="background:none; border:none; color:inherit; font-size:1.2rem; cursor:pointer; padding:0 10px;" onclick="appState.adj('${t.id}', -1)">-</button>
                         <span style="flex-grow:1; text-align:center;">${displayVal}</span>
-                        <button style="background:none; border:none; color:inherit; font-size:1.2rem; cursor:pointer; padding:0 10px;" onclick="appState.adj('${t.id}', 1)">+</button>
+                        <button type="button" style="background:none; border:none; color:inherit; font-size:1.2rem; cursor:pointer; padding:0 10px;" onclick="appState.adj('${t.id}', 1)">+</button>
                     </div>`;
                 } else if (t.type === 'checklist') {
                     const dropClass = appState.openDropdowns[t.id] ? 'show' : '';
@@ -1028,17 +1055,17 @@ const appState = {
                         return `<div class="sub-item" style="flex-direction: column; align-items: flex-start;">
                                     <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
                                         <span>${s.name}</span>
-                                        <button class="check-btn ${s.done ? 'is-done' : ''}" onclick="appState.check('${t.id}', ${idx})">${s.done ? '✓' : ''}</button>
+                                        <button type="button" class="check-btn ${s.done ? 'is-done' : ''}" onclick="appState.check('${t.id}', ${idx})">${s.done ? '✓' : ''}</button>
                                     </div>
                                 </div>`;
                     }).join('');
 
-                    ctrl = `<button class="${btnClass}" style="cursor: pointer;" onclick="appState.toggleDrop('${t.id}')">${btnText}</button>
+                    ctrl = `<button type="button" class="${btnClass}" onclick="appState.toggleDrop('${t.id}')">${btnText}</button>
                             <div id="drop-${t.id}" class="dropdown-content ${dropClass}">${subItemsHTML}</div>`;
                 } else {
                     const btnClass = isDone ? 'toggle-btn lock-badge' : 'toggle-btn';
                     const btnText = isDone ? 'Audit Verified (Undo)' : 'Mark Harvested';
-                    ctrl = `<button class="${btnClass}" style="cursor: pointer;" onclick="appState.tog('${t.id}')">${btnText}</button>`;
+                    ctrl = `<button type="button" class="${btnClass}" onclick="appState.tog('${t.id}')">${btnText}</button>`;
                 }
 
                 card.innerHTML = `<div style="display:flex; gap:10px; align-items:center;"><img src="${this.getIcon(t)}" class="trophy-icon-img"><div><span class="trophy-rank rank-${t.rank}">${t.rank}</span><div style="font-weight:900; font-size:0.9rem; margin-top:4px;">${t.name}</div></div></div><p style="font-size:0.75rem; font-style:italic; margin:15px 0; color:#cbd5e1; display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${t.desc}</p>${ctrl}`;
@@ -1126,16 +1153,15 @@ const appState = {
     /* ----------------------------------------------------
      * SECTION 7: Cloud Firestore Sync Writer
      * ---------------------------------------------------- */
-    sync: async function() {
+    sync: async function(silent = false) {
         this.render();
         this.updateRankUI();
 
         if (!this.db || !this.auth || !this.auth.currentUser) return;
 
-        this.setStatus("⏳ Saving to Cloud Firestore...", "#e67e22");
+        if (!silent) this.setStatus("⏳ Saving to Cloud Firestore...", "#e67e22");
 
         try {
-            // GA4 Event Trigger for custom conversions
             if (typeof gtag === 'function') {
                 gtag('event', 'tracker_sync', {
                     'event_category': 'Tracker',
@@ -1157,7 +1183,6 @@ const appState = {
             await setDoc(ref, payload, { merge: true });
             const timeStr = new Date().toLocaleTimeString('en-US', { hour12: false });
             this.setStatus(`✓ Saved to Cloud Firestore at ${timeStr}`, "#10b981");
-            console.log(`✓ Cloud Firestore updated: /users/${this.activeHunter}/platform/${this.activePlatform}/progress/${GAME_ID}`);
         } catch (error) {
             console.error("FIRESTORE WRITE ERROR:", error);
             this.setStatus(`❌ Save Failed: ${error.message}`, "#ef4444");
@@ -1170,7 +1195,14 @@ window.adjRank = (tier, val) => appState.adjRank(tier, val);
 
 appState.init();
 
-window.onclick = function(event) {
+// Global click event: only dismiss dropdowns if clicked outside
+window.addEventListener('click', function(event) {
+    if (!event.target.closest('.nav-dropdown')) {
+        document.querySelectorAll('.nav-dropdown.active').forEach(el => {
+            el.classList.remove('active');
+        });
+    }
+
     if (!event.target.matches('.dropdown-trigger') && !event.target.closest('.dropdown-content')) {
         document.querySelectorAll('.dropdown-content.show').forEach(el => {
             el.classList.remove('show');
@@ -1178,4 +1210,4 @@ window.onclick = function(event) {
             appState.openDropdowns[id] = false;
         });
     }
-};
+});
