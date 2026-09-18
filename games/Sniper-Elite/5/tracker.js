@@ -322,7 +322,7 @@ const sniperData = [
   { id: 'm11_wb3', cat: '11: Landing Force (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Radar installation sub-level locker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm11_ch1', cat: '11: Landing Force (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Disable heavy battery without combat alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'med_lastresort', cat: '11: Landing Force (DLC)', name: 'Last Resort', type: 'Medal', desc: 'Complete the campaign mission - Landing Force.' },
-  { id: 'med_m11longshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 Long Shot', type: 'Medal', desc: 'Take a 350 meters shot in Landing Force.', target: 350, isLongShot: true },
+  { id: 'med_m11longshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 Long Shot', type: 'Medal', desc: 'Take a 350 meters shot in Landing Force.', target: 500, isLongShot: true },
   { id: 'med_m11authlongshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Landing Force, in Authentic difficulty.', target: 250, isLongShot: true },
 
   // --- Mission 12: Conqueror (DLC) ---
