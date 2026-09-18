@@ -387,6 +387,9 @@ const sniperData = [
   { id: 'med_m14_shipbreaker', cat: '14: Kraken Awakes (DLC)', name: 'Shipbreaker', type: 'Medal', desc: 'Complete campaign mission - Kraken Awakes.' },
   { id: 'med_m14_sinkorswim', cat: '14: Kraken Awakes (DLC)', name: 'Sink or Swim', type: 'Medal', desc: 'Kraken Awakes - Complete mission with a 2 star rating.', target: 2 },
   { id: 'med_m14_goingover', cat: '14: Kraken Awakes (DLC)', name: 'Going Overboard', type: 'Medal', desc: 'Kraken Awakes - Complete mission on Authentic difficulty.' },
+    id: 'med_m14longshot', cat: '14: Kraken Awakes (DLC)', name: 'Mission 14 Long Shot', type: 'Medal', desc: 'Take a 300 meters shot in Kraken Awakes.', target: 300, isLongShot: true },
+  { id: 'med_m14authlongshot', cat: '14: Kraken Awakes (DLC)', name: 'Mission 14 Authentic Long Shot', type: 'Medal', desc: 'Take a 300 meters shot in Kraken Awakes.', target: 300, isLongShot: true },
+  
 
   // --- Category: Campaign & Objective Medals ---
   { id: 'med_fleshwound', cat: '15: Campaign & Objective Medals', name: 'Just a Flesh Wound', type: 'Medal', desc: 'Complete a mission without healing (excluding Loose Ends).' },
