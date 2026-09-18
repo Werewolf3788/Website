@@ -7,24 +7,29 @@
  *              2. Skeletons: games/{commId} stores full trophy metadata, secret
  *                 objectives, descriptions, icons, rarity, targets, and groups.
  *              3. Live User Subtree: gamertags/{player}/liveTrophyProgress/{commId}
- *                 stores full raw progress records alongside computed `# / ##` ratios.
+ *                 stores full raw progress records alongside computed ratios.
  *              4. Play Sessions: gamertags/{player}/playSessions/{commId} preserves
  *                 Sony's native playDuration/playCount plus live session seconds.
  *              5. Complete ingestion executed equally for all squad members.
+ *              6. Resilient Token Persistence: Saves refresh tokens to Firebase 
+ *                 and disk so sessions survive past the 7-day NPSSO browser death.
+ *              7. Presence Resolution: Uses target "me" for authenticated profile
+ *                 with automated fallback to native recentlyPlayedTitles to guarantee
+ *                 the active game title and boxart never get stuck on "Dashboard".
  * Protocol Support: Direct REST PUT to Firebase Realtime Database (HTTP/HTTPS supported).
  * Analytics Tagging: G-CTYHDF4MSD (Ready for deployment via GTM container).
- * Version: 34.0.0 - Unrestricted Deep Telemetry & Full Squad Ingestion
- * Date & Time Stamp: 2026-09-12 21:42:00 (America/New_York)
+ * Version: 36.0.0 - Full Presence Fail-Safe & Deep Telemetry
+ * Date & Time Stamp: 2026-09-18 01:17:00 (America/New_York)
  * ============================================================================ */
 
-// Line 20: Core Node Modules & HTTP/HTTPS Handling
+// Line 25: Core Node Modules & Dual Protocol Support (Works across both HTTP and HTTPS)
 const fs = require("fs");
 const path = require("path");
 const http = require("http");
 const https = require("https");
 const psnApi = require("psn-api");
 
-// Line 27: PSN API SDK Destructuring
+// Line 33: PSN API SDK Destructuring
 const {
     exchangeNpssoForCode,
     exchangeCodeForAccessToken,
@@ -45,13 +50,14 @@ const {
     makeUniversalSearch
 } = psnApi;
 
-// Line 48: Database, Storage, and Tag Configurations
+// Line 54: Database Endpoints, Analytics Tag, and Local File Destinations
 const FIREBASE_BASE_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn";
-const GA4_MEASUREMENT_ID = "G-CTYHDF4MSD"; // Line 50: Target Analytics Tag
+const GA4_MEASUREMENT_ID = "G-CTYHDF4MSD"; // Target Google Analytics 4 Measurement Tag
 const LOCAL_JSON_PATH = path.join(__dirname, "psn.json");
 const ROOT_LOCAL_JSON_PATH = path.join(__dirname, "..", "psn.json");
+const LOCAL_TOKENS_PATH = path.join(__dirname, ".psn_tokens.json");
 
-// Line 54: Squad Accounts & Mapping (Gamertags used across system)
+// Line 62: Squad Gamertag Mapping (Strictly gamertags, never human names)
 const SQUAD_GAMERTAGS = {
     wildhorse_spirit: "WildHorse_Spirit",
     ray: "OneLIVIDMAN",
@@ -74,6 +80,8 @@ const ACCOUNT_IDS = {
 };
 
 const AMAZON_TAG = "moviesanywhere02-20";
+
+// Line 87: In-Memory Token Cache (Initialized empty, populated from Firebase/disk)
 let tokenStore = { ray: {}, wildhorse_spirit: {} };
 
 let diagnosticReport = {
@@ -85,7 +93,48 @@ let diagnosticReport = {
 };
 
 // ----------------------------------------------------------------------------
-// [SECTION: TIME & SESSION HELPERS - Lines 90-180]
+// [SECTION: HTTP & HTTPS RESILIENT FETCH LAYER - Lines 100-155]
+// ----------------------------------------------------------------------------
+// Line 102: Custom universal fetch fallback ensuring compatibility across environments
+async function resilientFetch(url, options = {}) {
+    const isHttps = url.startsWith("https://");
+    const client = isHttps ? https : http;
+
+    if (typeof fetch !== "undefined") {
+        return fetch(url, options);
+    }
+
+    return new Promise((resolve, reject) => {
+        const parsedUrl = new URL(url);
+        const reqOptions = {
+            hostname: parsedUrl.hostname,
+            port: parsedUrl.port || (isHttps ? 443 : 80),
+            path: `${parsedUrl.pathname}${parsedUrl.search}`,
+            method: options.method || "GET",
+            headers: options.headers || {}
+        };
+
+        const req = client.request(reqOptions, (res) => {
+            let data = "";
+            res.on("data", (chunk) => { data += chunk; });
+            res.on("end", () => {
+                resolve({
+                    ok: res.statusCode >= 200 && res.statusCode < 300,
+                    status: res.statusCode,
+                    text: async () => data,
+                    json: async () => JSON.parse(data || "{}")
+                });
+            });
+        });
+
+        req.on("error", (err) => reject(err));
+        if (options.body) req.write(options.body);
+        req.end();
+    });
+}
+
+// ----------------------------------------------------------------------------
+// [SECTION: TIME & FORMATTING HELPERS - Lines 157-230]
 // ----------------------------------------------------------------------------
 function formatDuration(totalSeconds) {
     if (!totalSeconds || totalSeconds < 60) return "< 1 min";
@@ -216,7 +265,7 @@ function calculateAgeString(startDate, endDate = new Date()) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: TWITCH TELEMETRY - Lines 215-265]
+// [SECTION: TWITCH TELEMETRY - Lines 285-340]
 // ----------------------------------------------------------------------------
 async function getTwitchIntel(username) {
     if (!username) return null;
@@ -234,7 +283,7 @@ async function getTwitchIntel(username) {
         try {
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 3500);
-            const res = await fetch(`https://decapi.me/twitch/${endpoint}/${cleanUser}`, { signal: controller.signal });
+            const res = await resilientFetch(`https://decapi.me/twitch/${endpoint}/${cleanUser}`, { signal: controller.signal });
             clearTimeout(timeout);
             if (!res.ok) return null;
             const text = await res.text();
@@ -272,7 +321,39 @@ async function getTwitchIntel(username) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: PSN AUTHENTICATION - Lines 275-345]
+// [SECTION: PERSISTENT TOKEN STORAGE LAYER - Survives NPSSO Invalidation]
+// ----------------------------------------------------------------------------
+// Line 350: Loads refresh tokens from Firebase and local file to avoid repeated NPSSO logins
+async function loadPersistentTokens() {
+    try {
+        const res = await resilientFetch(`${FIREBASE_BASE_URL}/secureTokens.json`);
+        if (res.ok) {
+            const remoteTokens = await res.json();
+            if (remoteTokens) tokenStore = { ...tokenStore, ...remoteTokens };
+        }
+    } catch (e) {}
+
+    if (fs.existsSync(LOCAL_TOKENS_PATH)) {
+        try {
+            const localData = JSON.parse(fs.readFileSync(LOCAL_TOKENS_PATH, "utf-8"));
+            tokenStore = { ...tokenStore, ...localData };
+        } catch (e) {}
+    }
+}
+
+// Line 368: Saves active refresh tokens to both local disk and Firebase for cross-run preservation
+async function savePersistentTokens() {
+    try {
+        fs.writeFileSync(LOCAL_TOKENS_PATH, JSON.stringify(tokenStore, null, 2), "utf-8");
+    } catch (e) {}
+
+    try {
+        await syncNodeToFirebase("secureTokens", tokenStore);
+    } catch (e) {}
+}
+
+// ----------------------------------------------------------------------------
+// [SECTION: PSN AUTHENTICATION & AUTO-REFRESH ENGINE - Lines 380-465]
 // ----------------------------------------------------------------------------
 async function isTokenValid(accessToken) {
     try {
@@ -284,33 +365,43 @@ async function isTokenValid(accessToken) {
 async function getAuthenticated(userKey, npssoInput) {
     let currentUserTokens = tokenStore[userKey] || {};
     const now = Math.floor(Date.now() / 1000);
-    
-    if (currentUserTokens.accessToken && (currentUserTokens.expiryTime > now + 300)) {
+
+    // 1. Test existing Access Token if not expired
+    if (currentUserTokens.accessToken && (currentUserTokens.expiryTime > now + 180)) {
         const isValid = await isTokenValid(currentUserTokens.accessToken);
         if (isValid) {
             diagnosticReport[`${userKey}_active`] = "yes";
-            diagnosticReport[`${userKey}_status`] = "ACTIVE";
+            diagnosticReport[`${userKey}_status`] = "ACTIVE_ACCESS_TOKEN";
             return { accessToken: currentUserTokens.accessToken, npssoValid: true, userKey };
         }
         currentUserTokens.accessToken = null;
     }
-    
+
+    // 2. Refresh tokens survive for weeks; exchange refresh token if present
     if (currentUserTokens.refreshToken) {
         try {
+            console.log(`[AUTH] Attempting refresh token exchange for ${userKey}...`);
             const refreshed = await exchangeRefreshTokenForAuthTokens(currentUserTokens.refreshToken);
             tokenStore[userKey] = { 
                 accessToken: refreshed.accessToken, 
                 refreshToken: refreshed.refreshToken, 
                 expiryTime: Math.floor(Date.now() / 1000) + (refreshed.expiresIn || 3600) 
             };
+            await savePersistentTokens();
             diagnosticReport[`${userKey}_active`] = "yes";
-            diagnosticReport[`${userKey}_status`] = "ACTIVE";
+            diagnosticReport[`${userKey}_status`] = "ACTIVE_VIA_REFRESH";
+            console.log(`[AUTH REFRESH SUCCESS] Successfully renewed session for ${userKey}.`);
             return { ...refreshed, npssoValid: true, userKey };
-        } catch (e) { currentUserTokens.refreshToken = null; }
+        } catch (e) {
+            console.warn(`[REFRESH WARN] Refresh token for ${userKey} was rejected: ${e.message}`);
+            currentUserTokens.refreshToken = null;
+        }
     }
-    
+
+    // 3. Fallback: Full handshake with NPSSO
     if (npssoInput) {
         try {
+            console.log(`[AUTH] Performing full NPSSO exchange for ${userKey}...`);
             const accessCode = await exchangeNpssoForCode(npssoInput.trim());
             const auth = await exchangeCodeForAccessToken(accessCode);
             tokenStore[userKey] = { 
@@ -318,17 +409,19 @@ async function getAuthenticated(userKey, npssoInput) {
                 refreshToken: auth.refreshToken, 
                 expiryTime: Math.floor(Date.now() / 1000) + (auth.expiresIn || 3600) 
             };
+            await savePersistentTokens();
             diagnosticReport[`${userKey}_active`] = "yes";
-            diagnosticReport[`${userKey}_status`] = "ACTIVE";
-            console.log(`[AUTH SUCCESS] Authenticated ${userKey} with PSN.`);
+            diagnosticReport[`${userKey}_status`] = "ACTIVE_VIA_NPSSO";
+            console.log(`[AUTH SUCCESS] Authenticated ${userKey} via NPSSO.`);
             return { ...auth, npssoValid: true, userKey };
         } catch (e) { 
-            console.error(`[AUTH DIAGNOSTIC] Auth failed for ${userKey}: ${e.message}`);
+            console.error(`[AUTH DIAGNOSTIC] Full NPSSO exchange failed for ${userKey}: ${e.message}`);
             diagnosticReport[`${userKey}_active`] = "no";
             diagnosticReport[`${userKey}_status`] = "EXPIRED_NPSSO";
             return null; 
         }
     }
+
     diagnosticReport[`${userKey}_active`] = "no";
     diagnosticReport[`${userKey}_status`] = "MISSING_NPSSO";
     return null;
@@ -444,7 +537,6 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
         
         let earnedRes = await getUserTrophiesEarnedForTitle(auth, targetId, commId, "all", opt).catch(() => ({}));
         
-        // Auto-switch across trophy services if empty
         if ((!earnedRes || !earnedRes.trophies || earnedRes.trophies.length === 0) && opt.npServiceName === "trophy") {
             opt.npServiceName = "trophy2";
             earnedRes = await getUserTrophiesEarnedForTitle(auth, targetId, commId, "all", opt).catch(() => ({}));
@@ -455,7 +547,6 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
 
         let earnedStatus = earnedRes?.trophies || [];
         
-        // Complete pagination: get 100% of trophies beyond first page
         if (earnedRes?.totalItemCount && earnedRes.totalItemCount > earnedStatus.length) {
             let earnedOffset = earnedStatus.length;
             while (earnedOffset < earnedRes.totalItemCount) {
@@ -533,7 +624,7 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: COMPLETE SQUAD TELEMETRY & FULL PROGRESS ENGINE - No Corners Cut]
+// [SECTION: COMPLETE SQUAD TELEMETRY & FAIL-SAFE PRESENCE ENGINE]
 // ----------------------------------------------------------------------------
 async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, isManualRun, globalGames) {
     const twitchIntel = await getTwitchIntel(TWITCH_MAP[userKey]);
@@ -563,7 +654,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             currentGame: twitchIntel?.game || "Dashboard", 
             currentGameArt: twitchIntel?.gameArt || null,
             amazonAffiliateUrl: generateAffiliateUrl(twitchIntel?.game), 
-            bio: twitchIntel?.bio || "Official Pack Member Profile",
+            bio: twitchIntel?.bio || "Official Pack Member Profile", 
             twitch: twitchIntel, 
             streamHistory: processStreamHistory(existingData?.streamHistory, twitchIntel),
             playSessions: existingData?.playSessions || {},
@@ -579,8 +670,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
     }
 
     try {
-        const presenceId = resolvedTargetId;
-        
         let profile = null;
         try { profile = await getProfileFromAccountId(auth, resolvedTargetId); } catch(e) {}
 
@@ -589,28 +678,12 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             try { region = await getUserRegion(auth, "me"); } catch(e) {}
         }
 
-        // Live Presence Fetch
-        let rawP = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
-        try { 
-            const raw = await getBasicPresence(auth, presenceId); 
-            rawP = raw?.basicPresence || (Array.isArray(raw) ? raw[0] : (raw?.basicPresences ? raw.basicPresences[0] : raw)) || rawP;
-        } catch(e) {}
-
-        const isPlayerOnline = (rawP.primaryPlatformInfo?.onlineStatus || "offline") !== "offline" || !!twitchIntel?.isLive;
-        const activeGameInfo = rawP?.gameTitleInfoList?.[0] || {};
-        
-        // Exact resolution of active Communication ID
-        let activeCommId = activeGameInfo.npCommunicationId || activeGameInfo.npTitleId || null;
-        
-        let resolvedTitle = (twitchIntel?.isLive && twitchIntel.game && (!activeGameInfo.titleName || activeGameInfo.titleName === "Dashboard")) 
-            ? twitchIntel.game : (activeGameInfo.titleName || null);
-
         // Titles & Telemetry Ingestion (Full Library Pagination Loop - No Limits)
         let sortedTitles = [];
         let totalGamesPlayedCount = 0;
         try {
             let offset = 0;
-            const pageSize = 800; // Native PSN max page size
+            const pageSize = 800;
             let keepFetching = true;
 
             while (keepFetching) {
@@ -693,21 +766,50 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             return dateB - dateA;
         });
 
-        // Resolve active comm ID by matching title if npCommunicationId was missing from presence
-        if (!activeCommId && resolvedTitle && resolvedTitle !== "Dashboard") {
-            const cleanTitle = resolvedTitle.toLowerCase().replace(/®|™/g, "").trim();
-            const matchedRecent = allRecentGames.find(g => g.name.toLowerCase().replace(/®|™/g, "").trim() === cleanTitle);
-            if (matchedRecent) {
-                activeCommId = matchedRecent.npCommunicationId;
+        // --- PRESENCE RESOLUTION ENGINE (Lines 640-695) ---
+        // Uses "me" when query matches current auth token to bypass privacy blocks
+        let presenceTarget = (auth.userKey === userKey) ? "me" : resolvedTargetId;
+        let rawP = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
+
+        try { 
+            const raw = await getBasicPresence(auth, presenceTarget); 
+            rawP = raw?.basicPresence || (Array.isArray(raw) ? raw[0] : (raw?.basicPresences ? raw.basicPresences[0] : raw)) || rawP;
+        } catch(e) {
+            if (presenceTarget !== "me") {
+                try {
+                    const retryRaw = await getBasicPresence(auth, "me");
+                    rawP = retryRaw?.basicPresence || (Array.isArray(retryRaw) ? retryRaw[0] : (retryRaw?.basicPresences ? retryRaw.basicPresences[0] : retryRaw)) || rawP;
+                } catch(err2) {}
             }
         }
 
-        if (!resolvedTitle) {
-            resolvedTitle = (isPlayerOnline && activeCommId && mergedGamesMap.has(activeCommId))
-                ? mergedGamesMap.get(activeCommId).name
-                : (isPlayerOnline && activeCommId ? "Active PlayStation Game" : "Dashboard");
+        const isPlayerOnline = (rawP.primaryPlatformInfo?.onlineStatus || "offline") !== "offline" || !!twitchIntel?.isLive;
+        const activeGameInfo = rawP?.gameTitleInfoList?.[0] || {};
+        let activeCommId = activeGameInfo.npCommunicationId || activeGameInfo.npTitleId || null;
+        
+        let resolvedTitle = activeGameInfo.titleName || null;
+
+        // Fallback 1: Twitch broadcast game if PSN presence does not provide a title
+        if (!resolvedTitle && twitchIntel?.isLive && twitchIntel.game) {
+            resolvedTitle = twitchIntel.game;
         }
 
+        // Fallback 2: Exact matching of Communication ID from recent games map
+        if (!resolvedTitle && activeCommId && mergedGamesMap.has(activeCommId)) {
+            resolvedTitle = mergedGamesMap.get(activeCommId).name;
+        }
+
+        // Fallback 3: If still blank or sitting on "Dashboard", pull the latest played title
+        if (!resolvedTitle || resolvedTitle === "Dashboard") {
+            if (allRecentGames.length > 0) {
+                resolvedTitle = allRecentGames[0].name;
+                activeCommId = activeCommId || allRecentGames[0].npCommunicationId;
+            } else {
+                resolvedTitle = isPlayerOnline ? "Active PlayStation Game" : "Dashboard";
+            }
+        }
+
+        // Image Art Resolution
         let matchedArt = null;
         if (activeCommId && mergedGamesMap.has(activeCommId)) {
             matchedArt = mergedGamesMap.get(activeCommId).art;
@@ -744,7 +846,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             }
         }
 
-        // Target active game or fallback to latest played
         const targetSyncId = (isPlayerOnline && activeCommId) ? activeCommId : (activeCommId || allRecentGames[0]?.npCommunicationId);
         const matchedGame = (targetSyncId && mergedGamesMap.get(targetSyncId)) || {};
         const currentPlatform = normalizePlatform(matchedGame);
@@ -768,7 +869,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         let mostRecentTrophies = existingData?.mostRecentTrophies || [];
         const liveTrophyProgress = existingData?.liveTrophyProgress || {};
 
-        // Ingest trophy progress for multiple recent titles + active title
         const titlesToIngestProgress = [
             ...(targetSyncId ? [targetSyncId] : []),
             ...allRecentGames.slice(0, 5).map(g => g.npCommunicationId).filter(id => id && id !== targetSyncId)
@@ -789,14 +889,14 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                     }
                     
                     activeHunt = { 
-                        npCommunicationId: targetSyncId,
+                        npCommunicationId: targetSyncId, 
                         title: matchedGame.name || resolvedTitle, 
-                        platform: currentPlatform,
-                        art: resolvedPoster,
-                        hoursPlayed: currentGameDurationFormatted,
-                        hoursFormatted: currentGameDurationFormatted,
+                        platform: currentPlatform, 
+                        art: resolvedPoster, 
+                        hoursPlayed: currentGameDurationFormatted, 
+                        hoursFormatted: currentGameDurationFormatted, 
                         amazonAffiliateUrl: generateAffiliateUrl(matchedGame.name || resolvedTitle), 
-                        progress: matchedGame.progress || 0,
+                        progress: matchedGame.progress || 0, 
                         velocity: {
                             completionStatus: `${matchedGame.earnedTotal || 0}/${matchedGame.definedTotal || 0}`
                         },
@@ -849,7 +949,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                 progress: stats?.progress || 0,
                 tier: stats?.tier || 0
             },
-            recentGames: allRecentGames, // Preserves the entire list of user games
+            recentGames: allRecentGames,
             activeHunt, 
             mostRecentTrophies: mostRecentTrophies.slice(0, 10), 
             streamHistory: processStreamHistory(existingData?.streamHistory, twitchIntel),
@@ -888,7 +988,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 // ----------------------------------------------------------------------------
 async function fetchFromFirebase() {
     try {
-        const response = await fetch(`${FIREBASE_BASE_URL}.json`);
+        const response = await resilientFetch(`${FIREBASE_BASE_URL}.json`);
         if (!response.ok) return {};
         const data = await response.json();
         return data || {};
@@ -897,7 +997,7 @@ async function fetchFromFirebase() {
 
 async function syncNodeToFirebase(endpointPath, payload) {
     const targetUrl = `${FIREBASE_BASE_URL}/${endpointPath}.json`;
-    await fetch(targetUrl, {
+    await resilientFetch(targetUrl, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -919,7 +1019,10 @@ function writeLocalFile(payload) {
 // ----------------------------------------------------------------------------
 async function main() {
     try {
-        console.log("[INIT] Starting Squad Pack Sync Engine v34.0.0 (Zero-Omission & Full Squad Ingestion)...");
+        console.log("[INIT] Starting Squad Pack Sync Engine v36.0.0 (Presence Fail-Safe & Deep Telemetry)...");
+
+        // Step 1: Pre-load tokens from disk and Firebase before doing anything
+        await loadPersistentTokens();
 
         const previousFirebaseData = await fetchFromFirebase();
         const globalGames = previousFirebaseData.games || {};
@@ -930,22 +1033,24 @@ async function main() {
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport,
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
-            engineVersion: "34.0.0",
+            engineVersion: "36.0.0",
             analyticsTag: GA4_MEASUREMENT_ID,
-            codeTimestamp: "Saturday, September 12, 2026 | 21:42 EDT"
+            codeTimestamp: "Friday, September 18, 2026 | 01:17 EDT"
         };
 
+        // Step 2: Authenticate (Prefers stored refresh token over raw NPSSO)
         const wildHorseAuth = await getAuthenticated("wildhorse_spirit", process.env.PSN_NPSSO_WEREWOLF);
         const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
         const masterAuth = wildHorseAuth || rayAuth;
 
         finalData.authDiagnostics = diagnosticReport;
 
+        // Step 3: Iterate through squad gamertags
         for (const [key, gamerTag] of Object.entries(SQUAD_GAMERTAGS)) {
             const accountId = ACCOUNT_IDS[key];
             const agentAuth = (key === 'ray' && rayAuth) ? rayAuth : (key === 'wildhorse_spirit' && wildHorseAuth) ? wildHorseAuth : masterAuth;
             
-            console.log(`[INGESTION] Fetching full data for ${gamerTag}...`);
+            console.log(`[INGESTION] Fetching full data for gamertag: ${gamerTag}...`);
             const data = await getFullUserData(agentAuth, gamerTag, key, accountId, finalData.gamertags[gamerTag], true, globalGames);
             if (data) {
                 finalData.gamertags[gamerTag] = data;
@@ -957,7 +1062,7 @@ async function main() {
         await syncNodeToFirebase("lastGlobalUpdate", finalData.lastGlobalUpdate);
         writeLocalFile(finalData);
 
-        console.log(`[SUCCESS] PSN Engine finished writing 100% of raw data across all gamertags to Firebase.`);
+        console.log(`[SUCCESS] PSN Engine v36.0.0 finished writing 100% of raw data across all gamertags to Firebase.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Execution failed: ${criticalError.message}`);
         process.exit(1);
