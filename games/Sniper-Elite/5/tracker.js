@@ -322,8 +322,6 @@ const sniperData = [
   { id: 'm11_wb3', cat: '11: Landing Force (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Radar installation sub-level locker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm11_ch1', cat: '11: Landing Force (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Disable heavy battery without combat alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'med_lastresort', cat: '11: Landing Force (DLC)', name: 'Last Resort', type: 'Medal', desc: 'Complete the campaign mission - Landing Force.' },
-  { id: 'med_m11longshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 Long Shot', type: 'Medal', desc: 'Take a 350 meters shot in Landing Force.', target: 500, isLongShot: true },
-  { id: 'med_m11authlongshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Landing Force, in Authentic difficulty.', target: 250, isLongShot: true },
 
   // --- Mission 12: Conqueror (DLC) ---
   { id: 'm12_pl1', cat: '12: Conqueror (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Town entrance bridge guard desk.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
@@ -342,8 +340,7 @@ const sniperData = [
   { id: 'med_siegebreaker', cat: '12: Conqueror (DLC)', name: 'Siegebreaker', type: 'Medal', desc: 'Complete the campaign mission - Conqueror.' },
   { id: 'med_ghostoffalaise', cat: '12: Conqueror (DLC)', name: 'Ghost of Falaise', type: 'Medal', desc: 'Conqueror - Complete mission with a 2 star rating.', target: 2 },
   { id: 'med_opoverlord', cat: '12: Conqueror (DLC)', name: 'Operation Overlord', type: 'Medal', desc: 'Conqueror - Complete mission on Authentic difficulty.' },
-  { id: 'med_m12authlongshot', cat: '12: Conqueror (DLC)', name: 'Mission 12 Authentic Long Shot', type: 'Medal', desc: 'Take a 260 meters shot in Conqueror, in Authentic difficulty.', target: 260, isLongShot: true },
-
+  
   // --- Mission 13: Rough Landing (DLC) ---
   { id: 'm13_pl1', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Forest camp command tent cot.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_pl2', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #2', type: 'Personal Letter', desc: 'Crashed glider wreckage site.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
@@ -367,9 +364,7 @@ const sniperData = [
   { id: 'med_m13_woods', cat: '13: Rough Landing (DLC)', name: 'If You Go Down to the Woods Today', type: 'Medal', desc: 'Complete campaign mission - Rough Landing.' },
   { id: 'med_m13_fightanother', cat: '13: Rough Landing (DLC)', name: 'Fight Another Day', type: 'Medal', desc: 'Rough Landing - Complete mission with a 2 star rating.', target: 2 },
   { id: 'med_m13_stroll', cat: '13: Rough Landing (DLC)', name: 'Stroll in the Woods', type: 'Medal', desc: 'Rough Landing - Complete mission on Authentic difficulty.' },
-  { id: 'med_m13_longshot', cat: '13: Rough Landing (DLC)', name: 'Mission 13 Long Shot', type: 'Medal', desc: 'Take a 240 meters shot in Rough Landing.', target: 240, isLongShot: true },
-  { id: 'med_m13_authlong', cat: '13: Rough Landing (DLC)', name: 'Mission 13 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Rough Landing, in Authentic difficulty.', target: 250, isLongShot: true },
-
+  
   // --- Mission 14: Kraken Awakes (DLC) ---
   { id: 'm14_pl1', cat: '14: Kraken Awakes (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Submarine dry dock office desk.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm14_pl2', cat: '14: Kraken Awakes (DLC)', name: 'Personal Letter #2', type: 'Personal Letter', desc: 'Carrier flight deck control station.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
@@ -386,10 +381,7 @@ const sniperData = [
   { id: 'm14_ch1', cat: '14: Kraken Awakes (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Destroy carrier without triggering alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'med_m14_shipbreaker', cat: '14: Kraken Awakes (DLC)', name: 'Shipbreaker', type: 'Medal', desc: 'Complete campaign mission - Kraken Awakes.' },
   { id: 'med_m14_sinkorswim', cat: '14: Kraken Awakes (DLC)', name: 'Sink or Swim', type: 'Medal', desc: 'Kraken Awakes - Complete mission with a 2 star rating.', target: 2 },
-  { id: 'med_m14_goingover', cat: '14: Kraken Awakes (DLC)', name: 'Going Overboard', type: 'Medal', desc: 'Kraken Awakes - Complete mission on Authentic difficulty.' },
-    id: 'med_m14longshot', cat: '14: Kraken Awakes (DLC)', name: 'Mission 14 Long Shot', type: 'Medal', desc: 'Take a 300 meters shot in Kraken Awakes.', target: 300, isLongShot: true },
-  { id: 'med_m14authlongshot', cat: '14: Kraken Awakes (DLC)', name: 'Mission 14 Authentic Long Shot', type: 'Medal', desc: 'Take a 300 meters shot in Kraken Awakes.', target: 300, isLongShot: true },
-  
+  { id: 'med_m14_goingover', cat: '14: Kraken Awakes (DLC)', name: 'Going Overboard', type: 'Medal', desc: 'Kraken Awakes - Complete mission on Authentic difficulty.' }, 
 
   // --- Category: Campaign & Objective Medals ---
   { id: 'med_fleshwound', cat: '15: Campaign & Objective Medals', name: 'Just a Flesh Wound', type: 'Medal', desc: 'Complete a mission without healing (excluding Loose Ends).' },
@@ -436,7 +428,16 @@ const sniperData = [
   { id: 'med_ls_m8_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 8 Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in St. Nazaire, in Authentic difficulty.', target: 200, isLongShot: true },
   { id: 'med_ls_m9', cat: '16: Longshot & Combat Medals', name: 'Mission 9 Long Shot', type: 'Medal', desc: 'Take a 500 meters shot in Loose Ends.', target: 500, isLongShot: true },
   { id: 'med_ls_m9_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 9 Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in Loose Ends, in Authentic difficulty.', target: 200, isLongShot: true },
-  { id: 'med_longgame', cat: '16: Longshot & Combat Medals', name: 'The Long Game', type: 'Medal', desc: 'Accumulate a cumulative kill distance of 100,000 meters across all modes.', target: 100000 },
+  { id: 'med_m11longshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 Long Shot', type: 'Medal', desc: 'Take a 500 meters shot in Landing Force.', target: 500, isLongShot: true },
+  { id: 'med_m11authlongshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 Authentic Long Shot', type: 'Medal', desc: 'Take a 350 meters shot in Landing Force, in Authentic difficulty.', target: 250, isLongShot: true },
+  { id: 'med_ls_m12longshot', cat: '12: Conqueror (DLC)', name: 'Mission 12 Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Conqueror, in Authentic difficulty.', target: 250, isLongShot: true },
+  { id: 'med_ls_m12authlongshot', cat: '12: Conqueror (DLC)', name: 'Mission 12 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Conqueror, in Authentic difficulty.', target: 250, isLongShot: true },
+  { id: 'med_ls_m13_longshot', cat: '13: Rough Landing (DLC)', name: 'Mission 13 Long Shot', type: 'Medal', desc: 'Take a 240 meters shot in Rough Landing.', target: 240, isLongShot: true },
+  { id: 'med_ls_m13_authlong', cat: '13: Rough Landing (DLC)', name: 'Mission 13 Authentic Long Shot', type: 'Medal', desc: 'Take a 240 meters shot in Rough Landing, in Authentic difficulty.', target: 240, isLongShot: true },
+  { id: 'med_ls_m14longshot', cat: '14: Kraken Awakes (DLC)', name: 'Mission 14 Long Shot', type: 'Medal', desc: 'Take a 300 meters shot in Kraken Awakes.', target: 300, isLongShot: true },
+  { id: 'med_ls_m14authlongshot', cat: '14: Kraken Awakes (DLC)', name: 'Mission 14 Authentic Long Shot', type: 'Medal', desc: 'Take a 300 meters shot in Kraken Awakes.', target: 300, isLongShot: true },
+    
+{ id: 'med_longgame', cat: '16: Longshot & Combat Medals', name: 'The Long Game', type: 'Medal', desc: 'Accumulate a cumulative kill distance of 100,000 meters across all modes.', target: 100000 },
   { id: 'med_sharpshooter', cat: '16: Longshot & Combat Medals', name: 'Sharpshooter', type: 'Medal', desc: 'Kill 350 enemies with a Rifle.', target: 350 },
   { id: 'med_skirmisher', cat: '16: Longshot & Combat Medals', name: 'Skirmisher', type: 'Medal', desc: 'Kill 150 enemies with a Secondary Weapon.', target: 150 },
   { id: 'med_gunslinger', cat: '16: Longshot & Combat Medals', name: 'Gunslinger', type: 'Medal', desc: 'Kill 150 enemies with Pistols.', target: 150 },
