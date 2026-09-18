@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * Dashboard: WildHorse_Spirit Master Command Telemetry & Tactical Operations Hub
- * Engine Version: 37.0.0-PRO-UNIVERSAL-LIVE-PROGRESS-SKELETON-SQUAD-DYNAMIC
+ * Engine Version: 37.1.0-PRO-UNIVERSAL-LIVE-PROGRESS-SKELETON-SQUAD-DYNAMIC
  * Primary PSN Node: https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/WildHorse_Spirit.json
  * PSN Canonical Skeleton: https://entertainment-71888-default-rtdb.firebaseio.com/psn/games.json
  * PSN Squad Gamertags: https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags.json
  * FS25 Dedicated Cluster: https://fs25-a3563-default-rtdb.firebaseio.com/fs25.json (target: farms/farm_1)
  * Navigation Directory: https://entertainment-71888-default-rtdb.firebaseio.com/utm_links.json
  * Timezone: 24hr New York Time (EDT)
- * Date & Time Stamp: 2026-09-12 15:10:00 (24hr New York Time)
+ * Date & Time Stamp: 2026-09-18 02:15:00 (24hr New York Time)
  * ============================================================================ -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="refresh" content="900">
+    <!-- Unrestricted CDN image loading for PlayStation Network assets -->
+    <meta name="referrer" content="no-referrer">
     <title>WildHorse_Spirit | Tactical Operations Hub</title>
     
-    <!-- GOOGLE ANALYTICS 4 DUAL MEASUREMENT ENGINE -->
+    <!-- Line 20: Google Analytics GA4 (G-CTYHDF4MSD) - Protocol Agnostic for HTTP & HTTPS -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -32,7 +34,7 @@
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '37.0.0',
+            'layout_version': '37.1.0',
             'gamertag': 'WildHorse_Spirit',
             'user_handle': 'Werewolf3788',
             'engagement_timezone': 'America/New_York',
@@ -61,7 +63,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- MASTER STYLESHEET -->
+    <!-- MASTER STYLESHEET (Lines 70-340) -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap');
 
@@ -243,7 +245,6 @@
         .trophy-icon-sq { width: 56px; height: 56px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); object-fit: cover; }
         .trophy-title-text { font-weight: 800; font-size: 15px; text-transform: uppercase; }
 
-        /* 24-Hour Earn Pulse Glow */
         .recent-earn-yellow-glow {
             border-color: rgba(245, 158, 11, 0.85) !important;
             background: rgba(245, 158, 11, 0.08) !important;
@@ -468,7 +469,7 @@
         <div class="viewport-85-wrap">
             <div class="relative inline-block mb-6">
                 <div class="absolute inset-0 bg-[#FF5F1F] blur-[100px] opacity-30 rounded-full"></div>
-                <img id="main-avatar" src="https://via.placeholder.com/250x250/1e1e24/FF5F1F?text=WOLF" class="relative w-36 h-36 sm:w-48 sm:h-48 lg:w-56 lg:h-56 rounded-full border-4 border-[#FF5F1F] shadow-2xl mx-auto object-cover cursor-pointer" onclick="openLightboxImage(this.src, 'WildHorse_Spirit Avatar')" onerror="this.src='https://via.placeholder.com/250x250/1e1e24/FF5F1F?text=WOLF'">
+                <img id="main-avatar" src="https://via.placeholder.com/250x250/1e1e24/FF5F1F?text=WOLF" class="relative w-36 h-36 sm:w-48 sm:h-48 lg:w-56 lg:h-56 rounded-full border-4 border-[#FF5F1F] shadow-2xl mx-auto object-cover cursor-pointer" onclick="openLightboxImage(this.src, 'WildHorse_Spirit Avatar')" onerror="this.src='https://via.placeholder.com/250x250/1e1e24/FF5F1F?text=WOLF'" referrerpolicy="no-referrer">
                 <div id="ps-plus-indicator" class="ps-plus-badge"><i class="fab fa-playstation"></i> PLUS MEMBER</div>
             </div>
             
@@ -547,7 +548,7 @@
                     </div>
                     
                     <div class="relative w-full aspect-video bg-orange-900/10 border-y border-white/5 cursor-pointer" onclick="openLightboxImage(document.getElementById('active-game-art').src, document.getElementById('active-game-title').innerText)">
-                        <img id="active-game-art" src="" class="w-full h-full object-cover hidden" onerror="this.src='https://via.placeholder.com/600x337/1e1e24/FF5F1F?text=GAME+COVER'">
+                        <img id="active-game-art" src="" class="w-full h-full object-cover hidden" onerror="this.src='https://via.placeholder.com/600x337/1e1e24/FF5F1F?text=GAME+COVER'" referrerpolicy="no-referrer">
                         <div id="active-game-fallback" class="w-full h-full flex items-center justify-center"><i class="fab fa-playstation text-6xl text-orange-500/30"></i></div>
                     </div>
 
@@ -561,13 +562,13 @@
 
                         <div class="space-y-2 bg-black/40 p-4 rounded-xl border border-white/5">
                             <div class="flex justify-between items-end">
-                                <span class="text-xs text-gray-300 font-black uppercase text-orange-400">Hunt Completion</span>
+                                <span class="text-xs font-black uppercase text-orange-400">Hunt Completion</span>
                                 <span id="active-game-progress-text" class="text-base font-black text-white font-mono">0%</span>
                             </div>
                             <div class="progress-bar-container"><div id="active-game-progress-fill" class="progress-bar-fill prog-stage-1" style="width: 0%"></div></div>
                         </div>
 
-                        <!-- Trophy Groups Breakdown (Shows named DLCs directly from Skeleton with true percentages) -->
+                        <!-- Trophy Groups Breakdown (Shows named DLCs directly from Skeleton) -->
                         <div id="active-hunt-groups-container" class="space-y-2 pt-2 border-t border-white/5 hidden">
                             <div class="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
                                 <i class="fas fa-layer-group text-orange-400"></i> Trophy Groups & Expansion Packs
@@ -615,7 +616,7 @@
                     <section id="recent-trophy-card" class="glass-card p-5 border-t-4 border-yellow-500 hidden">
                         <h3 class="text-yellow-500 text-xs font-black flex items-center gap-2 mb-3"><i class="fas fa-trophy"></i> Latest PSN Unlock</h3>
                         <div class="flex gap-3 items-center bg-black/40 p-3 rounded-xl cursor-pointer hover:bg-white/10 transition-colors" onclick="openRecentTrophyLightbox()">
-                            <img id="last-trophy-icon" src="" class="w-14 h-14 rounded-lg object-cover border border-yellow-500/30" onerror="this.src='https://via.placeholder.com/64x64/202024/FF5F1F?text=🏆'">
+                            <img id="last-trophy-icon" src="" class="w-14 h-14 rounded-lg object-cover border border-yellow-500/30" onerror="this.src='https://via.placeholder.com/64x64/202024/FF5F1F?text=🏆'" referrerpolicy="no-referrer">
                             <div class="min-w-0 flex-1">
                                 <div id="last-trophy-name" class="font-black text-white uppercase text-xs truncate">---</div>
                                 <div id="last-trophy-game" class="text-xs font-black text-yellow-500 uppercase truncate">---</div>
@@ -628,7 +629,7 @@
                     <section id="ps-plus-card" class="glass-card p-5 border-t-4 border-orange-500 text-center flex flex-col justify-between">
                         <h3 class="text-orange-400 text-xs font-black flex items-center justify-center gap-1.5"><i class="fab fa-playstation"></i> PS Plus Active</h3>
                         <a href="https://www.playstation.com/en-us/ps-plus/" target="_blank" class="py-2 inline-block">
-                            <img src="https://assetsdelivery.eldorado.gg/v7/_offers-v2_/2e84e915-faa9-4670-b6a1-2406ea1f3a64_Offer_20241113013824_723432Large.png?w=255" alt="PS Plus Premium" class="w-20 h-20 object-contain mx-auto p-1.5 rounded-xl bg-black/40 border border-white/10 hover:border-orange-400 transition-all">
+                            <img src="https://assetsdelivery.eldorado.gg/v7/_offers-v2_/2e84e915-faa9-4670-b6a1-2406ea1f3a64_Offer_20241113013824_723432Large.png?w=255" alt="PS Plus Premium" class="w-20 h-20 object-contain mx-auto p-1.5 rounded-xl bg-black/40 border border-white/10 hover:border-orange-400 transition-all" referrerpolicy="no-referrer">
                         </a>
                         <span class="text-xs font-black text-gray-400 uppercase">Premium Cloud Sync</span>
                     </section>
@@ -643,7 +644,7 @@
                     <h2 class="text-2xl font-black uppercase text-white flex items-center gap-2.5">
                         <i class="fas fa-layer-group text-orange-400"></i> Active Operations & Server Telemetry
                     </h2>
-                    <p class="text-xs text-gray-400 font-bold uppercase">Dedicated Real-Time Feeds for WildHorse_Spirit / Werewolf3788</p>
+                    <p class="text-xs text-gray-400 font-bold uppercase">Dedicated Real-Time Feeds for WildHorse_Spirit</p>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-lime-950 text-lime-400 border border-lime-500/40">FS25 Farm 1 Focused</span>
@@ -703,7 +704,7 @@
                             </div>
                         </div>
 
-                        <!-- Farmland Parcels with Full Agronomy -->
+                        <!-- Farmland Parcels with Agronomy -->
                         <div class="space-y-2.5 pt-2 border-t border-white/5">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-2">
@@ -745,7 +746,7 @@
                             <div class="progress-bar-container"><div id="se5-progress-fill" class="progress-bar-fill prog-stage-1" style="width: 0%"></div></div>
                             <div class="flex flex-col sm:flex-row justify-between sm:items-center text-xs font-black text-gray-400 uppercase pt-1 gap-1">
                                 <span>Active Target: <strong id="se5-active-mission" class="text-white">1: The Atlantic Wall</strong></span>
-                                <span>Squad: <strong class="text-sky-400">wildhorse_spirit, OneLIVIDMAN, Darkwing69420, Elu Cloud</strong></span>
+                                <span>Squad: <strong class="text-sky-400">WildHorse_Spirit, OneLIVIDMAN, Darkwing69420, DesdemonaTiger</strong></span>
                             </div>
                         </div>
 
@@ -836,7 +837,7 @@
                         </div>
 
                         <div id="firestore-squad-games-grid" class="flex flex-col gap-3.5 max-h-[500px] overflow-y-auto no-scrollbar pr-1">
-                            <div class="p-8 text-center text-gray-500 font-bold uppercase text-xs">Streaming Squad Targets from Cloud Firestore...</div>
+                            <div class="p-8 text-center text-gray-500 font-bold uppercase text-xs">Streaming Squad Targets...</div>
                         </div>
                     </div>
                 </section>
@@ -862,7 +863,7 @@
             <div id="trophy-checklist-container" class="max-h-[900px] overflow-y-auto divide-y divide-white/5 no-scrollbar"></div>
         </section>
 
-        <!-- FOOTER TIMESTAMPS & REFRESH TARGETS -->
+        <!-- FOOTER TIMESTAMPS -->
         <div class="text-center mt-6 text-xs font-black text-gray-500 uppercase tracking-[0.3em]">
             Primary RTDB: <span class="text-orange-400">/psn/gamertags/WildHorse_Spirit.json</span> | FS25 RTDB: <span class="text-lime-400">fs25-a3563 (farm_1)</span> | NYC 24hr: <span id="sync-time" class="text-gray-300">--</span>
         </div>
@@ -883,7 +884,7 @@
     <!-- FIREBASE MODULE & REAL-TIME SQUAD LEADERBOARD ENGINE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, doc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -1009,10 +1010,10 @@
         };
 
         const OPERATIVES_CONFIG = [
-            { key: 'Werewolf3788', psnTag: 'wildhorse_spirit', displayName: 'Werewolf3788' },
-            { key: 'Raymystyro', psnTag: 'OneLIVIDMAN', displayName: 'Raymystyro' },
-            { key: 'Terrdog', psnTag: 'Darkwing69420', displayName: 'Terrdog' },
-            { key: 'Elu Cloud', psnTag: 'Elu Cloud', displayName: 'Elu Cloud' }
+            { key: 'Werewolf3788', psnTag: 'WildHorse_Spirit', displayName: 'WildHorse_Spirit' },
+            { key: 'Raymystyro', psnTag: 'OneLIVIDMAN', displayName: 'OneLIVIDMAN' },
+            { key: 'Terrdog', psnTag: 'Darkwing69420', displayName: 'Darkwing69420' },
+            { key: 'Elu Cloud', psnTag: 'DesdemonaTiger', displayName: 'DesdemonaTiger' }
         ];
 
         const OPERATIVE_KEYS = OPERATIVES_CONFIG.map(o => o.key);
@@ -1061,7 +1062,7 @@
                 if (snap.exists()) {
                     teamSE5Progress[op] = snap.data();
                 } else if (op === 'Werewolf3788') {
-                    onSnapshot(doc(db, `users/wildhorse_spirit/platform/playstation/progress/sniper-elite-5`), (subSnap) => {
+                    onSnapshot(doc(db, `users/WildHorse_Spirit/platform/playstation/progress/sniper-elite-5`), (subSnap) => {
                         if (subSnap.exists()) teamSE5Progress[op] = subSnap.data();
                         renderSE5Leaderboard();
                     });
@@ -1077,7 +1078,7 @@
             if (!container) return;
 
             const wolfData = teamSE5Progress['Werewolf3788'] || {};
-            const wolfItems = Array.isArray(wolfData.progress) ? wolfData.progress : [];
+            const wolfItems = Array.isArray(wolfData.progress) ? wolfData.progress : (wolfData.progress ? Object.values(wolfData.progress) : []);
             const completedCount = wolfItems.filter(i => i && (i.collected || i.completed)).length;
             const totalCount = wolfItems.length || 351;
             const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
@@ -1096,8 +1097,8 @@
             let html = '';
             LONG_SHOT_ITEMS.forEach(item => {
                 const operativeScores = OPERATIVE_KEYS.map(op => {
-                    const pList = (teamSE5Progress[op] && Array.isArray(teamSE5Progress[op].progress)) ? teamSE5Progress[op].progress : [];
-                    const match = pList.find(p => p.id === item.id);
+                    const pList = (teamSE5Progress[op] && Array.isArray(teamSE5Progress[op].progress)) ? teamSE5Progress[op].progress : (teamSE5Progress[op]?.progress ? Object.values(teamSE5Progress[op].progress) : []);
+                    const match = pList.find(p => p && p.id === item.id);
                     const dist = match && match.count !== undefined ? Number(match.count) : (match && match.collected ? item.req : 0);
                     return { op, dist };
                 });
@@ -1137,7 +1138,8 @@
                             ${playersWithScore.map(entry => {
                                 const glowClass = rankMap[entry.op] || 'rank-glow-none';
                                 const isLeader = glowClass === 'rank-glow-1st';
-                                const psnDisplay = entry.op === 'Werewolf3788' ? 'wildhorse_spirit' : (entry.op === 'Terrdog' ? 'Darkwing69420' : (entry.op === 'Raymystyro' ? 'OneLIVIDMAN' : entry.op));
+                                const opConf = OPERATIVES_CONFIG.find(c => c.key === entry.op);
+                                const psnDisplay = opConf ? opConf.displayName : entry.op;
                                 return `
                                     <div class="p-2 rounded-lg flex flex-col items-center justify-center text-center transition-all ${glowClass}">
                                         <div class="text-xs font-black uppercase flex items-center gap-1 truncate max-w-full">
@@ -1162,12 +1164,12 @@
                 if (docSnap.exists()) {
                     renderCOTWData(docSnap.data());
                 } else if (userAlias === "Werewolf3788") {
-                    subscribePlaystationCOTW("wildhorse_spirit");
+                    subscribePlaystationCOTW("WildHorse_Spirit");
                 } else {
                     renderCOTWData({});
                 }
             }, () => {
-                if (userAlias === "Werewolf3788") subscribePlaystationCOTW("wildhorse_spirit");
+                if (userAlias === "Werewolf3788") subscribePlaystationCOTW("WildHorse_Spirit");
             });
         }
 
@@ -1345,74 +1347,7 @@
         function extractTrophyTracking(t) {
             if (!t) return null;
             if (window.getTrophyLiveProgress) return window.getTrophyLiveProgress(t);
-
-            const isEarned = !!t.earned;
-
-            if (t.subProgressRatio && typeof t.subProgressRatio === 'string' && t.subProgressRatio.includes('/')) {
-                const parts = t.subProgressRatio.split('/');
-                const c = Number(parts[0].trim());
-                const targetVal = Number(parts[1].trim());
-
-                if (!isNaN(targetVal) && targetVal > 0) {
-                    if (isEarned) {
-                        return {
-                            count: targetVal,
-                            target: targetVal,
-                            pct: 100,
-                            fraction: `${targetVal.toLocaleString()}/${targetVal.toLocaleString()}`
-                        };
-                    }
-                    if (!isNaN(c)) {
-                        return {
-                            count: c,
-                            target: targetVal,
-                            pct: Math.min(100, Math.round((c / targetVal) * 100)),
-                            fraction: `${c.toLocaleString()}/${targetVal.toLocaleString()}`
-                        };
-                    }
-                }
-            }
-
-            let target = null;
-            if (t.trophyProgressTargetValue !== undefined && t.trophyProgressTargetValue !== null && t.trophyProgressTargetValue !== "") {
-                target = Number(t.trophyProgressTargetValue);
-            } else if (t.targetValue !== undefined && Number(t.targetValue) > 1) {
-                target = Number(t.targetValue);
-            } else if (t.target !== undefined && Number(t.target) > 1) {
-                target = Number(t.target);
-            }
-
-            if (!target || isNaN(target) || target <= 1) return null;
-
-            if (isEarned) {
-                return {
-                    count: target,
-                    target: target,
-                    pct: 100,
-                    fraction: `${target.toLocaleString()}/${target.toLocaleString()}`
-                };
-            }
-
-            let count = 0;
-            if (t.currentValue !== undefined && t.currentValue !== null) {
-                count = Number(t.currentValue);
-            } else if (t.progressRate !== undefined && t.progressRate !== null) {
-                count = Number(t.progressRate);
-            } else if (t.progress !== undefined && t.progress !== null && !Array.isArray(t.progress)) {
-                count = Number(t.progress);
-            } else if (t.count !== undefined && t.count !== null) {
-                count = Number(t.count);
-            }
-
-            if (isNaN(count)) count = 0;
-            const pct = Math.min(100, Math.round((count / target) * 100));
-
-            return {
-                count: count,
-                target: target,
-                pct: pct,
-                fraction: `${count.toLocaleString()}/${target.toLocaleString()}`
-            };
+            return null;
         }
 
         async function fetchCanonicalSkeleton() {
@@ -1660,7 +1595,7 @@
             const container = document.getElementById('firestore-squad-games-grid');
             if (!container) return;
 
-            const wolfData = globalGamertagsData['WildHorse_Spirit'] || globalGamertagsData['wildhorse_spirit'] || globalGamertagsData['Werewolf3788'] || globalGamertagsData['werewolf3788'] || {};
+            const wolfData = globalGamertagsData['WildHorse_Spirit'] || globalGamertagsData['wildhorse_spirit'] || {};
             const wolfGames = convertFirebaseArray(wolfData.recentGames);
 
             if (wolfGames.length === 0) {
@@ -1733,7 +1668,7 @@
 
                         <div class="grid grid-cols-1 ${squadMatches.length > 1 ? 'sm:grid-cols-2' : ''} gap-3 pt-1 border-t border-white/5">
                             ${squadMatches.map(stat => {
-                                const chroma = getChromaStageClass(stat.progress);
+                                const chroma = window.getChromaStageClass ? window.getChromaStageClass(stat.progress) : 'prog-stage-1';
                                 return `
                                     <div class="bg-black/50 p-3 rounded-lg border ${stat.isPrimary ? 'border-orange-500/50 shadow-[0_0_15px_rgba(255,95,31,0.2)]' : 'border-white/5'} space-y-1.5 cursor-pointer hover:bg-white/5 transition-colors" onclick="openPSNRecentGameCompareModal('${safeGameTitle}', '${safeGameArt}', ${stat.progress}, '${game.npCommunicationId || ''}')">
                                         <div class="flex justify-between items-center text-xs font-black uppercase">
@@ -1756,9 +1691,6 @@
             container.innerHTML = html || `<div class="p-8 text-center text-gray-500 font-bold uppercase text-xs">No active squad campaigns currently above 0%.</div>`;
         }
 
-        // ====================================================================
-        // PSN HUB TELEMETRY: With Real Group Progress, Robust Playtime & Cross-Player Trophies
-        // ====================================================================
         async function updateHub() {
             try {
                 let user = null;
@@ -1770,10 +1702,7 @@
                         if (rootData?.games) canonicalGamesSkeleton = rootData.games;
                         user = globalSquadData?.WildHorse_Spirit || 
                                globalSquadData?.wildhorse_spirit || 
-                               globalSquadData?.Werewolf3788 || 
-                               globalSquadData?.werewolf3788 || 
-                               rootData?.users?.wildhorse_spirit || 
-                               rootData?.users?.Werewolf3788 || null;
+                               rootData?.users?.wildhorse_spirit || null;
                     }
                 } catch (e) {}
 
@@ -1784,14 +1713,13 @@
 
                 if (!user) return;
 
-                // NPSSO & Handshake status inspection
                 const hDot = document.getElementById('health-dot');
                 const hVal = document.getElementById('health-value');
                 const alertContainer = document.getElementById('system-alerts-container');
                 const alertMsg = document.getElementById('alert-message');
 
                 const npssoStat = user.npssoStatus || (user.npssoValid !== false ? "active" : "expired");
-                const isTokenValid = (npssoStat.toLowerCase() === "active" || user.npssoValid === true) && user.handshakeState !== 'EXPIRED';
+                const isTokenValid = (npssoStat.toLowerCase().includes("active") || user.npssoValid === true) && user.handshakeState !== 'EXPIRED';
 
                 if (!isTokenValid) {
                     if (hDot) hDot.className = "status-dot-pulse expired";
@@ -1852,7 +1780,7 @@
                     const twAgeEl = document.getElementById('twitch-age');
                     const liveBadge = document.getElementById('live-indicator');
 
-                    if (followerEl) followerEl.innerText = (tw.followers !== undefined) ? tw.followers.toLocaleString() : "--";
+                    if (followerEl) followerEl.innerText = (tw.followers !== undefined) ? Number(tw.followers).toLocaleString() : "--";
                     if (msgEl) msgEl.innerText = tw.isLive ? `Live: ${tw.game || 'Gaming'}` : `"${tw.statusMessage || 'Offline'}"`;
                     if (twAgeEl) twAgeEl.innerText = tw.age ? `Age: ${tw.age}` : (tw.subCount ? `Subs: ${tw.subCount}` : 'Channel Active');
                     if (liveBadge) liveBadge.classList.toggle('hidden', !tw.isLive);
@@ -1904,14 +1832,13 @@
                     const fillBar = document.getElementById('active-game-progress-fill');
                     if (fillBar) {
                         fillBar.style.width = `${pct}%`;
-                        fillBar.className = `progress-bar-fill ${getChromaStageClass(pct)}`;
+                        const chroma = window.getChromaStageClass ? window.getChromaStageClass(pct) : 'prog-stage-1';
+                        fillBar.className = `progress-bar-fill ${chroma}`;
                     }
                     document.getElementById('active-game-ratio').innerText = hunt.velocity?.completionStatus || "--/--";
 
-                    // Ingest liveTrophyProgress node if present
                     const liveProgNode = user.liveTrophyProgress?.[huntCommId] || user.liveTrophyProgress?.[hunt.commId] || user.liveTrophyProgress || {};
 
-                    // Re-hydrate Trophy Checklist: Skeleton definition + User progress
                     const skelTrophies = skeletonData?.trophies ? convertFirebaseArray(skeletonData.trophies) : [];
                     const userTrophies = hunt.userTrophies ? convertFirebaseArray(hunt.userTrophies) : (hunt.trophies ? convertFirebaseArray(hunt.trophies) : []);
 
@@ -1946,9 +1873,7 @@
                         currentTrophyData = userTrophies;
                     }
 
-                    // ============================================================
-                    // DLC & TROPHY GROUPS: EXACT SKELETON /groups/{id}/name RESOLUTION
-                    // ============================================================
+                    // Trophy Groups Breakdown
                     const groupsContainer = document.getElementById('active-hunt-groups-container');
                     const groupsGrid = document.getElementById('active-hunt-groups-grid');
                     
@@ -1965,18 +1890,15 @@
 
                     let resolvedGroups = [];
 
-                    // Base off skeleton groups so exact name always prevails
                     if (skelGroups.length > 0) {
                         resolvedGroups = skelGroups.map((sg, idx) => {
                             const gId = normGId(sg.trophyGroupId !== undefined ? sg.trophyGroupId : idx);
 
-                            // Exact DLC name from /psn/games/{commId}/groups/{id}/name
                             let dlcName = sg.name || sg.trophyGroupName;
                             if (!dlcName || dlcName.toUpperCase() === "DEFAULT" || dlcName.toUpperCase().startsWith("GROUP ")) {
                                 dlcName = (idx === 0 || gId === "default") ? activeGameTitle : `Expansion Pack ${idx}`;
                             }
 
-                            // Match user earnings for this group
                             const userMatch = userGroupEarnings.find(ug => normGId(ug.trophyGroupId) === gId) || userGroupEarnings[idx];
 
                             let progressText = "";
@@ -2030,7 +1952,6 @@
                     const firstTrophy = earnedList.length > 0 ? earnedList[0] : null;
                     const recentTrophy = earnedList.length > 0 ? earnedList[earnedList.length - 1] : null;
 
-                    // Epoch Guard
                     let firstDateRaw = null;
                     const possibleFirstDates = [
                         firstTrophy ? (firstTrophy.earnedDateTime || firstTrophy.earnedTimestamp || firstTrophy.earnedDate) : null,
@@ -2073,9 +1994,7 @@
                         if (firstDateEl) firstDateEl.innerText = "--";
                     }
 
-                    if (hoursEl) {
-                        hoursEl.innerText = `${loggedHours} hrs logged`;
-                    }
+                    if (hoursEl) hoursEl.innerText = `${loggedHours} hrs logged`;
                     
                     if (paceEl) {
                         if (loggedHours > 0 && earnedList.length > 0) {
@@ -2096,7 +2015,7 @@
                         }
                     }
 
-                    // Render Checklist with Universal Squad Search across whole DB
+                    // Render Trophy Checklist
                     const checklist = document.getElementById('trophy-checklist-container');
                     if (checklist && currentTrophyData.length > 0) {
                         checklist.innerHTML = currentTrophyData.map((t, idx) => {
@@ -2125,7 +2044,6 @@
                                 `;
                             }
 
-                            // Robust Squad Cross-Reference checking user activeHunt, recentGames, and liveTrophyProgress
                             const squadMatches = [];
                             Object.entries(globalGamertagsData).forEach(([gtag, pObj]) => {
                                 const normGKey = gtag.toLowerCase().trim();
@@ -2156,7 +2074,6 @@
                                     if (matched && matched.trophies) trophies = convertFirebaseArray(matched.trophies);
                                 }
 
-                                // Also check other player's liveTrophyProgress
                                 const pLiveNode = pObj.liveTrophyProgress?.[huntCommId] || pObj.liveTrophyProgress || {};
                                 const pLiveTrophy = pLiveNode[t.id] || pLiveNode[String(t.id)];
 
@@ -2204,7 +2121,7 @@
 
                             return `
                                 <div class="trophy-row ${isEarnedWithin24Hours ? 'recent-earn-yellow-glow' : ''}" onclick="openTrophyDetailModal(currentTrophyData[${idx}], '${safeHuntTitle}')">
-                                    <img src="${t.icon}" class="trophy-icon-sq ${!isEarned && t.hidden ? 'opacity-30 blur-[2px]' : ''}" onerror="this.src='https://via.placeholder.com/56x56/202024/FF5F1F?text=🏆'">
+                                    <img src="${t.icon}" class="trophy-icon-sq ${!isEarned && t.hidden ? 'opacity-30 blur-[2px]' : ''}" onerror="this.src='https://via.placeholder.com/56x56/202024/FF5F1F?text=🏆'" referrerpolicy="no-referrer">
                                     <div class="min-w-0 flex-1">
                                         <div class="flex items-center gap-2">
                                             <div class="trophy-title-text truncate text-sm ${isEarned ? 'text-green-400' : 'text-orange-400'}">${t.name}</div>
@@ -2236,7 +2153,7 @@
                         const safeArt = escapeHtmlAttr(skel?.posterArt || g.art || g.trophyTitleIconUrl || '');
                         return `
                             <div class="game-thumb" onclick="openPSNRecentGameCompareModal('${safeGName}', '${safeArt}', ${g.progress || 0}, '${g.npCommunicationId || ''}')">
-                                <img src="${safeArt}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150x225/1e1e24/FF5F1F?text=GAME'">
+                                <img src="${safeArt}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150x225/1e1e24/FF5F1F?text=GAME'" referrerpolicy="no-referrer">
                                 <div class="game-info-overlay">
                                     <div class="text-xs font-black text-orange-400 truncate">${safeGName}</div>
                                     <div class="text-xs font-black text-white/80">${g.progress || 0}%</div>
@@ -2280,7 +2197,73 @@
             }
         }
 
-        // DUAL PS4/PS5 & CANONICAL SKELETON RE-HYDRATION MODAL
+        // Window-scoped modal & navigation triggers
+        window.toggleNav = function() {
+            const nav = document.getElementById('dynamic-nav-container');
+            if (nav) nav.classList.toggle('active');
+        };
+
+        window.openLightboxImage = function(url, title) {
+            const lb = document.getElementById('generic-lightbox');
+            document.getElementById('lightbox-title').innerText = title || "Image";
+            document.getElementById('lightbox-body').innerHTML = `<img src="${url}" class="max-h-[70vh] mx-auto rounded-xl object-contain" referrerpolicy="no-referrer">`;
+            if (lb) lb.style.display = 'flex';
+        };
+
+        window.closeGenericLightbox = function() {
+            const lb = document.getElementById('generic-lightbox');
+            if (lb) lb.style.display = 'none';
+        };
+
+        window.openRecentTrophyLightbox = function() {
+            if (lastEarnedTrophyData) window.openTrophyDetailModal(lastEarnedTrophyData, lastEarnedTrophyData.game);
+        };
+
+        window.openTrophyDetailModal = function(t, gameTitle) {
+            if (!t) return;
+            const lb = document.getElementById('generic-lightbox');
+            document.getElementById('lightbox-title').innerText = (gameTitle || "Game") + " - Trophy";
+
+            const earnedDateRaw = t.earnedDate || t.earnedDateTime || t.earnedTimestamp || null;
+            const formattedDate = earnedDateRaw ? formatNYC24Time(earnedDateRaw) : null;
+            const timeAgo = earnedDateRaw ? getTimeAgoString(earnedDateRaw) : null;
+            const hoursAgo = earnedDateRaw ? getPreciseHoursAgo(earnedDateRaw) : null;
+
+            const tracking = extractTrophyTracking(t);
+            const chroma = tracking ? (window.getChromaStageClass ? window.getChromaStageClass(tracking.pct) : 'prog-stage-1') : '';
+
+            document.getElementById('lightbox-body').innerHTML = `
+                <div class="flex flex-col items-center space-y-4 text-center">
+                    <img src="${t.icon || ''}" class="w-24 h-24 rounded-xl border border-white/10 shadow-xl" referrerpolicy="no-referrer">
+                    <h4 class="text-xl font-black text-white uppercase">${t.name}</h4>
+                    <p class="text-gray-300 bg-white/5 p-4 rounded-xl border border-white/5 w-full text-xs">${t.description || t.detail || 'Objective Achieved.'}</p>
+                    
+                    ${tracking ? `
+                        <div class="bg-black/50 p-3 rounded-xl border border-orange-500/20 w-full space-y-1.5">
+                            <div class="flex justify-between text-xs font-black uppercase text-orange-400">
+                                <span>Objective SubProgress</span>
+                                <span>${tracking.fraction} (${tracking.pct}%)</span>
+                            </div>
+                            <div class="progress-bar-container"><div class="progress-bar-fill ${chroma}" style="width: ${tracking.pct}%"></div></div>
+                        </div>
+                    ` : ''}
+
+                    <div class="flex flex-col items-center gap-1">
+                        <div class="text-xs font-black uppercase ${t.earned ? 'text-emerald-400' : 'text-gray-500'}">
+                            ${t.earned ? 'Unlocked on PlayStation Network' : 'Locked Trophy'}
+                        </div>
+                        ${formattedDate ? `
+                            <div class="text-xs font-bold text-gray-400">
+                                Earned: <span class="text-white">${formattedDate} (EDT)</span> &bull; <span class="text-orange-400">${timeAgo}</span>
+                                <div class="text-orange-300 font-mono text-xs mt-0.5">${hoursAgo}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            if (lb) lb.style.display = 'flex';
+        };
+
         window.openPSNRecentGameCompareModal = function(gameName, gameArt, wolfProgress, commId = '') {
             const lb = document.getElementById('generic-lightbox');
             document.getElementById('lightbox-title').innerText = `${gameName} — PS4 & PS5 Full Progress Hub`;
@@ -2365,7 +2348,7 @@
             document.getElementById('lightbox-body').innerHTML = `
                 <div class="flex flex-col space-y-6">
                     <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-black/50 p-5 rounded-2xl border border-white/10">
-                        <img src="${resolvedArt}" class="w-24 h-32 object-cover rounded-xl border border-white/20 shadow-xl" onerror="this.src='https://via.placeholder.com/150x225/1e1e24/FF5F1F?text=GAME'">
+                        <img src="${resolvedArt}" class="w-24 h-32 object-cover rounded-xl border border-white/20 shadow-xl" onerror="this.src='https://via.placeholder.com/150x225/1e1e24/FF5F1F?text=GAME'" referrerpolicy="no-referrer">
                         <div class="min-w-0 flex-1">
                             <div class="flex items-center gap-2">
                                 <h4 class="text-2xl font-black text-white uppercase truncate">${gameName}</h4>
@@ -2379,6 +2362,7 @@
                     <div class="grid grid-cols-1 ${activePlayers.length > 1 ? 'sm:grid-cols-2' : ''} gap-4">
                         ${activePlayers.map(p => {
                             const completedCount = p.trophies.filter(t => t.earned).length;
+                            const chroma = window.getChromaStageClass ? window.getChromaStageClass(p.progress) : 'prog-stage-1';
                             return `
                                 <div class="bg-black/50 p-4 rounded-xl border ${p.isPrimary ? 'border-orange-500/60 shadow-[0_0_15px_rgba(255,95,31,0.25)]' : 'border-white/10'} space-y-2">
                                     <div class="flex justify-between items-center text-xs font-black uppercase">
@@ -2388,7 +2372,7 @@
                                         <span class="text-white font-mono text-sm">${p.progress}% (${completedCount}/${masterTrophies.length})</span>
                                     </div>
                                     <div class="progress-bar-container">
-                                        <div class="progress-bar-fill ${getChromaStageClass(p.progress)}" style="width: ${p.progress}%"></div>
+                                        <div class="progress-bar-fill ${chroma}" style="width: ${p.progress}%"></div>
                                     </div>
                                     <div class="flex justify-between text-xs font-mono text-gray-400">
                                         <span>Platform: ${p.platform}</span>
@@ -2413,7 +2397,7 @@
                                 return `
                                     <div class="py-3.5 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
                                         <div class="flex items-center gap-3 min-w-0 flex-1">
-                                            <img src="${t.icon || ''}" class="w-12 h-12 rounded-lg object-cover border border-white/10 flex-shrink-0" onerror="this.src='https://via.placeholder.com/48x48/202024/FF5F1F?text=🏆'">
+                                            <img src="${t.icon || ''}" class="w-12 h-12 rounded-lg object-cover border border-white/10 flex-shrink-0" onerror="this.src='https://via.placeholder.com/48x48/202024/FF5F1F?text=🏆'" referrerpolicy="no-referrer">
                                             <div class="min-w-0 flex-1">
                                                 <div class="flex items-center gap-2">
                                                     <div class="text-sm font-bold text-white uppercase truncate">${t.name}</div>
@@ -2477,71 +2461,6 @@
                 if (msgEl && msgEl.innerText === '"--"') msgEl.innerText = isLive ? `Live: ${gameRes.trim()}` : `"${titleRes.trim()}"`;
                 if (liveBadge) liveBadge.classList.toggle('hidden', !isLive);
             } catch (e) {}
-        }
-
-        function toggleNav() {
-            const nav = document.getElementById('dynamic-nav-container');
-            if (nav) nav.classList.toggle('active');
-        }
-
-        function openLightboxImage(url, title) {
-            const lb = document.getElementById('generic-lightbox');
-            document.getElementById('lightbox-title').innerText = title || "Image";
-            document.getElementById('lightbox-body').innerHTML = `<img src="${url}" class="max-h-[70vh] mx-auto rounded-xl object-contain">`;
-            if (lb) lb.style.display = 'flex';
-        }
-
-        function openRecentTrophyLightbox() {
-            if (lastEarnedTrophyData) openTrophyDetailModal(lastEarnedTrophyData, lastEarnedTrophyData.game);
-        }
-
-        function openTrophyDetailModal(t, gameTitle) {
-            if (!t) return;
-            const lb = document.getElementById('generic-lightbox');
-            document.getElementById('lightbox-title').innerText = (gameTitle || "Game") + " - Trophy";
-
-            const earnedDateRaw = t.earnedDate || t.earnedDateTime || t.earnedTimestamp || null;
-            const formattedDate = earnedDateRaw ? formatNYC24Time(earnedDateRaw) : null;
-            const timeAgo = earnedDateRaw ? getTimeAgoString(earnedDateRaw) : null;
-            const hoursAgo = earnedDateRaw ? getPreciseHoursAgo(earnedDateRaw) : null;
-
-            const tracking = extractTrophyTracking(t);
-
-            document.getElementById('lightbox-body').innerHTML = `
-                <div class="flex flex-col items-center space-y-4 text-center">
-                    <img src="${t.icon || ''}" class="w-24 h-24 rounded-xl border border-white/10 shadow-xl">
-                    <h4 class="text-xl font-black text-white uppercase">${t.name}</h4>
-                    <p class="text-gray-300 bg-white/5 p-4 rounded-xl border border-white/5 w-full text-xs">${t.description || t.detail || 'Objective Achieved.'}</p>
-                    
-                    ${tracking ? `
-                        <div class="bg-black/50 p-3 rounded-xl border border-orange-500/20 w-full space-y-1.5">
-                            <div class="flex justify-between text-xs font-black uppercase text-orange-400">
-                                <span>Objective SubProgress</span>
-                                <span>${tracking.fraction} (${tracking.pct}%)</span>
-                            </div>
-                            <div class="progress-bar-container"><div class="progress-bar-fill ${getChromaStageClass(tracking.pct)}" style="width: ${tracking.pct}%"></div></div>
-                        </div>
-                    ` : ''}
-
-                    <div class="flex flex-col items-center gap-1">
-                        <div class="text-xs font-black uppercase ${t.earned ? 'text-emerald-400' : 'text-gray-500'}">
-                            ${t.earned ? 'Unlocked on PlayStation Network' : 'Locked Trophy'}
-                        </div>
-                        ${formattedDate ? `
-                            <div class="text-xs font-bold text-gray-400">
-                                Earned: <span class="text-white">${formattedDate} (EDT)</span> &bull; <span class="text-orange-400">${timeAgo}</span>
-                                <div class="text-orange-300 font-mono text-xs mt-0.5">${hoursAgo}</div>
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-            `;
-            if (lb) lb.style.display = 'flex';
-        }
-
-        function closeGenericLightbox() {
-            const lb = document.getElementById('generic-lightbox');
-            if (lb) lb.style.display = 'none';
         }
 
         // Initialize Engine & Polling Loops
