@@ -11,25 +11,27 @@
  *              4. Play Sessions: gamertags/{player}/playSessions/{commId} preserves
  *                 Sony's native playDuration/playCount plus live session seconds.
  *              5. Complete ingestion executed equally for all squad members.
- *              6. Resilient Token Persistence: Saves refresh tokens to Firebase 
+ *              6. Automated Token Persistence: Saves refresh tokens to Firebase 
  *                 and disk so sessions survive past the 7-day NPSSO browser death.
  *              7. Presence Resolution: Uses target "me" for authenticated profile
- *                 with automated fallback to native recentlyPlayedTitles to guarantee
- *                 the active game title and boxart never get stuck on "Dashboard".
+ *                 with automated fallback to native recentlyPlayedTitles so
+ *                 active game title and boxart never get stuck on "Dashboard".
+ *              8. Scoped First Trophy: Calculates active game first trophy date
+ *                 strictly from the active title rather than account creation.
  * Protocol Support: Direct REST PUT to Firebase Realtime Database (HTTP/HTTPS supported).
  * Analytics Tagging: G-CTYHDF4MSD (Ready for deployment via GTM container).
- * Version: 36.0.0 - Full Presence Fail-Safe & Deep Telemetry
- * Date & Time Stamp: 2026-09-18 01:17:00 (America/New_York)
+ * Version: 39.0.0 - Self-Healing Token Lifecycle & Hardened Telemetry
+ * Date & Time Stamp: 2026-09-18 02:27:00 (America/New_York)
  * ============================================================================ */
 
-// Line 25: Core Node Modules & Dual Protocol Support (Works across both HTTP and HTTPS)
+// Line 27: Core Node Modules & Dual Protocol Support (Works across both HTTP and HTTPS)
 const fs = require("fs");
 const path = require("path");
 const http = require("http");
 const https = require("https");
 const psnApi = require("psn-api");
 
-// Line 33: PSN API SDK Destructuring
+// Line 35: PSN API SDK Destructuring
 const {
     exchangeNpssoForCode,
     exchangeCodeForAccessToken,
@@ -50,14 +52,14 @@ const {
     makeUniversalSearch
 } = psnApi;
 
-// Line 54: Database Endpoints, Analytics Tag, and Local File Destinations
+// Line 56: Database Endpoints, Analytics Tag, and Local File Destinations
 const FIREBASE_BASE_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn";
 const GA4_MEASUREMENT_ID = "G-CTYHDF4MSD"; // Target Google Analytics 4 Measurement Tag
 const LOCAL_JSON_PATH = path.join(__dirname, "psn.json");
 const ROOT_LOCAL_JSON_PATH = path.join(__dirname, "..", "psn.json");
 const LOCAL_TOKENS_PATH = path.join(__dirname, ".psn_tokens.json");
 
-// Line 62: Squad Gamertag Mapping (Strictly gamertags, never human names)
+// Line 64: Squad Gamertag Mapping (Strictly gamertags, never human names)
 const SQUAD_GAMERTAGS = {
     wildhorse_spirit: "WildHorse_Spirit",
     ray: "OneLIVIDMAN",
@@ -81,7 +83,7 @@ const ACCOUNT_IDS = {
 
 const AMAZON_TAG = "moviesanywhere02-20";
 
-// Line 87: In-Memory Token Cache (Initialized empty, populated from Firebase/disk)
+// Line 89: In-Memory Token Cache
 let tokenStore = { ray: {}, wildhorse_spirit: {} };
 
 let diagnosticReport = {
@@ -95,41 +97,55 @@ let diagnosticReport = {
 // ----------------------------------------------------------------------------
 // [SECTION: HTTP & HTTPS RESILIENT FETCH LAYER - Lines 100-155]
 // ----------------------------------------------------------------------------
-// Line 102: Custom universal fetch fallback ensuring compatibility across environments
 async function resilientFetch(url, options = {}) {
     const isHttps = url.startsWith("https://");
     const client = isHttps ? https : http;
 
     if (typeof fetch !== "undefined") {
-        return fetch(url, options);
+        try {
+            return await fetch(url, options);
+        } catch (fetchErr) {
+            console.warn(`[FETCH WARN] Global fetch fallback for ${url}: ${fetchErr.message}`);
+        }
     }
 
     return new Promise((resolve, reject) => {
-        const parsedUrl = new URL(url);
-        const reqOptions = {
-            hostname: parsedUrl.hostname,
-            port: parsedUrl.port || (isHttps ? 443 : 80),
-            path: `${parsedUrl.pathname}${parsedUrl.search}`,
-            method: options.method || "GET",
-            headers: options.headers || {}
-        };
+        try {
+            const parsedUrl = new URL(url);
+            const headers = options.headers || {};
+            if (options.body && !headers["Content-Length"]) {
+                headers["Content-Length"] = Buffer.byteLength(options.body);
+            }
 
-        const req = client.request(reqOptions, (res) => {
-            let data = "";
-            res.on("data", (chunk) => { data += chunk; });
-            res.on("end", () => {
-                resolve({
-                    ok: res.statusCode >= 200 && res.statusCode < 300,
-                    status: res.statusCode,
-                    text: async () => data,
-                    json: async () => JSON.parse(data || "{}")
+            const reqOptions = {
+                hostname: parsedUrl.hostname,
+                port: parsedUrl.port || (isHttps ? 443 : 80),
+                path: `${parsedUrl.pathname}${parsedUrl.search}`,
+                method: options.method || "GET",
+                headers: headers
+            };
+
+            const req = client.request(reqOptions, (res) => {
+                let data = "";
+                res.on("data", (chunk) => { data += chunk; });
+                res.on("end", () => {
+                    resolve({
+                        ok: res.statusCode >= 200 && res.statusCode < 300,
+                        status: res.statusCode,
+                        text: async () => data,
+                        json: async () => {
+                            try { return JSON.parse(data || "{}"); } catch(e) { return {}; }
+                        }
+                    });
                 });
             });
-        });
 
-        req.on("error", (err) => reject(err));
-        if (options.body) req.write(options.body);
-        req.end();
+            req.on("error", (err) => reject(err));
+            if (options.body) req.write(options.body);
+            req.end();
+        } catch (err) {
+            reject(err);
+        }
     });
 }
 
@@ -321,27 +337,31 @@ async function getTwitchIntel(username) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: PERSISTENT TOKEN STORAGE LAYER - Survives NPSSO Invalidation]
+// [SECTION: HARDENED PERSISTENT TOKEN STORAGE LAYER]
 // ----------------------------------------------------------------------------
-// Line 350: Loads refresh tokens from Firebase and local file to avoid repeated NPSSO logins
 async function loadPersistentTokens() {
     try {
         const res = await resilientFetch(`${FIREBASE_BASE_URL}/secureTokens.json`);
-        if (res.ok) {
+        if (res && res.ok) {
             const remoteTokens = await res.json();
-            if (remoteTokens) tokenStore = { ...tokenStore, ...remoteTokens };
+            if (remoteTokens && typeof remoteTokens === "object") {
+                tokenStore = { ...tokenStore, ...remoteTokens };
+                console.log("[TOKEN STORAGE] Loaded cached tokens from Firebase.");
+            }
         }
     } catch (e) {}
 
     if (fs.existsSync(LOCAL_TOKENS_PATH)) {
         try {
             const localData = JSON.parse(fs.readFileSync(LOCAL_TOKENS_PATH, "utf-8"));
-            tokenStore = { ...tokenStore, ...localData };
+            if (localData && typeof localData === "object") {
+                tokenStore = { ...tokenStore, ...localData };
+                console.log("[TOKEN STORAGE] Loaded cached tokens from local disk.");
+            }
         } catch (e) {}
     }
 }
 
-// Line 368: Saves active refresh tokens to both local disk and Firebase for cross-run preservation
 async function savePersistentTokens() {
     try {
         fs.writeFileSync(LOCAL_TOKENS_PATH, JSON.stringify(tokenStore, null, 2), "utf-8");
@@ -352,8 +372,21 @@ async function savePersistentTokens() {
     } catch (e) {}
 }
 
+async function purgeToken(userKey) {
+    console.warn(`[TOKEN PURGE] Clearing stale tokens for ${userKey}...`);
+    tokenStore[userKey] = {};
+    try {
+        if (fs.existsSync(LOCAL_TOKENS_PATH)) {
+            fs.writeFileSync(LOCAL_TOKENS_PATH, JSON.stringify(tokenStore, null, 2), "utf-8");
+        }
+    } catch(e) {}
+    try {
+        await syncNodeToFirebase(`secureTokens/${userKey}`, {});
+    } catch(e) {}
+}
+
 // ----------------------------------------------------------------------------
-// [SECTION: PSN AUTHENTICATION & AUTO-REFRESH ENGINE - Lines 380-465]
+// [SECTION: PSN AUTHENTICATION WITH INSTANT NPSSO FALLTHROUGH]
 // ----------------------------------------------------------------------------
 async function isTokenValid(accessToken) {
     try {
@@ -366,7 +399,7 @@ async function getAuthenticated(userKey, npssoInput) {
     let currentUserTokens = tokenStore[userKey] || {};
     const now = Math.floor(Date.now() / 1000);
 
-    // 1. Test existing Access Token if not expired
+    // 1. Check if the active access token is still within its validity window
     if (currentUserTokens.accessToken && (currentUserTokens.expiryTime > now + 180)) {
         const isValid = await isTokenValid(currentUserTokens.accessToken);
         if (isValid) {
@@ -377,51 +410,58 @@ async function getAuthenticated(userKey, npssoInput) {
         currentUserTokens.accessToken = null;
     }
 
-    // 2. Refresh tokens survive for weeks; exchange refresh token if present
+    // 2. Primary renewal path: Use long-lived refresh token (valid for months)
     if (currentUserTokens.refreshToken) {
         try {
-            console.log(`[AUTH] Attempting refresh token exchange for ${userKey}...`);
+            console.log(`[AUTH] Renewing session via refresh token for ${userKey}...`);
             const refreshed = await exchangeRefreshTokenForAuthTokens(currentUserTokens.refreshToken);
-            tokenStore[userKey] = { 
-                accessToken: refreshed.accessToken, 
-                refreshToken: refreshed.refreshToken, 
-                expiryTime: Math.floor(Date.now() / 1000) + (refreshed.expiresIn || 3600) 
-            };
-            await savePersistentTokens();
-            diagnosticReport[`${userKey}_active`] = "yes";
-            diagnosticReport[`${userKey}_status`] = "ACTIVE_VIA_REFRESH";
-            console.log(`[AUTH REFRESH SUCCESS] Successfully renewed session for ${userKey}.`);
-            return { ...refreshed, npssoValid: true, userKey };
+            if (refreshed && refreshed.accessToken) {
+                tokenStore[userKey] = { 
+                    accessToken: refreshed.accessToken, 
+                    refreshToken: refreshed.refreshToken || currentUserTokens.refreshToken, 
+                    expiryTime: Math.floor(Date.now() / 1000) + (refreshed.expiresIn || 3600) 
+                };
+                await savePersistentTokens();
+                diagnosticReport[`${userKey}_active`] = "yes";
+                diagnosticReport[`${userKey}_status`] = "ACTIVE_VIA_REFRESH";
+                console.log(`[AUTH SUCCESS] Successfully renewed session for ${userKey}.`);
+                return { ...refreshed, npssoValid: true, userKey };
+            }
         } catch (e) {
-            console.warn(`[REFRESH WARN] Refresh token for ${userKey} was rejected: ${e.message}`);
-            currentUserTokens.refreshToken = null;
+            console.warn(`[REFRESH REJECTED] Refresh token invalid for ${userKey}: ${e.message}. Purging and falling back to NPSSO.`);
+            await purgeToken(userKey);
         }
     }
 
-    // 3. Fallback: Full handshake with NPSSO
-    if (npssoInput) {
+    // 3. One-time fallback: Perform handshake with raw NPSSO from environment variables
+    if (npssoInput && npssoInput.trim().length > 0) {
         try {
-            console.log(`[AUTH] Performing full NPSSO exchange for ${userKey}...`);
-            const accessCode = await exchangeNpssoForCode(npssoInput.trim());
+            console.log(`[AUTH] Initializing fresh handshake with NPSSO for ${userKey}...`);
+            const cleanNpsso = npssoInput.trim();
+            const accessCode = await exchangeNpssoForCode(cleanNpsso);
             const auth = await exchangeCodeForAccessToken(accessCode);
-            tokenStore[userKey] = { 
-                accessToken: auth.accessToken, 
-                refreshToken: auth.refreshToken, 
-                expiryTime: Math.floor(Date.now() / 1000) + (auth.expiresIn || 3600) 
-            };
-            await savePersistentTokens();
-            diagnosticReport[`${userKey}_active`] = "yes";
-            diagnosticReport[`${userKey}_status`] = "ACTIVE_VIA_NPSSO";
-            console.log(`[AUTH SUCCESS] Authenticated ${userKey} via NPSSO.`);
-            return { ...auth, npssoValid: true, userKey };
+
+            if (auth && auth.accessToken) {
+                tokenStore[userKey] = { 
+                    accessToken: auth.accessToken, 
+                    refreshToken: auth.refreshToken, 
+                    expiryTime: Math.floor(Date.now() / 1000) + (auth.expiresIn || 3600) 
+                };
+                await savePersistentTokens();
+                diagnosticReport[`${userKey}_active`] = "yes";
+                diagnosticReport[`${userKey}_status`] = "ACTIVE_VIA_NPSSO";
+                console.log(`[AUTH SUCCESS] Authenticated ${userKey} via NPSSO and saved long-term refresh token!`);
+                return { ...auth, npssoValid: true, userKey };
+            }
         } catch (e) { 
-            console.error(`[AUTH DIAGNOSTIC] Full NPSSO exchange failed for ${userKey}: ${e.message}`);
+            console.error(`[NPSSO ERROR] Exchange failed for ${userKey}: ${e.message}`);
             diagnosticReport[`${userKey}_active`] = "no";
-            diagnosticReport[`${userKey}_status`] = "EXPIRED_NPSSO";
+            diagnosticReport[`${userKey}_status`] = `EXPIRED_NPSSO (${e.message})`;
             return null; 
         }
     }
 
+    console.error(`[AUTH FATAL] No valid tokens or NPSSO available for ${userKey}.`);
     diagnosticReport[`${userKey}_active`] = "no";
     diagnosticReport[`${userKey}_status`] = "MISSING_NPSSO";
     return null;
@@ -643,6 +683,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
     }
 
     if (!auth || !resolvedTargetId) {
+        console.warn(`[TELEMETRY WARN] Missing auth or target ID for ${gamerTag}. Writing fallback profile.`);
         return {
             onlineId: gamerTag, 
             online: !!twitchIntel?.isLive,
@@ -678,7 +719,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             try { region = await getUserRegion(auth, "me"); } catch(e) {}
         }
 
-        // Titles & Telemetry Ingestion (Full Library Pagination Loop - No Limits)
+        // 1. Ingest Full Trophy Titles List
         let sortedTitles = [];
         let totalGamesPlayedCount = 0;
         try {
@@ -700,11 +741,15 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             sortedTitles.sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
         } catch(err) {}
 
+        // 2. Correct psn-api Signature: getRecentlyPlayedGames takes (auth, options) ONLY
         let telemetryData = [];
         try {
-            const history = await getRecentlyPlayedGames(auth, resolvedTargetId, { limit: 100 });
+            const history = await getRecentlyPlayedGames(auth, { limit: 100 });
             telemetryData = history?.data?.recentlyPlayedTitles || history?.recentlyPlayedTitles || [];
-        } catch (e) {}
+            console.log(`[TELEMETRY FETCH] Retrieved ${telemetryData.length} recent titles from Sony for ${gamerTag}.`);
+        } catch (e) {
+            console.warn(`[TELEMETRY NOTICE] Recent games fetch warning: ${e.message}`);
+        }
 
         const earliestEntry = sortedTitles.reduce((oldest, current) => {
             const currentDate = new Date(current.lastUpdatedDateTime || current.lastPlayed);
@@ -713,7 +758,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 
         const mergedGamesMap = new Map();
 
-        // 1. Ingest Telemetry (preserving all native fields)
+        // 3. Map Recently Played Titles
         telemetryData.forEach(g => {
             if (!g.npCommunicationId) return;
             const parsedSeconds = parseIsoDuration(g.playDuration);
@@ -734,7 +779,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             });
         });
 
-        // 2. Ingest Trophy Titles & Merge
+        // 4. Merge Trophy Titles
         sortedTitles.forEach(t => {
             const commId = t.npCommunicationId;
             if (!commId) return;
@@ -766,8 +811,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             return dateB - dateA;
         });
 
-        // --- PRESENCE RESOLUTION ENGINE (Lines 640-695) ---
-        // Uses "me" when query matches current auth token to bypass privacy blocks
+        // 5. Robust Live Presence Resolution
         let presenceTarget = (auth.userKey === userKey) ? "me" : resolvedTargetId;
         let rawP = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
 
@@ -789,17 +833,14 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         
         let resolvedTitle = activeGameInfo.titleName || null;
 
-        // Fallback 1: Twitch broadcast game if PSN presence does not provide a title
         if (!resolvedTitle && twitchIntel?.isLive && twitchIntel.game) {
             resolvedTitle = twitchIntel.game;
         }
 
-        // Fallback 2: Exact matching of Communication ID from recent games map
         if (!resolvedTitle && activeCommId && mergedGamesMap.has(activeCommId)) {
             resolvedTitle = mergedGamesMap.get(activeCommId).name;
         }
 
-        // Fallback 3: If still blank or sitting on "Dashboard", pull the latest played title
         if (!resolvedTitle || resolvedTitle === "Dashboard") {
             if (allRecentGames.length > 0) {
                 resolvedTitle = allRecentGames[0].name;
@@ -809,20 +850,22 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             }
         }
 
-        // Image Art Resolution
+        // Dedicated Art Resolution: Pulls direct game art from merged telemetry
         let matchedArt = null;
         if (activeCommId && mergedGamesMap.has(activeCommId)) {
-            matchedArt = mergedGamesMap.get(activeCommId).art;
+            matchedArt = mergedGamesMap.get(activeCommId).art || mergedGamesMap.get(activeCommId).trophyTitleIconUrl;
+        }
+        if (!matchedArt && allRecentGames.length > 0) {
+            const match = allRecentGames.find(g => g.name.toLowerCase().replace(/®|™/g, "").trim() === resolvedTitle.toLowerCase().replace(/®|™/g, "").trim());
+            matchedArt = match?.art || match?.trophyTitleIconUrl || allRecentGames[0]?.art;
         }
         if (!matchedArt && twitchIntel?.isLive) {
             matchedArt = twitchIntel.gameArt;
         }
-        if (!matchedArt && allRecentGames.length > 0) {
-            const match = allRecentGames.find(g => g.name.toLowerCase().replace(/®|™/g, "").trim() === resolvedTitle.toLowerCase().replace(/®|™/g, "").trim());
-            matchedArt = match?.art || allRecentGames[0]?.art;
-        }
 
-        // Live Cumulative Playtime Engine
+        console.log(`[PRESENCE RESOLVED] ${gamerTag} -> Game: "${resolvedTitle}" | Art: ${matchedArt ? matchedArt.substring(0, 45) + '...' : "NULL"}`);
+
+        // Session Tracking
         const { playSessions, currentGameDurationFormatted } = updateGameSessionTracking(
             existingData,
             activeCommId,
@@ -884,8 +927,11 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                 liveTrophyProgress[cId] = subtree.standaloneProgressMap;
                 
                 if (cId === targetSyncId) {
+                    const sortedEarned = [...subtree.earnedTrophiesList].sort((a, b) => a.timestamp - b.timestamp);
+                    const earliestActiveTrophyTimestamp = sortedEarned.length > 0 ? sortedEarned[0].timestamp : null;
+
                     if (subtree.earnedTrophiesList.length > 0) {
-                        mostRecentTrophies = subtree.earnedTrophiesList.sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
+                        mostRecentTrophies = [...subtree.earnedTrophiesList].sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
                     }
                     
                     activeHunt = { 
@@ -897,6 +943,9 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                         hoursFormatted: currentGameDurationFormatted, 
                         amazonAffiliateUrl: generateAffiliateUrl(matchedGame.name || resolvedTitle), 
                         progress: matchedGame.progress || 0, 
+                        // Scoped strictly to this active game:
+                        firstTrophyTimestamp: earliestActiveTrophyTimestamp,
+                        firstTrophyDate: earliestActiveTrophyTimestamp ? new Date(earliestActiveTrophyTimestamp).toISOString() : null,
                         velocity: {
                             completionStatus: `${matchedGame.earnedTotal || 0}/${matchedGame.definedTotal || 0}`
                         },
@@ -956,6 +1005,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
         };
     } catch (e) { 
+        console.error(`[TELEMETRY CRITICAL ERROR] For ${gamerTag}: ${e.message}`);
         return {
             onlineId: gamerTag, 
             online: !!twitchIntel?.isLive,
@@ -989,19 +1039,29 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 async function fetchFromFirebase() {
     try {
         const response = await resilientFetch(`${FIREBASE_BASE_URL}.json`);
-        if (!response.ok) return {};
+        if (!response || !response.ok) return {};
         const data = await response.json();
         return data || {};
-    } catch (err) { return {}; }
+    } catch (err) { 
+        console.warn(`[FIREBASE READ ERROR] ${err.message}`);
+        return {}; 
+    }
 }
 
 async function syncNodeToFirebase(endpointPath, payload) {
     const targetUrl = `${FIREBASE_BASE_URL}/${endpointPath}.json`;
-    await resilientFetch(targetUrl, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-    });
+    try {
+        const res = await resilientFetch(targetUrl, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        if (res && !res.ok) {
+            console.error(`[FIREBASE WRITE ERROR] Failed ${endpointPath}: HTTP ${res.status}`);
+        }
+    } catch (err) {
+        console.error(`[FIREBASE WRITE ERROR] Failed ${endpointPath}: ${err.message}`);
+    }
 }
 
 function writeLocalFile(payload) {
@@ -1019,9 +1079,9 @@ function writeLocalFile(payload) {
 // ----------------------------------------------------------------------------
 async function main() {
     try {
-        console.log("[INIT] Starting Squad Pack Sync Engine v36.0.0 (Presence Fail-Safe & Deep Telemetry)...");
+        console.log("[INIT] Starting Squad Pack Sync Engine v39.0.0 (Self-Healing Token Lifecycle)...");
 
-        // Step 1: Pre-load tokens from disk and Firebase before doing anything
+        // 1. Pre-load persisted refresh tokens
         await loadPersistentTokens();
 
         const previousFirebaseData = await fetchFromFirebase();
@@ -1033,19 +1093,20 @@ async function main() {
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport,
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
-            engineVersion: "36.0.0",
+            engineVersion: "39.0.0",
             analyticsTag: GA4_MEASUREMENT_ID,
-            codeTimestamp: "Friday, September 18, 2026 | 01:17 EDT"
+            codeTimestamp: "Friday, September 18, 2026 | 02:27 EDT"
         };
 
-        // Step 2: Authenticate (Prefers stored refresh token over raw NPSSO)
+        // 2. Authenticate squad accounts (Uses refresh tokens first, auto-renews silently)
+        console.log("[AUTH] Authenticating primary squad tokens...");
         const wildHorseAuth = await getAuthenticated("wildhorse_spirit", process.env.PSN_NPSSO_WEREWOLF);
         const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
         const masterAuth = wildHorseAuth || rayAuth;
 
         finalData.authDiagnostics = diagnosticReport;
 
-        // Step 3: Iterate through squad gamertags
+        // 3. Iterate through all squad gamertags
         for (const [key, gamerTag] of Object.entries(SQUAD_GAMERTAGS)) {
             const accountId = ACCOUNT_IDS[key];
             const agentAuth = (key === 'ray' && rayAuth) ? rayAuth : (key === 'wildhorse_spirit' && wildHorseAuth) ? wildHorseAuth : masterAuth;
@@ -1055,6 +1116,12 @@ async function main() {
             if (data) {
                 finalData.gamertags[gamerTag] = data;
                 await syncNodeToFirebase(`gamertags/${gamerTag}`, data);
+                
+                // Explicitly guarantee that currentGameArt is directly synced to its own dedicated node
+                if (data.currentGameArt) {
+                    await syncNodeToFirebase(`gamertags/${gamerTag}/currentGameArt`, data.currentGameArt);
+                }
+                console.log(`[FIREBASE SYNC] Updated node gamertags/${gamerTag} (currentGameArt: ${data.currentGameArt ? "WRITTEN" : "NULL"})`);
             }
         }
 
@@ -1062,7 +1129,7 @@ async function main() {
         await syncNodeToFirebase("lastGlobalUpdate", finalData.lastGlobalUpdate);
         writeLocalFile(finalData);
 
-        console.log(`[SUCCESS] PSN Engine v36.0.0 finished writing 100% of raw data across all gamertags to Firebase.`);
+        console.log(`[SUCCESS] PSN Engine v39.0.0 finished writing 100% of raw data across all gamertags to Firebase.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Execution failed: ${criticalError.message}`);
         process.exit(1);
