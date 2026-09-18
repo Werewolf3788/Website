@@ -20,8 +20,8 @@
  *                 strictly from the active title rather than account creation.
  * Protocol Support: Direct REST PUT to Firebase Realtime Database (HTTP/HTTPS supported).
  * Analytics Tagging: G-CTYHDF4MSD (Ready for deployment via GTM container).
- * Version: 39.0.0 - Self-Healing Token Lifecycle & Hardened Telemetry
- * Date & Time Stamp: 2026-09-18 02:27:00 (America/New_York)
+ * Version: 39.1.0 - Populated Squad Account IDs & Hardened Telemetry
+ * Date & Time Stamp: 2026-09-18 15:16:00 (America/Chicago)
  * ============================================================================ */
 
 // Line 27: Core Node Modules & Dual Protocol Support (Works across both HTTP and HTTPS)
@@ -78,7 +78,7 @@ const ACCOUNT_IDS = {
     wildhorse_spirit: "4087137467908566201",
     ray: "2732733730346312494",
     darkwing: "4398462806362115916",
-    marc: ""
+    marc: "6551906246515882523"
 };
 
 const AMAZON_TAG = "moviesanywhere02-20";
@@ -91,11 +91,11 @@ let diagnosticReport = {
     wildhorse_spirit_status: "UNCHECKED",
     ray_active: "no",
     ray_status: "UNCHECKED",
-    lastCheck: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
+    lastCheck: new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false })
 };
 
 // ----------------------------------------------------------------------------
-// [SECTION: HTTP & HTTPS RESILIENT FETCH LAYER - Lines 100-155]
+// [SECTION: HTTP & HTTPS RESILIENT FETCH LAYER]
 // ----------------------------------------------------------------------------
 async function resilientFetch(url, options = {}) {
     const isHttps = url.startsWith("https://");
@@ -150,7 +150,7 @@ async function resilientFetch(url, options = {}) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: TIME & FORMATTING HELPERS - Lines 157-230]
+// [SECTION: TIME & FORMATTING HELPERS]
 // ----------------------------------------------------------------------------
 function formatDuration(totalSeconds) {
     if (!totalSeconds || totalSeconds < 60) return "< 1 min";
@@ -232,7 +232,7 @@ function normalizePlatform(game) {
         game?.trophyTitlePlatform || 
         game?.platform || 
         game?.category || 
-        (game?.npServiceName === "trophy2" ? "PS5" : "PS4") ||
+        (game?.npServiceName === "trophy2" ? "PS5" : "PS4") || 
         "PS4"
     ).toUpperCase();
 
@@ -281,7 +281,7 @@ function calculateAgeString(startDate, endDate = new Date()) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: TWITCH TELEMETRY - Lines 285-340]
+// [SECTION: TWITCH TELEMETRY]
 // ----------------------------------------------------------------------------
 async function getTwitchIntel(username) {
     if (!username) return null;
@@ -410,7 +410,7 @@ async function getAuthenticated(userKey, npssoInput) {
         currentUserTokens.accessToken = null;
     }
 
-    // 2. Primary renewal path: Use long-lived refresh token (valid for months)
+    // 2. Primary renewal path: Use long-lived refresh token
     if (currentUserTokens.refreshToken) {
         try {
             console.log(`[AUTH] Renewing session via refresh token for ${userKey}...`);
@@ -433,7 +433,7 @@ async function getAuthenticated(userKey, npssoInput) {
         }
     }
 
-    // 3. One-time fallback: Perform handshake with raw NPSSO from environment variables
+    // 3. Fallback: Handshake with raw NPSSO
     if (npssoInput && npssoInput.trim().length > 0) {
         try {
             console.log(`[AUTH] Initializing fresh handshake with NPSSO for ${userKey}...`);
@@ -630,7 +630,7 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
                 earnedRate: skelTrophy?.earnedRate || "0.0",
                 hidden: skelTrophy?.hidden || false,
                 earned: !!s.earned,
-                earnedDate: s.earnedDateTime ? new Date(s.earnedDateTime).toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }) : null,
+                earnedDate: s.earnedDateTime ? new Date(s.earnedDateTime).toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false }) : null,
                 earnedAge: s.earnedDateTime ? getTrophyAgeString(s.earnedDateTime) : null,
                 timestamp: s.earnedDateTime ? new Date(s.earnedDateTime).getTime() : 0,
                 currentValue: currentVal,
@@ -701,7 +701,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             playSessions: existingData?.playSessions || {},
             liveTrophyProgress: existingData?.liveTrophyProgress || {},
             currentGameHours: "0 hrs",
-            lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
+            lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false }), 
             gamesPlayed: existingData?.gamesPlayed || 0, level: existingData?.level || 0,
             trophySummary: existingData?.trophySummary || { platinum: 0, gold: 0, silver: 0, bronze: 0, total: 0, trophyLevel: 0 },
             recentGames: existingData?.recentGames || [], 
@@ -741,7 +741,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             sortedTitles.sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
         } catch(err) {}
 
-        // 2. Correct psn-api Signature: getRecentlyPlayedGames takes (auth, options) ONLY
+        // 2. psn-api Signature: getRecentlyPlayedGames takes (auth, options) ONLY
         let telemetryData = [];
         try {
             const history = await getRecentlyPlayedGames(auth, { limit: 100 });
@@ -850,7 +850,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             }
         }
 
-        // Dedicated Art Resolution: Pulls direct game art from merged telemetry
         let matchedArt = null;
         if (activeCommId && mergedGamesMap.has(activeCommId)) {
             matchedArt = mergedGamesMap.get(activeCommId).art || mergedGamesMap.get(activeCommId).trophyTitleIconUrl;
@@ -865,7 +864,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 
         console.log(`[PRESENCE RESOLVED] ${gamerTag} -> Game: "${resolvedTitle}" | Art: ${matchedArt ? matchedArt.substring(0, 45) + '...' : "NULL"}`);
 
-        // Session Tracking
         const { playSessions, currentGameDurationFormatted } = updateGameSessionTracking(
             existingData,
             activeCommId,
@@ -873,7 +871,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             isPlayerOnline
         );
 
-        // Sync skeletons for recent games
         for (const g of allRecentGames.slice(0, 20)) {
             if (g.npCommunicationId && g.npCommunicationId !== "Dashboard") {
                 await ensureGameSkeleton(
@@ -943,7 +940,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                         hoursFormatted: currentGameDurationFormatted, 
                         amazonAffiliateUrl: generateAffiliateUrl(matchedGame.name || resolvedTitle), 
                         progress: matchedGame.progress || 0, 
-                        // Scoped strictly to this active game:
                         firstTrophyTimestamp: earliestActiveTrophyTimestamp,
                         firstTrophyDate: earliestActiveTrophyTimestamp ? new Date(earliestActiveTrophyTimestamp).toISOString() : null,
                         velocity: {
@@ -1002,7 +998,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             activeHunt, 
             mostRecentTrophies: mostRecentTrophies.slice(0, 10), 
             streamHistory: processStreamHistory(existingData?.streamHistory, twitchIntel),
-            lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
+            lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false })
         };
     } catch (e) { 
         console.error(`[TELEMETRY CRITICAL ERROR] For ${gamerTag}: ${e.message}`);
@@ -1023,7 +1019,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             playSessions: existingData?.playSessions || {},
             liveTrophyProgress: existingData?.liveTrophyProgress || {},
             currentGameHours: "0 hrs",
-            lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
+            lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false }), 
             gamesPlayed: existingData?.gamesPlayed || 0, level: existingData?.level || 0,
             trophySummary: existingData?.trophySummary || { platinum: 0, gold: 0, silver: 0, bronze: 0, total: 0, trophyLevel: 0 },
             recentGames: existingData?.recentGames || [], 
@@ -1059,7 +1055,7 @@ async function syncNodeToFirebase(endpointPath, payload) {
         if (res && !res.ok) {
             console.error(`[FIREBASE WRITE ERROR] Failed ${endpointPath}: HTTP ${res.status}`);
         }
-    } catch (err) {
+    } catch (err) { 
         console.error(`[FIREBASE WRITE ERROR] Failed ${endpointPath}: ${err.message}`);
     }
 }
@@ -1079,7 +1075,7 @@ function writeLocalFile(payload) {
 // ----------------------------------------------------------------------------
 async function main() {
     try {
-        console.log("[INIT] Starting Squad Pack Sync Engine v39.0.0 (Self-Healing Token Lifecycle)...");
+        console.log("[INIT] Starting Squad Pack Sync Engine v39.1.0 (Self-Healing Token Lifecycle)...");
 
         // 1. Pre-load persisted refresh tokens
         await loadPersistentTokens();
@@ -1092,13 +1088,13 @@ async function main() {
             games: globalGames, 
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport,
-            lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
-            engineVersion: "39.0.0",
+            lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false }), 
+            engineVersion: "39.1.0",
             analyticsTag: GA4_MEASUREMENT_ID,
-            codeTimestamp: "Friday, September 18, 2026 | 02:27 EDT"
+            codeTimestamp: "Friday, September 18, 2026 | 15:16 CDT"
         };
 
-        // 2. Authenticate squad accounts (Uses refresh tokens first, auto-renews silently)
+        // 2. Authenticate squad accounts
         console.log("[AUTH] Authenticating primary squad tokens...");
         const wildHorseAuth = await getAuthenticated("wildhorse_spirit", process.env.PSN_NPSSO_WEREWOLF);
         const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
@@ -1117,7 +1113,7 @@ async function main() {
                 finalData.gamertags[gamerTag] = data;
                 await syncNodeToFirebase(`gamertags/${gamerTag}`, data);
                 
-                // Explicitly guarantee that currentGameArt is directly synced to its own dedicated node
+                // Explicitly guarantee currentGameArt is written directly to its own node
                 if (data.currentGameArt) {
                     await syncNodeToFirebase(`gamertags/${gamerTag}/currentGameArt`, data.currentGameArt);
                 }
@@ -1129,7 +1125,7 @@ async function main() {
         await syncNodeToFirebase("lastGlobalUpdate", finalData.lastGlobalUpdate);
         writeLocalFile(finalData);
 
-        console.log(`[SUCCESS] PSN Engine v39.0.0 finished writing 100% of raw data across all gamertags to Firebase.`);
+        console.log(`[SUCCESS] PSN Engine v39.1.0 finished writing 100% of raw data across all gamertags to Firebase.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Execution failed: ${criticalError.message}`);
         process.exit(1);
