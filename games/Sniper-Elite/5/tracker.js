@@ -319,7 +319,7 @@ const sniperData = [
   { id: 'm11_se2', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Same building as Bread & Bordom Personal letter at top by sniper post on edge of building.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc&t=104s' },
   { id: 'm11_se3', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Eastern battery bunker roof corner.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm11_wb1', cat: '11: Landing Force (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Underground armory under gun battery.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm11_wb2', cat: '11: Landing Force (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Locked boatyard warehouse.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
+  { id: 'm11_wb2', cat: '11: Landing Force (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Locked boatyard warehouse.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc&t=75s' },
   { id: 'm11_wb3', cat: '11: Landing Force (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Radar installation sub-level locker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm11_ch1', cat: '11: Landing Force (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Disable heavy battery without combat alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'med_lastresort', cat: '11: Landing Force (DLC)', name: 'Last Resort', type: 'Medal', desc: 'Complete the campaign mission - Landing Force.' },
