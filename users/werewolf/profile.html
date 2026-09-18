@@ -8,7 +8,7 @@
  * FS25 Dedicated Cluster: https://fs25-a3563-default-rtdb.firebaseio.com/fs25.json (target: farms/farm_1)
  * Navigation Directory: https://entertainment-71888-default-rtdb.firebaseio.com/utm_links.json
  * Timezone: 24hr New York Time (EDT)
- * Date & Time Stamp: 2026-09-18 02:15:00 (24hr New York Time)
+ * Date & Time Stamp: 2026-09-18 12:35:00 (24hr New York Time)
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -527,6 +527,16 @@
 
     <!-- MAIN 85% VIEWPORT DASHBOARD BODY -->
     <main class="viewport-85-wrap pb-28 flex flex-col gap-10">
+
+        <!-- EMBEDDED MEDIA SECTION: STRAVA & APPLE MUSIC -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mobile-stack-single">
+            <div class="glass-card p-6 flex flex-col items-center justify-center">
+                <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;max-width:660px;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/profile/DJWerewolf"></iframe>
+            </div>
+            <div class="glass-card p-6 flex flex-col items-center justify-center">
+                <iframe height='160' width='300' frameborder='0' allowtransparency='true' scrolling='no' src='https://www.strava.com/athletes/113819932/activity-summary/99d5152954edad80e8f58659fb18c2ed3f592336'></iframe>
+            </div>
+        </div>
 
         <!-- SECTION 1: ACTIVE HUNT & RECENT PSN HISTORY -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mobile-stack-single" id="active-hunt-section">
@@ -2046,6 +2056,7 @@
 
                             const squadMatches = [];
                             Object.entries(globalGamertagsData).forEach(([gtag, pObj]) => {
+                                if (!pObj) return;
                                 const normGKey = gtag.toLowerCase().trim();
                                 if (normGKey === 'wildhorse_spirit' || normGKey === 'werewolf3788' || normGKey === 'werewolf') return;
                                 if (normGKey === 'terrdog' || normGKey === 'terrdog420') return;
@@ -2057,22 +2068,30 @@
                                 const pRecent = convertFirebaseArray(pObj.recentGames);
                                 const pHunt = pObj.activeHunt;
                                 let trophies = [];
+                                let memberGameProg = 0;
 
                                 if (pHunt) {
                                     const huntMatch = (huntCommId && pHunt.npCommunicationId && pHunt.npCommunicationId === huntCommId) ||
                                                       (normalizeGameTitle(pHunt.title) === normalizeGameTitle(activeGameTitle));
                                     if (huntMatch) {
                                         trophies = convertFirebaseArray(pHunt.userTrophies || pHunt.trophies);
+                                        memberGameProg = Number(pHunt.progress || 0);
                                     }
                                 }
                                 
-                                if (trophies.length === 0 && pRecent.length > 0) {
-                                    const matched = pRecent.find(g => {
-                                        if (huntCommId && g.npCommunicationId && g.npCommunicationId === huntCommId) return true;
-                                        return normalizeGameTitle(g.name || g.title || g.trophyTitleName) === normalizeGameTitle(activeGameTitle);
-                                    });
-                                    if (matched && matched.trophies) trophies = convertFirebaseArray(matched.trophies);
+                                const matched = pRecent.find(g => {
+                                    if (huntCommId && g.npCommunicationId && g.npCommunicationId === huntCommId) return true;
+                                    return normalizeGameTitle(g.name || g.title || g.trophyTitleName) === normalizeGameTitle(activeGameTitle);
+                                });
+                                if (matched) {
+                                    memberGameProg = Math.max(memberGameProg, Number(matched.progress || 0));
+                                    if (trophies.length === 0 && matched.trophies) {
+                                        trophies = convertFirebaseArray(matched.trophies);
+                                    }
                                 }
+
+                                // Rule: only show if they have the game with progress > 0
+                                if (memberGameProg <= 0) return;
 
                                 const pLiveNode = pObj.liveTrophyProgress?.[huntCommId] || pObj.liveTrophyProgress || {};
                                 const pLiveTrophy = pLiveNode[t.id] || pLiveNode[String(t.id)];
@@ -2084,21 +2103,19 @@
                                 
                                 if (matchT || pLiveTrophy) {
                                     const combinedObj = { ...(matchT || {}), ...(pLiveTrophy || {}) };
-                                    const tr = extractTrophyTracking(combinedObj);
                                     const pEarned = !!combinedObj.earned;
 
-                                    let squadFraction = '';
+                                    // Rule: only show squad presence if they have EARNED this trophy
                                     if (pEarned) {
-                                        squadFraction = tr ? tr.fraction : (tracking ? `${tracking.target}/${tracking.target}` : 'DONE');
-                                    } else {
-                                        squadFraction = tr ? tr.fraction : (tracking ? `0/${tracking.target}` : '0/1');
-                                    }
+                                        const tr = extractTrophyTracking(combinedObj);
+                                        let squadFraction = tr ? tr.fraction : (tracking ? `${tracking.target}/${tracking.target}` : 'DONE');
 
-                                    squadMatches.push({
-                                        tag: displayTag,
-                                        earned: pEarned,
-                                        label: squadFraction
-                                    });
+                                        squadMatches.push({
+                                            tag: displayTag,
+                                            earned: true,
+                                            label: squadFraction
+                                        });
+                                    }
                                 }
                             });
 
@@ -2108,8 +2125,8 @@
                                     <div class="flex flex-wrap items-center gap-2 mt-2 pt-1.5 border-t border-white/5">
                                         <span class="text-[11px] font-black uppercase text-gray-400 tracking-wider mr-1">Squad Presence:</span>
                                         ${squadMatches.map(m => `
-                                            <span class="squad-member-pill ${m.earned ? 'earned' : 'locked'}">
-                                                <i class="fas ${m.earned ? 'fa-check-circle text-emerald-400' : 'fa-lock text-gray-400'}"></i>
+                                            <span class="squad-member-pill earned">
+                                                <i class="fas fa-check-circle text-emerald-400"></i>
                                                 <span>${m.tag} (${m.label})</span>
                                             </span>
                                         `).join('')}
