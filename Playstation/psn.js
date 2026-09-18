@@ -1,21 +1,18 @@
 /* ============================================================================
  * File: psn.js
  * Location: /Playstation/psn.js
- * Description: Squad Pack Master Telemetry Engine - Zero-Omission Failover Ingestion:
- *              1. Hot-Standby Token Buffer: Keeps both sessions perpetually renewed
- *                 in Firebase. If the primary token expires, it silently promotes
- *                 the backup token to Master runner so telemetry never breaks.
- *              2. Dual-Key Playtime Engine: Indexes sessions under both npTitleId
- *                 (CUSA... / PPSA...) and npCommunicationId (NPWR...) to ensure
- *                 lifetime hours are never reported as 0.
- *              3. Full Sony Payload Ingestion: Profile, Devices, Social Graph,
- *                 Purchased Games, Played Games, Trophy Trees, and Live Presence.
- *              4. Squad Analytics & Leaderboards: Mutual circle overlap, competitive
- *                 trophy race standings, and expansion group resolution.
+ * Description: Squad Pack Master Telemetry Engine - Smart-Pull & Dynamic Playtime:
+ *              1. Smart Presence Gatekeeper: Checks live status first; exits
+ *                 immediately if the entire squad is offline to conserve resources.
+ *              2. Dynamic Session Tracking: Writes live session timestamps while active;
+ *                 calculates cumulative totals and finalizes records on logout.
+ *              3. Hot-Standby Failover Buffer: Maintains active and standby tokens
+ *                 seamlessly to prevent execution interruptions.
+ *              4. Zero Omissions: Retains all raw payload fields and trophy trees.
  * Protocol Support: Direct REST PUT to Firebase Realtime Database (HTTP/HTTPS).
  * Analytics Tagging: G-CTYHDF4MSD (Ready for deployment via GTM container).
- * Version: 43.0.0 - Hot-Standby Failover & Unrestricted Telemetry
- * Date & Time Stamp: 2026-09-18 16:00:00 (America/Chicago)
+ * Version: 44.0.0 - Smart-Pull Presence Gatekeeper & Dynamic Session Finalizer
+ * Date & Time Stamp: 2026-09-18 16:15:00 (America/Chicago)
  * ============================================================================ */
 
 const fs = require("fs");
@@ -24,7 +21,6 @@ const http = require("http");
 const https = require("https");
 const psnApi = require("psn-api");
 
-// Full PSN API SDK Destructuring
 const {
     exchangeNpssoForCode,
     exchangeCodeForAccessToken,
@@ -49,14 +45,12 @@ const {
     makeUniversalSearch
 } = psnApi;
 
-// Database Endpoints, Analytics Tag, and Local Storage Destinations
 const FIREBASE_BASE_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn";
 const GA4_MEASUREMENT_ID = "G-CTYHDF4MSD";
 const LOCAL_JSON_PATH = path.join(__dirname, "psn.json");
 const ROOT_LOCAL_JSON_PATH = path.join(__dirname, "..", "psn.json");
 const LOCAL_TOKENS_PATH = path.join(__dirname, ".psn_tokens.json");
 
-// Squad Gamertag, Twitch & Permanent Account ID Mapping
 const SQUAD_GAMERTAGS = {
     wildhorse_spirit: "WildHorse_Spirit",
     ray: "OneLIVIDMAN",
@@ -229,25 +223,27 @@ function generateAffiliateUrl(gameName) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: DUAL-KEY SESSION TRACKING ENGINE]
+// [SECTION: SMART SESSION TRACKING & OFFLINE ACCUMULATOR]
 // ----------------------------------------------------------------------------
 function updateGameSessionTracking(existingUserData, activeCommId, activeTitle, isOnline, activeTitleId) {
     const playSessions = existingUserData?.playSessions || {};
     const now = Date.now();
-    const primaryKey = activeTitleId || activeCommId;
+    const primaryKey = activeCommId || activeTitleId;
 
+    // 1. Close any running sessions if user switched games or went offline
     for (const [id, session] of Object.entries(playSessions)) {
         if (session.isActive && (id !== primaryKey || !isOnline)) {
-            const sessionElapsed = Math.max(0, Math.floor((now - session.sessionStartTime) / 1000));
+            const sessionElapsed = Math.max(0, Math.floor((now - (session.sessionStartTime || now)) / 1000));
             session.totalSeconds = (session.totalSeconds || 0) + sessionElapsed;
             session.isActive = false;
             session.sessionStartTime = null;
             session.lastEndedTime = now;
             session.totalFormatted = formatDuration(session.totalSeconds);
-            console.log(`[SESSION CLOSED] ${session.title} closed. Added ${sessionElapsed}s. Total: ${session.totalFormatted}`);
+            console.log(`[SESSION FINALIZED] Logged out from ${session.title}. Added ${sessionElapsed}s. Total: ${session.totalFormatted}`);
         }
     }
 
+    // 2. Manage active game session
     if (isOnline && primaryKey && primaryKey !== "Dashboard") {
         if (!playSessions[primaryKey]) {
             playSessions[primaryKey] = {
@@ -259,13 +255,13 @@ function updateGameSessionTracking(existingUserData, activeCommId, activeTitle, 
                 sessionStartTime: now,
                 totalFormatted: "0 hrs"
             };
-            console.log(`[SESSION STARTED] Tracking ${activeTitle} (${primaryKey}).`);
+            console.log(`[SESSION STARTED] Active tracking started for ${activeTitle} (${primaryKey}).`);
         } else {
             const current = playSessions[primaryKey];
             if (!current.isActive) {
                 current.isActive = true;
                 current.sessionStartTime = now;
-                console.log(`[SESSION RESUMED] Resumed tracking ${activeTitle} (${primaryKey}).`);
+                console.log(`[SESSION RESUMED] Resumed tracking for ${activeTitle} (${primaryKey}).`);
             }
         }
     }
@@ -412,7 +408,6 @@ async function getAuthenticated(userKey, npssoInput) {
     let currentUserTokens = tokenStore[userKey] || {};
     const now = Math.floor(Date.now() / 1000);
 
-    // 1. In-flight token validation
     if (currentUserTokens.accessToken && (currentUserTokens.expiryTime > now + 180)) {
         const isValid = await isTokenValid(currentUserTokens.accessToken);
         if (isValid) {
@@ -423,7 +418,6 @@ async function getAuthenticated(userKey, npssoInput) {
         currentUserTokens.accessToken = null;
     }
 
-    // 2. Primary refresh token renewal
     if (currentUserTokens.refreshToken) {
         try {
             console.log(`[AUTH] Renewing session via refresh token for ${userKey}...`);
@@ -446,10 +440,9 @@ async function getAuthenticated(userKey, npssoInput) {
         }
     }
 
-    // 3. One-time raw NPSSO handshake fallback
     if (npssoInput && npssoInput.trim().length > 0) {
         try {
-            console.log(`[AUTH] Initializing fresh handshake with NPSSO for ${userKey}...`);
+            console.log(`[AUTH] Handshaking NPSSO for ${userKey}...`);
             const cleanNpsso = npssoInput.trim();
             const accessCode = await exchangeNpssoForCode(cleanNpsso);
             const auth = await exchangeCodeForAccessToken(accessCode);
@@ -484,60 +477,32 @@ async function getAuthenticated(userKey, npssoInput) {
 // [SECTION: SMART HOT-STANDBY FAILOVER MANAGER]
 // ----------------------------------------------------------------------------
 async function resolveMasterSession(wildHorseNpsso, rayNpsso) {
-    console.log("[FAILOVER CONTROLLER] Initializing token health check across both accounts...");
+    console.log("[FAILOVER MANAGER] Checking token health across squad accounts...");
 
-    // Perpetually maintain both token refresh timers in Firebase
     const wolfAuth = await getAuthenticated("wildhorse_spirit", wildHorseNpsso);
     const rayAuth = await getAuthenticated("ray", rayNpsso);
 
     let activeMaster = null;
     let failoverState = "NORMAL";
 
-    // Primary Leader: Werewolf / WildHorse_Spirit
     if (wolfAuth && wolfAuth.accessToken) {
-        console.log("[FAILOVER CONTROLLER] Primary token (WildHorse_Spirit) is HEALTHY. Operating as Leader.");
+        console.log("[FAILOVER MANAGER] Primary token (WildHorse_Spirit) is active.");
         activeMaster = wolfAuth;
         failoverState = "PRIMARY_WOLF";
-    } 
-    // Hot-Standby Promotion: Raymystyro / OneLIVIDMAN
-    else if (rayAuth && rayAuth.accessToken) {
-        console.warn("[FAILOVER CONTROLLER] ⚠️ Primary token EXPIRED. Failover engaged -> Operating via Ray's standby token.");
+    } else if (rayAuth && rayAuth.accessToken) {
+        console.warn("[FAILOVER MANAGER] ⚠️ Primary token expired. Failing over to Ray standby token.");
         activeMaster = rayAuth;
         failoverState = "FAILOVER_RAY";
-    } 
-    else {
-        console.error("[FAILOVER CONTROLLER] 🚨 CRITICAL: Both primary and standby tokens have expired.");
+    } else {
+        console.error("[FAILOVER MANAGER] 🚨 Critical: Both primary and standby tokens expired.");
         failoverState = "ALL_EXPIRED";
     }
 
-    return {
-        masterAuth: activeMaster,
-        wolfAuth,
-        rayAuth,
-        failoverState
-    };
-}
-
-async function resolveAccountIdFromSearch(auth, gamerTag) {
-    const searchDomains = ["domain:conceptCollapse", "domain:socialAllAccounts"];
-    for (const domain of searchDomains) {
-        try {
-            const searchResults = await makeUniversalSearch(auth, gamerTag, domain);
-            const domainResults = searchResults?.searchResults?.[0]?.results || [];
-            const match = domainResults.find(r => 
-                r.socialMetadata?.onlineId?.toLowerCase() === gamerTag.toLowerCase() ||
-                r.onlineId?.toLowerCase() === gamerTag.toLowerCase()
-            );
-
-            const discoveredId = match?.socialMetadata?.accountId || match?.accountId;
-            if (discoveredId) return discoveredId;
-        } catch (e) {}
-    }
-    return "";
+    return { masterAuth: activeMaster, wolfAuth, rayAuth, failoverState };
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: COMPLETE SKELETON GENERATOR (Zero Omissions)]
+// [SECTION: GAME SKELETON INGESTION]
 // ----------------------------------------------------------------------------
 async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, iconArt, definedTrophies, existingGames) {
     if (!commId || commId === "Dashboard") return null;
@@ -606,7 +571,7 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: DEEP TROPHY SUBTREE INGESTION]
+// [SECTION: DEEP TROPHY PROGRESS SUBTREE INGESTION]
 // ----------------------------------------------------------------------------
 async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, platform, globalGames) {
     if (!commId || commId === "Dashboard") return null;
@@ -703,26 +668,13 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: TOTAL NPSSO SQUAD INGESTION ENGINE]
+// [SECTION: COMPLETE SQUAD MEMBER DATA INGESTION]
 // ----------------------------------------------------------------------------
 async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, isManualRun, globalGames) {
     const twitchIntel = await getTwitchIntel(TWITCH_MAP[userKey]);
     let resolvedTargetId = targetId || ACCOUNT_IDS[userKey];
 
-    if (!resolvedTargetId && auth?.accessToken) {
-        if (auth.userKey === userKey) {
-            try {
-                const payload = JSON.parse(Buffer.from(auth.accessToken.split(".")[1], "base64").toString());
-                resolvedTargetId = payload.account_id || "";
-            } catch (e) {}
-        } else {
-            resolvedTargetId = await resolveAccountIdFromSearch(auth, gamerTag);
-            if (resolvedTargetId) ACCOUNT_IDS[userKey] = resolvedTargetId;
-        }
-    }
-
     if (!auth || !resolvedTargetId) {
-        console.warn(`[TELEMETRY WARN] Missing auth or target ID for ${gamerTag}. Writing fallback profile.`);
         return {
             onlineId: gamerTag, 
             online: !!twitchIntel?.isLive,
@@ -831,9 +783,9 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                 const playedRes = await getUserPlayedGames(auth, resolvedTargetId, { limit: 100 });
                 telemetryData = playedRes?.titles || [];
             }
-            console.log(`[TELEMETRY] Retrieved ${telemetryData.length} playtime titles from Sony for ${gamerTag}.`);
+            console.log(`[TELEMETRY] Retrieved ${telemetryData.length} played titles from Sony for ${gamerTag}.`);
         } catch (e) {
-            console.warn(`[TELEMETRY NOTICE] Playtime warning for ${gamerTag}: ${e.message}`);
+            console.warn(`[TELEMETRY NOTICE] Played games warning for ${gamerTag}: ${e.message}`);
         }
 
         const earliestEntry = sortedTitles.reduce((oldest, current) => {
@@ -966,7 +918,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             matchedArt = twitchIntel.gameArt;
         }
 
-        // Play Session Calculation with Dual-Key Ingestion
+        // Active Session Tracking & Finalization
         const { playSessions, currentGameDurationFormatted, activeSessionSeconds } = updateGameSessionTracking(
             existingData,
             activeCommId,
@@ -1249,31 +1201,18 @@ function writeLocalFile(payload) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: MASTER EXECUTION THREAD (HOT-STANDBY LOGIC)]
+// [SECTION: MASTER EXECUTION WITH SMART PRESENCE GATEKEEPER]
 // ----------------------------------------------------------------------------
 async function main() {
     try {
-        console.log("[INIT] Starting Squad Pack Sync Engine v43.0.0 (Hot-Standby Buffer)...");
+        console.log("[INIT] Starting Squad Pack Sync Engine v44.0.0 (Smart Gatekeeper)...");
 
         await loadPersistentTokens();
 
         const previousFirebaseData = await fetchFromFirebase();
         const globalGames = previousFirebaseData.games || {};
 
-        let finalData = { 
-            gamertags: previousFirebaseData.gamertags || {}, 
-            games: globalGames, 
-            squadLeaderboard: [],
-            squadAnalytics: {},
-            mutualSquadFollowers: [], 
-            authDiagnostics: diagnosticReport,
-            lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false }), 
-            engineVersion: "43.0.0",
-            analyticsTag: GA4_MEASUREMENT_ID,
-            codeTimestamp: "Friday, September 18, 2026 | 16:00 CDT"
-        };
-
-        // 1. Resolve Active Master Session with Failover Protection
+        // 1. Resolve master token with failover protection
         const sessionState = await resolveMasterSession(
             process.env.PSN_NPSSO_WEREWOLF,
             process.env.PSN_NPSSO_RAY
@@ -1286,25 +1225,77 @@ async function main() {
             ? "RUNNING ON BACKUP (WildHorse token needs renewal)" 
             : "PRIMARY HEALTHY (Werewolf Running)";
 
-        finalData.authDiagnostics = diagnosticReport;
-
         if (!masterAuth) {
             console.error("[FATAL] Both tokens expired. Writing diagnostics and stopping.");
-            await syncNodeToFirebase("authDiagnostics", finalData.authDiagnostics);
+            await syncNodeToFirebase("authDiagnostics", diagnosticReport);
             process.exit(1);
         }
 
-        // 2. Query All Squad Gamertags with Automated Failover Assignment
+        // 2. Gatekeeper: Presence check across all squad members
+        console.log("[GATEKEEPER] Running lightweight presence probe...");
+        const presenceMap = {};
+        let anyoneOnline = false;
+        let pendingSessionClosing = false;
+
+        for (const [key, gamerTag] of Object.entries(SQUAD_GAMERTAGS)) {
+            const targetId = ACCOUNT_IDS[key];
+            let isOnline = false;
+
+            try {
+                const targetScope = (masterAuth.userKey === key) ? "me" : targetId;
+                const pRaw = await getBasicPresence(masterAuth, targetScope);
+                const onlineStatus = pRaw?.basicPresence?.primaryPlatformInfo?.onlineStatus || 
+                                     pRaw?.primaryPlatformInfo?.onlineStatus || "offline";
+                isOnline = (onlineStatus !== "offline");
+            } catch (e) {}
+
+            // Check Twitch stream status
+            const twitchIntel = await getTwitchIntel(TWITCH_MAP[key]);
+            if (twitchIntel?.isLive) isOnline = true;
+
+            presenceMap[key] = isOnline;
+            if (isOnline) anyoneOnline = true;
+
+            // Check if user was playing previously and needs session finalization
+            const prevUser = previousFirebaseData?.gamertags?.[gamerTag];
+            const hasOpenSession = Object.values(prevUser?.playSessions || {}).some(s => s.isActive);
+            if (hasOpenSession && !isOnline) {
+                pendingSessionClosing = true;
+                console.log(`[GATEKEEPER] ${gamerTag} has an unfinalized session requiring logout transition.`);
+            }
+        }
+
+        // 3. Early Exit Optimization: If nobody is online and no sessions need closing, exit cleanly
+        if (!anyoneOnline && !pendingSessionClosing) {
+            console.log("[GATEKEEPER] Entire squad is idle and all sessions are finalized. Exiting to save usage.");
+            diagnosticReport.lastCheck = new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false });
+            await syncNodeToFirebase("authDiagnostics", diagnosticReport);
+            process.exit(0);
+        }
+
+        console.log("[GATEKEEPER] Activity detected. Running synchronization pass...");
+
+        let finalData = { 
+            gamertags: previousFirebaseData.gamertags || {}, 
+            games: globalGames, 
+            squadLeaderboard: [],
+            squadAnalytics: {},
+            mutualSquadFollowers: [], 
+            authDiagnostics: diagnosticReport,
+            lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false }), 
+            engineVersion: "44.0.0",
+            analyticsTag: GA4_MEASUREMENT_ID,
+            codeTimestamp: "Friday, September 18, 2026 | 16:15 CDT"
+        };
+
+        // 4. Ingest and update squad telemetry
         for (const [key, gamerTag] of Object.entries(SQUAD_GAMERTAGS)) {
             const accountId = ACCOUNT_IDS[key];
-            
-            // Prefer the player's personal authenticated token for owner-level data;
-            // otherwise, fail over seamlessly to the active Master.
             let agentAuth = masterAuth;
             if (key === "wildhorse_spirit" && wolfAuth) agentAuth = wolfAuth;
             if (key === "ray" && rayAuth) agentAuth = rayAuth;
             
-            console.log(`[INGESTION] Fetching ${gamerTag} via ${agentAuth.userKey.toUpperCase()}...`);
+            console.log(`[INGESTION] Syncing ${gamerTag} via ${agentAuth.userKey.toUpperCase()}...`);
             const data = await getFullUserData(agentAuth, gamerTag, key, accountId, finalData.gamertags[gamerTag], true, globalGames);
             if (data) {
                 finalData.gamertags[gamerTag] = data;
@@ -1313,12 +1304,10 @@ async function main() {
                 if (data.currentGameArt) {
                     await syncNodeToFirebase(`gamertags/${gamerTag}/currentGameArt`, data.currentGameArt);
                 }
-                console.log(`[FIREBASE SYNC] Updated node gamertags/${gamerTag} (Art: ${data.currentGameArt ? "WRITTEN" : "NULL"})`);
             }
         }
 
-        // 3. Squad Analytics & Social Graphs
-        console.log("[ANALYTICS] Computing Squad Pack Leaderboard & Social Graph Overlaps...");
+        // 5. Update squad leaderboards and social graph
         const squadIntel = buildSquadIntelligence(finalData.gamertags);
         finalData.squadLeaderboard = squadIntel.leaderboard;
         finalData.squadAnalytics = {
@@ -1334,7 +1323,7 @@ async function main() {
 
         writeLocalFile(finalData);
 
-        console.log(`[SUCCESS] PSN Engine v43.0.0 finished writing 100% of telemetry, leaderboards, and raw data to Firebase.`);
+        console.log(`[SUCCESS] PSN Engine v44.0.0 finished writing data to Firebase.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Execution failed: ${criticalError.message}`);
         process.exit(1);
