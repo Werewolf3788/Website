@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * Dashboard: WildHorse_Spirit / Werewolf3788 Master Command Telemetry & Tactical Hub
- * Engine Version: 41.2.0-STRICT-SQUAD-SKELETON-FARM1-EXPANDED
+ * Engine Version: 44.1.0-STRICT-SQUAD-SKELETON-FARM1-LIVE-PLAYTIME
  * Location: /Playstation/dashboards/wildhorse_spirit.html
  * Description: Comprehensive Operative Intelligence Hub for WildHorse_Spirit:
- *              1. Canonical PSN Engine: Pulls directly from /psn/gamertags/WildHorse_Spirit.json
+ *              1. Canonical PSN Engine: Pulls from /psn/gamertags/WildHorse_Spirit.json
  *                 and re-hydrates against the /psn/games.json skeleton.
- *              2. Dual PS4 & PS5 Crossplay Compare: Compares live objectives across
+ *              2. Dual-Key Playtime Engine: Bridges CUSA/PPSA and NPWR keys
+ *                 with client-side real-time ticking while online.
+ *              3. Dual PS4 & PS5 Crossplay Compare: Compares live objectives across
  *                 OneLIVIDMAN, Darkwing69420, and DesdemonaTiger.
- *              3. FS25 Dedicated Farm 1 Cluster: Pulls live agronomy, field stages,
+ *              4. FS25 Dedicated Farm 1 Cluster: Pulls live agronomy, field stages,
  *                 and machinery fleet records directly from /fs25/farms/farm_1.
- *              4. Sniper Elite 5 Live Matrix: Real-time Firestore synchronizer for
+ *              5. Sniper Elite 5 Live Matrix: Real-time Firestore synchronizer for
  *                 Werewolf3788 and squad members with stoplight glow metrics.
- *              5. Precision Timing & Formatting: Formatted for 24-hour display.
  * Analytics Tagging: G-CTYHDF4MSD (GA4 Stream & GTM Ready)
- * Date & Time Stamp: 2026-09-18 15:40:00 (America/Chicago)
+ * Date & Time Stamp: 2026-09-18 16:25:00 (America/Chicago)
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -38,7 +39,7 @@
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '41.2.0',
+            'layout_version': '44.1.0',
             'gamertag': 'WildHorse_Spirit',
             'user_handle': 'Werewolf3788',
             'engagement_timezone': 'America/Chicago',
@@ -426,12 +427,10 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <!-- KF WATERMARK -->
     <div class="kf-watermark">
         <span class="kf-k">K</span><span class="kf-f">F</span>
     </div>
 
-    <!-- STICKY NAVIGATION BAR (85% WRAPPER) -->
     <nav class="nav-bar">
         <div class="viewport-85-wrap nav-container">
             <a href="https://werewolf3788.github.io/Website/" target="_blank" class="text-white font-black text-lg flex items-center gap-2 min-h-[48px]">
@@ -448,7 +447,6 @@
         </div>
     </nav>
 
-    <!-- REALTIME HEALTH MONITOR -->
     <div id="health-monitor">
         <div id="health-dot" class="status-dot-pulse bg-gray-500"></div>
         <div class="flex flex-col">
@@ -457,7 +455,6 @@
         </div>
     </div>
 
-    <!-- SYSTEM NPSSO ALERT -->
     <div class="viewport-85-wrap mt-4 hidden" id="system-alerts-container">
         <div class="bg-red-500/10 border-2 border-red-500 p-4 rounded-2xl flex items-center gap-4">
             <i class="fas fa-triangle-exclamation text-red-500 text-2xl"></i>
@@ -468,7 +465,6 @@
         </div>
     </div>
 
-    <!-- HEADER HERO & STAT CARDS -->
     <header class="w-full text-center py-8 sm:py-10">
         <div class="viewport-85-wrap">
             <div class="relative inline-block mb-6">
@@ -481,8 +477,6 @@
             <div class="text-xs sm:text-sm font-black text-gray-400 uppercase tracking-[0.4em] mb-8">Official Pack Leader Telemetry Hub</div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-center mobile-stack-single">
-                
-                <!-- CARD 1: TWITCH FEED -->
                 <a id="twitch-card" href="https://www.twitch.tv/werewolf3788" target="_blank" class="glass-card header-stat-card p-5 border-b-4 border-purple-500 hover:scale-[1.02] transition-transform min-h-[160px] relative">
                     <div id="live-indicator" class="live-badge hidden">Live Now</div>
                     <div class="text-xs text-purple-400 font-black mb-1 uppercase tracking-widest">Twitch Feed</div>
@@ -491,14 +485,12 @@
                     <div id="twitch-age" class="text-xs text-gray-400 font-black uppercase mt-1">Age: --</div>
                 </a>
 
-                <!-- CARD 2: PSN TOTAL GAMES -->
                 <div class="glass-card header-stat-card p-5 border-b-4 border-[#ff5f1f] min-h-[160px]">
                     <div class="text-xs text-orange-400 font-black mb-1 uppercase tracking-widest">PSN Library</div>
                     <div id="games-played-count" class="text-3xl font-black text-white font-mono">--</div>
                     <div class="text-xs text-gray-300 font-bold uppercase mt-2">Total Games Played</div>
                 </div>
 
-                <!-- CARD 3: PSN LEVEL -->
                 <div class="glass-card header-stat-card p-5 border-b-4 border-[#9e3a12] min-h-[160px]">
                     <div class="text-xs text-orange-400 font-black mb-1 uppercase tracking-widest">PSN Level</div>
                     <div id="psn-level-label" class="text-3xl font-black text-white font-mono">--</div>
@@ -506,7 +498,6 @@
                     <div id="psn-account-age" class="text-xs text-gray-400 font-black uppercase mt-1">Age: --</div>
                 </div>
 
-                <!-- CARD 4: TROPHY COUNTERS -->
                 <div id="trophy-card" class="glass-card header-stat-card p-5 border-b-4 border-yellow-500 min-h-[160px]">
                     <div class="text-xs text-yellow-500 font-black mb-1 uppercase tracking-widest">Total Trophies</div>
                     <div id="trophy-total" class="text-3xl lg:text-4xl font-black text-white mb-2 font-mono">--</div>
@@ -518,7 +509,6 @@
                     </div>
                 </div>
 
-                <!-- CARD 5: LIVE PRESENCE -->
                 <div class="glass-card header-stat-card p-5 border-b-4 border-green-500 col-span-1 sm:col-span-2 lg:col-span-1 min-h-[160px]">
                     <div id="online-status-label" class="text-base font-black text-white uppercase">Connecting</div>
                     <div id="current-game-sub" class="text-xs text-green-400 font-black uppercase mt-1 truncate max-w-[200px]">---</div>
@@ -529,13 +519,9 @@
         </div>
     </header>
 
-    <!-- MAIN 85% VIEWPORT DASHBOARD BODY -->
     <main class="viewport-85-wrap pb-28 flex flex-col gap-10">
 
-        <!-- SECTION 1: ACTIVE HUNT & RECENT PSN HISTORY -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mobile-stack-single" id="active-hunt-section">
-            
-            <!-- LEFT: PROFILE BIO & ACTIVE HUNT HERO -->
             <div class="flex flex-col gap-6">
                 <section class="glass-card p-6">
                     <div class="flex justify-between items-start mb-2">
@@ -572,7 +558,7 @@
                             <div class="progress-bar-container"><div id="active-game-progress-fill" class="progress-bar-fill prog-stage-1" style="width: 0%"></div></div>
                         </div>
 
-                        <!-- Trophy Groups Breakdown (Exact Skeleton Name Resolution) -->
+                        <!-- Trophy Groups Breakdown -->
                         <div id="active-hunt-groups-container" class="space-y-2 pt-2 border-t border-white/5 hidden">
                             <div class="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
                                 <i class="fas fa-layer-group text-orange-400"></i> Trophy Groups & Expansion Packs
@@ -606,7 +592,6 @@
                 </section>
             </div>
 
-            <!-- RIGHT: RECENT PSN HUNTS -->
             <div class="flex flex-col gap-6">
                 <section id="recent-hunts-section" class="glass-card p-6">
                     <div class="flex justify-between items-center mb-4">
@@ -641,7 +626,6 @@
             </div>
         </div>
 
-        <!-- FULL-WIDTH OPERATIONS MATRIX -->
         <div class="w-full flex flex-col gap-6" id="dual-telemetry-row">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-2">
                 <div>
@@ -658,7 +642,6 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mobile-stack-single" id="operations-matrix-grid">
                 
-                <!-- CARD A: FS25 FARM 1 (LIVE CROP, GROWTH & FLEET MATRIX) -->
                 <section id="fs25-telemetry-section" class="glass-card card-theme-fs25 p-6 sm:p-7 flex flex-col justify-between space-y-6">
                     <div class="space-y-5">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
@@ -675,7 +658,6 @@
                             </div>
                         </div>
 
-                        <!-- Financial & Farmland Stats -->
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
                             <div class="bg-black/40 p-3 rounded-xl border border-white/5">
                                 <div class="text-xs font-black text-gray-400 uppercase">Farm Designation</div>
@@ -695,7 +677,6 @@
                             </div>
                         </div>
 
-                        <!-- Machinery Fleet -->
                         <div class="space-y-2.5">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-2">
@@ -708,7 +689,6 @@
                             </div>
                         </div>
 
-                        <!-- Farmland Parcels with Agronomy -->
                         <div class="space-y-2.5 pt-2 border-t border-white/5">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-2">
@@ -723,7 +703,6 @@
                     </div>
                 </section>
 
-                <!-- CARD B: SNIPER ELITE 5 LEADERBOARD -->
                 <section id="firestore-progress-section" class="glass-card card-theme-se5 p-6 sm:p-7 flex flex-col justify-between space-y-6">
                     <div class="space-y-5">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
@@ -741,7 +720,6 @@
                             </div>
                         </div>
 
-                        <!-- Progress Strip -->
                         <div class="bg-black/50 p-4 rounded-xl border border-white/5 space-y-2.5">
                             <div class="flex justify-between items-center">
                                 <span class="text-xs font-black text-sky-400 uppercase">Werewolf3788 Campaign Completion</span>
@@ -754,7 +732,6 @@
                             </div>
                         </div>
 
-                        <!-- Long Shots Ranking Feed -->
                         <div class="space-y-2.5">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
@@ -769,7 +746,6 @@
                     </div>
                 </section>
 
-                <!-- CARD C: COTW EXPANDED TROPHY LODGE -->
                 <section id="cotw-full-card" class="glass-card card-theme-cotw p-6 sm:p-7 flex flex-col justify-between space-y-5 hidden">
                     <div class="space-y-4">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
@@ -786,7 +762,6 @@
                             </div>
                         </div>
 
-                        <!-- 6 Animal Harvest Badges -->
                         <div id="cotw-trophy-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                             <div id="cotw-card-great-one" class="bg-black/40 p-3 rounded-xl border border-white/5 flex flex-col items-center hidden">
                                 <i class="fas fa-crown text-yellow-400 text-lg mb-1"></i>
@@ -822,7 +797,6 @@
                     </div>
                 </section>
 
-                <!-- CARD D: SQUAD CAMPAIGNS & LIVE OBJECTIVES (PSN-SYNCED) -->
                 <section id="additional-games-section" class="glass-card card-theme-wolf p-6 sm:p-7 flex flex-col justify-between space-y-5">
                     <div class="space-y-4">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
@@ -849,7 +823,6 @@
             </div>
         </div>
 
-        <!-- TROPHY CHECKLIST LOG (FULL-WIDTH) -->
         <section id="mission-log-container" class="glass-card overflow-hidden w-full">
             <div class="p-6 border-b border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                 <div>
@@ -867,14 +840,12 @@
             <div id="trophy-checklist-container" class="max-h-[900px] overflow-y-auto divide-y divide-white/5 no-scrollbar"></div>
         </section>
 
-        <!-- FOOTER TIMESTAMPS & REFRESH TARGETS -->
         <div class="text-center mt-6 text-xs font-black text-gray-500 uppercase tracking-[0.3em]">
             Primary RTDB: <span class="text-orange-400">/psn/gamertags/WildHorse_Spirit.json</span> | FS25 RTDB: <span class="text-lime-400">fs25-a3563 (farm_1)</span> | Synced: <span id="sync-time" class="text-gray-300">--</span>
         </div>
 
     </main>
 
-    <!-- CROSSPLAY & MEDIA LIGHTBOX MODAL -->
     <div id="generic-lightbox" onclick="closeGenericLightbox()">
         <div class="lightbox-modal-content" onclick="event.stopPropagation()">
             <div class="p-5 border-b border-white/10 flex justify-between items-center">
@@ -885,10 +856,10 @@
         </div>
     </div>
 
-    <!-- FIREBASE MODULE & REAL-TIME SQUAD LEADERBOARD ENGINE -->
+    <!-- FIRESTORE MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, doc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -1239,6 +1210,7 @@
         let globalSquadData = {}; 
         let globalGamertagsData = {};
         let canonicalGamesSkeleton = {};
+        let activeLiveInterval = null;
 
         function convertFirebaseArray(data) {
             if (!data) return [];
@@ -1345,6 +1317,78 @@
                 if (normTitle && normalizeGameTitle(skel.name || skel.trophyTitleName || '') === normTitle) return skel;
             }
             return null;
+        }
+
+        // ====================================================================
+        // DUAL-KEY PLAYTIME RESOLVER (CUSA... / NPWR... / Dynamic Active Timer)
+        // ====================================================================
+        function resolveActivePlaytime(user, hunt) {
+            if (!user || !hunt) return { formatted: "0 hrs", isLive: false, baseSeconds: 0, startTime: null };
+
+            const playSessions = user.playSessions || {};
+            const recentGames = convertFirebaseArray(user.recentGames);
+
+            const candidateKeys = [
+                hunt.titleId,
+                hunt.npTitleId,
+                hunt.commId,
+                hunt.npCommunicationId,
+                user.currentCommunicationId
+            ].filter(Boolean);
+
+            let matchedSession = null;
+            for (const key of candidateKeys) {
+                if (playSessions[key]) {
+                    matchedSession = playSessions[key];
+                    break;
+                }
+            }
+
+            const targetNormTitle = normalizeGameTitle(hunt.title || user.currentGame);
+            if (!matchedSession) {
+                for (const session of Object.values(playSessions)) {
+                    if (session && normalizeGameTitle(session.title) === targetNormTitle) {
+                        matchedSession = session;
+                        break;
+                    }
+                }
+            }
+
+            // If session is currently active
+            if (matchedSession) {
+                const isOnline = !!user.online;
+                const isActive = !!matchedSession.isActive && isOnline;
+                const baseSec = matchedSession.totalSeconds || 0;
+                const start = matchedSession.sessionStartTime || null;
+
+                if (isActive && start) {
+                    const elapsed = Math.max(0, Math.floor((Date.now() - start) / 1000));
+                    return {
+                        formatted: `${formatDuration(baseSec + elapsed)} (Active)`,
+                        isLive: true,
+                        baseSeconds: baseSec,
+                        startTime: start
+                    };
+                }
+
+                if (matchedSession.totalFormatted && matchedSession.totalFormatted !== "0 hrs") {
+                    return { formatted: matchedSession.totalFormatted, isLive: false, baseSeconds: baseSec, startTime: null };
+                }
+            }
+
+            // Fallback: Check native Sony lifetime playtime in recentGames
+            const matchedRecent = recentGames.find(g => {
+                if (hunt.npCommunicationId && g.npCommunicationId === hunt.npCommunicationId) return true;
+                if (hunt.titleId && (g.titleId === hunt.titleId || g.npTitleId === hunt.titleId)) return true;
+                return normalizeGameTitle(g.name || g.title) === targetNormTitle;
+            });
+
+            if (matchedRecent?.nativePlaytimeFormatted && matchedRecent.nativePlaytimeFormatted !== "0 hrs") {
+                return { formatted: matchedRecent.nativePlaytimeFormatted, isLive: false, baseSeconds: matchedRecent.nativePlaytimeSeconds || 0, startTime: null };
+            }
+
+            const directVal = hunt.hoursFormatted || hunt.hoursPlayed || "0 hrs";
+            return { formatted: directVal, isLive: false, baseSeconds: 0, startTime: null };
         }
 
         function extractTrophyTracking(t) {
@@ -1528,7 +1572,6 @@
             }
         });
 
-        // FS25 ENGINE: TARGETING /fs25/farms/farm_1
         async function updateFS25Telemetry() {
             try {
                 let res = await fetch(`${FS25_PRIMARY_URL}?t=${Date.now()}`);
@@ -1646,7 +1689,6 @@
             }
         }
 
-        // PSN GAMERTAGS CROSS-REFERENCE ENGINE
         async function syncPSNGamertags() {
             try {
                 const res = await fetch(`${PSN_GAMERTAGS_URL}?t=${Date.now()}`);
@@ -1938,7 +1980,7 @@
                                 currentValue: liveMatch.currentValue !== undefined ? liveMatch.currentValue : (utMatch.currentValue !== undefined ? utMatch.currentValue : null),
                                 progressRate: utMatch.progressRate || utMatch.progress || null,
                                 groupId: String(st.groupId !== undefined ? st.groupId : (st.trophyGroupId !== undefined ? st.trophyGroupId : (utMatch.trophyGroupId || utMatch.groupId || 'default'))).toLowerCase(),
-                                hidden: st.hidden !== undefined ? st.hidden : (st.trophyHidden || utMatch.hidden || false)
+                                hidden: !!(st.hidden !== undefined ? st.hidden : (st.trophyHidden || utMatch.hidden || false))
                             };
                         });
                     } else {
@@ -2041,8 +2083,8 @@
 
                     const recentDateRaw = user.latestTrophyDate || (recentTrophy ? (recentTrophy.earnedDateTime || recentTrophy.earnedTimestamp || recentTrophy.earnedDate) : null);
                     
-                    const rawHours = hunt.hoursPlayed !== undefined ? hunt.hoursPlayed : (hunt.hoursFormatted || hunt.playDuration || (recentGames[0]?.hours) || 0);
-                    const loggedHours = parsePlayDurationToHours(rawHours);
+                    // Universal Playtime Resolution
+                    const playtimeState = resolveActivePlaytime(user, hunt);
 
                     const timelineEl = document.getElementById('hunt-timeline-span');
                     const hoursEl = document.getElementById('hunt-gameplay-hours');
@@ -2066,12 +2108,27 @@
                     }
 
                     if (hoursEl) {
-                        hoursEl.innerText = `${loggedHours} hrs logged`;
+                        hoursEl.innerText = playtimeState.formatted;
+                        
+                        // Clear any previous live interval
+                        if (activeLiveInterval) {
+                            clearInterval(activeLiveInterval);
+                            activeLiveInterval = null;
+                        }
+
+                        // Run client-side ticking if actively in session
+                        if (playtimeState.isLive && playtimeState.startTime) {
+                            activeLiveInterval = setInterval(() => {
+                                const liveElapsed = Math.max(0, Math.floor((Date.now() - playtimeState.startTime) / 1000));
+                                hoursEl.innerText = `${formatDuration(playtimeState.baseSeconds + liveElapsed)} (Active)`;
+                            }, 1000);
+                        }
                     }
                     
                     if (paceEl) {
-                        if (loggedHours > 0 && earnedList.length > 0) {
-                            const hrsPerTrophy = (loggedHours / earnedList.length).toFixed(1);
+                        const numericHours = parsePlayDurationToHours(playtimeState.formatted);
+                        if (numericHours > 0 && earnedList.length > 0) {
+                            const hrsPerTrophy = (numericHours / earnedList.length).toFixed(1);
                             paceEl.innerText = `1 trophy / ${hrsPerTrophy}h`;
                         } else {
                             paceEl.innerText = `${earnedList.length} trophies total`;
