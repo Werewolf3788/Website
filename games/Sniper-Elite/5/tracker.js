@@ -349,7 +349,7 @@ const sniperData = [
   
   // --- Mission 13: Rough Landing (DLC) ---
   { id: 'm13_pl1', cat: '13: Rough Landing (DLC)', name: 'Letters Between Friends', type: 'Personal Letter', desc: 'Carried by Herbert Dorf (Infantry) with Key.', yt: '//https://www.youtube.com/watch?v=9XEuci1u4kE' },
-  { id: 'm13_pl2', cat: '13: Rough Landing (DLC)', name: 'Debris-Covered Love Letter', type: 'Personal Letter', desc: 'Next to Artillery gun.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY' },
+  { id: 'm13_pl2', cat: '13: Rough Landing (DLC)', name: 'ersonal Letter #2', type: 'Personal Letter', desc: 'Next to Artillery gun.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY' },
   { id: 'm13_pl3', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #3', type: 'Personal Letter', desc: 'Rail depot switchboard table.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_pl4', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #4', type: 'Personal Letter', desc: 'Farmhouse attic crate.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_pl5', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #5', type: 'Personal Letter', desc: 'Looted from patrolling squad officer.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
