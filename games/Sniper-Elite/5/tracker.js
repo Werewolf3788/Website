@@ -331,7 +331,7 @@ const sniperData = [
   { id: 'm12_cd1', cat: '12: Conqueror (DLC)', name: 'Classified Doc #1', type: 'Classified Doc', desc: 'Castle fortress headquarters table.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=173s' },
   { id: 'm12_cd2', cat: '12: Conqueror (DLC)', name: 'Operations Dossier', type: 'Classified Doc', desc: 'Go to the far west of the map slightly north of the roughly written note on the edge of map. ', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=156s' },
   { id: 'm12_hi1', cat: '12: Conqueror (DLC)', name: 'Hidden Item #1', type: 'Hidden Item', desc: 'Medieval knight dagger in castle hall.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm12_hi2', cat: '12: Conqueror (DLC)', name: 'Golden Goblet', type: 'Hidden Item', desc: 'Church sacristy safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
+  { id: 'm12_hi2', cat: '12: Conqueror (DLC)', name: 'Bronze Statue', type: 'Hidden Item', desc: 'In office where you kill Khon in the round castle tower.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=329s' },
   { id: 'm12_se1', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Main castle keep battlements peak.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm12_se2', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Cathedral archway across river.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm12_se3', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'North sid castle in window bout second floor up.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
