@@ -308,7 +308,7 @@ const sniperData = [
   { id: 'med_covertelim', cat: '10: Wolf Mountain (DLC)', name: 'Covert Elimination', type: 'Medal', desc: 'Kill Hitler and exfiltrate without ever being detected.' },
 
   // --- Mission 11: Landing Force (DLC) ---
-  { id: 'm11_pl1', cat: '11: Landing Force (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Northern radio guardpost table.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
+  { id: 'm11_pl1', cat: '11: Landing Force (DLC)', name: 'Munition Ignitions', type: 'Personal Letter', desc: 'So going to the area you need to destory all the guns. Outside dont go into the large bay area, when facing it look to the right youll see a canapy go in that door and its on the big table on ground floor.', yt: '//https://youtu.be/LIw6drPLrkc?t=211' },
   { id: 'm11_pl2', cat: '11: Landing Force (DLC)', name: 'Bread and Bordom', type: 'Personal Letter', desc: 'Northern in the broken tower guardpost on groundlevel by the lader on crate.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc&t=28s' },
   { id: 'm11_pl3', cat: '11: Landing Force (DLC)', name: 'Heavy Is The Crown', type: 'Personal Letter', desc: 'Dock warehouse barracks trunk.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm11_cd1', cat: '11: Landing Force (DLC)', name: 'Wine-Stained Warning', type: 'Classified Doc', desc: 'Command bunker office safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
