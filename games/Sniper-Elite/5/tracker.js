@@ -327,6 +327,7 @@ const sniperData = [
   // --- Mission 12: Conqueror (DLC) ---
   { id: 'm12_pl1', cat: '12: Conqueror (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Town entrance bridge guard desk.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY' },
   { id: 'm12_pl2', cat: '12: Conqueror (DLC)', name: 'Personal Letter #2', type: 'Debris-Covered Love Letter', desc: 'On a Box next to the Artillery Gun.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=125s' },
+   { id: 'm12_pl2', cat: '12: Conqueror (DLC)', name: 'Personal Letter #2', type: 'An Unfinished Plea for Aid', desc: 'top of map youll see a white door with 2 red flags go to back side on left jump thru window look on floor.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=125s' },
   { id: 'm12_cd1', cat: '12: Conqueror (DLC)', name: 'Classified Doc #1', type: 'Classified Doc', desc: 'Castle fortress headquarters table.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=173s' },
   { id: 'm12_cd2', cat: '12: Conqueror (DLC)', name: 'Classified Doc #2', type: 'Classified Doc', desc: 'Subterranean dungeon interrogation room.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm12_hi1', cat: '12: Conqueror (DLC)', name: 'Hidden Item #1', type: 'Hidden Item', desc: 'Medieval knight dagger in castle hall.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
