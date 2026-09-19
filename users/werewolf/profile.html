@@ -1,21 +1,10 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * Dashboard: WildHorse_Spirit / Werewolf3788 Master Command Telemetry & Tactical Hub
- * Engine Version: 44.1.0-STRICT-SQUAD-SKELETON-FARM1-LIVE-PLAYTIME
+ * Engine Version: 44.2.0-STRICT-SQUAD-PS5-SUBPROGRESS-FIXED
  * Location: /Playstation/dashboards/wildhorse_spirit.html
- * Description: Comprehensive Operative Intelligence Hub for WildHorse_Spirit:
- *              1. Canonical PSN Engine: Pulls from /psn/gamertags/WildHorse_Spirit.json
- *                 and re-hydrates against the /psn/games.json skeleton.
- *              2. Dual-Key Playtime Engine: Bridges CUSA/PPSA and NPWR keys
- *                 with client-side real-time ticking while online.
- *              3. Dual PS4 & PS5 Crossplay Compare: Compares live objectives across
- *                 OneLIVIDMAN, Darkwing69420, and DesdemonaTiger.
- *              4. FS25 Dedicated Farm 1 Cluster: Pulls live agronomy, field stages,
- *                 and machinery fleet records directly from /fs25/farms/farm_1.
- *              5. Sniper Elite 5 Live Matrix: Real-time Firestore synchronizer for
- *                 Werewolf3788 and squad members with stoplight glow metrics.
  * Analytics Tagging: G-CTYHDF4MSD (GA4 Stream & GTM Ready)
- * Date & Time Stamp: 2026-09-18 16:25:00 (America/Chicago)
+ * Date & Time Stamp: 2026-09-19 14:30:00 (America/New_York)
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -25,25 +14,27 @@
     <title>WildHorse_Spirit | Tactical Telemetry Hub</title>
     
     <!-- GOOGLE ANALYTICS 4 DUAL MEASUREMENT ENGINE -->
+    <!-- Line 17: GA4 Script Loader -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
+        // Line 20: GA4 DataLayer Initialization
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
 
-        function getChicago24Time() {
-            return new Date().toLocaleString("en-US", {timeZone: "America/Chicago", hour12: false});
+        function getNY24Time() {
+            return new Date().toLocaleString("en-US", {timeZone: "America/New_York", hour12: false});
         }
 
         gtag('config', 'G-CTYHDF4MSD', {
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '44.1.0',
+            'layout_version': '44.2.0',
             'gamertag': 'WildHorse_Spirit',
             'user_handle': 'Werewolf3788',
-            'engagement_timezone': 'America/Chicago',
-            'engagement_timestamp_24h': getChicago24Time(),
+            'engagement_timezone': 'America/New_York',
+            'engagement_timestamp_24h': getNY24Time(),
             'send_page_view': true,
             'allow_google_signals': true,
             'cookie_flags': 'SameSite=None;Secure'
@@ -58,7 +49,7 @@
                 gtag('event', actionName, {
                     ...eventData,
                     'user_id': 'WildHorse_Spirit',
-                    'timestamp': getChicago24Time()
+                    'timestamp': getNY24Time()
                 });
             }
         }
@@ -68,7 +59,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- MASTER STYLESHEET -->
+    <!-- MASTER STYLESHEET (Line 61 to Line 238) -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap');
 
@@ -133,8 +124,9 @@
             }
         }
 
+        /* Line 122: Persistent Dropdown & Z-Index Navigation */
         .nav-bar {
-            position: sticky; top: 0; z-index: 50000;
+            position: fixed; top: 0; z-index: 99999;
             background: rgba(10, 10, 14, 0.96);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
@@ -161,7 +153,7 @@
             position: absolute; top: 100%; left: 0; right: 0;
             background: rgba(12, 12, 16, 0.98); padding: 16px;
             border-bottom: 2px solid var(--accent-orange);
-            max-height: 80vh; overflow-y: auto; z-index: 55000;
+            max-height: 80vh; overflow-y: auto; z-index: 99999;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.95);
         }
 
@@ -196,7 +188,7 @@
             display: none; position: absolute; top: calc(100% + 6px); left: 0; min-width: 250px;
             background: rgba(14, 14, 20, 0.99); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 8px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 25px rgba(255, 95, 31, 0.2); z-index: 60000;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 25px rgba(255, 95, 31, 0.2); z-index: 99999;
         }
 
         @media (max-width: 1023px) {
@@ -262,9 +254,9 @@
         }
 
         .trophy-badge-earned {
-            background-color: rgba(255, 95, 31, 0.15);
-            border: 1px solid rgba(255, 95, 31, 0.4);
-            color: #ff5f1f;
+            background-color: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #10b981;
             border-radius: 4px;
             padding: 1px 6px;
             font-size: 11px;
@@ -274,9 +266,9 @@
             align-items: center;
         }
         .trophy-badge-locked {
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #94a3b8;
+            background-color: rgba(255, 95, 31, 0.15);
+            border: 1px solid rgba(255, 95, 31, 0.4);
+            color: #ff5f1f;
             border-radius: 4px;
             padding: 1px 6px;
             font-size: 11px;
@@ -299,7 +291,7 @@
             border: 1px solid rgba(255, 255, 255, 0.12); 
         }
 
-        .progress-bar-container { height: 12px; background: rgba(20, 20, 28, 0.8); border-radius: 9999px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
+        .progress-bar-container { height: 10px; background: rgba(20, 20, 28, 0.8); border-radius: 9999px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
         .progress-bar-fill { height: 100%; transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.5s ease; }
         
         .prog-stage-1 { background: linear-gradient(90deg, #991b1b, #ef4444); box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
@@ -356,7 +348,7 @@
         }
 
         #generic-lightbox {
-            position: fixed; inset: 0; z-index: 70000; background: rgba(0,0,0,0.94);
+            position: fixed; inset: 0; z-index: 999999; background: rgba(0,0,0,0.94);
             display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); padding: 16px;
         }
         .lightbox-modal-content {
@@ -425,12 +417,13 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col pt-16">
 
     <div class="kf-watermark">
         <span class="kf-k">K</span><span class="kf-f">F</span>
     </div>
 
+    <!-- NAVIGATION BAR -->
     <nav class="nav-bar">
         <div class="viewport-85-wrap nav-container">
             <a href="https://werewolf3788.github.io/Website/" target="_blank" class="text-white font-black text-lg flex items-center gap-2 min-h-[48px]">
@@ -465,6 +458,7 @@
         </div>
     </div>
 
+    <!-- MAIN HEADER SECTION -->
     <header class="w-full text-center py-8 sm:py-10">
         <div class="viewport-85-wrap">
             <div class="relative inline-block mb-6">
@@ -519,6 +513,7 @@
         </div>
     </header>
 
+    <!-- MAIN BODY CONTENT -->
     <main class="viewport-85-wrap pb-28 flex flex-col gap-10">
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mobile-stack-single" id="active-hunt-section">
@@ -830,7 +825,7 @@
                         <i class="fas fa-list-check text-orange-500"></i> Active Trophy Checklist & Campaign Journey Log
                     </h2>
                     <p id="checklist-timeline-sub" class="text-xs text-gray-400 font-bold uppercase mt-0.5">
-                        Interval tracking from First Trophy to Current Date & Time (24h Standard Time)
+                        Interval tracking from First Trophy to Current Date & Time (24h New York Standard Time)
                     </p>
                 </div>
                 <span class="text-xs font-black uppercase tracking-wider text-gray-400 bg-black/40 px-3 py-1.5 rounded-lg border border-white/5">
@@ -846,6 +841,7 @@
 
     </main>
 
+    <!-- LIGHTBOX MODAL -->
     <div id="generic-lightbox" onclick="closeGenericLightbox()">
         <div class="lightbox-modal-content" onclick="event.stopPropagation()">
             <div class="p-5 border-b border-white/10 flex justify-between items-center">
@@ -874,115 +870,6 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
-        const MASTER_TROPHY_TARGETS = {
-            'master of pistols': 6,
-            'master of secondaries': 6,
-            'master of rifles': 6,
-            'master-at-arms': 3,
-            'gunslinger': 150,
-            'skirmisher': 300,
-            'sharpshooter': 350,
-            'the long game': 100000,
-            'set europe ablaze': 50,
-            'precision is key': 150,
-            'out of scope': 150,
-            'rigged to blow': 20,
-            'my little friend': 50,
-            'lord of war': 20,
-            'resourceful': 50,
-            'der geist': 250,
-            'as quiet as a mouse': 50,
-            'close quarters': 100,
-            'snake in the grass': 50,
-            'from paris with love': 41,
-            'burn after reading': 39,
-            'souvenir hunter': 24,
-            'eagle eyed': 24,
-            'tinkerer': 24,
-            'no stone unturned': 16,
-            'shoot for the moon': 3,
-            'climbing the ladder': 40,
-            'pigeon hunter': 10,
-            'führerious repetition': 5,
-            'memories of the alps': 15,
-            'operation foxley': 2
-        };
-
-        window.getTrophyLiveProgress = function(trophyObj) {
-            if (!trophyObj) return null;
-            const isEarned = !!trophyObj.earned;
-            const nameKey = (trophyObj.name || '').toLowerCase().trim();
-
-            let target = null;
-            if (trophyObj.trophyProgressTargetValue !== undefined && trophyObj.trophyProgressTargetValue !== null && trophyObj.trophyProgressTargetValue !== "") {
-                target = Number(trophyObj.trophyProgressTargetValue);
-            } else if (trophyObj.targetValue !== undefined && Number(trophyObj.targetValue) > 1) {
-                target = Number(trophyObj.targetValue);
-            } else if (trophyObj.target !== undefined && Number(trophyObj.target) > 1) {
-                target = Number(trophyObj.target);
-            } else if (MASTER_TROPHY_TARGETS[nameKey]) {
-                target = MASTER_TROPHY_TARGETS[nameKey];
-            }
-
-            if (trophyObj.subProgressRatio && typeof trophyObj.subProgressRatio === 'string' && trophyObj.subProgressRatio.includes('/')) {
-                const parts = trophyObj.subProgressRatio.split('/');
-                const subCount = Number(parts[0].trim());
-                const subTarget = Number(parts[1].trim());
-
-                if (!isNaN(subTarget) && subTarget > 0) {
-                    if (isEarned) {
-                        return {
-                            count: subTarget,
-                            target: subTarget,
-                            pct: 100,
-                            fraction: `${subTarget.toLocaleString()}/${subTarget.toLocaleString()}`
-                        };
-                    }
-                    if (!isNaN(subCount)) {
-                        const pct = Math.min(100, Math.round((subCount / subTarget) * 100));
-                        return {
-                            count: subCount,
-                            target: subTarget,
-                            pct: pct,
-                            fraction: `${subCount.toLocaleString()}/${subTarget.toLocaleString()}`
-                        };
-                    }
-                }
-            }
-
-            if (!target || isNaN(target) || target <= 1) return null;
-
-            if (isEarned) {
-                return {
-                    count: target,
-                    target: target,
-                    pct: 100,
-                    fraction: `${target.toLocaleString()}/${target.toLocaleString()}`
-                };
-            }
-
-            let count = 0;
-            if (trophyObj.currentValue !== undefined && trophyObj.currentValue !== null) {
-                count = Number(trophyObj.currentValue);
-            } else if (trophyObj.progressRate !== undefined && trophyObj.progressRate !== null) {
-                count = Number(trophyObj.progressRate);
-            } else if (trophyObj.progress !== undefined && trophyObj.progress !== null && !Array.isArray(trophyObj.progress)) {
-                count = Number(trophyObj.progress);
-            } else if (trophyObj.count !== undefined && trophyObj.count !== null) {
-                count = Number(trophyObj.count);
-            }
-
-            if (isNaN(count)) count = 0;
-            const pct = Math.min(100, Math.round((count / target) * 100));
-
-            return {
-                count: count,
-                target: target,
-                pct: pct,
-                fraction: `${count.toLocaleString()}/${target.toLocaleString()}`
-            };
-        };
 
         const OPERATIVES_CONFIG = [
             { key: 'Werewolf3788', psnTag: 'wildhorse_spirit', displayName: 'Werewolf3788' },
@@ -1024,13 +911,6 @@
             { id: 'med_m13_authlong', mission: 'DLC 13 (Auth)', name: 'Rough Landing Auth', req: 250 }
         ];
 
-        window.getChromaStageClass = function(pct) {
-            if (pct <= 25) return 'prog-stage-1';
-            if (pct <= 50) return 'prog-stage-2';
-            if (pct <= 75) return 'prog-stage-3';
-            return 'prog-stage-4';
-        };
-
         OPERATIVE_KEYS.forEach(op => {
             const path = `users/${op}/platform/playstation/progress/sniper-elite-5`;
             onSnapshot(doc(db, path), (snap) => {
@@ -1065,7 +945,7 @@
             if (pctEl) pctEl.innerText = `${pct}% (${completedCount}/${totalCount})`;
             if (fillEl) {
                 fillEl.style.width = `${pct}%`;
-                fillEl.className = `progress-bar-fill ${getChromaStageClass(pct)}`;
+                fillEl.className = `progress-bar-fill ${window.getChromaStageClass ? window.getChromaStageClass(pct) : 'prog-stage-1'}`;
             }
             if (missionEl && wolfData.activeMission) missionEl.innerText = wolfData.activeMission;
 
@@ -1212,6 +1092,56 @@
         let canonicalGamesSkeleton = {};
         let activeLiveInterval = null;
 
+        const MASTER_TROPHY_TARGETS = {
+            'master of pistols': 6,
+            'master of secondaries': 6,
+            'master of rifles': 6,
+            'master-at-arms': 3,
+            'gunslinger': 150,
+            'skirmisher': 300,
+            'sharpshooter': 350,
+            'the long game': 100000,
+            'set europe ablaze': 50,
+            'precision is key': 150,
+            'out of scope': 150,
+            'rigged to blow': 20,
+            'my little friend': 50,
+            'lord of war': 20,
+            'resourceful': 50,
+            'der geist': 250,
+            'as quiet as a mouse': 50,
+            'close quarters': 100,
+            'snake in the grass': 50,
+            'from paris with love': 41,
+            'burn after reading': 39,
+            'souvenir hunter': 24,
+            'eagle eyed': 24,
+            'tinkerer': 24,
+            'no stone unturned': 16,
+            'shoot for the moon': 3,
+            'climbing the ladder': 40,
+            'pigeon hunter': 10,
+            'führerious repetition': 5,
+            'memories of the alps': 15,
+            'operation foxley': 2
+        };
+
+        function formatDuration(totalSeconds) {
+            if (!totalSeconds || isNaN(totalSeconds)) return "0 hrs";
+            const sec = Math.max(0, Math.floor(Number(totalSeconds)));
+            const hrs = Math.floor(sec / 3600);
+            const mins = Math.floor((sec % 3600) / 60);
+            if (hrs > 0) return `${hrs}h ${mins}m`;
+            return `${mins}m`;
+        }
+
+        window.getChromaStageClass = function(pct) {
+            if (pct <= 25) return 'prog-stage-1';
+            if (pct <= 50) return 'prog-stage-2';
+            if (pct <= 75) return 'prog-stage-3';
+            return 'prog-stage-4';
+        };
+
         function convertFirebaseArray(data) {
             if (!data) return [];
             if (Array.isArray(data)) return data;
@@ -1220,8 +1150,8 @@
         }
 
         function formatDisplayTime(timestamp) {
-            if (!timestamp) return new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false });
-            return new Date(timestamp).toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false });
+            if (!timestamp) return new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
+            return new Date(timestamp).toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
         }
 
         function getTimeAgoString(timestamp) {
@@ -1320,6 +1250,105 @@
         }
 
         // ====================================================================
+        // PS5 TROPHY PROGRESS PARSER (SUB-PROGRESS, RATIOS & TARGET VALUES)
+        // ====================================================================
+        function extractTrophyTracking(trophyObj) {
+            if (!trophyObj) return null;
+            const isEarned = !!trophyObj.earned;
+            const nameKey = (trophyObj.name || trophyObj.trophyName || '').toLowerCase().trim();
+
+            // 1. Check Sub-Progress Ratio "X/Y"
+            const ratioCandidate = trophyObj.subProgressRatio || trophyObj.progressRatio || trophyObj.progressRate;
+            if (ratioCandidate && typeof ratioCandidate === 'string' && ratioCandidate.includes('/')) {
+                const parts = ratioCandidate.split('/');
+                const subCount = Number(parts[0].trim());
+                const subTarget = Number(parts[1].trim());
+
+                if (!isNaN(subTarget) && subTarget > 0) {
+                    if (isEarned) {
+                        return {
+                            count: subTarget,
+                            target: subTarget,
+                            pct: 100,
+                            fraction: `${subTarget.toLocaleString()}/${subTarget.toLocaleString()}`
+                        };
+                    }
+                    const validCount = isNaN(subCount) ? 0 : Math.min(subCount, subTarget);
+                    const pct = Math.min(100, Math.round((validCount / subTarget) * 100));
+                    return {
+                        count: validCount,
+                        target: subTarget,
+                        pct: pct,
+                        fraction: `${validCount.toLocaleString()}/${subTarget.toLocaleString()}`
+                    };
+                }
+            }
+
+            // 2. Extract Sony PS5 Target Value
+            let target = null;
+            if (trophyObj.trophyProgressTargetValue !== undefined && trophyObj.trophyProgressTargetValue !== null && trophyObj.trophyProgressTargetValue !== "") {
+                target = Number(trophyObj.trophyProgressTargetValue);
+            } else if (trophyObj.targetValue !== undefined && trophyObj.targetValue !== null && trophyObj.targetValue !== "") {
+                target = Number(trophyObj.targetValue);
+            } else if (trophyObj.target !== undefined && Number(trophyObj.target) > 1) {
+                target = Number(trophyObj.target);
+            } else if (MASTER_TROPHY_TARGETS[nameKey]) {
+                target = MASTER_TROPHY_TARGETS[nameKey];
+            }
+
+            // 3. PS5 Direct Progress Rate / Progress Percentage (0-100%)
+            let rawPct = null;
+            if (trophyObj.trophyProgress !== undefined && trophyObj.trophyProgress !== null && trophyObj.trophyProgress !== "") {
+                rawPct = Number(trophyObj.trophyProgress);
+            } else if (trophyObj.progress !== undefined && trophyObj.progress !== null && !Array.isArray(trophyObj.progress)) {
+                rawPct = Number(trophyObj.progress);
+            }
+
+            if (!target || isNaN(target) || target <= 1) {
+                // If there's a standalone percentage without a target value
+                if (rawPct !== null && !isNaN(rawPct) && rawPct > 0 && !isEarned) {
+                    const safePct = Math.min(100, Math.max(0, Math.round(rawPct)));
+                    return {
+                        count: safePct,
+                        target: 100,
+                        pct: safePct,
+                        fraction: `${safePct}%`
+                    };
+                }
+                return null;
+            }
+
+            if (isEarned) {
+                return {
+                    count: target,
+                    target: target,
+                    pct: 100,
+                    fraction: `${target.toLocaleString()}/${target.toLocaleString()}`
+                };
+            }
+
+            // 4. Extract Current Progress Value
+            let count = 0;
+            if (trophyObj.currentValue !== undefined && trophyObj.currentValue !== null) {
+                count = Number(trophyObj.currentValue);
+            } else if (trophyObj.count !== undefined && trophyObj.count !== null) {
+                count = Number(trophyObj.count);
+            } else if (rawPct !== null && !isNaN(rawPct)) {
+                count = Math.round((rawPct / 100) * target);
+            }
+
+            if (isNaN(count)) count = 0;
+            const pct = Math.min(100, Math.round((count / target) * 100));
+
+            return {
+                count: count,
+                target: target,
+                pct: pct,
+                fraction: `${count.toLocaleString()}/${target.toLocaleString()}`
+            };
+        }
+
+        // ====================================================================
         // DUAL-KEY PLAYTIME RESOLVER (CUSA... / NPWR... / Dynamic Active Timer)
         // ====================================================================
         function resolveActivePlaytime(user, hunt) {
@@ -1354,7 +1383,6 @@
                 }
             }
 
-            // If session is currently active
             if (matchedSession) {
                 const isOnline = !!user.online;
                 const isActive = !!matchedSession.isActive && isOnline;
@@ -1376,7 +1404,6 @@
                 }
             }
 
-            // Fallback: Check native Sony lifetime playtime in recentGames
             const matchedRecent = recentGames.find(g => {
                 if (hunt.npCommunicationId && g.npCommunicationId === hunt.npCommunicationId) return true;
                 if (hunt.titleId && (g.titleId === hunt.titleId || g.npTitleId === hunt.titleId)) return true;
@@ -1389,79 +1416,6 @@
 
             const directVal = hunt.hoursFormatted || hunt.hoursPlayed || "0 hrs";
             return { formatted: directVal, isLive: false, baseSeconds: 0, startTime: null };
-        }
-
-        function extractTrophyTracking(t) {
-            if (!t) return null;
-            if (window.getTrophyLiveProgress) return window.getTrophyLiveProgress(t);
-
-            const isEarned = !!t.earned;
-
-            if (t.subProgressRatio && typeof t.subProgressRatio === 'string' && t.subProgressRatio.includes('/')) {
-                const parts = t.subProgressRatio.split('/');
-                const c = Number(parts[0].trim());
-                const targetVal = Number(parts[1].trim());
-
-                if (!isNaN(targetVal) && targetVal > 0) {
-                    if (isEarned) {
-                        return {
-                            count: targetVal,
-                            target: targetVal,
-                            pct: 100,
-                            fraction: `${targetVal.toLocaleString()}/${targetVal.toLocaleString()}`
-                        };
-                    }
-                    if (!isNaN(c)) {
-                        return {
-                            count: c,
-                            target: targetVal,
-                            pct: Math.min(100, Math.round((c / targetVal) * 100)),
-                            fraction: `${c.toLocaleString()}/${targetVal.toLocaleString()}`
-                        };
-                    }
-                }
-            }
-
-            let target = null;
-            if (t.trophyProgressTargetValue !== undefined && t.trophyProgressTargetValue !== null && t.trophyProgressTargetValue !== "") {
-                target = Number(t.trophyProgressTargetValue);
-            } else if (t.targetValue !== undefined && Number(t.targetValue) > 1) {
-                target = Number(t.targetValue);
-            } else if (t.target !== undefined && Number(t.target) > 1) {
-                target = Number(t.target);
-            }
-
-            if (!target || isNaN(target) || target <= 1) return null;
-
-            if (isEarned) {
-                return {
-                    count: target,
-                    target: target,
-                    pct: 100,
-                    fraction: `${target.toLocaleString()}/${target.toLocaleString()}`
-                };
-            }
-
-            let count = 0;
-            if (t.currentValue !== undefined && t.currentValue !== null) {
-                count = Number(t.currentValue);
-            } else if (t.progressRate !== undefined && t.progressRate !== null) {
-                count = Number(t.progressRate);
-            } else if (t.progress !== undefined && t.progress !== null && !Array.isArray(t.progress)) {
-                count = Number(t.progress);
-            } else if (t.count !== undefined && t.count !== null) {
-                count = Number(t.count);
-            }
-
-            if (isNaN(count)) count = 0;
-            const pct = Math.min(100, Math.round((count / target) * 100));
-
-            return {
-                count: count,
-                target: target,
-                pct: pct,
-                fraction: `${count.toLocaleString()}/${target.toLocaleString()}`
-            };
         }
 
         async function fetchCanonicalSkeleton() {
@@ -1780,7 +1734,7 @@
 
                         <div class="grid grid-cols-1 ${squadMatches.length > 1 ? 'sm:grid-cols-2' : ''} gap-3 pt-1 border-t border-white/5">
                             ${squadMatches.map(stat => {
-                                const chroma = getChromaStageClass(stat.progress);
+                                const chroma = window.getChromaStageClass(stat.progress);
                                 return `
                                     <div class="bg-black/50 p-3 rounded-lg border ${stat.isPrimary ? 'border-orange-500/50 shadow-[0_0_15px_rgba(255,95,31,0.2)]' : 'border-white/5'} space-y-1.5 cursor-pointer hover:bg-white/5 transition-colors" onclick="openPSNRecentGameCompareModal('${safeGameTitle}', '${safeGameArt}', ${stat.progress}, '${game.npCommunicationId || ''}')">
                                         <div class="flex justify-between items-center text-xs font-black uppercase">
@@ -1947,7 +1901,7 @@
                     const fillBar = document.getElementById('active-game-progress-fill');
                     if (fillBar) {
                         fillBar.style.width = `${pct}%`;
-                        fillBar.className = `progress-bar-fill ${getChromaStageClass(pct)}`;
+                        fillBar.className = `progress-bar-fill ${window.getChromaStageClass(pct)}`;
                     }
                     document.getElementById('active-game-ratio').innerText = hunt.velocity?.completionStatus || "--/--";
 
@@ -1963,22 +1917,23 @@
 
                             const utMatch = userTrophies.find(ut => {
                                 if (ut.trophyId !== undefined && ut.trophyId === tId) return true;
-                                return (ut.name || '').toLowerCase().trim() === (st.trophyName || st.name || '').toLowerCase().trim();
+                                return (ut.name || ut.trophyName || '').toLowerCase().trim() === (st.trophyName || st.name || '').toLowerCase().trim();
                             }) || userTrophies[idx] || {};
 
                             const isTrophyEarned = !!(liveMatch.earned !== undefined ? liveMatch.earned : utMatch.earned);
 
                             return {
                                 id: tId,
-                                name: st.trophyName || st.name || utMatch.name,
-                                description: st.trophyDetail || st.description || utMatch.description,
-                                icon: st.trophyIconUrl || st.icon || utMatch.icon,
+                                name: st.trophyName || st.name || utMatch.name || utMatch.trophyName,
+                                description: st.trophyDetail || st.description || utMatch.description || utMatch.trophyDetail,
+                                icon: st.trophyIconUrl || st.icon || utMatch.icon || utMatch.trophyIconUrl,
                                 earned: isTrophyEarned,
                                 earnedDateTime: liveMatch.earnedDate || liveMatch.timestamp || utMatch.earnedDateTime || utMatch.earnedTimestamp || utMatch.earnedDate,
                                 subProgressRatio: liveMatch.subProgressRatio || utMatch.subProgressRatio || st.subProgressRatio || null,
-                                trophyProgressTargetValue: liveMatch.targetValue || st.targetValue || st.trophyProgressTargetValue || utMatch.trophyProgressTargetValue || null,
+                                trophyProgressTargetValue: liveMatch.targetValue || st.targetValue || st.trophyProgressTargetValue || utMatch.trophyProgressTargetValue || utMatch.targetValue || null,
                                 currentValue: liveMatch.currentValue !== undefined ? liveMatch.currentValue : (utMatch.currentValue !== undefined ? utMatch.currentValue : null),
-                                progressRate: utMatch.progressRate || utMatch.progress || null,
+                                trophyProgress: utMatch.trophyProgress !== undefined ? utMatch.trophyProgress : (utMatch.progress !== undefined ? utMatch.progress : null),
+                                progressRate: utMatch.progressRate || null,
                                 groupId: String(st.groupId !== undefined ? st.groupId : (st.trophyGroupId !== undefined ? st.trophyGroupId : (utMatch.trophyGroupId || utMatch.groupId || 'default'))).toLowerCase(),
                                 hidden: !!(st.hidden !== undefined ? st.hidden : (st.trophyHidden || utMatch.hidden || false))
                             };
@@ -2083,7 +2038,6 @@
 
                     const recentDateRaw = user.latestTrophyDate || (recentTrophy ? (recentTrophy.earnedDateTime || recentTrophy.earnedTimestamp || recentTrophy.earnedDate) : null);
                     
-                    // Universal Playtime Resolution
                     const playtimeState = resolveActivePlaytime(user, hunt);
 
                     const timelineEl = document.getElementById('hunt-timeline-span');
@@ -2110,13 +2064,11 @@
                     if (hoursEl) {
                         hoursEl.innerText = playtimeState.formatted;
                         
-                        // Clear any previous live interval
                         if (activeLiveInterval) {
                             clearInterval(activeLiveInterval);
                             activeLiveInterval = null;
                         }
 
-                        // Run client-side ticking if actively in session
                         if (playtimeState.isLive && playtimeState.startTime) {
                             activeLiveInterval = setInterval(() => {
                                 const liveElapsed = Math.max(0, Math.floor((Date.now() - playtimeState.startTime) / 1000));
@@ -2145,6 +2097,7 @@
                         }
                     }
 
+                    // Checklist rendering with PS5 progress bars
                     const checklist = document.getElementById('trophy-checklist-container');
                     if (checklist && currentTrophyData.length > 0) {
                         checklist.innerHTML = currentTrophyData.map((t, idx) => {
@@ -2252,11 +2205,22 @@
                                 <div class="trophy-row ${isEarnedWithin24Hours ? 'recent-earn-yellow-glow' : ''}" onclick="openTrophyDetailModal(currentTrophyData[${idx}], '${safeHuntTitle}')">
                                     <img src="${t.icon}" class="trophy-icon-sq ${!isEarned && t.hidden ? 'opacity-30 blur-[2px]' : ''}" onerror="this.src='https://via.placeholder.com/56x56/202024/FF5F1F?text=🏆'">
                                     <div class="min-w-0 flex-1">
-                                        <div class="flex items-center gap-2">
+                                        <div class="flex items-center gap-2 flex-wrap">
                                             <div class="trophy-title-text truncate text-sm ${isEarned ? 'text-green-400' : 'text-orange-400'}">${t.name}</div>
                                             ${tracking ? `<span class="${isEarned ? 'trophy-badge-earned' : 'trophy-badge-locked'}">${tracking.fraction}</span>` : ''}
                                         </div>
                                         <div class="text-xs text-gray-400 truncate mt-0.5">${t.description || ''}</div>
+                                        ${tracking && !isEarned ? `
+                                            <div class="mt-2 max-w-xs">
+                                                <div class="flex justify-between items-center text-[10px] font-mono text-gray-400 mb-1">
+                                                    <span>PS5 Target Progress</span>
+                                                    <span class="text-orange-400 font-bold">${tracking.pct}%</span>
+                                                </div>
+                                                <div class="progress-bar-container h-1.5">
+                                                    <div class="progress-bar-fill ${window.getChromaStageClass(tracking.pct)}" style="width: ${tracking.pct}%"></div>
+                                                </div>
+                                            </div>
+                                        ` : ''}
                                         ${dateBadgeHtml}
                                         ${squadHtml}
                                     </div>
@@ -2264,7 +2228,7 @@
                                         <span class="text-xs font-black uppercase px-2.5 py-1 rounded ${isEarned ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-white/5 text-gray-400 border border-white/10'}">
                                             ${isEarned ? 'EARNED' : 'LOCKED'}
                                         </span>
-                                        ${tracking && !isEarned ? `<span class="text-xs font-mono font-bold text-gray-400">${tracking.pct}%</span>` : ''}
+                                        ${tracking && !isEarned ? `<span class="text-xs font-mono font-bold text-orange-400">${tracking.pct}%</span>` : ''}
                                     </div>
                                 </div>
                             `;
@@ -2431,7 +2395,7 @@
                                         <span class="text-white font-mono text-sm">${p.progress}% (${completedCount}/${masterTrophies.length})</span>
                                     </div>
                                     <div class="progress-bar-container">
-                                        <div class="progress-bar-fill ${getChromaStageClass(p.progress)}" style="width: ${p.progress}%"></div>
+                                        <div class="progress-bar-fill ${window.getChromaStageClass(p.progress)}" style="width: ${p.progress}%"></div>
                                     </div>
                                     <div class="flex justify-between text-xs font-mono text-gray-400">
                                         <span>Platform: ${p.platform}</span>
@@ -2562,7 +2526,7 @@
                                 <span>Objective SubProgress</span>
                                 <span>${tracking.fraction} (${tracking.pct}%)</span>
                             </div>
-                            <div class="progress-bar-container"><div class="progress-bar-fill ${getChromaStageClass(tracking.pct)}" style="width: ${tracking.pct}%"></div></div>
+                            <div class="progress-bar-container"><div class="progress-bar-fill ${window.getChromaStageClass(tracking.pct)}" style="width: ${tracking.pct}%"></div></div>
                         </div>
                     ` : ''}
 
