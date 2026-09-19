@@ -311,7 +311,7 @@ const sniperData = [
   { id: 'm11_pl1', cat: '11: Landing Force (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Northern radio guardpost table.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm11_pl2', cat: '11: Landing Force (DLC)', name: 'Bread and Bordom', type: 'Personal Letter', desc: 'Northern in the broken tower guardpost on groundlevel by the lader on crate.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc&t=28s' },
   { id: 'm11_pl3', cat: '11: Landing Force (DLC)', name: 'Heavy Is The Crown', type: 'Personal Letter', desc: 'Dock warehouse barracks trunk.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm11_cd1', cat: '11: Landing Force (DLC)', name: 'Classified Doc #1', type: 'Classified Doc', desc: 'Command bunker office safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
+  { id: 'm11_cd1', cat: '11: Landing Force (DLC)', name: 'Wine-Stained Warning', type: 'Classified Doc', desc: 'Command bunker office safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm11_cd2', cat: '11: Landing Force (DLC)', name: 'Security Measures', type: 'Classified Doc', desc: 'Under desk by SMG workbench.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc&t=75s' },
   { id: 'm11_hi1', cat: '11: Landing Force (DLC)', name: 'Military Flask', type: 'Hidden Item', desc: 'Ancient coin on lighthouse top floor.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm11_hi2', cat: '11: Landing Force (DLC)', name: 'Hidden Item #2', type: 'Hidden Item', desc: 'Naval telescope in harbourmaster tower.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
