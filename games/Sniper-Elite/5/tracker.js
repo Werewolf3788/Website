@@ -334,7 +334,7 @@ const sniperData = [
   { id: 'm12_hi2', cat: '12: Conqueror (DLC)', name: 'Golden Goblet', type: 'Hidden Item', desc: 'Church sacristy safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm12_se1', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Main castle keep battlements peak.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm12_se2', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Cathedral archway across river.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm12_se3', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Southern bridge guardhouse chimney.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
+  { id: 'm12_se3', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'North sid castle in window bout second floor up.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm12_wb1', cat: '12: Conqueror (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Castle courtyard stable armory.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm12_wb2', cat: '12: Conqueror (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Cellar beneath eastern bakery.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm12_wb3', cat: '12: Conqueror (DLC)', name: 'Village Workbench Pistol Workbench', type: 'Workbench', desc: 'Far right of map up ladder of a building with agy hilda faded paint.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=23s' },
