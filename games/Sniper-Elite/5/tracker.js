@@ -435,8 +435,8 @@ const sniperData = [
   { id: 'med_ls_m12authlongshot', cat: '12: Conqueror (DLC)', name: 'Mission 12 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Conqueror, in Authentic difficulty.', target: 250, isLongShot: true },
   { id: 'med_ls_m13_longshot', cat: '13: Rough Landing (DLC)', name: 'Mission 13 Long Shot', type: 'Medal', desc: 'Take a 240 meters shot in Rough Landing.', target: 240, isLongShot: true },
   { id: 'med_ls_m13_authlong', cat: '13: Rough Landing (DLC)', name: 'Mission 13 Authentic Long Shot', type: 'Medal', desc: 'Take a 240 meters shot in Rough Landing, in Authentic difficulty.', target: 240, isLongShot: true },
-  { id: 'med_ls_m14longshot', cat: '14: Kraken Awakes (DLC)', name: 'Mission 14 Long Shot', type: 'Medal', desc: 'Take a 300 meters shot in Kraken Awakes.', target: 300, isLongShot: true },
-  { id: 'med_ls_m14authlongshot', cat: '14: Kraken Awakes (DLC)', name: 'Mission 14 Authentic Long Shot', type: 'Medal', desc: 'Take a 300 meters shot in Kraken Awakes.', target: 300, isLongShot: true },
+  { id: 'med_ls_m14longshot', cat: '14: Kraken Awakes (DLC)', name: 'Mission 14 Long Shot', type: 'Medal', desc: 'Take a 460 meters shot in Kraken Awakes.', target: 460, isLongShot: true },
+  { id: 'med_ls_m14authlongshot', cat: '14: Kraken Awakes (DLC)', name: 'Mission 14 Authentic Long Shot', type: 'Medal', desc: 'Take a 460 meters shot in Kraken Awakes.', target: 460, isLongShot: true },
     
   { id: 'med_longgame', cat: '16: Longshot & Combat Medals', name: 'The Long Game', type: 'Medal', desc: 'Accumulate a cumulative kill distance of 100,000 meters across all modes.', target: 100000 },
   { id: 'med_sharpshooter', cat: '16: Longshot & Combat Medals', name: 'Sharpshooter', type: 'Medal', desc: 'Kill 350 enemies with a Rifle.', target: 350 },
