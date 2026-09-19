@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * Dashboard: WildHorse_Spirit / Werewolf3788 Master Command Telemetry & Tactical Hub
- * Engine Version: 44.2.0-STRICT-SQUAD-PS5-SUBPROGRESS-FIXED
+ * Engine Version: 44.3.0-STRICT-SQUAD-PS5-LIVE-TROPHY-PROGRESS
  * Location: /Playstation/dashboards/wildhorse_spirit.html
  * Analytics Tagging: G-CTYHDF4MSD (GA4 Stream & GTM Ready)
- * Date & Time Stamp: 2026-09-19 14:30:00 (America/New_York)
+ * Date & Time Stamp: 2026-09-19 17:59:46 (America/New_York)
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -13,9 +13,8 @@
     <meta http-equiv="refresh" content="900">
     <title>WildHorse_Spirit | Tactical Telemetry Hub</title>
     
-    <!-- GOOGLE ANALYTICS 4 DUAL MEASUREMENT ENGINE -->
-    <!-- Line 17: GA4 Script Loader -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
+    <!-- Line 17: GOOGLE ANALYTICS 4 DUAL MEASUREMENT ENGINE -->
+    <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
         // Line 20: GA4 DataLayer Initialization
         window.dataLayer = window.dataLayer || [];
@@ -30,7 +29,7 @@
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '44.2.0',
+            'layout_version': '44.3.0',
             'gamertag': 'WildHorse_Spirit',
             'user_handle': 'Werewolf3788',
             'engagement_timezone': 'America/New_York',
@@ -55,13 +54,13 @@
         }
     </script>
 
-    <!-- UI LIBS, FONTS & ICONS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Line 61: UI LIBS, FONTS & ICONS -->
+    <script src="//cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- MASTER STYLESHEET (Line 61 to Line 238) -->
+    <!-- Line 66: MASTER STYLESHEET -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap');
+        @import url('//fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap');
 
         :root {
             --bg-dark: #070709;
@@ -124,7 +123,7 @@
             }
         }
 
-        /* Line 122: Persistent Dropdown & Z-Index Navigation */
+        /* Line 134: Persistent Top Header Navigation */
         .nav-bar {
             position: fixed; top: 0; z-index: 99999;
             background: rgba(10, 10, 14, 0.96);
@@ -423,10 +422,10 @@
         <span class="kf-k">K</span><span class="kf-f">F</span>
     </div>
 
-    <!-- NAVIGATION BAR -->
+    <!-- Line 350: TOP HEADER MENU -->
     <nav class="nav-bar">
         <div class="viewport-85-wrap nav-container">
-            <a href="https://werewolf3788.github.io/Website/" target="_blank" class="text-white font-black text-lg flex items-center gap-2 min-h-[48px]">
+            <a href="//werewolf3788.github.io/Website/" target="_blank" class="text-white font-black text-lg flex items-center gap-2 min-h-[48px]">
                 <i class="fab fa-playstation text-orange-500"></i> PACK HUB
             </a>
             
@@ -458,12 +457,12 @@
         </div>
     </div>
 
-    <!-- MAIN HEADER SECTION -->
+    <!-- Line 384: HEADER STAT CARDS -->
     <header class="w-full text-center py-8 sm:py-10">
         <div class="viewport-85-wrap">
             <div class="relative inline-block mb-6">
                 <div class="absolute inset-0 bg-[#FF5F1F] blur-[100px] opacity-30 rounded-full"></div>
-                <img id="main-avatar" src="https://via.placeholder.com/250x250/1e1e24/FF5F1F?text=WOLF" class="relative w-36 h-36 sm:w-48 sm:h-48 lg:w-56 lg:h-56 rounded-full border-4 border-[#FF5F1F] shadow-2xl mx-auto object-cover cursor-pointer" onclick="openLightboxImage(this.src, 'WildHorse_Spirit Avatar')" onerror="this.src='https://via.placeholder.com/250x250/1e1e24/FF5F1F?text=WOLF'">
+                <img id="main-avatar" src="//via.placeholder.com/250x250/1e1e24/FF5F1F?text=WOLF" class="relative w-36 h-36 sm:w-48 sm:h-48 lg:w-56 lg:h-56 rounded-full border-4 border-[#FF5F1F] shadow-2xl mx-auto object-cover cursor-pointer" onclick="openLightboxImage(this.src, 'WildHorse_Spirit Avatar')" onerror="this.src='//via.placeholder.com/250x250/1e1e24/FF5F1F?text=WOLF'">
                 <div id="ps-plus-indicator" class="ps-plus-badge"><i class="fab fa-playstation"></i> PLUS MEMBER</div>
             </div>
             
@@ -471,7 +470,7 @@
             <div class="text-xs sm:text-sm font-black text-gray-400 uppercase tracking-[0.4em] mb-8">Official Pack Leader Telemetry Hub</div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-center mobile-stack-single">
-                <a id="twitch-card" href="https://www.twitch.tv/werewolf3788" target="_blank" class="glass-card header-stat-card p-5 border-b-4 border-purple-500 hover:scale-[1.02] transition-transform min-h-[160px] relative">
+                <a id="twitch-card" href="//www.twitch.tv/werewolf3788" target="_blank" class="glass-card header-stat-card p-5 border-b-4 border-purple-500 hover:scale-[1.02] transition-transform min-h-[160px] relative">
                     <div id="live-indicator" class="live-badge hidden">Live Now</div>
                     <div class="text-xs text-purple-400 font-black mb-1 uppercase tracking-widest">Twitch Feed</div>
                     <div id="follower-count" class="text-3xl font-black text-gray-400 font-mono">--</div>
@@ -513,9 +512,10 @@
         </div>
     </header>
 
-    <!-- MAIN BODY CONTENT -->
+    <!-- Line 446: MAIN OPERATIONS HUB -->
     <main class="viewport-85-wrap pb-28 flex flex-col gap-10">
 
+        <!-- Line 449: ACTIVE HUNT & PROFILE INTEL -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mobile-stack-single" id="active-hunt-section">
             <div class="flex flex-col gap-6">
                 <section class="glass-card p-6">
@@ -533,7 +533,7 @@
                     </div>
                     
                     <div class="relative w-full aspect-video bg-orange-900/10 border-y border-white/5 cursor-pointer" onclick="openLightboxImage(document.getElementById('active-game-art').src, document.getElementById('active-game-title').innerText)">
-                        <img id="active-game-art" src="" class="w-full h-full object-cover hidden" onerror="this.src='https://via.placeholder.com/600x337/1e1e24/FF5F1F?text=GAME+COVER'">
+                        <img id="active-game-art" src="" class="w-full h-full object-cover hidden" onerror="this.src='//via.placeholder.com/600x337/1e1e24/FF5F1F?text=GAME+COVER'">
                         <div id="active-game-fallback" class="w-full h-full flex items-center justify-center"><i class="fab fa-playstation text-6xl text-orange-500/30"></i></div>
                     </div>
 
@@ -600,7 +600,7 @@
                     <section id="recent-trophy-card" class="glass-card p-5 border-t-4 border-yellow-500 hidden">
                         <h3 class="text-yellow-500 text-xs font-black flex items-center gap-2 mb-3"><i class="fas fa-trophy"></i> Latest PSN Unlock</h3>
                         <div class="flex gap-3 items-center bg-black/40 p-3 rounded-xl cursor-pointer hover:bg-white/10 transition-colors" onclick="openRecentTrophyLightbox()">
-                            <img id="last-trophy-icon" src="" class="w-14 h-14 rounded-lg object-cover border border-yellow-500/30" onerror="this.src='https://via.placeholder.com/64x64/202024/FF5F1F?text=🏆'">
+                            <img id="last-trophy-icon" src="" class="w-14 h-14 rounded-lg object-cover border border-yellow-500/30" onerror="this.src='//via.placeholder.com/64x64/202024/FF5F1F?text=🏆'">
                             <div class="min-w-0 flex-1">
                                 <div id="last-trophy-name" class="font-black text-white uppercase text-xs truncate">---</div>
                                 <div id="last-trophy-game" class="text-xs font-black text-yellow-500 uppercase truncate">---</div>
@@ -612,8 +612,8 @@
 
                     <section id="ps-plus-card" class="glass-card p-5 border-t-4 border-orange-500 text-center flex flex-col justify-between">
                         <h3 class="text-orange-400 text-xs font-black flex items-center justify-center gap-1.5"><i class="fab fa-playstation"></i> PS Plus Active</h3>
-                        <a href="https://www.playstation.com/en-us/ps-plus/" target="_blank" class="py-2 inline-block">
-                            <img src="https://assetsdelivery.eldorado.gg/v7/_offers-v2_/2e84e915-faa9-4670-b6a1-2406ea1f3a64_Offer_20241113013824_723432Large.png?w=255" alt="PS Plus Premium" class="w-20 h-20 object-contain mx-auto p-1.5 rounded-xl bg-black/40 border border-white/10 hover:border-orange-400 transition-all">
+                        <a href="//www.playstation.com/en-us/ps-plus/" target="_blank" class="py-2 inline-block">
+                            <img src="//assetsdelivery.eldorado.gg/v7/_offers-v2_/2e84e915-faa9-4670-b6a1-2406ea1f3a64_Offer_20241113013824_723432Large.png?w=255" alt="PS Plus Premium" class="w-20 h-20 object-contain mx-auto p-1.5 rounded-xl bg-black/40 border border-white/10 hover:border-orange-400 transition-all">
                         </a>
                         <span class="text-xs font-black text-gray-400 uppercase">Premium Cloud Sync</span>
                     </section>
@@ -621,6 +621,7 @@
             </div>
         </div>
 
+        <!-- Line 559: DUAL TELEMETRY ROW -->
         <div class="w-full flex flex-col gap-6" id="dual-telemetry-row">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-2">
                 <div>
@@ -818,6 +819,7 @@
             </div>
         </div>
 
+        <!-- Line 750: TROPHY CHECKLIST WITH DUAL LIVE PROGRESS BARS -->
         <section id="mission-log-container" class="glass-card overflow-hidden w-full">
             <div class="p-6 border-b border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                 <div>
@@ -841,7 +843,7 @@
 
     </main>
 
-    <!-- LIGHTBOX MODAL -->
+    <!-- Line 773: GENERIC LIGHTBOX -->
     <div id="generic-lightbox" onclick="closeGenericLightbox()">
         <div class="lightbox-modal-content" onclick="event.stopPropagation()">
             <div class="p-5 border-b border-white/10 flex justify-between items-center">
@@ -852,15 +854,15 @@
         </div>
     </div>
 
-    <!-- FIRESTORE MODULE -->
+    <!-- Line 784: FIRESTORE LEADERBOARD MODULE -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { initializeApp } from "//www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getFirestore, doc, onSnapshot } from "//www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
             authDomain: "entertainment-71888.firebaseapp.com",
-            databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
+            databaseURL: "//entertainment-71888-default-rtdb.firebaseio.com",
             projectId: "entertainment-71888",
             storageBucket: "entertainment-71888.firebasestorage.app",
             messagingSenderId: "660524340277",
@@ -1074,16 +1076,16 @@
         subscribePlaystationCOTW("Werewolf3788");
     </script>
 
-    <!-- REALTIME DATABASE SYNCHRONIZER & SKELETON RE-HYDRATION ENGINE -->
+    <!-- Line 975: REALTIME DATABASE SYNCHRONIZER & SKELETON RE-HYDRATION ENGINE -->
     <script>
-        const WILDHORSE_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/WildHorse_Spirit.json";
-        const ROOT_PSN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn.json";
-        const CANONICAL_GAMES_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/games.json";
-        const UTM_LINKS_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
-        const PSN_GAMERTAGS_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags.json";
+        const WILDHORSE_RTDB_URL = "//entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/WildHorse_Spirit.json";
+        const ROOT_PSN_RTDB_URL = "//entertainment-71888-default-rtdb.firebaseio.com/psn.json";
+        const CANONICAL_GAMES_URL = "//entertainment-71888-default-rtdb.firebaseio.com/psn/games.json";
+        const UTM_LINKS_RTDB_URL = "//entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
+        const PSN_GAMERTAGS_URL = "//entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags.json";
         
-        const FS25_PRIMARY_URL = "https://fs25-a3563-default-rtdb.firebaseio.com/fs25.json";
-        const FS25_FALLBACK_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
+        const FS25_PRIMARY_URL = "//fs25-a3563-default-rtdb.firebaseio.com/fs25.json";
+        const FS25_FALLBACK_URL = "//entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
 
         let currentTrophyData = [];
         let lastEarnedTrophyData = null;
@@ -1250,14 +1252,14 @@
         }
 
         // ====================================================================
-        // PS5 TROPHY PROGRESS PARSER (SUB-PROGRESS, RATIOS & TARGET VALUES)
+        // Line 1145: PS5 TROPHY PROGRESS PARSER (X/Y PROGRESS & RATIOS)
         // ====================================================================
         function extractTrophyTracking(trophyObj) {
             if (!trophyObj) return null;
             const isEarned = !!trophyObj.earned;
             const nameKey = (trophyObj.name || trophyObj.trophyName || '').toLowerCase().trim();
 
-            // 1. Check Sub-Progress Ratio "X/Y"
+            // 1. Direct Sub-Progress Ratio "X/Y"
             const ratioCandidate = trophyObj.subProgressRatio || trophyObj.progressRatio || trophyObj.progressRate;
             if (ratioCandidate && typeof ratioCandidate === 'string' && ratioCandidate.includes('/')) {
                 const parts = ratioCandidate.split('/');
@@ -1284,7 +1286,7 @@
                 }
             }
 
-            // 2. Extract Sony PS5 Target Value
+            // 2. PS5 Target Value Resolution
             let target = null;
             if (trophyObj.trophyProgressTargetValue !== undefined && trophyObj.trophyProgressTargetValue !== null && trophyObj.trophyProgressTargetValue !== "") {
                 target = Number(trophyObj.trophyProgressTargetValue);
@@ -1296,7 +1298,7 @@
                 target = MASTER_TROPHY_TARGETS[nameKey];
             }
 
-            // 3. PS5 Direct Progress Rate / Progress Percentage (0-100%)
+            // 3. PS5 Progress Percentage
             let rawPct = null;
             if (trophyObj.trophyProgress !== undefined && trophyObj.trophyProgress !== null && trophyObj.trophyProgress !== "") {
                 rawPct = Number(trophyObj.trophyProgress);
@@ -1305,7 +1307,6 @@
             }
 
             if (!target || isNaN(target) || target <= 1) {
-                // If there's a standalone percentage without a target value
                 if (rawPct !== null && !isNaN(rawPct) && rawPct > 0 && !isEarned) {
                     const safePct = Math.min(100, Math.max(0, Math.round(rawPct)));
                     return {
@@ -1327,7 +1328,7 @@
                 };
             }
 
-            // 4. Extract Current Progress Value
+            // 4. Current Value Progression
             let count = 0;
             if (trophyObj.currentValue !== undefined && trophyObj.currentValue !== null) {
                 count = Number(trophyObj.currentValue);
@@ -1349,7 +1350,7 @@
         }
 
         // ====================================================================
-        // DUAL-KEY PLAYTIME RESOLVER (CUSA... / NPWR... / Dynamic Active Timer)
+        // Line 1243: DUAL-KEY PLAYTIME RESOLVER (CUSA / PPSA / NPWR)
         // ====================================================================
         function resolveActivePlaytime(user, hunt) {
             if (!user || !hunt) return { formatted: "0 hrs", isLive: false, baseSeconds: 0, startTime: null };
@@ -1443,7 +1444,7 @@
                     if (!node || typeof node !== 'object') return;
 
                     const url = node.url || node.link || node.href;
-                    if (url && typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://'))) {
+                    if (url && typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('//'))) {
                         leafLinks.push({
                             title: node.title || node.name || "Link",
                             url: url,
@@ -1725,10 +1726,10 @@
                                 <p class="text-xs text-gray-400 font-bold uppercase font-mono">${squadMatches.length} Squad Member(s) Active</p>
                             </div>
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                                <a href="https://store.playstation.com/en-us/search/${cleanGameName}" target="_blank" class="store-btn store-btn-ps"><i class="fab fa-playstation"></i><span>PS</span></a>
-                                <a href="https://store.steampowered.com/search/?term=${cleanGameName}" target="_blank" class="store-btn store-btn-pc"><i class="fab fa-steam"></i><span>PC</span></a>
-                                <a href="https://store.steampowered.com/search/?term=${cleanGameName}" target="_blank" class="store-btn store-btn-steam"><i class="fas fa-desktop"></i><span>Steam</span></a>
-                                <a href="https://www.amazon.com/s?k=${cleanGameName}&tag=website3788-20" target="_blank" class="store-btn store-btn-amazon"><i class="fab fa-amazon"></i><span>Amazon</span></a>
+                                <a href="//store.playstation.com/en-us/search/${cleanGameName}" target="_blank" class="store-btn store-btn-ps"><i class="fab fa-playstation"></i><span>PS</span></a>
+                                <a href="//store.steampowered.com/search/?term=${cleanGameName}" target="_blank" class="store-btn store-btn-pc"><i class="fab fa-steam"></i><span>PC</span></a>
+                                <a href="//store.steampowered.com/search/?term=${cleanGameName}" target="_blank" class="store-btn store-btn-steam"><i class="fas fa-desktop"></i><span>Steam</span></a>
+                                <a href="//www.amazon.com/s?k=${cleanGameName}&tag=website3788-20" target="_blank" class="store-btn store-btn-amazon"><i class="fab fa-amazon"></i><span>Amazon</span></a>
                             </div>
                         </div>
 
@@ -1852,7 +1853,7 @@
                     if (followerEl) followerEl.innerText = (tw.followers !== undefined) ? tw.followers.toLocaleString() : "--";
                     if (msgEl) msgEl.innerText = tw.isLive ? `Live: ${tw.game || 'Gaming'}` : `"${tw.statusMessage || 'Offline'}"`;
                     if (twAgeEl) twAgeEl.innerText = tw.age ? `Age: ${tw.age}` : (tw.subCount ? `Subs: ${tw.subCount}` : 'Channel Active');
-                    if (liveBadge) liveBadge.classList.toggle('hidden', !tw.isLive);
+                    if (liveBadge) liveBadge.classList.toggle('hidden', !liveBadge.classList.contains('hidden') && !tw.isLive ? true : !tw.isLive);
                 }
 
                 const summary = user.trophySummary || {};
@@ -1890,10 +1891,10 @@
 
                     const cleanName = encodeURIComponent((activeGameTitle || '').replace(/®|™/g, ''));
                     document.getElementById('active-game-stores-bar').innerHTML = `
-                        <a href="https://store.playstation.com/en-us/search/${cleanName}" target="_blank" class="store-btn store-btn-ps"><i class="fab fa-playstation"></i><span>PS Store</span></a>
-                        <a href="https://store.steampowered.com/search/?term=${cleanName}" target="_blank" class="store-btn store-btn-pc"><i class="fab fa-steam"></i><span>PC Store</span></a>
-                        <a href="https://store.steampowered.com/search/?term=${cleanName}" target="_blank" class="store-btn store-btn-steam"><i class="fas fa-desktop"></i><span>Steam</span></a>
-                        <a href="https://www.amazon.com/s?k=${cleanName}&tag=website3788-20" target="_blank" class="store-btn store-btn-amazon"><i class="fab fa-amazon"></i><span>Amazon</span></a>
+                        <a href="//store.playstation.com/en-us/search/${cleanName}" target="_blank" class="store-btn store-btn-ps"><i class="fab fa-playstation"></i><span>PS Store</span></a>
+                        <a href="//store.steampowered.com/search/?term=${cleanName}" target="_blank" class="store-btn store-btn-pc"><i class="fab fa-steam"></i><span>PC Store</span></a>
+                        <a href="//store.steampowered.com/search/?term=${cleanName}" target="_blank" class="store-btn store-btn-steam"><i class="fas fa-desktop"></i><span>Steam</span></a>
+                        <a href="//www.amazon.com/s?k=${cleanName}&tag=website3788-20" target="_blank" class="store-btn store-btn-amazon"><i class="fab fa-amazon"></i><span>Amazon</span></a>
                     `;
 
                     const pct = hunt.progress || 0;
@@ -2097,7 +2098,7 @@
                         }
                     }
 
-                    // Checklist rendering with PS5 progress bars
+                    // Line 1618: TROPHY CHECKLIST RENDERING
                     const checklist = document.getElementById('trophy-checklist-container');
                     if (checklist && currentTrophyData.length > 0) {
                         checklist.innerHTML = currentTrophyData.map((t, idx) => {
@@ -2203,7 +2204,7 @@
 
                             return `
                                 <div class="trophy-row ${isEarnedWithin24Hours ? 'recent-earn-yellow-glow' : ''}" onclick="openTrophyDetailModal(currentTrophyData[${idx}], '${safeHuntTitle}')">
-                                    <img src="${t.icon}" class="trophy-icon-sq ${!isEarned && t.hidden ? 'opacity-30 blur-[2px]' : ''}" onerror="this.src='https://via.placeholder.com/56x56/202024/FF5F1F?text=🏆'">
+                                    <img src="${t.icon}" class="trophy-icon-sq ${!isEarned && t.hidden ? 'opacity-30 blur-[2px]' : ''}" onerror="this.src='//via.placeholder.com/56x56/202024/FF5F1F?text=🏆'">
                                     <div class="min-w-0 flex-1">
                                         <div class="flex items-center gap-2 flex-wrap">
                                             <div class="trophy-title-text truncate text-sm ${isEarned ? 'text-green-400' : 'text-orange-400'}">${t.name}</div>
@@ -2245,7 +2246,7 @@
                         const safeArt = escapeHtmlAttr(skel?.posterArt || g.art || g.trophyTitleIconUrl || '');
                         return `
                             <div class="game-thumb" onclick="openPSNRecentGameCompareModal('${safeGName}', '${safeArt}', ${g.progress || 0}, '${g.npCommunicationId || ''}')">
-                                <img src="${safeArt}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150x225/1e1e24/FF5F1F?text=GAME'">
+                                <img src="${safeArt}" class="w-full h-full object-cover" onerror="this.src='//via.placeholder.com/150x225/1e1e24/FF5F1F?text=GAME'">
                                 <div class="game-info-overlay">
                                     <div class="text-xs font-black text-orange-400 truncate">${safeGName}</div>
                                     <div class="text-xs font-black text-white/80">${g.progress || 0}%</div>
@@ -2372,7 +2373,7 @@
             document.getElementById('lightbox-body').innerHTML = `
                 <div class="flex flex-col space-y-6">
                     <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-black/50 p-5 rounded-2xl border border-white/10">
-                        <img src="${resolvedArt}" class="w-24 h-32 object-cover rounded-xl border border-white/20 shadow-xl" onerror="this.src='https://via.placeholder.com/150x225/1e1e24/FF5F1F?text=GAME'">
+                        <img src="${resolvedArt}" class="w-24 h-32 object-cover rounded-xl border border-white/20 shadow-xl" onerror="this.src='//via.placeholder.com/150x225/1e1e24/FF5F1F?text=GAME'">
                         <div class="min-w-0 flex-1">
                             <div class="flex items-center gap-2">
                                 <h4 class="text-2xl font-black text-white uppercase truncate">${gameName}</h4>
@@ -2420,7 +2421,7 @@
                                 return `
                                     <div class="py-3.5 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
                                         <div class="flex items-center gap-3 min-w-0 flex-1">
-                                            <img src="${t.icon || ''}" class="w-12 h-12 rounded-lg object-cover border border-white/10 flex-shrink-0" onerror="this.src='https://via.placeholder.com/48x48/202024/FF5F1F?text=🏆'">
+                                            <img src="${t.icon || ''}" class="w-12 h-12 rounded-lg object-cover border border-white/10 flex-shrink-0" onerror="this.src='//via.placeholder.com/48x48/202024/FF5F1F?text=🏆'">
                                             <div class="min-w-0 flex-1">
                                                 <div class="flex items-center gap-2">
                                                     <div class="text-sm font-bold text-white uppercase truncate">${t.name}</div>
@@ -2469,10 +2470,10 @@
             try {
                 const user = "werewolf3788";
                 const [statusRes, gameRes, followRes, titleRes] = await Promise.all([
-                    fetch(`https://decapi.me/twitch/uptime/${user}`).then(r => r.text()).catch(() => "offline"),
-                    fetch(`https://decapi.me/twitch/game/${user}`).then(r => r.text()).catch(() => ""),
-                    fetch(`https://decapi.me/twitch/followcount/${user}`).then(r => r.text()).catch(() => "0"),
-                    fetch(`https://decapi.me/twitch/title/${user}`).then(r => r.text()).catch(() => "")
+                    fetch(`//decapi.me/twitch/uptime/${user}`).then(r => r.text()).catch(() => "offline"),
+                    fetch(`//decapi.me/twitch/game/${user}`).then(r => r.text()).catch(() => ""),
+                    fetch(`//decapi.me/twitch/followcount/${user}`).then(r => r.text()).catch(() => "0"),
+                    fetch(`//decapi.me/twitch/title/${user}`).then(r => r.text()).catch(() => "")
                 ]);
 
                 const isLive = !statusRes.toLowerCase().includes("offline") && !statusRes.toLowerCase().includes("error");
@@ -2551,7 +2552,7 @@
             if (lb) lb.style.display = 'none';
         }
 
-        // Initialize Engine & Polling Loops
+        // Line 1969: Initialize Engine & Polling Loops
         fetchCanonicalSkeleton();
         fetchUtmNavLinks();
         updateHub();
