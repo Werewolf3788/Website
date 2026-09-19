@@ -353,7 +353,6 @@ const sniperData = [
   { id: 'm13_pl3', cat: '13: Rough Landing (DLC)', name: 'Damaged Journal', type: 'Personal Letter', desc: 'Bottom left of map next to workbench.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_cd1', cat: '13: Rough Landing (DLC)', name: 'Scribble-Covered Map', type: 'Classified Doc', desc: 'Airfield control tower radio room.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_cd2', cat: '13: Rough Landing (DLC)', name: 'Resistance Correspondence', type: 'Classified Doc', desc: 'Underground fuel storage facility safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm13_cd5', cat: '13: Rough Landing (DLC)', name: 'Staff Car Orders', type: 'Classified Doc', desc: 'Staff car glove box at checkpoint.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_hi1', cat: '13: Rough Landing (DLC)', name: 'Film Cannister', type: 'Hidden Item', desc: 'Crashed cockpit floor.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_hi2', cat: '13: Rough Landing (DLC)', name: 'Smoking Pipe', type: 'Hidden Item', desc: 'Experimental jet turbine blueprints.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_hi3', cat: '13: Rough Landing (DLC)', name: 'Smoking Pipe', type: 'Hidden Item', desc: 'Inside officer quarters desk.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
