@@ -314,7 +314,7 @@ const sniperData = [
   { id: 'm11_cd1', cat: '11: Landing Force (DLC)', name: 'Wine-Stained Warning', type: 'Classified Doc', desc: 'Command bunker office safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm11_cd2', cat: '11: Landing Force (DLC)', name: 'Security Measures', type: 'Classified Doc', desc: 'Under desk by SMG workbench.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc&t=75s' },
   { id: 'm11_hi1', cat: '11: Landing Force (DLC)', name: 'Military Flask', type: 'Hidden Item', desc: 'Ancient coin on lighthouse top floor.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm11_hi2', cat: '11: Landing Force (DLC)', name: 'Hidden Item #2', type: 'Hidden Item', desc: 'Naval telescope in harbourmaster tower.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
+  { id: 'm11_hi2', cat: '11: Landing Force (DLC)', name: 'Binoculars', type: 'Hidden Item', desc: 'Naval telescope in harbourmaster tower.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm11_se1', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Look across the river when you first come out of cave in the area of the tank you need to blow up.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc' },
   { id: 'm11_se2', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Same building as Bread & Bordom Personal letter at top by sniper post on edge of building.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc&t=104s' },
   { id: 'm11_se3', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Eastern battery bunker roof corner.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
