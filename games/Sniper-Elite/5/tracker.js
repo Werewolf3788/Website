@@ -325,11 +325,11 @@ const sniperData = [
   { id: 'med_lastresort', cat: '11: Landing Force (DLC)', name: 'Last Resort', type: 'Medal', desc: 'Complete the campaign mission - Landing Force.' },
 
   // --- Mission 12: Conqueror (DLC) ---
-  { id: 'm12_pl1', cat: '12: Conqueror (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Town entrance bridge guard desk.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY' },
+  { id: 'm12_pl1', cat: '12: Conqueror (DLC)', name: 'Roughly-Written Note', type: 'Personal Letter', desc: 'On the Highest floor, Next to the gbed on the floor east side of map just north of the hidden item, just north of the long wall or sidewalk', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=173s' },
   { id: 'm12_pl2', cat: '12: Conqueror (DLC)', name: 'Debris-Covered Love Letter', type: 'Personal Letter', desc: 'On a Box next to the Artillery Gun.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=125s' },
    { id: 'm12_pl2', cat: '12: Conqueror (DLC)', name: 'An Unfinished Plea for Aid', type: 'Personal Letter', desc: 'top of map youll see a white door with 2 red flags go to back side on left jump thru window look on floor.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=125s' },
   { id: 'm12_cd1', cat: '12: Conqueror (DLC)', name: 'Classified Doc #1', type: 'Classified Doc', desc: 'Castle fortress headquarters table.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=173s' },
-  { id: 'm12_cd2', cat: '12: Conqueror (DLC)', name: 'Classified Doc #2', type: 'Classified Doc', desc: 'Subterranean dungeon interrogation room.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
+  { id: 'm12_cd2', cat: '12: Conqueror (DLC)', name: 'Operations Dossier', type: 'Classified Doc', desc: 'Go to the far west of the map slightly north of the roughly written note on the edge of map. ', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=156s' },
   { id: 'm12_hi1', cat: '12: Conqueror (DLC)', name: 'Hidden Item #1', type: 'Hidden Item', desc: 'Medieval knight dagger in castle hall.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm12_hi2', cat: '12: Conqueror (DLC)', name: 'Golden Goblet', type: 'Hidden Item', desc: 'Church sacristy safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm12_se1', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Main castle keep battlements peak.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
