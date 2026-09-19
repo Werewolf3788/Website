@@ -349,7 +349,7 @@ const sniperData = [
   
   // --- Mission 13: Rough Landing (DLC) ---
   { id: 'm13_pl1', cat: '13: Rough Landing (DLC)', name: 'Letters Between Friends', type: 'Personal Letter', desc: 'Carried by Herbert Dorf (Infantry) with Key.', yt: '//https://www.youtube.com/watch?v=9XEuci1u4kE' },
-  { id: 'm13_pl2', cat: '13: Rough Landing (DLC)', name: 'ersonal Letter #2', type: 'Personal Letter', desc: 'Next to Artillery gun.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY' },
+  { id: 'm13_pl2', cat: '13: Rough Landing (DLC)', name: 'Undiscovered', type: 'Personal Letter', desc: 'Next to Artillery gun.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY' },
   { id: 'm13_pl3', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #3', type: 'Personal Letter', desc: 'Rail depot switchboard table.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_pl4', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #4', type: 'Personal Letter', desc: 'Farmhouse attic crate.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_pl5', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #5', type: 'Personal Letter', desc: 'Looted from patrolling squad officer.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
@@ -360,7 +360,7 @@ const sniperData = [
   { id: 'm13_cd5', cat: '13: Rough Landing (DLC)', name: 'Staff Car Orders', type: 'Classified Doc', desc: 'Staff car glove box at checkpoint.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_hi1', cat: '13: Rough Landing (DLC)', name: 'Pilot Flight Goggles', type: 'Hidden Item', desc: 'Crashed cockpit floor.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_hi2', cat: '13: Rough Landing (DLC)', name: 'Turbine Blueprints', type: 'Hidden Item', desc: 'Experimental jet turbine blueprints.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm13_hi3', cat: '13: Rough Landing (DLC)', name: 'Iron Cross', type: 'Hidden Item', desc: 'Inside officer quarters desk.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
+  { id: 'm13_hi3', cat: '13: Rough Landing (DLC)', name: 'Smoking Pipe', type: 'Hidden Item', desc: 'Inside officer quarters desk.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_se1', cat: '13: Rough Landing (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Aviation hangar roof girder apex.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_se2', cat: '13: Rough Landing (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Rail bridge central concrete pillar.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_se3', cat: '13: Rough Landing (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Forest water reservoir watchtower.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
