@@ -344,7 +344,7 @@ const sniperData = [
   
   // --- Mission 13: Rough Landing (DLC) ---
   { id: 'm13_pl1', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Forest camp command tent cot.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm13_pl2', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #2', type: 'Personal Letter', desc: 'Crashed glider wreckage site.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
+  { id: 'm13_pl2', cat: '13: Rough Landing (DLC)', name: 'Debris=Covered Love Letter', type: 'Personal Letter', desc: 'Next to Artilry gun.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY' },
   { id: 'm13_pl3', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #3', type: 'Personal Letter', desc: 'Rail depot switchboard table.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_pl4', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #4', type: 'Personal Letter', desc: 'Farmhouse attic crate.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_pl5', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #5', type: 'Personal Letter', desc: 'Looted from patrolling squad officer.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
@@ -361,7 +361,7 @@ const sniperData = [
   { id: 'm13_se3', cat: '13: Rough Landing (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Forest water reservoir watchtower.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_wb1', cat: '13: Rough Landing (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Hangar maintenance trench underground.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_wb2', cat: '13: Rough Landing (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Rail freight staging depot armory.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm13_wb3', cat: '13: Rough Landing (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Forest checkpoint security bunker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
+  { id: 'm13_wb3', cat: '13: Rough Landing (DLC)', name: 'Village Pistol Workbench', type: 'Workbench', desc: 'In Village with faded red paint AG Hail.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=23s' },
   { id: 'med_m13_woods', cat: '13: Rough Landing (DLC)', name: 'If You Go Down to the Woods Today', type: 'Medal', desc: 'Complete campaign mission - Rough Landing.' },
   { id: 'med_m13_fightanother', cat: '13: Rough Landing (DLC)', name: 'Fight Another Day', type: 'Medal', desc: 'Rough Landing - Complete mission with a 2 star rating.', target: 2 },
   { id: 'med_m13_stroll', cat: '13: Rough Landing (DLC)', name: 'Stroll in the Woods', type: 'Medal', desc: 'Rough Landing - Complete mission on Authentic difficulty.' },
