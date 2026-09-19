@@ -411,8 +411,8 @@ const sniperData = [
   { id: 'med_bestofbest', cat: '15: Campaign & Objective Medals', name: 'Best of the Best', type: 'Medal', desc: 'Complete entire campaign on Authentic difficulty.' },
 
   // --- Category: Longshot & Combat Medals ---
-  { id: 'med_ls_m1', cat: '16: Longshot & Combat Medals', name: 'Mission 1 Long Shot', type: 'Medal', desc: 'Take a 450 meters shot in Colline-Sur-Mer.', target: 450, isLongShot: true },
-  { id: 'med_ls_m1_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 1 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Colline-Sur-Mer, in Authentic difficulty.', target: 250, isLongShot: true },
+  { id: 'med_ls_m1', cat: '16: Longshot & Combat Medals', name: 'Mission 1 Long Shot', type: 'Medal', desc: 'Take a 600 meters shot in Colline-Sur-Mer.', target: 600, isLongShot: true },
+  { id: 'med_ls_m1_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 1 Authentic Long Shot', type: 'Medal', desc: 'Take a 725 meters shot in Colline-Sur-Mer, in Authentic difficulty.', target: 725, isLongShot: true },
   { id: 'med_ls_m2', cat: '16: Longshot & Combat Medals', name: 'Mission 2 Long Shot', type: 'Medal', desc: 'Take a 375 meters shot in Château de Berengar.', target: 375, isLongShot: true },
   { id: 'med_ls_m2_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 2 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Château de Berengar, in Authentic difficulty.', target: 250, isLongShot: true },
   { id: 'med_ls_m3', cat: '16: Longshot & Combat Medals', name: 'Mission 3 Long Shot', type: 'Medal', desc: 'Take a 675 meters shot in Beaumont-Saint-Denis.', target: 675, isLongShot: true },
