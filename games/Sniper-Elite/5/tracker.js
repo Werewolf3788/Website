@@ -1,13 +1,13 @@
 /* ============================================================================
    File: tracker.js
-   Deployment Timestamp: Sat, Sep 19, 2026, 03:15 (EDT - New York)
+   Deployment Timestamp: Fri, Sep 18, 2026, 23:27 (EDT - New York)
    Project: entertainment-71888
-   Version: v7.3.0-SE5-DISCORD-INTEL-DISPATCHER
+   Version: v7.4.0-SE5-DISCORD-LONGSHOT-LEADERBOARD
    Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
    Google Analytics Tag: G-CTYHDF4MSD
    Features:
      - Real-time Firestore sync & LocalStorage offline caching
-     - Discord Webhook Intel Dispatcher with real-time category breakdown (Found vs Pending)
+     - Discord Webhook Intel Dispatcher with Long Shot Leaderboard breakdown & squad records
      - Uncapped Long Shot & Repeatable Career Ribbon tracking (counter + direct edit)
      - 47 Complete Campaign/Survival Career Ribbons (Stealth, Tactics, Lethal, Non-Lethal, Survival)
      - Dynamic Team Intel Leaderboard badge with Leader Crown (👑) indicator
@@ -20,7 +20,7 @@
 
 /* === SECTION: Automatic Cache Purge === */
 (function purgeStaleTrackerCache() {
-  const activeVersion = 'v7.3.0-20260919-0315';
+  const activeVersion = 'v7.4.0-20260918-2327';
   const storedVersion = localStorage.getItem('se5_tracker_build_version');
   if (storedVersion !== activeVersion) {
     Object.keys(localStorage).forEach(key => {
@@ -461,7 +461,7 @@ const sniperData = [
   // --- Category: Weapon Mastery & Tactics Medals ---
   { id: 'med_masterrifles', cat: '17: Weapon Mastery & Tactics Medals', name: 'Master of Rifles', type: 'Medal', desc: 'Obtain 6 rifle-related mastery medals (50 headshots from 100m+ each).', target: 6 },
   { id: 'med_mastersecond', cat: '17: Weapon Mastery & Tactics Medals', name: 'Master of Secondaries', type: 'Medal', desc: 'Obtain 6 secondary-related mastery medals (150 kills each).', target: 6 },
-  { id: 'med_masterpistols', cat: '17: Weapon Mastery & Tactics Medals', name: 'Master of Pistols', type: 'Medal', desc: 'Obtain 6 pistol-related mastery medals (50 ghost kills each).', target: 6 },
+  { id: 'med_masterpistols', cat: '17: Weapon Mastery & Tactics Medals', name: 'Master of Pistols', type: 'Medal', desc: 'Obtain 6 pistol-related mastery medals (50 ghost kills each).', target: 50 },
   { id: 'med_double1866', cat: '17: Weapon Mastery & Tactics Medals', name: 'Double 1866 Master', type: 'Medal', desc: 'Ghost kill 5 enemies with the Double 1866.', target: 5 },
   { id: 'med_welrodmaster', cat: '17: Weapon Mastery & Tactics Medals', name: 'Welrod Master', type: 'Medal', desc: 'Ghost kill 5 enemies with the Welrod.', target: 5 },
   { id: 'med_m1911master', cat: '17: Weapon Mastery & Tactics Medals', name: 'M1911 Master', type: 'Medal', desc: 'Ghost kill 25 enemies with the M1911.', target: 25 },
@@ -673,29 +673,12 @@ function getItemThemeMeta(item) {
 }
 
 /* === SECTION: Discord Real-Time Push Notification Engine === */
-async function sendDiscordIntelUpdate(item, hunterData, operative) {
+async function sendDiscordIntelUpdate(item, hunterData, operative, teamProgress) {
   if (!DISCORD_WEBHOOK_URL) return;
 
   try {
     const rawIconUrl = GAME_TYPE_ICONS[item.type] || GAME_TYPE_ICONS['Personal Letter'];
     const absoluteIconUrl = rawIconUrl.startsWith('//') ? 'https:' + rawIconUrl : rawIconUrl;
-
-    // Filter all items belonging to the same mission category and identical type
-    const sameTypeItems = hunterData.filter(i => i.cat === item.cat && i.type === item.type);
-    const foundItems = sameTypeItems.filter(i => i.collected);
-    const pendingItems = sameTypeItems.filter(i => !i.collected);
-
-    const countFound = foundItems.length;
-    const countTotal = sameTypeItems.length;
-
-    // Build Found & Pending checkmark lists
-    const foundListText = foundItems.length > 0
-      ? foundItems.map(i => `✅ **${i.name}**`).join('\n')
-      : '_None yet_';
-
-    const pendingListText = pendingItems.length > 0
-      ? pendingItems.map(i => `❌ ${i.name}`).join('\n')
-      : '🎉 **All acquired for this mission!**';
 
     const opTheme = userThemes[operative] || userThemes['Werewolf3788'];
     const embedColor = opTheme.intColor || 0xff8800;
@@ -713,51 +696,142 @@ async function sendDiscordIntelUpdate(item, hunterData, operative) {
     });
     const nyTimeStr = nyFormatter.format(new Date());
 
-    const embedPayload = {
-      username: "Sniper Elite 5 HQ Intel",
-      avatar_url: "https://raw.githubusercontent.com/Werewolf3788/Website/main/games/Sniper-Elite/5/images/Sniper%20Elite%20Eagle.JPG",
-      embeds: [
-        {
-          title: `🎯 INTEL SECURED: ${item.name}`,
-          description: `**Operative [${operative.toUpperCase()}]** marked **${item.name}** as completed!`,
-          color: embedColor,
-          thumbnail: {
-            url: absoluteIconUrl
-          },
-          fields: [
-            {
-              name: "🗺️ Mission / Category",
-              value: `**${item.cat}**`,
-              inline: true
+    let embedPayload = null;
+
+    if (item.isLongShot) {
+      // Build squad ranking for this specific shot
+      const shotLeaderboard = ALL_OPERATIVES.map(op => {
+        const opSaved = (teamProgress && teamProgress[op]) || [];
+        const opEntry = opSaved.find(s => s.id === item.id);
+        const count = opEntry && opEntry.count !== undefined ? Number(opEntry.count) : (op === operative ? item.count : 0);
+        return {
+          operative: op,
+          distance: count
+        };
+      }).sort((a, b) => b.distance - a.distance);
+
+      const longestShot = shotLeaderboard[0].distance;
+      const isCurrentOpLeader = item.count > 0 && item.count >= longestShot;
+
+      const leaderboardText = shotLeaderboard.map((entry, index) => {
+        const isLeader = entry.distance > 0 && entry.distance === longestShot;
+        const crown = isLeader ? '👑 ' : `${index + 1}. `;
+        const activeMarker = entry.operative.toLowerCase() === operative.toLowerCase() ? ' 🎯 *(Updated)*' : '';
+        return `${crown}**${entry.operative.toUpperCase()}**: ${entry.distance}m${activeMarker}`;
+      }).join('\n');
+
+      const isRecordOverTarget = item.target && item.count >= item.target;
+      const targetNote = item.target 
+        ? (isRecordOverTarget 
+            ? `\n🎯 **TARGET MET (${item.target}m required) 🔥**` 
+            : `\n🎯 **${item.target - item.count}m remaining to hit mission target (${item.target}m)**`)
+        : '';
+
+      embedPayload = {
+        username: "Sniper Elite 5 HQ Intel",
+        avatar_url: "https://raw.githubusercontent.com/Werewolf3788/Website/main/games/Sniper-Elite/5/images/Sniper%20Elite%20Eagle.JPG",
+        embeds: [
+          {
+            title: `🎯 LONG SHOT RECORD: ${item.name}`,
+            description: `**Operative [${operative.toUpperCase()}]** registered a **${item.count}m shot**!${isCurrentOpLeader && item.count > 0 ? '\n👑 **NEW SQUAD LEADER!**' : ''}${targetNote}`,
+            color: embedColor,
+            thumbnail: { url: absoluteIconUrl },
+            fields: [
+              {
+                name: "🗺️ Mission / Category",
+                value: `**${item.cat}**`,
+                inline: true
+              },
+              {
+                name: "🎯 Shot Distance",
+                value: `**${item.count}m** (Target: ${item.target || 0}m)`,
+                inline: true
+              },
+              {
+                name: "🏆 Longest Squad Shot",
+                value: `**${longestShot}m** ${isCurrentOpLeader ? '👑' : ''}`,
+                inline: true
+              },
+              {
+                name: "📊 Squad Long Shot Leaderboard",
+                value: leaderboardText,
+                inline: false
+              },
+              {
+                name: "📍 Vantage / Target Intel",
+                value: item.desc ? `_${item.desc}_` : '_Long shot position registered._',
+                inline: false
+              }
+            ],
+            footer: {
+              text: `HQ Tactical Ballistics • New York (24h): ${nyTimeStr}`
             },
-            {
-              name: "📦 Intel Type & Progress",
-              value: `**${item.type}** (${countFound}/${countTotal} Found)`,
-              inline: true
+            timestamp: new Date().toISOString()
+          }
+        ]
+      };
+
+    } else {
+      // Standard Collectible, Medal, or Ribbon Alert
+      const sameTypeItems = hunterData.filter(i => i.cat === item.cat && i.type === item.type);
+      const foundItems = sameTypeItems.filter(i => i.collected);
+      const pendingItems = sameTypeItems.filter(i => !i.collected);
+
+      const countFound = foundItems.length;
+      const countTotal = sameTypeItems.length;
+
+      const foundListText = foundItems.length > 0
+        ? foundItems.map(i => `✅ **${i.name}**`).join('\n')
+        : '_None yet_';
+
+      const pendingListText = pendingItems.length > 0
+        ? pendingItems.map(i => `❌ ${i.name}`).join('\n')
+        : '🎉 **All acquired for this mission!**';
+
+      embedPayload = {
+        username: "Sniper Elite 5 HQ Intel",
+        avatar_url: "https://raw.githubusercontent.com/Werewolf3788/Website/main/games/Sniper-Elite/5/images/Sniper%20Elite%20Eagle.JPG",
+        embeds: [
+          {
+            title: `🎯 INTEL SECURED: ${item.name}`,
+            description: `**Operative [${operative.toUpperCase()}]** marked **${item.name}** as completed!`,
+            color: embedColor,
+            thumbnail: { url: absoluteIconUrl },
+            fields: [
+              {
+                name: "🗺️ Mission / Category",
+                value: `**${item.cat}**`,
+                inline: true
+              },
+              {
+                name: "📦 Intel Type & Progress",
+                value: `**${item.type}** (${countFound}/${countTotal} Found)`,
+                inline: true
+              },
+              {
+                name: "📍 Location Intel",
+                value: item.desc ? `_${item.desc}_` : '_No specific intel location noted._',
+                inline: false
+              },
+              {
+                name: `✅ Found So Far (${countFound}/${countTotal})`,
+                value: foundListText,
+                inline: true
+              },
+              {
+                name: `❌ Still Pending (${pendingItems.length}/${countTotal})`,
+                value: pendingListText,
+                inline: true
+              }
+            ],
+            footer: {
+              text: `HQ Tactical Operations • New York (24h): ${nyTimeStr}`
             },
-            {
-              name: `📍 Location Intel`,
-              value: item.desc ? `_${item.desc}_` : '_No specific intel location noted._',
-              inline: false
-            },
-            {
-              name: `✅ Found So Far (${countFound}/${countTotal})`,
-              value: foundListText,
-              inline: true
-            },
-            {
-              name: `❌ Still Pending (${pendingItems.length}/${countTotal})`,
-              value: pendingListText,
-              inline: true
-            }
-          ],
-          footer: {
-            text: `HQ Tactical Operations • New York (24h): ${nyTimeStr}`
-          },
-          timestamp: new Date().toISOString()
-        }
-      ]
-    };
+            timestamp: new Date().toISOString()
+          }
+        ]
+      };
+    }
 
     if (item.yt) {
       const ytLink = item.yt.startsWith('//') ? 'https:' + item.yt.replace(/^\/\//, '') : item.yt;
@@ -791,8 +865,8 @@ const appState = {
   user: null,
   unsubListeners: [],
   isLoaded: false,
-  version: 'v7.3.0',
-  buildDate: '2026-09-19 03:15 EDT',
+  version: 'v7.4.0',
+  buildDate: '2026-09-18 23:27 EDT',
   activeLeafletMaps: {},
   markerLayers: {},
 
@@ -1117,7 +1191,9 @@ const appState = {
     const item = this.hunterData.find(i => i.id === id);
     if (!item) return;
 
+    const previousCount = item.count || 0;
     const previousCollectedState = item.collected;
+
     item.count = newCount;
     if (item.target) {
       item.collected = (item.count >= item.target);
@@ -1135,9 +1211,15 @@ const appState = {
     }
     this.teamProgress[this.activeGamertag] = opSaved;
 
-    // If item was newly reached or achieved
-    if (!previousCollectedState && item.collected) {
-      sendDiscordIntelUpdate(item, this.hunterData, this.activeGamertag);
+    // Alert Conditions:
+    // 1. Long Shot: Send whenever distance increased and is > 0
+    // 2. Other items: Send when newly reaching collected status
+    if (item.isLongShot) {
+      if (item.count > 0 && item.count !== previousCount) {
+        sendDiscordIntelUpdate(item, this.hunterData, this.activeGamertag, this.teamProgress);
+      }
+    } else if (!previousCollectedState && item.collected) {
+      sendDiscordIntelUpdate(item, this.hunterData, this.activeGamertag, this.teamProgress);
     }
 
     this.render();
@@ -1354,7 +1436,7 @@ const appState = {
 
       // Trigger Discord Push Alert on item acquisition
       if (item.collected) {
-        sendDiscordIntelUpdate(item, this.hunterData, this.activeGamertag);
+        sendDiscordIntelUpdate(item, this.hunterData, this.activeGamertag, this.teamProgress);
       }
 
       this.render();
