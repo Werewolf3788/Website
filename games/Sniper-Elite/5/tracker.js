@@ -1,11 +1,12 @@
 /* ============================================================================
    File: tracker.js
-   Deployment Timestamp: Sat, Sep 19, 2026, 03:36 (EDT - New York)
+   Deployment Timestamp: Sat, Sep 19, 2026, 03:45 (EDT - New York)
    Project: entertainment-71888
-   Version: v7.6.0-SE5-NAMED-MISSION-LONGSHOTS
+   Version: v7.7.0-SE5-TIERED-MEDALS-BRONZE-SILVER-GOLD
    Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
    Google Analytics Tag: G-CTYHDF4MSD
    Features:
+     - Bronze (25%), Silver (50%), and Gold (100%) progression milestones
      - Named Mission Long Shots: Specific mission names displayed on all long shots
      - Real-time Firestore sync & LocalStorage offline caching
      - Discord Webhook Intel Dispatcher with Long Shot Leaderboard breakdown & squad records
@@ -21,7 +22,7 @@
 
 /* === SECTION: Automatic Cache Purge === */
 (function purgeStaleTrackerCache() {
-  const activeVersion = 'v7.6.0-20260919-0336';
+  const activeVersion = 'v7.7.0-20260919-0345';
   const storedVersion = localStorage.getItem('se5_tracker_build_version');
   if (storedVersion !== activeVersion) {
     Object.keys(localStorage).forEach(key => {
@@ -100,6 +101,52 @@ const MISSION_MAP_CONFIG = {
     h: 2048 
   }
 };
+
+/* === SECTION: Tier Progress Utility (Bronze, Silver, Gold) === */
+function getTierStatus(percent) {
+  if (percent >= 100) {
+    return {
+      tier: 'Gold',
+      icon: '🥇',
+      label: 'GOLD TIER',
+      badgeClass: 'tier-badge-gold',
+      color: '#ffd700',
+      intColor: 0xffd700,
+      style: 'background: rgba(255, 215, 0, 0.2); color: #ffd700; border: 1px solid #ffd700;'
+    };
+  }
+  if (percent >= 50) {
+    return {
+      tier: 'Silver',
+      icon: '🥈',
+      label: 'SILVER TIER',
+      badgeClass: 'tier-badge-silver',
+      color: '#c0c0c0',
+      intColor: 0xc0c0c0,
+      style: 'background: rgba(192, 192, 192, 0.2); color: #e0e0e0; border: 1px solid #c0c0c0;'
+    };
+  }
+  if (percent >= 25) {
+    return {
+      tier: 'Bronze',
+      icon: '🥉',
+      label: 'BRONZE TIER',
+      badgeClass: 'tier-badge-bronze',
+      color: '#cd7f32',
+      intColor: 0xcd7f32,
+      style: 'background: rgba(205, 127, 50, 0.2); color: #e59866; border: 1px solid #cd7f32;'
+    };
+  }
+  return {
+    tier: 'None',
+    icon: '⚪',
+    label: 'IN PROGRESS',
+    badgeClass: 'tier-badge-none',
+    color: '#888888',
+    intColor: 0x888888,
+    style: 'background: rgba(255, 255, 255, 0.08); color: #aaa; border: 1px solid rgba(255,255,255,0.15);'
+  };
+}
 
 /* === SECTION: Master Dataset === */
 const sniperData = [
@@ -245,7 +292,7 @@ const sniperData = [
   { id: 'm7_pl1', cat: '7: Secret Weapons', name: 'We Had a Deal', type: 'Personal Letter', desc: 'Upstairs table in eastern trainyard office.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=20s', x: 1480, y: 920 },
   { id: 'm7_pl2', cat: '7: Secret Weapons', name: 'I\'m Done', type: 'Personal Letter', desc: 'Fireplace of far-eastern abandoned house.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=55s', x: 1620, y: 780 },
   { id: 'm7_pl3', cat: '7: Secret Weapons', name: 'I Can\'t Work Like This', type: 'Personal Letter', desc: 'Table on steel grate near V2 rocket lower level.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=92s', x: 1140, y: 640 },
-  { id: 'm7_pl4', cat: '7: Secret Weapons', name: 'The V2\'s Are Obsolete', type: 'Personal Letter', desc: 'Chair opposite V2 Launch Site in central dome.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=128s', x: 1220, y: 680 },
+  { id: 'm7_pl4', cat: '7: Secret Weapons', name: 'The V2\'s Are Obsolete', type: 'Personal Letter', desc: 'Chair opposite V2 Launch Site in central dome.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=128s' },
   { id: 'm7_pl5', cat: '7: Secret Weapons', name: 'Thinking Outside the Box', type: 'Personal Letter', desc: 'Top of zig-zag stairs in northern dome room.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=165s', x: 1240, y: 580 },
   { id: 'm7_cd1', cat: '7: Secret Weapons', name: 'Inbound Deliveries', type: 'Classified Doc', desc: 'Looted from head engineer in station safe.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=200s', x: 1420, y: 960 },
   { id: 'm7_cd2', cat: '7: Secret Weapons', name: 'Dr Junger\'s Schedule', type: 'Classified Doc', desc: 'Near window in SE train station building.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=235s', x: 1360, y: 1040 },
@@ -678,6 +725,12 @@ async function sendDiscordIntelUpdate(item, hunterData, operative, teamProgress)
     const opTheme = userThemes[operative] || userThemes['Werewolf3788'];
     const embedColor = opTheme.intColor || 0xff8800;
 
+    // Calculate category completion percentage and Tier
+    const catItems = hunterData.filter(i => i.cat === item.cat);
+    const catFound = catItems.filter(i => i.collected).length;
+    const catPct = catItems.length > 0 ? Math.round((catFound / catItems.length) * 100) : 0;
+    const catTier = getTierStatus(catPct);
+
     // 24hr New York Timestamp for Discord Embed footer
     const nyFormatter = new Intl.DateTimeFormat('en-US', {
       timeZone: 'America/New_York',
@@ -748,6 +801,11 @@ async function sendDiscordIntelUpdate(item, hunterData, operative, teamProgress)
                 inline: true
               },
               {
+                name: "🎖️ Mission Status Tier",
+                value: `**${catTier.icon} ${catTier.label} (${catPct}%)**`,
+                inline: true
+              },
+              {
                 name: "📊 Squad Long Shot Leaderboard",
                 value: leaderboardText,
                 inline: false
@@ -783,14 +841,18 @@ async function sendDiscordIntelUpdate(item, hunterData, operative, teamProgress)
         ? pendingItems.map(i => `❌ ${i.name}`).join('\n')
         : '🎉 **All acquired for this mission!**';
 
+      const tierPromoText = (catPct === 25 || catPct === 50 || catPct === 100)
+        ? `\n🎉 **MISSION PROMOTED TO ${catTier.icon} ${catTier.label}!**`
+        : '';
+
       embedPayload = {
         username: "Sniper Elite 5 HQ Intel",
         avatar_url: "https://raw.githubusercontent.com/Werewolf3788/Website/main/games/Sniper-Elite/5/images/Sniper%20Elite%20Eagle.JPG",
         embeds: [
           {
             title: `🎯 INTEL SECURED: ${item.name}`,
-            description: `**Operative [${operative.toUpperCase()}]** marked **${item.name}** as completed!`,
-            color: embedColor,
+            description: `**Operative [${operative.toUpperCase()}]** marked **${item.name}** as completed!${tierPromoText}`,
+            color: (catPct === 100 ? 0xffd700 : (catPct >= 50 ? 0xc0c0c0 : (catPct >= 25 ? 0xcd7f32 : embedColor))),
             thumbnail: { url: absoluteIconUrl },
             fields: [
               {
@@ -801,6 +863,11 @@ async function sendDiscordIntelUpdate(item, hunterData, operative, teamProgress)
               {
                 name: "📦 Intel Type & Progress",
                 value: `**${item.type}** (${countFound}/${countTotal} Found)`,
+                inline: true
+              },
+              {
+                name: "🎖️ Mission Status Tier",
+                value: `**${catTier.icon} ${catTier.label} (${catPct}%)**`,
                 inline: true
               },
               {
@@ -860,8 +927,8 @@ const appState = {
   user: null,
   unsubListeners: [],
   isLoaded: false,
-  version: 'v7.6.0',
-  buildDate: '2026-09-19 03:36 EDT',
+  version: 'v7.7.0',
+  buildDate: '2026-09-19 03:45 EDT',
   activeLeafletMaps: {},
   markerLayers: {},
 
@@ -1256,6 +1323,10 @@ const appState = {
       section.id = `section-${sid}`;
       section.className = `category-section ${this.collapsedSections[sid] ? 'section-collapsed' : ''} ${isActiveFocus ? 'active-focus' : ''}`;
 
+      // Calculate Category Tier Status (Bronze 25%, Silver 50%, Gold 100%)
+      const catPercent = items.length > 0 ? Math.round((count / items.length) * 100) : 0;
+      const tierInfo = getTierStatus(catPercent);
+
       const hasMapTexture = MISSION_MAP_CONFIG[sid] !== undefined;
       const mapHtml = hasMapTexture ? `
         <div class="tactical-map-wrapper">
@@ -1269,8 +1340,11 @@ const appState = {
 
       section.innerHTML = `
         <div class="category-header outlined-text" onclick="appState.toggleSection('${sid}')">
-          <div style="display:flex; align-items:center; gap: 8px;">
+          <div style="display:flex; align-items:center; gap: 8px; flex-wrap: wrap;">
             <h2 style="font-size: 1.15rem; font-weight: 900; letter-spacing: 1px; color: #fff; text-transform: uppercase;">${cat}</h2>
+            <span class="tier-pill-badge" style="${tierInfo.style} padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; letter-spacing: 1px;">
+              ${tierInfo.icon} ${tierInfo.label} (${catPercent}%)
+            </span>
             ${isActiveFocus ? `<span style="color:var(--ser-color, #ff8800); font-size:11px; font-weight:900; letter-spacing:1px;">[ACTIVE TARGET]</span>` : ''}
           </div>
           <div style="font-weight:900; font-size: 15px; color: var(--ser-color, #ff8800); font-family: monospace;">${count}/${items.length}</div>
@@ -1404,10 +1478,17 @@ const appState = {
     });
 
     const percent = Math.round((totalFound / this.hunterData.length) * 100) || 0;
+    const overallTier = getTierStatus(percent);
+
     const bar = document.getElementById('overall-bar') || document.querySelector('.progress-hud .progress-fill');
     const pct = document.getElementById('percent-text') || document.querySelector('.percent-label');
-    if (bar) bar.style.width = percent + '%';
-    if (pct) pct.innerText = `TOTAL COLLECTION: ${percent}% (${this.activeGamertag})`;
+    if (bar) {
+      bar.style.width = percent + '%';
+      bar.style.backgroundColor = overallTier.color;
+    }
+    if (pct) {
+      pct.innerText = `TOTAL COLLECTION: ${percent}% (${this.activeGamertag}) • [${overallTier.icon} ${overallTier.label}]`;
+    }
   },
 
   toggleItem: async function(id) {
