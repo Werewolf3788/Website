@@ -1,12 +1,12 @@
 /* ============================================================================
    File: tracker.js
-   Deployment Timestamp: Sat, Sep 19, 2026, 03:30 (EDT - New York)
+   Deployment Timestamp: Sat, Sep 19, 2026, 03:36 (EDT - New York)
    Project: entertainment-71888
-   Version: v7.5.0-SE5-MISSION-LONGSHOT-INTEGRATION
+   Version: v7.6.0-SE5-NAMED-MISSION-LONGSHOTS
    Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
    Google Analytics Tag: G-CTYHDF4MSD
    Features:
-     - Mission-Integrated Long Shots: Each mission's Long Shots reside inside its section
+     - Named Mission Long Shots: Specific mission names displayed on all long shots
      - Real-time Firestore sync & LocalStorage offline caching
      - Discord Webhook Intel Dispatcher with Long Shot Leaderboard breakdown & squad records
      - Uncapped Long Shot & Repeatable Career Ribbon tracking (counter + direct edit)
@@ -21,7 +21,7 @@
 
 /* === SECTION: Automatic Cache Purge === */
 (function purgeStaleTrackerCache() {
-  const activeVersion = 'v7.5.0-20260919-0330';
+  const activeVersion = 'v7.6.0-20260919-0336';
   const storedVersion = localStorage.getItem('se5_tracker_build_version');
   if (storedVersion !== activeVersion) {
     Object.keys(localStorage).forEach(key => {
@@ -123,8 +123,8 @@ const sniperData = [
   { id: 'm1_wb1', cat: '1: The Atlantic Wall', name: 'Rifle Workbench', type: 'Workbench', desc: 'Armoury room upstairs after rendezvousing with Blue Viper.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=615s' },
   { id: 'm1_wb2', cat: '1: The Atlantic Wall', name: 'SMG Workbench', type: 'Workbench', desc: 'Attic of the resistance safehouse on the western map edge.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=648s' },
   { id: 'm1_wb3', cat: '1: The Atlantic Wall', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside locked shack above gun battery in the north-west.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=680s' },
-  { id: 'med_ls_m1', cat: '1: The Atlantic Wall', name: 'Mission 1 Long Shot', type: 'Medal', desc: 'Take a 600 meters shot in Colline-Sur-Mer.', target: 600, isLongShot: true },
-  { id: 'med_ls_m1_auth', cat: '1: The Atlantic Wall', name: 'Mission 1 Authentic Long Shot', type: 'Medal', desc: 'Take a 725 meters shot in Colline-Sur-Mer, in Authentic difficulty.', target: 725, isLongShot: true },
+  { id: 'med_ls_m1', cat: '1: The Atlantic Wall', name: 'Mission 1 (The Atlantic Wall) Long Shot', type: 'Medal', desc: 'Take a 600 meters shot in Colline-Sur-Mer.', target: 600, isLongShot: true },
+  { id: 'med_ls_m1_auth', cat: '1: The Atlantic Wall', name: 'Mission 1 (The Atlantic Wall) Authentic Long Shot', type: 'Medal', desc: 'Take a 725 meters shot in Colline-Sur-Mer, in Authentic difficulty.', target: 725, isLongShot: true },
 
   // --- Mission 2: Occupied Residence ---
   { id: 'm2_pl1', cat: '2: Occupied Residence', name: 'Do Not Fail Me, Nephew', type: 'Personal Letter', desc: 'Table in an open room upstairs overlooking the main courtyard.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=20s' },
@@ -146,8 +146,8 @@ const sniperData = [
   { id: 'm2_wb1', cat: '2: Occupied Residence', name: 'Rifle Workbench', type: 'Workbench', desc: 'Inside the eastern cellar armoury.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=595s' },
   { id: 'm2_wb2', cat: '2: Occupied Residence', name: 'SMG Workbench', type: 'Workbench', desc: 'Roof area of the western resistance safehouse (climb vines).', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=630s' },
   { id: 'm2_wb3', cat: '2: Occupied Residence', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside the eastern outhouse armoury.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=665s' },
-  { id: 'med_ls_m2', cat: '2: Occupied Residence', name: 'Mission 2 Long Shot', type: 'Medal', desc: 'Take a 375 meters shot in Château de Berengar.', target: 375, isLongShot: true },
-  { id: 'med_ls_m2_auth', cat: '2: Occupied Residence', name: 'Mission 2 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Château de Berengar, in Authentic difficulty.', target: 250, isLongShot: true },
+  { id: 'med_ls_m2', cat: '2: Occupied Residence', name: 'Mission 2 (Occupied Residence) Long Shot', type: 'Medal', desc: 'Take a 375 meters shot in Château de Berengar.', target: 375, isLongShot: true },
+  { id: 'med_ls_m2_auth', cat: '2: Occupied Residence', name: 'Mission 2 (Occupied Residence) Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Château de Berengar, in Authentic difficulty.', target: 250, isLongShot: true },
 
   // --- Mission 3: Spy Academy ---
   { id: 'm3_pl1', cat: '3: Spy Academy', name: 'Parking Problems', type: 'Personal Letter', desc: 'On a bin near benches opposite white car in west.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=18s' },
@@ -169,8 +169,8 @@ const sniperData = [
   { id: 'm3_wb1', cat: '3: Spy Academy', name: 'Rifle Workbench', type: 'Workbench', desc: 'Cellar north of Kraken training room.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=578s' },
   { id: 'm3_wb2', cat: '3: Spy Academy', name: 'SMG Workbench', type: 'Workbench', desc: 'Locked resistance door east of main square statue.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=612s' },
   { id: 'm3_wb3', cat: '3: Spy Academy', name: 'Pistol Workbench', type: 'Workbench', desc: 'South-central armoury (requires Satchel Charge).', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=645s' },
-  { id: 'med_ls_m3', cat: '3: Spy Academy', name: 'Mission 3 Long Shot', type: 'Medal', desc: 'Take a 675 meters shot in Beaumont-Saint-Denis.', target: 675, isLongShot: true },
-  { id: 'med_ls_m3_auth', cat: '3: Spy Academy', name: 'Mission 3 Authentic Long Shot', type: 'Medal', desc: 'Take a 325 meters shot in Beaumont-Saint-Denis, in Authentic difficulty.', target: 325, isLongShot: true },
+  { id: 'med_ls_m3', cat: '3: Spy Academy', name: 'Mission 3 (Spy Academy) Long Shot', type: 'Medal', desc: 'Take a 675 meters shot in Beaumont-Saint-Denis.', target: 675, isLongShot: true },
+  { id: 'med_ls_m3_auth', cat: '3: Spy Academy', name: 'Mission 3 (Spy Academy) Authentic Long Shot', type: 'Medal', desc: 'Take a 325 meters shot in Beaumont-Saint-Denis, in Authentic difficulty.', target: 325, isLongShot: true },
 
   // --- Mission 4: War Factory ---
   { id: 'm4_pl1', cat: '4: War Factory', name: 'Klaus! You Idiot', type: 'Personal Letter', desc: 'Desk in bridge building toward north-west.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=22s' },
@@ -192,8 +192,8 @@ const sniperData = [
   { id: 'm4_wb1', cat: '4: War Factory', name: 'Rifle Workbench', type: 'Workbench', desc: 'Central warehouse cellar (resistance safehouse).', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=592s' },
   { id: 'm4_wb2', cat: '4: War Factory', name: 'SMG Workbench', type: 'Workbench', desc: 'Upstairs armoury north of shipping warehouse.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=625s' },
   { id: 'm4_wb3', cat: '4: War Factory', name: 'Pistol Workbench', type: 'Workbench', desc: 'Armoury adjacent to eastern vat room.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=658s' },
-  { id: 'med_ls_m4', cat: '4: War Factory', name: 'Mission 4 Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in War Factory.', target: 200, isLongShot: true },
-  { id: 'med_ls_m4_auth', cat: '4: War Factory', name: 'Mission 4 Authentic Long Shot', type: 'Medal', desc: 'Take an Authentic difficulty long shot in War Factory.', target: 200, isLongShot: true },
+  { id: 'med_ls_m4', cat: '4: War Factory', name: 'Mission 4 (War Factory) Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in War Factory.', target: 200, isLongShot: true },
+  { id: 'med_ls_m4_auth', cat: '4: War Factory', name: 'Mission 4 (War Factory) Authentic Long Shot', type: 'Medal', desc: 'Take an Authentic difficulty long shot in War Factory.', target: 200, isLongShot: true },
 
   // --- Mission 5: Festung Guernsey ---
   { id: 'm5_pl1', cat: '5: Festung Guernsey', name: 'No Need to Worry', type: 'Personal Letter', desc: 'Looted from officer in SE tower.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=20s' },
@@ -215,8 +215,8 @@ const sniperData = [
   { id: 'm5_wb1', cat: '5: Festung Guernsey', name: 'Rifle Workbench', type: 'Workbench', desc: 'Inside church tower; climb exterior vines.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=588s' },
   { id: 'm5_wb2', cat: '5: Festung Guernsey', name: 'SMG Workbench', type: 'Workbench', desc: 'Small building basement; crawl under table to ladder.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=620s' },
   { id: 'm5_wb3', cat: '5: Festung Guernsey', name: 'Pistol Workbench', type: 'Workbench', desc: 'In trenches next to anti-air flak emplacement.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=652s' },
-  { id: 'med_ls_m5', cat: '5: Festung Guernsey', name: 'Mission 5 Long Shot', type: 'Medal', desc: 'Take a 400 meters shot in Festung Guernsey.', target: 400, isLongShot: true },
-  { id: 'med_ls_m5_auth', cat: '5: Festung Guernsey', name: 'Mission 5 Authentic Long Shot', type: 'Medal', desc: 'Take a 400 meters shot in Festung Guernsey, in Authentic difficulty.', target: 400, isLongShot: true },
+  { id: 'med_ls_m5', cat: '5: Festung Guernsey', name: 'Mission 5 (Festung Guernsey) Long Shot', type: 'Medal', desc: 'Take a 400 meters shot in Festung Guernsey.', target: 400, isLongShot: true },
+  { id: 'med_ls_m5_auth', cat: '5: Festung Guernsey', name: 'Mission 5 (Festung Guernsey) Authentic Long Shot', type: 'Medal', desc: 'Take a 400 meters shot in Festung Guernsey, in Authentic difficulty.', target: 400, isLongShot: true },
 
   // --- Mission 6: Libération ---
   { id: 'm6_pl1', cat: '6: Libération', name: 'They\'re Out There', type: 'Personal Letter', desc: 'Looted from bald soldier in SE farmhouse yard.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=0s' },
@@ -238,8 +238,8 @@ const sniperData = [
   { id: 'm6_wb1', cat: '6: Libération', name: 'Rifle Workbench', type: 'Workbench', desc: 'Northern resistance safehouse (climb wall before bridge).', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=392s' },
   { id: 'm6_wb2', cat: '6: Libération', name: 'SMG Workbench', type: 'Workbench', desc: 'Central cellar (same room as HI2 Stolen Medals).', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=415s' },
   { id: 'm6_wb3', cat: '6: Libération', name: 'Pistol Workbench', type: 'Workbench', desc: 'Top floor in southern building via scaffolding.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=438s' },
-  { id: 'med_ls_m6', cat: '6: Libération', name: 'Mission 6 Long Shot', type: 'Medal', desc: 'Take a 400 meters rifle shot in Desponts-Sur-Douve.', target: 400, isLongShot: true },
-  { id: 'med_ls_m6_auth', cat: '6: Libération', name: 'Mission 6 Authentic Long Shot', type: 'Medal', desc: 'Take a 400 meters shot in Desponts-Sur-Douve, in Authentic difficulty.', target: 400, isLongShot: true },
+  { id: 'med_ls_m6', cat: '6: Libération', name: 'Mission 6 (Libération) Long Shot', type: 'Medal', desc: 'Take a 400 meters rifle shot in Desponts-Sur-Douve.', target: 400, isLongShot: true },
+  { id: 'med_ls_m6_auth', cat: '6: Libération', name: 'Mission 6 (Libération) Authentic Long Shot', type: 'Medal', desc: 'Take a 400 meters shot in Desponts-Sur-Douve, in Authentic difficulty.', target: 400, isLongShot: true },
 
   // --- Mission 7: Secret Weapons ---
   { id: 'm7_pl1', cat: '7: Secret Weapons', name: 'We Had a Deal', type: 'Personal Letter', desc: 'Upstairs table in eastern trainyard office.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=20s', x: 1480, y: 920 },
@@ -261,8 +261,8 @@ const sniperData = [
   { id: 'm7_wb1', cat: '7: Secret Weapons', name: 'Rifle Workbench', type: 'Workbench', desc: 'Axis Armoury north of V2 rockets.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=578s', x: 1180, y: 560 },
   { id: 'm7_wb2', cat: '7: Secret Weapons', name: 'SMG Workbench', type: 'Workbench', desc: 'Shower corridor from V2 dome spiral stairs.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=610s', x: 1290, y: 640 },
   { id: 'm7_wb3', cat: '7: Secret Weapons', name: 'Pistol Workbench', type: 'Workbench', desc: 'Cave behind wooden panels near SW waterfall.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=642s', x: 620, y: 1280 },
-  { id: 'med_ls_m7', cat: '7: Secret Weapons', name: 'Mission 7 Long Shot', type: 'Medal', desc: 'Take a 350 meters shot in Secret Weapons.', target: 350, isLongShot: true },
-  { id: 'med_ls_m7_auth', cat: '7: Secret Weapons', name: 'Mission 7 Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in Secret Weapons, in Authentic difficulty.', target: 200, isLongShot: true },
+  { id: 'med_ls_m7', cat: '7: Secret Weapons', name: 'Mission 7 (Secret Weapons) Long Shot', type: 'Medal', desc: 'Take a 350 meters shot in Secret Weapons.', target: 350, isLongShot: true },
+  { id: 'med_ls_m7_auth', cat: '7: Secret Weapons', name: 'Mission 7 (Secret Weapons) Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in Secret Weapons, in Authentic difficulty.', target: 200, isLongShot: true },
 
   // --- Mission 8: Rubble and Ruin ---
   { id: 'm8_pl1', cat: '8: Rubble and Ruin', name: 'It\'s Not Over Yet', type: 'Personal Letter', desc: 'Table in ground floor room of SE hotel.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=18s', x: 1440, y: 1380 },
@@ -284,8 +284,8 @@ const sniperData = [
   { id: 'm8_wb1', cat: '8: Rubble and Ruin', name: 'Rifle Workbench', type: 'Workbench', desc: 'Armoury in first sewer combat area.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=572s', x: 1090, y: 1190 },
   { id: 'm8_wb2', cat: '8: Rubble and Ruin', name: 'SMG Workbench', type: 'Workbench', desc: 'Resistance armoury opposite Yoshikawa estate.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=605s', x: 780, y: 660 },
   { id: 'm8_wb3', cat: '8: Rubble and Ruin', name: 'Pistol Workbench', type: 'Workbench', desc: 'Crypt hole in NW corner of central church.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=638s', x: 1150, y: 790 },
-  { id: 'med_ls_m8', cat: '8: Rubble and Ruin', name: 'Mission 8 Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in St. Nazaire.', target: 200, isLongShot: true },
-  { id: 'med_ls_m8_auth', cat: '8: Rubble and Ruin', name: 'Mission 8 Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in St. Nazaire, in Authentic difficulty.', target: 200, isLongShot: true },
+  { id: 'med_ls_m8', cat: '8: Rubble and Ruin', name: 'Mission 8 (Rubble and Ruin) Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in St. Nazaire.', target: 200, isLongShot: true },
+  { id: 'med_ls_m8_auth', cat: '8: Rubble and Ruin', name: 'Mission 8 (Rubble and Ruin) Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in St. Nazaire, in Authentic difficulty.', target: 200, isLongShot: true },
 
   // --- Mission 9: Loose Ends ---
   { id: 'm9_ch1', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Kill Möller with a Rifle', type: 'Challenge', desc: 'Eliminate Abelard Möller with any rifle shot.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA' },
@@ -295,8 +295,8 @@ const sniperData = [
   { id: 'med_brainsop', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Brains of the Operation', type: 'Medal', desc: 'Kill Möller with a headshot in Loose Ends (Mission 9).' },
   { id: 'med_sightbeyond', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Sight Beyond Sights', type: 'Medal', desc: 'Kill Möller with a rifle in Iron Sights (Mission 9).' },
   { id: 'med_cantoutrun', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Can\'t Outrun a Bullet', type: 'Medal', desc: 'Kill Möller at 600 meters or more (Mission 9).', target: 600, isLongShot: true },
-  { id: 'med_ls_m9', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Mission 9 Long Shot', type: 'Medal', desc: 'Take a 500 meters shot in Loose Ends.', target: 500, isLongShot: true },
-  { id: 'med_ls_m9_auth', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Mission 9 Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in Loose Ends, in Authentic difficulty.', target: 200, isLongShot: true },
+  { id: 'med_ls_m9', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Mission 9 (Loose Ends) Long Shot', type: 'Medal', desc: 'Take a 500 meters shot in Loose Ends.', target: 500, isLongShot: true },
+  { id: 'med_ls_m9_auth', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Mission 9 (Loose Ends) Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in Loose Ends, in Authentic difficulty.', target: 200, isLongShot: true },
 
   // --- Mission 10: Wolf Mountain (DLC) ---
   { id: 'm10_pl1', cat: '10: Wolf Mountain (DLC)', name: 'Construction Halted', type: 'Personal Letter', desc: 'Inside guardhouse before teahouse.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=22s' },
@@ -318,9 +318,9 @@ const sniperData = [
   { id: 'm10_wb1', cat: '10: Wolf Mountain (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Cellar of large SW resort building.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=582s' },
   { id: 'm10_wb2', cat: '10: Wolf Mountain (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Basement of abandoned shack near AA gun.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=615s' },
   { id: 'm10_wb3', cat: '10: Wolf Mountain (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Armoury in Berghof basement.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=648s' },
-  { id: 'med_wm_fuhrerlong', cat: '10: Wolf Mountain (DLC)', name: 'Führer Long Shot', type: 'Medal', desc: 'Take a 412 meters shot in Wolf Mountain.', target: 412, isLongShot: true },
-  { id: 'med_fuhrerlongshot', cat: '10: Wolf Mountain (DLC)', name: 'Führer Authentic Long Shot', type: 'Medal', desc: 'Take a 257 meters shot in Wolf Mountain, in Authentic difficulty.', target: 257, isLongShot: true },
-  { id: 'med_wm_fromfuhrer', cat: '10: Wolf Mountain (DLC)', name: 'From Führer Away', type: 'Medal', desc: 'Kill Hitler at a distance of 300 meters or more.', target: 300, isLongShot: true },
+  { id: 'med_wm_fuhrerlong', cat: '10: Wolf Mountain (DLC)', name: 'Mission 10 (Wolf Mountain) Führer Long Shot', type: 'Medal', desc: 'Take a 412 meters shot in Wolf Mountain.', target: 412, isLongShot: true },
+  { id: 'med_fuhrerlongshot', cat: '10: Wolf Mountain (DLC)', name: 'Mission 10 (Wolf Mountain) Führer Authentic Long Shot', type: 'Medal', desc: 'Take a 257 meters shot in Wolf Mountain, in Authentic difficulty.', target: 257, isLongShot: true },
+  { id: 'med_wm_fromfuhrer', cat: '10: Wolf Mountain (DLC)', name: 'Mission 10 (Wolf Mountain) From Führer Away', type: 'Medal', desc: 'Kill Hitler at a distance of 300 meters or more.', target: 300, isLongShot: true },
   { id: 'med_wm_dasspook', cat: '10: Wolf Mountain (DLC)', name: 'Das Spook', type: 'Medal', desc: 'Perform a ghost takedown on Hitler.' },
   { id: 'med_wm_herrtoday', cat: '10: Wolf Mountain (DLC)', name: 'Herr Today, Gone Tomorrow', type: 'Medal', desc: 'Complete mission across Cadet, Sharpshooter, and Sniper Elite.', target: 2 },
   { id: 'med_wm_familienjuwel', cat: '10: Wolf Mountain (DLC)', name: 'Das Familienjuwel', type: 'Medal', desc: 'Kill Hitler with a testicle shot.' },
@@ -348,8 +348,8 @@ const sniperData = [
   { id: 'm11_wb2', cat: '11: Landing Force (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'East side of map boatyard warehouse.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc&t=75s' },
   { id: 'm11_wb3', cat: '11: Landing Force (DLC)', name: 'Military Fort Pistol Workbench', type: 'Workbench', desc: 'Radar installation sub-level locker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm11_ch1', cat: '11: Landing Force (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Disable heavy battery without combat alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'med_m11longshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 Long Shot', type: 'Medal', desc: 'Take a 500 meters shot in Landing Force.', target: 500, isLongShot: true },
-  { id: 'med_m11authlongshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 Authentic Long Shot', type: 'Medal', desc: 'Take a 350 meters shot in Landing Force, in Authentic difficulty.', target: 250, isLongShot: true },
+  { id: 'med_ls_m11longshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 (Landing Force) Long Shot', type: 'Medal', desc: 'Take a 500 meters shot in Landing Force.', target: 500, isLongShot: true },
+  { id: 'med_m11authlongshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 (Landing Force) Authentic Long Shot', type: 'Medal', desc: 'Take a 350 meters shot in Landing Force, in Authentic difficulty.', target: 250, isLongShot: true },
   { id: 'med_lastresort', cat: '11: Landing Force (DLC)', name: 'Last Resort', type: 'Medal', desc: 'Complete the campaign mission - Landing Force.' },
 
   // --- Mission 12: Conqueror (DLC) ---
@@ -367,8 +367,8 @@ const sniperData = [
   { id: 'm12_wb2', cat: '12: Conqueror (DLC)', name: 'Castle Grounds SMG Workbench', type: 'Workbench', desc: 'In elbow of castle fence west side of destroy AA guns mission.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=284s' },
   { id: 'm12_wb3', cat: '12: Conqueror (DLC)', name: 'Village Pistol Workbench', type: 'Workbench', desc: 'Far right of map up ladder of building with faded Agy Hilda paint.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=23s' },
   { id: 'm12_ch1', cat: '12: Conqueror (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Eliminate general using environment hazards.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'med_ls_m12longshot', cat: '12: Conqueror (DLC)', name: 'Mission 12 Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Conqueror, in Authentic difficulty.', target: 250, isLongShot: true },
-  { id: 'med_ls_m12authlongshot', cat: '12: Conqueror (DLC)', name: 'Mission 12 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Conqueror, in Authentic difficulty.', target: 250, isLongShot: true },
+  { id: 'med_ls_m12longshot', cat: '12: Conqueror (DLC)', name: 'Mission 12 (Conqueror) Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Conqueror, in Authentic difficulty.', target: 250, isLongShot: true },
+  { id: 'med_ls_m12authlongshot', cat: '12: Conqueror (DLC)', name: 'Mission 12 (Conqueror) Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Conqueror, in Authentic difficulty.', target: 250, isLongShot: true },
   { id: 'med_siegebreaker', cat: '12: Conqueror (DLC)', name: 'Siegebreaker', type: 'Medal', desc: 'Complete the campaign mission - Conqueror.' },
   { id: 'med_ghostoffalaise', cat: '12: Conqueror (DLC)', name: 'Ghost of Falaise', type: 'Medal', desc: 'Conqueror - Complete mission with a 2 star rating.', target: 2 },
   { id: 'med_opoverlord', cat: '12: Conqueror (DLC)', name: 'Operation Overlord', type: 'Medal', desc: 'Conqueror - Complete mission on Authentic difficulty.' },
@@ -388,8 +388,8 @@ const sniperData = [
   { id: 'm13_wb1', cat: '13: Rough Landing (DLC)', name: 'Resistance Camp Rifle Workbench', type: 'Workbench', desc: 'Hangar maintenance trench underground.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_wb2', cat: '13: Rough Landing (DLC)', name: 'Abandoned Cabin SMG Workbench', type: 'Workbench', desc: 'Rail freight staging depot armory.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_wb3', cat: '13: Rough Landing (DLC)', name: 'Mine Depot Pistol Workbench', type: 'Workbench', desc: 'In Village with faded red paint AG Hail.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=23s' },
-  { id: 'med_ls_m13_longshot', cat: '13: Rough Landing (DLC)', name: 'Mission 13 Long Shot', type: 'Medal', desc: 'Take a 240 meters shot in Rough Landing.', target: 240, isLongShot: true },
-  { id: 'med_ls_m13_authlong', cat: '13: Rough Landing (DLC)', name: 'Mission 13 Authentic Long Shot', type: 'Medal', desc: 'Take a 240 meters shot in Rough Landing, in Authentic difficulty.', target: 240, isLongShot: true },
+  { id: 'med_ls_m13_longshot', cat: '13: Rough Landing (DLC)', name: 'Mission 13 (Rough Landing) Long Shot', type: 'Medal', desc: 'Take a 240 meters shot in Rough Landing.', target: 240, isLongShot: true },
+  { id: 'med_ls_m13_authlong', cat: '13: Rough Landing (DLC)', name: 'Mission 13 (Rough Landing) Authentic Long Shot', type: 'Medal', desc: 'Take a 240 meters shot in Rough Landing, in Authentic difficulty.', target: 240, isLongShot: true },
   { id: 'med_m13_woods', cat: '13: Rough Landing (DLC)', name: 'If You Go Down to the Woods Today', type: 'Medal', desc: 'Complete campaign mission - Rough Landing.' },
   { id: 'med_m13_fightanother', cat: '13: Rough Landing (DLC)', name: 'Fight Another Day', type: 'Medal', desc: 'Rough Landing - Complete mission with a 2 star rating.', target: 2 },
   { id: 'med_m13_stroll', cat: '13: Rough Landing (DLC)', name: 'Stroll in the Woods', type: 'Medal', desc: 'Rough Landing - Complete mission on Authentic difficulty.' },
@@ -408,8 +408,8 @@ const sniperData = [
   { id: 'm14_wb2', cat: '14: Kraken Awakes (DLC)', name: 'Maintenance SMG Workbench', type: 'Workbench', desc: 'Dry dock machine shop workshop.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm14_wb3', cat: '14: Kraken Awakes (DLC)', name: 'Resistance Storage Pistol Workbench', type: 'Workbench', desc: 'Docklands security station gun locker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm14_ch1', cat: '14: Kraken Awakes (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Destroy carrier without triggering alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'med_ls_m14longshot', cat: '14: Kraken Awakes (DLC)', name: 'Mission 14 Long Shot', type: 'Medal', desc: 'Take a 460 meters shot in Kraken Awakes.', target: 460, isLongShot: true },
-  { id: 'med_ls_m14authlongshot', cat: '14: Kraken Awakes (DLC)', name: 'Mission 14 Authentic Long Shot', type: 'Medal', desc: 'Take a 460 meters shot in Kraken Awakes.', target: 460, isLongShot: true },
+  { id: 'med_ls_m14longshot', cat: '14: Kraken Awakes (DLC)', name: 'Mission 14 (Kraken Awakes) Long Shot', type: 'Medal', desc: 'Take a 460 meters shot in Kraken Awakes.', target: 460, isLongShot: true },
+  { id: 'med_ls_m14authlongshot', cat: '14: Kraken Awakes (DLC)', name: 'Mission 14 (Kraken Awakes) Authentic Long Shot', type: 'Medal', desc: 'Take a 460 meters shot in Kraken Awakes.', target: 460, isLongShot: true },
   { id: 'med_m14_shipbreaker', cat: '14: Kraken Awakes (DLC)', name: 'Shipbreaker', type: 'Medal', desc: 'Complete campaign mission - Kraken Awakes.' },
   { id: 'med_m14_sinkorswim', cat: '14: Kraken Awakes (DLC)', name: 'Sink or Swim', type: 'Medal', desc: 'Kraken Awakes - Complete mission with a 2 star rating.', target: 2 },
   { id: 'med_m14_goingover', cat: '14: Kraken Awakes (DLC)', name: 'Going Overboard', type: 'Medal', desc: 'Kraken Awakes - Complete mission on Authentic difficulty.' },
@@ -590,7 +590,7 @@ function getItemThemeMeta(item) {
   }
 
   // Standard Long Shots: Purple Badge
-  if (nameLower.includes('long shot') || nameLower.includes('the long game')) {
+  if (nameLower.includes('long shot') || nameLower.includes('the long game') || nameLower.includes('from führer away')) {
     return {
       badgeClass: 'theme-badge-ls',
       customStyle: 'background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid #a855f7;'
@@ -860,8 +860,8 @@ const appState = {
   user: null,
   unsubListeners: [],
   isLoaded: false,
-  version: 'v7.5.0',
-  buildDate: '2026-09-19 03:30 EDT',
+  version: 'v7.6.0',
+  buildDate: '2026-09-19 03:36 EDT',
   activeLeafletMaps: {},
   markerLayers: {},
 
