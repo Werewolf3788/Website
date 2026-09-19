@@ -1,11 +1,15 @@
 /* ============================================================================
    File: tracker.js
-   Deployment Timestamp: Sat, Sep 19, 2026, 03:45 (EDT - New York)
+   Deployment Timestamp: Sat, Sep 19, 2026, 12:00 (EDT - New York)
    Project: entertainment-71888
-   Version: v7.7.0-SE5-TIERED-MEDALS-BRONZE-SILVER-GOLD
+   Version: v7.8.0-SE5-PSN-RTDB-TROPHY-SYNC
    Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
+   RTDB Path: psn/gamertags/{psn_id}/liveTrophyProgress/NPWR21465_00
    Google Analytics Tag: G-CTYHDF4MSD
    Features:
+     - Direct PSN Realtime Database sync (NPWR21465_00 / PPSA01685_00)
+     - Maps PSN trophies to tracker items without duplicates
+     - Operatives bound to PSN IDs: WildHorse_Spirit, OneLIVIDMAN, DesdemonaTiger
      - Bronze (25%), Silver (50%), and Gold (100%) progression milestones
      - Named Mission Long Shots: Specific mission names displayed on all long shots
      - Real-time Firestore sync & LocalStorage offline caching
@@ -22,7 +26,7 @@
 
 /* === SECTION: Automatic Cache Purge === */
 (function purgeStaleTrackerCache() {
-  const activeVersion = 'v7.7.0-20260919-0345';
+  const activeVersion = 'v7.8.0-20260919-1200';
   const storedVersion = localStorage.getItem('se5_tracker_build_version');
   if (storedVersion !== activeVersion) {
     Object.keys(localStorage).forEach(key => {
@@ -38,6 +42,7 @@
 import { initializeApp } from '//www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from '//www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from '//www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+import { getDatabase, ref as rtdbRef, onValue } from '//www.gstatic.com/firebasejs/11.6.1/firebase-database.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -50,7 +55,16 @@ const firebaseConfig = {
   measurementId: "G-CTYHDF4MSD"
 };
 
+/* Operative Gamertags & Account Mappings */
 const ALL_OPERATIVES = ['Werewolf3788', 'Raymystyro', 'Terrdog', 'Elu Cloud'];
+
+const PSN_ACCOUNT_MAPPINGS = {
+  'WildHorse_Spirit': 'Werewolf3788',
+  'OneLIVIDMAN': 'Raymystyro',
+  'DesdemonaTiger': 'Elu Cloud'
+};
+
+const PSN_COMMUNICATION_ID = 'NPWR21465_00'; // Sniper Elite 5 PSN Trophy ID
 
 const userThemes = {
   'Werewolf3788': { color: '#ff8800', glow: 'rgba(255, 136, 0, 0.6)', intColor: 0xff8800 },
@@ -69,6 +83,69 @@ const IN_GAME_TYPE_ORDER = {
   'Trophy': 7,
   'Medal': 8,
   'Ribbon': 9
+};
+
+/* === SECTION: PSN Trophy Cross-Reference Mapping (No Duplicate Entries) === */
+const PSN_TROPHY_MAPPINGS = {
+  'Sightless Strike': 'm9_ch3',
+  'Master Sniper': 'm9_ch4',
+  'Just a Flesh Wound': 'med_fleshwound',
+  'The French Connection': 'med_frenchconn',
+  'Confirming Suspicions': 'med_confirming_susp',
+  'The Kraken Wakes': 'med_thekrakenwakes',
+  'It\'s Starting to Crack': 'med_startstocrack',
+  'Change the Channel': 'med_changechannel',
+  'Taking It Back': 'med_takeback',
+  'Target America': 'med_targetamerica',
+  'The Kraken Sleeps': 'med_krakensleeps',
+  'Liberté': 'med_liberte',
+  'Best of the Best': 'med_bestofbest',
+  'Locomotion Commotion': 'med_locomotion',
+  'Up Close and Personal': 'med_upclose',
+  'Don\'t Hold Your Breath': 'med_dontbreath',
+  'Brains of the Operation': 'med_brainsop',
+  'Sight Beyond Sights': 'med_sightbeyond',
+  'Can\'t Outrun a Bullet': 'med_cantoutrun',
+  'No Stone Unturned': 'med_nostone',
+  'Sharpshooter': 'med_sharpshooter',
+  'Skirmisher': 'med_skirmisher',
+  'Gunslinger': 'med_gunslinger',
+  'Lord of War': 'med_lordofwar',
+  'Organ Grinder': 'med_organgrinder',
+  'Der Geist': 'med_dergeist',
+  'As Quiet as a Mouse': 'med_quietmouse',
+  'Close Quarters': 'med_closequarters',
+  'Snake in the Grass': 'med_snaketallgrass',
+  'Master of Rifles': 'med_masterrifles',
+  'Master of Secondaries': 'med_mastersecond',
+  'Master of Pistols': 'med_masterpistols',
+  'Master-at-Arms': 'med_masteratarms',
+  'Set Europe Ablaze': 'med_seteablaze',
+  'Rigged to Blow': 'med_riggedtoblow',
+  'Explosive Efficiency': 'med_explodeeffic',
+  'Die Nussknacker Sweet!': 'med_nutcracker',
+  'Strategist': 'med_strategist',
+  'Das Spook': 'med_wm_dasspook',
+  'Herr Today, Gone Tomorrow': 'med_wm_herrtoday',
+  'Das Familienjuwel': 'med_wm_familienjuwel',
+  'Führerious Repetition': 'med_wm_fuhrerious',
+  'Reich to the Point': 'med_reichtopoint',
+  'Memories of the Alps': 'med_alpsmemories',
+  'Operation Foxley': 'med_wm_opfoxley',
+  'Alpha': 'med_wm_alpha',
+  'Downfall': 'med_downfall',
+  'Put a Pin in It': 'med_putapinit',
+  'Covert Elimination': 'med_covertelim',
+  'Last Resort': 'med_lastresort',
+  'Siegebreaker': 'med_siegebreaker',
+  'Ghost of Falaise': 'med_ghostoffalaise',
+  'Operation Overlord': 'med_opoverlord',
+  'If You Go Down to the Woods Today': 'med_m13_woods',
+  'Fight Another Day': 'med_m13_fightanother',
+  'Stroll in the Woods': 'med_m13_stroll',
+  'Shipbreaker': 'med_m14_shipbreaker',
+  'Sink or Swim': 'med_m14_sinkorswim',
+  'Going Overboard': 'med_m14_goingover'
 };
 
 /* === SECTION: Discord Webhook Intel Configuration === */
@@ -707,7 +784,6 @@ function getItemThemeMeta(item) {
     };
   }
 
-  // Default Badges
   return {
     badgeClass: 'theme-badge-default',
     customStyle: 'background: rgba(255, 255, 255, 0.08); color: #ddd; border: 1px solid rgba(255,255,255,0.15);'
@@ -725,13 +801,11 @@ async function sendDiscordIntelUpdate(item, hunterData, operative, teamProgress)
     const opTheme = userThemes[operative] || userThemes['Werewolf3788'];
     const embedColor = opTheme.intColor || 0xff8800;
 
-    // Calculate category completion percentage and Tier
     const catItems = hunterData.filter(i => i.cat === item.cat);
     const catFound = catItems.filter(i => i.collected).length;
     const catPct = catItems.length > 0 ? Math.round((catFound / catItems.length) * 100) : 0;
     const catTier = getTierStatus(catPct);
 
-    // 24hr New York Timestamp for Discord Embed footer
     const nyFormatter = new Intl.DateTimeFormat('en-US', {
       timeZone: 'America/New_York',
       year: 'numeric',
@@ -747,7 +821,6 @@ async function sendDiscordIntelUpdate(item, hunterData, operative, teamProgress)
     let embedPayload = null;
 
     if (item.isLongShot) {
-      // Build squad ranking for this specific shot
       const shotLeaderboard = ALL_OPERATIVES.map(op => {
         const opSaved = (teamProgress && teamProgress[op]) || [];
         const opEntry = opSaved.find(s => s.id === item.id);
@@ -825,7 +898,6 @@ async function sendDiscordIntelUpdate(item, hunterData, operative, teamProgress)
       };
 
     } else {
-      // Standard Collectible, Medal, or Ribbon Alert
       const sameTypeItems = hunterData.filter(i => i.cat === item.cat && i.type === item.type);
       const foundItems = sameTypeItems.filter(i => i.collected);
       const pendingItems = sameTypeItems.filter(i => !i.collected);
@@ -923,12 +995,13 @@ const appState = {
   teamProgress: {},
   collapsedSections: {},
   db: null,
+  rtdb: null,
   auth: null,
   user: null,
   unsubListeners: [],
   isLoaded: false,
-  version: 'v7.7.0',
-  buildDate: '2026-09-19 03:45 EDT',
+  version: 'v7.8.0',
+  buildDate: '2026-09-19 12:00 EDT',
   activeLeafletMaps: {},
   markerLayers: {},
 
@@ -956,7 +1029,6 @@ const appState = {
       }
     });
 
-    // Dynamic Accordion State: Only the active mission starts expanded
     const cats = [...new Set(this.hunterData.map(i => i.cat))];
     cats.forEach(cat => {
       const sid = cat.replace(/[^a-z0-9]/gi, '');
@@ -971,6 +1043,7 @@ const appState = {
       const app = initializeApp(firebaseConfig);
       this.auth = getAuth(app);
       this.db = getFirestore(app);
+      this.rtdb = getDatabase(app);
 
       signInAnonymously(this.auth).catch(err => console.warn("ℹ️ Anonymous auth notice:", err.message));
 
@@ -980,6 +1053,7 @@ const appState = {
         if (u) {
           if (statEl) statEl.innerText = `ID: ${u.uid.substring(0, 8)} | ONLINE`;
           this.attachAllTeamListeners();
+          this.attachPsnRtdbListeners();
         } else {
           if (statEl) statEl.innerText = `OFFLINE`;
           this.loadHunterFromLocalStorage(this.activeGamertag);
@@ -988,6 +1062,88 @@ const appState = {
     } catch (e) {
       console.warn("⚠️ Firebase Init fallback:", e.message);
       this.loadHunterFromLocalStorage(this.activeGamertag);
+    }
+  },
+
+  /* === Realtime Database PSN Listener === */
+  attachPsnRtdbListeners: function() {
+    if (!this.rtdb) return;
+
+    Object.entries(PSN_ACCOUNT_MAPPINGS).forEach(([psnTag, operativeName]) => {
+      const liveTrophyPath = `psn/gamertags/${psnTag}/liveTrophyProgress/${PSN_COMMUNICATION_ID}`;
+      const trophyRef = rtdbRef(this.rtdb, liveTrophyPath);
+
+      onValue(trophyRef, (snapshot) => {
+        if (!snapshot.exists()) return;
+        const trophyData = snapshot.val();
+        this.processPsnTrophies(operativeName, trophyData);
+      }, (error) => {
+        console.warn(`RTDB Trophy listener fallback for ${psnTag}:`, error.message);
+      });
+    });
+  },
+
+  /* Process incoming PSN live trophy state & mark items as completed */
+  processPsnTrophies: function(operativeName, trophyPayload) {
+    if (!trophyPayload) return;
+
+    let hasChanges = false;
+    let opSaved = this.teamProgress[operativeName] || [];
+
+    // Trophy data may be an array or object keyed by trophy index
+    const trophyList = Array.isArray(trophyPayload) 
+      ? trophyPayload 
+      : (trophyPayload.trophies || Object.values(trophyPayload));
+
+    trophyList.forEach(t => {
+      if (!t) return;
+      const isEarned = (t.earned === true || t.earned === 1 || t.unlocked === true || t.isEarned === true);
+      if (!isEarned) return;
+
+      const trophyTitle = t.trophyName || t.name || t.title;
+      const matchedTrackerId = PSN_TROPHY_MAPPINGS[trophyTitle] || (t.trophyId !== undefined ? PSN_TROPHY_MAPPINGS[t.trophyId] : null);
+
+      if (matchedTrackerId) {
+        let existing = opSaved.find(s => s.id === matchedTrackerId);
+        const itemDef = sniperData.find(d => d.id === matchedTrackerId);
+        const targetValue = (itemDef && itemDef.target) ? itemDef.target : 1;
+
+        if (existing) {
+          if (!existing.collected) {
+            existing.collected = true;
+            if (!existing.count || existing.count < targetValue) {
+              existing.count = targetValue;
+            }
+            hasChanges = true;
+          }
+        } else {
+          opSaved.push({
+            id: matchedTrackerId,
+            collected: true,
+            count: targetValue
+          });
+          hasChanges = true;
+        }
+
+        // If currently viewing this operative, mark in current active hunterData
+        if (operativeName === this.activeGamertag) {
+          const currentItem = this.hunterData.find(i => i.id === matchedTrackerId);
+          if (currentItem && !currentItem.collected) {
+            currentItem.collected = true;
+            currentItem.count = targetValue;
+            this.updateMapPinVisibility(matchedTrackerId, true);
+          }
+        }
+      }
+    });
+
+    if (hasChanges) {
+      this.teamProgress[operativeName] = opSaved;
+      localStorage.setItem(`se5_progress_${operativeName}`, JSON.stringify(opSaved));
+      this.render();
+      if (operativeName === this.activeGamertag) {
+        this.sync();
+      }
     }
   },
 
@@ -1210,7 +1366,6 @@ const appState = {
     const item = this.hunterData.find(i => i.id === id);
     if (!item) return;
     const currentVal = item.count || 0;
-    // Step by 5m for longshots, 1 for ribbons/medals
     const stepSize = item.isLongShot ? 5 : 1;
     const nextVal = Math.max(0, currentVal + (delta * stepSize));
     this.setManualItemCount(id, nextVal);
@@ -1220,7 +1375,6 @@ const appState = {
     const container = document.getElementById(`val-box-${id}`);
     if (!container) return;
 
-    // Uncap input ceiling if Long Shot or Career Ribbon
     const maxAttr = (isUncapped || !maxVal) ? '' : `max="${maxVal}"`;
 
     container.innerHTML = `
@@ -1273,9 +1427,6 @@ const appState = {
     }
     this.teamProgress[this.activeGamertag] = opSaved;
 
-    // Alert Conditions:
-    // 1. Long Shot: Send whenever distance increased and is > 0
-    // 2. Other items: Send when newly reaching collected status
     if (item.isLongShot) {
       if (item.count > 0 && item.count !== previousCount) {
         sendDiscordIntelUpdate(item, this.hunterData, this.activeGamertag, this.teamProgress);
@@ -1323,7 +1474,6 @@ const appState = {
       section.id = `section-${sid}`;
       section.className = `category-section ${this.collapsedSections[sid] ? 'section-collapsed' : ''} ${isActiveFocus ? 'active-focus' : ''}`;
 
-      // Calculate Category Tier Status (Bronze 25%, Silver 50%, Gold 100%)
       const catPercent = items.length > 0 ? Math.round((count / items.length) * 100) : 0;
       const tierInfo = getTierStatus(catPercent);
 
@@ -1366,7 +1516,6 @@ const appState = {
         const iconUrl = GAME_TYPE_ICONS[item.type] || GAME_TYPE_ICONS['Personal Letter'];
         const themeMeta = getItemThemeMeta(item);
 
-        // Leader comparison: highest shot distance or ribbon count
         let maxTeamShot = 0;
         if (isLongShot || isRibbon) {
           ALL_OPERATIVES.forEach(op => {
@@ -1510,7 +1659,6 @@ const appState = {
 
       this.updateMapPinVisibility(id, item.collected);
 
-      // Trigger Discord Push Alert on item acquisition
       if (item.collected) {
         sendDiscordIntelUpdate(item, this.hunterData, this.activeGamertag, this.teamProgress);
       }
