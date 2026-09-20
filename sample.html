@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * Dashboard: WildHorse_Spirit / Werewolf3788 Master Command Telemetry & Tactical Hub
- * Engine Version: 44.6.0-STRICT-SQUAD-PS5-90PCT-CAROUSEL-INTEGRATED
+ * Engine Version: 44.7.0-STRICT-SQUAD-PS5-LIVE-TROPHY-SUBPROGRESS-FARM01
  * Location: /Playstation/dashboards/wildhorse_spirit.html
  * Analytics Tagging: G-CTYHDF4MSD (GA4 Stream & GTM Ready)
- * Code Deployment Timestamp: 2026-09-19 21:45:00 (America/New_York)
- * Description: Fully Preserved Tactical OS with Enforced Upgrades:
- *              1. 90% Screen Width: .viewport-85-wrap scaled to 90% across desktop.
- *              2. Cinema Carousel: Horizontal wheel & arrow navigation; year in yellow, date added in orange.
- *              3. Full Multi-Storefront Split: PS, PC (Microsoft Store), Xbox, Steam, Amazon.
- *              4. Live Last.fm & Apple Music: Active REST poller for live scrobbles + curated playlist.
- *              5. SE5 Telemetry: Ingests Long Shots, Ribbons, and Medals with stoplight glows.
- *              6. FS25 Clean Fleet: Full entity name cleanups and high-res machinery image ingestion.
- *              7. Strict Friend Cutoff: Friends only appear if progress >= 1% or dist >= 1m.
- *              8. Auto-Hiding Twitch: Floating left-center overlay that only appears when Live.
+ * Code Deployment Timestamp: 2026-09-19 22:20:00 (America/New_York)
+ * Description: Comprehensive Operative Intelligence Hub for WildHorse_Spirit:
+ *   1. Hardware Device Ingestion: Directly resolves deviceType from 
+ *      /psn/gamertags/WildHorse_Spirit/devices/accountDevices/0/deviceType
+ *   2. Deep Trophy Sub-Progress Engine: Ingests subProgressRatio, currentValue,
+ *      targetValue, and earnedRate from /liveTrophyProgress/{commId}/{trophyId}
+ *   3. FS25 Farm 01 Focus: Queries fs25-a3563 for farm_01, mapping machinery 
+ *      fleet names and high-res images from REPO_IMAGES asset base
+ *   4. Werewolf Cinema Carousel: Same-day additions carousel located beneath 
+ *      Latest Trophy and Strava; year in yellow, date added in orange
+ *   5. Multi-Storefront Split: Dedicated buttons for PS, PC (MS Store), Xbox, Steam, Amazon
+ *   6. Floating Twitch Overlay: Left-center docked video player that auto-hides when offline
+ *   7. 90% Screen Width: Desktop wrapper enforced at 90%
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -22,7 +25,7 @@
     <meta http-equiv="refresh" content="900">
     <title>WildHorse_Spirit | Tactical Telemetry Hub</title>
     
-    <!-- Line 25: GOOGLE ANALYTICS 4 ENGINE -->
+    <!-- Line 28: GOOGLE ANALYTICS 4 ENGINE -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -37,7 +40,7 @@
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '44.6.0',
+            'layout_version': '44.7.0',
             'gamertag': 'WildHorse_Spirit',
             'user_handle': 'Werewolf3788',
             'engagement_timezone': 'America/New_York',
@@ -62,12 +65,12 @@
         }
     </script>
 
-    <!-- Line 68: UI LIBS, FONTS & ICONS -->
+    <!-- Line 71: UI LIBS, FONTS & ICONS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="//embed.twitch.tv/embed/v1.js"></script>
     
-    <!-- Line 73: MASTER STYLESHEET (90% Layout & Carousel Styles) -->
+    <!-- Line 76: MASTER STYLESHEET (90% Layout, Inset Glows & Fallbacks) -->
     <style>
         @import url('//fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap');
 
@@ -519,6 +522,7 @@
                     </div>
                 </div>
 
+                <!-- 5th Header Card: Live PSN Status & Dynamic Active Device Type -->
                 <div class="glass-card header-stat-card p-5 border-b-4 border-green-500 col-span-1 sm:col-span-2 lg:col-span-1 min-h-[160px]">
                     <div id="online-status-label" class="text-base font-black text-white uppercase">Connecting</div>
                     <div id="current-game-sub" class="text-xs text-green-400 font-black uppercase mt-1 truncate max-w-[200px]">---</div>
@@ -552,7 +556,7 @@
                         </div>
                         
                         <div class="w-full flex justify-center">
-                            <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="150" style="width:100%;max-width:100%;overflow:hidden;background:transparent;border-radius:12px;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="//embed.music.apple.com/profile/DJWerewolf"></iframe>
+                            <iframe allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" frameborder="0" height="150" style="width:100%;max-width:100%;overflow:hidden;background:transparent;border-radius:12px;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="//embed.music.apple.com/profile/DJWerewolf"></iframe>
                         </div>
 
                         <div id="lastfm-scrobble-row" class="bg-black/50 p-2.5 rounded-xl border border-white/5 text-xs font-mono flex items-center justify-between">
@@ -671,7 +675,6 @@
                             </p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <!-- Sideways Carousel Controls -->
                             <button class="carousel-btn" onclick="scrollCinemaBatch(-1)" aria-label="Scroll Left">◄</button>
                             <button class="carousel-btn" onclick="scrollCinemaBatch(1)" aria-label="Scroll Right">►</button>
                             <a id="cinema-destination-link" href="//werewolf3788.github.io/Website/" target="_blank" class="store-btn text-red-400 border-red-500/40 bg-red-950/40 hover:bg-red-900 ml-1">
@@ -680,7 +683,6 @@
                         </div>
                     </div>
 
-                    <!-- Sideways Scrollable Reel with Wheel Support -->
                     <div id="cinema-batch-container" class="flex gap-4 overflow-x-auto pb-2 no-scrollbar scroll-smooth" onwheel="handleCinemaWheel(event)">
                         <div class="p-6 text-center text-gray-500 uppercase font-bold text-xs w-full">Ingesting Recent Cinema Releases...</div>
                     </div>
@@ -698,7 +700,7 @@
                     <p class="text-xs text-gray-400 font-bold uppercase">Dedicated Real-Time Feeds for WildHorse_Spirit / Werewolf3788</p>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
-                    <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-lime-950 text-lime-400 border border-lime-500/40">FS25 Farm 1 Focused</span>
+                    <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-lime-950 text-lime-400 border border-lime-500/40">FS25 Farm 01 Focused</span>
                     <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-orange-950 text-orange-400 border border-orange-500/40">Squad Roster Active</span>
                 </div>
             </div>
@@ -711,20 +713,20 @@
                             <div>
                                 <div class="flex items-center gap-2.5">
                                     <i class="fas fa-tractor text-lime-400 text-2xl"></i>
-                                    <h3 class="text-xl font-black uppercase text-lime-400">FS25 Telemetry & Farm 1 Fleet</h3>
+                                    <h3 class="text-xl font-black uppercase text-lime-400">FS25 Telemetry & Farm 01 Fleet</h3>
                                 </div>
-                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Live Node: fs25-a3563 / Target: farms/farm_1</p>
+                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Live Node: fs25-a3563 / Target: farms/farm_01</p>
                             </div>
                             <div id="fs25-status-pill" class="fs25-badge flex items-center gap-1.5 self-start sm:self-auto">
                                 <span class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span>
-                                <span id="fs25-status-text">Farm 1 Synchronized</span>
+                                <span id="fs25-status-text">Farm 01 Synchronized</span>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
                             <div class="bg-black/40 p-3 rounded-xl border border-white/5">
                                 <div class="text-xs font-black text-gray-400 uppercase">Farm Designation</div>
-                                <div id="fs25-farm-name" class="text-xs sm:text-sm font-black text-white mt-1 truncate">Werewolf Farm (Farm 1)</div>
+                                <div id="fs25-farm-name" class="text-xs sm:text-sm font-black text-white mt-1 truncate">Werewolf Farm (Farm 01)</div>
                             </div>
                             <div class="bg-black/40 p-3 rounded-xl border border-white/5">
                                 <div class="text-xs font-black text-gray-400 uppercase">Operating Capital</div>
@@ -743,20 +745,20 @@
                         <div class="space-y-2.5">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-2">
-                                    <i class="fas fa-truck-monster text-lime-400"></i> Farm 1 Active Implements & Heavy Machinery
+                                    <i class="fas fa-truck-monster text-lime-400"></i> Farm 01 Active Implements & Heavy Machinery
                                 </h4>
                                 <span id="fs25-fleet-subtitle" class="text-xs font-black text-lime-400 uppercase font-mono">0 Units</span>
                             </div>
                             <!-- Fully Resolved Clean Entity Names & High-Res Machinery Images -->
                             <div id="fs25-fleet-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[360px] overflow-y-auto no-scrollbar pr-1">
-                                <div class="p-6 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Ingesting Farm 1 Fleet...</div>
+                                <div class="p-6 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Ingesting Farm 01 Fleet...</div>
                             </div>
                         </div>
 
                         <div class="space-y-2.5 pt-2 border-t border-white/5">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-2">
-                                    <i class="fas fa-seedling text-lime-400"></i> Farm 1 Crops, Agronomy & Field Boundaries
+                                    <i class="fas fa-seedling text-lime-400"></i> Farm 01 Crops, Agronomy & Field Boundaries
                                 </h4>
                                 <span id="fs25-fields-subtitle" class="text-xs font-black text-lime-400 uppercase font-mono">0 Parcels</span>
                             </div>
@@ -932,7 +934,7 @@
 
         <!-- Hardcoded Version & Deployment Timestamp Stamped in Code -->
         <div class="text-center mt-6 text-xs font-black text-gray-500 uppercase tracking-[0.25em]">
-            Engine Version: <span class="text-orange-400">44.6.0-STRICT-SQUAD-PS5</span> | Code Deployed: <span class="text-gray-300">2026-09-19 21:45:00 (EDT)</span>
+            Engine Version: <span class="text-orange-400">44.7.0-STRICT-SQUAD-PS5</span> | Code Deployed: <span class="text-gray-300">2026-09-19 22:20:00 (EDT)</span>
         </div>
 
     </main>
@@ -1337,11 +1339,13 @@
             return null;
         }
 
+        // Deep Ingestion of currentValue, targetValue, subProgressRatio & earnedRate
         function extractTrophyTracking(trophyObj) {
             if (!trophyObj) return null;
             const isEarned = !!trophyObj.earned;
-            const nameKey = (trophyObj.name || trophyObj.trophyName || '').toLowerCase().trim();
+            const nameKey = (trophyObj.name || trophyObj.trophyName || trophyObj.title || '').toLowerCase().trim();
 
+            // Direct subProgressRatio string evaluation (e.g. "21/50")
             const ratioCandidate = trophyObj.subProgressRatio || trophyObj.progressRatio || trophyObj.progressRate;
             if (ratioCandidate && typeof ratioCandidate === 'string' && ratioCandidate.includes('/')) {
                 const parts = ratioCandidate.split('/');
@@ -1358,11 +1362,12 @@
                 }
             }
 
+            // Sony Target Value & Current Value Ingestion
             let target = null;
-            if (trophyObj.trophyProgressTargetValue !== undefined && trophyObj.trophyProgressTargetValue !== null && trophyObj.trophyProgressTargetValue !== "") {
-                target = Number(trophyObj.trophyProgressTargetValue);
-            } else if (trophyObj.targetValue !== undefined && trophyObj.targetValue !== null && trophyObj.targetValue !== "") {
+            if (trophyObj.targetValue !== undefined && trophyObj.targetValue !== null && trophyObj.targetValue !== "") {
                 target = Number(trophyObj.targetValue);
+            } else if (trophyObj.trophyProgressTargetValue !== undefined && trophyObj.trophyProgressTargetValue !== null && trophyObj.trophyProgressTargetValue !== "") {
+                target = Number(trophyObj.trophyProgressTargetValue);
             } else if (trophyObj.target !== undefined && Number(trophyObj.target) > 1) {
                 target = Number(trophyObj.target);
             } else if (MASTER_TROPHY_TARGETS[nameKey]) {
@@ -1464,7 +1469,7 @@
             }
         }
 
-        // Line 1100: Ordered Navigation Menu Builder
+        // Line 1100: Ordered Navigation Menu Builder with Full Image Resolver
         async function fetchUtmNavLinks() {
             const container = document.getElementById('dynamic-nav-container');
             if (!container) return;
@@ -1494,10 +1499,12 @@
                     function extractItems(sub) {
                         if (!sub) return;
                         if (sub.url && typeof sub.url === 'string' && (sub.url.startsWith('http') || sub.url.startsWith('//'))) {
+                            // Full property lookup so no thumbnails vanish
+                            const resolvedImg = sub.image || sub.thumbnail || sub.thumb || sub.img || sub.icon || sub.picture || sub.photo || sub.poster || null;
                             items.push({
                                 title: sub.title || sub.name || catKey,
                                 url: sub.url,
-                                image: sub.image || sub.thumb || null
+                                image: resolvedImg
                             });
                             return;
                         }
@@ -1526,7 +1533,7 @@
                                 <div class="folder-dropdown-menu" id="${folderId}">
                                     ${items.map(link => `
                                         <a href="${link.url}" target="_blank" class="folder-dropdown-item">
-                                            ${link.image ? `<img src="${link.image}" class="nav-thumb-icon" onerror="this.style.display='none'">` : '<i class="fas fa-arrow-up-right-from-square text-orange-400 text-xs"></i>'}
+                                            ${link.image ? `<img src="${link.image.startsWith('http') || link.image.startsWith('//') ? link.image : '//' + link.image}" class="nav-thumb-icon" onerror="this.outerHTML='<i class=\\'fas fa-link text-orange-400 text-xs\\'></i>'">` : '<i class="fas fa-link text-orange-400 text-xs"></i>'}
                                             <span class="truncate">${link.title}</span>
                                         </a>
                                     `).join('')}
@@ -1584,7 +1591,6 @@
                 list.sort((a, b) => b._ts - a._ts);
                 if (list.length === 0) return;
 
-                // Grab newest dateAdded string and get ALL titles from that exact same day
                 const latestDateString = list[0].dateAdded || "";
                 const sameDayBatch = list.filter(m => m.dateAdded === latestDateString);
 
@@ -1634,7 +1640,7 @@
         async function fetchLastFmTrack() {
             try {
                 const user = "werewolf3788";
-                const apiKey = "b25b959554ed76058ac220b7b2e0a026"; // Public reading key
+                const apiKey = "b25b959554ed76058ac220b7b2e0a026";
                 const res = await fetch(`//ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${user}&api_key=${apiKey}&format=json&limit=1`);
                 if (!res.ok) return;
                 const data = await res.json();
@@ -1650,7 +1656,7 @@
             } catch (e) {}
         }
 
-        // Line 1280: FS25 Clean Fleet Ingestion (Stripping Raw Prefixes & Ingesting Clean Names/Images)
+        // Line 1280: FS25 Clean Fleet Ingestion (Targeting farm_01 Specifically)
         async function updateFS25Telemetry() {
             try {
                 let res = await fetch(`${FS25_PRIMARY_URL}?t=${Date.now()}`);
@@ -1659,9 +1665,10 @@
                 const data = await res.json();
                 if (!data) return;
 
-                const farmData = data.farms?.farm_1 || data.farms?.farm01 || data.farms?.farmId1 || data.farms?.[1] || data.farms?.Werewolf || data.farms?.WildHorse_Spirit || data.farm_1 || data;
+                // Priority targeting for farm_01
+                const farmData = data.farms?.farm_01 || data.farms?.farm_1 || data.farms?.farm01 || data.farms?.farmId1 || data.farms?.[1] || data.farms?.Werewolf || data.farms?.WildHorse_Spirit || data.farm_01 || data.farm_1 || data;
 
-                const farmName = farmData.name || farmData.farmName || "Werewolf Farm (Farm 1)";
+                const farmName = farmData.name || farmData.farmName || "Werewolf Farm (Farm 01)";
                 const rawMoney = farmData.finances ? farmData.finances.money : farmData.money;
                 const money = rawMoney !== undefined ? `$${Math.round(Number(rawMoney)).toLocaleString()}` : "$0";
                 
@@ -1693,7 +1700,7 @@
                             const img = v.image || (v.file ? `${GITHUB_FS25_IMG_BASE}${encodeURIComponent(cleanFs25Name(v.file))}.JPG` : null);
                             const hours = v.operatingHours !== undefined ? `${v.operatingHours} hrs` : "Operational";
                             const wear = v.wear !== undefined ? `${Math.round(v.wear * 100)}% Wear` : "Clean";
-                            const cardType = v.cardType || "Farm 1 Implement";
+                            const cardType = v.cardType || "Farm 01 Implement";
 
                             return `
                                 <div class="bg-black/40 p-3 rounded-xl border border-white/5 flex gap-3 items-center hover:border-lime-500/40 transition-colors">
@@ -1710,7 +1717,7 @@
                             `;
                         }).join('');
                     } else {
-                        fleetContainer.innerHTML = `<div class="p-6 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No active machinery registered to Farm 1.</div>`;
+                        fleetContainer.innerHTML = `<div class="p-6 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No active machinery registered to Farm 01.</div>`;
                     }
                 }
 
@@ -1743,7 +1750,7 @@
                                 <div class="bg-black/50 p-3 rounded-xl border border-white/5 flex flex-col justify-between space-y-2">
                                     <div class="flex justify-between items-start">
                                         <div>
-                                            <div class="text-xs font-black text-lime-400 uppercase Farmland Plot #${fId}">Farmland Plot #${fId}</div>
+                                            <div class="text-xs font-black text-lime-400 uppercase">Farmland Plot #${fId}</div>
                                             <div class="text-sm font-black text-white uppercase mt-0.5">${crop}</div>
                                         </div>
                                         <span class="text-xs font-mono font-bold ${growthStage >= 6 ? 'text-emerald-400' : 'text-amber-400'}">${growthStatus}</span>
@@ -1757,7 +1764,7 @@
                             `;
                         }).join('');
                     } else {
-                        fieldsContainer.innerHTML = `<div class="p-4 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No parcels assigned to Farm 1.</div>`;
+                        fieldsContainer.innerHTML = `<div class="p-4 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No parcels assigned to Farm 01.</div>`;
                     }
                 }
 
@@ -1952,11 +1959,17 @@
                 const sLabel = document.getElementById('online-status-label');
                 const gSub = document.getElementById('current-game-sub');
                 const actLabel = document.getElementById('current-activity');
+                const curPlat = document.getElementById('current-platform');
+
+                // Ingest exact deviceType from accountDevices/0/deviceType
+                const resolvedDevice = user.devices?.accountDevices?.[0]?.deviceType || user.platform || "PS5";
+
                 if (sLabel) {
                     sLabel.innerText = isOnline ? "ONLINE" : "OFFLINE";
                     sLabel.className = isOnline ? "text-base font-black text-green-500 uppercase animate-pulse" : "text-base font-black text-gray-500 uppercase";
                     if (gSub) gSub.innerText = isOnline ? (user.currentGame || "Dashboard") : "Away";
                     if (actLabel) actLabel.innerText = "Activity: " + (user.currentGameActivity || (isOnline ? "Active" : "Idle"));
+                    if (curPlat) curPlat.innerText = `Device: ${resolvedDevice}`;
                 }
 
                 if (user.twitch) {
@@ -2186,7 +2199,7 @@
                         recentHoursEl.innerText = recentDateRaw ? `${getPreciseHoursAgo(recentDateRaw)} (${recentTrophy?.name || 'Latest'})` : "--";
                     }
 
-                    // Line 1618: TROPHY CHECKLIST RENDERING (Strict Friend >= 1% Rule & Partial Progress Bars)
+                    // Line 1618: TROPHY CHECKLIST RENDERING (Strict Friend >= 1% Rule & Sub-Progress Formula)
                     const checklist = document.getElementById('trophy-checklist-container');
                     if (checklist && currentTrophyData.length > 0) {
                         checklist.innerHTML = currentTrophyData.map((t, idx) => {
@@ -2258,7 +2271,6 @@
 
                                     let squadFraction = pEarned ? (tr ? tr.fraction : 'DONE') : (tr ? tr.fraction : '0/1');
 
-                                    // STRICT RULE: Friend is only added if they have >= 1% or have earned it
                                     if (pEarned || (tr && tr.pct >= 1)) {
                                         squadMatches.push({
                                             tag: displayTag,
@@ -2413,7 +2425,6 @@
                 const earnedCount = pTrophies.filter(t => t.earned).length;
                 const prog = match ? Number(match.progress || 0) : (pHunt ? Number(pHunt.progress || 0) : (isPrimary ? wolfProgress : 0));
 
-                // STRICT RULE: Friends ONLY qualify if prog >= 1%
                 if ((prog >= 1 && earnedCount > 0) || isPrimary) {
                     const existing = activePlayers.find(p => p.tag === resolvedTag);
                     if (!existing) {
@@ -2570,7 +2581,6 @@
                 if (msgEl && msgEl.innerText === '"--"') msgEl.innerText = isLive ? `Live: ${gameRes.trim()}` : `"${titleRes.trim()}"`;
                 if (liveBadge) liveBadge.classList.toggle('hidden', !isLive);
 
-                // Auto-Hide floating video overlay if offline; Show if live
                 if (floatingTwitch) {
                     if (isLive) {
                         floatingTwitch.classList.add('live');
