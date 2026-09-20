@@ -1,19 +1,22 @@
 /* ============================================================================
    File: tracker.js
-   Deployment Timestamp: Sun, Sep 20, 2026, 12:58 (EDT - New York)
+   Deployment Timestamp: 2026-09-20 13:24:00 (EDT - New York)
    Project: entertainment-71888
-   Version: v7.9.0-SE5-PSN-NONDESTRUCTIVE-SYNC
+   Version: v8.1.0-SE5-HEATMAP-CENTERED-NAV
    Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
    RTDB Path: psn/gamertags/{psn_id}/liveTrophyProgress/NPWR21465_00
    Google Analytics Tag: G-CTYHDF4MSD
    Features:
-     - Non-destructive state synchronization (Preserves all manual entries & Firestore docs)
-     - Live PSN RTDB Trophy + Trophy Progress pairing across all squad operatives
+     - Dynamic Long Shot Heatmap Engine: Interpolates smooth Green (high) to Red (low) gradient
+     - Centered Top Navigation Header: Ordered Home -> Users -> Game -> Entertainment
+     - 100% Firebase Authoritative: Zero localStorage dependencies; Firestore is source of truth
+     - Direct cloud-state preservation: Never downgrades or wipes progress on sync
+     - Live PSN RTDB Trophy & trophyProgress telemetry auto-merged with manual inputs
      - Operatives bound to PSN IDs: WildHorse_Spirit, OneLIVIDMAN, DesdemonaTiger
-     - Mission 2 Long Shot updated to 525 meters
+     - Mission 2 Long Shot distance calibrated to 525 meters
      - Bronze (25%), Silver (50%), and Gold (100%) progression milestones
      - Named Mission Long Shots: Specific mission names displayed on all long shots
-     - Real-time Firestore sync & LocalStorage offline caching
+     - Real-time Firestore onSnapshot synchronization across all devices
      - Discord Webhook Intel Dispatcher with Long Shot Leaderboard breakdown & squad records
      - Uncapped Long Shot & Repeatable Career Ribbon tracking (counter + direct edit)
      - 47 Complete Campaign/Survival Career Ribbons (Stealth, Tactics, Lethal, Non-Lethal, Survival)
@@ -209,6 +212,33 @@ function getTierStatus(percent) {
     color: '#888888',
     intColor: 0x888888,
     style: 'background: rgba(255, 255, 255, 0.08); color: #aaa; border: 1px solid rgba(255,255,255,0.15);'
+  };
+}
+
+/* === SECTION: Dynamic Long Shot Heatmap Color Engine === */
+function getLongShotHeatmapStyle(val, minVal, maxVal) {
+  const current = Number(val) || 0;
+  const targetMax = Math.max(Number(maxVal) || 1, 1);
+  const targetMin = Math.max(Number(minVal) || 0, 0);
+
+  let ratio = 0;
+  if (targetMax > targetMin) {
+    ratio = (current - targetMin) / (targetMax - targetMin);
+  } else if (current > 0) {
+    ratio = 1;
+  }
+  ratio = Math.max(0, Math.min(1, ratio));
+
+  // Red (#ef4444 -> 239, 68, 68) to Green (#22c55e -> 34, 197, 94)
+  const r = Math.round(239 + (34 - 239) * ratio);
+  const g = Math.round(68 + (197 - 68) * ratio);
+  const b = Math.round(68 + (94 - 68) * ratio);
+
+  return {
+    color: `rgb(${r}, ${g}, ${b})`,
+    background: `rgba(${r}, ${g}, ${b}, 0.22)`,
+    border: `1px solid rgba(${r}, ${g}, ${b}, 0.85)`,
+    glow: `0 0 10px rgba(${r}, ${g}, ${b}, 0.45)`
   };
 }
 
@@ -641,7 +671,7 @@ const sniperData = [
   { id: 'rib_perfect_defence', cat: '22: Ribbons - Survival (Gold)', name: 'Perfect Defence', type: 'Ribbon', desc: 'Complete a Stage without the enemy breaching the Command Post.', isRibbon: true }
 ];
 
-/* === SECTION: Baseline Migration Seeds (Non-Destructive) === */
+/* Initial Migration Template (Only created in Firestore if document doesn't exist yet) */
 const WEREWOLF_SEEDS = [
   { id: 'med_confirming_susp', count: 3, collected: true },
   { id: 'med_thekrakenwakes', count: 3, collected: true },
@@ -978,8 +1008,8 @@ const appState = {
   user: null,
   unsubListeners: [],
   isLoaded: false,
-  version: 'v7.9.0',
-  buildDate: '2026-09-20 12:58 EDT',
+  version: 'v8.1.0',
+  buildDate: '2026-09-20 13:24 EDT',
   activeLeafletMaps: {},
   markerLayers: {},
 
@@ -996,18 +1026,7 @@ const appState = {
     }));
 
     ALL_OPERATIVES.forEach(op => {
-      const localSaved = localStorage.getItem(`se5_progress_${op}`);
-      if (localSaved) {
-        try {
-          this.teamProgress[op] = JSON.parse(localSaved);
-        } catch (e) {
-          this.teamProgress[op] = [];
-        }
-      } else if (op === 'Werewolf3788') {
-        this.teamProgress[op] = WEREWOLF_SEEDS;
-      } else {
-        this.teamProgress[op] = [];
-      }
+      this.teamProgress[op] = [];
     });
 
     const cats = [...new Set(this.hunterData.map(i => i.cat))];
@@ -1032,17 +1051,15 @@ const appState = {
         this.user = u;
         const statEl = document.getElementById('stat-line') || document.querySelector('.system-status');
         if (u) {
-          if (statEl) statEl.innerText = `ID: ${u.uid.substring(0, 8)} | ONLINE`;
+          if (statEl) statEl.innerText = `ID: ${u.uid.substring(0, 8)} | ONLINE (CLOUD-DIRECT)`;
           this.attachAllTeamListeners();
           this.attachPsnRtdbListeners();
         } else {
-          if (statEl) statEl.innerText = `OFFLINE`;
-          this.loadHunterFromLocalStorage(this.activeGamertag);
+          if (statEl) statEl.innerText = `CONNECTING SECURE CLOUD...`;
         }
       });
     } catch (e) {
-      console.warn("⚠️ Firebase Init fallback:", e.message);
-      this.loadHunterFromLocalStorage(this.activeGamertag);
+      console.warn("⚠️ Firebase Init error:", e.message);
     }
   },
 
@@ -1059,12 +1076,11 @@ const appState = {
         const trophyData = snapshot.val();
         this.processPsnTrophies(operativeName, trophyData);
       }, (error) => {
-        console.warn(`RTDB Trophy listener fallback for ${psnTag}:`, error.message);
+        console.warn(`RTDB Trophy listener notice for ${psnTag}:`, error.message);
       });
     });
   },
 
-  /* Non-Destructive Live PSN Trophy + Trophy Progress Processing */
   processPsnTrophies: function(operativeName, trophyPayload) {
     if (!trophyPayload) return;
 
@@ -1085,7 +1101,6 @@ const appState = {
         const itemDef = sniperData.find(d => d.id === matchedTrackerId);
         const targetValue = (itemDef && itemDef.target) ? itemDef.target : 1;
 
-        // Extract PS5 / PSN live progress counters
         const psnProgressVal = t.currentValue !== undefined 
           ? parseInt(t.currentValue, 10) 
           : (t.trophyProgress !== undefined 
@@ -1098,7 +1113,6 @@ const appState = {
           let updatedCount = existing.count || 0;
           let updatedCollected = existing.collected || isEarned;
 
-          // Merge without downgrading: use the higher value between manual and PSN
           if (psnProgressVal > updatedCount) {
             updatedCount = psnProgressVal;
           }
@@ -1124,7 +1138,6 @@ const appState = {
           hasChanges = true;
         }
 
-        // Keep active hunterData live in sync if viewing this operative
         if (operativeName === this.activeGamertag) {
           const currentItem = this.hunterData.find(i => i.id === matchedTrackerId);
           if (currentItem) {
@@ -1141,7 +1154,6 @@ const appState = {
 
     if (hasChanges) {
       this.teamProgress[operativeName] = opSaved;
-      localStorage.setItem(`se5_progress_${operativeName}`, JSON.stringify(opSaved));
       this.render();
       if (operativeName === this.activeGamertag) {
         this.sync();
@@ -1207,31 +1219,12 @@ const appState = {
 
     ALL_OPERATIVES.forEach(op => {
       const docRef = this.getDocRefForGamertag(op);
-      const unsub = onSnapshot(docRef, (snap) => {
+      const unsub = onSnapshot(docRef, async (snap) => {
         if (snap.exists()) {
           const docData = snap.data();
           const remoteSaved = docData.progress || [];
 
-          // Non-destructive merge with local progress
-          const currentLocal = this.teamProgress[op] || [];
-          const mergedProgress = [...remoteSaved];
-
-          currentLocal.forEach(localItem => {
-            const remoteItem = mergedProgress.find(r => r.id === localItem.id);
-            if (!remoteItem) {
-              mergedProgress.push(localItem);
-            } else {
-              if (localItem.count > (remoteItem.count || 0)) {
-                remoteItem.count = localItem.count;
-              }
-              if (localItem.collected) {
-                remoteItem.collected = true;
-              }
-            }
-          });
-
-          this.teamProgress[op] = mergedProgress;
-          localStorage.setItem(`se5_progress_${op}`, JSON.stringify(mergedProgress));
+          this.teamProgress[op] = remoteSaved;
 
           if (op === this.activeGamertag) {
             if (docData.activeMission && docData.activeMission !== this.activeMission) {
@@ -1246,7 +1239,7 @@ const appState = {
             }
 
             this.hunterData = sniperData.map(item => {
-              const status = mergedProgress.find(s => s.id === item.id);
+              const status = remoteSaved.find(s => s.id === item.id);
               return {
                 ...item,
                 collected: status ? !!status.collected : false,
@@ -1254,31 +1247,23 @@ const appState = {
               };
             });
           }
+        } else if (op === 'Werewolf3788') {
+          this.teamProgress[op] = WEREWOLF_SEEDS;
+          await setDoc(docRef, {
+            activeMission: this.activeMission,
+            gameId: "sniper-elite-5",
+            lastUpdate: Date.now(),
+            platform: this.platform,
+            progress: WEREWOLF_SEEDS
+          }, { merge: true });
         }
         this.isLoaded = true;
         this.render();
       }, (err) => {
-        console.warn(`Firestore snapshot fallback for ${op}:`, err.message);
-        this.loadHunterFromLocalStorage(this.activeGamertag);
+        console.warn(`Firestore live snapshot notice for ${op}:`, err.message);
       });
       this.unsubListeners.push(unsub);
     });
-  },
-
-  loadHunterFromLocalStorage: function(gamertag) {
-    const localSaved = localStorage.getItem(`se5_progress_${gamertag}`);
-    const saved = localSaved ? JSON.parse(localSaved) : (gamertag === 'Werewolf3788' ? WEREWOLF_SEEDS : []);
-    this.teamProgress[gamertag] = saved;
-    this.hunterData = sniperData.map(item => {
-      const status = saved.find(s => s.id === item.id);
-      return {
-        ...item,
-        collected: status ? !!status.collected : false,
-        count: status && status.count !== undefined ? Number(status.count) : 0
-      };
-    });
-    this.isLoaded = true;
-    this.render();
   },
 
   switchHunter: function(gamertag) {
@@ -1466,8 +1451,8 @@ const appState = {
       const bar = document.getElementById('overall-bar') || document.querySelector('.progress-hud .progress-fill');
       const pct = document.getElementById('percent-text') || document.querySelector('.percent-label');
       if (bar) bar.style.width = '0%';
-      if (pct) pct.innerText = `SYNCING DATA...`;
-      container.innerHTML = '<div style="text-align:center; padding: 50px 20px; color: var(--ser-color, #ff8800); font-weight: 900; letter-spacing: 2px; font-size: 18px;" class="outlined-text">ESTABLISHING SECURE LINK...<br><span style="font-size:12px; color:#aaa;">READING ENTERTAINMENT DATABASE</span></div>';
+      if (pct) pct.innerText = `SYNCING DIRECT FROM CLOUD...`;
+      container.innerHTML = '<div style="text-align:center; padding: 50px 20px; color: var(--ser-color, #ff8800); font-weight: 900; letter-spacing: 2px; font-size: 18px;" class="outlined-text">ESTABLISHING SECURE CLOUD LINK...<br><span style="font-size:12px; color:#aaa;">CONNECTING FIRESTORE & PSN RTDB</span></div>';
       return;
     }
 
@@ -1535,8 +1520,16 @@ const appState = {
         const iconUrl = GAME_TYPE_ICONS[item.type] || GAME_TYPE_ICONS['Personal Letter'];
         const themeMeta = getItemThemeMeta(item);
 
+        let minTeamShot = 0;
         let maxTeamShot = 0;
-        if (isLongShot || isRibbon) {
+        if (isLongShot) {
+          const distances = ALL_OPERATIVES.map(op => {
+            const opData = (this.teamProgress[op] || []).find(s => s.id === item.id);
+            return opData && opData.count !== undefined ? Number(opData.count) : 0;
+          });
+          minTeamShot = Math.min(...distances, 0);
+          maxTeamShot = Math.max(...distances, item.target || 0);
+        } else if (isRibbon) {
           ALL_OPERATIVES.forEach(op => {
             const opData = (this.teamProgress[op] || []).find(s => s.id === item.id);
             if (opData && opData.count > maxTeamShot) {
@@ -1554,9 +1547,13 @@ const appState = {
           
           let displayBadgeText = op.toUpperCase();
           let leaderClass = '';
+          let dynamicBadgeStyle = '';
 
           if (isLongShot) {
             displayBadgeText = `${op.toUpperCase()} (${opCount}m)`;
+            const heat = getLongShotHeatmapStyle(opCount, minTeamShot, maxTeamShot);
+            dynamicBadgeStyle = `background: ${heat.background} !important; color: ${heat.color} !important; border: ${heat.border} !important; box-shadow: ${heat.glow}; font-weight: 900;`;
+
             if (opCount > 0 && opCount === maxTeamShot) {
               leaderClass = ' team-shot-leader';
               displayBadgeText = `👑 ${displayBadgeText}`;
@@ -1571,7 +1568,7 @@ const appState = {
             displayBadgeText = `${op.toUpperCase()} (${opCount})`;
           }
 
-          teamBadgesHtml += `<span class="team-badge ${isCollected ? 'is-collected' : ''}${leaderClass}">${displayBadgeText}</span>`;
+          teamBadgesHtml += `<span class="team-badge ${isCollected ? 'is-collected' : ''}${leaderClass}" style="${dynamicBadgeStyle}">${displayBadgeText}</span>`;
         });
 
         let actionControlsHtml = '';
@@ -1580,9 +1577,13 @@ const appState = {
           const targetVal = item.target || 1;
           
           let pillLabel = `✏️ ${countVal} / ${targetVal}`;
+          let dynamicPillStyle = '';
+
           if (isLongShot) {
-            const isPersonalRecord = countVal > targetVal;
+            const isPersonalRecord = countVal >= targetVal;
             pillLabel = `🎯 ${countVal}m / ${targetVal}m REQ ${isPersonalRecord ? '🔥' : ''}`;
+            const heat = getLongShotHeatmapStyle(countVal, minTeamShot, maxTeamShot);
+            dynamicPillStyle = `background: ${heat.background} !important; color: ${heat.color} !important; border: ${heat.border} !important; box-shadow: ${heat.glow};`;
           } else if (isRibbon) {
             pillLabel = `🎖️ EARNED: ${countVal} TIME${countVal === 1 ? '' : 'S'}`;
           }
@@ -1590,7 +1591,7 @@ const appState = {
           actionControlsHtml = `
             <div class="stepper-action-row">
               <button class="step-btn outlined-text" onclick="appState.stepItemCount('${item.id}', -1)">−</button>
-              <div id="val-box-${item.id}" class="clickable-num-pill outlined-text ${item.collected ? 'pill-completed' : ''}" onclick="appState.openDirectNumberEditor('${item.id}', ${countVal}, ${targetVal}, ${isLongShot || isRibbon})">
+              <div id="val-box-${item.id}" class="clickable-num-pill outlined-text ${item.collected ? 'pill-completed' : ''}" style="${dynamicPillStyle}" onclick="appState.openDirectNumberEditor('${item.id}', ${countVal}, ${targetVal}, ${isLongShot || isRibbon})">
                 ${pillLabel}
               </div>
               <button class="step-btn outlined-text" onclick="appState.stepItemCount('${item.id}', 1)">+</button>
@@ -1693,15 +1694,13 @@ const appState = {
   },
 
   sync: async function() {
+    if (!this.db) return;
+
     const progress = this.hunterData.map(i => ({
       id: i.id,
       collected: i.collected,
       count: i.count || 0
     }));
-
-    localStorage.setItem(`se5_progress_${this.activeGamertag}`, JSON.stringify(progress));
-
-    if (!this.db) return;
 
     try {
       const docRef = this.getDocRefForGamertag(this.activeGamertag);
@@ -1714,7 +1713,7 @@ const appState = {
       };
       await setDoc(docRef, payload, { merge: true });
     } catch (err) {
-      console.warn("Firestore save fallback error:", err.message);
+      console.warn("Firestore cloud save notice:", err.message);
     }
   }
 };
@@ -1722,7 +1721,7 @@ const appState = {
 window.appState = appState;
 appState.init();
 
-/* === SECTION: Dynamic CSV Spreadsheet Navigation Menu === */
+/* === SECTION: Centered CSV Navigation Menu (Home -> Users -> Game -> Entertainment) === */
 async function buildTopMenu() {
   try {
     const csvUrl = "//docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
@@ -1730,8 +1729,8 @@ async function buildTopMenu() {
     const textData = await response.text();
 
     const rows = textData.split('\n');
-    const menuStructure = [];
     const groupMap = {};
+    const singleItems = [];
 
     let startIdx = 0;
     if (rows[0] && rows[0].toLowerCase().includes("name")) {
@@ -1751,24 +1750,60 @@ async function buildTopMenu() {
       if (!name || !url) continue;
 
       if (!group || group.toLowerCase() === 'none') {
-        menuStructure.push({ type: 'single', name, url, img });
+        singleItems.push({ type: 'single', name, url, img });
       } else {
         if (!groupMap[group]) {
-          const newGroup = { type: 'group', name: group, items: [] };
-          menuStructure.push(newGroup);
-          groupMap[group] = newGroup;
+          groupMap[group] = { type: 'group', name: group, items: [] };
         }
         groupMap[group].items.push({ name, url, img });
       }
     }
 
+    // Strict Centered Menu Order: Home -> Users -> Game -> Entertainment
+    const DESIRED_ORDER = ['Home', 'Users', 'Game', 'Entertainment'];
+    const orderedMenuStructure = [];
+
+    // 1. Check for standalone "Home" link
+    const homeSingle = singleItems.find(i => i.name.toLowerCase() === 'home');
+    if (homeSingle) {
+      orderedMenuStructure.push(homeSingle);
+    }
+
+    // 2. Add Groups matching target sequence
+    DESIRED_ORDER.forEach(targetKey => {
+      const matchedGroupKey = Object.keys(groupMap).find(k => k.toLowerCase() === targetKey.toLowerCase());
+      if (matchedGroupKey) {
+        orderedMenuStructure.push(groupMap[matchedGroupKey]);
+        delete groupMap[matchedGroupKey];
+      }
+    });
+
+    // 3. Append any remaining dropdown groups
+    Object.values(groupMap).forEach(g => {
+      orderedMenuStructure.push(g);
+    });
+
+    // 4. Append any remaining single items
+    singleItems.forEach(s => {
+      if (s.name.toLowerCase() !== 'home') {
+        orderedMenuStructure.push(s);
+      }
+    });
+
     const menuBar = document.getElementById('dynamic-nav-links') || document.getElementById('csv-menu-bar');
     if (!menuBar) return;
-    let html = '';
 
+    // Enforce centered desktop alignment with flex container
+    menuBar.style.display = 'flex';
+    menuBar.style.justifyContent = 'center';
+    menuBar.style.alignItems = 'center';
+    menuBar.style.width = '100%';
+    menuBar.style.flexWrap = 'wrap';
+
+    let html = '';
     const chevron = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; display: inline-block; vertical-align: middle;"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
 
-    menuStructure.forEach(item => {
+    orderedMenuStructure.forEach(item => {
       if (item.type === 'single') {
         html += `<a href="${item.url}" target="SE5_ITC_Window" class="csv-single-btn outlined-text">${item.name}</a>`;
       } else {
@@ -1792,7 +1827,7 @@ async function buildTopMenu() {
 
     menuBar.innerHTML = html;
   } catch (e) {
-    console.error("Error loading CSV Menu:", e);
+    console.error("Error loading Centered CSV Menu:", e);
   }
 }
 
