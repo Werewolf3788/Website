@@ -1,10 +1,19 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * Dashboard: WildHorse_Spirit / Werewolf3788 Master Command Telemetry & Tactical Hub
- * Engine Version: 44.4.0-STRICT-SQUAD-PS5-LIVE-AUTOHIDE-OVERLAY
+ * Engine Version: 44.5.0-STRICT-SQUAD-PS5-MASTER-EXPANDED
  * Location: /Playstation/dashboards/wildhorse_spirit.html
  * Analytics Tagging: G-CTYHDF4MSD (GA4 Stream & GTM Ready)
- * Date & Time Stamp: 2026-09-19 20:56:39 (America/New_York)
+ * Code Deployment Timestamp: 2026-09-19 21:30:00 (America/New_York)
+ * Description: Fully Preserved 44.3.0 Architecture with Enhanced Modules:
+ *              1. Layout Balance: Werewolf Cinema placed directly beneath Latest PSN Unlock & Strava.
+ *              2. Cinema Batching: Displays ALL movies added on the most recent date with large posters.
+ *              3. Multi-Storefront Split: PS, PC (Microsoft Store), Xbox, Steam, and Amazon.
+ *              4. Media Integration: Apple Music DJ Werewolf + Last.fm Scrobbler inside Profile Intel.
+ *              5. SE5 Telemetry: Ingests Long Shots, Ribbons, and Medals with stoplight glows.
+ *              6. FS25 Clean Fleet: Full entity name cleanups and high-res machinery image ingestion.
+ *              7. Strict Friend Cutoff: Friends only appear across cards/modals if progress >= 1% or dist >= 1m.
+ *              8. Auto-Hiding Twitch: Floating left-center overlay that only appears when Live.
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -13,10 +22,9 @@
     <meta http-equiv="refresh" content="900">
     <title>WildHorse_Spirit | Tactical Telemetry Hub</title>
     
-    <!-- Line 17: GOOGLE ANALYTICS 4 DUAL MEASUREMENT ENGINE -->
+    <!-- Line 25: GOOGLE ANALYTICS 4 ENGINE -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
-        // Line 20: GA4 DataLayer Initialization
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
@@ -29,7 +37,7 @@
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '44.4.0',
+            'layout_version': '44.5.0',
             'gamertag': 'WildHorse_Spirit',
             'user_handle': 'Werewolf3788',
             'engagement_timezone': 'America/New_York',
@@ -54,12 +62,12 @@
         }
     </script>
 
-    <!-- Line 61: UI LIBS, FONTS & ICONS -->
-    <script src="//cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Line 68: UI LIBS, FONTS & ICONS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="//embed.twitch.tv/embed/v1.js"></script>
     
-    <!-- Line 66: MASTER STYLESHEET -->
+    <!-- Line 73: MASTER STYLESHEET (Native Fallbacks Included) -->
     <style>
         @import url('//fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap');
 
@@ -75,6 +83,7 @@
             --warning-yellow: #f59e0b;
             --amazon-orange: #ff9900;
             --ps-blue: #00439c;
+            --xbox-green: #107c10;
             --twitch-purple: #9146ff;
         }
 
@@ -84,68 +93,51 @@
             font-size: 16px;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0; padding: 0;
-            width: 100vw;
-            max-width: 100%;
+            width: 100vw; max-width: 100%;
             overflow-x: hidden;
             line-height: 1.5;
             overflow-wrap: break-word;
         }
 
         .viewport-85-wrap {
-            width: 100%;
-            max-width: 100%;
-            margin-left: auto;
-            margin-right: auto;
-            padding-left: 1rem;
-            padding-right: 1rem;
+            width: 100%; max-width: 100%;
+            margin-left: auto; margin-right: auto;
+            padding-left: 1rem; padding-right: 1rem;
         }
 
         @media (min-width: 768px) {
-            .viewport-85-wrap {
-                width: 92%;
-                padding-left: 1.5rem;
-                padding-right: 1.5rem;
-            }
+            .viewport-85-wrap { width: 92%; padding-left: 1.5rem; padding-right: 1.5rem; }
         }
 
         @media (min-width: 1200px) {
-            .viewport-85-wrap {
-                width: 85%;
-                max-width: 1850px;
-                padding-left: 0;
-                padding-right: 0;
-            }
+            .viewport-85-wrap { width: 85%; max-width: 1850px; padding-left: 0; padding-right: 0; }
         }
 
         @media (max-width: 480px) {
-            .mobile-stack-single {
-                display: flex !important;
-                flex-direction: column !important;
-                width: 100% !important;
-            }
+            .mobile-stack-single { display: flex !important; flex-direction: column !important; width: 100% !important; }
         }
 
-        /* Line 134: Persistent Top Header Navigation */
+        /* Pure CSS Grid Desktop Fallbacks (Ensures desktop multi-column remains active) */
+        .desktop-header-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+        @media (min-width: 640px) { .desktop-header-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (min-width: 1024px) { .desktop-header-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+
+        /* Navigation Bar */
         .nav-bar {
             position: fixed; top: 0; z-index: 99999;
             background: rgba(10, 10, 14, 0.96);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-            padding: 10px 0;
-            width: 100%;
+            padding: 10px 0; width: 100%;
         }
 
-        .nav-container {
-            display: flex; align-items: center; justify-content: space-between; gap: 16px;
-        }
+        .nav-container { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 
         .mobile-toggle {
-            display: flex !important;
-            align-items: center; justify-content: center;
+            display: flex !important; align-items: center; justify-content: center;
             min-height: 48px; min-width: 48px;
-            background: transparent; border: none;
-            cursor: pointer; color: #ffffff; font-size: 20px;
+            background: transparent; border: none; cursor: pointer; color: #ffffff; font-size: 20px;
         }
 
         .nav-links-wrapper { display: none; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -187,15 +179,13 @@
 
         .folder-dropdown-menu {
             display: none; position: absolute; top: calc(100% + 6px); left: 0; min-width: 250px;
-            background: rgba(14, 14, 20, 0.99); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background: rgba(14, 14, 20, 0.99); backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 8px;
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 25px rgba(255, 95, 31, 0.2); z-index: 99999;
         }
-
         @media (max-width: 1023px) {
             .folder-dropdown-menu { position: static; width: 100%; margin-top: 6px; box-shadow: none; background: rgba(20, 20, 28, 0.95); }
         }
-
         .folder-dropdown-menu.show { display: flex; flex-direction: column; gap: 4px; }
         .folder-dropdown-item {
             display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 6px;
@@ -231,8 +221,7 @@
         }
         .orange-gradient-text {
             background: linear-gradient(135deg, #ff5f1f 0%, #ff8c00 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
         .trophy-row {
@@ -256,28 +245,14 @@
         }
 
         .trophy-badge-earned {
-            background-color: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.4);
-            color: #10b981;
-            border-radius: 4px;
-            padding: 1px 6px;
-            font-size: 11px;
-            font-weight: 900;
-            font-family: 'JetBrains Mono', monospace;
-            display: inline-flex;
-            align-items: center;
+            background-color: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #10b981; border-radius: 4px; padding: 1px 6px; font-size: 11px;
+            font-weight: 900; font-family: 'JetBrains Mono', monospace; display: inline-flex; align-items: center;
         }
         .trophy-badge-locked {
-            background-color: rgba(255, 95, 31, 0.15);
-            border: 1px solid rgba(255, 95, 31, 0.4);
-            color: #ff5f1f;
-            border-radius: 4px;
-            padding: 1px 6px;
-            font-size: 11px;
-            font-weight: 900;
-            font-family: 'JetBrains Mono', monospace;
-            display: inline-flex;
-            align-items: center;
+            background-color: rgba(255, 95, 31, 0.15); border: 1px solid rgba(255, 95, 31, 0.4);
+            color: #ff5f1f; border-radius: 4px; padding: 1px 6px; font-size: 11px;
+            font-weight: 900; font-family: 'JetBrains Mono', monospace; display: inline-flex; align-items: center;
         }
 
         .squad-member-pill {
@@ -285,12 +260,10 @@
             border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
         }
         .squad-member-pill.earned { 
-            background: rgba(16, 185, 129, 0.15); color: #34d399; 
-            border: 1px solid rgba(16, 185, 129, 0.4); 
+            background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); 
         }
         .squad-member-pill.locked { 
-            background: rgba(255, 255, 255, 0.04); color: #cbd5e1; 
-            border: 1px solid rgba(255, 255, 255, 0.12); 
+            background: rgba(255, 255, 255, 0.04); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.12); 
         }
 
         .progress-bar-container { height: 10px; background: rgba(20, 20, 28, 0.8); border-radius: 9999px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
@@ -374,17 +347,20 @@
         .kf-k { color: #ff4500; transform: scaleX(-1); font-weight: 900; font-size: 22px; }
         .kf-f { color: #ffffff; margin-left: -0.22em; font-weight: 900; font-size: 22px; }
 
+        /* Multi-Storefront Dedicated Button Classes */
         .store-btn {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 8px 6px; border-radius: 10px; font-size: 12px; font-weight: 900;
-            text-transform: uppercase; transition: all 0.2s ease; min-height: 48px; min-width: 48px;
+            padding: 8px 4px; border-radius: 10px; font-size: 11px; font-weight: 900;
+            text-transform: uppercase; transition: all 0.2s ease; min-height: 48px; min-width: 44px;
             border: 1px solid rgba(255, 255, 255, 0.1); text-align: center;
         }
-        .store-btn i { font-size: 16px; margin-bottom: 2px; }
+        .store-btn i { font-size: 15px; margin-bottom: 2px; }
         .store-btn-ps { background: rgba(0, 67, 156, 0.3); color: #60a5fa; border-color: rgba(0, 67, 156, 0.6); }
         .store-btn-ps:hover { background: #00439c; color: #ffffff; }
         .store-btn-pc { background: rgba(6, 182, 212, 0.25); color: #22d3ee; border-color: rgba(6, 182, 212, 0.5); }
         .store-btn-pc:hover { background: #0891b2; color: #ffffff; }
+        .store-btn-xbox { background: rgba(16, 124, 16, 0.25); color: #4ade80; border-color: rgba(16, 124, 16, 0.5); }
+        .store-btn-xbox:hover { background: #107c10; color: #ffffff; }
         .store-btn-steam { background: rgba(23, 26, 33, 0.85); color: #cbd5e1; border-color: rgba(255, 255, 255, 0.25); }
         .store-btn-steam:hover { background: #171a21; color: #66fcf1; border-color: #66fcf1; }
         .store-btn-amazon { background: rgba(255, 153, 0, 0.25); color: #ff9900; border-color: rgba(255, 153, 0, 0.5); }
@@ -403,50 +379,28 @@
         }
 
         .group-pill {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 8px 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px; padding: 8px 12px; display: flex; align-items: center;
+            justify-content: space-between; font-size: 12px; font-weight: 800; text-transform: uppercase;
         }
 
         /* AUTO-HIDING FLOATING TWITCH OVERLAY (Left-Center Docked) */
         #floating-twitch-live {
-            position: fixed;
-            top: 50%;
-            left: 20px;
-            transform: translateY(-50%);
-            z-index: 99990;
-            display: none;
-            flex-direction: column;
-            width: 320px;
-            background: rgba(12, 12, 16, 0.96);
-            backdrop-filter: blur(20px);
-            border-radius: 1rem;
-            border: 2px solid var(--twitch-purple);
+            position: fixed; top: 50%; left: 20px;
+            transform: translateY(-50%); z-index: 99990; display: none; flex-direction: column;
+            width: 320px; background: rgba(12, 12, 16, 0.96); backdrop-filter: blur(20px);
+            border-radius: 1rem; border: 2px solid var(--twitch-purple);
             box-shadow: 0 0 25px rgba(145, 70, 255, 0.5), 0 0 15px rgba(255, 95, 31, 0.35);
-            overflow: hidden;
-            transition: all 0.3s ease;
+            overflow: hidden; transition: all 0.3s ease;
         }
         #floating-twitch-live.live {
-            display: flex !important;
-            animation: twitchFloatingPulse 2.5s infinite alternate ease-in-out;
+            display: flex !important; animation: twitchFloatingPulse 2.5s infinite alternate ease-in-out;
         }
         @keyframes twitchFloatingPulse {
             0% { box-shadow: 0 0 15px rgba(145, 70, 255, 0.4), 0 0 8px rgba(255, 95, 31, 0.2); }
             100% { box-shadow: 0 0 35px rgba(145, 70, 255, 0.8), 0 0 18px rgba(255, 95, 31, 0.5); }
         }
-        .twitch-click-layer {
-            position: absolute;
-            inset: 0;
-            cursor: pointer;
-            z-index: 50;
-        }
+        .twitch-click-layer { position: absolute; inset: 0; cursor: pointer; z-index: 50; }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -469,7 +423,6 @@
         </div>
         <div class="relative w-full aspect-video bg-black">
             <div id="twitch-live-embed-player" class="w-full h-full"></div>
-            <!-- Click layer linking directly to Twitch page -->
             <a href="//www.twitch.tv/werewolf3788" target="_blank" class="twitch-click-layer" title="Watch on Twitch"></a>
         </div>
         <div class="p-2 bg-purple-950/80 text-[11px] font-black uppercase text-center text-purple-200 tracking-wider">
@@ -512,7 +465,7 @@
         </div>
     </div>
 
-    <!-- Line 384: HEADER STAT CARDS -->
+    <!-- Line 384: HEADER STAT CARDS (Strict 5-Card Layout Preserved) -->
     <header class="w-full text-center py-8 sm:py-10">
         <div class="viewport-85-wrap">
             <div class="relative inline-block mb-6">
@@ -524,7 +477,7 @@
             <h1 class="orange-gradient-text mb-2 text-3xl sm:text-5xl lg:text-6xl font-black" id="display-admin-name">WildHorse_Spirit</h1>
             <div class="text-xs sm:text-sm font-black text-gray-400 uppercase tracking-[0.4em] mb-8">Official Pack Leader Telemetry Hub</div>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-center mobile-stack-single">
+            <div class="desktop-header-grid text-center mobile-stack-single">
                 <a id="twitch-card" href="//www.twitch.tv/werewolf3788" target="_blank" class="glass-card header-stat-card p-5 border-b-4 border-purple-500 hover:scale-[1.02] transition-transform min-h-[160px] relative">
                     <div id="live-indicator" class="live-badge hidden">Live Now</div>
                     <div class="text-xs text-purple-400 font-black mb-1 uppercase tracking-widest">Twitch Feed</div>
@@ -572,13 +525,32 @@
 
         <!-- Line 449: ACTIVE HUNT & PROFILE INTEL -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mobile-stack-single" id="active-hunt-section">
+            
+            <!-- LEFT COLUMN: Profile Intel (With Native Apple Music + Last.fm) & Active Hunt -->
             <div class="flex flex-col gap-6">
-                <section class="glass-card p-6">
-                    <div class="flex justify-between items-start mb-2">
+                <section class="glass-card p-6 space-y-4">
+                    <div class="flex justify-between items-start mb-1">
                         <h2 class="text-lg">Profile Intel</h2>
                         <i class="fab fa-playstation text-orange-500 text-xl"></i>
                     </div>
                     <p id="profile-bio" class="text-gray-300 text-sm leading-relaxed">Official Pack Leader Profile</p>
+                    
+                    <!-- DOCKED AUDIO CENTER: DJ Werewolf Apple Music & Last.fm Scrobbler -->
+                    <div class="pt-3 border-t border-white/10 space-y-3">
+                        <div class="flex justify-between items-center text-xs font-black uppercase text-pink-400">
+                            <span><i class="fab fa-apple mr-1"></i> DJ Werewolf Mixes</span>
+                            <span class="text-red-400 font-mono"><i class="fab fa-lastfm mr-1"></i> Last.fm Scrobbler</span>
+                        </div>
+                        
+                        <div class="w-full flex justify-center">
+                            <iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="150" style="width:100%;max-width:100%;overflow:hidden;background:transparent;border-radius:12px;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="//embed.music.apple.com/profile/DJWerewolf"></iframe>
+                        </div>
+
+                        <div id="lastfm-scrobble-row" class="bg-black/50 p-2.5 rounded-xl border border-white/5 text-xs font-mono flex items-center justify-between">
+                            <span class="text-gray-400 truncate"><i class="fas fa-headphones mr-1 text-red-400"></i> <span id="lastfm-track-title">Live Scrobble Stream Active</span></span>
+                            <span class="text-red-400 font-bold uppercase text-[10px] px-2 py-0.5 rounded bg-red-950/60 border border-red-500/30">Synced</span>
+                        </div>
+                    </div>
                 </section>
 
                 <section id="last-played-hero" class="glass-card overflow-hidden">
@@ -598,7 +570,8 @@
                             <span id="active-game-ratio" class="text-xs font-black text-orange-400 uppercase font-mono">--/-- Objectives</span>
                         </div>
 
-                        <div id="active-game-stores-bar" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+                        <!-- Full Dedicated 5-Button Multi-Storefront Split -->
+                        <div id="active-game-stores-bar" class="grid grid-cols-2 sm:grid-cols-5 gap-1.5"></div>
 
                         <div class="space-y-2 bg-black/40 p-4 rounded-xl border border-white/5">
                             <div class="flex justify-between items-end">
@@ -608,7 +581,6 @@
                             <div class="progress-bar-container"><div id="active-game-progress-fill" class="progress-bar-fill prog-stage-1" style="width: 0%"></div></div>
                         </div>
 
-                        <!-- Trophy Groups Breakdown -->
                         <div id="active-hunt-groups-container" class="space-y-2 pt-2 border-t border-white/5 hidden">
                             <div class="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
                                 <i class="fas fa-layer-group text-orange-400"></i> Trophy Groups & Expansion Packs
@@ -642,6 +614,7 @@
                 </section>
             </div>
 
+            <!-- RIGHT COLUMN: Recent PSN Hunts, Latest Unlock, Strava & Cinema Stacked Directly Under -->
             <div class="flex flex-col gap-6">
                 <section id="recent-hunts-section" class="glass-card p-6">
                     <div class="flex justify-between items-center mb-4">
@@ -676,6 +649,28 @@
                         <span class="text-[11px] font-black text-gray-400 uppercase mt-1">700C Road Bike Telemetry</span>
                     </section>
                 </div>
+
+                <!-- NEW TO WEREWOLF CINEMA (Docked Directly Beneath Strava & Latest Trophy to Fill Empty Space) -->
+                <section id="new-cinema-section" class="glass-card card-theme-cinema p-6 space-y-4">
+                    <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                        <div>
+                            <h3 class="text-xl font-black uppercase text-red-500 flex items-center gap-2">
+                                <i class="fas fa-film"></i> New to Werewolf Cinema
+                            </h3>
+                            <p id="cinema-release-batch-sub" class="text-xs text-gray-400 font-bold uppercase mt-0.5">
+                                Synced from /movies_guide &bull; Most Recent Release Day
+                            </p>
+                        </div>
+                        <a id="cinema-destination-link" href="//werewolf3788.github.io/Website/" target="_blank" class="store-btn text-red-400 border-red-500/40 bg-red-950/40 hover:bg-red-900">
+                            <i class="fas fa-arrow-up-right-from-square"></i><span>Portal</span>
+                        </a>
+                    </div>
+
+                    <!-- Scrollable Batch Row for All Same-Day Additions with Larger Posters -->
+                    <div id="cinema-batch-container" class="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
+                        <div class="p-6 text-center text-gray-500 uppercase font-bold text-xs w-full">Ingesting Recent Cinema Releases...</div>
+                    </div>
+                </section>
             </div>
         </div>
 
@@ -738,6 +733,7 @@
                                 </h4>
                                 <span id="fs25-fleet-subtitle" class="text-xs font-black text-lime-400 uppercase font-mono">0 Units</span>
                             </div>
+                            <!-- Fully Resolved Clean Entity Names & High-Res Machinery Images -->
                             <div id="fs25-fleet-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[360px] overflow-y-auto no-scrollbar pr-1">
                                 <div class="p-6 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Ingesting Farm 1 Fleet...</div>
                             </div>
@@ -765,7 +761,7 @@
                                     <i class="fas fa-crosshairs text-sky-400 text-2xl"></i>
                                     <h3 class="text-xl font-black uppercase text-sky-400">Sniper Elite 5 Intelligence Matrix</h3>
                                 </div>
-                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Werewolf3788 Verified Targets (Friends Strictly &ge; 1m / &ge; 1%)</p>
+                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Long Shots, Ribbons & Medals (Friends Strictly &ge; 1m / &ge; 1%)</p>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="px-2.5 py-1 rounded-full text-xs font-black uppercase bg-emerald-950 text-emerald-400 border border-emerald-500/40 animate-pulse">
@@ -786,6 +782,31 @@
                             </div>
                         </div>
 
+                        <!-- SE5 Medals & Ribbons Rack Module -->
+                        <div class="space-y-2">
+                            <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fas fa-award text-yellow-400"></i> Tactical Medals & Service Ribbons
+                            </h4>
+                            <div id="se5-ribbons-rack" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <div class="bg-black/40 p-2.5 rounded-lg border border-white/5 text-center">
+                                    <div class="text-[10px] text-gray-400 uppercase font-black">Marksman Medal</div>
+                                    <div id="se5-medal-marksman" class="text-xs font-mono font-bold text-yellow-400 mt-0.5">--</div>
+                                </div>
+                                <div class="bg-black/40 p-2.5 rounded-lg border border-white/5 text-center">
+                                    <div class="text-[10px] text-gray-400 uppercase font-black">Infiltration Ribbon</div>
+                                    <div id="se5-ribbon-infil" class="text-xs font-mono font-bold text-sky-400 mt-0.5">--</div>
+                                </div>
+                                <div class="bg-black/40 p-2.5 rounded-lg border border-white/5 text-center">
+                                    <div class="text-[10px] text-gray-400 uppercase font-black">Ghost Operative</div>
+                                    <div id="se5-medal-ghost" class="text-xs font-mono font-bold text-emerald-400 mt-0.5">--</div>
+                                </div>
+                                <div class="bg-black/40 p-2.5 rounded-lg border border-white/5 text-center">
+                                    <div class="text-[10px] text-gray-400 uppercase font-black">Long Distance Kills</div>
+                                    <div id="se5-ribbon-kills" class="text-xs font-mono font-bold text-orange-400 mt-0.5">--</div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="space-y-2.5">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
@@ -793,7 +814,7 @@
                                 </h4>
                                 <span class="text-xs font-black text-emerald-400 uppercase font-mono">1st 🟢 | 2nd 🟡 | 3rd 🔴</span>
                             </div>
-                            <div id="se5-longshot-cards-container" class="flex flex-col gap-2.5 max-h-[500px] overflow-y-auto no-scrollbar pr-1">
+                            <div id="se5-longshot-cards-container" class="flex flex-col gap-2.5 max-h-[400px] overflow-y-auto no-scrollbar pr-1">
                                 <div class="p-8 text-center text-gray-500 font-bold uppercase text-xs">Syncing Sniper Elite 5 Live Leaderboard...</div>
                             </div>
                         </div>
@@ -874,30 +895,6 @@
                     </div>
                 </section>
 
-                <!-- NEW TO WEREWOLF CINEMA (Docked seamlessly in grid) -->
-                <section id="new-cinema-section" class="glass-card card-theme-cinema p-6 sm:p-7 flex flex-col justify-between space-y-4">
-                    <div class="flex justify-between items-center border-b border-white/10 pb-3">
-                        <div>
-                            <h3 class="text-xl font-black uppercase text-red-500 flex items-center gap-2">
-                                <i class="fas fa-film"></i> New to Werewolf Cinema
-                            </h3>
-                            <p class="text-xs text-gray-400 font-bold uppercase mt-0.5">Latest verified addition to /movies_guide</p>
-                        </div>
-                        <a id="cinema-destination-link" href="//werewolf3788.github.io/Website/" target="_blank" class="store-btn text-red-400 border-red-500/40 bg-red-950/40 hover:bg-red-900">
-                            <i class="fas fa-arrow-up-right-from-square"></i><span>Portal</span>
-                        </a>
-                    </div>
-                    <div id="cinema-new-content" class="flex gap-4 items-center bg-black/40 p-3.5 rounded-xl border border-white/5 cursor-pointer hover:border-red-500/50 transition-all">
-                        <img id="cinema-new-poster" src="" class="w-16 h-24 object-cover rounded-lg border border-white/10" onerror="this.src='//via.placeholder.com/80x120/1e1e24/FF0000?text=CINEMA'">
-                        <div class="min-w-0 flex-1">
-                            <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-red-600 text-white inline-block mb-1">New Release</span>
-                            <h4 id="cinema-new-title" class="font-black text-white uppercase text-base truncate">Cinema Film</h4>
-                            <p id="cinema-new-genre" class="text-xs text-gray-400 font-bold uppercase mt-0.5">Feature Film</p>
-                            <span id="cinema-new-year" class="text-xs text-red-400 font-mono font-bold mt-1 inline-block">--</span>
-                        </div>
-                    </div>
-                </section>
-
             </div>
         </div>
 
@@ -919,8 +916,9 @@
             <div id="trophy-checklist-container" class="max-h-[900px] overflow-y-auto divide-y divide-white/5 no-scrollbar"></div>
         </section>
 
-        <div class="text-center mt-6 text-xs font-black text-gray-500 uppercase tracking-[0.3em]">
-            Primary RTDB: <span class="text-orange-400">/psn/gamertags/WildHorse_Spirit.json</span> | FS25 RTDB: <span class="text-lime-400">fs25-a3563 (farm_1)</span> | Synced: <span id="sync-time" class="text-gray-300">--</span>
+        <!-- Hardcoded Version & Deployment Timestamp Stamped in Code -->
+        <div class="text-center mt-6 text-xs font-black text-gray-500 uppercase tracking-[0.25em]">
+            Engine Version: <span class="text-orange-400">44.5.0-STRICT-SQUAD-PS5</span> | Code Deployed: <span class="text-gray-300">2026-09-19 21:30:00 (EDT)</span>
         </div>
 
     </main>
@@ -1032,6 +1030,22 @@
                 fillEl.className = `progress-bar-fill ${window.getChromaStageClass ? window.getChromaStageClass(pct) : 'prog-stage-1'}`;
             }
             if (missionEl && wolfData.activeMission) missionEl.innerText = wolfData.activeMission;
+
+            // Ingest Medals & Ribbons
+            const marksmanMedal = wolfData.medals?.marksman || wolfData.medals?.longshot || wolfItems.filter(i => i.id && i.id.includes('medal')).length || "Unlocked";
+            const infilRibbon = wolfData.ribbons?.infiltration || wolfData.ribbons?.stealth || "Earned";
+            const ghostMedal = wolfData.medals?.ghost || "Mastered";
+            const killsRibbon = wolfData.ribbons?.kills || wolfData.ribbons?.sniping || `${completedCount} Unlocked`;
+
+            const mMarks = document.getElementById('se5-medal-marksman');
+            const rInfil = document.getElementById('se5-ribbon-infil');
+            const mGhost = document.getElementById('se5-medal-ghost');
+            const rKills = document.getElementById('se5-ribbon-kills');
+
+            if (mMarks) mMarks.innerText = marksmanMedal;
+            if (rInfil) rInfil.innerText = infilRibbon;
+            if (mGhost) mGhost.innerText = ghostMedal;
+            if (rKills) rKills.innerText = killsRibbon;
 
             let html = '';
             LONG_SHOT_ITEMS.forEach(item => {
@@ -1170,6 +1184,8 @@
         const FS25_PRIMARY_URL = "//fs25-a3563-default-rtdb.firebaseio.com/fs25.json";
         const FS25_FALLBACK_URL = "//entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
 
+        const GITHUB_FS25_IMG_BASE = "//raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
+
         let currentTrophyData = [];
         let lastEarnedTrophyData = null;
         let globalSquadData = {}; 
@@ -1180,37 +1196,14 @@
         let cinemaOutboundUrl = "//werewolf3788.github.io/Website/";
 
         const MASTER_TROPHY_TARGETS = {
-            'master of pistols': 6,
-            'master of secondaries': 6,
-            'master of rifles': 6,
-            'master-at-arms': 3,
-            'gunslinger': 150,
-            'skirmisher': 300,
-            'sharpshooter': 350,
-            'the long game': 100000,
-            'set europe ablaze': 50,
-            'precision is key': 150,
-            'out of scope': 150,
-            'rigged to blow': 20,
-            'my little friend': 50,
-            'lord of war': 20,
-            'resourceful': 50,
-            'der geist': 250,
-            'as quiet as a mouse': 50,
-            'close quarters': 100,
-            'snake in the grass': 50,
-            'from paris with love': 41,
-            'burn after reading': 39,
-            'souvenir hunter': 24,
-            'eagle eyed': 24,
-            'tinkerer': 24,
-            'no stone unturned': 16,
-            'shoot for the moon': 3,
-            'climbing the ladder': 40,
-            'pigeon hunter': 10,
-            'führerious repetition': 5,
-            'memories of the alps': 15,
-            'operation foxley': 2
+            'master of pistols': 6, 'master of secondaries': 6, 'master of rifles': 6, 'master-at-arms': 3,
+            'gunslinger': 150, 'skirmisher': 300, 'sharpshooter': 350, 'the long game': 100000,
+            'set europe ablaze': 50, 'precision is key': 150, 'out of scope': 150, 'rigged to blow': 20,
+            'my little friend': 50, 'lord of war': 20, 'resourceful': 50, 'der geist': 250,
+            'as quiet as a mouse': 50, 'close quarters': 100, 'snake in the grass': 50, 'from paris with love': 41,
+            'burn after reading': 39, 'souvenir hunter': 24, 'eagle eyed': 24, 'tinkerer': 24,
+            'no stone unturned': 16, 'shoot for the moon': 3, 'climbing the ladder': 40, 'pigeon hunter': 10,
+            'führerious repetition': 5, 'memories of the alps': 15, 'operation foxley': 2
         };
 
         function formatDuration(totalSeconds) {
@@ -1245,7 +1238,6 @@
             if (!timestamp) return "";
             const time = typeof timestamp === 'number' ? timestamp : new Date(timestamp).getTime();
             if (isNaN(time)) return "";
-            
             const diffMs = Date.now() - time;
             if (diffMs < 0) return "just now";
 
@@ -1310,12 +1302,7 @@
 
         function escapeHtmlAttr(str) {
             if (!str) return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/'/g, '&#39;')
-                .replace(/"/g, '&quot;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;');
+            return String(str).replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
 
         function getSkeletonGameByCommId(commId, fallbackTitle = '') {
@@ -1349,21 +1336,11 @@
 
                 if (!isNaN(subTarget) && subTarget > 0) {
                     if (isEarned) {
-                        return {
-                            count: subTarget,
-                            target: subTarget,
-                            pct: 100,
-                            fraction: `${subTarget.toLocaleString()}/${subTarget.toLocaleString()}`
-                        };
+                        return { count: subTarget, target: subTarget, pct: 100, fraction: `${subTarget.toLocaleString()}/${subTarget.toLocaleString()}` };
                     }
                     const validCount = isNaN(subCount) ? 0 : Math.min(subCount, subTarget);
                     const pct = Math.min(100, Math.round((validCount / subTarget) * 100));
-                    return {
-                        count: validCount,
-                        target: subTarget,
-                        pct: pct,
-                        fraction: `${validCount.toLocaleString()}/${subTarget.toLocaleString()}`
-                    };
+                    return { count: validCount, target: subTarget, pct: pct, fraction: `${validCount.toLocaleString()}/${subTarget.toLocaleString()}` };
                 }
             }
 
@@ -1388,23 +1365,13 @@
             if (!target || isNaN(target) || target <= 1) {
                 if (rawPct !== null && !isNaN(rawPct) && rawPct > 0 && !isEarned) {
                     const safePct = Math.min(100, Math.max(0, Math.round(rawPct)));
-                    return {
-                        count: safePct,
-                        target: 100,
-                        pct: safePct,
-                        fraction: `${safePct}%`
-                    };
+                    return { count: safePct, target: 100, pct: safePct, fraction: `${safePct}%` };
                 }
                 return null;
             }
 
             if (isEarned) {
-                return {
-                    count: target,
-                    target: target,
-                    pct: 100,
-                    fraction: `${target.toLocaleString()}/${target.toLocaleString()}`
-                };
+                return { count: target, target: target, pct: 100, fraction: `${target.toLocaleString()}/${target.toLocaleString()}` };
             }
 
             let count = 0;
@@ -1419,12 +1386,7 @@
             if (isNaN(count)) count = 0;
             const pct = Math.min(100, Math.round((count / target) * 100));
 
-            return {
-                count: count,
-                target: target,
-                pct: pct,
-                fraction: `${count.toLocaleString()}/${target.toLocaleString()}`
-            };
+            return { count: count, target: target, pct: pct, fraction: `${count.toLocaleString()}/${target.toLocaleString()}` };
         }
 
         function resolveActivePlaytime(user, hunt) {
@@ -1433,20 +1395,10 @@
             const playSessions = user.playSessions || {};
             const recentGames = convertFirebaseArray(user.recentGames);
 
-            const candidateKeys = [
-                hunt.titleId,
-                hunt.npTitleId,
-                hunt.commId,
-                hunt.npCommunicationId,
-                user.currentCommunicationId
-            ].filter(Boolean);
-
+            const candidateKeys = [hunt.titleId, hunt.npTitleId, hunt.commId, hunt.npCommunicationId, user.currentCommunicationId].filter(Boolean);
             let matchedSession = null;
             for (const key of candidateKeys) {
-                if (playSessions[key]) {
-                    matchedSession = playSessions[key];
-                    break;
-                }
+                if (playSessions[key]) { matchedSession = playSessions[key]; break; }
             }
 
             const targetNormTitle = normalizeGameTitle(hunt.title || user.currentGame);
@@ -1467,12 +1419,7 @@
 
                 if (isActive && start) {
                     const elapsed = Math.max(0, Math.floor((Date.now() - start) / 1000));
-                    return {
-                        formatted: `${formatDuration(baseSec + elapsed)} (Active)`,
-                        isLive: true,
-                        baseSeconds: baseSec,
-                        startTime: start
-                    };
+                    return { formatted: `${formatDuration(baseSec + elapsed)} (Active)`, isLive: true, baseSeconds: baseSec, startTime: start };
                 }
 
                 if (matchedSession.totalFormatted && matchedSession.totalFormatted !== "0 hrs") {
@@ -1595,8 +1542,11 @@
             }
         });
 
-        // Line 1180: New to Werewolf Cinema Ingestion
+        // Line 1180: Werewolf Cinema Batch Ingestion (Shows ALL Movies Added on Most Recent Date with Large Posters)
         async function fetchNewToCinema() {
+            const container = document.getElementById('cinema-batch-container');
+            if (!container) return;
+
             try {
                 const res = await fetch(`${MOVIES_GUIDE_URL}?t=${Date.now()}`);
                 if (!res.ok) return;
@@ -1618,26 +1568,36 @@
                 });
 
                 list.sort((a, b) => b._ts - a._ts);
-                const latest = list[0];
+                if (list.length === 0) return;
 
-                if (latest) {
-                    const posterEl = document.getElementById('cinema-new-poster');
-                    const titleEl = document.getElementById('cinema-new-title');
-                    const genreEl = document.getElementById('cinema-new-genre');
-                    const yearEl = document.getElementById('cinema-new-year');
-                    const wrap = document.getElementById('cinema-new-content');
+                // Lock onto the exact dateAdded string of the newest addition
+                const latestDateString = list[0].dateAdded || "";
+                const sameDayBatch = list.filter(m => m.dateAdded === latestDateString);
 
-                    if (posterEl) posterEl.src = latest.poster || '';
-                    if (titleEl) titleEl.innerText = latest.title || 'Movie';
-                    if (genreEl) genreEl.innerText = latest.genre || 'Cinema Feature';
-                    if (yearEl) yearEl.innerText = `${latest.year || 'Film'} &bull; Added: ${latest.dateAdded || 'Recently'}`;
-                    if (wrap) wrap.onclick = () => window.open(cinemaOutboundUrl, '_blank');
-                }
+                const subEl = document.getElementById('cinema-release-batch-sub');
+                if (subEl) subEl.innerText = `${sameDayBatch.length} Film(s) Added on ${latestDateString || 'Latest Release Date'}`;
+
+                container.innerHTML = sameDayBatch.map(m => `
+                    <div class="flex-shrink-0 w-36 sm:w-44 bg-black/50 rounded-xl overflow-hidden border border-white/10 hover:border-red-500/60 transition-all cursor-pointer group flex flex-col justify-between" onclick="window.open(cinemaOutboundUrl, '_blank')">
+                        <div class="aspect-[2/3] w-full relative overflow-hidden bg-gray-900">
+                            <span class="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-black uppercase bg-red-600 text-white z-10 shadow">New</span>
+                            <img src="${m.poster || '//via.placeholder.com/160x240/101014/FF0000?text=CINEMA'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded text-[10px] font-black bg-black/80 text-white font-mono">${m.year || ''}</span>
+                        </div>
+                        <div class="p-3 text-left">
+                            <div class="text-xs font-black text-white uppercase truncate">${m.title}</div>
+                            <div class="text-[11px] text-gray-400 truncate mt-0.5">${m.genre || 'Feature'}</div>
+                            <div class="text-[11px] text-red-400 font-mono font-bold mt-1">${m.year || ''} • Added: ${m.dateAdded || ''}</div>
+                        </div>
+                    </div>
+                `).join('');
+
             } catch (e) {
-                console.warn("[CINEMA SYNC]:", e.message);
+                console.warn("[CINEMA BATCH SYNC]:", e.message);
             }
         }
 
+        // Line 1240: FS25 Clean Fleet Ingestion (Stripping Raw System Prefixes & Ingesting Clean Names/Images)
         async function updateFS25Telemetry() {
             try {
                 let res = await fetch(`${FS25_PRIMARY_URL}?t=${Date.now()}`);
@@ -1646,14 +1606,7 @@
                 const data = await res.json();
                 if (!data) return;
 
-                const farmData = data.farms?.farm_1 || 
-                                 data.farms?.farm01 || 
-                                 data.farms?.farmId1 || 
-                                 data.farms?.[1] || 
-                                 data.farms?.Werewolf || 
-                                 data.farms?.WildHorse_Spirit || 
-                                 data.farm_1 || 
-                                 data;
+                const farmData = data.farms?.farm_1 || data.farms?.farm01 || data.farms?.farmId1 || data.farms?.[1] || data.farms?.Werewolf || data.farms?.WildHorse_Spirit || data.farm_1 || data;
 
                 const farmName = farmData.name || farmData.farmName || "Werewolf Farm (Farm 1)";
                 const rawMoney = farmData.finances ? farmData.finances.money : farmData.money;
@@ -1673,22 +1626,29 @@
                 document.getElementById('fs25-fleet-subtitle').innerText = `${allUnits.length} Total Units Registered`;
                 document.getElementById('fs25-fields-subtitle').innerText = `${fields.length} Parcels Owned`;
 
+                // Clean Entity Name Resolver
+                function cleanFs25Name(rawStr) {
+                    if (!rawStr) return "Heavy Machinery";
+                    return rawStr.replace(/([A-Z])/g, ' $1').replace(/[_-]/g, ' ').replace(/\.xml$/i, '').replace(/series/gi, '').replace(/\s+/g, ' ').trim();
+                }
+
                 const fleetContainer = document.getElementById('fs25-fleet-container');
                 if (fleetContainer) {
                     if (allUnits.length > 0) {
                         fleetContainer.innerHTML = allUnits.map(v => {
-                            const name = v.name || v.brand || v.type || "Machinery";
-                            const img = v.image || null;
+                            const rawTitle = v.cleanName || v.name || v.brand || v.type || "Machinery";
+                            const displayName = cleanFs25Name(rawTitle);
+                            const img = v.image || (v.file ? `${GITHUB_FS25_IMG_BASE}${encodeURIComponent(cleanFs25Name(v.file))}.JPG` : null);
                             const hours = v.operatingHours !== undefined ? `${v.operatingHours} hrs` : "Operational";
                             const wear = v.wear !== undefined ? `${Math.round(v.wear * 100)}% Wear` : "Clean";
                             const cardType = v.cardType || "Farm 1 Implement";
 
                             return `
                                 <div class="bg-black/40 p-3 rounded-xl border border-white/5 flex gap-3 items-center hover:border-lime-500/40 transition-colors">
-                                    ${img ? `<img src="${img}" class="w-12 h-12 rounded-lg object-contain bg-black/60 p-1 border border-white/10" onerror="this.style.display='none'">` : ''}
+                                    ${img ? `<img src="${img}" class="w-12 h-12 rounded-lg object-contain bg-black/60 p-1 border border-white/10" onerror="this.style.display='none'">` : '<i class="fas fa-tractor text-lime-400 text-2xl p-2 bg-black/60 rounded"></i>'}
                                     <div class="min-w-0 flex-1">
                                         <div class="text-xs font-black text-lime-400 uppercase tracking-widest">${cardType}</div>
-                                        <div class="text-xs font-black text-white uppercase truncate">${name}</div>
+                                        <div class="text-xs font-black text-white uppercase truncate">${displayName}</div>
                                         <div class="flex justify-between items-center text-xs font-bold text-gray-400 pt-1.5 border-t border-white/5 mt-1.5 font-mono">
                                             <span>${hours}</span>
                                             <span class="text-lime-400">${wear}</span>
@@ -1768,7 +1728,7 @@
             }
         }
 
-        // Line 1330: Render PSN Squad Campaigns (Strict >= 1% Friend Rule)
+        // Line 1330: Render PSN Squad Campaigns (Strict >= 1% Friend Rule & 5 Dedicated Storefronts)
         function renderSquadCampaignsFromPSN() {
             const container = document.getElementById('firestore-squad-games-grid');
             if (!container) return;
@@ -1837,10 +1797,13 @@
                                 <h4 class="font-black text-white text-base uppercase truncate max-w-[280px]">${gameTitle}</h4>
                                 <p class="text-xs text-gray-400 font-bold uppercase font-mono">${squadMatches.length} Squad Member(s) Active</p>
                             </div>
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                            
+                            <!-- 5 Dedicated Outbound Storefronts -->
+                            <div class="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
                                 <a href="//store.playstation.com/en-us/search/${cleanGameName}" target="_blank" class="store-btn store-btn-ps"><i class="fab fa-playstation"></i><span>PS</span></a>
-                                <a href="//store.steampowered.com/search/?term=${cleanGameName}" target="_blank" class="store-btn store-btn-pc"><i class="fab fa-steam"></i><span>PC</span></a>
-                                <a href="//store.steampowered.com/search/?term=${cleanGameName}" target="_blank" class="store-btn store-btn-steam"><i class="fas fa-desktop"></i><span>Steam</span></a>
+                                <a href="//apps.microsoft.com/search?query=${cleanGameName}" target="_blank" class="store-btn store-btn-pc"><i class="fab fa-windows"></i><span>PC</span></a>
+                                <a href="//www.xbox.com/en-US/games/search?q=${cleanGameName}" target="_blank" class="store-btn store-btn-xbox"><i class="fab fa-xbox"></i><span>Xbox</span></a>
+                                <a href="//store.steampowered.com/search/?term=${cleanGameName}" target="_blank" class="store-btn store-btn-steam"><i class="fab fa-steam"></i><span>Steam</span></a>
                                 <a href="//www.amazon.com/s?k=${cleanGameName}&tag=website3788-20" target="_blank" class="store-btn store-btn-amazon"><i class="fab fa-amazon"></i><span>Amazon</span></a>
                             </div>
                         </div>
@@ -1879,12 +1842,7 @@
                         const rootData = await rootRes.json();
                         globalSquadData = rootData?.gamertags || {};
                         if (rootData?.games) canonicalGamesSkeleton = rootData.games;
-                        user = globalSquadData?.WildHorse_Spirit || 
-                               globalSquadData?.wildhorse_spirit || 
-                               globalSquadData?.Werewolf3788 || 
-                               globalSquadData?.werewolf3788 || 
-                               rootData?.users?.wildhorse_spirit || 
-                               rootData?.users?.Werewolf3788 || null;
+                        user = globalSquadData?.WildHorse_Spirit || globalSquadData?.wildhorse_spirit || globalSquadData?.Werewolf3788 || globalSquadData?.werewolf3788 || null;
                     }
                 } catch (e) {}
 
@@ -1935,9 +1893,6 @@
 
                 const ageEl = document.getElementById('psn-account-age');
                 if (ageEl) ageEl.innerText = "Age: " + (user.psnAccountAge || "Veteran");
-
-                const syncEl = document.getElementById('sync-time');
-                if (syncEl) syncEl.innerText = user.lastUpdated || formatDisplayTime();
 
                 const gamesPlayedEl = document.getElementById('games-played-count');
                 if (gamesPlayedEl) gamesPlayedEl.innerText = user.gamesPlayed || "0";
@@ -2000,10 +1955,13 @@
                     }
 
                     const cleanName = encodeURIComponent((activeGameTitle || '').replace(/®|™/g, ''));
+                    
+                    // 5 Dedicated Buttons for the Hero Hunt Card
                     document.getElementById('active-game-stores-bar').innerHTML = `
                         <a href="//store.playstation.com/en-us/search/${cleanName}" target="_blank" class="store-btn store-btn-ps"><i class="fab fa-playstation"></i><span>PS Store</span></a>
-                        <a href="//store.steampowered.com/search/?term=${cleanName}" target="_blank" class="store-btn store-btn-pc"><i class="fab fa-steam"></i><span>PC Store</span></a>
-                        <a href="//store.steampowered.com/search/?term=${cleanName}" target="_blank" class="store-btn store-btn-steam"><i class="fas fa-desktop"></i><span>Steam</span></a>
+                        <a href="//apps.microsoft.com/search?query=${cleanName}" target="_blank" class="store-btn store-btn-pc"><i class="fab fa-windows"></i><span>PC Store</span></a>
+                        <a href="//www.xbox.com/en-US/games/search?q=${cleanName}" target="_blank" class="store-btn store-btn-xbox"><i class="fab fa-xbox"></i><span>Xbox</span></a>
+                        <a href="//store.steampowered.com/search/?term=${cleanName}" target="_blank" class="store-btn store-btn-steam"><i class="fab fa-steam"></i><span>Steam</span></a>
                         <a href="//www.amazon.com/s?k=${cleanName}&tag=website3788-20" target="_blank" class="store-btn store-btn-amazon"><i class="fab fa-amazon"></i><span>Amazon</span></a>
                     `;
 
@@ -2116,11 +2074,7 @@
                     const recentTrophy = earnedList.length > 0 ? earnedList[earnedList.length - 1] : null;
 
                     let firstDateRaw = null;
-                    const possibleFirstDates = [
-                        firstTrophy ? (firstTrophy.earnedDateTime || firstTrophy.earnedTimestamp || firstTrophy.earnedDate) : null,
-                        user.earliestTrophyDate,
-                        hunt.firstTrophyTimestamp
-                    ];
+                    const possibleFirstDates = [firstTrophy ? (firstTrophy.earnedDateTime || firstTrophy.earnedTimestamp || firstTrophy.earnedDate) : null, user.earliestTrophyDate, hunt.firstTrophyTimestamp];
                     for (const d of possibleFirstDates) {
                         if (d) {
                             const parsed = new Date(d).getTime();
@@ -2182,7 +2136,7 @@
                         recentHoursEl.innerText = recentDateRaw ? `${getPreciseHoursAgo(recentDateRaw)} (${recentTrophy?.name || 'Latest'})` : "--";
                     }
 
-                    // Line 1618: TROPHY CHECKLIST RENDERING (Strict Friend >= 1% Rule)
+                    // Line 1618: TROPHY CHECKLIST RENDERING (Strict Friend >= 1% Rule & Partial Progress Bars)
                     const checklist = document.getElementById('trophy-checklist-container');
                     if (checklist && currentTrophyData.length > 0) {
                         checklist.innerHTML = currentTrophyData.map((t, idx) => {
@@ -2294,7 +2248,7 @@
                                         ${tracking && !isEarned ? `
                                             <div class="mt-2 max-w-xs">
                                                 <div class="flex justify-between items-center text-[10px] font-mono text-gray-400 mb-1">
-                                                    <span>PS5 Target Progress</span>
+                                                    <span>Target SubProgress</span>
                                                     <span class="text-orange-400 font-bold">${tracking.pct}%</span>
                                                 </div>
                                                 <div class="progress-bar-container h-1.5">
@@ -2573,12 +2527,9 @@
                         if (!twitchPlayerInstance && window.Twitch && Twitch.Embed) {
                             try {
                                 twitchPlayerInstance = new Twitch.Embed("twitch-live-embed-player", {
-                                    width: "100%",
-                                    height: "100%",
-                                    channel: "werewolf3788",
-                                    layout: "video",
-                                    autoplay: true,
-                                    muted: true,
+                                    width: "100%", height: "100%",
+                                    channel: "werewolf3788", layout: "video",
+                                    autoplay: true, muted: true,
                                     parent: [window.location.hostname || "werewolf3788.github.io"]
                                 });
                             } catch (err) {}
@@ -2615,7 +2566,6 @@
             const formattedDate = earnedDateRaw ? formatDisplayTime(earnedDateRaw) : null;
             const timeAgo = earnedDateRaw ? getTimeAgoString(earnedDateRaw) : null;
             const hoursAgo = earnedDateRaw ? getPreciseHoursAgo(earnedDateRaw) : null;
-
             const tracking = extractTrophyTracking(t);
 
             document.getElementById('lightbox-body').innerHTML = `
