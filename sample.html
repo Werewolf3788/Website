@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * Dashboard: WildHorse_Spirit / Werewolf3788 Master Command Telemetry & Tactical Hub
- * Engine Version: 44.5.0-STRICT-SQUAD-PS5-MASTER-EXPANDED
+ * Engine Version: 44.6.0-STRICT-SQUAD-PS5-90PCT-CAROUSEL-INTEGRATED
  * Location: /Playstation/dashboards/wildhorse_spirit.html
  * Analytics Tagging: G-CTYHDF4MSD (GA4 Stream & GTM Ready)
- * Code Deployment Timestamp: 2026-09-19 21:30:00 (America/New_York)
- * Description: Fully Preserved 44.3.0 Architecture with Enhanced Modules:
- *              1. Layout Balance: Werewolf Cinema placed directly beneath Latest PSN Unlock & Strava.
- *              2. Cinema Batching: Displays ALL movies added on the most recent date with large posters.
- *              3. Multi-Storefront Split: PS, PC (Microsoft Store), Xbox, Steam, and Amazon.
- *              4. Media Integration: Apple Music DJ Werewolf + Last.fm Scrobbler inside Profile Intel.
+ * Code Deployment Timestamp: 2026-09-19 21:45:00 (America/New_York)
+ * Description: Fully Preserved Tactical OS with Enforced Upgrades:
+ *              1. 90% Screen Width: .viewport-85-wrap scaled to 90% across desktop.
+ *              2. Cinema Carousel: Horizontal wheel & arrow navigation; year in yellow, date added in orange.
+ *              3. Full Multi-Storefront Split: PS, PC (Microsoft Store), Xbox, Steam, Amazon.
+ *              4. Live Last.fm & Apple Music: Active REST poller for live scrobbles + curated playlist.
  *              5. SE5 Telemetry: Ingests Long Shots, Ribbons, and Medals with stoplight glows.
  *              6. FS25 Clean Fleet: Full entity name cleanups and high-res machinery image ingestion.
- *              7. Strict Friend Cutoff: Friends only appear across cards/modals if progress >= 1% or dist >= 1m.
+ *              7. Strict Friend Cutoff: Friends only appear if progress >= 1% or dist >= 1m.
  *              8. Auto-Hiding Twitch: Floating left-center overlay that only appears when Live.
  * ============================================================================ -->
 <html lang="en">
@@ -37,7 +37,7 @@
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '44.5.0',
+            'layout_version': '44.6.0',
             'gamertag': 'WildHorse_Spirit',
             'user_handle': 'Werewolf3788',
             'engagement_timezone': 'America/New_York',
@@ -67,7 +67,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="//embed.twitch.tv/embed/v1.js"></script>
     
-    <!-- Line 73: MASTER STYLESHEET (Native Fallbacks Included) -->
+    <!-- Line 73: MASTER STYLESHEET (90% Layout & Carousel Styles) -->
     <style>
         @import url('//fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap');
 
@@ -99,6 +99,7 @@
             overflow-wrap: break-word;
         }
 
+        /* 90% SCREEN WIDTH ON DESKTOP */
         .viewport-85-wrap {
             width: 100%; max-width: 100%;
             margin-left: auto; margin-right: auto;
@@ -106,18 +107,17 @@
         }
 
         @media (min-width: 768px) {
-            .viewport-85-wrap { width: 92%; padding-left: 1.5rem; padding-right: 1.5rem; }
+            .viewport-85-wrap { width: 94%; padding-left: 1.5rem; padding-right: 1.5rem; }
         }
 
         @media (min-width: 1200px) {
-            .viewport-85-wrap { width: 85%; max-width: 1850px; padding-left: 0; padding-right: 0; }
+            .viewport-85-wrap { width: 90% !important; max-width: 1980px; padding-left: 0; padding-right: 0; }
         }
 
         @media (max-width: 480px) {
             .mobile-stack-single { display: flex !important; flex-direction: column !important; width: 100% !important; }
         }
 
-        /* Pure CSS Grid Desktop Fallbacks (Ensures desktop multi-column remains active) */
         .desktop-header-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
         @media (min-width: 640px) { .desktop-header-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
         @media (min-width: 1024px) { .desktop-header-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
@@ -402,6 +402,15 @@
         }
         .twitch-click-layer { position: absolute; inset: 0; cursor: pointer; z-index: 50; }
 
+        /* Sideways Carousel Navigation */
+        .carousel-btn {
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff; width: 34px; height: 34px; border-radius: 8px;
+            display: inline-flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .carousel-btn:hover { background: var(--accent-orange); color: #000; border-color: var(--accent-orange); }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -526,7 +535,7 @@
         <!-- Line 449: ACTIVE HUNT & PROFILE INTEL -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mobile-stack-single" id="active-hunt-section">
             
-            <!-- LEFT COLUMN: Profile Intel (With Native Apple Music + Last.fm) & Active Hunt -->
+            <!-- LEFT COLUMN: Profile Intel & Active Hunt -->
             <div class="flex flex-col gap-6">
                 <section class="glass-card p-6 space-y-4">
                     <div class="flex justify-between items-start mb-1">
@@ -547,7 +556,7 @@
                         </div>
 
                         <div id="lastfm-scrobble-row" class="bg-black/50 p-2.5 rounded-xl border border-white/5 text-xs font-mono flex items-center justify-between">
-                            <span class="text-gray-400 truncate"><i class="fas fa-headphones mr-1 text-red-400"></i> <span id="lastfm-track-title">Live Scrobble Stream Active</span></span>
+                            <span class="text-gray-400 truncate"><i class="fas fa-headphones mr-1 text-red-400"></i> <span id="lastfm-track-title">Live Scrobble Stream Ingesting...</span></span>
                             <span class="text-red-400 font-bold uppercase text-[10px] px-2 py-0.5 rounded bg-red-950/60 border border-red-500/30">Synced</span>
                         </div>
                     </div>
@@ -650,7 +659,7 @@
                     </section>
                 </div>
 
-                <!-- NEW TO WEREWOLF CINEMA (Docked Directly Beneath Strava & Latest Trophy to Fill Empty Space) -->
+                <!-- NEW TO WEREWOLF CINEMA: Sideways Carousel, Year in Yellow, Date in Orange -->
                 <section id="new-cinema-section" class="glass-card card-theme-cinema p-6 space-y-4">
                     <div class="flex justify-between items-center border-b border-white/10 pb-3">
                         <div>
@@ -658,16 +667,21 @@
                                 <i class="fas fa-film"></i> New to Werewolf Cinema
                             </h3>
                             <p id="cinema-release-batch-sub" class="text-xs text-gray-400 font-bold uppercase mt-0.5">
-                                Synced from /movies_guide &bull; Most Recent Release Day
+                                Synced from /movies_guide &bull; Same-Day Release Carousel
                             </p>
                         </div>
-                        <a id="cinema-destination-link" href="//werewolf3788.github.io/Website/" target="_blank" class="store-btn text-red-400 border-red-500/40 bg-red-950/40 hover:bg-red-900">
-                            <i class="fas fa-arrow-up-right-from-square"></i><span>Portal</span>
-                        </a>
+                        <div class="flex items-center gap-2">
+                            <!-- Sideways Carousel Controls -->
+                            <button class="carousel-btn" onclick="scrollCinemaBatch(-1)" aria-label="Scroll Left">◄</button>
+                            <button class="carousel-btn" onclick="scrollCinemaBatch(1)" aria-label="Scroll Right">►</button>
+                            <a id="cinema-destination-link" href="//werewolf3788.github.io/Website/" target="_blank" class="store-btn text-red-400 border-red-500/40 bg-red-950/40 hover:bg-red-900 ml-1">
+                                <i class="fas fa-arrow-up-right-from-square"></i><span>Portal</span>
+                            </a>
+                        </div>
                     </div>
 
-                    <!-- Scrollable Batch Row for All Same-Day Additions with Larger Posters -->
-                    <div id="cinema-batch-container" class="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
+                    <!-- Sideways Scrollable Reel with Wheel Support -->
+                    <div id="cinema-batch-container" class="flex gap-4 overflow-x-auto pb-2 no-scrollbar scroll-smooth" onwheel="handleCinemaWheel(event)">
                         <div class="p-6 text-center text-gray-500 uppercase font-bold text-xs w-full">Ingesting Recent Cinema Releases...</div>
                     </div>
                 </section>
@@ -918,7 +932,7 @@
 
         <!-- Hardcoded Version & Deployment Timestamp Stamped in Code -->
         <div class="text-center mt-6 text-xs font-black text-gray-500 uppercase tracking-[0.25em]">
-            Engine Version: <span class="text-orange-400">44.5.0-STRICT-SQUAD-PS5</span> | Code Deployed: <span class="text-gray-300">2026-09-19 21:30:00 (EDT)</span>
+            Engine Version: <span class="text-orange-400">44.6.0-STRICT-SQUAD-PS5</span> | Code Deployed: <span class="text-gray-300">2026-09-19 21:45:00 (EDT)</span>
         </div>
 
     </main>
@@ -1542,7 +1556,7 @@
             }
         });
 
-        // Line 1180: Werewolf Cinema Batch Ingestion (Shows ALL Movies Added on Most Recent Date with Large Posters)
+        // Line 1180: Werewolf Cinema Batch Ingestion (Same-Day Additions, Yellow Year, Orange Date, Sideways Carousel)
         async function fetchNewToCinema() {
             const container = document.getElementById('cinema-batch-container');
             if (!container) return;
@@ -1570,7 +1584,7 @@
                 list.sort((a, b) => b._ts - a._ts);
                 if (list.length === 0) return;
 
-                // Lock onto the exact dateAdded string of the newest addition
+                // Grab newest dateAdded string and get ALL titles from that exact same day
                 const latestDateString = list[0].dateAdded || "";
                 const sameDayBatch = list.filter(m => m.dateAdded === latestDateString);
 
@@ -1578,16 +1592,20 @@
                 if (subEl) subEl.innerText = `${sameDayBatch.length} Film(s) Added on ${latestDateString || 'Latest Release Date'}`;
 
                 container.innerHTML = sameDayBatch.map(m => `
-                    <div class="flex-shrink-0 w-36 sm:w-44 bg-black/50 rounded-xl overflow-hidden border border-white/10 hover:border-red-500/60 transition-all cursor-pointer group flex flex-col justify-between" onclick="window.open(cinemaOutboundUrl, '_blank')">
+                    <div class="flex-shrink-0 w-44 sm:w-52 bg-black/60 rounded-xl overflow-hidden border border-white/10 hover:border-red-500/60 transition-all cursor-pointer group flex flex-col justify-between" onclick="window.open(cinemaOutboundUrl, '_blank')">
                         <div class="aspect-[2/3] w-full relative overflow-hidden bg-gray-900">
-                            <span class="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-black uppercase bg-red-600 text-white z-10 shadow">New</span>
-                            <img src="${m.poster || '//via.placeholder.com/160x240/101014/FF0000?text=CINEMA'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded text-[10px] font-black bg-black/80 text-white font-mono">${m.year || ''}</span>
+                            <span class="absolute top-2 left-2 px-2.5 py-0.5 rounded text-[10px] font-black uppercase bg-red-600 text-white z-10 shadow">New</span>
+                            <img src="${m.poster || '//via.placeholder.com/180x270/101014/FF0000?text=CINEMA'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='//via.placeholder.com/180x270/101014/FF0000?text=CINEMA'">
+                            <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded text-[10px] font-black bg-black/80 text-yellow-400 font-mono">${m.year || ''}</span>
                         </div>
                         <div class="p-3 text-left">
                             <div class="text-xs font-black text-white uppercase truncate">${m.title}</div>
-                            <div class="text-[11px] text-gray-400 truncate mt-0.5">${m.genre || 'Feature'}</div>
-                            <div class="text-[11px] text-red-400 font-mono font-bold mt-1">${m.year || ''} • Added: ${m.dateAdded || ''}</div>
+                            <div class="text-[11px] text-gray-400 truncate mt-0.5">${m.genre || 'Cinema Feature'}</div>
+                            <div class="text-[11px] font-mono mt-1.5 flex items-center gap-1.5">
+                                <span class="text-yellow-400 font-black">${m.year || 'Film'}</span>
+                                <span class="text-gray-500">•</span>
+                                <span class="text-orange-400 font-bold">Added: ${m.dateAdded || 'Recently'}</span>
+                            </div>
                         </div>
                     </div>
                 `).join('');
@@ -1597,7 +1615,42 @@
             }
         }
 
-        // Line 1240: FS25 Clean Fleet Ingestion (Stripping Raw System Prefixes & Ingesting Clean Names/Images)
+        window.scrollCinemaBatch = function(direction) {
+            const container = document.getElementById('cinema-batch-container');
+            if (container) {
+                container.scrollBy({ left: direction * 240, behavior: 'smooth' });
+            }
+        };
+
+        window.handleCinemaWheel = function(e) {
+            const container = document.getElementById('cinema-batch-container');
+            if (container && e.deltaY !== 0) {
+                e.preventDefault();
+                container.scrollLeft += e.deltaY;
+            }
+        };
+
+        // Line 1250: Live Last.fm Scrobbler Listener
+        async function fetchLastFmTrack() {
+            try {
+                const user = "werewolf3788";
+                const apiKey = "b25b959554ed76058ac220b7b2e0a026"; // Public reading key
+                const res = await fetch(`//ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${user}&api_key=${apiKey}&format=json&limit=1`);
+                if (!res.ok) return;
+                const data = await res.json();
+                const track = data?.recenttracks?.track?.[0];
+                if (track) {
+                    const titleEl = document.getElementById('lastfm-track-title');
+                    if (titleEl) {
+                        const artist = track.artist?.['#text'] || track.artist?.name || 'Artist';
+                        const song = track.name || 'Track';
+                        titleEl.innerText = `${artist} - ${song}`;
+                    }
+                }
+            } catch (e) {}
+        }
+
+        // Line 1280: FS25 Clean Fleet Ingestion (Stripping Raw Prefixes & Ingesting Clean Names/Images)
         async function updateFS25Telemetry() {
             try {
                 let res = await fetch(`${FS25_PRIMARY_URL}?t=${Date.now()}`);
@@ -1626,7 +1679,6 @@
                 document.getElementById('fs25-fleet-subtitle').innerText = `${allUnits.length} Total Units Registered`;
                 document.getElementById('fs25-fields-subtitle').innerText = `${fields.length} Parcels Owned`;
 
-                // Clean Entity Name Resolver
                 function cleanFs25Name(rawStr) {
                     if (!rawStr) return "Heavy Machinery";
                     return rawStr.replace(/([A-Z])/g, ' $1').replace(/[_-]/g, ' ').replace(/\.xml$/i, '').replace(/series/gi, '').replace(/\s+/g, ' ').trim();
@@ -1691,7 +1743,7 @@
                                 <div class="bg-black/50 p-3 rounded-xl border border-white/5 flex flex-col justify-between space-y-2">
                                     <div class="flex justify-between items-start">
                                         <div>
-                                            <div class="text-xs font-black text-lime-400 uppercase">Farmland Plot #${fId}</div>
+                                            <div class="text-xs font-black text-lime-400 uppercase Farmland Plot #${fId}">Farmland Plot #${fId}</div>
                                             <div class="text-sm font-black text-white uppercase mt-0.5">${crop}</div>
                                         </div>
                                         <span class="text-xs font-mono font-bold ${growthStage >= 6 ? 'text-emerald-400' : 'text-amber-400'}">${growthStatus}</span>
@@ -1728,7 +1780,7 @@
             }
         }
 
-        // Line 1330: Render PSN Squad Campaigns (Strict >= 1% Friend Rule & 5 Dedicated Storefronts)
+        // Line 1390: Render PSN Squad Campaigns (Strict >= 1% Friend Rule & 5 Dedicated Storefronts)
         function renderSquadCampaignsFromPSN() {
             const container = document.getElementById('firestore-squad-games-grid');
             if (!container) return;
@@ -1775,7 +1827,6 @@
 
                     if (matchedGame) {
                         const prog = Number(matchedGame.progress || 0);
-                        // STRICT RULE: Friend MUST have >= 1%
                         if (prog >= 1) {
                             let displayTag = gtag;
                             if (normKey === 'onelividman' || normKey === 'raymystyro') displayTag = 'OneLIVIDMAN';
@@ -1956,7 +2007,6 @@
 
                     const cleanName = encodeURIComponent((activeGameTitle || '').replace(/®|™/g, ''));
                     
-                    // 5 Dedicated Buttons for the Hero Hunt Card
                     document.getElementById('active-game-stores-bar').innerHTML = `
                         <a href="//store.playstation.com/en-us/search/${cleanName}" target="_blank" class="store-btn store-btn-ps"><i class="fab fa-playstation"></i><span>PS Store</span></a>
                         <a href="//apps.microsoft.com/search?query=${cleanName}" target="_blank" class="store-btn store-btn-pc"><i class="fab fa-windows"></i><span>PC Store</span></a>
@@ -2609,6 +2659,7 @@
         fetchCanonicalSkeleton();
         fetchUtmNavLinks();
         fetchNewToCinema();
+        fetchLastFmTrack();
         updateHub();
         updateFS25Telemetry();
         fetchLiveTwitch();
@@ -2617,6 +2668,7 @@
         setInterval(updateHub, 30000);
         setInterval(updateFS25Telemetry, 45000);
         setInterval(fetchLiveTwitch, 45000);
+        setInterval(fetchLastFmTrack, 60000);
         setInterval(fetchUtmNavLinks, 180000);
         setInterval(syncPSNGamertags, 30000);
         setInterval(fetchNewToCinema, 60000);
