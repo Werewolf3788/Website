@@ -1,15 +1,16 @@
 /* ============================================================================
    File: tracker.js
-   Deployment Timestamp: Sat, Sep 19, 2026, 12:00 (EDT - New York)
+   Deployment Timestamp: Sun, Sep 20, 2026, 12:58 (EDT - New York)
    Project: entertainment-71888
-   Version: v7.8.0-SE5-PSN-RTDB-TROPHY-SYNC
+   Version: v7.9.0-SE5-PSN-NONDESTRUCTIVE-SYNC
    Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
    RTDB Path: psn/gamertags/{psn_id}/liveTrophyProgress/NPWR21465_00
    Google Analytics Tag: G-CTYHDF4MSD
    Features:
-     - Direct PSN Realtime Database sync (NPWR21465_00 / PPSA01685_00)
-     - Maps PSN trophies to tracker items without duplicates
+     - Non-destructive state synchronization (Preserves all manual entries & Firestore docs)
+     - Live PSN RTDB Trophy + Trophy Progress pairing across all squad operatives
      - Operatives bound to PSN IDs: WildHorse_Spirit, OneLIVIDMAN, DesdemonaTiger
+     - Mission 2 Long Shot updated to 525 meters
      - Bronze (25%), Silver (50%), and Gold (100%) progression milestones
      - Named Mission Long Shots: Specific mission names displayed on all long shots
      - Real-time Firestore sync & LocalStorage offline caching
@@ -23,20 +24,6 @@
      - Mobile hamburger toggle and Google Sheets CSV top navigation engine
      - 24-Hour New York Time clock with auto-updating DOM bindings
    ============================================================================ */
-
-/* === SECTION: Automatic Cache Purge === */
-(function purgeStaleTrackerCache() {
-  const activeVersion = 'v7.8.0-20260919-1200';
-  const storedVersion = localStorage.getItem('se5_tracker_build_version');
-  if (storedVersion !== activeVersion) {
-    Object.keys(localStorage).forEach(key => {
-      if (key.startsWith('se5_progress_') || key.startsWith('se_medal_tracker_')) {
-        localStorage.removeItem(key);
-      }
-    });
-    localStorage.setItem('se5_tracker_build_version', activeVersion);
-  }
-})();
 
 /* === SECTION: Core Imports & Firebase Configuration === */
 import { initializeApp } from '//www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
@@ -228,12 +215,12 @@ function getTierStatus(percent) {
 /* === SECTION: Master Dataset === */
 const sniperData = [
   // --- Mission 1: The Atlantic Wall ---
-  { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'Far eastern side, south of radar tower, inside a small shack.', yt: '//https://www.youtube.com/watch?v=9WbjkODyRio&t=86s' },
-  { id: 'm1_pl2', cat: '1: The Atlantic Wall', name: 'Upcoming Delivery', type: 'Personal Letter', desc: 'Farm east of Steffen Beckendorf. Climb ladder on western side of outhouse.', yt: '//https://www.youtube.com/watch?v=9WbjkODyRio&t=201s' },
-  { id: 'm1_pl3', cat: '1: The Atlantic Wall', name: 'Violets Are Wilting', type: 'Personal Letter', desc: 'Attic of the building containing the Atlantikwall Report.', yt: '//https://www.youtube.com/watch?v=9WbjkODyRio&t=374s' },
-  { id: 'm1_pl4', cat: '1: The Atlantic Wall', name: 'Violets Don\'t Wilt', type: 'Personal Letter', desc: 'Inside hotel safe on the western side of the map.', yt: '//https://www.youtube.com/watch?v=9WbjkODyRio&t=433s' },
-  { id: 'm1_pl5', cat: '1: The Atlantic Wall', name: 'Pests in the Garden', type: 'Personal Letter', desc: 'Beneath the gazebo table on the pier (south-western map).', yt: '//https://www.youtube.com/watch?v=9WbjkODyRio&t=580s' },
-  { id: 'm1_pl6', cat: '1: The Atlantic Wall', name: 'Boches at the Door', type: 'Personal Letter', desc: 'Downstairs sofa in the resistance safehouse.', yt: '//https://www.youtube.com/watch?v=9WbjkODyRio&t=639s' },
+  { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'Far eastern side, south of radar tower, inside a small shack.', yt: '//www.youtube.com/watch?v=9WbjkODyRio&t=86s' },
+  { id: 'm1_pl2', cat: '1: The Atlantic Wall', name: 'Upcoming Delivery', type: 'Personal Letter', desc: 'Farm east of Steffen Beckendorf. Climb ladder on western side of outhouse.', yt: '//www.youtube.com/watch?v=9WbjkODyRio&t=201s' },
+  { id: 'm1_pl3', cat: '1: The Atlantic Wall', name: 'Violets Are Wilting', type: 'Personal Letter', desc: 'Attic of the building containing the Atlantikwall Report.', yt: '//www.youtube.com/watch?v=9WbjkODyRio&t=374s' },
+  { id: 'm1_pl4', cat: '1: The Atlantic Wall', name: 'Violets Don\'t Wilt', type: 'Personal Letter', desc: 'Inside hotel safe on the western side of the map.', yt: '//www.youtube.com/watch?v=9WbjkODyRio&t=433s' },
+  { id: 'm1_pl5', cat: '1: The Atlantic Wall', name: 'Pests in the Garden', type: 'Personal Letter', desc: 'Beneath the gazebo table on the pier (south-western map).', yt: '//www.youtube.com/watch?v=9WbjkODyRio&t=580s' },
+  { id: 'm1_pl6', cat: '1: The Atlantic Wall', name: 'Boches at the Door', type: 'Personal Letter', desc: 'Downstairs sofa in the resistance safehouse.', yt: '//www.youtube.com/watch?v=9WbjkODyRio&t=639s' },
   { id: 'm1_cd1', cat: '1: The Atlantic Wall', name: 'Resistance Captured', type: 'Classified Doc', desc: 'Table inside the boathouse (requires boathouse key from officer).', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=268s' },
   { id: 'm1_cd2', cat: '1: The Atlantic Wall', name: 'Beach Defences', type: 'Classified Doc', desc: 'Inside a safe in the north-western shack (SMG workbench area).', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=305s' },
   { id: 'm1_cd3', cat: '1: The Atlantic Wall', name: 'Lacking Air Support', type: 'Classified Doc', desc: 'Inside a safe in the room under the radar tower.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=345s' },
@@ -270,7 +257,7 @@ const sniperData = [
   { id: 'm2_wb1', cat: '2: Occupied Residence', name: 'Rifle Workbench', type: 'Workbench', desc: 'Inside the eastern cellar armoury.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=595s' },
   { id: 'm2_wb2', cat: '2: Occupied Residence', name: 'SMG Workbench', type: 'Workbench', desc: 'Roof area of the western resistance safehouse (climb vines).', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=630s' },
   { id: 'm2_wb3', cat: '2: Occupied Residence', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside the eastern outhouse armoury.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=665s' },
-  { id: 'med_ls_m2', cat: '2: Occupied Residence', name: 'Mission 2 (Occupied Residence) Long Shot', type: 'Medal', desc: 'Take a 375 meters shot in Château de Berengar.', target: 375, isLongShot: true },
+  { id: 'med_ls_m2', cat: '2: Occupied Residence', name: 'Mission 2 (Occupied Residence) Long Shot', type: 'Medal', desc: 'Take a 525 meters shot in Château de Berengar.', target: 525, isLongShot: true },
   { id: 'med_ls_m2_auth', cat: '2: Occupied Residence', name: 'Mission 2 (Occupied Residence) Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Château de Berengar, in Authentic difficulty.', target: 250, isLongShot: true },
 
   // --- Mission 3: Spy Academy ---
@@ -459,17 +446,17 @@ const sniperData = [
 
   // --- Mission 11: Landing Force (DLC) ---
   { id: 'm11_pl1', cat: '11: Landing Force (DLC)', name: 'Munition Ignitions', type: 'Personal Letter', desc: 'Outside area facing large bay doors, enter door on right under canopy. Table on ground floor.', yt: '//https://youtu.be/LIw6drPLrkc?t=211' },
-  { id: 'm11_pl2', cat: '11: Landing Force (DLC)', name: 'Bread and Boredom', type: 'Personal Letter', desc: 'Northern broken tower guardpost ground level by ladder on crate.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc&t=28s' },
-  { id: 'm11_pl3', cat: '11: Landing Force (DLC)', name: 'Heavy Is The Crown', type: 'Personal Letter', desc: 'Dock warehouse barracks trunk.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc&t=294s' },
+  { id: 'm11_pl2', cat: '11: Landing Force (DLC)', name: 'Bread and Boredom', type: 'Personal Letter', desc: 'Northern broken tower guardpost ground level by ladder on crate.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc&t=28s' },
+  { id: 'm11_pl3', cat: '11: Landing Force (DLC)', name: 'Heavy Is The Crown', type: 'Personal Letter', desc: 'Dock warehouse barracks trunk.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc&t=294s' },
   { id: 'm11_cd1', cat: '11: Landing Force (DLC)', name: 'Wine-Stained Warning', type: 'Classified Doc', desc: 'Command bunker office safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm11_cd2', cat: '11: Landing Force (DLC)', name: 'Security Measures', type: 'Classified Doc', desc: 'Under desk by SMG workbench.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc&t=75s' },
-  { id: 'm11_hi1', cat: '11: Landing Force (DLC)', name: 'Military Flask', type: 'Hidden Item', desc: 'Ancient coin on lighthouse top floor.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc&t=176s' },
-  { id: 'm11_hi2', cat: '11: Landing Force (DLC)', name: 'Binoculars', type: 'Hidden Item', desc: 'Outside on railing Naval telescope in harbourmaster tower.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc&t=129s' },
-  { id: 'm11_se1', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Look across the river when first coming out of cave near the tank.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc' },
-  { id: 'm11_se2', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Radio tower base across the lake when exiting the cave.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc&t=270s' },
-  { id: 'm11_se3', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Middle of building ruins when heading from SMG workbench to lighthouse.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc&t=104s' },
-  { id: 'm11_wb1', cat: '11: Landing Force (DLC)', name: 'Resort Docks Rifle Workbench', type: 'Workbench', desc: 'Where you obtain poison for Hermann Kraus.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc&t=219s' },
-  { id: 'm11_wb2', cat: '11: Landing Force (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'East side of map boatyard warehouse.', yt: '//https://www.youtube.com/watch?v=LIw6drPLrkc&t=75s' },
+  { id: 'm11_cd2', cat: '11: Landing Force (DLC)', name: 'Security Measures', type: 'Classified Doc', desc: 'Under desk by SMG workbench.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc&t=75s' },
+  { id: 'm11_hi1', cat: '11: Landing Force (DLC)', name: 'Military Flask', type: 'Hidden Item', desc: 'Ancient coin on lighthouse top floor.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc&t=176s' },
+  { id: 'm11_hi2', cat: '11: Landing Force (DLC)', name: 'Binoculars', type: 'Hidden Item', desc: 'Outside on railing Naval telescope in harbourmaster tower.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc&t=129s' },
+  { id: 'm11_se1', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Look across the river when first coming out of cave near the tank.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc' },
+  { id: 'm11_se2', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Radio tower base across the lake when exiting the cave.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc&t=270s' },
+  { id: 'm11_se3', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Middle of building ruins when heading from SMG workbench to lighthouse.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc&t=104s' },
+  { id: 'm11_wb1', cat: '11: Landing Force (DLC)', name: 'Resort Docks Rifle Workbench', type: 'Workbench', desc: 'Where you obtain poison for Hermann Kraus.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc&t=219s' },
+  { id: 'm11_wb2', cat: '11: Landing Force (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'East side of map boatyard warehouse.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc&t=75s' },
   { id: 'm11_wb3', cat: '11: Landing Force (DLC)', name: 'Military Fort Pistol Workbench', type: 'Workbench', desc: 'Radar installation sub-level locker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm11_ch1', cat: '11: Landing Force (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Disable heavy battery without combat alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'med_ls_m11longshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 (Landing Force) Long Shot', type: 'Medal', desc: 'Take a 500 meters shot in Landing Force.', target: 500, isLongShot: true },
@@ -477,19 +464,19 @@ const sniperData = [
   { id: 'med_lastresort', cat: '11: Landing Force (DLC)', name: 'Last Resort', type: 'Medal', desc: 'Complete the campaign mission - Landing Force.' },
 
   // --- Mission 12: Conqueror (DLC) ---
-  { id: 'm12_pl1', cat: '12: Conqueror (DLC)', name: 'Roughly-Written Note', type: 'Personal Letter', desc: 'Highest floor next to the bed on floor east side of map north of hidden item.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=173s' },
-  { id: 'm12_pl2', cat: '12: Conqueror (DLC)', name: 'Debris-Covered Love Letter', type: 'Personal Letter', desc: 'On a box next to the Artillery Gun.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=125s' },
-  { id: 'm12_pl3', cat: '12: Conqueror (DLC)', name: 'An Unfinished Plea for Aid', type: 'Personal Letter', desc: 'Top of map behind white door with 2 red flags, jump through window.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=125s' },
-  { id: 'm12_cd1', cat: '12: Conqueror (DLC)', name: 'Classified Doc #1', type: 'Classified Doc', desc: 'Castle fortress headquarters table.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=173s' },
-  { id: 'm12_cd2', cat: '12: Conqueror (DLC)', name: 'Operations Dossier', type: 'Classified Doc', desc: 'Far west of the map slightly north of the roughly-written note on edge.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=156s' },
+  { id: 'm12_pl1', cat: '12: Conqueror (DLC)', name: 'Roughly-Written Note', type: 'Personal Letter', desc: 'Highest floor next to the bed on floor east side of map north of hidden item.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY&t=173s' },
+  { id: 'm12_pl2', cat: '12: Conqueror (DLC)', name: 'Debris-Covered Love Letter', type: 'Personal Letter', desc: 'On a box next to the Artillery Gun.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY&t=125s' },
+  { id: 'm12_pl3', cat: '12: Conqueror (DLC)', name: 'An Unfinished Plea for Aid', type: 'Personal Letter', desc: 'Top of map behind white door with 2 red flags, jump through window.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY&t=125s' },
+  { id: 'm12_cd1', cat: '12: Conqueror (DLC)', name: 'Classified Doc #1', type: 'Classified Doc', desc: 'Castle fortress headquarters table.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY&t=173s' },
+  { id: 'm12_cd2', cat: '12: Conqueror (DLC)', name: 'Operations Dossier', type: 'Classified Doc', desc: 'Far west of the map slightly north of the roughly-written note on edge.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY&t=156s' },
   { id: 'm12_hi1', cat: '12: Conqueror (DLC)', name: 'Hidden Item #1', type: 'Hidden Item', desc: 'Medieval knight dagger in castle hall.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm12_hi2', cat: '12: Conqueror (DLC)', name: 'Bronze Statue', type: 'Hidden Item', desc: 'In office where you eliminate Khon in round castle tower.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=329s' },
+  { id: 'm12_hi2', cat: '12: Conqueror (DLC)', name: 'Bronze Statue', type: 'Hidden Item', desc: 'In office where you eliminate Khon in round castle tower.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY&t=329s' },
   { id: 'm12_se1', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Main castle keep battlements peak.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm12_se2', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Cathedral archway across river.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm12_se3', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'North side castle in second-floor window.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm12_wb1', cat: '12: Conqueror (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Castle courtyard stable armory.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm12_wb2', cat: '12: Conqueror (DLC)', name: 'Castle Grounds SMG Workbench', type: 'Workbench', desc: 'In elbow of castle fence west side of destroy AA guns mission.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=284s' },
-  { id: 'm12_wb3', cat: '12: Conqueror (DLC)', name: 'Village Pistol Workbench', type: 'Workbench', desc: 'Far right of map up ladder of building with faded Agy Hilda paint.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=23s' },
+  { id: 'm12_wb2', cat: '12: Conqueror (DLC)', name: 'Castle Grounds SMG Workbench', type: 'Workbench', desc: 'In elbow of castle fence west side of destroy AA guns mission.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY&t=284s' },
+  { id: 'm12_wb3', cat: '12: Conqueror (DLC)', name: 'Village Pistol Workbench', type: 'Workbench', desc: 'Far right of map up ladder of building with faded Agy Hilda paint.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY&t=23s' },
   { id: 'm12_ch1', cat: '12: Conqueror (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Eliminate general using environment hazards.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'med_ls_m12longshot', cat: '12: Conqueror (DLC)', name: 'Mission 12 (Conqueror) Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Conqueror, in Authentic difficulty.', target: 250, isLongShot: true },
   { id: 'med_ls_m12authlongshot', cat: '12: Conqueror (DLC)', name: 'Mission 12 (Conqueror) Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Conqueror, in Authentic difficulty.', target: 250, isLongShot: true },
@@ -498,8 +485,8 @@ const sniperData = [
   { id: 'med_opoverlord', cat: '12: Conqueror (DLC)', name: 'Operation Overlord', type: 'Medal', desc: 'Conqueror - Complete mission on Authentic difficulty.' },
   
   // --- Mission 13: Rough Landing (DLC) ---
-  { id: 'm13_pl1', cat: '13: Rough Landing (DLC)', name: 'Letters Between Friends', type: 'Personal Letter', desc: 'Carried by Herbert Dorf (Infantry) with Key.', yt: '//https://www.youtube.com/watch?v=9XEuci1u4kE' },
-  { id: 'm13_pl2', cat: '13: Rough Landing (DLC)', name: 'Undiscovered', type: 'Personal Letter', desc: 'Next to Artillery gun.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY' },
+  { id: 'm13_pl1', cat: '13: Rough Landing (DLC)', name: 'Letters Between Friends', type: 'Personal Letter', desc: 'Carried by Herbert Dorf (Infantry) with Key.', yt: '//www.youtube.com/watch?v=9XEuci1u4kE' },
+  { id: 'm13_pl2', cat: '13: Rough Landing (DLC)', name: 'Undiscovered', type: 'Personal Letter', desc: 'Next to Artillery gun.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY' },
   { id: 'm13_pl3', cat: '13: Rough Landing (DLC)', name: 'Damaged Journal', type: 'Personal Letter', desc: 'Bottom left of map next to workbench.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_cd1', cat: '13: Rough Landing (DLC)', name: 'Scribble-Covered Map', type: 'Classified Doc', desc: 'Airfield control tower radio room.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_cd2', cat: '13: Rough Landing (DLC)', name: 'Resistance Correspondence', type: 'Classified Doc', desc: 'Underground fuel storage facility safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
@@ -511,7 +498,7 @@ const sniperData = [
   { id: 'm13_se3', cat: '13: Rough Landing (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Forest water reservoir watchtower.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_wb1', cat: '13: Rough Landing (DLC)', name: 'Resistance Camp Rifle Workbench', type: 'Workbench', desc: 'Hangar maintenance trench underground.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm13_wb2', cat: '13: Rough Landing (DLC)', name: 'Abandoned Cabin SMG Workbench', type: 'Workbench', desc: 'Rail freight staging depot armory.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm13_wb3', cat: '13: Rough Landing (DLC)', name: 'Mine Depot Pistol Workbench', type: 'Workbench', desc: 'In Village with faded red paint AG Hail.', yt: '//https://www.youtube.com/watch?v=UvZ3L2jNYcY&t=23s' },
+  { id: 'm13_wb3', cat: '13: Rough Landing (DLC)', name: 'Mine Depot Pistol Workbench', type: 'Workbench', desc: 'In Village with faded red paint AG Hail.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY&t=23s' },
   { id: 'med_ls_m13_longshot', cat: '13: Rough Landing (DLC)', name: 'Mission 13 (Rough Landing) Long Shot', type: 'Medal', desc: 'Take a 240 meters shot in Rough Landing.', target: 240, isLongShot: true },
   { id: 'med_ls_m13_authlong', cat: '13: Rough Landing (DLC)', name: 'Mission 13 (Rough Landing) Authentic Long Shot', type: 'Medal', desc: 'Take a 240 meters shot in Rough Landing, in Authentic difficulty.', target: 240, isLongShot: true },
   { id: 'med_m13_woods', cat: '13: Rough Landing (DLC)', name: 'If You Go Down to the Woods Today', type: 'Medal', desc: 'Complete campaign mission - Rough Landing.' },
@@ -654,7 +641,7 @@ const sniperData = [
   { id: 'rib_perfect_defence', cat: '22: Ribbons - Survival (Gold)', name: 'Perfect Defence', type: 'Ribbon', desc: 'Complete a Stage without the enemy breaching the Command Post.', isRibbon: true }
 ];
 
-/* Default Seeds for Werewolf3788 Profile */
+/* === SECTION: Baseline Migration Seeds (Non-Destructive) === */
 const WEREWOLF_SEEDS = [
   { id: 'med_confirming_susp', count: 3, collected: true },
   { id: 'med_thekrakenwakes', count: 3, collected: true },
@@ -705,7 +692,6 @@ function getItemThemeMeta(item) {
   const nameLower = item.name.toLowerCase();
   const catLower = item.cat.toLowerCase();
 
-  // Authentic Long Shots: Red Badge
   if (nameLower.includes('authentic long shot') || nameLower.includes('führer authentic long shot')) {
     return {
       badgeClass: 'theme-badge-auth-ls',
@@ -713,7 +699,6 @@ function getItemThemeMeta(item) {
     };
   }
 
-  // Standard Long Shots: Purple Badge
   if (nameLower.includes('long shot') || nameLower.includes('the long game') || nameLower.includes('from führer away')) {
     return {
       badgeClass: 'theme-badge-ls',
@@ -721,7 +706,6 @@ function getItemThemeMeta(item) {
     };
   }
 
-  // Master of Pistols: Pistol Silver
   if (nameLower.includes('master of pistols') || nameLower.includes('double 1866') || nameLower.includes('welrod') || nameLower.includes('gunslinger') || nameLower.includes('m1911') || nameLower.includes('mod.712') || nameLower.includes('model d') || nameLower.includes('type 14') || nameLower.includes('mk vi')) {
     return {
       badgeClass: 'theme-badge-pistol-silver',
@@ -729,7 +713,6 @@ function getItemThemeMeta(item) {
     };
   }
 
-  // DLC Campaign Missions / Objectives / DLC Medals: Military Tan
   if (catLower.includes('(dlc)') || catLower.includes('landing force') || catLower.includes('conqueror') || catLower.includes('rough landing') || catLower.includes('kraken awakes') || catLower.includes('wolf mountain')) {
     return {
       badgeClass: 'theme-badge-dlc-tan',
@@ -737,7 +720,6 @@ function getItemThemeMeta(item) {
     };
   }
 
-  // Ribbons - Stealth (Blue)
   if (catLower.includes('stealth')) {
     return {
       badgeClass: 'theme-badge-ribbon-blue',
@@ -745,7 +727,6 @@ function getItemThemeMeta(item) {
     };
   }
 
-  // Ribbons - Tactics (Maroon)
   if (catLower.includes('tactics')) {
     return {
       badgeClass: 'theme-badge-ribbon-maroon',
@@ -753,7 +734,6 @@ function getItemThemeMeta(item) {
     };
   }
 
-  // Ribbons - Lethal (Red)
   if (catLower.includes('lethal') && !catLower.includes('non-lethal')) {
     return {
       badgeClass: 'theme-badge-ribbon-red',
@@ -761,7 +741,6 @@ function getItemThemeMeta(item) {
     };
   }
 
-  // Ribbons - Non-Lethal (Teal)
   if (catLower.includes('non-lethal')) {
     return {
       badgeClass: 'theme-badge-ribbon-teal',
@@ -769,7 +748,6 @@ function getItemThemeMeta(item) {
     };
   }
 
-  // Ribbons - Survival (Gold)
   if (catLower.includes('survival')) {
     return {
       badgeClass: 'theme-badge-ribbon-gold',
@@ -1000,8 +978,8 @@ const appState = {
   user: null,
   unsubListeners: [],
   isLoaded: false,
-  version: 'v7.8.0',
-  buildDate: '2026-09-19 12:00 EDT',
+  version: 'v7.9.0',
+  buildDate: '2026-09-20 12:58 EDT',
   activeLeafletMaps: {},
   markerLayers: {},
 
@@ -1020,10 +998,13 @@ const appState = {
     ALL_OPERATIVES.forEach(op => {
       const localSaved = localStorage.getItem(`se5_progress_${op}`);
       if (localSaved) {
-        this.teamProgress[op] = JSON.parse(localSaved);
+        try {
+          this.teamProgress[op] = JSON.parse(localSaved);
+        } catch (e) {
+          this.teamProgress[op] = [];
+        }
       } else if (op === 'Werewolf3788') {
         this.teamProgress[op] = WEREWOLF_SEEDS;
-        localStorage.setItem(`se5_progress_${op}`, JSON.stringify(WEREWOLF_SEEDS));
       } else {
         this.teamProgress[op] = [];
       }
@@ -1083,23 +1064,19 @@ const appState = {
     });
   },
 
-  /* Process incoming PSN live trophy state & mark items as completed */
+  /* Non-Destructive Live PSN Trophy + Trophy Progress Processing */
   processPsnTrophies: function(operativeName, trophyPayload) {
     if (!trophyPayload) return;
 
     let hasChanges = false;
     let opSaved = this.teamProgress[operativeName] || [];
 
-    // Trophy data may be an array or object keyed by trophy index
     const trophyList = Array.isArray(trophyPayload) 
       ? trophyPayload 
       : (trophyPayload.trophies || Object.values(trophyPayload));
 
     trophyList.forEach(t => {
       if (!t) return;
-      const isEarned = (t.earned === true || t.earned === 1 || t.unlocked === true || t.isEarned === true);
-      if (!isEarned) return;
-
       const trophyTitle = t.trophyName || t.name || t.title;
       const matchedTrackerId = PSN_TROPHY_MAPPINGS[trophyTitle] || (t.trophyId !== undefined ? PSN_TROPHY_MAPPINGS[t.trophyId] : null);
 
@@ -1108,30 +1085,55 @@ const appState = {
         const itemDef = sniperData.find(d => d.id === matchedTrackerId);
         const targetValue = (itemDef && itemDef.target) ? itemDef.target : 1;
 
+        // Extract PS5 / PSN live progress counters
+        const psnProgressVal = t.currentValue !== undefined 
+          ? parseInt(t.currentValue, 10) 
+          : (t.trophyProgress !== undefined 
+              ? parseInt(t.trophyProgress, 10) 
+              : (t.progress !== undefined ? parseInt(t.progress, 10) : 0));
+
+        const isEarned = (t.earned === true || t.earned === 1 || t.unlocked === true || t.isEarned === true || (targetValue > 1 && psnProgressVal >= targetValue));
+
         if (existing) {
-          if (!existing.collected) {
-            existing.collected = true;
-            if (!existing.count || existing.count < targetValue) {
-              existing.count = targetValue;
-            }
+          let updatedCount = existing.count || 0;
+          let updatedCollected = existing.collected || isEarned;
+
+          // Merge without downgrading: use the higher value between manual and PSN
+          if (psnProgressVal > updatedCount) {
+            updatedCount = psnProgressVal;
+          }
+          if (isEarned && updatedCount < targetValue) {
+            updatedCount = targetValue;
+          }
+          if (updatedCount >= targetValue) {
+            updatedCollected = true;
+          }
+
+          if (existing.count !== updatedCount || existing.collected !== updatedCollected) {
+            existing.count = updatedCount;
+            existing.collected = updatedCollected;
             hasChanges = true;
           }
         } else {
+          const finalCount = isEarned ? targetValue : psnProgressVal;
           opSaved.push({
             id: matchedTrackerId,
-            collected: true,
-            count: targetValue
+            collected: isEarned || (finalCount >= targetValue),
+            count: finalCount
           });
           hasChanges = true;
         }
 
-        // If currently viewing this operative, mark in current active hunterData
+        // Keep active hunterData live in sync if viewing this operative
         if (operativeName === this.activeGamertag) {
           const currentItem = this.hunterData.find(i => i.id === matchedTrackerId);
-          if (currentItem && !currentItem.collected) {
-            currentItem.collected = true;
-            currentItem.count = targetValue;
-            this.updateMapPinVisibility(matchedTrackerId, true);
+          if (currentItem) {
+            const savedItem = opSaved.find(s => s.id === matchedTrackerId);
+            if (savedItem) {
+              currentItem.collected = savedItem.collected;
+              currentItem.count = savedItem.count;
+              this.updateMapPinVisibility(matchedTrackerId, currentItem.collected);
+            }
           }
         }
       }
@@ -1208,9 +1210,28 @@ const appState = {
       const unsub = onSnapshot(docRef, (snap) => {
         if (snap.exists()) {
           const docData = snap.data();
-          const saved = docData.progress || [];
-          this.teamProgress[op] = saved;
-          localStorage.setItem(`se5_progress_${op}`, JSON.stringify(saved));
+          const remoteSaved = docData.progress || [];
+
+          // Non-destructive merge with local progress
+          const currentLocal = this.teamProgress[op] || [];
+          const mergedProgress = [...remoteSaved];
+
+          currentLocal.forEach(localItem => {
+            const remoteItem = mergedProgress.find(r => r.id === localItem.id);
+            if (!remoteItem) {
+              mergedProgress.push(localItem);
+            } else {
+              if (localItem.count > (remoteItem.count || 0)) {
+                remoteItem.count = localItem.count;
+              }
+              if (localItem.collected) {
+                remoteItem.collected = true;
+              }
+            }
+          });
+
+          this.teamProgress[op] = mergedProgress;
+          localStorage.setItem(`se5_progress_${op}`, JSON.stringify(mergedProgress));
 
           if (op === this.activeGamertag) {
             if (docData.activeMission && docData.activeMission !== this.activeMission) {
@@ -1223,8 +1244,9 @@ const appState = {
               const select = document.getElementById('mission-focus-select');
               if (select) select.value = this.activeMission;
             }
+
             this.hunterData = sniperData.map(item => {
-              const status = saved.find(s => s.id === item.id);
+              const status = mergedProgress.find(s => s.id === item.id);
               return {
                 ...item,
                 collected: status ? !!status.collected : false,
@@ -1232,9 +1254,6 @@ const appState = {
               };
             });
           }
-        } else if (op === 'Werewolf3788' && !localStorage.getItem(`se5_progress_${op}`)) {
-          this.teamProgress[op] = WEREWOLF_SEEDS;
-          this.sync();
         }
         this.isLoaded = true;
         this.render();
