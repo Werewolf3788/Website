@@ -2,13 +2,13 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * File: games/FS25/index.html
- * Deployment Timestamp: 2026-09-20 23:22:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-20 23:45:00 (EDT - 24hr New York Time)
  * Project: fs25-a3563 (/fs25 RTDB Node) & entertainment-71888
  * Target Database: https://fs25-a3563-default-rtdb.firebaseio.com/fs25.json
  * Google Analytics Tag: G-CTYHDF4MSD | Measurement ID: G-SGJF0FJPQZ
  * Description: All-In-One Unified FS25 Realtime Tactical Dashboard & Mod Directory.
- *              - Zero external CSS or JS file dependencies (100% consolidated single-file architecture).
- *              - Eliminates style.css and index.js to streamline repository structure.
+ *              - Zero external CSS or JS file dependencies (100% single-file architecture).
+ *              - Fixed: Safe fillUnits normalization preventing .map() crashes on objects.
  *              - Dual-Target Fallback: fs25-a3563 -> entertainment-71888.
  *              - Centered Top Navigation Bar pulling directly from /utm_links.
  *              - Clean Equipment & Brand Names (Zero raw file paths).
@@ -40,7 +40,7 @@
         gtag('config', 'G-SGJF0FJPQZ');
     </script>
 
-    <!-- Line 43: Consolidated CSS Stylesheet (Merged style.css and enhancements) -->
+    <!-- Line 43: Consolidated CSS Stylesheet (Embedded, Zero External Files) -->
     <style>
         :root {
             --bg-dark: #070a12;
@@ -894,19 +894,27 @@
     <!-- System Footer -->
     <footer class="system-footer">
         <div class="footer-content">
-            <span><i class="fa-solid fa-code-commit"></i> Engine: <strong>v52.0.0 (Consolidated Single-File Architecture)</strong></span>
+            <span><i class="fa-solid fa-code-commit"></i> Engine: <strong>v52.2.0 (Fail-Safe Client Live Sync)</strong></span>
             <span id="save-slot-display" style="color:var(--accent-gold, #facc15); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Slot #1</span>
             <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Connected</span>
         </div>
     </footer>
 
-    <!-- Line 750: BROWSER-COMPATIBLE FIREBASE REST ENGINE SCRIPT -->
+    <!-- RESILIENT FAIL-SAFE FIREBASE REST SCRIPT -->
     <script>
         const PRIMARY_FS25_URL = "//fs25-a3563-default-rtdb.firebaseio.com/fs25.json";
         const MIRROR_FS25_URL = "//entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
         const UTM_LINKS_URL = "//entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
 
         let cachedMods = {};
+
+        // Safe Array Normalizer (Prevents crashes on plain objects or single-element XML records)
+        function toArray(val) {
+            if (!val) return [];
+            if (Array.isArray(val)) return val;
+            if (typeof val === 'object') return Object.values(val);
+            return [];
+        }
 
         function formatMoney(amount) {
             return '$' + Math.round(Number(amount) || 0).toLocaleString('en-US');
@@ -941,9 +949,7 @@
             const lbModal = document.getElementById('lightbox-modal');
             const lbClose = document.getElementById('lightbox-close');
             if (lbClose && lbModal) {
-                lbClose.addEventListener('click', () => {
-                    lbModal.classList.remove('active');
-                });
+                lbClose.addEventListener('click', () => lbModal.classList.remove('active'));
                 lbModal.addEventListener('click', (e) => {
                     if (e.target === lbModal) lbModal.classList.remove('active');
                 });
@@ -964,7 +970,6 @@
 
         // ====================================================================
         // SECTION 1: CENTERED /utm_links NAVIGATION BUILDER
-        // Sequence: Home -> Users -> Game -> Other -> Entertainment -> Rest
         // ====================================================================
         async function loadNavigationMenu() {
             const nav = document.getElementById('dynamic-menu');
@@ -995,8 +1000,7 @@
                 let html = '';
                 ordered.forEach(folder => {
                     const links = [];
-                    const records = folder.records || {};
-                    const list = Array.isArray(records) ? records : Object.values(records);
+                    const list = toArray(folder.records);
 
                     list.forEach(item => {
                         if (item && typeof item === 'object') {
@@ -1059,71 +1063,85 @@
 
             if (!data) return;
 
-            const serverNameEl = document.getElementById('server-name');
-            const statusPill = document.getElementById('server-status-pill');
-            const statusText = document.getElementById('status-text');
-            const mapEl = document.getElementById('server-map');
-            const timeEl = document.getElementById('server-time');
-            const seasonEl = document.getElementById('server-month');
-            const weatherEl = document.getElementById('server-weather');
-            const playersEl = document.getElementById('server-players');
-            const slotDisplay = document.getElementById('save-slot-display');
-            const syncTimeEl = document.getElementById('last-sync-time');
+            // 1. Banner Info
+            try {
+                const statusPill = document.getElementById('server-status-pill');
+                const statusText = document.getElementById('status-text');
+                const mapEl = document.getElementById('server-map');
+                const seasonEl = document.getElementById('server-month');
+                const weatherEl = document.getElementById('server-weather');
+                const playersEl = document.getElementById('server-players');
+                const slotDisplay = document.getElementById('save-slot-display');
+                const syncTimeEl = document.getElementById('last-sync-time');
 
-            const isOnline = !!data.serverStatus?.isOnline;
-            if (statusPill && statusText) {
-                statusPill.className = `status-pill ${isOnline ? 'status-online' : 'status-offline'}`;
-                statusText.innerText = isOnline ? 'ONLINE' : 'OFFLINE';
+                const isOnline = !!data.serverStatus?.isOnline;
+                if (statusPill && statusText) {
+                    statusPill.className = `status-pill ${isOnline ? 'status-online' : 'status-offline'}`;
+                    statusText.innerText = isOnline ? 'ONLINE' : 'OFFLINE';
+                }
+
+                if (data.gameInfo?.mapTitle && mapEl) mapEl.innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${data.gameInfo.mapTitle}`;
+                if (data.weatherState && weatherEl) weatherEl.innerHTML = `<i class="fa-solid fa-sun"></i> Weather: ${data.weatherState.currentWeather || 'Clear'}`;
+                if (data.weatherState && seasonEl) seasonEl.innerHTML = `<i class="fa-solid fa-calendar-days"></i> Season: ${data.weatherState.season || 'Spring'}`;
+                if (playersEl) playersEl.innerHTML = `<i class="fa-solid fa-users"></i> Players: ${data.activePlayers || 0} Online`;
+                if (slotDisplay) slotDisplay.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Slot #${data.activeSaveSlot || 1}`;
+
+                const nyTime = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
+                if (syncTimeEl) syncTimeEl.innerHTML = `<i class="fa-solid fa-rotate"></i> Synced: ${nyTime} (EDT)`;
+            } catch (err) {
+                console.warn("[BANNER ERROR]:", err.message);
             }
 
-            if (data.gameInfo?.mapTitle && mapEl) mapEl.innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${data.gameInfo.mapTitle}`;
-            if (data.weatherState && weatherEl) weatherEl.innerHTML = `<i class="fa-solid fa-sun"></i> Weather: ${data.weatherState.currentWeather || 'Clear'}`;
-            if (data.weatherState && seasonEl) seasonEl.innerHTML = `<i class="fa-solid fa-calendar-days"></i> Season: ${data.weatherState.season || 'Spring'}`;
-            if (playersEl) playersEl.innerHTML = `<i class="fa-solid fa-users"></i> Players: ${data.activePlayers || 0} Online`;
-            if (slotDisplay) slotDisplay.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Slot #${data.activeSaveSlot || 1}`;
-
-            const nyTime = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
-            if (syncTimeEl) syncTimeEl.innerHTML = `<i class="fa-solid fa-rotate"></i> Synced: ${nyTime} (EDT)`;
-
-            let totalMoney = 0;
-            let totalFleetCount = 0;
-            let totalParcelsCount = 0;
-
+            // 2. Metrics KPIs
             const farmsObj = data.farms || {};
-            Object.values(farmsObj).forEach(f => {
-                totalMoney += Number(f.money || f.finances?.money || 0);
-                totalFleetCount += (f.vehicles || []).length;
-                totalParcelsCount += (f.cards?.farmlandOwned || []).length;
-            });
+            try {
+                let totalMoney = 0;
+                let totalFleetCount = 0;
+                let totalParcelsCount = 0;
 
-            const netWorthEl = document.getElementById('global-net-worth');
-            const fleetCountEl = document.getElementById('global-vehicle-count');
-            const modCountEl = document.getElementById('global-mod-errors');
-            const landCountEl = document.getElementById('global-land-count');
+                Object.values(farmsObj).forEach(f => {
+                    totalMoney += Number(f.money || f.finances?.money || 0);
+                    totalFleetCount += toArray(f.vehicles).length;
+                    totalParcelsCount += toArray(f.cards?.farmlandOwned).length;
+                });
 
-            if (netWorthEl) netWorthEl.innerText = formatMoney(totalMoney);
-            if (fleetCountEl) fleetCountEl.innerText = totalFleetCount;
-            if (modCountEl) modCountEl.innerText = Object.keys(data.activeMods || {}).length;
-            if (landCountEl) landCountEl.innerText = `${totalParcelsCount} Plots`;
+                const netWorthEl = document.getElementById('global-net-worth');
+                const fleetCountEl = document.getElementById('global-vehicle-count');
+                const modCountEl = document.getElementById('global-mod-errors');
+                const landCountEl = document.getElementById('global-land-count');
 
-            renderPlayerList(data.activePlayersList || []);
-            renderFarmsList(farmsObj);
-            renderMissionsList(data.missions || { all: [] });
-            renderCollectibles(data.collectibles || { items: [] });
-            renderEquipmentCards(farmsObj);
-            renderFieldsList(data.fields || []);
-            renderPassiveGenerators(farmsObj);
-            renderModHub(data.activeMods || {});
+                if (netWorthEl) netWorthEl.innerText = formatMoney(totalMoney);
+                if (fleetCountEl) fleetCountEl.innerText = totalFleetCount;
+                if (modCountEl) modCountEl.innerText = Object.keys(data.activeMods || {}).length;
+                if (landCountEl) landCountEl.innerText = `${totalParcelsCount} Plots`;
+            } catch (err) {
+                console.warn("[METRICS ERROR]:", err.message);
+            }
+
+            // 3. Isolated Card Renderers with Error Protection
+            try { renderPlayerList(data.activePlayersList || []); } catch (e) { console.warn("[PLAYERS ERROR]:", e.message); }
+            try { renderFarmsList(farmsObj); } catch (e) { console.warn("[FARMS ERROR]:", e.message); }
+            try { renderAnimalsList(data); } catch (e) { console.warn("[ANIMALS ERROR]:", e.message); }
+            try { renderPassiveGenerators(farmsObj); } catch (e) { console.warn("[PASSIVE ERROR]:", e.message); }
+            try { renderMissionsList(data.missions || { all: [] }); } catch (e) { console.warn("[MISSIONS ERROR]:", e.message); }
+            try { renderCollectibles(data.collectibles || { items: [] }); } catch (e) { console.warn("[COLLECTIBLES ERROR]:", e.message); }
+            try { renderEquipmentCards(farmsObj, data); } catch (e) { console.warn("[EQUIPMENT ERROR]:", e.message); }
+            try { renderHandTools(data); } catch (e) { console.warn("[HANDTOOLS ERROR]:", e.message); }
+            try { renderFieldsList(data.fields || []); } catch (e) { console.warn("[FIELDS ERROR]:", e.message); }
+            try { renderProductions(data); } catch (e) { console.warn("[PRODUCTIONS ERROR]:", e.message); }
+            try { renderStorage(data); } catch (e) { console.warn("[STORAGE ERROR]:", e.message); }
+            try { renderModHub(data.activeMods || {}); } catch (e) { console.warn("[MODHUB ERROR]:", e.message); }
         }
 
         function renderPlayerList(players) {
             const container = document.getElementById('active-players-container');
             if (!container) return;
-            if (!players || players.length === 0) {
+            const list = toArray(players);
+            if (list.length === 0) {
                 container.innerHTML = `<div class="empty-state">No players currently connected.</div>`;
                 return;
             }
-            container.innerHTML = players.map(p => `
+            container.innerHTML = list.map(p => `
                 <div class="telemetry-card">
                     <i class="fa-solid fa-user card-icon" style="color:#38bdf8;"></i>
                     <div class="card-details">
@@ -1150,7 +1168,51 @@
                             <strong>${f.name || 'Farm'}</strong>
                             <strong style="color:#4ade80;">${formatMoney(f.money || f.finances?.money || 0)}</strong>
                         </div>
-                        <span class="card-subtext">Parcels: ${(f.cards?.farmlandOwned || []).length} | Fleet: ${(f.vehicles || []).length} Units</span>
+                        <span class="card-subtext">Parcels: ${toArray(f.cards?.farmlandOwned).length} | Fleet: ${toArray(f.vehicles).length} Units</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAnimalsList(data) {
+            const container = document.getElementById('animals-container');
+            if (!container) return;
+            const animals = toArray(data.cards?.animals);
+            if (animals.length === 0) {
+                container.innerHTML = `<div class="empty-state">No active animal husbandry detected.</div>`;
+                return;
+            }
+            container.innerHTML = animals.map(a => `
+                <div class="telemetry-card">
+                    <i class="fa-solid fa-cow card-icon" style="color:#facc15;"></i>
+                    <div class="card-details" style="flex:1;">
+                        <strong>${cleanName(a.name || a.file)}</strong>
+                        <span class="card-subtext">Husbandry Facility</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPassiveGenerators(farms) {
+            const container = document.getElementById('construction-container');
+            if (!container) return;
+            const generators = [];
+            Object.values(farms).forEach(f => {
+                toArray(f.cards?.incomeGenerators).forEach(g => generators.push(g));
+            });
+            if (generators.length === 0) {
+                container.innerHTML = `<div class="empty-state">No passive generators installed.</div>`;
+                return;
+            }
+            container.innerHTML = generators.map(g => `
+                <div class="telemetry-card">
+                    <i class="fa-solid fa-solar-panel card-icon" style="color:#38bdf8;"></i>
+                    <div class="card-details" style="flex:1;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <strong>${g.source || 'Generator'} (${g.totalUnits || 1} Units)</strong>
+                            <span style="color:#4ade80; font-family:var(--font-mono); font-weight:700;">${g.revenueSchedule?.displayPayout || '$0/mo'}</span>
+                        </div>
+                        <span class="card-subtext">Location: ${g.location || 'Farm Grounds'} | Value: ${g.totalFarmValueFormatted || '$0'}</span>
                     </div>
                 </div>
             `).join('');
@@ -1159,7 +1221,7 @@
         function renderMissionsList(missions) {
             const container = document.getElementById('missions-container');
             if (!container) return;
-            const list = missions.all || [];
+            const list = toArray(missions.all);
             if (list.length === 0) {
                 container.innerHTML = `<div class="empty-state">No active contracts available.</div>`;
                 return;
@@ -1181,7 +1243,7 @@
         function renderCollectibles(collectibles) {
             const container = document.getElementById('collectibles-container');
             if (!container) return;
-            const items = collectibles.items || [];
+            const items = toArray(collectibles.items);
             if (items.length === 0) {
                 container.innerHTML = `<div class="empty-state">No collectibles tracked.</div>`;
                 return;
@@ -1197,7 +1259,10 @@
             `;
         }
 
-        function renderEquipmentCards(farms) {
+        // ====================================================================
+        // FIXED EQUIPMENT RENDERER: Safe Array Conversion for fillUnits
+        // ====================================================================
+        function renderEquipmentCards(farms, rootData) {
             const tractorsBox = document.getElementById('tractors-container');
             const harvestersBox = document.getElementById('harvesters-container');
             const trailersBox = document.getElementById('trailers-container');
@@ -1205,8 +1270,12 @@
 
             const allVehicles = [];
             Object.values(farms).forEach(f => {
-                (f.vehicles || []).forEach(v => allVehicles.push(v));
+                toArray(f.vehicles).forEach(v => allVehicles.push(v));
             });
+
+            if (allVehicles.length === 0 && rootData?.cards?.fleet) {
+                toArray(rootData.cards.fleet).forEach(v => allVehicles.push(v));
+            }
 
             const renderUnits = (units, targetBox, emptyMsg) => {
                 if (!targetBox) return;
@@ -1215,13 +1284,16 @@
                     return;
                 }
                 targetBox.innerHTML = units.map(u => {
-                    const fillHtml = (u.fillUnits || []).map(fu => {
-                        const color = getStoplightColor(fu.percent);
+                    // Safe parsing prevents crashes when fillUnits is an object
+                    const rawUnits = toArray(u.fillUnits?.unit || u.fillUnits);
+                    const fillHtml = rawUnits.map(fu => {
+                        const pct = Math.min(100, Math.max(0, Math.round(Number(fu.percent !== undefined ? fu.percent : fu.fillLevel) || 0)));
+                        const color = getStoplightColor(pct);
                         return `
                             <div class="fill-meter-wrap">
-                                <span>${fu.fillType}</span>
-                                <div class="fill-bar-track"><div class="fill-bar-val" style="width:${fu.percent}%; background:${color};"></div></div>
-                                <span style="color:${color}; font-weight:700;">${fu.percent}%</span>
+                                <span>${fu.fillType || 'Capacity'}</span>
+                                <div class="fill-bar-track"><div class="fill-bar-val" style="width:${pct}%; background:${color};"></div></div>
+                                <span style="color:${color}; font-weight:700;">${pct}%</span>
                             </div>
                         `;
                     }).join('');
@@ -1229,7 +1301,7 @@
                     return `
                         <div class="telemetry-card" style="flex-direction:column; align-items:stretch;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <strong>${cleanName(u.name)}</strong>
+                                <strong>${cleanName(u.name || u.file)}</strong>
                                 <span class="card-subtext">${u.operatingHours || 0}h</span>
                             </div>
                             ${fillHtml}
@@ -1238,9 +1310,21 @@
                 }).join('');
             };
 
-            const tractors = allVehicles.filter(v => (v.category || '').includes('Tractor') || cleanName(v.name).toLowerCase().includes('tractor') || cleanName(v.name).toLowerCase().includes('series'));
-            const harvesters = allVehicles.filter(v => (v.category || '').includes('Harvester') || cleanName(v.name).toLowerCase().includes('combine') || cleanName(v.name).toLowerCase().includes('picker'));
-            const trailers = allVehicles.filter(v => (v.category || '').includes('Trailer') || cleanName(v.name).toLowerCase().includes('tipper') || cleanName(v.name).toLowerCase().includes('wagon'));
+            const tractors = allVehicles.filter(v => {
+                const n = (cleanName(v.name || v.file) + ' ' + (v.category || '')).toLowerCase();
+                return n.includes('tractor') || n.includes('quadtrac') || n.includes('series') || n.includes('8r') || n.includes('9r') || n.includes('magnum');
+            });
+
+            const harvesters = allVehicles.filter(v => {
+                const n = (cleanName(v.name || v.file) + ' ' + (v.category || '')).toLowerCase();
+                return n.includes('harvester') || n.includes('combine') || n.includes('picker') || n.includes('cotton');
+            });
+
+            const trailers = allVehicles.filter(v => {
+                const n = (cleanName(v.name || v.file) + ' ' + (v.category || '')).toLowerCase();
+                return n.includes('trailer') || n.includes('tipper') || n.includes('wagon') || n.includes('flatbed');
+            });
+
             const implementsList = allVehicles.filter(v => !tractors.includes(v) && !harvesters.includes(v) && !trailers.includes(v));
 
             renderUnits(tractors, tractorsBox, "No fleet tractors deployed.");
@@ -1249,14 +1333,34 @@
             renderUnits(implementsList, implementsBox, "No tools or implements detected.");
         }
 
+        function renderHandTools(data) {
+            const container = document.getElementById('handtools-container');
+            if (!container) return;
+            const tools = toArray(data.cards?.handTools);
+            if (tools.length === 0) {
+                container.innerHTML = `<div class="empty-state">No hand tools registered.</div>`;
+                return;
+            }
+            container.innerHTML = tools.map(t => `
+                <div class="telemetry-card">
+                    <i class="fa-solid fa-toolbox card-icon" style="color:#ef4444;"></i>
+                    <div class="card-details">
+                        <strong>${cleanName(t.name || t.filename)}</strong>
+                        <span class="card-subtext">Player Inventory Tool</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
         function renderFieldsList(fields) {
             const container = document.getElementById('fields-container');
             if (!container) return;
-            if (!fields || fields.length === 0) {
+            const list = toArray(fields);
+            if (list.length === 0) {
                 container.innerHTML = `<div class="empty-state">No fields mapped.</div>`;
                 return;
             }
-            container.innerHTML = fields.slice(0, 15).map(f => `
+            container.innerHTML = list.slice(0, 15).map(f => `
                 <div class="telemetry-card">
                     <i class="fa-solid fa-seedling card-icon" style="color:#84cc16;"></i>
                     <div class="card-details" style="flex:1;">
@@ -1264,32 +1368,45 @@
                             <strong>Field #${f.fieldId} (${f.fruitType || 'Fallow'})</strong>
                             <span style="color:${f.isReadyToHarvest ? '#4ade80' : '#facc15'}; font-weight:700;">${f.isReadyToHarvest ? 'Ready to Harvest' : 'Growing'}</span>
                         </div>
-                        <span class="card-subtext">Fertilizer: ${f.fertilizedLevel * 50}% | Lime: ${f.needsLime ? 'Needs Lime' : 'OK'}</span>
+                        <span class="card-subtext">Fertilizer: ${Number(f.fertilizedLevel || 0) * 50}% | Lime: ${f.needsLime ? 'Needs Lime' : 'OK'}</span>
                     </div>
                 </div>
             `).join('');
         }
 
-        function renderPassiveGenerators(farms) {
-            const container = document.getElementById('construction-container');
+        function renderProductions(data) {
+            const container = document.getElementById('main-productions-container');
             if (!container) return;
-            const generators = [];
-            Object.values(farms).forEach(f => {
-                (f.cards?.incomeGenerators || []).forEach(g => generators.push(g));
-            });
-            if (generators.length === 0) {
-                container.innerHTML = `<div class="empty-state">No passive generators installed.</div>`;
+            const list = toArray(data.cards?.factories);
+            if (list.length === 0) {
+                container.innerHTML = `<div class="empty-state">No production factories registered.</div>`;
                 return;
             }
-            container.innerHTML = generators.map(g => `
+            container.innerHTML = list.map(p => `
                 <div class="telemetry-card">
-                    <i class="fa-solid fa-solar-panel card-icon" style="color:#38bdf8;"></i>
-                    <div class="card-details" style="flex:1;">
-                        <div style="display:flex; justify-content:space-between;">
-                            <strong>${g.source || 'Generator'} (${g.totalUnits || 1} Units)</strong>
-                            <span style="color:#4ade80; font-family:var(--font-mono); font-weight:700;">${g.revenueSchedule?.displayPayout || '$0/mo'}</span>
-                        </div>
-                        <span class="card-subtext">Location: ${g.location || 'Farm Grounds'} | Value: ${g.totalFarmValueFormatted || '$0'}</span>
+                    <i class="fa-solid fa-industry card-icon" style="color:#38bdf8;"></i>
+                    <div class="card-details">
+                        <strong>${cleanName(p.name || p.file)}</strong>
+                        <span class="card-subtext">Active Production Line</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderStorage(data) {
+            const container = document.getElementById('greenhouses-container');
+            if (!container) return;
+            const list = toArray(data.cards?.palletsAndBales);
+            if (list.length === 0) {
+                container.innerHTML = `<div class="empty-state">No storage inventory detected.</div>`;
+                return;
+            }
+            container.innerHTML = list.slice(0, 15).map(s => `
+                <div class="telemetry-card">
+                    <i class="fa-solid fa-box card-icon" style="color:#facc15;"></i>
+                    <div class="card-details">
+                        <strong>${cleanName(s.name || s.file)}</strong>
+                        <span class="card-subtext">Pallet / Bale Inventory</span>
                     </div>
                 </div>
             `).join('');
@@ -1309,7 +1426,7 @@
                 <div class="mod-card" onclick="openModDetail('${key}')">
                     <div class="mod-card-body">
                         <span class="mod-category-tag">${m.platform || 'Crossplay'}</span>
-                        <div class="mod-title">${m.name}</div>
+                        <div class="mod-title">${m.name || key}</div>
                         <div class="mod-desc">${(m.description || 'Community Modification').substring(0, 80)}...</div>
                         <div class="mod-card-footer">
                             <span class="mod-author">By ${m.author || 'Author'}</span>
@@ -1320,7 +1437,6 @@
             `).join('');
         }
 
-        // Lightbox Image Viewer
         window.openImageLightbox = function(imgUrl, captionText) {
             const modal = document.getElementById('lightbox-modal');
             const img = document.getElementById('lightbox-img');
@@ -1333,7 +1449,6 @@
             modal.classList.add('active');
         };
 
-        // Lightbox Modal for Mod Details
         window.openModDetail = function(modKey) {
             const m = cachedMods[modKey];
             if (!m) return;
@@ -1343,6 +1458,7 @@
 
             if (m.image) {
                 img.src = m.image;
+                img.alt = m.name;
                 img.style.display = 'block';
             } else {
                 img.style.display = 'none';
@@ -1350,15 +1466,15 @@
 
             caption.innerHTML = `
                 <div style="text-align:left; max-width:550px; margin:0 auto; font-family:var(--font-family);">
-                    <h3 style="color:#facc15; font-size:1.3rem; margin-bottom:6px;">${m.name}</h3>
-                    <p style="color:#cbd5e1; font-size:0.875rem; margin-bottom:12px; line-height:1.4;">${m.description}</p>
+                    <h3 style="color:#facc15; font-size:1.3rem; margin-bottom:6px;">${m.name || modKey}</h3>
+                    <p style="color:#cbd5e1; font-size:0.875rem; margin-bottom:12px; line-height:1.4;">${m.description || 'No description provided.'}</p>
                     <div style="background:#0b1120; padding:10px; border-radius:6px; font-family:var(--font-mono); font-size:0.8rem; color:#94a3b8; display:flex; flex-direction:column; gap:4px;">
-                        <div>Author: <strong style="color:#fff;">${m.author}</strong></div>
-                        <div>Version: <strong style="color:#fff;">${m.version}</strong></div>
-                        <div>Platform: <strong style="color:#38bdf8;">${m.platform}</strong></div>
+                        <div>Author: <strong style="color:#fff;">${m.author || 'Unknown'}</strong></div>
+                        <div>Version: <strong style="color:#fff;">${m.version || '1.0.0.0'}</strong></div>
+                        <div>Platform: <strong style="color:#38bdf8;">${m.platform || 'Crossplay'}</strong></div>
                         <div>Catalog Status: <strong style="color:#4ade80;">${m.matchedInCatalog ? 'VERIFIED IN CATALOG' : 'MODHUB DEPLOYED'}</strong></div>
                     </div>
-                    <a href="${m.storeUrl}" target="_blank" class="mod-download-btn" style="margin-top:14px; width:100%; justify-content:center; padding:10px;">
+                    <a href="${m.storeUrl || 'https://www.farming-simulator.com/mods.php?title=fs2025&searchKeyword=' + encodeURIComponent(m.name || modKey)}" target="_blank" class="mod-download-btn" style="margin-top:14px; width:100%; justify-content:center; padding:10px;">
                         <i class="fa-solid fa-arrow-up-right-from-square"></i> Search on Official ModHub
                     </a>
                 </div>
