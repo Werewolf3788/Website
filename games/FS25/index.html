@@ -2,20 +2,23 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * File: games/FS25/index.html
- * Deployment Timestamp: 2026-09-20 23:59:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-21 00:27:31 (EDT - 24hr New York Time)
  * Project: fs25-a3563 (/fs25 RTDB Node)
  * Target Database: https://fs25-a3563-default-rtdb.firebaseio.com
- * Measurement ID: G-SGJF0FJPQZ | GA4 Tag: G-CTYHDF4MSD
- * Description: FS25 Tactical Operations Hub with Split Dual-Farm Fleet & Direct ModHub Lookup.
- *              - Zero Google Cloud Service Account (GCP_SA_KEY) requirements.
- *              - Pure client-side modular SDK direct connection to fs25-a3563.
- *              - Strict Side-by-Side Dual Column Architecture: Farm 1 (Left) vs Farm 2 (Right).
- *              - Fixed Lightbox Dismissal: Closes instantly via X button, Backdrop, or ESC key.
- *              - Dynamic Specific ModHub Search: Direct targeted query using exact mod title.
- *              - Safe Array Normalization (toArray) preventing fillUnits crashes.
- *              - Clean Equipment & Brand Names (Zero raw file paths).
- *              - Color-Coded Stoplight Fill Meters (<=35% Red, 36-74% Yellow, >=75% Green).
- *              - Collectibles System (25% opacity unfound, 100% illuminated found).
+ * Google Analytics Tag: G-CTYHDF4MSD | Measurement ID: G-SGJF0FJPQZ
+ * Description: All-In-One Unified FS25 Realtime Tactical Dashboard & Mod Directory.
+ *              - Fluid cross-platform responsive layout:
+ *                  * Desktop (>=1200px): 85% centered width, dual-column grid.
+ *                  * Tablet (768px-1199px): 92% fluid width, collapsible sandwich menu, 48px touch targets.
+ *                  * Mobile (<768px): 90% fluid width with dedicated outer thumb-scroll channels (no horizontal overflow).
+ *              - True Sandwich Accordion Drawer for tablets and phones (<1200px) with zero overlap.
+ *              - Split Dual-Farm Operational Matrix: Farm 1 (Left) vs Farm 2 (Right).
+ *              - Reliable Lightbox Modal: Closes instantly via X button, outer backdrop tap, or ESC key.
+ *              - Targeted ModHub Search: Dynamically searches exact mod names on the official ModHub catalog.
+ *              - Safe Array Normalization (toArray) preventing fillUnits .map() errors.
+ *              - Sanitized human-readable brand and model names (no raw XML paths).
+ *              - Color-coded stoplight fill meters (<=35% Red, 36-74% Yellow, >=75% Green).
+ *              - Map Collectibles System (25% opacity when unfound, 100% illuminated when found).
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -32,6 +35,7 @@
     <!-- Google Analytics GA4 -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
+        // Line 36: GA4 DataLayer Initialization
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
@@ -39,7 +43,7 @@
         gtag('config', 'G-SGJF0FJPQZ');
     </script>
 
-    <!-- Consolidated CSS Stylesheet -->
+    <!-- Line 44: Consolidated Responsive CSS Stylesheet -->
     <style>
         :root {
             --bg-dark: #070a12;
@@ -63,61 +67,83 @@
             padding: 0;
         }
 
-        body {
+        html, body {
             background-color: var(--bg-dark);
             color: var(--text-main);
             font-family: var(--font-family);
             font-size: 16px;
             line-height: 1.5;
+            width: 100vw;
+            max-width: 100%;
             overflow-x: hidden;
         }
 
-        /* Top Header Navigation Bar (Centered Layout) */
+        /* Top Header Navigation Bar (Sandwich & Centered Layout) */
         .navbar {
-            display: flex;
-            align-items: center;
-            justify-content: center;
             background: var(--header-bg);
             border-bottom: 1px solid var(--border-color);
-            padding: 0.85rem 1.75rem;
             position: sticky;
             top: 0;
             z-index: 1000;
             width: 100%;
+            padding: 0.75rem 0;
         }
 
         .nav-container {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             width: 85%;
             margin: 0 auto;
             position: relative;
+            min-height: 48px;
         }
 
         .brand-hub-link {
-            position: absolute;
-            left: 0;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.6rem;
             color: var(--text-main);
             text-decoration: none;
             font-weight: 700;
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             letter-spacing: 0.05em;
+            white-space: nowrap;
+            z-index: 1010;
         }
 
         .logo-icon {
             color: var(--accent-gold);
-            font-size: 1.5rem;
+            font-size: 1.4rem;
         }
 
+        .mobile-toggle {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--accent-gold);
+            font-size: 1.25rem;
+            min-width: 48px;
+            min-height: 48px;
+            cursor: pointer;
+            z-index: 1010;
+            transition: all 0.2s ease;
+        }
+
+        .mobile-toggle:hover {
+            background: rgba(250, 204, 21, 0.15);
+            border-color: var(--accent-gold);
+        }
+
+        /* Desktop Navigation (> 1200px) */
         .nav-menu-centered {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
@@ -130,17 +156,18 @@
             background: var(--card-bg);
             color: var(--text-main);
             border: 1px solid var(--border-color);
-            padding: 0.6rem 1.25rem;
+            padding: 0.5rem 1rem;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 0.5rem;
             min-height: 44px;
             transition: all 0.2s ease;
             text-decoration: none;
+            white-space: nowrap;
         }
 
         .dropdown-trigger-btn:hover,
@@ -159,10 +186,10 @@
             background: #1e293b;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            min-width: 260px;
-            box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.6);
+            min-width: 250px;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.7);
             overflow: hidden;
-            z-index: 1001;
+            z-index: 1020;
         }
 
         .nav-dropdown-wrapper:hover .dropdown-popout-menu,
@@ -173,11 +200,11 @@
         .dropdown-item {
             display: flex;
             align-items: center;
-            gap: 0.85rem;
-            padding: 0.8rem 1.25rem;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
             color: var(--text-main);
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             min-height: 44px;
             transition: background 0.2s ease, color 0.2s ease;
         }
@@ -187,22 +214,10 @@
             color: var(--accent-gold);
         }
 
-        .mobile-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--text-main);
-            font-size: 1.5rem;
-            min-width: 44px;
-            min-height: 44px;
-            cursor: pointer;
-        }
-
-        /* Dashboard Container & Cards System (85% Desktop Layout) */
+        /* Dashboard Container & Grid System */
         .dashboard-container {
-            padding: 1.5rem;
+            padding: 1.5rem 0;
             width: 85%;
-            max-width: none;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
@@ -212,9 +227,10 @@
         .server-banner {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 1.25rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            width: 100%;
         }
 
         .banner-layout {
@@ -245,7 +261,8 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 0.85rem;
+            gap: 0.75rem;
+            min-width: 250px;
         }
 
         .server-header-line {
@@ -256,9 +273,11 @@
         }
 
         .server-header-line h1 {
-            font-size: 1.4rem;
+            font-size: 1.35rem;
             font-weight: 700;
             color: #ffffff;
+            line-height: 1.2;
+            word-break: break-word;
         }
 
         .status-pill {
@@ -294,19 +313,20 @@
         .banner-badges {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.6rem;
+            gap: 0.5rem;
         }
 
         .badge {
             background: rgba(15, 23, 42, 0.8);
             border: 1px solid var(--border-color);
-            padding: 0.4rem 0.8rem;
+            padding: 0.35rem 0.75rem;
             border-radius: 6px;
-            font-size: 0.825rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
+            white-space: nowrap;
         }
 
         .badge i {
@@ -315,60 +335,70 @@
 
         .metrics-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 1.25rem;
+            width: 100%;
         }
 
         .metric-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 10px;
-            padding: 1.1rem 1.25rem;
+            padding: 1rem 1.2rem;
             display: flex;
             align-items: center;
-            gap: 1.1rem;
+            gap: 1rem;
+            width: 100%;
         }
 
         .metric-icon {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
+            flex-shrink: 0;
         }
 
         .metric-value {
-            font-size: 1.35rem;
+            font-size: 1.25rem;
             font-weight: 700;
             font-family: var(--font-mono);
             color: #ffffff;
+            word-break: break-word;
         }
 
         .metric-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.04em;
         }
 
-        /* Dual Column Split Layout: Farm 1 (Left) vs Farm 2 (Right) */
+        /* Dual-Farm Split Matrix */
         .dual-farm-matrix {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1.5rem;
             align-items: start;
+            width: 100%;
         }
 
         .farm-column {
             display: flex;
             flex-direction: column;
             gap: 1.25rem;
+            width: 100%;
+            min-width: 0;
         }
 
         .farm-header-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 10px;
-            padding: 1.25rem;
+            padding: 1.1rem 1.25rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            width: 100%;
         }
 
         .farm-header-card.farm1-card {
@@ -380,16 +410,17 @@
         }
 
         .farm-header-title {
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             font-weight: 700;
             color: #ffffff;
             text-transform: uppercase;
         }
 
         .farm-header-balance {
-            font-size: 1.35rem;
+            font-size: 1.25rem;
             font-weight: 700;
             font-family: var(--font-mono);
+            word-break: break-all;
         }
 
         .farm-header-balance.f1 {
@@ -407,11 +438,12 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            width: 100%;
         }
 
         .box-header {
             background: rgba(15, 23, 42, 0.8);
-            padding: 0.8rem 1.1rem;
+            padding: 0.75rem 1rem;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
@@ -420,11 +452,11 @@
 
         .box-header i {
             color: var(--accent-gold);
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
         .box-header h2 {
-            font-size: 0.875rem;
+            font-size: 0.825rem;
             font-weight: 700;
             margin: 0;
             color: #ffffff;
@@ -432,8 +464,8 @@
         }
 
         .box-content {
-            padding: 0.85rem;
-            max-height: 420px;
+            padding: 0.75rem;
+            max-height: 400px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -448,7 +480,7 @@
             border-radius: 4px;
         }
 
-        /* Telemetry Cards */
+        /* Telemetry Row Item Cards */
         .telemetry-card {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid var(--border-color);
@@ -457,28 +489,35 @@
             display: flex;
             align-items: center;
             gap: 0.85rem;
+            width: 100%;
         }
 
         .card-icon {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: var(--accent-gold);
             width: 24px;
             text-align: center;
+            flex-shrink: 0;
         }
 
         .card-details {
             display: flex;
             flex-direction: column;
+            min-width: 0;
+            flex: 1;
         }
 
         .card-details strong {
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             font-weight: 600;
             color: #f1f5f9;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .card-details span {
-            font-size: 0.775rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
         }
 
@@ -489,14 +528,14 @@
         }
 
         .empty-state, .loading-state {
-            font-size: 0.825rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
             padding: 1rem;
             text-align: center;
             width: 100%;
         }
 
-        /* Stoplight Fill Meters */
+        /* Stoplight Meters */
         .fill-meter-wrap {
             display: flex;
             align-items: center;
@@ -505,12 +544,14 @@
             padding: 4px 8px;
             border-radius: 4px;
             font-family: var(--font-mono);
-            font-size: 0.725rem;
+            font-size: 0.7rem;
             margin-top: 4px;
+            width: 100%;
         }
 
         .fill-bar-track {
-            width: 80px;
+            flex: 1;
+            max-width: 100px;
             height: 6px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 3px;
@@ -526,7 +567,7 @@
         /* Collectibles Grid System */
         .collectibles-grid-layout {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
             gap: 6px;
             max-height: 240px;
             overflow-y: auto;
@@ -542,7 +583,6 @@
             font-family: var(--font-mono);
             font-size: 0.7rem;
             font-weight: 700;
-            transition: all 0.2s ease;
             background: rgba(15, 23, 42, 0.8);
             border: 1px solid var(--border-color);
         }
@@ -567,10 +607,11 @@
             border: 1px solid var(--border-color);
             border-radius: 10px;
             padding: 1.25rem;
+            width: 100%;
         }
 
         .mod-hub-header h2 {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             color: #ffffff;
             display: flex;
             align-items: center;
@@ -586,7 +627,7 @@
 
         .mod-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 1rem;
             margin-top: 1.25rem;
         }
@@ -622,13 +663,13 @@
         }
 
         .mod-title {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: #ffffff;
         }
 
         .mod-desc {
-            font-size: 0.8rem;
+            font-size: 0.775rem;
             color: var(--text-muted);
             line-height: 1.35;
         }
@@ -639,11 +680,11 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-top: 1px solid rgba(255,255,255,0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .mod-author {
-            font-size: 0.75rem;
+            font-size: 0.725rem;
             color: var(--text-muted);
         }
 
@@ -653,7 +694,7 @@
             text-decoration: none;
             padding: 0.35rem 0.75rem;
             border-radius: 4px;
-            font-size: 0.75rem;
+            font-size: 0.725rem;
             font-weight: 700;
             display: inline-flex;
             align-items: center;
@@ -670,7 +711,7 @@
             z-index: 20000;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem;
+            padding: 1.25rem;
         }
 
         .lightbox-modal.active {
@@ -682,24 +723,28 @@
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 12px;
             padding: 1.5rem;
-            max-width: 600px;
+            max-width: 550px;
             width: 100%;
             position: relative;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.85);
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .lightbox-close-btn {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 1.5rem;
+            top: 0.75rem;
+            right: 0.75rem;
+            font-size: 1.75rem;
             color: #94a3b8;
             cursor: pointer;
             background: none;
             border: none;
             line-height: 1;
-            padding: 4px 8px;
+            padding: 6px 10px;
             transition: color 0.2s ease;
+            z-index: 20010;
         }
 
         .lightbox-close-btn:hover {
@@ -711,21 +756,21 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
-            max-height: 85vh;
             overflow-y: auto;
         }
 
         .lightbox-content {
             max-width: 100%;
-            max-height: 50vh;
+            max-height: 45vh;
             border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
             margin-bottom: 1rem;
+            object-fit: contain;
         }
 
         .lightbox-caption {
             color: #ffffff;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             text-align: center;
             width: 100%;
@@ -735,8 +780,9 @@
         .system-footer {
             background: var(--header-bg);
             border-top: 1px solid var(--border-color);
-            padding: 1rem;
+            padding: 1rem 0;
             margin-top: 3rem;
+            width: 100%;
         }
 
         .footer-content {
@@ -751,28 +797,107 @@
             color: var(--text-muted);
         }
 
-        /* Responsive Viewports */
-        @media (max-width: 1024px) and (min-width: 768px) {
-            .dashboard-container, .footer-content, .nav-container { width: 92%; }
-            .dual-farm-matrix { grid-template-columns: 1fr; }
-            .metrics-row { grid-template-columns: repeat(2, 1fr); }
+        /* ====================================================================
+         * CROSS-PLATFORM RESPONSIVE RULES (TABLETS & MOBILE PHONES)
+         * ==================================================================== */
+
+        /* Tablets & Smaller Desktops (< 1200px) */
+        @media (max-width: 1199px) {
+            .nav-container, .dashboard-container, .footer-content {
+                width: 92%;
+            }
+
+            .mobile-toggle {
+                display: flex !important;
+            }
+
+            /* Turn top bar into true collapsible sandwich accordion */
+            .nav-menu-centered {
+                display: none !important;
+                position: absolute;
+                top: calc(100% + 0.75rem);
+                left: 0;
+                right: 0;
+                background: #0b1120;
+                border: 1px solid var(--border-color);
+                border-radius: 12px;
+                padding: 1rem;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 0.5rem !important;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9);
+                z-index: 1050;
+            }
+
+            .nav-menu-centered.open {
+                display: flex !important;
+            }
+
+            .nav-dropdown-wrapper {
+                width: 100%;
+            }
+
+            .dropdown-trigger-btn {
+                width: 100%;
+                justify-content: space-between;
+                min-height: 48px;
+                padding: 0.75rem 1rem;
+                font-size: 0.95rem;
+            }
+
+            .dropdown-popout-menu {
+                position: static;
+                width: 100%;
+                margin-top: 0.25rem;
+                background: #111827;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                box-shadow: none;
+            }
+
+            .dual-farm-matrix {
+                grid-template-columns: 1fr;
+            }
         }
 
+        /* Mobile Phones (< 768px) */
         @media (max-width: 767px) {
-            .dashboard-container, .footer-content { width: 100%; padding: 1rem; }
-            .mobile-toggle { display: flex; }
-            .nav-container { width: 100%; justify-content: space-between; }
-            .brand-hub-link { position: static; }
-            .dual-farm-matrix { grid-template-columns: 1fr; }
-            .metrics-row { grid-template-columns: 1fr; }
-            .banner-layout { flex-direction: column; align-items: flex-start; }
-            .map-preview-box { width: 100%; height: 180px; }
+            /* 90% fluid width leaves 5% thumb gutters on left & right */
+            .nav-container, .dashboard-container, .footer-content {
+                width: 90% !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
+
+            .server-header-line {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .farm-header-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.25rem;
+            }
+
+            .farm-header-balance {
+                font-size: 1.15rem;
+            }
+
+            .metrics-row {
+                grid-template-columns: 1fr;
+            }
+
+            .map-preview-box {
+                width: 100%;
+                height: 180px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Master Navigation Header (Centered Layout) -->
+    <!-- Master Navigation Header (Centered on Desktop, Sandwich on Tablet/Phone) -->
     <header class="navbar">
         <div class="nav-container">
             <a href="//werewolf3788.github.io/Website/" class="brand-hub-link" aria-label="Home Overview">
@@ -968,7 +1093,7 @@
         </div>
 
         <!-- Section: Global Map Operations (Players, Contracts, Collectibles, Fields, Factories) -->
-        <div class="metrics-row" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); margin-top: 1rem;">
+        <div class="metrics-row" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-top: 0.5rem;">
             
             <!-- Card: Active Online Players -->
             <div class="dashboard-box">
@@ -1036,13 +1161,13 @@
     <!-- System Footer -->
     <footer class="system-footer">
         <div class="footer-content">
-            <span><i class="fa-solid fa-code-commit"></i> Engine: <strong>v52.4.0 (Dual-Farm Split Architecture)</strong></span>
+            <span><i class="fa-solid fa-code-commit"></i> Engine: <strong>v53.0.0 (Fluid Responsive Engine)</strong></span>
             <span id="save-slot-display" style="color:var(--accent-gold, #facc15); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Slot #1</span>
             <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Connected</span>
         </div>
     </footer>
 
-    <!-- Line 750: DIRECT FIREBASE MODULAR SDK CLIENT ENGINE -->
+    <!-- Line 790: DIRECT FIREBASE MODULAR SDK CLIENT ENGINE -->
     <script type="module">
         import { initializeApp } from "//www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAnalytics } from "//www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
@@ -1098,21 +1223,31 @@
                 .replace(/\b\w/g, c => c.toUpperCase());
         }
 
-        // ====================================================================
-        // LIGHTBOX CONTROLLER: RELIABLE DISMISSAL & ESCAPE HANDLING
-        // ====================================================================
+        // Reliable Lightbox Dismissal Function
         function closeActiveLightbox() {
             const modal = document.getElementById('lightbox-modal');
             if (modal) modal.classList.remove('active');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Mobile & Tablet Sandwich Accordion Toggle
             const toggle = document.getElementById('mobile-menu-toggle');
             const menu = document.getElementById('dynamic-menu');
             if (toggle && menu) {
-                toggle.addEventListener('click', () => menu.classList.toggle('open'));
+                toggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    menu.classList.toggle('open');
+                });
+
+                // Auto-close menu when tapping outside
+                document.addEventListener('click', (e) => {
+                    if (!menu.contains(e.target) && !toggle.contains(e.target)) {
+                        menu.classList.remove('open');
+                    }
+                });
             }
 
+            // Lightbox Modal Listeners
             const lbModal = document.getElementById('lightbox-modal');
             const lbClose = document.getElementById('lightbox-close');
             if (lbClose) {
@@ -1148,7 +1283,7 @@
         });
 
         // ====================================================================
-        // SECTION 1: CENTERED /utm_links NAVIGATION BUILDER
+        // SECTION 1: CENTERED / ACCORDION /utm_links BUILDER
         // ====================================================================
         async function loadNavigationMenu() {
             const nav = document.getElementById('dynamic-menu');
@@ -1198,14 +1333,14 @@
                         const h = links[0] || { title: 'Home', url: '//werewolf3788.github.io/Website/' };
                         html += `
                             <a href="${h.url}" class="dropdown-trigger-btn">
-                                <i class="fa-solid fa-house" style="color:var(--accent-gold);"></i> ${h.title}
+                                <i class="fa-solid fa-house" style="color:var(--accent-gold);"></i> <span>${h.title}</span>
                             </a>
                         `;
                     } else if (links.length > 0) {
                         html += `
                             <div class="nav-dropdown-wrapper">
                                 <button type="button" class="dropdown-trigger-btn">
-                                    <i class="fa-solid fa-folder" style="color:var(--accent-gold);"></i> ${folder.title} <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                                    <i class="fa-solid fa-folder" style="color:var(--accent-gold);"></i> <span>${folder.title}</span> <i class="fa-solid fa-chevron-down arrow-icon"></i>
                                 </button>
                                 <div class="dropdown-popout-menu">
                                     ${links.map(l => `
@@ -1618,13 +1753,12 @@
             }
 
             const modDisplayName = m.name || modKey;
-            // Precise target search on the official ModHub using exact name
             const specificModhubUrl = `https://www.farming-simulator.com/mods.php?title=fs2025&searchKeyword=${encodeURIComponent(modDisplayName)}`;
 
             caption.innerHTML = `
                 <div style="text-align:left; width:100%; font-family:var(--font-family);">
-                    <h3 style="color:#facc15; font-size:1.3rem; margin-bottom:6px;">${modDisplayName}</h3>
-                    <p style="color:#cbd5e1; font-size:0.875rem; margin-bottom:12px; line-height:1.4;">${m.description || 'No description provided.'}</p>
+                    <h3 style="color:#facc15; font-size:1.25rem; margin-bottom:6px;">${modDisplayName}</h3>
+                    <p style="color:#cbd5e1; font-size:0.85rem; margin-bottom:12px; line-height:1.4;">${m.description || 'No description provided.'}</p>
                     <div style="background:#0b1120; padding:10px; border-radius:6px; font-family:var(--font-mono); font-size:0.8rem; color:#94a3b8; display:flex; flex-direction:column; gap:4px;">
                         <div>Author: <strong style="color:#fff;">${m.author || 'Unknown'}</strong></div>
                         <div>Version: <strong style="color:#fff;">${m.version || '1.0.0.0'}</strong></div>
