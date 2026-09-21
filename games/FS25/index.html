@@ -2,15 +2,16 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * File: games/FS25/index.html
- * Deployment Timestamp: 2026-09-20 23:30:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-20 23:22:00 (EDT - 24hr New York Time)
  * Project: fs25-a3563 (/fs25 RTDB Node) & entertainment-71888
  * Target Database: https://fs25-a3563-default-rtdb.firebaseio.com/fs25.json
  * Google Analytics Tag: G-CTYHDF4MSD | Measurement ID: G-SGJF0FJPQZ
- * Description: Complete Self-Contained Resilient FS25 Realtime Tactical Dashboard.
- *              - Zero Node.js dependencies in the browser; pure client-side REST.
+ * Description: All-In-One Unified FS25 Realtime Tactical Dashboard & Mod Directory.
+ *              - Zero external CSS or JS file dependencies (100% consolidated single-file architecture).
+ *              - Eliminates style.css and index.js to streamline repository structure.
  *              - Dual-Target Fallback: fs25-a3563 -> entertainment-71888.
  *              - Centered Top Navigation Bar pulling directly from /utm_links.
- *              - Sanitized Clean Equipment & Brand Names (Zero raw file paths).
+ *              - Clean Equipment & Brand Names (Zero raw file paths).
  *              - Categorized Fleet: Tractors, Harvesters, Trailers, Implements.
  *              - Color-Coded Stoplight Fill Meters (<=35% Red, 36-74% Yellow, >=75% Green).
  *              - Collectibles System (25% opacity when unfound, 100% illuminated when found).
@@ -27,11 +28,11 @@
     <link rel="preconnect" href="//fonts.googleapis.com">
     <link rel="preconnect" href="//fonts.gstatic.com" crossorigin>
     <link href="//fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./style.css">
 
     <!-- Google Analytics GA4 -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
+        // Line 35: Google Analytics Setup
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
@@ -39,13 +40,46 @@
         gtag('config', 'G-SGJF0FJPQZ');
     </script>
 
-    <!-- Line 40: Embedded CSS Enhancements (Centered Menu, Stoplight Meters, Collectibles) -->
+    <!-- Line 43: Consolidated CSS Stylesheet (Merged style.css and enhancements) -->
     <style>
-        /* Centered Header Navigation */
+        :root {
+            --bg-dark: #070a12;
+            --card-bg: #111827;
+            --header-bg: #0b1120;
+            --accent-gold: #facc15;
+            --accent-orange: #ff5f00;
+            --accent-blue: #38bdf8;
+            --accent-red: #f87171;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #1f293d;
+            --font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            font-size: 16px;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* Top Header Navigation Bar (Centered Layout) */
         .navbar {
             display: flex;
             align-items: center;
             justify-content: center;
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.85rem 1.75rem;
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -66,15 +100,17 @@
             left: 0;
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: var(--text-main, #f8fafc);
+            gap: 0.75rem;
+            color: var(--text-main);
             text-decoration: none;
             font-weight: 700;
+            font-size: 1.15rem;
+            letter-spacing: 0.05em;
         }
 
-        @media (max-width: 1023px) {
-            .nav-container { justify-content: space-between; width: 100%; padding: 0 1rem; }
-            .brand-hub-link { position: static; }
+        .logo-icon {
+            color: var(--accent-gold);
+            font-size: 1.5rem;
         }
 
         .nav-menu-centered {
@@ -85,19 +121,327 @@
             flex-wrap: wrap;
         }
 
-        @media (max-width: 767px) {
-            .nav-menu-centered {
-                display: none;
-                flex-direction: column;
-                width: 100%;
-                margin-top: 10px;
-            }
-            .nav-menu-centered.open {
-                display: flex;
-            }
+        .nav-dropdown-wrapper {
+            position: relative;
+            display: inline-block;
         }
 
-        /* Fill Unit Stoplight Meters */
+        .dropdown-trigger-btn {
+            background: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 0.6rem 1.25rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            min-height: 44px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .dropdown-trigger-btn:hover,
+        .nav-dropdown-wrapper:hover .dropdown-trigger-btn {
+            background: #1e293b;
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+        }
+
+        .dropdown-popout-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 0.4rem;
+            background: #1e293b;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            min-width: 260px;
+            box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            z-index: 1001;
+        }
+
+        .nav-dropdown-wrapper:hover .dropdown-popout-menu,
+        .nav-dropdown-wrapper:focus-within .dropdown-popout-menu {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.8rem 1.25rem;
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.9rem;
+            min-height: 44px;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background: #2a374a;
+            color: var(--accent-gold);
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.5rem;
+            min-width: 44px;
+            min-height: 44px;
+            cursor: pointer;
+        }
+
+        /* Dashboard Container & Cards System (85% Desktop Layout) */
+        .dashboard-container {
+            padding: 1.5rem;
+            width: 85%;
+            max-width: none;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .server-banner {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.25rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
+        .banner-layout {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .map-preview-box {
+            width: 140px;
+            height: 140px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+            background: #0f172a;
+            flex-shrink: 0;
+        }
+
+        .map-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .banner-title {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .server-header-line {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .server-header-line h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        .status-online {
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+        }
+
+        .status-offline {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .banner-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .badge {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-color);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.825rem;
+            color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .badge i {
+            color: var(--accent-gold);
+        }
+
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1.1rem;
+        }
+
+        .metric-icon {
+            font-size: 1.8rem;
+        }
+
+        .metric-value {
+            font-size: 1.35rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            color: #ffffff;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .dashboard-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .box-header {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 0.8rem 1.1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .box-header i {
+            color: var(--accent-gold);
+            font-size: 1.1rem;
+        }
+
+        .box-header h2 {
+            font-size: 0.875rem;
+            font-weight: 700;
+            margin: 0;
+            color: #ffffff;
+            letter-spacing: 0.05em;
+        }
+
+        .box-content {
+            padding: 0.85rem;
+            max-height: 380px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        /* Telemetry Cards */
+        .telemetry-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.65rem 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .card-icon {
+            font-size: 1.2rem;
+            color: var(--accent-gold);
+            width: 24px;
+            text-align: center;
+        }
+
+        .card-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-details strong {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .card-details span {
+            font-size: 0.775rem;
+            color: var(--text-muted);
+        }
+
+        .card-subtext {
+            font-size: 0.725rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        .empty-state, .loading-state {
+            font-size: 0.825rem;
+            color: var(--text-muted);
+            padding: 1rem;
+            text-align: center;
+            width: 100%;
+        }
+
+        /* Stoplight Fill Meters */
         .fill-meter-wrap {
             display: flex;
             align-items: center;
@@ -124,7 +468,7 @@
             transition: width 0.4s ease;
         }
 
-        /* Collectibles Grid Styles */
+        /* Collectibles Grid System */
         .collectibles-grid-layout {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
@@ -162,7 +506,106 @@
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
         }
 
-        /* Lightbox Image Defense */
+        /* Mod Directory Section */
+        .mod-hub-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.25rem;
+        }
+
+        .mod-hub-header h2 {
+            font-size: 1.1rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .mod-categories-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .mod-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1.25rem;
+        }
+
+        .mod-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+
+        .mod-card:hover {
+            border-color: var(--accent-gold);
+        }
+
+        .mod-card-body {
+            padding: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            flex: 1;
+        }
+
+        .mod-category-tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+        }
+
+        .mod-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .mod-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.35;
+        }
+
+        .mod-card-footer {
+            margin-top: auto;
+            padding-top: 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .mod-author {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .mod-download-btn {
+            background: var(--accent-gold);
+            color: #0f172a;
+            text-decoration: none;
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* Lightbox Modal (Confining Image ALT & Full Details) */
         .lightbox-modal {
             display: none;
             position: fixed;
@@ -174,8 +617,79 @@
             justify-content: center;
             padding: 1.5rem;
         }
+
         .lightbox-modal.active {
             display: flex;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.75rem;
+            font-size: 2.5rem;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .lightbox-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 90%;
+            max-height: 85vh;
+        }
+
+        .lightbox-content {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .lightbox-caption {
+            margin-top: 1rem;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* System Sticky Footer */
+        .system-footer {
+            background: var(--header-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            width: 85%;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Responsive Viewports */
+        @media (max-width: 1024px) and (min-width: 768px) {
+            .dashboard-container, .footer-content, .nav-container { width: 92%; }
+            .grid-layout { grid-template-columns: repeat(2, 1fr); }
+            .metrics-row { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 767px) {
+            .dashboard-container, .footer-content { width: 100%; padding: 1rem; }
+            .mobile-toggle { display: flex; }
+            .nav-container { width: 100%; justify-content: space-between; }
+            .brand-hub-link { position: static; }
+            .grid-layout { grid-template-columns: 1fr; }
+            .metrics-row { grid-template-columns: 1fr; }
+            .banner-layout { flex-direction: column; align-items: flex-start; }
+            .map-preview-box { width: 100%; height: 180px; }
         }
     </style>
 </head>
@@ -208,7 +722,8 @@
                 <div class="map-preview-box">
                     <img id="banner-map-thumb" 
                          src="//wsrv.nl/?url=207.244.246.70:9050/feed/dedicated-server-stats-map.jpg?code=3FvqSlOsYKckfauM&quality=75&size=512" 
-                         alt="Satellite Overview"
+                         alt=""
+                         data-alt="Live Satellite Map Feed"
                          class="lightbox-trigger"
                          onerror="this.src='//via.placeholder.com/140x140/0f172a/facc15?text=FS25+MAP';" />
                 </div>
@@ -371,7 +886,7 @@
     <div id="lightbox-modal" class="lightbox-modal">
         <span id="lightbox-close" class="lightbox-close">&times;</span>
         <div id="lightbox-card-body" class="lightbox-body">
-            <img id="lightbox-img" class="lightbox-content" src="" alt="Detail Image" style="display:none;">
+            <img id="lightbox-img" class="lightbox-content" src="" alt="" style="display:none;">
             <div id="lightbox-caption" class="lightbox-caption"></div>
         </div>
     </div>
@@ -379,13 +894,13 @@
     <!-- System Footer -->
     <footer class="system-footer">
         <div class="footer-content">
-            <span><i class="fa-solid fa-code-commit"></i> Engine: <strong>v51.0.0 (Client Live Sync)</strong></span>
+            <span><i class="fa-solid fa-code-commit"></i> Engine: <strong>v52.0.0 (Consolidated Single-File Architecture)</strong></span>
             <span id="save-slot-display" style="color:var(--accent-gold, #facc15); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Slot #1</span>
             <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Connected</span>
         </div>
     </footer>
 
-    <!-- Line 310: PURE CLIENT-SIDE FIREBASE REST INGESTION ENGINE -->
+    <!-- Line 750: BROWSER-COMPATIBLE FIREBASE REST ENGINE SCRIPT -->
     <script>
         const PRIMARY_FS25_URL = "//fs25-a3563-default-rtdb.firebaseio.com/fs25.json";
         const MIRROR_FS25_URL = "//entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
@@ -393,19 +908,16 @@
 
         let cachedMods = {};
 
-        // Utility: Format Currency
         function formatMoney(amount) {
             return '$' + Math.round(Number(amount) || 0).toLocaleString('en-US');
         }
 
-        // Utility: Color Stoplight Fill Calculations
         function getStoplightColor(pct) {
             if (pct <= 35) return '#ef4444';
             if (pct <= 74) return '#f59e0b';
             return '#10b981';
         }
 
-        // Utility: Clean Brand Name Resolver
         function cleanName(raw) {
             if (!raw) return "Equipment";
             const parts = String(raw).replace(/\\/g, '/').split('/').filter(Boolean);
@@ -419,7 +931,6 @@
                 .replace(/\b\w/g, c => c.toUpperCase());
         }
 
-        // Mobile Nav Toggle
         document.addEventListener('DOMContentLoaded', () => {
             const toggle = document.getElementById('mobile-menu-toggle');
             const menu = document.getElementById('dynamic-menu');
@@ -438,7 +949,13 @@
                 });
             }
 
-            // Start Ingestion
+            const mapThumb = document.getElementById('banner-map-thumb');
+            if (mapThumb) {
+                mapThumb.addEventListener('click', () => {
+                    window.openImageLightbox(mapThumb.src, mapThumb.getAttribute('data-alt') || 'Live Satellite Feed');
+                });
+            }
+
             loadNavigationMenu();
             syncDashboard();
             setInterval(syncDashboard, 20000);
@@ -497,7 +1014,7 @@
                     if (folder.title.toLowerCase() === 'home' && links.length <= 1) {
                         const h = links[0] || { title: 'Home', url: '//werewolf3788.github.io/Website/' };
                         html += `
-                            <a href="${h.url}" class="dropdown-trigger-btn" style="text-decoration:none;">
+                            <a href="${h.url}" class="dropdown-trigger-btn">
                                 <i class="fa-solid fa-house" style="color:var(--accent-gold);"></i> ${h.title}
                             </a>
                         `;
@@ -523,7 +1040,7 @@
                 nav.innerHTML = html;
 
             } catch (err) {
-                console.warn("[UTM NAV ERROR]:", err.message);
+                console.warn("[UTM NAV NOTICE]:", err.message);
             }
         }
 
@@ -537,22 +1054,19 @@
                 if (!res.ok) res = await fetch(`${MIRROR_FS25_URL}?t=${Date.now()}`);
                 if (res.ok) data = await res.json();
             } catch (e) {
-                console.warn("[FS25 FETCH ERROR]:", e.message);
+                console.warn("[FS25 FETCH NOTICE]:", e.message);
             }
 
             if (!data) return;
 
-            // 1. Banner Info
             const serverNameEl = document.getElementById('server-name');
             const statusPill = document.getElementById('server-status-pill');
             const statusText = document.getElementById('status-text');
             const mapEl = document.getElementById('server-map');
             const timeEl = document.getElementById('server-time');
-            const speedEl = document.getElementById('time-speed-badge');
             const seasonEl = document.getElementById('server-month');
             const weatherEl = document.getElementById('server-weather');
             const playersEl = document.getElementById('server-players');
-            const trafficEl = document.getElementById('traffic-badge');
             const slotDisplay = document.getElementById('save-slot-display');
             const syncTimeEl = document.getElementById('last-sync-time');
 
@@ -571,7 +1085,6 @@
             const nyTime = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
             if (syncTimeEl) syncTimeEl.innerHTML = `<i class="fa-solid fa-rotate"></i> Synced: ${nyTime} (EDT)`;
 
-            // 2. Metrics KPIs
             let totalMoney = 0;
             let totalFleetCount = 0;
             let totalParcelsCount = 0;
@@ -593,7 +1106,6 @@
             if (modCountEl) modCountEl.innerText = Object.keys(data.activeMods || {}).length;
             if (landCountEl) landCountEl.innerText = `${totalParcelsCount} Plots`;
 
-            // 3. Populate Card Lists
             renderPlayerList(data.activePlayersList || []);
             renderFarmsList(farmsObj);
             renderMissionsList(data.missions || { all: [] });
@@ -604,7 +1116,6 @@
             renderModHub(data.activeMods || {});
         }
 
-        // Card Renderers
         function renderPlayerList(players) {
             const container = document.getElementById('active-players-container');
             if (!container) return;
@@ -795,7 +1306,7 @@
             }
 
             grid.innerHTML = entries.map(([key, m]) => `
-                <div class="mod-card" onclick="openModDetail('${key}')" style="cursor:pointer;">
+                <div class="mod-card" onclick="openModDetail('${key}')">
                     <div class="mod-card-body">
                         <span class="mod-category-tag">${m.platform || 'Crossplay'}</span>
                         <div class="mod-title">${m.name}</div>
@@ -809,7 +1320,20 @@
             `).join('');
         }
 
-        // Lightbox Modal Opener (Confining Detailed Metadata & ALT Descriptions)
+        // Lightbox Image Viewer
+        window.openImageLightbox = function(imgUrl, captionText) {
+            const modal = document.getElementById('lightbox-modal');
+            const img = document.getElementById('lightbox-img');
+            const caption = document.getElementById('lightbox-caption');
+            if (!modal || !img || !caption) return;
+
+            img.src = imgUrl;
+            img.style.display = 'block';
+            caption.innerHTML = `<p>${captionText}</p>`;
+            modal.classList.add('active');
+        };
+
+        // Lightbox Modal for Mod Details
         window.openModDetail = function(modKey) {
             const m = cachedMods[modKey];
             if (!m) return;
@@ -819,7 +1343,6 @@
 
             if (m.image) {
                 img.src = m.image;
-                img.alt = m.name;
                 img.style.display = 'block';
             } else {
                 img.style.display = 'none';
@@ -836,7 +1359,7 @@
                         <div>Catalog Status: <strong style="color:#4ade80;">${m.matchedInCatalog ? 'VERIFIED IN CATALOG' : 'MODHUB DEPLOYED'}</strong></div>
                     </div>
                     <a href="${m.storeUrl}" target="_blank" class="mod-download-btn" style="margin-top:14px; width:100%; justify-content:center; padding:10px;">
-                        <i class="fa-solid fa-external-link"></i> Search on Official ModHub
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Search on Official ModHub
                     </a>
                 </div>
             `;
