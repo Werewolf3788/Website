@@ -1,247 +1,848 @@
+<!-- Line 1: Document Type Declaration -->
 <!DOCTYPE html>
+<!-- ============================================================================
+ * File: games/FS25/index.html
+ * Deployment Timestamp: 2026-09-20 23:30:00 (EDT - 24hr New York Time)
+ * Project: fs25-a3563 (/fs25 RTDB Node) & entertainment-71888
+ * Target Database: https://fs25-a3563-default-rtdb.firebaseio.com/fs25.json
+ * Google Analytics Tag: G-CTYHDF4MSD | Measurement ID: G-SGJF0FJPQZ
+ * Description: Complete Self-Contained Resilient FS25 Realtime Tactical Dashboard.
+ *              - Zero Node.js dependencies in the browser; pure client-side REST.
+ *              - Dual-Target Fallback: fs25-a3563 -> entertainment-71888.
+ *              - Centered Top Navigation Bar pulling directly from /utm_links.
+ *              - Sanitized Clean Equipment & Brand Names (Zero raw file paths).
+ *              - Categorized Fleet: Tractors, Harvesters, Trailers, Implements.
+ *              - Color-Coded Stoplight Fill Meters (<=35% Red, 36-74% Yellow, >=75% Green).
+ *              - Collectibles System (25% opacity when unfound, 100% illuminated when found).
+ *              - Mod Directory with Lightbox detail view & ModHub Search links.
+ * ============================================================================ -->
 <html lang="en">
 <head>
-  <!-- Character Encoding & Responsive Viewport -->
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FS25 Realtime Tactical Dashboard & Mod Directory</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FS25 Realtime Tactical Dashboard & Mod Directory</title>
 
-  <!-- Shortcut Icon & Stylesheets -->
-  <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="preconnect" href="//fonts.googleapis.com">
-  <link rel="preconnect" href="//fonts.gstatic.com" crossorigin>
-  <link href="//fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./style.css">
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="//fonts.googleapis.com">
+    <link rel="preconnect" href="//fonts.gstatic.com" crossorigin>
+    <link href="//fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
 
-  <!-- Firebase Realtime Database Client SDKs (Compat Suite) -->
-  <script src="//www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="//www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-  <script src="./index.js" defer></script>
+    <!-- Google Analytics GA4 -->
+    <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-CTYHDF4MSD', { 'send_page_view': true });
+        gtag('config', 'G-SGJF0FJPQZ');
+    </script>
+
+    <!-- Line 40: Embedded CSS Enhancements (Centered Menu, Stoplight Meters, Collectibles) -->
+    <style>
+        /* Centered Header Navigation */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 85%;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .brand-hub-link {
+            position: absolute;
+            left: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main, #f8fafc);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        @media (max-width: 1023px) {
+            .nav-container { justify-content: space-between; width: 100%; padding: 0 1rem; }
+            .brand-hub-link { position: static; }
+        }
+
+        .nav-menu-centered {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 767px) {
+            .nav-menu-centered {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                margin-top: 10px;
+            }
+            .nav-menu-centered.open {
+                display: flex;
+            }
+        }
+
+        /* Fill Unit Stoplight Meters */
+        .fill-meter-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.725rem;
+            margin-top: 4px;
+        }
+
+        .fill-bar-track {
+            width: 80px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 0 8px;
+        }
+
+        .fill-bar-val {
+            height: 100%;
+            transition: width 0.4s ease;
+        }
+
+        /* Collectibles Grid Styles */
+        .collectibles-grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+            gap: 6px;
+            max-height: 240px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+
+        .collectible-badge {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 700;
+            transition: all 0.2s ease;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-color);
+        }
+
+        .collectible-badge.unfound {
+            opacity: 0.25;
+            color: var(--text-muted);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .collectible-badge.found {
+            opacity: 1;
+            color: #10b981;
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.15);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Lightbox Image Defense */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(16px);
+            z-index: 20000;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        .lightbox-modal.active {
+            display: flex;
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Master Navigation Header -->
-  <header class="navbar">
-    <div class="nav-brand">
-      <a href="//werewolf3788.github.io/Website/" class="home-shortcut-btn" aria-label="Home Overview">
-        <i class="fa-solid fa-wheat-awn logo-icon"></i>
-        <span>FS25 TELEMETRY HUB</span>
-      </a>
+    <!-- Master Navigation Header (Centered Layout) -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="//werewolf3788.github.io/Website/" class="brand-hub-link" aria-label="Home Overview">
+                <i class="fa-solid fa-wheat-awn logo-icon"></i>
+                <span>FS25 TELEMETRY</span>
+            </a>
+
+            <button id="mobile-menu-toggle" type="button" class="mobile-toggle" aria-label="Toggle Navigation Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <nav id="dynamic-menu" class="nav-menu-centered">
+                <span class="loading-state" style="padding: 0; font-size: 0.8rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Directory...</span>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Body -->
+    <main class="dashboard-container">
+        
+        <!-- Section: Server Status Banner -->
+        <section class="server-banner">
+            <div class="banner-layout">
+                <div class="map-preview-box">
+                    <img id="banner-map-thumb" 
+                         src="//wsrv.nl/?url=207.244.246.70:9050/feed/dedicated-server-stats-map.jpg?code=3FvqSlOsYKckfauM&quality=75&size=512" 
+                         alt="Satellite Overview"
+                         class="lightbox-trigger"
+                         onerror="this.src='//via.placeholder.com/140x140/0f172a/facc15?text=FS25+MAP';" />
+                </div>
+                <div class="banner-title">
+                    <div class="server-header-line">
+                        <h1 id="server-name">OneLIVIDMAN and werewolf 618</h1>
+                        <span id="server-status-pill" class="status-pill status-online">
+                            <span class="status-dot"></span> <span id="status-text">CONNECTING...</span>
+                        </span>
+                    </div>
+                    <div class="banner-badges">
+                        <span id="server-map" class="badge" title="Active Map Location"><i class="fa-solid fa-map-location-dot"></i> Map: Loading...</span>
+                        <span id="server-time" class="badge"><i class="fa-regular fa-clock"></i> Time: --:--</span>
+                        <span id="time-speed-badge" class="badge" style="border:1px solid #facc15; color:#facc15;"><i class="fa-solid fa-forward-fast"></i> Speed: 1x</span>
+                        <span id="server-month" class="badge"><i class="fa-solid fa-calendar-days"></i> Season: Spring</span>
+                        <span id="server-weather" class="badge"><i class="fa-solid fa-sun"></i> Weather: Clear</span>
+                        <span id="server-players" class="badge"><i class="fa-solid fa-users"></i> Players: 0 Online</span>
+                        <span id="traffic-badge" class="badge" style="border:1px solid #38bdf8;"><i class="fa-solid fa-car"></i> Traffic: OFF</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Global Summary KPI Counters -->
+        <div class="metrics-row">
+            <div class="metric-card">
+                <i class="fa-solid fa-scale-balanced metric-icon" style="color:#4ade80;"></i>
+                <div>
+                    <div class="metric-value" id="global-net-worth">$0</div>
+                    <div class="metric-label">Global Net Balance</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <i class="fa-solid fa-tractor metric-icon" style="color:#ef4444;"></i>
+                <div>
+                    <div class="metric-value" id="global-vehicle-count">0</div>
+                    <div class="metric-label">Total Fleet Machinery</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <i class="fa-solid fa-boxes-stacked metric-icon" style="color:#38bdf8;"></i>
+                <div>
+                    <div class="metric-value" id="global-mod-errors">0</div>
+                    <div class="metric-label">Active Installed Mods</div>
+                </div>
+            </div>
+            <div class="metric-card">
+                <i class="fa-solid fa-map-location-dot metric-icon" style="color:#84cc16;"></i>
+                <div>
+                    <div class="metric-value" id="global-land-count">0 Fields</div>
+                    <div class="metric-label">Total Map Farmland</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Primary Telemetry Columns -->
+        <div class="grid-layout">
+            
+            <!-- Card: Active Online Players -->
+            <div class="dashboard-box">
+                <div class="box-header"><i class="fa-solid fa-gamepad"></i><h2>ACTIVE ONLINE PLAYERS</h2></div>
+                <div id="active-players-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Checking connected players...</div></div>
+            </div>
+
+            <!-- Card: Server Farms Balances -->
+            <div class="dashboard-box">
+                <div class="box-header"><i class="fa-solid fa-building-columns"></i><h2>REGISTERED SERVER FARMS</h2></div>
+                <div id="farms-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Syncing farm balances...</div></div>
+            </div>
+
+            <!-- Card: Livestock & Animal Barns -->
+            <div class="dashboard-box">
+                <div class="box-header"><i class="fa-solid fa-cow"></i><h2>LIVESTOCK & ANIMAL BARNS</h2></div>
+                <div id="animals-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading animal telemetry...</div></div>
+            </div>
+
+            <!-- Card: Placed Objects & Passive Income -->
+            <div class="dashboard-box">
+                <div class="box-header"><i class="fa-solid fa-solar-panel"></i><h2>PASSIVE INCOME GENERATORS</h2></div>
+                <div id="construction-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Calculating passive revenue...</div></div>
+            </div>
+
+            <!-- Card: Contracts & Missions -->
+            <div class="dashboard-box">
+                <div class="box-header"><i class="fa-solid fa-file-contract"></i><h2>ACTIVE CONTRACTS & MISSIONS</h2></div>
+                <div id="missions-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading contract telemetry...</div></div>
+            </div>
+
+            <!-- Card: Map Collectibles -->
+            <div class="dashboard-box">
+                <div class="box-header"><i class="fa-solid fa-trophy"></i><h2>MAP COLLECTIBLES (FOUND VS REMAINING)</h2></div>
+                <div id="collectibles-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading collectible items...</div></div>
+            </div>
+
+            <!-- Card: Fleet Tractors -->
+            <div class="dashboard-box">
+                <div class="box-header"><i class="fa-solid fa-tractor"></i><h2>FLEET TRACTORS & RIGS</h2></div>
+                <div id="tractors-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning tractor fleet...</div></div>
+            </div>
+
+            <!-- Card: Harvesters & Combines -->
+            <div class="dashboard-box">
+                <div class="box-header"><i class="fa-solid fa-wheat-awn"></i><h2>HARVESTERS & COMBINES</h2></div>
+                <div id="harvesters-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning harvest fleet...</div></div>
+            </div>
+
+            <!-- Card: Hauling Trailers & Wagons -->
+            <div class="dashboard-box">
+                <div class="box-header"><i class="fa-solid fa-truck-ramp-box"></i><h2>HAULING TRAILERS & WAGONS</h2></div>
+                <div id="trailers-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning trailers...</div></div>
+            </div>
+
+            <!-- Card: Implements & Seeders -->
+            <div class="dashboard-box">
+                <div class="box-header"><i class="fa-solid fa-screwdriver-wrench"></i><h2>IMPLEMENTS, SEEDERS & PLOWS</h2></div>
+                <div id="implements-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning equipment...</div></div>
+            </div>
+
+            <!-- Card: Hand Tools -->
+            <div class="dashboard-box">
+                <div class="box-header"><i class="fa-solid fa-toolbox"></i><h2>PLAYER HAND TOOLS</h2></div>
+                <div id="handtools-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning hand tools...</div></div>
+            </div>
+
+            <!-- Card: Field Crops & Agronomy -->
+            <div class="dashboard-box">
+                <div class="box-header"><i class="fa-solid fa-seedling"></i><h2>FIELD CROPS & AGRONOMY STATUS</h2></div>
+                <div id="fields-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading field telemetry...</div></div>
+            </div>
+
+            <!-- Card: Factories & Productions -->
+            <div class="dashboard-box">
+                <div class="box-header"><i class="fa-solid fa-industry"></i><h2>MAP FACTORIES & PRODUCTIONS</h2></div>
+                <div id="main-productions-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading factory telemetry...</div></div>
+            </div>
+
+            <!-- Card: Greenhouses & Storage -->
+            <div class="dashboard-box">
+                <div class="box-header"><i class="fa-solid fa-warehouse"></i><h2>BALES, PALLETS & STORAGE</h2></div>
+                <div id="greenhouses-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading storage inventory...</div></div>
+            </div>
+
+        </div>
+
+        <!-- Section: Server Mod Directory -->
+        <section class="mod-hub-section" style="margin-top: 2rem;">
+            <div class="mod-hub-header">
+                <h2><i class="fa-solid fa-cubes" style="color:var(--accent-gold, #facc15);"></i> SERVER MODIFICATION DIRECTORY</h2>
+                <p style="color:var(--text-muted, #94a3b8); margin-top:4px;">Installed modifications cross-referenced with ModHub search links.</p>
+                <div id="mod-categories-bar" class="mod-categories-bar"></div>
+            </div>
+            <div id="mod-hub-grid" class="mod-grid">
+                <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Mod catalog...</div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Lightbox Modal for Detail View -->
+    <div id="lightbox-modal" class="lightbox-modal">
+        <span id="lightbox-close" class="lightbox-close">&times;</span>
+        <div id="lightbox-card-body" class="lightbox-body">
+            <img id="lightbox-img" class="lightbox-content" src="" alt="Detail Image" style="display:none;">
+            <div id="lightbox-caption" class="lightbox-caption"></div>
+        </div>
     </div>
 
-    <button id="mobile-menu-toggle" type="button" class="mobile-toggle" aria-label="Toggle Navigation Menu">
-      <i class="fa-solid fa-bars"></i>
-    </button>
-
-    <nav id="dynamic-menu" class="nav-menu">
-      <div class="nav-dropdown-wrapper">
-        <button type="button" class="dropdown-trigger-btn">
-          <i class="fa-solid fa-folder-tree"></i> Navigation Portals <i class="fa-solid fa-chevron-down arrow-icon"></i>
-        </button>
-        <div class="dropdown-popout-menu">
-          <a href="//werewolf3788.github.io/Website/" class="dropdown-item">
-            <i class="fa-solid fa-house"></i> Main Website Home
-          </a>
-          <a href="//werewolf3788.github.io/Website/games/FS25/" class="dropdown-item active">
-            <i class="fa-solid fa-tractor"></i> FS25 Telemetry Hub
-          </a>
-          <a href="//werewolf3788.github.io/Website/games/" class="dropdown-item">
-            <i class="fa-solid fa-gamepad"></i> Gaming Servers & Profiles
-          </a>
-          <a href="//werewolf3788.github.io/Website/community/" class="dropdown-item">
-            <i class="fa-solid fa-users"></i> Community Portals
-          </a>
+    <!-- System Footer -->
+    <footer class="system-footer">
+        <div class="footer-content">
+            <span><i class="fa-solid fa-code-commit"></i> Engine: <strong>v51.0.0 (Client Live Sync)</strong></span>
+            <span id="save-slot-display" style="color:var(--accent-gold, #facc15); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Slot #1</span>
+            <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Connected</span>
         </div>
-      </div>
-    </nav>
-  </header>
+    </footer>
 
-  <!-- Main Dashboard Body -->
-  <main class="dashboard-container">
-    
-    <!-- Section: Server Status Banner & Secure HTTPS Live Stream -->
-    <section class="server-banner">
-      <div class="banner-layout">
-        <div class="map-preview-box">
-          <img id="banner-map-thumb" 
-               src="https://wsrv.nl/?url=207.244.246.70:9050/feed/dedicated-server-stats-map.jpg?code=3FvqSlOsYKckfauM&quality=75&size=512" 
-               data-alt="Live Dedicated Map Overview" 
-               class="lightbox-trigger"
-               onerror="this.parentNode.style.display='none';" />
-        </div>
-        <div class="banner-title">
-          <div class="server-header-line">
-            <h1 id="server-name">OneLIVIDMAN and werewolf 618</h1>
-            <span id="server-status-pill" class="status-pill status-online">
-              <span class="status-dot"></span> <span id="status-text">ONLINE</span>
-            </span>
-          </div>
-          <div class="banner-badges">
-            <span id="server-map" class="badge live-map-btn" title="Click to view full live satellite map feed"><i class="fa-solid fa-map-location-dot"></i> Map: Calm Lands</span>
-            <span id="server-time" class="badge"><i class="fa-regular fa-clock"></i> Time: 00:00</span>
-            <span id="time-speed-badge" class="badge" style="border:1px solid #facc15; color:#facc15;"><i class="fa-solid fa-forward-fast"></i> Speed: 1x</span>
-            <span id="server-month" class="badge"><i class="fa-solid fa-calendar-days"></i> Season: Early Autumn</span>
-            <span id="server-weather" class="badge"><i class="fa-solid fa-sun"></i> Weather: Clear</span>
-            <span id="server-players" class="badge"><i class="fa-solid fa-users"></i> Players: 0/6</span>
-            <span id="traffic-badge" class="badge" style="border:1px solid #38bdf8;"><i class="fa-solid fa-car"></i> Traffic: OFF</span>
-          </div>
-        </div>
-      </div>
-    </section>
+    <!-- Line 310: PURE CLIENT-SIDE FIREBASE REST INGESTION ENGINE -->
+    <script>
+        const PRIMARY_FS25_URL = "//fs25-a3563-default-rtdb.firebaseio.com/fs25.json";
+        const MIRROR_FS25_URL = "//entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
+        const UTM_LINKS_URL = "//entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
 
-    <!-- Section: Global Summary KPI Counters -->
-    <div class="metrics-row">
-      <div class="metric-card">
-        <i class="fa-solid fa-scale-balanced metric-icon" style="color:#4ade80;"></i>
-        <div>
-          <div class="metric-value" id="global-net-worth">$0</div>
-          <div class="metric-label">Global Net Balance</div>
-        </div>
-      </div>
-      <div class="metric-card">
-        <i class="fa-solid fa-tractor metric-icon" style="color:#ef4444;"></i>
-        <div>
-          <div class="metric-value" id="global-vehicle-count">0</div>
-          <div class="metric-label">Total Fleet Machinery</div>
-        </div>
-      </div>
-      <div class="metric-card">
-        <i class="fa-solid fa-triangle-exclamation metric-icon" style="color:#f87171;"></i>
-        <div>
-          <div class="metric-value" id="global-mod-errors">0</div>
-          <div class="metric-label">Active Mod Warnings</div>
-        </div>
-      </div>
-      <div class="metric-card">
-        <i class="fa-solid fa-map-location-dot metric-icon" style="color:#84cc16;"></i>
-        <div>
-          <div class="metric-value" id="global-land-count">0 Fields</div>
-          <div class="metric-label">Total Map Farmland</div>
-        </div>
-      </div>
-    </div>
+        let cachedMods = {};
 
-    <!-- Section: Primary Telemetry Columns -->
-    <div class="grid-layout">
-      
-      <!-- Card: Active Online Players -->
-      <div class="dashboard-box">
-        <div class="box-header"><i class="fa-solid fa-gamepad"></i><h2>ACTIVE ONLINE PLAYERS</h2></div>
-        <div id="active-players-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Checking connected players...</div></div>
-      </div>
+        // Utility: Format Currency
+        function formatMoney(amount) {
+            return '$' + Math.round(Number(amount) || 0).toLocaleString('en-US');
+        }
 
-      <!-- Card: Server Farms Balances -->
-      <div class="dashboard-box">
-        <div class="box-header"><i class="fa-solid fa-building-columns"></i><h2>REGISTERED SERVER FARMS</h2></div>
-        <div id="farms-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Syncing farm balances...</div></div>
-      </div>
+        // Utility: Color Stoplight Fill Calculations
+        function getStoplightColor(pct) {
+            if (pct <= 35) return '#ef4444';
+            if (pct <= 74) return '#f59e0b';
+            return '#10b981';
+        }
 
-      <!-- Card: Livestock & Animal Barns -->
-      <div class="dashboard-box">
-        <div class="box-header"><i class="fa-solid fa-cow"></i><h2>LIVESTOCK & ANIMAL BARNS</h2></div>
-        <div id="animals-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading animal telemetry...</div></div>
-      </div>
+        // Utility: Clean Brand Name Resolver
+        function cleanName(raw) {
+            if (!raw) return "Equipment";
+            const parts = String(raw).replace(/\\/g, '/').split('/').filter(Boolean);
+            const filename = parts.pop() || "Equipment";
+            return filename
+                .replace(/\.xml$/i, '')
+                .replace(/([A-Z])/g, ' $1')
+                .replace(/[_-]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .replace(/\b\w/g, c => c.toUpperCase());
+        }
 
-      <!-- Card: Placed Objects & Construction -->
-      <div class="dashboard-box">
-        <div class="box-header"><i class="fa-solid fa-tower-cell"></i><h2>CONSTRUCTION & PLACED OBJECTS</h2></div>
-        <div id="construction-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Counting placed objects...</div></div>
-      </div>
+        // Mobile Nav Toggle
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('mobile-menu-toggle');
+            const menu = document.getElementById('dynamic-menu');
+            if (toggle && menu) {
+                toggle.addEventListener('click', () => menu.classList.toggle('open'));
+            }
 
-      <!-- Card: Contracts & Missions -->
-      <div class="dashboard-box">
-        <div class="box-header"><i class="fa-solid fa-file-contract"></i><h2>ACTIVE CONTRACTS & MISSIONS</h2></div>
-        <div id="missions-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading contract telemetry...</div></div>
-      </div>
+            const lbModal = document.getElementById('lightbox-modal');
+            const lbClose = document.getElementById('lightbox-close');
+            if (lbClose && lbModal) {
+                lbClose.addEventListener('click', () => {
+                    lbModal.classList.remove('active');
+                });
+                lbModal.addEventListener('click', (e) => {
+                    if (e.target === lbModal) lbModal.classList.remove('active');
+                });
+            }
 
-      <!-- Card: Map Collectibles -->
-      <div class="dashboard-box">
-        <div class="box-header"><i class="fa-solid fa-trophy"></i><h2>MAP COLLECTIBLES & DISCOVERIES</h2></div>
-        <div id="collectibles-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading collectible items...</div></div>
-      </div>
+            // Start Ingestion
+            loadNavigationMenu();
+            syncDashboard();
+            setInterval(syncDashboard, 20000);
+            setInterval(loadNavigationMenu, 120000);
+        });
 
-      <!-- Card: Fleet Tractors & Rigs -->
-      <div class="dashboard-box">
-        <div class="box-header"><i class="fa-solid fa-tractor"></i><h2>FLEET TRACTORS & RIGS</h2></div>
-        <div id="tractors-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning tractor fleet...</div></div>
-      </div>
+        // ====================================================================
+        // SECTION 1: CENTERED /utm_links NAVIGATION BUILDER
+        // Sequence: Home -> Users -> Game -> Other -> Entertainment -> Rest
+        // ====================================================================
+        async function loadNavigationMenu() {
+            const nav = document.getElementById('dynamic-menu');
+            if (!nav) return;
 
-      <!-- Card: Harvesters & Combines -->
-      <div class="dashboard-box">
-        <div class="box-header"><i class="fa-solid fa-wheat-awn"></i><h2>HARVESTERS & COMBINES</h2></div>
-        <div id="harvesters-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning harvest fleet...</div></div>
-      </div>
+            try {
+                const res = await fetch(`${UTM_LINKS_URL}?t=${Date.now()}`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                if (!data || typeof data !== 'object') return;
 
-      <!-- Card: Hauling Trailers & Wagons -->
-      <div class="dashboard-box">
-        <div class="box-header"><i class="fa-solid fa-truck-ramp-box"></i><h2>HAULING TRAILERS & WAGONS</h2></div>
-        <div id="trailers-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning trailers...</div></div>
-      </div>
+                const DESIRED_ORDER = ['home', 'users', 'game', 'other', 'entertainment'];
+                const rootFolders = {};
 
-      <!-- Card: Implements & Attachments -->
-      <div class="dashboard-box">
-        <div class="box-header"><i class="fa-solid fa-screwdriver-wrench"></i><h2>IMPLEMENTS & ATTACHMENTS</h2></div>
-        <div id="implements-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning equipment...</div></div>
-      </div>
+                Object.keys(data).forEach(k => {
+                    rootFolders[k.toLowerCase()] = { title: k, records: data[k] };
+                });
 
-      <!-- Card: Hand Tools -->
-      <div class="dashboard-box">
-        <div class="box-header"><i class="fa-solid fa-toolbox"></i><h2>PLAYER HAND TOOLS</h2></div>
-        <div id="handtools-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning hand tools...</div></div>
-      </div>
+                const ordered = [];
+                DESIRED_ORDER.forEach(k => {
+                    if (rootFolders[k]) {
+                        ordered.push(rootFolders[k]);
+                        delete rootFolders[k];
+                    }
+                });
+                Object.values(rootFolders).forEach(f => ordered.push(f));
 
-      <!-- Card: Field Crops, Agronomy & Precision Farming -->
-      <div class="dashboard-box">
-        <div class="box-header"><i class="fa-solid fa-seedling"></i><h2>FIELD CROPS & AGRONOMY STATUS</h2></div>
-        <div id="fields-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading field telemetry...</div></div>
-      </div>
+                let html = '';
+                ordered.forEach(folder => {
+                    const links = [];
+                    const records = folder.records || {};
+                    const list = Array.isArray(records) ? records : Object.values(records);
 
-      <!-- Card: Factories & Productions -->
-      <div class="dashboard-box">
-        <div class="box-header"><i class="fa-solid fa-industry"></i><h2>MAP FACTORIES & PRODUCTIONS</h2></div>
-        <div id="main-productions-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading factory telemetry...</div></div>
-      </div>
+                    list.forEach(item => {
+                        if (item && typeof item === 'object') {
+                            const url = item.url || item.link || item.href;
+                            if (url && typeof url === 'string') {
+                                links.push({
+                                    title: item.title || item.name || "Link",
+                                    url: url,
+                                    img: item.image || item.thumb || null
+                                });
+                            }
+                        }
+                    });
 
-      <!-- Card: Greenhouses & Solar Generators -->
-      <div class="dashboard-box">
-        <div class="box-header"><i class="fa-solid fa-solar-panel"></i><h2>GREENHOUSES & SOLAR GENERATORS</h2></div>
-        <div id="greenhouses-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading solar & greenhouse telemetry...</div></div>
-      </div>
+                    if (folder.title.toLowerCase() === 'home' && links.length <= 1) {
+                        const h = links[0] || { title: 'Home', url: '//werewolf3788.github.io/Website/' };
+                        html += `
+                            <a href="${h.url}" class="dropdown-trigger-btn" style="text-decoration:none;">
+                                <i class="fa-solid fa-house" style="color:var(--accent-gold);"></i> ${h.title}
+                            </a>
+                        `;
+                    } else if (links.length > 0) {
+                        html += `
+                            <div class="nav-dropdown-wrapper">
+                                <button type="button" class="dropdown-trigger-btn">
+                                    <i class="fa-solid fa-folder" style="color:var(--accent-gold);"></i> ${folder.title} <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                                </button>
+                                <div class="dropdown-popout-menu">
+                                    ${links.map(l => `
+                                        <a href="${l.url}" class="dropdown-item">
+                                            ${l.img ? `<img src="${l.img}" style="width:18px; height:18px; border-radius:3px; object-fit:cover;">` : '<i class="fa-solid fa-arrow-up-right-from-square"></i>'}
+                                            <span>${l.title}</span>
+                                        </a>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
 
-    </div>
+                nav.innerHTML = html;
 
-    <!-- Section: Server Mod Directory -->
-    <section class="mod-hub-section" style="margin-top: 2rem;">
-      <div class="mod-hub-header">
-        <h2><i class="fa-solid fa-cubes" style="color:var(--accent-gold, #facc15);"></i> SERVER MODIFICATION DIRECTORY</h2>
-        <p style="color:var(--text-muted, #94a3b8); margin-top:4px;">Live mod catalog cross-referenced against /FS25_Mods_Info and active server files.</p>
-        <div id="mod-categories-bar" class="mod-categories-bar"></div>
-      </div>
-      <div id="mod-hub-grid" class="mod-grid">
-        <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Mod catalog...</div>
-      </div>
-    </section>
+            } catch (err) {
+                console.warn("[UTM NAV ERROR]:", err.message);
+            }
+        }
 
-  </main>
+        // ====================================================================
+        // SECTION 2: TELEMETRY INGESTION & CARD POPULATOR
+        // ====================================================================
+        async function syncDashboard() {
+            let data = null;
+            try {
+                let res = await fetch(`${PRIMARY_FS25_URL}?t=${Date.now()}`);
+                if (!res.ok) res = await fetch(`${MIRROR_FS25_URL}?t=${Date.now()}`);
+                if (res.ok) data = await res.json();
+            } catch (e) {
+                console.warn("[FS25 FETCH ERROR]:", e.message);
+            }
 
-  <!-- Lightbox Modal for Enlarged Satellite Map & Images -->
-  <div id="lightbox-modal" class="lightbox-modal">
-    <span id="lightbox-close" class="lightbox-close">&times;</span>
-    <div id="lightbox-card-body" class="lightbox-body">
-      <img id="lightbox-img" class="lightbox-content" alt="">
-      <div id="lightbox-caption" class="lightbox-caption"></div>
-    </div>
-  </div>
+            if (!data) return;
 
-  <!-- System Footer -->
-  <footer class="system-footer">
-    <div class="footer-content">
-      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Sun, Aug 30, 2026, 18:04:00 (EDT)</strong></span>
-      <span id="save-slot-display" style="color:var(--accent-gold, #facc15); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Detecting...</span>
-      <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Connected</span>
-    </div>
-  </footer>
+            // 1. Banner Info
+            const serverNameEl = document.getElementById('server-name');
+            const statusPill = document.getElementById('server-status-pill');
+            const statusText = document.getElementById('status-text');
+            const mapEl = document.getElementById('server-map');
+            const timeEl = document.getElementById('server-time');
+            const speedEl = document.getElementById('time-speed-badge');
+            const seasonEl = document.getElementById('server-month');
+            const weatherEl = document.getElementById('server-weather');
+            const playersEl = document.getElementById('server-players');
+            const trafficEl = document.getElementById('traffic-badge');
+            const slotDisplay = document.getElementById('save-slot-display');
+            const syncTimeEl = document.getElementById('last-sync-time');
 
+            const isOnline = !!data.serverStatus?.isOnline;
+            if (statusPill && statusText) {
+                statusPill.className = `status-pill ${isOnline ? 'status-online' : 'status-offline'}`;
+                statusText.innerText = isOnline ? 'ONLINE' : 'OFFLINE';
+            }
+
+            if (data.gameInfo?.mapTitle && mapEl) mapEl.innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${data.gameInfo.mapTitle}`;
+            if (data.weatherState && weatherEl) weatherEl.innerHTML = `<i class="fa-solid fa-sun"></i> Weather: ${data.weatherState.currentWeather || 'Clear'}`;
+            if (data.weatherState && seasonEl) seasonEl.innerHTML = `<i class="fa-solid fa-calendar-days"></i> Season: ${data.weatherState.season || 'Spring'}`;
+            if (playersEl) playersEl.innerHTML = `<i class="fa-solid fa-users"></i> Players: ${data.activePlayers || 0} Online`;
+            if (slotDisplay) slotDisplay.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Slot #${data.activeSaveSlot || 1}`;
+
+            const nyTime = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
+            if (syncTimeEl) syncTimeEl.innerHTML = `<i class="fa-solid fa-rotate"></i> Synced: ${nyTime} (EDT)`;
+
+            // 2. Metrics KPIs
+            let totalMoney = 0;
+            let totalFleetCount = 0;
+            let totalParcelsCount = 0;
+
+            const farmsObj = data.farms || {};
+            Object.values(farmsObj).forEach(f => {
+                totalMoney += Number(f.money || f.finances?.money || 0);
+                totalFleetCount += (f.vehicles || []).length;
+                totalParcelsCount += (f.cards?.farmlandOwned || []).length;
+            });
+
+            const netWorthEl = document.getElementById('global-net-worth');
+            const fleetCountEl = document.getElementById('global-vehicle-count');
+            const modCountEl = document.getElementById('global-mod-errors');
+            const landCountEl = document.getElementById('global-land-count');
+
+            if (netWorthEl) netWorthEl.innerText = formatMoney(totalMoney);
+            if (fleetCountEl) fleetCountEl.innerText = totalFleetCount;
+            if (modCountEl) modCountEl.innerText = Object.keys(data.activeMods || {}).length;
+            if (landCountEl) landCountEl.innerText = `${totalParcelsCount} Plots`;
+
+            // 3. Populate Card Lists
+            renderPlayerList(data.activePlayersList || []);
+            renderFarmsList(farmsObj);
+            renderMissionsList(data.missions || { all: [] });
+            renderCollectibles(data.collectibles || { items: [] });
+            renderEquipmentCards(farmsObj);
+            renderFieldsList(data.fields || []);
+            renderPassiveGenerators(farmsObj);
+            renderModHub(data.activeMods || {});
+        }
+
+        // Card Renderers
+        function renderPlayerList(players) {
+            const container = document.getElementById('active-players-container');
+            if (!container) return;
+            if (!players || players.length === 0) {
+                container.innerHTML = `<div class="empty-state">No players currently connected.</div>`;
+                return;
+            }
+            container.innerHTML = players.map(p => `
+                <div class="telemetry-card">
+                    <i class="fa-solid fa-user card-icon" style="color:#38bdf8;"></i>
+                    <div class="card-details">
+                        <strong>${p.name || 'Player'}</strong>
+                        <span>Connected to Dedicated Server</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderFarmsList(farms) {
+            const container = document.getElementById('farms-container');
+            if (!container) return;
+            const list = Object.values(farms);
+            if (list.length === 0) {
+                container.innerHTML = `<div class="empty-state">No registered server farms.</div>`;
+                return;
+            }
+            container.innerHTML = list.map(f => `
+                <div class="telemetry-card">
+                    <i class="fa-solid fa-building-columns card-icon"></i>
+                    <div class="card-details" style="flex:1;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <strong>${f.name || 'Farm'}</strong>
+                            <strong style="color:#4ade80;">${formatMoney(f.money || f.finances?.money || 0)}</strong>
+                        </div>
+                        <span class="card-subtext">Parcels: ${(f.cards?.farmlandOwned || []).length} | Fleet: ${(f.vehicles || []).length} Units</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderMissionsList(missions) {
+            const container = document.getElementById('missions-container');
+            if (!container) return;
+            const list = missions.all || [];
+            if (list.length === 0) {
+                container.innerHTML = `<div class="empty-state">No active contracts available.</div>`;
+                return;
+            }
+            container.innerHTML = list.slice(0, 15).map(m => `
+                <div class="telemetry-card">
+                    <i class="fa-solid fa-file-signature card-icon" style="color:#facc15;"></i>
+                    <div class="card-details" style="flex:1;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <strong>${m.title || 'Contract'}</strong>
+                            <span style="color:#4ade80; font-family:var(--font-mono); font-weight:700;">${m.rewardFormatted || formatMoney(m.reward)}</span>
+                        </div>
+                        <span class="card-subtext">Status: ${m.status || 'Available'} | Leased: ${m.hasLeasedVehicles ? 'Yes' : 'No'}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderCollectibles(collectibles) {
+            const container = document.getElementById('collectibles-container');
+            if (!container) return;
+            const items = collectibles.items || [];
+            if (items.length === 0) {
+                container.innerHTML = `<div class="empty-state">No collectibles tracked.</div>`;
+                return;
+            }
+            container.innerHTML = `
+                <div class="collectibles-grid-layout">
+                    ${items.map(c => `
+                        <div class="collectible-badge ${c.isFound ? 'found' : 'unfound'}" title="${c.name} -${c.isFound ? 'Found' : 'Unfound'}">
+                            ${c.id}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderEquipmentCards(farms) {
+            const tractorsBox = document.getElementById('tractors-container');
+            const harvestersBox = document.getElementById('harvesters-container');
+            const trailersBox = document.getElementById('trailers-container');
+            const implementsBox = document.getElementById('implements-container');
+
+            const allVehicles = [];
+            Object.values(farms).forEach(f => {
+                (f.vehicles || []).forEach(v => allVehicles.push(v));
+            });
+
+            const renderUnits = (units, targetBox, emptyMsg) => {
+                if (!targetBox) return;
+                if (!units || units.length === 0) {
+                    targetBox.innerHTML = `<div class="empty-state">${emptyMsg}</div>`;
+                    return;
+                }
+                targetBox.innerHTML = units.map(u => {
+                    const fillHtml = (u.fillUnits || []).map(fu => {
+                        const color = getStoplightColor(fu.percent);
+                        return `
+                            <div class="fill-meter-wrap">
+                                <span>${fu.fillType}</span>
+                                <div class="fill-bar-track"><div class="fill-bar-val" style="width:${fu.percent}%; background:${color};"></div></div>
+                                <span style="color:${color}; font-weight:700;">${fu.percent}%</span>
+                            </div>
+                        `;
+                    }).join('');
+
+                    return `
+                        <div class="telemetry-card" style="flex-direction:column; align-items:stretch;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <strong>${cleanName(u.name)}</strong>
+                                <span class="card-subtext">${u.operatingHours || 0}h</span>
+                            </div>
+                            ${fillHtml}
+                        </div>
+                    `;
+                }).join('');
+            };
+
+            const tractors = allVehicles.filter(v => (v.category || '').includes('Tractor') || cleanName(v.name).toLowerCase().includes('tractor') || cleanName(v.name).toLowerCase().includes('series'));
+            const harvesters = allVehicles.filter(v => (v.category || '').includes('Harvester') || cleanName(v.name).toLowerCase().includes('combine') || cleanName(v.name).toLowerCase().includes('picker'));
+            const trailers = allVehicles.filter(v => (v.category || '').includes('Trailer') || cleanName(v.name).toLowerCase().includes('tipper') || cleanName(v.name).toLowerCase().includes('wagon'));
+            const implementsList = allVehicles.filter(v => !tractors.includes(v) && !harvesters.includes(v) && !trailers.includes(v));
+
+            renderUnits(tractors, tractorsBox, "No fleet tractors deployed.");
+            renderUnits(harvesters, harvestersBox, "No harvesters or combines active.");
+            renderUnits(trailers, trailersBox, "No hauling trailers registered.");
+            renderUnits(implementsList, implementsBox, "No tools or implements detected.");
+        }
+
+        function renderFieldsList(fields) {
+            const container = document.getElementById('fields-container');
+            if (!container) return;
+            if (!fields || fields.length === 0) {
+                container.innerHTML = `<div class="empty-state">No fields mapped.</div>`;
+                return;
+            }
+            container.innerHTML = fields.slice(0, 15).map(f => `
+                <div class="telemetry-card">
+                    <i class="fa-solid fa-seedling card-icon" style="color:#84cc16;"></i>
+                    <div class="card-details" style="flex:1;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <strong>Field #${f.fieldId} (${f.fruitType || 'Fallow'})</strong>
+                            <span style="color:${f.isReadyToHarvest ? '#4ade80' : '#facc15'}; font-weight:700;">${f.isReadyToHarvest ? 'Ready to Harvest' : 'Growing'}</span>
+                        </div>
+                        <span class="card-subtext">Fertilizer: ${f.fertilizedLevel * 50}% | Lime: ${f.needsLime ? 'Needs Lime' : 'OK'}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPassiveGenerators(farms) {
+            const container = document.getElementById('construction-container');
+            if (!container) return;
+            const generators = [];
+            Object.values(farms).forEach(f => {
+                (f.cards?.incomeGenerators || []).forEach(g => generators.push(g));
+            });
+            if (generators.length === 0) {
+                container.innerHTML = `<div class="empty-state">No passive generators installed.</div>`;
+                return;
+            }
+            container.innerHTML = generators.map(g => `
+                <div class="telemetry-card">
+                    <i class="fa-solid fa-solar-panel card-icon" style="color:#38bdf8;"></i>
+                    <div class="card-details" style="flex:1;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <strong>${g.source || 'Generator'} (${g.totalUnits || 1} Units)</strong>
+                            <span style="color:#4ade80; font-family:var(--font-mono); font-weight:700;">${g.revenueSchedule?.displayPayout || '$0/mo'}</span>
+                        </div>
+                        <span class="card-subtext">Location: ${g.location || 'Farm Grounds'} | Value: ${g.totalFarmValueFormatted || '$0'}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderModHub(mods) {
+            const grid = document.getElementById('mod-hub-grid');
+            if (!grid) return;
+            cachedMods = mods || {};
+            const entries = Object.entries(cachedMods);
+            if (entries.length === 0) {
+                grid.innerHTML = `<div class="empty-state">No active modifications installed.</div>`;
+                return;
+            }
+
+            grid.innerHTML = entries.map(([key, m]) => `
+                <div class="mod-card" onclick="openModDetail('${key}')" style="cursor:pointer;">
+                    <div class="mod-card-body">
+                        <span class="mod-category-tag">${m.platform || 'Crossplay'}</span>
+                        <div class="mod-title">${m.name}</div>
+                        <div class="mod-desc">${(m.description || 'Community Modification').substring(0, 80)}...</div>
+                        <div class="mod-card-footer">
+                            <span class="mod-author">By ${m.author || 'Author'}</span>
+                            <span class="mod-download-btn"><i class="fa-solid fa-magnifying-glass"></i> Details</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Lightbox Modal Opener (Confining Detailed Metadata & ALT Descriptions)
+        window.openModDetail = function(modKey) {
+            const m = cachedMods[modKey];
+            if (!m) return;
+            const modal = document.getElementById('lightbox-modal');
+            const caption = document.getElementById('lightbox-caption');
+            const img = document.getElementById('lightbox-img');
+
+            if (m.image) {
+                img.src = m.image;
+                img.alt = m.name;
+                img.style.display = 'block';
+            } else {
+                img.style.display = 'none';
+            }
+
+            caption.innerHTML = `
+                <div style="text-align:left; max-width:550px; margin:0 auto; font-family:var(--font-family);">
+                    <h3 style="color:#facc15; font-size:1.3rem; margin-bottom:6px;">${m.name}</h3>
+                    <p style="color:#cbd5e1; font-size:0.875rem; margin-bottom:12px; line-height:1.4;">${m.description}</p>
+                    <div style="background:#0b1120; padding:10px; border-radius:6px; font-family:var(--font-mono); font-size:0.8rem; color:#94a3b8; display:flex; flex-direction:column; gap:4px;">
+                        <div>Author: <strong style="color:#fff;">${m.author}</strong></div>
+                        <div>Version: <strong style="color:#fff;">${m.version}</strong></div>
+                        <div>Platform: <strong style="color:#38bdf8;">${m.platform}</strong></div>
+                        <div>Catalog Status: <strong style="color:#4ade80;">${m.matchedInCatalog ? 'VERIFIED IN CATALOG' : 'MODHUB DEPLOYED'}</strong></div>
+                    </div>
+                    <a href="${m.storeUrl}" target="_blank" class="mod-download-btn" style="margin-top:14px; width:100%; justify-content:center; padding:10px;">
+                        <i class="fa-solid fa-external-link"></i> Search on Official ModHub
+                    </a>
+                </div>
+            `;
+
+            modal.classList.add('active');
+        };
+    </script>
 </body>
 </html>
