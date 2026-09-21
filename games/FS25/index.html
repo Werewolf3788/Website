@@ -2,19 +2,18 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * File: games/FS25/index.html
- * Deployment Timestamp: 2026-09-20 23:45:00 (EDT - 24hr New York Time)
- * Project: fs25-a3563 (/fs25 RTDB Node) & entertainment-71888
- * Target Database: https://fs25-a3563-default-rtdb.firebaseio.com/fs25.json
- * Google Analytics Tag: G-CTYHDF4MSD | Measurement ID: G-SGJF0FJPQZ
+ * Deployment Timestamp: 2026-09-20 23:50:00 (EDT - 24hr New York Time)
+ * Project: fs25-a3563 (/fs25 RTDB Node)
+ * Target Database: https://fs25-a3563-default-rtdb.firebaseio.com
+ * Measurement ID: G-SGJF0FJPQZ | GA4 Tag: G-CTYHDF4MSD
  * Description: All-In-One Unified FS25 Realtime Tactical Dashboard & Mod Directory.
- *              - Zero external CSS or JS file dependencies (100% single-file architecture).
- *              - Fixed: Safe fillUnits normalization preventing .map() crashes on objects.
- *              - Dual-Target Fallback: fs25-a3563 -> entertainment-71888.
+ *              - Zero Google Cloud Service Account (GCP_SA_KEY) requirements.
+ *              - Pure client-side modular SDK direct connection to fs25-a3563.
  *              - Centered Top Navigation Bar pulling directly from /utm_links.
+ *              - Safe Array Normalization (toArray) preventing fillUnits crashes.
  *              - Clean Equipment & Brand Names (Zero raw file paths).
- *              - Categorized Fleet: Tractors, Harvesters, Trailers, Implements.
  *              - Color-Coded Stoplight Fill Meters (<=35% Red, 36-74% Yellow, >=75% Green).
- *              - Collectibles System (25% opacity when unfound, 100% illuminated when found).
+ *              - Collectibles System (25% opacity unfound, 100% illuminated found).
  *              - Mod Directory with Lightbox detail view & ModHub Search links.
  * ============================================================================ -->
 <html lang="en">
@@ -32,7 +31,7 @@
     <!-- Google Analytics GA4 -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
-        // Line 35: Google Analytics Setup
+        // Line 34: GA4 DataLayer Initialization
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
@@ -40,7 +39,7 @@
         gtag('config', 'G-SGJF0FJPQZ');
     </script>
 
-    <!-- Line 43: Consolidated CSS Stylesheet (Embedded, Zero External Files) -->
+    <!-- Line 42: Consolidated CSS Stylesheet (Embedded, Zero External Files) -->
     <style>
         :root {
             --bg-dark: #070a12;
@@ -735,7 +734,7 @@
                         </span>
                     </div>
                     <div class="banner-badges">
-                        <span id="server-map" class="badge" title="Active Map Location"><i class="fa-solid fa-map-location-dot"></i> Map: Loading...</span>
+                        <span id="server-map" class="badge" title="Active Map Location"><i class="fa-solid fa-map-location-dot"></i> Map: Calm Lands</span>
                         <span id="server-time" class="badge"><i class="fa-regular fa-clock"></i> Time: --:--</span>
                         <span id="time-speed-badge" class="badge" style="border:1px solid #facc15; color:#facc15;"><i class="fa-solid fa-forward-fast"></i> Speed: 1x</span>
                         <span id="server-month" class="badge"><i class="fa-solid fa-calendar-days"></i> Season: Spring</span>
@@ -894,18 +893,35 @@
     <!-- System Footer -->
     <footer class="system-footer">
         <div class="footer-content">
-            <span><i class="fa-solid fa-code-commit"></i> Engine: <strong>v52.2.0 (Fail-Safe Client Live Sync)</strong></span>
+            <span><i class="fa-solid fa-code-commit"></i> Engine: <strong>v52.3.0 (Direct Client Live Sync)</strong></span>
             <span id="save-slot-display" style="color:var(--accent-gold, #facc15); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Slot #1</span>
             <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Connected</span>
         </div>
     </footer>
 
-    <!-- RESILIENT FAIL-SAFE FIREBASE REST SCRIPT -->
-    <script>
-        const PRIMARY_FS25_URL = "//fs25-a3563-default-rtdb.firebaseio.com/fs25.json";
-        const MIRROR_FS25_URL = "//entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
-        const UTM_LINKS_URL = "//entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
+    <!-- Line 750: DIRECT FIREBASE MODULAR SDK CLIENT ENGINE -->
+    <script type="module">
+        import { initializeApp } from "//www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAnalytics } from "//www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+        import { getDatabase, ref, onValue } from "//www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
+        // Exact FS25 Client Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBwhhUNH0itRb2hQcnSap_vGfnErAGVzZc",
+            authDomain: "fs25-a3563.firebaseapp.com",
+            databaseURL: "https://fs25-a3563-default-rtdb.firebaseio.com",
+            projectId: "fs25-a3563",
+            storageBucket: "fs25-a3563.firebasestorage.app",
+            messagingSenderId: "528331196894",
+            appId: "1:528331196894:web:5af51bc2c80fd56aecf54f",
+            measurementId: "G-SGJF0FJPQZ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+
+        const UTM_LINKS_URL = "//entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
         let cachedMods = {};
 
         // Safe Array Normalizer (Prevents crashes on plain objects or single-element XML records)
@@ -938,35 +954,6 @@
                 .trim()
                 .replace(/\b\w/g, c => c.toUpperCase());
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggle = document.getElementById('mobile-menu-toggle');
-            const menu = document.getElementById('dynamic-menu');
-            if (toggle && menu) {
-                toggle.addEventListener('click', () => menu.classList.toggle('open'));
-            }
-
-            const lbModal = document.getElementById('lightbox-modal');
-            const lbClose = document.getElementById('lightbox-close');
-            if (lbClose && lbModal) {
-                lbClose.addEventListener('click', () => lbModal.classList.remove('active'));
-                lbModal.addEventListener('click', (e) => {
-                    if (e.target === lbModal) lbModal.classList.remove('active');
-                });
-            }
-
-            const mapThumb = document.getElementById('banner-map-thumb');
-            if (mapThumb) {
-                mapThumb.addEventListener('click', () => {
-                    window.openImageLightbox(mapThumb.src, mapThumb.getAttribute('data-alt') || 'Live Satellite Feed');
-                });
-            }
-
-            loadNavigationMenu();
-            syncDashboard();
-            setInterval(syncDashboard, 20000);
-            setInterval(loadNavigationMenu, 120000);
-        });
 
         // ====================================================================
         // SECTION 1: CENTERED /utm_links NAVIGATION BUILDER
@@ -1049,18 +1036,9 @@
         }
 
         // ====================================================================
-        // SECTION 2: TELEMETRY INGESTION & CARD POPULATOR
+        // SECTION 2: REALTIME DATABASE SYNC & CARD POPULATOR
         // ====================================================================
-        async function syncDashboard() {
-            let data = null;
-            try {
-                let res = await fetch(`${PRIMARY_FS25_URL}?t=${Date.now()}`);
-                if (!res.ok) res = await fetch(`${MIRROR_FS25_URL}?t=${Date.now()}`);
-                if (res.ok) data = await res.json();
-            } catch (e) {
-                console.warn("[FS25 FETCH NOTICE]:", e.message);
-            }
-
+        function syncDashboard(data) {
             if (!data) return;
 
             // 1. Banner Info
@@ -1284,7 +1262,6 @@
                     return;
                 }
                 targetBox.innerHTML = units.map(u => {
-                    // Safe parsing prevents crashes when fillUnits is an object
                     const rawUnits = toArray(u.fillUnits?.unit || u.fillUnits);
                     const fillHtml = rawUnits.map(fu => {
                         const pct = Math.min(100, Math.max(0, Math.round(Number(fu.percent !== undefined ? fu.percent : fu.fillLevel) || 0)));
@@ -1423,7 +1400,7 @@
             }
 
             grid.innerHTML = entries.map(([key, m]) => `
-                <div class="mod-card" onclick="openModDetail('${key}')">
+                <div class="mod-card" onclick="window.openModDetail('${key}')">
                     <div class="mod-card-body">
                         <span class="mod-category-tag">${m.platform || 'Crossplay'}</span>
                         <div class="mod-title">${m.name || key}</div>
@@ -1437,6 +1414,7 @@
             `).join('');
         }
 
+        // Global Window Attachments for Lightbox Handling
         window.openImageLightbox = function(imgUrl, captionText) {
             const modal = document.getElementById('lightbox-modal');
             const img = document.getElementById('lightbox-img');
@@ -1458,7 +1436,7 @@
 
             if (m.image) {
                 img.src = m.image;
-                img.alt = m.name;
+                img.alt = "";
                 img.style.display = 'block';
             } else {
                 img.style.display = 'none';
@@ -1482,6 +1460,20 @@
 
             modal.classList.add('active');
         };
+
+        // Initialize Native Realtime Listener directly from fs25-a3563
+        document.addEventListener('DOMContentLoaded', () => {
+            loadNavigationMenu();
+            const fs25Ref = ref(db, "fs25");
+            onValue(fs25Ref, (snapshot) => {
+                const liveData = snapshot.val();
+                if (liveData) {
+                    syncDashboard(liveData);
+                }
+            }, (error) => {
+                console.warn("[RTDB STREAM NOTICE]:", error.message);
+            });
+        });
     </script>
 </body>
 </html>
