@@ -1,20 +1,27 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: 2026-09-05 20:38:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-21 00:08:45 (CDT - Chicago)
  * Project: fs25-a3563 (/fs25 RTDB Node)
  * Target Database: https://fs25-a3563-default-rtdb.firebaseio.com/fs25
  * Google Analytics Tag: G-CTYHDF4MSD (Gaming, Progress Tracking, Firebase Entertainment)
  * Measurement ID: G-SGJF0FJPQZ
- * Description: Zero-Loss FS25 G-Portal Ingestion & Card Synchronization Engine.
- *              - Dual HTTP & HTTPS protocol-agnostic networking.
- *              - Manual Trigger Override (workflow_dispatch / --force):
- *                  * PULLS EVERYTHING from G-Portal FTP unconditionally.
- *                  * Bypasses offline guards and active-player checks.
- *                  * Ingests 100% of XML files, aggregates passive income,
- *                    missions, fleet, placeables, and pushes the master tree.
- *              - Automated 16-Minute Route:
- *                  * Evaluates Port 9050 live stats.
- *                  * Respects offline safety guard & active player thresholds.
+ * Description: Deep-Inspection Zero-Loss FS25 Ingestion & Card Synchronization.
+ *              - Dynamic Slot Routing: Automatically identifies the active slot
+ *                (e.g., Slot 1 -> savegame1, Slot 3 -> savegame3) and syncs the
+ *                full payload directly into both `/fs25` AND `/fs25/savegame{slot}`
+ *                so slot-specific states are always preserved.
+ *              - In-Game Time & Month Extraction: Parses live daytime and calendar
+ *                month directly from Port 9050 stats, environment.xml, and careerSavegame.
+ *              - Zero "(Unknown)" placeholders: Fallback chains scan internal XML
+ *                sub-nodes, raw file paths, and catalogs.
+ *              - Animals Husbandry Deep Scan: Headcounts, clusters, feed types
+ *                (Hay, Grass, TMR), and outputs (Milk, Slurry, Manure, Straw).
+ *              - Fleet & Trailers Deep Inspection: Cargo fill levels, capacity percentages,
+ *                attachment couplings, spatial field/coordinate zones.
+ *              - Production Deep Inspection: Factory type, active status, missing inputs,
+ *                storage capacities, distribution modes (Keep/Sell/Distribute), and owners.
+ *              - Active Mods Exclusive: Pulls only mods verified on G-Portal, enriched
+ *                with websiteMods properties and grouped categorically.
  * ============================================================================ */
 
 require('dotenv').config({ path: __dirname + '/.env' });
@@ -70,7 +77,7 @@ async function getDb(path) {
 }
 
 // ============================================================================
-// SECTION 3: NETWORK CONFIGURATION (Dual HTTP/HTTPS Compatibility)
+// SECTION 3: NETWORK CONFIGURATION
 // ============================================================================
 const ftpHost = process.env.FTP_HOST || '207.244.246.70';
 const ftpPort = parseInt(process.env.FTP_PORT, 10) || 21;
@@ -82,154 +89,137 @@ const STATS_URL = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=$
 const MAP_IMAGE_URL = `https://wsrv.nl/?url=${ftpHost}:9050/feed/dedicated-server-stats-map.jpg?code=${apiCode}&quality=75&size=1024`;
 const GITHUB_IMG_BASE = `https://raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/`;
 
-// ============================================================================
-// SECTION 4: GITHUB IMAGE LOOKUP DICTIONARY
-// ============================================================================
 const REPO_IMAGES = {
-  "americanmidwesttruckshop": "American_Midwest_Truck_Shop.jpg",
   "balenet": "Bale_Net.JPG",
   "baletwine": "Bale_Twine.JPG",
   "balewrap": "Bale_Wrap.JPG",
   "barley": "Barley.JPG",
   "barleyswath": "Barley_Swath.JPG",
   "beetroot": "Beetroot.JPG",
-  "bigbudktta700": "Big_Bud_KTTA_700.JPG",
   "bread": "Bread.JPG",
-  "buffalomozzarella": "Buffalo_Mozzarella.JPG",
   "butter": "Butter.JPG",
   "cabbage": "Cabbage.JPG",
-  "calmlands": "CalmLands.JPG",
   "canola": "Canola.JPG",
-  "canolaoil": "Canola_Oil.JPG",
-  "canolaswath": "Canola_Swath.JPG",
   "carrots": "Carrots.JPG",
   "cereal": "Cereal.JPG",
   "chaff": "Chaff.JPG",
   "cheese": "Cheese.JPG",
   "chickens": "Chickens.JPG",
-  "chilipeppers": "Chili_Peppers.JPG",
-  "chocolate": "Chocolate.JPG",
   "corn": "Corn.JPG",
   "cotton": "Cotton.JPG",
-  "cottonroundbale": "Cotton_Round_Bale.JPG",
-  "cottonsquarebale": "Cotton_Square_Bale.JPG",
   "cow": "Cow.JPG",
-  "def": "DEF.JPG",
-  "destructiblerock": "Destructible_Rock.JPG",
   "diesel": "Diesel.JPG",
-  "digestate": "Digestate.JPG",
-  "dogs": "Dogs.JPG",
   "eggs": "Eggs.JPG",
-  "electriccharge": "Electric_Charge.JPG",
-  "elevatorsilo": "Elevator_Silo.JPG",
-  "enoki": "Enoki.JPG",
-  "forestrylocomotive": "FORESTRY_LOCOMOTIVE.JPG",
-  "farmingsimulator25posterimage": "Farming_Simulator_25_Poster_Image.jpg",
-  "firtree": "Fir_Tree.JPG",
   "flour": "Flour.JPG",
-  "forage": "Forage.JPG",
-  "grainbarge": "GRAIN_BARGE.JPG",
-  "grainelevator": "GRAIN_ELEVATOR.jpg",
-  "garlic": "Garlic.JPG",
-  "goatcheese": "Goat_Cheese.JPG",
-  "goats": "Goats.JPG",
-  "grapejuice": "Grape_Juice.JPG",
   "grapes": "Grapes.JPG",
   "grass": "Grass.JPG",
-  "grasscut": "Grass_Cut.JPG",
-  "grassroundbale": "Grass_Round_Bale.JPG",
-  "grasssquarebale": "Grass_Square_Bale.JPG",
-  "governmentsubsidy": "Government_Subsidy.jpg",
-  "subsidy": "Government_Subsidy.jpg",
-  "greenbeans": "Green_Beans.JPG",
-  "harvest": "HARVEST.JPG",
-  "herbicide": "HERBICIDE.JPG",
-  "honeybox": "HONEY_BOX.JPG",
   "hay": "Hay.JPG",
-  "hayroundbale": "Hay_Round_Bale.JPG",
-  "haysquarebale": "Hay_Square_Bale.JPG",
   "horses": "Horses.JPG",
-  "johndeere8rseries": "John_Deere_8R_Series.JPG",
-  "johndeere8r": "John_Deere_8R_Series.JPG",
-  "lettuce": "Lettuce.JPG",
-  "liftablepalletsandbales": "Liftable_Pallets_And_Bales.jpg",
   "lime": "Lime.JPG",
   "liquidfertilizer": "Liquid_Fertilizer.JPG",
-  "logtrailer": "Log_Trailer.JPG",
-  "longgrainrice": "Long_Grain_Rice.JPG",
   "manure": "Manure.JPG",
-  "methane": "Methane.JPG",
   "milk": "Milk.JPG",
-  "mineralfeed": "Mineral_Feed.JPG",
-  "oatswath": "Oat_Swath.JPG",
   "oats": "Oats.JPG",
-  "oilseedradish": "Oilseed_Radish.JPG",
-  "oliveoil": "Olive_Oil.JPG",
-  "onions": "Onions.JPG",
-  "oystermushroom": "Oyster_Mushroom.JPG",
-  "parsnip": "Parsnip.JPG",
-  "peas": "Peas.JPG",
-  "pigfood": "Pig_Food.JPG",
   "pigs": "Pigs.JPG",
-  "poplartree": "Poplar_Tree.JPG",
-  "potatochips": "Potato_Chips.JPG",
   "potatoes": "Potatoes.JPG",
-  "precisionfarming": "Precision_Farming.jpg",
-  "raisins": "Raisins.JPG",
-  "redbeet": "Red_Beet.JPG",
-  "restaurant": "Restaurant.JPG",
   "rice": "Rice.JPG",
-  "riceoil": "Rice_Oil.JPG",
-  "ricesaplings": "Rice_Saplings.JPG",
-  "roadsalt": "Road_Salt.JPG",
-  "rudolfhoermannroundstorage": "Rudolf_Hoermann_Round_Storage.jpg",
   "seeds": "Seeds.JPG",
   "sheep": "Sheep.JPG",
   "silage": "Silage.JPG",
-  "silageadditive": "Silage_Additive.JPG",
-  "silageroundbale": "Silage_Round_Bale.JPG",
-  "silagesquarebale": "Silage_Square_Bale.JPG",
   "slurry": "Slurry.JPG",
-  "snow": "Snow.JPG",
-  "solarpanel": "Solar_Panel.jpg",
   "solidfertilizer": "Solid_Fertilizer.JPG",
-  "sorghum": "Sorghum.JPG",
-  "sorghumswath": "Sorghum_Swath.JPG",
-  "soybeanswath": "Soybean_Swath.JPG",
   "soybeans": "Soybeans.JPG",
-  "spinach": "Spinach.JPG",
-  "spinachbag": "Spinach_Bag.JPG",
-  "springonions": "Spring_Onions.JPG",
-  "stlawrencemap": "St_Lawrence_Map.JPG",
-  "stone": "Stone.JPG",
   "straw": "Straw.JPG",
-  "strawroundbale": "Straw_Round_Bale.JPG",
-  "strawsquarebale": "Straw_Square_Bale.JPG",
-  "strawberries": "Strawberries.JPG",
-  "sugarbeetcut": "Sugar_Beet_Cut.JPG",
-  "sugarbeets": "Sugarbeets.JPG",
-  "sugarcane": "Sugarcane.JPG",
-  "sunfloweroil": "Sunflower Oil.JPG",
   "sunflowers": "Sunflowers.JPG",
-  "teddar": "Teddar.JPG",
-  "tomatoes": "Tomatoes.JPG",
-  "totalmixedration": "Total_Mixed_Ration.JPG",
-  "toytractor": "Toy_Tractor.JPG",
-  "toywagon": "Toy_Wagon.JPG",
-  "trainstation": "Train_Station.JPG",
-  "wagonflatbed": "WAGON_FLAT_BED.JPG",
-  "wagongrain": "WAGON_GRAIN.JPG",
-  "wagonsugarbeets": "WAGON_SUGARBEETS.JPG",
-  "wagonwoodchips": "WAGON_WOOD_CHIPS.JPG",
   "water": "Water.jpg",
-  "waterbuffalos": "Water_Buffalos.JPG",
   "wheat": "Wheat.JPG",
-  "wheatswath": "Wheat_Swath.JPG",
-  "windturbine": "Wind_Turbine.jpg",
-  "windmill": "Wind_Turbine.jpg",
-  "woodchips": "Wood_Chips.JPG",
-  "woodchipsroundbale": "Wood_Chips_Round Bale.JPG"
+  "woodchips": "Wood_Chips.JPG"
 };
+
+// ============================================================================
+// SECTION 4: IN-GAME TIME & CALENDAR PARSERS
+// ============================================================================
+const FS_MONTHS = [
+  "March", "April", "May", "June", "July", "August",
+  "September", "October", "November", "December", "January", "February"
+];
+
+function formatInGameMinutes(minutesRaw) {
+  if (minutesRaw === null || minutesRaw === undefined || isNaN(minutesRaw)) {
+    return { rawMinutes: 0, time24: "00:00", time12: "12:00 AM", hours: 0, minutes: 0 };
+  }
+  const totalMins = Math.floor(parseFloat(minutesRaw)) % 1440;
+  const hours24 = Math.floor(totalMins / 60);
+  const mins = totalMins % 60;
+
+  const hours12 = hours24 % 12 === 0 ? 12 : hours24 % 12;
+  const ampm = hours24 >= 12 ? "PM" : "AM";
+
+  const padH = String(hours24).padStart(2, '0');
+  const padM = String(mins).padStart(2, '0');
+
+  return {
+    rawMinutes: totalMins,
+    time24: `${padH}:${padM}`,
+    time12: `${hours12}:${padM} ${ampm}`,
+    hours: hours24,
+    minutes: mins
+  };
+}
+
+function resolveInGameCalendar(envNode, careerNode, statsDayTime) {
+  const env = envNode && (envNode.environment || envNode);
+  const career = careerNode && (careerNode.careerSavegame || careerNode);
+
+  let rawDayTime = null;
+  if (statsDayTime !== null && statsDayTime !== undefined) {
+    rawDayTime = parseFloat(statsDayTime);
+  } else if (env && env.dayTime !== undefined) {
+    rawDayTime = parseFloat(env.dayTime);
+  } else if (career && career.dayTime !== undefined) {
+    rawDayTime = parseFloat(career.dayTime);
+  }
+
+  const timeObj = formatInGameMinutes(rawDayTime);
+
+  let monthIndex = 0;
+  let dayInMonth = 1;
+  let seasonName = "Spring";
+
+  const rawMonth = env && (env.currentMon || env.currentMonth || env.month);
+  const currentDay = env && (env.currentDay || env.day);
+  const daysPerPeriod = parseInt((env && env.daysPerPeriod) || (career && career.plannedDaysPerPeriod) || 1, 10);
+
+  if (rawMonth !== undefined && !isNaN(rawMonth)) {
+    const parsedM = parseInt(rawMonth, 10);
+    monthIndex = (parsedM >= 1 && parsedM <= 12) ? parsedM - 1 : 0;
+  } else if (currentDay !== undefined && !isNaN(currentDay)) {
+    const dayNum = parseInt(currentDay, 10);
+    const calculatedMonthIndex = Math.floor((dayNum - 1) / Math.max(1, daysPerPeriod)) % 12;
+    monthIndex = (calculatedMonthIndex >= 0 && calculatedMonthIndex < 12) ? calculatedMonthIndex : 0;
+    dayInMonth = ((dayNum - 1) % daysPerPeriod) + 1;
+  }
+
+  const monthName = FS_MONTHS[monthIndex];
+
+  if (monthIndex >= 0 && monthIndex <= 2) seasonName = "Spring";
+  else if (monthIndex >= 3 && monthIndex <= 5) seasonName = "Summer";
+  else if (monthIndex >= 6 && monthIndex <= 8) seasonName = "Autumn";
+  else seasonName = "Winter";
+
+  return {
+    time: timeObj.time12,
+    time24: timeObj.time24,
+    hours: timeObj.hours,
+    minutes: timeObj.minutes,
+    month: monthName,
+    monthIndex: monthIndex + 1,
+    dayInMonth: dayInMonth,
+    season: seasonName,
+    daysPerPeriod: daysPerPeriod,
+    formattedStamp: `${monthName} (Day ${dayInMonth}) - ${timeObj.time12}`
+  };
+}
 
 // ============================================================================
 // SECTION 5: UTILITY PARSERS & STRING SANITIZERS
@@ -266,18 +256,32 @@ async function parseXmlString(xmlString) {
 }
 
 function cleanEntityName(filepath) {
-  if (!filepath) return "Item";
+  if (!filepath) return "Equipment";
   const filename = filepath.split('/').pop().replace(/\.xml$/i, '');
   return filename
+    .replace(/^fs25[_\-\s]*/i, '')
     .replace(/([A-Z])/g, ' $1')
     .replace(/[_-]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 }
 
+function cleanFillTypeName(typeName) {
+  if (!typeName) return "General Cargo";
+  const clean = typeName
+    .replace(/^(fillType_|filltype_|ft_)/i, '')
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/[_-]/g, ' ')
+    .trim();
+  return clean.charAt(0).toUpperCase() + clean.slice(1);
+}
+
 function normalizeKey(str) {
   if (!str) return "";
-  return str.toString().toLowerCase().replace(/[^a-z0-9]/g, '');
+  return str.toString()
+    .toLowerCase()
+    .replace(/^f\s*s\s*25[_\-\s]*/g, '')
+    .replace(/[^a-z0-9]/g, '');
 }
 
 function formatCurrency(amount) {
@@ -301,9 +305,8 @@ function formatSheetImageUrl(rawUrl) {
 function resolveBestImage(entityKey, sheetRecord) {
   if (sheetRecord && typeof sheetRecord === 'object') {
     const candidateColumns = [
-      sheetRecord.image, sheetRecord.image_url, sheetRecord.imageurl,
-      sheetRecord.img, sheetRecord.picture, sheetRecord.mod_image,
-      sheetRecord.photo, sheetRecord.icon, sheetRecord.url_image
+      sheetRecord.image, sheetRecord.image_b, sheetRecord.imageUrl,
+      sheetRecord.url_image, sheetRecord.img, sheetRecord.picture
     ];
 
     for (const cand of candidateColumns) {
@@ -327,17 +330,30 @@ function resolveBestImage(entityKey, sheetRecord) {
   return null;
 }
 
-function getSpatialZone(p) {
-  if (p.fieldId) return `Field ${p.fieldId}`;
-  if (p.farmlandId) return `Farmland Plot ${p.farmlandId}`;
+function getSpatialZone(node, fieldList = []) {
+  if (node.fieldId) return `Field ${node.fieldId}`;
+  if (node.farmlandId) return `Farmland Plot ${node.farmlandId}`;
   
-  const pos = p.position || (p.transform && p.transform.position) || (p.bale && p.bale.position);
+  const pos = node.position || (node.transform && node.transform.position) || (node.bale && node.bale.position);
   if (typeof pos === 'string') {
     const coords = pos.trim().split(/\s+/).map(Number);
     if (coords.length >= 2 && !isNaN(coords[0]) && !isNaN(coords[2] || coords[1])) {
-      const xGrid = Math.floor(coords[0] / 100) * 100;
-      const zGrid = Math.floor((coords[2] || coords[1]) / 100) * 100;
-      return `Zone (${xGrid}, ${zGrid})`;
+      const x = Math.round(coords[0]);
+      const z = Math.round(coords[2] || coords[1]);
+
+      if (fieldList && fieldList.length > 0) {
+        const matchedField = fieldList.find(f => {
+          if (f.xMin !== undefined && f.xMax !== undefined && f.zMin !== undefined && f.zMax !== undefined) {
+            return x >= f.xMin && x <= f.xMax && z >= f.zMin && z <= f.zMax;
+          }
+          return false;
+        });
+        if (matchedField) return `Field ${matchedField.fieldId}`;
+      }
+
+      const xGrid = Math.floor(x / 100) * 100;
+      const zGrid = Math.floor(z / 100) * 100;
+      return `Sector (${xGrid}, ${zGrid})`;
     }
   }
   return "Farm Grounds";
@@ -369,6 +385,7 @@ async function pingServerLiveStats() {
         let players = 0;
         let activeSlot = null;
         let mapTitle = "";
+        let dayTimeRaw = null;
 
         const slotsMatch = clean.match(/numUsed="(\d+)"/i) || clean.match(/slots\s+numUsed="(\d+)"/i);
         if (slotsMatch) {
@@ -387,53 +404,55 @@ async function pingServerLiveStats() {
         const mapMatch = clean.match(/mapTitle="([^"]+)"/i) || clean.match(/mapName="([^"]+)"/i);
         if (mapMatch) mapTitle = mapMatch[1];
 
+        const dayTimeMatch = clean.match(/dayTime="([\d\.]+)"/i) || clean.match(/<dayTime>([\d\.]+)<\/dayTime>/i);
+        if (dayTimeMatch) dayTimeRaw = parseFloat(dayTimeMatch[1]);
+
         const parsed = await parseXmlString(clean);
-        return { isOnline: true, text: clean, players, activeSlot, mapTitle, parsed: parsed ? parsed.Server : null };
+        return { isOnline: true, text: clean, players, activeSlot, mapTitle, dayTimeRaw, parsed: parsed ? parsed.Server : null };
       }
     }
   } catch (err) {
     console.warn("⚠️ Dedicated server ping returned offline:", err.message);
   }
-  return { isOnline: false, text: "", players: 0, activeSlot: null, mapTitle: "", parsed: null };
+  return { isOnline: false, text: "", players: 0, activeSlot: null, mapTitle: "", dayTimeRaw: null, parsed: null };
 }
 
 async function fetchModsCatalog() {
   try {
-    const rawVal = (await getDb('FS25_Mods_Info')) || {};
+    const rawVal = (await getDb('websiteMods')) || {};
     const catalogLookup = {};
 
-    function indexObject(obj) {
-      if (!obj || typeof obj !== 'object') return;
-      Object.keys(obj).forEach(k => {
-        const item = obj[k];
-        if (item && typeof item === 'object') {
-          if (item.filename || item.name || item.mod_name || item.modname || item.title || item.author || item.platform) {
-            const rawKeys = [k, item.filename, item.name, item.mod_name, item.modname, item.title];
-            rawKeys.filter(Boolean).forEach(keyToMap => {
-              catalogLookup[normalizeKey(keyToMap)] = item;
-            });
-          }
-          indexObject(item);
-        }
-      });
-    }
+    Object.keys(rawVal).forEach(k => {
+      const item = rawVal[k];
+      if (item && typeof item === 'object') {
+        const cleanFile = (item.filename || k).replace(/\.zip$/i, '');
+        catalogLookup[k.toLowerCase()] = item;
+        catalogLookup[cleanFile.toLowerCase()] = item;
+        catalogLookup[normalizeKey(cleanFile)] = item;
 
-    indexObject(rawVal);
+        if (item.name) {
+          catalogLookup[normalizeKey(item.name)] = item;
+        }
+      }
+    });
+
     return catalogLookup;
   } catch (err) {
-    console.warn("⚠️ Could not read /FS25_Mods_Info catalog:", err.message);
+    console.warn("⚠️ Could not read /websiteMods catalog:", err.message);
     return {};
   }
 }
 
 // ============================================================================
-// SECTION 6: ADVANCED ZERO-LOSS CARD COMPILER & AGGREGATOR
+// SECTION 6: ZERO-LOSS CARD COMPILER & AGGREGATOR
 // ============================================================================
-async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfigXml) {
+async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfigXml, statsDayTime, resolvedSlot) {
   const parsedTree = {};
   for (const [key, rawContent] of Object.entries(rawFiles)) {
     parsedTree[key] = await parseXmlString(rawContent);
   }
+
+  const inGameCalendar = resolveInGameCalendar(parsedTree['environment'], parsedTree['careerSavegame'], statsDayTime);
 
   const farmNameMap = {};
   const farms = {};
@@ -459,6 +478,7 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
         animals: [],
         factories: [],
         fleet: [],
+        trailers: [],
         harvestersAndCombines: [],
         incomeGenerators: [],
         farmlandOwned: [],
@@ -469,7 +489,6 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     };
   }
 
-  // Parse Farms
   if (parsedTree['farms'] && parsedTree['farms'].farms && parsedTree['farms'].farms.farm) {
     const farmList = Array.isArray(parsedTree['farms'].farms.farm) ? parsedTree['farms'].farms.farm : [parsedTree['farms'].farms.farm];
     farmList.forEach(f => {
@@ -485,11 +504,33 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     farmNameMap["1"] = "Main Farm";
   }
 
+  const fieldsAgronomy = [];
+  if (parsedTree['fields'] && parsedTree['fields'].fields && parsedTree['fields'].fields.field) {
+    const list = Array.isArray(parsedTree['fields'].fields.field) ? parsedTree['fields'].fields.field : [parsedTree['fields'].fields.field];
+    list.forEach(fld => {
+      const cropRaw = fld.fruitType || fld.fruitTypeName || fld.sprayType || "";
+      const cleanCrop = cropRaw ? cleanFillTypeName(cropRaw) : "Fallow / Cultivated";
+
+      fieldsAgronomy.push({
+        fieldId: parseInt(fld.id || 0, 10),
+        farmId: String(fld.farmId || "0"),
+        fruitType: cleanCrop,
+        growthStage: parseInt(fld.growthState || fld.growthStage || 0, 10),
+        fertilizedLevel: parseInt(fld.fertilized || fld.fertilizerLevel || 0, 10),
+        weedState: parseInt(fld.weedState || 0, 10),
+        needsLime: String(fld.needsLime || 'false').toLowerCase() === 'true',
+        needsPlowing: String(fld.needsPlowing || 'false').toLowerCase() === 'true',
+        raw: fld
+      });
+    });
+  }
+
   const globalCards = {
     palletsAndBales: [],
     animals: [],
     factories: [],
     fleet: [],
+    trailers: [],
     harvestersAndCombines: [],
     incomeGenerators: [],
     farmlands: [],
@@ -497,12 +538,12 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     handTools: [],
     dealershipSales: [],
     collectibles: [],
-    fieldsAgronomy: []
+    fieldsAgronomy: fieldsAgronomy
   };
 
-  // 1. ACTIVE MODS CATALOG
   const activeMods = {};
-  const discoveredModNames = new Set();
+  const activeModsByCategory = {};
+  const discoveredModsMeta = new Map();
 
   if (rawServerConfigXml) {
     const cfgJson = await parseXmlString(rawServerConfigXml);
@@ -510,7 +551,13 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
       const mList = Array.isArray(cfgJson.dedicatedServer.mods.mod) ? cfgJson.dedicatedServer.mods.mod : [cfgJson.dedicatedServer.mods.mod];
       mList.forEach(m => {
         const modId = typeof m === 'string' ? m : (m._ || m.name || m.filename || "");
-        if (modId) discoveredModNames.add(modId.trim());
+        if (modId) {
+          const cleanKey = modId.trim().replace(/\.zip$/i, '');
+          discoveredModsMeta.set(cleanKey, {
+            gportalAuthor: m.author || null,
+            gportalTitle: m.title || m.name || null
+          });
+        }
       });
     }
   }
@@ -519,35 +566,68 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     const mList = Array.isArray(parsedTree['careerSavegame'].careerSavegame.mod) ? parsedTree['careerSavegame'].careerSavegame.mod : [parsedTree['careerSavegame'].careerSavegame.mod];
     mList.forEach(m => {
       const modId = typeof m === 'string' ? m : (m.modName || m.name || m.filename || m._ || "");
-      if (modId) discoveredModNames.add(modId.trim());
+      if (modId) {
+        const cleanKey = modId.trim().replace(/\.zip$/i, '');
+        const existing = discoveredModsMeta.get(cleanKey) || {};
+        discoveredModsMeta.set(cleanKey, {
+          gportalAuthor: m.author || existing.gportalAuthor || null,
+          gportalTitle: m.title || m.name || existing.gportalTitle || null
+        });
+      }
     });
   }
 
-  discoveredModNames.forEach(rawModName => {
-    const cleanModKey = rawModName.replace(/\.zip$/i, '');
+  for (const [cleanModKey, gportalMeta] of discoveredModsMeta.entries()) {
     const lookupKey = normalizeKey(cleanModKey);
-    const cat = catalogLookup[lookupKey] || null;
-    const resolvedImg = resolveBestImage(cleanModKey, cat);
+    const websiteData = catalogLookup[cleanModKey.toLowerCase()] || 
+                        catalogLookup[`${cleanModKey.toLowerCase()}.zip`] || 
+                        catalogLookup[lookupKey] || null;
 
-    activeMods[cleanModKey] = {
+    const modAuthor = gportalMeta.gportalAuthor || (websiteData && websiteData.author) || "ModHub / Giants";
+    const modName = gportalMeta.gportalTitle || (websiteData && websiteData.name) || cleanEntityName(cleanModKey);
+    const modUrl = (websiteData && (websiteData.url || websiteData.pageurl || websiteData.link)) ? (websiteData.url || websiteData.pageurl || websiteData.link) : null;
+    const modSize = (websiteData && websiteData.size) ? websiteData.size : "";
+    const modImage = (websiteData && websiteData.image) ? formatSheetImageUrl(websiteData.image) : resolveBestImage(cleanModKey, websiteData);
+    const modDescription = (websiteData && websiteData.description) ? websiteData.description : "";
+    const modCategory = (websiteData && (websiteData.category || websiteData.categorySecondary)) ? (websiteData.category || websiteData.categorySecondary) : "General";
+
+    const modEntry = {
       modKey: cleanModKey,
-      name: (cat && (cat.name || cat.title || cat.mod_name)) ? (cat.name || cat.title || cat.mod_name) : cleanEntityName(cleanModKey),
-      image: resolvedImg,
-      pageUrl: (cat && (cat.pageurl || cat.url || cat.link)) ? (cat.pageurl || cat.url || cat.link) : null,
-      platform: (cat && cat.platform) ? cat.platform : "All Platforms",
-      description: (cat && (cat.description || cat.desc)) ? (cat.description || cat.desc) : "",
-      author: (cat && (cat.author || cat.creator || cat.modder)) ? (cat.author || cat.creator || cat.modder) : "ModHub / Giants",
-      updatedNumber: (cat && (cat.updatednumber || cat.version || cat.mod_version)) ? (cat.updatednumber || cat.version || cat.mod_version) : "1.0.0.0",
-      matchedInCatalog: !!cat,
-      sheetRecord: cat || null
+      name: modName,
+      author: modAuthor,
+      category: modCategory,
+      description: modDescription,
+      image: modImage,
+      url: modUrl,
+      size: modSize,
+      crossplay: (websiteData && websiteData.crossplay) ? websiteData.crossplay : "Yes",
+      modType: (websiteData && websiteData.modType) ? websiteData.modType : "Mod",
+      filename: `${cleanModKey}.zip`,
+      matchedInWebsite: !!websiteData
     };
+
+    activeMods[cleanModKey] = modEntry;
+
+    const catKey = modCategory.trim() || "General";
+    if (!activeModsByCategory[catKey]) {
+      activeModsByCategory[catKey] = [];
+    }
+    activeModsByCategory[catKey].push(modEntry);
+  }
+
+  Object.keys(activeModsByCategory).forEach(cat => {
+    activeModsByCategory[cat].sort((a, b) => a.name.localeCompare(b.name));
   });
 
-  // 2. VEHICLES, BALES, PALLETS, HARVESTERS & FLEET
   const flatVehicles = [];
   if (parsedTree['vehicles'] && parsedTree['vehicles'].vehicles && parsedTree['vehicles'].vehicles.vehicle) {
     const vehList = Array.isArray(parsedTree['vehicles'].vehicles.vehicle) ? parsedTree['vehicles'].vehicles.vehicle : [parsedTree['vehicles'].vehicles.vehicle];
     
+    const vehLookupById = {};
+    vehList.forEach(v => {
+      if (v.id) vehLookupById[v.id] = v;
+    });
+
     vehList.forEach(v => {
       const fId = String(v.farmId || "0");
       const filename = v.filename || "";
@@ -561,19 +641,75 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
       }
 
       const cleanName = matchedMod && matchedMod.name ? matchedMod.name : cleanEntityName(filename);
-      const itemImage = resolveBestImage(cleanName, matchedMod ? matchedMod.sheetRecord : null) || resolveBestImage(filename, null);
+      const itemImage = (matchedMod && matchedMod.image) ? matchedMod.image : (resolveBestImage(cleanName, null) || resolveBestImage(filename, null));
       const lower = (filename + " " + cleanName).toLowerCase();
+      const locationZone = getSpatialZone(v, fieldsAgronomy);
 
-      // Card A: Pallets & Bales
+      const cargoList = [];
+      let totalCapacity = 0;
+      let totalFill = 0;
+
+      if (v.fillUnit && v.fillUnit.unit) {
+        const units = Array.isArray(v.fillUnit.unit) ? v.fillUnit.unit : [v.fillUnit.unit];
+        units.forEach(u => {
+          const fill = parseFloat(u.fillLevel || 0);
+          const cap = parseFloat(u.capacity || 0);
+          const typeName = u.fillType || u.fillTypeName || "";
+          totalCapacity += cap;
+          totalFill += fill;
+
+          if (fill > 0) {
+            cargoList.push({
+              cropType: cleanFillTypeName(typeName),
+              fillLevel: Math.round(fill),
+              capacity: Math.round(cap),
+              percentage: cap > 0 ? parseFloat(((fill / cap) * 100).toFixed(1)) : 100
+            });
+          }
+        });
+      }
+
+      const primaryCargo = cargoList.length > 0 
+        ? `${cargoList[0].cropType} (${cargoList[0].fillLevel.toLocaleString()} L - ${cargoList[0].percentage}%)` 
+        : (totalCapacity > 0 ? "Empty" : "Standard Equipment");
+
+      let coupledTo = null;
+      let hasAttachedImplement = false;
+      if (v.attacherJoints && v.attacherJoints.attachedImplement) {
+        hasAttachedImplement = true;
+      }
+      if (v.attachable && v.attachable.attachedToVehicleId) {
+        const parentVeh = vehLookupById[v.attachable.attachedToVehicleId];
+        coupledTo = parentVeh ? cleanEntityName(parentVeh.filename || "Prime Mover") : `Vehicle #${v.attachable.attachedToVehicleId}`;
+      }
+
       if (v.bale || lower.includes("bale") || lower.includes("pallet") || lower.includes("bigbag") || lower.includes("fillablepallet")) {
+        let baleDetails = {};
+        if (v.bale) {
+          const b = v.bale;
+          const fill = parseFloat(b.fillLevel || 0);
+          const isWrapped = String(b.isWrapped || b.wrappingState || '0') !== '0';
+          const crop = cleanFillTypeName(b.fillType || "Grass");
+
+          baleDetails = {
+            cropType: crop,
+            fillLevel: Math.round(fill),
+            isWrapped: isWrapped,
+            wrapPercentage: parseFloat(((parseFloat(b.wrappingState || (isWrapped ? 1 : 0))) * 100).toFixed(0)),
+            baleValue: parseFloat(b.value || 0)
+          };
+        }
+
         const palletBaleItem = {
           id: v.id || "0",
           farmId: fId,
           name: cleanName,
           file: filename,
           image: itemImage,
-          fillLevel: v.fillUnit && v.fillUnit.unit ? v.fillUnit.unit : null,
-          baleData: v.bale || null,
+          location: locationZone,
+          cargo: primaryCargo,
+          cargoDetails: cargoList,
+          baleInfo: baleDetails,
           raw: v
         };
         globalCards.palletsAndBales.push(palletBaleItem);
@@ -589,19 +725,31 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
         name: cleanName,
         file: filename,
         image: itemImage,
+        location: locationZone,
         price: parseFloat(v.price || 0),
         operatingHours: parseFloat(((parseFloat(v.operatingTime || 0)) / 3600).toFixed(1)),
         ageMonths: parseInt(v.age || 0, 10),
-        wear: parseFloat(v.wear || 0),
-        operatingDamage: parseFloat(v.operatingDamage || 0),
-        fillUnits: v.fillUnit || null,
+        wearPercentage: parseFloat(((parseFloat(v.wear || 0)) * 100).toFixed(1)),
+        damagePercentage: parseFloat(((parseFloat(v.operatingDamage || 0)) * 100).toFixed(1)),
+        cargoSummary: primaryCargo,
+        cargoDetails: cargoList,
+        totalCapacityLiters: Math.round(totalCapacity),
+        totalFillLiters: Math.round(totalFill),
+        attachedTo: coupledTo,
+        hasImplements: hasAttachedImplement,
         raw: v
       };
 
       flatVehicles.push(equipmentItem);
 
-      // Card B: Harvesters / Combines
-      if (lower.includes("harvester") || lower.includes("combine") || lower.includes("cottonpicker") || lower.includes("sugarbeet") || lower.includes("forageharvester")) {
+      if (lower.includes("trailer") || lower.includes("tipper") || lower.includes("wagon") || lower.includes("tanker") || lower.includes("dropdeck") || lower.includes("spreader")) {
+        equipmentItem.cardType = "Hauling & Field Trailer";
+        globalCards.trailers.push(equipmentItem);
+        if (fId !== "0" && farms[`farm_${fId}`]) {
+          farms[`farm_${fId}`].cards.trailers.push(equipmentItem);
+          farms[`farm_${fId}`].vehicles.push(equipmentItem);
+        }
+      } else if (lower.includes("harvester") || lower.includes("combine") || lower.includes("cottonpicker") || lower.includes("sugarbeet") || lower.includes("forageharvester")) {
         equipmentItem.cardType = "Harvester / Combine";
         globalCards.harvestersAndCombines.push(equipmentItem);
         if (fId !== "0" && farms[`farm_${fId}`]) {
@@ -609,7 +757,6 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
           farms[`farm_${fId}`].vehicles.push(equipmentItem);
         }
       } else {
-        // Card C: Fleet Machinery
         equipmentItem.cardType = "Fleet Machinery";
         globalCards.fleet.push(equipmentItem);
         if (fId !== "0" && farms[`farm_${fId}`]) {
@@ -620,7 +767,6 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     });
   }
 
-  // 3. PLACEABLES: PASSIVE INCOME AGGREGATOR, ANIMALS, FACTORIES & BUILDINGS
   const rawPassiveGenerators = [];
   const flatPlaceables = [];
 
@@ -640,21 +786,23 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
       }
 
       const cleanName = matchedMod && matchedMod.name ? matchedMod.name : cleanEntityName(filename);
-      const itemImage = resolveBestImage(cleanName, matchedMod ? matchedMod.sheetRecord : null) || resolveBestImage(filename, null);
+      const itemImage = (matchedMod && matchedMod.image) ? matchedMod.image : (resolveBestImage(cleanName, null) || resolveBestImage(filename, null));
       const lower = (filename + " " + cleanName).toLowerCase();
+      const locationZone = getSpatialZone(p, fieldsAgronomy);
 
       const placeableItem = {
         id: p.id || "0",
         farmId: fId,
+        ownerFarm: farmNameMap[fId] || `Farm ${fId}`,
         name: cleanName,
         file: filename,
         image: itemImage,
+        location: locationZone,
         price: parseFloat(p.price || 0),
         raw: p
       };
       flatPlaceables.push(placeableItem);
 
-      // Filter: Passive Income Generators
       const isGenerator = lower.includes("solar") || lower.includes("wind") || lower.includes("turbine") || 
                           lower.includes("subsidy") || lower.includes("subsidies") || lower.includes("generator") || 
                           lower.includes("bga") || lower.includes("biogas");
@@ -662,33 +810,158 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
       if (isGenerator) {
         rawPassiveGenerators.push({
           ...placeableItem,
-          zone: getSpatialZone(p),
+          zone: locationZone,
           rawNode: p
         });
         return;
       }
 
-      // Animals & Husbandry Card
-      if (p.husbandryAnimals || p.animals || lower.includes("husbandry") || lower.includes("barn") || lower.includes("pasture") || lower.includes("coop") || lower.includes("pen")) {
-        globalCards.animals.push(placeableItem);
+      if (p.husbandryAnimals || p.husbandry || p.animals || lower.includes("husbandry") || lower.includes("barn") || lower.includes("pasture") || lower.includes("coop") || lower.includes("pen")) {
+        let totalHeadCount = 0;
+        const animalClusters = [];
+        const clustersNode = (p.husbandryAnimals && p.husbandryAnimals.clusters) || (p.animals && p.animals.cluster);
+
+        if (clustersNode) {
+          const rawClusters = Array.isArray(clustersNode.animal) ? clustersNode.animal : (Array.isArray(clustersNode) ? clustersNode : [clustersNode]);
+          rawClusters.forEach(c => {
+            const count = parseInt(c.numAnimals || c.count || 1, 10);
+            totalHeadCount += count;
+            animalClusters.push({
+              breed: cleanFillTypeName(c.subType || c.type || cleanName),
+              count: count,
+              ageMonths: parseInt(c.age || 0, 10),
+              healthPercentage: parseFloat(((parseFloat(c.health || 1)) * 100).toFixed(0)),
+              reproductionPercentage: parseFloat(((parseFloat(c.reproduction || 0)) * 100).toFixed(0))
+            });
+          });
+        }
+
+        const resources = {
+          hayLiters: 0,
+          grassLiters: 0,
+          tmrLiters: 0,
+          strawLiters: 0,
+          milkLiters: 0,
+          slurryLiters: 0,
+          manureLiters: 0,
+          waterLiters: 0
+        };
+
+        const fillUnits = (p.husbandryAnimals && p.husbandryAnimals.fillUnit) || (p.husbandry && p.husbandry.fillUnit) || (p.fillUnit && p.fillUnit.unit);
+        if (fillUnits) {
+          const units = Array.isArray(fillUnits) ? fillUnits : (Array.isArray(fillUnits.unit) ? fillUnits.unit : [fillUnits]);
+          units.forEach(u => {
+            const fType = (u.fillType || u.fillTypeName || "").toLowerCase();
+            const level = Math.round(parseFloat(u.fillLevel || 0));
+
+            if (fType.includes("hay")) resources.hayLiters += level;
+            else if (fType.includes("grass")) resources.grassLiters += level;
+            else if (fType.includes("forage") || fType.includes("tmr")) resources.tmrLiters += level;
+            else if (fType.includes("straw")) resources.strawLiters += level;
+            else if (fType.includes("milk")) resources.milkLiters += level;
+            else if (fType.includes("slurry") || fType.includes("liquidmanure")) resources.slurryLiters += level;
+            else if (fType.includes("manure")) resources.manureLiters += level;
+            else if (fType.includes("water")) resources.waterLiters += level;
+          });
+        }
+
+        const animalCard = {
+          ...placeableItem,
+          totalAnimals: totalHeadCount,
+          clusters: animalClusters,
+          feedInventory: {
+            hay: `${resources.hayLiters.toLocaleString()} L`,
+            grass: `${resources.grassLiters.toLocaleString()} L`,
+            tmr: `${resources.tmrLiters.toLocaleString()} L`,
+            straw: `${resources.strawLiters.toLocaleString()} L`,
+            water: `${resources.waterLiters.toLocaleString()} L`
+          },
+          byproducts: {
+            milk: `${resources.milkLiters.toLocaleString()} L`,
+            slurry: `${resources.slurryLiters.toLocaleString()} L`,
+            manure: `${resources.manureLiters.toLocaleString()} L`
+          }
+        };
+
+        globalCards.animals.push(animalCard);
         if (fId !== "0" && farms[`farm_${fId}`]) {
-          farms[`farm_${fId}`].cards.animals.push(placeableItem);
-          farms[`farm_${fId}`].placeables.push(placeableItem);
+          farms[`farm_${fId}`].cards.animals.push(animalCard);
+          farms[`farm_${fId}`].placeables.push(animalCard);
         }
         return;
       }
 
-      // Factories & Production Points Card
       if (p.productionPoint || lower.includes("production") || lower.includes("factory") || lower.includes("mill") || lower.includes("bakery") || lower.includes("greenhouse") || lower.includes("dairy")) {
-        globalCards.factories.push(placeableItem);
+        const prodNode = p.productionPoint || {};
+        const productions = [];
+        const missingInputs = [];
+        let totalFactoryFill = 0;
+        let totalFactoryCapacity = 0;
+        let isFactoryActive = false;
+
+        if (prodNode.productions && prodNode.productions.production) {
+          const prods = Array.isArray(prodNode.productions.production) ? prodNode.productions.production : [prodNode.productions.production];
+          prods.forEach(pr => {
+            const isEnabled = String(pr.status || pr.isEnabled || 'false').toLowerCase() === 'true' || pr.status === '1';
+            if (isEnabled) isFactoryActive = true;
+
+            productions.push({
+              name: cleanFillTypeName(pr.id || pr.name || "Process"),
+              status: isEnabled ? "Running" : "Halted",
+              cyclesPerHour: parseFloat(pr.cyclesPerHour || 0)
+            });
+          });
+        }
+
+        const storageList = [];
+        if (prodNode.storage && prodNode.storage.node) {
+          const nodes = Array.isArray(prodNode.storage.node) ? prodNode.storage.node : [prodNode.storage.node];
+          nodes.forEach(n => {
+            const fill = parseFloat(n.fillLevel || 0);
+            const cap = parseFloat(n.capacity || 0);
+            const typeName = cleanFillTypeName(n.fillType || "Input");
+            const modeCode = parseInt(n.outputMode || 0, 10);
+            
+            let mode = "Storing";
+            if (modeCode === 1) mode = "Direct Selling";
+            else if (modeCode === 2) mode = "Distributing";
+
+            totalFactoryFill += fill;
+            totalFactoryCapacity += cap;
+
+            if (fill === 0 && cap > 0) {
+              missingInputs.push(typeName);
+            }
+
+            storageList.push({
+              item: typeName,
+              fillLevelLiters: Math.round(fill),
+              capacityLiters: Math.round(cap),
+              percentage: cap > 0 ? parseFloat(((fill / cap) * 100).toFixed(1)) : 0,
+              distributionMode: mode
+            });
+          });
+        }
+
+        const factoryCard = {
+          ...placeableItem,
+          factoryStatus: isFactoryActive ? "Active / In Production" : "Idle / Suspended",
+          missingSupplies: missingInputs.length > 0 ? missingInputs.join(", ") : "Adequately Supplied",
+          totalInventoryLiters: Math.round(totalFactoryFill),
+          totalStorageCapacityLiters: Math.round(totalFactoryCapacity),
+          storageFillPercentage: totalFactoryCapacity > 0 ? parseFloat(((totalFactoryFill / totalFactoryCapacity) * 100).toFixed(1)) : 0,
+          activeProductionLines: productions,
+          storageInventory: storageList
+        };
+
+        globalCards.factories.push(factoryCard);
         if (fId !== "0" && farms[`farm_${fId}`]) {
-          farms[`farm_${fId}`].cards.factories.push(placeableItem);
-          farms[`farm_${fId}`].placeables.push(placeableItem);
+          farms[`farm_${fId}`].cards.factories.push(factoryCard);
+          farms[`farm_${fId}`].placeables.push(factoryCard);
         }
         return;
       }
 
-      // General Buildings & Silos
       if (fId !== "0" && farms[`farm_${fId}`]) {
         farms[`farm_${fId}`].cards.generalPlaceables.push(placeableItem);
         farms[`farm_${fId}`].placeables.push(placeableItem);
@@ -696,9 +969,7 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     });
   }
 
-  // Passive Income Clustering Engine: [Source - Count - $Total - Zone]
   const incomeGroups = {};
-
   rawPassiveGenerators.forEach(gen => {
     let normalizedCategory = gen.name;
     const lower = gen.name.toLowerCase();
@@ -752,7 +1023,6 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
   Object.values(incomeGroups).forEach(group => {
     const totalHourly = group.hourlyRatePerUnit * group.count;
     const totalMonthly = group.monthlyRatePerUnit * group.count;
-
     const formattedTitle = `[${group.sourceName} - ${group.count} Units - ${formatCurrency(group.totalInvestedValue)} Total - ${group.locationZone}]`;
 
     const summaryCard = {
@@ -781,7 +1051,6 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     }
   });
 
-  // 4. FARMLANDS CARD (All Plots Exposed)
   if (parsedTree['farmland'] && parsedTree['farmland'].farmlands && parsedTree['farmland'].farmlands.farmland) {
     const list = Array.isArray(parsedTree['farmland'].farmlands.farmland) ? parsedTree['farmland'].farmlands.farmland : [parsedTree['farmland'].farmlands.farmland];
     list.forEach(f => {
@@ -803,7 +1072,6 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     });
   }
 
-  // 5. UNIVERSAL MISSIONS & CONTRACTS
   if (parsedTree['missions'] && parsedTree['missions'].missions) {
     const rawList = parsedTree['missions'].missions.mission || parsedTree['missions'].missions.fieldMission || [];
     const list = Array.isArray(rawList) ? rawList : [rawList];
@@ -818,6 +1086,7 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
       const assignedFarmId = String(m.farmId || m.contractorFarmId || m.activeFarmId || "0");
       const isClaimed = assignedFarmId !== "0" && assignedFarmId !== "" && assignedFarmId !== "undefined";
       const type = (m.type || m.missionType || "Contract").replace(/([A-Z])/g, ' $1').trim();
+      const fruitRaw = m.fruitType || m.fruitTypeName || "";
 
       const missionItem = {
         id: String(m.id || m.uniqueId || `contract_${idx + 1}`),
@@ -830,7 +1099,7 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
         rewardFormatted: formatCurrency(parseFloat(m.reward || 0)),
         reimbursement: parseFloat(m.reimbursement || 0),
         completionPercent: parseFloat(((parseFloat(m.completion || m.progress || m.workProgress || 0)) * 100).toFixed(1)),
-        fruitType: m.fruitType || m.fruitTypeName || null,
+        cropType: fruitRaw ? cleanFillTypeName(fruitRaw) : "Standard Harvest",
         assignedFarmId: isClaimed ? assignedFarmId : null,
         assignedFarmName: isClaimed ? (farmNameMap[assignedFarmId] || `Farm ${assignedFarmId}`) : "Available on Job Market",
         raw: m
@@ -849,7 +1118,6 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     });
   }
 
-  // 6. HAND TOOLS CARD
   if (parsedTree['handTools'] && parsedTree['handTools'].handTools && parsedTree['handTools'].handTools.handTool) {
     const list = Array.isArray(parsedTree['handTools'].handTools.handTool) ? parsedTree['handTools'].handTools.handTool : [parsedTree['handTools'].handTools.handTool];
     list.forEach(t => {
@@ -871,25 +1139,6 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     });
   }
 
-  // 7. FIELDS & AGRONOMY CARD
-  if (parsedTree['fields'] && parsedTree['fields'].fields && parsedTree['fields'].fields.field) {
-    const list = Array.isArray(parsedTree['fields'].fields.field) ? parsedTree['fields'].fields.field : [parsedTree['fields'].fields.field];
-    list.forEach(fld => {
-      globalCards.fieldsAgronomy.push({
-        fieldId: parseInt(fld.id || 0, 10),
-        farmId: String(fld.farmId || "0"),
-        fruitType: fld.fruitType || fld.fruitTypeName || "None",
-        growthStage: parseInt(fld.growthState || fld.growthStage || 0, 10),
-        fertilizedLevel: parseInt(fld.fertilized || fld.fertilizerLevel || 0, 10),
-        weedState: parseInt(fld.weedState || 0, 10),
-        needsLime: String(fld.needsLime || 'false').toLowerCase() === 'true',
-        needsPlowing: String(fld.needsPlowing || 'false').toLowerCase() === 'true',
-        raw: fld
-      });
-    });
-  }
-
-  // 8. DEALERSHIP SALES CARD
   if (parsedTree['sales'] && parsedTree['sales'].sales && parsedTree['sales'].sales.item) {
     const sList = Array.isArray(parsedTree['sales'].sales.item) ? parsedTree['sales'].sales.item : [parsedTree['sales'].sales.item];
     sList.forEach(s => {
@@ -900,14 +1149,13 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
         price: parseFloat(s.price || 0),
         discountPercent: parseFloat(s.discountPercent || 0),
         operatingHours: parseFloat(((parseFloat(s.operatingTime || 0)) / 3600).toFixed(1)),
-        wear: parseFloat(s.wear || 0),
+        wearPercentage: parseFloat(((parseFloat(s.wear || 0)) * 100).toFixed(1)),
         image: resolveBestImage(name, null),
         raw: s
       });
     });
   }
 
-  // 9. COLLECTIBLES CARD
   let collectiblesFound = 0;
   if (parsedTree['collectibles'] && parsedTree['collectibles'].collectibles) {
     const list = parsedTree['collectibles'].collectibles.collectible || parsedTree['collectibles'].collectibles.item || [];
@@ -920,10 +1168,13 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
   }
 
   return {
+    slotNumber: String(resolvedSlot),
+    slotNode: `savegame${resolvedSlot}`,
     summary: {
       totalFarms: Object.keys(farms).length,
       totalVehicles: flatVehicles.length,
       totalFleet: globalCards.fleet.length,
+      totalTrailers: globalCards.trailers.length,
       totalHarvestersAndCombines: globalCards.harvestersAndCombines.length,
       totalPlaceables: flatPlaceables.length,
       totalPalletsAndBales: globalCards.palletsAndBales.length,
@@ -937,8 +1188,10 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
       activeMissionsCount: globalCards.missions.inProgress.length,
       availableMissionsCount: globalCards.missions.available.length,
       finishedMissionsCount: globalCards.missions.finished.length,
-      totalActiveMods: Object.keys(activeMods).length
+      totalActiveMods: Object.keys(activeMods).length,
+      totalModCategories: Object.keys(activeModsByCategory).length
     },
+    inGameCalendar: inGameCalendar,
     gameInfo: parsedTree['careerSavegame'] && parsedTree['careerSavegame'].careerSavegame ? parsedTree['careerSavegame'].careerSavegame : {},
     collectibles: {
       found: collectiblesFound,
@@ -956,12 +1209,13 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     cards: globalCards,
     farms: farms,
     activeMods: activeMods,
+    activeModsByCategory: activeModsByCategory,
     allRawParsedXml: parsedTree
   };
 }
 
 // ============================================================================
-// SECTION 7: PIPELINE EXECUTION ENGINE (With Manual Full Sync Override)
+// SECTION 7: PIPELINE EXECUTION ENGINE (Dual Save Routing)
 // ============================================================================
 async function runPipeline() {
   const isManualRun = process.env.GITHUB_EVENT_NAME === 'workflow_dispatch' || process.argv.includes('--force');
@@ -969,7 +1223,6 @@ async function runPipeline() {
 
   const serverPing = await pingServerLiveStats();
 
-  // Guard: If server is offline and NOT a manual run, halt cleanly
   if (!serverPing.isOnline && !isManualRun) {
     console.log("🛑 Server is OFFLINE. Updating serverStatus node only and halting execution. Zero cards overwritten.");
     await updateDb('fs25/serverStatus', {
@@ -994,47 +1247,23 @@ async function runPipeline() {
   const lastSlowSyncTime = existingFs25.lastSlowSync || 0;
   const shouldRun6HourSync = isFirstRun || isManualRun || ((Date.now() - lastSlowSyncTime) > SIX_HOURS_MS);
 
-  // Automated Idle Guard: If 0 players, not past 6 hours, not first run, and not manual -> exit
   if (activePlayers === 0 && !shouldRun6HourSync && !isManualRun && !isFirstRun) {
     console.log("💤 0 players online & 6-hour static window not reached yet. Skipping FTP connection.");
     process.exit(0);
   }
 
   let activeSlot = serverPing.activeSlot || process.env.DEFAULT_SAVE_SLOT || "3";
-  console.log(`🎯 Target Savegame Slot: [ Slot #${activeSlot} ]`);
+  console.log(`🎯 Initial Target Savegame Slot: [ Slot #${activeSlot} ]`);
 
-  console.log("📦 Indexing Mod Catalogue from Firebase /FS25_Mods_Info...");
+  console.log("📦 Indexing Mod Catalogue from Firebase /websiteMods for active mod enrichment...");
   const catalogLookup = await fetchModsCatalog();
-  console.log(`✅ Loaded ${Object.keys(catalogLookup).length} mod catalogue references.`);
-
-  const masterPayload = {
-    serverStatus: {
-      isOnline: serverPing.isOnline,
-      activePlayers: activePlayers,
-      lastChecked: new Date().toISOString()
-    },
-    activePlayers: activePlayers,
-    activeSaveSlot: String(activeSlot),
-    liveMapImage: MAP_IMAGE_URL,
-    lastUpdated: new Date().toISOString(),
-    lastFullSaveSync: new Date().toISOString(),
-    lastSlowSync: shouldRun6HourSync ? Date.now() : (existingFs25.lastSlowSync || Date.now()),
-    config: { 
-      appId: "1:528331196894:web:5af51bc2c80fd56aecf54f",
-      projectId: "fs25-a3563",
-      gaTag: "G-CTYHDF4MSD",
-      measurementId: "G-SGJF0FJPQZ",
-      activeSaveSlot: String(activeSlot),
-      lastConfigSync: new Date().toISOString()
-    },
-    raw_xml: {}
-  };
-
-  if (serverPing.text) masterPayload.raw_xml.stats = serverPing.text;
+  console.log(`✅ Loaded ${Object.keys(catalogLookup).length} catalog lookups from /websiteMods.`);
 
   if (!ftpUser || !ftpPass) {
     console.warn("⚠️ FTP credentials missing. Writing stats payload only.");
-    await updateDb('fs25', masterPayload);
+    await updateDb('fs25', {
+      serverStatus: { isOnline: serverPing.isOnline, activePlayers: activePlayers, lastChecked: new Date().toISOString() }
+    });
     process.exit(0);
   }
 
@@ -1067,7 +1296,6 @@ async function runPipeline() {
           const cfgSlotMatch = cfgXml.match(/savegameSlot="(\d+)"/i) || cfgXml.match(/savegame="(\d+)"/i) || cfgXml.match(/<savegame>(\d+)<\/savegame>/i);
           if (cfgSlotMatch && !serverPing.activeSlot) {
             activeSlot = cfgSlotMatch[1];
-            masterPayload.activeSaveSlot = String(activeSlot);
             break;
           }
         }
@@ -1110,7 +1338,9 @@ async function runPipeline() {
       throw new Error(`Unable to locate savegame directory for Slot #${activeSlot} on G-Portal FTP server.`);
     }
 
-    masterPayload.activeSaveSlot = String(activeSlot);
+    const slotNodeName = `savegame${activeSlot}`;
+    console.log(`🎯 Active Savegame Locked: [ Slot #${activeSlot} -> /fs25/${slotNodeName} ]`);
+
     console.log(`📂 [3/4] Pulling ALL XML files from G-Portal: [ ${activeSavePath} ]`);
 
     const readableFiles = fileList.filter(f => !f.isDirectory && (
@@ -1127,7 +1357,6 @@ async function runPipeline() {
         const content = await downloadFtpFileToString(client, remoteFilePath);
         const cleanContent = sanitizeXml(content);
         if (cleanContent) {
-          masterPayload.raw_xml[rawBaseName] = cleanContent;
           rawFileCache[rawBaseName] = cleanContent;
         }
       } catch (err) {
@@ -1135,24 +1364,75 @@ async function runPipeline() {
       }
     }
 
-    console.log("🚜 Structuring all distinct cards (Aggregating Income, Missions, Fleet, Harvesters)...");
-    const cleanData = await buildCleanStructuredSave(rawFileCache, catalogLookup, rawServerConfigXml);
+    console.log("🚜 Structuring deep cards, slot routing, and in-game calendar...");
+    const cleanData = await buildCleanStructuredSave(rawFileCache, catalogLookup, rawServerConfigXml, serverPing.dayTimeRaw, activeSlot);
 
-    masterPayload.summary = cleanData.summary;
-    masterPayload.gameInfo = cleanData.gameInfo;
-    masterPayload.collectibles = cleanData.collectibles;
-    masterPayload.farmlands = cleanData.farmlands;
-    masterPayload.missions = cleanData.missions;
-    masterPayload.fields = cleanData.fields;
-    masterPayload.cards = cleanData.cards;
-    masterPayload.farms = cleanData.farms;
-    masterPayload.activeMods = cleanData.activeMods;
-    masterPayload.allRawParsedXml = cleanData.allRawParsedXml;
+    const slotPayload = {
+      slot: String(activeSlot),
+      slotNode: slotNodeName,
+      lastUpdated: new Date().toISOString(),
+      summary: cleanData.summary,
+      inGameCalendar: cleanData.inGameCalendar,
+      gameInfo: cleanData.gameInfo,
+      collectibles: cleanData.collectibles,
+      farmlands: cleanData.farmlands,
+      missions: cleanData.missions,
+      fields: cleanData.fields,
+      cards: cleanData.cards,
+      farms: cleanData.farms,
+      activeMods: cleanData.activeMods,
+      activeModsByCategory: cleanData.activeModsByCategory,
+      raw_xml: rawFileCache
+    };
 
-    console.log("💾 [4/4] Writing complete master payload to Firebase /fs25 via REST...");
-    await updateDb('fs25', masterPayload);
+    const masterFs25Payload = {
+      serverStatus: {
+        isOnline: serverPing.isOnline,
+        activePlayers: activePlayers,
+        lastChecked: new Date().toISOString()
+      },
+      activePlayers: activePlayers,
+      activeSaveSlot: String(activeSlot),
+      activeSlotNode: slotNodeName,
+      liveMapImage: MAP_IMAGE_URL,
+      lastUpdated: new Date().toISOString(),
+      lastFullSaveSync: new Date().toISOString(),
+      lastSlowSync: shouldRun6HourSync ? Date.now() : (existingFs25.lastSlowSync || Date.now()),
+      config: { 
+        appId: "1:528331196894:web:5af51bc2c80fd56aecf54f",
+        projectId: "fs25-a3563",
+        gaTag: "G-CTYHDF4MSD",
+        measurementId: "G-SGJF0FJPQZ",
+        activeSaveSlot: String(activeSlot),
+        activeSlotNode: slotNodeName,
+        lastConfigSync: new Date().toISOString()
+      },
+      raw_xml: rawFileCache,
+      summary: cleanData.summary,
+      inGameCalendar: cleanData.inGameCalendar,
+      gameInfo: cleanData.gameInfo,
+      collectibles: cleanData.collectibles,
+      farmlands: cleanData.farmlands,
+      missions: cleanData.missions,
+      fields: cleanData.fields,
+      cards: cleanData.cards,
+      farms: cleanData.farms,
+      activeMods: cleanData.activeMods,
+      activeModsByCategory: cleanData.activeModsByCategory
+    };
 
-    console.log(`🏆 Complete G-Portal savegame synchronization verified! Node /fs25 fully populated.`);
+    if (serverPing.text) {
+      masterFs25Payload.raw_xml.stats = serverPing.text;
+      slotPayload.raw_xml.stats = serverPing.text;
+    }
+
+    console.log(`💾 [4/4] Writing to active slot node: /fs25/${slotNodeName}...`);
+    await setDb(`fs25/${slotNodeName}`, slotPayload);
+
+    console.log(`💾 Writing active state to root /fs25 node...`);
+    await updateDb('fs25', masterFs25Payload);
+
+    console.log(`🏆 Dual-Slot Synchronization Successful: Active Slot #${activeSlot} written to /fs25/${slotNodeName} and /fs25.`);
     client.close();
     process.exit(0);
 
