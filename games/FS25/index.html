@@ -2,19 +2,20 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * File: games/FS25/index.html
- * Deployment Timestamp: 2026-09-20 23:50:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-20 23:59:00 (EDT - 24hr New York Time)
  * Project: fs25-a3563 (/fs25 RTDB Node)
  * Target Database: https://fs25-a3563-default-rtdb.firebaseio.com
  * Measurement ID: G-SGJF0FJPQZ | GA4 Tag: G-CTYHDF4MSD
- * Description: All-In-One Unified FS25 Realtime Tactical Dashboard & Mod Directory.
+ * Description: FS25 Tactical Operations Hub with Split Dual-Farm Fleet & Direct ModHub Lookup.
  *              - Zero Google Cloud Service Account (GCP_SA_KEY) requirements.
  *              - Pure client-side modular SDK direct connection to fs25-a3563.
- *              - Centered Top Navigation Bar pulling directly from /utm_links.
+ *              - Strict Side-by-Side Dual Column Architecture: Farm 1 (Left) vs Farm 2 (Right).
+ *              - Fixed Lightbox Dismissal: Closes instantly via X button, Backdrop, or ESC key.
+ *              - Dynamic Specific ModHub Search: Direct targeted query using exact mod title.
  *              - Safe Array Normalization (toArray) preventing fillUnits crashes.
  *              - Clean Equipment & Brand Names (Zero raw file paths).
  *              - Color-Coded Stoplight Fill Meters (<=35% Red, 36-74% Yellow, >=75% Green).
  *              - Collectibles System (25% opacity unfound, 100% illuminated found).
- *              - Mod Directory with Lightbox detail view & ModHub Search links.
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -31,7 +32,6 @@
     <!-- Google Analytics GA4 -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
-        // Line 34: GA4 DataLayer Initialization
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
@@ -39,7 +39,7 @@
         gtag('config', 'G-SGJF0FJPQZ');
     </script>
 
-    <!-- Line 42: Consolidated CSS Stylesheet (Embedded, Zero External Files) -->
+    <!-- Consolidated CSS Stylesheet -->
     <style>
         :root {
             --bg-dark: #070a12;
@@ -47,7 +47,8 @@
             --header-bg: #0b1120;
             --accent-gold: #facc15;
             --accent-orange: #ff5f00;
-            --accent-blue: #38bdf8;
+            --accent-farm1: #84cc16;
+            --accent-farm2: #38bdf8;
             --accent-red: #f87171;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
@@ -346,10 +347,57 @@
             letter-spacing: 0.04em;
         }
 
-        .grid-layout {
+        /* Dual Column Split Layout: Farm 1 (Left) vs Farm 2 (Right) */
+        .dual-farm-matrix {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .farm-column {
+            display: flex;
+            flex-direction: column;
             gap: 1.25rem;
+        }
+
+        .farm-header-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .farm-header-card.farm1-card {
+            border-top: 4px solid var(--accent-farm1);
+        }
+
+        .farm-header-card.farm2-card {
+            border-top: 4px solid var(--accent-farm2);
+        }
+
+        .farm-header-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .farm-header-balance {
+            font-size: 1.35rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+        }
+
+        .farm-header-balance.f1 {
+            color: var(--accent-farm1);
+        }
+
+        .farm-header-balance.f2 {
+            color: var(--accent-farm2);
         }
 
         .dashboard-box {
@@ -385,11 +433,19 @@
 
         .box-content {
             padding: 0.85rem;
-            max-height: 380px;
+            max-height: 420px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
+        }
+
+        .box-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        .box-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
         }
 
         /* Telemetry Cards */
@@ -604,7 +660,7 @@
             gap: 0.3rem;
         }
 
-        /* Lightbox Modal (Confining Image ALT & Full Details) */
+        /* Lightbox Modal */
         .lightbox-modal {
             display: none;
             position: fixed;
@@ -621,36 +677,58 @@
             display: flex;
         }
 
-        .lightbox-close {
+        .lightbox-card-container {
+            background: #111827;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 1.5rem;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .lightbox-close-btn {
             position: absolute;
-            top: 1.25rem;
-            right: 1.75rem;
-            font-size: 2.5rem;
-            color: #ffffff;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            color: #94a3b8;
             cursor: pointer;
+            background: none;
+            border: none;
+            line-height: 1;
+            padding: 4px 8px;
+            transition: color 0.2s ease;
+        }
+
+        .lightbox-close-btn:hover {
+            color: #ffffff;
         }
 
         .lightbox-body {
             display: flex;
             flex-direction: column;
             align-items: center;
-            max-width: 90%;
+            width: 100%;
             max-height: 85vh;
+            overflow-y: auto;
         }
 
         .lightbox-content {
             max-width: 100%;
-            max-height: 70vh;
+            max-height: 50vh;
             border-radius: 8px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            margin-bottom: 1rem;
         }
 
         .lightbox-caption {
-            margin-top: 1rem;
             color: #ffffff;
             font-size: 1rem;
             font-weight: 600;
             text-align: center;
+            width: 100%;
         }
 
         /* System Sticky Footer */
@@ -676,7 +754,7 @@
         /* Responsive Viewports */
         @media (max-width: 1024px) and (min-width: 768px) {
             .dashboard-container, .footer-content, .nav-container { width: 92%; }
-            .grid-layout { grid-template-columns: repeat(2, 1fr); }
+            .dual-farm-matrix { grid-template-columns: 1fr; }
             .metrics-row { grid-template-columns: repeat(2, 1fr); }
         }
 
@@ -685,7 +763,7 @@
             .mobile-toggle { display: flex; }
             .nav-container { width: 100%; justify-content: space-between; }
             .brand-hub-link { position: static; }
-            .grid-layout { grid-template-columns: 1fr; }
+            .dual-farm-matrix { grid-template-columns: 1fr; }
             .metrics-row { grid-template-columns: 1fr; }
             .banner-layout { flex-direction: column; align-items: flex-start; }
             .map-preview-box { width: 100%; height: 180px; }
@@ -778,31 +856,124 @@
             </div>
         </div>
 
-        <!-- Section: Primary Telemetry Columns -->
-        <div class="grid-layout">
+        <!-- Section: Split Side-by-Side Dual Farm Operations Matrix -->
+        <div class="dual-farm-matrix">
+            
+            <!-- ==================== FARM 1 (LEFT COLUMN) ==================== -->
+            <div class="farm-column" id="farm1-column">
+                <div class="farm-header-card farm1-card">
+                    <div>
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Operational Facility</span>
+                        <h2 id="farm1-name" class="farm-header-title">Farm 1</h2>
+                    </div>
+                    <div id="farm1-money" class="farm-header-balance f1">$0</div>
+                </div>
+
+                <!-- Farm 1 Fleet Tractors -->
+                <div class="dashboard-box">
+                    <div class="box-header"><i class="fa-solid fa-tractor"></i><h2>FARM 1: TRACTORS & RIGS</h2></div>
+                    <div id="f1-tractors-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning Farm 1 tractors...</div></div>
+                </div>
+
+                <!-- Farm 1 Harvesters -->
+                <div class="dashboard-box">
+                    <div class="box-header"><i class="fa-solid fa-wheat-awn"></i><h2>FARM 1: HARVESTERS & COMBINES</h2></div>
+                    <div id="f1-harvesters-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning Farm 1 harvesters...</div></div>
+                </div>
+
+                <!-- Farm 1 Trailers -->
+                <div class="dashboard-box">
+                    <div class="box-header"><i class="fa-solid fa-truck-ramp-box"></i><h2>FARM 1: HAULING TRAILERS</h2></div>
+                    <div id="f1-trailers-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning Farm 1 trailers...</div></div>
+                </div>
+
+                <!-- Farm 1 Implements & Seeders -->
+                <div class="dashboard-box">
+                    <div class="box-header"><i class="fa-solid fa-screwdriver-wrench"></i><h2>FARM 1: IMPLEMENTS & SEEDERS</h2></div>
+                    <div id="f1-implements-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning Farm 1 implements...</div></div>
+                </div>
+
+                <!-- Farm 1 Livestock & Husbandry -->
+                <div class="dashboard-box">
+                    <div class="box-header"><i class="fa-solid fa-cow"></i><h2>FARM 1: LIVESTOCK & BARNS</h2></div>
+                    <div id="f1-animals-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Farm 1 animals...</div></div>
+                </div>
+
+                <!-- Farm 1 Passive Income Generators -->
+                <div class="dashboard-box">
+                    <div class="box-header"><i class="fa-solid fa-solar-panel"></i><h2>FARM 1: PASSIVE GENERATORS</h2></div>
+                    <div id="f1-construction-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Farm 1 generators...</div></div>
+                </div>
+
+                <!-- Farm 1 Storage & Inventory -->
+                <div class="dashboard-box">
+                    <div class="box-header"><i class="fa-solid fa-warehouse"></i><h2>FARM 1: BALES, PALLETS & STORAGE</h2></div>
+                    <div id="f1-storage-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Farm 1 storage...</div></div>
+                </div>
+            </div>
+
+            <!-- ==================== FARM 2 (RIGHT COLUMN) ==================== -->
+            <div class="farm-column" id="farm2-column">
+                <div class="farm-header-card farm2-card">
+                    <div>
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Operational Facility</span>
+                        <h2 id="farm2-name" class="farm-header-title">Farm 2</h2>
+                    </div>
+                    <div id="farm2-money" class="farm-header-balance f2">$0</div>
+                </div>
+
+                <!-- Farm 2 Fleet Tractors -->
+                <div class="dashboard-box">
+                    <div class="box-header"><i class="fa-solid fa-tractor"></i><h2>FARM 2: TRACTORS & RIGS</h2></div>
+                    <div id="f2-tractors-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning Farm 2 tractors...</div></div>
+                </div>
+
+                <!-- Farm 2 Harvesters -->
+                <div class="dashboard-box">
+                    <div class="box-header"><i class="fa-solid fa-wheat-awn"></i><h2>FARM 2: HARVESTERS & COMBINES</h2></div>
+                    <div id="f2-harvesters-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning Farm 2 harvesters...</div></div>
+                </div>
+
+                <!-- Farm 2 Trailers -->
+                <div class="dashboard-box">
+                    <div class="box-header"><i class="fa-solid fa-truck-ramp-box"></i><h2>FARM 2: HAULING TRAILERS</h2></div>
+                    <div id="f2-trailers-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning Farm 2 trailers...</div></div>
+                </div>
+
+                <!-- Farm 2 Implements & Seeders -->
+                <div class="dashboard-box">
+                    <div class="box-header"><i class="fa-solid fa-screwdriver-wrench"></i><h2>FARM 2: IMPLEMENTS & SEEDERS</h2></div>
+                    <div id="f2-implements-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning Farm 2 implements...</div></div>
+                </div>
+
+                <!-- Farm 2 Livestock & Husbandry -->
+                <div class="dashboard-box">
+                    <div class="box-header"><i class="fa-solid fa-cow"></i><h2>FARM 2: LIVESTOCK & BARNS</h2></div>
+                    <div id="f2-animals-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Farm 2 animals...</div></div>
+                </div>
+
+                <!-- Farm 2 Passive Income Generators -->
+                <div class="dashboard-box">
+                    <div class="box-header"><i class="fa-solid fa-solar-panel"></i><h2>FARM 2: PASSIVE GENERATORS</h2></div>
+                    <div id="f2-construction-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Farm 2 generators...</div></div>
+                </div>
+
+                <!-- Farm 2 Storage & Inventory -->
+                <div class="dashboard-box">
+                    <div class="box-header"><i class="fa-solid fa-warehouse"></i><h2>FARM 2: BALES, PALLETS & STORAGE</h2></div>
+                    <div id="f2-storage-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Farm 2 storage...</div></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Section: Global Map Operations (Players, Contracts, Collectibles, Fields, Factories) -->
+        <div class="metrics-row" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); margin-top: 1rem;">
             
             <!-- Card: Active Online Players -->
             <div class="dashboard-box">
                 <div class="box-header"><i class="fa-solid fa-gamepad"></i><h2>ACTIVE ONLINE PLAYERS</h2></div>
                 <div id="active-players-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Checking connected players...</div></div>
-            </div>
-
-            <!-- Card: Server Farms Balances -->
-            <div class="dashboard-box">
-                <div class="box-header"><i class="fa-solid fa-building-columns"></i><h2>REGISTERED SERVER FARMS</h2></div>
-                <div id="farms-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Syncing farm balances...</div></div>
-            </div>
-
-            <!-- Card: Livestock & Animal Barns -->
-            <div class="dashboard-box">
-                <div class="box-header"><i class="fa-solid fa-cow"></i><h2>LIVESTOCK & ANIMAL BARNS</h2></div>
-                <div id="animals-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading animal telemetry...</div></div>
-            </div>
-
-            <!-- Card: Placed Objects & Passive Income -->
-            <div class="dashboard-box">
-                <div class="box-header"><i class="fa-solid fa-solar-panel"></i><h2>PASSIVE INCOME GENERATORS</h2></div>
-                <div id="construction-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Calculating passive revenue...</div></div>
             </div>
 
             <!-- Card: Contracts & Missions -->
@@ -817,36 +988,6 @@
                 <div id="collectibles-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading collectible items...</div></div>
             </div>
 
-            <!-- Card: Fleet Tractors -->
-            <div class="dashboard-box">
-                <div class="box-header"><i class="fa-solid fa-tractor"></i><h2>FLEET TRACTORS & RIGS</h2></div>
-                <div id="tractors-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning tractor fleet...</div></div>
-            </div>
-
-            <!-- Card: Harvesters & Combines -->
-            <div class="dashboard-box">
-                <div class="box-header"><i class="fa-solid fa-wheat-awn"></i><h2>HARVESTERS & COMBINES</h2></div>
-                <div id="harvesters-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning harvest fleet...</div></div>
-            </div>
-
-            <!-- Card: Hauling Trailers & Wagons -->
-            <div class="dashboard-box">
-                <div class="box-header"><i class="fa-solid fa-truck-ramp-box"></i><h2>HAULING TRAILERS & WAGONS</h2></div>
-                <div id="trailers-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning trailers...</div></div>
-            </div>
-
-            <!-- Card: Implements & Seeders -->
-            <div class="dashboard-box">
-                <div class="box-header"><i class="fa-solid fa-screwdriver-wrench"></i><h2>IMPLEMENTS, SEEDERS & PLOWS</h2></div>
-                <div id="implements-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning equipment...</div></div>
-            </div>
-
-            <!-- Card: Hand Tools -->
-            <div class="dashboard-box">
-                <div class="box-header"><i class="fa-solid fa-toolbox"></i><h2>PLAYER HAND TOOLS</h2></div>
-                <div id="handtools-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning hand tools...</div></div>
-            </div>
-
             <!-- Card: Field Crops & Agronomy -->
             <div class="dashboard-box">
                 <div class="box-header"><i class="fa-solid fa-seedling"></i><h2>FIELD CROPS & AGRONOMY STATUS</h2></div>
@@ -859,19 +1000,19 @@
                 <div id="main-productions-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading factory telemetry...</div></div>
             </div>
 
-            <!-- Card: Greenhouses & Storage -->
+            <!-- Card: Hand Tools -->
             <div class="dashboard-box">
-                <div class="box-header"><i class="fa-solid fa-warehouse"></i><h2>BALES, PALLETS & STORAGE</h2></div>
-                <div id="greenhouses-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading storage inventory...</div></div>
+                <div class="box-header"><i class="fa-solid fa-toolbox"></i><h2>PLAYER HAND TOOLS</h2></div>
+                <div id="handtools-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning hand tools...</div></div>
             </div>
 
         </div>
 
         <!-- Section: Server Mod Directory -->
-        <section class="mod-hub-section" style="margin-top: 2rem;">
+        <section class="mod-hub-section" style="margin-top: 1.5rem;">
             <div class="mod-hub-header">
                 <h2><i class="fa-solid fa-cubes" style="color:var(--accent-gold, #facc15);"></i> SERVER MODIFICATION DIRECTORY</h2>
-                <p style="color:var(--text-muted, #94a3b8); margin-top:4px;">Installed modifications cross-referenced with ModHub search links.</p>
+                <p style="color:var(--text-muted, #94a3b8); margin-top:4px;">Installed modifications cross-referenced with exact ModHub target searches.</p>
                 <div id="mod-categories-bar" class="mod-categories-bar"></div>
             </div>
             <div id="mod-hub-grid" class="mod-grid">
@@ -883,17 +1024,19 @@
 
     <!-- Lightbox Modal for Detail View -->
     <div id="lightbox-modal" class="lightbox-modal">
-        <span id="lightbox-close" class="lightbox-close">&times;</span>
-        <div id="lightbox-card-body" class="lightbox-body">
-            <img id="lightbox-img" class="lightbox-content" src="" alt="" style="display:none;">
-            <div id="lightbox-caption" class="lightbox-caption"></div>
+        <div class="lightbox-card-container">
+            <button id="lightbox-close" class="lightbox-close-btn" type="button" aria-label="Close modal">&times;</button>
+            <div id="lightbox-card-body" class="lightbox-body">
+                <img id="lightbox-img" class="lightbox-content" src="" alt="" style="display:none;">
+                <div id="lightbox-caption" class="lightbox-caption"></div>
+            </div>
         </div>
     </div>
 
     <!-- System Footer -->
     <footer class="system-footer">
         <div class="footer-content">
-            <span><i class="fa-solid fa-code-commit"></i> Engine: <strong>v52.3.0 (Direct Client Live Sync)</strong></span>
+            <span><i class="fa-solid fa-code-commit"></i> Engine: <strong>v52.4.0 (Dual-Farm Split Architecture)</strong></span>
             <span id="save-slot-display" style="color:var(--accent-gold, #facc15); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Slot #1</span>
             <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Connected</span>
         </div>
@@ -924,7 +1067,7 @@
         const UTM_LINKS_URL = "//entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
         let cachedMods = {};
 
-        // Safe Array Normalizer (Prevents crashes on plain objects or single-element XML records)
+        // Safe Array Normalizer
         function toArray(val) {
             if (!val) return [];
             if (Array.isArray(val)) return val;
@@ -954,6 +1097,55 @@
                 .trim()
                 .replace(/\b\w/g, c => c.toUpperCase());
         }
+
+        // ====================================================================
+        // LIGHTBOX CONTROLLER: RELIABLE DISMISSAL & ESCAPE HANDLING
+        // ====================================================================
+        function closeActiveLightbox() {
+            const modal = document.getElementById('lightbox-modal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('mobile-menu-toggle');
+            const menu = document.getElementById('dynamic-menu');
+            if (toggle && menu) {
+                toggle.addEventListener('click', () => menu.classList.toggle('open'));
+            }
+
+            const lbModal = document.getElementById('lightbox-modal');
+            const lbClose = document.getElementById('lightbox-close');
+            if (lbClose) {
+                lbClose.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    closeActiveLightbox();
+                });
+            }
+
+            if (lbModal) {
+                lbModal.addEventListener('click', (e) => {
+                    if (e.target === lbModal) {
+                        closeActiveLightbox();
+                    }
+                });
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeActiveLightbox();
+                }
+            });
+
+            const mapThumb = document.getElementById('banner-map-thumb');
+            if (mapThumb) {
+                mapThumb.addEventListener('click', () => {
+                    window.openImageLightbox(mapThumb.src, mapThumb.getAttribute('data-alt') || 'Live Satellite Map Feed');
+                });
+            }
+
+            loadNavigationMenu();
+        });
 
         // ====================================================================
         // SECTION 1: CENTERED /utm_links NAVIGATION BUILDER
@@ -1036,7 +1228,7 @@
         }
 
         // ====================================================================
-        // SECTION 2: REALTIME DATABASE SYNC & CARD POPULATOR
+        // SECTION 2: REALTIME DATABASE SYNC & DUAL-FARM CARD POPULATOR
         // ====================================================================
         function syncDashboard(data) {
             if (!data) return;
@@ -1096,19 +1288,158 @@
                 console.warn("[METRICS ERROR]:", err.message);
             }
 
-            // 3. Isolated Card Renderers with Error Protection
+            // 3. Populate Farm 1 vs Farm 2 Distinct Operations
+            const farm1Data = farmsObj.farm_1 || farmsObj['1'] || null;
+            const farm2Data = farmsObj.farm_2 || farmsObj['2'] || null;
+
+            try { renderFarmColumn(farm1Data, 'f1', 'Farm 1'); } catch (e) { console.warn("[FARM 1 ERROR]:", e.message); }
+            try { renderFarmColumn(farm2Data, 'f2', 'Farm 2'); } catch (e) { console.warn("[FARM 2 ERROR]:", e.message); }
+
+            // 4. Populate Global Telemetry
             try { renderPlayerList(data.activePlayersList || []); } catch (e) { console.warn("[PLAYERS ERROR]:", e.message); }
-            try { renderFarmsList(farmsObj); } catch (e) { console.warn("[FARMS ERROR]:", e.message); }
-            try { renderAnimalsList(data); } catch (e) { console.warn("[ANIMALS ERROR]:", e.message); }
-            try { renderPassiveGenerators(farmsObj); } catch (e) { console.warn("[PASSIVE ERROR]:", e.message); }
             try { renderMissionsList(data.missions || { all: [] }); } catch (e) { console.warn("[MISSIONS ERROR]:", e.message); }
             try { renderCollectibles(data.collectibles || { items: [] }); } catch (e) { console.warn("[COLLECTIBLES ERROR]:", e.message); }
-            try { renderEquipmentCards(farmsObj, data); } catch (e) { console.warn("[EQUIPMENT ERROR]:", e.message); }
-            try { renderHandTools(data); } catch (e) { console.warn("[HANDTOOLS ERROR]:", e.message); }
             try { renderFieldsList(data.fields || []); } catch (e) { console.warn("[FIELDS ERROR]:", e.message); }
             try { renderProductions(data); } catch (e) { console.warn("[PRODUCTIONS ERROR]:", e.message); }
-            try { renderStorage(data); } catch (e) { console.warn("[STORAGE ERROR]:", e.message); }
+            try { renderHandTools(data); } catch (e) { console.warn("[HANDTOOLS ERROR]:", e.message); }
             try { renderModHub(data.activeMods || {}); } catch (e) { console.warn("[MODHUB ERROR]:", e.message); }
+        }
+
+        // ====================================================================
+        // RENDERER: SPLIT FARM COLUMNS (Farm 1 vs Farm 2)
+        // ====================================================================
+        function renderFarmColumn(farm, prefix, fallbackName) {
+            const nameEl = document.getElementById(`${prefix.replace('f', 'farm')}-name`);
+            const moneyEl = document.getElementById(`${prefix.replace('f', 'farm')}-money`);
+
+            if (!farm) {
+                if (nameEl) nameEl.innerText = fallbackName;
+                if (moneyEl) moneyEl.innerText = "$0";
+                return;
+            }
+
+            if (nameEl) nameEl.innerText = farm.name || fallbackName;
+            if (moneyEl) moneyEl.innerText = formatMoney(farm.money || farm.finances?.money || 0);
+
+            const vehicles = toArray(farm.vehicles);
+            const tractorsBox = document.getElementById(`${prefix}-tractors-container`);
+            const harvestersBox = document.getElementById(`${prefix}-harvesters-container`);
+            const trailersBox = document.getElementById(`${prefix}-trailers-container`);
+            const implementsBox = document.getElementById(`${prefix}-implements-container`);
+
+            const renderUnits = (units, targetBox, emptyMsg) => {
+                if (!targetBox) return;
+                if (!units || units.length === 0) {
+                    targetBox.innerHTML = `<div class="empty-state">${emptyMsg}</div>`;
+                    return;
+                }
+                targetBox.innerHTML = units.map(u => {
+                    const rawUnits = toArray(u.fillUnits?.unit || u.fillUnits);
+                    const fillHtml = rawUnits.map(fu => {
+                        const pct = Math.min(100, Math.max(0, Math.round(Number(fu.percent !== undefined ? fu.percent : fu.fillLevel) || 0)));
+                        const color = getStoplightColor(pct);
+                        return `
+                            <div class="fill-meter-wrap">
+                                <span>${fu.fillType || 'Capacity'}</span>
+                                <div class="fill-bar-track"><div class="fill-bar-val" style="width:${pct}%; background:${color};"></div></div>
+                                <span style="color:${color}; font-weight:700;">${pct}%</span>
+                            </div>
+                        `;
+                    }).join('');
+
+                    return `
+                        <div class="telemetry-card" style="flex-direction:column; align-items:stretch;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <strong>${cleanName(u.name || u.file)}</strong>
+                                <span class="card-subtext">${u.operatingHours || 0}h</span>
+                            </div>
+                            ${fillHtml}
+                        </div>
+                    `;
+                }).join('');
+            };
+
+            const tractors = vehicles.filter(v => {
+                const n = (cleanName(v.name || v.file) + ' ' + (v.category || '')).toLowerCase();
+                return n.includes('tractor') || n.includes('quadtrac') || n.includes('series') || n.includes('8r') || n.includes('9r') || n.includes('magnum');
+            });
+
+            const harvesters = vehicles.filter(v => {
+                const n = (cleanName(v.name || v.file) + ' ' + (v.category || '')).toLowerCase();
+                return n.includes('harvester') || n.includes('combine') || n.includes('picker') || n.includes('cotton');
+            });
+
+            const trailers = vehicles.filter(v => {
+                const n = (cleanName(v.name || v.file) + ' ' + (v.category || '')).toLowerCase();
+                return n.includes('trailer') || n.includes('tipper') || n.includes('wagon') || n.includes('flatbed');
+            });
+
+            const implementsList = vehicles.filter(v => !tractors.includes(v) && !harvesters.includes(v) && !trailers.includes(v));
+
+            renderUnits(tractors, tractorsBox, `No tractors registered to ${farm.name || fallbackName}.`);
+            renderUnits(harvesters, harvestersBox, `No harvesters registered to ${farm.name || fallbackName}.`);
+            renderUnits(trailers, trailersBox, `No trailers registered to ${farm.name || fallbackName}.`);
+            renderUnits(implementsList, implementsBox, `No implements registered to ${farm.name || fallbackName}.`);
+
+            // Animals
+            const animalsBox = document.getElementById(`${prefix}-animals-container`);
+            const animals = toArray(farm.cards?.animals);
+            if (animalsBox) {
+                if (animals.length === 0) {
+                    animalsBox.innerHTML = `<div class="empty-state">No animal husbandry facilities on this farm.</div>`;
+                } else {
+                    animalsBox.innerHTML = animals.map(a => `
+                        <div class="telemetry-card">
+                            <i class="fa-solid fa-cow card-icon" style="color:#facc15;"></i>
+                            <div class="card-details" style="flex:1;">
+                                <strong>${cleanName(a.name || a.file)}</strong>
+                                <span class="card-subtext">${a.file || 'Husbandry Facility'}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // Passive Income Generators
+            const constBox = document.getElementById(`${prefix}-construction-container`);
+            const generators = toArray(farm.cards?.incomeGenerators);
+            if (constBox) {
+                if (generators.length === 0) {
+                    constBox.innerHTML = `<div class="empty-state">No passive generators installed on this farm.</div>`;
+                } else {
+                    constBox.innerHTML = generators.map(g => `
+                        <div class="telemetry-card">
+                            <i class="fa-solid fa-solar-panel card-icon" style="color:#38bdf8;"></i>
+                            <div class="card-details" style="flex:1;">
+                                <div style="display:flex; justify-content:space-between;">
+                                    <strong>${g.source || 'Generator'} (${g.totalUnits || 1} Units)</strong>
+                                    <span style="color:#4ade80; font-family:var(--font-mono); font-weight:700;">${g.revenueSchedule?.displayPayout || '$0/mo'}</span>
+                                </div>
+                                <span class="card-subtext">Location: ${g.location || 'Farm Grounds'} | Value: ${g.totalFarmValueFormatted || '$0'}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // Pallets, Bales & Storage
+            const storageBox = document.getElementById(`${prefix}-storage-container`);
+            const storage = toArray(farm.cards?.palletsAndBales);
+            if (storageBox) {
+                if (storage.length === 0) {
+                    storageBox.innerHTML = `<div class="empty-state">No pallets or bales stored on this farm.</div>`;
+                } else {
+                    storageBox.innerHTML = storage.slice(0, 15).map(s => `
+                        <div class="telemetry-card">
+                            <i class="fa-solid fa-box card-icon" style="color:#facc15;"></i>
+                            <div class="card-details">
+                                <strong>${cleanName(s.name || s.file)}</strong>
+                                <span class="card-subtext">Stored Pallet / Bale Resource</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
         }
 
         function renderPlayerList(players) {
@@ -1125,72 +1456,6 @@
                     <div class="card-details">
                         <strong>${p.name || 'Player'}</strong>
                         <span>Connected to Dedicated Server</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderFarmsList(farms) {
-            const container = document.getElementById('farms-container');
-            if (!container) return;
-            const list = Object.values(farms);
-            if (list.length === 0) {
-                container.innerHTML = `<div class="empty-state">No registered server farms.</div>`;
-                return;
-            }
-            container.innerHTML = list.map(f => `
-                <div class="telemetry-card">
-                    <i class="fa-solid fa-building-columns card-icon"></i>
-                    <div class="card-details" style="flex:1;">
-                        <div style="display:flex; justify-content:space-between;">
-                            <strong>${f.name || 'Farm'}</strong>
-                            <strong style="color:#4ade80;">${formatMoney(f.money || f.finances?.money || 0)}</strong>
-                        </div>
-                        <span class="card-subtext">Parcels: ${toArray(f.cards?.farmlandOwned).length} | Fleet: ${toArray(f.vehicles).length} Units</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderAnimalsList(data) {
-            const container = document.getElementById('animals-container');
-            if (!container) return;
-            const animals = toArray(data.cards?.animals);
-            if (animals.length === 0) {
-                container.innerHTML = `<div class="empty-state">No active animal husbandry detected.</div>`;
-                return;
-            }
-            container.innerHTML = animals.map(a => `
-                <div class="telemetry-card">
-                    <i class="fa-solid fa-cow card-icon" style="color:#facc15;"></i>
-                    <div class="card-details" style="flex:1;">
-                        <strong>${cleanName(a.name || a.file)}</strong>
-                        <span class="card-subtext">Husbandry Facility</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderPassiveGenerators(farms) {
-            const container = document.getElementById('construction-container');
-            if (!container) return;
-            const generators = [];
-            Object.values(farms).forEach(f => {
-                toArray(f.cards?.incomeGenerators).forEach(g => generators.push(g));
-            });
-            if (generators.length === 0) {
-                container.innerHTML = `<div class="empty-state">No passive generators installed.</div>`;
-                return;
-            }
-            container.innerHTML = generators.map(g => `
-                <div class="telemetry-card">
-                    <i class="fa-solid fa-solar-panel card-icon" style="color:#38bdf8;"></i>
-                    <div class="card-details" style="flex:1;">
-                        <div style="display:flex; justify-content:space-between;">
-                            <strong>${g.source || 'Generator'} (${g.totalUnits || 1} Units)</strong>
-                            <span style="color:#4ade80; font-family:var(--font-mono); font-weight:700;">${g.revenueSchedule?.displayPayout || '$0/mo'}</span>
-                        </div>
-                        <span class="card-subtext">Location: ${g.location || 'Farm Grounds'} | Value: ${g.totalFarmValueFormatted || '$0'}</span>
                     </div>
                 </div>
             `).join('');
@@ -1237,98 +1502,6 @@
             `;
         }
 
-        // ====================================================================
-        // FIXED EQUIPMENT RENDERER: Safe Array Conversion for fillUnits
-        // ====================================================================
-        function renderEquipmentCards(farms, rootData) {
-            const tractorsBox = document.getElementById('tractors-container');
-            const harvestersBox = document.getElementById('harvesters-container');
-            const trailersBox = document.getElementById('trailers-container');
-            const implementsBox = document.getElementById('implements-container');
-
-            const allVehicles = [];
-            Object.values(farms).forEach(f => {
-                toArray(f.vehicles).forEach(v => allVehicles.push(v));
-            });
-
-            if (allVehicles.length === 0 && rootData?.cards?.fleet) {
-                toArray(rootData.cards.fleet).forEach(v => allVehicles.push(v));
-            }
-
-            const renderUnits = (units, targetBox, emptyMsg) => {
-                if (!targetBox) return;
-                if (!units || units.length === 0) {
-                    targetBox.innerHTML = `<div class="empty-state">${emptyMsg}</div>`;
-                    return;
-                }
-                targetBox.innerHTML = units.map(u => {
-                    const rawUnits = toArray(u.fillUnits?.unit || u.fillUnits);
-                    const fillHtml = rawUnits.map(fu => {
-                        const pct = Math.min(100, Math.max(0, Math.round(Number(fu.percent !== undefined ? fu.percent : fu.fillLevel) || 0)));
-                        const color = getStoplightColor(pct);
-                        return `
-                            <div class="fill-meter-wrap">
-                                <span>${fu.fillType || 'Capacity'}</span>
-                                <div class="fill-bar-track"><div class="fill-bar-val" style="width:${pct}%; background:${color};"></div></div>
-                                <span style="color:${color}; font-weight:700;">${pct}%</span>
-                            </div>
-                        `;
-                    }).join('');
-
-                    return `
-                        <div class="telemetry-card" style="flex-direction:column; align-items:stretch;">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <strong>${cleanName(u.name || u.file)}</strong>
-                                <span class="card-subtext">${u.operatingHours || 0}h</span>
-                            </div>
-                            ${fillHtml}
-                        </div>
-                    `;
-                }).join('');
-            };
-
-            const tractors = allVehicles.filter(v => {
-                const n = (cleanName(v.name || v.file) + ' ' + (v.category || '')).toLowerCase();
-                return n.includes('tractor') || n.includes('quadtrac') || n.includes('series') || n.includes('8r') || n.includes('9r') || n.includes('magnum');
-            });
-
-            const harvesters = allVehicles.filter(v => {
-                const n = (cleanName(v.name || v.file) + ' ' + (v.category || '')).toLowerCase();
-                return n.includes('harvester') || n.includes('combine') || n.includes('picker') || n.includes('cotton');
-            });
-
-            const trailers = allVehicles.filter(v => {
-                const n = (cleanName(v.name || v.file) + ' ' + (v.category || '')).toLowerCase();
-                return n.includes('trailer') || n.includes('tipper') || n.includes('wagon') || n.includes('flatbed');
-            });
-
-            const implementsList = allVehicles.filter(v => !tractors.includes(v) && !harvesters.includes(v) && !trailers.includes(v));
-
-            renderUnits(tractors, tractorsBox, "No fleet tractors deployed.");
-            renderUnits(harvesters, harvestersBox, "No harvesters or combines active.");
-            renderUnits(trailers, trailersBox, "No hauling trailers registered.");
-            renderUnits(implementsList, implementsBox, "No tools or implements detected.");
-        }
-
-        function renderHandTools(data) {
-            const container = document.getElementById('handtools-container');
-            if (!container) return;
-            const tools = toArray(data.cards?.handTools);
-            if (tools.length === 0) {
-                container.innerHTML = `<div class="empty-state">No hand tools registered.</div>`;
-                return;
-            }
-            container.innerHTML = tools.map(t => `
-                <div class="telemetry-card">
-                    <i class="fa-solid fa-toolbox card-icon" style="color:#ef4444;"></i>
-                    <div class="card-details">
-                        <strong>${cleanName(t.name || t.filename)}</strong>
-                        <span class="card-subtext">Player Inventory Tool</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
         function renderFieldsList(fields) {
             const container = document.getElementById('fields-container');
             if (!container) return;
@@ -1370,20 +1543,20 @@
             `).join('');
         }
 
-        function renderStorage(data) {
-            const container = document.getElementById('greenhouses-container');
+        function renderHandTools(data) {
+            const container = document.getElementById('handtools-container');
             if (!container) return;
-            const list = toArray(data.cards?.palletsAndBales);
-            if (list.length === 0) {
-                container.innerHTML = `<div class="empty-state">No storage inventory detected.</div>`;
+            const tools = toArray(data.cards?.handTools);
+            if (tools.length === 0) {
+                container.innerHTML = `<div class="empty-state">No hand tools registered.</div>`;
                 return;
             }
-            container.innerHTML = list.slice(0, 15).map(s => `
+            container.innerHTML = tools.map(t => `
                 <div class="telemetry-card">
-                    <i class="fa-solid fa-box card-icon" style="color:#facc15;"></i>
+                    <i class="fa-solid fa-toolbox card-icon" style="color:#ef4444;"></i>
                     <div class="card-details">
-                        <strong>${cleanName(s.name || s.file)}</strong>
-                        <span class="card-subtext">Pallet / Bale Inventory</span>
+                        <strong>${cleanName(t.name || t.filename)}</strong>
+                        <span class="card-subtext">Player Inventory Tool</span>
                     </div>
                 </div>
             `).join('');
@@ -1414,7 +1587,9 @@
             `).join('');
         }
 
-        // Global Window Attachments for Lightbox Handling
+        // ====================================================================
+        // GLOBAL LIGHTBOX ATTACHMENTS WITH DIRECT MOD SEARCH LOOKUP
+        // ====================================================================
         window.openImageLightbox = function(imgUrl, captionText) {
             const modal = document.getElementById('lightbox-modal');
             const img = document.getElementById('lightbox-img');
@@ -1442,9 +1617,13 @@
                 img.style.display = 'none';
             }
 
+            const modDisplayName = m.name || modKey;
+            // Precise target search on the official ModHub using exact name
+            const specificModhubUrl = `https://www.farming-simulator.com/mods.php?title=fs2025&searchKeyword=${encodeURIComponent(modDisplayName)}`;
+
             caption.innerHTML = `
-                <div style="text-align:left; max-width:550px; margin:0 auto; font-family:var(--font-family);">
-                    <h3 style="color:#facc15; font-size:1.3rem; margin-bottom:6px;">${m.name || modKey}</h3>
+                <div style="text-align:left; width:100%; font-family:var(--font-family);">
+                    <h3 style="color:#facc15; font-size:1.3rem; margin-bottom:6px;">${modDisplayName}</h3>
                     <p style="color:#cbd5e1; font-size:0.875rem; margin-bottom:12px; line-height:1.4;">${m.description || 'No description provided.'}</p>
                     <div style="background:#0b1120; padding:10px; border-radius:6px; font-family:var(--font-mono); font-size:0.8rem; color:#94a3b8; display:flex; flex-direction:column; gap:4px;">
                         <div>Author: <strong style="color:#fff;">${m.author || 'Unknown'}</strong></div>
@@ -1452,8 +1631,8 @@
                         <div>Platform: <strong style="color:#38bdf8;">${m.platform || 'Crossplay'}</strong></div>
                         <div>Catalog Status: <strong style="color:#4ade80;">${m.matchedInCatalog ? 'VERIFIED IN CATALOG' : 'MODHUB DEPLOYED'}</strong></div>
                     </div>
-                    <a href="${m.storeUrl || 'https://www.farming-simulator.com/mods.php?title=fs2025&searchKeyword=' + encodeURIComponent(m.name || modKey)}" target="_blank" class="mod-download-btn" style="margin-top:14px; width:100%; justify-content:center; padding:10px;">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Search on Official ModHub
+                    <a href="${specificModhubUrl}" target="_blank" rel="noopener noreferrer" class="mod-download-btn" style="margin-top:14px; width:100%; justify-content:center; padding:10px;">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Search "${modDisplayName}" on Official ModHub
                     </a>
                 </div>
             `;
@@ -1461,9 +1640,8 @@
             modal.classList.add('active');
         };
 
-        // Initialize Native Realtime Listener directly from fs25-a3563
+        // Stream Telemetry Directly from Firebase
         document.addEventListener('DOMContentLoaded', () => {
-            loadNavigationMenu();
             const fs25Ref = ref(db, "fs25");
             onValue(fs25Ref, (snapshot) => {
                 const liveData = snapshot.val();
