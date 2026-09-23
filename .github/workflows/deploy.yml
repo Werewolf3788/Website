@@ -1,7 +1,8 @@
 # ==============================================================================
-# GitHub Actions Workflow: Auto-Deploy to Google Cloud Firebase
-# Timestamp: 2026-09-23 11:27:00 EDT (New York)
-# Triggers on git push to the main branch
+# GitHub Actions Workflow: Auto-Deploy to Firebase Hosting
+# Project: playstation-be936
+# Target Secret: GCP_SA_KEY_WEBSITE
+# Timestamp: 2026-09-23 11:45:00 EDT (New York)
 # ==============================================================================
 
 name: Deploy to Google Cloud & Firebase
@@ -10,6 +11,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build_and_deploy:
@@ -26,23 +28,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache-dependency-path: functions/package-lock.json
 
-      # Step 3: Clean install backend dependencies for Cloud Functions
-      - name: Install Cloud Functions Dependencies
-        run: |
-          if [ -d "functions" ]; then
-            echo "Functions directory detected. Installing npm dependencies..."
-            cd functions
-            npm install
-          else
-            echo "No functions folder found, skipping function install."
-          fi
-
-      # Step 4: Deploy both Hosting and Cloud Functions using your Entertainment service account secret
-      - name: Deploy to Firebase Hosting and Functions
+      # Step 3: Deploy to Firebase Hosting using GCP_SA_KEY_WEBSITE secret
+      - name: Deploy to Firebase Hosting
         uses: w9jds/firebase-action@master
         with:
-          args: deploy
+          args: deploy --only hosting --project playstation-be936
         env:
-          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_ENTERTAINMENT }}
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_WEBSITE }}
