@@ -10,7 +10,7 @@
            File: cotw.html (Styles)
            Location: /games/HunterCOTW/cotw.html
            Description: theHunter: Call of the Wild Responsive Interface
-           Timestamp: 2026-09-23 13:58:00 EDT (America/New_York)
+           Timestamp: 2026-09-23 14:18:00 EDT (America/New_York)
            ========================================================================== */
         :root {
             --user-theme-accent: #ff5500;
@@ -392,7 +392,7 @@
             border-color: #10b981;
         }
 
-        /* --- Footer --- */
+        /* --- Footer (Persistent Version & Code Timestamp Display) --- */
         footer {
             text-align: center;
             padding: 30px 16px;
@@ -400,6 +400,15 @@
             margin-top: 40px;
             background: rgba(15, 23, 42, 0.8);
             border-radius: 12px;
+        }
+
+        #build-meta-footer {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            font-family: monospace;
+            letter-spacing: 0.05em;
+            margin-top: 4px;
         }
     </style>
 </head>
@@ -533,18 +542,21 @@
         <!-- Dynamic Reserve Trophy Cards -->
         <main id="section-container"></main>
 
-        <!-- Footer: Version & Timestamp Signature -->
+        <!-- ======================================================================
+             Footer: Persistent Version & Code Timestamp
+             Visible at all times in HTML and dynamically synchronized with script.js
+             ====================================================================== -->
         <footer>
             <div style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 8px;">
                 Support the hunt: <a href="https://playstation-be936.web.app/" style="color: var(--user-theme-accent); text-decoration: none;">Werewolf Project Home</a>
             </div>
-            <div id="build-meta-footer" style="color: #94a3b8; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
-                Werewolf Project Engine • v2.3.0 • Build: 2026-09-23 13:58:00 EDT
+            <div id="build-meta-footer">
+                Werewolf Project Engine • v2.3.2 • Build: 2026-09-23 14:18:00 EDT
             </div>
         </footer>
     </div>
 
     <!-- Script connection with cachebuster param -->
-    <script type="module" src="./script.js?v=2.3.0"></script>
+    <script type="module" src="./script.js?v=2.3.2"></script>
 </body>
 </html>
