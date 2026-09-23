@@ -7,7 +7,7 @@
 <!-- Line 470: App Core & Movie Gallery Scaffolding                    -->
 <!-- Line 590: Live Realtime Firebase Sync Engine (Universal Dates)    -->
 <!-- Line 1060: Universal Clickable Outbound Storefronts & YouTube Fix -->
-<!-- Date & Time (NYT 24hr): 09/22/2026 20:04:00 EDT                   -->
+<!-- Date & Time (NYT 24hr): 09/22/2026 23:55:00 EDT                   -->
 <!-- ================================================================= -->
 <html lang="en">
 <head>
@@ -49,7 +49,7 @@
             </div>
         </div>
 
-        <!-- Desktop & Tablet Menu Bar: Center Home & Right-Hand Folders -->
+        <!-- Desktop & Tablet Menu Bar -->
         <div id="desktop-menubar-container">
             <div id="desktop-home-slot"></div>
             <div id="desktop-folders-slot"></div>
@@ -94,6 +94,7 @@
         <div id="header-clock" class="black-outline">Loading Time...</div>
         <div id="cinema-logo" class="black-outline">WEREWOLF <span>CINEMA</span></div>
         <div id="movie-counter" class="black-outline">Cinema Inventory: <span>...</span></div>
+        <div id="user-owned-counter" class="black-outline" style="font-size: 0.75rem; color: #ffd166; margin-top: 4px; display: none;"></div>
         
         <div id="sync-status-badge" class="black-outline">
             <span id="sync-dot" class="dot-checking"></span>
@@ -124,6 +125,8 @@
                 
                 <select id="platform-select" class="f-select" onchange="runFilters()">
                     <option value="">All Digital Stores</option>
+                    <option value="my_owned_yt">⭐ My Owned Films (YouTube)</option>
+                    <option value="youtube_free">🆓 YouTube (Free Movies)</option>
                     <option value="family_share">👨‍👩‍👧‍👦 Google Family Share</option>
                     <option value="amazon">Amazon</option>
                     <option value="google">Google Play</option>
@@ -131,6 +134,7 @@
                     <option value="moviesanywhere">Movies Anywhere</option>
                     <option value="apple">Apple TV</option>
                     <option value="fandango">Fandango</option>
+                    <option value="justwatch">JustWatch</option>
                 </select>
 
                 <select id="stream-service-select" class="f-select" onchange="runFilters()">
@@ -178,7 +182,7 @@
     </div>
 </div>
 
-<!-- A-Z Alphabetical Sidebar -->
+<!-- Adaptive Dynamic Sidebar -->
 <div id="dynamic-nav-sidebar" class="black-outline"></div>
 
 <!-- Back to Top Button -->
@@ -197,9 +201,6 @@
                 <h2 id="lb-title" class="black-outline"></h2>
                 <div id="lb-meta-container" class="lb-meta black-outline"></div>
                 <div id="lb-rating-desc" class="lb-meta black-outline" style="color: #f5c518; font-size: 0.8rem; margin-top: 5px; font-weight: 700; display: none;"></div>
-                
-                <!-- Google Family Share Badge in Lightbox -->
-                <div id="lb-family-share" class="family-share-lb-badge black-outline" style="display: none;">👨‍👩‍👧‍👦 Google Family Share Available</div>
 
                 <div id="lb-streaming" class="lb-meta black-outline" style="color: #00aeef; font-size: 0.85rem; margin: 10px 0; display: none; white-space: pre-line; text-align: left; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px; border: 1px solid #222;"></div>
                 <div id="lb-date-added" class="black-outline" style="font-size: 0.8rem; color:#1ce783; margin-bottom:10px;"></div>
@@ -212,19 +213,24 @@
                     <div id="lb-artists" class="lb-cast-scrollbox"></div>
                 </div>
                 
-                <!-- Lightbox-only image description -->
                 <p id="lb-image-alt-desc" class="black-outline" style="font-size: 0.75rem; color: #f5c518; margin-top: 6px; font-style: italic;"></p>
-                
                 <p id="lb-description-text" class="black-outline" style="font-size: 0.85rem; color: #ccc; line-height: 1.5; margin-top: 10px; text-align: left;"></p>
+                
+                <!-- Personal Device YouTube Ownership Toggle -->
+                <div style="margin: 12px 0 6px;">
+                    <button id="lb-owned-toggle-btn" class="f-btn black-outline" style="font-size: 0.75rem; padding: 6px 14px; min-height: 38px; border-color: #ffd166; color: #ffd166;" onclick="toggleCurrentMovieOwnedState()">
+                        ⭐ Mark as Owned in My YouTube
+                    </button>
+                </div>
             </div>
 
-            <h3 id="lb-store-heading" class="black-outline" style="font-size: 0.9rem; color: #fff; margin: 20px 0 10px; text-transform: uppercase; font-weight: 400; display: none;">Buy / Rent / Watch</h3>
+            <h3 id="lb-store-heading" class="black-outline" style="font-size: 0.9rem; color: #fff; margin: 15px 0 10px; text-transform: uppercase; font-weight: 400; display: none;">Buy / Rent / Watch</h3>
             <div id="lb-buttons" class="button-container"></div>
         </div>
     </div>
 </div>
 
-<!-- Standalone Image Lightbox (For Menu Thumbnails) -->
+<!-- Standalone Image Lightbox -->
 <div id="image-viewer-lightbox" onclick="closeImageViewer(event)">
     <button class="close-btn black-outline" onclick="closeImageViewer(event)" aria-label="Close image">✕</button>
     <div class="img-viewer-card" onclick="event.stopPropagation()">
@@ -267,7 +273,6 @@ body {
     transition: background 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Master 85% Width Scaffolding with Fluid Ceiling */
 .master-85-width { 
     width: 85%; 
     margin: 0 auto; 
@@ -277,7 +282,6 @@ body {
     align-items: center; 
 }
 
-/* Top Sticky Navbar Wrapper */
 #top-navbar-wrapper {
     position: sticky;
     top: 0;
@@ -341,7 +345,6 @@ body {
     color: #1ce783;
 }
 
-/* Desktop & Tablet Menubar */
 #desktop-menubar-container {
     display: flex;
     align-items: center;
@@ -484,7 +487,6 @@ body {
     border-color: #ff0000;
 }
 
-/* Mobile Slide Drawer */
 #nav-drawer-overlay {
     position: fixed;
     inset: 0;
@@ -627,10 +629,11 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
 body.theme-dark { background: radial-gradient(circle at center top, #1a1010 0%, #050505 50%, #000000 100%) fixed !important; }
 body.theme-dark.bg-amazon { background: radial-gradient(circle at center top, #3d1b00 0%, #0d0600 50%, #000000 100%) fixed !important; }
 body.theme-dark.bg-google, body.theme-dark.bg-family_share { background: radial-gradient(circle at center top, #0c1a3a 0%, #030612 50%, #000000 100%) fixed !important; }
-body.theme-dark.bg-youtube { background: radial-gradient(circle at center top, #3a0303 0%, #0e0101 50%, #000000 100%) fixed !important; }
+body.theme-dark.bg-youtube, body.theme-dark.bg-youtube_free, body.theme-dark.bg-my_owned_yt { background: radial-gradient(circle at center top, #3a0303 0%, #0e0101 50%, #000000 100%) fixed !important; }
 body.theme-dark.bg-moviesanywhere { background: radial-gradient(circle at center top, #002d40 0%, #000a10 50%, #000000 100%) fixed !important; }
 body.theme-dark.bg-apple { background: radial-gradient(circle at center top, #242426 0%, #0a0a0b 50%, #000000 100%) fixed !important; }
 body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, #3a1600 0%, #0e0500 50%, #000000 100%) fixed !important; }
+body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top, #362900 0%, #100b00 50%, #000000 100%) fixed !important; }
 
 #library-header { 
     width: 100%; 
@@ -692,7 +695,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 #dynamic-nav-sidebar::-webkit-scrollbar { display: none; }
 .nav-item {
     color: #888;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 900;
     padding: 4px 6px;
     cursor: pointer;
@@ -703,6 +706,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     display: flex;
     align-items: center;
     justify-content: center;
+    white-space: nowrap;
 }
 .nav-item:hover {
     color: #ff0000;
@@ -782,15 +786,76 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     box-shadow: 0 2px 6px rgba(0,0,0,0.6);
     border: 1px solid rgba(255,255,255,0.4);
 }
-.family-share-lb-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, #0284c7, #06b6d4);
+
+/* YouTube Free Vector Thumbnail Badge on Poster */
+.yt-free-badge {
+    position: absolute;
+    top: 58px;
+    left: 8px;
+    background: rgba(10, 10, 15, 0.88);
+    backdrop-filter: blur(4px);
     color: #fff;
-    font-size: 0.8rem;
-    font-weight: 800;
-    padding: 6px 12px;
-    border-radius: 6px;
-    margin: 6px 0;
+    font-size: 0.65rem;
+    font-weight: 900;
+    padding: 3px 7px;
+    border-radius: 4px;
+    z-index: 10;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.8);
+    border: 1px solid #ff0000;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: auto !important;
+    height: auto !important;
+    max-width: 140px;
+}
+.yt-free-badge svg {
+    width: 15px !important;
+    height: 15px !important;
+    flex-shrink: 0;
+}
+.user-owned-badge {
+    position: absolute;
+    top: 82px;
+    left: 8px;
+    background: linear-gradient(135deg, #d97706, #b45309);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 900;
+    padding: 3px 6px;
+    border-radius: 4px;
+    z-index: 10;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    border: 1px solid #ffd166;
+}
+
+.btn-youtube-free {
+    background: linear-gradient(135deg, #991b1b, #dc2626) !important;
+    border: 2px solid #1ce783 !important;
+    color: #fff !important;
+    animation: freeGlowPulse 1.5s infinite alternate;
+}
+.btn-youtube-owned {
+    background: linear-gradient(135deg, #15803d, #16a34a) !important;
+    border: 2px solid #ffd166 !important;
+    color: #fff !important;
+}
+.btn-justwatch {
+    background: linear-gradient(135deg, #f5c518, #eab308) !important;
+    color: #000 !important;
+    font-weight: 900 !important;
+    border: 1px solid #ffd166 !important;
+}
+.btn-justwatch:hover {
+    background: #ffd166 !important;
+    box-shadow: 0 0 15px rgba(245, 197, 24, 0.6);
+}
+
+@keyframes freeGlowPulse {
+    0% { box-shadow: 0 0 6px #1ce783; }
+    100% { box-shadow: 0 0 16px #1ce783, 0 0 25px rgba(225, 29, 72, 0.6); }
 }
 
 .tv-series-badge {
@@ -825,7 +890,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     box-shadow: inset 0 0 10px rgba(139, 92, 246, 0.2);
 }
 
-/* Fluid Liquid Grid Implementation */
 #movie-library-grid { 
     display: grid; 
     gap: 12px; 
@@ -863,7 +927,15 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 }
 .movie-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(139,0,0,0.5); border-color: #8b0000; }
 .poster-box { position: relative; aspect-ratio: 2/3; background: #000; overflow: hidden; }
-.movie-card img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Target ONLY the main movie poster image, NOT badges or icons */
+.movie-card .poster-box > img.poster-main { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    display: block;
+}
+
 .poster-year-badge { position: absolute; bottom: 6px; right: 6px; background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 900; }
 .movie-info { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; gap: 4px; text-align: center; }
 .movie-title { font-weight: 800; font-size: 0.95rem; border-bottom: 1px solid #333; padding-bottom: 4px; min-height: 2.2em; display: flex; align-items: center; justify-content: center; line-height: 1.2; }
@@ -873,7 +945,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 .ownership-text { font-size: 0.65rem; color: #c084fc; font-weight: 800; margin-top: 3px; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: center; width: 100%; }
 .click-indicator { font-size: 0.75rem; color: #1ce783; font-weight: bold; padding-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; border-top: 1px solid #222; min-height: 44px; display: flex; align-items: center; justify-content: center; }
 
-/* Lightbox Styling with Non-Clipping Flex Layout */
 #movie-lightbox { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; background: rgba(0,0,0,0.95); z-index: 20000; display: none; align-items: center; justify-content: center; padding: 1rem; }
 #movie-lightbox.active { display: flex; }
 .lightbox-content { width: 100%; max-width: 520px; height: 90vh; height: 90dvh; border: 2px solid #ff0000; border-radius: 16px; position: relative; background-size: cover; background-position: center; overflow: hidden; }
@@ -1021,17 +1092,16 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     const CACHE_STORAGE_KEY = "ww_cinema_cache_v2";
     const NOTIFY_PREF_KEY = "ww_cinema_push_enabled";
     const SEEN_MOVIES_KEY = "ww_cinema_seen_ids";
+    const USER_OWNED_YT_KEY = "ww_cinema_user_owned_youtube";
 
     let oldestMovieIndex = null;
     let newestMoviesSet = new Set();
     const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    const EXCLUDED_STREAMERS = /amazon video|apple tv store|itunes|google play movies|google play|youtube|fandango at home|fandango|vudu|buy\/rent|check apps|no free streams|spectrum on demand|amc\+\s*amazon channel|justwatch tv|vudu free/i;
+    const EXCLUDED_STREAMERS = /amazon video|apple tv store|itunes|google play movies|google play|fandango at home|fandango|vudu|buy\/rent|check apps|no free streams|spectrum on demand|amc\+\s*amazon channel|justwatch tv|vudu free/i;
 
-    /**
-     * UNIFIED SCROLL RESTORATION HELPER
-     * Prevents page scroll freezing by checking active overlays.
-     */
+    let currentActiveMovie = null;
+
     function syncScrollLockState() {
         const isLightboxActive = document.getElementById('movie-lightbox')?.classList.contains('active');
         const isDrawerActive = document.getElementById('nav-drawer')?.classList.contains('active');
@@ -1106,7 +1176,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         }
     };
 
-    // Close any modal or dropdown via the Escape key or outside clicks
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeLightbox();
@@ -1121,6 +1190,67 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             document.querySelectorAll('.nav-folder-dropdown.open').forEach(el => el.classList.remove('open'));
         }
     });
+
+    function getUserOwnedMovieIds() {
+        try {
+            return JSON.parse(localStorage.getItem(USER_OWNED_YT_KEY) || '[]');
+        } catch (e) {
+            return [];
+        }
+    }
+
+    window.toggleCurrentMovieOwnedState = () => {
+        if (!currentActiveMovie) return;
+        const movieId = (currentActiveMovie.imdbId || currentActiveMovie.title || '').toString().trim();
+        if (!movieId) return;
+
+        let owned = getUserOwnedMovieIds();
+        const index = owned.indexOf(movieId);
+        let nowOwned = false;
+
+        if (index > -1) {
+            owned.splice(index, 1);
+            nowOwned = false;
+        } else {
+            owned.push(movieId);
+            nowOwned = true;
+        }
+
+        try {
+            localStorage.setItem(USER_OWNED_YT_KEY, JSON.stringify(owned));
+        } catch (e) {}
+
+        currentActiveMovie.userOwned = nowOwned;
+        updateLightboxOwnedUI(nowOwned);
+        renderMovieGridBatch();
+        updateUserOwnedCounter();
+        triggerToast(nowOwned ? 'Marked as Owned in My YouTube!' : 'Removed from Owned list');
+    };
+
+    function updateLightboxOwnedUI(isOwned) {
+        const toggleBtn = document.getElementById('lb-owned-toggle-btn');
+        if (toggleBtn) {
+            toggleBtn.textContent = isOwned ? '✓ Owned in My YouTube' : '⭐ Mark as Owned in My YouTube';
+            toggleBtn.style.background = isOwned ? '#d97706' : '#111';
+            toggleBtn.style.color = isOwned ? '#fff' : '#ffd166';
+        }
+        if (currentActiveMovie) {
+            renderLightboxButtons(currentActiveMovie);
+        }
+    }
+
+    function updateUserOwnedCounter() {
+        const owned = getUserOwnedMovieIds();
+        const counter = document.getElementById('user-owned-counter');
+        if (counter) {
+            if (owned.length > 0) {
+                counter.innerHTML = `Personal Locker: <span>${owned.length}</span> Owned on YouTube`;
+                counter.style.display = 'block';
+            } else {
+                counter.style.display = 'none';
+            }
+        }
+    }
 
     function initLiveUtmStream() {
         fetch(FIREBASE_UTM_ENDPOINT)
@@ -1388,7 +1518,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     function isValidUrl(str) {
         if (!str) return false;
         const s = str.toString().trim().toLowerCase();
-        return s.startsWith('http://') || s.startsWith('https://') || s.startsWith('//') || s.includes('play.google.com') || s.includes('amazon.com') || s.includes('youtu');
+        return s.startsWith('http://') || s.startsWith('https://') || s.startsWith('//') || s.includes('play.google.com') || s.includes('amazon.com') || s.includes('youtu') || s.includes('justwatch.com');
     }
 
     function normalizeUrl(url) {
@@ -1403,7 +1533,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     window.appendUtm = (url, title = 'outbound') => {
         if (!url) return '';
         const cleanUrl = normalizeUrl(url);
-        if (cleanUrl.includes('amazon.com') || cleanUrl.includes('amzn.to')) {
+        if (cleanUrl.includes('amazon.com') || cleanUrl.includes('amzn.to') || cleanUrl.includes('justwatch.com')) {
             return cleanUrl;
         }
         
@@ -1498,26 +1628,39 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         const lower = tag.toLowerCase();
         let emoji = '🎉';
         let color = '#3b82f6';
+        let isActiveSeason = false;
+
+        const now = new Date();
+        const month = now.getMonth() + 1; // 1-12
+        const day = now.getDate();
 
         if (lower.includes('christmas') || lower.includes('xmas')) {
             emoji = '🎄'; color = '#15803d';
+            isActiveSeason = (month === 12) || (month === 1 && day <= 6);
         } else if (lower.includes('halloween') || lower.includes('spooky')) {
             emoji = '🎃'; color = '#ea580c';
+            isActiveSeason = (month === 10) || (month === 11 && day === 1);
         } else if (lower.includes('thanksgiving')) {
             emoji = '🦃'; color = '#b45309';
+            isActiveSeason = (month === 11);
         } else if (lower.includes('4th of july') || lower.includes('independence')) {
             emoji = '🎆'; color = '#1d4ed8';
+            isActiveSeason = (month === 6 && day >= 25) || (month === 7 && day <= 8);
         } else if (lower.includes('valentine')) {
             emoji = '💝'; color = '#be185d';
+            isActiveSeason = (month === 2 && day >= 1 && day <= 16);
         } else if (lower.includes('st. patrick') || lower.includes('patrick')) {
             emoji = '🍀'; color = '#047857';
+            isActiveSeason = (month === 3 && day >= 10 && day <= 19);
         } else if (lower.includes('easter')) {
             emoji = '🐰'; color = '#a21caf';
+            isActiveSeason = (month === 3 && day >= 20) || (month === 4 && day <= 25);
         } else if (lower.includes('new year')) {
             emoji = '🥂'; color = '#854d0e';
+            isActiveSeason = (month === 12 && day >= 26) || (month === 1 && day <= 5);
         }
 
-        return { name: tag, emoji: emoji, color: color };
+        return { name: tag, emoji: emoji, color: color, isSeason: isActiveSeason };
     }
 
     function getSafeTimestamp(ds) {
@@ -1616,7 +1759,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                         }
                         localStorage.removeItem(CACHE_STORAGE_KEY);
                         rebuildMoviesArray(true);
-                        runFilters();
                     }
                 } catch (err) {
                     console.error("Firebase SSE parsing error: ", err);
@@ -1634,7 +1776,9 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             } catch (e) {}
         }
 
+        const userOwnedIds = getUserOwnedMovieIds();
         const rawKeys = Object.keys(moviesMap);
+        
         movies = rawKeys.map((key, index) => {
             const v = moviesMap[key];
             if (!v || typeof v !== 'object') return null;
@@ -1645,7 +1789,8 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                 youtube: (v.youtube && isValidUrl(v.youtube)) ? normalizeUrl(v.youtube) : '', 
                 moviesanywhere: (v.ma && isValidUrl(v.ma)) ? normalizeUrl(v.ma) : '', 
                 apple: (v.apple && isValidUrl(v.apple)) ? normalizeUrl(v.apple) : '', 
-                fandango: (v.fandango && isValidUrl(v.fandango)) ? normalizeUrl(v.fandango) : '' 
+                fandango: (v.fandango && isValidUrl(v.fandango)) ? normalizeUrl(v.fandango) : '',
+                justwatch: (v.justwatch && isValidUrl(v.justwatch)) ? normalizeUrl(v.justwatch) : ''
             };
 
             let castArr = [];
@@ -1657,7 +1802,13 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
             const rawStreamingStr = v.streaming || '';
             const cleanStreamPlatforms = extractCleanStreamPlatforms(rawStreamingStr);
+            
             const isFamilyShareChecked = v.googleFamilyShare === true || v.googleFamilyShare === 'true' || v.googleFamilyShare === 1 || v.googleFamilyShare === 'TRUE';
+            const isYouTubeFreeChecked = v.youtubeFree === true || v.youtubeFree === 'true' || v.youtubeFree === 1 || v.youtubeFree === 'TRUE';
+
+            if (isYouTubeFreeChecked && !cleanStreamPlatforms.some(sp => sp.toLowerCase() === 'youtube (free with ads)')) {
+                cleanStreamPlatforms.unshift('YouTube (Free with Ads)');
+            }
 
             let finalPoster = (v.poster && v.poster !== 'N/A' && isValidUrl(v.poster)) ? v.poster : '';
             const rawMediaId = v.id ? v.id.toString().trim() : '';
@@ -1665,30 +1816,34 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             const rawHolidayTag = (v.holidays && v.holidays.toString().trim().toLowerCase() !== 'none') ? v.holidays.toString().trim() : '';
             const ts = getSafeTimestamp(v.dateAdded);
 
+            const isOwnedLocally = userOwnedIds.includes(rawMediaId) || userOwnedIds.includes((v.title || key || '').toString().trim());
+
             return {
-                title: v.title || key || '',
+                title: (v.title || key || '').toString().trim(),
                 image: finalPoster,
-                year: v.year || '',
+                year: (v.year || '').toString().trim(),
                 platforms: p,
                 dateAdded: getDisplayDateString(v.dateAdded, ts),
                 imdbId: rawMediaId,
                 cast: castArr,
-                edition: v.edition || '',
-                collection: v.collection || '',
-                genre: v.genre || '',
-                runtime: v.runtime || '',
-                type: v.type || 'Movie',
+                edition: (v.edition || '').toString().trim(),
+                collection: (v.collection || '').toString().trim(),
+                genre: (v.genre || '').toString().trim(),
+                runtime: (v.runtime || '').toString().trim(),
+                type: (v.type || 'Movie').toString().trim(),
                 streaming: rawStreamingStr,
                 streamPlatforms: cleanStreamPlatforms,
-                description: v.description || '',
+                description: (v.description || '').toString().trim(),
                 holidayTag: rawHolidayTag,
-                videoRating: v.rating || '',
-                ratingDescription: v.ratingReason || '',
+                videoRating: (v.rating || '').toString().trim(),
+                ratingDescription: (v.ratingReason || '').toString().trim(),
                 googleFamilyShare: isFamilyShareChecked,
+                youtubeFree: isYouTubeFreeChecked,
+                userOwned: isOwnedLocally,
                 timestamp: ts,
                 libIndex: index
             };
-        }).filter(m => m !== null && m.title && m.title.trim() !== '');
+        }).filter(m => m !== null && m.title !== '');
 
         const validDates = [...movies].filter(m => m.timestamp > 0);
         newestMoviesSet.clear();
@@ -1708,6 +1863,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         }
 
         checkNewMoviePushAlerts(movies);
+        updateUserOwnedCounter();
         updateDropdowns();
         runFilters();
     }
@@ -1717,7 +1873,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         if (!grid) return;
         
         if (currentFilteredList.length === 0) {
-            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 40px;">No movies found matching criteria.</div>';
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 40px; font-weight: 700;">No titles match your selected filters.</div>';
             return;
         }
 
@@ -1733,6 +1889,8 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             const isTV = m.type && m.type.toLowerCase().includes('tv');
             card.className = 'movie-card' + (isTV ? ' tv-show-card' : '');
             card.setAttribute('data-lib-index', m.libIndex);
+            card.setAttribute('data-year', m.year || '');
+            card.setAttribute('data-added-year', m.dateAdded ? (m.dateAdded.split('/')[2] || '') : '');
             card.onclick = () => openLightbox(m);
             
             const hasEdition = m.edition && m.edition.toLowerCase() !== 'standard' && m.edition.trim() !== '';
@@ -1749,9 +1907,23 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                 familyShareBadgeHtml = `<div class="family-share-badge black-outline">👨‍👩‍👧‍👦 Family Share</div>`;
             }
 
+            let ytFreeBadgeHtml = '';
+            if (m.youtubeFree) {
+                ytFreeBadgeHtml = `
+                    <div class="yt-free-badge black-outline">
+                        <svg viewBox="0 0 24 24" fill="#ff0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        <span>FREE</span>
+                    </div>`;
+            }
+
+            let userOwnedBadgeHtml = '';
+            if (m.userOwned) {
+                userOwnedBadgeHtml = `<div class="user-owned-badge black-outline">⭐ Owned</div>`;
+            }
+
             let holidayBadgeHtml = '';
             const holidayMeta = getHolidayMetadata(m);
-            if (holidayMeta) {
+            if (holidayMeta && holidayMeta.isSeason) {
                 holidayBadgeHtml = `
                     <div class="holiday-badge black-outline" style="background: ${holidayMeta.color}d5;">
                         <span>${holidayMeta.emoji} ${holidayMeta.name}</span>
@@ -1790,8 +1962,10 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                 <div class="poster-box">
                     ${ribbonBadgeHtml}
                     ${familyShareBadgeHtml}
+                    ${ytFreeBadgeHtml}
+                    ${userOwnedBadgeHtml}
                     ${holidayBadgeHtml}
-                    <img src="${posterSrc}" alt="${m.title}" loading="lazy" onerror="this.src='//raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'">
+                    <img class="poster-main" src="${posterSrc}" alt="${m.title}" loading="lazy" onerror="this.src='//raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'">
                     ${tvBadgeHtml}
                     <div class="poster-year-badge black-outline">${m.year}</div>
                 </div>
@@ -1821,18 +1995,18 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     });
 
     window.runFilters = () => {
-        const rawQuery = document.getElementById('movie-search')?.value.toLowerCase().trim() || '';
-        const typeF = document.getElementById('type-select')?.value || '';
-        const ratingF = document.getElementById('rating-select')?.value || '';
-        const platformF = document.getElementById('platform-select')?.value || '';
-        const streamF = document.getElementById('stream-service-select')?.value.toLowerCase().trim() || '';
-        const holidayF = document.getElementById('holiday-select')?.value.toLowerCase().trim() || '';
-        const genreF = document.getElementById('genre-select')?.value || '';
-        const collF = document.getElementById('collection-select')?.value || '';
-        const artF = document.getElementById('artist-select')?.value.toLowerCase().trim() || '';
+        const rawQuery = (document.getElementById('movie-search')?.value || '').toLowerCase().trim();
+        const typeF = (document.getElementById('type-select')?.value || '').trim();
+        const ratingF = (document.getElementById('rating-select')?.value || '').trim();
+        const platformF = (document.getElementById('platform-select')?.value || '').trim();
+        const streamF = (document.getElementById('stream-service-select')?.value || '').toLowerCase().trim();
+        const holidayF = (document.getElementById('holiday-select')?.value || '').toLowerCase().trim();
+        const genreF = (document.getElementById('genre-select')?.value || '').toLowerCase().trim();
+        const collF = (document.getElementById('collection-select')?.value || '').trim();
+        const artF = (document.getElementById('artist-select')?.value || '').toLowerCase().trim();
         const sort = document.getElementById('sort-select')?.value || 'newest';
 
-        document.body.classList.remove('bg-amazon', 'bg-google', 'bg-youtube', 'bg-moviesanywhere', 'bg-apple', 'bg-fandango', 'bg-family_share');
+        document.body.classList.remove('bg-amazon', 'bg-google', 'bg-youtube', 'bg-youtube_free', 'bg-my_owned_yt', 'bg-moviesanywhere', 'bg-apple', 'bg-fandango', 'bg-justwatch', 'bg-family_share');
         if (platformF) {
             document.body.classList.add('bg-' + platformF);
         }
@@ -1845,32 +2019,56 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                 const titleLower = m.title.toLowerCase();
                 const yearLower = (m.year || '').toString().toLowerCase();
                 const castStr = (m.cast || []).join(' ').toLowerCase();
-
                 searchMatch = titleLower.includes(rawQuery) || yearLower.includes(rawQuery) || castStr.includes(rawQuery);
             }
-            
-            const typeMatch = !typeF || (typeF === 'TV' ? m.type.toLowerCase().includes('tv') : m.type.toLowerCase().includes('movie'));
-            
-            let platformMatch = true;
-            if (platformF === 'family_share') {
-                platformMatch = m.googleFamilyShare === true;
-            } else if (platformF) {
-                platformMatch = m.platforms[platformF] && m.platforms[platformF].trim() !== '';
+            if (!searchMatch) return false;
+
+            if (typeF) {
+                const isTv = (m.type || '').toLowerCase().includes('tv');
+                if (typeF === 'TV' && !isTv) return false;
+                if (typeF === 'Movie' && isTv) return false;
             }
 
-            const streamMatch = !streamF || (m.streamPlatforms && m.streamPlatforms.some(sp => sp.toLowerCase() === streamF));
-            const ratingMatch = !ratingF || m.videoRating === ratingF;
+            if (platformF) {
+                if (platformF === 'family_share') {
+                    if (!m.googleFamilyShare) return false;
+                } else if (platformF === 'youtube_free') {
+                    if (!m.youtubeFree) return false;
+                } else if (platformF === 'my_owned_yt') {
+                    if (!m.userOwned) return false;
+                } else {
+                    const storeUrl = m.platforms ? m.platforms[platformF] : '';
+                    if (!storeUrl || storeUrl.trim() === '') return false;
+                }
+            }
 
-            let holidayMatch = true;
+            if (streamF) {
+                const hasStream = (m.streamPlatforms || []).some(sp => sp.toLowerCase().trim() === streamF);
+                if (!hasStream) return false;
+            }
+
+            if (ratingF) {
+                if ((m.videoRating || '').toLowerCase() !== ratingF.toLowerCase()) return false;
+            }
+
             if (holidayF) {
-                holidayMatch = m.holidayTag && m.holidayTag.toLowerCase().includes(holidayF);
+                if (!(m.holidayTag || '').toLowerCase().includes(holidayF)) return false;
             }
-            
-            const genreMatch = !genreF || m.genre.toLowerCase().includes(genreF.toLowerCase());
-            const collMatch = !collF || m.collection === collF;
-            const artMatch = !artF || m.cast.some(a => a.toLowerCase() === artF || a.toLowerCase().includes(artF));
-            
-            return searchMatch && typeMatch && platformMatch && streamMatch && ratingMatch && holidayMatch && genreMatch && collMatch && artMatch;
+
+            if (genreF) {
+                if (!(m.genre || '').toLowerCase().includes(genreF)) return false;
+            }
+
+            if (collF) {
+                if ((m.collection || '').toLowerCase() !== collF.toLowerCase()) return false;
+            }
+
+            if (artF) {
+                const hasActor = (m.cast || []).some(a => a.toLowerCase().includes(artF));
+                if (!hasActor) return false;
+            }
+
+            return true;
         });
 
         if (collF && sort === 'newest') {
@@ -1893,7 +2091,9 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
         const counter = document.getElementById('movie-counter');
         if (counter) {
-            if (isFiltered) {
+            if (platformF === 'my_owned_yt') {
+                counter.innerHTML = `My Owned Films (YouTube): <span>${currentFilteredList.length}</span>`;
+            } else if (isFiltered) {
                 counter.innerHTML = `Filtered Inventory: <span>${currentFilteredList.length}</span> / <span>${movies.length}</span>`;
             } else {
                 counter.innerHTML = `Cinema Inventory: <span>${movies.length}</span>`;
@@ -1902,17 +2102,24 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
         currentRenderLimit = BATCH_SIZE;
         renderMovieGridBatch();
-        buildSidebar(currentFilteredList, sort);
+        buildAdaptiveSidebar(currentFilteredList, sort);
     };
 
     window.filterByActor = (actorName) => {
         closeLightbox();
-        document.getElementById('movie-search').value = '';
-        document.getElementById('genre-select').value = '';
-        document.getElementById('collection-select').value = '';
-        document.getElementById('holiday-select').value = '';
-        document.getElementById('stream-service-select').value = '';
-        document.getElementById('artist-select').value = actorName;
+        const searchInput = document.getElementById('movie-search');
+        const genreSelect = document.getElementById('genre-select');
+        const collSelect = document.getElementById('collection-select');
+        const holidaySelect = document.getElementById('holiday-select');
+        const streamSelect = document.getElementById('stream-service-select');
+        const artistSelect = document.getElementById('artist-select');
+
+        if (searchInput) searchInput.value = '';
+        if (genreSelect) genreSelect.value = '';
+        if (collSelect) collSelect.value = '';
+        if (holidaySelect) holidaySelect.value = '';
+        if (streamSelect) streamSelect.value = '';
+        if (artistSelect) artistSelect.value = actorName;
         
         if (typeof gtag === 'function') {
             gtag('event', 'filter_by_actor', {
@@ -1922,7 +2129,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         }
 
         runFilters();
-        document.getElementById('controls-container').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('controls-container')?.scrollIntoView({ behavior: 'smooth' });
     };
 
     function extractYouTubeVideoId(url) {
@@ -1932,13 +2139,82 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         return match ? match[1] : null;
     }
 
+    function renderLightboxButtons(m) {
+        const storeHeading = document.getElementById('lb-store-heading');
+        const buttonBox = document.getElementById('lb-buttons');
+        let btns = [];
+        const p = m.platforms;
+        const sanitizedTitle = m.title.replace(/'/g, '');
+
+        if (p.amazon && p.amazon.trim() !== '') {
+            const amz = resolveAppOrWebUrl(p.amazon, 'amazon');
+            btns.push(`<a href="${amz}" onclick="trackOutboundClick(this.href, 'Amazon: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-amazon">Amazon</a>`);
+        }
+        if (p.google && p.google.trim() !== '') {
+            const goog = appendUtm(p.google, m.title + '_google');
+            const familyGlowClass = m.googleFamilyShare ? ' glow-family-share' : '';
+            btns.push(`<a href="${goog}" onclick="trackOutboundClick(this.href, 'Google: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-google${familyGlowClass}">Google Play</a>`);
+        }
+        if (p.moviesanywhere && p.moviesanywhere.trim() !== '' && !p.moviesanywhere.toLowerCase().includes('not in library')) {
+            const ma = appendUtm(p.moviesanywhere, m.title + '_moviesanywhere');
+            btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MoviesAnywhere: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-moviesanywhere">Movies Anywhere</a>`);
+        }
+        if (p.apple && p.apple.trim() !== '') {
+            const app = appendUtm(p.apple, m.title + '_apple');
+            btns.push(`<a href="${app}" onclick="trackOutboundClick(this.href, 'AppleTV: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-apple">Apple TV</a>`);
+        }
+        if (p.fandango && p.fandango.trim() !== '') {
+            const fan = appendUtm(p.fandango, m.title + '_fandango');
+            btns.push(`<a href="${fan}" onclick="trackOutboundClick(this.href, 'Fandango: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-fandango">Fandango</a>`);
+        }
+        if (p.youtube && p.youtube.trim() !== '') {
+            const ytVidId = extractYouTubeVideoId(p.youtube);
+            
+            if (m.youtubeFree) {
+                if (ytVidId) {
+                    btns.push(`<button type="button" onclick="playYouTube('${p.youtube}')" class="m-link btn-youtube-free">▶ Watch Free on YouTube</button>`);
+                } else {
+                    const ytUrl = resolveAppOrWebUrl(p.youtube, 'youtube');
+                    btns.push(`<a href="${ytUrl}" onclick="trackOutboundClick(this.href, 'YouTube Free: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-youtube-free">▶ Watch Free on YouTube</a>`);
+                }
+            } else if (m.userOwned) {
+                if (ytVidId) {
+                    btns.push(`<button type="button" onclick="playYouTube('${p.youtube}')" class="m-link btn-youtube-owned">▶ Watch Now on YouTube</button>`);
+                } else {
+                    const ytUrl = resolveAppOrWebUrl(p.youtube, 'youtube');
+                    btns.push(`<a href="${ytUrl}" onclick="trackOutboundClick(this.href, 'YouTube Owned: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-youtube-owned">▶ Watch Now on YouTube</a>`);
+                }
+            } else {
+                if (ytVidId) {
+                    btns.push(`<button type="button" onclick="playYouTube('${p.youtube}')" class="m-link btn-youtube">▶ Watch Trailer</button>`);
+                } else {
+                    const ytUrl = resolveAppOrWebUrl(p.youtube, 'youtube');
+                    btns.push(`<a href="${ytUrl}" onclick="trackOutboundClick(this.href, 'YouTube: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-youtube">YouTube</a>`);
+                }
+            }
+        }
+        if (p.justwatch && p.justwatch.trim() !== '') {
+            btns.push(`<a href="${p.justwatch}" onclick="trackOutboundClick(this.href, 'JustWatch: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-justwatch">🟡 JustWatch</a>`);
+        }
+
+        buttonBox.innerHTML = btns.join('');
+        if (btns.length > 0) {
+            const hasMA = p.moviesanywhere && p.moviesanywhere.trim() !== '' && !p.moviesanywhere.toLowerCase().includes('not in library');
+            storeHeading.textContent = hasMA ? "Sync / Rent / Buy (Movies Anywhere Compatible)" : "Buy / Rent / Watch";
+            storeHeading.style.display = 'block';
+        } else {
+            storeHeading.style.display = 'none';
+        }
+    }
+
     window.openLightbox = (m) => {
+        currentActiveMovie = m;
         const lb = document.getElementById('movie-lightbox');
         const posterImg = m.image || '//raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg';
         document.getElementById('lightbox-inner').style.backgroundImage = `url('${posterImg}')`;
         
         const holidayMeta = getHolidayMetadata(m);
-        document.getElementById('lb-title').textContent = (holidayMeta ? `${holidayMeta.emoji} ` : '') + m.title;
+        document.getElementById('lb-title').textContent = ((holidayMeta && holidayMeta.isSeason) ? `${holidayMeta.emoji} ` : '') + m.title;
         
         const hasEdition = m.edition && m.edition.toLowerCase() !== 'standard' && m.edition.trim() !== '';
         
@@ -1972,12 +2248,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             lbRatingDesc.style.display = 'none';
         }
 
-        const lbFamilyShare = document.getElementById('lb-family-share');
-        if (m.googleFamilyShare) {
-            lbFamilyShare.style.display = 'inline-block';
-        } else {
-            lbFamilyShare.style.display = 'none';
-        }
+        updateLightboxOwnedUI(m.userOwned);
 
         const isTV = m.type && m.type.toLowerCase().includes('tv');
         const tvBingeBox = document.getElementById('lb-tv-binge-container');
@@ -2022,52 +2293,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
         document.getElementById('lb-description-text').textContent = m.description || 'No description available.';
 
-        let btns = [];
-        const p = m.platforms;
-        const sanitizedTitle = m.title.replace(/'/g, '');
-
-        if (p.amazon && p.amazon.trim() !== '') {
-            const amz = resolveAppOrWebUrl(p.amazon, 'amazon');
-            btns.push(`<a href="${amz}" onclick="trackOutboundClick(this.href, 'Amazon: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-amazon">Amazon</a>`);
-        }
-        if (p.google && p.google.trim() !== '') {
-            const goog = appendUtm(p.google, m.title + '_google');
-            const familyGlowClass = m.googleFamilyShare ? ' glow-family-share' : '';
-            btns.push(`<a href="${goog}" onclick="trackOutboundClick(this.href, 'Google: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-google${familyGlowClass}">Google Play</a>`);
-        }
-        if (p.moviesanywhere && p.moviesanywhere.trim() !== '' && !p.moviesanywhere.toLowerCase().includes('not in library')) {
-            const ma = appendUtm(p.moviesanywhere, m.title + '_moviesanywhere');
-            btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MoviesAnywhere: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-moviesanywhere">Movies Anywhere</a>`);
-        }
-        if (p.apple && p.apple.trim() !== '') {
-            const app = appendUtm(p.apple, m.title + '_apple');
-            btns.push(`<a href="${app}" onclick="trackOutboundClick(this.href, 'AppleTV: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-apple">Apple TV</a>`);
-        }
-        if (p.fandango && p.fandango.trim() !== '') {
-            const fan = appendUtm(p.fandango, m.title + '_fandango');
-            btns.push(`<a href="${fan}" onclick="trackOutboundClick(this.href, 'Fandango: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-fandango">Fandango</a>`);
-        }
-        if (p.youtube && p.youtube.trim() !== '') {
-            const ytVidId = extractYouTubeVideoId(p.youtube);
-            if (ytVidId) {
-                btns.push(`<button type="button" onclick="playYouTube('${p.youtube}')" class="m-link btn-youtube">▶ Watch Trailer</button>`);
-            } else {
-                const ytUrl = resolveAppOrWebUrl(p.youtube, 'youtube');
-                btns.push(`<a href="${ytUrl}" onclick="trackOutboundClick(this.href, 'YouTube: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-youtube">YouTube</a>`);
-            }
-        }
-
-        const storeHeading = document.getElementById('lb-store-heading');
-        const buttonBox = document.getElementById('lb-buttons');
-        
-        buttonBox.innerHTML = btns.join('');
-        if (btns.length > 0) {
-            const hasMA = p.moviesanywhere && p.moviesanywhere.trim() !== '' && !p.moviesanywhere.toLowerCase().includes('not in library');
-            storeHeading.textContent = hasMA ? "Sync / Rent / Buy (Movies Anywhere Compatible)" : "Buy / Rent / Watch";
-            storeHeading.style.display = 'block';
-        } else {
-            storeHeading.style.display = 'none';
-        }
+        renderLightboxButtons(m);
 
         lb.classList.add('active');
         syncScrollLockState();
@@ -2078,6 +2304,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         if (lb) lb.classList.remove('active');
         closeYouTube(); 
         syncScrollLockState();
+        currentActiveMovie = null;
     };
     
     window.playYouTube = (u) => {
@@ -2110,10 +2337,15 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         const gSet = new Set(), cSet = new Set(), aSet = new Set(), rSet = new Set(), sSet = new Set(), hSet = new Set();
         
         movies.forEach(m => { 
-            if(m.genre) m.genre.split(',').forEach(g => { const clean = g.trim(); if(clean) gSet.add(clean); });
-            if(m.collection) cSet.add(m.collection);
-            if(m.videoRating) rSet.add(m.videoRating.trim());
-            if(m.holidayTag) hSet.add(m.holidayTag.trim());
+            if (m.genre) {
+                m.genre.split(',').forEach(g => {
+                    const clean = g.trim();
+                    if (clean) gSet.add(clean);
+                });
+            }
+            if (m.collection) cSet.add(m.collection.trim());
+            if (m.videoRating) rSet.add(m.videoRating.trim());
+            if (m.holidayTag) hSet.add(m.holidayTag.trim());
 
             if (Array.isArray(m.cast)) {
                 m.cast.forEach(a => {
@@ -2123,17 +2355,25 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             }
 
             if (m.streamPlatforms && Array.isArray(m.streamPlatforms)) {
-                m.streamPlatforms.forEach(p => sSet.add(p));
+                m.streamPlatforms.forEach(p => {
+                    const cleanP = p.trim();
+                    if (cleanP) sSet.add(cleanP);
+                });
             }
         });
 
         const fill = (id, set, label) => {
-            const el = document.getElementById(id); if (!el) return;
-            const cur = el.value; el.innerHTML = `<option value="">All ${label}</option>`;
+            const el = document.getElementById(id); 
+            if (!el) return;
+            const cur = el.value; 
+            el.innerHTML = `<option value="">All ${label}</option>`;
             const fragment = document.createDocumentFragment();
             Array.from(set).sort((a,b) => a.toLowerCase().localeCompare(b.toLowerCase())).forEach(v => {
-                const o = document.createElement('option'); o.value = v; o.textContent = v;
-                if (v === cur) o.selected = true; fragment.appendChild(o);
+                const o = document.createElement('option'); 
+                o.value = v; 
+                o.textContent = v;
+                if (v === cur) o.selected = true; 
+                fragment.appendChild(o);
             });
             el.appendChild(fragment);
         };
@@ -2155,7 +2395,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         runFilters(); 
     };
 
-    function buildSidebar(filteredList, sortMode) {
+    function buildAdaptiveSidebar(filteredList, sortMode) {
         const sidebar = document.getElementById('dynamic-nav-sidebar');
         if (!sidebar) return;
         sidebar.innerHTML = '';
@@ -2171,6 +2411,62 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                     for (let c of cards) {
                         const title = c.querySelector('.movie-title')?.textContent.trim().toUpperCase();
                         if (title && ((l === '#' && /^[0-9]/.test(title)) || title.startsWith(l))) {
+                            c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            break;
+                        }
+                    }
+                };
+                sidebar.appendChild(d);
+            });
+        } else if (sortMode === 'newest' || sortMode === 'oldest') {
+            const yearSet = new Set();
+            filteredList.forEach(m => {
+                if (m.dateAdded) {
+                    const parts = m.dateAdded.split('/');
+                    if (parts.length === 3 && parts[2]) yearSet.add(parts[2].trim());
+                }
+            });
+            const sortedYears = Array.from(yearSet).sort((a, b) => sortMode === 'newest' ? b.localeCompare(a) : a.localeCompare(b));
+            
+            sortedYears.forEach(fullYear => {
+                const shortLabel = `'${fullYear.slice(-2)}`;
+                const d = document.createElement('div');
+                d.className = 'nav-item';
+                d.textContent = shortLabel;
+                d.title = `Added in ${fullYear}`;
+                d.onclick = () => {
+                    const cards = document.querySelectorAll('.movie-card');
+                    for (let c of cards) {
+                        if (c.getAttribute('data-added-year') === fullYear) {
+                            c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            break;
+                        }
+                    }
+                };
+                sidebar.appendChild(d);
+            });
+        } else if (sortMode === 'new-old' || sortMode === 'old-new') {
+            const decadeSet = new Set();
+            filteredList.forEach(m => {
+                const y = parseInt(m.year);
+                if (y && !isNaN(y)) {
+                    const dec = Math.floor(y / 10) * 10;
+                    decadeSet.add(dec);
+                }
+            });
+            const sortedDecades = Array.from(decadeSet).sort((a, b) => sortMode === 'new-old' ? b - a : a - b);
+
+            sortedDecades.forEach(dec => {
+                const label = dec >= 2000 ? `${dec}s` : `'${String(dec).slice(-2)}s`;
+                const d = document.createElement('div');
+                d.className = 'nav-item';
+                d.textContent = label;
+                d.title = `Released in the ${dec}s`;
+                d.onclick = () => {
+                    const cards = document.querySelectorAll('.movie-card');
+                    for (let c of cards) {
+                        const y = parseInt(c.getAttribute('data-year'));
+                        if (y && Math.floor(y / 10) * 10 === dec) {
                             c.scrollIntoView({ behavior: 'smooth', block: 'start' });
                             break;
                         }
