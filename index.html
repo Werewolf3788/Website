@@ -2,11 +2,11 @@
   File: index.html
   Location: /index.html
   Description: Werewolf Project Main Landing Page with Dynamic Firebase RTDB utm_links Navigation,
-               Robust Profile Card Auto-Binding (/utm_links/User), Bugatti & USA Flag Custom Themes,
-               Live PSN Telemetry, Weather Overlays, Mobile Drill-Down Drawer, Click-to-Pause Cinema 
-               Lightbox with Full Action Buttons, and Native Live FS25 Telemetry.
-  Build Version: 2.4.0
-  Last Modified: Wednesday, September 23, 2026 - 15:03:51 EDT (America/New_York)
+               Game Poster Covers in Live Telemetry & Progression, Floating "Rust & Redline" Album
+               Release Countdown to Sept 29, 2026, Bugatti & Flag Custom Theming, Live PSN Presence,
+               Weather Overlays, Cinema Lightbox, and FS25 Server Telemetry.
+  Build Version: 2.5.0
+  Last Modified: Wednesday, September 23, 2026 - 15:10:00 EDT (America/New_York)
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -18,10 +18,8 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Google Tag Manager / GA4 Setup & G-CTYHDF4MSD Multi-Property Integration -->
-    <!-- HTML JS Line ~18 -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
     <script>
-      /* GA4 Multi-Property Setup: G-Z9M5LXQ5XN & G-CTYHDF4MSD */
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
@@ -30,28 +28,26 @@
     </script>
 
     <style>
-        /* CSS Variables - Layout & Gamertag Accent Colors */
-        /* CSS Line ~32 */
         :root {
             --header-text-size: clamp(22px, 4vw, 32px);
             --body-text-size: 16px;
             --row-height: 1.6;
             --section-height: clamp(30px, 5vw, 60px);
 
-            /* Bugatti Theme (Werewolf3788): Deep Carbon & Hyper Orange */
+            /* Werewolf3788 (Bugatti Black & Orange) */
             --color-werewolf: #FF5500;
             --color-werewolf-glow: rgba(255, 85, 0, 0.45);
 
-            /* USA Flag Theme (Raymystyro): Dual-Tone Red & Electric Blue */
+            /* Raymystyro (USA Flag Dual-Tone Red & Blue) */
             --color-ray-red: #EF4444;
             --color-ray-blue: #2563EB;
             --color-ray-glow: rgba(37, 99, 235, 0.45);
 
-            /* Royal Amethyst Purple (Terrdog) */
+            /* Terrdog (Royal Amethyst Purple) */
             --color-terrdog: #A855F7;
             --color-terrdog-glow: rgba(168, 85, 247, 0.45);
 
-            /* Emerald Teal (Elu Cloud) */
+            /* Elu Cloud (Emerald Teal) */
             --color-elu: #10B981;
             --color-fs25: #22C55E;
         }
@@ -101,8 +97,6 @@
             display: block;
         }
 
-        /* Dynamic Glassmorphic Custom Cards */
-        /* CSS Line ~90 */
         .custom-card {
             background: rgba(15, 23, 42, 0.75);
             backdrop-filter: blur(12px);
@@ -113,7 +107,6 @@
             transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        /* Player Specific Themes */
         .card-theme-werewolf {
             border: 2px solid var(--color-werewolf) !important;
             box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.6), 0 0 20px var(--color-werewolf-glow);
@@ -136,8 +129,32 @@
         .border-terrdog { border-color: var(--color-terrdog) !important; }
         .text-terrdog { color: var(--color-terrdog) !important; }
 
-        /* Dynamic Weather Animation Layers */
-        /* CSS Line ~125 */
+        /* Game Poster Header styling for Live Telemetry cards */
+        .game-poster-banner {
+            position: relative;
+            width: 100%;
+            height: 140px;
+            overflow: hidden;
+            border-top-left-radius: 0.95rem;
+            border-top-right-radius: 0.95rem;
+            background-color: #020617;
+        }
+        .game-poster-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            transition: transform 0.5s ease;
+        }
+        .custom-card:hover .game-poster-banner img {
+            transform: scale(1.05);
+        }
+        .game-poster-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.1) 0%, rgba(15, 23, 42, 0.95) 100%);
+        }
+
         .weather-layer {
             position: absolute;
             inset: 0;
@@ -239,7 +256,6 @@
         .is-sunny .weather-desc { color: #334155 !important; opacity: 0.9; }
         .is-sunny .visit-link { color: #0F172A !important; border-color: rgba(0,0,0,0.3) !important; }
 
-        /* Lightbox Action Buttons Grid */
         .lb-btn-grid {
             display: grid;
             gap: 8px;
@@ -277,7 +293,6 @@
         .btn-fandango { background: #EA580C !important; }
         .btn-youtube { background: #DC2626 !important; cursor: pointer; border: none; }
 
-        /* Site Signature Watermark */
         .kf-watermark {
             position: fixed;
             bottom: 10px;
@@ -294,12 +309,44 @@
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Floating Album Release Countdown Banner */
+        #album-countdown-badge {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(14px);
+            border: 2px solid #FF5500;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 85, 0, 0.4);
+            border-radius: 16px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            max-width: 380px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #album-countdown-badge.minimized {
+            transform: translateY(80px);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .album-cover-thumb {
+            width: 54px;
+            height: 54px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <!-- Sticky Navigation Bar Container -->
-    <!-- HTML Line ~280 -->
+    <!-- Top Navigation Bar -->
     <nav class="bg-slate-900/90 sticky top-0 z-50 border-b border-slate-700 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -309,8 +356,7 @@
                     </a>
                 </div>
 
-                <!-- Desktop Horizontal Navigation Links (1280px and wider) -->
-                <!-- HTML Line ~291 -->
+                <!-- Desktop Navigation (>= 1280px) -->
                 <div id="desktop-nav-links" class="hidden xl:flex items-center space-x-6">
                     <div class="flex items-center space-x-4 animate-pulse">
                         <div class="h-4 w-16 bg-slate-700 rounded"></div>
@@ -320,7 +366,6 @@
                 </div>
 
                 <!-- Mobile & Tablet Hamburger Toggle (< 1280px) -->
-                <!-- HTML Line ~301 -->
                 <div class="xl:hidden flex items-center">
                     <button type="button" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu" class="text-slate-400 hover:text-white p-2 min-h-[48px] min-w-[48px] flex items-center justify-center rounded-lg hover:bg-slate-800 transition-colors">
                         <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
@@ -330,8 +375,7 @@
         </div>
     </nav>
 
-    <!-- Mobile/Tablet Slide-Over Modal Drawer -->
-    <!-- HTML Line ~312 -->
+    <!-- Mobile Navigation Drawer -->
     <div id="mobile-menu-overlay" class="fixed inset-0 bg-slate-950/95 z-[100] hidden flex flex-col no-scrollbar overflow-y-auto">
         <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/90 sticky top-0 z-10">
             <span class="text-lg font-black text-sky-400">NAVIGATION MENU</span>
@@ -355,7 +399,6 @@
     </div>
 
     <!-- Main Landing Hero Section -->
-    <!-- HTML Line ~337 -->
     <header class="section-padding px-4 sm:px-6 lg:px-8 flex-grow flex items-center">
         <div class="max-w-4xl mx-auto text-center">
             <h1 class="text-slate-100">Knowing the Players</h1>
@@ -365,8 +408,7 @@
         </div>
     </header>
 
-    <!-- Contributors Team Section with Player Dynamic Theming -->
-    <!-- HTML Line ~348 -->
+    <!-- Contributors Team Section with Custom Theming -->
     <section id="team" class="section-padding bg-slate-900/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-8 sm:mb-12">
@@ -376,7 +418,6 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Werewolf3788 Profile Card (Bugatti Carbon & Hyper Orange) -->
-                <!-- HTML Line ~358 -->
                 <div id="card-werewolf" class="custom-card card-theme-werewolf p-6 text-center">
                     <div class="weather-layer" id="layer-werewolf"></div>
                     <div class="card-content">
@@ -399,7 +440,6 @@
                 </div>
 
                 <!-- Raymystyro Profile Card (USA Flag Theme: Red & Blue) -->
-                <!-- HTML Line ~381 -->
                 <div id="card-ray" class="custom-card card-theme-ray p-6 text-center">
                     <div class="weather-layer" id="layer-ray"></div>
                     <div class="card-content">
@@ -422,7 +462,6 @@
                 </div>
 
                 <!-- Terrdog Profile Card (Royal Amethyst Purple) -->
-                <!-- HTML Line ~404 -->
                 <div id="card-tj" class="custom-card card-theme-terrdog p-6 text-center md:col-span-2 lg:col-span-1">
                     <div class="weather-layer" id="layer-tj"></div>
                     <div class="card-content">
@@ -448,14 +487,12 @@
     </section>
 
     <!-- Cinema Movie Library Archive Section -->
-    <!-- HTML Line ~429 -->
     <section class="section-padding bg-slate-900/30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            
             <div class="text-center max-w-3xl mx-auto space-y-4">
                 <h2 class="text-orange-500">Werewolf Cinema</h2>
                 <p class="text-slate-300 font-medium text-sm sm:text-base leading-relaxed">
-                    Access the list of Movies I own digitally, plus see what they're streaming on. Major brands like Google, YouTube, Apple, Fandango, and Movies Anywhere are cataloged, along with affiliated Amazon listings.
+                    Access the list of Movies I own digitally, plus see what they're streaming on across Google, YouTube, Apple, Fandango, Amazon, and Movies Anywhere.
                 </p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
                     <a href="./Movies.html" 
@@ -474,7 +511,6 @@
             </div>
 
             <!-- Cinema Slideshow Screen Frame -->
-            <!-- HTML Line ~453 -->
             <div id="cinema-container" 
                  onclick="openCinemaLightbox()" 
                  title="Click to view details and pause slideshow"
@@ -491,46 +527,50 @@
                 
                 <div class="absolute inset-0 bg-slate-950/40 group-hover:bg-slate-950/20 transition-colors z-0"></div>
                 
-                <!-- Dynamic Poster Caption Pill -->
                 <div class="relative z-10 mb-2 sm:mb-4 bg-black/70 border border-orange-500/50 group-hover:border-orange-400 px-4 sm:px-6 py-2 rounded-full backdrop-blur-md max-w-md mx-auto flex items-center justify-center gap-2 transition-all">
                     <i class="fa-solid fa-expand text-orange-400 text-xs"></i>
                     <span id="cinema-caption-title" class="text-orange-400 font-black text-xs uppercase tracking-wider italic">Featured Poster</span>
                 </div>
             </div>
-
         </div>
     </section>
 
-    <!-- Co-Op Games & Live Dedicated Server Telemetry Section -->
-    <!-- HTML Line ~482 -->
+    <!-- Co-Op Games & Live Dedicated Server Telemetry Section (With Game Posters) -->
     <section class="section-padding">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-8">
                 <span class="text-emerald-400 font-bold uppercase tracking-widest text-xs">Live Telemetry & Progression</span>
                 <h2 class="mt-2">Farming Simulator 25 & Squad Modules</h2>
                 <p class="mt-2 text-slate-400 text-sm sm:text-base">
-                    Real-time world telemetry parsed directly from Cloud Firebase RTDB feeds.
+                    Real-time world telemetry parsed directly from Cloud Firebase RTDB feeds with game cover artwork.
                 </p>
             </div>
 
             <!-- Featured Modules Grid -->
-            <!-- HTML Line ~493 -->
             <div id="gaming-modules-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 
                 <!-- Dedicated FS25 Live Server Card -->
-                <!-- HTML Line ~497 -->
-                <div id="fs25-server-card" class="custom-card p-6 border border-emerald-500/30 flex flex-col justify-between shadow-emerald-950/20 shadow-xl">
-                    <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs font-bold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
-                                <i class="fa-solid fa-tractor text-sm"></i>FS25 Dedicated
+                <div id="fs25-server-card" class="custom-card border border-emerald-500/30 flex flex-col justify-between shadow-emerald-950/20 shadow-xl">
+                    <!-- Top Game Poster Cover -->
+                    <div class="game-poster-banner">
+                        <img src="//cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg" 
+                             alt="Farming Simulator 25 Poster"
+                             onerror="this.src='//images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80'">
+                        <div class="game-poster-overlay"></div>
+                        <div class="absolute top-3 left-3 z-10">
+                            <span class="text-[11px] font-black uppercase tracking-widest text-emerald-400 bg-slate-950/80 px-2.5 py-1 rounded border border-emerald-500/40 flex items-center gap-1.5 shadow-lg">
+                                <i class="fa-solid fa-tractor text-xs"></i>FS25 Dedicated
                             </span>
-                            <span id="fs25-status-pill" class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded border border-slate-700 flex items-center gap-1 font-mono">
+                        </div>
+                        <div class="absolute top-3 right-3 z-10">
+                            <span id="fs25-status-pill" class="text-[10px] bg-slate-900/90 text-slate-400 px-2 py-1 rounded border border-slate-700 flex items-center gap-1 font-mono font-bold shadow-lg">
                                 <span class="w-2 h-2 rounded-full bg-slate-500 inline-block animate-pulse"></span>
                                 Checking Firebase...
                             </span>
                         </div>
+                    </div>
 
+                    <div class="p-6 pt-2">
                         <h3 class="text-lg font-black text-white mb-1 uppercase tracking-tight truncate" id="fs25-server-name">WEREWOLF FS25</h3>
                         
                         <div class="flex items-center justify-between text-xs text-slate-400 mb-3 font-mono">
@@ -619,7 +659,7 @@
                         </div>
                     </div>
 
-                    <a href="./games/FS25/index.html" class="text-emerald-400 hover:text-emerald-300 font-bold text-xs flex items-center justify-between border-t border-slate-800 pt-3 min-h-[48px]">
+                    <a href="./games/FS25/index.html" class="text-emerald-400 hover:text-emerald-300 font-bold text-xs flex items-center justify-between border-t border-slate-800 p-4 min-h-[48px]">
                         <span>Explore FS25 Telemetry Hub</span>
                         <i class="fa-solid fa-arrow-right"></i>
                     </a>
@@ -634,10 +674,8 @@
     </section>
 
     <!-- Cinema Movie Lightbox Modal -->
-    <!-- HTML Line ~608 -->
     <div id="cinema-lightbox" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[200] hidden flex items-center justify-center p-4">
         <div class="relative max-w-2xl w-full bg-slate-900 border border-orange-500/40 rounded-2xl p-6 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
-            
             <button type="button" onclick="closeCinemaLightbox()" aria-label="Close Lightbox" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-full w-10 h-10 flex items-center justify-center transition-colors z-20">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
@@ -680,17 +718,32 @@
     </div>
 
     <!-- ======================================================================
-         Footer: Persistent Version & Code Timestamp
-         Visible at all times in HTML and dynamically synchronized
+         Floating Album Release Countdown Badge ("Rust & Redline")
          ====================================================================== -->
-    <!-- HTML Line ~661 -->
+    <aside id="album-countdown-badge" aria-label="Album Release Countdown">
+        <a id="album-link" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 text-left group">
+            <img id="album-cover-img" src="//placehold.co/100x100/1e293b/ff5500?text=RUST" alt="Rust & Redline Album Cover" class="album-cover-thumb">
+            <div class="flex-1 min-w-0">
+                <span class="text-[10px] font-bold text-orange-400 uppercase tracking-widest block leading-tight">My First Album Release Date for all Platforms</span>
+                <h4 id="album-title" class="text-sm font-black text-white group-hover:text-orange-400 transition-colors truncate">Rust & Redline</h4>
+                <div id="album-timer-display" class="text-xs font-mono font-bold text-emerald-400 mt-0.5">
+                    Calculating...
+                </div>
+            </div>
+        </a>
+        <button type="button" onclick="toggleAlbumCountdown(event)" aria-label="Minimize album release badge" class="text-slate-400 hover:text-white p-1 ml-1 text-sm">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </aside>
+
+    <!-- Footer: Persistent Version & Code Timestamp -->
     <footer class="mt-auto bg-slate-950 py-10 border-t border-slate-800 text-center relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
             <p class="text-slate-500 text-sm">
                 &copy; 2026 Werewolf Project. Built by Werewolf3788 & Friends.
             </p>
             <div id="build-meta-footer" style="color: #94a3b8; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
-                Werewolf Project Engine • v2.4.0 • Build: 2026-09-23 15:03:51 EDT
+                Werewolf Project Engine • v2.5.0 • Build: 2026-09-23 15:10:00 EDT
             </div>
         </div>
         
@@ -700,16 +753,14 @@
     </footer>
 
     <!-- Firebase SDK Modules Script -->
-    <!-- HTML JS Line ~680 -->
     <script type="module">
         import { initializeApp } from "//www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "//www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getDatabase, ref, onValue } from "//www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const BUILD_VERSION = "2.4.0";
-        const CODE_BUILD_DATE = "2026-09-23 15:03:51 EDT";
+        const BUILD_VERSION = "2.5.0";
+        const CODE_BUILD_DATE = "2026-09-23 15:10:00 EDT";
 
-        /* Firebase App Credentials Config */
         const firebaseConfig = {
             apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
             authDomain: "entertainment-71888.firebaseapp.com",
@@ -728,30 +779,67 @@
         const PLATFORMS = ['playstation', 'psn', 'pc', 'xbox', 'steam'];
         const TARGET_USERS = ['Werewolf3788', 'Raymystyro', 'Terrdog', 'Elu Cloud'];
 
+        // Game Posters Catalog Dictionary
+        const GAME_POSTERS = {
+            'COTW': '//cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg',
+            'HUNTERCOTW': '//cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg',
+            'THEHUNTER': '//cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg',
+            'FS25': '//cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg',
+            'SNIPER-ELITE-5': '//cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg',
+            'SNIPERELITE5': '//cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg',
+            'DEFAULT': '//images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80'
+        };
+
         /* -------------------------------------------------------------
-           1. Firebase RTDB Navigation Engine & Card Link Binder (/utm_links)
+           1. Firebase RTDB Navigation Engine & Album Resolver (/utm_links)
            ------------------------------------------------------------- */
         let mobileNavTree = [];
 
         function listenToUtmLinks() {
             const utmRef = ref(rtdb, 'utm_links');
             onValue(utmRef, (snapshot) => {
-                if (!snapshot.exists()) {
-                    console.warn("No data at /utm_links");
-                    return;
-                }
+                if (!snapshot.exists()) return;
 
                 const data = snapshot.val();
                 buildNavigationFromUtm(data);
                 bindProfileCardLinks(data);
+                resolveRustAndRedlineAlbum(data);
             }, (error) => {
                 console.error("Failed to read /utm_links:", error);
-                const deskNav = document.getElementById('desktop-nav-links');
-                if (deskNav) deskNav.innerHTML = `<span class="text-red-400 text-sm">Navigation offline</span>`;
             });
         }
 
-        /* Robust Profile Card Auto-Binder: Matches regardless of array order or object keys */
+        /* Match and populate Rust & Redline Album info from /utm_links */
+        function resolveRustAndRedlineAlbum(utmData) {
+            let albumNode = null;
+
+            const searchRecursive = (obj) => {
+                if (!obj || typeof obj !== 'object') return;
+                const name = String(obj.name || obj.title || '').toLowerCase();
+                if (name.includes('rust') && (name.includes('redline') || name.includes('red line'))) {
+                    albumNode = obj;
+                    return;
+                }
+                for (const key of Object.keys(obj)) {
+                    if (albumNode) break;
+                    searchRecursive(obj[key]);
+                }
+            };
+
+            searchRecursive(utmData);
+
+            const linkEl = document.getElementById('album-link');
+            const imgEl = document.getElementById('album-cover-img');
+            const titleEl = document.getElementById('album-title');
+
+            if (albumNode) {
+                if (linkEl && (albumNode.url || albumNode.link)) linkEl.href = albumNode.url || albumNode.link;
+                if (imgEl && (albumNode.img || albumNode.image || albumNode.icon)) imgEl.src = albumNode.img || albumNode.image || albumNode.icon;
+                if (titleEl && (albumNode.name || albumNode.title)) titleEl.textContent = albumNode.name || albumNode.title;
+            }
+        }
+
+        /* Robust Profile Card Auto-Binder */
         function bindProfileCardLinks(utmData) {
             const userFolder = utmData.User || utmData.user || utmData.Users || utmData.users;
             if (!userFolder) return;
@@ -831,21 +919,7 @@
                 }
             });
 
-            const sortedGroupNames = Object.keys(groupsMap).sort((a, b) => {
-                const lowA = a.toLowerCase();
-                const lowB = b.toLowerCase();
-                const isUserA = lowA === 'user' || lowA === 'users';
-                const isUserB = lowB === 'user' || lowB === 'users';
-                const isGameA = lowA === 'game' || lowA === 'games';
-                const isGameB = lowB === 'game' || lowB === 'games';
-
-                if (isUserA) return -1;
-                if (isUserB) return 1;
-                if (isGameA) return -1;
-                if (isGameB) return 1;
-                return lowA.localeCompare(lowB);
-            });
-
+            const sortedGroupNames = Object.keys(groupsMap).sort((a, b) => a.localeCompare(b));
             sortedGroupNames.forEach(groupName => {
                 navOrder.push({
                     type: 'group',
@@ -972,21 +1046,17 @@
            ------------------------------------------------------------- */
         function extractUserPsnNode(psnRootData, possibleKeys) {
             if (!psnRootData) return null;
-            
             for (const key of possibleKeys) {
                 if (psnRootData[key]) return psnRootData[key];
                 if (psnRootData.gamertags && psnRootData.gamertags[key]) return psnRootData.gamertags[key];
                 if (psnRootData.users && psnRootData.users[key]) return psnRootData.users[key];
             }
-
             const lowerKeys = possibleKeys.map(k => k.toLowerCase());
             const searchPool = [psnRootData, psnRootData.gamertags, psnRootData.users].filter(Boolean);
-
             for (const pool of searchPool) {
                 const matchedKey = Object.keys(pool).find(k => lowerKeys.includes(k.toLowerCase()));
                 if (matchedKey && pool[matchedKey]) return pool[matchedKey];
             }
-
             return null;
         }
 
@@ -1065,7 +1135,7 @@
         }
 
         /* -------------------------------------------------------------
-           3. Live Farming Simulator 25 Telemetry & Leader Badges
+           3. Live Farming Simulator 25 Telemetry
            ------------------------------------------------------------- */
         function listenToFs25FirebaseTelemetry() {
             const fs25Ref = ref(rtdb, 'fs25');
@@ -1304,11 +1374,10 @@
         }
 
         /* -------------------------------------------------------------
-           4. Firestore Squad Multi-Player Progress Tracker
+           4. Firestore Squad Multi-Player Progress Tracker with Poster Cards
            ------------------------------------------------------------- */
         function calculateGameProgress(docData) {
             if (!docData) return 0;
-
             if (typeof docData.totalCollection === 'number') return Math.round(docData.totalCollection);
             if (typeof docData.percentage === 'number') return Math.round(docData.percentage);
             if (typeof docData.overall === 'number') return Math.round(docData.overall);
@@ -1318,7 +1387,6 @@
                     ? Math.round(docData.progress * 100) 
                     : Math.round(docData.progress);
             }
-
             if (Array.isArray(docData.progress) && docData.progress.length > 0) {
                 const total = docData.progress.length;
                 const collected = docData.progress.filter(item => 
@@ -1326,11 +1394,9 @@
                 ).length;
                 return total > 0 ? Math.round((collected / total) * 100) : 0;
             }
-
             if (Array.isArray(docData.trophies) && docData.trophies.length > 0) {
                 let totalGoal = 0;
                 let currentMet = 0;
-
                 docData.trophies.forEach(t => {
                     if (t.type === 'checklist' && Array.isArray(t.subItems)) {
                         totalGoal += t.subItems.length;
@@ -1348,10 +1414,8 @@
                         }
                     }
                 });
-
                 if (totalGoal > 0) return Math.round((currentMet / totalGoal) * 100);
             }
-
             return 0;
         }
 
@@ -1439,19 +1503,40 @@
                         `;
                     });
 
+                    // Match Poster Cover
+                    const normalizedKey = game.gameId.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                    const posterUrl = GAME_POSTERS[normalizedKey] || GAME_POSTERS[game.gameId] || GAME_POSTERS['COTW'] || GAME_POSTERS['DEFAULT'];
+                    
+                    let targetUrl = "./games/HunterCOTW/cotw.html";
+                    if (game.gameId.toLowerCase().includes('sniper')) targetUrl = "./games/Sniper-Elite/5/index.html";
+
                     finalCardsHTML += `
-                        <div class="custom-card p-6 border border-slate-700/80 hover:border-sky-500/50 transition-all flex flex-col justify-between">
+                        <div class="custom-card border border-slate-700/80 hover:border-sky-500/50 transition-all flex flex-col justify-between">
                             <div>
-                                <div class="flex items-center justify-between mb-4">
-                                    <span class="text-xs font-bold uppercase tracking-widest text-sky-400"><i class="fa-solid fa-users mr-1"></i> Co-Op Module</span>
-                                    <span class="text-[10px] bg-sky-950 text-sky-300 px-2 py-0.5 rounded border border-sky-800">${game.players.length} Active Players</span>
+                                <!-- Inset Game Poster Header -->
+                                <div class="game-poster-banner">
+                                    <img src="${posterUrl}" alt="${game.title} Poster" onerror="this.src='${GAME_POSTERS['DEFAULT']}'">
+                                    <div class="game-poster-overlay"></div>
+                                    <div class="absolute top-3 left-3 z-10">
+                                        <span class="text-[11px] font-black uppercase tracking-widest text-sky-400 bg-slate-950/80 px-2.5 py-1 rounded border border-sky-500/40 flex items-center gap-1.5 shadow-lg">
+                                            <i class="fa-solid fa-users text-xs"></i> Co-Op Squad
+                                        </span>
+                                    </div>
+                                    <div class="absolute top-3 right-3 z-10">
+                                        <span class="text-[10px] bg-slate-900/90 text-sky-300 px-2 py-1 rounded border border-sky-800 font-bold shadow-lg">
+                                            ${game.players.length} Active Players
+                                        </span>
+                                    </div>
                                 </div>
-                                <h3 class="text-lg font-black text-white mb-4 uppercase tracking-tight">${game.title}</h3>
-                                <div class="space-y-3 mb-6">
-                                    ${playerProgressHTML}
+
+                                <div class="p-6 pt-2">
+                                    <h3 class="text-lg font-black text-white mb-4 uppercase tracking-tight">${game.title}</h3>
+                                    <div class="space-y-3 mb-2">
+                                        ${playerProgressHTML}
+                                    </div>
                                 </div>
                             </div>
-                            <a href="./games/HunterCOTW/cotw.html" class="text-sky-400 hover:text-sky-300 font-bold text-xs flex items-center justify-between border-t border-slate-800 pt-4 min-h-[48px]">
+                            <a href="${targetUrl}" class="text-sky-400 hover:text-sky-300 font-bold text-xs flex items-center justify-between border-t border-slate-800 p-4 min-h-[48px]">
                                 <span>Explore Module Tracker</span>
                                 <i class="fa-solid fa-arrow-right"></i>
                             </a>
@@ -1466,15 +1551,13 @@
             }
         }
 
-        // Initialize Firebase RTDB, FS25 Native Listener & Firestore Listeners
         listenToUtmLinks();
         listenToPsnPresence();
         listenToFs25FirebaseTelemetry();
         loadFirestoreSquadProgress();
     </script>
 
-    <!-- Open-Meteo Weather, Lightbox, & Interactive Slideshow Engine -->
-    <!-- HTML JS Line ~1175 -->
+    <!-- Open-Meteo Weather, Lightbox, & Countdown Engine -->
     <script>
         const users = [
             { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', layerId: 'layer-werewolf', descId: 'weather-desc-werewolf' },
@@ -1496,6 +1579,46 @@
                 }
             }
         }
+
+        /* -------------------------------------------------------------
+           Floating Album Countdown Timer (Target: Sept 29, 2026 00:00:00 EDT)
+           ------------------------------------------------------------- */
+        function initAlbumCountdown() {
+            const targetDate = new Date('2026-09-29T00:00:00-04:00').getTime();
+            const timerDisplay = document.getElementById('album-timer-display');
+
+            const updateTimer = () => {
+                const now = new Date().getTime();
+                const diff = targetDate - now;
+
+                if (!timerDisplay) return;
+
+                if (diff <= 0) {
+                    timerDisplay.textContent = "ALBUM IS NOW STREAMING!";
+                    timerDisplay.className = "text-xs font-mono font-black text-orange-400 mt-0.5 animate-pulse";
+                    return;
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                timerDisplay.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+            };
+
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
+
+        window.toggleAlbumCountdown = function(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            const badge = document.getElementById('album-countdown-badge');
+            if (badge) badge.classList.add('minimized');
+        };
 
         let cinemaImages = [];
         let currentSlideIndex = 0;
@@ -1521,9 +1644,7 @@
                         return (lower.includes('tt') || lower.includes('tmdb') || lower.includes('tvdb') || k.includes('_')) && !k.startsWith('entry_');
                     }).length;
 
-                    if (countDisplay) {
-                        countDisplay.textContent = verifiedCount.toLocaleString();
-                    }
+                    if (countDisplay) countDisplay.textContent = verifiedCount.toLocaleString();
                     localStorage.setItem('werewolf_library_count', verifiedCount);
                 }
 
@@ -1821,6 +1942,7 @@
 
         window.onload = () => {
             refreshData();
+            initAlbumCountdown();
             setInterval(refreshData, 300000);
         };
     </script>
