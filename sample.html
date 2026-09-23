@@ -9,12 +9,12 @@
  *      - All Tactical Long Shots (meters + leader crowns).
  *      - All 47 Career Ribbons (Stealth, Tactics, Lethal, Non-Lethal, Survival).
  *      - Tactics & Weapon Mastery Medals.
- *      - Mission 1 through Mission 14 level collectibles are excluded from this record.
+ *      - Level collectibles from M1 through M14 are excluded from this record.
  *   3. COTW Animal Rank Comparative Lodge: Side-by-side harvest tiers with crowns (👑).
  *   4. Dynamic Firestore Squad Games: Only users with >= 1% progress are displayed.
  *   5. FS25 Farm 2 (farmId2) Telemetry: Live agronomy, crop stage, and fleet machinery.
- * Analytics: G-CTYHDF4MSD (Chicago 24h Time)
- * Date & Time Stamp: 2026-09-23 15:35:00 (America/Chicago)
+ * Analytics: G-CTYHDF4MSD (New York 24h Time)
+ * Date & Time Stamp: 2026-09-23 15:43:50 EDT (America/New_York)
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -24,14 +24,14 @@
     <title>OneLIVIDMAN | Tactical Telemetry Hub</title>
     
     <!-- GOOGLE ANALYTICS 4 DUAL MEASUREMENT ENGINE -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
+    <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
 
-        function getChicago24Time() {
-            return new Date().toLocaleString("en-US", {timeZone: "America/Chicago", hour12: false});
+        function getNewYork24Time() {
+            return new Date().toLocaleString("en-US", {timeZone: "America/New_York", hour12: false});
         }
 
         gtag('config', 'G-CTYHDF4MSD', {
@@ -41,8 +41,8 @@
             'layout_version': '45.2.0',
             'gamertag': 'OneLIVIDMAN',
             'user_handle': 'Raymystyro',
-            'engagement_timezone': 'America/Chicago',
-            'engagement_timestamp_24h': getChicago24Time(),
+            'engagement_timezone': 'America/New_York',
+            'engagement_timestamp_24h': getNewYork24Time(),
             'send_page_view': true,
             'allow_google_signals': true,
             'cookie_flags': 'SameSite=None;Secure'
@@ -54,12 +54,12 @@
     </script>
 
     <!-- UI LIBS, FONTS & ICONS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="//cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- MASTER STYLESHEET -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap');
+        @import url('//fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap');
 
         :root {
             --bg-dark: #070709;
@@ -287,7 +287,7 @@
     <!-- Navigation Header -->
     <nav class="nav-bar">
         <div class="viewport-85-wrap nav-container">
-            <a href="https://werewolf3788.github.io/Website/" target="_blank" class="text-white font-black text-lg flex items-center gap-2 min-h-[48px]">
+            <a href="//werewolf3788.github.io/Website/" target="_blank" class="text-white font-black text-lg flex items-center gap-2 min-h-[48px]">
                 <i class="fab fa-playstation text-red-500"></i> PACK HUB
             </a>
             
@@ -315,14 +315,14 @@
         <div class="viewport-85-wrap">
             <div class="relative inline-block mb-6">
                 <div class="absolute inset-0 bg-[#2563EB] blur-[100px] opacity-40 rounded-full"></div>
-                <img id="main-avatar" src="https://static-cdn.jtvnw.net/jtv_user_pictures/032a0367-589f-4763-94de-4fc679a0b2df-profile_image-70x70.png" class="relative w-36 h-36 sm:w-48 sm:h-48 lg:w-56 lg:h-56 rounded-full border-4 border-[#2563EB] border-t-[#EF4444] shadow-2xl mx-auto object-cover cursor-pointer" onerror="this.src='https://via.placeholder.com/250x250/1e1e24/2563EB?text=RAY'">
+                <img id="main-avatar" src="//static-cdn.jtvnw.net/jtv_user_pictures/032a0367-589f-4763-94de-4fc679a0b2df-profile_image-70x70.png" class="relative w-36 h-36 sm:w-48 sm:h-48 lg:w-56 lg:h-56 rounded-full border-4 border-[#2563EB] border-t-[#EF4444] shadow-2xl mx-auto object-cover cursor-pointer" onerror="this.src='//via.placeholder.com/250x250/1e1e24/2563EB?text=RAY'">
             </div>
             
             <h1 class="flag-gradient-text mb-2 text-3xl sm:text-5xl lg:text-6xl font-black" id="display-admin-name">OneLIVIDMAN</h1>
             <div class="text-xs sm:text-sm font-black text-gray-400 uppercase tracking-[0.4em] mb-8">Raymystyro Squad Telemetry & Operations Command</div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-center">
-                <a id="twitch-card" href="https://www.twitch.tv/raymystyro" target="_blank" class="glass-card header-stat-card p-5 border-b-4 border-purple-500 hover:scale-[1.02] transition-transform min-h-[160px] relative">
+                <a id="twitch-card" href="//www.twitch.tv/raymystyro" target="_blank" class="glass-card header-stat-card p-5 border-b-4 border-purple-500 hover:scale-[1.02] transition-transform min-h-[160px] relative">
                     <div class="text-xs text-purple-400 font-black mb-1 uppercase tracking-widest">Twitch Feed</div>
                     <div id="follower-count" class="text-3xl font-black text-gray-400 font-mono">--</div>
                     <div id="twitch-status-msg" class="text-xs text-gray-300 font-bold uppercase mt-2 italic truncate w-full px-2">"--"</div>
@@ -362,7 +362,9 @@
 
     <main class="viewport-85-wrap pb-28 flex flex-col gap-10">
 
-        <!-- OPERATIONS & SERVER TELEMETRY MATRIX -->
+        <!-- ======================================================================
+             OPERATIONS & SERVER TELEMETRY MATRIX
+             ====================================================================== -->
         <div class="w-full flex flex-col gap-6" id="dual-telemetry-row">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-2">
                 <div>
@@ -574,7 +576,7 @@
                     &copy; 2026 Werewolf Project. Built by Werewolf3788 & Friends.
                 </p>
                 <div id="build-meta-footer" style="color: #94a3b8; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
-                    Werewolf Command Engine • v45.2.0 • Build: 2026-09-23 15:35:00 CDT
+                    Werewolf Command Engine • v45.2.0 • Build: 2026-09-23 15:43:50 EDT
                 </div>
             </div>
         </footer>
@@ -594,8 +596,8 @@
 
     <!-- FIRESTORE TELEMETRY & SE5 FILTER MODULE -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, doc, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { initializeApp } from "//www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getFirestore, doc, collection, getDocs, onSnapshot } from "//www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -627,11 +629,11 @@
         };
 
         const GAME_POSTERS = {
-            'COTW': 'https://cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg',
-            'HUNTERCOTW': 'https://cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg',
-            'SNIPER-ELITE-5': 'https://cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg',
-            'FS25': 'https://cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg',
-            'DEFAULT': 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80'
+            'COTW': '//cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg',
+            'HUNTERCOTW': '//cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg',
+            'SNIPER-ELITE-5': '//cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg',
+            'FS25': '//cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg',
+            'DEFAULT': '//images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80'
         };
 
         const LONG_SHOT_ITEMS = [
@@ -669,7 +671,6 @@
         function isMissionCollectable(itemId, category) {
             const id = (itemId || '').toLowerCase();
             const cat = (category || '').toLowerCase();
-            // Filter out M1 through M14 level specific collectibles
             const matchM = id.match(/^m(\d+)_/);
             if (matchM) {
                 const num = parseInt(matchM[1], 10);
@@ -718,9 +719,6 @@
             return 0;
         }
 
-        /* -------------------------------------------------------------
-           SE5 Listener: Pulls Long Shots, All Ribbons & Tactics/Mastery
-           ------------------------------------------------------------- */
         function initSE5Listeners() {
             TARGET_USERS.forEach(user => {
                 const aliases = USER_ALIASES[user] || [user];
@@ -789,7 +787,7 @@
                 lsContainer.innerHTML = lsHtml || `<div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">No tactical long shots recorded yet.</div>`;
             }
 
-            // 2. All 47 Career Ribbons (Categorized by rib_ / ribbon)
+            // 2. All 47 Career Ribbons
             const ribbonsContainer = document.getElementById('se5-ribbons-container');
             const ribbonsCountEl = document.getElementById('se5-ribbons-count');
             if (ribbonsContainer) {
@@ -833,7 +831,7 @@
                 }
             }
 
-            // 3. Tactics & Weapon Mastery Medals (Strictly excluding M1-M14 mission items)
+            // 3. Tactics & Weapon Mastery Medals (excluding M1-M14 mission items)
             const masteryContainer = document.getElementById('se5-mastery-container');
             const medalsCountEl = document.getElementById('se5-medals-count');
             if (masteryContainer) {
@@ -842,10 +840,7 @@
                     const cat = (i.category || '').toLowerCase();
                     const isLongshot = id.includes('longshot') || id.includes('_ls_');
                     const isRibbon = cat.includes('ribbon') || id.startsWith('rib_');
-                    
-                    // Exclude mission level collectibles (m1 through m14)
                     if (isMissionCollectable(i.id, i.category || i.cat)) return false;
-
                     return !isLongshot && !isRibbon && (i.collected || i.completed || (i.count && i.count > 0));
                 });
 
@@ -949,9 +944,9 @@
                 const posterKey = g.id.toUpperCase().replace(/[^A-Z0-9]/g, '');
                 const posterUrl = GAME_POSTERS[posterKey] || GAME_POSTERS[g.id] || GAME_POSTERS['DEFAULT'];
 
-                let targetLink = "https://werewolf3788.github.io/Website/";
-                if (g.id.toLowerCase().includes('cotw')) targetLink = "https://werewolf3788.github.io/Website/games/HunterCOTW/cotw.html";
-                if (g.id.toLowerCase().includes('sniper')) targetLink = "https://werewolf3788.github.io/Website/games/Sniper-Elite/5/index.html";
+                let targetLink = "//werewolf3788.github.io/Website/";
+                if (g.id.toLowerCase().includes('cotw')) targetLink = "//werewolf3788.github.io/Website/games/HunterCOTW/cotw.html";
+                if (g.id.toLowerCase().includes('sniper')) targetLink = "//werewolf3788.github.io/Website/games/Sniper-Elite/5/index.html";
 
                 html += `
                     <div class="bg-black/50 p-4 rounded-xl border border-white/10 flex flex-col justify-between space-y-3">
@@ -1093,8 +1088,254 @@
         setInterval(loadAllFirestoreSquadGames, 45000);
     </script>
 
-    <!-- UI Interaction Helper Functions -->
+    <!-- REALTIME DATABASE & FS25 FARM 2 DIRECT INGESTION -->
     <script>
+        const FS25_PRIMARY_URL = "https://fs25-a3563-default-rtdb.firebaseio.com/fs25.json";
+        const FS25_BACKUP_URL  = "https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
+        const UTM_LINKS_URL    = "https://entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
+
+        function convertFirebaseArray(data) {
+            if (!data) return [];
+            if (Array.isArray(data)) return data;
+            if (typeof data === 'object') return Object.values(data);
+            return [];
+        }
+
+        async function updateFS25Telemetry() {
+            try {
+                let rawData = null;
+
+                try {
+                    const res = await fetch(`${FS25_PRIMARY_URL}?t=${Date.now()}`);
+                    if (res.ok) rawData = await res.json();
+                } catch (e) {}
+
+                if (!rawData) {
+                    try {
+                        const resBack = await fetch(`${FS25_BACKUP_URL}?t=${Date.now()}`);
+                        if (resBack.ok) rawData = await resBack.json();
+                    } catch (e) {}
+                }
+
+                if (!rawData) return;
+                const data = rawData.fs25 ? rawData.fs25 : rawData;
+
+                const isOnline = data.syncStatus === 'online' || 
+                                 data.syncStatus === true || 
+                                 data.serverOnline === true ||
+                                 (data.gameInfo && Object.keys(data.gameInfo).length > 0) ||
+                                 (data.farms && Object.keys(data.farms).length > 0);
+
+                const statusPill = document.getElementById('fs25-status-pill');
+                const statusText = document.getElementById('fs25-status-text');
+                if (statusPill && statusText) {
+                    if (isOnline) {
+                        statusPill.className = "fs25-badge flex items-center gap-1.5";
+                        statusPill.style.background = "rgba(132, 204, 22, 0.15)";
+                        statusPill.style.color = "#bef264";
+                        statusText.innerText = "Farm 2 Active";
+                    } else {
+                        statusPill.className = "fs25-badge flex items-center gap-1.5";
+                        statusPill.style.background = "rgba(239, 68, 68, 0.15)";
+                        statusPill.style.color = "#f87171";
+                        statusText.innerText = "Server Standby";
+                    }
+                }
+
+                const farmsNode = data.farms || {};
+                const farmData = farmsNode.farm_2 || 
+                                 farmsNode.farmId2 || 
+                                 farmsNode['2'] || 
+                                 farmsNode.Ray || 
+                                 farmsNode.OneLIVIDMAN || 
+                                 data.farmId2 || 
+                                 {};
+
+                const farmName = farmData.name || farmData.farmName || "Ray's Farm (Farm 2)";
+                const rawMoney = farmData.finances ? farmData.finances.money : (farmData.money ?? farmData.balance);
+                const money = (rawMoney !== undefined && rawMoney !== null) ? `$${Math.round(Number(rawMoney)).toLocaleString()}` : "$0";
+
+                const vehiclesPool = farmData.cards?.fleet || farmData.vehicles || farmData.fleet || farmData.equipment || farmData.machines || [];
+                const harvestersPool = farmData.cards?.harvestersAndCombines || [];
+                const allUnits = [...convertFirebaseArray(vehiclesPool), ...convertFirebaseArray(harvestersPool)];
+
+                const fields = convertFirebaseArray(farmData.cards?.farmlandOwned || farmData.fields || farmData.farmlands || farmData.ownedFields);
+                const agronomyFields = convertFirebaseArray(data.fields || data.cards?.fieldsAgronomy || []);
+
+                const nameEl = document.getElementById('fs25-farm-name');
+                const moneyEl = document.getElementById('fs25-money');
+                const fieldsCountEl = document.getElementById('fs25-fields-count');
+                const vehiclesCountEl = document.getElementById('fs25-vehicles-count');
+                const fleetSubEl = document.getElementById('fs25-fleet-subtitle');
+                const fieldsSubEl = document.getElementById('fs25-fields-subtitle');
+
+                if (nameEl) nameEl.innerText = farmName;
+                if (moneyEl) moneyEl.innerText = money;
+                if (fieldsCountEl) fieldsCountEl.innerText = fields.length;
+                if (vehiclesCountEl) vehiclesCountEl.innerText = allUnits.length;
+                if (fleetSubEl) fleetSubEl.innerText = `${allUnits.length} Total Units Registered`;
+                if (fieldsSubEl) fieldsSubEl.innerText = `${fields.length} Parcels Owned`;
+
+                const fleetContainer = document.getElementById('fs25-fleet-container');
+                if (fleetContainer) {
+                    if (allUnits.length > 0) {
+                        fleetContainer.innerHTML = allUnits.map(v => {
+                            const name = v.name || v.brand || v.type || "Machinery";
+                            const img = v.image || null;
+                            const hours = v.operatingHours !== undefined ? `${v.operatingHours} hrs` : "Operational";
+                            const wear = v.wear !== undefined ? `${Math.round(v.wear * 100)}% Wear` : "Clean";
+                            const cardType = v.cardType || "Farm 2 Implement";
+
+                            return `
+                                <div class="bg-black/40 p-3 rounded-xl border border-white/5 flex gap-3 items-center hover:border-lime-500/40 transition-colors">
+                                    ${img ? `<img src="${img}" class="w-12 h-12 rounded-lg object-contain bg-black/60 p-1 border border-white/10" onerror="this.style.display='none'">` : ''}
+                                    <div class="min-w-0 flex-1">
+                                        <div class="text-[10px] font-black text-lime-400 uppercase tracking-widest">${cardType}</div>
+                                        <div class="text-xs font-black text-white uppercase truncate">${name}</div>
+                                        <div class="flex justify-between items-center text-[11px] font-bold text-gray-400 pt-1.5 border-t border-white/5 mt-1.5 font-mono">
+                                            <span>${hours}</span>
+                                            <span class="text-lime-400">${wear}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    } else {
+                        fleetContainer.innerHTML = `<div class="p-6 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No active machinery registered to Farm 2.</div>`;
+                    }
+                }
+
+                const fieldsContainer = document.getElementById('fs25-fields-container');
+                if (fieldsContainer) {
+                    if (fields.length > 0) {
+                        fieldsContainer.innerHTML = fields.map(f => {
+                            const fId = f.id || f.fieldId || "Plot";
+                            const area = f.areaHa ? `${f.areaHa} ha` : (f.area ? `${f.area}` : null);
+                            const agroMatch = agronomyFields.find(af => af.fieldId == fId) || {};
+                            const crop = agroMatch.fruitType || f.crop || f.fruitType || "Seeded";
+                            
+                            const growthStage = agroMatch.growthStage || f.growthStage || 0;
+                            let growthStatus = "Growing";
+                            if (growthStage >= 6) growthStatus = "Ready to Harvest";
+                            else if (growthStage === 0) growthStatus = "Seeded / Cultivated";
+
+                            return `
+                                <div class="bg-black/50 p-3 rounded-xl border border-white/5 flex flex-col justify-between space-y-2">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <div class="text-[10px] font-black text-lime-400 uppercase">Farmland Plot #${fId}</div>
+                                            <div class="text-xs font-black text-white uppercase mt-0.5">${crop}</div>
+                                        </div>
+                                        <span class="text-[10px] font-mono font-bold ${growthStage >= 6 ? 'text-emerald-400' : 'text-amber-400'}">${growthStatus}</span>
+                                    </div>
+                                    ${area ? `<div class="text-[10px] text-gray-500 font-mono">Area: ${area}</div>` : ''}
+                                </div>
+                            `;
+                        }).join('');
+                    } else {
+                        fieldsContainer.innerHTML = `<div class="p-4 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No parcels assigned to Farm 2.</div>`;
+                    }
+                }
+
+            } catch (err) {
+                console.warn("[FS25 Polling Notice]:", err.message);
+            }
+        }
+
+        async function fetchUtmNavLinks() {
+            const container = document.getElementById('dynamic-nav-container');
+            if (!container) return;
+
+            try {
+                const res = await fetch(`${UTM_LINKS_URL}?t=${Date.now()}`);
+                if (!res.ok) return;
+                const data = await res.json();
+                if (!data) return;
+
+                const leafLinks = [];
+
+                function extractLinks(node) {
+                    if (!node || typeof node !== 'object') return;
+                    const url = node.url || node.link || node.href;
+                    if (url && typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('//'))) {
+                        leafLinks.push({
+                            title: node.title || node.name || "Link",
+                            url: url,
+                            image: node.image || node.thumb || node.thumbnail || node.img || null,
+                            group: node.group ? String(node.group).trim() : "Standalone"
+                        });
+                        return;
+                    }
+                    Object.values(node).forEach(child => {
+                        if (child && typeof child === 'object') extractLinks(child);
+                    });
+                }
+
+                extractLinks(data);
+
+                const standaloneLinks = [];
+                const groupFolders = {};
+
+                leafLinks.forEach(item => {
+                    const grp = item.group;
+                    if (grp.toLowerCase() === 'standalone' || grp.toLowerCase() === 'none' || grp === '') {
+                        standaloneLinks.push(item);
+                    } else {
+                        if (!groupFolders[grp]) groupFolders[grp] = [];
+                        groupFolders[grp].push(item);
+                    }
+                });
+
+                let html = '';
+
+                Object.entries(groupFolders).forEach(([folderName, items], idx) => {
+                    const folderId = `nav-folder-${idx}`;
+                    html += `
+                        <div class="nav-folder">
+                            <button class="folder-toggle-btn" onclick="toggleFolderDropdown('${folderId}')">
+                                <i class="fas fa-folder text-yellow-400"></i>
+                                <span>${folderName}</span>
+                                <i class="fas fa-chevron-down text-xs text-gray-400 ml-1"></i>
+                            </button>
+                            <div class="folder-dropdown-menu" id="${folderId}">
+                                ${items.map(link => `
+                                    <a href="${link.url}" target="_blank" class="folder-dropdown-item">
+                                        ${link.image ? `<img src="${link.image}" class="nav-thumb-icon" onerror="this.style.display='none'">` : '<i class="fas fa-arrow-up-right-from-square text-sky-400 text-xs"></i>'}
+                                        <span class="truncate">${link.title}</span>
+                                    </a>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                standaloneLinks.forEach(link => {
+                    html += `
+                        <a href="${link.url}" target="_blank" class="nav-link-btn">
+                            ${link.image ? `<img src="${link.image}" class="nav-thumb-icon mr-1.5" onerror="this.style.display='none'">` : ''}
+                            <span>${link.title}</span>
+                        </a>
+                    `;
+                });
+
+                container.innerHTML = html;
+            } catch (err) {}
+        }
+
+        window.toggleFolderDropdown = function(folderId) {
+            document.querySelectorAll('.folder-dropdown-menu').forEach(menu => {
+                if (menu.id !== folderId) menu.classList.remove('show');
+            });
+            const menu = document.getElementById(folderId);
+            if (menu) menu.classList.toggle('show');
+        };
+
+        window.addEventListener('click', function(e) {
+            if (!e.target.closest('.nav-folder')) {
+                document.querySelectorAll('.folder-dropdown-menu').forEach(menu => menu.classList.remove('show'));
+            }
+        });
+
         function toggleNav() {
             const nav = document.getElementById('dynamic-nav-container');
             if (nav) nav.classList.toggle('active');
@@ -1104,6 +1345,12 @@
             const lb = document.getElementById('generic-lightbox');
             if (lb) lb.style.display = 'none';
         }
+
+        // Initialize loops
+        fetchUtmNavLinks();
+        updateFS25Telemetry();
+        setInterval(updateFS25Telemetry, 30000);
+        setInterval(fetchUtmNavLinks, 180000);
     </script>
 </body>
 </html>
