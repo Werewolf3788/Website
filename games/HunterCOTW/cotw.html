@@ -10,7 +10,7 @@
            File: cotw.html (Styles)
            Location: /games/HunterCOTW/cotw.html
            Description: theHunter: Call of the Wild Responsive Interface
-           Timestamp: 2026-09-23 13:45:00 EDT (America/New_York)
+           Timestamp: 2026-09-23 13:58:00 EDT (America/New_York)
            ========================================================================== */
         :root {
             --user-theme-accent: #ff5500;
@@ -41,7 +41,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
         }
 
@@ -98,7 +98,7 @@
             font-weight: 700;
             font-size: 0.85rem;
             cursor: pointer;
-            min-height: 44px;
+            min-height: 48px;
         }
 
         .user-nav-btn {
@@ -111,7 +111,7 @@
             font-size: 0.85rem;
             cursor: pointer;
             transition: all 0.2s ease;
-            min-height: 44px;
+            min-height: 48px;
         }
 
         .user-nav-btn:hover {
@@ -162,8 +162,8 @@
             background: #0f172a;
             color: #f8fafc;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
@@ -226,7 +226,7 @@
             border-radius: 8px;
             font-weight: 700;
             width: 100%;
-            max-width: 320px;
+            max-width: 340px;
             min-height: 48px;
             cursor: pointer;
         }
@@ -250,6 +250,7 @@
             user-select: none;
             background: rgba(30, 41, 59, 0.4);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            min-height: 48px;
         }
 
         .category-header h2 {
@@ -290,6 +291,14 @@
             border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
+        .trophy-badges-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 4px;
+        }
+
         .trophy-rank {
             font-size: 0.65rem;
             text-transform: uppercase;
@@ -304,6 +313,31 @@
         .rank-bronze { background: #b45309; color: #ffffff; }
         .rank-rare { background: #7c3aed; color: #ffffff; }
 
+        /* PSN Indicator Badges */
+        .sync-badge {
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .sync-badge-psn {
+            background: rgba(234, 179, 8, 0.2);
+            color: #facc15;
+            border: 1px solid rgba(234, 179, 8, 0.4);
+        }
+
+        .sync-badge-manual {
+            background: rgba(148, 163, 184, 0.15);
+            color: #94a3b8;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+        }
+
         .toggle-btn, .dropdown-trigger {
             width: 100%;
             background: #1e293b;
@@ -315,7 +349,7 @@
             font-size: 0.85rem;
             cursor: pointer;
             transition: all 0.2s;
-            min-height: 44px;
+            min-height: 48px;
         }
 
         .toggle-btn:hover, .dropdown-trigger:hover {
@@ -346,8 +380,8 @@
             background: #1e293b;
             color: #ffffff;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
@@ -372,10 +406,13 @@
 <body>
     <div class="container">
         <!-- ======================================================================
-             Top Navigation with Responsive Sandwich Bar (☰ Menu)
+             Top Navigation with 3-Tier Responsive Layout
+             Desktop: Full horizontal bar (>=1280px)
+             Tablet: Touch-friendly drawer/dropdown (768px-1279px)
+             Mobile: Sandwich menu bar (<768px)
              ====================================================================== -->
         <div class="nav-wrapper-centered">
-            <button type="button" id="mobile-sandwich-btn" class="sandwich-btn" onclick="appState.toggleMobileMenu()" aria-label="Toggle Navigation">
+            <button type="button" id="mobile-sandwich-btn" class="sandwich-btn" onclick="appState.toggleMobileMenu(event)" aria-label="Toggle Navigation">
                 <span class="sandwich-icon">☰</span>
                 <span class="sandwich-label">Menu</span>
             </button>
@@ -402,7 +439,7 @@
                         <option value="playstation">PlayStation</option>
                     </select>
 
-                    <!-- Exact 4 Normalized Player Buttons (Ray/OneLIVIDMAN duplicate purged) -->
+                    <!-- Exact 4 Normalized Player Buttons -->
                     <div class="user-btn-group" style="display: flex; gap: 8px; flex-wrap: wrap;">
                         <button type="button" class="user-nav-btn" onclick="appState.switchHunter('Werewolf3788')">Werewolf3788</button>
                         <button type="button" class="user-nav-btn" onclick="appState.switchHunter('OneLIVIDMAN')">OneLIVIDMAN</button>
@@ -496,21 +533,18 @@
         <!-- Dynamic Reserve Trophy Cards -->
         <main id="section-container"></main>
 
-        <!-- ======================================================================
-             Footer: Verified Static Version & Code Timestamp
-             (Collaborator names purged per request)
-             ====================================================================== -->
+        <!-- Footer: Version & Timestamp Signature -->
         <footer>
             <div style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 8px;">
                 Support the hunt: <a href="https://playstation-be936.web.app/" style="color: var(--user-theme-accent); text-decoration: none;">Werewolf Project Home</a>
             </div>
             <div id="build-meta-footer" style="color: #94a3b8; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
-                Werewolf Project Engine • v2.2.0 • Build: 2026-09-23 13:38:00 EDT
+                Werewolf Project Engine • v2.3.0 • Build: 2026-09-23 13:58:00 EDT
             </div>
         </footer>
     </div>
 
     <!-- Script connection with cachebuster param -->
-    <script type="module" src="./script.js?v=2.2.0"></script>
+    <script type="module" src="./script.js?v=2.3.0"></script>
 </body>
 </html>
