@@ -1,127 +1,516 @@
-<!--
-  File: index.html
-  Location: /index.html
-  Description: COTW Master Tracker Main Interface & GA4 Setup
-  Last Updated: 2026-09-12 21:26:00 (America/New_York)
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COTW Master Tracker | Werewolf3788</title>
+    <title>COTW Master Tracker | Werewolf Project</title>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ==========================================================================
+           File: cotw.html (Styles)
+           Location: /games/HunterCOTW/cotw.html
+           Description: theHunter: Call of the Wild Responsive Interface
+           Timestamp: 2026-09-23 13:45:00 EDT (America/New_York)
+           ========================================================================== */
+        :root {
+            --user-theme-accent: #ff5500;
+            --user-theme-glow: rgba(255, 85, 0, 0.45);
+            --user-theme-border: rgba(255, 85, 0, 0.35);
+            --user-theme-secondary: #0a0a0c;
+            --user-theme-badge-bg: #ff5500;
+            --user-theme-badge-text: #ffffff;
+            --bg-color: #0b0f19;
+            --card-bg: rgba(15, 23, 42, 0.95);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
 
-    <!-- Google Analytics 4 Tag (G-CTYHDF4MSD) via gtag.js -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-      // GA4 Configuration with Enhanced Measurement & Custom Dimension Parameters
-      gtag('config', 'G-CTYHDF4MSD', {
-        'send_page_view': true
-      });
-    </script>
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at top, rgba(30, 41, 59, 0.5) 0%, rgba(11, 15, 25, 1) 100%);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            padding: 16px;
+        }
 
-    <link rel="stylesheet" href="./style.css?v=2.0">
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* --- Header & Master Hunter Console --- */
+        .console-card {
+            background: var(--card-bg);
+            border: 2px solid var(--user-theme-border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--user-theme-glow);
+            transition: all 0.3s ease;
+        }
+
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+        }
+
+        .console-title-group h1 {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            color: var(--user-theme-accent);
+            text-transform: uppercase;
+        }
+
+        .console-title-group .sub-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .console-controls {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .platform-select {
+            background: #0f172a;
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            min-height: 44px;
+        }
+
+        .user-nav-btn {
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 44px;
+        }
+
+        .user-nav-btn:hover {
+            border-color: var(--user-theme-border);
+            color: var(--user-theme-accent);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- Animal Rank Badges --- */
+        .rank-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .rank-badge {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .rank-badge .icon {
+            font-size: 1.5rem;
+        }
+
+        .rank-badge .title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .rank-ctrls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .rank-ctrls button {
+            background: #0f172a;
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .rank-ctrls .val {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--user-theme-accent);
+            min-width: 20px;
+        }
+
+        /* --- Progress Bar --- */
+        .progress-box {
+            text-align: center;
+            margin: 24px 0 16px 0;
+        }
+
+        .progress-box h2 {
+            font-size: 1.25rem;
+            font-weight: 900;
+            margin-bottom: 6px;
+            letter-spacing: 0.05em;
+        }
+
+        .progress-box p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .progress-track {
+            background: #1e293b;
+            border-radius: 999px;
+            height: 12px;
+            overflow: hidden;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-fill {
+            background: var(--user-theme-accent);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+            box-shadow: 0 0 10px var(--user-theme-glow);
+        }
+
+        .reserve-jump {
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .reserve-select {
+            background: #0f172a;
+            color: #f8fafc;
+            border: 1px solid var(--user-theme-border);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            width: 100%;
+            max-width: 320px;
+            min-height: 48px;
+            cursor: pointer;
+        }
+
+        /* --- Trophy Sections --- */
+        .category-section {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-left: 6px solid var(--user-theme-accent);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .category-header {
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            background: rgba(30, 41, 59, 0.4);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .category-header h2 {
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .section-content {
+            padding: 16px;
+        }
+
+        .section-collapsed .section-content {
+            display: none;
+        }
+
+        .trophy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 14px;
+        }
+
+        .trophy-card {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .trophy-icon-img {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .trophy-rank {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .rank-platinum { background: #0284c7; color: #ffffff; }
+        .rank-gold { background: #d97706; color: #ffffff; }
+        .rank-silver { background: #64748b; color: #ffffff; }
+        .rank-bronze { background: #b45309; color: #ffffff; }
+        .rank-rare { background: #7c3aed; color: #ffffff; }
+
+        .toggle-btn, .dropdown-trigger {
+            width: 100%;
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 44px;
+        }
+
+        .toggle-btn:hover, .dropdown-trigger:hover {
+            border-color: var(--user-theme-border);
+            color: var(--user-theme-accent);
+        }
+
+        .lock-badge {
+            background: var(--user-theme-badge-bg) !important;
+            color: var(--user-theme-badge-text) !important;
+            border-color: transparent !important;
+        }
+
+        .dropdown-content {
+            display: none;
+            margin-top: 8px;
+            padding: 8px;
+            background: #020617;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .check-btn {
+            background: #1e293b;
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .check-btn.is-done {
+            background: #10b981;
+            border-color: #10b981;
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 30px 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 40px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 12px;
+        }
+    </style>
 </head>
-<body id="master-body" class="theme-werewolf">
-    <div class="background-overlay"></div>
-
-    <!-- Navigation Bar Section (Layered on top of everything) -->
-    <nav class="master-nav">
-        <a href="https://werewolf3788.firebaseapp.com" class="nav-logo">WEREWOLF3788</a>
-        <div id="dynamic-nav-links" class="nav-links">
-            <span style="color: #94a3b8; font-size: 0.8rem; padding: 8px;">Loading RTDB Navigation...</span>
-        </div>
-    </nav>
-
-    <!-- Main Content Container -->
-    <div class="tracker-container">
-        <!-- Profile & Platform Controls Header -->
-        <div class="profile-header">
-            <div class="active-info">
-                <div style="font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 1px;">Master Hunter Console</div>
-                <span id="hunter-name" class="hunter-glow">WEREWOLF3788 [PLAYSTATION]</span>
-            </div>
-            
-            <div class="profile-actions">
-                <!-- Platform Selector Dropdown -->
-                <select id="platform-selector" class="profile-select">
-                    <option value="playstation">PlayStation</option>
-                    <option value="xbox">Xbox</option>
-                    <option value="pc">PC</option>
-                </select>
-
-                <!-- Hunter Profile Buttons -->
-                <button class="profile-btn" onclick="appState.switchHunter('Werewolf3788')">Werewolf</button>
-                <button class="profile-btn" onclick="appState.switchHunter('Raymystyro')">Ray</button>
-                <button class="profile-btn" onclick="appState.switchHunter('terrdog420')">TJ</button>
-                <button class="profile-btn" onclick="appState.switchHunter('OneLIVIDMAN')">OneLIVIDMAN</button>
-            </div>
+<body>
+    <div class="container">
+        <!-- ======================================================================
+             Top Navigation with Responsive Sandwich Bar (☰ Menu)
+             ====================================================================== -->
+        <div class="nav-wrapper-centered">
+            <button type="button" id="mobile-sandwich-btn" class="sandwich-btn" onclick="appState.toggleMobileMenu()" aria-label="Toggle Navigation">
+                <span class="sandwich-icon">☰</span>
+                <span class="sandwich-label">Menu</span>
+            </button>
+            <nav id="dynamic-nav-links" class="nav-collapsed-mobile"></nav>
         </div>
 
-        <!-- Main Stats & Animal Ranks Header -->
-        <header class="main-header">
-            <div style="font-size: 0.8rem; font-weight: 900; color: #94a3b8; margin-bottom: 10px;">ANIMAL RANK (LEGACY SYNC)</div>
-            
-            <!-- Animal Rank Counter Grid -->
+        <!-- ======================================================================
+             Master Hunter Console: Cleaned Profiles & Pin Button
+             ====================================================================== -->
+        <section class="console-card">
+            <div class="console-header">
+                <div class="console-title-group">
+                    <div class="sub-label">Master Hunter Console</div>
+                    <h1 id="hunter-name">WEREWOLF3788 [PLAYSTATION]</h1>
+                </div>
+
+                <div class="console-controls">
+                    <!-- Identity Pin Mechanism -->
+                    <span class="pin-device-control">
+                        <button type="button" id="pin-device-btn" class="pin-device-btn" onclick="appState.togglePinDevice()">📌 Pin Device to This User</button>
+                    </span>
+
+                    <select id="platform-selector" class="platform-select" aria-label="Platform Selector">
+                        <option value="playstation">PlayStation</option>
+                    </select>
+
+                    <!-- Exact 4 Normalized Player Buttons (Ray/OneLIVIDMAN duplicate purged) -->
+                    <div class="user-btn-group" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button type="button" class="user-nav-btn" onclick="appState.switchHunter('Werewolf3788')">Werewolf3788</button>
+                        <button type="button" class="user-nav-btn" onclick="appState.switchHunter('OneLIVIDMAN')">OneLIVIDMAN</button>
+                        <button type="button" class="user-nav-btn" onclick="appState.switchHunter('Terrdog')">Terrdog</button>
+                        <button type="button" class="user-nav-btn" onclick="appState.switchHunter('DesdemonaTiger')">DesdemonaTiger</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legacy Synchronized Animal Ranks -->
+            <div style="text-align: center; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.08em; color: var(--text-muted); text-transform: uppercase;">
+                Animal Rank (Legacy Sync)
+            </div>
             <div class="rank-grid">
-                <div class="rank-item">
-                    <span class="rank-emoji">👑</span><span class="rank-label">G.O.</span>
-                    <div class="rank-controls"><button onclick="adjRank('greatone', -1)">-</button><span id="rank-val-greatone">0</span><button onclick="adjRank('greatone', 1)">+</button></div>
+                <div class="rank-badge">
+                    <span class="icon">👑</span>
+                    <span class="title">G.O.</span>
+                    <div class="rank-ctrls">
+                        <button type="button" onclick="adjRank('greatone', -1)">-</button>
+                        <span id="rank-val-greatone" class="val">0</span>
+                        <button type="button" onclick="adjRank('greatone', 1)">+</button>
+                    </div>
                 </div>
-                <div class="rank-item">
-                    <span class="rank-emoji">🐇</span><span class="rank-label">Albino</span>
-                    <div class="rank-controls"><button onclick="adjRank('albino', -1)">-</button><span id="rank-val-albino">0</span><button onclick="adjRank('albino', 1)">+</button></div>
+                <div class="rank-badge">
+                    <span class="icon">🐇</span>
+                    <span class="title">Albino</span>
+                    <div class="rank-ctrls">
+                        <button type="button" onclick="adjRank('albino', -1)">-</button>
+                        <span id="rank-val-albino" class="val">0</span>
+                        <button type="button" onclick="adjRank('albino', 1)">+</button>
+                    </div>
                 </div>
-                <div class="rank-item">
-                    <span class="rank-emoji">💎</span><span class="rank-label">DIAMOND</span>
-                    <div class="rank-controls"><button onclick="adjRank('diamond', -1)">-</button><span id="rank-val-diamond">0</span><button onclick="adjRank('diamond', 1)">+</button></div>
+                <div class="rank-badge">
+                    <span class="icon">💎</span>
+                    <span class="title">Diamond</span>
+                    <div class="rank-ctrls">
+                        <button type="button" onclick="adjRank('diamond', -1)">-</button>
+                        <span id="rank-val-diamond" class="val">0</span>
+                        <button type="button" onclick="adjRank('diamond', 1)">+</button>
+                    </div>
                 </div>
-                <div class="rank-item">
-                    <span class="rank-emoji">🥇</span><span class="rank-label">GOLD</span>
-                    <div class="rank-controls"><button onclick="adjRank('gold', -1)">-</button><span id="rank-val-gold">0</span><button onclick="adjRank('gold', 1)">+</button></div>
+                <div class="rank-badge">
+                    <span class="icon">🥇</span>
+                    <span class="title">Gold</span>
+                    <div class="rank-ctrls">
+                        <button type="button" onclick="adjRank('gold', -1)">-</button>
+                        <span id="rank-val-gold" class="val">0</span>
+                        <button type="button" onclick="adjRank('gold', 1)">+</button>
+                    </div>
                 </div>
-                <div class="rank-item">
-                    <span class="rank-emoji">🥈</span><span class="rank-label">SILVER</span>
-                    <div class="rank-controls"><button onclick="adjRank('silver', -1)">-</button><span id="rank-val-silver">0</span><button onclick="adjRank('silver', 1)">+</button></div>
+                <div class="rank-badge">
+                    <span class="icon">🥈</span>
+                    <span class="title">Silver</span>
+                    <div class="rank-ctrls">
+                        <button type="button" onclick="adjRank('silver', -1)">-</button>
+                        <span id="rank-val-silver" class="val">0</span>
+                        <button type="button" onclick="adjRank('silver', 1)">+</button>
+                    </div>
                 </div>
-                <div class="rank-item">
-                    <span class="rank-emoji">🥉</span><span class="rank-label">BRONZE</span>
-                    <div class="rank-controls"><button onclick="adjRank('bronze', -1)">-</button><span id="rank-val-bronze">0</span><button onclick="adjRank('bronze', 1)">+</button></div>
+                <div class="rank-badge">
+                    <span class="icon">🥉</span>
+                    <span class="title">Bronze</span>
+                    <div class="rank-ctrls">
+                        <button type="button" onclick="adjRank('bronze', -1)">-</button>
+                        <span id="rank-val-bronze" class="val">0</span>
+                        <button type="button" onclick="adjRank('bronze', 1)">+</button>
+                    </div>
                 </div>
             </div>
 
-            <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 30px 0;"></div>
-            
-            <h1 id="game-title">theHunter: Call of the Wild</h1>
-            <div id="percent-text" style="font-weight: 900; margin-bottom: 5px;">Master Platinum Progress 0%</div>
-            
-            <!-- Progress Bar -->
-            <div class="bar-bg"><div id="overall-bar" class="bar-fill"></div></div>
-            
-            <!-- Reserve Jump Selector -->
-            <div style="margin-top: 20px;">
-                <div style="font-size: 0.75rem; font-weight: 900; display: block; margin-bottom: 6px; text-transform: uppercase;">Jump to Reserve:</div>
-                <select id="reserve-selector" onchange="appState.scrollToCategory(this.value)"><option value="">-- Select Section --</option></select>
+            <!-- Master Completion Progress -->
+            <div class="progress-box">
+                <h2>THEHUNTER: CALL OF THE WILD</h2>
+                <p id="percent-text">Master Completion Progress 0%</p>
+                <div class="progress-track">
+                    <div id="overall-bar" class="progress-fill"></div>
+                </div>
             </div>
-            
-            <p id="stat-line" style="font-family: monospace; font-size: 11px; margin-top: 20px; opacity: 0.7;">AUDIT STATUS: INITIALIZING RTDB & FIRESTORE SYNC...</p>
-        </header>
 
-        <!-- Dynamic Category Containers -->
-        <div id="section-container"></div>
+            <div class="reserve-jump">
+                <select id="reserve-selector" class="reserve-select" onchange="appState.scrollToCategory(this.value)">
+                    <option value="">-- Jump to Reserve --</option>
+                </select>
+            </div>
 
-        <!-- Footer -->
-        <footer class="tracker-footer">
-            <p>Support the hunt: <a href="https://www.amazon.com/gp/goldbox?tag=moviesanywhere02-20" target="_blank">Today's Deals</a> | <a href="https://www.amazon.com/s?k=hunting&tag=moviesanywhere02-20" target="_blank">Hunting Gear</a></p>
-            <p style="margin-top: 15px; font-size: 0.75rem;">Lead Developer: Werewolf3788 | Collaborators: Raymystyro, terrdog420, OneLIVIDMAN</p>
+            <div id="stat-line" style="text-align: center; font-size: 0.85rem; font-weight: 700; color: #10b981; margin-top: 8px;">
+                Connecting to Database...
+            </div>
+        </section>
+
+        <!-- Dynamic Reserve Trophy Cards -->
+        <main id="section-container"></main>
+
+        <!-- ======================================================================
+             Footer: Verified Static Version & Code Timestamp
+             (Collaborator names purged per request)
+             ====================================================================== -->
+        <footer>
+            <div style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 8px;">
+                Support the hunt: <a href="https://playstation-be936.web.app/" style="color: var(--user-theme-accent); text-decoration: none;">Werewolf Project Home</a>
+            </div>
+            <div id="build-meta-footer" style="color: #94a3b8; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
+                Werewolf Project Engine • v2.2.0 • Build: 2026-09-23 13:38:00 EDT
+            </div>
         </footer>
     </div>
 
-    <!-- Modular Script Import -->
-    <script type="module" src="./script.js?v=2.0"></script>
+    <!-- Script connection with cachebuster param -->
+    <script type="module" src="./script.js?v=2.2.0"></script>
 </body>
 </html>
