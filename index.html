@@ -2,10 +2,11 @@
   File: index.html
   Location: /index.html
   Description: Werewolf Project Main Landing Page with Dynamic Firebase RTDB utm_links Navigation,
-               Profile Card Direct Mapping (/utm_links/User/0, 1, 2), Live PSN Telemetry, 
-               Weather Overlays, Mobile Drill-Down Drawer, Click-to-Pause Cinema Lightbox with Full 
-               Action Buttons, and Native Live FS25 Telemetry with Leader Badges (Most Fleet & Placeables).
-  Last Modified: Friday, September 04, 2026 - 01:50:00 EDT (America/New_York)
+               Robust Profile Card Auto-Binding (/utm_links/User), Bugatti & USA Flag Custom Themes,
+               Live PSN Telemetry, Weather Overlays, Mobile Drill-Down Drawer, Click-to-Pause Cinema 
+               Lightbox with Full Action Buttons, and Native Live FS25 Telemetry.
+  Build Version: 2.4.0
+  Last Modified: Wednesday, September 23, 2026 - 15:03:51 EDT (America/New_York)
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -13,12 +14,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Werewolf Project | Home</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="//cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Google Tag Manager / GA4 Setup & G-CTYHDF4MSD Multi-Property Integration (Works on HTTP & HTTPS) -->
+    <!-- Google Tag Manager / GA4 Setup & G-CTYHDF4MSD Multi-Property Integration -->
     <!-- HTML JS Line ~18 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
+    <script async src="//www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
     <script>
       /* GA4 Multi-Property Setup: G-Z9M5LXQ5XN & G-CTYHDF4MSD */
       window.dataLayer = window.dataLayer || [];
@@ -37,16 +38,27 @@
             --row-height: 1.6;
             --section-height: clamp(30px, 5vw, 60px);
 
-            --color-werewolf: #FF5F1F; /* Jet Orange */
-            --color-ray: #C41E3A;      /* Red */
-            --color-phoenix: #00f2ff;   /* Cyan */
-            --color-terrdog: #9333ea;   /* Purple */
-            --color-fs25: #22c55e;      /* Green */
+            /* Bugatti Theme (Werewolf3788): Deep Carbon & Hyper Orange */
+            --color-werewolf: #FF5500;
+            --color-werewolf-glow: rgba(255, 85, 0, 0.45);
+
+            /* USA Flag Theme (Raymystyro): Dual-Tone Red & Electric Blue */
+            --color-ray-red: #EF4444;
+            --color-ray-blue: #2563EB;
+            --color-ray-glow: rgba(37, 99, 235, 0.45);
+
+            /* Royal Amethyst Purple (Terrdog) */
+            --color-terrdog: #A855F7;
+            --color-terrdog-glow: rgba(168, 85, 247, 0.45);
+
+            /* Emerald Teal (Elu Cloud) */
+            --color-elu: #10B981;
+            --color-fs25: #22C55E;
         }
 
         body {
-            background-color: #0f172a;
-            color: #f1f5f9;
+            background-color: #0B0F19;
+            color: #F1F5F9;
             font-size: var(--body-text-size);
             line-height: var(--row-height);
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -57,7 +69,7 @@
             font-size: var(--header-text-size);
             line-height: 1.25;
             font-weight: 800;
-            color: #38bdf8;
+            color: #38BDF8;
         }
 
         .section-padding {
@@ -77,7 +89,7 @@
             height: 2px;
             bottom: -4px;
             left: 0;
-            background-color: #38bdf8;
+            background-color: #38BDF8;
             transition: width 0.3s ease;
         }
 
@@ -90,19 +102,42 @@
         }
 
         /* Dynamic Glassmorphic Custom Cards */
-        /* CSS Line ~89 */
+        /* CSS Line ~90 */
         .custom-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 1rem;
             position: relative;
             overflow: hidden;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
+        /* Player Specific Themes */
+        .card-theme-werewolf {
+            border: 2px solid var(--color-werewolf) !important;
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.6), 0 0 20px var(--color-werewolf-glow);
+        }
+        .border-werewolf { border-color: var(--color-werewolf) !important; }
+        .text-werewolf { color: var(--color-werewolf) !important; }
+
+        .card-theme-ray {
+            border: 2px solid var(--color-ray-blue) !important;
+            border-top: 2px solid var(--color-ray-red) !important;
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.6), 0 0 20px var(--color-ray-glow);
+        }
+        .border-ray { border-color: var(--color-ray-red) !important; }
+        .text-ray { color: var(--color-ray-red) !important; }
+
+        .card-theme-terrdog {
+            border: 2px solid var(--color-terrdog) !important;
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.6), 0 0 20px var(--color-terrdog-glow);
+        }
+        .border-terrdog { border-color: var(--color-terrdog) !important; }
+        .text-terrdog { color: var(--color-terrdog) !important; }
+
         /* Dynamic Weather Animation Layers */
-        /* CSS Line ~101 */
+        /* CSS Line ~125 */
         .weather-layer {
             position: absolute;
             inset: 0;
@@ -120,11 +155,11 @@
             z-index: 10;
         }
 
-        .bg-rain { background: linear-gradient(to bottom, #1e293b, #0f172a); }
-        .bg-cloudy { background: linear-gradient(to bottom, #475569, #1e293b); }
-        .bg-sunny { background: linear-gradient(to bottom, #fbbf24, #f59e0b); }
-        .bg-snowy { background: linear-gradient(to bottom, #1e40af, #3b82f6); }
-        .bg-clear { background: linear-gradient(to bottom, #0f172a, #020617); }
+        .bg-rain { background: linear-gradient(to bottom, #1E293B, #0F172A); }
+        .bg-cloudy { background: linear-gradient(to bottom, #475569, #1E293B); }
+        .bg-sunny { background: linear-gradient(to bottom, #FBBF24, #F59E0B); }
+        .bg-snowy { background: linear-gradient(to bottom, #1E40AF, #3B82F6); }
+        .bg-clear { background: linear-gradient(to bottom, #0F172A, #020617); }
 
         .rain-drop {
             position: absolute;
@@ -187,7 +222,7 @@
             display: inline-block;
             width: 8px;
             height: 8px;
-            background-color: #22c55e;
+            background-color: #22C55E;
             border-radius: 50%;
             margin-right: 6px;
             animation: pulse 2s infinite;
@@ -199,26 +234,12 @@
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
         }
 
-        .border-werewolf { border-color: var(--color-werewolf); }
-        .text-werewolf { color: var(--color-werewolf); }
-        .shadow-werewolf { box-shadow: 0 10px 15px -3px rgba(255, 95, 31, 0.4); }
-
-        .border-ray { border-color: var(--color-ray); }
-        .text-ray { color: var(--color-ray); }
-        .shadow-ray { box-shadow: 0 10px 15px -3px rgba(196, 30, 58, 0.4); }
-
-        .border-terrdog { border-color: var(--color-terrdog); }
-        .text-terrdog { color: var(--color-terrdog); }
-        .shadow-terrdog { box-shadow: 0 10px 15px -3px rgba(147, 51, 234, 0.4); }
-
-        .is-sunny h3 { color: #0f172a !important; }
-        .is-sunny p { color: #1e293b !important; }
+        .is-sunny h3 { color: #0F172A !important; }
+        .is-sunny p { color: #1E293B !important; }
         .is-sunny .weather-desc { color: #334155 !important; opacity: 0.9; }
-        .is-sunny .border-terrdog, .is-sunny .border-werewolf, .is-sunny .border-ray { border-color: rgba(0,0,0,0.4); }
-        .is-sunny .visit-link { color: #0f172a !important; border-color: rgba(0,0,0,0.3) !important; }
+        .is-sunny .visit-link { color: #0F172A !important; border-color: rgba(0,0,0,0.3) !important; }
 
         /* Lightbox Action Buttons Grid */
-        /* CSS Line ~207 */
         .lb-btn-grid {
             display: grid;
             gap: 8px;
@@ -251,13 +272,12 @@
         }
         .btn-amazon { background: #FF9900 !important; color: #000 !important; }
         .btn-google { background: #4285F4 !important; }
-        .btn-moviesanywhere { background: #00aeef !important; }
-        .btn-apple { background: #4b5563 !important; }
-        .btn-fandango { background: #ea580c !important; }
-        .btn-youtube { background: #dc2626 !important; cursor: pointer; border: none; }
+        .btn-moviesanywhere { background: #00AEEF !important; }
+        .btn-apple { background: #4B5563 !important; }
+        .btn-fandango { background: #EA580C !important; }
+        .btn-youtube { background: #DC2626 !important; cursor: pointer; border: none; }
 
         /* Site Signature Watermark */
-        /* CSS Line ~245 */
         .kf-watermark {
             position: fixed;
             bottom: 10px;
@@ -279,7 +299,7 @@
 <body class="min-h-screen flex flex-col">
 
     <!-- Sticky Navigation Bar Container -->
-    <!-- HTML Line ~268 -->
+    <!-- HTML Line ~280 -->
     <nav class="bg-slate-900/90 sticky top-0 z-50 border-b border-slate-700 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -289,9 +309,9 @@
                     </a>
                 </div>
 
-                <!-- Desktop Horizontal Navigation Links -->
-                <!-- HTML Line ~279 -->
-                <div id="desktop-nav-links" class="hidden lg:flex items-center space-x-6 xl:space-x-8">
+                <!-- Desktop Horizontal Navigation Links (1280px and wider) -->
+                <!-- HTML Line ~291 -->
+                <div id="desktop-nav-links" class="hidden xl:flex items-center space-x-6">
                     <div class="flex items-center space-x-4 animate-pulse">
                         <div class="h-4 w-16 bg-slate-700 rounded"></div>
                         <div class="h-4 w-16 bg-slate-700 rounded"></div>
@@ -299,10 +319,10 @@
                     </div>
                 </div>
 
-                <!-- Mobile & Tablet Hamburger Toggle -->
-                <!-- HTML Line ~289 -->
-                <div class="lg:hidden flex items-center">
-                    <button type="button" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu" class="text-slate-400 hover:text-white p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-slate-800 transition-colors">
+                <!-- Mobile & Tablet Hamburger Toggle (< 1280px) -->
+                <!-- HTML Line ~301 -->
+                <div class="xl:hidden flex items-center">
+                    <button type="button" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu" class="text-slate-400 hover:text-white p-2 min-h-[48px] min-w-[48px] flex items-center justify-center rounded-lg hover:bg-slate-800 transition-colors">
                         <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
                     </button>
                 </div>
@@ -311,11 +331,11 @@
     </nav>
 
     <!-- Mobile/Tablet Slide-Over Modal Drawer -->
-    <!-- HTML Line ~298 -->
+    <!-- HTML Line ~312 -->
     <div id="mobile-menu-overlay" class="fixed inset-0 bg-slate-950/95 z-[100] hidden flex flex-col no-scrollbar overflow-y-auto">
         <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/90 sticky top-0 z-10">
             <span class="text-lg font-black text-sky-400">NAVIGATION MENU</span>
-            <button type="button" onclick="toggleMobileMenu()" aria-label="Close navigation menu" class="text-slate-400 hover:text-white p-2 min-h-[44px] min-w-[44px] flex items-center justify-center">
+            <button type="button" onclick="toggleMobileMenu()" aria-label="Close navigation menu" class="text-slate-400 hover:text-white p-2 min-h-[48px] min-w-[48px] flex items-center justify-center">
                 <i class="fa-solid fa-xmark text-2xl"></i>
             </button>
         </div>
@@ -325,7 +345,7 @@
         </div>
 
         <div id="mobile-folder-view" class="p-6 space-y-4 flex-1 hidden flex flex-col">
-            <button type="button" onclick="closeMobileFolderView()" class="flex items-center gap-2 text-sky-400 hover:text-sky-300 font-bold text-sm bg-slate-900 border border-slate-800 px-4 py-3 rounded-lg w-full min-h-[44px]">
+            <button type="button" onclick="closeMobileFolderView()" class="flex items-center gap-2 text-sky-400 hover:text-sky-300 font-bold text-sm bg-slate-900 border border-slate-800 px-4 py-3 rounded-lg w-full min-h-[48px]">
                 <i class="fa-solid fa-arrow-left"></i>
                 <span>Back to All Folders</span>
             </button>
@@ -335,7 +355,7 @@
     </div>
 
     <!-- Main Landing Hero Section -->
-    <!-- HTML Line ~323 -->
+    <!-- HTML Line ~337 -->
     <header class="section-padding px-4 sm:px-6 lg:px-8 flex-grow flex items-center">
         <div class="max-w-4xl mx-auto text-center">
             <h1 class="text-slate-100">Knowing the Players</h1>
@@ -345,8 +365,8 @@
         </div>
     </header>
 
-    <!-- Contributors Team Section -->
-    <!-- HTML Line ~334 -->
+    <!-- Contributors Team Section with Player Dynamic Theming -->
+    <!-- HTML Line ~348 -->
     <section id="team" class="section-padding bg-slate-900/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-8 sm:mb-12">
@@ -355,17 +375,17 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Werewolf3788 Profile Card -->
-                <!-- HTML Line ~344 -->
-                <div id="card-werewolf" class="custom-card p-6 text-center shadow-werewolf">
+                <!-- Werewolf3788 Profile Card (Bugatti Carbon & Hyper Orange) -->
+                <!-- HTML Line ~358 -->
+                <div id="card-werewolf" class="custom-card card-theme-werewolf p-6 text-center">
                     <div class="weather-layer" id="layer-werewolf"></div>
                     <div class="card-content">
                         <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 relative">
-                            <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-70x70.png" 
+                            <img src="//static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-70x70.png" 
                                  alt="Werewolf3788 avatar"
                                  class="w-full h-full rounded-full border-2 border-werewolf object-cover shadow-lg">
                             <div id="status-indicator-werewolf" class="hidden absolute bottom-1 right-1">
-                                <span class="status-pulse"></span>
+                                <span class="status-pulse" style="background-color: var(--color-werewolf);"></span>
                             </div>
                         </div>
                         <h3 class="text-xl mb-1 text-white">Werewolf3788</h3>
@@ -374,21 +394,21 @@
                         <div class="mb-4 min-h-[24px] flex items-center justify-center">
                             <p id="game-status-werewolf" class="text-slate-400 text-xs uppercase font-bold italic tracking-widest">Checking PlayStation...</p>
                         </div>
-                        <a id="profile-link-werewolf" href="https://werewolf3788.github.io/Website/Werewolf3788.html" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-werewolf text-xs transition-colors min-h-[44px] flex items-center justify-center">Visit Profile</a>
+                        <a id="profile-link-werewolf" href="./Werewolf3788.html" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-werewolf text-xs transition-colors min-h-[44px] flex items-center justify-center">Visit Profile</a>
                     </div>
                 </div>
 
-                <!-- Raymystyro Profile Card -->
-                <!-- HTML Line ~367 -->
-                <div id="card-ray" class="custom-card p-6 text-center shadow-ray">
+                <!-- Raymystyro Profile Card (USA Flag Theme: Red & Blue) -->
+                <!-- HTML Line ~381 -->
+                <div id="card-ray" class="custom-card card-theme-ray p-6 text-center">
                     <div class="weather-layer" id="layer-ray"></div>
                     <div class="card-content">
                         <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 relative">
-                            <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/032a0367-589f-4763-94de-4fc679a0b2df-profile_image-70x70.png" 
+                            <img src="//static-cdn.jtvnw.net/jtv_user_pictures/032a0367-589f-4763-94de-4fc679a0b2df-profile_image-70x70.png" 
                                  alt="Raymystyro avatar"
                                  class="w-full h-full rounded-full border-2 border-ray object-cover shadow-lg">
                             <div id="status-indicator-ray" class="hidden absolute bottom-1 right-1">
-                                <span class="status-pulse"></span>
+                                <span class="status-pulse" style="background-color: var(--color-ray-blue);"></span>
                             </div>
                         </div>
                         <h3 class="text-xl mb-1 text-white">Raymystyro</h3>
@@ -397,30 +417,30 @@
                         <div class="mb-4 min-h-[24px] flex items-center justify-center">
                             <p id="game-status-ray" class="text-slate-400 text-xs uppercase font-bold italic tracking-widest">Checking PlayStation...</p>
                         </div>
-                        <a id="profile-link-ray" href="https://werewolf3788.github.io/Website/Raymystyro.html" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-ray text-xs transition-colors min-h-[44px] flex items-center justify-center">Visit Profile</a>
+                        <a id="profile-link-ray" href="./Raymystyro.html" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-ray text-xs transition-colors min-h-[44px] flex items-center justify-center">Visit Profile</a>
                     </div>
                 </div>
 
-                <!-- Terrdog420 Profile Card -->
-                <!-- HTML Line ~390 -->
-                <div id="card-tj" class="custom-card p-6 text-center shadow-terrdog md:col-span-2 lg:col-span-1">
+                <!-- Terrdog Profile Card (Royal Amethyst Purple) -->
+                <!-- HTML Line ~404 -->
+                <div id="card-tj" class="custom-card card-theme-terrdog p-6 text-center md:col-span-2 lg:col-span-1">
                     <div class="weather-layer" id="layer-tj"></div>
                     <div class="card-content">
                         <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 relative">
-                            <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/9dad426e-04cb-4fc0-a917-25982b3800ce-profile_image-70x70.png" 
-                                 alt="Terrdog420 avatar"
+                            <img src="//static-cdn.jtvnw.net/jtv_user_pictures/9dad426e-04cb-4fc0-a917-25982b3800ce-profile_image-70x70.png" 
+                                 alt="Terrdog avatar"
                                  class="w-full h-full rounded-full border-2 border-terrdog object-cover shadow-lg">
                             <div id="status-indicator-tj" class="hidden absolute bottom-1 right-1">
-                                <span class="status-pulse"></span>
+                                <span class="status-pulse" style="background-color: var(--color-terrdog);"></span>
                             </div>
                         </div>
-                        <h3 class="text-xl mb-1 text-white">Terrdog420</h3>
+                        <h3 class="text-xl mb-1 text-white">Terrdog</h3>
                         <p class="text-terrdog text-xs font-bold uppercase tracking-tighter mb-1">Contributor / Streamer</p>
                         <p id="weather-desc-tj" class="weather-desc text-xs opacity-70 mb-2 italic">Updating weather...</p>
                         <div class="mb-4 min-h-[24px] flex items-center justify-center">
                             <p id="game-status-tj" class="text-slate-400 text-xs uppercase font-bold italic tracking-widest">Checking PlayStation...</p>
                         </div>
-                        <a id="profile-link-tj" href="https://werewolf3788.github.io/Website/Terrdog420.html" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-terrdog text-xs transition-colors min-h-[44px] flex items-center justify-center">Visit Profile</a>
+                        <a id="profile-link-tj" href="./Terrdog.html" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-terrdog text-xs transition-colors min-h-[44px] flex items-center justify-center">Visit Profile</a>
                     </div>
                 </div>
             </div>
@@ -428,19 +448,19 @@
     </section>
 
     <!-- Cinema Movie Library Archive Section -->
-    <!-- HTML Line ~414 -->
+    <!-- HTML Line ~429 -->
     <section class="section-padding bg-slate-900/30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             
             <div class="text-center max-w-3xl mx-auto space-y-4">
                 <h2 class="text-orange-500">Werewolf Cinema</h2>
                 <p class="text-slate-300 font-medium text-sm sm:text-base leading-relaxed">
-                    Access the list of Movie's I own digitally, plus see what they're streaming on, the major brands like google, youtube, apple fandango, and Movies anywhere are all manually added, Amazon is sorta both manually added or search for Amazon is a Affilated account. Hope you enjoy this setup.
+                    Access the list of Movies I own digitally, plus see what they're streaming on. Major brands like Google, YouTube, Apple, Fandango, and Movies Anywhere are cataloged, along with affiliated Amazon listings.
                 </p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-                    <a href="https://werewolf3788.github.io/Website/Movies.html" 
+                    <a href="./Movies.html" 
                        target="werewolf_cinema_window" 
-                       class="w-full sm:w-auto bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 px-8 rounded-lg transition-all shadow-[0_0_15px_rgba(255,95,31,0.5)] border border-orange-400 min-h-[44px] inline-flex items-center justify-center">
+                       class="w-full sm:w-auto bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 px-8 rounded-lg transition-all shadow-[0_0_15px_rgba(255,95,31,0.5)] border border-orange-400 min-h-[48px] inline-flex items-center justify-center">
                         MOVIES ARCHIVE
                     </a>
                     <div class="text-center sm:text-left sm:border-l border-slate-700 sm:pl-4">
@@ -453,8 +473,8 @@
                 </div>
             </div>
 
-            <!-- Dynamic Cinema Slideshow Screen Frame (Click to Pause & Open Lightbox) -->
-            <!-- HTML Line ~439 -->
+            <!-- Cinema Slideshow Screen Frame -->
+            <!-- HTML Line ~453 -->
             <div id="cinema-container" 
                  onclick="openCinemaLightbox()" 
                  title="Click to view details and pause slideshow"
@@ -482,7 +502,7 @@
     </section>
 
     <!-- Co-Op Games & Live Dedicated Server Telemetry Section -->
-    <!-- HTML Line ~468 -->
+    <!-- HTML Line ~482 -->
     <section class="section-padding">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-8">
@@ -494,11 +514,11 @@
             </div>
 
             <!-- Featured Modules Grid -->
-            <!-- HTML Line ~479 -->
+            <!-- HTML Line ~493 -->
             <div id="gaming-modules-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 
-                <!-- Dedicated FS25 Live Server Card (Native /fs25 RTDB Endpoint) -->
-                <!-- HTML Line ~483 -->
+                <!-- Dedicated FS25 Live Server Card -->
+                <!-- HTML Line ~497 -->
                 <div id="fs25-server-card" class="custom-card p-6 border border-emerald-500/30 flex flex-col justify-between shadow-emerald-950/20 shadow-xl">
                     <div>
                         <div class="flex items-center justify-between mb-3">
@@ -520,13 +540,12 @@
 
                         <!-- Live Minimap & Dual Farm Grid -->
                         <div class="space-y-3 mb-4">
-                            <!-- Minimap Thumbnail View (Routed through SSL Proxy) -->
                             <div class="relative w-full h-28 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 group">
                                 <img id="fs25-map-img" 
-                                     src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80" 
+                                     src="//images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80" 
                                      alt="FS25 Live Server Map"
                                      class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                                     onerror="this.src='https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80';">
+                                     onerror="this.src='//images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80';">
                                 <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent"></div>
                                 <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[11px] font-mono">
                                     <span class="text-white font-bold bg-black/60 px-2 py-0.5 rounded border border-slate-700" id="fs25-day-season">Day --</span>
@@ -534,9 +553,8 @@
                                 </div>
                             </div>
 
-                            <!-- Dual Farm Display: Farm 1 & Farm 2 Split Box with Leader Badges -->
+                            <!-- Dual Farm Display -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <!-- Farm 1 -->
                                 <div id="fs25-farm1-box" class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 flex flex-col justify-between min-h-[78px] transition-all">
                                     <div>
                                         <div class="flex justify-between items-center text-[11px] mb-0.5">
@@ -545,12 +563,9 @@
                                         </div>
                                         <div class="text-[10px] text-slate-400 truncate mb-1.5" id="fs25-farm1-name">Loading Farm 1...</div>
                                     </div>
-                                    <div id="fs25-farm1-badges" class="flex flex-wrap gap-1 mt-auto">
-                                        <!-- Badges: Most Fleet, Most Placeables -->
-                                    </div>
+                                    <div id="fs25-farm1-badges" class="flex flex-wrap gap-1 mt-auto"></div>
                                 </div>
 
-                                <!-- Farm 2 -->
                                 <div id="fs25-farm2-box" class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 flex flex-col justify-between min-h-[78px] transition-all">
                                     <div>
                                         <div class="flex justify-between items-center text-[11px] mb-0.5">
@@ -559,13 +574,11 @@
                                         </div>
                                         <div class="text-[10px] text-slate-400 truncate mb-1.5" id="fs25-farm2-name">Loading Farm 2...</div>
                                     </div>
-                                    <div id="fs25-farm2-badges" class="flex flex-wrap gap-1 mt-auto">
-                                        <!-- Badges: Most Fleet, Most Placeables -->
-                                    </div>
+                                    <div id="fs25-farm2-badges" class="flex flex-wrap gap-1 mt-auto"></div>
                                 </div>
                             </div>
 
-                            <!-- Quick Stats Row (Farms & Active Players) -->
+                            <!-- Quick Stats Row -->
                             <div class="grid grid-cols-2 gap-2">
                                 <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 text-center">
                                     <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Total Farms</span>
@@ -578,7 +591,7 @@
                             </div>
                         </div>
 
-                        <!-- Live Equipment & Summary Breakdown (from /fs25/summary) -->
+                        <!-- Asset Figures -->
                         <div class="border-t border-slate-800/80 pt-2.5 mb-3">
                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">World Assets & Inventory:</span>
                             <div class="grid grid-cols-3 gap-1.5 text-center">
@@ -597,7 +610,7 @@
                             </div>
                         </div>
 
-                        <!-- Live CareerSavegame Environment Display (from /fs25/raw_xml/careerSavegame) -->
+                        <!-- Difficulty / Speed -->
                         <div class="border-t border-slate-800/80 pt-2 mb-3 bg-slate-950/50 p-2 rounded border border-slate-800">
                             <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono">
                                 <span><i class="fa-solid fa-gamepad mr-1 text-emerald-400"></i>Difficulty: <strong id="fs25-career-difficulty" class="text-slate-200">Normal</strong></span>
@@ -606,13 +619,13 @@
                         </div>
                     </div>
 
-                    <a href="https://werewolf3788.github.io/Website/games/FS25/index.html" class="text-emerald-400 hover:text-emerald-300 font-bold text-xs flex items-center justify-between border-t border-slate-800 pt-3 min-h-[44px]">
+                    <a href="./games/FS25/index.html" class="text-emerald-400 hover:text-emerald-300 font-bold text-xs flex items-center justify-between border-t border-slate-800 pt-3 min-h-[48px]">
                         <span>Explore FS25 Telemetry Hub</span>
                         <i class="fa-solid fa-arrow-right"></i>
                     </a>
                 </div>
 
-                <!-- Squad Progress Skeleton Cards -->
+                <!-- Squad Progress Skeleton Card -->
                 <div class="custom-card p-6 border border-slate-700 animate-pulse flex items-center justify-center min-h-[200px] md:col-span-1 lg:col-span-2">
                     <span class="text-slate-400 text-sm font-mono"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Scanning Firestore for co-op squad progress...</span>
                 </div>
@@ -620,17 +633,15 @@
         </div>
     </section>
 
-    <!-- Cinema Movie Lightbox Modal with Full Action / Play / Buy Buttons -->
-    <!-- HTML Line ~578 -->
+    <!-- Cinema Movie Lightbox Modal -->
+    <!-- HTML Line ~608 -->
     <div id="cinema-lightbox" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[200] hidden flex items-center justify-center p-4">
         <div class="relative max-w-2xl w-full bg-slate-900 border border-orange-500/40 rounded-2xl p-6 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
             
-            <!-- Close Button -->
             <button type="button" onclick="closeCinemaLightbox()" aria-label="Close Lightbox" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-full w-10 h-10 flex items-center justify-center transition-colors z-20">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
             
-            <!-- Embedded YouTube Video Screen Layer -->
             <div id="lb-video-wrapper" class="absolute inset-0 bg-black z-30 hidden flex-col">
                 <div class="flex items-center justify-between p-3 bg-slate-900 border-b border-slate-800">
                     <button type="button" onclick="closeLightboxVideo()" class="text-red-400 hover:text-red-300 text-xs font-bold flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 rounded min-h-[36px]">
@@ -644,25 +655,19 @@
             <h3 id="lightbox-title" class="text-xl font-bold text-orange-400 mb-4 pr-10">Movie Title</h3>
             
             <div class="flex-1 overflow-y-auto no-scrollbar flex flex-col items-center gap-4">
-                <!-- Large Poster View -->
                 <img id="lightbox-img" src="" alt="Movie Poster" class="max-h-[42vh] w-auto rounded-lg shadow-xl object-contain border border-slate-800">
                 
-                <!-- Description / Alt Details (Exclusively displayed inside lightbox view) -->
                 <div class="w-full bg-slate-950/60 p-4 rounded-xl border border-slate-800 text-left space-y-3">
                     <div>
                         <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Overview / Description</span>
                         <p id="lightbox-desc" class="text-slate-300 text-sm leading-relaxed">No description available.</p>
                     </div>
 
-                    <!-- Streaming / Broadcast Info Pill -->
                     <div id="lightbox-stream-pill" class="hidden text-xs text-sky-400 bg-sky-950/40 p-2.5 rounded-lg border border-sky-800/40 whitespace-pre-line font-medium"></div>
 
-                    <!-- Action / Play / Buy Buttons Container -->
                     <div>
                         <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2" id="lb-actions-header">Play / Stream / Buy</span>
-                        <div id="lightbox-buttons-container" class="lb-btn-grid">
-                            <!-- Populated dynamically: Amazon, Google, YouTube, Apple, MA, Fandango -->
-                        </div>
+                        <div id="lightbox-buttons-container" class="lb-btn-grid"></div>
                     </div>
                 </div>
             </div>
@@ -674,11 +679,19 @@
         </div>
     </div>
 
+    <!-- ======================================================================
+         Footer: Persistent Version & Code Timestamp
+         Visible at all times in HTML and dynamically synchronized
+         ====================================================================== -->
+    <!-- HTML Line ~661 -->
     <footer class="mt-auto bg-slate-950 py-10 border-t border-slate-800 text-center relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
             <p class="text-slate-500 text-sm">
                 &copy; 2026 Werewolf Project. Built by Werewolf3788 & Friends.
             </p>
+            <div id="build-meta-footer" style="color: #94a3b8; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
+                Werewolf Project Engine • v2.4.0 • Build: 2026-09-23 15:03:51 EDT
+            </div>
         </div>
         
         <div class="kf-watermark">
@@ -687,14 +700,16 @@
     </footer>
 
     <!-- Firebase SDK Modules Script -->
-    <!-- HTML JS Line ~650 -->
+    <!-- HTML JS Line ~680 -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { initializeApp } from "//www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "//www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getDatabase, ref, onValue } from "//www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const BUILD_VERSION = "2.4.0";
+        const CODE_BUILD_DATE = "2026-09-23 15:03:51 EDT";
 
         /* Firebase App Credentials Config */
-        /* JS Line ~657 */
         const firebaseConfig = {
             apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
             authDomain: "entertainment-71888.firebaseapp.com",
@@ -710,11 +725,11 @@
         const db = getFirestore(app);
         const rtdb = getDatabase(app);
 
-        const PLATFORMS = ['playstation', 'psn', 'pc', 'xbox'];
-        const TARGET_USERS = ['Elu Cloud', 'Raymystyro', 'Terrdog', 'Werewolf3788'];
+        const PLATFORMS = ['playstation', 'psn', 'pc', 'xbox', 'steam'];
+        const TARGET_USERS = ['Werewolf3788', 'Raymystyro', 'Terrdog', 'Elu Cloud'];
 
         /* -------------------------------------------------------------
-           1. Firebase RTDB Navigation Engine (/utm_links)
+           1. Firebase RTDB Navigation Engine & Card Link Binder (/utm_links)
            ------------------------------------------------------------- */
         let mobileNavTree = [];
 
@@ -731,43 +746,44 @@
                 bindProfileCardLinks(data);
             }, (error) => {
                 console.error("Failed to read /utm_links:", error);
-                document.getElementById('desktop-nav-links').innerHTML = `<span class="text-red-400 text-sm">Navigation offline</span>`;
+                const deskNav = document.getElementById('desktop-nav-links');
+                if (deskNav) deskNav.innerHTML = `<span class="text-red-400 text-sm">Navigation offline</span>`;
             });
         }
 
+        /* Robust Profile Card Auto-Binder: Matches regardless of array order or object keys */
         function bindProfileCardLinks(utmData) {
             const userFolder = utmData.User || utmData.user || utmData.Users || utmData.users;
             if (!userFolder) return;
 
-            const user0 = userFolder[0] || userFolder['0'];
-            if (user0 && (user0.url || user0.link)) {
-                const btnTj = document.getElementById('profile-link-tj');
-                if (btnTj) btnTj.href = user0.url || user0.link;
-            }
+            const items = Array.isArray(userFolder) ? userFolder : Object.values(userFolder);
 
-            const user1 = userFolder[1] || userFolder['1'];
-            if (user1 && (user1.url || user1.link)) {
-                const btnRay = document.getElementById('profile-link-ray');
-                if (btnRay) btnRay.href = user1.url || user1.link;
-            }
+            items.forEach(u => {
+                if (!u) return;
+                const link = u.url || u.link || '';
+                const name = (u.name || u.title || '').toLowerCase();
 
-            const user2 = userFolder[2] || userFolder['2'];
-            if (user2 && (user2.url || user2.link)) {
-                const btnWerewolf = document.getElementById('profile-link-werewolf');
-                if (btnWerewolf) btnWerewolf.href = user2.url || user2.link;
-            }
+                if (name.includes('werewolf') || link.toLowerCase().includes('werewolf3788')) {
+                    const btn = document.getElementById('profile-link-werewolf');
+                    if (btn && link) btn.href = link;
+                } else if (name.includes('ray') || link.toLowerCase().includes('raymystyro') || link.toLowerCase().includes('onelividman')) {
+                    const btn = document.getElementById('profile-link-ray');
+                    if (btn && link) btn.href = link;
+                } else if (name.includes('terr') || name.includes('tj') || link.toLowerCase().includes('terrdog')) {
+                    const btn = document.getElementById('profile-link-tj');
+                    if (btn && link) btn.href = link;
+                }
+            });
         }
 
         function buildNavigationFromUtm(utmData) {
             const standaloneItems = [];
             const groupsMap = {};
 
-            const protocol = window.location.protocol.startsWith('https') ? 'https:' : 'http:';
-
             const navOrder = [
                 {
                     type: 'standalone',
-                    data: { name: 'Home', url: `${protocol}//werewolf3788.github.io/Website/`, img: '' }
+                    data: { name: 'Home', url: './index.html', img: '' }
                 }
             ];
 
@@ -815,7 +831,21 @@
                 }
             });
 
-            const sortedGroupNames = Object.keys(groupsMap).sort((a, b) => a.localeCompare(b));
+            const sortedGroupNames = Object.keys(groupsMap).sort((a, b) => {
+                const lowA = a.toLowerCase();
+                const lowB = b.toLowerCase();
+                const isUserA = lowA === 'user' || lowA === 'users';
+                const isUserB = lowB === 'user' || lowB === 'users';
+                const isGameA = lowA === 'game' || lowA === 'games';
+                const isGameB = lowB === 'game' || lowB === 'games';
+
+                if (isUserA) return -1;
+                if (isUserB) return 1;
+                if (isGameA) return -1;
+                if (isGameB) return 1;
+                return lowA.localeCompare(lowB);
+            });
+
             sortedGroupNames.forEach(groupName => {
                 navOrder.push({
                     type: 'group',
@@ -838,7 +868,7 @@
             navOrder.forEach(node => {
                 if (node.type === 'standalone') {
                     const item = node.data;
-                    const imgTag = item.img ? `<img src="${item.img}" alt="${item.name}" class="w-5 h-5 rounded-full object-cover">` : '';
+                    const imgTag = item.img ? `<img src="${item.img}" alt="" class="w-5 h-5 rounded-full object-cover">` : '';
                     
                     const isMovies = item.name.toLowerCase() === 'movies';
                     const textClass = isMovies ? 'text-orange-400 hover:text-orange-300 font-bold' : 'text-slate-300 hover:text-white';
@@ -851,7 +881,7 @@
                     `;
 
                     mobileHTML += `
-                        <a href="${item.url}" ${targetAttr} onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-900 border border-slate-800 ${textClass} hover:bg-slate-800 min-h-[44px]">
+                        <a href="${item.url}" ${targetAttr} onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-900 border border-slate-800 ${textClass} hover:bg-slate-800 min-h-[48px]">
                             ${imgTag}<span>${item.name}</span>
                         </a>
                     `;
@@ -866,7 +896,7 @@
                     `;
 
                     mobileHTML += `
-                        <button type="button" onclick="openMobileFolderView('${node.name.replace(/'/g, "\\'")}')" class="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 hover:border-sky-500/50 hover:text-sky-400 transition-all text-left min-h-[44px]">
+                        <button type="button" onclick="openMobileFolderView('${node.name.replace(/'/g, "\\'")}')" class="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 hover:border-sky-500/50 hover:text-sky-400 transition-all text-left min-h-[48px]">
                             <span class="font-bold text-sm">${node.name}</span>
                             <div class="flex items-center gap-2 text-xs text-sky-400">
                                 <span>${node.items.length} links</span>
@@ -876,7 +906,7 @@
                     `;
 
                     node.items.forEach(item => {
-                        const imgTag = item.img ? `<img src="${item.img}" alt="${item.name}" class="w-5 h-5 rounded-md object-cover border border-slate-600">` : '';
+                        const imgTag = item.img ? `<img src="${item.img}" alt="" class="w-5 h-5 rounded-md object-cover border border-slate-600">` : '';
                         
                         desktopHTML += `
                             <a href="${item.url}" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 hover:text-sky-400 transition-colors min-h-[44px]">
@@ -906,9 +936,9 @@
 
             let linksHtml = '';
             groupNode.items.forEach(item => {
-                const imgTag = item.img ? `<img src="${item.img}" alt="${item.name}" class="w-6 h-6 rounded-md object-cover border border-slate-600">` : '<i class="fa-solid fa-link text-sky-400"></i>';
+                const imgTag = item.img ? `<img src="${item.img}" alt="" class="w-6 h-6 rounded-md object-cover border border-slate-600">` : '<i class="fa-solid fa-link text-sky-400"></i>';
                 linksHtml += `
-                    <a href="${item.url}" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 hover:text-sky-400 hover:border-sky-500/40 transition-all min-h-[44px]">
+                    <a href="${item.url}" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 hover:text-sky-400 hover:border-sky-500/40 transition-all min-h-[48px]">
                         ${imgTag}
                         <span class="font-bold text-sm">${item.name}</span>
                     </a>
@@ -938,7 +968,7 @@
         };
 
         /* -------------------------------------------------------------
-           2. PlayStation Live Status & Idle Detection Engine (/psn)
+           2. PlayStation Live Presence & Idle Engine (/psn)
            ------------------------------------------------------------- */
         function extractUserPsnNode(psnRootData, possibleKeys) {
             if (!psnRootData) return null;
@@ -966,17 +996,17 @@
                 if (snapshot.exists()) {
                     const psnData = snapshot.val();
                     
-                    const werewolfData = extractUserPsnNode(psnData, ['WildHorse_Spirit', 'wildhorse_spirit', 'Werewolf3788', 'werewolf3788', 'werewolf']);
+                    const werewolfData = extractUserPsnNode(psnData, ['WildHorse_Spirit', 'wildhorse_spirit', 'Werewolf3788', 'werewolf3788']);
                     updatePsnCardStatus('werewolf', werewolfData, 'var(--color-werewolf)');
 
-                    const rayData = extractUserPsnNode(psnData, ['OneLIVIDMAN', 'onelividman', 'Raymystyro', 'raymystyro', 'Ray']);
-                    updatePsnCardStatus('ray', rayData, 'var(--color-ray)');
+                    const rayData = extractUserPsnNode(psnData, ['Raymystyro', 'raymystyro', 'OneLIVIDMAN', 'onelividman']);
+                    updatePsnCardStatus('ray', rayData, 'var(--color-ray-blue)');
 
-                    const tjData = extractUserPsnNode(psnData, ['Darkwing69420', 'darkwing69420', 'Terrdog420', 'terrdog420', 'terrdog', 'Darkwing', 'darkwing']);
+                    const tjData = extractUserPsnNode(psnData, ['Darkwing69420', 'darkwing69420', 'Terrdog', 'terrdog', 'Terrdog420', 'terrdog420']);
                     updatePsnCardStatus('tj', tjData, 'var(--color-terrdog)');
                 } else {
                     updatePsnCardStatus('werewolf', null, 'var(--color-werewolf)');
-                    updatePsnCardStatus('ray', null, 'var(--color-ray)');
+                    updatePsnCardStatus('ray', null, 'var(--color-ray-blue)');
                     updatePsnCardStatus('tj', null, 'var(--color-terrdog)');
                 }
             }, (error) => {
@@ -1036,8 +1066,6 @@
 
         /* -------------------------------------------------------------
            3. Live Farming Simulator 25 Telemetry & Leader Badges
-              Calculates Fleet and Placeables counts per farm from
-              /fs25/raw_xml/vehicles and /fs25/raw_xml/placeables.
            ------------------------------------------------------------- */
         function listenToFs25FirebaseTelemetry() {
             const fs25Ref = ref(rtdb, 'fs25');
@@ -1049,14 +1077,12 @@
                 const gameTimeEl = document.getElementById('fs25-game-time');
                 const slotsCountEl = document.getElementById('fs25-slots-count');
                 
-                // Farm 1 elements
                 const farm1LabelEl = document.getElementById('fs25-farm1-label');
                 const farm1NameEl = document.getElementById('fs25-farm1-name');
                 const farm1MoneyEl = document.getElementById('fs25-farm1-money');
                 const farm1BadgesEl = document.getElementById('fs25-farm1-badges');
                 const farm1BoxEl = document.getElementById('fs25-farm1-box');
                 
-                // Farm 2 elements
                 const farm2LabelEl = document.getElementById('fs25-farm2-label');
                 const farm2NameEl = document.getElementById('fs25-farm2-name');
                 const farm2MoneyEl = document.getElementById('fs25-farm2-money');
@@ -1068,12 +1094,10 @@
                 const daySeasonEl = document.getElementById('fs25-day-season');
                 const mapImgEl = document.getElementById('fs25-map-img');
 
-                // Summary stats elements
                 const totalVehiclesEl = document.getElementById('fs25-total-vehicles');
                 const totalPlaceablesEl = document.getElementById('fs25-total-placeables');
                 const totalModsEl = document.getElementById('fs25-total-mods');
 
-                // Career Savegame elements
                 const careerDiffEl = document.getElementById('fs25-career-difficulty');
                 const careerScaleEl = document.getElementById('fs25-career-timescale');
 
@@ -1084,7 +1108,6 @@
 
                 const data = snapshot.val();
 
-                // 1. Online State
                 const isOnline = data.syncStatus === 'online' || 
                                  data.syncStatus === true || 
                                  data.serverOnline === true ||
@@ -1092,23 +1115,21 @@
 
                 if (isOnline) {
                     statusPill.className = "text-[10px] bg-emerald-950/90 text-emerald-400 px-2 py-0.5 rounded border border-emerald-800 flex items-center gap-1 font-mono font-bold";
-                    statusPill.innerHTML = `<span class="status-pulse" style="background-color:#22c55e;"></span> ONLINE`;
+                    statusPill.innerHTML = `<span class="status-pulse" style="background-color:#22C55E;"></span> ONLINE`;
                 } else {
                     statusPill.className = "text-[10px] bg-red-950/80 text-red-400 px-2 py-0.5 rounded border border-red-800 flex items-center gap-1 font-mono font-bold";
                     statusPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 inline-block"></span> OFFLINE`;
                 }
 
-                // 2. HTTPS-Safe Live Map Image
                 let rawMapImg = data.liveMapImage || data.map_image_url || '';
                 if (rawMapImg && mapImgEl) {
                     if (rawMapImg.startsWith('http://')) {
-                        mapImgEl.src = `https://images.weserv.nl/?url=${encodeURIComponent(rawMapImg.replace(/^https?:\/\//, ''))}`;
+                        mapImgEl.src = `//images.weserv.nl/?url=${encodeURIComponent(rawMapImg.replace(/^https?:\/\//, ''))}`;
                     } else {
                         mapImgEl.src = rawMapImg;
                     }
                 }
 
-                // 3. Server Metadata
                 const gInfo = data.gameInfo || {};
                 const summary = data.summary || {};
 
@@ -1123,12 +1144,10 @@
                 gameTimeEl.innerHTML = `<i class="fa-regular fa-clock mr-1"></i>${time}`;
                 daySeasonEl.textContent = `Day ${day}`;
 
-                // 4. Summary Asset Figures
                 if (totalVehiclesEl) totalVehiclesEl.textContent = (summary.totalVehicles ?? summary.vehiclesCount ?? "--").toString();
                 if (totalPlaceablesEl) totalPlaceablesEl.textContent = (summary.totalPlaceables ?? summary.placeablesCount ?? "--").toString();
                 if (totalModsEl) totalModsEl.textContent = (summary.totalActiveMods ?? summary.modsCount ?? "--").toString();
 
-                // 5. CareerSavegame Parsing
                 const careerData = (data.raw_xml && data.raw_xml.careerSavegame) ? data.raw_xml.careerSavegame : {};
                 if (careerDiffEl) {
                     let diffText = "Normal";
@@ -1142,7 +1161,6 @@
                     careerScaleEl.textContent = `${timeScale}x`;
                 }
 
-                // 6. Active Players Online
                 let onlinePlayerCount = 0;
                 if (data.activePlayers) {
                     onlinePlayerCount = Array.isArray(data.activePlayers) 
@@ -1154,7 +1172,6 @@
                 slotsCountEl.textContent = `${onlinePlayerCount}/${slots} Slots`;
                 playersEl.textContent = onlinePlayerCount.toString();
 
-                // 7. Currency Formatter Helper
                 const formatMoney = (val) => {
                     if (val === undefined || val === null) return "$0";
                     const num = typeof val === 'string' ? parseFloat(val.replace(/[$,]/g, '')) : val;
@@ -1162,7 +1179,6 @@
                     return `$${Math.round(num).toLocaleString()}`;
                 };
 
-                // 8. Direct Farm Resolution
                 const farmsNode = data.farms || {};
                 const farm1Node = farmsNode.farm_1 || farmsNode['1'] || farmsNode['0'] || {};
                 const farm2Node = farmsNode.farm_2 || farmsNode['2'] || {};
@@ -1170,7 +1186,6 @@
                 const farmKeys = Object.keys(farmsNode);
                 totalFarmsEl.textContent = farmKeys.length.toString();
 
-                // Farm 1 Data
                 if (farm1Node && (farm1Node.name || farm1Node.finances)) {
                     farm1LabelEl.textContent = "Farm 1";
                     farm1NameEl.textContent = farm1Node.name || "Primary Operation";
@@ -1182,7 +1197,6 @@
                     farm1MoneyEl.textContent = "$0";
                 }
 
-                // Farm 2 Data
                 if (farm2Node && (farm2Node.name || farm2Node.finances)) {
                     farm2LabelEl.textContent = "Farm 2";
                     farm2NameEl.textContent = farm2Node.name || "Secondary Operation";
@@ -1194,11 +1208,9 @@
                     farm2MoneyEl.textContent = "--";
                 }
 
-                // 9. Fleet & Placeables Comparison Engine
                 let f1Vehicles = 0, f2Vehicles = 0;
                 let f1Placeables = 0, f2Placeables = 0;
 
-                // Tally vehicles per farm
                 const vehiclesPool = (data.raw_xml && data.raw_xml.vehicles) ? data.raw_xml.vehicles : (data.vehicles || {});
                 const vehiclesList = Array.isArray(vehiclesPool) ? vehiclesPool : Object.values(vehiclesPool);
                 vehiclesList.forEach(item => {
@@ -1208,11 +1220,9 @@
                     else if (fId == 2 || fId == '2' || fId == 'farm_2') f2Vehicles++;
                 });
 
-                // Check farm node vehicle counts as fallback
                 if (f1Vehicles === 0 && farm1Node.statistics && farm1Node.statistics.vehiclesCount) f1Vehicles = farm1Node.statistics.vehiclesCount;
                 if (f2Vehicles === 0 && farm2Node.statistics && farm2Node.statistics.vehiclesCount) f2Vehicles = farm2Node.statistics.vehiclesCount;
 
-                // Tally placeables per farm
                 const placeablesPool = (data.raw_xml && data.raw_xml.placeables) ? data.raw_xml.placeables : (data.placeables || {});
                 const placeablesList = Array.isArray(placeablesPool) ? placeablesPool : Object.values(placeablesPool);
                 placeablesList.forEach(item => {
@@ -1222,7 +1232,6 @@
                     else if (fId == 2 || fId == '2' || fId == 'farm_2') f2Placeables++;
                 });
 
-                // Render Fleet Badges
                 let f1BadgesHtml = '';
                 let f2BadgesHtml = '';
 
@@ -1231,28 +1240,20 @@
                         f1BadgesHtml += `<span class="text-[9px] bg-amber-950/80 text-amber-300 px-1.5 py-0.5 rounded border border-amber-800/80 font-bold"><i class="fa-solid fa-trophy text-[8px] mr-1"></i>Most Fleet (${f1Vehicles})</span>`;
                     } else if (f2Vehicles > f1Vehicles) {
                         f2BadgesHtml += `<span class="text-[9px] bg-amber-950/80 text-amber-300 px-1.5 py-0.5 rounded border border-amber-800/80 font-bold"><i class="fa-solid fa-trophy text-[8px] mr-1"></i>Most Fleet (${f2Vehicles})</span>`;
-                    } else {
-                        f1BadgesHtml += `<span class="text-[9px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded border border-slate-700 font-bold"><i class="fa-solid fa-handshake text-[8px] mr-1"></i>Fleet Tied (${f1Vehicles})</span>`;
-                        f2BadgesHtml += `<span class="text-[9px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded border border-slate-700 font-bold"><i class="fa-solid fa-handshake text-[8px] mr-1"></i>Fleet Tied (${f2Vehicles})</span>`;
                     }
                 }
 
-                // Render Placeables Badges
                 if (f1Placeables > 0 || f2Placeables > 0) {
                     if (f1Placeables > f2Placeables) {
                         f1BadgesHtml += `<span class="text-[9px] bg-sky-950/80 text-sky-300 px-1.5 py-0.5 rounded border border-sky-800/80 font-bold"><i class="fa-solid fa-building text-[8px] mr-1"></i>Most Buildings (${f1Placeables})</span>`;
                     } else if (f2Placeables > f1Placeables) {
                         f2BadgesHtml += `<span class="text-[9px] bg-sky-950/80 text-sky-300 px-1.5 py-0.5 rounded border border-sky-800/80 font-bold"><i class="fa-solid fa-building text-[8px] mr-1"></i>Most Buildings (${f2Placeables})</span>`;
-                    } else {
-                        f1BadgesHtml += `<span class="text-[9px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded border border-slate-700 font-bold"><i class="fa-solid fa-handshake text-[8px] mr-1"></i>Buildings Tied (${f1Placeables})</span>`;
-                        f2BadgesHtml += `<span class="text-[9px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded border border-slate-700 font-bold"><i class="fa-solid fa-handshake text-[8px] mr-1"></i>Buildings Tied (${f2Placeables})</span>`;
                     }
                 }
 
                 if (farm1BadgesEl) farm1BadgesEl.innerHTML = f1BadgesHtml;
                 if (farm2BadgesEl) farm2BadgesEl.innerHTML = f2BadgesHtml;
 
-                // Accent highlighting for leaders
                 if (f1Vehicles > f2Vehicles || f1Placeables > f2Placeables) {
                     farm1BoxEl.classList.add('border-emerald-500/40');
                 } else {
@@ -1419,10 +1420,11 @@
                     let playerProgressHTML = "";
 
                     game.players.forEach(p => {
-                        let nameColor = "#38bdf8";
-                        if (p.name.toLowerCase().includes("werewolf") || p.name.toLowerCase().includes("elu")) nameColor = "var(--color-werewolf)";
-                        if (p.name.toLowerCase().includes("ray")) nameColor = "var(--color-ray)";
+                        let nameColor = "#38BDF8";
+                        if (p.name.toLowerCase().includes("werewolf")) nameColor = "var(--color-werewolf)";
+                        if (p.name.toLowerCase().includes("ray")) nameColor = "var(--color-ray-red)";
                         if (p.name.toLowerCase().includes("terr") || p.name.toLowerCase().includes("tj")) nameColor = "var(--color-terrdog)";
+                        if (p.name.toLowerCase().includes("elu")) nameColor = "var(--color-elu)";
 
                         playerProgressHTML += `
                             <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700/50">
@@ -1449,7 +1451,7 @@
                                     ${playerProgressHTML}
                                 </div>
                             </div>
-                            <a href="https://werewolf3788.github.io/Website/games/Sniper-Elite/5/index.html" class="text-sky-400 hover:text-sky-300 font-bold text-xs flex items-center justify-between border-t border-slate-800 pt-4 min-h-[44px]">
+                            <a href="./games/HunterCOTW/cotw.html" class="text-sky-400 hover:text-sky-300 font-bold text-xs flex items-center justify-between border-t border-slate-800 pt-4 min-h-[48px]">
                                 <span>Explore Module Tracker</span>
                                 <i class="fa-solid fa-arrow-right"></i>
                             </a>
@@ -1472,12 +1474,12 @@
     </script>
 
     <!-- Open-Meteo Weather, Lightbox, & Interactive Slideshow Engine -->
-    <!-- HTML JS Line ~1170 -->
+    <!-- HTML JS Line ~1175 -->
     <script>
         const users = [
             { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', layerId: 'layer-werewolf', descId: 'weather-desc-werewolf' },
             { id: 'ray', user: 'raymystyro', lat: 38.6689, lon: -88.4851, cardId: 'card-ray', layerId: 'layer-ray', descId: 'weather-desc-ray' },
-            { id: 'tj', user: 'terrdog420', lat: 42.1614, lon: -93.3033, cardId: 'card-tj', layerId: 'layer-tj', descId: 'weather-desc-tj' }
+            { id: 'tj', user: 'terrdog', lat: 42.1614, lon: -93.3033, cardId: 'card-tj', layerId: 'layer-tj', descId: 'weather-desc-tj' }
         ];
 
         async function fetchWithRetry(url, options = {}) {
@@ -1653,22 +1655,22 @@
             const p = currentItem.platforms || {};
             let buttonsHtml = '';
 
-            if (p.youtube && (p.youtube.startsWith('http://') || p.youtube.startsWith('https://'))) {
+            if (p.youtube && (p.youtube.startsWith('http://') || p.youtube.startsWith('https://') || p.youtube.startsWith('//'))) {
                 buttonsHtml += `<button type="button" onclick="playLightboxYouTube('${p.youtube}', '${currentItem.title.replace(/'/g, "\\'")}')" class="lb-btn btn-youtube"><i class="fa-brands fa-youtube mr-1.5 text-base"></i>Watch Video</button>`;
             }
-            if (p.amazon && (p.amazon.startsWith('http://') || p.amazon.startsWith('https://'))) {
+            if (p.amazon && (p.amazon.startsWith('http://') || p.amazon.startsWith('https://') || p.amazon.startsWith('//'))) {
                 buttonsHtml += `<a href="${p.amazon}" target="_blank" rel="noopener noreferrer" class="lb-btn btn-amazon"><i class="fa-brands fa-amazon mr-1.5 text-base"></i>Amazon</a>`;
             }
-            if (p.google && (p.google.startsWith('http://') || p.google.startsWith('https://'))) {
+            if (p.google && (p.google.startsWith('http://') || p.google.startsWith('https://') || p.google.startsWith('//'))) {
                 buttonsHtml += `<a href="${p.google}" target="_blank" rel="noopener noreferrer" class="lb-btn btn-google"><i class="fa-brands fa-google-play mr-1.5 text-base"></i>Google</a>`;
             }
-            if (p.ma && (p.ma.startsWith('http://') || p.ma.startsWith('https://'))) {
+            if (p.ma && (p.ma.startsWith('http://') || p.ma.startsWith('https://') || p.ma.startsWith('//'))) {
                 buttonsHtml += `<a href="${p.ma}" target="_blank" rel="noopener noreferrer" class="lb-btn btn-moviesanywhere"><i class="fa-solid fa-film mr-1.5 text-base"></i>MA</a>`;
             }
-            if (p.apple && (p.apple.startsWith('http://') || p.apple.startsWith('https://'))) {
+            if (p.apple && (p.apple.startsWith('http://') || p.apple.startsWith('https://') || p.apple.startsWith('//'))) {
                 buttonsHtml += `<a href="${p.apple}" target="_blank" rel="noopener noreferrer" class="lb-btn btn-apple"><i class="fa-brands fa-apple mr-1.5 text-base"></i>Apple TV</a>`;
             }
-            if (p.fandango && (p.fandango.startsWith('http://') || p.fandango.startsWith('https://'))) {
+            if (p.fandango && (p.fandango.startsWith('http://') || p.fandango.startsWith('https://') || p.fandango.startsWith('//'))) {
                 buttonsHtml += `<a href="${p.fandango}" target="_blank" rel="noopener noreferrer" class="lb-btn btn-fandango"><i class="fa-solid fa-ticket mr-1.5 text-base"></i>Fandango</a>`;
             }
 
@@ -1750,7 +1752,8 @@
 
                     applyWeatherUI(u, type, `${desc} • ${temp}°F`);
                 } catch (e) {
-                    document.getElementById(u.descId).textContent = "Weather service unavailable";
+                    const descEl = document.getElementById(u.descId);
+                    if (descEl) descEl.textContent = "Weather service unavailable";
                 }
             }
         }
@@ -1760,7 +1763,9 @@
             const layer = document.getElementById(user.layerId);
             const descText = document.getElementById(user.descId);
             
-            descText.textContent = description;
+            if (descText) descText.textContent = description;
+            if (!card || !layer) return;
+
             card.classList.remove('bg-rain', 'bg-cloudy', 'bg-sunny', 'bg-snowy', 'bg-clear', 'is-sunny');
             card.classList.add(`bg-${type}`);
             
