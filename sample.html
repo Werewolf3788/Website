@@ -14,8 +14,9 @@
  *   5. Squad Campaigns: Formatted clean game titles & proxied poster graphics.
  *   6. FS25 Farm 2 (farmId2) Telemetry: Live agronomy, crop stage, and fleet equipment.
  *   7. Smart Domain Routing: Same domain stays in current tab; external opens new tab.
+ *   8. Zero-Network SVG Fallbacks: Prevents via.placeholder.com recursive loop crash.
  * Analytics: G-CTYHDF4MSD (New York 24h Time)
- * Date & Time Stamp: 2026-09-23 16:30:00 EDT (America/New_York)
+ * Date & Time Stamp: 2026-09-23 16:45:00 EDT (America/New_York)
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -24,8 +25,8 @@
     <meta http-equiv="refresh" content="900">
     <title>OneLIVIDMAN | Tactical Telemetry Hub</title>
     
-    <!-- GOOGLE ANALYTICS 4 DUAL MEASUREMENT ENGINE -->
-    <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
+    <!-- GOOGLE ANALYTICS 4 DUAL MEASUREMENT ENGINE (Silent Ad-Block Guard) -->
+    <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD" onerror="window.gtagBlocked=true;"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
@@ -39,7 +40,7 @@
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '45.7.0',
+            'layout_version': '45.8.0',
             'gamertag': 'OneLIVIDMAN',
             'user_handle': 'Raymystyro',
             'engagement_timezone': 'America/New_York',
@@ -54,7 +55,7 @@
         gtag('config', 'G-SGJF0FJPQZ');
 
         function trackUserAction(actionName, eventData) {
-            if (typeof gtag === 'function') {
+            if (typeof gtag === 'function' && !window.gtagBlocked) {
                 gtag('event', actionName, {
                     ...eventData,
                     'user_id': 'OneLIVIDMAN',
@@ -437,6 +438,7 @@
         <span class="kf-k">K</span><span class="kf-f">F</span>
     </div>
 
+    <!-- Navigation Header -->
     <nav class="nav-bar">
         <div class="viewport-85-wrap nav-container">
             <a href="//werewolf3788.github.io/Website/" class="text-white font-black text-lg flex items-center gap-2 min-h-[48px]">
@@ -453,6 +455,7 @@
         </div>
     </nav>
 
+    <!-- Health Monitor -->
     <div id="health-monitor">
         <div id="health-dot" class="status-dot-pulse bg-gray-500"></div>
         <div class="flex flex-col">
@@ -471,11 +474,12 @@
         </div>
     </div>
 
+    <!-- Main Header Persona Strip -->
     <header class="w-full text-center py-8 sm:py-10">
         <div class="viewport-85-wrap">
             <div class="relative inline-block mb-6">
                 <div class="absolute inset-0 bg-[#38BDF8] blur-[100px] opacity-30 rounded-full"></div>
-                <img id="main-avatar" src="//via.placeholder.com/250x250/1e1e24/38BDF8?text=RAY" class="relative w-36 h-36 sm:w-48 sm:h-48 lg:w-56 lg:h-56 rounded-full border-4 border-[#38BDF8] shadow-2xl mx-auto object-cover cursor-pointer" onclick="openLightboxImage(this.src, 'OneLIVIDMAN Avatar')" onerror="this.src='//via.placeholder.com/250x250/1e1e24/38BDF8?text=RAY'">
+                <img id="main-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='250' height='250' viewBox='0 0 250 250'><rect width='250' height='250' fill='%231e1e24'/><text x='50%25' y='50%25' font-family='sans-serif' font-weight='900' font-size='36' fill='%2338bdf8' dominant-baseline='middle' text-anchor='middle'>RAY</text></svg>" class="relative w-36 h-36 sm:w-48 sm:h-48 lg:w-56 lg:h-56 rounded-full border-4 border-[#38BDF8] shadow-2xl mx-auto object-cover cursor-pointer" onclick="openLightboxImage(this.src, 'OneLIVIDMAN Avatar')" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'250\' height=\'250\' viewBox=\'0 0 250 250\'><rect width=\'250\' height=\'250\' fill=\'%231e1e24\'/><text x=\'50%25\' y=\'50%25\' font-family=\'sans-serif\' font-weight=\'900\' font-size=\'36\' fill=\'%2338bdf8\' dominant-baseline=\'middle\' text-anchor=\'middle\'>RAY</text></svg>';">
                 <div id="ps-plus-indicator" class="ps-plus-badge"><i class="fab fa-playstation"></i> PLUS MEMBER</div>
             </div>
             
@@ -544,7 +548,7 @@
                     </div>
                     
                     <div class="relative w-full aspect-video bg-sky-900/10 border-y border-white/5 cursor-pointer" onclick="openLightboxImage(document.getElementById('active-game-art').src, document.getElementById('active-game-title').innerText)">
-                        <img id="active-game-art" src="" class="w-full h-full object-cover hidden" onerror="this.src='//via.placeholder.com/600x337/1e1e24/38BDF8?text=GAME+COVER'">
+                        <img id="active-game-art" src="" class="w-full h-full object-cover hidden" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'600\' height=\'337\' viewBox=\'0 0 600 337\'><rect width=\'600\' height=\'337\' fill=\'%231e1e24\'/><text x=\'50%25\' y=\'50%25\' font-family=\'sans-serif\' font-weight=\'900\' font-size=\'28\' fill=\'%2338bdf8\' dominant-baseline=\'middle\' text-anchor=\'middle\'>ACTIVE GAME</text></svg>';">
                         <div id="active-game-fallback" class="w-full h-full flex items-center justify-center"><i class="fab fa-playstation text-6xl text-sky-500/30"></i></div>
                     </div>
 
@@ -610,7 +614,7 @@
                     <section id="recent-trophy-card" class="glass-card p-5 border-t-4 border-yellow-500 hidden">
                         <h3 class="text-yellow-500 text-xs font-black flex items-center gap-2 mb-3"><i class="fas fa-trophy"></i> Latest PSN Unlock</h3>
                         <div class="flex gap-3 items-center bg-black/40 p-3 rounded-xl cursor-pointer hover:bg-white/10 transition-colors" onclick="openRecentTrophyLightbox()">
-                            <img id="last-trophy-icon" src="" class="w-14 h-14 rounded-lg object-cover border border-yellow-500/30" onerror="this.src='//via.placeholder.com/64x64/202024/38BDF8?text=🏆'">
+                            <img id="last-trophy-icon" src="" class="w-14 h-14 rounded-lg object-cover border border-yellow-500/30" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\' viewBox=\'0 0 64 64\'><rect width=\'64\' height=\'64\' fill=\'%23202024\'/><text x=\'50%25\' y=\'50%25\' font-size=\'24\' dominant-baseline=\'middle\' text-anchor=\'middle\'>🏆</text></svg>';">
                             <div class="min-w-0 flex-1">
                                 <div id="last-trophy-name" class="font-black text-white uppercase text-xs truncate">---</div>
                                 <div id="last-trophy-game" class="text-xs font-black text-yellow-500 uppercase truncate">---</div>
@@ -858,7 +862,7 @@
                     &copy; 2026 Werewolf Project. Built by Werewolf3788 & Friends.
                 </p>
                 <div id="build-meta-footer" style="color: #94a3b8; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
-                    Werewolf Command Engine • v45.7.0 • Build: 2026-09-23 16:30:00 EDT
+                    Werewolf Command Engine • v45.8.0 • Build: 2026-09-23 16:45:00 EDT
                 </div>
                 <div class="text-center mt-2 text-xs font-black text-gray-500 uppercase tracking-[0.2em]">
                     Primary RTDB: <span class="text-sky-400">/psn/gamertags/OneLIVIDMAN.json</span> | FS25 RTDB: <span class="text-lime-400">fs25-a3563 (farmId2)</span> | Synced: <span id="sync-time" class="text-gray-300">--</span>
@@ -1247,7 +1251,7 @@
                     <div class="bg-black/50 p-4 rounded-xl border border-white/10 flex flex-col justify-between space-y-3">
                         <div class="space-y-2.5">
                             <div class="flex items-center gap-3">
-                                <img src="${posterUrl}" referrerpolicy="no-referrer" class="w-16 h-16 object-cover rounded-lg border border-white/10 flex-shrink-0" onerror="this.src='${GAME_POSTERS['DEFAULT']}'">
+                                <img src="${posterUrl}" referrerpolicy="no-referrer" class="w-16 h-16 object-cover rounded-lg border border-white/10 flex-shrink-0" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\' viewBox=\'0 0 64 64\'><rect width=\'64\' height=\'64\' fill=\'%231a1a22\'/><text x=\'50%25\' y=\'50%25\' font-size=\'20\' dominant-baseline=\'middle\' text-anchor=\'middle\'>🎮</text></svg>';">
                                 <div class="min-w-0 flex-1">
                                     <h4 class="text-sm font-black text-white uppercase truncate">${g.title}</h4>
                                     <div class="text-[11px] font-bold text-sky-400 font-mono">${activePlayers.length} Active Hunter(s) &ge; 1%</div>
@@ -1375,6 +1379,37 @@
             });
 
             container.innerHTML = html;
+        }
+
+        function calculateGameProgress(docData) {
+            if (!docData) return 0;
+            if (typeof docData.percentage === 'number') return Math.round(docData.percentage);
+            if (typeof docData.overall === 'number') return Math.round(docData.overall);
+            if (typeof docData.completion === 'number') return Math.round(docData.completion);
+            if (typeof docData.totalCollection === 'number') return Math.round(docData.totalCollection);
+            if (typeof docData.progress === 'number') {
+                return docData.progress <= 1 && docData.progress > 0 ? Math.round(docData.progress * 100) : Math.round(docData.progress);
+            }
+            if (Array.isArray(docData.trophies) && docData.trophies.length > 0) {
+                let current = 0;
+                let goal = 0;
+                docData.trophies.forEach(t => {
+                    const g = Number(t.goal) || 1;
+                    goal += g;
+                    if (t.current >= g || t.completed === true || t.done === true) {
+                        current += g;
+                    } else {
+                        current += Number(t.current) || 0;
+                    }
+                });
+                return goal > 0 ? Math.round((current / goal) * 100) : 0;
+            }
+            if (Array.isArray(docData.progress) && docData.progress.length > 0) {
+                const total = docData.progress.length;
+                const found = docData.progress.filter(i => i && (i.collected || i.done || i.completed || (i.count && i.count > 0))).length;
+                return total > 0 ? Math.round((found / total) * 100) : 0;
+            }
+            return 0;
         }
 
         initSE5Listeners();
@@ -1727,7 +1762,7 @@
                                     const targetAttr = isSameDomain(link.url) ? 'target="_self"' : 'target="_blank" rel="noopener noreferrer"';
                                     return `
                                         <a href="${link.url}" ${targetAttr} class="folder-dropdown-item">
-                                            ${link.image ? `<img src="${link.image}" class="nav-thumb-icon" onerror="this.style.display='none'">` : '<i class="fas fa-arrow-up-right-from-square text-sky-400 text-xs"></i>'}
+                                            ${link.image ? `<img src="${link.image}" class="nav-thumb-icon" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'><rect width=\'24\' height=\'24\' fill=\'%231a1a22\'/><text x=\'50%25\' y=\'50%25\' font-size=\'10\' dominant-baseline=\'middle\' text-anchor=\'middle\'>🔗</text></svg>';">` : '<i class="fas fa-arrow-up-right-from-square text-sky-400 text-xs"></i>'}
                                             <span class="truncate">${link.title}</span>
                                         </a>
                                     `;
@@ -1741,7 +1776,7 @@
                     const targetAttr = isSameDomain(link.url) ? 'target="_self"' : 'target="_blank" rel="noopener noreferrer"';
                     html += `
                         <a href="${link.url}" ${targetAttr} class="nav-link-btn">
-                            ${link.image ? `<img src="${link.image}" class="nav-thumb-icon mr-1.5" onerror="this.style.display='none'">` : ''}
+                            ${link.image ? `<img src="${link.image}" class="nav-thumb-icon mr-1.5" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'><rect width=\'24\' height=\'24\' fill=\'%231a1a22\'/><text x=\'50%25\' y=\'50%25\' font-size=\'10\' dominant-baseline=\'middle\' text-anchor=\'middle\'>🔗</text></svg>';">` : ''}
                             <span>${link.title}</span>
                         </a>
                     `;
@@ -1812,7 +1847,7 @@
 
                             return `
                                 <div class="bg-black/40 p-3 rounded-xl border border-white/5 flex gap-3 items-center hover:border-lime-500/40 transition-colors">
-                                    ${img ? `<img src="${img}" class="w-12 h-12 rounded-lg object-contain bg-black/60 p-1 border border-white/10" onerror="this.style.display='none'">` : ''}
+                                    ${img ? `<img src="${img}" class="w-12 h-12 rounded-lg object-contain bg-black/60 p-1 border border-white/10" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'48\' height=\'48\' viewBox=\'0 0 48 48\'><rect width=\'48\' height=\'48\' fill=\'%231a1a22\'/><text x=\'50%25\' y=\'50%25\' font-size=\'20\' dominant-baseline=\'middle\' text-anchor=\'middle\'>🚜</text></svg>';">` : ''}
                                     <div class="min-w-0 flex-1">
                                         <div class="text-[10px] font-black text-lime-400 uppercase tracking-widest">${cardType}</div>
                                         <div class="text-xs font-black text-white uppercase truncate">${name}</div>
@@ -1895,7 +1930,7 @@
 
             document.getElementById('lightbox-body').innerHTML = `
                 <div class="flex flex-col items-center space-y-4 text-center">
-                    <img src="${t.icon || ''}" class="w-24 h-24 rounded-xl border border-white/10 shadow-xl">
+                    <img src="${t.icon || ''}" class="w-24 h-24 rounded-xl border border-white/10 shadow-xl" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'96\' height=\'96\' viewBox=\'0 0 96 96\'><rect width=\'96\' height=\'96\' fill=\'%23202024\'/><text x=\'50%25\' y=\'50%25\' font-size=\'40\' dominant-baseline=\'middle\' text-anchor=\'middle\'>🏆</text></svg>';">
                     <h4 class="text-xl font-black text-white uppercase">${t.name}</h4>
                     <p class="text-gray-300 bg-white/5 p-4 rounded-xl border border-white/5 w-full text-xs">${t.description || t.detail || 'Objective Achieved.'}</p>
                     
