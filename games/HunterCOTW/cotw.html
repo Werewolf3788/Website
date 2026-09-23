@@ -10,7 +10,7 @@
            File: cotw.html (Styles)
            Location: /games/HunterCOTW/cotw.html
            Description: theHunter: Call of the Wild Responsive Interface
-           Timestamp: 2026-09-23 14:18:00 EDT (America/New_York)
+           Timestamp: 2026-09-23 14:55:00 EDT (America/New_York)
            ========================================================================== */
         :root {
             --user-theme-accent: #ff5500;
@@ -313,7 +313,6 @@
         .rank-bronze { background: #b45309; color: #ffffff; }
         .rank-rare { background: #7c3aed; color: #ffffff; }
 
-        /* PSN Indicator Badges */
         .sync-badge {
             font-size: 0.65rem;
             font-weight: 800;
@@ -414,12 +413,7 @@
 </head>
 <body>
     <div class="container">
-        <!-- ======================================================================
-             Top Navigation with 3-Tier Responsive Layout
-             Desktop: Full horizontal bar (>=1280px)
-             Tablet: Touch-friendly drawer/dropdown (768px-1279px)
-             Mobile: Sandwich menu bar (<768px)
-             ====================================================================== -->
+        <!-- Top Navigation -->
         <div class="nav-wrapper-centered">
             <button type="button" id="mobile-sandwich-btn" class="sandwich-btn" onclick="appState.toggleMobileMenu(event)" aria-label="Toggle Navigation">
                 <span class="sandwich-icon">☰</span>
@@ -428,9 +422,7 @@
             <nav id="dynamic-nav-links" class="nav-collapsed-mobile"></nav>
         </div>
 
-        <!-- ======================================================================
-             Master Hunter Console: Cleaned Profiles & Pin Button
-             ====================================================================== -->
+        <!-- Master Hunter Console -->
         <section class="console-card">
             <div class="console-header">
                 <div class="console-title-group">
@@ -439,26 +431,29 @@
                 </div>
 
                 <div class="console-controls">
-                    <!-- Identity Pin Mechanism -->
                     <span class="pin-device-control">
                         <button type="button" id="pin-device-btn" class="pin-device-btn" onclick="appState.togglePinDevice()">📌 Pin Device to This User</button>
                     </span>
 
+                    <!-- Multi-Platform Dropdown Selector -->
                     <select id="platform-selector" class="platform-select" aria-label="Platform Selector">
-                        <option value="playstation">PlayStation</option>
+                        <option value="playstation" selected>PlayStation</option>
+                        <option value="pc">PC</option>
+                        <option value="xbox">Xbox</option>
+                        <option value="steam">Steam</option>
                     </select>
 
-                    <!-- Exact 4 Normalized Player Buttons -->
+                    <!-- Exact 4 Standardized Handles -->
                     <div class="user-btn-group" style="display: flex; gap: 8px; flex-wrap: wrap;">
                         <button type="button" class="user-nav-btn" onclick="appState.switchHunter('Werewolf3788')">Werewolf3788</button>
-                        <button type="button" class="user-nav-btn" onclick="appState.switchHunter('OneLIVIDMAN')">OneLIVIDMAN</button>
+                        <button type="button" class="user-nav-btn" onclick="appState.switchHunter('Raymystyro')">Raymystyro</button>
                         <button type="button" class="user-nav-btn" onclick="appState.switchHunter('Terrdog')">Terrdog</button>
-                        <button type="button" class="user-nav-btn" onclick="appState.switchHunter('DesdemonaTiger')">DesdemonaTiger</button>
+                        <button type="button" class="user-nav-btn" onclick="appState.switchHunter('Elu Cloud')">Elu Cloud</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Legacy Synchronized Animal Ranks -->
+            <!-- Animal Ranks -->
             <div style="text-align: center; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.08em; color: var(--text-muted); text-transform: uppercase;">
                 Animal Rank (Legacy Sync)
             </div>
@@ -542,21 +537,18 @@
         <!-- Dynamic Reserve Trophy Cards -->
         <main id="section-container"></main>
 
-        <!-- ======================================================================
-             Footer: Persistent Version & Code Timestamp
-             Visible at all times in HTML and dynamically synchronized with script.js
-             ====================================================================== -->
+        <!-- Footer -->
         <footer>
             <div style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 8px;">
                 Support the hunt: <a href="https://playstation-be936.web.app/" style="color: var(--user-theme-accent); text-decoration: none;">Werewolf Project Home</a>
             </div>
             <div id="build-meta-footer">
-                Werewolf Project Engine • v2.3.2 • Build: 2026-09-23 14:18:00 EDT
+                Werewolf Project Engine • v2.4.0 • Build: 2026-09-23 14:55:00 EDT
             </div>
         </footer>
     </div>
 
     <!-- Script connection with cachebuster param -->
-    <script type="module" src="./script.js?v=2.3.2"></script>
+    <script type="module" src="./script.js?v=2.4.0"></script>
 </body>
 </html>
