@@ -7,7 +7,7 @@
    RTDB Trophy Source: /psn/gamertags/{Gamertag}/liveTrophyProgress/NPWR13211_00
    RTDB Navigation Source: /utm_links
    Analytics Tag: G-CTYHDF4MSD
-   Date & Time Stamp: 2026-09-23 11:15:00 EDT (America/New_York)
+   Date & Time Stamp: 2026-09-23 12:18:00 EDT (America/New_York)
    ============================================================================ */
 
 import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -17,6 +17,7 @@ import { getDatabase, ref as rtdbRef, onValue, off } from '//www.gstatic.com/fir
 
 /* ----------------------------------------------------
  * SECTION 1: Firebase Configuration & User Map
+ * Lines 18-47: Environment credentials and normalized gamer handles
  * ---------------------------------------------------- */
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -32,12 +33,11 @@ const GAME_ID = 'COTW';
 const NPWR_ID = 'NPWR13211_00';
 
 // Live PSN Gamertag mapping for Firebase RTDB trophy syncing
+// Strictly normalized gaming handles; personal names removed
 const USER_PSN_MAP = {
     'Werewolf3788': 'WildHorse_Spirit',
-    'Raymystyro': 'OneLIVIDMAN',
     'OneLIVIDMAN': 'OneLIVIDMAN',
-    'terrdog420': 'Darkwing69420',
-    'Darkwing69420': 'Darkwing69420',
+    'Terrdog': 'Darkwing69420',
     'DesdemonaTiger': 'DesdemonaTiger'
 };
 
@@ -52,6 +52,7 @@ const ICONS = {
 
 /* ----------------------------------------------------
  * SECTION 2: Master Helpers
+ * Lines 49-74: Checklist generator & alphabetic indexing
  * ---------------------------------------------------- */
 const checkSet = (items) => items.map(name => ({ name, done: false }));
 
@@ -73,6 +74,7 @@ const formatAlphaCheckset = (items) => {
 
 /* ----------------------------------------------------
  * SECTION 3: Raw Static Master Data Baseline
+ * Lines 76-200: Base Game, Reserves, and Story Missions
  * ---------------------------------------------------- */
 const trophyData = [
     // --- BASE GAME TROPHIES ---
@@ -258,6 +260,7 @@ const trophyData = [
 
 /* ----------------------------------------------------
  * SECTION 4: Platform Normalization
+ * Lines 202-212: Maps diverse platform inputs to standards
  * ---------------------------------------------------- */
 const normalizePlatform = (inputPlatform) => {
     if (!inputPlatform) return 'playstation';
@@ -270,8 +273,7 @@ const normalizePlatform = (inputPlatform) => {
 
 /* ----------------------------------------------------
  * SECTION 5: Dynamic Cross-Platform Responsive Styles Injection
- * Enforces Desktop (multi-column), Tablet (fluid, 48px touch targets),
- * Mobile (single column), and ultra-high z-index for dropdown navigation.
+ * Lines 214-358: Fluid desktop, tablet touch targets, and mobile layout
  * ---------------------------------------------------- */
 const injectResponsiveNavbarStyles = () => {
     if (document.getElementById('cotw-responsive-nav-styles')) return;
@@ -476,8 +478,10 @@ const injectResponsiveNavbarStyles = () => {
 
 /* ----------------------------------------------------
  * SECTION 6: Main Application State & Engines
+ * Lines 360-645: Profile binding, RTDB navigation, and live trophy sync
  * ---------------------------------------------------- */
 const appState = {
+    // Strictly gaming handle - default fallback Werewolf3788
     activeHunter: localStorage.getItem('active_gaming_nickname') || 'Werewolf3788',
     activePlatform: normalizePlatform(localStorage.getItem('active_gaming_platform')),
     hunterData: [],
@@ -541,7 +545,6 @@ const appState = {
                 const node = rawData[key];
                 if (!node) return;
 
-                // Handle indexed array groups (e.g. Game: [ {title, url}, ... ])
                 if (Array.isArray(node)) {
                     const groupKey = key;
                     if (!groups[groupKey]) groups[groupKey] = [];
@@ -550,7 +553,6 @@ const appState = {
                         if (parsed) groups[groupKey].push(parsed);
                     });
                 } else if (typeof node === 'object') {
-                    // Check if object is a standalone record or a group of named sub-keys
                     if (node.title || node.url || node.link) {
                         const parsed = parseItem(node, key);
                         const f = parsed.folder.toLowerCase();
@@ -561,7 +563,6 @@ const appState = {
                             groups[parsed.folder].push(parsed);
                         }
                     } else {
-                        // Subfolder map
                         const groupKey = key;
                         if (!groups[groupKey]) groups[groupKey] = [];
                         Object.keys(node).forEach(subKey => {
@@ -735,6 +736,21 @@ const appState = {
                 this.switchPlatform(e.target.value);
             });
         }
+
+        const userSelector = document.getElementById("user-selector");
+        if (userSelector) {
+            userSelector.innerHTML = '';
+            Object.keys(USER_PSN_MAP).forEach(handle => {
+                const opt = document.createElement("option");
+                opt.value = handle;
+                opt.innerText = handle;
+                if (handle === this.activeHunter) opt.selected = true;
+                userSelector.appendChild(opt);
+            });
+            userSelector.addEventListener("change", (e) => {
+                this.switchHunter(e.target.value);
+            });
+        }
     },
 
     loadHunter: function(userName, platform) {
@@ -748,6 +764,7 @@ const appState = {
             this.rtdbTrophyRef = null;
         }
 
+        // Standardize gamer handle
         this.activeHunter = userName || 'Werewolf3788';
         this.activePlatform = normalizePlatform(platform);
 
@@ -764,6 +781,11 @@ const appState = {
         const platformSelector = document.getElementById("platform-selector");
         if (platformSelector) {
             platformSelector.value = this.activePlatform;
+        }
+
+        const userSelector = document.getElementById("user-selector");
+        if (userSelector) {
+            userSelector.value = this.activeHunter;
         }
 
         this.render();
@@ -1035,6 +1057,7 @@ const appState = {
 
     /* ----------------------------------------------------
      * SECTION 7: Cloud Firestore Sync Writer
+     * Lines 647-684: Writeback pipeline & analytics trigger
      * ---------------------------------------------------- */
     sync: async function(silent = false) {
         this.render();
