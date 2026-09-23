@@ -7,7 +7,8 @@
    RTDB Trophy Source: /psn/gamertags/{Gamertag}/liveTrophyProgress/NPWR13211_00
    RTDB Navigation Source: /utm_links
    Analytics Tag: G-CTYHDF4MSD
-   Date & Time Stamp: 2026-09-23 12:18:00 EDT (America/New_York)
+   Build Version: 2.2.0
+   Code Build Date: 2026-09-23 13:38:00 EDT (America/New_York)
    ============================================================================ */
 
 import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -16,9 +17,12 @@ import { getFirestore, doc, setDoc, onSnapshot } from '//www.gstatic.com/firebas
 import { getDatabase, ref as rtdbRef, onValue, off } from '//www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
 /* ----------------------------------------------------
- * SECTION 1: Firebase Configuration & User Map
- * Lines 18-47: Environment credentials and normalized gamer handles
+ * SECTION 1: Build Metadata, User Map & Custom Color Themes
+ * Lines 20-75: Immutable release signatures, handles & palette sets
  * ---------------------------------------------------- */
+const BUILD_VERSION = "2.2.0";
+const CODE_BUILD_DATE = "2026-09-23 13:38:00 EDT";
+
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -32,13 +36,56 @@ const firebaseConfig = {
 const GAME_ID = 'COTW';
 const NPWR_ID = 'NPWR13211_00';
 
-// Live PSN Gamertag mapping for Firebase RTDB trophy syncing
-// Strictly normalized gaming handles; personal names removed
+// Normalized Gamer Handles
 const USER_PSN_MAP = {
     'Werewolf3788': 'WildHorse_Spirit',
     'OneLIVIDMAN': 'OneLIVIDMAN',
     'Terrdog': 'Darkwing69420',
     'DesdemonaTiger': 'DesdemonaTiger'
+};
+
+// Player-Specific Color Schemes
+// Werewolf3788: Bugatti (Carbon Black & Hyper Orange)
+// OneLIVIDMAN: USA Flag (Deep Red & Electric Blue)
+// Terrdog: Royal Amethyst Purple
+// DesdemonaTiger: Emerald Teal
+const USER_THEMES = {
+    'Werewolf3788': {
+        accent: '#ff5500',
+        accentGlow: 'rgba(255, 85, 0, 0.45)',
+        secondary: '#0a0a0c',
+        border: 'rgba(255, 85, 0, 0.35)',
+        gradient: 'linear-gradient(135deg, #ff5500 0%, #1a1a1a 100%)',
+        badgeBg: '#ff5500',
+        badgeText: '#ffffff'
+    },
+    'OneLIVIDMAN': {
+        accent: '#2563eb',
+        accentGlow: 'rgba(37, 99, 235, 0.45)',
+        secondary: '#ef4444',
+        border: 'rgba(37, 99, 235, 0.4)',
+        gradient: 'linear-gradient(135deg, #ef4444 0%, #2563eb 100%)',
+        badgeBg: '#ef4444',
+        badgeText: '#ffffff'
+    },
+    'Terrdog': {
+        accent: '#a855f7',
+        accentGlow: 'rgba(168, 85, 247, 0.45)',
+        secondary: '#581c87',
+        border: 'rgba(168, 85, 247, 0.4)',
+        gradient: 'linear-gradient(135deg, #a855f7 0%, #3b0764 100%)',
+        badgeBg: '#a855f7',
+        badgeText: '#ffffff'
+    },
+    'DesdemonaTiger': {
+        accent: '#10b981',
+        accentGlow: 'rgba(16, 185, 129, 0.45)',
+        secondary: '#064e3b',
+        border: 'rgba(16, 185, 129, 0.4)',
+        gradient: 'linear-gradient(135deg, #10b981 0%, #064e3b 100%)',
+        badgeBg: '#10b981',
+        badgeText: '#ffffff'
+    }
 };
 
 const ICONS = {
@@ -52,7 +99,7 @@ const ICONS = {
 
 /* ----------------------------------------------------
  * SECTION 2: Master Helpers
- * Lines 49-74: Checklist generator & alphabetic indexing
+ * Lines 77-102: Checklist generation & alphabetization
  * ---------------------------------------------------- */
 const checkSet = (items) => items.map(name => ({ name, done: false }));
 
@@ -74,7 +121,7 @@ const formatAlphaCheckset = (items) => {
 
 /* ----------------------------------------------------
  * SECTION 3: Raw Static Master Data Baseline
- * Lines 76-200: Base Game, Reserves, and Story Missions
+ * Lines 104-227: Complete trophy & mission database records
  * ---------------------------------------------------- */
 const trophyData = [
     // --- BASE GAME TROPHIES ---
@@ -260,7 +307,7 @@ const trophyData = [
 
 /* ----------------------------------------------------
  * SECTION 4: Platform Normalization
- * Lines 202-212: Maps diverse platform inputs to standards
+ * Lines 229-239: Uniform platform sanitation
  * ---------------------------------------------------- */
 const normalizePlatform = (inputPlatform) => {
     if (!inputPlatform) return 'playstation';
@@ -273,14 +320,22 @@ const normalizePlatform = (inputPlatform) => {
 
 /* ----------------------------------------------------
  * SECTION 5: Dynamic Cross-Platform Responsive Styles Injection
- * Lines 214-358: Fluid desktop, tablet touch targets, and mobile layout
+ * Lines 241-410: Layout rules, device pin badge, and theme transitions
  * ---------------------------------------------------- */
 const injectResponsiveNavbarStyles = () => {
     if (document.getElementById('cotw-responsive-nav-styles')) return;
     const styleEl = document.createElement('style');
     styleEl.id = 'cotw-responsive-nav-styles';
     styleEl.innerHTML = `
-        /* Top Navigation Stacking & Centering Context */
+        :root {
+            --user-theme-accent: #ff5500;
+            --user-theme-glow: rgba(255, 85, 0, 0.45);
+            --user-theme-border: rgba(255, 85, 0, 0.35);
+            --user-theme-secondary: #0a0a0c;
+            --user-theme-badge-bg: #ff5500;
+            --user-theme-badge-text: #ffffff;
+        }
+
         .nav-wrapper-centered {
             display: flex;
             justify-content: center;
@@ -300,10 +355,11 @@ const injectResponsiveNavbarStyles = () => {
             padding: 10px 16px;
             background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            border: 1px solid var(--user-theme-border);
             border-radius: 12px;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
             z-index: 99999;
+            transition: border-color 0.3s ease;
         }
 
         #dynamic-nav-links a, .nav-dropbtn {
@@ -325,8 +381,8 @@ const injectResponsiveNavbarStyles = () => {
 
         #dynamic-nav-links a:hover, .nav-dropbtn:hover {
             background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
-            color: #38bdf8;
+            border-color: var(--user-theme-border);
+            color: var(--user-theme-accent);
         }
 
         .nav-icon {
@@ -336,7 +392,6 @@ const injectResponsiveNavbarStyles = () => {
             border-radius: 4px;
         }
 
-        /* High-contrast, Top-of-Everything Dropdown Overlay */
         .nav-dropdown {
             position: relative;
             display: inline-block;
@@ -353,7 +408,7 @@ const injectResponsiveNavbarStyles = () => {
             min-width: 220px;
             max-width: 320px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            border: 1px solid var(--user-theme-border);
             border-radius: 10px;
             padding: 8px;
             z-index: 100001;
@@ -379,15 +434,52 @@ const injectResponsiveNavbarStyles = () => {
 
         .nav-dropdown-content a:hover {
             background: #1e293b;
-            color: #38bdf8;
+            color: var(--user-theme-accent);
         }
 
-        /* Number Inputs with Direct Typing Support */
+        /* Identity Lock Pin Controls */
+        .pin-device-control {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 12px;
+        }
+
+        .pin-device-btn {
+            background: #1e293b;
+            color: #94a3b8;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            letter-spacing: 0.04em;
+        }
+
+        .pin-device-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        .pin-device-btn.is-pinned {
+            background: var(--user-theme-badge-bg);
+            color: var(--user-theme-badge-text);
+            border-color: transparent;
+            box-shadow: 0 0 12px var(--user-theme-glow);
+        }
+
+        .trophy-card.completed {
+            border-color: var(--user-theme-accent) !important;
+            box-shadow: 0 0 15px var(--user-theme-glow) !important;
+        }
+
         .number-control-group {
             display: inline-flex;
             align-items: center;
             background: #0f172a;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--user-theme-border);
             border-radius: 8px;
             overflow: hidden;
             width: 100%;
@@ -414,7 +506,7 @@ const injectResponsiveNavbarStyles = () => {
             width: 60px;
             background: transparent;
             border: none;
-            color: #38bdf8;
+            color: var(--user-theme-accent);
             font-size: 0.95rem;
             font-weight: 700;
             text-align: center;
@@ -435,7 +527,6 @@ const injectResponsiveNavbarStyles = () => {
             white-space: nowrap;
         }
 
-        /* Tablet Responsive (768px to 1023px) */
         @media (min-width: 768px) and (max-width: 1023px) {
             #dynamic-nav-links a, .nav-dropbtn {
                 min-height: 48px;
@@ -446,7 +537,6 @@ const injectResponsiveNavbarStyles = () => {
             }
         }
 
-        /* Mobile Responsive (under 768px) */
         @media (max-width: 767px) {
             #dynamic-nav-links {
                 flex-direction: column;
@@ -471,6 +561,11 @@ const injectResponsiveNavbarStyles = () => {
                 border: 1px solid rgba(255, 255, 255, 0.08);
                 margin-top: 4px;
             }
+            .pin-device-control {
+                margin: 8px 0;
+                width: 100%;
+                justify-content: center;
+            }
         }
     `;
     document.head.appendChild(styleEl);
@@ -478,11 +573,11 @@ const injectResponsiveNavbarStyles = () => {
 
 /* ----------------------------------------------------
  * SECTION 6: Main Application State & Engines
- * Lines 360-645: Profile binding, RTDB navigation, and live trophy sync
+ * Lines 412-740: Identity cache, theme switcher, RTDB navigation
  * ---------------------------------------------------- */
 const appState = {
-    // Strictly gaming handle - default fallback Werewolf3788
-    activeHunter: localStorage.getItem('active_gaming_nickname') || 'Werewolf3788',
+    // 1. Check pinned device identity first; 2. Fall back to active cache; 3. Default to Werewolf3788 (Admin)
+    activeHunter: localStorage.getItem('pinned_device_user') || localStorage.getItem('active_gaming_nickname') || 'Werewolf3788',
     activePlatform: normalizePlatform(localStorage.getItem('active_gaming_platform')),
     hunterData: [],
     animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 },
@@ -500,12 +595,59 @@ const appState = {
     },
 
     /* ----------------------------------------------------
-     * SECTION 6A: Dynamic RTDB Navigation Loader (/utm_links)
-     * Enforces Strict Display Order:
-     * 1. Home / Standalone (Left)
-     * 2. User / Users (Second)
-     * 3. Game / Games (Third)
-     * 4. Everything else alphabetically
+     * SECTION 6A: Dynamic Color Theme Engine
+     * Switches CSS variables across the entire DOM per gamer
+     * ---------------------------------------------------- */
+    applyPlayerTheme: function(gamerHandle) {
+        const theme = USER_THEMES[gamerHandle] || USER_THEMES['Werewolf3788'];
+        const root = document.documentElement;
+
+        root.style.setProperty('--user-theme-accent', theme.accent);
+        root.style.setProperty('--user-theme-glow', theme.accentGlow);
+        root.style.setProperty('--user-theme-border', theme.border);
+        root.style.setProperty('--user-theme-secondary', theme.secondary);
+        root.style.setProperty('--user-theme-badge-bg', theme.badgeBg);
+        root.style.setProperty('--user-theme-badge-text', theme.badgeText);
+
+        document.body.setAttribute('data-active-user', gamerHandle);
+    },
+
+    /* ----------------------------------------------------
+     * SECTION 6B: Pin Device Identity Lock
+     * Stores primary user directly into local client storage
+     * ---------------------------------------------------- */
+    togglePinDevice: function() {
+        const currentPin = localStorage.getItem('pinned_device_user');
+
+        if (currentPin === this.activeHunter) {
+            localStorage.removeItem('pinned_device_user');
+        } else {
+            localStorage.setItem('pinned_device_user', this.activeHunter);
+        }
+
+        this.updatePinButtonUI();
+    },
+
+    updatePinButtonUI: function() {
+        const pinBtn = document.getElementById('pin-device-btn');
+        if (!pinBtn) return;
+
+        const isPinned = localStorage.getItem('pinned_device_user') === this.activeHunter;
+
+        if (isPinned) {
+            pinBtn.classList.add('is-done');
+            pinBtn.classList.add('is-pinned');
+            pinBtn.innerText = '📌 Pinned as Primary Device';
+        } else {
+            pinBtn.classList.remove('is-done');
+            pinBtn.classList.remove('is-pinned');
+            pinBtn.innerText = '📌 Pin Device to This User';
+        }
+    },
+
+    /* ----------------------------------------------------
+     * SECTION 6C: Dynamic RTDB Navigation Loader (/utm_links)
+     * Enforces Strict Hierarchy: Standalone -> User -> Game -> Others
      * ---------------------------------------------------- */
     loadNavigationFromRTDB: function() {
         injectResponsiveNavbarStyles();
@@ -523,7 +665,6 @@ const appState = {
             const groups = {};
             const standalone = [];
 
-            // Protocol-relative sanitization helper
             const cleanUrl = (u) => {
                 if (!u) return '#';
                 let res = String(u).trim();
@@ -575,13 +716,13 @@ const appState = {
 
             let navHTML = '';
 
-            // 1. Far Left: Home & Standalone links
+            // 1. Far Left: Standalone / Home
             standalone.forEach(item => {
                 const iconTag = item.icon ? `<img src="${item.icon}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
                 navHTML += `<a href="${item.url}">${iconTag}<span>${item.name}</span></a>`;
             });
 
-            // Sorted Folders: User -> Game -> Alphabetical others
+            // 2. Folders Sorted: User -> Game -> Alphabetical
             const sortedFolderKeys = Object.keys(groups).sort((a, b) => {
                 const lowA = a.toLowerCase();
                 const lowB = b.toLowerCase();
@@ -597,7 +738,6 @@ const appState = {
                 return lowA.localeCompare(lowB);
             });
 
-            // 2. Render Folders
             sortedFolderKeys.forEach(folderName => {
                 const folderId = folderName.replace(/[^a-zA-Z0-9]/g, '_');
                 const dropItems = groups[folderName].map(item => {
@@ -638,14 +778,18 @@ const appState = {
     },
 
     /* ----------------------------------------------------
-     * SECTION 6B: Direct PSN RTDB Trophy Auto-Watcher
+     * SECTION 6D: Direct PSN RTDB Trophy Auto-Watcher
      * Path: /psn/gamertags/{Gamertag}/liveTrophyProgress/NPWR13211_00
-     * Automatically scans and pulls completed trophies into the tracker.
      * ---------------------------------------------------- */
     bindRTDBTrophyWatcher: function(hunterKey) {
         if (!this.rtdb) return;
 
-        const psnGamertag = USER_PSN_MAP[hunterKey] || hunterKey;
+        const psnGamertag = USER_PSN_MAP[hunterKey];
+        if (!psnGamertag) {
+            console.log(`[RTDB Sync] Skipping watcher: ${hunterKey} is not in the active gamer map.`);
+            return;
+        }
+
         const trophyPath = `psn/gamertags/${psnGamertag}/liveTrophyProgress/${NPWR_ID}`;
         this.rtdbTrophyRef = rtdbRef(this.rtdb, trophyPath);
 
@@ -694,6 +838,8 @@ const appState = {
     init: async function() {
         this.hunterData = this.getFreshTrophyTemplate();
         this.setupControlDropdowns();
+        this.renderBuildMetadata();
+        this.applyPlayerTheme(this.activeHunter);
 
         try {
             const app = initializeApp(firebaseConfig, 'COTW-Firestore-Engine');
@@ -717,6 +863,13 @@ const appState = {
             console.error("Init Error:", err);
             this.setStatus(`❌ Connection Error: ${err.message}`, "#ef4444");
             this.render();
+        }
+    },
+
+    renderBuildMetadata: function() {
+        const el = document.getElementById("build-meta-footer");
+        if (el) {
+            el.innerText = `Werewolf Project Engine • v${BUILD_VERSION} • Build: ${CODE_BUILD_DATE}`;
         }
     },
 
@@ -751,6 +904,17 @@ const appState = {
                 this.switchHunter(e.target.value);
             });
         }
+
+        // Auto-inject Pin Button into the control row if not already present
+        const hunterHeader = document.getElementById('hunter-name');
+        if (hunterHeader && !document.getElementById('pin-device-btn')) {
+            const pinContainer = document.createElement('span');
+            pinContainer.className = 'pin-device-control';
+            pinContainer.innerHTML = `<button type="button" id="pin-device-btn" class="pin-device-btn" onclick="appState.togglePinDevice()">📌 Pin Device to This User</button>`;
+            hunterHeader.parentNode.insertBefore(pinContainer, hunterHeader.nextSibling);
+        }
+
+        this.updatePinButtonUI();
     },
 
     loadHunter: function(userName, platform) {
@@ -764,7 +928,6 @@ const appState = {
             this.rtdbTrophyRef = null;
         }
 
-        // Standardize gamer handle
         this.activeHunter = userName || 'Werewolf3788';
         this.activePlatform = normalizePlatform(platform);
 
@@ -773,6 +936,9 @@ const appState = {
 
         localStorage.setItem('active_gaming_nickname', this.activeHunter);
         localStorage.setItem('active_gaming_platform', this.activePlatform);
+
+        this.applyPlayerTheme(this.activeHunter);
+        this.updatePinButtonUI();
 
         if (document.getElementById('hunter-name')) {
             document.getElementById('hunter-name').innerText = `${this.activeHunter.toUpperCase()} [${this.activePlatform.toUpperCase()}]`;
@@ -829,7 +995,6 @@ const appState = {
                 this.setStatus(`⚠️ Initial State for ${this.activeHunter} [${this.activePlatform.toUpperCase()}]`, "#ff8800");
             }
 
-            // Immediately scan & listen to live PSN trophies from RTDB
             this.bindRTDBTrophyWatcher(this.activeHunter);
             this.render();
         }, (err) => {
@@ -907,7 +1072,7 @@ const appState = {
             section.innerHTML = `
                 <div class="category-header" onclick="appState.toggleSection('${sectionId}')">
                     <h2>${cat}</h2>
-                    <div style="font-weight:900; font-size: 0.85rem; color:#38bdf8;">${catMet}/${items.length} (${percent}%)</div>
+                    <div style="font-weight:900; font-size: 0.85rem; color: var(--user-theme-accent);">${catMet}/${items.length} (${percent}%)</div>
                 </div>
                 <div class="section-content"><div class="trophy-grid"></div></div>
             `;
@@ -921,7 +1086,6 @@ const appState = {
                 let ctrl = '';
 
                 if (t.type === 'numeric') {
-                    // Universal direct-typing support for counts
                     ctrl = `
                         <div class="number-control-group">
                             <button type="button" onclick="appState.adj('${t.id}', -1)">-</button>
@@ -971,7 +1135,12 @@ const appState = {
         });
 
         const overall = globalTotal > 0 ? Math.round((globalMet / globalTotal) * 100) : 0;
-        if (document.getElementById('overall-bar')) document.getElementById('overall-bar').style.width = overall + '%';
+        if (document.getElementById('overall-bar')) {
+            const bar = document.getElementById('overall-bar');
+            bar.style.width = overall + '%';
+            bar.style.backgroundColor = 'var(--user-theme-accent)';
+            bar.style.boxShadow = '0 0 10px var(--user-theme-glow)';
+        }
         if (document.getElementById('percent-text')) document.getElementById('percent-text').innerText = `Master Completion Progress ${overall}%`;
     },
 
@@ -1057,7 +1226,7 @@ const appState = {
 
     /* ----------------------------------------------------
      * SECTION 7: Cloud Firestore Sync Writer
-     * Lines 647-684: Writeback pipeline & analytics trigger
+     * Lines 742-779: State commit and telemetry dispatch
      * ---------------------------------------------------- */
     sync: async function(silent = false) {
         this.render();
