@@ -4,19 +4,16 @@
  * File: /Playstation/dashboards/onelividman.html
  * Engine: Complete Client-Side Firebase RTDB & Firestore Real-Time Dashboard
  * Description: 
- *   1. Full PSN Multi-Path Reader: Pulls from /psn/gamertags, /psn/users, and /psn.json
- *      with auto-fallback so profile data NEVER blanks out.
- *   2. Sniper Elite 5 Service Record: Shows All Longshots (exact meters & leader crowns),
- *      All Ribbons (exact multiplier counters), and Weapon Mastery / Tactics Medals.
- *      Werewolf3788 ONLY shows on an item if Ray has earned it AND Werewolf has earned it.
- *      Excludes level-specific M1-M14 collectible clutter.
- *   3. Dual-Key Playtime Engine: Preserves logged hours and active live timers.
- *   4. Strict Trophy Checklist: Squad members only appear if they have unlocked the trophy.
- *   5. FS25 Farm 2 (farmId2) Telemetry: Live agronomy, crop stage, and fleet equipment.
- *   6. Dynamic Squad Firestore Games: Pulls all active games (COTW, etc.) >= 1% progress.
- *   7. COTW Animal Rank Comparative Lodge: Compares Great One, Albino, Diamond, Gold, Silver, Bronze.
+ *   1. Full PSN Multi-Path Reader: Pulls from /psn/gamertags, /psn/users, and /psn.json.
+ *   2. Sniper Elite 5 Service Record: Shows All Longshots, All 47 Ribbons with
+ *      official names/descriptions, and Tactics/Mastery. Excludes M1-M14 item clutter.
+ *   3. COTW Trophy Lodge: Multi-hunter comparison across all active operatives.
+ *   4. Active Trophy Checklist: Compares squad members (WildHorse_Spirit, Darkwing, etc.)
+ *      for every trophy in the list.
+ *   5. Squad Campaigns: Formatted clean game titles & proxied poster graphics.
+ *   6. FS25 Farm 2 (farmId2) Telemetry: Live agronomy, crop stage, and fleet equipment.
  * Analytics: G-CTYHDF4MSD (New York 24h Time)
- * Date & Time Stamp: 2026-09-23 15:46:00 EDT (America/New_York)
+ * Date & Time Stamp: 2026-09-23 16:05:00 EDT (America/New_York)
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -40,7 +37,7 @@
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '45.3.0',
+            'layout_version': '45.5.0',
             'gamertag': 'OneLIVIDMAN',
             'user_handle': 'Raymystyro',
             'engagement_timezone': 'America/New_York',
@@ -76,13 +73,14 @@
         :root {
             --bg-dark: #070709;
             --wolf-gray: #16161b;
-            --accent-blue: #38bdf8;
-            --accent-blue-dim: #0284c7;
-            --accent-green: #10b981;
+            --accent-blue: #2563eb;
+            --accent-red: #ef4444;
+            --accent-orange: #ff5500;
+            --accent-purple: #a855f7;
+            --accent-teal: #10b981;
             --accent-farm: #84cc16;
             --danger-red: #ef4444;
             --warning-yellow: #f59e0b;
-            --amazon-orange: #ff9900;
             --ps-blue: #00439c;
         }
 
@@ -122,14 +120,6 @@
                 max-width: 1850px;
                 padding-left: 0;
                 padding-right: 0;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .mobile-stack-single {
-                display: flex !important;
-                flex-direction: column !important;
-                width: 100% !important;
             }
         }
 
@@ -181,7 +171,7 @@
             display: inline-flex; align-items: center; justify-content: center;
             border-radius: 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .nav-link-btn:hover { color: #fff; background: rgba(56, 189, 248, 0.2); border-color: var(--accent-blue); }
+        .nav-link-btn:hover { color: #fff; background: rgba(37, 99, 235, 0.2); border-color: var(--accent-blue); }
 
         .nav-folder { position: relative; display: inline-block; }
         .folder-toggle-btn {
@@ -196,7 +186,7 @@
             display: none; position: absolute; top: calc(100% + 6px); left: 0; min-width: 250px;
             background: rgba(14, 14, 20, 0.99); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 8px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 25px rgba(56, 189, 248, 0.2); z-index: 60000;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95); z-index: 60000;
         }
 
         @media (max-width: 1023px) {
@@ -209,36 +199,37 @@
             color: #e2e8f0; font-size: 12px; font-weight: 700; text-decoration: none; text-transform: uppercase;
             transition: all 0.2s ease; min-height: 48px;
         }
-        .folder-dropdown-item:hover { background: rgba(56, 189, 248, 0.2); color: var(--accent-blue); }
+        .folder-dropdown-item:hover { background: rgba(37, 99, 235, 0.2); color: #38bdf8; }
         .nav-thumb-icon { width: 24px; height: 24px; border-radius: 4px; object-fit: cover; border: 1px solid rgba(255,255,255,0.25); }
 
         h1, h2, h3, h4 { font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; color: white; }
 
         .glass-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(18, 18, 24, 0.75) 100%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(18, 18, 24, 0.85) 100%);
             backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1); border-top: 1px solid rgba(255, 255, 255, 0.22);
-            border-radius: 1.5rem; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            border-radius: 1.5rem; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65);
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .glass-card:hover {
-            border-color: rgba(56, 189, 248, 0.5);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.2);
+            border-color: rgba(37, 99, 235, 0.5);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(37, 99, 235, 0.25);
         }
 
-        .card-theme-blue { border-top: 4px solid #38bdf8 !important; }
-        .card-theme-se5 { border-top: 4px solid #38bdf8 !important; }
-        .card-theme-cotw { border-top: 4px solid #10b981 !important; }
-        .card-theme-fs25 { border-top: 4px solid #84cc16 !important; }
+        .card-theme-ray { border-top: 4px solid var(--accent-red) !important; border-left: 2px solid var(--accent-blue) !important; }
+        .card-theme-cotw { border-top: 4px solid var(--accent-teal) !important; }
+        .card-theme-fs25 { border-top: 4px solid var(--accent-farm) !important; }
+        .card-theme-se5 { border-top: 4px solid var(--accent-blue) !important; }
+
+        .flag-gradient-text {
+            background: linear-gradient(135deg, #ef4444 0%, #ffffff 50%, #2563eb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
         .header-stat-card {
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             min-height: 170px; text-align: center; position: relative;
-        }
-        .blue-gradient-text {
-            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
 
         .trophy-row {
@@ -300,24 +291,71 @@
         }
 
         .progress-bar-container { height: 12px; background: rgba(20, 20, 28, 0.8); border-radius: 9999px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
-        .progress-bar-fill { height: 100%; transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.5s ease; }
+        .progress-bar-fill { height: 100%; transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1); }
         
-        .prog-stage-1 { background: linear-gradient(90deg, #991b1b, #ef4444); box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
-        .prog-stage-2 { background: linear-gradient(90deg, #ef4444, #f59e0b); box-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
-        .prog-stage-3 { background: linear-gradient(90deg, #f59e0b, #84cc16); box-shadow: 0 0 10px rgba(132, 204, 22, 0.5); }
-        .prog-stage-4 { background: linear-gradient(90deg, #10b981, #059669); box-shadow: 0 0 10px rgba(16, 185, 129, 0.6); }
+        .prog-stage-1 { background: linear-gradient(90deg, #991b1b, #ef4444); }
+        .prog-stage-2 { background: linear-gradient(90deg, #ef4444, #f59e0b); }
+        .prog-stage-3 { background: linear-gradient(90deg, #f59e0b, #84cc16); }
+        .prog-stage-4 { background: linear-gradient(90deg, #10b981, #059669); }
 
         .rank-glow-1st {
-            border: 2px solid #10b981 !important; box-shadow: 0 0 18px rgba(16, 185, 129, 0.7) !important;
+            border: 2px solid #10b981 !important; box-shadow: 0 0 15px rgba(16, 185, 129, 0.6) !important;
             color: #34d399 !important; background: rgba(16, 185, 129, 0.15) !important;
         }
         .rank-glow-2nd {
-            border: 2px solid #f59e0b !important; box-shadow: 0 0 18px rgba(245, 158, 11, 0.7) !important;
-            color: #fbbf24 !important; background: rgba(245, 158, 11, 0.15) !important;
+            border: 2px solid #f59e0b !important; color: #fbbf24 !important; background: rgba(245, 158, 11, 0.15) !important;
         }
-        .rank-glow-none {
-            border: 1px solid rgba(255, 255, 255, 0.1) !important; color: #94a3b8 !important; background: rgba(255, 255, 255, 0.04) !important;
+
+        .fs25-badge {
+            background: rgba(132, 204, 22, 0.15); color: #bef264; border: 1px solid rgba(132, 204, 22, 0.3);
+            border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 800; text-transform: uppercase;
         }
+
+        .store-btn {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 8px 6px; border-radius: 10px; font-size: 11px; font-weight: 900;
+            text-transform: uppercase; transition: all 0.2s ease; min-height: 44px; min-width: 44px;
+            border: 1px solid rgba(255, 255, 255, 0.1); text-align: center;
+        }
+        .store-btn i { font-size: 15px; margin-bottom: 2px; }
+        .store-btn-ps { background: rgba(0, 67, 156, 0.3); color: #60a5fa; border-color: rgba(0, 67, 156, 0.6); }
+        .store-btn-ps:hover { background: #00439c; color: #ffffff; }
+        .store-btn-pc { background: rgba(6, 182, 212, 0.25); color: #22d3ee; border-color: rgba(6, 182, 212, 0.5); }
+        .store-btn-pc:hover { background: #0891b2; color: #ffffff; }
+        .store-btn-steam { background: rgba(23, 26, 33, 0.85); color: #cbd5e1; border-color: rgba(255, 255, 255, 0.25); }
+        .store-btn-steam:hover { background: #171a21; color: #66fcf1; border-color: #66fcf1; }
+        .store-btn-amazon { background: rgba(255, 153, 0, 0.25); color: #ff9900; border-color: rgba(255, 153, 0, 0.5); }
+        .store-btn-amazon:hover { background: #ff9900; color: #000000; }
+
+        .service-badge {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 80px;
+        }
+
+        .status-dot-pulse { width: 10px; height: 10px; border-radius: 50%; position: relative; }
+        .status-dot-pulse.online { background: #10b981; }
+        .status-dot-pulse.online::after {
+            content: ''; position: absolute; inset: -3px; border-radius: 50%;
+            background: inherit; opacity: 0.4; animation: dotPulse 2s infinite;
+        }
+        @keyframes dotPulse {
+            0% { transform: scale(1); opacity: 0.4; }
+            70% { transform: scale(2.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+
+        .kf-watermark {
+            position: fixed; bottom: 16px; left: 24px; z-index: 40000; opacity: 0.35;
+            display: flex; align-items: center; pointer-events: none;
+        }
+        .kf-k { color: #ff4500; transform: scaleX(-1); font-weight: 900; font-size: 22px; }
+        .kf-f { color: #ffffff; margin-left: -0.22em; font-weight: 900; font-size: 22px; }
 
         .game-thumb {
             position: relative; aspect-ratio: 2/3; overflow: hidden; border-radius: 1.25rem;
@@ -331,103 +369,6 @@
             display: flex; flex-direction: column; justify-content: flex-end; padding: 12px;
         }
 
-        #health-monitor {
-            position: fixed; bottom: 20px; left: 20px; z-index: 45000;
-            background: rgba(20, 20, 28, 0.9); backdrop-filter: blur(14px); padding: 8px 18px;
-            border-radius: 9999px; border: 1px solid rgba(255, 255, 255, 0.12); display: flex;
-            align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-        .status-dot-pulse { width: 10px; height: 10px; border-radius: 50%; position: relative; }
-        .status-dot-pulse.online { background: var(--accent-green); }
-        .status-dot-pulse.online::after {
-            content: ''; position: absolute; inset: -3px; border-radius: 50%;
-            background: inherit; opacity: 0.4; animation: dotPulse 2s infinite;
-        }
-        .status-dot-pulse.expired { background: var(--danger-red); }
-        .status-dot-pulse.offline { background: #475569; }
-        @keyframes dotPulse {
-            0% { transform: scale(1); opacity: 0.4; }
-            70% { transform: scale(2.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 0; }
-        }
-
-        #generic-lightbox {
-            position: fixed; inset: 0; z-index: 70000; background: rgba(0,0,0,0.94);
-            display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); padding: 16px;
-        }
-        .lightbox-modal-content {
-            background: var(--wolf-gray); width: 100%; max-width: 850px;
-            border-radius: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.18);
-            overflow: hidden; max-height: 90vh; display: flex; flex-direction: column;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95);
-        }
-
-        .ps-plus-badge {
-            position: absolute; bottom: 0; left: 50%; transform: translate(-50%, 50%);
-            background: var(--ps-blue); color: white; padding: 4px 12px; border-radius: 20px;
-            font-size: 12px; font-weight: 900; letter-spacing: 0.1em; border: 2px solid var(--bg-dark);
-            z-index: 10; display: none; white-space: nowrap;
-        }
-
-        .kf-watermark {
-            position: fixed; bottom: 16px; left: 24px; z-index: 40000; opacity: 0.35;
-            display: flex; align-items: center; pointer-events: none;
-        }
-        .kf-k { color: #ff4500; transform: scaleX(-1); font-weight: 900; font-size: 22px; }
-        .kf-f { color: #ffffff; margin-left: -0.22em; font-weight: 900; font-size: 22px; }
-
-        .store-btn {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 8px 6px; border-radius: 10px; font-size: 12px; font-weight: 900;
-            text-transform: uppercase; transition: all 0.2s ease; min-height: 48px; min-width: 48px;
-            border: 1px solid rgba(255, 255, 255, 0.1); text-align: center;
-        }
-        .store-btn i { font-size: 16px; margin-bottom: 2px; }
-        .store-btn-ps { background: rgba(0, 67, 156, 0.3); color: #60a5fa; border-color: rgba(0, 67, 156, 0.6); }
-        .store-btn-ps:hover { background: #00439c; color: #ffffff; }
-        .store-btn-pc { background: rgba(6, 182, 212, 0.25); color: #22d3ee; border-color: rgba(6, 182, 212, 0.5); }
-        .store-btn-pc:hover { background: #0891b2; color: #ffffff; }
-        .store-btn-steam { background: rgba(23, 26, 33, 0.85); color: #cbd5e1; border-color: rgba(255, 255, 255, 0.25); }
-        .store-btn-steam:hover { background: #171a21; color: #66fcf1; border-color: #66fcf1; }
-        .store-btn-amazon { background: rgba(255, 153, 0, 0.25); color: #ff9900; border-color: rgba(255, 153, 0, 0.5); }
-        .store-btn-amazon:hover { background: #ff9900; color: #000000; }
-
-        .live-badge {
-            position: absolute; top: 12px; right: 12px; background: #38bdf8; color: black;
-            padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 900;
-            text-transform: uppercase; animation: pulseLive 2s infinite;
-        }
-        @keyframes pulseLive { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
-        .fs25-badge {
-            background: rgba(132, 204, 22, 0.15); color: #bef264; border: 1px solid rgba(132, 204, 22, 0.3);
-            border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 800; text-transform: uppercase;
-        }
-
-        .group-pill {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 8px 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-
-        .service-badge {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 80px;
-        }
-
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -438,10 +379,11 @@
         <span class="kf-k">K</span><span class="kf-f">F</span>
     </div>
 
+    <!-- Navigation Header -->
     <nav class="nav-bar">
         <div class="viewport-85-wrap nav-container">
             <a href="//werewolf3788.github.io/Website/" target="_blank" class="text-white font-black text-lg flex items-center gap-2 min-h-[48px]">
-                <i class="fab fa-playstation text-sky-400"></i> PACK HUB
+                <i class="fab fa-playstation text-red-500"></i> PACK HUB
             </a>
             
             <button class="mobile-toggle flex items-center justify-center" onclick="toggleNav()" aria-label="Toggle Menu">
@@ -454,55 +396,43 @@
         </div>
     </nav>
 
+    <!-- Health Monitor -->
     <div id="health-monitor">
-        <div id="health-dot" class="status-dot-pulse bg-gray-500"></div>
+        <div id="health-dot" class="status-dot-pulse online"></div>
         <div class="flex flex-col">
-            <span id="health-label" class="text-xs font-black text-gray-400 uppercase tracking-widest leading-none">PSN Sync</span>
-            <span id="health-value" class="text-xs font-black text-white uppercase tracking-tighter">Status: Connecting...</span>
+            <span class="text-xs font-black text-gray-400 uppercase tracking-widest leading-none">PSN Sync</span>
+            <span id="health-value" class="text-xs font-black text-white uppercase tracking-tighter">Status: Active</span>
         </div>
     </div>
 
-    <div class="viewport-85-wrap mt-4 hidden" id="system-alerts-container">
-        <div class="bg-red-500/10 border-2 border-red-500 p-4 rounded-2xl flex items-center gap-4">
-            <i class="fas fa-triangle-exclamation text-red-500 text-2xl"></i>
-            <div>
-                <div class="text-red-500 font-black uppercase text-xs">PSN NPSSO TOKEN ALERT</div>
-                <div id="alert-message" class="text-white font-bold text-sm">OneLIVIDMAN PSN_NPSSO token expired. Re-authenticate in secrets.</div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Main Header Persona Strip -->
     <header class="w-full text-center py-8 sm:py-10">
         <div class="viewport-85-wrap">
             <div class="relative inline-block mb-6">
-                <div class="absolute inset-0 bg-[#38BDF8] blur-[100px] opacity-30 rounded-full"></div>
-                <img id="main-avatar" src="//via.placeholder.com/250x250/1e1e24/38BDF8?text=RAY" class="relative w-36 h-36 sm:w-48 sm:h-48 lg:w-56 lg:h-56 rounded-full border-4 border-[#38BDF8] shadow-2xl mx-auto object-cover cursor-pointer" onclick="openLightboxImage(this.src, 'OneLIVIDMAN Avatar')" onerror="this.src='//via.placeholder.com/250x250/1e1e24/38BDF8?text=RAY'">
-                <div id="ps-plus-indicator" class="ps-plus-badge"><i class="fab fa-playstation"></i> PLUS MEMBER</div>
+                <div class="absolute inset-0 bg-[#2563EB] blur-[100px] opacity-40 rounded-full"></div>
+                <img id="main-avatar" src="//static-cdn.jtvnw.net/jtv_user_pictures/032a0367-589f-4763-94de-4fc679a0b2df-profile_image-70x70.png" class="relative w-36 h-36 sm:w-48 sm:h-48 lg:w-56 lg:h-56 rounded-full border-4 border-[#2563EB] border-t-[#EF4444] shadow-2xl mx-auto object-cover cursor-pointer" onerror="this.src='//via.placeholder.com/250x250/1e1e24/2563EB?text=RAY'">
             </div>
             
-            <h1 class="blue-gradient-text mb-2 text-3xl sm:text-5xl lg:text-6xl font-black" id="display-admin-name">OneLIVIDMAN</h1>
-            <div class="text-xs sm:text-sm font-black text-gray-400 uppercase tracking-[0.4em] mb-8">Squad Pack Progression Dashboard</div>
+            <h1 class="flag-gradient-text mb-2 text-3xl sm:text-5xl lg:text-6xl font-black" id="display-admin-name">OneLIVIDMAN</h1>
+            <div class="text-xs sm:text-sm font-black text-gray-400 uppercase tracking-[0.4em] mb-8">Raymystyro Squad Telemetry & Operations Command</div>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-center mobile-stack-single">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-center">
                 <a id="twitch-card" href="//www.twitch.tv/raymystyro" target="_blank" class="glass-card header-stat-card p-5 border-b-4 border-purple-500 hover:scale-[1.02] transition-transform min-h-[160px] relative">
-                    <div id="live-indicator" class="live-badge hidden">Live Now</div>
                     <div class="text-xs text-purple-400 font-black mb-1 uppercase tracking-widest">Twitch Feed</div>
                     <div id="follower-count" class="text-3xl font-black text-gray-400 font-mono">--</div>
                     <div id="twitch-status-msg" class="text-xs text-gray-300 font-bold uppercase mt-2 italic truncate w-full px-2">"--"</div>
-                    <div id="twitch-age" class="text-xs text-gray-400 font-black uppercase mt-1">Age: --</div>
                 </a>
 
-                <div class="glass-card header-stat-card p-5 border-b-4 border-[#38BDF8] min-h-[160px]">
-                    <div class="text-xs text-sky-400 font-black mb-1 uppercase tracking-widest">PSN Library</div>
+                <div class="glass-card header-stat-card p-5 border-b-4 border-blue-600 min-h-[160px]">
+                    <div class="text-xs text-blue-400 font-black mb-1 uppercase tracking-widest">PSN Library</div>
                     <div id="games-played-count" class="text-3xl font-black text-white font-mono">--</div>
                     <div class="text-xs text-gray-300 font-bold uppercase mt-2">Total Games Played</div>
                 </div>
 
-                <div class="glass-card header-stat-card p-5 border-b-4 border-[#0284C7] min-h-[160px]">
-                    <div class="text-xs text-sky-400 font-black mb-1 uppercase tracking-widest">PSN Level</div>
+                <div class="glass-card header-stat-card p-5 border-b-4 border-red-600 min-h-[160px]">
+                    <div class="text-xs text-red-400 font-black mb-1 uppercase tracking-widest">PSN Level</div>
                     <div id="psn-level-label" class="text-3xl font-black text-white font-mono">--</div>
                     <div id="psn-region" class="text-xs text-gray-300 font-bold uppercase mt-2">Region: US</div>
-                    <div id="psn-account-age" class="text-xs text-gray-400 font-black uppercase mt-1">Age: --</div>
                 </div>
 
                 <div id="trophy-card" class="glass-card header-stat-card p-5 border-b-4 border-yellow-500 min-h-[160px]">
@@ -519,7 +449,6 @@
                 <div class="glass-card header-stat-card p-5 border-b-4 border-green-500 col-span-1 sm:col-span-2 lg:col-span-1 min-h-[160px]">
                     <div id="online-status-label" class="text-base font-black text-white uppercase">Connecting</div>
                     <div id="current-game-sub" class="text-xs text-green-400 font-black uppercase mt-1 truncate max-w-[200px]">---</div>
-                    <div id="current-activity" class="text-xs text-gray-300 font-bold uppercase mt-2">Activity: --</div>
                     <div id="current-platform" class="text-xs text-gray-400 font-black uppercase mt-1">System: PS5</div>
                 </div>
             </div>
@@ -528,128 +457,27 @@
 
     <main class="viewport-85-wrap pb-28 flex flex-col gap-10">
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mobile-stack-single" id="active-hunt-section">
-            <div class="flex flex-col gap-6">
-                <section class="glass-card p-6">
-                    <div class="flex justify-between items-start mb-2">
-                        <h2 class="text-lg">Profile Intel</h2>
-                        <i class="fab fa-playstation text-sky-400 text-xl"></i>
-                    </div>
-                    <p id="profile-bio" class="text-gray-300 text-sm leading-relaxed">Official Pack Member Profile</p>
-                </section>
-
-                <section id="last-played-hero" class="glass-card overflow-hidden">
-                    <div class="p-6 pb-3 flex justify-between items-center">
-                        <h2 class="text-sky-400 text-lg flex items-center gap-2"><i class="fas fa-crosshairs"></i> Active Hunt</h2>
-                        <div id="hunter-persona-badge" class="px-3 py-1 bg-white/10 text-sky-400 border border-sky-500/40 rounded-full text-xs font-black uppercase tracking-widest hidden"></div>
-                    </div>
-                    
-                    <div class="relative w-full aspect-video bg-sky-900/10 border-y border-white/5 cursor-pointer" onclick="openLightboxImage(document.getElementById('active-game-art').src, document.getElementById('active-game-title').innerText)">
-                        <img id="active-game-art" src="" class="w-full h-full object-cover hidden" onerror="this.src='//via.placeholder.com/600x337/1e1e24/38BDF8?text=GAME+COVER'">
-                        <div id="active-game-fallback" class="w-full h-full flex items-center justify-center"><i class="fab fa-playstation text-6xl text-sky-500/30"></i></div>
-                    </div>
-
-                    <div class="p-6 space-y-4">
-                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-1">
-                            <div id="active-game-title" class="text-2xl font-black text-white uppercase truncate">---</div>
-                            <span id="active-game-ratio" class="text-xs font-black text-sky-400 uppercase font-mono">--/-- Objectives</span>
-                        </div>
-
-                        <div id="active-game-stores-bar" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
-
-                        <div class="space-y-2 bg-black/40 p-4 rounded-xl border border-white/5">
-                            <div class="flex justify-between items-end">
-                                <span class="text-xs text-gray-300 font-black uppercase text-sky-400">Hunt Completion</span>
-                                <span id="active-game-progress-text" class="text-base font-black text-white font-mono">0%</span>
-                            </div>
-                            <div class="progress-bar-container"><div id="active-game-progress-fill" class="progress-bar-fill prog-stage-1" style="width: 0%"></div></div>
-                        </div>
-
-                        <div id="active-hunt-groups-container" class="space-y-2 pt-2 border-t border-white/5 hidden">
-                            <div class="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                <i class="fas fa-layer-group text-sky-400"></i> Trophy Groups & Expansion Packs
-                            </div>
-                            <div id="active-hunt-groups-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs font-black uppercase">
-                            <div class="bg-black/50 p-3 rounded-xl border border-white/5">
-                                <span class="text-gray-400 block text-xs">Campaign Timeline</span>
-                                <span id="hunt-timeline-span" class="text-white mt-1">--</span>
-                            </div>
-                            <div class="bg-black/50 p-3 rounded-xl border border-white/5">
-                                <span class="text-gray-400 block text-xs">Total Playtime</span>
-                                <span id="hunt-gameplay-hours" class="text-emerald-400 font-mono mt-1">-- hrs logged</span>
-                            </div>
-                            <div class="bg-black/50 p-3 rounded-xl border border-white/5">
-                                <span class="text-gray-400 block text-xs">Trophy Pace</span>
-                                <span id="hunt-trophy-pace" class="text-sky-400 mt-1">--</span>
-                            </div>
-                            <div class="bg-black/50 p-3 rounded-xl border border-white/5">
-                                <span class="text-gray-400 block text-xs">First Trophy Date</span>
-                                <span id="hunt-first-trophy-date" class="text-amber-400 truncate block mt-1">--</span>
-                            </div>
-                            <div class="bg-black/50 p-3 rounded-xl border border-white/5 sm:col-span-2">
-                                <span class="text-gray-400 block text-xs">Time Since Recent Trophy</span>
-                                <span id="hunt-recent-trophy-hours" class="text-sky-300 mt-1">--</span>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <div class="flex flex-col gap-6">
-                <section id="recent-hunts-section" class="glass-card p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-sky-400 text-lg uppercase tracking-wider">Recent PSN Hunts</h2>
-                        <span class="text-xs font-bold text-gray-400 uppercase">Tap for Dual PS4 & PS5 Squad Compare</span>
-                    </div>
-                    <div id="recent-games-container" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
-                </section>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <section id="recent-trophy-card" class="glass-card p-5 border-t-4 border-yellow-500 hidden">
-                        <h3 class="text-yellow-500 text-xs font-black flex items-center gap-2 mb-3"><i class="fas fa-trophy"></i> Latest PSN Unlock</h3>
-                        <div class="flex gap-3 items-center bg-black/40 p-3 rounded-xl cursor-pointer hover:bg-white/10 transition-colors" onclick="openRecentTrophyLightbox()">
-                            <img id="last-trophy-icon" src="" class="w-14 h-14 rounded-lg object-cover border border-yellow-500/30" onerror="this.src='//via.placeholder.com/64x64/202024/38BDF8?text=🏆'">
-                            <div class="min-w-0 flex-1">
-                                <div id="last-trophy-name" class="font-black text-white uppercase text-xs truncate">---</div>
-                                <div id="last-trophy-game" class="text-xs font-black text-yellow-500 uppercase truncate">---</div>
-                                <div id="last-trophy-time" class="text-xs text-gray-400 font-bold uppercase mt-0.5 truncate">---</div>
-                                <div id="last-trophy-hours-ago" class="text-xs font-bold text-sky-400 uppercase mt-0.5">---</div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section id="ps-plus-card" class="glass-card p-5 border-t-4 border-sky-400 text-center flex flex-col justify-between">
-                        <h3 class="text-[#38BDF8] text-xs font-black flex items-center justify-center gap-1.5"><i class="fab fa-playstation"></i> PS Plus Active</h3>
-                        <a href="//www.playstation.com/en-us/ps-plus/" target="_blank" class="py-2 inline-block">
-                            <img src="//assetsdelivery.eldorado.gg/v7/_offers-v2_/2e84e915-faa9-4670-b6a1-2406ea1f3a64_Offer_20241113013824_723432Large.png?w=255" alt="" class="w-20 h-20 object-contain mx-auto p-1.5 rounded-xl bg-black/40 border border-white/10 hover:border-sky-400 transition-all">
-                        </a>
-                        <span class="text-xs font-black text-gray-400 uppercase">Premium Cloud Sync</span>
-                    </section>
-                </div>
-            </div>
-        </div>
-
-        <!-- FULL-WIDTH OPERATIONS MATRIX -->
+        <!-- ======================================================================
+             OPERATIONS & SERVER TELEMETRY MATRIX
+             ====================================================================== -->
         <div class="w-full flex flex-col gap-6" id="dual-telemetry-row">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-2">
                 <div>
                     <h2 class="text-2xl font-black uppercase text-white flex items-center gap-2.5">
                         <i class="fas fa-layer-group text-sky-400"></i> Active Operations & Server Telemetry
                     </h2>
-                    <p class="text-xs text-gray-400 font-bold uppercase">Dedicated Real-Time Feeds for OneLIVIDMAN / Raymystyro</p>
+                    <p class="text-xs text-gray-400 font-bold uppercase">Dynamic Cloud Firestore & Server Roster (&ge; 1% Activity Only)</p>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
-                    <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-lime-950 text-lime-400 border border-lime-500/40">FS25 Farm 2 Focused</span>
-                    <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-cyan-950 text-cyan-400 border border-cyan-500/40">Squad Roster Active</span>
+                    <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-lime-950 text-lime-400 border border-lime-500/40">FS25 Farm 2 Live</span>
+                    <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-blue-950 text-blue-400 border border-blue-500/40">Squad Telemetry Active</span>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mobile-stack-single" id="operations-matrix-grid">
+            <!-- Operations Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start" id="operations-matrix-grid">
                 
-                <!-- CARD A: FS25 FARM 2 -->
+                <!-- 1. FS25 DEDICATED FARM 2 TELEMETRY -->
                 <section id="fs25-telemetry-section" class="glass-card card-theme-fs25 p-6 sm:p-7 flex flex-col justify-between space-y-6">
                     <div class="space-y-5">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
@@ -658,29 +486,29 @@
                                     <i class="fas fa-tractor text-lime-400 text-2xl"></i>
                                     <h3 class="text-xl font-black uppercase text-lime-400">FS25 Telemetry & Farm 2 Fleet</h3>
                                 </div>
-                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Live Node: fs25-a3563 / Target: farmId2</p>
+                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Live Server Node: fs25-a3563 / Farm: farmId2</p>
                             </div>
-                            <div id="fs25-status-pill" class="fs25-badge flex items-center gap-1.5 self-start sm:self-auto">
+                            <div id="fs25-status-pill" class="fs25-badge flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span>
-                                <span id="fs25-status-text">Farm 2 Synchronized</span>
+                                <span id="fs25-status-text">Farm 2 Active</span>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
                             <div class="bg-black/40 p-3 rounded-xl border border-white/5">
-                                <div class="text-xs font-black text-gray-400 uppercase">Farm Designation</div>
+                                <div class="text-xs font-black text-gray-400 uppercase">Farm Name</div>
                                 <div id="fs25-farm-name" class="text-xs sm:text-sm font-black text-white mt-1 truncate">Ray's Farm (Farm 2)</div>
                             </div>
                             <div class="bg-black/40 p-3 rounded-xl border border-white/5">
-                                <div class="text-xs font-black text-gray-400 uppercase">Operating Capital</div>
+                                <div class="text-xs font-black text-gray-400 uppercase">Capital</div>
                                 <div id="fs25-money" class="text-xs sm:text-sm font-black text-lime-400 font-mono mt-1 truncate">$0</div>
                             </div>
                             <div class="bg-black/40 p-3 rounded-xl border border-white/5">
-                                <div class="text-xs font-black text-gray-400 uppercase">Farmland Parcels</div>
+                                <div class="text-xs font-black text-gray-400 uppercase">Fields Owned</div>
                                 <div id="fs25-fields-count" class="text-xs sm:text-sm font-black text-white font-mono mt-1">0</div>
                             </div>
                             <div class="bg-black/40 p-3 rounded-xl border border-white/5">
-                                <div class="text-xs font-black text-gray-400 uppercase">Fleet Machinery</div>
+                                <div class="text-xs font-black text-gray-400 uppercase">Machinery</div>
                                 <div id="fs25-vehicles-count" class="text-xs sm:text-sm font-black text-white font-mono mt-1">0</div>
                             </div>
                         </div>
@@ -692,7 +520,7 @@
                                 </h4>
                                 <span id="fs25-fleet-subtitle" class="text-xs font-black text-lime-400 uppercase font-mono">0 Units</span>
                             </div>
-                            <div id="fs25-fleet-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[360px] overflow-y-auto no-scrollbar pr-1">
+                            <div id="fs25-fleet-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[300px] overflow-y-auto no-scrollbar pr-1">
                                 <div class="p-6 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Ingesting Farm 2 Fleet...</div>
                             </div>
                         </div>
@@ -704,43 +532,67 @@
                                 </h4>
                                 <span id="fs25-fields-subtitle" class="text-xs font-black text-lime-400 uppercase font-mono">0 Parcels</span>
                             </div>
-                            <div id="fs25-fields-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[260px] overflow-y-auto no-scrollbar pr-1">
+                            <div id="fs25-fields-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[220px] overflow-y-auto no-scrollbar pr-1">
                                 <div class="p-4 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Loading Agronomy Data...</div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- CARD B: SNIPER ELITE 5 COMPREHENSIVE SERVICE RECORD -->
-                <section id="firestore-progress-section" class="glass-card card-theme-se5 p-6 sm:p-7 flex flex-col justify-between space-y-6">
+                <!-- 2. COTW ANIMAL RANK HARVEST LODGE -->
+                <section id="cotw-ranks-comparison-section" class="glass-card card-theme-cotw p-6 sm:p-7 flex flex-col justify-between space-y-6">
+                    <div class="space-y-5">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
+                            <div>
+                                <div class="flex items-center gap-2.5">
+                                    <i class="fas fa-trophy text-emerald-400 text-2xl"></i>
+                                    <h3 class="text-xl font-black uppercase text-emerald-400">COTW Animal Rank Squad Lodge</h3>
+                                </div>
+                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Live Firestore: /progress/COTW_Ranks (Operatives with > 0 Harvests Only)</p>
+                            </div>
+                            <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-emerald-950 text-emerald-400 border border-emerald-500/40">
+                                👑 = Category Leader
+                            </span>
+                        </div>
+
+                        <div id="cotw-squad-ranks-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="p-8 text-center text-gray-500 font-bold uppercase text-xs col-span-full">
+                                Connecting to Cloud Firestore COTW Ranks...
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. SNIPER ELITE 5: LONG SHOTS, ALL RIBBONS & TACTICS -->
+                <section id="firestore-progress-section" class="glass-card card-theme-se5 p-6 sm:p-7 flex flex-col justify-between space-y-6 lg:col-span-2">
                     <div class="space-y-5">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
                             <div>
                                 <div class="flex items-center gap-2.5">
                                     <i class="fas fa-crosshairs text-sky-400 text-2xl"></i>
-                                    <h3 class="text-xl font-black uppercase text-sky-400">Sniper Elite 5 Service Record</h3>
+                                    <h3 class="text-xl font-black uppercase text-sky-400">Sniper Elite 5: Ballistics, Ribbons & Tactics</h3>
                                 </div>
                                 <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">
-                                    Tactical Long Shots, All 47 Career Ribbons & Mastery (Excluding M1-M14 Collectibles)
+                                    Showing Long Shots, All 47 Career Ribbons & Tactical Medals (Excludes Level M1–M14 Items)
                                 </p>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="px-2.5 py-1 rounded-full text-xs font-black uppercase bg-emerald-950 text-emerald-400 border border-emerald-500/40 animate-pulse">
-                                    Raymystyro Verified
+                                    Verified Squad Telemetry
                                 </span>
                             </div>
                         </div>
 
-                        <!-- Overall Campaign Progress Strip -->
+                        <!-- Overall Progress Bar -->
                         <div class="bg-black/50 p-4 rounded-xl border border-white/5 space-y-2.5">
                             <div class="flex justify-between items-center">
-                                <span class="text-xs font-black text-sky-400 uppercase">Raymystyro Verified Progression</span>
+                                <span class="text-xs font-black text-sky-400 uppercase">OneLIVIDMAN / Raymystyro Progress</span>
                                 <span id="se5-total-pct" class="text-sm font-black text-white font-mono">0% (0/0)</span>
                             </div>
                             <div class="progress-bar-container"><div id="se5-progress-fill" class="progress-bar-fill prog-stage-1" style="width: 0%"></div></div>
                             <div class="flex flex-col sm:flex-row justify-between sm:items-center text-xs font-black text-gray-400 uppercase pt-1 gap-1">
-                                <span>Active Target: <strong id="se5-active-mission" class="text-white">Secret Weapons</strong></span>
-                                <span>Dual Squad: <strong class="text-sky-400">Raymystyro (Primary) &bull; Werewolf3788 (Sync)</strong></span>
+                                <span>Target: <strong class="text-white">Long Shots &bull; Ribbons &bull; Tactics & Mastery</strong></span>
+                                <span>Showing Active Operatives with &ge; 1% Progress</span>
                             </div>
                         </div>
 
@@ -752,113 +604,59 @@
                                 </h4>
                                 <span class="text-xs font-black text-emerald-400 uppercase font-mono">1st 🟢 | 2nd 🟡</span>
                             </div>
-                            <div id="se5-longshot-cards-container" class="flex flex-col gap-2.5 max-h-[300px] overflow-y-auto no-scrollbar pr-1">
-                                <div class="p-6 text-center text-gray-500 font-bold uppercase text-xs">Syncing Sniper Elite 5 Longshots...</div>
+                            <div id="se5-longshot-cards-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-[320px] overflow-y-auto no-scrollbar pr-1">
+                                <div class="p-6 text-center text-gray-500 font-bold uppercase text-xs col-span-full">Syncing Sniper Elite 5 Longshots...</div>
                             </div>
                         </div>
 
-                        <!-- ALL 47 COMBAT RIBBONS & MULTIPLIERS -->
+                        <!-- ALL 47 CAREER COMBAT RIBBONS -->
                         <div class="space-y-2.5 pt-2 border-t border-white/5">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                                    <i class="fas fa-ribbon text-pink-400"></i> All 47 Career Combat Ribbons
+                                    <i class="fas fa-ribbon text-pink-400"></i> All 47 Combat Ribbons (Stealth, Tactics, Lethal, Non-Lethal, Survival)
                                 </h4>
                                 <span id="se5-ribbons-count" class="text-xs font-mono text-sky-400 font-black">0 Ribbons</span>
                             </div>
-                            <div id="se5-ribbons-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[260px] overflow-y-auto no-scrollbar pr-1">
-                                <div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">Ingesting Ribbons...</div>
+                            <div id="se5-ribbons-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-[360px] overflow-y-auto no-scrollbar pr-1">
+                                <div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">Ingesting All Career Ribbons...</div>
                             </div>
                         </div>
 
-                        <!-- WEAPON MASTERY & TACTICS MEDALS (EXCLUDING M1-M14 COLLECTIBLES) -->
+                        <!-- TACTICS & WEAPON MASTERY MEDALS -->
                         <div class="space-y-2.5 pt-2 border-t border-white/5">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                                    <i class="fas fa-shield-halved text-cyan-400"></i> Weapon Mastery & Tactics Medals
+                                    <i class="fas fa-shield-halved text-cyan-400"></i> Tactics & Weapon Mastery Medals
                                 </h4>
                                 <span id="se5-medals-count" class="text-xs font-mono text-cyan-400 font-black">0 Masteries</span>
                             </div>
-                            <div id="se5-mastery-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[260px] overflow-y-auto no-scrollbar pr-1">
-                                <div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">Ingesting Medals & Weapon Masteries...</div>
-                            </div>
-                        </div>
-
-                    </div>
-                </section>
-
-                <!-- CARD C: COTW EXPANDED TROPHY LODGE -->
-                <section id="cotw-full-card" class="glass-card card-theme-cotw p-6 sm:p-7 flex flex-col justify-between space-y-5">
-                    <div class="space-y-4">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
-                            <div>
-                                <div class="flex items-center gap-2.5">
-                                    <i class="fas fa-paw text-emerald-400 text-2xl"></i>
-                                    <h3 class="text-xl font-black uppercase text-emerald-400">COTW Trophy Lodge & Harvests</h3>
-                                </div>
-                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">theHunter: Call of the Wild / Harvest Records</p>
-                            </div>
-                            <div id="cotw-rank-container" class="px-3 py-1 bg-black/40 rounded-xl border border-emerald-500/30 text-left flex items-center gap-2">
-                                <span class="text-xs font-black text-emerald-400 uppercase">Hunter Rank:</span>
-                                <span id="cotw-ps-rank-val" class="text-white font-black text-xs font-mono">--</span>
-                            </div>
-                        </div>
-
-                        <!-- Live Animal Harvest Counts with Comparative Crowns -->
-                        <div id="cotw-trophy-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            <div id="cotw-card-great-one" class="bg-black/40 p-3 rounded-xl border border-white/5 flex flex-col items-center">
-                                <i class="fas fa-crown text-yellow-400 text-lg mb-1"></i>
-                                <span class="text-xs text-gray-400 uppercase font-black">Great One</span>
-                                <span id="cotw-great-one" class="text-base font-black text-white font-mono mt-0.5">0</span>
-                            </div>
-                            <div id="cotw-card-albino" class="bg-black/40 p-3 rounded-xl border border-white/5 flex flex-col items-center">
-                                <i class="fas fa-sparkles text-pink-300 text-lg mb-1"></i>
-                                <span class="text-xs text-gray-400 uppercase font-black">Rare Fur</span>
-                                <span id="cotw-albino" class="text-base font-black text-white font-mono mt-0.5">0</span>
-                            </div>
-                            <div id="cotw-card-diamond" class="bg-black/40 p-3 rounded-xl border border-white/5 flex flex-col items-center">
-                                <i class="fas fa-gem text-cyan-400 text-lg mb-1"></i>
-                                <span class="text-xs text-gray-400 uppercase font-black">Diamond</span>
-                                <span id="cotw-diamond" class="text-base font-black text-white font-mono mt-0.5">0</span>
-                            </div>
-                            <div id="cotw-card-gold" class="bg-black/40 p-3 rounded-xl border border-white/5 flex flex-col items-center">
-                                <i class="fas fa-award text-amber-400 text-lg mb-1"></i>
-                                <span class="text-xs text-gray-400 uppercase font-black">Gold</span>
-                                <span id="cotw-gold" class="text-base font-black text-white font-mono mt-0.5">0</span>
-                            </div>
-                            <div id="cotw-card-silver" class="bg-black/40 p-3 rounded-xl border border-white/5 flex flex-col items-center">
-                                <i class="fas fa-award text-slate-300 text-lg mb-1"></i>
-                                <span class="text-xs text-gray-400 uppercase font-black">Silver</span>
-                                <span id="cotw-silver" class="text-base font-black text-white font-mono mt-0.5">0</span>
-                            </div>
-                            <div id="cotw-card-bronze" class="bg-black/40 p-3 rounded-xl border border-white/5 flex flex-col items-center">
-                                <i class="fas fa-award text-amber-700 text-lg mb-1"></i>
-                                <span class="text-xs text-gray-400 uppercase font-black">Bronze</span>
-                                <span id="cotw-bronze" class="text-base font-black text-white font-mono mt-0.5">0</span>
+                            <div id="se5-mastery-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-[260px] overflow-y-auto no-scrollbar pr-1">
+                                <div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">Ingesting Tactics & Weapon Masteries...</div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- CARD D: SQUAD CAMPAIGNS & DYNAMIC CLOUD FIRESTORE PROGRESSION -->
-                <section id="additional-games-section" class="glass-card card-theme-blue p-6 sm:p-7 flex flex-col justify-between space-y-5">
+                <!-- 4. DYNAMIC FIRESTORE SQUAD CAMPAIGNS -->
+                <section id="dynamic-firestore-games-section" class="glass-card card-theme-ray p-6 sm:p-7 flex flex-col justify-between space-y-5 lg:col-span-2">
                     <div class="space-y-4">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
                             <div>
                                 <div class="flex items-center gap-2.5">
-                                    <i class="fas fa-users-viewfinder text-sky-400 text-2xl"></i>
-                                    <h3 class="text-xl font-black uppercase text-sky-400">Squad Campaigns & Live Objectives</h3>
+                                    <i class="fas fa-users-viewfinder text-red-500 text-2xl"></i>
+                                    <h3 class="text-xl font-black uppercase text-white">Cloud Firestore Squad Campaigns</h3>
                                 </div>
                                 <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">
-                                    Direct Cloud Firestore Query (&ge; 1% Activity Only)
+                                    Live Query across /users/{gamertag}/platform/playstation/progress (&ge; 1% Progress Only)
                                 </p>
                             </div>
-                            <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-cyan-950 text-cyan-400 border border-cyan-500/40 font-mono">
+                            <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-blue-950 text-blue-400 border border-blue-500/40 font-mono">
                                 Live Firestore Sync
                             </span>
                         </div>
 
-                        <div id="firestore-squad-games-grid" class="flex flex-col gap-3.5 max-h-[500px] overflow-y-auto no-scrollbar pr-1">
-                            <div class="p-8 text-center text-gray-500 font-bold uppercase text-xs">Querying Firestore for active squad games...</div>
+                        <div id="firestore-squad-games-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto no-scrollbar pr-1">
+                            <div class="p-8 text-center text-gray-500 font-bold uppercase text-xs col-span-full">Querying Cloud Firestore Progress Documents...</div>
                         </div>
                     </div>
                 </section>
@@ -866,32 +664,23 @@
             </div>
         </div>
 
-        <!-- TROPHY CHECKLIST LOG -->
-        <section id="mission-log-container" class="glass-card overflow-hidden w-full">
-            <div class="p-6 border-b border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                <div>
-                    <h2 id="checklist-header-text" class="text-white text-xl flex items-center gap-2.5">
-                        <i class="fas fa-list-check text-sky-400"></i> Active Trophy Checklist & Campaign Journey Log
-                    </h2>
-                    <p id="checklist-timeline-sub" class="text-xs text-gray-400 font-bold uppercase mt-0.5">
-                        Interval tracking from First Trophy to Current Date & Time (24h Standard Time)
-                    </p>
+        <!-- Sticky Footer with Build Version & Timestamp -->
+        <footer class="mt-auto bg-slate-950 py-10 border-t border-slate-800 text-center relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
+                <p class="text-slate-500 text-sm">
+                    &copy; 2026 Werewolf Project. Built by Werewolf3788 & Friends.
+                </p>
+                <div id="build-meta-footer" style="color: #94a3b8; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
+                    Werewolf Command Engine • v45.5.0 • Build: 2026-09-23 16:05:00 EDT
                 </div>
-                <span class="text-xs font-black uppercase tracking-wider text-gray-400 bg-black/40 px-3 py-1.5 rounded-lg border border-white/5">
-                    Live Syncing
-                </span>
             </div>
-            <div id="trophy-checklist-container" class="max-h-[900px] overflow-y-auto divide-y divide-white/5 no-scrollbar"></div>
-        </section>
-
-        <div class="text-center mt-6 text-xs font-black text-gray-500 uppercase tracking-[0.3em]">
-            Primary RTDB: <span class="text-sky-400">/psn/gamertags/OneLIVIDMAN.json</span> | FS25 RTDB: <span class="text-lime-400">fs25-a3563 (farmId2)</span> | Synced: <span id="sync-time" class="text-gray-300">--</span>
-        </div>
+        </footer>
 
     </main>
 
-    <div id="generic-lightbox" onclick="closeGenericLightbox()">
-        <div class="lightbox-modal-content" onclick="event.stopPropagation()">
+    <!-- LIGHTBOX MODAL -->
+    <div id="generic-lightbox" onclick="closeGenericLightbox()" style="position:fixed; inset:0; z-index:70000; background:rgba(0,0,0,0.94); display:none; align-items:center; justify-content:center; backdrop-filter:blur(20px); padding:16px;">
+        <div class="lightbox-modal-content" onclick="event.stopPropagation()" style="background:var(--wolf-gray); width:100%; max-width:850px; border-radius:1.5rem; border:1px solid rgba(255,255,255,0.18); overflow:hidden; max-height:90vh; display:flex; flex-direction:column;">
             <div class="p-5 border-b border-white/10 flex justify-between items-center">
                 <h3 id="lightbox-title" class="text-lg font-black text-sky-400 uppercase">Detail View</h3>
                 <button onclick="closeGenericLightbox()" class="w-12 h-12 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-sky-400 hover:text-black transition-colors min-h-[48px] min-w-[48px]"><i class="fas fa-times text-lg"></i></button>
@@ -900,7 +689,7 @@
         </div>
     </div>
 
-    <!-- FIRESTORE MODULE -->
+    <!-- FIRESTORE TELEMETRY & SE5 FILTER MODULE -->
     <script type="module">
         import { initializeApp } from "//www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getFirestore, doc, collection, getDocs, onSnapshot } from "//www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -928,136 +717,33 @@
         };
 
         const USER_THEMES = {
-            'Werewolf3788': { color: '#ff5500', glow: 'rgba(255,85,0,0.4)' },
-            'Raymystyro': { color: '#2563eb', glow: 'rgba(37,99,235,0.4)' },
-            'Terrdog': { color: '#a855f7', glow: 'rgba(168,85,247,0.4)' },
-            'Elu Cloud': { color: '#10b981', glow: 'rgba(16,185,129,0.4)' }
+            'Werewolf3788': { name: 'Werewolf3788', color: '#ff5500', glow: 'rgba(255,85,0,0.4)' },
+            'Raymystyro': { name: 'Raymystyro', color: '#2563eb', glow: 'rgba(37,99,235,0.4)' },
+            'Terrdog': { name: 'Terrdog', color: '#a855f7', glow: 'rgba(168,85,247,0.4)' },
+            'Elu Cloud': { name: 'Elu Cloud', color: '#10b981', glow: 'rgba(16,185,129,0.4)' }
         };
 
+        /* Proxy function prevents broken images from Valve/Steam CDN */
+        const proxyImg = (url) => `//images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}`;
+
         const GAME_POSTERS = {
-            'COTW': '//cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg',
-            'HUNTERCOTW': '//cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg',
-            'SNIPER-ELITE-5': '//cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg',
-            'FS25': '//cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg',
+            'COTW': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg'),
+            'HUNTERCOTW': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg'),
+            'THEHUNTER': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg'),
+            'SNIPER-ELITE-5': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg'),
+            'SNIPERELITE5': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg'),
+            'FS25': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg'),
             'DEFAULT': '//images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80'
         };
 
-        const MASTER_TROPHY_TARGETS = {
-            'master of pistols': 6,
-            'master of secondaries': 6,
-            'master of rifles': 6,
-            'master-at-arms': 3,
-            'gunslinger': 150,
-            'skirmisher': 300,
-            'sharpshooter': 350,
-            'the long game': 100000,
-            'set europe ablaze': 50,
-            'precision is key': 150,
-            'out of scope': 150,
-            'rigged to blow': 20,
-            'my little friend': 50,
-            'lord of war': 20,
-            'resourceful': 50,
-            'der geist': 250,
-            'as quiet as a mouse': 50,
-            'close quarters': 100,
-            'snake in the grass': 50,
-            'from paris with love': 41,
-            'burn after reading': 39,
-            'souvenir hunter': 24,
-            'eagle eyed': 24,
-            'tinkerer': 24,
-            'no stone unturned': 16,
-            'shoot for the moon': 3,
-            'climbing the ladder': 40,
-            'pigeon hunter': 10,
-            'führerious repetition': 5,
-            'memories of the alps': 15,
-            'operation foxley': 2
+        const CLEAN_GAME_TITLES = {
+            'COTW': 'THEHUNTER: CALL OF THE WILD',
+            'HUNTERCOTW': 'THEHUNTER: CALL OF THE WILD',
+            'THEHUNTER': 'THEHUNTER: CALL OF THE WILD',
+            'SNIPER-ELITE-5': 'SNIPER ELITE 5',
+            'SNIPERELITE5': 'SNIPER ELITE 5',
+            'FS25': 'FARMING SIMULATOR 25'
         };
-
-        window.getTrophyLiveProgress = function(trophyObj) {
-            if (!trophyObj) return null;
-            const isEarned = !!trophyObj.earned;
-            const nameKey = (trophyObj.name || '').toLowerCase().trim();
-
-            let target = null;
-            if (trophyObj.trophyProgressTargetValue !== undefined && trophyObj.trophyProgressTargetValue !== null && trophyObj.trophyProgressTargetValue !== "") {
-                target = Number(trophyObj.trophyProgressTargetValue);
-            } else if (trophyObj.targetValue !== undefined && Number(trophyObj.targetValue) > 1) {
-                target = Number(trophyObj.targetValue);
-            } else if (trophyObj.target !== undefined && Number(trophyObj.target) > 1) {
-                target = Number(trophyObj.target);
-            } else if (MASTER_TROPHY_TARGETS[nameKey]) {
-                target = MASTER_TROPHY_TARGETS[nameKey];
-            }
-
-            if (trophyObj.subProgressRatio && typeof trophyObj.subProgressRatio === 'string' && trophyObj.subProgressRatio.includes('/')) {
-                const parts = trophyObj.subProgressRatio.split('/');
-                const subCount = Number(parts[0].trim());
-                const subTarget = Number(parts[1].trim());
-
-                if (!isNaN(subTarget) && subTarget > 0) {
-                    if (isEarned) {
-                        return {
-                            count: subTarget,
-                            target: subTarget,
-                            pct: 100,
-                            fraction: `${subTarget.toLocaleString()}/${subTarget.toLocaleString()}`
-                        };
-                    }
-                    if (!isNaN(subCount)) {
-                        const pct = Math.min(100, Math.round((subCount / subTarget) * 100));
-                        return {
-                            count: subCount,
-                            target: subTarget,
-                            pct: pct,
-                            fraction: `${subCount.toLocaleString()}/${subTarget.toLocaleString()}`
-                        };
-                    }
-                }
-            }
-
-            if (!target || isNaN(target) || target <= 1) return null;
-
-            if (isEarned) {
-                return {
-                    count: target,
-                    target: target,
-                    pct: 100,
-                    fraction: `${target.toLocaleString()}/${target.toLocaleString()}`
-                };
-            }
-
-            let count = 0;
-            if (trophyObj.currentValue !== undefined && trophyObj.currentValue !== null) {
-                count = Number(trophyObj.currentValue);
-            } else if (trophyObj.progressRate !== undefined && trophyObj.progressRate !== null) {
-                count = Number(trophyObj.progressRate);
-            } else if (trophyObj.progress !== undefined && trophyObj.progress !== null && !Array.isArray(trophyObj.progress)) {
-                count = Number(trophyObj.progress);
-            } else if (trophyObj.count !== undefined && trophyObj.count !== null) {
-                count = Number(trophyObj.count);
-            }
-
-            if (isNaN(count)) count = 0;
-            const pct = Math.min(100, Math.round((count / target) * 100));
-
-            return {
-                count: count,
-                target: target,
-                pct: pct,
-                fraction: `${count.toLocaleString()}/${target.toLocaleString()}`
-            };
-        };
-
-        const OPERATIVES_CONFIG = [
-            { key: 'Raymystyro', psnTag: 'OneLIVIDMAN', displayName: 'Raymystyro' },
-            { key: 'Werewolf3788', psnTag: 'wildhorse_spirit', displayName: 'Werewolf3788' }
-        ];
-
-        const OPERATIVE_KEYS = OPERATIVES_CONFIG.map(o => o.key);
-        const teamSE5Progress = {};
 
         const LONG_SHOT_ITEMS = [
             { id: 'med_ls_m1', mission: 'Mission 1', name: 'Colline-Sur-Mer', req: 450 },
@@ -1089,12 +775,7 @@
             { id: 'med_m13_authlong', mission: 'DLC 13 (Auth)', name: 'Rough Landing Auth', req: 250 }
         ];
 
-        window.getChromaStageClass = function(pct) {
-            if (pct <= 25) return 'prog-stage-1';
-            if (pct <= 50) return 'prog-stage-2';
-            if (pct <= 75) return 'prog-stage-3';
-            return 'prog-stage-4';
-        };
+        const teamSE5Progress = {};
 
         function isMissionCollectable(itemId, category) {
             const id = (itemId || '').toLowerCase();
@@ -1116,203 +797,7 @@
             return false;
         }
 
-        OPERATIVE_KEYS.forEach(op => {
-            const path = `users/${op}/platform/playstation/progress/sniper-elite-5`;
-            onSnapshot(doc(db, path), (snap) => {
-                if (snap.exists()) {
-                    teamSE5Progress[op] = snap.data();
-                } else if (op === 'Raymystyro') {
-                    onSnapshot(doc(db, `users/OneLIVIDMAN/platform/playstation/progress/sniper-elite-5`), (subSnap) => {
-                        if (subSnap.exists()) teamSE5Progress[op] = subSnap.data();
-                        renderSE5FullRecord();
-                    });
-                } else if (op === 'Werewolf3788') {
-                    onSnapshot(doc(db, `users/wildhorse_spirit/platform/playstation/progress/sniper-elite-5`), (subSnap) => {
-                        if (subSnap.exists()) teamSE5Progress[op] = subSnap.data();
-                        renderSE5FullRecord();
-                    });
-                }
-                renderSE5FullRecord();
-            }, (err) => {
-                console.warn(`[SE5 FIRESTORE] Sync notice for ${op}:`, err.message);
-            });
-        });
-
-        // SERVICE RECORD RENDERER (Ray is primary; Werewolf only shows if Ray has it AND Werewolf has it)
-        function renderSE5FullRecord() {
-            const rayData = teamSE5Progress['Raymystyro'] || {};
-            const wolfData = teamSE5Progress['Werewolf3788'] || {};
-
-            const rayItems = Array.isArray(rayData.progress) ? rayData.progress : [];
-            const wolfItems = Array.isArray(wolfData.progress) ? wolfData.progress : [];
-
-            // 1. Overall Progress Bar (Excluding M1-M14 Collectibles)
-            const cleanRayItems = rayItems.filter(i => !isMissionCollectable(i.id, i.category || i.cat));
-            const completedCount = cleanRayItems.filter(i => i && (i.collected || i.completed || (i.count && i.count > 0))).length;
-            const totalCount = cleanRayItems.length || 150;
-            const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
-
-            const pctEl = document.getElementById('se5-total-pct');
-            const fillEl = document.getElementById('se5-progress-fill');
-            const missionEl = document.getElementById('se5-active-mission');
-
-            if (pctEl) pctEl.innerText = `${pct}% (${completedCount}/${totalCount})`;
-            if (fillEl) {
-                fillEl.style.width = `${pct}%`;
-                fillEl.className = `progress-bar-fill ${getChromaStageClass(pct)}`;
-            }
-            if (missionEl && rayData.activeMission) missionEl.innerText = rayData.activeMission;
-
-            // 2. Tactical Longshots Leaderboard
-            const lsContainer = document.getElementById('se5-longshot-cards-container');
-            if (lsContainer) {
-                let lsHtml = '';
-                LONG_SHOT_ITEMS.forEach(item => {
-                    const rayMatch = rayItems.find(p => p.id === item.id);
-                    const rayDist = rayMatch && rayMatch.count !== undefined ? Number(rayMatch.count) : (rayMatch && rayMatch.collected ? item.req : 0);
-
-                    if (rayDist <= 0) return;
-
-                    const wolfMatch = wolfItems.find(p => p.id === item.id);
-                    const wolfDist = wolfMatch && wolfMatch.count !== undefined ? Number(wolfMatch.count) : (wolfMatch && wolfMatch.collected ? item.req : 0);
-
-                    const scores = [{ op: 'OneLIVIDMAN', dist: rayDist, isPrimary: true }];
-                    if (wolfDist > 0) {
-                        scores.push({ op: 'WildHorse_Spirit', dist: wolfDist, isPrimary: false });
-                    }
-
-                    scores.sort((a, b) => b.dist - a.dist);
-
-                    lsHtml += `
-                        <div class="bg-black/40 p-3 rounded-xl border border-white/5 flex flex-col justify-between space-y-2">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <div class="text-[11px] font-black text-cyan-400 uppercase tracking-wider">${item.mission}</div>
-                                    <div class="text-xs font-black text-white uppercase">${item.name}</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-[11px] font-black text-gray-400 uppercase">Target: ${item.req}m</div>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 ${scores.length > 1 ? 'sm:grid-cols-2' : ''} gap-2 pt-1">
-                                ${scores.map((s, idx) => {
-                                    const isFurthest = idx === 0 && scores.length > 1;
-                                    const glowClass = idx === 0 ? 'rank-glow-1st' : 'rank-glow-2nd';
-                                    return `
-                                        <div class="p-2 rounded-lg flex items-center justify-between text-xs font-black uppercase ${glowClass}">
-                                            <div class="flex items-center gap-1.5 truncate">
-                                                ${isFurthest ? '<span>👑</span>' : ''}
-                                                <span>${s.op}</span>
-                                            </div>
-                                            <span class="font-mono text-white text-xs">${s.dist}m</span>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
-                    `;
-                });
-                lsContainer.innerHTML = lsHtml || `<div class="p-4 text-center text-gray-500 font-bold uppercase text-xs">No Longshots recorded yet by Raymystyro.</div>`;
-            }
-
-            // 3. All 47 Career Combat Ribbons
-            const ribbonsContainer = document.getElementById('se5-ribbons-container');
-            const ribbonsCountEl = document.getElementById('se5-ribbons-count');
-            if (ribbonsContainer) {
-                const ribbonsList = rayItems.filter(i => {
-                    const id = (i.id || '').toLowerCase();
-                    const cat = (i.category || i.cat || '').toLowerCase();
-                    return cat.includes('ribbon') || id.startsWith('rib_') || id.startsWith('ribbon_');
-                });
-
-                if (ribbonsCountEl) ribbonsCountEl.innerText = `${ribbonsList.length} Ribbons`;
-
-                if (ribbonsList.length > 0) {
-                    ribbonsContainer.innerHTML = ribbonsList.map(r => {
-                        const rayMultiplier = Number(r.count || r.multiplier || (r.collected ? 1 : 0));
-                        if (rayMultiplier <= 0) return '';
-
-                        const wolfMatch = wolfItems.find(wi => wi.id === r.id);
-                        const wolfMultiplier = wolfMatch ? Number(wolfMatch.count || wolfMatch.multiplier || (wolfMatch.collected ? 1 : 0)) : 0;
-                        const wolfHasIt = wolfMultiplier > 0;
-
-                        return `
-                            <div class="service-badge hover:border-sky-500/40 transition-colors">
-                                <div class="flex justify-between items-start gap-2">
-                                    <span class="text-xs font-black text-white uppercase truncate">${r.name || r.id}</span>
-                                    <span class="text-xs font-black font-mono text-sky-400 bg-sky-950/80 px-2 py-0.5 rounded border border-sky-500/40">
-                                        x${rayMultiplier}
-                                    </span>
-                                </div>
-                                <div class="text-[11px] text-gray-400 mt-1 line-clamp-2">${r.description || r.desc || r.detail || 'Combat Ribbon Earned'}</div>
-                                ${wolfHasIt ? `
-                                    <div class="pt-2 border-t border-white/5 mt-2 flex justify-between items-center text-[11px] font-black uppercase">
-                                        <span class="text-gray-400">WildHorse:</span>
-                                        <span class="text-emerald-400 font-mono">x${wolfMultiplier}</span>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        `;
-                    }).join('');
-                } else {
-                    ribbonsContainer.innerHTML = `<div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">No ribbons unlocked yet by Raymystyro.</div>`;
-                }
-            }
-
-            // 4. Weapon Mastery & Tactics Medals (Strictly excluding M1-M14 mission items)
-            const masteryContainer = document.getElementById('se5-mastery-container');
-            const medalsCountEl = document.getElementById('se5-medals-count');
-            if (masteryContainer) {
-                const medalsList = rayItems.filter(i => {
-                    const id = (i.id || '').toLowerCase();
-                    const cat = (i.category || i.cat || '').toLowerCase();
-                    const isLongshot = id.includes('longshot') || id.includes('_ls_');
-                    const isRibbon = cat.includes('ribbon') || id.startsWith('rib_');
-                    
-                    if (isMissionCollectable(i.id, i.category || i.cat)) return false;
-
-                    return !isLongshot && !isRibbon && (i.collected || i.completed || (i.count && i.count > 0));
-                });
-
-                if (medalsCountEl) medalsCountEl.innerText = `${medalsList.length} Tactics / Medals`;
-
-                if (medalsList.length > 0) {
-                    masteryContainer.innerHTML = medalsList.map(m => {
-                        const wolfMatch = wolfItems.find(wi => wi.id === m.id);
-                        const wolfHasIt = wolfMatch && (wolfMatch.collected || wolfMatch.completed || (wolfMatch.count && wolfMatch.count > 0));
-                        const wolfDisplay = wolfMatch?.count !== undefined ? wolfMatch.count : (wolfHasIt ? 'Done' : null);
-
-                        const currentVal = m.count !== undefined ? m.count : (m.collected ? 'Mastered' : 'Earned');
-
-                        return `
-                            <div class="service-badge hover:border-cyan-500/40 transition-colors">
-                                <div class="flex justify-between items-start gap-2">
-                                    <span class="text-xs font-black text-white uppercase truncate">${m.name || m.id}</span>
-                                    <span class="text-xs font-black font-mono text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-500/40">
-                                        ${currentVal}
-                                    </span>
-                                </div>
-                                <div class="text-[11px] text-gray-400 mt-1 line-clamp-2">${m.description || m.desc || m.detail || 'Tactical Objective Completed'}</div>
-                                ${wolfHasIt ? `
-                                    <div class="pt-2 border-t border-white/5 mt-2 flex justify-between items-center text-[11px] font-black uppercase">
-                                        <span class="text-gray-400">WildHorse:</span>
-                                        <span class="text-emerald-400 font-mono">${wolfDisplay}</span>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        `;
-                    }).join('');
-                } else {
-                    masteryContainer.innerHTML = `<div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">No mastery medals earned yet by Raymystyro.</div>`;
-                }
-            }
-        }
-
-        /* -------------------------------------------------------------
-           Dynamic Squad Games Scanner (>= 1% Progress Only)
-           ------------------------------------------------------------- */
-        function calculateGameProgress(docData) {
+        function calculateProgress(docData) {
             if (!docData) return 0;
             if (typeof docData.percentage === 'number') return Math.round(docData.percentage);
             if (typeof docData.overall === 'number') return Math.round(docData.overall);
@@ -1343,6 +828,181 @@
             return 0;
         }
 
+        function initSE5Listeners() {
+            TARGET_USERS.forEach(user => {
+                const aliases = USER_ALIASES[user] || [user];
+                aliases.forEach(alias => {
+                    const docRef = doc(db, `users/${alias}/platform/playstation/progress/sniper-elite-5`);
+                    onSnapshot(docRef, (snap) => {
+                        if (snap.exists()) {
+                            teamSE5Progress[user] = snap.data();
+                            renderSE5ServiceRecord();
+                        }
+                    }, () => {});
+                });
+            });
+        }
+
+        function renderSE5ServiceRecord() {
+            const rayData = teamSE5Progress['Raymystyro'] || {};
+            const wolfData = teamSE5Progress['Werewolf3788'] || {};
+
+            const rayItems = Array.isArray(rayData.progress) ? rayData.progress : [];
+            const wolfItems = Array.isArray(wolfData.progress) ? wolfData.progress : [];
+
+            // 1. Long Shots Leaderboard
+            const lsContainer = document.getElementById('se5-longshot-cards-container');
+            if (lsContainer) {
+                let lsHtml = '';
+                LONG_SHOT_ITEMS.forEach(item => {
+                    const rayMatch = rayItems.find(p => p.id === item.id);
+                    const rayDist = rayMatch && rayMatch.count !== undefined ? Number(rayMatch.count) : (rayMatch && rayMatch.collected ? item.req : 0);
+                    if (rayDist <= 0) return;
+
+                    const wolfMatch = wolfItems.find(p => p.id === item.id);
+                    const wolfDist = wolfMatch && wolfMatch.count !== undefined ? Number(wolfMatch.count) : (wolfMatch && wolfMatch.collected ? item.req : 0);
+
+                    const scores = [{ op: 'OneLIVIDMAN', dist: rayDist }];
+                    if (wolfDist > 0) scores.push({ op: 'WildHorse_Spirit', dist: wolfDist });
+                    scores.sort((a, b) => b.dist - a.dist);
+
+                    lsHtml += `
+                        <div class="bg-black/40 p-3 rounded-xl border border-white/5 flex flex-col justify-between space-y-2">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="text-[11px] font-black text-cyan-400 uppercase tracking-wider">${item.mission}</div>
+                                    <div class="text-xs font-black text-white uppercase">${item.name}</div>
+                                </div>
+                                <div class="text-[11px] font-black text-gray-400 uppercase">Target: ${item.req}m</div>
+                            </div>
+                            <div class="grid grid-cols-1 ${scores.length > 1 ? 'sm:grid-cols-2' : ''} gap-2 pt-1">
+                                ${scores.map((s, idx) => {
+                                    const isFurthest = idx === 0 && scores.length > 1;
+                                    const glowClass = idx === 0 ? 'rank-glow-1st' : 'rank-glow-2nd';
+                                    return `
+                                        <div class="p-2 rounded-lg flex items-center justify-between text-xs font-black uppercase ${glowClass}">
+                                            <div class="flex items-center gap-1.5 truncate">
+                                                ${isFurthest ? '<span>👑</span>' : ''}
+                                                <span>${s.op}</span>
+                                            </div>
+                                            <span class="font-mono text-white text-xs">${s.dist}m</span>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+                lsContainer.innerHTML = lsHtml || `<div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">No tactical long shots recorded yet.</div>`;
+            }
+
+            // 2. All 47 Career Ribbons
+            const ribbonsContainer = document.getElementById('se5-ribbons-container');
+            const ribbonsCountEl = document.getElementById('se5-ribbons-count');
+            if (ribbonsContainer) {
+                const ribbonsList = rayItems.filter(i => {
+                    const id = (i.id || '').toLowerCase();
+                    const cat = (i.category || '').toLowerCase();
+                    return cat.includes('ribbon') || id.startsWith('rib_') || id.startsWith('ribbon_');
+                });
+
+                if (ribbonsCountEl) ribbonsCountEl.innerText = `${ribbonsList.length} Ribbons`;
+
+                if (ribbonsList.length > 0) {
+                    ribbonsContainer.innerHTML = ribbonsList.map(r => {
+                        const rayMultiplier = Number(r.count || r.multiplier || (r.collected ? 1 : 0));
+                        if (rayMultiplier <= 0) return '';
+
+                        const wolfMatch = wolfItems.find(wi => wi.id === r.id);
+                        const wolfMultiplier = wolfMatch ? Number(wolfMatch.count || wolfMatch.multiplier || (wolfMatch.collected ? 1 : 0)) : 0;
+                        const wolfHasIt = wolfMultiplier > 0;
+
+                        return `
+                            <div class="service-badge hover:border-pink-500/40 transition-colors">
+                                <div class="flex justify-between items-start gap-2">
+                                    <span class="text-xs font-black text-white uppercase truncate">${r.name || r.id}</span>
+                                    <span class="text-xs font-black font-mono text-pink-400 bg-pink-950/80 px-2 py-0.5 rounded border border-pink-500/40">
+                                        x${rayMultiplier}
+                                    </span>
+                                </div>
+                                <div class="text-[11px] text-gray-400 mt-1 line-clamp-2">${r.description || r.desc || r.detail || 'Combat Ribbon Earned'}</div>
+                                ${wolfHasIt ? `
+                                    <div class="pt-2 border-t border-white/5 mt-2 flex justify-between items-center text-[11px] font-black uppercase">
+                                        <span class="text-gray-400">WildHorse:</span>
+                                        <span class="text-emerald-400 font-mono">x${wolfMultiplier}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    ribbonsContainer.innerHTML = `<div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">No ribbons unlocked yet by Raymystyro.</div>`;
+                }
+            }
+
+            // 3. Tactics & Weapon Mastery Medals (excluding M1-M14 mission items)
+            const masteryContainer = document.getElementById('se5-mastery-container');
+            const medalsCountEl = document.getElementById('se5-medals-count');
+            if (masteryContainer) {
+                const tacticsList = rayItems.filter(i => {
+                    const id = (i.id || '').toLowerCase();
+                    const cat = (i.category || '').toLowerCase();
+                    const isLongshot = id.includes('longshot') || id.includes('_ls_');
+                    const isRibbon = cat.includes('ribbon') || id.startsWith('rib_');
+                    if (isMissionCollectable(i.id, i.category || i.cat)) return false;
+                    return !isLongshot && !isRibbon && (i.collected || i.completed || (i.count && i.count > 0));
+                });
+
+                if (medalsCountEl) medalsCountEl.innerText = `${tacticsList.length} Tactics / Medals`;
+
+                if (tacticsList.length > 0) {
+                    masteryContainer.innerHTML = tacticsList.map(m => {
+                        const wolfMatch = wolfItems.find(wi => wi.id === m.id);
+                        const wolfHasIt = wolfMatch && (wolfMatch.collected || wolfMatch.completed || (wolfMatch.count && wolfMatch.count > 0));
+                        const wolfDisplay = wolfMatch?.count !== undefined ? wolfMatch.count : (wolfHasIt ? 'Done' : null);
+                        const currentVal = m.count !== undefined ? m.count : (m.collected ? 'Mastered' : 'Earned');
+
+                        return `
+                            <div class="service-badge hover:border-cyan-500/40 transition-colors">
+                                <div class="flex justify-between items-start gap-2">
+                                    <span class="text-xs font-black text-white uppercase truncate">${m.name || m.id}</span>
+                                    <span class="text-xs font-black font-mono text-cyan-400 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-500/40">
+                                        ${currentVal}
+                                    </span>
+                                </div>
+                                <div class="text-[11px] text-gray-400 mt-1 line-clamp-2">${m.description || m.desc || m.detail || 'Tactical Objective Completed'}</div>
+                                ${wolfHasIt ? `
+                                    <div class="pt-2 border-t border-white/5 mt-2 flex justify-between items-center text-[11px] font-black uppercase">
+                                        <span class="text-gray-400">WildHorse:</span>
+                                        <span class="text-emerald-400 font-mono">${wolfDisplay}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    masteryContainer.innerHTML = `<div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">No tactical mastery medals logged yet.</div>`;
+                }
+            }
+
+            // 4. Overall Progress Ratio
+            const totalSE5Items = rayItems.filter(i => !isMissionCollectable(i.id, i.category || i.cat));
+            const completedItems = totalSE5Items.filter(i => i.collected || i.completed || (i.count && i.count > 0)).length;
+            const pct = totalSE5Items.length > 0 ? Math.round((completedItems / totalSE5Items.length) * 100) : 0;
+
+            const pctEl = document.getElementById('se5-total-pct');
+            const fillEl = document.getElementById('se5-progress-fill');
+            if (pctEl) pctEl.innerText = `${pct}% (${completedItems}/${totalSE5Items.length})`;
+            if (fillEl) {
+                fillEl.style.width = `${pct}%`;
+                fillEl.className = `progress-bar-fill ${pct > 75 ? 'prog-stage-4' : (pct > 50 ? 'prog-stage-3' : (pct > 25 ? 'prog-stage-2' : 'prog-stage-1'))}`;
+            }
+        }
+
+        /* -------------------------------------------------------------
+           Dynamic Squad Games Scanner (>= 1% Progress Only)
+           Displays full clean game names and proxied non-broken thumbnails
+           ------------------------------------------------------------- */
         async function loadAllFirestoreSquadGames() {
             const container = document.getElementById('firestore-squad-games-grid');
             if (!container) return;
@@ -1361,10 +1021,12 @@
                             if (gameId.endsWith("_Ranks")) return;
 
                             const data = docSnap.data();
-                            const pct = calculateGameProgress(data);
+                            const pct = calculateProgress(data);
 
                             if (pct >= 1) {
-                                const cleanTitle = gameId.replace(/-/g, ' ').replace(/_/g, ' ').toUpperCase();
+                                const normKey = gameId.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                                const cleanTitle = CLEAN_GAME_TITLES[normKey] || CLEAN_GAME_TITLES[gameId] || gameId.replace(/-/g, ' ').replace(/_/g, ' ').toUpperCase();
+                                
                                 if (!gamesMap[gameId]) {
                                     gamesMap[gameId] = { id: gameId, title: cleanTitle, players: {} };
                                 }
@@ -1402,7 +1064,7 @@
                     <div class="bg-black/50 p-4 rounded-xl border border-white/10 flex flex-col justify-between space-y-3">
                         <div class="space-y-2.5">
                             <div class="flex items-center gap-3">
-                                <img src="${posterUrl}" class="w-14 h-14 object-cover rounded-lg border border-white/10 flex-shrink-0" onerror="this.src='${GAME_POSTERS['DEFAULT']}'">
+                                <img src="${posterUrl}" referrerpolicy="no-referrer" class="w-16 h-16 object-cover rounded-lg border border-white/10 flex-shrink-0" onerror="this.src='${GAME_POSTERS['DEFAULT']}'">
                                 <div class="min-w-0 flex-1">
                                     <h4 class="text-sm font-black text-white uppercase truncate">${g.title}</h4>
                                     <div class="text-[11px] font-bold text-sky-400 font-mono">${activePlayers.length} Active Hunter(s) &ge; 1%</div>
@@ -1440,43 +1102,55 @@
         }
 
         /* -------------------------------------------------------------
-           COTW Squad Animal Ranks Comparison
+           COTW Squad Animal Ranks Lodge Comparison
+           Renders each active hunter's full harvest counts side-by-side with crowns
            ------------------------------------------------------------- */
         const squadCotwRanks = {};
 
-        function subscribePlaystationCOTW(userAlias) {
+        function listenToSquadCotwRanks() {
             TARGET_USERS.forEach(user => {
                 const aliases = USER_ALIASES[user] || [user];
                 aliases.forEach(alias => {
-                    const rankRef = doc(db, "users", alias, "platform", "playstation", "progress", "COTW_Ranks");
-                    onSnapshot(rankRef, (docSnap) => {
-                        if (docSnap.exists()) {
-                            squadCotwRanks[user] = docSnap.data();
-                            renderCOTWData();
+                    const rankDoc = doc(db, "users", alias, "platform", "playstation", "progress", "COTW_Ranks");
+                    onSnapshot(rankDoc, (snap) => {
+                        if (snap.exists()) {
+                            squadCotwRanks[user] = snap.data();
+                            renderCotwRankComparison();
                         }
                     }, () => {});
                 });
             });
         }
 
-        function renderCOTWData() {
+        function renderCotwRankComparison() {
+            const container = document.getElementById('cotw-squad-ranks-container');
+            if (!container) return;
+
             const TIERS = [
-                { key: 'greatone', label: 'Great One', icon: '👑', valId: 'cotw-great-one', cardId: 'cotw-card-great-one' },
-                { key: 'albino', label: 'Rare Fur', icon: '🐇', valId: 'cotw-albino', cardId: 'cotw-card-albino' },
-                { key: 'diamond', label: 'Diamond', icon: '💎', valId: 'cotw-diamond', cardId: 'cotw-card-diamond' },
-                { key: 'gold', label: 'Gold', icon: '🥇', valId: 'cotw-gold', cardId: 'cotw-card-gold' },
-                { key: 'silver', label: 'Silver', icon: '🥈', valId: 'cotw-silver', cardId: 'cotw-card-silver' },
-                { key: 'bronze', label: 'Bronze', icon: '🥉', valId: 'cotw-bronze', cardId: 'cotw-card-bronze' }
+                { key: 'greatone', label: 'Great One', icon: '👑' },
+                { key: 'albino', label: 'Albino (Rare)', icon: '🐇' },
+                { key: 'diamond', label: 'Diamond', icon: '💎' },
+                { key: 'gold', label: 'Gold', icon: '🥇' },
+                { key: 'silver', label: 'Silver', icon: '🥈' },
+                { key: 'bronze', label: 'Bronze', icon: '🥉' }
             ];
 
-            const rayRanks = squadCotwRanks['Raymystyro'] || {};
+            const activeHunters = Object.keys(squadCotwRanks).filter(u => {
+                const data = squadCotwRanks[u] || {};
+                const total = Object.values(data).reduce((acc, val) => acc + (Number(val) || 0), 0);
+                return total > 0;
+            });
 
-            // Determine category leaders across active operatives with > 0 harvests
+            if (activeHunters.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center text-gray-500 font-bold uppercase text-xs col-span-full">No operative has logged animal ranks in Firestore.</div>`;
+                return;
+            }
+
             const leaders = {};
             TIERS.forEach(t => {
                 let max = 0;
                 let leader = null;
-                Object.keys(squadCotwRanks).forEach(u => {
+                activeHunters.forEach(u => {
                     const count = Number(squadCotwRanks[u]?.[t.key] || squadCotwRanks[u]?.[t.key.toLowerCase()] || 0);
                     if (count > max) {
                         max = count;
@@ -1486,26 +1160,43 @@
                 if (max > 0) leaders[t.key] = { leader, max };
             });
 
-            TIERS.forEach(t => {
-                const valEl = document.getElementById(t.valId);
-                const count = Number(rayRanks[t.key] || rayRanks[t.key.toLowerCase()] || 0);
-                const isLeader = leaders[t.key] && leaders[t.key].leader === 'Raymystyro' && count > 0;
-                if (valEl) {
-                    valEl.innerText = `${isLeader ? '👑 ' : ''}${count}`;
-                    if (isLeader) valEl.className = "text-base font-black text-emerald-400 font-mono mt-0.5";
-                }
+            let html = "";
+            activeHunters.forEach(user => {
+                const uData = squadCotwRanks[user] || {};
+                const theme = USER_THEMES[user] || { color: '#ffffff' };
+
+                html += `
+                    <div class="bg-black/50 p-4 rounded-xl border border-white/10 space-y-3">
+                        <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                            <span class="text-sm font-black uppercase" style="color:${theme.color};">${user}</span>
+                            <span class="text-[10px] font-mono text-gray-400 uppercase">Trophy Lodge</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            ${TIERS.map(t => {
+                                const count = Number(uData[t.key] || uData[t.key.toLowerCase()] || 0);
+                                const isLead = leaders[t.key] && leaders[t.key].leader === user && count > 0;
+                                return `
+                                    <div class="bg-black/60 p-2 rounded-lg border ${isLead ? 'rank-glow-1st' : 'border-white/5'} flex justify-between items-center">
+                                        <span class="text-gray-300 font-bold flex items-center gap-1">
+                                            <span>${t.icon}</span> ${t.label}
+                                        </span>
+                                        <span class="font-mono font-black text-white ${isLead ? 'text-emerald-400' : ''}">
+                                            ${isLead ? '👑 ' : ''}${count}
+                                        </span>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
             });
 
-            const rankVal = rayRanks.rank || rayRanks.level || rayRanks.currentRank;
-            const rankContainer = document.getElementById('cotw-rank-container');
-            const rankValEl = document.getElementById('cotw-ps-rank-val');
-            if (rankVal && rankVal !== "0" && rankVal !== "--") {
-                if (rankValEl) rankValEl.innerText = rankVal;
-                if (rankContainer) rankContainer.classList.remove('hidden');
-            }
+            container.innerHTML = html;
         }
 
-        subscribePlaystationCOTW("Raymystyro");
+        // Initialize All Listeners
+        initSE5Listeners();
+        listenToSquadCotwRanks();
         loadAllFirestoreSquadGames();
         setInterval(loadAllFirestoreSquadGames, 45000);
     </script>
@@ -1518,7 +1209,7 @@
         const UTM_LINKS_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
         const PSN_GAMERTAGS_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags.json";
         
-        // Exact rule-compliant endpoint for fs25-a3563
+        // Authorized rule endpoint for fs25-a3563
         const FS25_PRIMARY_URL = "https://fs25-a3563-default-rtdb.firebaseio.com/fs25.json";
         const FS25_FALLBACK_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
 
@@ -1884,7 +1575,7 @@
             }
         });
 
-        // FS25 Farm 2 Telemetry Direct Authorized Reader
+        // FS25 Farm 2 Telemetry Ingestion
         async function updateFS25Telemetry() {
             try {
                 let res = await fetch(`${FS25_PRIMARY_URL}?t=${Date.now()}`);
@@ -1998,6 +1689,19 @@
 
             } catch (err) {
                 console.warn("[FS25 CLUSTER] Telemetry standby:", err.message);
+            }
+        }
+
+        async function syncPSNGamertags() {
+            try {
+                const res = await fetch(`${PSN_GAMERTAGS_URL}?t=${Date.now()}`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                if (!data) return;
+
+                globalGamertagsData = data;
+            } catch (err) {
+                console.warn("[PSN GAMERTAGS SYNC]:", err.message);
             }
         }
 
@@ -2274,12 +1978,13 @@
                         }
                     }
 
-                    // Render Trophy Checklist
+                    // SQUAD-COMPARED ACTIVE TROPHY CHECKLIST (All Operatives displayed side-by-side)
                     const checklist = document.getElementById('trophy-checklist-container');
                     if (checklist && currentTrophyData.length > 0) {
                         checklist.innerHTML = currentTrophyData.map((t, idx) => {
                             const isEarned = !!t.earned;
                             const tracking = extractTrophyTracking(t);
+                            const normName = (t.name || '').toLowerCase().trim();
                             const earnedDateRaw = t.earnedDateTime || t.earnedTimestamp || t.earnedDate || null;
                             let dateBadgeHtml = "";
                             let isEarnedWithin24Hours = false;
@@ -2301,6 +2006,76 @@
                                 `;
                             }
 
+                            // Pull Squad Presence for each trophy across all operatives
+                            const squadMatches = [];
+                            Object.entries(globalGamertagsData).forEach(([gtag, pObj]) => {
+                                const normGKey = gtag.toLowerCase().trim();
+                                if (normGKey === 'onelividman' || normGKey === 'raymystyro' || normGKey === 'ray') return;
+                                if (normGKey === 'terrdog' || normGKey === 'terrdog420') return;
+
+                                let displayTag = gtag;
+                                if (normGKey === 'wildhorse_spirit' || normGKey === 'werewolf3788' || normGKey === 'werewolf') displayTag = 'WildHorse_Spirit';
+                                if (normGKey === 'darkwing' || normGKey === 'darkwing69420') displayTag = 'Darkwing69420';
+                                if (normGKey === 'desdemonatiger' || normGKey === 'elu cloud') displayTag = 'DesdemonaTiger';
+
+                                const pRecent = convertFirebaseArray(pObj.recentGames);
+                                const pHunt = pObj.activeHunt;
+                                let trophies = [];
+
+                                if (pHunt) {
+                                    const huntMatch = (huntCommId && pHunt.npCommunicationId && pHunt.npCommunicationId === huntCommId) ||
+                                                      (normalizeGameTitle(pHunt.title) === normalizeGameTitle(activeGameTitle));
+                                    if (huntMatch) trophies = convertFirebaseArray(pHunt.userTrophies || pHunt.trophies);
+                                }
+                                
+                                if (trophies.length === 0 && pRecent.length > 0) {
+                                    const matched = pRecent.find(g => {
+                                        if (huntCommId && g.npCommunicationId && g.npCommunicationId === huntCommId) return true;
+                                        return normalizeGameTitle(g.name || g.title || g.trophyTitleName) === normalizeGameTitle(activeGameTitle);
+                                    });
+                                    if (matched && matched.trophies) trophies = convertFirebaseArray(matched.trophies);
+                                }
+
+                                const pLiveNode = pObj.liveTrophyProgress?.[huntCommId] || pObj.liveTrophyProgress || {};
+                                const pLiveTrophy = pLiveNode[t.id] || pLiveNode[String(t.id)];
+
+                                const matchT = trophies.find(pt => {
+                                    const pName = (pt.name || pt.trophyName || '').toLowerCase().trim();
+                                    return pName === normName || (pt.trophyId !== undefined && pt.trophyId === t.id);
+                                });
+                                
+                                if (matchT || pLiveTrophy) {
+                                    const combinedObj = { ...(matchT || {}), ...(pLiveTrophy || {}) };
+                                    const tr = extractTrophyTracking(combinedObj);
+                                    const pEarned = !!combinedObj.earned;
+                                    const pProgressVal = combinedObj.currentValue || combinedObj.progress || combinedObj.count || 0;
+
+                                    if (pEarned || pProgressVal > 0) {
+                                        let squadFraction = pEarned ? (tr ? tr.fraction : 'Unlocked') : (tr ? tr.fraction : `${pProgressVal}`);
+                                        squadMatches.push({
+                                            tag: displayTag,
+                                            earned: pEarned,
+                                            label: squadFraction
+                                        });
+                                    }
+                                }
+                            });
+
+                            let squadHtml = "";
+                            if (squadMatches.length > 0) {
+                                squadHtml = `
+                                    <div class="flex flex-wrap items-center gap-2 mt-2 pt-1.5 border-t border-white/5">
+                                        <span class="text-[11px] font-black uppercase text-gray-400 tracking-wider mr-1">Squad Presence:</span>
+                                        ${squadMatches.map(m => `
+                                            <span class="squad-member-pill ${m.earned ? 'earned' : 'locked'}">
+                                                <i class="fas ${m.earned ? 'fa-check-circle text-emerald-400' : 'fa-hourglass-half text-amber-400'}"></i>
+                                                <span>${m.tag} (${m.label})</span>
+                                            </span>
+                                        `).join('')}
+                                    </div>
+                                `;
+                            }
+
                             const safeHuntTitle = escapeHtmlAttr(activeGameTitle);
 
                             return `
@@ -2313,6 +2088,7 @@
                                         </div>
                                         <div class="text-xs text-gray-400 truncate mt-0.5">${t.description || ''}</div>
                                         ${dateBadgeHtml}
+                                        ${squadHtml}
                                     </div>
                                     <div class="text-right flex flex-col items-end gap-1">
                                         <span class="text-xs font-black uppercase px-2.5 py-1 rounded ${isEarned ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-white/5 text-gray-400 border border-white/10'}">
@@ -2469,11 +2245,13 @@
         updateHub();
         updateFS25Telemetry();
         fetchLiveTwitch();
+        syncPSNGamertags();
 
         setInterval(updateHub, 30000);
         setInterval(updateFS25Telemetry, 30000);
         setInterval(fetchLiveTwitch, 60000);
         setInterval(fetchUtmNavLinks, 180000);
+        setInterval(syncPSNGamertags, 30000);
     </script>
 </body>
 </html>
