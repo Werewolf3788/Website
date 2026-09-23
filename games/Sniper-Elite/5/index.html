@@ -1,18 +1,39 @@
 <!DOCTYPE html>
+<!-- ============================================================================
+ * Project: Sniper Elite 5 Tactical Master Log & Intel Progress Tracker
+ * File: index.html
+ * PSN Communication ID: NPWR21465_00
+ * Google Analytics Tag: G-CTYHDF4MSD
+ * Build Version: v8.3.0-SE5-CLOUD-AUTHORITATIVE
+ * Timestamp: 2026-09-23 17:51:00 EDT (America/New_York)
+ * ============================================================================ -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="psn-communication-id" content="NPWR21465_00">
     <title>Sniper Elite 5: Master Log & Progress Tracker</title>
     
-    <!-- Universal Google Analytics 4 Tag (G-CTYHDF4MSD) -->
-    <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
+    <!-- Universal Google Analytics 4 Tag (G-CTYHDF4MSD) with Ad-Block Safety -->
+    <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD" onerror="window.gtagBlocked=true;"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
+
+        function getNewYork24Time() {
+            return new Date().toLocaleString("en-US", {timeZone: "America/New_York", hour12: false});
+        }
+
         gtag('config', 'G-CTYHDF4MSD', {
-            'anonymize_ip': false,
+            'stream_id': '13278632388',
+            'page_type': 'se5_master_tracker',
+            'content_id': 'NPWR21465_00',
+            'layout_version': '8.3.0',
+            'engagement_timezone': 'America/New_York',
+            'engagement_timestamp_24h': getNewYork24Time(),
+            'send_page_view': true,
+            'allow_google_signals': true,
             'cookie_flags': 'SameSite=None;Secure'
         });
     </script>
@@ -98,6 +119,7 @@
             display: flex;
             flex-wrap: wrap;
             align-items: center;
+            justify-content: center;
             gap: 6px;
             padding: 6px 16px;
             background: rgba(5, 6, 8, 0.85);
@@ -230,6 +252,7 @@
         .operative-buttons-row {
             display: flex;
             flex-wrap: wrap;
+            align-items: center;
             gap: 8px;
         }
 
@@ -251,6 +274,27 @@
             color: var(--ser-color);
             box-shadow: 0 0 10px var(--ser-glow);
             background: #242630;
+        }
+
+        .pin-device-btn {
+            background: rgba(255, 255, 255, 0.06);
+            color: #94a3b8;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            min-height: 44px;
+            transition: all 0.2s ease;
+        }
+
+        .pin-device-btn.is-pinned {
+            background: rgba(255, 136, 0, 0.2);
+            color: #ff8800;
+            border: 1px solid #ff8800;
+            box-shadow: 0 0 10px rgba(255, 136, 0, 0.4);
         }
 
         /* Top Intel Registry Box */
@@ -382,7 +426,6 @@
             background: #000000;
         }
 
-        /* Custom In-Game Marker Pin Styling */
         .custom-map-pin {
             display: flex;
             align-items: center;
@@ -416,7 +459,6 @@
             }
         }
 
-        /* Card Container */
         .item-card {
             background: #111319;
             border: 1px solid rgba(255, 255, 255, 0.12);
@@ -508,7 +550,7 @@
             font-weight: 900;
         }
 
-        /* Button Actions Row */
+        /* Action Buttons */
         .card-actions-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -562,7 +604,51 @@
             color: #79e08f;
         }
 
-        /* Sticky Bottom Verification Footer */
+        .stepper-action-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-btn {
+            background: #1e293b;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 900;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            min-height: 44px;
+        }
+
+        .clickable-num-pill {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 13px;
+            font-weight: 900;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .manual-inline-num-input {
+            width: 100%;
+            background: #000;
+            color: #fff;
+            border: 2px solid var(--ser-color);
+            padding: 8px 12px;
+            font-family: monospace;
+            font-weight: 900;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        /* Persistent Verification Footer */
         #se5-sticky-footer {
             position: fixed;
             bottom: 0;
@@ -595,7 +681,7 @@
 
     <header>
         <div class="header-top">
-            <div class="header-title outlined-text">Sniper Elite 5: Master Log</div>
+            <div class="header-title outlined-text">Sniper Elite 5: Master Log [NPWR21465_00]</div>
             <div id="stat-line" class="system-status">LINKING CLOUD...</div>
         </div>
         <nav id="csv-menu-bar"></nav>
@@ -609,13 +695,14 @@
             </div>
             <div class="terminal-group">
                 <div class="terminal-label">Active Mission Focus</div>
-                <select id="mission-focus-select" class="mission-select-box outlined-text" onchange="appState.setActiveMission(this.value)"></select>
+                <select id="mission-focus-select" class="mission-select-box outlined-text" onchange="window.appState && window.appState.setActiveMission(this.value)"></select>
             </div>
             <div class="operative-buttons-row">
-                <button class="profile-btn active-btn" onclick="appState.switchHunter('Werewolf3788')">Werewolf3788</button>
-                <button class="profile-btn" onclick="appState.switchHunter('Raymystyro')">Raymystyro</button>
-                <button class="profile-btn" onclick="appState.switchHunter('Terrdog')">Terrdog</button>
-                <button class="profile-btn" onclick="appState.switchHunter('Elu Cloud')">Elu Cloud</button>
+                <button class="profile-btn active-btn" onclick="window.appState && window.appState.switchHunter('Werewolf3788')">Werewolf3788</button>
+                <button class="profile-btn" onclick="window.appState && window.appState.switchHunter('Raymystyro')">Raymystyro</button>
+                <button class="profile-btn" onclick="window.appState && window.appState.switchHunter('Terrdog')">Terrdog</button>
+                <button class="profile-btn" onclick="window.appState && window.appState.switchHunter('Elu Cloud')">Elu Cloud</button>
+                <button id="pin-user-toggle-btn" class="pin-device-btn" onclick="window.appState && window.appState.togglePinActiveUser()">📌 Pin User</button>
             </div>
         </div>
     </section>
@@ -632,6 +719,45 @@
 
     <main id="section-container"></main>
 
-    <script type="module" src="tracker.js?v=20260823_0245"></script>
+    <footer id="se5-sticky-footer">
+        <div>
+            <span class="footer-badge">v8.3.0</span>
+            <span style="margin-left:8px; color:var(--ser-color, #ff8800); font-weight:bold;">PSN ID: NPWR21465_00</span>
+            <span style="margin-left:8px; color:#888;">BUILD: 2026-09-23 17:51 EDT</span>
+        </div>
+        <div id="ny-timestamp" style="font-size:11px; color:#aaa;" class="outlined-text">
+            New York Time (24h): --:--:--
+        </div>
+    </footer>
+
+    <!-- Domain-Aware Link Routing (Enforces target="_self" on same domain, target="_blank" on external) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const enforceDomainRouting = () => {
+                document.querySelectorAll('a[href]').forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+
+                    try {
+                        const parsed = new URL(href, window.location.href);
+                        if (parsed.origin === window.location.origin) {
+                            link.removeAttribute('target');
+                            link.removeAttribute('rel');
+                        } else {
+                            link.setAttribute('target', '_blank');
+                            link.setAttribute('rel', 'noopener noreferrer');
+                        }
+                    } catch (e) {}
+                });
+            };
+
+            enforceDomainRouting();
+            const observer = new MutationObserver(() => enforceDomainRouting());
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
+    </script>
+
+    <!-- Main Tactical Engine Script -->
+    <script type="module" src="tracker.js?v=20260923_1751"></script>
 </body>
 </html>
