@@ -2,11 +2,11 @@
   File: index.html
   Location: /index.html
   Description: Werewolf Project Main Landing Page with Dynamic Firebase RTDB utm_links Navigation,
-               Game Poster Covers in Live Telemetry & Progression, Floating "Rust & Redline" Album
-               Release Countdown to Sept 29, 2026, Bugatti & Flag Custom Theming, Live PSN Presence,
-               Weather Overlays, Cinema Lightbox, and FS25 Server Telemetry.
-  Build Version: 2.5.0
-  Last Modified: Wednesday, September 23, 2026 - 15:10:00 EDT (America/New_York)
+               SSL-Proxied Game Poster Covers in Live Telemetry & Progression (Hotlink Protected for Tablets/Mobile),
+               Floating "Rust & Redline" Album Release Countdown to Sept 29, 2026, Bugatti & Flag Custom Theming,
+               Live PSN Presence, Weather Overlays, Cinema Lightbox, and Native FS25 Dedicated Server Telemetry.
+  Build Version: 2.5.2
+  Last Modified: Wednesday, September 23, 2026 - 15:17:27 EDT (America/New_York)
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -20,6 +20,7 @@
     <!-- Google Tag Manager / GA4 Setup & G-CTYHDF4MSD Multi-Property Integration -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
     <script>
+      /* GA4 Multi-Property Setup: G-Z9M5LXQ5XN & G-CTYHDF4MSD (Enhanced Measurement, Google Signals, 14-mo Retention) */
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
@@ -28,13 +29,14 @@
     </script>
 
     <style>
+        /* CSS Variables - Layout & Gamertag Accent Colors */
         :root {
             --header-text-size: clamp(22px, 4vw, 32px);
             --body-text-size: 16px;
             --row-height: 1.6;
             --section-height: clamp(30px, 5vw, 60px);
 
-            /* Werewolf3788 (Bugatti Black & Orange) */
+            /* Werewolf3788 (Bugatti Black & Hyper Orange) */
             --color-werewolf: #FF5500;
             --color-werewolf-glow: rgba(255, 85, 0, 0.45);
 
@@ -52,13 +54,14 @@
             --color-fs25: #22C55E;
         }
 
-        body {
-            background-color: #0B0F19;
-            color: #F1F5F9;
+        html, body {
+            background-color: #0B0F19 !important;
+            color: #F1F5F9 !important;
             font-size: var(--body-text-size);
             line-height: var(--row-height);
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             overflow-x: hidden;
+            min-height: 100vh;
         }
 
         h1, h2, h3 {
@@ -97,8 +100,9 @@
             display: block;
         }
 
+        /* Dynamic Glassmorphic Custom Cards */
         .custom-card {
-            background: rgba(15, 23, 42, 0.75);
+            background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 1rem;
@@ -107,6 +111,7 @@
             transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
+        /* Player Specific Themes */
         .card-theme-werewolf {
             border: 2px solid var(--color-werewolf) !important;
             box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.6), 0 0 20px var(--color-werewolf-glow);
@@ -155,6 +160,7 @@
             background: linear-gradient(to bottom, rgba(15, 23, 42, 0.1) 0%, rgba(15, 23, 42, 0.95) 100%);
         }
 
+        /* Dynamic Weather Animation Layers */
         .weather-layer {
             position: absolute;
             inset: 0;
@@ -256,6 +262,7 @@
         .is-sunny .weather-desc { color: #334155 !important; opacity: 0.9; }
         .is-sunny .visit-link { color: #0F172A !important; border-color: rgba(0,0,0,0.3) !important; }
 
+        /* Lightbox Action Buttons Grid */
         .lb-btn-grid {
             display: grid;
             gap: 8px;
@@ -277,7 +284,7 @@
             text-decoration: none;
             text-align: center;
             transition: transform 0.2s, opacity 0.2s;
-            min-height: 44px;
+            min-height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -293,6 +300,7 @@
         .btn-fandango { background: #EA580C !important; }
         .btn-youtube { background: #DC2626 !important; cursor: pointer; border: none; }
 
+        /* Watermark */
         .kf-watermark {
             position: fixed;
             bottom: 10px;
@@ -310,7 +318,7 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Floating Album Release Countdown Banner */
+        /* Floating Album Release Countdown Badge */
         #album-countdown-badge {
             position: fixed;
             bottom: 24px;
@@ -346,7 +354,7 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <!-- Top Navigation Bar -->
+    <!-- Top Navigation Bar Container -->
     <nav class="bg-slate-900/90 sticky top-0 z-50 border-b border-slate-700 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -375,7 +383,7 @@
         </div>
     </nav>
 
-    <!-- Mobile Navigation Drawer -->
+    <!-- Mobile/Tablet Slide-Over Modal Drawer -->
     <div id="mobile-menu-overlay" class="fixed inset-0 bg-slate-950/95 z-[100] hidden flex flex-col no-scrollbar overflow-y-auto">
         <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/90 sticky top-0 z-10">
             <span class="text-lg font-black text-sky-400">NAVIGATION MENU</span>
@@ -408,7 +416,7 @@
         </div>
     </header>
 
-    <!-- Contributors Team Section with Custom Theming -->
+    <!-- Contributors Team Section with Custom Player Themes -->
     <section id="team" class="section-padding bg-slate-900/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-8 sm:mb-12">
@@ -423,7 +431,7 @@
                     <div class="card-content">
                         <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 relative">
                             <img src="//static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-70x70.png" 
-                                 alt="Werewolf3788 avatar"
+                                 alt=""
                                  class="w-full h-full rounded-full border-2 border-werewolf object-cover shadow-lg">
                             <div id="status-indicator-werewolf" class="hidden absolute bottom-1 right-1">
                                 <span class="status-pulse" style="background-color: var(--color-werewolf);"></span>
@@ -445,7 +453,7 @@
                     <div class="card-content">
                         <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 relative">
                             <img src="//static-cdn.jtvnw.net/jtv_user_pictures/032a0367-589f-4763-94de-4fc679a0b2df-profile_image-70x70.png" 
-                                 alt="Raymystyro avatar"
+                                 alt=""
                                  class="w-full h-full rounded-full border-2 border-ray object-cover shadow-lg">
                             <div id="status-indicator-ray" class="hidden absolute bottom-1 right-1">
                                 <span class="status-pulse" style="background-color: var(--color-ray-blue);"></span>
@@ -467,7 +475,7 @@
                     <div class="card-content">
                         <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 relative">
                             <img src="//static-cdn.jtvnw.net/jtv_user_pictures/9dad426e-04cb-4fc0-a917-25982b3800ce-profile_image-70x70.png" 
-                                 alt="Terrdog avatar"
+                                 alt=""
                                  class="w-full h-full rounded-full border-2 border-terrdog object-cover shadow-lg">
                             <div id="status-indicator-tj" class="hidden absolute bottom-1 right-1">
                                 <span class="status-pulse" style="background-color: var(--color-terrdog);"></span>
@@ -535,14 +543,14 @@
         </div>
     </section>
 
-    <!-- Co-Op Games & Live Dedicated Server Telemetry Section (With Game Posters) -->
+    <!-- Co-Op Games & Live Dedicated Server Telemetry Section (With SSL-Proxied Game Posters) -->
     <section class="section-padding">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-8">
                 <span class="text-emerald-400 font-bold uppercase tracking-widest text-xs">Live Telemetry & Progression</span>
                 <h2 class="mt-2">Farming Simulator 25 & Squad Modules</h2>
                 <p class="mt-2 text-slate-400 text-sm sm:text-base">
-                    Real-time world telemetry parsed directly from Cloud Firebase RTDB feeds with game cover artwork.
+                    Real-time world telemetry parsed directly from Cloud Firebase RTDB feeds with verified game cover posters.
                 </p>
             </div>
 
@@ -551,11 +559,13 @@
                 
                 <!-- Dedicated FS25 Live Server Card -->
                 <div id="fs25-server-card" class="custom-card border border-emerald-500/30 flex flex-col justify-between shadow-emerald-950/20 shadow-xl">
-                    <!-- Top Game Poster Cover -->
+                    <!-- Top Game Poster Banner -->
                     <div class="game-poster-banner">
-                        <img src="//cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg" 
-                             alt="Farming Simulator 25 Poster"
-                             onerror="this.src='//images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80'">
+                        <img src="//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg" 
+                             alt=""
+                             referrerpolicy="no-referrer"
+                             loading="lazy"
+                             onerror="this.onerror=null;this.src='//images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80';">
                         <div class="game-poster-overlay"></div>
                         <div class="absolute top-3 left-3 z-10">
                             <span class="text-[11px] font-black uppercase tracking-widest text-emerald-400 bg-slate-950/80 px-2.5 py-1 rounded border border-emerald-500/40 flex items-center gap-1.5 shadow-lg">
@@ -583,7 +593,7 @@
                             <div class="relative w-full h-28 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 group">
                                 <img id="fs25-map-img" 
                                      src="//images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80" 
-                                     alt="FS25 Live Server Map"
+                                     alt=""
                                      class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                                      onerror="this.src='//images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80';">
                                 <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent"></div>
@@ -673,7 +683,7 @@
         </div>
     </section>
 
-    <!-- Cinema Movie Lightbox Modal -->
+    <!-- Cinema Movie Lightbox Modal with Full Action / Play / Buy Buttons -->
     <div id="cinema-lightbox" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[200] hidden flex items-center justify-center p-4">
         <div class="relative max-w-2xl w-full bg-slate-900 border border-orange-500/40 rounded-2xl p-6 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
             <button type="button" onclick="closeCinemaLightbox()" aria-label="Close Lightbox" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-full w-10 h-10 flex items-center justify-center transition-colors z-20">
@@ -693,7 +703,7 @@
             <h3 id="lightbox-title" class="text-xl font-bold text-orange-400 mb-4 pr-10">Movie Title</h3>
             
             <div class="flex-1 overflow-y-auto no-scrollbar flex flex-col items-center gap-4">
-                <img id="lightbox-img" src="" alt="Movie Poster" class="max-h-[42vh] w-auto rounded-lg shadow-xl object-contain border border-slate-800">
+                <img id="lightbox-img" src="" alt="Movie Poster Details View" class="max-h-[42vh] w-auto rounded-lg shadow-xl object-contain border border-slate-800">
                 
                 <div class="w-full bg-slate-950/60 p-4 rounded-xl border border-slate-800 text-left space-y-3">
                     <div>
@@ -722,7 +732,7 @@
          ====================================================================== -->
     <aside id="album-countdown-badge" aria-label="Album Release Countdown">
         <a id="album-link" href="#" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 text-left group">
-            <img id="album-cover-img" src="//placehold.co/100x100/1e293b/ff5500?text=RUST" alt="Rust & Redline Album Cover" class="album-cover-thumb">
+            <img id="album-cover-img" src="//placehold.co/100x100/1e293b/ff5500?text=RUST" alt="" class="album-cover-thumb">
             <div class="flex-1 min-w-0">
                 <span class="text-[10px] font-bold text-orange-400 uppercase tracking-widest block leading-tight">My First Album Release Date for all Platforms</span>
                 <h4 id="album-title" class="text-sm font-black text-white group-hover:text-orange-400 transition-colors truncate">Rust & Redline</h4>
@@ -736,14 +746,14 @@
         </button>
     </aside>
 
-    <!-- Footer: Persistent Version & Code Timestamp -->
+    <!-- Footer: Persistent Version & Code Timestamp (Always Visible) -->
     <footer class="mt-auto bg-slate-950 py-10 border-t border-slate-800 text-center relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
             <p class="text-slate-500 text-sm">
                 &copy; 2026 Werewolf Project. Built by Werewolf3788 & Friends.
             </p>
             <div id="build-meta-footer" style="color: #94a3b8; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
-                Werewolf Project Engine • v2.5.0 • Build: 2026-09-23 15:10:00 EDT
+                Werewolf Project Engine • v2.5.2 • Build: 2026-09-23 15:17:27 EDT
             </div>
         </div>
         
@@ -758,9 +768,10 @@
         import { getFirestore, collection, getDocs } from "//www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getDatabase, ref, onValue } from "//www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const BUILD_VERSION = "2.5.0";
-        const CODE_BUILD_DATE = "2026-09-23 15:10:00 EDT";
+        const BUILD_VERSION = "2.5.2";
+        const CODE_BUILD_DATE = "2026-09-23 15:17:27 EDT";
 
+        /* Firebase App Credentials Config */
         const firebaseConfig = {
             apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
             authDomain: "entertainment-71888.firebaseapp.com",
@@ -779,15 +790,20 @@
         const PLATFORMS = ['playstation', 'psn', 'pc', 'xbox', 'steam'];
         const TARGET_USERS = ['Werewolf3788', 'Raymystyro', 'Terrdog', 'Elu Cloud'];
 
+        /* Helper to route external CDN images through SSL proxy to prevent 403 blocks on tablet/mobile */
+        const proxyImg = (url) => `//images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}`;
+
+        const DEFAULT_POSTER = '//images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80';
+
         // Game Posters Catalog Dictionary
         const GAME_POSTERS = {
-            'COTW': '//cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg',
-            'HUNTERCOTW': '//cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg',
-            'THEHUNTER': '//cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg',
-            'FS25': '//cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg',
-            'SNIPER-ELITE-5': '//cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg',
-            'SNIPERELITE5': '//cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg',
-            'DEFAULT': '//images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80'
+            'COTW': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg'),
+            'HUNTERCOTW': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg'),
+            'THEHUNTER': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg'),
+            'FS25': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg'),
+            'SNIPER-ELITE-5': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg'),
+            'SNIPERELITE5': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg'),
+            'DEFAULT': DEFAULT_POSTER
         };
 
         /* -------------------------------------------------------------
@@ -796,17 +812,21 @@
         let mobileNavTree = [];
 
         function listenToUtmLinks() {
-            const utmRef = ref(rtdb, 'utm_links');
-            onValue(utmRef, (snapshot) => {
-                if (!snapshot.exists()) return;
+            try {
+                const utmRef = ref(rtdb, 'utm_links');
+                onValue(utmRef, (snapshot) => {
+                    if (!snapshot.exists()) return;
 
-                const data = snapshot.val();
-                buildNavigationFromUtm(data);
-                bindProfileCardLinks(data);
-                resolveRustAndRedlineAlbum(data);
-            }, (error) => {
-                console.error("Failed to read /utm_links:", error);
-            });
+                    const data = snapshot.val();
+                    buildNavigationFromUtm(data);
+                    bindProfileCardLinks(data);
+                    resolveRustAndRedlineAlbum(data);
+                }, (error) => {
+                    console.error("Failed to read /utm_links:", error);
+                });
+            } catch (err) {
+                console.error("listenToUtmLinks Exception:", err);
+            }
         }
 
         /* Match and populate Rust & Redline Album info from /utm_links */
@@ -839,7 +859,7 @@
             }
         }
 
-        /* Robust Profile Card Auto-Binder */
+        /* Robust Profile Card Auto-Binder: Matches regardless of array order or object keys */
         function bindProfileCardLinks(utmData) {
             const userFolder = utmData.User || utmData.user || utmData.Users || utmData.users;
             if (!userFolder) return;
@@ -1006,7 +1026,7 @@
             const titleEl = document.getElementById('mobile-folder-title');
             const linksContainer = document.getElementById('mobile-folder-links');
 
-            titleEl.textContent = groupName.toUpperCase();
+            if (titleEl) titleEl.textContent = groupName.toUpperCase();
 
             let linksHtml = '';
             groupNode.items.forEach(item => {
@@ -1019,9 +1039,9 @@
                 `;
             });
 
-            linksContainer.innerHTML = linksHtml;
-            rootView.classList.add('hidden');
-            folderView.classList.remove('hidden');
+            if (linksContainer) linksContainer.innerHTML = linksHtml;
+            if (rootView) rootView.classList.add('hidden');
+            if (folderView) folderView.classList.remove('hidden');
         };
 
         window.closeMobileFolderView = function() {
@@ -1061,27 +1081,31 @@
         }
 
         function listenToPsnPresence() {
-            const psnRef = ref(rtdb, 'psn');
-            onValue(psnRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    const psnData = snapshot.val();
-                    
-                    const werewolfData = extractUserPsnNode(psnData, ['WildHorse_Spirit', 'wildhorse_spirit', 'Werewolf3788', 'werewolf3788']);
-                    updatePsnCardStatus('werewolf', werewolfData, 'var(--color-werewolf)');
+            try {
+                const psnRef = ref(rtdb, 'psn');
+                onValue(psnRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        const psnData = snapshot.val();
+                        
+                        const werewolfData = extractUserPsnNode(psnData, ['WildHorse_Spirit', 'wildhorse_spirit', 'Werewolf3788', 'werewolf3788']);
+                        updatePsnCardStatus('werewolf', werewolfData, 'var(--color-werewolf)');
 
-                    const rayData = extractUserPsnNode(psnData, ['Raymystyro', 'raymystyro', 'OneLIVIDMAN', 'onelividman']);
-                    updatePsnCardStatus('ray', rayData, 'var(--color-ray-blue)');
+                        const rayData = extractUserPsnNode(psnData, ['Raymystyro', 'raymystyro', 'OneLIVIDMAN', 'onelividman']);
+                        updatePsnCardStatus('ray', rayData, 'var(--color-ray-blue)');
 
-                    const tjData = extractUserPsnNode(psnData, ['Darkwing69420', 'darkwing69420', 'Terrdog', 'terrdog', 'Terrdog420', 'terrdog420']);
-                    updatePsnCardStatus('tj', tjData, 'var(--color-terrdog)');
-                } else {
-                    updatePsnCardStatus('werewolf', null, 'var(--color-werewolf)');
-                    updatePsnCardStatus('ray', null, 'var(--color-ray-blue)');
-                    updatePsnCardStatus('tj', null, 'var(--color-terrdog)');
-                }
-            }, (error) => {
-                console.error("Firebase RTDB PSN Listen Error:", error);
-            });
+                        const tjData = extractUserPsnNode(psnData, ['Darkwing69420', 'darkwing69420', 'Terrdog', 'terrdog', 'Terrdog420', 'terrdog420']);
+                        updatePsnCardStatus('tj', tjData, 'var(--color-terrdog)');
+                    } else {
+                        updatePsnCardStatus('werewolf', null, 'var(--color-werewolf)');
+                        updatePsnCardStatus('ray', null, 'var(--color-ray-blue)');
+                        updatePsnCardStatus('tj', null, 'var(--color-terrdog)');
+                    }
+                }, (error) => {
+                    console.error("Firebase RTDB PSN Listen Error:", error);
+                });
+            } catch (err) {
+                console.error("listenToPsnPresence Exception:", err);
+            }
         }
 
         function updatePsnCardStatus(userId, userPsnData, themeColor) {
@@ -1138,208 +1162,221 @@
            3. Live Farming Simulator 25 Telemetry
            ------------------------------------------------------------- */
         function listenToFs25FirebaseTelemetry() {
-            const fs25Ref = ref(rtdb, 'fs25');
-            
-            onValue(fs25Ref, (snapshot) => {
-                const statusPill = document.getElementById('fs25-status-pill');
-                const serverNameEl = document.getElementById('fs25-server-name');
-                const mapNameEl = document.getElementById('fs25-map-name');
-                const gameTimeEl = document.getElementById('fs25-game-time');
-                const slotsCountEl = document.getElementById('fs25-slots-count');
+            try {
+                const fs25Ref = ref(rtdb, 'fs25');
                 
-                const farm1LabelEl = document.getElementById('fs25-farm1-label');
-                const farm1NameEl = document.getElementById('fs25-farm1-name');
-                const farm1MoneyEl = document.getElementById('fs25-farm1-money');
-                const farm1BadgesEl = document.getElementById('fs25-farm1-badges');
-                const farm1BoxEl = document.getElementById('fs25-farm1-box');
-                
-                const farm2LabelEl = document.getElementById('fs25-farm2-label');
-                const farm2NameEl = document.getElementById('fs25-farm2-name');
-                const farm2MoneyEl = document.getElementById('fs25-farm2-money');
-                const farm2BadgesEl = document.getElementById('fs25-farm2-badges');
-                const farm2BoxEl = document.getElementById('fs25-farm2-box');
-                
-                const totalFarmsEl = document.getElementById('fs25-total-farms');
-                const playersEl = document.getElementById('fs25-player-count');
-                const daySeasonEl = document.getElementById('fs25-day-season');
-                const mapImgEl = document.getElementById('fs25-map-img');
+                onValue(fs25Ref, (snapshot) => {
+                    const statusPill = document.getElementById('fs25-status-pill');
+                    const serverNameEl = document.getElementById('fs25-server-name');
+                    const mapNameEl = document.getElementById('fs25-map-name');
+                    const gameTimeEl = document.getElementById('fs25-game-time');
+                    const slotsCountEl = document.getElementById('fs25-slots-count');
+                    
+                    const farm1LabelEl = document.getElementById('fs25-farm1-label');
+                    const farm1NameEl = document.getElementById('fs25-farm1-name');
+                    const farm1MoneyEl = document.getElementById('fs25-farm1-money');
+                    const farm1BadgesEl = document.getElementById('fs25-farm1-badges');
+                    const farm1BoxEl = document.getElementById('fs25-farm1-box');
+                    
+                    const farm2LabelEl = document.getElementById('fs25-farm2-label');
+                    const farm2NameEl = document.getElementById('fs25-farm2-name');
+                    const farm2MoneyEl = document.getElementById('fs25-farm2-money');
+                    const farm2BadgesEl = document.getElementById('fs25-farm2-badges');
+                    const farm2BoxEl = document.getElementById('fs25-farm2-box');
+                    
+                    const totalFarmsEl = document.getElementById('fs25-total-farms');
+                    const playersEl = document.getElementById('fs25-player-count');
+                    const daySeasonEl = document.getElementById('fs25-day-season');
+                    const mapImgEl = document.getElementById('fs25-map-img');
 
-                const totalVehiclesEl = document.getElementById('fs25-total-vehicles');
-                const totalPlaceablesEl = document.getElementById('fs25-total-placeables');
-                const totalModsEl = document.getElementById('fs25-total-mods');
+                    const totalVehiclesEl = document.getElementById('fs25-total-vehicles');
+                    const totalPlaceablesEl = document.getElementById('fs25-total-placeables');
+                    const totalModsEl = document.getElementById('fs25-total-mods');
 
-                const careerDiffEl = document.getElementById('fs25-career-difficulty');
-                const careerScaleEl = document.getElementById('fs25-career-timescale');
+                    const careerDiffEl = document.getElementById('fs25-career-difficulty');
+                    const careerScaleEl = document.getElementById('fs25-career-timescale');
 
-                if (!snapshot.exists()) {
-                    setFs25Offline();
-                    return;
-                }
+                    if (!snapshot.exists()) {
+                        setFs25Offline();
+                        return;
+                    }
 
-                const data = snapshot.val();
+                    const data = snapshot.val();
 
-                const isOnline = data.syncStatus === 'online' || 
-                                 data.syncStatus === true || 
-                                 data.serverOnline === true ||
-                                 (data.gameInfo && Object.keys(data.gameInfo).length > 0);
+                    const isOnline = data.syncStatus === 'online' || 
+                                     data.syncStatus === true || 
+                                     data.serverOnline === true ||
+                                     (data.gameInfo && Object.keys(data.gameInfo).length > 0);
 
-                if (isOnline) {
-                    statusPill.className = "text-[10px] bg-emerald-950/90 text-emerald-400 px-2 py-0.5 rounded border border-emerald-800 flex items-center gap-1 font-mono font-bold";
-                    statusPill.innerHTML = `<span class="status-pulse" style="background-color:#22C55E;"></span> ONLINE`;
-                } else {
-                    statusPill.className = "text-[10px] bg-red-950/80 text-red-400 px-2 py-0.5 rounded border border-red-800 flex items-center gap-1 font-mono font-bold";
-                    statusPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 inline-block"></span> OFFLINE`;
-                }
-
-                let rawMapImg = data.liveMapImage || data.map_image_url || '';
-                if (rawMapImg && mapImgEl) {
-                    if (rawMapImg.startsWith('http://')) {
-                        mapImgEl.src = `//images.weserv.nl/?url=${encodeURIComponent(rawMapImg.replace(/^https?:\/\//, ''))}`;
+                    if (isOnline) {
+                        if (statusPill) {
+                            statusPill.className = "text-[10px] bg-emerald-950/90 text-emerald-400 px-2 py-0.5 rounded border border-emerald-800 flex items-center gap-1 font-mono font-bold";
+                            statusPill.innerHTML = `<span class="status-pulse" style="background-color:#22C55E;"></span> ONLINE`;
+                        }
                     } else {
-                        mapImgEl.src = rawMapImg;
+                        if (statusPill) {
+                            statusPill.className = "text-[10px] bg-red-950/80 text-red-400 px-2 py-0.5 rounded border border-red-800 flex items-center gap-1 font-mono font-bold";
+                            statusPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 inline-block"></span> OFFLINE`;
+                        }
                     }
-                }
 
-                const gInfo = data.gameInfo || {};
-                const summary = data.summary || {};
+                    let rawMapImg = data.liveMapImage || data.map_image_url || '';
+                    if (rawMapImg && mapImgEl) {
+                        if (rawMapImg.startsWith('http://')) {
+                            mapImgEl.src = `//images.weserv.nl/?url=${encodeURIComponent(rawMapImg.replace(/^https?:\/\//, ''))}`;
+                        } else {
+                            mapImgEl.src = rawMapImg;
+                        }
+                    }
 
-                const serverName = gInfo.serverName || gInfo.name || summary.serverName || "WEREWOLF FS25 SERVER";
-                const mapTitle = gInfo.mapTitle || gInfo.mapName || "Riverbend Springs";
-                const day = gInfo.day || gInfo.currentDay || "1";
-                const time = gInfo.time || gInfo.dayTime || "12:00";
-                const slots = gInfo.slots || gInfo.capacity || "16";
+                    const gInfo = data.gameInfo || {};
+                    const summary = data.summary || {};
 
-                serverNameEl.textContent = serverName;
-                mapNameEl.innerHTML = `<i class="fa-solid fa-map-location-dot mr-1"></i>Map: ${mapTitle}`;
-                gameTimeEl.innerHTML = `<i class="fa-regular fa-clock mr-1"></i>${time}`;
-                daySeasonEl.textContent = `Day ${day}`;
+                    const serverName = gInfo.serverName || gInfo.name || summary.serverName || "WEREWOLF FS25 SERVER";
+                    const mapTitle = gInfo.mapTitle || gInfo.mapName || "Riverbend Springs";
+                    const day = gInfo.day || gInfo.currentDay || "1";
+                    const time = gInfo.time || gInfo.dayTime || "12:00";
+                    const slots = gInfo.slots || gInfo.capacity || "16";
 
-                if (totalVehiclesEl) totalVehiclesEl.textContent = (summary.totalVehicles ?? summary.vehiclesCount ?? "--").toString();
-                if (totalPlaceablesEl) totalPlaceablesEl.textContent = (summary.totalPlaceables ?? summary.placeablesCount ?? "--").toString();
-                if (totalModsEl) totalModsEl.textContent = (summary.totalActiveMods ?? summary.modsCount ?? "--").toString();
+                    if (serverNameEl) serverNameEl.textContent = serverName;
+                    if (mapNameEl) mapNameEl.innerHTML = `<i class="fa-solid fa-map-location-dot mr-1"></i>Map: ${mapTitle}`;
+                    if (gameTimeEl) gameTimeEl.innerHTML = `<i class="fa-regular fa-clock mr-1"></i>${time}`;
+                    if (daySeasonEl) daySeasonEl.textContent = `Day ${day}`;
 
-                const careerData = (data.raw_xml && data.raw_xml.careerSavegame) ? data.raw_xml.careerSavegame : {};
-                if (careerDiffEl) {
-                    let diffText = "Normal";
-                    const diffVal = careerData.difficulty || careerData.economicDifficulty;
-                    if (diffVal === 1 || diffVal === "1" || diffVal === "easy") diffText = "Easy";
-                    else if (diffVal === 3 || diffVal === "3" || diffVal === "hard") diffText = "Hard";
-                    careerDiffEl.textContent = diffText;
-                }
-                if (careerScaleEl) {
-                    const timeScale = careerData.timeScale || careerData.timescale || 1;
-                    careerScaleEl.textContent = `${timeScale}x`;
-                }
+                    if (totalVehiclesEl) totalVehiclesEl.textContent = (summary.totalVehicles ?? summary.vehiclesCount ?? "--").toString();
+                    if (totalPlaceablesEl) totalPlaceablesEl.textContent = (summary.totalPlaceables ?? summary.placeablesCount ?? "--").toString();
+                    if (totalModsEl) totalModsEl.textContent = (summary.totalActiveMods ?? summary.modsCount ?? "--").toString();
 
-                let onlinePlayerCount = 0;
-                if (data.activePlayers) {
-                    onlinePlayerCount = Array.isArray(data.activePlayers) 
-                        ? data.activePlayers.length 
-                        : Object.keys(data.activePlayers).length;
-                } else if (summary.activePlayersCount !== undefined) {
-                    onlinePlayerCount = summary.activePlayersCount;
-                }
-                slotsCountEl.textContent = `${onlinePlayerCount}/${slots} Slots`;
-                playersEl.textContent = onlinePlayerCount.toString();
+                    const careerData = (data.raw_xml && data.raw_xml.careerSavegame) ? data.raw_xml.careerSavegame : {};
+                    if (careerDiffEl) {
+                        let diffText = "Normal";
+                        const diffVal = careerData.difficulty || careerData.economicDifficulty;
+                        if (diffVal === 1 || diffVal === "1" || diffVal === "easy") diffText = "Easy";
+                        else if (diffVal === 3 || diffVal === "3" || diffVal === "hard") diffText = "Hard";
+                        careerDiffEl.textContent = diffText;
+                    }
+                    if (careerScaleEl) {
+                        const timeScale = careerData.timeScale || careerData.timescale || 1;
+                        careerScaleEl.textContent = `${timeScale}x`;
+                    }
 
-                const formatMoney = (val) => {
-                    if (val === undefined || val === null) return "$0";
-                    const num = typeof val === 'string' ? parseFloat(val.replace(/[$,]/g, '')) : val;
-                    if (isNaN(num)) return "$0";
-                    return `$${Math.round(num).toLocaleString()}`;
-                };
+                    let onlinePlayerCount = 0;
+                    if (data.activePlayers) {
+                        onlinePlayerCount = Array.isArray(data.activePlayers) 
+                            ? data.activePlayers.length 
+                            : Object.keys(data.activePlayers).length;
+                    } else if (summary.activePlayersCount !== undefined) {
+                        onlinePlayerCount = summary.activePlayersCount;
+                    }
+                    if (slotsCountEl) slotsCountEl.textContent = `${onlinePlayerCount}/${slots} Slots`;
+                    if (playersEl) playersEl.textContent = onlinePlayerCount.toString();
 
-                const farmsNode = data.farms || {};
-                const farm1Node = farmsNode.farm_1 || farmsNode['1'] || farmsNode['0'] || {};
-                const farm2Node = farmsNode.farm_2 || farmsNode['2'] || {};
+                    const formatMoney = (val) => {
+                        if (val === undefined || val === null) return "$0";
+                        const num = typeof val === 'string' ? parseFloat(val.replace(/[$,]/g, '')) : val;
+                        if (isNaN(num)) return "$0";
+                        return `$${Math.round(num).toLocaleString()}`;
+                    };
 
-                const farmKeys = Object.keys(farmsNode);
-                totalFarmsEl.textContent = farmKeys.length.toString();
+                    const farmsNode = data.farms || {};
+                    const farm1Node = farmsNode.farm_1 || farmsNode['1'] || farmsNode['0'] || {};
+                    const farm2Node = farmsNode.farm_2 || farmsNode['2'] || {};
 
-                if (farm1Node && (farm1Node.name || farm1Node.finances)) {
-                    farm1LabelEl.textContent = "Farm 1";
-                    farm1NameEl.textContent = farm1Node.name || "Primary Operation";
-                    const balance1 = farm1Node.finances ? farm1Node.finances.balance : (farm1Node.money || farm1Node.balance);
-                    farm1MoneyEl.textContent = formatMoney(balance1);
-                } else {
-                    farm1LabelEl.textContent = "Farm 1";
-                    farm1NameEl.textContent = "Not Created";
-                    farm1MoneyEl.textContent = "$0";
-                }
+                    const farmKeys = Object.keys(farmsNode);
+                    if (totalFarmsEl) totalFarmsEl.textContent = farmKeys.length.toString();
 
-                if (farm2Node && (farm2Node.name || farm2Node.finances)) {
-                    farm2LabelEl.textContent = "Farm 2";
-                    farm2NameEl.textContent = farm2Node.name || "Secondary Operation";
-                    const balance2 = farm2Node.finances ? farm2Node.finances.balance : (farm2Node.money || farm2Node.balance);
-                    farm2MoneyEl.textContent = formatMoney(balance2);
-                } else {
-                    farm2LabelEl.textContent = "Farm 2";
-                    farm2NameEl.textContent = "No 2nd Farm";
-                    farm2MoneyEl.textContent = "--";
-                }
+                    if (farm1Node && (farm1Node.name || farm1Node.finances)) {
+                        if (farm1LabelEl) farm1LabelEl.textContent = "Farm 1";
+                        if (farm1NameEl) farm1NameEl.textContent = farm1Node.name || "Primary Operation";
+                        const balance1 = farm1Node.finances ? farm1Node.finances.balance : (farm1Node.money || farm1Node.balance);
+                        if (farm1MoneyEl) farm1MoneyEl.textContent = formatMoney(balance1);
+                    } else {
+                        if (farm1LabelEl) farm1LabelEl.textContent = "Farm 1";
+                        if (farm1NameEl) farm1NameEl.textContent = "Not Created";
+                        if (farm1MoneyEl) farm1MoneyEl.textContent = "$0";
+                    }
 
-                let f1Vehicles = 0, f2Vehicles = 0;
-                let f1Placeables = 0, f2Placeables = 0;
+                    if (farm2Node && (farm2Node.name || farm2Node.finances)) {
+                        if (farm2LabelEl) farm2LabelEl.textContent = "Farm 2";
+                        if (farm2NameEl) farm2NameEl.textContent = farm2Node.name || "Secondary Operation";
+                        const balance2 = farm2Node.finances ? farm2Node.finances.balance : (farm2Node.money || farm2Node.balance);
+                        if (farm2MoneyEl) farm2MoneyEl.textContent = formatMoney(balance2);
+                    } else {
+                        if (farm2LabelEl) farm2LabelEl.textContent = "Farm 2";
+                        if (farm2NameEl) farm2NameEl.textContent = "No 2nd Farm";
+                        if (farm2MoneyEl) farm2MoneyEl.textContent = "--";
+                    }
 
-                const vehiclesPool = (data.raw_xml && data.raw_xml.vehicles) ? data.raw_xml.vehicles : (data.vehicles || {});
-                const vehiclesList = Array.isArray(vehiclesPool) ? vehiclesPool : Object.values(vehiclesPool);
-                vehiclesList.forEach(item => {
-                    if (!item) return;
-                    const fId = item.farmId || item.ownerFarmId || (item.$ && item.$.farmId);
-                    if (fId == 1 || fId == '1' || fId == 'farm_1') f1Vehicles++;
-                    else if (fId == 2 || fId == '2' || fId == 'farm_2') f2Vehicles++;
+                    let f1Vehicles = 0, f2Vehicles = 0;
+                    let f1Placeables = 0, f2Placeables = 0;
+
+                    const vehiclesPool = (data.raw_xml && data.raw_xml.vehicles) ? data.raw_xml.vehicles : (data.vehicles || {});
+                    const vehiclesList = Array.isArray(vehiclesPool) ? vehiclesPool : Object.values(vehiclesPool);
+                    vehiclesList.forEach(item => {
+                        if (!item) return;
+                        const fId = item.farmId || item.ownerFarmId || (item.$ && item.$.farmId);
+                        if (fId == 1 || fId == '1' || fId == 'farm_1') f1Vehicles++;
+                        else if (fId == 2 || fId == '2' || fId == 'farm_2') f2Vehicles++;
+                    });
+
+                    if (f1Vehicles === 0 && farm1Node.statistics && farm1Node.statistics.vehiclesCount) f1Vehicles = farm1Node.statistics.vehiclesCount;
+                    if (f2Vehicles === 0 && farm2Node.statistics && farm2Node.statistics.vehiclesCount) f2Vehicles = farm2Node.statistics.vehiclesCount;
+
+                    const placeablesPool = (data.raw_xml && data.raw_xml.placeables) ? data.raw_xml.placeables : (data.placeables || {});
+                    const placeablesList = Array.isArray(placeablesPool) ? placeablesPool : Object.values(placeablesPool);
+                    placeablesList.forEach(item => {
+                        if (!item) return;
+                        const fId = item.farmId || item.ownerFarmId || (item.$ && item.$.farmId);
+                        if (fId == 1 || fId == '1' || fId == 'farm_1') f1Placeables++;
+                        else if (fId == 2 || fId == '2' || fId == 'farm_2') f2Placeables++;
+                    });
+
+                    let f1BadgesHtml = '';
+                    let f2BadgesHtml = '';
+
+                    if (f1Vehicles > 0 || f2Vehicles > 0) {
+                        if (f1Vehicles > f2Vehicles) {
+                            f1BadgesHtml += `<span class="text-[9px] bg-amber-950/80 text-amber-300 px-1.5 py-0.5 rounded border border-amber-800/80 font-bold"><i class="fa-solid fa-trophy text-[8px] mr-1"></i>Most Fleet (${f1Vehicles})</span>`;
+                        } else if (f2Vehicles > f1Vehicles) {
+                            f2BadgesHtml += `<span class="text-[9px] bg-amber-950/80 text-amber-300 px-1.5 py-0.5 rounded border border-amber-800/80 font-bold"><i class="fa-solid fa-trophy text-[8px] mr-1"></i>Most Fleet (${f2Vehicles})</span>`;
+                        }
+                    }
+
+                    if (f1Placeables > 0 || f2Placeables > 0) {
+                        if (f1Placeables > f2Placeables) {
+                            f1BadgesHtml += `<span class="text-[9px] bg-sky-950/80 text-sky-300 px-1.5 py-0.5 rounded border border-sky-800/80 font-bold"><i class="fa-solid fa-building text-[8px] mr-1"></i>Most Buildings (${f1Placeables})</span>`;
+                        } else if (f2Placeables > f1Placeables) {
+                            f2BadgesHtml += `<span class="text-[9px] bg-sky-950/80 text-sky-300 px-1.5 py-0.5 rounded border border-sky-800/80 font-bold"><i class="fa-solid fa-building text-[8px] mr-1"></i>Most Buildings (${f2Placeables})</span>`;
+                        }
+                    }
+
+                    if (farm1BadgesEl) farm1BadgesEl.innerHTML = f1BadgesHtml;
+                    if (farm2BadgesEl) farm2BadgesEl.innerHTML = f2BadgesHtml;
+
+                    if (farm1BoxEl) {
+                        if (f1Vehicles > f2Vehicles || f1Placeables > f2Placeables) {
+                            farm1BoxEl.classList.add('border-emerald-500/40');
+                        } else {
+                            farm1BoxEl.classList.remove('border-emerald-500/40');
+                        }
+                    }
+
+                    if (farm2BoxEl) {
+                        if (f2Vehicles > f1Vehicles || f2Placeables > f1Placeables) {
+                            farm2BoxEl.classList.add('border-emerald-500/40');
+                        } else {
+                            farm2BoxEl.classList.remove('border-emerald-500/40');
+                        }
+                    }
+
+                }, (error) => {
+                    console.error("FS25 Firebase RTDB Error:", error);
+                    setFs25Offline();
                 });
-
-                if (f1Vehicles === 0 && farm1Node.statistics && farm1Node.statistics.vehiclesCount) f1Vehicles = farm1Node.statistics.vehiclesCount;
-                if (f2Vehicles === 0 && farm2Node.statistics && farm2Node.statistics.vehiclesCount) f2Vehicles = farm2Node.statistics.vehiclesCount;
-
-                const placeablesPool = (data.raw_xml && data.raw_xml.placeables) ? data.raw_xml.placeables : (data.placeables || {});
-                const placeablesList = Array.isArray(placeablesPool) ? placeablesPool : Object.values(placeablesPool);
-                placeablesList.forEach(item => {
-                    if (!item) return;
-                    const fId = item.farmId || item.ownerFarmId || (item.$ && item.$.farmId);
-                    if (fId == 1 || fId == '1' || fId == 'farm_1') f1Placeables++;
-                    else if (fId == 2 || fId == '2' || fId == 'farm_2') f2Placeables++;
-                });
-
-                let f1BadgesHtml = '';
-                let f2BadgesHtml = '';
-
-                if (f1Vehicles > 0 || f2Vehicles > 0) {
-                    if (f1Vehicles > f2Vehicles) {
-                        f1BadgesHtml += `<span class="text-[9px] bg-amber-950/80 text-amber-300 px-1.5 py-0.5 rounded border border-amber-800/80 font-bold"><i class="fa-solid fa-trophy text-[8px] mr-1"></i>Most Fleet (${f1Vehicles})</span>`;
-                    } else if (f2Vehicles > f1Vehicles) {
-                        f2BadgesHtml += `<span class="text-[9px] bg-amber-950/80 text-amber-300 px-1.5 py-0.5 rounded border border-amber-800/80 font-bold"><i class="fa-solid fa-trophy text-[8px] mr-1"></i>Most Fleet (${f2Vehicles})</span>`;
-                    }
-                }
-
-                if (f1Placeables > 0 || f2Placeables > 0) {
-                    if (f1Placeables > f2Placeables) {
-                        f1BadgesHtml += `<span class="text-[9px] bg-sky-950/80 text-sky-300 px-1.5 py-0.5 rounded border border-sky-800/80 font-bold"><i class="fa-solid fa-building text-[8px] mr-1"></i>Most Buildings (${f1Placeables})</span>`;
-                    } else if (f2Placeables > f1Placeables) {
-                        f2BadgesHtml += `<span class="text-[9px] bg-sky-950/80 text-sky-300 px-1.5 py-0.5 rounded border border-sky-800/80 font-bold"><i class="fa-solid fa-building text-[8px] mr-1"></i>Most Buildings (${f2Placeables})</span>`;
-                    }
-                }
-
-                if (farm1BadgesEl) farm1BadgesEl.innerHTML = f1BadgesHtml;
-                if (farm2BadgesEl) farm2BadgesEl.innerHTML = f2BadgesHtml;
-
-                if (f1Vehicles > f2Vehicles || f1Placeables > f2Placeables) {
-                    farm1BoxEl.classList.add('border-emerald-500/40');
-                } else {
-                    farm1BoxEl.classList.remove('border-emerald-500/40');
-                }
-
-                if (f2Vehicles > f1Vehicles || f2Placeables > f1Placeables) {
-                    farm2BoxEl.classList.add('border-emerald-500/40');
-                } else {
-                    farm2BoxEl.classList.remove('border-emerald-500/40');
-                }
-
-            }, (error) => {
-                console.error("FS25 Firebase RTDB Error:", error);
+            } catch (err) {
+                console.error("listenToFs25FirebaseTelemetry Exception:", err);
                 setFs25Offline();
-            });
+            }
         }
 
         function setFs25Offline() {
@@ -1503,7 +1540,7 @@
                         `;
                     });
 
-                    // Match Poster Cover
+                    // Match Poster Cover (with fallback and referrer-safe SSL proxy)
                     const normalizedKey = game.gameId.toUpperCase().replace(/[^A-Z0-9]/g, '');
                     const posterUrl = GAME_POSTERS[normalizedKey] || GAME_POSTERS[game.gameId] || GAME_POSTERS['COTW'] || GAME_POSTERS['DEFAULT'];
                     
@@ -1513,9 +1550,13 @@
                     finalCardsHTML += `
                         <div class="custom-card border border-slate-700/80 hover:border-sky-500/50 transition-all flex flex-col justify-between">
                             <div>
-                                <!-- Inset Game Poster Header -->
+                                <!-- Inset Game Poster Header Banner -->
                                 <div class="game-poster-banner">
-                                    <img src="${posterUrl}" alt="${game.title} Poster" onerror="this.src='${GAME_POSTERS['DEFAULT']}'">
+                                    <img src="${posterUrl}" 
+                                         alt="" 
+                                         referrerpolicy="no-referrer"
+                                         loading="lazy"
+                                         onerror="this.onerror=null;this.src='${DEFAULT_POSTER}';">
                                     <div class="game-poster-overlay"></div>
                                     <div class="absolute top-3 left-3 z-10">
                                         <span class="text-[11px] font-black uppercase tracking-widest text-sky-400 bg-slate-950/80 px-2.5 py-1 rounded border border-sky-500/40 flex items-center gap-1.5 shadow-lg">
@@ -1551,10 +1592,13 @@
             }
         }
 
-        listenToUtmLinks();
-        listenToPsnPresence();
-        listenToFs25FirebaseTelemetry();
-        loadFirestoreSquadProgress();
+        // Initialize Firebase RTDB, FS25 Native Listener & Firestore Listeners on DOM load
+        document.addEventListener('DOMContentLoaded', () => {
+            listenToUtmLinks();
+            listenToPsnPresence();
+            listenToFs25FirebaseTelemetry();
+            loadFirestoreSquadProgress();
+        });
     </script>
 
     <!-- Open-Meteo Weather, Lightbox, & Countdown Engine -->
@@ -1823,10 +1867,12 @@
 
             const vidMatch = url.match(/(?:youtu\.be\/|v\/|embed\/|watch\?v=|\&v=)([^#\&\?]{11})/);
             if (vidMatch && vidMatch[1]) {
-                videoHeader.textContent = title;
-                iframe.src = `https://www.youtube.com/embed/${vidMatch[1]}?autoplay=1`;
-                vidWrapper.classList.remove('hidden');
-                vidWrapper.classList.add('flex');
+                if (videoHeader) videoHeader.textContent = title;
+                if (iframe) iframe.src = `https://www.youtube.com/embed/${vidMatch[1]}?autoplay=1`;
+                if (vidWrapper) {
+                    vidWrapper.classList.remove('hidden');
+                    vidWrapper.classList.add('flex');
+                }
             } else {
                 window.open(url, '_blank', 'noopener,noreferrer');
             }
@@ -1842,7 +1888,7 @@
             }
         };
 
-        document.getElementById('cinema-lightbox').addEventListener('click', function(e) {
+        document.getElementById('cinema-lightbox')?.addEventListener('click', function(e) {
             if (e.target === this) {
                 window.closeCinemaLightbox();
             }
@@ -1940,11 +1986,11 @@
             fetchMovieData(); 
         }
 
-        window.onload = () => {
+        document.addEventListener('DOMContentLoaded', () => {
             refreshData();
             initAlbumCountdown();
             setInterval(refreshData, 300000);
-        };
+        });
     </script>
 </body>
 </html>
