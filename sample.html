@@ -1,33 +1,23 @@
 <!DOCTYPE html>
 <!-- ============================================================================
- * Dashboard: OneLIVIDMAN / Raymystyro Master Command Telemetry & Tactical Hub
- * File: /Playstation/dashboards/onelividman.html
- * Engine: Complete Client-Side Firebase RTDB & Firestore Real-Time Dashboard
- * Description: 
- *   1. Full PSN Multi-Path Reader: Pulls from /psn/gamertags, /psn/users, and /psn.json.
- *   2. Sniper Elite 5 Service Record: Shows All Longshots (meters + crowns), All 47
- *      Official Ribbons, and Tactics/Masteries. Excludes M1-M14 collectible clutter.
- *      Werewolf3788 ONLY shows on an item if Ray has earned it AND Werewolf has earned it.
- *   3. COTW Trophy Lodge: Multi-hunter comparison across all active operatives with crowns.
- *   4. Active Trophy Checklist: Compares squad members (WildHorse, Darkwing, etc.)
- *      for every trophy in the list.
- *   5. Squad Campaigns: Formatted clean game titles & proxied poster graphics.
- *   6. FS25 Farm 2 (farmId2) Telemetry: Live agronomy, crop stage, and fleet equipment.
- *   7. Smart Domain Routing: Same domain stays in current tab; external opens new tab.
- *   8. Zero-Network SVG Fallbacks: Prevents via.placeholder.com recursive loop crash.
- * Analytics: G-CTYHDF4MSD (New York 24h Time)
- * Date & Time Stamp: 2026-09-23 16:45:00 EDT (America/New_York)
+ * Project: Sniper Elite 5 Tactical Master Log & Intel Progress Tracker
+ * File: index.html
+ * PSN Communication ID: NPWR21465_00
+ * Google Analytics Tag: G-CTYHDF4MSD
+ * Build Version: v8.5.0-SE5-CLOUD-AUTHORITATIVE
+ * Timestamp: 2026-09-23 20:35:00 EDT (America/New_York)
  * ============================================================================ -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="900">
-    <title>OneLIVIDMAN | Tactical Telemetry Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="psn-communication-id" content="NPWR21465_00">
+    <title>Sniper Elite 5: Master Log & Progress Tracker</title>
     
-    <!-- GOOGLE ANALYTICS 4 DUAL MEASUREMENT ENGINE (Silent Ad-Block Guard) -->
+    <!-- Universal Google Analytics 4 Tag (G-CTYHDF4MSD) with Ad-Block Safety -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD" onerror="window.gtagBlocked=true;"></script>
     <script>
+        // Section: Analytics DataLayer Initialization
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
@@ -38,1965 +28,690 @@
 
         gtag('config', 'G-CTYHDF4MSD', {
             'stream_id': '13278632388',
-            'page_type': 'gamertag_dashboard',
-            'content_group': 'squad_hub',
-            'layout_version': '45.8.0',
-            'gamertag': 'OneLIVIDMAN',
-            'user_handle': 'Raymystyro',
+            'page_type': 'se5_master_tracker',
+            'content_id': 'NPWR21465_00',
+            'layout_version': '8.5.0',
             'engagement_timezone': 'America/New_York',
             'engagement_timestamp_24h': getNewYork24Time(),
             'send_page_view': true,
             'allow_google_signals': true,
             'cookie_flags': 'SameSite=None;Secure'
         });
-
-        gtag('config', 'G-H6Q756MVE8');
-        gtag('config', 'G-L376P3NPY4');
-        gtag('config', 'G-SGJF0FJPQZ');
-
-        function trackUserAction(actionName, eventData) {
-            if (typeof gtag === 'function' && !window.gtagBlocked) {
-                gtag('event', actionName, {
-                    ...eventData,
-                    'user_id': 'OneLIVIDMAN',
-                    'timestamp': getNewYork24Time()
-                });
-            }
-        }
     </script>
 
-    <!-- UI LIBS, FONTS & ICONS -->
-    <script src="//cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- MASTER STYLESHEET -->
-    <style>
-        @import url('//fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap');
+    <!-- Leaflet Custom Game Map Engine CDN -->
+    <link rel="stylesheet" href="//unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="//unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
+    <style>
         :root {
-            --bg-dark: #070709;
-            --wolf-gray: #16161b;
-            --accent-blue: #38bdf8;
-            --accent-blue-dim: #0284c7;
-            --accent-green: #10b981;
-            --accent-farm: #84cc16;
-            --danger-red: #ef4444;
-            --warning-yellow: #f59e0b;
-            --amazon-orange: #ff9900;
-            --ps-blue: #00439c;
+            --ser-color: #ff8800;
+            --ser-glow: rgba(255, 136, 0, 0.6);
+            --bg-dark: #07080a;
+            --bg-card: #12141a;
+            --bg-card-hover: #181b24;
+            --text-main: #ffffff;
+            --border-dim: rgba(255, 136, 0, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             background-color: var(--bg-dark);
-            color: #e2e8f0;
-            font-size: 16px;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0; padding: 0;
-            width: 100vw;
-            max-width: 100%;
+            background-image: url('//shared.fastly.steamstatic.com/store_item_assets/steam/apps/1029690/page_bg_raw.jpg');
+            background-size: cover;
+            background-position: center top;
+            background-attachment: fixed;
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-size: 15px;
+            line-height: 1.4;
+            min-height: 100vh;
+            padding-bottom: 75px;
             overflow-x: hidden;
-            line-height: 1.5;
-            overflow-wrap: break-word;
         }
 
-        .viewport-85-wrap {
-            width: 100%;
-            max-width: 100%;
-            margin-left: auto;
-            margin-right: auto;
-            padding-left: 1rem;
-            padding-right: 1rem;
+        .outlined-text {
+            text-shadow: 1px 1px 2px #000, -1px -1px 2px #000, 1px -1px 2px #000, -1px 1px 2px #000;
         }
 
-        @media (min-width: 768px) {
-            .viewport-85-wrap {
-                width: 92%;
-                padding-left: 1.5rem;
-                padding-right: 1.5rem;
-            }
+        /* Top Header Bar */
+        header {
+            background: rgba(10, 11, 14, 0.95);
+            border-bottom: 2px solid var(--ser-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(8px);
         }
 
-        @media (min-width: 1200px) {
-            .viewport-85-wrap {
-                width: 85%;
-                max-width: 1850px;
-                padding-left: 0;
-                padding-right: 0;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .mobile-stack-single {
-                display: flex !important;
-                flex-direction: column !important;
-                width: 100% !important;
-            }
-        }
-
-        .nav-bar {
-            position: sticky; top: 0; z-index: 50000;
-            background: rgba(10, 10, 14, 0.96);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-            padding: 10px 0;
-            width: 100%;
-        }
-
-        .nav-container {
-            display: flex; align-items: center; justify-content: space-between; gap: 16px;
-        }
-
-        .mobile-toggle {
-            display: flex !important;
-            align-items: center; justify-content: center;
-            min-height: 48px; min-width: 48px;
-            background: transparent; border: none;
-            cursor: pointer; color: #ffffff; font-size: 20px;
-        }
-
-        .nav-links-wrapper { display: none; gap: 8px; align-items: center; flex-wrap: wrap; }
-        .nav-links-wrapper.active {
-            display: flex !important; flex-direction: column; align-items: stretch;
-            position: absolute; top: 100%; left: 0; right: 0;
-            background: rgba(12, 12, 16, 0.98); padding: 16px;
-            border-bottom: 2px solid var(--accent-blue);
-            max-height: 80vh; overflow-y: auto; z-index: 55000;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.95);
-        }
-
-        @media (min-width: 1024px) {
-            .mobile-toggle { display: none !important; }
-            .nav-links-wrapper { 
-                display: flex !important; position: static;
-                background: transparent; padding: 0; border: none;
-                box-shadow: none; flex-direction: row; max-height: none; overflow-y: visible;
-            }
-        }
-
-        .nav-link-btn {
-            font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
-            color: #cbd5e1; transition: all 0.2s ease; white-space: nowrap; text-decoration: none;
-            cursor: pointer; padding: 10px 14px; min-height: 48px; min-width: 48px;
-            display: inline-flex; align-items: center; justify-content: center;
-            border-radius: 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .nav-link-btn:hover { color: #fff; background: rgba(56, 189, 248, 0.2); border-color: var(--accent-blue); }
-
-        .nav-folder { position: relative; display: inline-block; }
-        .folder-toggle-btn {
-            font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
-            color: #f8fafc; background: rgba(26, 26, 34, 0.95); border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 10px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center;
-            justify-content: center; gap: 8px; min-height: 48px; min-width: 48px; transition: all 0.2s ease;
-        }
-        .folder-toggle-btn:hover { border-color: var(--accent-blue); background: rgba(35, 35, 45, 1); }
-
-        .folder-dropdown-menu {
-            display: none; position: absolute; top: calc(100% + 6px); left: 0; min-width: 250px;
-            background: rgba(14, 14, 20, 0.99); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 8px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 25px rgba(56, 189, 248, 0.2); z-index: 60000;
-        }
-
-        @media (max-width: 1023px) {
-            .folder-dropdown-menu { position: static; width: 100%; margin-top: 6px; box-shadow: none; background: rgba(20, 20, 28, 0.95); }
-        }
-
-        .folder-dropdown-menu.show { display: flex; flex-direction: column; gap: 4px; }
-        .folder-dropdown-item {
-            display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 6px;
-            color: #e2e8f0; font-size: 12px; font-weight: 700; text-decoration: none; text-transform: uppercase;
-            transition: all 0.2s ease; min-height: 48px;
-        }
-        .folder-dropdown-item:hover { background: rgba(56, 189, 248, 0.2); color: var(--accent-blue); }
-        .nav-thumb-icon { width: 24px; height: 24px; border-radius: 4px; object-fit: cover; border: 1px solid rgba(255,255,255,0.25); }
-
-        h1, h2, h3, h4 { font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; color: white; }
-
-        .glass-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(18, 18, 24, 0.75) 100%);
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1); border-top: 1px solid rgba(255, 255, 255, 0.22);
-            border-radius: 1.5rem; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .glass-card:hover {
-            border-color: rgba(56, 189, 248, 0.5);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.2);
-        }
-
-        .card-theme-blue { border-top: 4px solid #38bdf8 !important; }
-        .card-theme-se5 { border-top: 4px solid #38bdf8 !important; }
-        .card-theme-cotw { border-top: 4px solid #10b981 !important; }
-        .card-theme-fs25 { border-top: 4px solid #84cc16 !important; }
-
-        .header-stat-card {
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            min-height: 170px; text-align: center; position: relative;
-        }
-        .blue-gradient-text {
-            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .trophy-row {
-            display: grid; grid-template-columns: 56px 1fr auto; align-items: center; gap: 16px;
-            padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.06); cursor: pointer;
-            transition: all 0.2s ease; min-height: 72px;
-        }
-        .trophy-row:hover { background: rgba(255,255,255,0.04); }
-        .trophy-icon-sq { width: 56px; height: 56px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); object-fit: cover; }
-        .trophy-title-text { font-weight: 800; font-size: 15px; text-transform: uppercase; }
-
-        .recent-earn-yellow-glow {
-            border-color: rgba(245, 158, 11, 0.85) !important;
-            background: rgba(245, 158, 11, 0.08) !important;
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.35) inset, 0 0 15px rgba(245, 158, 11, 0.25) !important;
-            animation: earnPulse24h 2.5s infinite ease-in-out;
-        }
-        @keyframes earnPulse24h {
-            0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.25) inset, 0 0 10px rgba(245, 158, 11, 0.15); }
-            50% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.5) inset, 0 0 20px rgba(245, 158, 11, 0.4); }
-        }
-
-        .trophy-badge-earned {
-            background-color: rgba(56, 189, 248, 0.15);
-            border: 1px solid rgba(56, 189, 248, 0.4);
-            color: #38bdf8;
-            border-radius: 4px;
-            padding: 1px 6px;
-            font-size: 11px;
-            font-weight: 900;
-            font-family: 'JetBrains Mono', monospace;
-            display: inline-flex;
-            align-items: center;
-        }
-        .trophy-badge-locked {
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #94a3b8;
-            border-radius: 4px;
-            padding: 1px 6px;
-            font-size: 11px;
-            font-weight: 900;
-            font-family: 'JetBrains Mono', monospace;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .squad-member-pill {
-            display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px;
-            border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
-        }
-        .squad-member-pill.earned { 
-            background: rgba(16, 185, 129, 0.15); color: #34d399; 
-            border: 1px solid rgba(16, 185, 129, 0.4); 
-        }
-        .squad-member-pill.locked { 
-            background: rgba(255, 255, 255, 0.04); color: #cbd5e1; 
-            border: 1px solid rgba(255, 255, 255, 0.12); 
-        }
-
-        .progress-bar-container { height: 12px; background: rgba(20, 20, 28, 0.8); border-radius: 9999px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
-        .progress-bar-fill { height: 100%; transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.5s ease; }
-        
-        .prog-stage-1 { background: linear-gradient(90deg, #991b1b, #ef4444); box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
-        .prog-stage-2 { background: linear-gradient(90deg, #ef4444, #f59e0b); box-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
-        .prog-stage-3 { background: linear-gradient(90deg, #f59e0b, #84cc16); box-shadow: 0 0 10px rgba(132, 204, 22, 0.5); }
-        .prog-stage-4 { background: linear-gradient(90deg, #10b981, #059669); box-shadow: 0 0 10px rgba(16, 185, 129, 0.6); }
-
-        .rank-glow-1st {
-            border: 2px solid #10b981 !important; box-shadow: 0 0 18px rgba(16, 185, 129, 0.7) !important;
-            color: #34d399 !important; background: rgba(16, 185, 129, 0.15) !important;
-        }
-        .rank-glow-2nd {
-            border: 2px solid #f59e0b !important; box-shadow: 0 0 18px rgba(245, 158, 11, 0.7) !important;
-            color: #fbbf24 !important; background: rgba(245, 158, 11, 0.15) !important;
-        }
-        .rank-glow-none {
-            border: 1px solid rgba(255, 255, 255, 0.1) !important; color: #94a3b8 !important; background: rgba(255, 255, 255, 0.04) !important;
-        }
-
-        .game-thumb {
-            position: relative; aspect-ratio: 2/3; overflow: hidden; border-radius: 1.25rem;
-            background: #1a1a22; border: 1px solid rgba(255,255,255,0.08); cursor: pointer;
-            transition: all 0.4s ease; min-height: 180px;
-        }
-        .game-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
-        .game-thumb:hover img { transform: scale(1.05); }
-        .game-info-overlay {
-            position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 65%);
-            display: flex; flex-direction: column; justify-content: flex-end; padding: 12px;
-        }
-
-        #health-monitor {
-            position: fixed; bottom: 20px; left: 20px; z-index: 45000;
-            background: rgba(20, 20, 28, 0.9); backdrop-filter: blur(14px); padding: 8px 18px;
-            border-radius: 9999px; border: 1px solid rgba(255, 255, 255, 0.12); display: flex;
-            align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-        .status-dot-pulse { width: 10px; height: 10px; border-radius: 50%; position: relative; }
-        .status-dot-pulse.online { background: var(--accent-green); }
-        .status-dot-pulse.online::after {
-            content: ''; position: absolute; inset: -3px; border-radius: 50%;
-            background: inherit; opacity: 0.4; animation: dotPulse 2s infinite;
-        }
-        .status-dot-pulse.expired { background: var(--danger-red); }
-        .status-dot-pulse.offline { background: #475569; }
-        @keyframes dotPulse {
-            0% { transform: scale(1); opacity: 0.4; }
-            70% { transform: scale(2.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 0; }
-        }
-
-        #generic-lightbox {
-            position: fixed; inset: 0; z-index: 70000; background: rgba(0,0,0,0.94);
-            display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); padding: 16px;
-        }
-        .lightbox-modal-content {
-            background: var(--wolf-gray); width: 100%; max-width: 850px;
-            border-radius: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.18);
-            overflow: hidden; max-height: 90vh; display: flex; flex-direction: column;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95);
-        }
-
-        .ps-plus-badge {
-            position: absolute; bottom: 0; left: 50%; transform: translate(-50%, 50%);
-            background: var(--ps-blue); color: white; padding: 4px 12px; border-radius: 20px;
-            font-size: 12px; font-weight: 900; letter-spacing: 0.1em; border: 2px solid var(--bg-dark);
-            z-index: 10; display: none; white-space: nowrap;
-        }
-
-        .kf-watermark {
-            position: fixed; bottom: 16px; left: 24px; z-index: 40000; opacity: 0.35;
-            display: flex; align-items: center; pointer-events: none;
-        }
-        .kf-k { color: #ff4500; transform: scaleX(-1); font-weight: 900; font-size: 22px; }
-        .kf-f { color: #ffffff; margin-left: -0.22em; font-weight: 900; font-size: 22px; }
-
-        .store-btn {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 8px 6px; border-radius: 10px; font-size: 12px; font-weight: 900;
-            text-transform: uppercase; transition: all 0.2s ease; min-height: 48px; min-width: 48px;
-            border: 1px solid rgba(255, 255, 255, 0.1); text-align: center;
-        }
-        .store-btn i { font-size: 16px; margin-bottom: 2px; }
-        .store-btn-ps { background: rgba(0, 67, 156, 0.3); color: #60a5fa; border-color: rgba(0, 67, 156, 0.6); }
-        .store-btn-ps:hover { background: #00439c; color: #ffffff; }
-        .store-btn-pc { background: rgba(6, 182, 212, 0.25); color: #22d3ee; border-color: rgba(6, 182, 212, 0.5); }
-        .store-btn-pc:hover { background: #0891b2; color: #ffffff; }
-        .store-btn-steam { background: rgba(23, 26, 33, 0.85); color: #cbd5e1; border-color: rgba(255, 255, 255, 0.25); }
-        .store-btn-steam:hover { background: #171a21; color: #66fcf1; border-color: #66fcf1; }
-        .store-btn-amazon { background: rgba(255, 153, 0, 0.25); color: #ff9900; border-color: rgba(255, 153, 0, 0.5); }
-        .store-btn-amazon:hover { background: #ff9900; color: #000000; }
-
-        .live-badge {
-            position: absolute; top: 12px; right: 12px; background: #38bdf8; color: black;
-            padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 900;
-            text-transform: uppercase; animation: pulseLive 2s infinite;
-        }
-        @keyframes pulseLive { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
-        .fs25-badge {
-            background: rgba(132, 204, 22, 0.15); color: #bef264; border: 1px solid rgba(132, 204, 22, 0.3);
-            border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 800; text-transform: uppercase;
-        }
-
-        .group-pill {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 8px 12px;
+        .header-top {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            font-size: 12px;
-            font-weight: 800;
+            align-items: center;
+            padding: 10px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .header-title {
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: var(--ser-color);
+            letter-spacing: 1.5px;
             text-transform: uppercase;
         }
 
-        .service-badge {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        .system-status {
+            font-size: 0.72rem;
+            color: #aaa;
+            font-weight: bold;
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+
+        /* CSV Google Sheets Dropdown Menu */
+        #csv-menu-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 6px 16px;
+            background: rgba(5, 6, 8, 0.85);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .csv-single-btn, .csv-dropdown-btn {
+            background: transparent;
+            color: #bbb;
+            border: 1px solid transparent;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            min-height: 44px;
+            transition: all 0.2s ease;
+        }
+
+        .csv-single-btn:hover, .csv-dropdown-btn:hover {
+            color: var(--ser-color);
+            background: rgba(255, 136, 0, 0.12);
+            border-color: rgba(255, 136, 0, 0.4);
+        }
+
+        .csv-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .csv-dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #12141a;
+            border: 1px solid var(--border-dim);
+            border-radius: 6px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            min-width: 230px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .csv-dropdown-content.show {
+            display: block;
+        }
+
+        .csv-dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            color: #ddd;
+            text-decoration: none;
+            font-size: 0.8rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            min-height: 44px;
+        }
+
+        .csv-dropdown-item:hover {
+            background: var(--ser-color);
+            color: #000;
+            font-weight: bold;
+        }
+
+        /* Top Operative Terminal */
+        .terminal-container {
+            max-width: 1400px;
+            margin: 18px auto 0 auto;
+            padding: 0 16px;
+        }
+
+        .master-terminal-card {
+            background: rgba(12, 14, 18, 0.90);
+            border: 2px solid var(--ser-color);
+            box-shadow: 0 0 16px var(--ser-glow);
             border-radius: 12px;
-            padding: 12px;
+            padding: 14px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            backdrop-filter: blur(6px);
+        }
+
+        .terminal-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .terminal-label {
+            font-size: 0.65rem;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #888;
+        }
+
+        .operative-name {
+            font-size: 1.55rem;
+            font-weight: 900;
+            color: var(--ser-color);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .mission-select-box {
+            background: #0d0f14;
+            color: #fff;
+            border: 1px solid var(--ser-color);
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            outline: none;
+            cursor: pointer;
+            min-height: 44px;
+            box-shadow: inset 0 0 6px rgba(0,0,0,0.8);
+        }
+
+        .operative-buttons-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-btn {
+            background: #181a22;
+            color: #ccc;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            cursor: pointer;
+            min-height: 44px;
+            transition: all 0.2s ease;
+        }
+
+        .profile-btn.active-btn {
+            border-color: var(--ser-color);
+            color: var(--ser-color);
+            box-shadow: 0 0 10px var(--ser-glow);
+            background: #242630;
+        }
+
+        .pin-device-btn {
+            background: rgba(255, 255, 255, 0.06);
+            color: #94a3b8;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            min-height: 44px;
+            transition: all 0.2s ease;
+        }
+
+        .pin-device-btn.is-pinned {
+            background: rgba(255, 136, 0, 0.2);
+            color: #ff8800;
+            border: 1px solid #ff8800;
+            box-shadow: 0 0 10px rgba(255, 136, 0, 0.4);
+        }
+
+        /* Top Intel Registry Box */
+        .intel-container {
+            max-width: 1400px;
+            margin: 14px auto 14px auto;
+            padding: 0 16px;
+        }
+
+        .intel-card {
+            background: rgba(12, 14, 18, 0.90);
+            border: 2px solid var(--ser-color);
+            box-shadow: 0 0 16px var(--ser-glow);
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+            backdrop-filter: blur(6px);
+        }
+
+        .intel-title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #fff;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .intel-subtitle {
+            font-size: 0.85rem;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            color: #bbb;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 14px;
+            background: #161820;
+            border-radius: 7px;
+            overflow: hidden;
+            border: 1px solid #333;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--ser-color);
+            box-shadow: 0 0 12px var(--ser-glow);
+            transition: width 0.4s ease-in-out;
+        }
+
+        /* Collectibles Container */
+        #section-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 6px 16px 40px 16px;
+        }
+
+        .category-section {
+            width: 100%;
+            background: rgba(15, 17, 22, 0.94);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        .category-section.active-focus {
+            border: 2px solid var(--ser-color);
+            box-shadow: 0 0 15px var(--ser-glow);
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            background: rgba(24, 26, 34, 0.95);
+            cursor: pointer;
+            user-select: none;
+            min-height: 48px;
+        }
+
+        .category-header:hover {
+            background: rgba(35, 38, 48, 0.95);
+        }
+
+        .section-collapsed .category-content {
+            display: none !important;
+        }
+
+        .category-content {
+            padding: 16px;
+            background: rgba(10, 11, 15, 0.90);
+        }
+
+        .item-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        @media (min-width: 800px) {
+            .item-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .item-card {
+            background: #111319;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 80px;
+            min-height: 220px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
 
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .item-card:hover {
+            background: #161822;
+            border-color: rgba(255, 136, 0, 0.4);
+        }
+
+        .item-card.completed {
+            border-color: rgba(76, 175, 80, 0.7);
+            background: #0d1a11;
+        }
+
+        .item-type-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #252834;
+            color: #fff;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+        }
+
+        .item-title {
+            font-size: 1.05rem;
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .item-desc {
+            font-size: 0.82rem;
+            color: #bbb;
+            font-style: italic;
+            line-height: 1.4;
+            margin-bottom: 14px;
+        }
+
+        /* Team Intel Multi-Player Row */
+        .team-intel-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 12px;
+        }
+
+        .team-intel-label {
+            font-size: 0.68rem;
+            font-weight: 900;
+            color: #777;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-right: 4px;
+        }
+
+        .team-badge {
+            font-size: 0.68rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #1a1d26;
+            color: #666;
+            border: 1px solid #2a2e3d;
+            transition: all 0.2s ease;
+        }
+
+        .team-badge.is-collected {
+            background: rgba(0, 204, 102, 0.15);
+            color: #00ff88;
+            border-color: #00cc66;
+            box-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+            font-weight: 900;
+        }
+
+        /* Action Buttons */
+        .card-actions-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .watch-clip-btn {
+            background: #4a0d13;
+            border: 1px solid #75141e;
+            color: #ffb3b8;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            text-decoration: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 44px;
+            transition: all 0.2s ease;
+        }
+
+        .watch-clip-btn:hover {
+            background: #75141e;
+            color: #fff;
+        }
+
+        .confirm-toggle-btn {
+            background: #000000;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            min-height: 44px;
+            transition: all 0.2s ease;
+        }
+
+        .confirm-toggle-btn:hover {
+            border-color: var(--ser-color);
+            color: var(--ser-color);
+        }
+
+        .confirm-toggle-btn.completed-state {
+            background: #113819;
+            border-color: #1c662d;
+            color: #79e08f;
+        }
+
+        .stepper-action-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-btn {
+            background: #1e293b;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 900;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            min-height: 44px;
+        }
+
+        .clickable-num-pill {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 13px;
+            font-weight: 900;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .manual-inline-num-input {
+            width: 100%;
+            background: #000;
+            color: #fff;
+            border: 2px solid var(--ser-color);
+            padding: 8px 12px;
+            font-family: monospace;
+            font-weight: 900;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        /* Persistent Verification Footer */
+        #se5-sticky-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(8, 9, 12, 0.98);
+            border-top: 2px solid var(--ser-color);
+            box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.9);
+            color: #ccc;
+            font-size: 11px;
+            padding: 8px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            z-index: 99999;
+        }
+
+        .footer-badge {
+            background: #111;
+            border: 1px solid #444;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #fff;
+            font-weight: bold;
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
 
-    <div class="kf-watermark">
-        <span class="kf-k">K</span><span class="kf-f">F</span>
-    </div>
-
-    <!-- Navigation Header -->
-    <nav class="nav-bar">
-        <div class="viewport-85-wrap nav-container">
-            <a href="//werewolf3788.github.io/Website/" class="text-white font-black text-lg flex items-center gap-2 min-h-[48px]">
-                <i class="fab fa-playstation text-sky-400"></i> PACK HUB
-            </a>
-            
-            <button class="mobile-toggle flex items-center justify-center" onclick="toggleNav()" aria-label="Toggle Menu">
-                <i class="fas fa-bars"></i>
-            </button>
-            
-            <div class="nav-links-wrapper" id="dynamic-nav-container">
-                <span class="text-xs text-gray-500 font-bold uppercase tracking-wider">Loading Directory...</span>
-            </div>
+    <header>
+        <div class="header-top">
+            <div class="header-title outlined-text">Sniper Elite 5: Master Log [NPWR21465_00]</div>
+            <div id="stat-line" class="system-status">LINKING CLOUD...</div>
         </div>
-    </nav>
-
-    <!-- Health Monitor -->
-    <div id="health-monitor">
-        <div id="health-dot" class="status-dot-pulse bg-gray-500"></div>
-        <div class="flex flex-col">
-            <span id="health-label" class="text-xs font-black text-gray-400 uppercase tracking-widest leading-none">PSN Sync</span>
-            <span id="health-value" class="text-xs font-black text-white uppercase tracking-tighter">Status: Connecting...</span>
-        </div>
-    </div>
-
-    <div class="viewport-85-wrap mt-4 hidden" id="system-alerts-container">
-        <div class="bg-red-500/10 border-2 border-red-500 p-4 rounded-2xl flex items-center gap-4">
-            <i class="fas fa-triangle-exclamation text-red-500 text-2xl"></i>
-            <div>
-                <div class="text-red-500 font-black uppercase text-xs">PSN NPSSO TOKEN ALERT</div>
-                <div id="alert-message" class="text-white font-bold text-sm">OneLIVIDMAN PSN_NPSSO token expired. Re-authenticate in secrets.</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Header Persona Strip -->
-    <header class="w-full text-center py-8 sm:py-10">
-        <div class="viewport-85-wrap">
-            <div class="relative inline-block mb-6">
-                <div class="absolute inset-0 bg-[#38BDF8] blur-[100px] opacity-30 rounded-full"></div>
-                <img id="main-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='250' height='250' viewBox='0 0 250 250'><rect width='250' height='250' fill='%231e1e24'/><text x='50%25' y='50%25' font-family='sans-serif' font-weight='900' font-size='36' fill='%2338bdf8' dominant-baseline='middle' text-anchor='middle'>RAY</text></svg>" class="relative w-36 h-36 sm:w-48 sm:h-48 lg:w-56 lg:h-56 rounded-full border-4 border-[#38BDF8] shadow-2xl mx-auto object-cover cursor-pointer" onclick="openLightboxImage(this.src, 'OneLIVIDMAN Avatar')" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'250\' height=\'250\' viewBox=\'0 0 250 250\'><rect width=\'250\' height=\'250\' fill=\'%231e1e24\'/><text x=\'50%25\' y=\'50%25\' font-family=\'sans-serif\' font-weight=\'900\' font-size=\'36\' fill=\'%2338bdf8\' dominant-baseline=\'middle\' text-anchor=\'middle\'>RAY</text></svg>';">
-                <div id="ps-plus-indicator" class="ps-plus-badge"><i class="fab fa-playstation"></i> PLUS MEMBER</div>
-            </div>
-            
-            <h1 class="blue-gradient-text mb-2 text-3xl sm:text-5xl lg:text-6xl font-black" id="display-admin-name">OneLIVIDMAN</h1>
-            <div class="text-xs sm:text-sm font-black text-gray-400 uppercase tracking-[0.4em] mb-8">Squad Pack Progression Dashboard</div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-center mobile-stack-single">
-                <a id="twitch-card" href="//www.twitch.tv/raymystyro" target="_blank" rel="noopener noreferrer" class="glass-card header-stat-card p-5 border-b-4 border-purple-500 hover:scale-[1.02] transition-transform min-h-[160px] relative">
-                    <div id="live-indicator" class="live-badge hidden">Live Now</div>
-                    <div class="text-xs text-purple-400 font-black mb-1 uppercase tracking-widest">Twitch Feed</div>
-                    <div id="follower-count" class="text-3xl font-black text-gray-400 font-mono">--</div>
-                    <div id="twitch-status-msg" class="text-xs text-gray-300 font-bold uppercase mt-2 italic truncate w-full px-2">"--"</div>
-                    <div id="twitch-age" class="text-xs text-gray-400 font-black uppercase mt-1">Age: --</div>
-                </a>
-
-                <div class="glass-card header-stat-card p-5 border-b-4 border-[#38BDF8] min-h-[160px]">
-                    <div class="text-xs text-sky-400 font-black mb-1 uppercase tracking-widest">PSN Library</div>
-                    <div id="games-played-count" class="text-3xl font-black text-white font-mono">--</div>
-                    <div class="text-xs text-gray-300 font-bold uppercase mt-2">Total Games Played</div>
-                </div>
-
-                <div class="glass-card header-stat-card p-5 border-b-4 border-[#0284C7] min-h-[160px]">
-                    <div class="text-xs text-sky-400 font-black mb-1 uppercase tracking-widest">PSN Level</div>
-                    <div id="psn-level-label" class="text-3xl font-black text-white font-mono">--</div>
-                    <div id="psn-region" class="text-xs text-gray-300 font-bold uppercase mt-2">Region: US</div>
-                    <div id="psn-account-age" class="text-xs text-gray-400 font-black uppercase mt-1">Age: --</div>
-                </div>
-
-                <div id="trophy-card" class="glass-card header-stat-card p-5 border-b-4 border-yellow-500 min-h-[160px]">
-                    <div class="text-xs text-yellow-500 font-black mb-1 uppercase tracking-widest">Total Trophies</div>
-                    <div id="trophy-total" class="text-3xl lg:text-4xl font-black text-white mb-2 font-mono">--</div>
-                    <div class="grid grid-cols-4 gap-1 pt-2 border-t border-white/5 w-full">
-                        <div class="flex flex-col items-center"><i class="fas fa-trophy text-blue-300 text-xs"></i><div id="plat-count" class="text-xs font-black font-mono">0</div></div>
-                        <div class="flex flex-col items-center"><i class="fas fa-trophy text-amber-400 text-xs"></i><div id="gold-count" class="text-xs font-black font-mono">0</div></div>
-                        <div class="flex flex-col items-center"><i class="fas fa-trophy text-slate-400 text-xs"></i><div id="silver-count" class="text-xs font-black font-mono">0</div></div>
-                        <div class="flex flex-col items-center"><i class="fas fa-trophy text-amber-700 text-xs"></i><div id="bronze-count" class="text-xs font-black font-mono">0</div></div>
-                    </div>
-                </div>
-
-                <div class="glass-card header-stat-card p-5 border-b-4 border-green-500 col-span-1 sm:col-span-2 lg:col-span-1 min-h-[160px]">
-                    <div id="online-status-label" class="text-base font-black text-white uppercase">Connecting</div>
-                    <div id="current-game-sub" class="text-xs text-green-400 font-black uppercase mt-1 truncate max-w-[200px]">---</div>
-                    <div id="current-activity" class="text-xs text-gray-300 font-bold uppercase mt-2">Activity: --</div>
-                    <div id="current-platform" class="text-xs text-gray-400 font-black uppercase mt-1">System: PS5</div>
-                </div>
-            </div>
-        </div>
+        <nav id="csv-menu-bar"></nav>
     </header>
 
-    <main class="viewport-85-wrap pb-28 flex flex-col gap-10">
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mobile-stack-single" id="active-hunt-section">
-            <div class="flex flex-col gap-6">
-                <section class="glass-card p-6">
-                    <div class="flex justify-between items-start mb-2">
-                        <h2 class="text-lg">Profile Intel</h2>
-                        <i class="fab fa-playstation text-sky-400 text-xl"></i>
-                    </div>
-                    <p id="profile-bio" class="text-gray-300 text-sm leading-relaxed">Official Pack Member Profile</p>
-                </section>
-
-                <section id="last-played-hero" class="glass-card overflow-hidden">
-                    <div class="p-6 pb-3 flex justify-between items-center">
-                        <h2 class="text-sky-400 text-lg flex items-center gap-2"><i class="fas fa-crosshairs"></i> Active Hunt</h2>
-                        <div id="hunter-persona-badge" class="px-3 py-1 bg-white/10 text-sky-400 border border-sky-500/40 rounded-full text-xs font-black uppercase tracking-widest hidden"></div>
-                    </div>
-                    
-                    <div class="relative w-full aspect-video bg-sky-900/10 border-y border-white/5 cursor-pointer" onclick="openLightboxImage(document.getElementById('active-game-art').src, document.getElementById('active-game-title').innerText)">
-                        <img id="active-game-art" src="" class="w-full h-full object-cover hidden" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'600\' height=\'337\' viewBox=\'0 0 600 337\'><rect width=\'600\' height=\'337\' fill=\'%231e1e24\'/><text x=\'50%25\' y=\'50%25\' font-family=\'sans-serif\' font-weight=\'900\' font-size=\'28\' fill=\'%2338bdf8\' dominant-baseline=\'middle\' text-anchor=\'middle\'>ACTIVE GAME</text></svg>';">
-                        <div id="active-game-fallback" class="w-full h-full flex items-center justify-center"><i class="fab fa-playstation text-6xl text-sky-500/30"></i></div>
-                    </div>
-
-                    <div class="p-6 space-y-4">
-                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-1">
-                            <div id="active-game-title" class="text-2xl font-black text-white uppercase truncate">---</div>
-                            <span id="active-game-ratio" class="text-xs font-black text-sky-400 uppercase font-mono">--/-- Objectives</span>
-                        </div>
-
-                        <div id="active-game-stores-bar" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
-
-                        <div class="space-y-2 bg-black/40 p-4 rounded-xl border border-white/5">
-                            <div class="flex justify-between items-end">
-                                <span class="text-xs text-gray-300 font-black uppercase text-sky-400">Hunt Completion</span>
-                                <span id="active-game-progress-text" class="text-base font-black text-white font-mono">0%</span>
-                            </div>
-                            <div class="progress-bar-container"><div id="active-game-progress-fill" class="progress-bar-fill prog-stage-1" style="width: 0%"></div></div>
-                        </div>
-
-                        <div id="active-hunt-groups-container" class="space-y-2 pt-2 border-t border-white/5 hidden">
-                            <div class="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                <i class="fas fa-layer-group text-sky-400"></i> Trophy Groups & Expansion Packs
-                            </div>
-                            <div id="active-hunt-groups-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs font-black uppercase">
-                            <div class="bg-black/50 p-3 rounded-xl border border-white/5">
-                                <span class="text-gray-400 block text-xs">Campaign Timeline</span>
-                                <span id="hunt-timeline-span" class="text-white mt-1">--</span>
-                            </div>
-                            <div class="bg-black/50 p-3 rounded-xl border border-white/5">
-                                <span class="text-gray-400 block text-xs">Total Playtime</span>
-                                <span id="hunt-gameplay-hours" class="text-emerald-400 font-mono mt-1">-- hrs logged</span>
-                            </div>
-                            <div class="bg-black/50 p-3 rounded-xl border border-white/5">
-                                <span class="text-gray-400 block text-xs">Trophy Pace</span>
-                                <span id="hunt-trophy-pace" class="text-sky-400 mt-1">--</span>
-                            </div>
-                            <div class="bg-black/50 p-3 rounded-xl border border-white/5">
-                                <span class="text-gray-400 block text-xs">First Trophy Date</span>
-                                <span id="hunt-first-trophy-date" class="text-amber-400 truncate block mt-1">--</span>
-                            </div>
-                            <div class="bg-black/50 p-3 rounded-xl border border-white/5 sm:col-span-2">
-                                <span class="text-gray-400 block text-xs">Time Since Recent Trophy</span>
-                                <span id="hunt-recent-trophy-hours" class="text-sky-300 mt-1">--</span>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+    <section class="terminal-container">
+        <div class="master-terminal-card">
+            <div class="terminal-group">
+                <div class="terminal-label">Operative Terminal</div>
+                <div id="hunter-display" class="operative-name outlined-text">WEREWOLF3788</div>
             </div>
-
-            <div class="flex flex-col gap-6">
-                <section id="recent-hunts-section" class="glass-card p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-sky-400 text-lg uppercase tracking-wider">Recent PSN Hunts</h2>
-                        <span class="text-xs font-bold text-gray-400 uppercase">Tap for Dual PS4 & PS5 Squad Compare</span>
-                    </div>
-                    <div id="recent-games-container" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
-                </section>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <section id="recent-trophy-card" class="glass-card p-5 border-t-4 border-yellow-500 hidden">
-                        <h3 class="text-yellow-500 text-xs font-black flex items-center gap-2 mb-3"><i class="fas fa-trophy"></i> Latest PSN Unlock</h3>
-                        <div class="flex gap-3 items-center bg-black/40 p-3 rounded-xl cursor-pointer hover:bg-white/10 transition-colors" onclick="openRecentTrophyLightbox()">
-                            <img id="last-trophy-icon" src="" class="w-14 h-14 rounded-lg object-cover border border-yellow-500/30" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\' viewBox=\'0 0 64 64\'><rect width=\'64\' height=\'64\' fill=\'%23202024\'/><text x=\'50%25\' y=\'50%25\' font-size=\'24\' dominant-baseline=\'middle\' text-anchor=\'middle\'>🏆</text></svg>';">
-                            <div class="min-w-0 flex-1">
-                                <div id="last-trophy-name" class="font-black text-white uppercase text-xs truncate">---</div>
-                                <div id="last-trophy-game" class="text-xs font-black text-yellow-500 uppercase truncate">---</div>
-                                <div id="last-trophy-time" class="text-xs text-gray-400 font-bold uppercase mt-0.5 truncate">---</div>
-                                <div id="last-trophy-hours-ago" class="text-xs font-bold text-sky-400 uppercase mt-0.5">---</div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section id="ps-plus-card" class="glass-card p-5 border-t-4 border-sky-400 text-center flex flex-col justify-between">
-                        <h3 class="text-[#38BDF8] text-xs font-black flex items-center justify-center gap-1.5"><i class="fab fa-playstation"></i> PS Plus Active</h3>
-                        <a href="//www.playstation.com/en-us/ps-plus/" target="_blank" rel="noopener noreferrer" class="py-2 inline-block">
-                            <img src="//assetsdelivery.eldorado.gg/v7/_offers-v2_/2e84e915-faa9-4670-b6a1-2406ea1f3a64_Offer_20241113013824_723432Large.png?w=255" alt="" class="w-20 h-20 object-contain mx-auto p-1.5 rounded-xl bg-black/40 border border-white/10 hover:border-sky-400 transition-all">
-                        </a>
-                        <span class="text-xs font-black text-gray-400 uppercase">Premium Cloud Sync</span>
-                    </section>
-                </div>
+            <div class="terminal-group">
+                <div class="terminal-label">Active Mission Focus</div>
+                <select id="mission-focus-select" class="mission-select-box outlined-text" onchange="window.appState && window.appState.setActiveMission(this.value)"></select>
+            </div>
+            <div class="operative-buttons-row">
+                <button class="profile-btn active-btn" onclick="window.appState && window.appState.switchHunter('Werewolf3788')">Werewolf3788</button>
+                <button class="profile-btn" onclick="window.appState && window.appState.switchHunter('Raymystyro')">Raymystyro</button>
+                <button class="profile-btn" onclick="window.appState && window.appState.switchHunter('Terrdog')">Terrdog</button>
+                <button class="profile-btn" onclick="window.appState && window.appState.switchHunter('Elu Cloud')">Elu Cloud</button>
+                <button id="pin-user-toggle-btn" class="pin-device-btn" onclick="window.appState && window.appState.togglePinActiveUser()">📌 Pin User</button>
             </div>
         </div>
+    </section>
 
-        <!-- FULL-WIDTH OPERATIONS MATRIX -->
-        <div class="w-full flex flex-col gap-6" id="dual-telemetry-row">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-2">
-                <div>
-                    <h2 class="text-2xl font-black uppercase text-white flex items-center gap-2.5">
-                        <i class="fas fa-layer-group text-sky-400"></i> Active Operations & Server Telemetry
-                    </h2>
-                    <p class="text-xs text-gray-400 font-bold uppercase">Dedicated Real-Time Feeds for OneLIVIDMAN / Raymystyro</p>
-                </div>
-                <div class="flex items-center gap-2 flex-wrap">
-                    <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-lime-950 text-lime-400 border border-lime-500/40">FS25 Farm 2 Focused</span>
-                    <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-cyan-950 text-cyan-400 border border-cyan-500/40">Squad Roster Active</span>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mobile-stack-single" id="operations-matrix-grid">
-                
-                <!-- CARD A: FS25 FARM 2 -->
-                <section id="fs25-telemetry-section" class="glass-card card-theme-fs25 p-6 sm:p-7 flex flex-col justify-between space-y-6">
-                    <div class="space-y-5">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
-                            <div>
-                                <div class="flex items-center gap-2.5">
-                                    <i class="fas fa-tractor text-lime-400 text-2xl"></i>
-                                    <h3 class="text-xl font-black uppercase text-lime-400">FS25 Telemetry & Farm 2 Fleet</h3>
-                                </div>
-                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Live Server Node: fs25-a3563 / Farm: farmId2</p>
-                            </div>
-                            <div id="fs25-status-pill" class="fs25-badge flex items-center gap-1.5 self-start sm:self-auto">
-                                <span class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span>
-                                <span id="fs25-status-text">Farm 2 Synchronized</span>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                            <div class="bg-black/40 p-3 rounded-xl border border-white/5">
-                                <div class="text-xs font-black text-gray-400 uppercase">Farm Designation</div>
-                                <div id="fs25-farm-name" class="text-xs sm:text-sm font-black text-white mt-1 truncate">Ray's Farm (Farm 2)</div>
-                            </div>
-                            <div class="bg-black/40 p-3 rounded-xl border border-white/5">
-                                <div class="text-xs font-black text-gray-400 uppercase">Operating Capital</div>
-                                <div id="fs25-money" class="text-xs sm:text-sm font-black text-lime-400 font-mono mt-1 truncate">$0</div>
-                            </div>
-                            <div class="bg-black/40 p-3 rounded-xl border border-white/5">
-                                <div class="text-xs font-black text-gray-400 uppercase">Farmland Parcels</div>
-                                <div id="fs25-fields-count" class="text-xs sm:text-sm font-black text-white font-mono mt-1">0</div>
-                            </div>
-                            <div class="bg-black/40 p-3 rounded-xl border border-white/5">
-                                <div class="text-xs font-black text-gray-400 uppercase">Fleet Machinery</div>
-                                <div id="fs25-vehicles-count" class="text-xs sm:text-sm font-black text-white font-mono mt-1">0</div>
-                            </div>
-                        </div>
-
-                        <div class="space-y-2.5">
-                            <div class="flex justify-between items-center">
-                                <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-2">
-                                    <i class="fas fa-truck-monster text-lime-400"></i> Farm 2 Active Implements & Heavy Machinery
-                                </h4>
-                                <span id="fs25-fleet-subtitle" class="text-xs font-black text-lime-400 uppercase font-mono">0 Units</span>
-                            </div>
-                            <div id="fs25-fleet-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[360px] overflow-y-auto no-scrollbar pr-1">
-                                <div class="p-6 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Ingesting Farm 2 Fleet...</div>
-                            </div>
-                        </div>
-
-                        <div class="space-y-2.5 pt-2 border-t border-white/5">
-                            <div class="flex justify-between items-center">
-                                <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-2">
-                                    <i class="fas fa-seedling text-lime-400"></i> Farm 2 Crops, Agronomy & Field Boundaries
-                                </h4>
-                                <span id="fs25-fields-subtitle" class="text-xs font-black text-lime-400 uppercase font-mono">0 Parcels</span>
-                            </div>
-                            <div id="fs25-fields-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[260px] overflow-y-auto no-scrollbar pr-1">
-                                <div class="p-4 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Loading Agronomy Data...</div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- CARD B: SNIPER ELITE 5 COMPREHENSIVE SERVICE RECORD -->
-                <section id="firestore-progress-section" class="glass-card card-theme-se5 p-6 sm:p-7 flex flex-col justify-between space-y-6">
-                    <div class="space-y-5">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
-                            <div>
-                                <div class="flex items-center gap-2.5">
-                                    <i class="fas fa-crosshairs text-sky-400 text-2xl"></i>
-                                    <h3 class="text-xl font-black uppercase text-sky-400">Sniper Elite 5 Service Record</h3>
-                                </div>
-                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Longshots &bull; All 47 Ribbons &bull; Mastery Medals</p>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="px-2.5 py-1 rounded-full text-xs font-black uppercase bg-emerald-950 text-emerald-400 border border-emerald-500/40 animate-pulse">
-                                    Raymystyro Verified
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Overall Campaign Progress Strip -->
-                        <div class="bg-black/50 p-4 rounded-xl border border-white/5 space-y-2.5">
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs font-black text-sky-400 uppercase">Raymystyro Progression Ratio</span>
-                                <span id="se5-total-pct" class="text-sm font-black text-white font-mono">0% (0/0)</span>
-                            </div>
-                            <div class="progress-bar-container"><div id="se5-progress-fill" class="progress-bar-fill prog-stage-1" style="width: 0%"></div></div>
-                            <div class="flex flex-col sm:flex-row justify-between sm:items-center text-xs font-black text-gray-400 uppercase pt-1 gap-1">
-                                <span>Target Feats: <strong class="text-white">Longshots &bull; Ribbons &bull; Masteries</strong></span>
-                                <span>Dual Squad: <strong class="text-sky-400">Raymystyro (Primary) &bull; Werewolf3788 (Sync)</strong></span>
-                            </div>
-                        </div>
-
-                        <!-- TACTICAL LONGSHOTS LEADERBOARD -->
-                        <div class="space-y-2.5">
-                            <div class="flex justify-between items-center">
-                                <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                                    <i class="fas fa-medal text-yellow-400"></i> Tactical Long Shot Range Comparison
-                                </h4>
-                                <span class="text-xs font-black text-emerald-400 uppercase font-mono">1st 🟢 | 2nd 🟡</span>
-                            </div>
-                            <div id="se5-longshot-cards-container" class="flex flex-col gap-2.5 max-h-[300px] overflow-y-auto no-scrollbar pr-1">
-                                <div class="p-6 text-center text-gray-500 font-bold uppercase text-xs">Syncing Sniper Elite 5 Longshots...</div>
-                            </div>
-                        </div>
-
-                        <!-- COMBAT RIBBONS & MULTIPLIERS (ALL 47 RIBBONS) -->
-                        <div class="space-y-2.5 pt-2 border-t border-white/5">
-                            <div class="flex justify-between items-center">
-                                <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                                    <i class="fas fa-ribbon text-pink-400"></i> All Combat Ribbons (47 Total)
-                                </h4>
-                                <span id="se5-ribbons-count" class="text-xs font-mono text-sky-400 font-black">0 Ribbons</span>
-                            </div>
-                            <div id="se5-ribbons-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[260px] overflow-y-auto no-scrollbar pr-1">
-                                <div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">Ingesting Ribbons...</div>
-                            </div>
-                        </div>
-
-                        <!-- WEAPON MASTERY & TACTICS MEDALS (CLEANED - NO M1-M14 COLLECTIBLES) -->
-                        <div class="space-y-2.5 pt-2 border-t border-white/5">
-                            <div class="flex justify-between items-center">
-                                <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                                    <i class="fas fa-shield-halved text-cyan-400"></i> Weapon Mastery & Tactics Medals
-                                </h4>
-                                <span id="se5-medals-count" class="text-xs font-mono text-cyan-400 font-black">0 Masteries</span>
-                            </div>
-                            <div id="se5-mastery-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[260px] overflow-y-auto no-scrollbar pr-1">
-                                <div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">Ingesting Medals & Weapon Masteries...</div>
-                            </div>
-                        </div>
-
-                    </div>
-                </section>
-
-                <!-- CARD C: COTW EXPANDED TROPHY LODGE (MULTI-HUNTER COMPARATIVE GRID) -->
-                <section id="cotw-full-card" class="glass-card card-theme-cotw p-6 sm:p-7 flex flex-col justify-between space-y-5">
-                    <div class="space-y-4">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
-                            <div>
-                                <div class="flex items-center gap-2.5">
-                                    <i class="fas fa-paw text-emerald-400 text-2xl"></i>
-                                    <h3 class="text-xl font-black uppercase text-emerald-400">COTW Trophy Lodge & Harvests</h3>
-                                </div>
-                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">theHunter: Call of the Wild / Comparative Harvest Records</p>
-                            </div>
-                            <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-emerald-950 text-emerald-400 border border-emerald-500/40">
-                                👑 = Squad Leader
-                            </span>
-                        </div>
-
-                        <!-- Comparative Animal Ranks Container across all active operatives -->
-                        <div id="cotw-squad-lodge-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[460px] overflow-y-auto no-scrollbar pr-1">
-                            <div class="p-6 text-center text-gray-500 font-bold uppercase text-xs col-span-full">Loading COTW Squad Harvest Records...</div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- CARD D: SQUAD CAMPAIGNS & LIVE OBJECTIVES (DYNAMIC CLOUD FIRESTORE) -->
-                <section id="additional-games-section" class="glass-card card-theme-blue p-6 sm:p-7 flex flex-col justify-between space-y-5">
-                    <div class="space-y-4">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
-                            <div>
-                                <div class="flex items-center gap-2.5">
-                                    <i class="fas fa-users-viewfinder text-sky-400 text-2xl"></i>
-                                    <h3 class="text-xl font-black uppercase text-sky-400">Squad Campaigns & Live Objectives</h3>
-                                </div>
-                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">
-                                    Cloud Firestore Progress (&ge; 1% Progress Only)
-                                </p>
-                            </div>
-                            <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-cyan-950 text-cyan-400 border border-cyan-500/40 font-mono">
-                                Live Firestore Sync
-                            </span>
-                        </div>
-
-                        <div id="firestore-squad-games-grid" class="flex flex-col gap-3.5 max-h-[500px] overflow-y-auto no-scrollbar pr-1">
-                            <div class="p-8 text-center text-gray-500 font-bold uppercase text-xs">Querying Firestore for active squad games...</div>
-                        </div>
-                    </div>
-                </section>
-
+    <section class="intel-container">
+        <div class="intel-card">
+            <div class="intel-title outlined-text">Intel Registry</div>
+            <div id="percent-text" class="intel-subtitle outlined-text">TOTAL COLLECTION: 0%</div>
+            <div class="progress-bar-container">
+                <div id="overall-bar" class="progress-bar-fill"></div>
             </div>
         </div>
+    </section>
 
-        <!-- TROPHY CHECKLIST LOG -->
-        <section id="mission-log-container" class="glass-card overflow-hidden w-full">
-            <div class="p-6 border-b border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                <div>
-                    <h2 id="checklist-header-text" class="text-white text-xl flex items-center gap-2.5">
-                        <i class="fas fa-list-check text-sky-400"></i> Active Trophy Checklist & Campaign Journey Log
-                    </h2>
-                    <p id="checklist-timeline-sub" class="text-xs text-gray-400 font-bold uppercase mt-0.5">
-                        Interval tracking from First Trophy to Current Date & Time (24h Standard Time)
-                    </p>
-                </div>
-                <span class="text-xs font-black uppercase tracking-wider text-gray-400 bg-black/40 px-3 py-1.5 rounded-lg border border-white/5">
-                    Live Syncing
-                </span>
-            </div>
-            <div id="trophy-checklist-container" class="max-h-[900px] overflow-y-auto divide-y divide-white/5 no-scrollbar"></div>
-        </section>
+    <main id="section-container"></main>
 
-        <!-- FOOTER WITH PERSISTENT DATE/TIME & BUILD STAMP -->
-        <footer class="mt-auto bg-slate-950 py-10 border-t border-slate-800 text-center relative">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
-                <p class="text-slate-500 text-sm">
-                    &copy; 2026 Werewolf Project. Built by Werewolf3788 & Friends.
-                </p>
-                <div id="build-meta-footer" style="color: #94a3b8; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
-                    Werewolf Command Engine • v45.8.0 • Build: 2026-09-23 16:45:00 EDT
-                </div>
-                <div class="text-center mt-2 text-xs font-black text-gray-500 uppercase tracking-[0.2em]">
-                    Primary RTDB: <span class="text-sky-400">/psn/gamertags/OneLIVIDMAN.json</span> | FS25 RTDB: <span class="text-lime-400">fs25-a3563 (farmId2)</span> | Synced: <span id="sync-time" class="text-gray-300">--</span>
-                </div>
-            </div>
-        </footer>
-
-    </main>
-
-    <div id="generic-lightbox" onclick="closeGenericLightbox()">
-        <div class="lightbox-modal-content" onclick="event.stopPropagation()">
-            <div class="p-5 border-b border-white/10 flex justify-between items-center">
-                <h3 id="lightbox-title" class="text-lg font-black text-sky-400 uppercase">Detail View</h3>
-                <button onclick="closeGenericLightbox()" class="w-12 h-12 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-sky-400 hover:text-black transition-colors min-h-[48px] min-w-[48px]"><i class="fas fa-times text-lg"></i></button>
-            </div>
-            <div id="lightbox-body" class="p-6 overflow-y-auto space-y-4 text-sm text-gray-200"></div>
+    <!-- Synchronized Persistent Footer with Live 24h Clock -->
+    <footer id="se5-sticky-footer">
+        <div>
+            <span class="footer-badge">v8.5.0</span>
+            <span style="margin-left:8px; color:var(--ser-color, #ff8800); font-weight:bold;">PSN ID: NPWR21465_00</span>
+            <span style="margin-left:8px; color:#888;">BUILD: 2026-09-23 20:35:00 EDT</span>
         </div>
-    </div>
-
-    <!-- FIRESTORE MODULE -->
-    <script type="module">
-        import { initializeApp } from "//www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, doc, collection, getDocs, onSnapshot } from "//www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
-            authDomain: "entertainment-71888.firebaseapp.com",
-            databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
-            projectId: "entertainment-71888",
-            storageBucket: "entertainment-71888.firebasestorage.app",
-            messagingSenderId: "660524340277",
-            appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
-            measurementId: "G-CTYHDF4MSD"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        const TARGET_USERS = ['Werewolf3788', 'Raymystyro', 'Terrdog', 'Elu Cloud'];
-        const USER_ALIASES = {
-            'Raymystyro': ['OneLIVIDMAN', 'Raymystyro', 'Ray'],
-            'Werewolf3788': ['Werewolf3788', 'WildHorse_Spirit'],
-            'Terrdog': ['Terrdog', 'Darkwing69420', 'terrdog420'],
-            'Elu Cloud': ['Elu Cloud', 'DesdemonaTiger']
-        };
-
-        const USER_THEMES = {
-            'Werewolf3788': { color: '#ff5500', glow: 'rgba(255,85,0,0.4)' },
-            'Raymystyro': { color: '#2563eb', glow: 'rgba(37,99,235,0.4)' },
-            'Terrdog': { color: '#a855f7', glow: 'rgba(168,85,247,0.4)' },
-            'Elu Cloud': { color: '#10b981', glow: 'rgba(16,185,129,0.4)' }
-        };
-
-        const proxyImg = (url) => `//images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}`;
-
-        const GAME_POSTERS = {
-            'COTW': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg'),
-            'HUNTERCOTW': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg'),
-            'THEHUNTER': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg'),
-            'SNIPER-ELITE-5': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg'),
-            'SNIPERELITE5': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg'),
-            'FS25': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg'),
-            'DEFAULT': '//images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80'
-        };
-
-        const CLEAN_GAME_TITLES = {
-            'COTW': 'THEHUNTER: CALL OF THE WILD',
-            'HUNTERCOTW': 'THEHUNTER: CALL OF THE WILD',
-            'THEHUNTER': 'THEHUNTER: CALL OF THE WILD',
-            'SNIPER-ELITE-5': 'SNIPER ELITE 5',
-            'SNIPERELITE5': 'SNIPER ELITE 5',
-            'FS25': 'FARMING SIMULATOR 25'
-        };
-
-        const LONG_SHOT_ITEMS = [
-            { id: 'med_ls_m1', mission: 'Mission 1', name: 'Colline-Sur-Mer', req: 450 },
-            { id: 'med_ls_m1_auth', mission: 'Mission 1 (Auth)', name: 'Colline-Sur-Mer Auth', req: 250 },
-            { id: 'med_ls_m2', mission: 'Mission 2', name: 'Château de Berengar', req: 375 },
-            { id: 'med_ls_m2_auth', mission: 'Mission 2 (Auth)', name: 'Château de Berengar Auth', req: 250 },
-            { id: 'med_ls_m3', mission: 'Mission 3', name: 'Beaumont-Saint-Denis', req: 675 },
-            { id: 'med_ls_m3_auth', mission: 'Mission 3 (Auth)', name: 'Beaumont Auth', req: 325 },
-            { id: 'med_ls_m4', mission: 'Mission 4', name: 'War Factory', req: 200 },
-            { id: 'med_ls_m4_auth', mission: 'Mission 4 (Auth)', name: 'War Factory Auth', req: 200 },
-            { id: 'med_ls_m5', mission: 'Mission 5', name: 'Festung Guernsey', req: 400 },
-            { id: 'med_ls_m5_auth', mission: 'Mission 5 (Auth)', name: 'Guernsey Auth', req: 400 },
-            { id: 'med_ls_m6', mission: 'Mission 6', name: 'Desponts-Sur-Douve', req: 400 },
-            { id: 'med_ls_m6_auth', mission: 'Mission 6 (Auth)', name: 'Desponts Auth', req: 400 },
-            { id: 'med_ls_m7', mission: 'Mission 7', name: 'Secret Weapons', req: 350 },
-            { id: 'med_ls_m7_auth', mission: 'Mission 7 (Auth)', name: 'Secret Weapons Auth', req: 200 },
-            { id: 'med_ls_m8', mission: 'Mission 8', name: 'St. Nazaire', req: 200 },
-            { id: 'med_ls_m8_auth', mission: 'Mission 8 (Auth)', name: 'St. Nazaire Auth', req: 200 },
-            { id: 'med_ls_m9', mission: 'Mission 9', name: 'Loose Ends', req: 500 },
-            { id: 'med_ls_m9_auth', mission: 'Mission 9 (Auth)', name: 'Loose Ends Auth', req: 200 },
-            { id: 'med_cantoutrun', mission: 'Mission 9', name: 'Möller Kill (Can\'t Outrun)', req: 600 },
-            { id: 'med_wm_fuhrerlong', mission: 'DLC 10', name: 'Wolf Mountain (Hitler)', req: 412 },
-            { id: 'med_wm_fromfuhrer', mission: 'DLC 10', name: 'Wolf Mountain 300m+', req: 300 },
-            { id: 'med_fuhrerlongshot', mission: 'DLC 10 (Auth)', name: 'Wolf Mountain Authentic', req: 257 },
-            { id: 'med_m11longshot', mission: 'DLC 11', name: 'Landing Force', req: 350 },
-            { id: 'med_m11authlongshot', mission: 'DLC 11 (Auth)', name: 'Landing Force Auth', req: 250 },
-            { id: 'med_m12authlongshot', mission: 'DLC 12 (Auth)', name: 'Conqueror Auth', req: 260 },
-            { id: 'med_m13_longshot', mission: 'DLC 13', name: 'Rough Landing', req: 240 },
-            { id: 'med_m13_authlong', mission: 'DLC 13 (Auth)', name: 'Rough Landing Auth', req: 250 }
-        ];
-
-        window.getChromaStageClass = function(pct) {
-            if (pct <= 25) return 'prog-stage-1';
-            if (pct <= 50) return 'prog-stage-2';
-            if (pct <= 75) return 'prog-stage-3';
-            return 'prog-stage-4';
-        };
-
-        function isMissionCollectable(itemId, category) {
-            const id = (itemId || '').toLowerCase();
-            const cat = (category || '').toLowerCase();
-            const matchM = id.match(/^m(\d+)_/);
-            if (matchM) {
-                const num = parseInt(matchM[1], 10);
-                if (num >= 1 && num <= 14) return true;
-            }
-            if (cat.includes('the atlantic wall') || cat.includes('occupied residence') || cat.includes('spy academy') ||
-                cat.includes('war factory') || cat.includes('festung guernsey') || cat.includes('libération') ||
-                cat.includes('secret weapons') || cat.includes('rubble and ruin') || cat.includes('loose ends') ||
-                cat.includes('wolf mountain') || cat.includes('landing force') || cat.includes('conqueror') ||
-                cat.includes('rough landing') || cat.includes('kraken awakes')) {
-                if (!id.includes('longshot') && !id.includes('_ls_') && !id.includes('fuhrerlong')) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        const teamSE5Progress = {};
-
-        function initSE5Listeners() {
-            TARGET_USERS.forEach(user => {
-                const aliases = USER_ALIASES[user] || [user];
-                aliases.forEach(alias => {
-                    const docRef = doc(db, `users/${alias}/platform/playstation/progress/sniper-elite-5`);
-                    onSnapshot(docRef, (snap) => {
-                        if (snap.exists()) {
-                            teamSE5Progress[user] = snap.data();
-                            renderSE5ServiceRecord();
-                        }
-                    }, () => {});
-                });
-            });
-        }
-
-        function renderSE5ServiceRecord() {
-            const rayData = teamSE5Progress['Raymystyro'] || {};
-            const wolfData = teamSE5Progress['Werewolf3788'] || {};
-
-            const rayItems = Array.isArray(rayData.progress) ? rayData.progress : [];
-            const wolfItems = Array.isArray(wolfData.progress) ? wolfData.progress : [];
-
-            // 1. Long Shots
-            const lsContainer = document.getElementById('se5-longshot-cards-container');
-            if (lsContainer) {
-                let lsHtml = '';
-                LONG_SHOT_ITEMS.forEach(item => {
-                    const rayMatch = rayItems.find(p => p.id === item.id);
-                    const rayDist = rayMatch && rayMatch.count !== undefined ? Number(rayMatch.count) : (rayMatch && rayMatch.collected ? item.req : 0);
-
-                    if (rayDist <= 0) return;
-
-                    const wolfMatch = wolfItems.find(p => p.id === item.id);
-                    const wolfDist = wolfMatch && wolfMatch.count !== undefined ? Number(wolfMatch.count) : (wolfMatch && wolfMatch.collected ? item.req : 0);
-
-                    const scores = [{ op: 'OneLIVIDMAN', dist: rayDist, isPrimary: true }];
-                    if (wolfDist > 0) {
-                        scores.push({ op: 'WildHorse_Spirit', dist: wolfDist, isPrimary: false });
-                    }
-
-                    scores.sort((a, b) => b.dist - a.dist);
-
-                    lsHtml += `
-                        <div class="bg-black/40 p-3 rounded-xl border border-white/5 flex flex-col justify-between space-y-2">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <div class="text-[11px] font-black text-cyan-400 uppercase tracking-wider">${item.mission}</div>
-                                    <div class="text-xs font-black text-white uppercase">${item.name}</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-[11px] font-black text-gray-400 uppercase">Target: ${item.req}m</div>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 ${scores.length > 1 ? 'sm:grid-cols-2' : ''} gap-2 pt-1">
-                                ${scores.map((s, idx) => {
-                                    const isFurthest = idx === 0 && scores.length > 1;
-                                    const glowClass = idx === 0 ? 'rank-glow-1st' : 'rank-glow-2nd';
-                                    return `
-                                        <div class="p-2 rounded-lg flex items-center justify-between text-xs font-black uppercase ${glowClass}">
-                                            <div class="flex items-center gap-1.5 truncate">
-                                                ${isFurthest ? '<span>👑</span>' : ''}
-                                                <span>${s.op}</span>
-                                            </div>
-                                            <span class="font-mono text-white text-xs">${s.dist}m</span>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
-                    `;
-                });
-                lsContainer.innerHTML = lsHtml || `<div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">No tactical long shots recorded yet.</div>`;
-            }
-
-            // 2. All 47 Ribbons
-            const ribbonsContainer = document.getElementById('se5-ribbons-container');
-            const ribbonsCountEl = document.getElementById('se5-ribbons-count');
-            if (ribbonsContainer) {
-                const ribbonsList = rayItems.filter(i => {
-                    const id = (i.id || '').toLowerCase();
-                    const cat = (i.category || i.cat || '').toLowerCase();
-                    return cat.includes('ribbon') || id.startsWith('rib_') || id.startsWith('ribbon_');
-                });
-
-                if (ribbonsCountEl) ribbonsCountEl.innerText = `${ribbonsList.length} Ribbons`;
-
-                if (ribbonsList.length > 0) {
-                    ribbonsContainer.innerHTML = ribbonsList.map(r => {
-                        const rayMultiplier = Number(r.count || r.multiplier || (r.collected ? 1 : 0));
-                        if (rayMultiplier <= 0) return '';
-
-                        const wolfMatch = wolfItems.find(wi => wi.id === r.id);
-                        const wolfMultiplier = wolfMatch ? Number(wolfMatch.count || wolfMatch.multiplier || (wolfMatch.collected ? 1 : 0)) : 0;
-                        const wolfHasIt = wolfMultiplier > 0;
-
-                        return `
-                            <div class="service-badge hover:border-sky-500/40 transition-colors">
-                                <div class="flex justify-between items-start gap-2">
-                                    <span class="text-xs font-black text-white uppercase truncate">${r.name || r.id}</span>
-                                    <span class="text-xs font-black font-mono text-sky-400 bg-sky-950/80 px-2 py-0.5 rounded border border-sky-500/40">
-                                        x${rayMultiplier}
-                                    </span>
-                                </div>
-                                <div class="text-[11px] text-gray-400 mt-1 line-clamp-2">${r.description || r.desc || r.detail || 'Combat Ribbon Earned'}</div>
-                                ${wolfHasIt ? `
-                                    <div class="pt-2 border-t border-white/5 mt-2 flex justify-between items-center text-[11px] font-black uppercase">
-                                        <span class="text-gray-400">WildHorse:</span>
-                                        <span class="text-emerald-400 font-mono">x${wolfMultiplier}</span>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        `;
-                    }).join('');
-                } else {
-                    ribbonsContainer.innerHTML = `<div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">No ribbons unlocked yet by Raymystyro.</div>`;
-                }
-            }
-
-            // 3. Weapon Mastery & Tactics Medals (Cleaned - excludes M1-M14 items)
-            const masteryContainer = document.getElementById('se5-mastery-container');
-            const medalsCountEl = document.getElementById('se5-medals-count');
-            if (masteryContainer) {
-                const tacticsList = rayItems.filter(i => {
-                    const id = (i.id || '').toLowerCase();
-                    const cat = (i.category || i.cat || '').toLowerCase();
-                    const isLongshot = id.includes('longshot') || id.includes('_ls_');
-                    const isRibbon = cat.includes('ribbon') || id.startsWith('rib_');
-                    
-                    if (isMissionCollectable(i.id, i.category || i.cat)) return false;
-                    return !isLongshot && !isRibbon && (i.collected || i.completed || (i.count && i.count > 0));
-                });
-
-                if (medalsCountEl) medalsCountEl.innerText = `${tacticsList.length} Tactics / Medals`;
-
-                if (tacticsList.length > 0) {
-                    masteryContainer.innerHTML = tacticsList.map(m => {
-                        const wolfMatch = wolfItems.find(wi => wi.id === m.id);
-                        const wolfHasIt = wolfMatch && (wolfMatch.collected || wolfMatch.completed || (wolfMatch.count && wolfMatch.count > 0));
-                        const wolfDisplay = wolfMatch?.count !== undefined ? wolfMatch.count : (wolfHasIt ? 'Done' : null);
-
-                        const currentVal = m.count !== undefined ? m.count : (m.collected ? 'Mastered' : 'Earned');
-
-                        return `
-                            <div class="service-badge hover:border-cyan-500/40 transition-colors">
-                                <div class="flex justify-between items-start gap-2">
-                                    <span class="text-xs font-black text-white uppercase truncate">${m.name || m.id}</span>
-                                    <span class="text-xs font-black font-mono text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-500/40">
-                                        ${currentVal}
-                                    </span>
-                                </div>
-                                <div class="text-[11px] text-gray-400 mt-1 line-clamp-2">${m.description || m.desc || m.detail || 'Tactical Objective Completed'}</div>
-                                ${wolfHasIt ? `
-                                    <div class="pt-2 border-t border-white/5 mt-2 flex justify-between items-center text-[11px] font-black uppercase">
-                                        <span class="text-gray-400">WildHorse:</span>
-                                        <span class="text-emerald-400 font-mono">${wolfDisplay}</span>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        `;
-                    }).join('');
-                } else {
-                    masteryContainer.innerHTML = `<div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">No mastery medals earned yet by Raymystyro.</div>`;
-                }
-            }
-
-            // 4. Progress Bar
-            const cleanRayItems = rayItems.filter(i => !isMissionCollectable(i.id, i.category || i.cat));
-            const completedCount = cleanRayItems.filter(i => i && (i.collected || i.completed || (i.count && i.count > 0))).length;
-            const totalCount = cleanRayItems.length || 150;
-            const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
-
-            const pctEl = document.getElementById('se5-total-pct');
-            const fillEl = document.getElementById('se5-progress-fill');
-            if (pctEl) pctEl.innerText = `${pct}% (${completedCount}/${totalCount})`;
-            if (fillEl) {
-                fillEl.style.width = `${pct}%`;
-                fillEl.className = `progress-bar-fill ${pct > 75 ? 'prog-stage-4' : (pct > 50 ? 'prog-stage-3' : (pct > 25 ? 'prog-stage-2' : 'prog-stage-1'))}`;
-            }
-        }
-
-        /* -------------------------------------------------------------
-           Dynamic Squad Games Scanner (>= 1% Progress Only)
-           Displays full clean game names and proxied non-broken thumbnails
-           ------------------------------------------------------------- */
-        async function loadAllFirestoreSquadGames() {
-            const container = document.getElementById('firestore-squad-games-grid');
-            if (!container) return;
-
-            const gamesMap = {};
-
-            for (const user of TARGET_USERS) {
-                const aliases = USER_ALIASES[user] || [user];
-                for (const alias of aliases) {
-                    try {
-                        const colRef = collection(db, "users", alias, "platform", "playstation", "progress");
-                        const snap = await getDocs(colRef);
-
-                        snap.forEach(docSnap => {
-                            const gameId = docSnap.id;
-                            if (gameId.endsWith("_Ranks")) return;
-
-                            const data = docSnap.data();
-                            const pct = calculateGameProgress(data);
-
-                            if (pct >= 1) {
-                                const normKey = gameId.toUpperCase().replace(/[^A-Z0-9]/g, '');
-                                const cleanTitle = CLEAN_GAME_TITLES[normKey] || CLEAN_GAME_TITLES[gameId] || gameId.replace(/-/g, ' ').replace(/_/g, ' ').toUpperCase();
-                                
-                                if (!gamesMap[gameId]) {
-                                    gamesMap[gameId] = { id: gameId, title: cleanTitle, players: {} };
-                                }
-                                if (!gamesMap[gameId].players[user] || gamesMap[gameId].players[user] < pct) {
-                                    gamesMap[gameId].players[user] = pct;
-                                }
-                            }
-                        });
-                    } catch (e) {}
-                }
-            }
-
-            const gamesList = Object.values(gamesMap);
-            if (gamesList.length === 0) {
-                container.innerHTML = `<div class="p-8 text-center text-gray-500 font-bold uppercase text-xs col-span-full">No active squad games found with &ge; 1% progress.</div>`;
-                return;
-            }
-
-            let html = "";
-            gamesList.forEach(g => {
-                const activePlayers = Object.entries(g.players)
-                    .map(([uname, pct]) => ({ uname, pct }))
-                    .sort((a, b) => b.pct - a.pct);
-
-                if (activePlayers.length === 0) return;
-
-                const posterKey = g.id.toUpperCase().replace(/[^A-Z0-9]/g, '');
-                const posterUrl = GAME_POSTERS[posterKey] || GAME_POSTERS[g.id] || GAME_POSTERS['DEFAULT'];
-
-                let targetLink = "//werewolf3788.github.io/Website/";
-                if (g.id.toLowerCase().includes('cotw')) targetLink = "//werewolf3788.github.io/Website/games/HunterCOTW/cotw.html";
-                if (g.id.toLowerCase().includes('sniper')) targetLink = "//werewolf3788.github.io/Website/games/Sniper-Elite/5/index.html";
-
-                const isSameDomain = (url) => {
-                    try {
-                        const parsed = new URL(url, window.location.href);
-                        return parsed.origin === window.location.origin;
-                    } catch (e) { return true; }
-                };
-
-                const targetAttr = isSameDomain(targetLink) ? 'target="_self"' : 'target="_blank" rel="noopener noreferrer"';
-
-                html += `
-                    <div class="bg-black/50 p-4 rounded-xl border border-white/10 flex flex-col justify-between space-y-3">
-                        <div class="space-y-2.5">
-                            <div class="flex items-center gap-3">
-                                <img src="${posterUrl}" referrerpolicy="no-referrer" class="w-16 h-16 object-cover rounded-lg border border-white/10 flex-shrink-0" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\' viewBox=\'0 0 64 64\'><rect width=\'64\' height=\'64\' fill=\'%231a1a22\'/><text x=\'50%25\' y=\'50%25\' font-size=\'20\' dominant-baseline=\'middle\' text-anchor=\'middle\'>🎮</text></svg>';">
-                                <div class="min-w-0 flex-1">
-                                    <h4 class="text-sm font-black text-white uppercase truncate">${g.title}</h4>
-                                    <div class="text-[11px] font-bold text-sky-400 font-mono">${activePlayers.length} Active Hunter(s) &ge; 1%</div>
-                                </div>
-                            </div>
-
-                            <div class="space-y-2 pt-2 border-t border-white/5">
-                                ${activePlayers.map((p, idx) => {
-                                    const theme = USER_THEMES[p.uname] || { color: '#38bdf8' };
-                                    const isLead = idx === 0 && activePlayers.length > 1;
-                                    return `
-                                        <div class="bg-black/60 p-2.5 rounded-lg border border-white/5 space-y-1">
-                                            <div class="flex justify-between items-center text-xs font-black uppercase">
-                                                <span style="color:${theme.color};">${isLead ? '👑 ' : ''}${p.uname}</span>
-                                                <span class="text-white font-mono">${p.pct}%</span>
-                                            </div>
-                                            <div class="progress-bar-container" style="height:8px;">
-                                                <div class="progress-bar-fill" style="width:${p.pct}%; background-color:${theme.color};"></div>
-                                            </div>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
-
-                        <a href="${targetLink}" ${targetAttr} class="text-sky-400 hover:text-sky-300 font-bold text-xs flex items-center justify-between border-t border-white/5 pt-2.5">
-                            <span>Launch Tracker</span>
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
-        }
-
-        /* -------------------------------------------------------------
-           COTW Squad Animal Ranks Lodge Comparison
-           Renders each active hunter side-by-side with crowns for category leaders
-           ------------------------------------------------------------- */
-        const squadCotwRanks = {};
-
-        function listenToSquadCotwRanks() {
-            TARGET_USERS.forEach(user => {
-                const aliases = USER_ALIASES[user] || [user];
-                aliases.forEach(alias => {
-                    const rankDoc = doc(db, "users", alias, "platform", "playstation", "progress", "COTW_Ranks");
-                    onSnapshot(rankDoc, (snap) => {
-                        if (snap.exists()) {
-                            squadCotwRanks[user] = snap.data();
-                            renderCotwSquadLodge();
-                        }
-                    }, () => {});
-                });
-            });
-        }
-
-        function renderCotwSquadLodge() {
-            const container = document.getElementById('cotw-squad-lodge-container');
-            if (!container) return;
-
-            const TIERS = [
-                { key: 'greatone', label: 'Great One', icon: '👑' },
-                { key: 'albino', label: 'Rare Fur', icon: '🐇' },
-                { key: 'diamond', label: 'Diamond', icon: '💎' },
-                { key: 'gold', label: 'Gold', icon: '🥇' },
-                { key: 'silver', label: 'Silver', icon: '🥈' },
-                { key: 'bronze', label: 'Bronze', icon: '🥉' }
-            ];
-
-            const activeHunters = Object.keys(squadCotwRanks).filter(u => {
-                const data = squadCotwRanks[u] || {};
-                const total = Object.values(data).reduce((acc, val) => acc + (Number(val) || 0), 0);
-                return total > 0;
-            });
-
-            if (activeHunters.length === 0) {
-                container.innerHTML = `<div class="p-6 text-center text-gray-500 font-bold uppercase text-xs col-span-full">No active hunter has logged animal ranks in Firestore.</div>`;
-                return;
-            }
-
-            const leaders = {};
-            TIERS.forEach(t => {
-                let max = 0;
-                let leader = null;
-                activeHunters.forEach(u => {
-                    const count = Number(squadCotwRanks[u]?.[t.key] || squadCotwRanks[u]?.[t.key.toLowerCase()] || 0);
-                    if (count > max) {
-                        max = count;
-                        leader = u;
-                    }
-                });
-                if (max > 0) leaders[t.key] = { leader, max };
-            });
-
-            let html = "";
-            activeHunters.forEach(user => {
-                const uData = squadCotwRanks[user] || {};
-                const theme = USER_THEMES[user] || { color: '#ffffff' };
-
-                html += `
-                    <div class="bg-black/50 p-4 rounded-xl border border-white/10 space-y-2.5">
-                        <div class="flex justify-between items-center border-b border-white/5 pb-2">
-                            <span class="text-sm font-black uppercase" style="color:${theme.color};">${user}</span>
-                            <span class="text-[10px] font-mono text-gray-400 uppercase">Trophy Lodge</span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 text-xs">
-                            ${TIERS.map(t => {
-                                const count = Number(uData[t.key] || uData[t.key.toLowerCase()] || 0);
-                                const isLead = leaders[t.key] && leaders[t.key].leader === user && count > 0;
-                                return `
-                                    <div class="bg-black/60 p-2 rounded-lg border ${isLead ? 'rank-glow-1st' : 'border-white/5'} flex justify-between items-center">
-                                        <span class="text-gray-300 font-bold flex items-center gap-1">
-                                            <span>${t.icon}</span> ${t.label}
-                                        </span>
-                                        <span class="font-mono font-black text-white ${isLead ? 'text-emerald-400' : ''}">
-                                            ${isLead ? '👑 ' : ''}${count}
-                                        </span>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
-        }
-
-        function calculateGameProgress(docData) {
-            if (!docData) return 0;
-            if (typeof docData.percentage === 'number') return Math.round(docData.percentage);
-            if (typeof docData.overall === 'number') return Math.round(docData.overall);
-            if (typeof docData.completion === 'number') return Math.round(docData.completion);
-            if (typeof docData.totalCollection === 'number') return Math.round(docData.totalCollection);
-            if (typeof docData.progress === 'number') {
-                return docData.progress <= 1 && docData.progress > 0 ? Math.round(docData.progress * 100) : Math.round(docData.progress);
-            }
-            if (Array.isArray(docData.trophies) && docData.trophies.length > 0) {
-                let current = 0;
-                let goal = 0;
-                docData.trophies.forEach(t => {
-                    const g = Number(t.goal) || 1;
-                    goal += g;
-                    if (t.current >= g || t.completed === true || t.done === true) {
-                        current += g;
-                    } else {
-                        current += Number(t.current) || 0;
-                    }
-                });
-                return goal > 0 ? Math.round((current / goal) * 100) : 0;
-            }
-            if (Array.isArray(docData.progress) && docData.progress.length > 0) {
-                const total = docData.progress.length;
-                const found = docData.progress.filter(i => i && (i.collected || i.done || i.completed || (i.count && i.count > 0))).length;
-                return total > 0 ? Math.round((found / total) * 100) : 0;
-            }
-            return 0;
-        }
-
-        initSE5Listeners();
-        listenToSquadCotwRanks();
-        loadAllFirestoreSquadGames();
-        setInterval(loadAllFirestoreSquadGames, 45000);
-    </script>
-
-    <!-- REALTIME DATABASE RESILIENT MULTI-PATH LOADER -->
+        <div id="ny-timestamp" style="font-size:11px; color:#aaa;" class="outlined-text">
+            New York Time (24h): --:--:--
+        </div>
+    </footer>
+
+    <!-- Domain-Aware Link Routing (Enforces target="_self" on same domain, target="_blank" on external) -->
     <script>
-        const ONELIVIDMAN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/OneLIVIDMAN.json";
-        const ROOT_PSN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn.json";
-        const CANONICAL_GAMES_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/games.json";
-        const UTM_LINKS_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
-        const PSN_GAMERTAGS_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags.json";
-        
-        // Exact rule-compliant endpoint for fs25-a3563
-        const FS25_PRIMARY_URL = "https://fs25-a3563-default-rtdb.firebaseio.com/fs25.json";
-        const FS25_FALLBACK_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
-
-        let currentTrophyData = [];
-        let lastEarnedTrophyData = null;
-        let globalSquadData = {}; 
-        let globalGamertagsData = {};
-        let canonicalGamesSkeleton = {};
-        let activeLiveInterval = null;
-
-        function convertFirebaseArray(data) {
-            if (!data) return [];
-            if (Array.isArray(data)) return data;
-            if (typeof data === 'object') return Object.values(data);
-            return [];
-        }
-
-        function formatDisplayTime(timestamp) {
-            if (!timestamp) return new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
-            return new Date(timestamp).toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
-        }
-
-        function getTimeAgoString(timestamp) {
-            if (!timestamp) return "";
-            const time = typeof timestamp === 'number' ? timestamp : new Date(timestamp).getTime();
-            if (isNaN(time)) return "";
-            
-            const diffMs = Date.now() - time;
-            if (diffMs < 0) return "just now";
-
-            const diffSec = Math.floor(diffMs / 1000);
-            if (diffSec < 60) return "just now";
-            const diffMin = Math.floor(diffSec / 60);
-            if (diffMin < 60) return `${diffMin}m ago`;
-            const diffHours = Math.floor(diffMin / 60);
-            if (diffHours < 24) return `${diffHours}h ago`;
-            const diffDays = Math.floor(diffHours / 24);
-            if (diffDays < 30) return `${diffDays}d ago`;
-            const diffMonths = Math.floor(diffDays / 30);
-            if (diffMonths < 12) return `${diffMonths}mo ago`;
-            const diffYears = Math.floor(diffDays / 365);
-            return `${diffYears}y ago`;
-        }
-
-        function getPreciseHoursAgo(timestamp) {
-            if (!timestamp) return "--";
-            const time = typeof timestamp === 'number' ? timestamp : new Date(timestamp).getTime();
-            if (isNaN(time)) return "--";
-            const diffMs = Math.max(0, Date.now() - time);
-            const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
-            const totalMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-            return `${totalHours}h ${totalMinutes}m elapsed`;
-        }
-
-        function formatIntervalSpan(startTimestamp, endTimestamp = Date.now()) {
-            if (!startTimestamp) return "--";
-            const start = typeof startTimestamp === 'number' ? startTimestamp : new Date(startTimestamp).getTime();
-            if (isNaN(start)) return "--";
-
-            const diffMs = Math.max(0, endTimestamp - start);
-            const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
-            const days = Math.floor(totalHours / 24);
-            const remHours = totalHours % 24;
-
-            if (days > 0) return `${days}d ${remHours}h elapsed`;
-            return `${totalHours}h elapsed`;
-        }
-
-        function parsePlayDurationToHours(val) {
-            if (val === undefined || val === null || val === "") return 0;
-            if (typeof val === 'number') return Math.round(val);
-            const str = String(val).trim();
-            const numericMatch = str.match(/^([\d.]+)/);
-            if (numericMatch) {
-                const num = parseFloat(numericMatch[1]);
-                if (!isNaN(num)) return Math.round(num);
-            }
-            const matchH = str.match(/(\d+)H/i);
-            const matchM = str.match(/(\d+)M/i);
-            let hours = matchH ? parseInt(matchH[1], 10) : 0;
-            let minutes = matchM ? parseInt(matchM[1], 10) : 0;
-            return Math.round(hours + (minutes / 60));
-        }
-
-        function normalizeGameTitle(str) {
-            if (!str) return "";
-            return str.toLowerCase().replace(/®|™/g, "").replace(/[^a-z0-9]/g, "").trim();
-        }
-
-        function escapeHtmlAttr(str) {
-            if (!str) return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/'/g, '&#39;')
-                .replace(/"/g, '&quot;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;');
-        }
-
-        function getSkeletonGameByCommId(commId, fallbackTitle = '') {
-            if (!commId && !fallbackTitle) return null;
-            const targetComm = (commId || '').trim().toUpperCase();
-            const normTitle = normalizeGameTitle(fallbackTitle);
-
-            if (targetComm && canonicalGamesSkeleton[targetComm]) {
-                return canonicalGamesSkeleton[targetComm];
-            }
-
-            for (const [key, skel] of Object.entries(canonicalGamesSkeleton)) {
-                if (!skel) continue;
-                const cId = (skel.commId || skel.npCommunicationId || key || '').trim().toUpperCase();
-                if (targetComm && cId === targetComm) return skel;
-                if (normTitle && normalizeGameTitle(skel.name || skel.trophyTitleName || '') === normTitle) return skel;
-            }
-            return null;
-        }
-
-        function resolveActivePlaytime(user, hunt) {
-            if (!user || !hunt) return { formatted: "0 hrs", isLive: false, baseSeconds: 0, startTime: null };
-
-            const playSessions = user.playSessions || {};
-            const recentGames = convertFirebaseArray(user.recentGames);
-
-            const candidateKeys = [
-                hunt.titleId,
-                hunt.npTitleId,
-                hunt.commId,
-                hunt.npCommunicationId,
-                user.currentCommunicationId
-            ].filter(Boolean);
-
-            let matchedSession = null;
-            for (const key of candidateKeys) {
-                if (playSessions[key]) {
-                    matchedSession = playSessions[key];
-                    break;
-                }
-            }
-
-            const targetNormTitle = normalizeGameTitle(hunt.title || user.currentGame);
-            if (!matchedSession) {
-                for (const session of Object.values(playSessions)) {
-                    if (session && normalizeGameTitle(session.title) === targetNormTitle) {
-                        matchedSession = session;
-                        break;
-                    }
-                }
-            }
-
-            if (matchedSession) {
-                const isOnline = !!user.online;
-                const isActive = !!matchedSession.isActive && isOnline;
-                const baseSec = matchedSession.totalSeconds || 0;
-                const start = matchedSession.sessionStartTime || null;
-
-                if (isActive && start) {
-                    const elapsed = Math.max(0, Math.floor((Date.now() - start) / 1000));
-                    return {
-                        formatted: `${formatDuration(baseSec + elapsed)} (Active)`,
-                        isLive: true,
-                        baseSeconds: baseSec,
-                        startTime: start
-                    };
-                }
-
-                if (matchedSession.totalFormatted && matchedSession.totalFormatted !== "0 hrs") {
-                    return { formatted: matchedSession.totalFormatted, isLive: false, baseSeconds: baseSec, startTime: null };
-                }
-            }
-
-            const matchedRecent = recentGames.find(g => {
-                if (hunt.npCommunicationId && g.npCommunicationId === hunt.npCommunicationId) return true;
-                if (hunt.titleId && (g.titleId === hunt.titleId || g.npTitleId === hunt.titleId)) return true;
-                return normalizeGameTitle(g.name || g.title) === targetNormTitle;
-            });
-
-            if (matchedRecent?.nativePlaytimeFormatted && matchedRecent.nativePlaytimeFormatted !== "0 hrs") {
-                return { formatted: matchedRecent.nativePlaytimeFormatted, isLive: false, baseSeconds: matchedRecent.nativePlaytimeSeconds || 0, startTime: null };
-            }
-
-            const directVal = hunt.hoursFormatted || hunt.hoursPlayed || "0 hrs";
-            return { formatted: directVal, isLive: false, baseSeconds: 0, startTime: null };
-        }
-
-        function extractTrophyTracking(t) {
-            if (!t) return null;
-            if (window.getTrophyLiveProgress) return window.getTrophyLiveProgress(t);
-
-            const isEarned = !!t.earned;
-
-            if (t.subProgressRatio && typeof t.subProgressRatio === 'string' && t.subProgressRatio.includes('/')) {
-                const parts = t.subProgressRatio.split('/');
-                const c = Number(parts[0].trim());
-                const targetVal = Number(parts[1].trim());
-
-                if (!isNaN(targetVal) && targetVal > 0) {
-                    if (isEarned) {
-                        return {
-                            count: targetVal,
-                            target: targetVal,
-                            pct: 100,
-                            fraction: `${targetVal.toLocaleString()}/${targetVal.toLocaleString()}`
-                        };
-                    }
-                    if (!isNaN(c)) {
-                        return {
-                            count: c,
-                            target: targetVal,
-                            pct: Math.min(100, Math.round((c / targetVal) * 100)),
-                            fraction: `${c.toLocaleString()}/${targetVal.toLocaleString()}`
-                        };
-                    }
-                }
-            }
-
-            let target = null;
-            if (t.trophyProgressTargetValue !== undefined && t.trophyProgressTargetValue !== null && t.trophyProgressTargetValue !== "") {
-                target = Number(t.trophyProgressTargetValue);
-            } else if (t.targetValue !== undefined && Number(t.targetValue) > 1) {
-                target = Number(t.targetValue);
-            } else if (t.target !== undefined && Number(t.target) > 1) {
-                target = Number(t.target);
-            }
-
-            if (!target || isNaN(target) || target <= 1) return null;
-
-            if (isEarned) {
-                return {
-                    count: target,
-                    target: target,
-                    pct: 100,
-                    fraction: `${target.toLocaleString()}/${target.toLocaleString()}`
-                };
-            }
-
-            let count = 0;
-            if (t.currentValue !== undefined && t.currentValue !== null) {
-                count = Number(t.currentValue);
-            } else if (t.progressRate !== undefined && t.progressRate !== null) {
-                count = Number(t.progressRate);
-            } else if (t.progress !== undefined && t.progress !== null && !Array.isArray(t.progress)) {
-                count = Number(t.progress);
-            } else if (t.count !== undefined && t.count !== null) {
-                count = Number(t.count);
-            }
-
-            if (isNaN(count)) count = 0;
-            const pct = Math.min(100, Math.round((count / target) * 100));
-
-            return {
-                count: count,
-                target: target,
-                pct: pct,
-                fraction: `${count.toLocaleString()}/${target.toLocaleString()}`
-            };
-        }
-
-        async function fetchCanonicalSkeleton() {
-            try {
-                const res = await fetch(`${CANONICAL_GAMES_URL}?t=${Date.now()}`);
-                if (res.ok) canonicalGamesSkeleton = await res.json() || {};
-            } catch (e) {
-                console.warn("[CANONICAL SKELETON NOTICE]:", e.message);
-            }
-        }
-
-        async function fetchUtmNavLinks() {
-            const container = document.getElementById('dynamic-nav-container');
-            if (!container) return;
-
-            try {
-                const res = await fetch(`${UTM_LINKS_RTDB_URL}?t=${Date.now()}`);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                if (!data) return;
-
-                const leafLinks = [];
-
-                function extractLinks(node) {
-                    if (!node || typeof node !== 'object') return;
-
-                    const url = node.url || node.link || node.href;
-                    if (url && typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('//'))) {
-                        leafLinks.push({
-                            title: node.title || node.name || "Link",
-                            url: url,
-                            image: node.image || node.thumb || node.thumbnail || node.img || null,
-                            group: node.group ? String(node.group).trim() : "Standalone"
-                        });
-                        return;
-                    }
-
-                    Object.values(node).forEach(child => {
-                        if (child && typeof child === 'object') extractLinks(child);
-                    });
-                }
-
-                extractLinks(data);
-
-                const standaloneLinks = [];
-                const groupFolders = {};
-
-                leafLinks.forEach(item => {
-                    const grp = item.group;
-                    if (grp.toLowerCase() === 'standalone' || grp.toLowerCase() === 'none' || grp === '') {
-                        standaloneLinks.push(item);
-                    } else {
-                        if (!groupFolders[grp]) groupFolders[grp] = [];
-                        groupFolders[grp].push(item);
-                    }
-                });
-
-                const isSameDomain = (url) => {
-                    try {
-                        const parsed = new URL(url, window.location.href);
-                        return parsed.origin === window.location.origin;
-                    } catch (e) { return true; }
-                };
-
-                let html = '';
-
-                Object.entries(groupFolders).forEach(([folderName, items], idx) => {
-                    const folderId = `nav-folder-${idx}`;
-                    html += `
-                        <div class="nav-folder">
-                            <button class="folder-toggle-btn" onclick="toggleFolderDropdown('${folderId}')">
-                                <i class="fas fa-folder text-yellow-400"></i>
-                                <span>${folderName}</span>
-                                <i class="fas fa-chevron-down text-xs text-gray-400 ml-1"></i>
-                            </button>
-                            <div class="folder-dropdown-menu" id="${folderId}">
-                                ${items.map(link => {
-                                    const targetAttr = isSameDomain(link.url) ? 'target="_self"' : 'target="_blank" rel="noopener noreferrer"';
-                                    return `
-                                        <a href="${link.url}" ${targetAttr} class="folder-dropdown-item">
-                                            ${link.image ? `<img src="${link.image}" class="nav-thumb-icon" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'><rect width=\'24\' height=\'24\' fill=\'%231a1a22\'/><text x=\'50%25\' y=\'50%25\' font-size=\'10\' dominant-baseline=\'middle\' text-anchor=\'middle\'>🔗</text></svg>';">` : '<i class="fas fa-arrow-up-right-from-square text-sky-400 text-xs"></i>'}
-                                            <span class="truncate">${link.title}</span>
-                                        </a>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
-                    `;
-                });
-
-                standaloneLinks.forEach(link => {
-                    const targetAttr = isSameDomain(link.url) ? 'target="_self"' : 'target="_blank" rel="noopener noreferrer"';
-                    html += `
-                        <a href="${link.url}" ${targetAttr} class="nav-link-btn">
-                            ${link.image ? `<img src="${link.image}" class="nav-thumb-icon mr-1.5" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'><rect width=\'24\' height=\'24\' fill=\'%231a1a22\'/><text x=\'50%25\' y=\'50%25\' font-size=\'10\' dominant-baseline=\'middle\' text-anchor=\'middle\'>🔗</text></svg>';">` : ''}
-                            <span>${link.title}</span>
-                        </a>
-                    `;
-                });
-
-                container.innerHTML = html;
-            } catch (err) {}
-        }
-
-        window.toggleFolderDropdown = function(folderId) {
-            document.querySelectorAll('.folder-dropdown-menu').forEach(menu => {
-                if (menu.id !== folderId) menu.classList.remove('show');
-            });
-            const menu = document.getElementById(folderId);
-            if (menu) menu.classList.toggle('show');
-        };
-
-        window.addEventListener('click', function(e) {
-            if (!e.target.closest('.nav-folder')) {
-                document.querySelectorAll('.folder-dropdown-menu').forEach(menu => menu.classList.remove('show'));
-            }
-        });
-
-        // FS25 Farm 2 Telemetry Direct Authorized Reader
-        async function updateFS25Telemetry() {
-            try {
-                let res = await fetch(`${FS25_PRIMARY_URL}?t=${Date.now()}`);
-                if (!res.ok) res = await fetch(`${FS25_FALLBACK_URL}?t=${Date.now()}`);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                if (!data) return;
-
-                const farmData = data.farms?.farm_2 || 
-                                 data.farms?.farmId2 || 
-                                 data.farms?.[2] || 
-                                 data.farms?.Ray || 
-                                 data.farms?.OneLIVIDMAN || 
-                                 data.farmId2 || 
-                                 data;
-
-                const farmName = farmData.name || farmData.farmName || "Ray's Farm (Farm 2)";
-                const rawMoney = farmData.finances ? farmData.finances.money : farmData.money;
-                const money = rawMoney !== undefined ? `$${Math.round(Number(rawMoney)).toLocaleString()}` : "$0";
-                
-                const vehicles = convertFirebaseArray(farmData.cards?.fleet || farmData.vehicles || farmData.fleet || farmData.equipment || farmData.machines);
-                const harvesters = convertFirebaseArray(farmData.cards?.harvestersAndCombines);
-                const allUnits = [...vehicles, ...harvesters];
-
-                const fields = convertFirebaseArray(farmData.cards?.farmlandOwned || farmData.fields || farmData.farmlands || farmData.ownedFields);
-                const agronomyFields = convertFirebaseArray(data.fields || data.cards?.fieldsAgronomy || []);
-
-                document.getElementById('fs25-farm-name').innerText = farmName;
-                document.getElementById('fs25-money').innerText = money;
-                document.getElementById('fs25-fields-count').innerText = fields.length;
-                document.getElementById('fs25-vehicles-count').innerText = allUnits.length;
-                document.getElementById('fs25-fleet-subtitle').innerText = `${allUnits.length} Total Units Registered`;
-                document.getElementById('fs25-fields-subtitle').innerText = `${fields.length} Parcels Owned`;
-
-                const fleetContainer = document.getElementById('fs25-fleet-container');
-                if (fleetContainer) {
-                    if (allUnits.length > 0) {
-                        fleetContainer.innerHTML = allUnits.map(v => {
-                            const name = v.name || v.brand || v.type || "Machinery";
-                            const img = v.image || null;
-                            const hours = v.operatingHours !== undefined ? `${v.operatingHours} hrs` : "Operational";
-                            const wear = v.wear !== undefined ? `${Math.round(v.wear * 100)}% Wear` : "Clean";
-                            const cardType = v.cardType || "Farm 2 Implement";
-
-                            return `
-                                <div class="bg-black/40 p-3 rounded-xl border border-white/5 flex gap-3 items-center hover:border-lime-500/40 transition-colors">
-                                    ${img ? `<img src="${img}" class="w-12 h-12 rounded-lg object-contain bg-black/60 p-1 border border-white/10" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'48\' height=\'48\' viewBox=\'0 0 48 48\'><rect width=\'48\' height=\'48\' fill=\'%231a1a22\'/><text x=\'50%25\' y=\'50%25\' font-size=\'20\' dominant-baseline=\'middle\' text-anchor=\'middle\'>🚜</text></svg>';">` : ''}
-                                    <div class="min-w-0 flex-1">
-                                        <div class="text-[10px] font-black text-lime-400 uppercase tracking-widest">${cardType}</div>
-                                        <div class="text-xs font-black text-white uppercase truncate">${name}</div>
-                                        <div class="flex justify-between items-center text-[11px] font-bold text-gray-400 pt-1.5 border-t border-white/5 mt-1.5 font-mono">
-                                            <span>${hours}</span>
-                                            <span class="text-lime-400">${wear}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('');
-                    } else {
-                        fleetContainer.innerHTML = `<div class="p-6 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No active machinery registered to Farm 2.</div>`;
-                    }
-                }
-
-                const fieldsContainer = document.getElementById('fs25-fields-container');
-                if (fieldsContainer) {
-                    if (fields.length > 0) {
-                        fieldsContainer.innerHTML = fields.map(f => {
-                            const fId = f.id || f.fieldId || "Plot";
-                            const area = f.areaHa ? `${f.areaHa} ha` : (f.area ? `${f.area}` : null);
-                            const agroMatch = agronomyFields.find(af => af.fieldId == fId) || {};
-                            const crop = agroMatch.fruitType || f.crop || f.fruitType || "Seeded";
-                            
-                            const growthStage = agroMatch.growthStage || f.growthStage || 0;
-                            let growthStatus = "Growing";
-                            if (growthStage >= 6) growthStatus = "Ready to Harvest";
-                            else if (growthStage === 0) growthStatus = "Seeded / Cultivated";
-
-                            return `
-                                <div class="bg-black/50 p-3 rounded-xl border border-white/5 flex flex-col justify-between space-y-2">
-                                    <div class="flex justify-between items-start">
-                                        <div>
-                                            <div class="text-[10px] font-black text-lime-400 uppercase">Farmland Plot #${fId}</div>
-                                            <div class="text-xs font-black text-white uppercase mt-0.5">${crop}</div>
-                                        </div>
-                                        <span class="text-[10px] font-mono font-bold ${growthStage >= 6 ? 'text-emerald-400' : 'text-amber-400'}">${growthStatus}</span>
-                                    </div>
-                                    ${area ? `<div class="text-[10px] text-gray-500 font-mono">Area: ${area}</div>` : ''}
-                                </div>
-                            `;
-                        }).join('');
-                    } else {
-                        fieldsContainer.innerHTML = `<div class="p-4 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No parcels assigned to Farm 2.</div>`;
-                    }
-                }
-
-            } catch (err) {
-                console.warn("[FS25 Polling Notice]:", err.message);
-            }
-        }
-
-        function toggleNav() {
-            const nav = document.getElementById('dynamic-nav-container');
-            if (nav) nav.classList.toggle('active');
-        }
-
-        function openLightboxImage(url, title) {
-            const lb = document.getElementById('generic-lightbox');
-            document.getElementById('lightbox-title').innerText = title || "Image";
-            document.getElementById('lightbox-body').innerHTML = `<img src="${url}" class="max-h-[70vh] mx-auto rounded-xl object-contain">`;
-            if (lb) lb.style.display = 'flex';
-        }
-
-        function openRecentTrophyLightbox() {
-            if (lastEarnedTrophyData) openTrophyDetailModal(lastEarnedTrophyData, lastEarnedTrophyData.game);
-        }
-
-        function openTrophyDetailModal(t, gameTitle) {
-            if (!t) return;
-            const lb = document.getElementById('generic-lightbox');
-            document.getElementById('lightbox-title').innerText = (gameTitle || "Game") + " - Trophy";
-
-            const earnedDateRaw = t.earnedDateTime || t.earnedTimestamp || t.earnedDate || null;
-            const formattedDate = earnedDateRaw ? formatDisplayTime(earnedDateRaw) : null;
-            const timeAgo = earnedDateRaw ? getTimeAgoString(earnedDateRaw) : null;
-            const hoursAgo = earnedDateRaw ? getPreciseHoursAgo(earnedDateRaw) : null;
-            const tracking = extractTrophyTracking(t);
-
-            document.getElementById('lightbox-body').innerHTML = `
-                <div class="flex flex-col items-center space-y-4 text-center">
-                    <img src="${t.icon || ''}" class="w-24 h-24 rounded-xl border border-white/10 shadow-xl" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'96\' height=\'96\' viewBox=\'0 0 96 96\'><rect width=\'96\' height=\'96\' fill=\'%23202024\'/><text x=\'50%25\' y=\'50%25\' font-size=\'40\' dominant-baseline=\'middle\' text-anchor=\'middle\'>🏆</text></svg>';">
-                    <h4 class="text-xl font-black text-white uppercase">${t.name}</h4>
-                    <p class="text-gray-300 bg-white/5 p-4 rounded-xl border border-white/5 w-full text-xs">${t.description || t.detail || 'Objective Achieved.'}</p>
-                    
-                    ${tracking ? `
-                        <div class="bg-black/50 p-3 rounded-xl border border-sky-500/20 w-full space-y-1.5">
-                            <div class="flex justify-between text-xs font-black uppercase text-sky-400">
-                                <span>Objective Progress</span>
-                                <span>${tracking.fraction} (${tracking.pct}%)</span>
-                            </div>
-                            <div class="progress-bar-container"><div class="progress-bar-fill ${getChromaStageClass(tracking.pct)}" style="width: ${tracking.pct}%"></div></div>
-                        </div>
-                    ` : ''}
-
-                    <div class="flex flex-col items-center gap-1">
-                        <div class="text-xs font-black uppercase ${t.earned ? 'text-emerald-400' : 'text-gray-500'}">
-                            ${t.earned ? 'Unlocked on PlayStation Network' : 'Locked Trophy'}
-                        </div>
-                        ${formattedDate ? `
-                            <div class="text-xs font-bold text-gray-400">
-                                Earned: <span class="text-white">${formattedDate}</span> &bull; <span class="text-sky-400">${timeAgo}</span>
-                                <div class="text-sky-300 font-mono text-xs mt-0.5">${hoursAgo}</div>
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-            `;
-            if (lb) lb.style.display = 'flex';
-        }
-
-        function closeGenericLightbox() {
-            const lb = document.getElementById('generic-lightbox');
-            if (lb) lb.style.display = 'none';
-        }
-
-        // Domain-Aware Link Routing (Keeps internal same-domain links in the same tab)
+        // Section: Protocol & Domain Error Handling
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('a[href]').forEach(link => {
-                const href = link.getAttribute('href');
-                if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+            const enforceDomainRouting = () => {
+                document.querySelectorAll('a[href]').forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
 
-                try {
-                    const parsedUrl = new URL(href, window.location.href);
-                    if (parsedUrl.origin === window.location.origin) {
-                        link.removeAttribute('target');
-                        link.removeAttribute('rel');
-                    } else {
-                        link.setAttribute('target', '_blank');
-                        link.setAttribute('rel', 'noopener noreferrer');
+                    try {
+                        const parsed = new URL(href, window.location.href);
+                        if (parsed.origin === window.location.origin) {
+                            link.removeAttribute('target');
+                            link.removeAttribute('rel');
+                        } else {
+                            link.setAttribute('target', '_blank');
+                            link.setAttribute('rel', 'noopener noreferrer');
+                        }
+                    } catch (e) {
+                        console.warn("[DOMAIN ROUTE ERROR]:", e.message);
                     }
-                } catch (e) {}
-            });
+                });
+            };
+
+            enforceDomainRouting();
+            const observer = new MutationObserver(() => enforceDomainRouting());
+            observer.observe(document.body, { childList: true, subtree: true });
         });
-
-        // Initialize Engine & Polling Loops
-        fetchCanonicalSkeleton();
-        fetchUtmNavLinks();
-        updateHub();
-        updateFS25Telemetry();
-        fetchLiveTwitch();
-        syncPSNGamertags();
-
-        setInterval(updateHub, 30000);
-        setInterval(updateFS25Telemetry, 30000);
-        setInterval(fetchLiveTwitch, 60000);
-        setInterval(fetchUtmNavLinks, 180000);
-        setInterval(syncPSNGamertags, 30000);
     </script>
+
+    <!-- Main Tactical Engine Script with Cache-Bust Matching Header Build Version -->
+    <script type="module" src="tracker.js?v=20260923_2035"></script>
 </body>
 </html>
