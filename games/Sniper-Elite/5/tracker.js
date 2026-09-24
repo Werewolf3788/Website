@@ -1,34 +1,14 @@
 /* ============================================================================
-   File: tracker.js
-   Deployment Timestamp: 2026-09-20 13:24:00 (EDT - New York)
-   Project: entertainment-71888
-   Version: v8.1.0-SE5-HEATMAP-CENTERED-NAV
-   Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
-   RTDB Path: psn/gamertags/{psn_id}/liveTrophyProgress/NPWR21465_00
-   Google Analytics Tag: G-CTYHDF4MSD
-   Features:
-     - Dynamic Long Shot Heatmap Engine: Interpolates smooth Green (high) to Red (low) gradient
-     - Centered Top Navigation Header: Ordered Home -> Users -> Game -> Entertainment
-     - 100% Firebase Authoritative: Zero localStorage dependencies; Firestore is source of truth
-     - Direct cloud-state preservation: Never downgrades or wipes progress on sync
-     - Live PSN RTDB Trophy & trophyProgress telemetry auto-merged with manual inputs
-     - Operatives bound to PSN IDs: WildHorse_Spirit, OneLIVIDMAN, DesdemonaTiger
-     - Mission 2 Long Shot distance calibrated to 525 meters
-     - Bronze (25%), Silver (50%), and Gold (100%) progression milestones
-     - Named Mission Long Shots: Specific mission names displayed on all long shots
-     - Real-time Firestore onSnapshot synchronization across all devices
-     - Discord Webhook Intel Dispatcher with Long Shot Leaderboard breakdown & squad records
-     - Uncapped Long Shot & Repeatable Career Ribbon tracking (counter + direct edit)
-     - 47 Complete Campaign/Survival Career Ribbons (Stealth, Tactics, Lethal, Non-Lethal, Survival)
-     - Dynamic Team Intel Leaderboard badge with Leader Crown (👑) indicator
-     - Interactive Leaflet tactical map overlay with dynamic pin filtering
-     - Direct numeric input editing + quick step (+/-) counters
-     - Single-tap toggle for 1-tier Medals, Collectibles, and Challenges
-     - Mobile hamburger toggle and Google Sheets CSV top navigation engine
-     - 24-Hour New York Time clock with auto-updating DOM bindings
-   ============================================================================ */
+ * File: tracker.js
+ * Project: entertainment-71888
+ * Version: v8.4.0-SE5-CLOUD-AUTHORITATIVE
+ * Deployment Timestamp: 2026-09-23 20:25:00 EDT (America/New_York)
+ * PSN Communication ID: NPWR21465_00
+ * Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
+ * RTDB Path: psn/gamertags/{psn_id}/liveTrophyProgress/NPWR21465_00
+ * Analytics: G-CTYHDF4MSD
+ * ============================================================================ */
 
-/* === SECTION: Core Imports & Firebase Configuration === */
 import { initializeApp } from '//www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from '//www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from '//www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
@@ -45,22 +25,32 @@ const firebaseConfig = {
   measurementId: "G-CTYHDF4MSD"
 };
 
-/* Operative Gamertags & Account Mappings */
+const PSN_COMMUNICATION_ID = 'NPWR21465_00';
 const ALL_OPERATIVES = ['Werewolf3788', 'Raymystyro', 'Terrdog', 'Elu Cloud'];
 
 const PSN_ACCOUNT_MAPPINGS = {
   'WildHorse_Spirit': 'Werewolf3788',
+  'wildhorse_spirit': 'Werewolf3788',
   'OneLIVIDMAN': 'Raymystyro',
-  'DesdemonaTiger': 'Elu Cloud'
+  'onelividman': 'Raymystyro',
+  'Darkwing69420': 'Terrdog',
+  'darkwing69420': 'Terrdog',
+  'DesdemonaTiger': 'Elu Cloud',
+  'desdemonatiger': 'Elu Cloud'
 };
 
-const PSN_COMMUNICATION_ID = 'NPWR21465_00'; // Sniper Elite 5 PSN Trophy ID
+const OPERATIVE_ALIASES = {
+  'Werewolf3788': ['Werewolf3788', 'wildhorse_spirit', 'WildHorse_Spirit'],
+  'Raymystyro': ['Raymystyro', 'OneLIVIDMAN', 'onelividman'],
+  'Terrdog': ['Terrdog', 'Darkwing69420', 'darkwing69420'],
+  'Elu Cloud': ['Elu Cloud', 'DesdemonaTiger', 'desdemonatiger']
+};
 
 const userThemes = {
-  'Werewolf3788': { color: '#ff8800', glow: 'rgba(255, 136, 0, 0.6)', intColor: 0xff8800 },
-  'Raymystyro': { color: '#ff4444', glow: 'rgba(255, 68, 68, 0.6)', intColor: 0xff4444 },
-  'Terrdog': { color: '#a855f7', glow: 'rgba(168, 85, 247, 0.6)', intColor: 0xa855f7 },
-  'Elu Cloud': { color: '#00ccff', glow: 'rgba(0, 204, 255, 0.6)', intColor: 0x00ccff }
+  'Werewolf3788': { color: '#ff8800', glow: 'rgba(255, 136, 0, 0.6)' },
+  'Raymystyro': { color: '#ff4444', glow: 'rgba(255, 68, 68, 0.6)' },
+  'Terrdog': { color: '#a855f7', glow: 'rgba(168, 85, 247, 0.6)' },
+  'Elu Cloud': { color: '#00ccff', glow: 'rgba(0, 204, 255, 0.6)' }
 };
 
 const IN_GAME_TYPE_ORDER = {
@@ -75,73 +65,107 @@ const IN_GAME_TYPE_ORDER = {
   'Ribbon': 9
 };
 
-/* === SECTION: PSN Trophy Cross-Reference Mapping (No Duplicate Entries) === */
-const PSN_TROPHY_MAPPINGS = {
-  'Sightless Strike': 'm9_ch3',
-  'Master Sniper': 'm9_ch4',
-  'Just a Flesh Wound': 'med_fleshwound',
-  'The French Connection': 'med_frenchconn',
-  'Confirming Suspicions': 'med_confirming_susp',
-  'The Kraken Wakes': 'med_thekrakenwakes',
-  'It\'s Starting to Crack': 'med_startstocrack',
-  'Change the Channel': 'med_changechannel',
-  'Taking It Back': 'med_takeback',
-  'Target America': 'med_targetamerica',
-  'The Kraken Sleeps': 'med_krakensleeps',
+function normalizeString(str) {
+  if (!str) return "";
+  return String(str)
+    .toLowerCase()
+    .replace(/[’']/g, "'")
+    .replace(/[^a-z0-9]/g, "")
+    .trim();
+}
+
+/* === SECTION 2: Complete PSN Trophy Mapping (NPWR21465_00) === */
+const PSN_TROPHY_MAPPINGS_RAW = {
+  // Platinum & Campaign Completion
+  'Sniper Elite': 'trophy_sniper_elite_plat',
+  'Meeting Resistance': 'trophy_meeting_resistance',
+  'Confirming Suspicions': 'trophy_confirming_suspicions',
+  'The Kraken Wakes': 'trophy_the_kraken_wakes',
+  "It's Starting to Crack": 'trophy_starting_to_crack',
+  'Change the Channel': 'trophy_change_channel',
+  'Taking it back': 'trophy_taking_it_back',
+  'Target America': 'trophy_target_america',
+  'The Kraken Sleeps': 'trophy_kraken_sleeps',
+  "Can't Outrun A Bullet": 'med_cantoutrun',
+  'Climbing the Ladder': 'trophy_climbing_ladder',
   'Liberté': 'med_liberte',
   'Best of the Best': 'med_bestofbest',
-  'Locomotion Commotion': 'med_locomotion',
-  'Up Close and Personal': 'med_upclose',
-  'Don\'t Hold Your Breath': 'med_dontbreath',
-  'Brains of the Operation': 'med_brainsop',
-  'Sight Beyond Sights': 'med_sightbeyond',
-  'Can\'t Outrun a Bullet': 'med_cantoutrun',
   'No Stone Unturned': 'med_nostone',
-  'Sharpshooter': 'med_sharpshooter',
-  'Skirmisher': 'med_skirmisher',
-  'Gunslinger': 'med_gunslinger',
-  'Lord of War': 'med_lordofwar',
+  'Opposing Force': 'trophy_opposing_force',
+  'Enemy at the Gates': 'trophy_enemy_at_gates',
+  'Fields of Glory': 'trophy_fields_of_glory',
+  'Just a Flesh Wound': 'med_fleshwound',
   'Organ Grinder': 'med_organgrinder',
+  'Strategist': 'med_strategist',
+  'Master of Pistols': 'med_masterpistols',
+  'Master of Secondaries': 'med_mastersecond',
+  'Master of Rifles': 'med_masterrifles',
+  'Master-at-arms': 'med_masteratarms',
+  'Gunslinger': 'med_gunslinger',
+  'Skirmisher': 'med_skirmisher',
+  'Sharpshooter': 'med_sharpshooter',
+  'The Long Game': 'med_longgame',
+  'Set Europe Ablaze': 'med_seteablaze',
+  'Precision Is Key': 'med_ironprecision',
+  'Out of Scope': 'med_outofscope',
+  'Rigged to Blow': 'med_riggedtoblow',
+  'My Little Friend': 'med_littlefriend',
+  'Explosive Efficiency': 'med_explodeeffic',
+  'Lord of War': 'med_lordofwar',
+  'Die Nussknacker Sweet!': 'med_nutcracker',
+  'Resourceful': 'med_resourceful',
   'Der Geist': 'med_dergeist',
   'As Quiet as a Mouse': 'med_quietmouse',
   'Close Quarters': 'med_closequarters',
   'Snake in the Grass': 'med_snaketallgrass',
-  'Master of Rifles': 'med_masterrifles',
-  'Master of Secondaries': 'med_mastersecond',
-  'Master of Pistols': 'med_masterpistols',
-  'Master-at-Arms': 'med_masteratarms',
-  'Set Europe Ablaze': 'med_seteablaze',
-  'Rigged to Blow': 'med_riggedtoblow',
-  'Explosive Efficiency': 'med_explodeeffic',
-  'Die Nussknacker Sweet!': 'med_nutcracker',
-  'Strategist': 'med_strategist',
-  'Das Spook': 'med_wm_dasspook',
-  'Herr Today, Gone Tomorrow': 'med_wm_herrtoday',
-  'Das Familienjuwel': 'med_wm_familienjuwel',
-  'Führerious Repetition': 'med_wm_fuhrerious',
-  'Reich to the Point': 'med_reichtopoint',
-  'Memories of the Alps': 'med_alpsmemories',
-  'Operation Foxley': 'med_wm_opfoxley',
-  'Alpha': 'med_wm_alpha',
-  'Downfall': 'med_downfall',
-  'Put a Pin in It': 'med_putapinit',
-  'Covert Elimination': 'med_covertelim',
-  'Last Resort': 'med_lastresort',
-  'Siegebreaker': 'med_siegebreaker',
-  'Ghost of Falaise': 'med_ghostoffalaise',
-  'Operation Overlord': 'med_opoverlord',
-  'If You Go Down to the Woods Today': 'med_m13_woods',
-  'Fight Another Day': 'med_m13_fightanother',
-  'Stroll in the Woods': 'med_m13_stroll',
-  'Shipbreaker': 'med_m14_shipbreaker',
-  'Sink or Swim': 'med_m14_sinkorswim',
-  'Going Overboard': 'med_m14_goingover'
+  'From Paris with Love': 'trophy_from_paris_with_love',
+  'Burn after reading': 'trophy_burn_after_reading',
+  'Souvenir hunter': 'trophy_souvenir_hunter',
+  'Eagle Eyed': 'trophy_eagle_eyed',
+  'Tinkerer': 'trophy_tinkerer',
+  "It'll Buff Right Out": 'med_buffrightout',
+  'Locomotion Commotion': 'med_locomotion',
+  'Up Close and Personal': 'med_upclose',
+  'Road Rage': 'med_roadrage',
+  "Don't hold your breath": 'med_dontbreath',
+  'Brains of the Operation': 'med_brainsop',
+  'Sight Beyond Sights': 'med_sightbeyond',
+  'Shoot for the Moon': 'trophy_shoot_for_moon',
+
+  // DLC 1: Wolf Mountain
+  'Führerious Repetition': 'trophy_dlc1_fuhrerious',
+  'Reich To The Point': 'trophy_dlc1_reich_to_point',
+  'From Führer Away': 'trophy_dlc1_from_fuhrer_away',
+  'Covert Elimination': 'trophy_dlc1_covert_elim',
+  'Alpha': 'trophy_dlc1_alpha',
+  'Herr Today, Gone Tomorrow': 'trophy_dlc1_herr_today',
+  'Operation Foxley': 'trophy_dlc1_op_foxley',
+  'Das Familienjuwel': 'trophy_dlc1_familienjuwel',
+
+  // DLC 2: Landing Force
+  'Last Resort': 'trophy_dlc2_last_resort',
+
+  // DLC 3: Conqueror
+  'Siegebreaker': 'trophy_dlc3_siegebreaker',
+  'Ghost of Falaise': 'trophy_dlc3_ghost_falaise',
+  'Operation Overlord': 'trophy_dlc3_op_overlord',
+
+  // DLC 4: Rough Landing
+  'If You Go Down To The Woods Today': 'trophy_dlc4_woods_today',
+  'Fight Another Day': 'trophy_dlc4_fight_another',
+  'Stroll in the Woods': 'trophy_dlc4_stroll_woods',
+
+  // DLC 5: Kraken Awakes
+  'Shipbreaker': 'trophy_dlc5_shipbreaker',
+  'Sink or Swim': 'trophy_dlc5_sink_or_swim',
+  'Going Overboard': 'trophy_dlc5_going_overboard'
 };
 
-/* === SECTION: Discord Webhook Intel Configuration === */
-const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1550706491030249492/u-9-vmB_nyR8EdOjL8jOeLOZXrK1gaHsUaqUPWjGsCdzAqzmcmOspw1d6M9fZCWUmrTi";
+const PSN_TROPHY_MAPPINGS = {};
+Object.entries(PSN_TROPHY_MAPPINGS_RAW).forEach(([rawName, trackerId]) => {
+  PSN_TROPHY_MAPPINGS[normalizeString(rawName)] = trackerId;
+});
 
-/* === SECTION: GitHub Asset Texture & Map Configuration === */
 const GITHUB_RAW_BASE = '//raw.githubusercontent.com/Werewolf3788/Website/main/games/Sniper-Elite/5/images/';
 
 const GAME_TYPE_ICONS = {
@@ -156,66 +180,13 @@ const GAME_TYPE_ICONS = {
   'Ribbon': `${GITHUB_RAW_BASE}Sniper%20Elite%20Personal%20Letters.JPG`
 };
 
-const MISSION_MAP_CONFIG = {
-  '7SecretWeapons': { 
-    imgUrl: `${GITHUB_RAW_BASE}Sniper%20Elite%20Secret%20Weapons.JPG`, 
-    w: 2048, 
-    h: 2048 
-  },
-  '8RubbleandRuin': { 
-    imgUrl: `${GITHUB_RAW_BASE}Sniper%20Elite%20Rubble%20and%20Ruin.JPG`, 
-    w: 2048, 
-    h: 2048 
-  }
-};
-
-/* === SECTION: Tier Progress Utility (Bronze, Silver, Gold) === */
 function getTierStatus(percent) {
-  if (percent >= 100) {
-    return {
-      tier: 'Gold',
-      icon: '🥇',
-      label: 'GOLD TIER',
-      badgeClass: 'tier-badge-gold',
-      color: '#ffd700',
-      intColor: 0xffd700,
-      style: 'background: rgba(255, 215, 0, 0.2); color: #ffd700; border: 1px solid #ffd700;'
-    };
-  }
-  if (percent >= 50) {
-    return {
-      tier: 'Silver',
-      icon: '🥈',
-      label: 'SILVER TIER',
-      badgeClass: 'tier-badge-silver',
-      color: '#c0c0c0',
-      intColor: 0xc0c0c0,
-      style: 'background: rgba(192, 192, 192, 0.2); color: #e0e0e0; border: 1px solid #c0c0c0;'
-    };
-  }
-  if (percent >= 25) {
-    return {
-      tier: 'Bronze',
-      icon: '🥉',
-      label: 'BRONZE TIER',
-      badgeClass: 'tier-badge-bronze',
-      color: '#cd7f32',
-      intColor: 0xcd7f32,
-      style: 'background: rgba(205, 127, 50, 0.2); color: #e59866; border: 1px solid #cd7f32;'
-    };
-  }
-  return {
-    tier: 'None',
-    icon: '⚪',
-    label: 'IN PROGRESS',
-    badgeClass: 'tier-badge-none',
-    color: '#888888',
-    intColor: 0x888888,
-    style: 'background: rgba(255, 255, 255, 0.08); color: #aaa; border: 1px solid rgba(255,255,255,0.15);'
-  };
+  if (percent >= 100) return { tier: 'Gold', icon: '🥇', label: 'GOLD TIER', color: '#ffd700', style: 'background: rgba(255, 215, 0, 0.2); color: #ffd700; border: 1px solid #ffd700;' };
+  if (percent >= 50) return { tier: 'Silver', icon: '🥈', label: 'SILVER TIER', color: '#c0c0c0', style: 'background: rgba(192, 192, 192, 0.2); color: #e0e0e0; border: 1px solid #c0c0c0;' };
+  if (percent >= 25) return { tier: 'Bronze', icon: '🥉', label: 'BRONZE TIER', color: '#cd7f32', style: 'background: rgba(205, 127, 50, 0.2); color: #e59866; border: 1px solid #cd7f32;' };
+  return { tier: 'None', icon: '⚪', label: 'IN PROGRESS', color: '#888888', style: 'background: rgba(255, 255, 255, 0.08); color: #aaa; border: 1px solid rgba(255,255,255,0.15);' };
 }
 
-/* === SECTION: Dynamic Long Shot Heatmap Color Engine === */
 function getLongShotHeatmapStyle(val, minVal, maxVal) {
   const current = Number(val) || 0;
   const targetMax = Math.max(Number(maxVal) || 1, 1);
@@ -229,7 +200,6 @@ function getLongShotHeatmapStyle(val, minVal, maxVal) {
   }
   ratio = Math.max(0, Math.min(1, ratio));
 
-  // Red (#ef4444 -> 239, 68, 68) to Green (#22c55e -> 34, 197, 94)
   const r = Math.round(239 + (34 - 239) * ratio);
   const g = Math.round(68 + (197 - 68) * ratio);
   const b = Math.round(68 + (94 - 68) * ratio);
@@ -237,14 +207,14 @@ function getLongShotHeatmapStyle(val, minVal, maxVal) {
   return {
     color: `rgb(${r}, ${g}, ${b})`,
     background: `rgba(${r}, ${g}, ${b}, 0.22)`,
-    border: `1px solid rgba(${r}, ${g}, ${b}, 0.85)`,
-    glow: `0 0 10px rgba(${r}, ${g}, ${b}, 0.45)`
+    border: `1px solid rgba(${r}, ${g}, ${b}, 0.85)`
   };
 }
 
-/* === SECTION: Master Dataset === */
+/* === SECTION 3: Complete Sniper Elite 5 Dataset === */
 const sniperData = [
   // --- Mission 1: The Atlantic Wall ---
+  { id: 'trophy_meeting_resistance', cat: '1: The Atlantic Wall', name: 'Meeting Resistance', type: 'Trophy', desc: 'PSN Trophy: Weaken the Atlantic wall and rendezvous with Blue Viper.' },
   { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'Far eastern side, south of radar tower, inside a small shack.', yt: '//www.youtube.com/watch?v=9WbjkODyRio&t=86s' },
   { id: 'm1_pl2', cat: '1: The Atlantic Wall', name: 'Upcoming Delivery', type: 'Personal Letter', desc: 'Farm east of Steffen Beckendorf. Climb ladder on western side of outhouse.', yt: '//www.youtube.com/watch?v=9WbjkODyRio&t=201s' },
   { id: 'm1_pl3', cat: '1: The Atlantic Wall', name: 'Violets Are Wilting', type: 'Personal Letter', desc: 'Attic of the building containing the Atlantikwall Report.', yt: '//www.youtube.com/watch?v=9WbjkODyRio&t=374s' },
@@ -268,6 +238,7 @@ const sniperData = [
   { id: 'med_ls_m1_auth', cat: '1: The Atlantic Wall', name: 'Mission 1 (The Atlantic Wall) Authentic Long Shot', type: 'Medal', desc: 'Take a 725 meters shot in Colline-Sur-Mer, in Authentic difficulty.', target: 725, isLongShot: true },
 
   // --- Mission 2: Occupied Residence ---
+  { id: 'trophy_confirming_suspicions', cat: '2: Occupied Residence', name: 'Confirming Suspicions', type: 'Trophy', desc: 'PSN Trophy: Raid Chateau de Berengar and Möller\'s Office.' },
   { id: 'm2_pl1', cat: '2: Occupied Residence', name: 'Do Not Fail Me, Nephew', type: 'Personal Letter', desc: 'Table in an open room upstairs overlooking the main courtyard.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=20s' },
   { id: 'm2_pl2', cat: '2: Occupied Residence', name: 'Need a Scapegoat', type: 'Personal Letter', desc: 'Box at foot of bed in Friedrich Kummler\'s quarters (second floor).', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=58s' },
   { id: 'm2_pl3', cat: '2: Occupied Residence', name: 'Brother, I Have a Plan', type: 'Personal Letter', desc: 'Third floor dorms in the central part of the chateau.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=95s' },
@@ -290,715 +261,167 @@ const sniperData = [
   { id: 'med_ls_m2', cat: '2: Occupied Residence', name: 'Mission 2 (Occupied Residence) Long Shot', type: 'Medal', desc: 'Take a 525 meters shot in Château de Berengar.', target: 525, isLongShot: true },
   { id: 'med_ls_m2_auth', cat: '2: Occupied Residence', name: 'Mission 2 (Occupied Residence) Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Château de Berengar, in Authentic difficulty.', target: 250, isLongShot: true },
 
-  // --- Mission 3: Spy Academy ---
-  { id: 'm3_pl1', cat: '3: Spy Academy', name: 'Parking Problems', type: 'Personal Letter', desc: 'On a bin near benches opposite white car in west.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=18s' },
-  { id: 'm3_pl2', cat: '3: Spy Academy', name: 'Fragile, Do Not Break', type: 'Personal Letter', desc: 'Steel box at checkpoint before beach.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=52s' },
-  { id: 'm3_pl3', cat: '3: Spy Academy', name: 'Do Not Be Late', type: 'Personal Letter', desc: 'Looted from pointed-hat guard near western turret.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=88s' },
-  { id: 'm3_pl4', cat: '3: Spy Academy', name: 'It\'s Easy Money', type: 'Personal Letter', desc: 'Desk inside far-eastern sniper nest.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=124s' },
-  { id: 'm3_pl5', cat: '3: Spy Academy', name: 'Just Attend One', type: 'Personal Letter', desc: 'Looted from officer near eastern church.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=160s' },
-  { id: 'm3_cd1', cat: '3: Spy Academy', name: 'Priority Package', type: 'Classified Doc', desc: 'Shelf inside window-access room south of main complex.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=195s' },
-  { id: 'm3_cd2', cat: '3: Spy Academy', name: 'Won\'t Be Attending', type: 'Classified Doc', desc: 'Table in room slightly east of main bridge.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=232s' },
-  { id: 'm3_cd3', cat: '3: Spy Academy', name: 'Training Scenarios', type: 'Classified Doc', desc: 'Table next to cellar key in northern sea room.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=268s' },
-  { id: 'm3_cd4', cat: '3: Spy Academy', name: 'Resource Request', type: 'Classified Doc', desc: 'Table atop eastern church sniper nest.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=305s' },
-  { id: 'm3_cd5', cat: '3: Spy Academy', name: 'Armoury Exposed', type: 'Classified Doc', desc: 'Bench chair in same room as CD2.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=340s' },
-  { id: 'm3_hi1', cat: '3: Spy Academy', name: 'Kriegsmarine Playing Cards', type: 'Hidden Item', desc: 'Table in pub on upper western side.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=375s' },
-  { id: 'm3_hi2', cat: '3: Spy Academy', name: 'Ornate Compass', type: 'Hidden Item', desc: 'Inside safe in northern sea room.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=410s' },
-  { id: 'm3_hi3', cat: '3: Spy Academy', name: 'Covert Ops Field Manual', type: 'Hidden Item', desc: 'Table in downstairs recreation area opposite diner.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=445s' },
-  { id: 'm3_se1', cat: '3: Spy Academy', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Facing beach on south-western building.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=480s' },
-  { id: 'm3_se2', cat: '3: Spy Academy', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Under roof of small turret right of main structure.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=512s' },
-  { id: 'm3_se3', cat: '3: Spy Academy', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Top of sunken tower in northern sea.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=545s' },
-  { id: 'm3_wb1', cat: '3: Spy Academy', name: 'Rifle Workbench', type: 'Workbench', desc: 'Cellar north of Kraken training room.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=578s' },
-  { id: 'm3_wb2', cat: '3: Spy Academy', name: 'SMG Workbench', type: 'Workbench', desc: 'Locked resistance door east of main square statue.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=612s' },
-  { id: 'm3_wb3', cat: '3: Spy Academy', name: 'Pistol Workbench', type: 'Workbench', desc: 'South-central armoury (requires Satchel Charge).', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=645s' },
-  { id: 'med_ls_m3', cat: '3: Spy Academy', name: 'Mission 3 (Spy Academy) Long Shot', type: 'Medal', desc: 'Take a 675 meters shot in Beaumont-Saint-Denis.', target: 675, isLongShot: true },
-  { id: 'med_ls_m3_auth', cat: '3: Spy Academy', name: 'Mission 3 (Spy Academy) Authentic Long Shot', type: 'Medal', desc: 'Take a 325 meters shot in Beaumont-Saint-Denis, in Authentic difficulty.', target: 325, isLongShot: true },
+  // --- Story Mission Trophies ---
+  { id: 'trophy_the_kraken_wakes', cat: '3: Spy Academy', name: 'The Kraken Wakes', type: 'Trophy', desc: 'PSN Trophy: Infiltrate Beaumont-Saint-Denis and Uncover Operation Kraken.' },
+  { id: 'trophy_starting_to_crack', cat: '4: War Factory', name: "It's Starting to Crack", type: 'Trophy', desc: 'PSN Trophy: Destroy Operation Kraken\'s production facility at Martressac.' },
+  { id: 'trophy_change_channel', cat: '5: Festung Guernsey', name: 'Change the Channel', type: 'Trophy', desc: 'PSN Trophy: Destroy the Prototype Stealth U-Boat hidden in Festung Guernsey.' },
+  { id: 'trophy_taking_it_back', cat: '6: Libération', name: 'Taking it back', type: 'Trophy', desc: 'PSN Trophy: Liberate Desponts-sur-Douve and secure Allied transport routes.' },
+  { id: 'trophy_target_america', cat: '7: Secret Weapons', name: 'Target America', type: 'Trophy', desc: 'PSN Trophy: Destroy the V2 Launch Sites and Uncover the target of Operation Kraken.' },
+  { id: 'trophy_kraken_sleeps', cat: '8: Rubble and Ruin', name: 'The Kraken Sleeps', type: 'Trophy', desc: 'PSN Trophy: Stop Operation Kraken and sink its deadly fleet.' },
 
-  // --- Mission 4: War Factory ---
-  { id: 'm4_pl1', cat: '4: War Factory', name: 'Klaus! You Idiot', type: 'Personal Letter', desc: 'Desk in bridge building toward north-west.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=22s' },
-  { id: 'm4_pl2', cat: '4: War Factory', name: 'The Suspense', type: 'Personal Letter', desc: 'Radio equipment in control room above generator.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=60s' },
-  { id: 'm4_pl3', cat: '4: War Factory', name: 'Sheers\' Notebook', type: 'Personal Letter', desc: 'Desk in upstairs blast furnace western office.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=98s' },
-  { id: 'm4_pl4', cat: '4: War Factory', name: 'Losing the Time', type: 'Personal Letter', desc: 'Desk on upper level of northern steelworks.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=135s' },
-  { id: 'm4_pl5', cat: '4: War Factory', name: 'Your Order Awaits', type: 'Personal Letter', desc: 'Box blocking doorway in central warehouse.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=172s' },
-  { id: 'm4_pl6', cat: '4: War Factory', name: 'Ehrlich\'s Done For', type: 'Personal Letter', desc: 'Desk in main train station office.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=210s' },
-  { id: 'm4_cd1', cat: '4: War Factory', name: 'Shipping Orders', type: 'Classified Doc', desc: 'Safe in shipping warehouse upstairs office.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=248s' },
-  { id: 'm4_cd2', cat: '4: War Factory', name: 'No More Games', type: 'Classified Doc', desc: 'Wooden planks in north-eastern construction yard.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=285s' },
-  { id: 'm4_cd3', cat: '4: War Factory', name: 'Bureaucratic Oaf', type: 'Classified Doc', desc: 'Table in central upstairs ladder-access room.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=320s' },
-  { id: 'm4_cd4', cat: '4: War Factory', name: 'Increase Security', type: 'Classified Doc', desc: 'Locked vat room table on far-eastern perimeter.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=355s' },
-  { id: 'm4_hi1', cat: '4: War Factory', name: 'Gold Pocket Watch', type: 'Hidden Item', desc: 'Wooden beams in north-eastern scrapyard.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=390s' },
-  { id: 'm4_hi2', cat: '4: War Factory', name: 'Stealth Plating', type: 'Hidden Item', desc: 'Stacked boxes on shipping warehouse ground floor.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=425s' },
-  { id: 'm4_hi3', cat: '4: War Factory', name: 'P.1000 Ratte Plans', type: 'Hidden Item', desc: 'Southern walkway upstairs in train station depot.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=460s' },
-  { id: 'm4_se1', cat: '4: War Factory', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Wall of dilapidated turret in far east ruins.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=495s' },
-  { id: 'm4_se2', cat: '4: War Factory', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Atop blast furnace in south-eastern corner.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=528s' },
-  { id: 'm4_se3', cat: '4: War Factory', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Roof of building at southern boundary tip.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=560s' },
-  { id: 'm4_wb1', cat: '4: War Factory', name: 'Rifle Workbench', type: 'Workbench', desc: 'Central warehouse cellar (resistance safehouse).', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=592s' },
-  { id: 'm4_wb2', cat: '4: War Factory', name: 'SMG Workbench', type: 'Workbench', desc: 'Upstairs armoury north of shipping warehouse.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=625s' },
-  { id: 'm4_wb3', cat: '4: War Factory', name: 'Pistol Workbench', type: 'Workbench', desc: 'Armoury adjacent to eastern vat room.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=658s' },
-  { id: 'med_ls_m4', cat: '4: War Factory', name: 'Mission 4 (War Factory) Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in War Factory.', target: 200, isLongShot: true },
-  { id: 'med_ls_m4_auth', cat: '4: War Factory', name: 'Mission 4 (War Factory) Authentic Long Shot', type: 'Medal', desc: 'Take an Authentic difficulty long shot in War Factory.', target: 200, isLongShot: true },
-
-  // --- Mission 5: Festung Guernsey ---
-  { id: 'm5_pl1', cat: '5: Festung Guernsey', name: 'No Need to Worry', type: 'Personal Letter', desc: 'Looted from officer in SE tower.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=20s' },
-  { id: 'm5_pl2', cat: '5: Festung Guernsey', name: 'Getting Off The Island', type: 'Personal Letter', desc: 'Basement of small house (with Crystal Radio).', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=55s' },
-  { id: 'm5_pl3', cat: '5: Festung Guernsey', name: 'Confiscated Goods', type: 'Personal Letter', desc: 'Looted from soldier in southern construction sector.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=92s' },
-  { id: 'm5_pl4', cat: '5: Festung Guernsey', name: 'Escaping Islanders', type: 'Personal Letter', desc: 'Inside upstairs bunker room in south-west.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=128s' },
-  { id: 'm5_pl5', cat: '5: Festung Guernsey', name: 'Harass The Huns!', type: 'Personal Letter', desc: 'Underground room; crawl under table to find ladder.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=165s' },
-  { id: 'm5_cd1', cat: '5: Festung Guernsey', name: 'Grin and Bear It!', type: 'Classified Doc', desc: 'Inside safe in Fort Hommet; climb vines or use AP ammo.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=200s' },
-  { id: 'm5_cd2', cat: '5: Festung Guernsey', name: 'Cut Costs Cost Lives', type: 'Classified Doc', desc: 'Inside western bunker in front of objective safe.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=238s' },
-  { id: 'm5_cd3', cat: '5: Festung Guernsey', name: 'Oafish Officers', type: 'Classified Doc', desc: 'Underground hospital side room west of corridor.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=275s' },
-  { id: 'm5_cd4', cat: '5: Festung Guernsey', name: 'Transport Troubles', type: 'Classified Doc', desc: 'Underground hospital north room table.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=310s' },
-  { id: 'm5_cd5', cat: '5: Festung Guernsey', name: 'Drastic Measures', type: 'Classified Doc', desc: 'Ground floor of western tower table.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=348s' },
-  { id: 'm5_hi1', cat: '5: Festung Guernsey', name: 'Todt Uniform Badge', type: 'Hidden Item', desc: 'Table in green building at NE construction site.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=385s' },
-  { id: 'm5_hi2', cat: '5: Festung Guernsey', name: 'Crystal Radio', type: 'Hidden Item', desc: 'Basement of small house with Getting Off Island letter.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=420s' },
-  { id: 'm5_hi3', cat: '5: Festung Guernsey', name: 'Comfort Bag', type: 'Hidden Item', desc: 'Upstairs bedroom in main farm building.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=455s' },
-  { id: 'm5_se1', cat: '5: Festung Guernsey', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Atop church tower near map center.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=490s' },
-  { id: 'm5_se2', cat: '5: Festung Guernsey', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'North-east map sitting on dirt embankment.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=522s' },
-  { id: 'm5_se3', cat: '5: Festung Guernsey', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Top of tower on western shoreline.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=555s' },
-  { id: 'm5_wb1', cat: '5: Festung Guernsey', name: 'Rifle Workbench', type: 'Workbench', desc: 'Inside church tower; climb exterior vines.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=588s' },
-  { id: 'm5_wb2', cat: '5: Festung Guernsey', name: 'SMG Workbench', type: 'Workbench', desc: 'Small building basement; crawl under table to ladder.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=620s' },
-  { id: 'm5_wb3', cat: '5: Festung Guernsey', name: 'Pistol Workbench', type: 'Workbench', desc: 'In trenches next to anti-air flak emplacement.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=652s' },
-  { id: 'med_ls_m5', cat: '5: Festung Guernsey', name: 'Mission 5 (Festung Guernsey) Long Shot', type: 'Medal', desc: 'Take a 400 meters shot in Festung Guernsey.', target: 400, isLongShot: true },
-  { id: 'med_ls_m5_auth', cat: '5: Festung Guernsey', name: 'Mission 5 (Festung Guernsey) Authentic Long Shot', type: 'Medal', desc: 'Take a 400 meters shot in Festung Guernsey, in Authentic difficulty.', target: 400, isLongShot: true },
-
-  // --- Mission 6: Libération ---
-  { id: 'm6_pl1', cat: '6: Libération', name: 'They\'re Out There', type: 'Personal Letter', desc: 'Looted from bald soldier in SE farmhouse yard.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=0s' },
-  { id: 'm6_pl2', cat: '6: Libération', name: 'Watch Your Back', type: 'Personal Letter', desc: 'Looted from estate guard outside manor yard.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=49s' },
-  { id: 'm6_pl3', cat: '6: Libération', name: 'Barely Escaped!', type: 'Personal Letter', desc: 'Northern artillery fortifications; trench network.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=73s' },
-  { id: 'm6_pl4', cat: '6: Libération', name: 'Give Me Strength', type: 'Personal Letter', desc: 'NE sector green barracks house on crate.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=93s' },
-  { id: 'm6_pl5', cat: '6: Libération', name: 'Vengeance Is Nigh!', type: 'Personal Letter', desc: 'Central farm sector; upstairs inside old barn attic.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=115s' },
-  { id: 'm6_cd1', cat: '6: Libération', name: 'Hold The Line', type: 'Classified Doc', desc: 'Southern bridge sector desk in radio bunker room.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=138s' },
-  { id: 'm6_cd2', cat: '6: Libération', name: 'Incoming Armour', type: 'Classified Doc', desc: 'Northern trenches equipment case in dugout node.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=160s' },
-  { id: 'm6_cd3', cat: '6: Libération', name: 'Unfit for Duty', type: 'Classified Doc', desc: 'Southern farm sector cluster bedroom nightstand.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=182s' },
-  { id: 'm6_cd4', cat: '6: Libération', name: 'A Surplus Bridge', type: 'Classified Doc', desc: 'Wooden box in yard of eastern burnt buildings.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=205s' },
-  { id: 'm6_cd5', cat: '6: Libération', name: 'Resistance Fanatic Located', type: 'Classified Doc', desc: 'Chest of drawers in locked 2nd-floor northern room.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=228s' },
-  { id: 'm6_hi1', cat: '6: Libération', name: 'Lucky Rabbit\'s Foot', type: 'Hidden Item', desc: 'Looted from bald soldier near central crashed plane.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=250s' },
-  { id: 'm6_hi2', cat: '6: Libération', name: 'Stolen Medals', type: 'Hidden Item', desc: 'Table in underground resistance cache beneath central L-building.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=275s' },
-  { id: 'm6_hi3', cat: '6: Libération', name: 'Engraved Lighter', type: 'Hidden Item', desc: 'Next to briefcase upstairs in building right after bridge.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=300s' },
-  { id: 'm6_se1', cat: '6: Libération', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Perched atop eastern windmill near start.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=325s' },
-  { id: 'm6_se2', cat: '6: Libération', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Rear of north-western church.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=348s' },
-  { id: 'm6_se3', cat: '6: Libération', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Upstairs window frame behind northern tank target.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=370s' },
-  { id: 'm6_wb1', cat: '6: Libération', name: 'Rifle Workbench', type: 'Workbench', desc: 'Northern resistance safehouse (climb wall before bridge).', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=392s' },
-  { id: 'm6_wb2', cat: '6: Libération', name: 'SMG Workbench', type: 'Workbench', desc: 'Central cellar (same room as HI2 Stolen Medals).', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=415s' },
-  { id: 'm6_wb3', cat: '6: Libération', name: 'Pistol Workbench', type: 'Workbench', desc: 'Top floor in southern building via scaffolding.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=438s' },
-  { id: 'med_ls_m6', cat: '6: Libération', name: 'Mission 6 (Libération) Long Shot', type: 'Medal', desc: 'Take a 400 meters rifle shot in Desponts-Sur-Douve.', target: 400, isLongShot: true },
-  { id: 'med_ls_m6_auth', cat: '6: Libération', name: 'Mission 6 (Libération) Authentic Long Shot', type: 'Medal', desc: 'Take a 400 meters shot in Desponts-Sur-Douve, in Authentic difficulty.', target: 400, isLongShot: true },
-
-  // --- Mission 7: Secret Weapons ---
-  { id: 'm7_pl1', cat: '7: Secret Weapons', name: 'We Had a Deal', type: 'Personal Letter', desc: 'Upstairs table in eastern trainyard office.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=20s', x: 1480, y: 920 },
-  { id: 'm7_pl2', cat: '7: Secret Weapons', name: 'I\'m Done', type: 'Personal Letter', desc: 'Fireplace of far-eastern abandoned house.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=55s', x: 1620, y: 780 },
-  { id: 'm7_pl3', cat: '7: Secret Weapons', name: 'I Can\'t Work Like This', type: 'Personal Letter', desc: 'Table on steel grate near V2 rocket lower level.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=92s', x: 1140, y: 640 },
-  { id: 'm7_pl4', cat: '7: Secret Weapons', name: 'The V2\'s Are Obsolete', type: 'Personal Letter', desc: 'Chair opposite V2 Launch Site in central dome.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=128s' },
-  { id: 'm7_pl5', cat: '7: Secret Weapons', name: 'Thinking Outside the Box', type: 'Personal Letter', desc: 'Top of zig-zag stairs in northern dome room.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=165s', x: 1240, y: 580 },
-  { id: 'm7_cd1', cat: '7: Secret Weapons', name: 'Inbound Deliveries', type: 'Classified Doc', desc: 'Looted from head engineer in station safe.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=200s', x: 1420, y: 960 },
-  { id: 'm7_cd2', cat: '7: Secret Weapons', name: 'Dr Junger\'s Schedule', type: 'Classified Doc', desc: 'Near window in SE train station building.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=235s', x: 1360, y: 1040 },
-  { id: 'm7_cd3', cat: '7: Secret Weapons', name: 'A-4B Logistical Issues', type: 'Classified Doc', desc: 'Top floor locked room in northern Weapons Lab.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=270s', x: 1050, y: 440 },
-  { id: 'm7_cd4', cat: '7: Secret Weapons', name: 'Intruder Sighted', type: 'Classified Doc', desc: 'Looted from sniper behind tree west of bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=305s', x: 780, y: 840 },
-  { id: 'm7_cd5', cat: '7: Secret Weapons', name: 'Pressurisation Report', type: 'Classified Doc', desc: 'Two staircases up inside SW castle tower.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=340s', x: 580, y: 1360 },
-  { id: 'm7_hi1', cat: '7: Secret Weapons', name: 'Peenemünde Lab ID', type: 'Hidden Item', desc: 'Under table in canteen exiting V2 dome.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=375s', x: 1260, y: 720 },
-  { id: 'm7_hi2', cat: '7: Secret Weapons', name: 'Luftwaffe Playing Cards', type: 'Hidden Item', desc: 'Table inside guardhouse next to northern bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=410s', x: 920, y: 410 },
-  { id: 'm7_hi3', cat: '7: Secret Weapons', name: 'Prüfstand XII Plans', type: 'Hidden Item', desc: 'Rocky beach under eastern side of bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=445s', x: 860, y: 890 },
-  { id: 'm7_se1', cat: '7: Secret Weapons', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Among rocks south of eastern abandoned house.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=480s', x: 1650, y: 840 },
-  { id: 'm7_se2', cat: '7: Secret Weapons', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Inside dam filter water on western bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=512s' },
-  { id: 'm7_se3', cat: '7: Secret Weapons', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Wall alcove opposite tower in SW castle.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=545s', x: 590, y: 1390 },
-  { id: 'm7_wb1', cat: '7: Secret Weapons', name: 'Rifle Workbench', type: 'Workbench', desc: 'Axis Armoury north of V2 rockets.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=578s', x: 1180, y: 560 },
-  { id: 'm7_wb2', cat: '7: Secret Weapons', name: 'SMG Workbench', type: 'Workbench', desc: 'Shower corridor from V2 dome spiral stairs.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=610s', x: 1290, y: 640 },
-  { id: 'm7_wb3', cat: '7: Secret Weapons', name: 'Pistol Workbench', type: 'Workbench', desc: 'Cave behind wooden panels near SW waterfall.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=642s', x: 620, y: 1280 },
-  { id: 'med_ls_m7', cat: '7: Secret Weapons', name: 'Mission 7 (Secret Weapons) Long Shot', type: 'Medal', desc: 'Take a 350 meters shot in Secret Weapons.', target: 350, isLongShot: true },
-  { id: 'med_ls_m7_auth', cat: '7: Secret Weapons', name: 'Mission 7 (Secret Weapons) Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in Secret Weapons, in Authentic difficulty.', target: 200, isLongShot: true },
-
-  // --- Mission 8: Rubble and Ruin ---
-  { id: 'm8_pl1', cat: '8: Rubble and Ruin', name: 'It\'s Not Over Yet', type: 'Personal Letter', desc: 'Table in ground floor room of SE hotel.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=18s', x: 1440, y: 1380 },
-  { id: 'm8_pl2', cat: '8: Rubble and Ruin', name: 'Clean Out the Sewer', type: 'Personal Letter', desc: 'Floor behind boxes left of sewer entrance.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=52s', x: 1040, y: 1180 },
-  { id: 'm8_pl3', cat: '8: Rubble and Ruin', name: 'He\'s Not the Sharpest', type: 'Personal Letter', desc: 'Locked box on central theatre balcony.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=88s', x: 1120, y: 940 },
-  { id: 'm8_pl4', cat: '8: Rubble and Ruin', name: 'Your Man Talked', type: 'Personal Letter', desc: 'Table in locked building in bombed area.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=124s', x: 920, y: 1340 },
-  { id: 'm8_pl5', cat: '8: Rubble and Ruin', name: 'Möller Is Moving', type: 'Personal Letter', desc: 'Ground floor back room of Sea View Offices.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=160s', x: 1520, y: 1420 },
-  { id: 'm8_cd1', cat: '8: Rubble and Ruin', name: 'Secure Radio Lines', type: 'Classified Doc', desc: 'Wooden box near start restaurant.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=195s', x: 740, y: 1480 },
-  { id: 'm8_cd2', cat: '8: Rubble and Ruin', name: 'Broken Resistance', type: 'Classified Doc', desc: 'Box directly ahead after sliding into sewers.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=230s', x: 1080, y: 1220 },
-  { id: 'm8_cd3', cat: '8: Rubble and Ruin', name: 'Resistance Report', type: 'Classified Doc', desc: 'Table in basement interrogation room.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=265s', x: 620, y: 1140 },
-  { id: 'm8_cd4', cat: '8: Rubble and Ruin', name: 'Flagship Fuel Risks', type: 'Classified Doc', desc: 'Safe inside locked second-floor hotel room.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=300s', x: 1420, y: 1360 },
-  { id: 'm8_cd5', cat: '8: Rubble and Ruin', name: 'Priority Pick Up', type: 'Classified Doc', desc: 'Attic floor of western Metro Du Café.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=335s', x: 680, y: 1520 },
-  { id: 'm8_hi1', cat: '8: Rubble and Ruin', name: 'Hidden Tantō', type: 'Hidden Item', desc: 'Chest in locked sewer room opposite entrance.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=370s', x: 1060, y: 1240 },
-  { id: 'm8_hi2', cat: '8: Rubble and Ruin', name: 'I-400 V2 Hangar', type: 'Hidden Item', desc: '2nd-floor room at northern fuel system.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=405s', x: 880, y: 480 },
-  { id: 'm8_hi3', cat: '8: Rubble and Ruin', name: 'An \'Original\' Adolf', type: 'Hidden Item', desc: 'Next to sleeping bag on upper church floor.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=440s', x: 1140, y: 780 },
-  { id: 'm8_se1', cat: '8: Rubble and Ruin', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Outside boundary seen from Sea View Offices.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=475s', x: 420, y: 1460 },
-  { id: 'm8_se2', cat: '8: Rubble and Ruin', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Past boundary left of giant fuel silos.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=508s', x: 1680, y: 1240 },
-  { id: 'm8_se3', cat: '8: Rubble and Ruin', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Atop Yoshikawa building from NW workbench.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=540s', x: 740, y: 620 },
-  { id: 'm8_wb1', cat: '8: Rubble and Ruin', name: 'Rifle Workbench', type: 'Workbench', desc: 'Armoury in first sewer combat area.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=572s', x: 1090, y: 1190 },
-  { id: 'm8_wb2', cat: '8: Rubble and Ruin', name: 'SMG Workbench', type: 'Workbench', desc: 'Resistance armoury opposite Yoshikawa estate.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=605s', x: 780, y: 660 },
-  { id: 'm8_wb3', cat: '8: Rubble and Ruin', name: 'Pistol Workbench', type: 'Workbench', desc: 'Crypt hole in NW corner of central church.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=638s', x: 1150, y: 790 },
-  { id: 'med_ls_m8', cat: '8: Rubble and Ruin', name: 'Mission 8 (Rubble and Ruin) Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in St. Nazaire.', target: 200, isLongShot: true },
-  { id: 'med_ls_m8_auth', cat: '8: Rubble and Ruin', name: 'Mission 8 (Rubble and Ruin) Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in St. Nazaire, in Authentic difficulty.', target: 200, isLongShot: true },
-
-  // --- Mission 9: Loose Ends ---
-  { id: 'm9_ch1', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Kill Möller with a Rifle', type: 'Challenge', desc: 'Eliminate Abelard Möller with any rifle shot.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA' },
-  { id: 'm9_ch2', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Kill Möller with Iron Sights', type: 'Challenge', desc: 'Kill Möller without optical rifle scope attachments.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA' },
-  { id: 'm9_ch3', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Sightless Strike Trophy', type: 'Trophy', desc: 'Kill Möller aiming down iron sights.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA' },
-  { id: 'm9_ch4', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Master Sniper Trophy', type: 'Trophy', desc: 'Complete entire campaign on Authentic difficulty.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA' },
-  { id: 'med_brainsop', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Brains of the Operation', type: 'Medal', desc: 'Kill Möller with a headshot in Loose Ends (Mission 9).' },
-  { id: 'med_sightbeyond', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Sight Beyond Sights', type: 'Medal', desc: 'Kill Möller with a rifle in Iron Sights (Mission 9).' },
-  { id: 'med_cantoutrun', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Can\'t Outrun a Bullet', type: 'Medal', desc: 'Kill Möller at 600 meters or more (Mission 9).', target: 600, isLongShot: true },
-  { id: 'med_ls_m9', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Mission 9 (Loose Ends) Long Shot', type: 'Medal', desc: 'Take a 500 meters shot in Loose Ends.', target: 500, isLongShot: true },
-  { id: 'med_ls_m9_auth', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Mission 9 (Loose Ends) Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in Loose Ends, in Authentic difficulty.', target: 200, isLongShot: true },
-
-  // --- Mission 10: Wolf Mountain (DLC) ---
-  { id: 'm10_pl1', cat: '10: Wolf Mountain (DLC)', name: 'Construction Halted', type: 'Personal Letter', desc: 'Inside guardhouse before teahouse.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=22s' },
-  { id: 'm10_pl2', cat: '10: Wolf Mountain (DLC)', name: 'Vermin Infestation', type: 'Personal Letter', desc: 'Garage back room north of Berghof.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=58s' },
-  { id: 'm10_pl3', cat: '10: Wolf Mountain (DLC)', name: 'Führer\'s Plans', type: 'Personal Letter', desc: 'Berghof ground-floor southern kitchen.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=95s' },
-  { id: 'm10_pl4', cat: '10: Wolf Mountain (DLC)', name: 'Perimeter Problems', type: 'Personal Letter', desc: 'Building next to road before tunnel.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=132s' },
-  { id: 'm10_pl5', cat: '10: Wolf Mountain (DLC)', name: 'Führer\'s Personal Space', type: 'Personal Letter', desc: 'Chest of drawers in NW room of Berghof.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=168s' },
-  { id: 'm10_cd1', cat: '10: Wolf Mountain (DLC)', name: 'Missing Inventory', type: 'Classified Doc', desc: 'Boxes near tents at SE anti-air gun.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=205s' },
-  { id: 'm10_cd2', cat: '10: Wolf Mountain (DLC)', name: 'Guest of the Führer', type: 'Classified Doc', desc: 'Side-office on southern 2nd-floor Berghof.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=240s' },
-  { id: 'm10_cd3', cat: '10: Wolf Mountain (DLC)', name: 'Routine Reminder', type: 'Classified Doc', desc: 'Building safe before Stone Eagle #2 tunnel.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=275s' },
-  { id: 'm10_cd4', cat: '10: Wolf Mountain (DLC)', name: 'Communication Operations', type: 'Classified Doc', desc: 'Wooden box at SW sniper lookout.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=310s' },
-  { id: 'm10_cd5', cat: '10: Wolf Mountain (DLC)', name: 'Additional Flak Positions', type: 'Classified Doc', desc: 'Downstairs table in SW resort building.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=345s' },
-  { id: 'm10_hi1', cat: '10: Wolf Mountain (DLC)', name: 'Führermuseum Concept Model', type: 'Hidden Item', desc: 'Berghof foyer on covered art box.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=380s' },
-  { id: 'm10_hi2', cat: '10: Wolf Mountain (DLC)', name: 'Practice Pose Photography', type: 'Hidden Item', desc: 'Safe in Hitler\'s quarters.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=415s' },
-  { id: 'm10_hi3', cat: '10: Wolf Mountain (DLC)', name: 'Possible Hitler Disguises', type: 'Hidden Item', desc: 'Table in eastern tearooms.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=450s' },
-  { id: 'm10_se1', cat: '10: Wolf Mountain (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Eastern-facing roof of Berghof.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=485s' },
-  { id: 'm10_se2', cat: '10: Wolf Mountain (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Top of eastern tunnel to Berghof.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=518s' },
-  { id: 'm10_se3', cat: '10: Wolf Mountain (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Top of shed across northern lake.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=550s' },
-  { id: 'm10_wb1', cat: '10: Wolf Mountain (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Cellar of large SW resort building.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=582s' },
-  { id: 'm10_wb2', cat: '10: Wolf Mountain (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Basement of abandoned shack near AA gun.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=615s' },
-  { id: 'm10_wb3', cat: '10: Wolf Mountain (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Armoury in Berghof basement.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=648s' },
-  { id: 'med_wm_fuhrerlong', cat: '10: Wolf Mountain (DLC)', name: 'Mission 10 (Wolf Mountain) Führer Long Shot', type: 'Medal', desc: 'Take a 412 meters shot in Wolf Mountain.', target: 412, isLongShot: true },
-  { id: 'med_fuhrerlongshot', cat: '10: Wolf Mountain (DLC)', name: 'Mission 10 (Wolf Mountain) Führer Authentic Long Shot', type: 'Medal', desc: 'Take a 257 meters shot in Wolf Mountain, in Authentic difficulty.', target: 257, isLongShot: true },
-  { id: 'med_wm_fromfuhrer', cat: '10: Wolf Mountain (DLC)', name: 'Mission 10 (Wolf Mountain) From Führer Away', type: 'Medal', desc: 'Kill Hitler at a distance of 300 meters or more.', target: 300, isLongShot: true },
-  { id: 'med_wm_dasspook', cat: '10: Wolf Mountain (DLC)', name: 'Das Spook', type: 'Medal', desc: 'Perform a ghost takedown on Hitler.' },
-  { id: 'med_wm_herrtoday', cat: '10: Wolf Mountain (DLC)', name: 'Herr Today, Gone Tomorrow', type: 'Medal', desc: 'Complete mission across Cadet, Sharpshooter, and Sniper Elite.', target: 2 },
-  { id: 'med_wm_familienjuwel', cat: '10: Wolf Mountain (DLC)', name: 'Das Familienjuwel', type: 'Medal', desc: 'Kill Hitler with a testicle shot.' },
-  { id: 'med_wm_fuhrerious', cat: '10: Wolf Mountain (DLC)', name: 'Führerious Repetition', type: 'Medal', desc: 'Kill Hitler 10 times.', target: 10 },
-  { id: 'med_reichtopoint', cat: '10: Wolf Mountain (DLC)', name: 'Reich to the Point', type: 'Medal', desc: 'Kill only Hitler and exfiltrate.' },
-  { id: 'med_alpsmemories', cat: '10: Wolf Mountain (DLC)', name: 'Memories of the Alps', type: 'Medal', desc: 'Obtain 15 collectibles in Wolf Mountain.', target: 15 },
-  { id: 'med_wm_opfoxley', cat: '10: Wolf Mountain (DLC)', name: 'Operation Foxley', type: 'Medal', desc: 'Complete Wolf Mountain with a 2-star rating.', target: 2 },
-  { id: 'med_wm_alpha', cat: '10: Wolf Mountain (DLC)', name: 'Alpha', type: 'Medal', desc: 'Complete Wolf Mountain on Authentic difficulty.' },
-  { id: 'med_downfall', cat: '10: Wolf Mountain (DLC)', name: 'Downfall', type: 'Medal', desc: 'Kill Hitler by making him fall down a cliffside via tampered fence.' },
-  { id: 'med_putapinit', cat: '10: Wolf Mountain (DLC)', name: 'Put a Pin in It', type: 'Medal', desc: 'Kill Hitler with a booby-trapped bowling pin.' },
-  { id: 'med_covertelim', cat: '10: Wolf Mountain (DLC)', name: 'Covert Elimination', type: 'Medal', desc: 'Kill Hitler and exfiltrate without ever being detected.' },
-
-  // --- Mission 11: Landing Force (DLC) ---
-  { id: 'm11_pl1', cat: '11: Landing Force (DLC)', name: 'Munition Ignitions', type: 'Personal Letter', desc: 'Outside area facing large bay doors, enter door on right under canopy. Table on ground floor.', yt: '//https://youtu.be/LIw6drPLrkc?t=211' },
-  { id: 'm11_pl2', cat: '11: Landing Force (DLC)', name: 'Bread and Boredom', type: 'Personal Letter', desc: 'Northern broken tower guardpost ground level by ladder on crate.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc&t=28s' },
-  { id: 'm11_pl3', cat: '11: Landing Force (DLC)', name: 'Heavy Is The Crown', type: 'Personal Letter', desc: 'Dock warehouse barracks trunk.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc&t=294s' },
-  { id: 'm11_cd1', cat: '11: Landing Force (DLC)', name: 'Wine-Stained Warning', type: 'Classified Doc', desc: 'Command bunker office safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm11_cd2', cat: '11: Landing Force (DLC)', name: 'Security Measures', type: 'Classified Doc', desc: 'Under desk by SMG workbench.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc&t=75s' },
-  { id: 'm11_hi1', cat: '11: Landing Force (DLC)', name: 'Military Flask', type: 'Hidden Item', desc: 'Ancient coin on lighthouse top floor.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc&t=176s' },
-  { id: 'm11_hi2', cat: '11: Landing Force (DLC)', name: 'Binoculars', type: 'Hidden Item', desc: 'Outside on railing Naval telescope in harbourmaster tower.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc&t=129s' },
-  { id: 'm11_se1', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Look across the river when first coming out of cave near the tank.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc' },
-  { id: 'm11_se2', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Radio tower base across the lake when exiting the cave.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc&t=270s' },
-  { id: 'm11_se3', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Middle of building ruins when heading from SMG workbench to lighthouse.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc&t=104s' },
-  { id: 'm11_wb1', cat: '11: Landing Force (DLC)', name: 'Resort Docks Rifle Workbench', type: 'Workbench', desc: 'Where you obtain poison for Hermann Kraus.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc&t=219s' },
-  { id: 'm11_wb2', cat: '11: Landing Force (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'East side of map boatyard warehouse.', yt: '//www.youtube.com/watch?v=LIw6drPLrkc&t=75s' },
-  { id: 'm11_wb3', cat: '11: Landing Force (DLC)', name: 'Military Fort Pistol Workbench', type: 'Workbench', desc: 'Radar installation sub-level locker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm11_ch1', cat: '11: Landing Force (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Disable heavy battery without combat alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'med_ls_m11longshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 (Landing Force) Long Shot', type: 'Medal', desc: 'Take a 500 meters shot in Landing Force.', target: 500, isLongShot: true },
-  { id: 'med_m11authlongshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 (Landing Force) Authentic Long Shot', type: 'Medal', desc: 'Take a 350 meters shot in Landing Force, in Authentic difficulty.', target: 250, isLongShot: true },
-  { id: 'med_lastresort', cat: '11: Landing Force (DLC)', name: 'Last Resort', type: 'Medal', desc: 'Complete the campaign mission - Landing Force.' },
-
-  // --- Mission 12: Conqueror (DLC) ---
-  { id: 'm12_pl1', cat: '12: Conqueror (DLC)', name: 'Roughly-Written Note', type: 'Personal Letter', desc: 'Highest floor next to the bed on floor east side of map north of hidden item.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY&t=173s' },
-  { id: 'm12_pl2', cat: '12: Conqueror (DLC)', name: 'Debris-Covered Love Letter', type: 'Personal Letter', desc: 'On a box next to the Artillery Gun.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY&t=125s' },
-  { id: 'm12_pl3', cat: '12: Conqueror (DLC)', name: 'An Unfinished Plea for Aid', type: 'Personal Letter', desc: 'Top of map behind white door with 2 red flags, jump through window.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY&t=125s' },
-  { id: 'm12_cd1', cat: '12: Conqueror (DLC)', name: 'Classified Doc #1', type: 'Classified Doc', desc: 'Castle fortress headquarters table.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY&t=173s' },
-  { id: 'm12_cd2', cat: '12: Conqueror (DLC)', name: 'Operations Dossier', type: 'Classified Doc', desc: 'Far west of the map slightly north of the roughly-written note on edge.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY&t=156s' },
-  { id: 'm12_hi1', cat: '12: Conqueror (DLC)', name: 'Hidden Item #1', type: 'Hidden Item', desc: 'Medieval knight dagger in castle hall.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm12_hi2', cat: '12: Conqueror (DLC)', name: 'Bronze Statue', type: 'Hidden Item', desc: 'In office where you eliminate Khon in round castle tower.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY&t=329s' },
-  { id: 'm12_se1', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Main castle keep battlements peak.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm12_se2', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Cathedral archway across river.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm12_se3', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'North side castle in second-floor window.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm12_wb1', cat: '12: Conqueror (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Castle courtyard stable armory.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm12_wb2', cat: '12: Conqueror (DLC)', name: 'Castle Grounds SMG Workbench', type: 'Workbench', desc: 'In elbow of castle fence west side of destroy AA guns mission.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY&t=284s' },
-  { id: 'm12_wb3', cat: '12: Conqueror (DLC)', name: 'Village Pistol Workbench', type: 'Workbench', desc: 'Far right of map up ladder of building with faded Agy Hilda paint.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY&t=23s' },
-  { id: 'm12_ch1', cat: '12: Conqueror (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Eliminate general using environment hazards.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'med_ls_m12longshot', cat: '12: Conqueror (DLC)', name: 'Mission 12 (Conqueror) Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Conqueror, in Authentic difficulty.', target: 250, isLongShot: true },
-  { id: 'med_ls_m12authlongshot', cat: '12: Conqueror (DLC)', name: 'Mission 12 (Conqueror) Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Conqueror, in Authentic difficulty.', target: 250, isLongShot: true },
-  { id: 'med_siegebreaker', cat: '12: Conqueror (DLC)', name: 'Siegebreaker', type: 'Medal', desc: 'Complete the campaign mission - Conqueror.' },
-  { id: 'med_ghostoffalaise', cat: '12: Conqueror (DLC)', name: 'Ghost of Falaise', type: 'Medal', desc: 'Conqueror - Complete mission with a 2 star rating.', target: 2 },
-  { id: 'med_opoverlord', cat: '12: Conqueror (DLC)', name: 'Operation Overlord', type: 'Medal', desc: 'Conqueror - Complete mission on Authentic difficulty.' },
-  
-  // --- Mission 13: Rough Landing (DLC) ---
-  { id: 'm13_pl1', cat: '13: Rough Landing (DLC)', name: 'Letters Between Friends', type: 'Personal Letter', desc: 'Carried by Herbert Dorf (Infantry) with Key.', yt: '//www.youtube.com/watch?v=9XEuci1u4kE' },
-  { id: 'm13_pl2', cat: '13: Rough Landing (DLC)', name: 'Undiscovered', type: 'Personal Letter', desc: 'Next to Artillery gun.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY' },
-  { id: 'm13_pl3', cat: '13: Rough Landing (DLC)', name: 'Damaged Journal', type: 'Personal Letter', desc: 'Bottom left of map next to workbench.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm13_cd1', cat: '13: Rough Landing (DLC)', name: 'Scribble-Covered Map', type: 'Classified Doc', desc: 'Airfield control tower radio room.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm13_cd2', cat: '13: Rough Landing (DLC)', name: 'Resistance Correspondence', type: 'Classified Doc', desc: 'Underground fuel storage facility safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm13_hi1', cat: '13: Rough Landing (DLC)', name: 'Film Cannister', type: 'Hidden Item', desc: 'Crashed cockpit floor.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm13_hi2', cat: '13: Rough Landing (DLC)', name: 'Smoking Pipe', type: 'Hidden Item', desc: 'Experimental jet turbine blueprints.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm13_hi3', cat: '13: Rough Landing (DLC)', name: 'Smoking Pipe', type: 'Hidden Item', desc: 'Inside officer quarters desk.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm13_se1', cat: '13: Rough Landing (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Aviation hangar roof girder apex.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm13_se2', cat: '13: Rough Landing (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Rail bridge central concrete pillar.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm13_se3', cat: '13: Rough Landing (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Forest water reservoir watchtower.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm13_wb1', cat: '13: Rough Landing (DLC)', name: 'Resistance Camp Rifle Workbench', type: 'Workbench', desc: 'Hangar maintenance trench underground.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm13_wb2', cat: '13: Rough Landing (DLC)', name: 'Abandoned Cabin SMG Workbench', type: 'Workbench', desc: 'Rail freight staging depot armory.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm13_wb3', cat: '13: Rough Landing (DLC)', name: 'Mine Depot Pistol Workbench', type: 'Workbench', desc: 'In Village with faded red paint AG Hail.', yt: '//www.youtube.com/watch?v=UvZ3L2jNYcY&t=23s' },
-  { id: 'med_ls_m13_longshot', cat: '13: Rough Landing (DLC)', name: 'Mission 13 (Rough Landing) Long Shot', type: 'Medal', desc: 'Take a 240 meters shot in Rough Landing.', target: 240, isLongShot: true },
-  { id: 'med_ls_m13_authlong', cat: '13: Rough Landing (DLC)', name: 'Mission 13 (Rough Landing) Authentic Long Shot', type: 'Medal', desc: 'Take a 240 meters shot in Rough Landing, in Authentic difficulty.', target: 240, isLongShot: true },
-  { id: 'med_m13_woods', cat: '13: Rough Landing (DLC)', name: 'If You Go Down to the Woods Today', type: 'Medal', desc: 'Complete campaign mission - Rough Landing.' },
-  { id: 'med_m13_fightanother', cat: '13: Rough Landing (DLC)', name: 'Fight Another Day', type: 'Medal', desc: 'Rough Landing - Complete mission with a 2 star rating.', target: 2 },
-  { id: 'med_m13_stroll', cat: '13: Rough Landing (DLC)', name: 'Stroll in the Woods', type: 'Medal', desc: 'Rough Landing - Complete mission on Authentic difficulty.' },
-  
-  // --- Mission 14: Kraken Awakes (DLC) ---
-  { id: 'm14_pl1', cat: '14: Kraken Awakes (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Submarine dry dock office desk.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm14_pl2', cat: '14: Kraken Awakes (DLC)', name: 'Boiler Room Inspection', type: 'Personal Letter', desc: 'Carrier flight deck control station.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm14_cd1', cat: '14: Kraken Awakes (DLC)', name: 'Successful Raid', type: 'Classified Doc', desc: 'Super-carrier reactor room logbook.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm14_cd2', cat: '14: Kraken Awakes (DLC)', name: 'Salavage Operation', type: 'Classified Doc', desc: 'Admiral sea-cabin master safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm14_hi1', cat: '14: Kraken Awakes (DLC)', name: 'Eagle Plaque', type: 'Hidden Item', desc: 'Officer wardroom table.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm14_hi2', cat: '14: Kraken Awakes (DLC)', name: 'Backpack', type: 'Hidden Item', desc: 'Prototype torpedo guidance module.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm14_se1', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Carrier primary radar mast antenna top.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm14_se2', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Dry dock crane gantry pinnacle.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm14_se3', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Harbour entrance lighthouse cupola.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm14_wb1', cat: '14: Kraken Awakes (DLC)', name: 'Adminstration Rifle Workbench', type: 'Workbench', desc: 'Carrier forward munitions storage hold.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm14_wb2', cat: '14: Kraken Awakes (DLC)', name: 'Maintenance SMG Workbench', type: 'Workbench', desc: 'Dry dock machine shop workshop.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm14_wb3', cat: '14: Kraken Awakes (DLC)', name: 'Resistance Storage Pistol Workbench', type: 'Workbench', desc: 'Docklands security station gun locker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'm14_ch1', cat: '14: Kraken Awakes (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Destroy carrier without triggering alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-  { id: 'med_ls_m14longshot', cat: '14: Kraken Awakes (DLC)', name: 'Mission 14 (Kraken Awakes) Long Shot', type: 'Medal', desc: 'Take a 460 meters shot in Kraken Awakes.', target: 460, isLongShot: true },
-  { id: 'med_ls_m14authlongshot', cat: '14: Kraken Awakes (DLC)', name: 'Mission 14 (Kraken Awakes) Authentic Long Shot', type: 'Medal', desc: 'Take a 460 meters shot in Kraken Awakes.', target: 460, isLongShot: true },
-  { id: 'med_m14_shipbreaker', cat: '14: Kraken Awakes (DLC)', name: 'Shipbreaker', type: 'Medal', desc: 'Complete campaign mission - Kraken Awakes.' },
-  { id: 'med_m14_sinkorswim', cat: '14: Kraken Awakes (DLC)', name: 'Sink or Swim', type: 'Medal', desc: 'Kraken Awakes - Complete mission with a 2 star rating.', target: 2 },
-  { id: 'med_m14_goingover', cat: '14: Kraken Awakes (DLC)', name: 'Going Overboard', type: 'Medal', desc: 'Kraken Awakes - Complete mission on Authentic difficulty.' },
-
-  // --- Category: Campaign & Objective Medals ---
-  { id: 'med_fleshwound', cat: '15: Campaign & Objective Medals', name: 'Just a Flesh Wound', type: 'Medal', desc: 'Complete a mission without healing (excluding Loose Ends).' },
-  { id: 'med_frenchconn', cat: '15: Campaign & Objective Medals', name: 'The French Connection', type: 'Medal', desc: 'Liberate Blue Viper in Colline-Sur-Mer (Mission 1).' },
-  { id: 'med_buffrightout', cat: '15: Campaign & Objective Medals', name: 'It’ll Buff Right Out', type: 'Medal', desc: 'Destroy Möller’s shiny new car in chateau courtyard (Mission 2).' },
-  { id: 'med_confirming_susp', cat: '15: Campaign & Objective Medals', name: 'Confirming Suspicions', type: 'Medal', desc: 'Complete Occupied Residence with a 3 star rating.', target: 3 },
-  { id: 'med_thekrakenwakes', cat: '15: Campaign & Objective Medals', name: 'The Kraken Wakes', type: 'Medal', desc: 'Complete Spy Academy with a 3 star rating.', target: 3 },
-  { id: 'med_startstocrack', cat: '15: Campaign & Objective Medals', name: 'It’s Starting to Crack', type: 'Medal', desc: 'Complete War Factory with a 3 star rating.', target: 3 },
-  { id: 'med_pigeonhunter', cat: '15: Campaign & Objective Medals', name: 'Pigeon Hunter', type: 'Medal', desc: 'Destroy 10 cardboard pigeons on Beaumont-Saint-Denis (Mission 3).', target: 10 },
-  { id: 'med_showoff', cat: '15: Campaign & Objective Medals', name: 'Show Off', type: 'Medal', desc: 'Hit all practice targets on range in Spy Academy (Mission 3).' },
-  { id: 'med_locomotion', cat: '15: Campaign & Objective Medals', name: 'Locomotion Commotion', type: 'Medal', desc: 'In Martressac, cause crane accident destroying train (Mission 4).' },
-  { id: 'med_germaneng', cat: '15: Campaign & Objective Medals', name: 'German Engineering', type: 'Medal', desc: 'Destroy the Armoured Car in Martressac (Mission 4).' },
-  { id: 'med_saboteur', cat: '15: Campaign & Objective Medals', name: 'Saboteur', type: 'Medal', desc: 'Sabotage searchlight fuses in Martressac without killing operators (Mission 4).' },
-  { id: 'med_gnomeguard', cat: '15: Campaign & Objective Medals', name: 'The Gnome Guard', type: 'Medal', desc: 'Shoot garden gnome in Guernsey (Mission 5).' },
-  { id: 'med_changechannel', cat: '15: Campaign & Objective Medals', name: 'Change the Channel', type: 'Medal', desc: 'Complete Festung Guernsey with a 3 star rating.', target: 3 },
-  { id: 'med_takeback', cat: '15: Campaign & Objective Medals', name: 'Taking It Back', type: 'Medal', desc: 'Complete Libération with a 3-star rating.', target: 3 },
-  { id: 'med_upclose', cat: '15: Campaign & Objective Medals', name: 'Up Close and Personal', type: 'Medal', desc: 'Takedown 3 snipers guarding 2nd river crossing in Desponts-sur-Douve (Mission 6).' },
-  { id: 'med_targetamerica', cat: '15: Campaign & Objective Medals', name: 'Target America', type: 'Medal', desc: 'Complete Secret Weapons with a 3 star rating.', target: 3 },
-  { id: 'med_roadrage', cat: '15: Campaign & Objective Medals', name: 'Road Rage', type: 'Medal', desc: 'In Secret Weapons, find and destroy one of each vehicle type (Mission 7).' },
-  { id: 'med_krakensleeps', cat: '15: Campaign & Objective Medals', name: 'The Kraken Sleeps', type: 'Medal', desc: 'Complete Rubble and Ruin with a 3 star rating.', target: 3 },
-  { id: 'med_dontbreath', cat: '15: Campaign & Objective Medals', name: 'Don\'t Hold Your Breath', type: 'Medal', desc: 'Make final shot in fuel tanks without Empty Lung (Mission 8).' },
-  { id: 'med_liberte', cat: '15: Campaign & Objective Medals', name: 'Liberté', type: 'Medal', desc: 'Complete campaign across Bronze, Silver, and Gold tiers.', target: 2 },
+  // --- Overall Campaign & Combat PSN Trophies ---
+  { id: 'trophy_sniper_elite_plat', cat: '15: Campaign & Objective Medals', name: 'Sniper Elite', type: 'Trophy', desc: 'PSN Platinum Trophy: Obtain all Trophies.' },
+  { id: 'trophy_climbing_ladder', cat: '15: Campaign & Objective Medals', name: 'Climbing the Ladder', type: 'Trophy', desc: 'PSN Trophy: Reach rank 40.', target: 40 },
+  { id: 'med_liberte', cat: '15: Campaign & Objective Medals', name: 'Liberté', type: 'Medal', desc: 'Complete campaign across all tiers.' },
   { id: 'med_bestofbest', cat: '15: Campaign & Objective Medals', name: 'Best of the Best', type: 'Medal', desc: 'Complete entire campaign on Authentic difficulty.' },
+  { id: 'med_nostone', cat: '15: Campaign & Objective Medals', name: 'No Stone Unturned', type: 'Medal', desc: 'Complete 16 campaign optional objectives.', target: 16 },
+  { id: 'med_fleshwound', cat: '15: Campaign & Objective Medals', name: 'Just a Flesh Wound', type: 'Medal', desc: 'Complete a mission without healing.' },
+  { id: 'med_cantoutrun', cat: '15: Campaign & Objective Medals', name: 'Can\'t Outrun A Bullet', type: 'Medal', desc: 'Kill Möller with a rifle at 600m+ (Mission 9).', target: 600, isLongShot: true },
+  { id: 'trophy_from_paris_with_love', cat: '15: Campaign & Objective Medals', name: 'From Paris with Love', type: 'Trophy', desc: 'Collect 41 Personal Letters.', target: 41 },
+  { id: 'trophy_burn_after_reading', cat: '15: Campaign & Objective Medals', name: 'Burn after reading', type: 'Trophy', desc: 'Collect 39 classified documents.', target: 39 },
+  { id: 'trophy_souvenir_hunter', cat: '15: Campaign & Objective Medals', name: 'Souvenir hunter', type: 'Trophy', desc: 'Collect 24 Hidden Items.', target: 24 },
+  { id: 'trophy_eagle_eyed', cat: '15: Campaign & Objective Medals', name: 'Eagle Eyed', type: 'Trophy', desc: 'Destroy 24 Dead-eye Targets.', target: 24 },
+  { id: 'trophy_tinkerer', cat: '15: Campaign & Objective Medals', name: 'Tinkerer', type: 'Trophy', desc: 'Interact with 24 workbenches.', target: 24 },
+  { id: 'med_buffrightout', cat: '15: Campaign & Objective Medals', name: "It'll Buff Right Out", type: 'Medal', desc: 'Destroy Möller\'s shiny new car.' },
+  { id: 'med_locomotion', cat: '15: Campaign & Objective Medals', name: 'Locomotion Commotion', type: 'Medal', desc: 'In Martressac, create an accident that destroys the train.' },
+  { id: 'med_upclose', cat: '15: Campaign & Objective Medals', name: 'Up Close and Personal', type: 'Medal', desc: 'Takedown 3 snipers guarding bridge.' },
+  { id: 'med_roadrage', cat: '15: Campaign & Objective Medals', name: 'Road Rage', type: 'Medal', desc: 'In Secret Weapons, destroy one of each vehicle type.' },
+  { id: 'med_dontbreath', cat: '15: Campaign & Objective Medals', name: "Don't hold your breath", type: 'Medal', desc: 'Make final shot without Empty Lung.' },
+  { id: 'med_brainsop', cat: '15: Campaign & Objective Medals', name: 'Brains of the Operation', type: 'Medal', desc: 'Kill Möller with a headshot.' },
+  { id: 'med_sightbeyond', cat: '15: Campaign & Objective Medals', name: 'Sight Beyond Sights', type: 'Medal', desc: 'Kill Möller with a rifle in Iron Sights.' },
+  { id: 'trophy_shoot_for_moon', cat: '15: Campaign & Objective Medals', name: 'Shoot for the Moon', type: 'Trophy', desc: 'Complete three Survival missions.', target: 3 },
+  { id: 'trophy_opposing_force', cat: '15: Campaign & Objective Medals', name: 'Opposing Force', type: 'Trophy', desc: 'Win one Axis Invasion as an Invader.' },
+  { id: 'trophy_enemy_at_gates', cat: '15: Campaign & Objective Medals', name: 'Enemy at the Gates', type: 'Trophy', desc: 'Defeat an invading Sniper Jager.' },
+  { id: 'trophy_fields_of_glory', cat: '15: Campaign & Objective Medals', name: 'Fields of Glory', type: 'Trophy', desc: 'Play one team-based PVP match.' },
 
-  // --- Category: Combat Medals ---
-  { id: 'med_longgame', cat: '16: Combat Medals', name: 'The Long Game', type: 'Medal', desc: 'Accumulate a cumulative kill distance of 100,000 meters across all modes.', target: 100000 },
+  // --- Category 16: Combat Medals ---
+  { id: 'med_longgame', cat: '16: Combat Medals', name: 'The Long Game', type: 'Medal', desc: 'Accumulate a cumulative kill distance of 100,000 meters.', target: 100000 },
   { id: 'med_sharpshooter', cat: '16: Combat Medals', name: 'Sharpshooter', type: 'Medal', desc: 'Kill 350 enemies with a Rifle.', target: 350 },
-  { id: 'med_skirmisher', cat: '16: Combat Medals', name: 'Skirmisher', type: 'Medal', desc: 'Kill 150 enemies with a Secondary Weapon.', target: 150 },
+  { id: 'med_skirmisher', cat: '16: Combat Medals', name: 'Skirmisher', type: 'Medal', desc: 'Kill 300 enemies with a Secondary Weapon.', target: 300 },
   { id: 'med_gunslinger', cat: '16: Combat Medals', name: 'Gunslinger', type: 'Medal', desc: 'Kill 150 enemies with Pistols.', target: 150 },
-  { id: 'med_ironprecision', cat: '16: Combat Medals', name: 'Precision Is Key', type: 'Medal', desc: 'Kill 300 enemies with any weapon while in Iron Sights.', target: 300 },
-  { id: 'med_outofscope', cat: '16: Combat Medals', name: 'Out of Scope', type: 'Medal', desc: 'Kill 150 enemies with a rifle while in Iron Sights.', target: 150 },
+  { id: 'med_ironprecision', cat: '16: Combat Medals', name: 'Precision Is Key', type: 'Medal', desc: 'Kill 150 enemies with any weapon in Iron Sights.', target: 150 },
+  { id: 'med_outofscope', cat: '16: Combat Medals', name: 'Out of Scope', type: 'Medal', desc: 'Kill 150 enemies with a rifle in Iron Sights.', target: 150 },
   { id: 'med_resourceful', cat: '16: Combat Medals', name: 'Resourceful', type: 'Medal', desc: 'Kill 50 enemy soldiers with Found Weapons.', target: 50 },
-  { id: 'med_littlefriend', cat: '16: Combat Medals', name: 'My Little Friend', type: 'Medal', desc: 'Kill 50 soldiers with heavy weapons (Panzerfaust or MG42).', target: 50 },
-  { id: 'med_lordofwar', cat: '16: Combat Medals', name: 'Lord of War', type: 'Medal', desc: 'Get a kill with 20 different base weapons.', target: 20 },
-  { id: 'med_organgrinder', cat: '16: Combat Medals', name: 'Organ Grinder', type: 'Medal', desc: 'Hit every organ (8 distinct types) at least once with a rifle.', target: 8 },
-  { id: 'med_dergeist', cat: '16: Combat Medals', name: 'Der Geist', type: 'Medal', desc: 'Achieve 250 ghost kills (unaware or suspicious).', target: 250 },
+  { id: 'med_littlefriend', cat: '16: Combat Medals', name: 'My Little Friend', type: 'Medal', desc: 'Kill 50 soldiers with heavy weapons.', target: 50 },
+  { id: 'med_lordofwar', cat: '16: Combat Medals', name: 'Lord of War', type: 'Medal', desc: 'Get a kill with 20 different weapons.', target: 20 },
+  { id: 'med_organgrinder', cat: '16: Combat Medals', name: 'Organ Grinder', type: 'Medal', desc: 'Hit every organ at least once with a rifle.' },
+  { id: 'med_dergeist', cat: '16: Combat Medals', name: 'Der Geist', type: 'Medal', desc: 'Achieve 250 ghost kills.', target: 250 },
   { id: 'med_quietmouse', cat: '16: Combat Medals', name: 'As Quiet as a Mouse', type: 'Medal', desc: 'Kill 50 enemies during a Sound Mask.', target: 50 },
   { id: 'med_closequarters', cat: '16: Combat Medals', name: 'Close Quarters', type: 'Medal', desc: 'Perform 100 lethal takedowns.', target: 100 },
   { id: 'med_snaketallgrass', cat: '16: Combat Medals', name: 'Snake in the Grass', type: 'Medal', desc: 'While in Tall Grass, kill 50 soldiers.', target: 50 },
+  { id: 'med_seteablaze', cat: '16: Combat Medals', name: 'Set Europe Ablaze', type: 'Medal', desc: 'Kill 50 enemies with traps.', target: 50 },
+  { id: 'med_riggedtoblow', cat: '16: Combat Medals', name: 'Rigged to Blow', type: 'Medal', desc: 'Kill 20 soldiers using booby traps.', target: 20 },
+  { id: 'med_explodeeffic', cat: '16: Combat Medals', name: 'Explosive Efficiency', type: 'Medal', desc: 'Kill 3 on-foot soldiers with one grenade.' },
+  { id: 'med_nutcracker', cat: '16: Combat Medals', name: 'Die Nussknacker Sweet!', type: 'Medal', desc: 'Testicle shot with a rifle from 100 meters or more.' },
+  { id: 'med_strategist', cat: '16: Combat Medals', name: 'Strategist', type: 'Medal', desc: 'Make a tank shoot and destroy another enemy vehicle.' },
 
-  // --- Category: Weapon Mastery & Tactics Medals ---
-  { id: 'med_masterrifles', cat: '17: Weapon Mastery & Tactics Medals', name: 'Master of Rifles', type: 'Medal', desc: 'Obtain 6 rifle-related mastery medals (50 headshots from 100m+ each).', target: 6 },
-  { id: 'med_mastersecond', cat: '17: Weapon Mastery & Tactics Medals', name: 'Master of Secondaries', type: 'Medal', desc: 'Obtain 6 secondary-related mastery medals (150 kills each).', target: 6 },
-  { id: 'med_masterpistols', cat: '17: Weapon Mastery & Tactics Medals', name: 'Master of Pistols', type: 'Medal', desc: 'Obtain 6 pistol-related mastery medals (50 ghost kills each).', target: 50 },
-  { id: 'med_double1866', cat: '17: Weapon Mastery & Tactics Medals', name: 'Double 1866 Master', type: 'Medal', desc: 'Ghost kill 5 enemies with the Double 1866.', target: 5 },
-  { id: 'med_welrodmaster', cat: '17: Weapon Mastery & Tactics Medals', name: 'Welrod Master', type: 'Medal', desc: 'Ghost kill 5 enemies with the Welrod.', target: 5 },
-  { id: 'med_m1911master', cat: '17: Weapon Mastery & Tactics Medals', name: 'M1911 Master', type: 'Medal', desc: 'Ghost kill 25 enemies with the M1911.', target: 25 },
-  { id: 'med_modeldmaster', cat: '17: Weapon Mastery & Tactics Medals', name: 'Model D Master', type: 'Medal', desc: 'Ghost kill 5 enemies with the Model D.', target: 5 },
-  { id: 'med_mkvimaster', cat: '17: Weapon Mastery & Tactics Medals', name: 'MK VI Master', type: 'Medal', desc: 'Ghost kill 5 enemies with the MK VI Revolver.', target: 5 },
-  { id: 'med_type14master', cat: '17: Weapon Mastery & Tactics Medals', name: 'Type 14 Master', type: 'Medal', desc: 'Ghost kill 5 enemies with the Type 14 Nambu.', target: 5 },
-  { id: 'med_mod712master', cat: '17: Weapon Mastery & Tactics Medals', name: 'Mod.712 Master', type: 'Medal', desc: 'Ghost kill 5 enemies with the Mod.712.', target: 5 },
-  { id: 'med_masteratarms', cat: '17: Weapon Mastery & Tactics Medals', name: 'Master-at-Arms', type: 'Medal', desc: 'Master all weapons in the game across Rifles, Secondaries, and Pistols.', target: 3 },
-  { id: 'med_seteablaze', cat: '17: Weapon Mastery & Tactics Medals', name: 'Set Europe Ablaze', type: 'Medal', desc: 'Kill 100 enemies with traps (TNT or teller mines).', target: 100 },
-  { id: 'med_riggedtoblow', cat: '17: Weapon Mastery & Tactics Medals', name: 'Rigged to Blow', type: 'Medal', desc: 'Kill 40 soldiers using booby traps.', target: 40 },
-  { id: 'med_explodeeffic', cat: '17: Weapon Mastery & Tactics Medals', name: 'Explosive Efficiency', type: 'Medal', desc: 'Kill 3 on-foot soldiers with a single hand grenade.' },
-  { id: 'med_nutcracker', cat: '17: Weapon Mastery & Tactics Medals', name: 'Die Nussknacker Sweet!', type: 'Medal', desc: 'Get a testicle shot with a rifle from 100 meters or more.' },
-  { id: 'med_strategist', cat: '17: Weapon Mastery & Tactics Medals', name: 'Strategist', type: 'Medal', desc: 'Make an enemy tank shoot and destroy another enemy vehicle.' },
-  { id: 'med_nostone', cat: '17: Weapon Mastery & Tactics Medals', name: 'No Stone Unturned', type: 'Medal', desc: 'Complete 16 campaign optional objectives.', target: 16 },
+  // --- Category 17: Weapon Mastery Medals ---
+  { id: 'med_masterpistols', cat: '17: Weapon Mastery & Tactics Medals', name: 'Master of Pistols', type: 'Medal', desc: 'Obtain six pistol-related mastery medals.', target: 6 },
+  { id: 'med_mastersecond', cat: '17: Weapon Mastery & Tactics Medals', name: 'Master of Secondaries', type: 'Medal', desc: 'Obtain six secondary-related mastery medals.', target: 6 },
+  { id: 'med_masterrifles', cat: '17: Weapon Mastery & Tactics Medals', name: 'Master of Rifles', type: 'Medal', desc: 'Obtain six rifle-related mastery medals.', target: 6 },
+  { id: 'med_masteratarms', cat: '17: Weapon Mastery & Tactics Medals', name: 'Master-at-arms', type: 'Medal', desc: 'Become the Master of each weapon.', target: 3 },
 
-  // --- Category 18: Ribbons - Stealth (Blue) ---
-  { id: 'rib_camofleur', cat: '18: Ribbons - Stealth (Blue)', name: 'Camofleur', type: 'Ribbon', desc: 'Kill 15 enemies while in Tall Grass.', isRibbon: true },
-  { id: 'rib_cleaner', cat: '18: Ribbons - Stealth (Blue)', name: 'Cleaner', type: 'Ribbon', desc: 'Hide 3 bodies in crates.', isRibbon: true },
-  { id: 'rib_distraction_expert', cat: '18: Ribbons - Stealth (Blue)', name: 'Distraction Expert', type: 'Ribbon', desc: 'Kill 5 distracted enemies.', isRibbon: true },
-  { id: 'rib_ghost', cat: '18: Ribbons - Stealth (Blue)', name: 'Ghost', type: 'Ribbon', desc: 'Whilst undetected, kill 15 soldiers.', isRibbon: true },
-  { id: 'rib_sound_mask_expert', cat: '18: Ribbons - Stealth (Blue)', name: 'Sound Mask Expert', type: 'Ribbon', desc: 'Sabotage 3 entities to create sound masks.', isRibbon: true },
-  { id: 'rib_assassin', cat: '18: Ribbons - Stealth (Blue)', name: 'Assassin', type: 'Ribbon', desc: 'Achieve a total of 5 lethal takedowns classified as Ghost Kills.', isRibbon: true },
-  { id: 'rib_circuit_breaker', cat: '18: Ribbons - Stealth (Blue)', name: 'Circuit Breaker', type: 'Ribbon', desc: 'Disable an alarm.', isRibbon: true },
+  // --- Category 18: DLC Packs Trophies ---
+  { id: 'trophy_dlc1_fuhrerious', cat: '18: DLC Pack 1 (Wolf Mountain)', name: 'Führerious Repetition', type: 'Trophy', desc: 'Kill Hitler 5 times.', target: 5 },
+  { id: 'trophy_dlc1_reich_to_point', cat: '18: DLC Pack 1 (Wolf Mountain)', name: 'Reich To The Point', type: 'Trophy', desc: 'Kill only Hitler and exfiltrate.' },
+  { id: 'trophy_dlc1_from_fuhrer_away', cat: '18: DLC Pack 1 (Wolf Mountain)', name: 'From Führer Away', type: 'Trophy', desc: 'Kill Hitler at a distance of 300 meters or more.', target: 300, isLongShot: true },
+  { id: 'trophy_dlc1_covert_elim', cat: '18: DLC Pack 1 (Wolf Mountain)', name: 'Covert Elimination', type: 'Trophy', desc: 'Kill Hitler and exfiltrate without being detected.' },
+  { id: 'trophy_dlc1_alpha', cat: '18: DLC Pack 1 (Wolf Mountain)', name: 'Alpha', type: 'Trophy', desc: 'Complete Wolf Mountain on Authentic difficulty.' },
+  { id: 'trophy_dlc1_herr_today', cat: '18: DLC Pack 1 (Wolf Mountain)', name: 'Herr Today, Gone Tomorrow', type: 'Trophy', desc: 'Complete Wolf Mountain.' },
+  { id: 'trophy_dlc1_op_foxley', cat: '18: DLC Pack 1 (Wolf Mountain)', name: 'Operation Foxley', type: 'Trophy', desc: 'Complete Wolf Mountain with a 2-star rating.', target: 2 },
+  { id: 'trophy_dlc1_familienjuwel', cat: '18: DLC Pack 1 (Wolf Mountain)', name: 'Das Familienjuwel', type: 'Trophy', desc: 'Kill Hitler with a testicle shot.' },
+  { id: 'trophy_dlc2_last_resort', cat: '19: DLC Pack 2 (Landing Force)', name: 'Last Resort', type: 'Trophy', desc: 'Complete the campaign mission - Landing Force.' },
+  { id: 'trophy_dlc3_siegebreaker', cat: '20: DLC Pack 3 (Conqueror)', name: 'Siegebreaker', type: 'Trophy', desc: 'Complete the campaign mission - Conqueror.' },
+  { id: 'trophy_dlc3_ghost_falaise', cat: '20: DLC Pack 3 (Conqueror)', name: 'Ghost of Falaise', type: 'Trophy', desc: 'Conqueror - Complete mission with a 2-star rating.', target: 2 },
+  { id: 'trophy_dlc3_op_overlord', cat: '20: DLC Pack 3 (Conqueror)', name: 'Operation Overlord', type: 'Trophy', desc: 'Conqueror - Complete mission on Authentic difficulty.' },
+  { id: 'trophy_dlc4_woods_today', cat: '21: DLC Pack 4 (Rough Landing)', name: 'If You Go Down To The Woods Today', type: 'Trophy', desc: 'Complete the campaign mission - Rough Landing.' },
+  { id: 'trophy_dlc4_fight_another', cat: '21: DLC Pack 4 (Rough Landing)', name: 'Fight Another Day', type: 'Trophy', desc: 'Rough Landing - Complete mission with a 2-star rating.', target: 2 },
+  { id: 'trophy_dlc4_stroll_woods', cat: '21: DLC Pack 4 (Rough Landing)', name: 'Stroll in the Woods', type: 'Trophy', desc: 'Rough Landing - Complete mission on Authentic difficulty.' },
+  { id: 'trophy_dlc5_shipbreaker', cat: '22: DLC Pack 5 (Kraken Awakes)', name: 'Shipbreaker', type: 'Trophy', desc: 'Complete the campaign mission - Kraken Awakes.' },
+  { id: 'trophy_dlc5_sink_or_swim', cat: '22: DLC Pack 5 (Kraken Awakes)', name: 'Sink or Swim', type: 'Trophy', desc: 'Kraken Awakes - Complete mission with a 2-star rating.', target: 2 },
+  { id: 'trophy_dlc5_going_overboard', cat: '22: DLC Pack 5 (Kraken Awakes)', name: 'Going Overboard', type: 'Trophy', desc: 'Kraken Awakes - Complete mission on Authentic difficulty.' },
 
-  // --- Category 19: Ribbons - Tactics (Maroon) ---
-  { id: 'rib_partisan', cat: '19: Ribbons - Tactics (Maroon)', name: 'Partisan', type: 'Ribbon', desc: 'Get 3 environmental kills.', isRibbon: true },
-  { id: 'rib_trapper', cat: '19: Ribbons - Tactics (Maroon)', name: 'Trapper', type: 'Ribbon', desc: 'Kill 3 or more soldiers with booby traps.', isRibbon: true },
-  { id: 'rib_demolitionist', cat: '19: Ribbons - Tactics (Maroon)', name: 'Demolitionist', type: 'Ribbon', desc: 'Kill 2 on-foot enemies simultaneously by shooting an explosive or traps.', isRibbon: true },
-  { id: 'rib_sapper', cat: '19: Ribbons - Tactics (Maroon)', name: 'Sapper', type: 'Ribbon', desc: 'Kill 2 on-foot enemies or more with a single trap or explosive.', isRibbon: true },
-  { id: 'rib_tank_hunter', cat: '19: Ribbons - Tactics (Maroon)', name: 'Tank Hunter', type: 'Ribbon', desc: 'Destroy a tank.', isRibbon: true },
-  { id: 'rib_v8_cylinder_hunter', cat: '19: Ribbons - Tactics (Maroon)', name: 'V8 Cylinder Hunter', type: 'Ribbon', desc: 'Destroy a 222 Armoured Car.', isRibbon: true },
-  { id: 'rib_scout', cat: '19: Ribbons - Tactics (Maroon)', name: 'Scout', type: 'Ribbon', desc: 'Tag 20 enemies with your binoculars.', isRibbon: true },
-  { id: 'rib_field_medic', cat: '19: Ribbons - Tactics (Maroon)', name: 'Field Medic', type: 'Ribbon', desc: 'Perform 1 teammate revive.', isRibbon: true },
-  { id: 'rib_spotter', cat: '19: Ribbons - Tactics (Maroon)', name: 'Spotter', type: 'Ribbon', desc: 'While playing the campaign in Co-op, get 5 tag assists.', isRibbon: true },
-  { id: 'rib_second_gunner', cat: '19: Ribbons - Tactics (Maroon)', name: 'Second Gunner', type: 'Ribbon', desc: 'While playing the campaign in Co-op mode, get 3 kill assists.', isRibbon: true },
-  { id: 'rib_engineer', cat: '19: Ribbons - Tactics (Maroon)', name: 'Engineer', type: 'Ribbon', desc: 'Use traps to destroy a vehicle.', isRibbon: true },
+  // --- Ribbons (All 47 Career Ribbons) ---
+  { id: 'rib_camofleur', cat: '23: Ribbons - Stealth (Blue)', name: 'Camofleur', type: 'Ribbon', desc: 'Kill 15 enemies while in Tall Grass.', isRibbon: true },
+  { id: 'rib_cleaner', cat: '23: Ribbons - Stealth (Blue)', name: 'Cleaner', type: 'Ribbon', desc: 'Hide 3 bodies in crates.', isRibbon: true },
+  { id: 'rib_distraction_expert', cat: '23: Ribbons - Stealth (Blue)', name: 'Distraction Expert', type: 'Ribbon', desc: 'Kill 5 distracted enemies.', isRibbon: true },
+  { id: 'rib_ghost', cat: '23: Ribbons - Stealth (Blue)', name: 'Ghost', type: 'Ribbon', desc: 'Whilst undetected, kill 15 soldiers.', isRibbon: true },
+  { id: 'rib_sound_mask_expert', cat: '23: Ribbons - Stealth (Blue)', name: 'Sound Mask Expert', type: 'Ribbon', desc: 'Sabotage 3 entities to create sound masks.', isRibbon: true },
+  { id: 'rib_assassin', cat: '23: Ribbons - Stealth (Blue)', name: 'Assassin', type: 'Ribbon', desc: 'Achieve 5 lethal takedowns as Ghost Kills.', isRibbon: true },
+  { id: 'rib_circuit_breaker', cat: '23: Ribbons - Stealth (Blue)', name: 'Circuit Breaker', type: 'Ribbon', desc: 'Disable an alarm.', isRibbon: true },
 
-  // --- Category 20: Ribbons - Lethal (Red) ---
-  { id: 'rib_pistol_specialist', cat: '20: Ribbons - Lethal (Red)', name: 'Pistol Specialist', type: 'Ribbon', desc: 'Kill 20 enemies with a pistol.', isRibbon: true },
-  { id: 'rib_secondary_specialist', cat: '20: Ribbons - Lethal (Red)', name: 'Secondary Specialist', type: 'Ribbon', desc: 'Kill 20 enemies with a secondary weapon.', isRibbon: true },
-  { id: 'rib_butcher', cat: '20: Ribbons - Lethal (Red)', name: 'Butcher', type: 'Ribbon', desc: 'Get 10 organ shot kills.', isRibbon: true },
-  { id: 'rib_wrecker', cat: '20: Ribbons - Lethal (Red)', name: 'Wrecker', type: 'Ribbon', desc: 'Destroy 5 manned vehicles.', isRibbon: true },
-  { id: 'rib_speed_shooter', cat: '20: Ribbons - Lethal (Red)', name: 'Speed Shooter', type: 'Ribbon', desc: 'Achieve 5 kills in less than 60 seconds with a rifle.', isRibbon: true },
-  { id: 'rib_grenadier', cat: '20: Ribbons - Lethal (Red)', name: 'Grenadier', type: 'Ribbon', desc: 'Get 5 grenade kills.', isRibbon: true },
-  { id: 'rib_rifle_specialist', cat: '20: Ribbons - Lethal (Red)', name: 'Rifle Specialist', type: 'Ribbon', desc: 'Kill 20 enemies with a rifle.', isRibbon: true },
-  { id: 'rib_brawler', cat: '20: Ribbons - Lethal (Red)', name: 'Brawler', type: 'Ribbon', desc: 'Perform 10 lethal takedowns.', isRibbon: true },
-  { id: 'rib_skull_crusher', cat: '20: Ribbons - Lethal (Red)', name: 'Skull Crusher', type: 'Ribbon', desc: 'Get 10 headshot kills.', isRibbon: true },
+  { id: 'rib_partisan', cat: '24: Ribbons - Tactics (Maroon)', name: 'Partisan', type: 'Ribbon', desc: 'Get 3 environmental kills.', isRibbon: true },
+  { id: 'rib_trapper', cat: '24: Ribbons - Tactics (Maroon)', name: 'Trapper', type: 'Ribbon', desc: 'Kill 3 or more soldiers with booby traps.', isRibbon: true },
+  { id: 'rib_demolitionist', cat: '24: Ribbons - Tactics (Maroon)', name: 'Demolitionist', type: 'Ribbon', desc: 'Kill 2 on-foot enemies simultaneously with explosives.', isRibbon: true },
+  { id: 'rib_sapper', cat: '24: Ribbons - Tactics (Maroon)', name: 'Sapper', type: 'Ribbon', desc: 'Kill 2 on-foot enemies with a single trap.', isRibbon: true },
+  { id: 'rib_tank_hunter', cat: '24: Ribbons - Tactics (Maroon)', name: 'Tank Hunter', type: 'Ribbon', desc: 'Destroy a tank.', isRibbon: true },
+  { id: 'rib_v8_cylinder_hunter', cat: '24: Ribbons - Tactics (Maroon)', name: 'V8 Cylinder Hunter', type: 'Ribbon', desc: 'Destroy a 222 Armoured Car.', isRibbon: true },
+  { id: 'rib_scout', cat: '24: Ribbons - Tactics (Maroon)', name: 'Scout', type: 'Ribbon', desc: 'Tag 20 enemies with your binoculars.', isRibbon: true },
+  { id: 'rib_field_medic', cat: '24: Ribbons - Tactics (Maroon)', name: 'Field Medic', type: 'Ribbon', desc: 'Perform 1 teammate revive.', isRibbon: true },
+  { id: 'rib_spotter', cat: '24: Ribbons - Tactics (Maroon)', name: 'Spotter', type: 'Ribbon', desc: 'Get 5 tag assists in Co-op.', isRibbon: true },
+  { id: 'rib_second_gunner', cat: '24: Ribbons - Tactics (Maroon)', name: 'Second Gunner', type: 'Ribbon', desc: 'Get 3 kill assists in Co-op.', isRibbon: true },
+  { id: 'rib_engineer', cat: '24: Ribbons - Tactics (Maroon)', name: 'Engineer', type: 'Ribbon', desc: 'Use traps to destroy a vehicle.', isRibbon: true },
 
-  // --- Category 21: Ribbons - Non-Lethal (Teal) ---
-  { id: 'rib_guerrilla', cat: '21: Ribbons - Non-Lethal (Teal)', name: 'Guerrilla', type: 'Ribbon', desc: 'Knock 3 enemies unconscious with Schu-mines.', isRibbon: true },
-  { id: 'rib_pacifist', cat: '21: Ribbons - Non-Lethal (Teal)', name: 'Pacifist', type: 'Ribbon', desc: 'Complete the mission with over 20 tagged enemies that have not been killed.', isRibbon: true },
-  { id: 'rib_head_doctor', cat: '21: Ribbons - Non-Lethal (Teal)', name: 'Head Doctor', type: 'Ribbon', desc: 'Get 15 non-lethal ammo headshots.', isRibbon: true },
-  { id: 'rib_mechanic', cat: '21: Ribbons - Non-Lethal (Teal)', name: 'Mechanic', type: 'Ribbon', desc: 'Disable the engine of 3 vehicles.', isRibbon: true },
-  { id: 'rib_merciful', cat: '21: Ribbons - Non-Lethal (Teal)', name: 'Merciful', type: 'Ribbon', desc: 'Knock 15 enemies unconscious with non-lethal ammo.', isRibbon: true },
-  { id: 'rib_boxer', cat: '21: Ribbons - Non-Lethal (Teal)', name: 'Boxer', type: 'Ribbon', desc: 'Perform 10 non-lethal takedowns.', isRibbon: true },
-  { id: 'rib_knockout_expert', cat: '21: Ribbons - Non-Lethal (Teal)', name: 'Knockout Expert', type: 'Ribbon', desc: 'Use throwable items to knockout enemies 4 times.', isRibbon: true },
+  { id: 'rib_pistol_specialist', cat: '25: Ribbons - Lethal (Red)', name: 'Pistol Specialist', type: 'Ribbon', desc: 'Kill 20 enemies with a pistol.', isRibbon: true },
+  { id: 'rib_secondary_specialist', cat: '25: Ribbons - Lethal (Red)', name: 'Secondary Specialist', type: 'Ribbon', desc: 'Kill 20 enemies with a secondary weapon.', isRibbon: true },
+  { id: 'rib_butcher', cat: '25: Ribbons - Lethal (Red)', name: 'Butcher', type: 'Ribbon', desc: 'Get 10 organ shot kills.', isRibbon: true },
+  { id: 'rib_wrecker', cat: '25: Ribbons - Lethal (Red)', name: 'Wrecker', type: 'Ribbon', desc: 'Destroy 5 manned vehicles.', isRibbon: true },
+  { id: 'rib_speed_shooter', cat: '25: Ribbons - Lethal (Red)', name: 'Speed Shooter', type: 'Ribbon', desc: 'Achieve 5 kills in less than 60 seconds with a rifle.', isRibbon: true },
+  { id: 'rib_grenadier', cat: '25: Ribbons - Lethal (Red)', name: 'Grenadier', type: 'Ribbon', desc: 'Get 5 grenade kills.', isRibbon: true },
+  { id: 'rib_rifle_specialist', cat: '25: Ribbons - Lethal (Red)', name: 'Rifle Specialist', type: 'Ribbon', desc: 'Kill 20 enemies with a rifle.', isRibbon: true },
+  { id: 'rib_brawler', cat: '25: Ribbons - Lethal (Red)', name: 'Brawler', type: 'Ribbon', desc: 'Perform 10 lethal takedowns.', isRibbon: true },
+  { id: 'rib_skull_crusher', cat: '25: Ribbons - Lethal (Red)', name: 'Skull Crusher', type: 'Ribbon', desc: 'Get 10 headshot kills.', isRibbon: true },
 
-  // --- Category 22: Ribbons - Survival (Gold) ---
-  { id: 'rib_guard_duty', cat: '22: Ribbons - Survival (Gold)', name: 'Guard Duty', type: 'Ribbon', desc: 'Get 15 kills while closely defending from inside the command post area.', isRibbon: true },
-  { id: 'rib_to_fight_another_day', cat: '22: Ribbons - Survival (Gold)', name: 'To Fight Another Day', type: 'Ribbon', desc: 'Complete an entire Survival mission.', isRibbon: true },
-  { id: 'rib_rocket_man', cat: '22: Ribbons - Survival (Gold)', name: 'Rocket Man', type: 'Ribbon', desc: 'Get 10 kills with a Panzerfaust.', isRibbon: true },
-  { id: 'rib_heavy_hitter', cat: '22: Ribbons - Survival (Gold)', name: 'Heavy Hitter', type: 'Ribbon', desc: 'Get 10 kills each scoring 300 or more points.', isRibbon: true },
-  { id: 'rib_liberator', cat: '22: Ribbons - Survival (Gold)', name: 'Liberator', type: 'Ribbon', desc: 'Kill 5 enemies capturing a Command Post.', isRibbon: true },
-  { id: 'rib_untouchable', cat: '22: Ribbons - Survival (Gold)', name: 'Untouchable', type: 'Ribbon', desc: 'Get 10 consecutive kills without taking any damage.', isRibbon: true },
-  { id: 'rib_fight_for_survival', cat: '22: Ribbons - Survival (Gold)', name: 'Fight for Survival', type: 'Ribbon', desc: 'Complete 2 consecutive waves with most kills in each.', isRibbon: true },
-  { id: 'rib_never_give_ground', cat: '22: Ribbons - Survival (Gold)', name: 'Never Give Ground', type: 'Ribbon', desc: 'Complete a Survival Stage without losing the Command Post.', isRibbon: true },
-  { id: 'rib_still_standing', cat: '22: Ribbons - Survival (Gold)', name: 'Still Standing', type: 'Ribbon', desc: 'Complete a Survival Stage without being incapacitated.', isRibbon: true },
-  { id: 'rib_counter_sniper', cat: '22: Ribbons - Survival (Gold)', name: 'Counter-Sniper', type: 'Ribbon', desc: 'Headshot 5 enemy snipers.', isRibbon: true },
-  { id: 'rib_crash_test_dummies', cat: '22: Ribbons - Survival (Gold)', name: 'Crash Test Dummies', type: 'Ribbon', desc: 'Kill 10 enemies before they disembark their vehicles.', isRibbon: true },
-  { id: 'rib_top_guns', cat: '22: Ribbons - Survival (Gold)', name: 'Top Guns', type: 'Ribbon', desc: 'Get 10 kills with MG42.', isRibbon: true },
-  { id: 'rib_perfect_defence', cat: '22: Ribbons - Survival (Gold)', name: 'Perfect Defence', type: 'Ribbon', desc: 'Complete a Stage without the enemy breaching the Command Post.', isRibbon: true }
+  { id: 'rib_guerrilla', cat: '26: Ribbons - Non-Lethal (Teal)', name: 'Guerrilla', type: 'Ribbon', desc: 'Knock 3 enemies unconscious with Schu-mines.', isRibbon: true },
+  { id: 'rib_pacifist', cat: '26: Ribbons - Non-Lethal (Teal)', name: 'Pacifist', type: 'Ribbon', desc: 'Complete mission with over 20 tagged living enemies.', isRibbon: true },
+  { id: 'rib_head_doctor', cat: '26: Ribbons - Non-Lethal (Teal)', name: 'Head Doctor', type: 'Ribbon', desc: 'Get 15 non-lethal ammo headshots.', isRibbon: true },
+  { id: 'rib_mechanic', cat: '26: Ribbons - Non-Lethal (Teal)', name: 'Mechanic', type: 'Ribbon', desc: 'Disable the engine of 3 vehicles.', isRibbon: true },
+  { id: 'rib_merciful', cat: '26: Ribbons - Non-Lethal (Teal)', name: 'Merciful', type: 'Ribbon', desc: 'Knock 15 enemies unconscious with non-lethal ammo.', isRibbon: true },
+  { id: 'rib_boxer', cat: '26: Ribbons - Non-Lethal (Teal)', name: 'Boxer', type: 'Ribbon', desc: 'Perform 10 non-lethal takedowns.', isRibbon: true },
+  { id: 'rib_knockout_expert', cat: '26: Ribbons - Non-Lethal (Teal)', name: 'Knockout Expert', type: 'Ribbon', desc: 'Use throwable items to knockout enemies 4 times.', isRibbon: true },
+
+  { id: 'rib_guard_duty', cat: '27: Ribbons - Survival (Gold)', name: 'Guard Duty', type: 'Ribbon', desc: 'Get 15 kills while defending command post.', isRibbon: true },
+  { id: 'rib_to_fight_another_day', cat: '27: Ribbons - Survival (Gold)', name: 'To Fight Another Day', type: 'Ribbon', desc: 'Complete an entire Survival mission.', isRibbon: true },
+  { id: 'rib_rocket_man', cat: '27: Ribbons - Survival (Gold)', name: 'Rocket Man', type: 'Ribbon', desc: 'Get 10 kills with a Panzerfaust.', isRibbon: true },
+  { id: 'rib_heavy_hitter', cat: '27: Ribbons - Survival (Gold)', name: 'Heavy Hitter', type: 'Ribbon', desc: 'Get 10 kills each scoring 300+ points.', isRibbon: true },
+  { id: 'rib_liberator', cat: '27: Ribbons - Survival (Gold)', name: 'Liberator', type: 'Ribbon', desc: 'Kill 5 enemies capturing a Command Post.', isRibbon: true },
+  { id: 'rib_untouchable', cat: '27: Ribbons - Survival (Gold)', name: 'Untouchable', type: 'Ribbon', desc: 'Get 10 consecutive kills without damage.', isRibbon: true },
+  { id: 'rib_fight_for_survival', cat: '27: Ribbons - Survival (Gold)', name: 'Fight for Survival', type: 'Ribbon', desc: 'Complete 2 consecutive waves with most kills.', isRibbon: true },
+  { id: 'rib_never_give_ground', cat: '27: Ribbons - Survival (Gold)', name: 'Never Give Ground', type: 'Ribbon', desc: 'Complete a Survival Stage without losing post.', isRibbon: true },
+  { id: 'rib_still_standing', cat: '27: Ribbons - Survival (Gold)', name: 'Still Standing', type: 'Ribbon', desc: 'Complete a Stage without being incapacitated.', isRibbon: true },
+  { id: 'rib_counter_sniper', cat: '27: Ribbons - Survival (Gold)', name: 'Counter-Sniper', type: 'Ribbon', desc: 'Headshot 5 enemy snipers.', isRibbon: true },
+  { id: 'rib_crash_test_dummies', cat: '27: Ribbons - Survival (Gold)', name: 'Crash Test Dummies', type: 'Ribbon', desc: 'Kill 10 enemies before they disembark.', isRibbon: true },
+  { id: 'rib_top_guns', cat: '27: Ribbons - Survival (Gold)', name: 'Top Guns', type: 'Ribbon', desc: 'Get 10 kills with MG42.', isRibbon: true },
+  { id: 'rib_perfect_defence', cat: '27: Ribbons - Survival (Gold)', name: 'Perfect Defence', type: 'Ribbon', desc: 'Complete a Stage without post breach.', isRibbon: true }
 ];
 
-/* Initial Migration Template (Only created in Firestore if document doesn't exist yet) */
-const WEREWOLF_SEEDS = [
-  { id: 'med_confirming_susp', count: 3, collected: true },
-  { id: 'med_thekrakenwakes', count: 3, collected: true },
-  { id: 'med_startstocrack', count: 3, collected: true },
-  { id: 'med_changechannel', count: 3, collected: true },
-  { id: 'med_takeback', count: 3, collected: true },
-  { id: 'med_targetamerica', count: 3, collected: true },
-  { id: 'med_krakensleeps', count: 3, collected: true },
-  { id: 'med_cantoutrun', count: 600, collected: true },
-  { id: 'med_liberte', count: 1, collected: false },
-  { id: 'med_nostone', count: 16, collected: true },
-  { id: 'med_bestofbest', count: 0, collected: false },
-  { id: 'med_ls_m1', count: 373, collected: false },
-  { id: 'med_ls_m1_auth', count: 146, collected: false },
-  { id: 'med_ls_m2', count: 266, collected: false },
-  { id: 'med_ls_m2_auth', count: 0, collected: false },
-  { id: 'med_ls_m3', count: 516, collected: false },
-  { id: 'med_ls_m3_auth', count: 325, collected: true },
-  { id: 'med_wm_dasspook', count: 1, collected: true },
-  { id: 'med_wm_herrtoday', count: 1, collected: false },
-  { id: 'med_wm_familienjuwel', count: 1, collected: true },
-  { id: 'med_wm_fuhrerious', count: 6, collected: false },
-  { id: 'med_reichtopoint', count: 1, collected: true },
-  { id: 'med_alpsmemories', count: 15, collected: true },
-  { id: 'med_wm_opfoxley', count: 2, collected: true },
-  { id: 'med_wm_fromfuhrer', count: 300, collected: true },
-  { id: 'med_fuhrerlongshot', count: 196, collected: false },
-  { id: 'med_sharpshooter', count: 350, collected: true },
-  { id: 'med_ironprecision', count: 300, collected: true },
-  { id: 'med_riggedtoblow', count: 40, collected: true },
-  { id: 'med_outofscope', count: 150, collected: true },
-  { id: 'med_seteablaze', count: 100, collected: true },
-  { id: 'med_lordofwar', count: 20, collected: true },
-  { id: 'med_resourceful', count: 50, collected: true },
-  { id: 'med_skirmisher', count: 113, collected: false },
-  { id: 'med_littlefriend', count: 49, collected: false },
-  { id: 'med_gunslinger', count: 150, collected: true },
-  { id: 'med_m1911master', count: 7, collected: false },
-  { id: 'med_mod712master', count: 3, collected: false },
-  { id: 'rib_camofleur', count: 1, collected: true },
-  { id: 'rib_cleaner', count: 1, collected: true },
-  { id: 'rib_distraction_expert', count: 1, collected: true },
-  { id: 'rib_ghost', count: 14, collected: true }
-];
-
-/* === SECTION: Dynamic Themed Medal & Ribbon Styling Utility === */
-function getItemThemeMeta(item) {
-  const nameLower = item.name.toLowerCase();
-  const catLower = item.cat.toLowerCase();
-
-  if (nameLower.includes('authentic long shot') || nameLower.includes('führer authentic long shot')) {
-    return {
-      badgeClass: 'theme-badge-auth-ls',
-      customStyle: 'background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444;'
-    };
+/* Helper to convert whatever Firestore has stored (array or map) into standard items */
+function extractItemsFromPayload(payload) {
+  if (!payload) return [];
+  if (Array.isArray(payload)) return payload;
+  if (typeof payload === 'object') {
+    const list = [];
+    Object.entries(payload).forEach(([k, v]) => {
+      if (v === true) {
+        list.push({ id: k, collected: true, count: 1 });
+      } else if (v && typeof v === 'object') {
+        list.push({
+          id: v.id || k,
+          collected: !!(v.collected || v.completed || v.done || (v.count && Number(v.count) > 0)),
+          count: v.count !== undefined ? Number(v.count) : 0
+        });
+      }
+    });
+    return list;
   }
-
-  if (nameLower.includes('long shot') || nameLower.includes('the long game') || nameLower.includes('from führer away')) {
-    return {
-      badgeClass: 'theme-badge-ls',
-      customStyle: 'background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid #a855f7;'
-    };
-  }
-
-  if (nameLower.includes('master of pistols') || nameLower.includes('double 1866') || nameLower.includes('welrod') || nameLower.includes('gunslinger') || nameLower.includes('m1911') || nameLower.includes('mod.712') || nameLower.includes('model d') || nameLower.includes('type 14') || nameLower.includes('mk vi')) {
-    return {
-      badgeClass: 'theme-badge-pistol-silver',
-      customStyle: 'background: rgba(209, 213, 219, 0.2); color: #e5e7eb; border: 1px solid #9ca3af;'
-    };
-  }
-
-  if (catLower.includes('(dlc)') || catLower.includes('landing force') || catLower.includes('conqueror') || catLower.includes('rough landing') || catLower.includes('kraken awakes') || catLower.includes('wolf mountain')) {
-    return {
-      badgeClass: 'theme-badge-dlc-tan',
-      customStyle: 'background: rgba(212, 185, 130, 0.2); color: #e2cb9d; border: 1px solid #d4b982;'
-    };
-  }
-
-  if (catLower.includes('stealth')) {
-    return {
-      badgeClass: 'theme-badge-ribbon-blue',
-      customStyle: 'background: rgba(37, 99, 235, 0.25); color: #60a5fa; border: 1px solid #2563eb;'
-    };
-  }
-
-  if (catLower.includes('tactics')) {
-    return {
-      badgeClass: 'theme-badge-ribbon-maroon',
-      customStyle: 'background: rgba(159, 18, 57, 0.25); color: #fb7185; border: 1px solid #9f1239;'
-    };
-  }
-
-  if (catLower.includes('lethal') && !catLower.includes('non-lethal')) {
-    return {
-      badgeClass: 'theme-badge-ribbon-red',
-      customStyle: 'background: rgba(220, 38, 38, 0.25); color: #f87171; border: 1px solid #dc2626;'
-    };
-  }
-
-  if (catLower.includes('non-lethal')) {
-    return {
-      badgeClass: 'theme-badge-ribbon-teal',
-      customStyle: 'background: rgba(13, 148, 136, 0.25); color: #2dd4bf; border: 1px solid #0d9488;'
-    };
-  }
-
-  if (catLower.includes('survival')) {
-    return {
-      badgeClass: 'theme-badge-ribbon-gold',
-      customStyle: 'background: rgba(202, 138, 4, 0.25); color: #facc15; border: 1px solid #ca8a04;'
-    };
-  }
-
-  if (item.type === 'Ribbon') {
-    return {
-      badgeClass: 'theme-badge-ribbon',
-      customStyle: 'background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid #3b82f6;'
-    };
-  }
-
-  return {
-    badgeClass: 'theme-badge-default',
-    customStyle: 'background: rgba(255, 255, 255, 0.08); color: #ddd; border: 1px solid rgba(255,255,255,0.15);'
-  };
+  return [];
 }
 
-/* === SECTION: Discord Real-Time Push Notification Engine === */
-async function sendDiscordIntelUpdate(item, hunterData, operative, teamProgress) {
-  if (!DISCORD_WEBHOOK_URL) return;
-
-  try {
-    const rawIconUrl = GAME_TYPE_ICONS[item.type] || GAME_TYPE_ICONS['Personal Letter'];
-    const absoluteIconUrl = rawIconUrl.startsWith('//') ? 'https:' + rawIconUrl : rawIconUrl;
-
-    const opTheme = userThemes[operative] || userThemes['Werewolf3788'];
-    const embedColor = opTheme.intColor || 0xff8800;
-
-    const catItems = hunterData.filter(i => i.cat === item.cat);
-    const catFound = catItems.filter(i => i.collected).length;
-    const catPct = catItems.length > 0 ? Math.round((catFound / catItems.length) * 100) : 0;
-    const catTier = getTierStatus(catPct);
-
-    const nyFormatter = new Intl.DateTimeFormat('en-US', {
-      timeZone: 'America/New_York',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    });
-    const nyTimeStr = nyFormatter.format(new Date());
-
-    let embedPayload = null;
-
-    if (item.isLongShot) {
-      const shotLeaderboard = ALL_OPERATIVES.map(op => {
-        const opSaved = (teamProgress && teamProgress[op]) || [];
-        const opEntry = opSaved.find(s => s.id === item.id);
-        const count = opEntry && opEntry.count !== undefined ? Number(opEntry.count) : (op === operative ? item.count : 0);
-        return {
-          operative: op,
-          distance: count
-        };
-      }).sort((a, b) => b.distance - a.distance);
-
-      const longestShot = shotLeaderboard[0].distance;
-      const isCurrentOpLeader = item.count > 0 && item.count >= longestShot;
-
-      const leaderboardText = shotLeaderboard.map((entry, index) => {
-        const isLeader = entry.distance > 0 && entry.distance === longestShot;
-        const crown = isLeader ? '👑 ' : `${index + 1}. `;
-        const activeMarker = entry.operative.toLowerCase() === operative.toLowerCase() ? ' 🎯 *(Updated)*' : '';
-        return `${crown}**${entry.operative.toUpperCase()}**: ${entry.distance}m${activeMarker}`;
-      }).join('\n');
-
-      const isRecordOverTarget = item.target && item.count >= item.target;
-      const targetNote = item.target 
-        ? (isRecordOverTarget 
-            ? `\n🎯 **TARGET MET (${item.target}m required) 🔥**` 
-            : `\n🎯 **${item.target - item.count}m remaining to hit mission target (${item.target}m)**`)
-        : '';
-
-      embedPayload = {
-        username: "Sniper Elite 5 HQ Intel",
-        avatar_url: "https://raw.githubusercontent.com/Werewolf3788/Website/main/games/Sniper-Elite/5/images/Sniper%20Elite%20Eagle.JPG",
-        embeds: [
-          {
-            title: `🎯 LONG SHOT RECORD: ${item.name}`,
-            description: `**Operative [${operative.toUpperCase()}]** registered a **${item.count}m shot**!${isCurrentOpLeader && item.count > 0 ? '\n👑 **NEW SQUAD LEADER!**' : ''}${targetNote}`,
-            color: embedColor,
-            thumbnail: { url: absoluteIconUrl },
-            fields: [
-              {
-                name: "🗺️ Mission / Category",
-                value: `**${item.cat}**`,
-                inline: true
-              },
-              {
-                name: "🎯 Shot Distance",
-                value: `**${item.count}m** (Target: ${item.target || 0}m)`,
-                inline: true
-              },
-              {
-                name: "🏆 Longest Squad Shot",
-                value: `**${longestShot}m** ${isCurrentOpLeader ? '👑' : ''}`,
-                inline: true
-              },
-              {
-                name: "🎖️ Mission Status Tier",
-                value: `**${catTier.icon} ${catTier.label} (${catPct}%)**`,
-                inline: true
-              },
-              {
-                name: "📊 Squad Long Shot Leaderboard",
-                value: leaderboardText,
-                inline: false
-              },
-              {
-                name: "📍 Vantage / Target Intel",
-                value: item.desc ? `_${item.desc}_` : '_Long shot position registered._',
-                inline: false
-              }
-            ],
-            footer: {
-              text: `HQ Tactical Ballistics • New York (24h): ${nyTimeStr}`
-            },
-            timestamp: new Date().toISOString()
-          }
-        ]
-      };
-
-    } else {
-      const sameTypeItems = hunterData.filter(i => i.cat === item.cat && i.type === item.type);
-      const foundItems = sameTypeItems.filter(i => i.collected);
-      const pendingItems = sameTypeItems.filter(i => !i.collected);
-
-      const countFound = foundItems.length;
-      const countTotal = sameTypeItems.length;
-
-      const foundListText = foundItems.length > 0
-        ? foundItems.map(i => `✅ **${i.name}**`).join('\n')
-        : '_None yet_';
-
-      const pendingListText = pendingItems.length > 0
-        ? pendingItems.map(i => `❌ ${i.name}`).join('\n')
-        : '🎉 **All acquired for this mission!**';
-
-      const tierPromoText = (catPct === 25 || catPct === 50 || catPct === 100)
-        ? `\n🎉 **MISSION PROMOTED TO ${catTier.icon} ${catTier.label}!**`
-        : '';
-
-      embedPayload = {
-        username: "Sniper Elite 5 HQ Intel",
-        avatar_url: "https://raw.githubusercontent.com/Werewolf3788/Website/main/games/Sniper-Elite/5/images/Sniper%20Elite%20Eagle.JPG",
-        embeds: [
-          {
-            title: `🎯 INTEL SECURED: ${item.name}`,
-            description: `**Operative [${operative.toUpperCase()}]** marked **${item.name}** as completed!${tierPromoText}`,
-            color: (catPct === 100 ? 0xffd700 : (catPct >= 50 ? 0xc0c0c0 : (catPct >= 25 ? 0xcd7f32 : embedColor))),
-            thumbnail: { url: absoluteIconUrl },
-            fields: [
-              {
-                name: "🗺️ Mission / Category",
-                value: `**${item.cat}**`,
-                inline: true
-              },
-              {
-                name: "📦 Intel Type & Progress",
-                value: `**${item.type}** (${countFound}/${countTotal} Found)`,
-                inline: true
-              },
-              {
-                name: "🎖️ Mission Status Tier",
-                value: `**${catTier.icon} ${catTier.label} (${catPct}%)**`,
-                inline: true
-              },
-              {
-                name: "📍 Location Intel",
-                value: item.desc ? `_${item.desc}_` : '_No specific intel location noted._',
-                inline: false
-              },
-              {
-                name: `✅ Found So Far (${countFound}/${countTotal})`,
-                value: foundListText,
-                inline: true
-              },
-              {
-                name: `❌ Still Pending (${pendingItems.length}/${countTotal})`,
-                value: pendingListText,
-                inline: true
-              }
-            ],
-            footer: {
-              text: `HQ Tactical Operations • New York (24h): ${nyTimeStr}`
-            },
-            timestamp: new Date().toISOString()
-          }
-        ]
-      };
-    }
-
-    if (item.yt) {
-      const ytLink = item.yt.startsWith('//') ? 'https:' + item.yt.replace(/^\/\//, '') : item.yt;
-      embedPayload.embeds[0].fields.push({
-        name: "🎥 Video Intel Link",
-        value: `[Watch Tactical Walkthrough](${ytLink})`,
-        inline: false
-      });
-    }
-
-    await fetch(DISCORD_WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(embedPayload)
-    });
-  } catch (err) {
-    console.warn("⚠️ Discord webhook dispatch notice:", err.message);
-  }
-}
-
-/* === SECTION: App State Controller & Core Tactical Engine === */
+/* === SECTION 4: App State Controller & Core Tactical Engine === */
 const appState = {
-  activeGamertag: 'Werewolf3788',
+  activeGamertag: localStorage.getItem('se5_pinned_user') || 'Werewolf3788',
   platform: 'playstation',
-  activeMission: '7: Secret Weapons',
+  activeMission: '1: The Atlantic Wall',
   hunterData: [],
   teamProgress: {},
   collapsedSections: {},
@@ -1008,14 +431,25 @@ const appState = {
   user: null,
   unsubListeners: [],
   isLoaded: false,
-  version: 'v8.1.0',
-  buildDate: '2026-09-20 13:24 EDT',
-  activeLeafletMaps: {},
-  markerLayers: {},
+  version: 'v8.4.0',
+  buildDate: '2026-09-23 20:25:00 EDT',
 
-  getDocRefForGamertag: function(gamertag) {
-    const path = `users/${gamertag}/platform/${this.platform}/progress/sniper-elite-5`;
-    return doc(this.db, path);
+  togglePinActiveUser: function() {
+    const pinned = localStorage.getItem('se5_pinned_user');
+    if (pinned === this.activeGamertag) {
+      localStorage.removeItem('se5_pinned_user');
+    } else {
+      localStorage.setItem('se5_pinned_user', this.activeGamertag);
+    }
+    this.updatePinButtonUI();
+  },
+
+  updatePinButtonUI: function() {
+    const btn = document.getElementById('pin-user-toggle-btn');
+    if (!btn) return;
+    const isPinned = localStorage.getItem('se5_pinned_user') === this.activeGamertag;
+    btn.classList.toggle('is-pinned', isPinned);
+    btn.innerText = isPinned ? `📌 Pinned: ${this.activeGamertag}` : '📌 Pin User';
   },
 
   init: async function() {
@@ -1036,8 +470,9 @@ const appState = {
     });
 
     this.populateMissionSelector();
-    this.render();
     this.renderStickyFooter();
+    this.updatePinButtonUI();
+    this.render();
 
     try {
       const app = initializeApp(firebaseConfig);
@@ -1045,13 +480,13 @@ const appState = {
       this.db = getFirestore(app);
       this.rtdb = getDatabase(app);
 
-      signInAnonymously(this.auth).catch(err => console.warn("ℹ️ Anonymous auth notice:", err.message));
+      signInAnonymously(this.auth).catch(err => console.warn("Anonymous auth notice:", err.message));
 
       onAuthStateChanged(this.auth, async (u) => {
         this.user = u;
-        const statEl = document.getElementById('stat-line') || document.querySelector('.system-status');
+        const statEl = document.getElementById('stat-line');
         if (u) {
-          if (statEl) statEl.innerText = `ID: ${u.uid.substring(0, 8)} | ONLINE (CLOUD-DIRECT)`;
+          if (statEl) statEl.innerText = `ID: ${u.uid.substring(0, 8)} | ONLINE (CLOUD-AUTHORITATIVE)`;
           this.attachAllTeamListeners();
           this.attachPsnRtdbListeners();
         } else {
@@ -1059,11 +494,66 @@ const appState = {
         }
       });
     } catch (e) {
-      console.warn("⚠️ Firebase Init error:", e.message);
+      console.warn("Firebase Init notice:", e.message);
     }
   },
 
-  /* === Realtime Database PSN Listener === */
+  attachAllTeamListeners: function() {
+    this.unsubListeners.forEach(u => u());
+    this.unsubListeners = [];
+
+    ALL_OPERATIVES.forEach(op => {
+      const aliases = OPERATIVE_ALIASES[op] || [op];
+      aliases.forEach(alias => {
+        const path = `users/${alias}/platform/${this.platform}/progress/sniper-elite-5`;
+        const docRef = doc(this.db, path);
+
+        const unsub = onSnapshot(docRef, (snap) => {
+          if (snap.exists()) {
+            const docData = snap.data();
+            const rawProgress = docData.progress || docData.collectibles || docData;
+            const remoteSaved = extractItemsFromPayload(rawProgress);
+
+            if (remoteSaved.length > 0) {
+              const currentList = this.teamProgress[op] || [];
+              remoteSaved.forEach(item => {
+                const idx = currentList.findIndex(e => e.id === item.id);
+                if (idx >= 0) {
+                  currentList[idx] = { ...currentList[idx], ...item };
+                } else {
+                  currentList.push(item);
+                }
+              });
+              this.teamProgress[op] = currentList;
+
+              if (op === this.activeGamertag) {
+                if (docData.activeMission && docData.activeMission !== this.activeMission) {
+                  this.activeMission = docData.activeMission;
+                }
+
+                this.hunterData = sniperData.map(item => {
+                  const status = currentList.find(s => s.id === item.id);
+                  const isDone = status ? !!(status.collected || status.completed || status.done || (status.count !== undefined && Number(status.count) > 0)) : false;
+                  return {
+                    ...item,
+                    collected: isDone,
+                    count: status && status.count !== undefined ? Number(status.count) : (isDone ? (item.target || 1) : 0)
+                  };
+                });
+              }
+            }
+          }
+          this.isLoaded = true;
+          this.render();
+        }, (err) => {
+          console.warn(`Firestore snapshot notice for ${alias}:`, err.message);
+        });
+
+        this.unsubListeners.push(unsub);
+      });
+    });
+  },
+
   attachPsnRtdbListeners: function() {
     if (!this.rtdb) return;
 
@@ -1073,10 +563,9 @@ const appState = {
 
       onValue(trophyRef, (snapshot) => {
         if (!snapshot.exists()) return;
-        const trophyData = snapshot.val();
-        this.processPsnTrophies(operativeName, trophyData);
+        this.processPsnTrophies(operativeName, snapshot.val());
       }, (error) => {
-        console.warn(`RTDB Trophy listener notice for ${psnTag}:`, error.message);
+        console.warn(`RTDB listener notice for ${psnTag}:`, error.message);
       });
     });
   },
@@ -1084,81 +573,164 @@ const appState = {
   processPsnTrophies: function(operativeName, trophyPayload) {
     if (!trophyPayload) return;
 
-    let hasChanges = false;
     let opSaved = this.teamProgress[operativeName] || [];
-
-    const trophyList = Array.isArray(trophyPayload) 
-      ? trophyPayload 
+    const trophyList = Array.isArray(trophyPayload)
+      ? trophyPayload
       : (trophyPayload.trophies || Object.values(trophyPayload));
 
     trophyList.forEach(t => {
       if (!t) return;
       const trophyTitle = t.trophyName || t.name || t.title;
-      const matchedTrackerId = PSN_TROPHY_MAPPINGS[trophyTitle] || (t.trophyId !== undefined ? PSN_TROPHY_MAPPINGS[t.trophyId] : null);
+      const normalizedTitle = normalizeString(trophyTitle);
+      const matchedTrackerId = PSN_TROPHY_MAPPINGS[normalizedTitle] || (t.trophyId !== undefined ? PSN_TROPHY_MAPPINGS[String(t.trophyId)] : null);
 
       if (matchedTrackerId) {
         let existing = opSaved.find(s => s.id === matchedTrackerId);
         const itemDef = sniperData.find(d => d.id === matchedTrackerId);
         const targetValue = (itemDef && itemDef.target) ? itemDef.target : 1;
 
-        const psnProgressVal = t.currentValue !== undefined 
-          ? parseInt(t.currentValue, 10) 
-          : (t.trophyProgress !== undefined 
-              ? parseInt(t.trophyProgress, 10) 
+        const psnProgressVal = t.currentValue !== undefined
+          ? parseInt(t.currentValue, 10)
+          : (t.trophyProgress !== undefined
+              ? parseInt(t.trophyProgress, 10)
               : (t.progress !== undefined ? parseInt(t.progress, 10) : 0));
 
-        const isEarned = (t.earned === true || t.earned === 1 || t.unlocked === true || t.isEarned === true || (targetValue > 1 && psnProgressVal >= targetValue));
+        const isEarned = (t.earned === true || t.earned === 1 || t.unlocked === true || (targetValue > 1 && psnProgressVal >= targetValue));
 
         if (existing) {
-          let updatedCount = existing.count || 0;
-          let updatedCollected = existing.collected || isEarned;
-
-          if (psnProgressVal > updatedCount) {
-            updatedCount = psnProgressVal;
-          }
-          if (isEarned && updatedCount < targetValue) {
-            updatedCount = targetValue;
-          }
-          if (updatedCount >= targetValue) {
-            updatedCollected = true;
-          }
-
-          if (existing.count !== updatedCount || existing.collected !== updatedCollected) {
-            existing.count = updatedCount;
-            existing.collected = updatedCollected;
-            hasChanges = true;
-          }
+          if (psnProgressVal > (existing.count || 0)) existing.count = psnProgressVal;
+          if (isEarned) existing.collected = true;
         } else {
-          const finalCount = isEarned ? targetValue : psnProgressVal;
           opSaved.push({
             id: matchedTrackerId,
-            collected: isEarned || (finalCount >= targetValue),
-            count: finalCount
+            collected: isEarned || (psnProgressVal >= targetValue),
+            count: isEarned ? targetValue : psnProgressVal
           });
-          hasChanges = true;
-        }
-
-        if (operativeName === this.activeGamertag) {
-          const currentItem = this.hunterData.find(i => i.id === matchedTrackerId);
-          if (currentItem) {
-            const savedItem = opSaved.find(s => s.id === matchedTrackerId);
-            if (savedItem) {
-              currentItem.collected = savedItem.collected;
-              currentItem.count = savedItem.count;
-              this.updateMapPinVisibility(matchedTrackerId, currentItem.collected);
-            }
-          }
         }
       }
     });
 
-    if (hasChanges) {
-      this.teamProgress[operativeName] = opSaved;
-      this.render();
-      if (operativeName === this.activeGamertag) {
-        this.sync();
-      }
+    this.teamProgress[operativeName] = opSaved;
+
+    if (this.activeGamertag === operativeName) {
+      this.hunterData = sniperData.map(item => {
+        const status = opSaved.find(s => s.id === item.id);
+        const isDone = status ? !!(status.collected || status.completed || status.done || (status.count !== undefined && Number(status.count) > 0)) : false;
+        return {
+          ...item,
+          collected: isDone,
+          count: status && status.count !== undefined ? Number(status.count) : (isDone ? (item.target || 1) : 0)
+        };
+      });
     }
+
+    this.render();
+  },
+
+  switchHunter: function(gamertag) {
+    this.activeGamertag = gamertag;
+    const displayEl = document.getElementById('hunter-display');
+    if (displayEl) displayEl.innerText = gamertag.toUpperCase();
+
+    const theme = userThemes[gamertag] || userThemes['Werewolf3788'];
+    document.documentElement.style.setProperty('--ser-color', theme.color);
+    document.documentElement.style.setProperty('--ser-glow', theme.glow);
+
+    document.querySelectorAll('.profile-btn').forEach(b => {
+      b.classList.toggle('active-btn', b.innerText.trim().toLowerCase() === gamertag.toLowerCase());
+    });
+
+    this.updatePinButtonUI();
+
+    const currentSaved = this.teamProgress[gamertag] || [];
+    this.hunterData = sniperData.map(item => {
+      const status = currentSaved.find(s => s.id === item.id);
+      const isDone = status ? !!(status.collected || status.completed || status.done || (status.count !== undefined && Number(status.count) > 0)) : false;
+      return {
+        ...item,
+        collected: isDone,
+        count: status && status.count !== undefined ? Number(status.count) : (isDone ? (item.target || 1) : 0)
+      };
+    });
+
+    this.render();
+  },
+
+  stepItemCount: function(id, delta) {
+    const item = this.hunterData.find(i => i.id === id);
+    if (!item) return;
+    const currentVal = item.count || 0;
+    const stepSize = item.isLongShot ? 5 : 1;
+    const nextVal = Math.max(0, currentVal + (delta * stepSize));
+    this.setManualItemCount(id, nextVal);
+  },
+
+  openDirectNumberEditor: function(id, currentVal, maxVal, isUncapped = false) {
+    const container = document.getElementById(`val-box-${id}`);
+    if (!container) return;
+
+    const maxAttr = (isUncapped || !maxVal) ? '' : `max="${maxVal}"`;
+    container.innerHTML = `<input type="number" id="input-edit-${id}" class="manual-inline-num-input" value="${currentVal}" min="0" ${maxAttr}>`;
+
+    const inputEl = document.getElementById(`input-edit-${id}`);
+    if (!inputEl) return;
+    inputEl.focus();
+    inputEl.select();
+
+    const commitVal = () => {
+      const rawVal = parseInt(inputEl.value, 10);
+      const finalVal = isNaN(rawVal) || rawVal < 0 ? 0 : rawVal;
+      this.setManualItemCount(id, finalVal);
+    };
+
+    inputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') inputEl.blur();
+      else if (e.key === 'Escape') this.render();
+    });
+
+    inputEl.addEventListener('blur', commitVal, { once: true });
+  },
+
+  setManualItemCount: function(id, newCount) {
+    const item = this.hunterData.find(i => i.id === id);
+    if (!item) return;
+
+    item.count = newCount;
+    item.collected = item.target ? (item.count >= item.target) : (item.count > 0);
+
+    const opSaved = this.teamProgress[this.activeGamertag] || [];
+    const existing = opSaved.find(s => s.id === id);
+    if (existing) {
+      existing.count = item.count;
+      existing.collected = item.collected;
+    } else {
+      opSaved.push({ id: item.id, count: item.count, collected: item.collected });
+    }
+    this.teamProgress[this.activeGamertag] = opSaved;
+
+    this.render();
+    this.sync();
+  },
+
+  toggleItem: async function(id) {
+    const item = this.hunterData.find(i => i.id === id);
+    if (!item) return;
+
+    item.collected = !item.collected;
+    item.count = item.collected ? (item.target || 1) : 0;
+
+    const opSaved = this.teamProgress[this.activeGamertag] || [];
+    const existing = opSaved.find(s => s.id === id);
+    if (existing) {
+      existing.collected = item.collected;
+      existing.count = item.count;
+    } else {
+      opSaved.push({ id: item.id, collected: item.collected, count: item.count });
+    }
+    this.teamProgress[this.activeGamertag] = opSaved;
+
+    this.render();
+    this.sync();
   },
 
   populateMissionSelector: function() {
@@ -1189,272 +761,16 @@ const appState = {
 
     this.render();
     this.sync();
-
-    const targetSid = catName.replace(/[^a-z0-9]/gi, '');
-    const targetEl = document.getElementById('section-' + targetSid);
-    if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   },
 
-  renderStickyFooter: function() {
-    let footer = document.getElementById('se5-sticky-footer');
-    if (!footer) {
-      footer = document.createElement('div');
-      footer.id = 'se5-sticky-footer';
-      document.body.appendChild(footer);
-    }
-    footer.innerHTML = `
-      <div>
-        <span class="footer-badge">${this.version}</span>
-        <span style="margin-left:8px; color:var(--ser-color, #ff8800); font-weight:bold;">BUILD: ${this.buildDate}</span>
-      </div>
-      <div style="font-size:11px; color:#aaa;" class="outlined-text">
-        OPERATIVES: Werewolf3788, Raymystyro, Terrdog, Elu Cloud
-      </div>
-    `;
-  },
-
-  attachAllTeamListeners: function() {
-    this.unsubListeners.forEach(u => u());
-    this.unsubListeners = [];
-
-    ALL_OPERATIVES.forEach(op => {
-      const docRef = this.getDocRefForGamertag(op);
-      const unsub = onSnapshot(docRef, async (snap) => {
-        if (snap.exists()) {
-          const docData = snap.data();
-          const remoteSaved = docData.progress || [];
-
-          this.teamProgress[op] = remoteSaved;
-
-          if (op === this.activeGamertag) {
-            if (docData.activeMission && docData.activeMission !== this.activeMission) {
-              this.activeMission = docData.activeMission;
-              const cats = [...new Set(this.hunterData.map(i => i.cat))];
-              cats.forEach(c => {
-                const sid = c.replace(/[^a-z0-9]/gi, '');
-                this.collapsedSections[sid] = (c !== this.activeMission);
-              });
-              const select = document.getElementById('mission-focus-select');
-              if (select) select.value = this.activeMission;
-            }
-
-            this.hunterData = sniperData.map(item => {
-              const status = remoteSaved.find(s => s.id === item.id);
-              return {
-                ...item,
-                collected: status ? !!status.collected : false,
-                count: status && status.count !== undefined ? Number(status.count) : 0
-              };
-            });
-          }
-        } else if (op === 'Werewolf3788') {
-          this.teamProgress[op] = WEREWOLF_SEEDS;
-          await setDoc(docRef, {
-            activeMission: this.activeMission,
-            gameId: "sniper-elite-5",
-            lastUpdate: Date.now(),
-            platform: this.platform,
-            progress: WEREWOLF_SEEDS
-          }, { merge: true });
-        }
-        this.isLoaded = true;
-        this.render();
-      }, (err) => {
-        console.warn(`Firestore live snapshot notice for ${op}:`, err.message);
-      });
-      this.unsubListeners.push(unsub);
-    });
-  },
-
-  switchHunter: function(gamertag) {
-    this.activeGamertag = gamertag;
-    const displayEl = document.getElementById('hunter-display');
-    if (displayEl) displayEl.innerText = gamertag.toUpperCase();
-
-    const theme = userThemes[gamertag] || userThemes['Werewolf3788'];
-    document.documentElement.style.setProperty('--ser-color', theme.color);
-    document.documentElement.style.setProperty('--ser-glow', theme.glow);
-
-    document.querySelectorAll('.profile-btn').forEach(b => {
-      b.classList.toggle('active-btn', b.innerText.trim().toLowerCase() === gamertag.toLowerCase());
-    });
-
-    const currentSaved = this.teamProgress[gamertag] || [];
-    this.hunterData = sniperData.map(item => {
-      const status = currentSaved.find(s => s.id === item.id);
-      return {
-        ...item,
-        collected: status ? !!status.collected : false,
-        count: status && status.count !== undefined ? Number(status.count) : 0
-      };
-    });
-
+  toggleSection: function(id) {
+    this.collapsedSections[id] = !this.collapsedSections[id];
     this.render();
-  },
-
-  initTacticalGameMapForSection: function(sid, catName) {
-    const mapContainer = document.getElementById(`map-frame-${sid}`);
-    if (!mapContainer || typeof L === 'undefined') return;
-
-    if (this.activeLeafletMaps[sid]) {
-      this.activeLeafletMaps[sid].remove();
-      delete this.activeLeafletMaps[sid];
-    }
-
-    const mapConfig = MISSION_MAP_CONFIG[sid] || { imgUrl: `${GITHUB_RAW_BASE}Sniper%20Elite%20Secret%20Weapons.JPG`, w: 2048, h: 2048 };
-
-    const map = L.map(`map-frame-${sid}`, {
-      crs: L.CRS.Simple,
-      minZoom: -2,
-      maxZoom: 2,
-      zoomSnap: 0.25,
-      attributionControl: false
-    });
-
-    const bounds = [[0, 0], [mapConfig.h, mapConfig.w]];
-    L.imageOverlay(mapConfig.imgUrl, bounds).addTo(map);
-    map.fitBounds(bounds);
-
-    this.activeLeafletMaps[sid] = map;
-
-    const sectionItems = this.hunterData.filter(i => i.cat === catName && i.x !== undefined && i.y !== undefined);
-    sectionItems.forEach(item => {
-      const iconUrl = GAME_TYPE_ICONS[item.type] || GAME_TYPE_ICONS['Personal Letter'];
-
-      const pinIcon = L.divIcon({
-        className: 'custom-map-pin',
-        html: `<img src="${iconUrl}" style="width:22px; height:22px; border-radius:50%; object-fit:cover; display:block;">`,
-        iconSize: [28, 28],
-        iconAnchor: [14, 14]
-      });
-
-      const yCoord = mapConfig.h - item.y;
-      const xCoord = item.x;
-
-      const marker = L.marker([yCoord, xCoord], { icon: pinIcon })
-        .bindPopup(`
-          <div style="color:#000; font-family:sans-serif; font-size:12px;">
-            <strong style="color:#d35400; text-transform:uppercase;">${item.type}</strong><br>
-            <strong style="font-size:13px;">${item.name}</strong><br>
-            <span style="color:#555; font-style:italic;">${item.desc}</span>
-          </div>
-        `);
-
-      this.markerLayers[item.id] = marker;
-
-      if (!item.collected) {
-        marker.addTo(map);
-      }
-    });
-  },
-
-  updateMapPinVisibility: function(id, collected) {
-    const marker = this.markerLayers[id];
-    if (!marker) return;
-
-    const item = this.hunterData.find(i => i.id === id);
-    if (!item) return;
-
-    const sid = item.cat.replace(/[^a-z0-9]/gi, '');
-    const map = this.activeLeafletMaps[sid];
-    if (!map) return;
-
-    if (collected) {
-      map.removeLayer(marker);
-    } else {
-      marker.addTo(map);
-    }
-  },
-
-  stepItemCount: function(id, delta) {
-    const item = this.hunterData.find(i => i.id === id);
-    if (!item) return;
-    const currentVal = item.count || 0;
-    const stepSize = item.isLongShot ? 5 : 1;
-    const nextVal = Math.max(0, currentVal + (delta * stepSize));
-    this.setManualItemCount(id, nextVal);
-  },
-
-  openDirectNumberEditor: function(id, currentVal, maxVal, isUncapped = false) {
-    const container = document.getElementById(`val-box-${id}`);
-    if (!container) return;
-
-    const maxAttr = (isUncapped || !maxVal) ? '' : `max="${maxVal}"`;
-
-    container.innerHTML = `
-      <input type="number" id="input-edit-${id}" class="manual-inline-num-input" value="${currentVal}" min="0" ${maxAttr}>
-    `;
-
-    const inputEl = document.getElementById(`input-edit-${id}`);
-    if (!inputEl) return;
-    inputEl.focus();
-    inputEl.select();
-
-    const commitVal = () => {
-      const rawVal = parseInt(inputEl.value, 10);
-      const finalVal = isNaN(rawVal) || rawVal < 0 ? 0 : rawVal;
-      this.setManualItemCount(id, finalVal);
-    };
-
-    inputEl.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        inputEl.blur();
-      } else if (e.key === 'Escape') {
-        this.render();
-      }
-    });
-
-    inputEl.addEventListener('blur', commitVal, { once: true });
-  },
-
-  setManualItemCount: function(id, newCount) {
-    const item = this.hunterData.find(i => i.id === id);
-    if (!item) return;
-
-    const previousCount = item.count || 0;
-    const previousCollectedState = item.collected;
-
-    item.count = newCount;
-    if (item.target) {
-      item.collected = (item.count >= item.target);
-    } else {
-      item.collected = (item.count > 0);
-    }
-
-    const opSaved = this.teamProgress[this.activeGamertag] || [];
-    const existing = opSaved.find(s => s.id === id);
-    if (existing) {
-      existing.count = item.count;
-      existing.collected = item.collected;
-    } else {
-      opSaved.push({ id: item.id, count: item.count, collected: item.collected });
-    }
-    this.teamProgress[this.activeGamertag] = opSaved;
-
-    if (item.isLongShot) {
-      if (item.count > 0 && item.count !== previousCount) {
-        sendDiscordIntelUpdate(item, this.hunterData, this.activeGamertag, this.teamProgress);
-      }
-    } else if (!previousCollectedState && item.collected) {
-      sendDiscordIntelUpdate(item, this.hunterData, this.activeGamertag, this.teamProgress);
-    }
-
-    this.render();
-    this.sync();
   },
 
   render: function() {
-    const container = document.getElementById('section-container') || document.querySelector('.checklist-container') || document.querySelector('.main-wrapper');
+    const container = document.getElementById('section-container');
     if (!container) return;
-
-    if (!this.isLoaded) {
-      const bar = document.getElementById('overall-bar') || document.querySelector('.progress-hud .progress-fill');
-      const pct = document.getElementById('percent-text') || document.querySelector('.percent-label');
-      if (bar) bar.style.width = '0%';
-      if (pct) pct.innerText = `SYNCING DIRECT FROM CLOUD...`;
-      container.innerHTML = '<div style="text-align:center; padding: 50px 20px; color: var(--ser-color, #ff8800); font-weight: 900; letter-spacing: 2px; font-size: 18px;" class="outlined-text">ESTABLISHING SECURE CLOUD LINK...<br><span style="font-size:12px; color:#aaa;">CONNECTING FIRESTORE & PSN RTDB</span></div>';
-      return;
-    }
 
     container.innerHTML = '';
     const cats = [...new Set(this.hunterData.map(i => i.cat))];
@@ -1481,44 +797,30 @@ const appState = {
       const catPercent = items.length > 0 ? Math.round((count / items.length) * 100) : 0;
       const tierInfo = getTierStatus(catPercent);
 
-      const hasMapTexture = MISSION_MAP_CONFIG[sid] !== undefined;
-      const mapHtml = hasMapTexture ? `
-        <div class="tactical-map-wrapper">
-          <div class="tactical-map-bar outlined-text">
-            <span>🗺️ TACTICAL MAP &bull; IN-GAME TEXTURE &bull; AUTO-HIDES PINS WHEN FOUND</span>
-            <span style="color:#aaa; font-size:10px;">CLICK PIN FOR BRIEFING</span>
-          </div>
-          <div id="map-frame-${sid}" class="mission-map-frame"></div>
-        </div>
-      ` : '';
-
       section.innerHTML = `
-        <div class="category-header outlined-text" onclick="appState.toggleSection('${sid}')">
+        <div class="category-header outlined-text" onclick="window.appState.toggleSection('${sid}')">
           <div style="display:flex; align-items:center; gap: 8px; flex-wrap: wrap;">
-            <h2 style="font-size: 1.15rem; font-weight: 900; letter-spacing: 1px; color: #fff; text-transform: uppercase;">${cat}</h2>
-            <span class="tier-pill-badge" style="${tierInfo.style} padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; letter-spacing: 1px;">
+            <h2 style="font-size: 1.1rem; font-weight: 900; letter-spacing: 1px; color: #fff; text-transform: uppercase;">${cat}</h2>
+            <span style="${tierInfo.style} padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 900;">
               ${tierInfo.icon} ${tierInfo.label} (${catPercent}%)
             </span>
-            ${isActiveFocus ? `<span style="color:var(--ser-color, #ff8800); font-size:11px; font-weight:900; letter-spacing:1px;">[ACTIVE TARGET]</span>` : ''}
           </div>
-          <div style="font-weight:900; font-size: 15px; color: var(--ser-color, #ff8800); font-family: monospace;">${count}/${items.length}</div>
+          <div style="font-weight:900; font-size: 14px; color: var(--ser-color, #ff8800); font-family: monospace;">${count}/${items.length}</div>
         </div>
         <div class="category-content section-content">
-          ${mapHtml}
           <div class="item-grid"></div>
         </div>
       `;
 
       const grid = section.querySelector('.item-grid');
       items.forEach(item => {
-        const isNumericProgress = (item.target !== undefined && item.target > 1) || !!item.isRibbon;
+        const isNumeric = (item.target !== undefined && item.target > 1) || !!item.isRibbon;
         const isLongShot = !!item.isLongShot;
         const isRibbon = !!item.isRibbon;
         const card = document.createElement('div');
         card.className = `item-card ${item.collected ? 'completed' : ''}`;
 
         const iconUrl = GAME_TYPE_ICONS[item.type] || GAME_TYPE_ICONS['Personal Letter'];
-        const themeMeta = getItemThemeMeta(item);
 
         let minTeamShot = 0;
         let maxTeamShot = 0;
@@ -1529,109 +831,68 @@ const appState = {
           });
           minTeamShot = Math.min(...distances, 0);
           maxTeamShot = Math.max(...distances, item.target || 0);
-        } else if (isRibbon) {
-          ALL_OPERATIVES.forEach(op => {
-            const opData = (this.teamProgress[op] || []).find(s => s.id === item.id);
-            if (opData && opData.count > maxTeamShot) {
-              maxTeamShot = opData.count;
-            }
-          });
         }
 
         let teamBadgesHtml = '';
         ALL_OPERATIVES.forEach(op => {
           const opProgress = this.teamProgress[op] || [];
           const opStatus = opProgress.find(s => s.id === item.id);
-          const isCollected = opStatus ? !!opStatus.collected : false;
+          const isCollected = opStatus ? !!(opStatus.collected || opStatus.completed || opStatus.done || (opStatus.count && Number(opStatus.count) > 0)) : false;
           const opCount = opStatus && opStatus.count !== undefined ? Number(opStatus.count) : (isCollected ? '✓' : 0);
-          
+
           let displayBadgeText = op.toUpperCase();
-          let leaderClass = '';
           let dynamicBadgeStyle = '';
 
           if (isLongShot) {
             displayBadgeText = `${op.toUpperCase()} (${opCount}m)`;
             const heat = getLongShotHeatmapStyle(opCount, minTeamShot, maxTeamShot);
-            dynamicBadgeStyle = `background: ${heat.background} !important; color: ${heat.color} !important; border: ${heat.border} !important; box-shadow: ${heat.glow}; font-weight: 900;`;
-
-            if (opCount > 0 && opCount === maxTeamShot) {
-              leaderClass = ' team-shot-leader';
-              displayBadgeText = `👑 ${displayBadgeText}`;
-            }
+            dynamicBadgeStyle = `background: ${heat.background} !important; color: ${heat.color} !important; border: ${heat.border} !important;`;
+            if (opCount > 0 && opCount === maxTeamShot) displayBadgeText = `👑 ${displayBadgeText}`;
           } else if (isRibbon) {
             displayBadgeText = `${op.toUpperCase()} (${opCount}x)`;
-            if (opCount > 0 && opCount === maxTeamShot) {
-              leaderClass = ' team-shot-leader';
-              displayBadgeText = `👑 ${displayBadgeText}`;
-            }
-          } else if (isNumericProgress) {
+          } else if (isNumeric) {
             displayBadgeText = `${op.toUpperCase()} (${opCount})`;
           }
 
-          teamBadgesHtml += `<span class="team-badge ${isCollected ? 'is-collected' : ''}${leaderClass}" style="${dynamicBadgeStyle}">${displayBadgeText}</span>`;
+          teamBadgesHtml += `<span class="team-badge ${isCollected ? 'is-collected' : ''}" style="${dynamicBadgeStyle}">${displayBadgeText}</span>`;
         });
 
         let actionControlsHtml = '';
-        if (isNumericProgress) {
+        if (isNumeric) {
           const countVal = item.count || 0;
           const targetVal = item.target || 1;
-          
-          let pillLabel = `✏️ ${countVal} / ${targetVal}`;
-          let dynamicPillStyle = '';
-
-          if (isLongShot) {
-            const isPersonalRecord = countVal >= targetVal;
-            pillLabel = `🎯 ${countVal}m / ${targetVal}m REQ ${isPersonalRecord ? '🔥' : ''}`;
-            const heat = getLongShotHeatmapStyle(countVal, minTeamShot, maxTeamShot);
-            dynamicPillStyle = `background: ${heat.background} !important; color: ${heat.color} !important; border: ${heat.border} !important; box-shadow: ${heat.glow};`;
-          } else if (isRibbon) {
-            pillLabel = `🎖️ EARNED: ${countVal} TIME${countVal === 1 ? '' : 'S'}`;
-          }
-
           actionControlsHtml = `
             <div class="stepper-action-row">
-              <button class="step-btn outlined-text" onclick="appState.stepItemCount('${item.id}', -1)">−</button>
-              <div id="val-box-${item.id}" class="clickable-num-pill outlined-text ${item.collected ? 'pill-completed' : ''}" style="${dynamicPillStyle}" onclick="appState.openDirectNumberEditor('${item.id}', ${countVal}, ${targetVal}, ${isLongShot || isRibbon})">
-                ${pillLabel}
+              <button class="step-btn outlined-text" onclick="window.appState.stepItemCount('${item.id}', -1)">−</button>
+              <div id="val-box-${item.id}" class="clickable-num-pill outlined-text" onclick="window.appState.openDirectNumberEditor('${item.id}', ${countVal}, ${targetVal}, ${isLongShot || isRibbon})">
+                ${isLongShot ? `🎯 ${countVal}m / ${targetVal}m` : (isRibbon ? `🎖️ EARNED: ${countVal}x` : `✏️ ${countVal} /${targetVal}`)}
               </div>
-              <button class="step-btn outlined-text" onclick="appState.stepItemCount('${item.id}', 1)">+</button>
+              <button class="step-btn outlined-text" onclick="window.appState.stepItemCount('${item.id}', 1)">+</button>
             </div>
           `;
         } else {
           actionControlsHtml = `
             <div class="card-actions-row">
-              ${item.yt
-                ? `<a href="${item.yt}" target="_blank" rel="noopener noreferrer" class="watch-clip-btn outlined-text">🎥 WATCH CLIP</a>`
-                : `<span></span>`}
-              <button class="confirm-toggle-btn toggle-btn outlined-text ${item.collected ? 'completed-state' : ''}" onclick="appState.toggleItem('${item.id}')">
-                ${item.collected ? 'GOT IT (Undo)' : 'MARK GOT IT'}
+              ${item.yt ? `<a href="${item.yt}" target="_blank" rel="noopener noreferrer" class="watch-clip-btn outlined-text">🎥 CLIP</a>` : `<span></span>`}
+              <button class="confirm-toggle-btn outlined-text ${item.collected ? 'completed-state' : ''}" onclick="window.appState.toggleItem('${item.id}')">
+                ${item.collected ? 'COLLECTED (Undo)' : 'MARK FOUND'}
               </button>
             </div>
           `;
         }
 
-        let goalBadgeText = '';
-        if (isLongShot) {
-          goalBadgeText = `TARGET: ${item.target}m`;
-        } else if (item.target && item.target > 1) {
-          goalBadgeText = `GOAL: ${item.target}`;
-        } else if (isRibbon) {
-          goalBadgeText = `REPEATABLE`;
-        }
-
         card.innerHTML = `
           <div>
             <div style="display:flex; align-items:center; gap:6px; margin-bottom:8px;">
-              <img src="${iconUrl}" style="width:20px; height:20px; border-radius:4px; object-fit:cover; border:1px solid rgba(255,255,255,0.2);">
-              <span class="item-type-badge item-type-tag ${themeMeta.badgeClass}" style="${themeMeta.customStyle}">${item.type}</span>
-              ${goalBadgeText ? `<span style="font-size:11px; color:#aaa; font-family:monospace; margin-left:auto;">${goalBadgeText}</span>` : ''}
+              <img src="${iconUrl}" style="width:20px; height:20px; border-radius:4px; object-fit:cover;" onerror="this.style.display='none'">
+              <span class="item-type-badge">${item.type}</span>
             </div>
             <div class="item-title outlined-text">${item.name}</div>
             <div class="item-desc outlined-text">${item.desc}</div>
           </div>
           <div>
             <div class="team-intel-row">
-              <span class="team-intel-label">${isLongShot ? 'SNIPER COMPARISON:' : (isRibbon ? 'RIBBONS COMPARISON:' : 'TEAM INTEL:')}</span>
+              <span class="team-intel-label">SQUAD PROGRESS:</span>
               ${teamBadgesHtml}
             </div>
             ${actionControlsHtml}
@@ -1639,58 +900,35 @@ const appState = {
         `;
         grid.appendChild(card);
       });
-      container.appendChild(section);
 
-      if (!this.collapsedSections[sid] && hasMapTexture) {
-        setTimeout(() => this.initTacticalGameMapForSection(sid, cat), 50);
-      }
+      container.appendChild(section);
     });
 
-    const percent = Math.round((totalFound / this.hunterData.length) * 100) || 0;
+    const percent = Math.round((totalFound / (this.hunterData.length || 1)) * 100) || 0;
     const overallTier = getTierStatus(percent);
-
-    const bar = document.getElementById('overall-bar') || document.querySelector('.progress-hud .progress-fill');
-    const pct = document.getElementById('percent-text') || document.querySelector('.percent-label');
-    if (bar) {
-      bar.style.width = percent + '%';
-      bar.style.backgroundColor = overallTier.color;
-    }
-    if (pct) {
-      pct.innerText = `TOTAL COLLECTION: ${percent}% (${this.activeGamertag}) • [${overallTier.icon} ${overallTier.label}]`;
-    }
+    const bar = document.getElementById('overall-bar');
+    const pct = document.getElementById('percent-text');
+    if (bar) bar.style.width = `${percent}%`;
+    if (pct) pct.innerText = `TOTAL COLLECTION: ${percent}% (${this.activeGamertag}) • [${overallTier.icon} ${overallTier.label}]`;
   },
 
-  toggleItem: async function(id) {
-    const item = this.hunterData.find(i => i.id === id);
-    if (item) {
-      item.collected = !item.collected;
-      if (item.collected && !item.count) item.count = 1;
-      if (!item.collected) item.count = 0;
-
-      const opSaved = this.teamProgress[this.activeGamertag] || [];
-      const existing = opSaved.find(s => s.id === id);
-      if (existing) {
-        existing.collected = item.collected;
-        existing.count = item.count;
-      } else {
-        opSaved.push({ id: item.id, collected: item.collected, count: item.count });
-      }
-      this.teamProgress[this.activeGamertag] = opSaved;
-
-      this.updateMapPinVisibility(id, item.collected);
-
-      if (item.collected) {
-        sendDiscordIntelUpdate(item, this.hunterData, this.activeGamertag, this.teamProgress);
-      }
-
-      this.render();
-      this.sync();
+  renderStickyFooter: function() {
+    let footer = document.getElementById('se5-sticky-footer');
+    if (!footer) {
+      footer = document.createElement('footer');
+      footer.id = 'se5-sticky-footer';
+      document.body.appendChild(footer);
     }
-  },
-
-  toggleSection: function(id) {
-    this.collapsedSections[id] = !this.collapsedSections[id];
-    this.render();
+    footer.innerHTML = `
+      <div>
+        <span class="footer-badge">${this.version}</span>
+        <span style="margin-left:8px; color:var(--ser-color, #ff8800); font-weight:bold;">PSN ID: NPWR21465_00</span>
+        <span style="margin-left:8px; color:#888;">BUILD: ${this.buildDate}</span>
+      </div>
+      <div id="ny-timestamp" style="font-size:11px; color:#aaa;" class="outlined-text">
+        New York Time (24h): --:--:--
+      </div>
+    `;
   },
 
   sync: async function() {
@@ -1698,22 +936,21 @@ const appState = {
 
     const progress = this.hunterData.map(i => ({
       id: i.id,
-      collected: i.collected,
+      collected: !!i.collected,
       count: i.count || 0
     }));
 
     try {
-      const docRef = this.getDocRefForGamertag(this.activeGamertag);
-      const payload = {
+      const docRef = doc(this.db, 'users', this.activeGamertag, 'platform', this.platform, 'progress', 'sniper-elite-5');
+      await setDoc(docRef, {
         activeMission: this.activeMission,
         gameId: "sniper-elite-5",
         lastUpdate: Date.now(),
         platform: this.platform,
         progress: progress
-      };
-      await setDoc(docRef, payload, { merge: true });
+      }, { merge: true });
     } catch (err) {
-      console.warn("Firestore cloud save notice:", err.message);
+      console.warn("Firestore save notice:", err.message);
     }
   }
 };
@@ -1721,21 +958,19 @@ const appState = {
 window.appState = appState;
 appState.init();
 
-/* === SECTION: Centered CSV Navigation Menu (Home -> Users -> Game -> Entertainment) === */
+/* === SECTION 5: Centered Top Navigation Google Sheets Menu Engine === */
 async function buildTopMenu() {
   try {
     const csvUrl = "//docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
-    const response = await fetch(csvUrl);
-    const textData = await response.text();
+    const res = await fetch(csvUrl);
+    if (!res.ok) return;
 
+    const textData = await res.text();
     const rows = textData.split('\n');
     const groupMap = {};
     const singleItems = [];
 
-    let startIdx = 0;
-    if (rows[0] && rows[0].toLowerCase().includes("name")) {
-      startIdx = 1;
-    }
+    let startIdx = (rows[0] && rows[0].toLowerCase().includes("name")) ? 1 : 0;
 
     for (let i = startIdx; i < rows.length; i++) {
       const rowStr = rows[i].replace(/\r/g, '').trim();
@@ -1745,108 +980,65 @@ async function buildTopMenu() {
       let name = cols[0] ? cols[0].replace(/^"|"$/g, '').trim() : '';
       let group = cols[1] ? cols[1].replace(/^"|"$/g, '').trim() : '';
       let url = cols[2] ? cols[2].replace(/^"|"$/g, '').trim() : '';
-      let img = cols[3] ? cols[3].replace(/^"|"$/g, '').trim() : '';
 
       if (!name || !url) continue;
 
       if (!group || group.toLowerCase() === 'none') {
-        singleItems.push({ type: 'single', name, url, img });
+        singleItems.push({ type: 'single', name, url });
       } else {
-        if (!groupMap[group]) {
-          groupMap[group] = { type: 'group', name: group, items: [] };
-        }
-        groupMap[group].items.push({ name, url, img });
+        if (!groupMap[group]) groupMap[group] = { type: 'group', name: group, items: [] };
+        groupMap[group].items.push({ name, url });
       }
     }
 
-    // Strict Centered Menu Order: Home -> Users -> Game -> Entertainment
-    const DESIRED_ORDER = ['Home', 'Users', 'Game', 'Entertainment'];
-    const orderedMenuStructure = [];
-
-    // 1. Check for standalone "Home" link
-    const homeSingle = singleItems.find(i => i.name.toLowerCase() === 'home');
-    if (homeSingle) {
-      orderedMenuStructure.push(homeSingle);
-    }
-
-    // 2. Add Groups matching target sequence
-    DESIRED_ORDER.forEach(targetKey => {
-      const matchedGroupKey = Object.keys(groupMap).find(k => k.toLowerCase() === targetKey.toLowerCase());
-      if (matchedGroupKey) {
-        orderedMenuStructure.push(groupMap[matchedGroupKey]);
-        delete groupMap[matchedGroupKey];
-      }
-    });
-
-    // 3. Append any remaining dropdown groups
-    Object.values(groupMap).forEach(g => {
-      orderedMenuStructure.push(g);
-    });
-
-    // 4. Append any remaining single items
-    singleItems.forEach(s => {
-      if (s.name.toLowerCase() !== 'home') {
-        orderedMenuStructure.push(s);
-      }
-    });
-
-    const menuBar = document.getElementById('dynamic-nav-links') || document.getElementById('csv-menu-bar');
+    const menuBar = document.getElementById('csv-menu-bar');
     if (!menuBar) return;
 
-    // Enforce centered desktop alignment with flex container
-    menuBar.style.display = 'flex';
-    menuBar.style.justifyContent = 'center';
-    menuBar.style.alignItems = 'center';
-    menuBar.style.width = '100%';
-    menuBar.style.flexWrap = 'wrap';
+    const isSameDomain = (linkUrl) => {
+      try {
+        const parsed = new URL(linkUrl, window.location.href);
+        return parsed.origin === window.location.origin;
+      } catch (e) { return true; }
+    };
 
     let html = '';
-    const chevron = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; display: inline-block; vertical-align: middle;"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+    singleItems.forEach(s => {
+      const target = isSameDomain(s.url) ? 'target="_self"' : 'target="_blank" rel="noopener noreferrer"';
+      html += `<a href="${s.url}" ${target} class="csv-single-btn outlined-text">${s.name}</a>`;
+    });
 
-    orderedMenuStructure.forEach(item => {
-      if (item.type === 'single') {
-        html += `<a href="${item.url}" target="SE5_ITC_Window" class="csv-single-btn outlined-text">${item.name}</a>`;
-      } else {
-        const safeId = item.name.replace(/[^a-zA-Z0-9]/g, '');
-        html += `
-          <div class="nav-dropdown csv-dropdown">
-            <button class="nav-dropbtn csv-dropdown-btn outlined-text" data-dropdown="${safeId}">
-              ${item.name} ${chevron}
-            </button>
-            <div id="dropdown-${safeId}" class="nav-dropdown-content csv-dropdown-content">
-        `;
-
-        item.items.forEach(sub => {
-          const imgTag = sub.img ? `<img src="${sub.img}" class="nav-icon" style="margin-right:10px;">` : '';
-          html += `<a href="${sub.url}" target="SE5_ITC_Window" class="csv-dropdown-item outlined-text">${imgTag}${sub.name}</a>`;
-        });
-
-        html += `</div></div>`;
-      }
+    Object.values(groupMap).forEach(g => {
+      const safeId = g.name.replace(/[^a-zA-Z0-9]/g, '');
+      html += `
+        <div class="csv-dropdown">
+          <button class="csv-dropdown-btn outlined-text" data-dropdown="${safeId}">${g.name} ▾</button>
+          <div id="dropdown-${safeId}" class="csv-dropdown-content">
+            ${g.items.map(sub => {
+              const target = isSameDomain(sub.url) ? 'target="_self"' : 'target="_blank" rel="noopener noreferrer"';
+              return `<a href="${sub.url}" ${target} class="csv-dropdown-item outlined-text">${sub.name}</a>`;
+            }).join('')}
+          </div>
+        </div>
+      `;
     });
 
     menuBar.innerHTML = html;
   } catch (e) {
-    console.error("Error loading Centered CSV Menu:", e);
+    console.warn("CSV Menu notice:", e.message);
   }
 }
 
-window.addEventListener('click', function(event) {
-  const btn = event.target.closest('.csv-dropdown-btn') || event.target.closest('.nav-dropbtn');
-  const dropdowns = document.querySelectorAll(".csv-dropdown-content, .nav-dropdown-content");
-
+window.addEventListener('click', function(e) {
+  const btn = e.target.closest('.csv-dropdown-btn');
+  const dropdowns = document.querySelectorAll(".csv-dropdown-content");
   if (btn) {
-    event.preventDefault();
-    event.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
     const id = btn.getAttribute('data-dropdown');
-    const targetDropdown = document.getElementById('dropdown-' + id);
-    const isCurrentlyOpen = targetDropdown && targetDropdown.classList.contains('show');
-
+    const target = document.getElementById('dropdown-' + id);
+    const isOpen = target && target.classList.contains('show');
     dropdowns.forEach(d => d.classList.remove('show'));
-
-    if (targetDropdown && !isCurrentlyOpen) {
-      targetDropdown.classList.add('show');
-    }
+    if (target && !isOpen) target.classList.add('show');
   } else {
     dropdowns.forEach(d => d.classList.remove('show'));
   }
@@ -1854,28 +1046,21 @@ window.addEventListener('click', function(event) {
 
 buildTopMenu();
 
-/* === SECTION: Dynamic 24-Hour New York Time Clock === */
-function updateNewYorkTimestamp() {
+/* === SECTION 6: 24-Hour New York Time Clock Binding === */
+function updateNewYorkClock() {
   const options = {
     timeZone: 'America/New_York',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
+    hour12: false,
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit',
-    hour12: false
+    second: '2-digit'
   };
-
-  const now = new Date();
-  const formatter = new Intl.DateTimeFormat('en-US', options);
-  const timeParts = formatter.format(now);
-
-  const targetElement = document.getElementById('ny-timestamp') || document.querySelector('.timestamp-box');
-  if (targetElement) {
-    targetElement.textContent = `New York Time (24h): ${timeParts}`;
+  const clockEl = document.getElementById('ny-timestamp');
+  if (clockEl) {
+    const timeStr = new Intl.DateTimeFormat('en-US', options).format(new Date());
+    clockEl.innerText = `New York Time (24h): ${timeStr} EDT`;
   }
 }
 
-updateNewYorkTimestamp();
-setInterval(updateNewYorkTimestamp, 1000);
+updateNewYorkClock();
+setInterval(updateNewYorkClock, 1000);
