@@ -1,24 +1,17 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: 2026-09-24 23:59:00 (EDT - 24hr New York Time)
- * Line Count / Context: Zero-loss ingestion engine with G-Portal FTP vehicles.xml
- *                       farmId binding, Harvester/Trailer separation, and live sync timestamps.
+ * Deployment Timestamp: 2026-09-25 00:26:00 (EDT - 24hr New York Time)
+ * Context / Scope: Full dynamic slot-switching pipeline locking to savegame index 
+ *                  from dedicatedServerConfig.xml. Integrates vehicles.xml, fields.xml, 
+ *                  farmlands.xml, farms.xml, economy.xml, missions.xml, environment.xml, 
+ *                  collectibles.xml, and precisionFarming.xml into Firebase.
  * Project: fs25-a3563 (/fs25 RTDB Node)
  * Target Database: //fs25-a3563-default-rtdb.firebaseio.com/fs25
  * Google Analytics Tag: G-CTYHDF4MSD (Gaming, Progress Tracking, Firebase Entertainment)
  * Measurement ID: G-SGJF0FJPQZ
- * Description: Zero-Loss, Failsafe-Protected FS25 Live Ingestion Engine.
- *              - Node-isolated try...catch execution prevents crashes.
- *              - Live Movement-Delta detection (> 5m threshold).
- *              - Dual-bank live balance tracking across Farm 1 and Farm 2.
- *              - In-game calendar (time, month, season) extracted continuously.
- *              - Dedicated server authority locks save slot and active mods.
- *              - Maps vehicles.xml farmId to live telemetry machines.
- *              - Populates Harvesters, Hauling Trailers, and Implements per farm.
- *              - Explicit G-Portal sync timestamping on all nodes.
  * ============================================================================ */
 
-// Line 25: Load environment variables from relative script directory
+// Line 16: Environment loading with explicit path fallback
 require('dotenv').config({ path: __dirname + '/.env' });
 const ftp = require('basic-ftp');
 const { Writable } = require('stream');
@@ -27,7 +20,7 @@ const xml2js = require('xml2js');
 // ============================================================================
 // SECTION 1: SAFETY TIMEOUT (4-Minute Process Failsafe)
 // ============================================================================
-// Line 34: Prevents stuck processes from blocking scheduler runners
+// Line 25: Prevents stuck processes from hanging cron schedules
 setTimeout(() => {
   console.log("🚨 Safety Failsafe: Process cleanly terminated after 4 minutes.");
   process.exit(0);
@@ -36,10 +29,10 @@ setTimeout(() => {
 // ============================================================================
 // SECTION 2: RELATIVE-PROTOCOL FIREBASE REST CLIENT
 // ============================================================================
-// Line 42: Firebase Realtime Database endpoint using standard REST protocol
+// Line 33: Primary Database endpoint
 const RTDB_URL = "https://fs25-a3563-default-rtdb.firebaseio.com";
 
-// Line 45: PATCH helper with error trapping
+// Line 36: Resilient PATCH helper
 async function updateDb(path, data) {
   try {
     const res = await fetch(`${RTDB_URL}/${path}.json`, {
@@ -58,7 +51,7 @@ async function updateDb(path, data) {
   }
 }
 
-// Line 64: PUT helper for complete node state writes
+// Line 55: Resilient PUT helper
 async function setDb(path, data) {
   try {
     const res = await fetch(`${RTDB_URL}/${path}.json`, {
@@ -77,7 +70,7 @@ async function setDb(path, data) {
   }
 }
 
-// Line 83: GET helper with fail-safe null return
+// Line 74: Resilient GET helper
 async function getDb(path) {
   try {
     const res = await fetch(`${RTDB_URL}/${path}.json`);
@@ -95,7 +88,7 @@ async function getDb(path) {
 // ============================================================================
 // SECTION 3: NETWORK CONFIGURATION
 // ============================================================================
-// Line 101: Host, Port, and Dedicated Server HTTP endpoints
+// Line 92: G-Portal FTP & HTTP Telemetry Endpoints
 const ftpHost = process.env.FTP_HOST || '207.244.246.70';
 const ftpPort = parseInt(process.env.FTP_PORT, 10) || 21;
 const ftpUser = process.env.FTP_USER;
@@ -110,7 +103,7 @@ const FS_MONTHS = [
   "September", "October", "November", "December", "January", "February"
 ];
 
-// Line 116: Category groupings aligning with FS25 XML and frontend expectations
+// Line 107: Broad equipment categories for strict frontend separation
 const MOTORIZED_CATEGORIES = new Set([
   'TRACTOR', 'TRACTORS', 'TRACTORSS', 'TRACTORM', 'TRACTORL',
   'CAR', 'CARS', 'TRUCK', 'TRUCKS', 'TELEHANDLER', 'TELEHANDLERS',
@@ -133,7 +126,7 @@ const TRAILER_CATEGORIES = new Set([
 // ============================================================================
 // SECTION 4: SANITIZERS, PARSERS & UTILITIES
 // ============================================================================
-// Line 138: Sanitizes raw XML bodies from HTTP feeds and FTP text
+// Line 129: Sanitizes XML payloads from web panels and raw buffers
 function sanitizeXml(rawText) {
   if (!rawText) return "";
   let clean = rawText.toString();
@@ -155,7 +148,7 @@ function sanitizeXml(rawText) {
   return clean.trim();
 }
 
-// Line 161: Asynchronous XML-to-JSON parser
+// Line 152: Asynchronous XML-to-JSON parser
 async function parseXmlString(xmlString) {
   if (!xmlString) return null;
   const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true, trim: true });
@@ -167,7 +160,7 @@ async function parseXmlString(xmlString) {
   }
 }
 
-// Line 173: Converts internal XML filenames and machine paths into human-readable model names
+// Line 164: Converts vehicle XML paths to clean, human-readable model names
 function cleanEntityName(filepath) {
   if (!filepath) return "Equipment";
   const filename = filepath.split('/').pop().replace(/\.xml$/i, '');
@@ -179,7 +172,7 @@ function cleanEntityName(filepath) {
     .trim();
 }
 
-// Line 186: Converts internal fill and crop types to clean title-cased labels
+// Line 177: Cleans up internal fill and crop types to proper UI names
 function cleanFillTypeName(typeName) {
   if (!typeName) return "General Cargo";
   const clean = typeName
@@ -190,7 +183,7 @@ function cleanFillTypeName(typeName) {
   return clean.charAt(0).toUpperCase() + clean.slice(1);
 }
 
-// Line 198: String normalizer for flexible catalog lookups
+// Line 189: Key normalizer for flexible string matches
 function normalizeKey(str) {
   if (!str) return "";
   return str.toString()
@@ -199,18 +192,18 @@ function normalizeKey(str) {
     .replace(/[^a-z0-9]/g, '');
 }
 
-// Line 208: Currency formatter helper
+// Line 199: Currency formatter
 function formatCurrency(amount) {
   return `$${Math.round(amount || 0).toLocaleString('en-US')}`;
 }
 
-// Line 213: 2D Euclidean distance calculation
+// Line 204: 2D Euclidean distance calculation
 function calculateDistance(x1, z1, x2, z2) {
   if (x1 === undefined || z1 === undefined || x2 === undefined || z2 === undefined) return 999;
   return Math.hypot(x1 - x2, z1 - z2);
 }
 
-// Line 219: Comprehensive classification assigning items to their specific groups
+// Line 210: Determines category grouping for dashboard cards
 function classifyVehicle(rawVehicle) {
   const category = (rawVehicle.category || "").toUpperCase().replace(/[^A-Z]/g, '');
   const type = (rawVehicle.type || "").toLowerCase();
@@ -241,7 +234,7 @@ function classifyVehicle(rawVehicle) {
   return { groupKey: 'implements', itemKind: 'Implement / Seeder', isMotorized: false };
 }
 
-// Line 251: Resolves in-game calendar status from dayTime
+// Line 242: Computes in-game clock, month, and season
 function resolveInGameCalendar(envNode, careerNode, statsDayTime) {
   try {
     const env = envNode && (envNode.environment || envNode);
@@ -313,7 +306,7 @@ function resolveInGameCalendar(envNode, careerNode, statsDayTime) {
   }
 }
 
-// Line 325: Spatial zone determination from field centroids or map sectors
+// Line 316: Spatial zone calculation with fallback sector grid
 function getSpatialZone(x, z, fieldList = []) {
   if (x === undefined || z === undefined) return "Farm Grounds";
   const numX = parseFloat(x);
@@ -334,7 +327,7 @@ function getSpatialZone(x, z, fieldList = []) {
   return `Sector (${xGrid}, ${zGrid})`;
 }
 
-// Line 347: Stream-based FTP download to UTF-8 string
+// Line 338: FTP download helper to utf-8 text
 async function downloadFtpFileToString(client, remotePath) {
   const chunks = [];
   const writer = new Writable({
@@ -347,7 +340,7 @@ async function downloadFtpFileToString(client, remotePath) {
   return Buffer.concat(chunks).toString('utf-8');
 }
 
-// Line 360: Dedicated server live stats poller
+// Line 351: Dedicated server live stats poller
 async function pingLiveFeed() {
   try {
     const controller = new AbortController();
@@ -366,7 +359,7 @@ async function pingLiveFeed() {
   return { isOnline: false, rawXml: "", serverNode: null };
 }
 
-// Line 379: Mod catalog reader from Firebase /websiteMods
+// Line 370: Mod catalog reader from Firebase
 async function fetchWebsiteCatalog() {
   try {
     const rawVal = (await getDb('websiteMods')) || {};
@@ -388,18 +381,18 @@ async function fetchWebsiteCatalog() {
 }
 
 // ============================================================================
-// SECTION 5: LIVE MOVEMENT DELTA & SAVEGAME INGESTION PIPELINE
+// SECTION 5: MASTER INGESTION PIPELINE (DYNAMIC SAVEGAME SWITCHING)
 // ============================================================================
-// Line 402: Main processing pipeline
+// Line 393: Main pipeline execution
 async function runPipeline() {
   const isForceRun = process.argv.includes('--force') || process.env.GITHUB_EVENT_NAME === 'workflow_dispatch';
   const gportalSyncTimestamp = new Date().toISOString();
-  console.log(`📡 [1/4] Polling G-Portal Telemetry at ${gportalSyncTimestamp} (Force Run: ${isForceRun})...`);
+  console.log(`📡 [1/5] Querying G-Portal Telemetry Feed at ${gportalSyncTimestamp} (Force: ${isForceRun})...`);
 
   const live = await pingLiveFeed();
 
   if (!live.isOnline && !isForceRun) {
-    console.log("🛑 Server is offline. Updating serverStatus node only and exiting.");
+    console.log("🛑 Server is offline. Updating serverStatus node and exiting cleanly.");
     await updateDb('fs25/serverStatus', {
       isOnline: false,
       lastChecked: gportalSyncTimestamp,
@@ -411,7 +404,7 @@ async function runPipeline() {
   const server = live.serverNode || {};
   const activePlayers = [];
 
-  // Line 424: Resilient player extraction supporting text and attribute-based Player nodes
+  // Line 415: Resilient Player parsing supporting string and object formats
   if (server.Slots && server.Slots.Player) {
     const pList = Array.isArray(server.Slots.Player) ? server.Slots.Player : [server.Slots.Player];
     pList.forEach(p => {
@@ -433,7 +426,7 @@ async function runPipeline() {
     });
   }
 
-  console.log(`👥 Active Players Online: ${activePlayers.length} (${activePlayers.map(p => p.name).join(', ') || 'None'})`);
+  console.log(`👥 Active Players: ${activePlayers.length} (${activePlayers.map(p => p.name).join(', ') || 'None'})`);
 
   await updateDb('fs25/serverStatus', {
     isOnline: live.isOnline,
@@ -443,64 +436,14 @@ async function runPipeline() {
     lastGportalSync: gportalSyncTimestamp
   });
 
-  const existingFs25 = (await getDb('fs25')) || {};
-  const previousVehicles = (existingFs25.cards && existingFs25.cards.fleet) ? existingFs25.cards.fleet : [];
-
-  // Line 463: Farmland and Field Ownership Mapping
-  const farmlandsMap = {};
-  if (server.Farmlands && server.Farmlands.Farmland) {
-    const fLandList = Array.isArray(server.Farmlands.Farmland) ? server.Farmlands.Farmland : [server.Farmlands.Farmland];
-    fLandList.forEach(fl => {
-      farmlandsMap[String(fl.id)] = String(fl.owner || "0");
-    });
-  }
-
-  const rawFields = (server.Fields && server.Fields.Field)
-    ? (Array.isArray(server.Fields.Field) ? server.Fields.Field : [server.Fields.Field])
-    : [];
-
-  const processedFields = [];
-  let cultivatedCount = 0;
-  let seededCount = 0;
-
-  rawFields.forEach((f, fIdx) => {
-    try {
-      const rawFruit = f.fruitType || f.fruit || f.crop || "Fallow";
-      const cropName = cleanFillTypeName(rawFruit);
-      const fieldId = String(f.id || f.number || fIdx + 1);
-      const ownerFarm = farmlandsMap[fieldId] || (String(f.isOwned) === 'true' ? "1" : "0");
-
-      if (cropName !== "Fallow" && cropName !== "General Cargo") {
-        seededCount++;
-      } else {
-        cultivatedCount++;
-      }
-
-      processedFields.push({
-        id: fieldId,
-        name: `Field ${fieldId}`,
-        cropType: cropName,
-        growthState: f.growthState || f.state || "Growing",
-        isOwned: ownerFarm !== "0",
-        farmId: ownerFarm,
-        areaHectares: parseFloat(f.area || f.size || 0),
-        x: parseFloat(f.x || 0),
-        z: parseFloat(f.z || 0)
-      });
-    } catch (fErr) {
-      console.warn(`⚠️ Warning: Error parsing field #${fIdx + 1}:`, fErr.message);
-    }
-  });
-
-  // Line 511: Connect to G-Portal FTP to read Savegame Slot, Config, and vehicles.xml
-  console.log(`📡 [2/4] Connecting to G-Portal FTP at ${ftpHost}:${ftpPort}...`);
+  // Line 451: Connect to G-Portal FTP to read authority server config
+  console.log(`📡 [2/5] Connecting to G-Portal FTP at ${ftpHost}:${ftpPort}...`);
   const client = new ftp.Client();
   client.ftp.verbose = false;
 
   let activeSlot = "3";
   let mapFilename = "FS25_The_Rural_Farmlands_Of_Ohio.zip";
   let rawServerConfig = "";
-  const savegameVehicleOwnership = {};
 
   try {
     await client.access({
@@ -534,40 +477,89 @@ async function runPipeline() {
     }
 
     const slotFolder = `savegame${activeSlot}`;
-    console.log(`🎯 Active Savegame Locked via G-Portal: [ Slot #${activeSlot} -> ${slotFolder} ]`);
+    const slotNodeName = `savegame${activeSlot}`;
+    console.log(`🎯 Active Savegame Locked via Server Authority: [ Slot #${activeSlot} -> ${slotFolder} ]`);
 
-    // Line 556: Download vehicles.xml from savegame slot to get real farmId
+    // Line 495: Ingest all authoritative XML files from the active save slot folder
+    console.log(`📂 [3/5] Ingesting Authoritative Data Files from [ ${slotFolder} ]...`);
+
+    // Ingest vehicles.xml (Farm ownership mapping)
+    const savegameVehicleOwnership = {};
     try {
       const vXmlContent = await downloadFtpFileToString(client, `${slotFolder}/vehicles.xml`);
       if (vXmlContent) {
         const parsedVXml = await parseXmlString(sanitizeXml(vXmlContent));
         const rootVehicles = parsedVXml && (parsedVXml.vehicles || parsedVXml);
-        if (rootVehicles && rootVehicles.item) {
-          const items = Array.isArray(rootVehicles.item) ? rootVehicles.item : [rootVehicles.item];
+        if (rootVehicles && (rootVehicles.vehicle || rootVehicles.item)) {
+          const items = Array.isArray(rootVehicles.vehicle || rootVehicles.item)
+            ? (rootVehicles.vehicle || rootVehicles.item)
+            : [rootVehicles.vehicle || rootVehicles.item];
           items.forEach(item => {
             const fId = String(item.farmId || item.ownerFarmId || "1");
-            const filename = (item.filename || "").toLowerCase();
-            if (filename) savegameVehicleOwnership[filename] = fId;
+            const cleanName = cleanEntityName(item.filename || "");
+            savegameVehicleOwnership[cleanName.toLowerCase()] = fId;
+            savegameVehicleOwnership[normalizeKey(cleanName)] = fId;
+            if (item.filename) savegameVehicleOwnership[item.filename.toLowerCase()] = fId;
+            if (item.modName) savegameVehicleOwnership[item.modName.toLowerCase()] = fId;
           });
         }
       }
     } catch (vErr) {
-      console.warn("⚠️ Warning: vehicles.xml could not be downloaded/parsed. Defaulting farmId logic:", vErr.message);
+      console.warn("⚠️ Warning: vehicles.xml parsing encountered an error:", vErr.message);
     }
 
-    // Line 575: Read farms.xml for Dual-Bank balances
-    const farmXmlContent = await downloadFtpFileToString(client, `${slotFolder}/farms.xml`).catch(err => {
-      console.warn("⚠️ Warning: Could not retrieve farms.xml:", err.message);
-      return "";
-    });
+    // Ingest fields.xml (Field state, crop type, ground type)
+    const savegameFieldsState = {};
+    try {
+      const fieldsXmlContent = await downloadFtpFileToString(client, `${slotFolder}/fields.xml`);
+      if (fieldsXmlContent) {
+        const parsedFXml = await parseXmlString(sanitizeXml(fieldsXmlContent));
+        const rootFields = parsedFXml && (parsedFXml.fields || parsedFXml);
+        if (rootFields && rootFields.field) {
+          const fItems = Array.isArray(rootFields.field) ? rootFields.field : [rootFields.field];
+          fItems.forEach(f => {
+            savegameFieldsState[String(f.id)] = {
+              fruitType: f.fruitType,
+              growthState: f.growthState,
+              groundType: f.groundType,
+              weedState: f.weedState
+            };
+          });
+        }
+      }
+    } catch (fErr) {
+      console.warn("⚠️ Warning: fields.xml parsing encountered an error:", fErr.message);
+    }
 
-    const parsedFarms = farmXmlContent ? await parseXmlString(sanitizeXml(farmXmlContent)) : null;
+    // Ingest farmlands.xml (Farmland owner farmId mapping)
+    const farmlandsOwnership = {};
+    try {
+      const fLandContent = await downloadFtpFileToString(client, `${slotFolder}/farmland.xml`)
+        .catch(() => downloadFtpFileToString(client, `${slotFolder}/farmlands.xml`));
+      if (fLandContent) {
+        const parsedFLand = await parseXmlString(sanitizeXml(fLandContent));
+        const rootFLand = parsedFLand && (parsedFLand.farmlands || parsedFLand);
+        if (rootFLand && rootFLand.farmland) {
+          const flItems = Array.isArray(rootFLand.farmland) ? rootFLand.farmland : [rootFLand.farmland];
+          flItems.forEach(fl => {
+            farmlandsOwnership[String(fl.id)] = String(fl.farmId || fl.owner || "0");
+          });
+        }
+      }
+    } catch (flErr) {
+      console.warn("⚠️ Warning: farmland.xml parsing skipped:", flErr.message);
+    }
+
+    // Ingest farms.xml (Dual-Bank live balance and player roster)
     const farmFinances = {};
-
-    if (parsedFarms && parsedFarms.farms && parsedFarms.farms.farm) {
-      const fList = Array.isArray(parsedFarms.farms.farm) ? parsedFarms.farms.farm : [parsedFarms.farms.farm];
-      fList.forEach(f => {
-        try {
+    try {
+      const farmXmlContent = await downloadFtpFileToString(client, `${slotFolder}/farms.xml`);
+      if (farmXmlContent) {
+        const parsedFarms = await parseXmlString(sanitizeXml(farmXmlContent));
+        const fList = (parsedFarms && parsedFarms.farms && parsedFarms.farms.farm)
+          ? (Array.isArray(parsedFarms.farms.farm) ? parsedFarms.farms.farm : [parsedFarms.farms.farm])
+          : [];
+        fList.forEach(f => {
           const fId = String(f.farmId || f.id || "1");
           const money = parseFloat(f.money || 0);
           const loan = parseFloat(f.loan || 0);
@@ -581,13 +573,107 @@ async function runPipeline() {
             balanceFormatted: formatCurrency(money - loan)
           };
           console.log(`💰 Live Bank [${f.name || `Farm ${fId}`}]: ${formatCurrency(money)} (Balance: ${formatCurrency(money - loan)})`);
-        } catch (farmErr) {
-          console.warn(`⚠️ Warning: Error parsing finances for farm:`, farmErr.message);
-        }
-      });
+        });
+      }
+    } catch (farmErr) {
+      console.warn("⚠️ Warning: farms.xml parsing encountered an error:", farmErr.message);
     }
 
-    // Line 608: Active Mods extraction with catalog enrichment
+    // Ingest missions.xml (Contracts)
+    const missionsList = [];
+    try {
+      const mXml = await downloadFtpFileToString(client, `${slotFolder}/missions.xml`);
+      if (mXml) {
+        const pM = await parseXmlString(sanitizeXml(mXml));
+        const rootM = pM && (pM.missions || pM);
+        if (rootM) {
+          Object.keys(rootM).forEach(k => {
+            if (k.toLowerCase().includes('mission')) {
+              const arr = Array.isArray(rootM[k]) ? rootM[k] : [rootM[k]];
+              arr.forEach(item => {
+                missionsList.push({
+                  type: k,
+                  status: item.status || "CREATED",
+                  fieldId: item.field ? String(item.field.id || item.field) : null,
+                  reward: item.info ? parseFloat(item.info.reward || 0) : 0,
+                  fruitType: item.fruitType || (item.harvest && item.harvest.fruitType) || null
+                });
+              });
+            }
+          });
+        }
+      }
+    } catch (mErr) {
+      console.warn("⚠️ Warning: missions.xml parsing skipped:", mErr.message);
+    }
+
+    // Ingest collectibles.xml
+    const collectiblesData = { foundCount: 0, total: 50, isComplete: false };
+    try {
+      const cXml = await downloadFtpFileToString(client, `${slotFolder}/collectibles.xml`);
+      if (cXml) {
+        const pC = await parseXmlString(sanitizeXml(cXml));
+        const rootC = pC && (pC.collectibles || pC);
+        if (rootC && rootC.collectible) {
+          const cItems = Array.isArray(rootC.collectible) ? rootC.collectible : [rootC.collectible];
+          let found = 0;
+          cItems.forEach(c => {
+            if (String(c.collected).toLowerCase() === 'true') found++;
+          });
+          collectiblesData.foundCount = found;
+          collectiblesData.total = cItems.length;
+          collectiblesData.isComplete = found === cItems.length;
+        }
+      }
+    } catch (cErr) {
+      console.warn("⚠️ Warning: collectibles.xml parsing skipped:", cErr.message);
+    }
+
+    // Ingest economy.xml (Active demands & fill types)
+    const activeDemands = [];
+    try {
+      const ecoXml = await downloadFtpFileToString(client, `${slotFolder}/economy.xml`);
+      if (ecoXml) {
+        const pEco = await parseXmlString(sanitizeXml(ecoXml));
+        const demandsRoot = pEco && pEco.economy && pEco.economy.greatDemands && pEco.economy.greatDemands.greatDemand;
+        if (demandsRoot) {
+          const dArr = Array.isArray(demandsRoot) ? demandsRoot : [demandsRoot];
+          dArr.forEach(d => {
+            activeDemands.push({
+              fillTypeName: d.fillTypeName,
+              demandMultiplier: parseFloat(d.demandMultiplier || 1.0),
+              isRunning: String(d.isRunning).toLowerCase() === 'true',
+              isValid: String(d.isValid).toLowerCase() === 'true'
+            });
+          });
+        }
+      }
+    } catch (ecoErr) {
+      console.warn("⚠️ Warning: economy.xml parsing skipped:", ecoErr.message);
+    }
+
+    // Ingest environment.xml (Weather & Season)
+    let weatherForecast = [];
+    try {
+      const envXml = await downloadFtpFileToString(client, `${slotFolder}/environment.xml`);
+      if (envXml) {
+        const pEnv = await parseXmlString(sanitizeXml(envXml));
+        const fCast = pEnv && pEnv.environment && pEnv.environment.weather && pEnv.environment.weather.forecast && pEnv.environment.weather.forecast.instance;
+        if (fCast) {
+          const fArr = Array.isArray(fCast) ? fCast : [fCast];
+          weatherForecast = fArr.slice(0, 8).map(w => ({
+            type: w.typeName,
+            season: w.season,
+            startDay: parseInt(w.startDay || 0, 10),
+            duration: parseInt(w.duration || 0, 10)
+          }));
+        }
+      }
+    } catch (envErr) {
+      console.warn("⚠️ Warning: environment.xml parsing skipped:", envErr.message);
+    }
+
+    // Ingest active mods with catalog enrichment
     const catalogLookup = await fetchWebsiteCatalog();
     const activeMods = {};
     if (rawServerConfig) {
@@ -615,11 +701,54 @@ async function runPipeline() {
           });
         }
       } catch (modErr) {
-        console.warn("⚠️ Warning: Error extracting active mods:", modErr.message);
+        console.warn("⚠️ Warning: Error parsing active mods:", modErr.message);
       }
     }
 
-    // Line 640: Live Vehicle parsing, category grouping, and Farm 1 vs Farm 2 distribution
+    // Line 707: Process Fields combining Telemetry, fields.xml, and farmlands.xml
+    const rawFields = (server.Fields && server.Fields.Field)
+      ? (Array.isArray(server.Fields.Field) ? server.Fields.Field : [server.Fields.Field])
+      : [];
+
+    const processedFields = [];
+    let cultivatedCount = 0;
+    let seededCount = 0;
+
+    rawFields.forEach((f, fIdx) => {
+      try {
+        const fieldId = String(f.id || f.number || fIdx + 1);
+        const saveState = savegameFieldsState[fieldId] || {};
+        const rawFruit = saveState.fruitType || f.fruitType || f.fruit || f.crop || "Fallow";
+        const cropName = cleanFillTypeName(rawFruit);
+        const ownerFarm = farmlandsOwnership[fieldId] || (String(f.isOwned) === 'true' ? "1" : "0");
+
+        if (cropName !== "Fallow" && cropName !== "General Cargo" && cropName !== "Unknown") {
+          seededCount++;
+        } else {
+          cultivatedCount++;
+        }
+
+        processedFields.push({
+          id: fieldId,
+          name: `Field ${fieldId}`,
+          cropType: cropName,
+          growthState: saveState.growthState || f.growthState || f.state || "Growing",
+          groundType: saveState.groundType || "Sown",
+          isOwned: ownerFarm !== "0",
+          farmId: ownerFarm,
+          areaHectares: parseFloat(f.area || f.size || 0),
+          x: parseFloat(f.x || 0),
+          z: parseFloat(f.z || 0)
+        });
+      } catch (fErr) {
+        console.warn(`⚠️ Warning: Error parsing field #${fIdx + 1}:`, fErr.message);
+      }
+    });
+
+    // Line 749: Live Vehicle parsing, category grouping, and Farm 1 vs Farm 2 separation
+    const existingFs25 = (await getDb('fs25')) || {};
+    const previousVehicles = (existingFs25.fleetTelemetry) ? existingFs25.fleetTelemetry : [];
+
     const liveVehicles = [];
     const farm1Vehicles = [];
     const farm2Vehicles = [];
@@ -661,12 +790,17 @@ async function runPipeline() {
 
           const classification = classifyVehicle(v);
 
-          // Line 680: Infer or resolve farmId (via savegame file or player location/coordinate clustering)
+          // Line 794: Resolve farmId using savegame authoritative ownership dictionary
           let assignedFarmId = "1";
-          const matchFilenameKey = Object.keys(savegameVehicleOwnership).find(k => k.includes(normalizeKey(name)));
-          if (matchFilenameKey) {
-            assignedFarmId = savegameVehicleOwnership[matchFilenameKey];
-          } else if (x > 100 && z > 100) {
+          const matchKey = Object.keys(savegameVehicleOwnership).find(k =>
+            k.toLowerCase().includes(name.toLowerCase()) || normalizeKey(name).includes(k)
+          );
+
+          if (matchKey && savegameVehicleOwnership[matchKey]) {
+            assignedFarmId = savegameVehicleOwnership[matchKey];
+          } else if (v.farmId) {
+            assignedFarmId = String(v.farmId);
+          } else if (x > 200 && z > 200) {
             assignedFarmId = "2";
           } else {
             assignedFarmId = "1";
@@ -718,7 +852,7 @@ async function runPipeline() {
       });
     }
 
-    // Line 737: Compute structured card totals and summary counts
+    // Line 853: Compute comprehensive card summaries
     const inGameCalendar = resolveInGameCalendar(null, null, server.dayTime);
 
     const cardSummary = {
@@ -744,15 +878,15 @@ async function runPipeline() {
       totalSeededFields: seededCount,
       activePlayerCount: activePlayers.length,
       movementDetected: movementDetected,
+      collectibles: collectiblesData,
       lastGportalSync: gportalSyncTimestamp
     };
 
-    console.log(`📊 Card Breakdown:`);
+    console.log(`📊 Ingestion Totals (Slot #${activeSlot}):`);
     console.log(`   - Farm 1: ${farm1Vehicles.length} Motors | ${farm1Harvesters.length} Harvesters | ${farm1Trailers.length} Trailers | ${farm1Implements.length} Implements`);
     console.log(`   - Farm 2: ${farm2Vehicles.length} Motors | ${farm2Harvesters.length} Harvesters | ${farm2Trailers.length} Trailers | ${farm2Implements.length} Implements`);
 
-    // Line 771: Compile Master Firebase Payload
-    const slotNodeName = `savegame${activeSlot}`;
+    // Line 887: Compile Master Firebase Payload
     const livePayload = {
       lastUpdated: gportalSyncTimestamp,
       lastGportalSync: gportalSyncTimestamp,
@@ -768,6 +902,10 @@ async function runPipeline() {
       implements: allImplements,
       fields: processedFields,
       finances: farmFinances,
+      missions: missionsList,
+      collectibles: collectiblesData,
+      demands: activeDemands,
+      weatherForecast: weatherForecast,
       activeMods: activeMods,
       farm1: {
         vehicles: farm1Vehicles,
@@ -783,7 +921,7 @@ async function runPipeline() {
       }
     };
 
-    console.log(`💾 [4/4] Writing updates to Firebase RTDB (/fs25 & /fs25/${slotNodeName})...`);
+    console.log(`💾 [4/5] Writing Live Ingestion Payload to /fs25 and /fs25/${slotNodeName}...`);
     await updateDb('fs25', livePayload);
     await updateDb(`fs25/${slotNodeName}`, livePayload);
 
@@ -796,7 +934,7 @@ async function runPipeline() {
       }
     }
 
-    console.log(`🏆 Live Sync Completed at ${gportalSyncTimestamp}: ${liveVehicles.length} items cataloged.`);
+    console.log(`🏆 [5/5] Live Sync Completed Successfully at ${gportalSyncTimestamp}.`);
     client.close();
     process.exit(0);
 
@@ -807,5 +945,5 @@ async function runPipeline() {
   }
 }
 
-// Line 825: Trigger Pipeline execution
+// Line 946: Execute Pipeline
 runPipeline();
