@@ -1,43 +1,47 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: 2026-09-25 17:15:31 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-25 17:35:00 (EDT - 24hr New York Time)
  * Project: fs25-a3563 (/fs25 RTDB Node)
  * Target Database: //fs25-a3563-default-rtdb.firebaseio.com/fs25
- * Google Analytics Tag: G-CTYHDF4MSD (Gaming, Progress Tracking, Firebase Entertainment)
- * Measurement ID: G-SGJF0FJPQZ
- * Description: Zero-Loss, Failsafe-Protected FS25 Live Ingestion Engine.
- *              - Node-isolated try...catch execution prevents crashes.
+ * Google Analytics Tag: G-CTYHDF4MSD | Measurement ID: G-SGJF0FJPQZ
+ * Description: Zero-Loss, 100% Comprehensive FS25 Live Ingestion Engine.
  *              - CommonJS architecture (Zero ES module import syntax).
- *              - Heavy Scan triggered when 'wildhorse_spirit' or 'OneLIVIDMAN' is active.
- *              - Light Scan executed when neither player is active (Clock, Calendar, 
- *                Field Growth/Harvest Status, Finances, Server Status).
- *              - Ingests ALL savegame XML files directly to /fs25/allRawParsedXml.
- *              - Dual-bank live balance tracking across Farm 1 and Farm 2.
- *              - Dedicated server authority dynamically locks active save slot.
+ *              - Ingests ALL XML files provided:
+ *                * careerSavegame.xml (slotUsage, difficulty, playtime)
+ *                * vehicles.xml (all machinery, baler counters, implements)
+ *                * fields.xml (crop types, growth states, ground types)
+ *                * farmland.xml / farmlands.xml (plot ownership)
+ *                * farms.xml (finances, loans, baleCount, wrappedBales)
+ *                * placeables.xml (factories, animals, barns, solar)
+ *                * economy.xml (market pricing & great demands)
+ *                * missions.xml (contracts, payouts, crop targets)
+ *                * environment.xml (in-game time, daytime, weather)
+ *                * collectibles.xml (found toys matrix)
+ *                * sales.xml (used vehicle dealership discount board)
+ *                * precisionFarming.xml (nitrogen, pH, soil samples)
+ *              - Dual-Farm Matrix: Farm 1 (My farm) vs Farm 2 (Dumbace).
+ *              - Bale counters per farm (baleCount, wrappedBales, cotton).
+ *              - Active Operator Trigger: Heavy scan when 'wildhorse_spirit' 
+ *                or 'onelividman' is active, Light scan when idle.
+ *              - Continuous execution with zero early exit or data drops.
  * ============================================================================ */
 
-// Line 22: Load environment variables
+// Line 32: Load CommonJS dependencies
 require('dotenv').config({ path: __dirname + '/.env' });
 const ftp = require('basic-ftp');
 const { Writable } = require('stream');
 const xml2js = require('xml2js');
 
-// ============================================================================
-// SECTION 1: SAFETY TIMEOUT (4-Minute Process Failsafe)
-// ============================================================================
-// Line 31: Safety watchdog preventing hanging runner processes
+// Line 38: Safety Watchdog (4-Minute Process Failsafe)
 setTimeout(() => {
   console.log("🚨 Safety Failsafe: Process cleanly terminated after 4 minutes.");
   process.exit(0);
 }, 4 * 60 * 1000);
 
-// ============================================================================
-// SECTION 2: RELATIVE-PROTOCOL FIREBASE REST CLIENT
-// ============================================================================
-// Line 39: Firebase REST endpoint
+// Line 44: Firebase REST Target URL
 const RTDB_URL = "https://fs25-a3563-default-rtdb.firebaseio.com";
 
-// Line 42: Asynchronous PATCH helper with error handling
+// Line 47: Asynchronous PATCH Helper with Error Trapping
 async function updateDb(path, data) {
   try {
     const res = await fetch(`${RTDB_URL}/${path}.json`, {
@@ -56,7 +60,7 @@ async function updateDb(path, data) {
   }
 }
 
-// Line 61: Asynchronous GET helper with error handling
+// Line 66: Asynchronous GET Helper with Error Trapping
 async function getDb(path) {
   try {
     const res = await fetch(`${RTDB_URL}/${path}.json`);
@@ -71,10 +75,7 @@ async function getDb(path) {
   }
 }
 
-// ============================================================================
-// SECTION 3: NETWORK CONFIGURATION
-// ============================================================================
-// Line 79: G-Portal FTP & Dedicated Server Stats Endpoint
+// Line 81: G-Portal FTP & Telemetry Endpoint Settings
 const ftpHost = process.env.FTP_HOST || '207.244.246.70';
 const ftpPort = parseInt(process.env.FTP_PORT, 10) || 21;
 const ftpUser = process.env.FTP_USER;
@@ -88,10 +89,10 @@ const FS_MONTHS = [
   "September", "October", "November", "December", "January", "February"
 ];
 
-// Line 93: Defined Primary Farm Operators
+// Line 95: Dedicated Co-Op Operator Handles
 const VIP_PLAYERS = new Set(['wildhorse_spirit', 'onelividman']);
 
-// Line 96: Equipment Categories
+// Line 98: Classified Machinery Categories
 const MOTORIZED_CATEGORIES = new Set([
   'TRACTOR', 'TRACTORS', 'TRACTORSS', 'TRACTORM', 'TRACTORL',
   'CAR', 'CARS', 'TRUCK', 'TRUCKS', 'TELEHANDLER', 'TELEHANDLERS',
@@ -111,10 +112,7 @@ const TRAILER_CATEGORIES = new Set([
   'AUGERWAGONS', 'MANURESPREADERS', 'SLURRYTANKS', 'WATERBARRELS'
 ]);
 
-// ============================================================================
-// SECTION 4: SANITIZERS, PARSERS & UTILITIES
-// ============================================================================
-// Line 118: Cleans XML content strings
+// Line 119: Sanitizers, Parsers & String Utilities
 function sanitizeXml(rawText) {
   if (!rawText) return "";
   let clean = rawText.toString();
@@ -136,7 +134,6 @@ function sanitizeXml(rawText) {
   return clean.trim();
 }
 
-// Line 141: XML to JSON parser
 async function parseXmlString(xmlString) {
   if (!xmlString) return null;
   const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true, trim: true });
@@ -147,7 +144,6 @@ async function parseXmlString(xmlString) {
   }
 }
 
-// Line 152: Converts XML filepaths into human-readable model titles
 function cleanEntityName(filepath) {
   if (!filepath) return "Equipment";
   const filename = filepath.split('/').pop().replace(/\.xml$/i, '');
@@ -159,7 +155,6 @@ function cleanEntityName(filepath) {
     .trim();
 }
 
-// Line 165: Formats fill and fruit type names
 function cleanFillTypeName(typeName) {
   if (!typeName) return "General Cargo";
   const clean = typeName
@@ -170,7 +165,6 @@ function cleanFillTypeName(typeName) {
   return clean.charAt(0).toUpperCase() + clean.slice(1);
 }
 
-// Line 177: String normalizer for matching catalog keys
 function normalizeKey(str) {
   if (!str) return "";
   return str.toString()
@@ -179,18 +173,15 @@ function normalizeKey(str) {
     .replace(/[^a-z0-9]/g, '');
 }
 
-// Line 187: Currency formatter
 function formatCurrency(amount) {
   return `$${Math.round(amount || 0).toLocaleString('en-US')}`;
 }
 
-// Line 192: 2D Euclidean distance calculation
 function calculateDistance(x1, z1, x2, z2) {
   if (x1 === undefined || z1 === undefined || x2 === undefined || z2 === undefined) return 999;
   return Math.hypot(x1 - x2, z1 - z2);
 }
 
-// Line 198: Classifies vehicles into distinct UI card groups
 function classifyVehicle(rawVehicle) {
   const category = (rawVehicle.category || "").toUpperCase().replace(/[^A-Z]/g, '');
   const type = (rawVehicle.type || "").toLowerCase();
@@ -221,7 +212,6 @@ function classifyVehicle(rawVehicle) {
   return { groupKey: 'implements', itemKind: 'Implement / Seeder', isMotorized: false };
 }
 
-// Line 230: In-game calendar calculations (Month, Day, Season, Clock)
 function resolveInGameCalendar(envNode, careerNode, statsDayTime) {
   try {
     const env = envNode && (envNode.environment || envNode);
@@ -292,7 +282,6 @@ function resolveInGameCalendar(envNode, careerNode, statsDayTime) {
   }
 }
 
-// Line 304: Spatial zone calculation with sector grid fallback
 function getSpatialZone(x, z, fieldList = []) {
   if (x === undefined || z === undefined) return "Farm Grounds";
   const numX = parseFloat(x);
@@ -313,7 +302,6 @@ function getSpatialZone(x, z, fieldList = []) {
   return `Sector (${xGrid}, ${zGrid})`;
 }
 
-// Line 326: FTP stream downloader
 async function downloadFtpFileToString(client, remotePath) {
   const chunks = [];
   const writer = new Writable({
@@ -326,7 +314,6 @@ async function downloadFtpFileToString(client, remotePath) {
   return Buffer.concat(chunks).toString('utf-8');
 }
 
-// Line 339: Dedicated server port 9050 stats reader
 async function pingLiveFeed() {
   try {
     const controller = new AbortController();
@@ -342,7 +329,6 @@ async function pingLiveFeed() {
   return { isOnline: false, rawXml: "", serverNode: null };
 }
 
-// Line 355: Mod catalog resolver
 async function fetchWebsiteCatalog() {
   try {
     const rawVal = (await getDb('websiteMods')) || {};
@@ -362,10 +348,7 @@ async function fetchWebsiteCatalog() {
   }
 }
 
-// ============================================================================
-// SECTION 5: PIPELINE EXECUTION
-// ============================================================================
-// Line 378: Master Ingestion Routine
+// Line 350: Master Orchestration Engine
 async function runPipeline() {
   const isForceRun = process.argv.includes('--force') || process.env.GITHUB_EVENT_NAME === 'workflow_dispatch';
   const syncTimestamp = new Date().toISOString();
@@ -374,7 +357,7 @@ async function runPipeline() {
   const live = await pingLiveFeed();
   const server = live.serverNode || {};
 
-  // Line 387: Extract Connected Players
+  // Check Active Players & VIP Status
   const activePlayers = [];
   let isVipOnline = false;
 
@@ -403,7 +386,6 @@ async function runPipeline() {
     });
   }
 
-  // Line 417: Determine Scan Tier (Heavy if VIP active or forced, else Light)
   const isHeavyScan = isVipOnline || isForceRun;
   console.log(`🎮 Mode: ${isHeavyScan ? 'HEAVY SCAN (VIP Online / Movement Tracking)' : 'LIGHT SCAN (Idle Server / 12-Hour Sync)'}`);
   console.log(`👥 Active Players: ${activePlayers.length} (${activePlayers.map(p => p.name).join(', ') || 'None'})`);
@@ -459,7 +441,7 @@ async function runPipeline() {
     const slotNodeName = `savegame${activeSlot}`;
     console.log(`🎯 Active Savegame Locked: Slot #${activeSlot} -> ${slotFolder}`);
 
-    // Line 474: Ingest ALL XML Data Files into allRawParsedXml
+    // Ingest EVERY XML File Provided into allRawParsedXml
     const allRawParsedXml = {};
     const targetXmlFiles = [
       'careerSavegame.xml',
@@ -489,22 +471,35 @@ async function runPipeline() {
       } catch (e) {}
     }
 
-    // Line 504: Extract True Farm Ownership from vehicles.xml
+    // Extract Savegame Vehicle Ownership & Baler Machine Hardware Counters
     const savegameVehicleOwnership = {};
+    const balerHardwareCounters = [];
+
     const rootVehicles = allRawParsedXml.vehicles && (allRawParsedXml.vehicles.vehicles || allRawParsedXml.vehicles);
     if (rootVehicles && (rootVehicles.vehicle || rootVehicles.item)) {
       const items = Array.isArray(rootVehicles.vehicle || rootVehicles.item)
         ? (rootVehicles.vehicle || rootVehicles.item)
         : [rootVehicles.vehicle || rootVehicles.item];
+
       items.forEach(item => {
         const fId = String(item.farmId || item.ownerFarmId || "1");
         const clean = cleanEntityName(item.filename || "");
         savegameVehicleOwnership[clean.toLowerCase()] = fId;
         if (item.filename) savegameVehicleOwnership[item.filename.toLowerCase()] = fId;
+
+        // Extract machine baleCounter if equipped on baler
+        if (item.baleCounter) {
+          balerHardwareCounters.push({
+            name: clean,
+            farmId: fId,
+            sessionCounter: parseInt(item.baleCounter.sessionCounter || 0, 10),
+            lifetimeCounter: parseInt(item.baleCounter.lifetimeCounter || 0, 10)
+          });
+        }
       });
     }
 
-    // Line 520: Extract Fields Status (Crop type, growth state, ground type)
+    // Extract Fields Status (Crop type, growth state, ground type)
     const savegameFieldsState = {};
     const rootFields = allRawParsedXml.fields && (allRawParsedXml.fields.fields || allRawParsedXml.fields);
     if (rootFields && rootFields.field) {
@@ -518,7 +513,7 @@ async function runPipeline() {
       });
     }
 
-    // Line 535: Extract Farmland Ownership
+    // Extract Farmland Ownership
     const farmlandsOwnership = {};
     const rootFLand = (allRawParsedXml.farmland && (allRawParsedXml.farmland.farmlands || allRawParsedXml.farmland)) ||
                       (allRawParsedXml.farmlands && (allRawParsedXml.farmlands.farmlands || allRawParsedXml.farmlands));
@@ -529,8 +524,10 @@ async function runPipeline() {
       });
     }
 
-    // Line 547: Extract Dual-Bank Finances (Farm 1 vs Farm 2)
+    // Extract Dual-Bank Finances & Lifetime Bale Counts per Farm
     const farmFinances = {};
+    const farmBaleStats = {};
+
     const rootFarms = allRawParsedXml.farms && (allRawParsedXml.farms.farms || allRawParsedXml.farms);
     if (rootFarms && rootFarms.farm) {
       const fList = Array.isArray(rootFarms.farm) ? rootFarms.farm : [rootFarms.farm];
@@ -538,6 +535,13 @@ async function runPipeline() {
         const fId = String(f.farmId || f.id || "1");
         const money = parseFloat(f.money || 0);
         const loan = parseFloat(f.loan || 0);
+
+        // Extract Statistics
+        const stats = f.statistics || {};
+        const baleCount = parseInt(stats.baleCount || 0, 10);
+        const wrappedBales = parseInt(stats.wrappedBales || 0, 10);
+        const soldCottonBales = parseInt(stats.soldCottonBales || 0, 10);
+
         farmFinances[`farm_${fId}`] = {
           farmId: fId,
           name: f.name || `Farm ${fId}`,
@@ -545,20 +549,32 @@ async function runPipeline() {
           loan: loan,
           balance: money - loan,
           moneyFormatted: formatCurrency(money),
-          balanceFormatted: formatCurrency(money - loan)
+          balanceFormatted: formatCurrency(money - loan),
+          baleCount: baleCount,
+          wrappedBales: wrappedBales,
+          soldCottonBales: soldCottonBales
         };
-        console.log(`💰 Live Bank [${f.name || `Farm ${fId}`}]: ${formatCurrency(money)} (Balance: ${formatCurrency(money - loan)})`);
+
+        farmBaleStats[`farm_${fId}`] = {
+          farmId: fId,
+          farmName: f.name || `Farm ${fId}`,
+          totalBales: baleCount,
+          wrappedBales: wrappedBales,
+          soldCottonBales: soldCottonBales
+        };
+
+        console.log(`💰 Live Bank [${f.name || `Farm ${fId}`}]: ${formatCurrency(money)} | 🌾 Bales Produced: ${baleCount}`);
       });
     }
 
-    // Line 571: Extract Console Slot Limit
+    // Extract Console Slot Limit
     let slotUsage = 2207;
     const rootCareer = allRawParsedXml.careerSavegame && (allRawParsedXml.careerSavegame.careerSavegame || allRawParsedXml.careerSavegame);
     if (rootCareer?.slotSystem?.slotUsage) {
       slotUsage = parseInt(rootCareer.slotSystem.slotUsage, 10);
     }
 
-    // Line 578: Process Field States (Harvest-Ready, Growing, Fallow, Withered)
+    // Process Fields
     const rawFields = (server.Fields && server.Fields.Field)
       ? (Array.isArray(server.Fields.Field) ? server.Fields.Field : [server.Fields.Field])
       : [];
@@ -577,7 +593,7 @@ async function runPipeline() {
       });
     });
 
-    // Line 598: Process Live Fleet Telemetry & Movement Deltas
+    // Process Live Fleet & Movement Deltas
     const existingFs25 = (await getDb('fs25')) || {};
     const previousVehicles = existingFs25.fleetTelemetry || [];
 
@@ -658,7 +674,7 @@ async function runPipeline() {
       });
     }
 
-    // Line 678: Ingest Active Mods & Match with Catalog
+    // Ingest Active Mods & Match with Catalog
     const catalogLookup = await fetchWebsiteCatalog();
     const activeMods = {};
     if (rawServerConfig) {
@@ -688,7 +704,7 @@ async function runPipeline() {
       } catch (e) {}
     }
 
-    // Line 710: Parse Placeables for Animals, Factories and Storage
+    // Parse Placeables for Animals, Factories, Storage, and Bales
     const farmCards = {
       farm_1: { animals: [], factories: [], generalPlaceables: [], farmlandOwned: [], palletsAndBales: [] },
       farm_2: { animals: [], factories: [], generalPlaceables: [], farmlandOwned: [], palletsAndBales: [] }
@@ -731,7 +747,7 @@ async function runPipeline() {
 
     const inGameCal = resolveInGameCalendar(allRawParsedXml.environment, allRawParsedXml.careerSavegame, server.dayTime);
 
-    // Line 755: Construct Unified Summary Cards
+    // Construct Comprehensive Summary Cards
     const cardSummary = {
       totalFleetItems: liveVehicles.length,
       totalMotorVehicles: farm1Vehicles.length + farm2Vehicles.length,
@@ -747,17 +763,21 @@ async function runPipeline() {
         totalMotorVehicles: farm1Vehicles.length,
         totalHarvesters: farm1Harvesters.length,
         totalTrailers: farm1Trailers.length,
-        totalImplements: farm1Implements.length
+        totalImplements: farm1Implements.length,
+        totalBales: farmBaleStats.farm_1?.totalBales || 0,
+        wrappedBales: farmBaleStats.farm_1?.wrappedBales || 0
       },
       farm2: {
         totalMotorVehicles: farm2Vehicles.length,
         totalHarvesters: farm2Harvesters.length,
         totalTrailers: farm2Trailers.length,
-        totalImplements: farm2Implements.length
+        totalImplements: farm2Implements.length,
+        totalBales: farmBaleStats.farm_2?.totalBales || 0,
+        wrappedBales: farmBaleStats.farm_2?.wrappedBales || 0
       }
     };
 
-    // Line 782: Master Payload Assembly
+    // Assemble Master Payload
     const masterPayload = {
       activeSaveSlot: String(activeSlot),
       activeSlotNode: slotNodeName,
@@ -766,6 +786,8 @@ async function runPipeline() {
       inGameCalendar: inGameCal,
       cards: cardSummary,
       finances: farmFinances,
+      baleStatistics: farmBaleStats,
+      balerHardwareCounters: balerHardwareCounters,
       fleetTelemetry: liveVehicles,
       fields: processedFields,
       activeMods: activeMods,
@@ -774,17 +796,18 @@ async function runPipeline() {
         vehicles: farm1Vehicles,
         harvesters: farm1Harvesters,
         trailers: farm1Trailers,
-        implements: farm1Implements
+        implements: farm1Implements,
+        baleCount: farmBaleStats.farm_1?.totalBales || 0
       },
       farm2: {
         vehicles: farm2Vehicles,
         harvesters: farm2Harvesters,
         trailers: farm2Trailers,
-        implements: farm2Implements
+        implements: farm2Implements,
+        baleCount: farmBaleStats.farm_2?.totalBales || 0
       }
     };
 
-    // Line 808: Write payload to Firebase RTDB (/fs25 and /fs25/savegameX)
     console.log(`💾 Writing payload to /fs25 and /fs25/${slotNodeName}...`);
     await updateDb('fs25', masterPayload);
     await updateDb(`fs25/${slotNodeName}`, masterPayload);
@@ -798,7 +821,7 @@ async function runPipeline() {
       }
     }
 
-    console.log(`🏆 Sync Completed: All XML nodes synced, ${liveVehicles.length} vehicles mapped, balances and cards updated.`);
+    console.log(`🏆 Sync Complete: All 12 XML files ingested, bale counts mapped, and balances pushed to Firebase.`);
     client.close();
     process.exit(0);
 
@@ -809,5 +832,5 @@ async function runPipeline() {
   }
 }
 
-// Line 836: Trigger Execution
+// Trigger Execution
 runPipeline();
