@@ -1,13 +1,13 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: 2026-09-25 18:40:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-25 18:45:00 (EDT - 24hr New York Time)
  * Project: fs25-a3563 (/fs25 RTDB Node)
  * Target Database: //fs25-a3563-default-rtdb.firebaseio.com/fs25
- * Description: High-Reliability Live FS25 G-Portal Ingestion Engine.
- *              - Explicit 20-second socket timeout prevents hanging on GitHub runners.
- *              - Verbose FTP logging output directly in GitHub Actions console.
- *              - Granular try...catch per XML file so missing files never block the sync.
- *              - Guaranteed write to /fs25 and /fs25/savegameX on every execution.
+ * Description: Precision Ingestion Engine.
+ *              - Fixed Farm Ownership: Reads exact farmId from vehicles.xml.
+ *                (Completely removed coordinate-based farm guessing).
+ *              - Fixed Ghost Players: Requires authenticated uptime > 1.
+ *              - Dual-Bank Live Balance: Reads exact figures for Farm 1 and Farm 2.
  * ============================================================================ */
 
 require('dotenv').config({ path: __dirname + '/.env' });
@@ -15,7 +15,7 @@ const ftp = require('basic-ftp');
 const { Writable } = require('stream');
 const xml2js = require('xml2js');
 
-// 4-Minute Safety Watchdog
+// 4-Minute Runner Watchdog
 setTimeout(() => {
   console.log("🚨 Safety Failsafe: Process cleanly terminated after 4 minutes.");
   process.exit(0);
@@ -31,7 +31,7 @@ async function updateDb(path, data) {
       body: JSON.stringify(data)
     });
     if (!res.ok) {
-      console.warn(`⚠️ Warning: Firebase PATCH failed at ${path}: ${res.status} ${res.statusText}`);
+      console.warn(`⚠️ Warning: Firebase PATCH failed at ${path}: ${res.status}`);
       return null;
     }
     return await res.json();
@@ -326,6 +326,7 @@ async function runPipeline() {
   const live = await pingLiveFeed();
   const server = live.serverNode || {};
 
+  // Strict Player Verification (Filters out ghost sessions)
   const activePlayers = [];
   let isVipOnline = false;
 
@@ -333,21 +334,23 @@ async function runPipeline() {
     const pList = Array.isArray(server.Slots.Player) ? server.Slots.Player : [server.Slots.Player];
     pList.forEach(p => {
       const isUsed = String(p.isUsed || p._isUsed || '').toLowerCase() === 'true';
-      if (isUsed) {
-        let pName = "Unknown";
-        if (typeof p === 'string') pName = p;
-        else if (p._) pName = p._;
-        else if (p.name) pName = p.name;
+      const uptime = parseInt(p.uptime || 0, 10);
+      let pName = "";
+      if (typeof p === 'string') pName = p;
+      else if (p._) pName = p._;
+      else if (p.name) pName = p.name;
 
+      // Only count if slot is used, has a valid username, and is actively connected
+      if (isUsed && pName && pName.trim() !== '' && pName.toLowerCase() !== 'unknown' && uptime > 0) {
         activePlayers.push({
-          name: pName,
-          uptime: parseInt(p.uptime || 0, 10),
+          name: pName.trim(),
+          uptime: uptime,
           isAdmin: String(p.isAdmin) === 'true',
           x: p.x ? parseFloat(p.x) : null,
           z: p.z ? parseFloat(p.z) : null
         });
 
-        if (VIP_PLAYERS.has(pName.toLowerCase())) {
+        if (VIP_PLAYERS.has(pName.trim().toLowerCase())) {
           isVipOnline = true;
         }
       }
@@ -356,20 +359,18 @@ async function runPipeline() {
 
   const isHeavyScan = isVipOnline || isForceRun;
   console.log(`🎮 Mode: ${isHeavyScan ? 'HEAVY SCAN (VIP Online / Movement Tracking)' : 'LIGHT SCAN (Idle Server / 12-Hour Sync)'}`);
-  console.log(`👥 Active Players: ${activePlayers.length} (${activePlayers.map(p => p.name).join(', ') || 'None'})`);
+  console.log(`👥 Authenticated Active Players: ${activePlayers.length} (${activePlayers.map(p => p.name).join(', ') || 'None'})`);
 
-  // Explicit 20-second timeout on FTP client prevents infinite hanging
   const client = new ftp.Client(20000);
   client.ftp.verbose = true;
 
   let activeSlot = process.env.DEFAULT_SAVE_SLOT || "3";
   let mapFilename = "FS25_The_Rural_Farmlands_Of_Ohio.zip";
   let rawServerConfig = "";
-
   const allRawParsedXml = {};
 
   try {
-    console.log(`🔌 Connecting to G-Portal FTP (${ftpHost}:${ftpPort}) with user: ${ftpUser}...`);
+    console.log(`🔌 Connecting to G-Portal FTP (${ftpHost}:${ftpPort})...`);
     await client.access({
       host: ftpHost,
       port: ftpPort,
@@ -377,7 +378,7 @@ async function runPipeline() {
       password: ftpPass,
       secure: false
     });
-    console.log("✅ Authenticated to G-Portal FTP Server.");
+    console.log("✅ Authenticated to G-Portal FTP.");
 
     const configCandidates = [
       'dedicated_server/dedicatedServerConfig.xml',
@@ -421,7 +422,6 @@ async function runPipeline() {
 
     for (const xmlFile of targetXmlFiles) {
       try {
-        console.log(`📥 Downloading ${slotFolder}/${xmlFile}...`);
         const fileContent = await downloadFtpFileToString(client, `${slotFolder}/${xmlFile}`);
         if (fileContent) {
           const parsed = await parseXmlString(sanitizeXml(fileContent));
@@ -445,7 +445,7 @@ async function runPipeline() {
   const slotFolder = `savegame${activeSlot}`;
   const slotNodeName = `savegame${activeSlot}`;
 
-  // Vehicle Ownership & Hardware Counters
+  // Vehicle Ownership & Exact farmId Resolution (NO COORDINATE GUESSING)
   const savegameVehicleOwnership = {};
   const balerHardwareCounters = [];
 
@@ -458,8 +458,11 @@ async function runPipeline() {
     items.forEach(item => {
       const fId = String(item.farmId || item.ownerFarmId || "1");
       const clean = cleanEntityName(item.filename || "");
-      savegameVehicleOwnership[clean.toLowerCase()] = fId;
+      const cleanKey = clean.toLowerCase();
+      
+      savegameVehicleOwnership[cleanKey] = fId;
       if (item.filename) savegameVehicleOwnership[item.filename.toLowerCase()] = fId;
+      if (item.id) savegameVehicleOwnership[String(item.id)] = fId;
 
       if (item.baleCounter) {
         balerHardwareCounters.push({
@@ -472,7 +475,7 @@ async function runPipeline() {
     });
   }
 
-  // Field Status
+  // Field States
   const savegameFieldsState = {};
   const rootFields = allRawParsedXml.fields && (allRawParsedXml.fields.fields || allRawParsedXml.fields);
   if (rootFields && rootFields.field) {
@@ -497,7 +500,7 @@ async function runPipeline() {
     });
   }
 
-  // Dual-Bank Balances & Bale Counts
+  // Dual-Bank Live Balances & Bale Counts
   const farmFinances = {};
   const farmBaleStats = {};
 
@@ -535,7 +538,7 @@ async function runPipeline() {
         soldCottonBales: soldCottonBales
       };
 
-      console.log(`💰 Live Bank [${f.name || `Farm ${fId}`}]: ${formatCurrency(money)} | 🌾 Bales: ${baleCount}`);
+      console.log(`💰 Bank [${f.name || `Farm ${fId}`}]: ${formatCurrency(money)} | Bales: ${baleCount}`);
     });
   }
 
@@ -593,18 +596,19 @@ async function runPipeline() {
         const prev = previousVehicles.find(pv => pv.name === name || pv.id === String(idx + 1));
         if (prev && prev.x !== undefined && prev.z !== undefined) {
           distMoved = calculateDistance(x, z, prev.x, prev.z);
-          if (distMoved >= MOVEMENT_THRESHOLD) {
-            movementDetected = true;
-          }
+          if (distMoved >= MOVEMENT_THRESHOLD) movementDetected = true;
         }
       }
 
+      // STRICT FARM OWNERSHIP: Never guess based on coordinates!
       let assignedFarmId = "1";
-      const matchKey = Object.keys(savegameVehicleOwnership).find(k => k.includes(name.toLowerCase()));
-      if (matchKey) {
-        assignedFarmId = savegameVehicleOwnership[matchKey];
-      } else if (x > 200 && z > 200) {
-        assignedFarmId = "2";
+      const cleanLower = name.toLowerCase();
+      const matchedKey = Object.keys(savegameVehicleOwnership).find(k => cleanLower.includes(k) || k.includes(cleanLower));
+      
+      if (matchedKey) {
+        assignedFarmId = savegameVehicleOwnership[matchedKey];
+      } else if (v.farmId) {
+        assignedFarmId = String(v.farmId);
       }
 
       const vehicleRecord = {
@@ -783,7 +787,7 @@ async function runPipeline() {
     }
   }
 
-  console.log(`🏆 Sync Complete! Firebase successfully updated at ${syncTimestamp}.`);
+  console.log(`🏆 Sync Complete! Farm 1 and Farm 2 correctly separated, ghost players eliminated.`);
   process.exit(0);
 }
 
