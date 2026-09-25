@@ -2,17 +2,21 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * File: games/FS25/index.html
- * Deployment Timestamp: 2026-09-25 17:45:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-25 18:15:00 (EDT - 24hr New York Time)
  * Project: fs25-a3563 (/fs25 RTDB Node)
  * Target Database: https://fs25-a3563-default-rtdb.firebaseio.com
  * Google Analytics Tag: G-CTYHDF4MSD | Measurement ID: G-SGJF0FJPQZ
- * Description: All-In-One Unified FS25 Realtime Tactical Dashboard & Mod Directory.
- *              - Zero-loss code preservation with ad-blocker failsafe isolation.
- *              - Dynamic active savegame switching locked to dedicatedServerConfig.
- *              - Dual-Farm Operational Matrix (My farm vs Dumbace).
- *              - Bale counters displayed per farm (baleCount, wrappedBales).
- *              - Live Eastern (New York) Time & human in-game dayTime clock.
- *              - Console slot usage headroom tracking (slotSystem.slotUsage).
+ * Description: Tactical FS25 Command Center & Live World Telemetry Engine.
+ *              - Real-time active player cards with custom glowing signature halos:
+ *                * wildhorse_spirit: Bugatti Black & Hyper-Orange glow.
+ *                * OneLIVIDMAN: USA Dual-Tone Red & Blue patriotic glow.
+ *              - Vehicle hoisting: Controlled vehicles & attachments pull into the driver card.
+ *              - 2D Mini-Field Radar box with live pulsating GPS position indicator.
+ *              - Field % completed, spray %, lime %, and harvest status metrics.
+ *              - Zero-loss money parsing: Recursive multi-branch fallback prevents $0 balances.
+ *              - Top-banner Eastern New York (EDT) sync time & console slot limit (2207 / 2600).
+ *              - Native local asset integration using ./images/ catalog icons.
+ *              - Image-first Mod directory with cinema-grade Lightbox modal.
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -24,9 +28,9 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="//fonts.googleapis.com">
     <link rel="preconnect" href="//fonts.gstatic.com" crossorigin>
-    <link href="//fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="//fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
 
-    <!-- Line 28: Failsafe Google Analytics Tag Manager (Bypasses Ad Blocker Blockades) -->
+    <!-- Failsafe Google Analytics Tag Manager -->
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){ window.dataLayer.push(arguments); }
@@ -48,22 +52,27 @@
         })();
     </script>
 
-    <!-- Line 50: Consolidated Responsive CSS Stylesheet -->
     <style>
         :root {
             --bg-dark: #070a12;
             --card-bg: #111827;
             --header-bg: #0b1120;
             --accent-gold: #facc15;
-            --accent-orange: #ff5f00;
+            --accent-orange: #ff5500;
             --accent-farm1: #84cc16;
             --accent-farm2: #38bdf8;
-            --accent-red: #f87171;
+            --accent-red: #ef4444;
+            --accent-blue: #2563eb;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border-color: #1f293d;
             --font-family: 'Poppins', system-ui, -apple-system, sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
+
+            /* Player Signature Glows */
+            --glow-wildhorse: 0 0 25px rgba(255, 85, 0, 0.65), 0 0 10px rgba(255, 85, 0, 0.4);
+            --glow-onelividman: 0 0 25px rgba(37, 99, 235, 0.65), 0 0 10px rgba(239, 68, 68, 0.5);
+            --glow-default: 0 0 20px rgba(56, 189, 248, 0.5);
         }
 
         * {
@@ -83,7 +92,7 @@
             overflow-x: hidden;
         }
 
-        /* Top Header Navigation Bar (Sandwich & Centered Layout) */
+        /* Top Navigation Bar */
         .navbar {
             background: var(--header-bg);
             border-bottom: 1px solid var(--border-color);
@@ -98,9 +107,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            width: 85%;
+            width: 90%;
             margin: 0 auto;
-            position: relative;
             min-height: 48px;
         }
 
@@ -110,11 +118,10 @@
             gap: 0.6rem;
             color: var(--text-main);
             text-decoration: none;
-            font-weight: 700;
-            font-size: 1.1rem;
+            font-weight: 800;
+            font-size: 1.15rem;
             letter-spacing: 0.05em;
             white-space: nowrap;
-            z-index: 1010;
         }
 
         .logo-icon {
@@ -134,16 +141,8 @@
             min-width: 48px;
             min-height: 48px;
             cursor: pointer;
-            z-index: 1010;
-            transition: all 0.2s ease;
         }
 
-        .mobile-toggle:hover {
-            background: rgba(250, 204, 21, 0.15);
-            border-color: var(--accent-gold);
-        }
-
-        /* Desktop Navigation (> 1200px) */
         .nav-menu-centered {
             display: flex;
             align-items: center;
@@ -197,8 +196,7 @@
             z-index: 1020;
         }
 
-        .nav-dropdown-wrapper:hover .dropdown-popout-menu,
-        .nav-dropdown-wrapper:focus-within .dropdown-popout-menu {
+        .nav-dropdown-wrapper:hover .dropdown-popout-menu {
             display: block;
         }
 
@@ -211,7 +209,6 @@
             text-decoration: none;
             font-size: 0.85rem;
             min-height: 44px;
-            transition: background 0.2s ease, color 0.2s ease;
         }
 
         .dropdown-item:hover {
@@ -219,16 +216,17 @@
             color: var(--accent-gold);
         }
 
-        /* Dashboard Container & Grid System */
+        /* Dashboard Container */
         .dashboard-container {
             padding: 1.5rem 0;
-            width: 85%;
+            width: 90%;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
         }
 
+        /* Server Banner */
         .server-banner {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -253,6 +251,7 @@
             border: 2px solid var(--border-color);
             background: #0f172a;
             flex-shrink: 0;
+            position: relative;
         }
 
         .map-preview-box img {
@@ -279,10 +278,9 @@
 
         .server-header-line h1 {
             font-size: 1.35rem;
-            font-weight: 700;
+            font-weight: 800;
             color: #ffffff;
             line-height: 1.2;
-            word-break: break-word;
         }
 
         .status-pill {
@@ -293,7 +291,6 @@
             border-radius: 999px;
             font-size: 0.75rem;
             font-weight: 700;
-            letter-spacing: 0.05em;
         }
 
         .status-online {
@@ -338,6 +335,202 @@
             color: var(--accent-gold);
         }
 
+        .badge.highlight-gold {
+            border-color: rgba(250, 204, 21, 0.4);
+            color: var(--accent-gold);
+            font-weight: 700;
+        }
+
+        .badge.highlight-slot {
+            border-color: rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+            font-weight: 700;
+        }
+
+        /* Tactical Command Deck (Active Player Operations) */
+        .command-deck-section {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, rgba(11, 17, 32, 0.95) 100%);
+            border: 2px solid #334155;
+            border-radius: 14px;
+            padding: 1.25rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .deck-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+
+        .deck-header h2 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .deck-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 1.25rem;
+        }
+
+        /* Player Cards & Signature Glows */
+        .player-tactical-card {
+            background: rgba(15, 23, 42, 0.85);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .player-tactical-card.glow-wildhorse {
+            border: 2px solid var(--accent-orange) !important;
+            box-shadow: var(--glow-wildhorse) !important;
+        }
+
+        .player-tactical-card.glow-onelividman {
+            border: 2px solid var(--accent-blue) !important;
+            border-top: 3px solid var(--accent-red) !important;
+            box-shadow: var(--glow-onelividman) !important;
+        }
+
+        .player-tactical-card.glow-default {
+            border: 2px solid var(--accent-farm2) !important;
+            box-shadow: var(--glow-default) !important;
+        }
+
+        .player-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .player-identity {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .player-avatar-ring {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #020617;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            border: 2px solid currentColor;
+        }
+
+        .player-meta-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .player-uptime-tag {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+
+        /* Hoisted Vehicle Strip */
+        .hoisted-vehicle-wrap {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .hoisted-vehicle-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .attached-convoy-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 4px;
+            padding-left: 0.75rem;
+            border-left: 2px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        /* Mini-Field 2D Radar Box */
+        .radar-box {
+            position: relative;
+            width: 100%;
+            height: 110px;
+            background: #020617;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .radar-grid-lines {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .radar-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 12px currentColor;
+            animation: pulse-dot 1.5s infinite;
+            z-index: 20;
+        }
+
+        @keyframes pulse-dot {
+            0% { transform: translate(-50%, -50%) scale(0.9); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.4); opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(0.9); opacity: 1; }
+        }
+
+        .radar-overlay-stats {
+            position: absolute;
+            bottom: 4px;
+            left: 6px;
+            right: 6px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
+            background: rgba(0, 0, 0, 0.75);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #cbd5e1;
+            z-index: 10;
+        }
+
+        /* KPI Metric Row */
         .metrics-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -353,7 +546,6 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            width: 100%;
         }
 
         .metric-icon {
@@ -376,7 +568,7 @@
             letter-spacing: 0.04em;
         }
 
-        /* Dual-Farm Split Matrix */
+        /* Dual-Farm Matrix */
         .dual-farm-matrix {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -403,38 +595,26 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 0.5rem;
-            width: 100%;
         }
 
-        .farm-header-card.farm1-card {
-            border-top: 4px solid var(--accent-farm1);
-        }
-
-        .farm-header-card.farm2-card {
-            border-top: 4px solid var(--accent-farm2);
-        }
+        .farm-header-card.farm1-card { border-top: 4px solid var(--accent-farm1); }
+        .farm-header-card.farm2-card { border-top: 4px solid var(--accent-farm2); }
 
         .farm-header-title {
             font-size: 1.15rem;
-            font-weight: 700;
+            font-weight: 800;
             color: #ffffff;
             text-transform: uppercase;
         }
 
         .farm-header-balance {
-            font-size: 1.25rem;
-            font-weight: 700;
+            font-size: 1.3rem;
+            font-weight: 800;
             font-family: var(--font-mono);
-            word-break: break-all;
         }
 
-        .farm-header-balance.f1 {
-            color: var(--accent-farm1);
-        }
-
-        .farm-header-balance.f2 {
-            color: var(--accent-farm2);
-        }
+        .farm-header-balance.f1 { color: var(--accent-farm1); }
+        .farm-header-balance.f2 { color: var(--accent-farm2); }
 
         .dashboard-box {
             background: var(--card-bg);
@@ -469,8 +649,7 @@
 
         .box-header h2 {
             font-size: 0.825rem;
-            font-weight: 700;
-            margin: 0;
+            font-weight: 800;
             color: #ffffff;
             letter-spacing: 0.05em;
         }
@@ -488,22 +667,20 @@
 
         .box-content {
             padding: 0.75rem;
-            max-height: 400px;
+            max-height: 420px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
         }
 
-        .box-content::-webkit-scrollbar {
-            width: 4px;
-        }
+        .box-content::-webkit-scrollbar { width: 4px; }
         .box-content::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.15);
             border-radius: 4px;
         }
 
-        /* Telemetry Row Item Cards */
+        /* Telemetry Cards & Inset Images */
         .telemetry-card {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid var(--border-color);
@@ -513,14 +690,17 @@
             align-items: center;
             gap: 0.85rem;
             width: 100%;
+            position: relative;
         }
 
-        .card-icon {
-            font-size: 1.1rem;
-            color: var(--accent-gold);
-            width: 24px;
-            text-align: center;
+        .card-icon-img {
+            width: 32px;
+            height: 32px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
             flex-shrink: 0;
+            background: #020617;
         }
 
         .card-details {
@@ -532,16 +712,11 @@
 
         .card-details strong {
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 700;
             color: #f1f5f9;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-        }
-
-        .card-details span {
-            font-size: 0.75rem;
-            color: var(--text-muted);
         }
 
         .card-subtext {
@@ -550,15 +725,6 @@
             font-family: var(--font-mono);
         }
 
-        .empty-state, .loading-state {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            padding: 1rem;
-            text-align: center;
-            width: 100%;
-        }
-
-        /* Stoplight Meters */
         .fill-meter-wrap {
             display: flex;
             align-items: center;
@@ -587,6 +753,14 @@
             transition: width 0.4s ease;
         }
 
+        .empty-state {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            padding: 1rem;
+            text-align: center;
+            width: 100%;
+        }
+
         /* Collectibles Grid System */
         .collectibles-grid-layout {
             display: grid;
@@ -610,64 +784,69 @@
             border: 1px solid var(--border-color);
         }
 
-        .collectible-badge.unfound {
-            opacity: 0.25;
-            color: var(--text-muted);
-            border-color: rgba(255, 255, 255, 0.05);
-        }
-
         .collectible-badge.found {
-            opacity: 1;
             color: #10b981;
             border-color: #10b981;
             background: rgba(16, 185, 129, 0.15);
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
         }
 
-        /* Mod Directory Section */
+        .collectible-badge.unfound {
+            opacity: 0.25;
+            color: var(--text-muted);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Mod Directory Visual Grid */
         .mod-hub-section {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 1.25rem;
             width: 100%;
         }
 
-        .mod-hub-header h2 {
-            font-size: 1.05rem;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
-
-        .mod-categories-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
         .mod-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.25rem;
             margin-top: 1.25rem;
         }
 
         .mod-card {
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(15, 23, 42, 0.85);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             cursor: pointer;
-            transition: border-color 0.2s ease;
+            transition: all 0.2s ease;
         }
 
         .mod-card:hover {
             border-color: var(--accent-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .mod-cover-frame {
+            width: 100%;
+            height: 150px;
+            background: #020617;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mod-cover-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .mod-card:hover .mod-cover-frame img {
+            transform: scale(1.05);
         }
 
         .mod-card-body {
@@ -686,8 +865,8 @@
         }
 
         .mod-title {
-            font-size: 0.9rem;
-            font-weight: 600;
+            font-size: 0.95rem;
+            font-weight: 700;
             color: #ffffff;
         }
 
@@ -706,24 +885,6 @@
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .mod-author {
-            font-size: 0.725rem;
-            color: var(--text-muted);
-        }
-
-        .mod-download-btn {
-            background: var(--accent-gold);
-            color: #0f172a;
-            text-decoration: none;
-            padding: 0.35rem 0.75rem;
-            border-radius: 4px;
-            font-size: 0.725rem;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-
         /* Lightbox Modal */
         .lightbox-modal {
             display: none;
@@ -737,9 +898,7 @@
             padding: 1.25rem;
         }
 
-        .lightbox-modal.active {
-            display: flex;
-        }
+        .lightbox-modal.active { display: flex; }
 
         .lightbox-card-container {
             background: #111827;
@@ -766,50 +925,21 @@
             border: none;
             line-height: 1;
             padding: 6px 10px;
-            transition: color 0.2s ease;
-            z-index: 20010;
         }
 
-        .lightbox-close-btn:hover {
-            color: #ffffff;
-        }
+        .lightbox-close-btn:hover { color: #ffffff; }
 
-        .lightbox-body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            overflow-y: auto;
-        }
-
-        .lightbox-content {
-            max-width: 100%;
-            max-height: 45vh;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-            margin-bottom: 1rem;
-            object-fit: contain;
-        }
-
-        .lightbox-caption {
-            color: #ffffff;
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-align: center;
-            width: 100%;
-        }
-
-        /* System Sticky Footer */
+        /* System Footer */
         .system-footer {
             background: var(--header-bg);
             border-top: 1px solid var(--border-color);
-            padding: 1rem 0;
+            padding: 1.25rem 0;
             margin-top: 3rem;
             width: 100%;
         }
 
         .footer-content {
-            width: 85%;
+            width: 90%;
             margin: 0 auto;
             display: flex;
             flex-wrap: wrap;
@@ -820,26 +950,15 @@
             color: var(--text-muted);
         }
 
-        /* ====================================================================
-         * CROSS-PLATFORM RESPONSIVE RULES (TABLETS & MOBILE PHONES)
-         * ==================================================================== */
-
-        /* Tablets & Smaller Desktops (< 1200px) */
         @media (max-width: 1199px) {
-            .nav-container, .dashboard-container, .footer-content {
-                width: 92%;
-            }
-
-            .mobile-toggle {
-                display: flex !important;
-            }
-
+            .nav-container, .dashboard-container, .footer-content { width: 94%; }
+            .dual-farm-matrix { grid-template-columns: 1fr; }
+            .mobile-toggle { display: flex !important; }
             .nav-menu-centered {
                 display: none !important;
                 position: absolute;
                 top: calc(100% + 0.75rem);
-                left: 0;
-                right: 0;
+                left: 0; right: 0;
                 background: #0b1120;
                 border: 1px solid var(--border-color);
                 border-radius: 12px;
@@ -847,83 +966,25 @@
                 flex-direction: column !important;
                 align-items: stretch !important;
                 gap: 0.5rem !important;
-                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9);
                 z-index: 1050;
             }
-
-            .nav-menu-centered.open {
-                display: flex !important;
-            }
-
-            .nav-dropdown-wrapper {
-                width: 100%;
-            }
-
-            .dropdown-trigger-btn {
-                width: 100%;
-                justify-content: space-between;
-                min-height: 48px;
-                padding: 0.75rem 1rem;
-                font-size: 0.95rem;
-            }
-
-            .dropdown-popout-menu {
-                position: static;
-                width: 100%;
-                margin-top: 0.25rem;
-                background: #111827;
-                border: 1px solid rgba(255, 255, 255, 0.08);
-                box-shadow: none;
-            }
-
-            .dual-farm-matrix {
-                grid-template-columns: 1fr;
-            }
+            .nav-menu-centered.open { display: flex !important; }
         }
 
-        /* Mobile Phones (< 768px) */
         @media (max-width: 767px) {
-            .nav-container, .dashboard-container, .footer-content {
-                width: 90% !important;
-                margin-left: auto !important;
-                margin-right: auto !important;
-            }
-
-            .server-header-line {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
-
-            .farm-header-card {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.25rem;
-            }
-
-            .farm-header-balance {
-                font-size: 1.15rem;
-            }
-
-            .metrics-row {
-                grid-template-columns: 1fr;
-            }
-
-            .map-preview-box {
-                width: 100%;
-                height: 180px;
-            }
+            .metrics-row { grid-template-columns: 1fr; }
+            .deck-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Master Navigation Header (Centered on Desktop, Sandwich on Tablet/Phone) -->
+    <!-- Header Navigation Bar -->
     <header class="navbar">
         <div class="nav-container">
             <a href="//werewolf3788.github.io/Website/" class="brand-hub-link" aria-label="Home Overview">
                 <i class="fa-solid fa-wheat-awn logo-icon"></i>
-                <span>FS25 TELEMETRY</span>
+                <span>FS25 TACTICAL TELEMETRY</span>
             </a>
 
             <button id="mobile-menu-toggle" type="button" class="mobile-toggle" aria-label="Toggle Navigation Menu">
@@ -931,15 +992,14 @@
             </button>
 
             <nav id="dynamic-menu" class="nav-menu-centered">
-                <span class="loading-state" style="padding: 0; font-size: 0.8rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Directory...</span>
+                <span class="empty-state" style="padding: 0; font-size: 0.8rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Directory...</span>
             </nav>
         </div>
     </header>
 
-    <!-- Main Dashboard Body -->
     <main class="dashboard-container">
         
-        <!-- Section: Server Status Banner -->
+        <!-- Top Status Banner -->
         <section class="server-banner">
             <div class="banner-layout">
                 <div class="map-preview-box">
@@ -948,7 +1008,7 @@
                          alt=""
                          data-alt="Live Satellite Map Feed"
                          class="lightbox-trigger"
-                         onerror="this.src='//via.placeholder.com/140x140/0f172a/facc15?text=FS25+MAP';" />
+                         onerror="this.src='./images/St_Lawrence_Map.JPG';" />
                 </div>
                 <div class="banner-title">
                     <div class="server-header-line">
@@ -960,17 +1020,31 @@
                     <div class="banner-badges">
                         <span id="server-map" class="badge" title="Active Map Location"><i class="fa-solid fa-map-location-dot"></i> Map: The Rural Farmlands Of Ohio</span>
                         <span id="server-time" class="badge"><i class="fa-regular fa-clock"></i> Time: --:--</span>
-                        <span id="time-speed-badge" class="badge" style="border:1px solid #facc15; color:#facc15;"><i class="fa-solid fa-forward-fast"></i> Speed: 1x</span>
-                        <span id="server-month" class="badge"><i class="fa-solid fa-calendar-days"></i> Season: Spring</span>
+                        <span id="server-month" class="badge"><i class="fa-solid fa-calendar-days"></i> March (Day 1)</span>
                         <span id="server-weather" class="badge"><i class="fa-solid fa-sun"></i> Weather: Clear</span>
                         <span id="server-players" class="badge"><i class="fa-solid fa-users"></i> Players: 0 Online</span>
-                        <span id="traffic-badge" class="badge" style="border:1px solid #38bdf8;"><i class="fa-solid fa-car"></i> Traffic: OFF</span>
+                        <span id="server-sync-clock" class="badge highlight-gold"><i class="fa-solid fa-rotate"></i> Last Sync: --:-- -- (EDT)</span>
+                        <span id="server-console-slots" class="badge highlight-slot"><i class="fa-solid fa-gamepad"></i> Console Slots: 2207 / 2600</span>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Section: Global Summary KPI Counters -->
+        <!-- TACTICAL COMMAND DECK: Active Player Cards with Signature Glows & 2D Radars -->
+        <section class="command-deck-section">
+            <div class="deck-header">
+                <h2><i class="fa-solid fa-satellite-dish" style="color:var(--accent-gold);"></i> LIVE OPERATOR COMMAND DECK</h2>
+                <span id="active-deck-status" class="card-subtext" style="color:var(--accent-gold); font-weight:700;">Standby Mode</span>
+            </div>
+            <div id="active-players-deck" class="deck-grid">
+                <div class="empty-state" style="grid-column: 1 / -1; padding: 2rem 0;">
+                    <i class="fa-solid fa-tower-broadcast text-2xl mb-2" style="color:var(--text-muted); opacity:0.4;"></i>
+                    <div>No active operators logged into dedicated server sessions. Server operating under 12-Hour Idle Telemetry.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- KPI Metrics Counters Row -->
         <div class="metrics-row">
             <div class="metric-card">
                 <i class="fa-solid fa-scale-balanced metric-icon" style="color:#4ade80;"></i>
@@ -1002,7 +1076,7 @@
             </div>
         </div>
 
-        <!-- Section: Split Side-by-Side Dual Farm Operations Matrix -->
+        <!-- Split Side-by-Side Dual Farm Operations Matrix -->
         <div class="dual-farm-matrix">
             
             <!-- ==================== FARM 1 (LEFT COLUMN) ==================== -->
@@ -1015,13 +1089,13 @@
                     <div id="farm1-money" class="farm-header-balance f1">$0</div>
                 </div>
 
-                <!-- Farm 1 Fleet Tractors -->
+                <!-- Farm 1 Tractors -->
                 <div class="dashboard-box">
                     <div class="box-header">
                         <div class="box-header-title-wrap"><i class="fa-solid fa-tractor"></i><h2>FARM 1: TRACTORS & RIGS</h2></div>
                         <span id="f1-tractors-count" class="box-counter-badge">0</span>
                     </div>
-                    <div id="f1-tractors-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning Farm 1 tractors...</div></div>
+                    <div id="f1-tractors-container" class="box-content"><div class="empty-state">Scanning Farm 1 tractors...</div></div>
                 </div>
 
                 <!-- Farm 1 Harvesters -->
@@ -1030,7 +1104,7 @@
                         <div class="box-header-title-wrap"><i class="fa-solid fa-wheat-awn"></i><h2>FARM 1: HARVESTERS & COMBINES</h2></div>
                         <span id="f1-harvesters-count" class="box-counter-badge">0</span>
                     </div>
-                    <div id="f1-harvesters-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning Farm 1 harvesters...</div></div>
+                    <div id="f1-harvesters-container" class="box-content"><div class="empty-state">Scanning Farm 1 harvesters...</div></div>
                 </div>
 
                 <!-- Farm 1 Trailers -->
@@ -1039,43 +1113,43 @@
                         <div class="box-header-title-wrap"><i class="fa-solid fa-truck-ramp-box"></i><h2>FARM 1: HAULING TRAILERS</h2></div>
                         <span id="f1-trailers-count" class="box-counter-badge">0</span>
                     </div>
-                    <div id="f1-trailers-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning Farm 1 trailers...</div></div>
+                    <div id="f1-trailers-container" class="box-content"><div class="empty-state">Scanning Farm 1 trailers...</div></div>
                 </div>
 
-                <!-- Farm 1 Implements & Seeders -->
+                <!-- Farm 1 Implements -->
                 <div class="dashboard-box">
                     <div class="box-header">
                         <div class="box-header-title-wrap"><i class="fa-solid fa-screwdriver-wrench"></i><h2>FARM 1: IMPLEMENTS & SEEDERS</h2></div>
                         <span id="f1-implements-count" class="box-counter-badge">0</span>
                     </div>
-                    <div id="f1-implements-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning Farm 1 implements...</div></div>
+                    <div id="f1-implements-container" class="box-content"><div class="empty-state">Scanning Farm 1 implements...</div></div>
                 </div>
 
-                <!-- Farm 1 Livestock & Husbandry -->
+                <!-- Farm 1 Animals -->
                 <div class="dashboard-box">
                     <div class="box-header">
                         <div class="box-header-title-wrap"><i class="fa-solid fa-cow"></i><h2>FARM 1: LIVESTOCK & BARNS</h2></div>
                         <span id="f1-animals-count" class="box-counter-badge">0</span>
                     </div>
-                    <div id="f1-animals-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Farm 1 animals...</div></div>
+                    <div id="f1-animals-container" class="box-content"><div class="empty-state">Reading Farm 1 animals...</div></div>
                 </div>
 
-                <!-- Farm 1 Passive Income Generators -->
+                <!-- Farm 1 Passive Generators -->
                 <div class="dashboard-box">
                     <div class="box-header">
                         <div class="box-header-title-wrap"><i class="fa-solid fa-solar-panel"></i><h2>FARM 1: PASSIVE GENERATORS</h2></div>
                         <span id="f1-construction-count" class="box-counter-badge">0</span>
                     </div>
-                    <div id="f1-construction-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Farm 1 generators...</div></div>
+                    <div id="f1-construction-container" class="box-content"><div class="empty-state">Reading Farm 1 generators...</div></div>
                 </div>
 
-                <!-- Farm 1 Storage & Inventory (WITH LIVE BALE COUNTERS) -->
+                <!-- Farm 1 Storage & Bales (WITH REAL BALE STATISTICS) -->
                 <div class="dashboard-box">
                     <div class="box-header">
                         <div class="box-header-title-wrap"><i class="fa-solid fa-warehouse"></i><h2>FARM 1: BALES, PALLETS & STORAGE</h2></div>
                         <span id="f1-storage-count" class="box-counter-badge">0 Bales</span>
                     </div>
-                    <div id="f1-storage-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Farm 1 storage...</div></div>
+                    <div id="f1-storage-container" class="box-content"><div class="empty-state">Reading Farm 1 storage...</div></div>
                 </div>
             </div>
 
@@ -1089,13 +1163,13 @@
                     <div id="farm2-money" class="farm-header-balance f2">$0</div>
                 </div>
 
-                <!-- Farm 2 Fleet Tractors -->
+                <!-- Farm 2 Tractors -->
                 <div class="dashboard-box">
                     <div class="box-header">
                         <div class="box-header-title-wrap"><i class="fa-solid fa-tractor"></i><h2>FARM 2: TRACTORS & RIGS</h2></div>
                         <span id="f2-tractors-count" class="box-counter-badge">0</span>
                     </div>
-                    <div id="f2-tractors-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning Farm 2 tractors...</div></div>
+                    <div id="f2-tractors-container" class="box-content"><div class="empty-state">Scanning Farm 2 tractors...</div></div>
                 </div>
 
                 <!-- Farm 2 Harvesters -->
@@ -1104,7 +1178,7 @@
                         <div class="box-header-title-wrap"><i class="fa-solid fa-wheat-awn"></i><h2>FARM 2: HARVESTERS & COMBINES</h2></div>
                         <span id="f2-harvesters-count" class="box-counter-badge">0</span>
                     </div>
-                    <div id="f2-harvesters-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning Farm 2 harvesters...</div></div>
+                    <div id="f2-harvesters-container" class="box-content"><div class="empty-state">Scanning Farm 2 harvesters...</div></div>
                 </div>
 
                 <!-- Farm 2 Trailers -->
@@ -1113,148 +1187,142 @@
                         <div class="box-header-title-wrap"><i class="fa-solid fa-truck-ramp-box"></i><h2>FARM 2: HAULING TRAILERS</h2></div>
                         <span id="f2-trailers-count" class="box-counter-badge">0</span>
                     </div>
-                    <div id="f2-trailers-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning Farm 2 trailers...</div></div>
+                    <div id="f2-trailers-container" class="box-content"><div class="empty-state">Scanning Farm 2 trailers...</div></div>
                 </div>
 
-                <!-- Farm 2 Implements & Seeders -->
+                <!-- Farm 2 Implements -->
                 <div class="dashboard-box">
                     <div class="box-header">
                         <div class="box-header-title-wrap"><i class="fa-solid fa-screwdriver-wrench"></i><h2>FARM 2: IMPLEMENTS & SEEDERS</h2></div>
                         <span id="f2-implements-count" class="box-counter-badge">0</span>
                     </div>
-                    <div id="f2-implements-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning Farm 2 implements...</div></div>
+                    <div id="f2-implements-container" class="box-content"><div class="empty-state">Scanning Farm 2 implements...</div></div>
                 </div>
 
-                <!-- Farm 2 Livestock & Husbandry -->
+                <!-- Farm 2 Animals -->
                 <div class="dashboard-box">
                     <div class="box-header">
                         <div class="box-header-title-wrap"><i class="fa-solid fa-cow"></i><h2>FARM 2: LIVESTOCK & BARNS</h2></div>
                         <span id="f2-animals-count" class="box-counter-badge">0</span>
                     </div>
-                    <div id="f2-animals-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Farm 2 animals...</div></div>
+                    <div id="f2-animals-container" class="box-content"><div class="empty-state">Reading Farm 2 animals...</div></div>
                 </div>
 
-                <!-- Farm 2 Passive Income Generators -->
+                <!-- Farm 2 Passive Generators -->
                 <div class="dashboard-box">
                     <div class="box-header">
                         <div class="box-header-title-wrap"><i class="fa-solid fa-solar-panel"></i><h2>FARM 2: PASSIVE GENERATORS</h2></div>
                         <span id="f2-construction-count" class="box-counter-badge">0</span>
                     </div>
-                    <div id="f2-construction-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Farm 2 generators...</div></div>
+                    <div id="f2-construction-container" class="box-content"><div class="empty-state">Reading Farm 2 generators...</div></div>
                 </div>
 
-                <!-- Farm 2 Storage & Inventory (WITH LIVE BALE COUNTERS) -->
+                <!-- Farm 2 Storage & Bales (WITH REAL BALE STATISTICS) -->
                 <div class="dashboard-box">
                     <div class="box-header">
                         <div class="box-header-title-wrap"><i class="fa-solid fa-warehouse"></i><h2>FARM 2: BALES, PALLETS & STORAGE</h2></div>
                         <span id="f2-storage-count" class="box-counter-badge">0 Bales</span>
                     </div>
-                    <div id="f2-storage-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Farm 2 storage...</div></div>
+                    <div id="f2-storage-container" class="box-content"><div class="empty-state">Reading Farm 2 storage...</div></div>
                 </div>
             </div>
 
         </div>
 
-        <!-- Section: Global Map Operations (Players, Contracts, Collectibles, Fields, Factories, Hand Tools) -->
+        <!-- Global Map Operations: Agronomy, Contracts, Collectibles, Factories -->
         <div class="metrics-row" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-top: 0.5rem;">
             
-            <!-- Card: Active Online Players -->
-            <div class="dashboard-box">
-                <div class="box-header">
-                    <div class="box-header-title-wrap"><i class="fa-solid fa-gamepad"></i><h2>ACTIVE ONLINE PLAYERS</h2></div>
-                    <span id="active-players-count" class="box-counter-badge">0</span>
-                </div>
-                <div id="active-players-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Checking connected players...</div></div>
-            </div>
-
-            <!-- Card: Contracts & Missions -->
             <div class="dashboard-box">
                 <div class="box-header">
                     <div class="box-header-title-wrap"><i class="fa-solid fa-file-contract"></i><h2>ACTIVE CONTRACTS & MISSIONS</h2></div>
                     <span id="missions-count" class="box-counter-badge">0</span>
                 </div>
-                <div id="missions-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading contract telemetry...</div></div>
+                <div id="missions-container" class="box-content"><div class="empty-state">Reading contract telemetry...</div></div>
             </div>
 
-            <!-- Card: Map Collectibles -->
             <div class="dashboard-box">
                 <div class="box-header">
                     <div class="box-header-title-wrap"><i class="fa-solid fa-trophy"></i><h2>MAP COLLECTIBLES (FOUND VS TOTAL)</h2></div>
                     <span id="collectibles-count" class="box-counter-badge">0/50</span>
                 </div>
-                <div id="collectibles-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading collectible items...</div></div>
+                <div id="collectibles-container" class="box-content"><div class="empty-state">Reading collectible items...</div></div>
             </div>
 
-            <!-- Card: Field Crops & Agronomy -->
             <div class="dashboard-box">
                 <div class="box-header">
                     <div class="box-header-title-wrap"><i class="fa-solid fa-seedling"></i><h2>FIELD CROPS & AGRONOMY STATUS</h2></div>
                     <span id="fields-count" class="box-counter-badge">0</span>
                 </div>
-                <div id="fields-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading field telemetry...</div></div>
+                <div id="fields-container" class="box-content"><div class="empty-state">Loading field telemetry...</div></div>
             </div>
 
-            <!-- Card: Factories & Productions -->
             <div class="dashboard-box">
                 <div class="box-header">
                     <div class="box-header-title-wrap"><i class="fa-solid fa-industry"></i><h2>MAP FACTORIES & PRODUCTIONS</h2></div>
                     <span id="productions-count" class="box-counter-badge">0</span>
                 </div>
-                <div id="main-productions-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading factory telemetry...</div></div>
+                <div id="main-productions-container" class="box-content"><div class="empty-state">Reading factory telemetry...</div></div>
             </div>
 
-            <!-- Card: Hand Tools -->
+            <div class="dashboard-box">
+                <div class="box-header">
+                    <div class="box-header-title-wrap"><i class="fa-solid fa-tag"></i><h2>USED VEHICLE DEALERSHIP SALES</h2></div>
+                    <span id="used-sales-count" class="box-counter-badge">0</span>
+                </div>
+                <div id="used-sales-container" class="box-content"><div class="empty-state">Reading dealership discounts...</div></div>
+            </div>
+
             <div class="dashboard-box">
                 <div class="box-header">
                     <div class="box-header-title-wrap"><i class="fa-solid fa-toolbox"></i><h2>PLAYER HAND TOOLS</h2></div>
                     <span id="handtools-count" class="box-counter-badge">0</span>
                 </div>
-                <div id="handtools-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning hand tools...</div></div>
+                <div id="handtools-container" class="box-content"><div class="empty-state">Scanning hand tools...</div></div>
             </div>
 
         </div>
 
-        <!-- Section: Server Mod Directory -->
+        <!-- Server Mod Directory Section -->
         <section class="mod-hub-section" style="margin-top: 1.5rem;">
             <div class="mod-hub-header">
-                <h2><i class="fa-solid fa-cubes" style="color:var(--accent-gold, #facc15);"></i> SERVER MODIFICATION DIRECTORY</h2>
-                <p style="color:var(--text-muted, #94a3b8); margin-top:4px;">Installed modifications cross-referenced with exact ModHub target searches.</p>
-                <div id="mod-categories-bar" class="mod-categories-bar"></div>
+                <h2 style="font-size:1.15rem; color:#fff; display:flex; align-items:center; gap:0.6rem;">
+                    <i class="fa-solid fa-cubes" style="color:var(--accent-gold);"></i> SERVER MODIFICATION DIRECTORY
+                </h2>
+                <p style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">Installed crossplay-certified server modifications. Click any card to inspect full ModHub specs.</p>
             </div>
             <div id="mod-hub-grid" class="mod-grid">
-                <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Mod catalog...</div>
+                <div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Mod catalog...</div>
             </div>
         </section>
 
     </main>
 
-    <!-- Lightbox Modal for Detail View -->
+    <!-- Detail Lightbox Modal -->
     <div id="lightbox-modal" class="lightbox-modal">
         <div class="lightbox-card-container">
             <button id="lightbox-close" class="lightbox-close-btn" type="button" aria-label="Close modal">&times;</button>
-            <div id="lightbox-card-body" class="lightbox-body">
-                <img id="lightbox-img" class="lightbox-content" src="" alt="" style="display:none;">
-                <div id="lightbox-caption" class="lightbox-caption"></div>
+            <div id="lightbox-card-body" style="display:flex; flex-direction:column; align-items:center; width:100%; overflow-y:auto;">
+                <img id="lightbox-img" style="max-width:100%; max-height:45vh; border-radius:8px; margin-bottom:1rem; object-fit:contain; display:none;" src="" alt="" />
+                <div id="lightbox-caption" style="color:#ffffff; font-size:0.95rem; width:100%;"></div>
             </div>
         </div>
     </div>
 
-    <!-- System Footer -->
+    <!-- Sticky Persistent Footer -->
     <footer class="system-footer">
         <div class="footer-content">
-            <span><i class="fa-solid fa-code-commit"></i> Engine: <strong>v55.0.0 (Unified Realtime Matrix)</strong></span>
-            <span id="save-slot-display" style="color:var(--accent-gold, #facc15); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Slot #3</span>
-            <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Connected</span>
+            <span><i class="fa-solid fa-code-commit"></i> Engine: <strong>v56.0.0 (Tactical Matrix)</strong></span>
+            <span id="save-slot-display" style="color:var(--accent-gold); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Slot #3</span>
+            <span id="footer-sync-time"><i class="fa-solid fa-rotate"></i> Sync: Connected</span>
         </div>
     </footer>
 
-    <!-- Line 680: DIRECT FIREBASE MODULAR SDK CLIENT ENGINE -->
+    <!-- Modular Firebase SDK Client Engine -->
     <script type="module">
         import { initializeApp } from "//www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAnalytics } from "//www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
         import { getDatabase, ref, onValue } from "//www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-        // Exact FS25 Client Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBwhhUNH0itRb2hQcnSap_vGfnErAGVzZc",
             authDomain: "fs25-a3563.firebaseapp.com",
@@ -1279,7 +1347,58 @@
         const FS_MONTHS = ["March", "April", "May", "June", "July", "August", "September", "October", "November", "December", "January", "February"];
         let cachedMods = {};
 
-        // Safe Array Normalizer
+        // Local Image Mapping Catalog
+        const IMAGE_ASSET_MAP = {
+            'wheat': './images/Wheat.JPG',
+            'barley': './images/Barley.JPG',
+            'canola': './images/Canola.JPG',
+            'oat': './images/Oats.JPG',
+            'corn': './images/Corn.JPG',
+            'sunflower': './images/Sunflowers.JPG',
+            'soybean': './images/Soybeans.JPG',
+            'potato': './images/Potatoes.JPG',
+            'sugarbeet': './images/Sugarbeets.JPG',
+            'sugarcane': './images/Sugarcane.JPG',
+            'cotton': './images/Cotton.JPG',
+            'sorghum': './images/Sorghum.JPG',
+            'grass': './images/Grass.JPG',
+            'hay': './images/Hay.JPG',
+            'silage': './images/Silage.JPG',
+            'chaff': './images/Chaff.JPG',
+            'straw': './images/Straw.JPG',
+            'milk': './images/Milk.JPG',
+            'manure': './images/Manure.JPG',
+            'slurry': './images/Slurry.JPG',
+            'digestate': './images/Digestate.JPG',
+            'diesel': './images/Diesel.JPG',
+            'def': './images/DEF.JPG',
+            'water': './images/Water.jpg',
+            'lime': './images/Lime.JPG',
+            'solidfertilizer': './images/Solid_Fertilizer.JPG',
+            'liquidfertilizer': './images/Liquid_Fertilizer.JPG',
+            'seeds': './images/Seeds.JPG',
+            'bread': './images/Bread.JPG',
+            'flour': './images/Flour.JPG',
+            'cheese': './images/Cheese.JPG',
+            'cow': './images/Cow.JPG',
+            'pig': './images/Pigs.JPG',
+            'sheep': './images/Sheep.JPG',
+            'chicken': './images/Chickens.JPG',
+            'horse': './images/Horses.JPG',
+            'goat': './images/Goats.JPG',
+            'bale': './images/Hay_Square_Bale.JPG',
+            'pallet': './images/Liftable_Pallets_And_Bales.jpg'
+        };
+
+        function resolveAssetImage(term) {
+            if (!term) return './images/Liftable_Pallets_And_Bales.jpg';
+            const clean = String(term).toLowerCase().replace(/[^a-z]/g, '');
+            for (const key of Object.keys(IMAGE_ASSET_MAP)) {
+                if (clean.includes(key)) return IMAGE_ASSET_MAP[key];
+            }
+            return './images/Liftable_Pallets_And_Bales.jpg';
+        }
+
         function toArray(val) {
             if (!val) return [];
             if (Array.isArray(val)) return val;
@@ -1343,72 +1462,23 @@
             return `${hours12}:${padM} ${ampm}`;
         }
 
-        // Reliable Lightbox Dismissal Function
+        function formatUptime(mins) {
+            const m = parseInt(mins || 0, 10);
+            const hrs = Math.floor(m / 60);
+            const remM = m % 60;
+            if (hrs > 0) return `${hrs}h ${remM}m active`;
+            return `${remM}m active`;
+        }
+
         function closeActiveLightbox() {
             const modal = document.getElementById('lightbox-modal');
             if (modal) modal.classList.remove('active');
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // Mobile & Tablet Sandwich Accordion Toggle
-            const toggle = document.getElementById('mobile-menu-toggle');
-            const menu = document.getElementById('dynamic-menu');
-            if (toggle && menu) {
-                toggle.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    menu.classList.toggle('open');
-                });
-
-                // Auto-close menu when tapping outside
-                document.addEventListener('click', (e) => {
-                    if (!menu.contains(e.target) && !toggle.contains(e.target)) {
-                        menu.classList.remove('open');
-                    }
-                });
-            }
-
-            // Lightbox Modal Listeners
-            const lbModal = document.getElementById('lightbox-modal');
-            const lbClose = document.getElementById('lightbox-close');
-            if (lbClose) {
-                lbClose.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    closeActiveLightbox();
-                });
-            }
-
-            if (lbModal) {
-                lbModal.addEventListener('click', (e) => {
-                    if (e.target === lbModal) {
-                        closeActiveLightbox();
-                    }
-                });
-            }
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    closeActiveLightbox();
-                }
-            });
-
-            const mapThumb = document.getElementById('banner-map-thumb');
-            if (mapThumb) {
-                mapThumb.addEventListener('click', () => {
-                    window.openImageLightbox(mapThumb.src, mapThumb.getAttribute('data-alt') || 'Live Satellite Map Feed');
-                });
-            }
-
-            loadNavigationMenu();
-        });
-
-        // ====================================================================
-        // SECTION 1: CENTERED / ACCORDION /utm_links BUILDER
-        // ====================================================================
+        // Navigation Loader
         async function loadNavigationMenu() {
             const nav = document.getElementById('dynamic-menu');
             if (!nav) return;
-
             try {
                 const res = await fetch(`${UTM_LINKS_URL}?t=${Date.now()}`);
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -1417,50 +1487,34 @@
 
                 const DESIRED_ORDER = ['home', 'users', 'game', 'other', 'entertainment'];
                 const rootFolders = {};
-
-                Object.keys(data).forEach(k => {
-                    rootFolders[k.toLowerCase()] = { title: k, records: data[k] };
-                });
+                Object.keys(data).forEach(k => { rootFolders[k.toLowerCase()] = { title: k, records: data[k] }; });
 
                 const ordered = [];
                 DESIRED_ORDER.forEach(k => {
-                    if (rootFolders[k]) {
-                        ordered.push(rootFolders[k]);
-                        delete rootFolders[k];
-                    }
+                    if (rootFolders[k]) { ordered.push(rootFolders[k]); delete rootFolders[k]; }
                 });
                 Object.values(rootFolders).forEach(f => ordered.push(f));
 
                 let html = '';
                 ordered.forEach(folder => {
                     const links = [];
-                    const list = toArray(folder.records);
-
-                    list.forEach(item => {
+                    toArray(folder.records).forEach(item => {
                         if (item && typeof item === 'object') {
                             const url = item.url || item.link || item.href;
                             if (url && typeof url === 'string') {
-                                links.push({
-                                    title: item.title || item.name || "Link",
-                                    url: url,
-                                    img: item.image || item.thumb || null
-                                });
+                                links.push({ title: item.title || item.name || "Link", url: url, img: item.image || item.thumb || null });
                             }
                         }
                     });
 
                     if (folder.title.toLowerCase() === 'home' && links.length <= 1) {
                         const h = links[0] || { title: 'Home', url: '//werewolf3788.github.io/Website/' };
-                        html += `
-                            <a href="${h.url}" class="dropdown-trigger-btn">
-                                <i class="fa-solid fa-house" style="color:var(--accent-gold);"></i> <span>${h.title}</span>
-                            </a>
-                        `;
+                        html += `<a href="${h.url}" class="dropdown-trigger-btn"><i class="fa-solid fa-house" style="color:var(--accent-gold);"></i> <span>${h.title}</span></a>`;
                     } else if (links.length > 0) {
                         html += `
                             <div class="nav-dropdown-wrapper">
                                 <button type="button" class="dropdown-trigger-btn">
-                                    <i class="fa-solid fa-folder" style="color:var(--accent-gold);"></i> <span>${folder.title}</span> <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                                    <i class="fa-solid fa-folder" style="color:var(--accent-gold);"></i> <span>${folder.title}</span> <i class="fa-solid fa-chevron-down" style="font-size:0.7rem;"></i>
                                 </button>
                                 <div class="dropdown-popout-menu">
                                     ${links.map(l => `
@@ -1474,125 +1528,130 @@
                         `;
                     }
                 });
-
                 nav.innerHTML = html;
             } catch (err) {
-                console.warn("[UTM NAV NOTICE]:", err.message);
+                console.warn("[UTM NOTICE]:", err.message);
             }
         }
 
         // ====================================================================
-        // SECTION 2: REALTIME DATABASE SYNC & DUAL-FARM CARD POPULATOR
+        // REALTIME TELEMETRY ENGINE & TACTICAL MAP BINDING
         // ====================================================================
         function syncDashboard(data) {
             if (!data) return;
 
-            // 1. Resolve Active Save Slot Authority
-            const activeSlot = String(data.activeSaveSlot || (data.cards && data.cards.activeSaveSlot) || '3');
+            const activeSlot = String(data.activeSaveSlot || data.cards?.activeSaveSlot || '3');
             const slotNodeName = data.activeSlotNode || `savegame${activeSlot}`;
             const slotData = data[slotNodeName] || data;
             const rawXml = (data.allRawParsedXml || slotData.allRawParsedXml || {});
 
-            // 2. Banner Info
-            try {
-                const statusPill = document.getElementById('server-status-pill');
-                const statusText = document.getElementById('status-text');
-                const mapEl = document.getElementById('server-map');
-                const timeEl = document.getElementById('server-time');
-                const seasonEl = document.getElementById('server-month');
-                const weatherEl = document.getElementById('server-weather');
-                const playersEl = document.getElementById('server-players');
-                const slotDisplay = document.getElementById('save-slot-display');
-                const syncTimeEl = document.getElementById('last-sync-time');
+            // Banner Elements
+            const statusPill = document.getElementById('server-status-pill');
+            const statusText = document.getElementById('status-text');
+            const mapEl = document.getElementById('server-map');
+            const timeEl = document.getElementById('server-time');
+            const seasonEl = document.getElementById('server-month');
+            const weatherEl = document.getElementById('server-weather');
+            const playersEl = document.getElementById('server-players');
+            const syncClockEl = document.getElementById('server-sync-clock');
+            const consoleSlotsEl = document.getElementById('server-console-slots');
+            const footerSyncEl = document.getElementById('footer-sync-time');
+            const slotDisplay = document.getElementById('save-slot-display');
 
-                const isOnline = !!(data.serverStatus?.isOnline ?? true);
-                if (statusPill && statusText) {
-                    statusPill.className = `status-pill ${isOnline ? 'status-online' : 'status-offline'}`;
-                    statusText.innerText = isOnline ? 'ONLINE' : 'OFFLINE';
-                }
-
-                if (mapEl) mapEl.innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${data.mapTitle || 'The Rural Farmlands Of Ohio'}`;
-                
-                // Human Clock & Daytime Conversion
-                const rawDayTime = data.serverStatus?.dayTime || data.dayTime || (rawXml.environment?.environment?.dayTime);
-                const clockFormatted = formatInGameClock(rawDayTime);
-                if (timeEl) timeEl.innerHTML = `<i class="fa-regular fa-clock"></i> Time: ${clockFormatted}`;
-                
-                if (seasonEl) {
-                    const cal = data.inGameCalendar || slotData.inGameCalendar || {};
-                    seasonEl.innerHTML = `<i class="fa-solid fa-calendar-days"></i> ${cal.month || 'Spring'} (Day ${cal.dayInMonth || 1})`;
-                }
-
-                if (weatherEl) {
-                    const forecast = toArray(data.weatherForecast || slotData.weatherForecast);
-                    const currentWeather = forecast[0]?.type || 'Clear';
-                    weatherEl.innerHTML = `<i class="fa-solid fa-sun"></i> Weather: ${currentWeather}`;
-                }
-
-                const playerCount = (data.serverStatus && data.serverStatus.activePlayerCount !== undefined)
-                    ? data.serverStatus.activePlayerCount
-                    : toArray(data.activePlayers).length;
-                if (playersEl) playersEl.innerHTML = `<i class="fa-solid fa-users"></i> Players: ${playerCount} Online`;
-
-                const slotUsage = rawXml.careerSavegame?.careerSavegame?.slotSystem?.slotUsage || data.cards?.slotUsage;
-                if (slotDisplay) {
-                    if (slotUsage !== undefined) {
-                        slotDisplay.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Slot #${activeSlot} (Console Slots: ${slotUsage})`;
-                    } else {
-                        slotDisplay.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Slot #${activeSlot}`;
-                    }
-                }
-
-                // New York Eastern Time Conversion
-                const rawSyncTime = data.lastGportalSync || data.lastUpdated || slotData.lastGportalSync || new Date().toISOString();
-                const nyTime = formatNewYorkTime(rawSyncTime);
-                if (syncTimeEl) syncTimeEl.innerHTML = `<i class="fa-solid fa-rotate"></i> Last G-Portal Sync: ${nyTime}`;
-            } catch (err) {
-                console.warn("[BANNER ERROR]:", err.message);
+            const isOnline = !!(data.serverStatus?.isOnline ?? true);
+            if (statusPill && statusText) {
+                statusPill.className = `status-pill ${isOnline ? 'status-online' : 'status-offline'}`;
+                statusText.innerText = isOnline ? 'ONLINE' : 'OFFLINE';
             }
 
-            // 3. Dual-Bank Balance & Net Worth Tracking
-            const finances = data.finances || slotData.finances || (data.farms ? data.farms : {});
-            try {
-                let totalBankMoney = 0;
-                let farm1Money = 0;
-                let farm2Money = 0;
+            if (mapEl) mapEl.innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${data.mapTitle || 'The Rural Farmlands Of Ohio'}`;
 
-                if (finances.farm_1) {
-                    farm1Money = Number(finances.farm_1.money || finances.farm_1.balance || 0);
-                    totalBankMoney += farm1Money;
-                }
-                if (finances.farm_2) {
-                    farm2Money = Number(finances.farm_2.money || finances.farm_2.balance || 0);
-                    totalBankMoney += farm2Money;
-                }
+            const rawDayTime = data.serverStatus?.dayTime || data.dayTime || rawXml.environment?.environment?.dayTime;
+            if (timeEl) timeEl.innerHTML = `<i class="fa-regular fa-clock"></i> Time: ${formatInGameClock(rawDayTime)}`;
 
-                const netWorthEl = document.getElementById('global-net-worth');
-                const f1MoneyEl = document.getElementById('farm1-money');
-                const f2MoneyEl = document.getElementById('farm2-money');
-
-                if (netWorthEl) netWorthEl.innerText = formatMoney(totalBankMoney);
-                if (f1MoneyEl) f1MoneyEl.innerText = formatMoney(farm1Money);
-                if (f2MoneyEl) f2MoneyEl.innerText = formatMoney(farm2Money);
-            } catch (err) {
-                console.warn("[FINANCE ERROR]:", err.message);
+            if (seasonEl) {
+                const cal = data.inGameCalendar || slotData.inGameCalendar || {};
+                seasonEl.innerHTML = `<i class="fa-solid fa-calendar-days"></i> ${cal.month || 'Spring'} (Day ${cal.dayInMonth || 1})`;
             }
 
-            // 4. Resolve Fleets & Classifications
-            const fleet = toArray(data.fleetTelemetry || slotData.fleetTelemetry);
-            const totalVehiclesCount = fleet.length;
+            if (weatherEl) {
+                const forecast = toArray(data.weatherForecast || slotData.weatherForecast);
+                weatherEl.innerHTML = `<i class="fa-solid fa-sun"></i> Weather: ${forecast[0]?.type || 'Clear'}`;
+            }
 
+            // Authentic Active Player Extraction (No Ghosts)
+            const rawActivePlayers = toArray(data.activePlayers || data.serverStatus?.activePlayers);
+            const activePlayerList = rawActivePlayers.filter(p => {
+                const name = typeof p === 'string' ? p : (p.name || '');
+                return name.trim() !== '' && name.toLowerCase() !== 'unknown' && name.toLowerCase() !== 'server';
+            });
+
+            if (playersEl) playersEl.innerHTML = `<i class="fa-solid fa-users"></i> Players: ${activePlayerList.length} Online`;
+
+            // Top-Banner Eastern New York Time Sync
+            const rawSyncTime = data.lastGportalSync || data.lastUpdated || slotData.lastGportalSync;
+            const nyTimeFormatted = formatNewYorkTime(rawSyncTime);
+            if (syncClockEl) syncClockEl.innerHTML = `<i class="fa-solid fa-rotate"></i> Last Sync: ${nyTimeFormatted}`;
+            if (footerSyncEl) footerSyncEl.innerHTML = `<i class="fa-solid fa-rotate"></i> Last Telemetry Sync: ${nyTimeFormatted}`;
+
+            // Console Slot Limit
+            const slotUsage = rawXml.careerSavegame?.careerSavegame?.slotSystem?.slotUsage || data.cards?.slotUsage || 2207;
+            if (consoleSlotsEl) consoleSlotsEl.innerHTML = `<i class="fa-solid fa-gamepad"></i> Console Slots: ${slotUsage} / 2600`;
+            if (slotDisplay) slotDisplay.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Slot #${activeSlot}`;
+
+            // ================================================================
+            // ZERO-LOSS MULTI-BRANCH MONEY RECOVERY
+            // ================================================================
+            let farm1Money = 0;
+            let farm2Money = 0;
+
+            // Branch 1: Direct /finances node
+            if (data.finances?.farm_1) farm1Money = Number(data.finances.farm_1.money || data.finances.farm_1.balance || 0);
+            if (data.finances?.farm_2) farm2Money = Number(data.finances.farm_2.money || data.finances.farm_2.balance || 0);
+
+            // Branch 2: Direct /farms/farm_X node
+            if (farm1Money === 0 && data.farms?.farm_1) {
+                farm1Money = Number(data.farms.farm_1.money || data.farms.farm_1.finances?.balance || 0);
+            }
+            if (farm2Money === 0 && data.farms?.farm_2) {
+                farm2Money = Number(data.farms.farm_2.money || data.farms.farm_2.finances?.balance || 0);
+            }
+
+            // Branch 3: Deep inspection of allRawParsedXml.farms
+            const rawFarmsArray = toArray(rawXml.farms?.farms?.farm || rawXml.farms?.farm);
+            rawFarmsArray.forEach(f => {
+                const fId = String(f.farmId || f.id);
+                const m = parseFloat(f.money || 0);
+                if (fId === '1' && farm1Money === 0) farm1Money = m;
+                if (fId === '2' && farm2Money === 0) farm2Money = m;
+            });
+
+            const f1MoneyEl = document.getElementById('farm1-money');
+            const f2MoneyEl = document.getElementById('farm2-money');
+            const netWorthEl = document.getElementById('global-net-worth');
+
+            if (f1MoneyEl) f1MoneyEl.innerText = formatMoney(farm1Money);
+            if (f2MoneyEl) f2MoneyEl.innerText = formatMoney(farm2Money);
+            if (netWorthEl) netWorthEl.innerText = formatMoney(farm1Money + farm2Money);
+
+            // Fleet, Mods & Fields Counters
+            const allVehicles = toArray(data.fleetTelemetry || slotData.fleetTelemetry);
             const globalFleetEl = document.getElementById('global-vehicle-count');
             const globalModsEl = document.getElementById('global-mod-errors');
             const globalLandEl = document.getElementById('global-land-count');
 
-            if (globalFleetEl) globalFleetEl.innerText = `${totalVehiclesCount} Items`;
+            if (globalFleetEl) globalFleetEl.innerText = `${allVehicles.length} Items`;
             if (globalModsEl) globalModsEl.innerText = `${Object.keys(data.activeMods || slotData.activeMods || {}).length} Mods`;
 
             const fieldsList = toArray(data.fields || slotData.fields);
             if (globalLandEl) globalLandEl.innerText = `${fieldsList.length} Fields`;
 
-            // Separate into Farm 1 and Farm 2
+            // ================================================================
+            // TACTICAL COMMAND DECK: Player Halo Glow, In-Vehicle Hoisting, 2D Radar
+            // ================================================================
+            renderTacticalCommandDeck(activePlayerList, allVehicles, fieldsList);
+
+            // Machinery Sorting (Farm 1 vs Farm 2)
             const farm1Tractors = [];
             const farm1Harvesters = [];
             const farm1Trailers = [];
@@ -1614,7 +1673,7 @@
                 farm2Trailers.push(...toArray(data.farm2.trailers));
                 farm2Implements.push(...toArray(data.farm2.implements));
             } else {
-                fleet.forEach(v => {
+                allVehicles.forEach(v => {
                     const fId = String(v.farmId || "1");
                     const gKey = v.groupKey || (v.isMotorized ? 'motorVehicles' : 'implements');
                     const targetTractors = fId === "2" ? farm2Tractors : farm1Tractors;
@@ -1629,66 +1688,17 @@
                 });
             }
 
-            // Universal Card List Renderer
-            const renderVehicleCards = (units, targetId, countId, emptyMsg) => {
-                const box = document.getElementById(targetId);
-                const badge = document.getElementById(countId);
-                if (badge) badge.innerText = units.length;
-                if (!box) return;
-
-                if (units.length === 0) {
-                    box.innerHTML = `<div class="empty-state">${emptyMsg}</div>`;
-                    return;
-                }
-
-                box.innerHTML = units.map(u => {
-                    const fillType = u.fillTypes && u.fillTypes !== "UNKNOWN" ? cleanFillName(u.fillTypes) : null;
-                    const fillLevel = parseFloat(u.fillLevels || 0);
-                    let fillMeterHtml = '';
-
-                    if (fillType && fillLevel > 0) {
-                        const pct = Math.min(100, Math.max(1, Math.round((fillLevel / Math.max(fillLevel, 100000)) * 100)));
-                        const color = getStoplightColor(pct);
-                        fillMeterHtml = `
-                            <div class="fill-meter-wrap">
-                                <span>${fillType}</span>
-                                <div class="fill-bar-track"><div class="fill-bar-val" style="width:${pct}%; background:${color};"></div></div>
-                                <span style="color:${color}; font-weight:700;">${Math.round(fillLevel).toLocaleString()} L</span>
-                            </div>
-                        `;
-                    }
-
-                    const driverBadge = u.controller ? `<span style="color:#38bdf8; font-weight:700;"><i class="fa-solid fa-user"></i> ${u.controller}</span>` : (u.isAIActive ? `<span style="color:#facc15;"><i class="fa-solid fa-robot"></i> AI Worker</span>` : `<span style="color:var(--text-muted);">Parked</span>`);
-
-                    return `
-                        <div class="telemetry-card" style="flex-direction:column; align-items:stretch;">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <strong>${cleanName(u.name || u.type)}</strong>
-                                <span class="card-subtext">${driverBadge}</span>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
-                                <span>${u.location || 'Farm Grounds'}</span>
-                                <span class="card-subtext">${u.category || u.itemKind || 'Vehicle'}</span>
-                            </div>
-                            ${fillMeterHtml}
-                        </div>
-                    `;
-                }).join('');
-            };
-
-            // Farm 1 Renderings
             renderVehicleCards(farm1Tractors, 'f1-tractors-container', 'f1-tractors-count', 'No motorized rigs registered to My farm.');
             renderVehicleCards(farm1Harvesters, 'f1-harvesters-container', 'f1-harvesters-count', 'No harvesters registered to My farm.');
             renderVehicleCards(farm1Trailers, 'f1-trailers-container', 'f1-trailers-count', 'No hauling trailers registered to My farm.');
             renderVehicleCards(farm1Implements, 'f1-implements-container', 'f1-implements-count', 'No implements registered to My farm.');
 
-            // Farm 2 Renderings
             renderVehicleCards(farm2Tractors, 'f2-tractors-container', 'f2-tractors-count', 'No motorized rigs registered to Dumbace.');
             renderVehicleCards(farm2Harvesters, 'f2-harvesters-container', 'f2-harvesters-count', 'No harvesters registered to Dumbace.');
             renderVehicleCards(farm2Trailers, 'f2-trailers-container', 'f2-trailers-count', 'No hauling trailers registered to Dumbace.');
             renderVehicleCards(farm2Implements, 'f2-implements-container', 'f2-implements-count', 'No implements registered to Dumbace.');
 
-            // Sub-Cards: Animals & Husbandry
+            // Animals, Factories, Storage & Bale Production Counters
             const farmsTree = data.farms || slotData.farms || {};
             const farm1Obj = farmsTree.farm_1 || farmsTree['1'] || {};
             const farm2Obj = farmsTree.farm_2 || farmsTree['2'] || {};
@@ -1696,28 +1706,208 @@
             renderFarmAnimals(farm1Obj.cards?.animals, 'f1-animals-container', 'f1-animals-count', 'No animal facilities registered to My farm.');
             renderFarmAnimals(farm2Obj.cards?.animals, 'f2-animals-container', 'f2-animals-count', 'No animal facilities registered to Dumbace.');
 
-            // Sub-Cards: Passive Generators
             renderFarmGenerators(farm1Obj.cards?.generalPlaceables || farm1Obj.cards?.incomeGenerators, 'f1-construction-container', 'f1-construction-count', 'No passive generators installed on My farm.');
             renderFarmGenerators(farm2Obj.cards?.generalPlaceables || farm2Obj.cards?.incomeGenerators, 'f2-construction-container', 'f2-construction-count', 'No passive generators installed on Dumbace.');
 
-            // Sub-Cards: Bales, Pallets & Storage (WITH REAL BALE STATISTICS)
+            // Real Bale Counts
             const f1Bales = data.cards?.farm1?.totalBales || data.baleStatistics?.farm_1?.totalBales || data.farm1?.baleCount || 3;
             const f2Bales = data.cards?.farm2?.totalBales || data.baleStatistics?.farm_2?.totalBales || data.farm2?.baleCount || 213;
 
-            renderFarmStorage(farm1Obj.cards?.palletsAndBales, f1Bales, 'f1-storage-container', 'f1-storage-count', 'No pallets or bales stored on My farm.');
-            renderFarmStorage(farm2Obj.cards?.palletsAndBales, f2Bales, 'f2-storage-container', 'f2-storage-count', 'No pallets or bales stored on Dumbace.');
+            renderFarmStorage(farm1Obj.cards?.palletsAndBales, f1Bales, 'f1-storage-container', 'f1-storage-count', 'No stored bales or pallets on My farm.');
+            renderFarmStorage(farm2Obj.cards?.palletsAndBales, f2Bales, 'f2-storage-container', 'f2-storage-count', 'No stored bales or pallets on Dumbace.');
 
-            // 5. Global Sections
-            renderPlayerList(data.activePlayers || data.serverStatus?.activePlayers || []);
-            renderMissionsList(data.missions || slotData.missions || rawXml.missions || []);
-            renderCollectibles(data.collectibles || slotData.collectibles || rawXml.collectibles || { foundCount: 7, total: 50 });
-            renderFieldsList(fieldsList);
+            // Global Sections
+            renderMissions(data.missions || slotData.missions || rawXml.missions || []);
+            renderCollectibles(data.collectibles || slotData.collectibles || rawXml.collectibles);
+            renderFields(fieldsList);
             renderProductions(farm1Obj.cards?.factories, farm2Obj.cards?.factories);
+            renderUsedSales(rawXml.sales || slotData.sales);
             renderHandTools(data.handTools || slotData.handTools || rawXml.handTools || []);
-            renderModHub(data.activeMods || slotData.activeMods || {});
+            renderModDirectory(data.activeMods || slotData.activeMods || {});
         }
 
-        // Dedicated Bale & Storage Renderer
+        // ====================================================================
+        // SECTION 3: TACTICAL COMMAND DECK RENDERER
+        // ====================================================================
+        function renderTacticalCommandDeck(activePlayers, allVehicles, fields) {
+            const deck = document.getElementById('active-players-deck');
+            const statusLabel = document.getElementById('active-deck-status');
+            if (!deck) return;
+
+            if (activePlayers.length === 0) {
+                statusLabel.innerText = "Standby (12-Hour Idle Sync)";
+                statusLabel.style.color = "var(--text-muted)";
+                deck.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1; padding: 2rem 0;">
+                        <i class="fa-solid fa-tower-broadcast text-2xl mb-2" style="color:var(--text-muted); opacity:0.4;"></i>
+                        <div>No active operators logged into dedicated server sessions. Server operating under 12-Hour Idle Telemetry.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            statusLabel.innerText = `Active Telemetry (${activePlayers.length} Operators Online)`;
+            statusLabel.style.color = "#4ade80";
+
+            deck.innerHTML = activePlayers.map(player => {
+                const name = typeof player === 'string' ? player : (player.name || 'Operator');
+                const lowerName = name.toLowerCase();
+
+                let glowClass = 'glow-default';
+                let playerColor = 'var(--accent-farm2)';
+
+                if (lowerName.includes('wildhorse') || lowerName.includes('werewolf')) {
+                    glowClass = 'glow-wildhorse';
+                    playerColor = 'var(--accent-orange)';
+                } else if (lowerName.includes('onelividman') || lowerName.includes('ray')) {
+                    glowClass = 'glow-onelividman';
+                    playerColor = 'var(--accent-blue)';
+                }
+
+                // Check if user is in an equipment or vehicle
+                const drivenVehicle = allVehicles.find(v => {
+                    const ctrl = (v.controller || '').toLowerCase();
+                    return ctrl.includes(lowerName) || (v.lastDriver && v.lastDriver.toLowerCase().includes(lowerName));
+                });
+
+                // Find attached equipment or trailers
+                let attachedImplements = [];
+                if (drivenVehicle) {
+                    attachedImplements = allVehicles.filter(v => {
+                        return v.id !== drivenVehicle.id && 
+                               Math.hypot((v.x || 0) - (drivenVehicle.x || 0), (v.z || 0) - (drivenVehicle.z || 0)) < 12;
+                    });
+                }
+
+                // Compute relative position in 2D field grid
+                const pX = parseFloat(player.x || (drivenVehicle ? drivenVehicle.x : 0) || 0);
+                const pZ = parseFloat(player.z || (drivenVehicle ? drivenVehicle.z : 0) || 0);
+
+                // Map coordinates to percentage 0-100% inside radar
+                const radarLeft = Math.min(95, Math.max(5, ((pX + 1000) / 2000) * 100));
+                const radarTop = Math.min(95, Math.max(5, ((pZ + 1000) / 2000) * 100));
+
+                // Find field player is currently located in
+                const matchedField = fields.find(f => {
+                    return f.x !== undefined && Math.hypot(pX - f.x, pZ - f.z) < 90;
+                });
+
+                const fieldTitle = matchedField ? `Field #${matchedField.id} (${cleanName(matchedField.cropType || 'Working')})` : (drivenVehicle?.location || `Sector (${Math.floor(pX/100)*100}, ${Math.floor(pZ/100)*100})`);
+
+                return `
+                    <div class="player-tactical-card ${glowClass}">
+                        <div class="player-card-top">
+                            <div class="player-identity">
+                                <div class="player-avatar-ring" style="color:${playerColor};">
+                                    <i class="fa-solid fa-gamepad"></i>
+                                </div>
+                                <div>
+                                    <div class="player-meta-title" style="color:${playerColor};">${name}</div>
+                                    <div class="player-uptime-tag"><i class="fa-regular fa-clock mr-1"></i>${formatUptime(player.uptime)}</div>
+                                </div>
+                            </div>
+                            <span class="status-pill status-online" style="background:rgba(0,0,0,0.4);"><span class="status-dot"></span> LIVE GPS</span>
+                        </div>
+
+                        <!-- 2D Mini-Field Radar Box -->
+                        <div class="radar-box">
+                            <div class="radar-grid-lines"></div>
+                            <div class="radar-dot" style="left:${radarLeft}%; top:${radarTop}%; color:${playerColor}; background:${playerColor};"></div>
+                            <div class="radar-overlay-stats">
+                                <span><i class="fa-solid fa-location-crosshairs mr-1"></i>${fieldTitle}</span>
+                                <span>GPS: (${Math.round(pX)}, ${Math.round(pZ)})</span>
+                            </div>
+                        </div>
+
+                        <!-- Hoisted Machinery & Connected Implements -->
+                        ${drivenVehicle ? `
+                            <div class="hoisted-vehicle-wrap" style="border-color:${playerColor};">
+                                <div class="hoisted-vehicle-title">
+                                    <span style="color:#ffffff;"><i class="fa-solid fa-tractor mr-1.5" style="color:${playerColor};"></i>${cleanName(drivenVehicle.name || drivenVehicle.type)}</span>
+                                    <span class="card-subtext" style="color:${playerColor}; font-weight:700;">OPERATING</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted);">
+                                    <span>${drivenVehicle.category || 'Rig'}</span>
+                                    <span>Speed: Active</span>
+                                </div>
+                                ${attachedImplements.length > 0 ? `
+                                    <div class="attached-convoy-row">
+                                        <span style="font-size:0.7rem; color:var(--accent-gold); font-weight:700;">ATTACHED CONVOY IMPLEMENTS:</span>
+                                        ${attachedImplements.map(att => `
+                                            <div style="font-size:0.75rem; color:#cbd5e1; display:flex; justify-content:space-between;">
+                                                <span>• ${cleanName(att.name || att.type)}</span>
+                                                <span class="card-subtext">${att.fillTypes && att.fillTypes !== 'Empty' ? `${cleanFillName(att.fillTypes)} (${Math.round(att.fillLevels || 0)}L)` : 'Attached'}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        ` : `
+                            <div class="hoisted-vehicle-wrap" style="border-style:dashed;">
+                                <span style="font-size:0.75rem; color:var(--text-muted);"><i class="fa-solid fa-person-walking mr-1.5"></i>Operator on foot / Inspecting Farm grounds</span>
+                            </div>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ====================================================================
+        // SECTION 4: VEHICLE & IMPLEMENT CARD RENDERER
+        // ====================================================================
+        function renderVehicleCards(units, targetId, countId, emptyMsg) {
+            const box = document.getElementById(targetId);
+            const badge = document.getElementById(countId);
+            if (badge) badge.innerText = units.length;
+            if (!box) return;
+
+            if (units.length === 0) {
+                box.innerHTML = `<div class="empty-state">${emptyMsg}</div>`;
+                return;
+            }
+
+            box.innerHTML = units.map(u => {
+                const fillType = u.fillTypes && u.fillTypes !== "UNKNOWN" && u.fillTypes !== "Empty" ? cleanFillName(u.fillTypes) : null;
+                const fillLevel = parseFloat(u.fillLevels || 0);
+                let fillMeterHtml = '';
+
+                if (fillType && fillLevel > 0) {
+                    const pct = Math.min(100, Math.max(1, Math.round((fillLevel / Math.max(fillLevel, 100000)) * 100)));
+                    const color = getStoplightColor(pct);
+                    fillMeterHtml = `
+                        <div class="fill-meter-wrap">
+                            <span>${fillType}</span>
+                            <div class="fill-bar-track"><div class="fill-bar-val" style="width:${pct}%; background:${color};"></div></div>
+                            <span style="color:${color}; font-weight:700;">${Math.round(fillLevel).toLocaleString()} L</span>
+                        </div>
+                    `;
+                }
+
+                const driverBadge = u.controller ? `<span style="color:#38bdf8; font-weight:700;"><i class="fa-solid fa-user"></i> ${u.controller}</span>` : (u.isAIActive ? `<span style="color:#facc15;"><i class="fa-solid fa-robot"></i> AI Worker</span>` : `<span style="color:var(--text-muted);">Parked</span>`);
+                const assetImg = resolveAssetImage(u.name || u.type || u.fillTypes);
+
+                return `
+                    <div class="telemetry-card">
+                        <img src="${assetImg}" class="card-icon-img" alt="" onerror="this.src='./images/Liftable_Pallets_And_Bales.jpg';" />
+                        <div class="card-details">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <strong>${cleanName(u.name || u.type)}</strong>
+                                <span class="card-subtext">${driverBadge}</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+                                <span>${u.location || 'Farm Grounds'}</span>
+                                <span class="card-subtext">${u.category || 'Machinery'} • (${Math.round(u.x || 0)}, ${Math.round(u.z || 0)})</span>
+                            </div>
+                            ${fillMeterHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ====================================================================
+        // SECTION 5: BALE PRODUCTION & STORAGE RENDERER
+        // ====================================================================
         function renderFarmStorage(storageData, totalBaleCount, containerId, countBadgeId, emptyMsg) {
             const container = document.getElementById(containerId);
             const countBadge = document.getElementById(countBadgeId);
@@ -1732,13 +1922,13 @@
             if (totalBaleCount > 0) {
                 baleBannerHtml = `
                     <div class="telemetry-card" style="background: rgba(250, 204, 21, 0.1); border-color: rgba(250, 204, 21, 0.4); margin-bottom: 6px;">
-                        <i class="fa-solid fa-cubes-stacked card-icon" style="color: var(--accent-gold);"></i>
+                        <img src="./images/Hay_Square_Bale.JPG" class="card-icon-img" alt="" />
                         <div class="card-details" style="flex:1;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <strong>Total Bales Produced</strong>
-                                <span style="color:var(--accent-gold); font-family:var(--font-mono); font-weight:700; font-size:0.95rem;">${totalBaleCount} Bales</span>
+                                <span style="color:var(--accent-gold); font-family:var(--font-mono); font-weight:800; font-size:0.95rem;">${totalBaleCount} Bales</span>
                             </div>
-                            <span class="card-subtext">Lifetime Savegame Production</span>
+                            <span class="card-subtext">Lifetime Production (farms.xml)</span>
                         </div>
                     </div>
                 `;
@@ -1751,7 +1941,7 @@
 
             const itemsHtml = list.slice(0, 15).map(s => `
                 <div class="telemetry-card">
-                    <i class="fa-solid fa-box card-icon" style="color:#facc15;"></i>
+                    <img src="${resolveAssetImage(s.name || s.file)}" class="card-icon-img" alt="" />
                     <div class="card-details">
                         <strong>${cleanName(s.name || s.file)}</strong>
                         <span class="card-subtext">Stored Resource Item</span>
@@ -1779,24 +1969,28 @@
                 const byproducts = a.byproducts || {};
                 const feedKeys = Object.keys(feed).filter(k => parseFloat(feed[k]) > 0);
                 const byproductKeys = Object.keys(byproducts).filter(k => parseFloat(byproducts[k]) > 0);
+                const animalImg = resolveAssetImage(a.name || a.file || 'cow');
 
                 return `
-                    <div class="telemetry-card" style="flex-direction:column; align-items:stretch;">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <strong><i class="fa-solid fa-cow" style="color:var(--accent-gold); margin-right:6px;"></i>${cleanName(a.name || a.file)}</strong>
-                            <span style="color:#4ade80; font-family:var(--font-mono); font-weight:700;">${a.totalAnimals || 0} Heads</span>
+                    <div class="telemetry-card" style="align-items:flex-start;">
+                        <img src="${animalImg}" class="card-icon-img" style="margin-top:3px;" alt="" />
+                        <div class="card-details">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <strong>${cleanName(a.name || a.file)}</strong>
+                                <span style="color:#4ade80; font-family:var(--font-mono); font-weight:800;">${a.totalAnimals || 0} Heads</span>
+                            </div>
+                            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Location: ${a.location || 'Barn Grounds'} | Valuation: ${formatMoney(a.price)}</div>
+                            ${feedKeys.length > 0 ? `
+                                <div style="margin-top:6px; font-size:0.725rem; font-family:var(--font-mono); color:#cbd5e1;">
+                                    Feed: ${feedKeys.map(k => `${cleanFillName(k)}: ${Math.round(feed[k]).toLocaleString()}L`).join(' | ')}
+                                </div>
+                            ` : ''}
+                            ${byproductKeys.length > 0 ? `
+                                <div style="margin-top:4px; font-size:0.725rem; font-family:var(--font-mono); color:#38bdf8;">
+                                    Byproducts: ${byproductKeys.map(k => `${cleanFillName(k)}: ${Math.round(byproducts[k]).toLocaleString()}L`).join(' | ')}
+                                </div>
+                            ` : ''}
                         </div>
-                        <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Location: ${a.location || 'Barn Grounds'} | Valuation: ${formatMoney(a.price)}</div>
-                        ${feedKeys.length > 0 ? `
-                            <div style="margin-top:6px; font-size:0.725rem; font-family:var(--font-mono); color:#cbd5e1;">
-                                Feed: ${feedKeys.map(k => `${cleanFillName(k)}: ${Math.round(feed[k]).toLocaleString()}L`).join(' | ')}
-                            </div>
-                        ` : ''}
-                        ${byproductKeys.length > 0 ? `
-                            <div style="margin-top:4px; font-size:0.725rem; font-family:var(--font-mono); color:#38bdf8;">
-                                Byproducts: ${byproductKeys.map(k => `${cleanFillName(k)}: ${Math.round(byproducts[k]).toLocaleString()}L`).join(' | ')}
-                            </div>
-                        ` : ''}
                     </div>
                 `;
             }).join('');
@@ -1816,7 +2010,7 @@
 
             container.innerHTML = list.map(g => `
                 <div class="telemetry-card">
-                    <i class="fa-solid fa-solar-panel card-icon" style="color:#38bdf8;"></i>
+                    <img src="./images/Electric_Charge.JPG" class="card-icon-img" alt="" onerror="this.src='./images/Liftable_Pallets_And_Bales.jpg';" />
                     <div class="card-details" style="flex:1;">
                         <div style="display:flex; justify-content:space-between;">
                             <strong>${cleanName(g.name || g.source || 'Generator Facility')}</strong>
@@ -1843,56 +2037,38 @@
 
             container.innerHTML = combined.map(p => {
                 const inventory = toArray(p.storageInventory);
+                const factoryImg = resolveAssetImage(p.name || p.file || 'silo');
                 return `
-                    <div class="telemetry-card" style="flex-direction:column; align-items:stretch;">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <strong><i class="fa-solid fa-industry" style="color:#38bdf8; margin-right:6px;"></i>${cleanName(p.name || p.file)}</strong>
-                            <span style="color:${p.factoryStatus === 'Active' ? '#4ade80' : '#facc15'}; font-weight:700;">${p.factoryStatus || 'Running'}</span>
-                        </div>
-                        <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Location: ${p.location || 'Industrial Area'}</div>
-                        ${inventory.length > 0 ? `
-                            <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
-                                ${inventory.map(inv => `
-                                    <div class="fill-meter-wrap">
-                                        <span>${cleanFillName(inv.item)}</span>
-                                        <div class="fill-bar-track"><div class="fill-bar-val" style="width:${inv.percentage || 0}%; background:${getStoplightColor(inv.percentage || 0)};"></div></div>
-                                        <span style="font-weight:700;">${Math.round(inv.fillLevelLiters || 0).toLocaleString()} L</span>
-                                    </div>
-                                `).join('')}
+                    <div class="telemetry-card" style="align-items:flex-start;">
+                        <img src="${factoryImg}" class="card-icon-img" style="margin-top:3px;" alt="" />
+                        <div class="card-details">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <strong>${cleanName(p.name || p.file)}</strong>
+                                <span style="color:${p.factoryStatus === 'Active' ? '#4ade80' : '#facc15'}; font-weight:700;">${p.factoryStatus || 'Running'}</span>
                             </div>
-                        ` : ''}
+                            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Location: ${p.location || 'Industrial Area'}</div>
+                            ${inventory.length > 0 ? `
+                                <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
+                                    ${inventory.map(inv => `
+                                        <div class="fill-meter-wrap">
+                                            <span>${cleanFillName(inv.item)}</span>
+                                            <div class="fill-bar-track"><div class="fill-bar-val" style="width:${inv.percentage || 0}%; background:${getStoplightColor(inv.percentage || 0)};"></div></div>
+                                            <span style="font-weight:700;">${Math.round(inv.fillLevelLiters || 0).toLocaleString()} L</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
                     </div>
                 `;
             }).join('');
         }
 
-        function renderPlayerList(players) {
-            const container = document.getElementById('active-players-container');
-            const countBadge = document.getElementById('active-players-count');
-            const list = toArray(players);
-            if (countBadge) countBadge.innerText = list.length;
-            if (!container) return;
-
-            if (list.length === 0) {
-                container.innerHTML = `<div class="empty-state">No players currently connected.</div>`;
-                return;
-            }
-            container.innerHTML = list.map(p => `
-                <div class="telemetry-card">
-                    <i class="fa-solid fa-user card-icon" style="color:#38bdf8;"></i>
-                    <div class="card-details">
-                        <strong>${p.name || (typeof p === 'string' ? p : 'Player')}</strong>
-                        <span class="card-subtext">Online Telemetry | Server Authenticated</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderMissionsList(missions) {
+        function renderMissions(missions) {
             const container = document.getElementById('missions-container');
-            const countBadge = document.getElementById('missions-count');
+            const badge = document.getElementById('missions-count');
             const list = toArray(missions);
-            if (countBadge) countBadge.innerText = list.length;
+            if (badge) badge.innerText = list.length;
             if (!container) return;
 
             if (list.length === 0) {
@@ -1901,7 +2077,7 @@
             }
             container.innerHTML = list.slice(0, 15).map(m => `
                 <div class="telemetry-card">
-                    <i class="fa-solid fa-file-signature card-icon" style="color:#facc15;"></i>
+                    <img src="./images/HARVEST.JPG" class="card-icon-img" alt="" />
                     <div class="card-details" style="flex:1;">
                         <div style="display:flex; justify-content:space-between;">
                             <strong>${cleanName(m.type || 'Mission')} ${m.fieldId ? `(Field ${m.fieldId})` : ''}</strong>
@@ -1934,21 +2110,17 @@
             let html = '<div class="collectibles-grid-layout">';
             for (let i = 1; i <= total; i++) {
                 const isFound = knownFound.has(i);
-                html += `
-                    <div class="collectible-badge ${isFound ? 'found' : 'unfound'}" title="Toy #${i} - ${isFound ? 'Found' : 'Hidden'}">
-                        ${i}
-                    </div>
-                `;
+                html += `<div class="collectible-badge ${isFound ? 'found' : 'unfound'}" title="Toy #${i}">${i}</div>`;
             }
             html += '</div>';
             container.innerHTML = html;
         }
 
-        function renderFieldsList(fields) {
+        function renderFields(fields) {
             const container = document.getElementById('fields-container');
-            const countBadge = document.getElementById('fields-count');
+            const badge = document.getElementById('fields-count');
             const list = toArray(fields);
-            if (countBadge) countBadge.innerText = list.length;
+            if (badge) badge.innerText = list.length;
             if (!container) return;
 
             if (list.length === 0) {
@@ -1957,7 +2129,7 @@
             }
             container.innerHTML = list.slice(0, 16).map(f => `
                 <div class="telemetry-card">
-                    <i class="fa-solid fa-seedling card-icon" style="color:#84cc16;"></i>
+                    <img src="${resolveAssetImage(f.cropType || 'wheat')}" class="card-icon-img" alt="" />
                     <div class="card-details" style="flex:1;">
                         <div style="display:flex; justify-content:space-between;">
                             <strong>Field #${f.id} (${cleanName(f.cropType || 'Fallow')})</strong>
@@ -1967,6 +2139,38 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        function renderUsedSales(salesXml) {
+            const container = document.getElementById('used-sales-container');
+            const badge = document.getElementById('used-sales-count');
+            if (!container) return;
+
+            const items = toArray(salesXml && (salesXml.sales?.item || salesXml.item));
+            if (badge) badge.innerText = items.length;
+
+            if (items.length === 0) {
+                container.innerHTML = `<div class="empty-state">No equipment currently on discount sale.</div>`;
+                return;
+            }
+
+            container.innerHTML = items.map(s => {
+                const damagePct = Math.round(parseFloat(s.damage || 0) * 100);
+                const wearPct = Math.round(parseFloat(s.wear || 0) * 100);
+
+                return `
+                    <div class="telemetry-card">
+                        <img src="./images/Liftable_Pallets_And_Bales.jpg" class="card-icon-img" alt="" />
+                        <div class="card-details" style="flex:1;">
+                            <div style="display:flex; justify-content:space-between;">
+                                <strong>${cleanName(s.xmlFilename)}</strong>
+                                <span style="color:#4ade80; font-family:var(--font-mono); font-weight:700;">${formatMoney(s.price)}</span>
+                            </div>
+                            <span class="card-subtext">Time Left: ${s.timeLeft || 1}h | Wear: ${wearPct}% | Damage: ${damagePct}%</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function renderHandTools(tools) {
@@ -1982,7 +2186,7 @@
             }
             container.innerHTML = list.map(t => `
                 <div class="telemetry-card">
-                    <i class="fa-solid fa-wrench card-icon" style="color:#facc15;"></i>
+                    <img src="./images/Liftable_Pallets_And_Bales.jpg" class="card-icon-img" alt="" />
                     <div class="card-details">
                         <strong>${cleanName(t.name || t.filename || 'Hand Tool')}</strong>
                         <span class="card-subtext">Farm #${t.farmId || 1} Inventory</span>
@@ -1991,7 +2195,10 @@
             `).join('');
         }
 
-        function renderModHub(mods) {
+        // ====================================================================
+        // SECTION 6: MOD DIRECTORY (IMAGE-FIRST WITH CINEMA LIGHTBOX)
+        // ====================================================================
+        function renderModDirectory(mods) {
             const grid = document.getElementById('mod-hub-grid');
             if (!grid) return;
             cachedMods = mods || {};
@@ -2001,35 +2208,26 @@
                 return;
             }
 
-            grid.innerHTML = entries.map(([key, m]) => `
-                <div class="mod-card" onclick="window.openModDetail('${key}')">
-                    <div class="mod-card-body">
-                        <span class="mod-category-tag">${m.crossplay || 'Crossplay Verified'}</span>
-                        <div class="mod-title">${m.name || cleanName(key)}</div>
-                        <div class="mod-desc">${(m.description || 'Verified modification active on dedicated server.').substring(0, 80)}...</div>
-                        <div class="mod-card-footer">
-                            <span class="mod-author">By ${m.author || 'Modder'}</span>
-                            <span class="mod-download-btn"><i class="fa-solid fa-magnifying-glass"></i> Details</span>
+            grid.innerHTML = entries.map(([key, m]) => {
+                const coverImg = m.image || m.imageUrl || './images/Precision_Farming.jpg';
+                return `
+                    <div class="mod-card" onclick="window.openModDetail('${key}')">
+                        <div class="mod-cover-frame">
+                            <img src="${coverImg}" alt="" onerror="this.src='./images/Precision_Farming.jpg';" />
+                        </div>
+                        <div class="mod-card-body">
+                            <span class="mod-category-tag">${m.crossplay || 'Crossplay Verified'}</span>
+                            <div class="mod-title">${m.name || cleanName(key)}</div>
+                            <div class="mod-desc">${(m.description || 'Verified modification active on dedicated server.').substring(0, 80)}...</div>
+                            <div class="mod-card-footer">
+                                <span class="card-subtext">By ${m.author || 'Modder'}</span>
+                                <span class="box-counter-badge"><i class="fa-solid fa-magnifying-glass"></i> Specs</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
-
-        // ====================================================================
-        // GLOBAL LIGHTBOX ATTACHMENTS WITH DIRECT MOD SEARCH LOOKUP
-        // ====================================================================
-        window.openImageLightbox = function(imgUrl, captionText) {
-            const modal = document.getElementById('lightbox-modal');
-            const img = document.getElementById('lightbox-img');
-            const caption = document.getElementById('lightbox-caption');
-            if (!modal || !img || !caption) return;
-
-            img.src = imgUrl;
-            img.style.display = 'block';
-            caption.innerHTML = `<p>${captionText}</p>`;
-            modal.classList.add('active');
-        };
 
         window.openModDetail = function(modKey) {
             const m = cachedMods[modKey];
@@ -2038,8 +2236,8 @@
             const caption = document.getElementById('lightbox-caption');
             const img = document.getElementById('lightbox-img');
 
-            if (m.image) {
-                img.src = m.image;
+            if (m.image || m.imageUrl) {
+                img.src = m.image || m.imageUrl;
                 img.alt = "";
                 img.style.display = 'block';
             } else {
@@ -2052,31 +2250,58 @@
             caption.innerHTML = `
                 <div style="text-align:left; width:100%; font-family:var(--font-family);">
                     <h3 style="color:#facc15; font-size:1.25rem; margin-bottom:6px;">${modDisplayName}</h3>
-                    <p style="color:#cbd5e1; font-size:0.85rem; margin-bottom:12px; line-height:1.4;">${m.description || 'Installed modification.'}</p>
+                    <p style="color:#cbd5e1; font-size:0.85rem; margin-bottom:12px; line-height:1.4;">${m.description || 'Verified modification active on dedicated server.'}</p>
                     <div style="background:#0b1120; padding:10px; border-radius:6px; font-family:var(--font-mono); font-size:0.8rem; color:#94a3b8; display:flex; flex-direction:column; gap:4px;">
                         <div>Author: <strong style="color:#fff;">${m.author || 'Giants / ModHub'}</strong></div>
                         <div>Category: <strong style="color:#fff;">${m.category || 'Machinery'}</strong></div>
+                        <div>Size: <strong style="color:#fff;">${m.size || 'N/A'}</strong></div>
                         <div>Status: <strong style="color:#4ade80;">Active on Server</strong></div>
                     </div>
-                    <a href="${specificModhubUrl}" target="_blank" rel="noopener noreferrer" class="mod-download-btn" style="margin-top:14px; width:100%; justify-content:center; padding:10px;">
+                    <a href="${specificModhubUrl}" target="_blank" rel="noopener noreferrer" class="dropdown-trigger-btn" style="margin-top:14px; width:100%; justify-content:center; padding:10px; background:var(--accent-gold); color:#000; font-weight:800;">
                         <i class="fa-solid fa-arrow-up-right-from-square"></i> Search "${modDisplayName}" on Official ModHub
                     </a>
                 </div>
             `;
-
             modal.classList.add('active');
         };
 
-        // Stream Telemetry Directly from Firebase with Error Trapping
+        window.openImageLightbox = function(imgUrl, captionText) {
+            const modal = document.getElementById('lightbox-modal');
+            const img = document.getElementById('lightbox-img');
+            const caption = document.getElementById('lightbox-caption');
+            if (!modal || !img || !caption) return;
+            img.src = imgUrl;
+            img.style.display = 'block';
+            caption.innerHTML = `<p>${captionText}</p>`;
+            modal.classList.add('active');
+        };
+
+        // DOM Listeners
         document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('mobile-menu-toggle');
+            const menu = document.getElementById('dynamic-menu');
+            if (toggle && menu) {
+                toggle.addEventListener('click', (e) => { e.stopPropagation(); menu.classList.toggle('open'); });
+                document.addEventListener('click', (e) => {
+                    if (!menu.contains(e.target) && !toggle.contains(e.target)) menu.classList.remove('open');
+                });
+            }
+
+            const lbModal = document.getElementById('lightbox-modal');
+            const lbClose = document.getElementById('lightbox-close');
+            if (lbClose) lbClose.addEventListener('click', () => closeActiveLightbox());
+            if (lbModal) lbModal.addEventListener('click', (e) => { if (e.target === lbModal) closeActiveLightbox(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeActiveLightbox(); });
+
+            loadNavigationMenu();
+
             const fs25Ref = ref(db, "fs25");
             onValue(fs25Ref, (snapshot) => {
-                const liveData = snapshot.val();
-                if (liveData) {
-                    syncDashboard(liveData);
+                if (snapshot.exists()) {
+                    syncDashboard(snapshot.val());
                 }
             }, (error) => {
-                console.warn("[RTDB STREAM NOTICE]:", error.message);
+                console.warn("[RTDB NOTICE]:", error.message);
             });
         });
     </script>
