@@ -1,16 +1,13 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: 2026-09-25 19:25:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-25 19:40:00 (EDT - 24hr New York Time)
  * Project: fs25-a3563 (/fs25 RTDB Node)
  * Target Database: https://fs25-a3563-default-rtdb.firebaseio.com/fs25
- * Description: Dynamic Directory Crawling Ingestion Engine.
- *              - Zero hardcoded XML lists: Dynamically lists and ingests EVERY .xml 
- *                file present in the active G-Portal savegame directory.
- *              - Strict authority to gamestat.xml: Respects numUsed="0" so 
- *                ghost players are completely eliminated when nobody is logged on.
- *              - Strict XML farmId binding: Direct 1:1 mapping from vehicles.xml.
- *                Pallets/BigBags isolated to storage cards (no more implement pollution).
- *              - Dual-Bank Live Balances & Bale Counts mapped directly from XML.
+ * Description: Unabridged G-Portal XML Ingestion Engine.
+ *              - Explicit path locked to: profile/savegame{slot} (Confirmed via G-Portal)
+ *              - Dynamic XML Directory Crawler: Ingests EVERY .xml file present.
+ *              - Zero Ghost Players: Authority given to numUsed="0".
+ *              - Direct 1:1 farmId vehicle mapping without coordinate guessing.
  * ============================================================================ */
 
 require('dotenv').config({ path: __dirname + '/.env' });
@@ -18,7 +15,7 @@ const ftp = require('basic-ftp');
 const { Writable } = require('stream');
 const xml2js = require('xml2js');
 
-// Line 23: 4-Minute Safety Watchdog
+// 4-Minute Safety Watchdog
 setTimeout(() => {
   console.log("🚨 Safety Watchdog: Execution finished.");
   process.exit(0);
@@ -26,7 +23,6 @@ setTimeout(() => {
 
 const RTDB_URL = "https://fs25-a3563-default-rtdb.firebaseio.com";
 
-// Line 31: Async REST Helpers
 async function updateDb(path, data) {
   try {
     const res = await fetch(`${RTDB_URL}/${path}.json`, {
@@ -55,7 +51,6 @@ async function getDb(path) {
   }
 }
 
-// Line 60: Credentials & Server Endpoints
 const ftpHost = process.env.FTP_HOST || '207.244.246.70';
 const ftpPort = parseInt(process.env.FTP_PORT, 10) || 21;
 const ftpUser = process.env.FTP_USER;
@@ -90,7 +85,6 @@ const TRAILER_CATEGORIES = new Set([
   'AUGERWAGONS', 'MANURESPREADERS', 'SLURRYTANKS', 'WATERBARRELS'
 ]);
 
-// Line 95: Sanitizers, Parsers & Utilities
 function sanitizeXml(rawText) {
   if (!rawText) return "";
   let clean = rawText.toString();
@@ -160,33 +154,27 @@ function calculateDistance(x1, z1, x2, z2) {
   return Math.hypot(x1 - x2, z1 - z2);
 }
 
-// Line 172: Strict Classification (Isolates Pallets and Separates Headers from Combines)
 function classifyVehicle(rawVehicle) {
   const category = (rawVehicle.category || "").toUpperCase().replace(/[^A-Z]/g, '');
   const type = (rawVehicle.type || "").toLowerCase();
   const name = (rawVehicle.name || "").toLowerCase();
 
-  // Isolated Pallet Bucket
   if (category.includes('PALLET') || category.includes('BIGBAG') || type.includes('pallet') || name.includes('pallet')) {
     return { groupKey: 'pallets', itemKind: 'Pallet / Cargo', isMotorized: false };
   }
 
-  // Headers and Cutters are implements, NOT harvesters
   if (category.includes('CUTTER') || category.includes('HEADER') || type.includes('cutter') || type.includes('header') || name.includes('header')) {
     return { groupKey: 'implements', itemKind: 'Cutter / Header', isMotorized: false };
   }
 
-  // Self-Propelled Harvesters & Combines
   if (HARVESTER_CATEGORIES.has(category) || type.includes('combine') || name.includes('harvester')) {
     return { groupKey: 'harvesters', itemKind: 'Harvester & Combine', isMotorized: true };
   }
 
-  // Trailers
   if (TRAILER_CATEGORIES.has(category) || name.includes('trailer') || name.includes('flatbed') || type.includes('trailer') || type.includes('wagon')) {
     return { groupKey: 'trailers', itemKind: 'Hauling Trailer', isMotorized: false };
   }
 
-  // Motorized Tractors & Trucks
   if (MOTORIZED_CATEGORIES.has(category) || Boolean(rawVehicle.controller) || String(rawVehicle.isAIActive).toLowerCase() === 'true' || type.includes('motor') || type.includes('tractor') || type.includes('truck')) {
     return { groupKey: 'motorVehicles', itemKind: 'Motor Vehicle', isMotorized: true };
   }
@@ -330,7 +318,6 @@ async function fetchWebsiteCatalog() {
   }
 }
 
-// Line 350: Dynamic Directory Crawling Pipeline
 async function runPipeline() {
   const isForceRun = process.argv.includes('--force') || process.env.GITHUB_EVENT_NAME === 'workflow_dispatch';
   const syncTimestamp = new Date().toISOString();
@@ -339,7 +326,6 @@ async function runPipeline() {
   const live = await pingLiveFeed();
   const server = live.serverNode || {};
 
-  // STRICT PLAYER RECOGNITION: Authority given to numUsed
   const activePlayers = [];
   let isVipOnline = false;
 
@@ -373,8 +359,8 @@ async function runPipeline() {
   }
 
   const isHeavyScan = isVipOnline || isForceRun;
-  console.log(`🎮 Mode: ${isHeavyScan ? 'HEAVY SCAN (VIP Online / Movement Tracking)' : 'LIGHT SCAN (Idle Server / 12-Hour Sync)'}`);
-  console.log(`👥 G-Portal Reported Players (numUsed: ${numUsed}) -> Verified Active: ${activePlayers.length}`);
+  console.log(`🎮 Mode: ${isHeavyScan ? 'HEAVY SCAN' : 'LIGHT SCAN'}`);
+  console.log(`👥 G-Portal Players (numUsed: ${numUsed}) -> Verified Active: ${activePlayers.length}`);
 
   const client = new ftp.Client(25000);
   client.ftp.verbose = true;
@@ -395,39 +381,32 @@ async function runPipeline() {
     });
     console.log("✅ Authenticated to G-Portal FTP.");
 
-    // Detect Active Slot Authority from Server Config
-    const configCandidates = [
-      'dedicated_server/dedicatedServerConfig.xml',
-      'profile/dedicated_server/dedicatedServerConfig.xml',
-      'dedicatedServerConfig.xml'
-    ];
-
-    for (const p of configCandidates) {
-      try {
-        const text = await downloadFtpFileToString(client, p);
-        if (text) {
-          rawServerConfig = sanitizeXml(text);
-          const sMatch = rawServerConfig.match(/<savegame_index>(\d+)<\/savegame_index>/i);
-          if (sMatch) activeSlot = sMatch[1];
-          const mMatch = rawServerConfig.match(/<mapFilename>([^<]+)<\/mapFilename>/i);
-          if (mMatch) mapFilename = mMatch[1];
-          break;
-        }
-      } catch (e) {}
+    try {
+      const text = await downloadFtpFileToString(client, 'profile/dedicated_server/dedicatedServerConfig.xml');
+      if (text) {
+        rawServerConfig = sanitizeXml(text);
+        const sMatch = rawServerConfig.match(/<savegame_index>(\d+)<\/savegame_index>/i);
+        if (sMatch) activeSlot = sMatch[1];
+        const mMatch = rawServerConfig.match(/<mapFilename>([^<]+)<\/mapFilename>/i);
+        if (mMatch) mapFilename = mMatch[1];
+      }
+    } catch (e) {
+      console.warn("⚠️ Could not read dedicatedServerConfig.xml, defaulting to slot 3.");
     }
 
-    const slotFolder = `savegame${activeSlot}`;
+    // EXACT G-PORTAL DIRECTORY TARGET: profile/savegame{slot}
+    const slotFolder = `profile/savegame${activeSlot}`;
     const slotNodeName = `savegame${activeSlot}`;
     console.log(`🎯 Active Savegame Locked: Slot #${activeSlot} -> ${slotFolder}`);
 
-    // DYNAMIC XML DIRECTORY CRAWLER: Discovers EVERY XML file in the savegame folder
-    console.log(`📂 Dynamically scanning directory: ${slotFolder}...`);
+    // DYNAMIC XML DIRECTORY CRAWLER: Ingests EVERY .xml in that folder
+    console.log(`📂 Dynamically scanning G-Portal directory: ${slotFolder}...`);
     const directoryList = await client.list(slotFolder);
     const xmlFilesFound = directoryList
       .filter(item => item.isFile && item.name.toLowerCase().endsWith('.xml'))
       .map(item => item.name);
 
-    console.log(`🔍 Discovered ${xmlFilesFound.length} XML files on G-Portal: ${xmlFilesFound.join(', ')}`);
+    console.log(`🔍 Discovered ${xmlFilesFound.length} XML files in ${slotFolder}: ${xmlFilesFound.join(', ')}`);
 
     for (const xmlFile of xmlFilesFound) {
       try {
@@ -436,7 +415,7 @@ async function runPipeline() {
           const parsed = await parseXmlString(sanitizeXml(fileContent));
           const fileKey = xmlFile.replace(/\.xml$/i, '');
           allRawParsedXml[fileKey] = parsed;
-          console.log(`✅ Dynamically Ingested: [ ${xmlFile} ] -> /fs25/allRawParsedXml/${fileKey}`);
+          console.log(`✅ Loaded XML: [ ${xmlFile} ] -> /fs25/allRawParsedXml/${fileKey}`);
         }
       } catch (fileErr) {
         console.warn(`⚠️ Skipped XML [ ${xmlFile} ]: ${fileErr.message}`);
@@ -451,10 +430,9 @@ async function runPipeline() {
     if (client) client.close();
   }
 
-  const slotFolder = `savegame${activeSlot}`;
   const slotNodeName = `savegame${activeSlot}`;
 
-  // Vehicle Ownership Mapping (Strict 1:1 ID and Filename index)
+  // Vehicle Ownership Mapping
   const vehicleIdToFarm = {};
   const balerHardwareCounters = [];
 
@@ -551,14 +529,12 @@ async function runPipeline() {
     });
   }
 
-  // Console Slot Headroom
   let slotUsage = 2207;
   const rootCareer = allRawParsedXml.careerSavegame && (allRawParsedXml.careerSavegame.careerSavegame || allRawParsedXml.careerSavegame);
   if (rootCareer?.slotSystem?.slotUsage) {
     slotUsage = parseInt(rootCareer.slotSystem.slotUsage, 10);
   }
 
-  // Process Fields
   const rawFields = (server.Fields && server.Fields.Field)
     ? (Array.isArray(server.Fields.Field) ? server.Fields.Field : [server.Fields.Field])
     : [];
@@ -613,7 +589,7 @@ async function runPipeline() {
         }
       }
 
-      // STRICT 1:1 XML FARM ID BINDING (Zero coordinate guessing)
+      // Direct 1:1 Farm ID Assignment
       const cleanLower = name.toLowerCase();
       let assignedFarmId = "1";
       if (v.farmId) {
@@ -661,7 +637,6 @@ async function runPipeline() {
     });
   }
 
-  // Installed Mods Lookup
   const catalogLookup = await fetchWebsiteCatalog();
   const activeMods = {};
   if (rawServerConfig) {
@@ -691,7 +666,6 @@ async function runPipeline() {
     } catch (e) {}
   }
 
-  // Parse Placeables (Animals, Factories, Storage, Generators)
   const farmCards = {
     farm_1: { animals: [], factories: [], generalPlaceables: [], farmlandOwned: [], palletsAndBales: [...farm1Pallets] },
     farm_2: { animals: [], factories: [], generalPlaceables: [], farmlandOwned: [], palletsAndBales: [...farm2Pallets] }
