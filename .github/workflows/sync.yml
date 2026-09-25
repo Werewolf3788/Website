@@ -1,24 +1,28 @@
 # ============================================================================
 # File: .github/workflows/fs25-sync.yml
-# Deployment Timestamp: 2026-09-20 23:45:00 (EDT - 24hr New York Time)
-# Project: fs25-a3563 (/fs25 RTDB Node) & entertainment-71888
-# Database Target: https://fs25-a3563-default-rtdb.firebaseio.com/fs25
-# Google Analytics Tag: G-CTYHDF4MSD (Gaming, Progress Tracking, Firebase Entertainment)
-# Measurement ID: G-SGJF0FJPQZ
-# Description: Self-Contained Tiered FS25 Savegame & Multi-Channel Discord Ingestion.
-#              - Firebase Database secret dependency eliminated: uses embedded default config.
-#              - Poller runs every 16 minutes matching G-Portal's 15-min auto-save.
-#              - Evaluates Port 9050 live stats and syncs savegame state directly.
-#              - Dual-Target Database Sync (fs25-a3563 & entertainment-71888 mirror).
-#              - Manual Trigger Override (workflow_dispatch): Forces immediate full sync.
+# Deployment Timestamp: 2026-09-25 18:25:00 (EDT - 24hr New York Time)
+# Project: fs25-a3563 (/fs25 RTDB Node)
+# Target Database: https://fs25-a3563-default-rtdb.firebaseio.com/fs25
+# Description: Automated FS25 Live G-Portal Ingestion & Multi-Channel Discord Pipeline.
+#              - Explicitly targets games/FS25/fs25.js (Eliminates index.js conflict).
+#              - Passes all 6 dedicated Discord webhook channels:
+#                * DISCORD_FS25_ANNOUNCEMENTS: Server Heartbeat & Financial Milestones
+#                * DISCORD_FS25_F1VEHICLES: My farm Machinery & Attachment Convoys
+#                * DISCORD_FS25_F2VEHICLES: Dumbace Machinery & Attachment Convoys
+#                * DISCORD_FS25_MODS: ModHub Catalog & Server Mod Installations
+#                * DISCORD_FS25_ONLINE: Player Connect/Disconnect & Live GPS Radar
+#                * DISCORD_FS25_TIMEINGAME: Calendar Progression & Weather Alerts
+#              - Passes repository secrets with safe fallback endpoints for G-Portal.
+#              - Dispatches on 15-minute cron aligned with G-Portal auto-saves.
+#              - Manual trigger override (workflow_dispatch) with --force flag.
 # ============================================================================
 
 name: FS25 Live Backup Sync
 
 on:
   schedule:
-    # Triggers every 16 minutes in alignment with G-Portal auto-save
-    - cron: '*/16 * * * *'
+    # Runs every 15 minutes aligned with G-Portal server auto-save intervals
+    - cron: '*/15 * * * *'
   workflow_dispatch:
     inputs:
       force_sync:
@@ -39,7 +43,7 @@ jobs:
       - name: Checkout Code Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js Runtime
+      - name: Setup Node.js Runtime (v24)
         uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -54,13 +58,13 @@ jobs:
             npm install basic-ftp dotenv xml2js
           fi
 
-      - name: Run Tiered Sync Pipeline & Discord Dispatcher
+      - name: Execute Live Ingestion & Discord Dispatcher
         env:
-          FTP_HOST: ${{ secrets.FTP_HOST }}
-          FTP_PORT: ${{ secrets.FTP_PORT }}
+          FTP_HOST: ${{ secrets.FTP_HOST || '207.244.246.70' }}
+          FTP_PORT: ${{ secrets.FTP_PORT || '21' }}
           FTP_USER: ${{ secrets.FTP_USER }}
           FTP_PASS: ${{ secrets.FTP_PASS }}
-          FS25_API_CODE: ${{ secrets.FS25_API_CODE }}
+          FS25_API_CODE: ${{ secrets.FS25_API_CODE || '3FvqSlOsYKckfauM' }}
           DEFAULT_SAVE_SLOT: ${{ secrets.DEFAULT_SAVE_SLOT || '3' }}
           FIREBASE_DATABASE_URL: "https://fs25-a3563-default-rtdb.firebaseio.com"
           FIREBASE_PROJECT_ID: "fs25-a3563"
@@ -68,13 +72,18 @@ jobs:
           FIREBASE_APP_ID: "1:528331196894:web:5af51bc2c80fd56aecf54f"
           FIREBASE_MEASUREMENT_ID: "G-SGJF0FJPQZ"
           GITHUB_EVENT_NAME: ${{ github.event_name }}
+          # Multi-Channel Discord Webhook Endpoints
+          DISCORD_FS25_ANNOUNCEMENTS: ${{ secrets.DISCORD_FS25_ANNOUNCEMENTS }}
+          DISCORD_FS25_F1VEHICLES: ${{ secrets.DISCORD_FS25_F1VEHICLES }}
+          DISCORD_FS25_F2VEHICLES: ${{ secrets.DISCORD_FS25_F2VEHICLES }}
+          DISCORD_FS25_MODS: ${{ secrets.DISCORD_FS25_MODS }}
+          DISCORD_FS25_ONLINE: ${{ secrets.DISCORD_FS25_ONLINE }}
+          DISCORD_FS25_TIMEINGAME: ${{ secrets.DISCORD_FS25_TIMEINGAME }}
         run: |
           cd games/FS25
-          if [ -f index.js ]; then
-            node index.js ${{ github.event_name == 'workflow_dispatch' && '--force' || '' }}
-          elif [ -f fs25.js ]; then
-            node fs25.js ${{ github.event_name == 'workflow_dispatch' && '--force' || '' }}
+          echo "🚀 Running fs25.js under Node $(node -v)..."
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            node fs25.js --force
           else
-            echo "❌ Error: Neither index.js nor fs25.js found in games/FS25!"
-            exit 1
+            node fs25.js
           fi
