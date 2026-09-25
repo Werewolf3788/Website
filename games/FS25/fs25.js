@@ -1,949 +1,731 @@
 /* ============================================================================
- * File: games/FS25/fs25.js
- * Deployment Timestamp: 2026-09-25 00:26:00 (EDT - 24hr New York Time)
- * Context / Scope: Full dynamic slot-switching pipeline locking to savegame index 
- *                  from dedicatedServerConfig.xml. Integrates vehicles.xml, fields.xml, 
- *                  farmlands.xml, farms.xml, economy.xml, missions.xml, environment.xml, 
- *                  collectibles.xml, and precisionFarming.xml into Firebase.
- * Project: fs25-a3563 (/fs25 RTDB Node)
- * Target Database: //fs25-a3563-default-rtdb.firebaseio.com/fs25
- * Google Analytics Tag: G-CTYHDF4MSD (Gaming, Progress Tracking, Firebase Entertainment)
- * Measurement ID: G-SGJF0FJPQZ
+ * File: games/FS25/app.js
+ * Deployment Timestamp: 2026-09-25 01:41:40 (EDT - 24hr New York Time)
+ * Context / Scope: Complete Modular Firebase RTDB Client & UI Synchronization Engine.
+ *                  - Reconnects to //fs25-a3563-default-rtdb.firebaseio.com/fs25.
+ *                  - Listens directly to activeSaveSlot and switches to active slot node.
+ *                  - Converts lastGportalSync to Eastern (New York) 12-hour/24-hour time.
+ *                  - Converts in-game dayTime to human-readable clock time (AM/PM).
+ *                  - Binds console slot usage (slotSystem.slotUsage) for join visibility.
+ *                  - Maps pre-sorted farm1 & farm2 collections (tractors, harvesters,
+ *                    trailers, implements) with live total count badges on card headers.
+ *                  - Safe DOMContentLoaded wrapping, null checks, and error trapping.
  * ============================================================================ */
 
-// Line 16: Environment loading with explicit path fallback
-require('dotenv').config({ path: __dirname + '/.env' });
-const ftp = require('basic-ftp');
-const { Writable } = require('stream');
-const xml2js = require('xml2js');
+// Line 16: Modular Firebase SDK Imports using relative protocol
+import { initializeApp } from "//www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAnalytics } from "//www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+import { getDatabase, ref, onValue } from "//www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-// ============================================================================
-// SECTION 1: SAFETY TIMEOUT (4-Minute Process Failsafe)
-// ============================================================================
-// Line 25: Prevents stuck processes from hanging cron schedules
-setTimeout(() => {
-  console.log("🚨 Safety Failsafe: Process cleanly terminated after 4 minutes.");
-  process.exit(0);
-}, 4 * 60 * 1000);
+// Line 21: Client Database Configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyBwhhUNH0itRb2hQcnSap_vGfnErAGVzZc",
+    authDomain: "fs25-a3563.firebaseapp.com",
+    databaseURL: "https://fs25-a3563-default-rtdb.firebaseio.com",
+    projectId: "fs25-a3563",
+    storageBucket: "fs25-a3563.firebasestorage.app",
+    messagingSenderId: "528331196894",
+    appId: "1:528331196894:web:5af51bc2c80fd56aecf54f",
+    measurementId: "G-SGJF0FJPQZ"
+};
 
-// ============================================================================
-// SECTION 2: RELATIVE-PROTOCOL FIREBASE REST CLIENT
-// ============================================================================
-// Line 33: Primary Database endpoint
-const RTDB_URL = "https://fs25-a3563-default-rtdb.firebaseio.com";
-
-// Line 36: Resilient PATCH helper
-async function updateDb(path, data) {
-  try {
-    const res = await fetch(`${RTDB_URL}/${path}.json`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    if (!res.ok) {
-      console.warn(`⚠️ Warning: Firebase PATCH failed at ${path}: ${res.status} ${res.statusText}`);
-      return null;
-    }
-    return await res.json();
-  } catch (err) {
-    console.warn(`⚠️ Warning: Network error during PATCH at ${path}: ${err.message}`);
-    return null;
-  }
+// Line 34: Safe app initialization with analytics blocker trap
+const app = initializeApp(firebaseConfig);
+let analytics = null;
+try {
+    analytics = getAnalytics(app);
+} catch (analyticsErr) {
+    console.warn("⚠️ Warning: Analytics tracking suppressed by client blocker:", analyticsErr.message);
 }
+const db = getDatabase(app);
 
-// Line 55: Resilient PUT helper
-async function setDb(path, data) {
-  try {
-    const res = await fetch(`${RTDB_URL}/${path}.json`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    if (!res.ok) {
-      console.warn(`⚠️ Warning: Firebase PUT failed at ${path}: ${res.status} ${res.statusText}`);
-      return null;
-    }
-    return await res.json();
-  } catch (err) {
-    console.warn(`⚠️ Warning: Network error during PUT at ${path}: ${err.message}`);
-    return null;
-  }
-}
+// Line 44: External UTM navigation endpoint
+const UTM_LINKS_URL = "//entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
 
-// Line 74: Resilient GET helper
-async function getDb(path) {
-  try {
-    const res = await fetch(`${RTDB_URL}/${path}.json`);
-    if (!res.ok) {
-      console.warn(`⚠️ Warning: Node empty or offline at ${path}: ${res.status}`);
-      return null;
-    }
-    return await res.json();
-  } catch (err) {
-    console.warn(`⚠️ Warning: Network error reading ${path}: ${err.message}`);
-    return null;
-  }
-}
-
-// ============================================================================
-// SECTION 3: NETWORK CONFIGURATION
-// ============================================================================
-// Line 92: G-Portal FTP & HTTP Telemetry Endpoints
-const ftpHost = process.env.FTP_HOST || '207.244.246.70';
-const ftpPort = parseInt(process.env.FTP_PORT, 10) || 21;
-const ftpUser = process.env.FTP_USER;
-const ftpPass = process.env.FTP_PASS;
-const apiCode = process.env.FS25_API_CODE || '3FvqSlOsYKckfauM';
-
-const STATS_URL = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=${apiCode}`;
-const MAP_IMAGE_URL = `https://wsrv.nl/?url=${ftpHost}:9050/feed/dedicated-server-stats-map.jpg?code=${apiCode}&quality=75&size=1024`;
-
+// Line 47: In-game calendar months array
 const FS_MONTHS = [
-  "March", "April", "May", "June", "July", "August",
-  "September", "October", "November", "December", "January", "February"
+    "March", "April", "May", "June", "July", "August",
+    "September", "October", "November", "December", "January", "February"
 ];
 
-// Line 107: Broad equipment categories for strict frontend separation
-const MOTORIZED_CATEGORIES = new Set([
-  'TRACTOR', 'TRACTORS', 'TRACTORSS', 'TRACTORM', 'TRACTORL',
-  'CAR', 'CARS', 'TRUCK', 'TRUCKS', 'TELEHANDLER', 'TELEHANDLERS',
-  'WHEELLOADER', 'WHEELLOADERS', 'SKIDSTEER', 'SKIDSTEERVEHICLES',
-  'FORKLIFT', 'FORKLIFTS', 'SELFPROPELLED', 'SELFPROPELLESSPRAYER',
-  'SLURRYVEHICLE', 'MOWERS'
-]);
-
-const HARVESTER_CATEGORIES = new Set([
-  'HARVESTERS', 'HARVESTER', 'COMBINE', 'COMBINES', 'FORAGEHARVESTER',
-  'BEETHARVESTERS', 'BEETHARVESTER', 'POTATOHARVESTER', 'POTATOHARVESTERS',
-  'COTTONHARVESTER', 'COTTONHARVESTERS', 'VEGETABLEHARVESTERS', 'VEGETABLEHARVESTER'
-]);
-
-const TRAILER_CATEGORIES = new Set([
-  'TRAILERS', 'TRAILER', 'TRAILERSSEMI', 'LOADERWAGONS', 'BARRELS',
-  'AUGERWAGONS', 'MANURESPREADERS', 'SLURRYTANKS', 'WATERBARRELS'
-]);
+let cachedMods = {};
 
 // ============================================================================
-// SECTION 4: SANITIZERS, PARSERS & UTILITIES
+// SECTION 1: DATA NORMALIZERS, SANITIZERS & TIME CONVERTERS
 // ============================================================================
-// Line 129: Sanitizes XML payloads from web panels and raw buffers
-function sanitizeXml(rawText) {
-  if (!rawText) return "";
-  let clean = rawText.toString();
-  if (clean.includes(".vue-modal-resizer")) clean = clean.split(".vue-modal-resizer")[0];
-  const preMatch = clean.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
-  if (preMatch && preMatch[1]) clean = preMatch[1];
-  const codeMatch = clean.match(/<code[^>]*>([\s\S]*?)<\/code>/i);
-  if (codeMatch && codeMatch[1]) clean = codeMatch[1];
 
-  clean = clean
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&')
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'");
-
-  const xmlStart = clean.indexOf("<");
-  if (xmlStart > 0) clean = clean.substring(xmlStart);
-  return clean.trim();
+// Line 58: Array normalizer preventing .map() / .forEach() crashes
+function toArray(val) {
+    if (!val) return [];
+    if (Array.isArray(val)) return val;
+    if (typeof val === 'object') return Object.values(val);
+    return [];
 }
 
-// Line 152: Asynchronous XML-to-JSON parser
-async function parseXmlString(xmlString) {
-  if (!xmlString) return null;
-  const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true, trim: true });
-  try {
-    return await parser.parseStringPromise(xmlString);
-  } catch (e) {
-    console.warn("⚠️ Warning: Malformed XML string skipped:", e.message);
-    return null;
-  }
+// Line 66: Currency formatter helper
+function formatMoney(amount) {
+    return '$' + Math.round(Number(amount) || 0).toLocaleString('en-US');
 }
 
-// Line 164: Converts vehicle XML paths to clean, human-readable model names
-function cleanEntityName(filepath) {
-  if (!filepath) return "Equipment";
-  const filename = filepath.split('/').pop().replace(/\.xml$/i, '');
-  return filename
-    .replace(/^fs25[_\-\s]*/i, '')
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/[_-]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+// Line 71: Stoplight meter color calculations
+function getStoplightColor(pct) {
+    if (pct <= 35) return '#ef4444';
+    if (pct <= 74) return '#f59e0b';
+    return '#10b981';
 }
 
-// Line 177: Cleans up internal fill and crop types to proper UI names
-function cleanFillTypeName(typeName) {
-  if (!typeName) return "General Cargo";
-  const clean = typeName
-    .replace(/^(fillType_|filltype_|ft_|fruitType_|fruittype_)/i, '')
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/[_-]/g, ' ')
-    .trim();
-  return clean.charAt(0).toUpperCase() + clean.slice(1);
+// Line 78: Converts internal XML filenames to clean human-readable model names
+function cleanName(raw) {
+    if (!raw) return "Equipment";
+    const parts = String(raw).replace(/\\/g, '/').split('/').filter(Boolean);
+    const filename = parts.pop() || "Equipment";
+    return filename
+        .replace(/\.xml$/i, '')
+        .replace(/^fs25[_\-\s]*/i, '')
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/[_-]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .replace(/\b\w/g, c => c.toUpperCase());
 }
 
-// Line 189: Key normalizer for flexible string matches
-function normalizeKey(str) {
-  if (!str) return "";
-  return str.toString()
-    .toLowerCase()
-    .replace(/^f\s*s\s*25[_\-\s]*/g, '')
-    .replace(/[^a-z0-9]/g, '');
+// Line 94: Cleans fill types and fruit titles
+function cleanFillName(raw) {
+    if (!raw) return "Cargo";
+    return cleanName(raw).replace(/^(Filltype|Fruit|Fruit Type)\s*/i, '');
 }
 
-// Line 199: Currency formatter
-function formatCurrency(amount) {
-  return `$${Math.round(amount || 0).toLocaleString('en-US')}`;
+// Line 100: Converts UTC / ISO timestamp directly to New York / Eastern Time
+function formatNewYorkTime(isoString) {
+    if (!isoString) return "--:-- --";
+    try {
+        const d = new Date(isoString);
+        return d.toLocaleTimeString("en-US", {
+            timeZone: "America/New_York",
+            hour12: true,
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+        }) + " (EDT)";
+    } catch (e) {
+        return String(isoString);
+    }
 }
 
-// Line 204: 2D Euclidean distance calculation
-function calculateDistance(x1, z1, x2, z2) {
-  if (x1 === undefined || z1 === undefined || x2 === undefined || z2 === undefined) return 999;
-  return Math.hypot(x1 - x2, z1 - z2);
-}
-
-// Line 210: Determines category grouping for dashboard cards
-function classifyVehicle(rawVehicle) {
-  const category = (rawVehicle.category || "").toUpperCase().replace(/[^A-Z]/g, '');
-  const type = (rawVehicle.type || "").toLowerCase();
-  const name = (rawVehicle.name || "").toLowerCase();
-
-  const isPallet = category === 'PALLETS' || category === 'BIGBAGPALLETS' || type.includes('pallet');
-  if (isPallet) {
-    return { groupKey: 'pallets', itemKind: 'Pallet / Cargo', isMotorized: false };
-  }
-
-  if (HARVESTER_CATEGORIES.has(category) || type.includes('combine') || name.includes('harvester')) {
-    return { groupKey: 'harvesters', itemKind: 'Harvester & Combine', isMotorized: true };
-  }
-
-  if (TRAILER_CATEGORIES.has(category) || name.includes('trailer') || name.includes('dropdeck') || name.includes('flatbed') || type.includes('trailer') || type.includes('wagon')) {
-    return { groupKey: 'trailers', itemKind: 'Hauling Trailer', isMotorized: false };
-  }
-
-  const isMotorCategory = MOTORIZED_CATEGORIES.has(category);
-  const isDriven = Boolean(rawVehicle.controller);
-  const isAIDriven = String(rawVehicle.isAIActive || 'false').toLowerCase() === 'true';
-  const hasMotorKeywords = type.includes('motor') || type.includes('tractor') || type.includes('truck') || name.includes('tractor') || name.includes('truck');
-
-  if (isMotorCategory || isDriven || isAIDriven || hasMotorKeywords) {
-    return { groupKey: 'motorVehicles', itemKind: 'Motor Vehicle', isMotorized: true };
-  }
-
-  return { groupKey: 'implements', itemKind: 'Implement / Seeder', isMotorized: false };
-}
-
-// Line 242: Computes in-game clock, month, and season
-function resolveInGameCalendar(envNode, careerNode, statsDayTime) {
-  try {
-    const env = envNode && (envNode.environment || envNode);
-    const career = careerNode && (careerNode.careerSavegame || careerNode);
-
-    let rawDayTime = null;
-    if (statsDayTime !== null && statsDayTime !== undefined) rawDayTime = parseFloat(statsDayTime);
-    else if (env && env.dayTime !== undefined) rawDayTime = parseFloat(env.dayTime);
-    else if (career && career.dayTime !== undefined) rawDayTime = parseFloat(career.dayTime);
-
-    const totalMins = Math.floor(parseFloat(rawDayTime || 0)) % 1440;
+// Line 117: Converts in-game raw fractional dayTime minutes (0 to 1440) to standard 12hr clock time
+function formatInGameClock(rawDayTime) {
+    if (rawDayTime === null || rawDayTime === undefined || isNaN(rawDayTime)) return "12:00 PM";
+    const totalMins = Math.floor(parseFloat(rawDayTime)) % 1440;
     const hours24 = Math.floor(totalMins / 60);
     const mins = totalMins % 60;
     const hours12 = hours24 % 12 === 0 ? 12 : hours24 % 12;
     const ampm = hours24 >= 12 ? "PM" : "AM";
-    const padH = String(hours24).padStart(2, '0');
     const padM = String(mins).padStart(2, '0');
+    return `${hours12}:${padM} ${ampm}`;
+}
 
-    let monthIndex = 0;
-    let dayInMonth = 1;
-    let seasonName = "Spring";
+// Line 129: Resolves in-game calendar season, month and days per period
+function resolveCalendarInfo(envNode, careerNode, statsDayTime) {
+    try {
+        const env = envNode && (envNode.environment || envNode);
+        const career = careerNode && (careerNode.careerSavegame || careerNode);
 
-    const rawMonth = env && (env.currentMon || env.currentMonth || env.month);
-    const currentDay = env && (env.currentDay || env.day);
-    const daysPerPeriod = parseInt((env && env.daysPerPeriod) || (career && career.settings && career.settings.plannedDaysPerPeriod) || 1, 10);
+        let dayTimeVal = statsDayTime;
+        if (dayTimeVal === null || dayTimeVal === undefined) {
+            dayTimeVal = env ? env.dayTime : (career ? career.dayTime : null);
+        }
 
-    if (rawMonth !== undefined && !isNaN(rawMonth)) {
-      const parsedM = parseInt(rawMonth, 10);
-      monthIndex = (parsedM >= 1 && parsedM <= 12) ? parsedM - 1 : 0;
-    } else if (currentDay !== undefined && !isNaN(currentDay)) {
-      const dayNum = parseInt(currentDay, 10);
-      const calculatedMonthIndex = Math.floor((dayNum - 1) / Math.max(1, daysPerPeriod)) % 12;
-      monthIndex = (calculatedMonthIndex >= 0 && calculatedMonthIndex < 12) ? calculatedMonthIndex : 0;
-      dayInMonth = ((dayNum - 1) % daysPerPeriod) + 1;
+        const clockStr = formatInGameClock(dayTimeVal);
+        const daysPerPeriod = parseInt((env && env.daysPerPeriod) || (career && career.settings && career.settings.plannedDaysPerPeriod) || 1, 10);
+        const currentDay = parseInt((env && (env.currentDay || env.currentMonotonicDay)) || 1, 10);
+
+        let monthIndex = Math.floor((currentDay - 1) / Math.max(1, daysPerPeriod)) % 12;
+        if (monthIndex < 0 || monthIndex >= 12) monthIndex = 0;
+        const dayInMonth = ((currentDay - 1) % daysPerPeriod) + 1;
+        const monthName = FS_MONTHS[monthIndex];
+
+        let seasonName = "Spring";
+        if (monthIndex >= 3 && monthIndex <= 5) seasonName = "Summer";
+        else if (monthIndex >= 6 && monthIndex <= 8) seasonName = "Autumn";
+        else if (monthIndex >= 9 && monthIndex <= 11) seasonName = "Winter";
+
+        return {
+            clock: clockStr,
+            month: monthName,
+            dayInMonth: dayInMonth,
+            season: seasonName,
+            formatted: `${monthName} (Day ${dayInMonth}) - ${clockStr}`
+        };
+    } catch (err) {
+        console.warn("⚠️ Warning: Calendar resolution fallback used:", err.message);
+        return {
+            clock: "12:00 PM",
+            month: "March",
+            dayInMonth: 1,
+            season: "Spring",
+            formatted: "March (Day 1) - 12:00 PM"
+        };
     }
-
-    const monthName = FS_MONTHS[monthIndex];
-    if (monthIndex >= 0 && monthIndex <= 2) seasonName = "Spring";
-    else if (monthIndex >= 3 && monthIndex <= 5) seasonName = "Summer";
-    else if (monthIndex >= 6 && monthIndex <= 8) seasonName = "Autumn";
-    else seasonName = "Winter";
-
-    return {
-      time: `${hours12}:${padM} ${ampm}`,
-      time24: `${padH}:${padM}`,
-      hours: hours24,
-      minutes: mins,
-      month: monthName,
-      monthIndex: monthIndex + 1,
-      dayInMonth: dayInMonth,
-      season: seasonName,
-      daysPerPeriod: daysPerPeriod,
-      formattedStamp: `${monthName} (Day ${dayInMonth}) - ${hours12}:${padM} ${ampm}`
-    };
-  } catch (err) {
-    console.warn("⚠️ Warning: Error resolving calendar. Using fallback defaults:", err.message);
-    return {
-      time: "12:00 PM",
-      time24: "12:00",
-      hours: 12,
-      minutes: 0,
-      month: "Spring",
-      monthIndex: 1,
-      dayInMonth: 1,
-      season: "Spring",
-      daysPerPeriod: 1,
-      formattedStamp: "Spring - 12:00 PM"
-    };
-  }
 }
 
-// Line 316: Spatial zone calculation with fallback sector grid
-function getSpatialZone(x, z, fieldList = []) {
-  if (x === undefined || z === undefined) return "Farm Grounds";
-  const numX = parseFloat(x);
-  const numZ = parseFloat(z);
-
-  if (fieldList && fieldList.length > 0) {
-    const matched = fieldList.find(f => {
-      if (f.x !== undefined && f.z !== undefined) {
-        return Math.hypot(numX - parseFloat(f.x), numZ - parseFloat(f.z)) < 85;
-      }
-      return false;
-    });
-    if (matched) return `Field ${matched.id}`;
-  }
-
-  const xGrid = Math.floor(numX / 100) * 100;
-  const zGrid = Math.floor(numZ / 100) * 100;
-  return `Sector (${xGrid}, ${zGrid})`;
-}
-
-// Line 338: FTP download helper to utf-8 text
-async function downloadFtpFileToString(client, remotePath) {
-  const chunks = [];
-  const writer = new Writable({
-    write(chunk, encoding, callback) {
-      chunks.push(chunk);
-      callback();
-    }
-  });
-  await client.downloadTo(writer, remotePath);
-  return Buffer.concat(chunks).toString('utf-8');
-}
-
-// Line 351: Dedicated server live stats poller
-async function pingLiveFeed() {
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 6000);
-    const res = await fetch(STATS_URL, { signal: controller.signal });
-    clearTimeout(timeout);
-
-    if (res.ok) {
-      const text = sanitizeXml(await res.text());
-      const parsed = await parseXmlString(text);
-      return { isOnline: true, rawXml: text, serverNode: parsed ? parsed.Server : null };
-    }
-  } catch (e) {
-    console.warn("⚠️ Warning: Dedicated server stats port 9050 is unreachable:", e.message);
-  }
-  return { isOnline: false, rawXml: "", serverNode: null };
-}
-
-// Line 370: Mod catalog reader from Firebase
-async function fetchWebsiteCatalog() {
-  try {
-    const rawVal = (await getDb('websiteMods')) || {};
-    const catalog = {};
-    Object.keys(rawVal).forEach(k => {
-      const item = rawVal[k];
-      if (item && typeof item === 'object') {
-        const clean = (item.filename || k).replace(/\.zip$/i, '');
-        catalog[clean.toLowerCase()] = item;
-        catalog[normalizeKey(clean)] = item;
-        if (item.name) catalog[normalizeKey(item.name)] = item;
-      }
-    });
-    return catalog;
-  } catch (err) {
-    console.warn("⚠️ Warning: Failed indexing /websiteMods catalog:", err.message);
-    return {};
-  }
+// Line 173: Dismisses active lightbox modal
+function closeActiveLightbox() {
+    const modal = document.getElementById('lightbox-modal');
+    if (modal) modal.classList.remove('active');
 }
 
 // ============================================================================
-// SECTION 5: MASTER INGESTION PIPELINE (DYNAMIC SAVEGAME SWITCHING)
+// SECTION 2: NAVIGATION MENU BUILDER (/utm_links)
 // ============================================================================
-// Line 393: Main pipeline execution
-async function runPipeline() {
-  const isForceRun = process.argv.includes('--force') || process.env.GITHUB_EVENT_NAME === 'workflow_dispatch';
-  const gportalSyncTimestamp = new Date().toISOString();
-  console.log(`📡 [1/5] Querying G-Portal Telemetry Feed at ${gportalSyncTimestamp} (Force: ${isForceRun})...`);
+// Line 181: Dynamically loads the navigation bar links
+async function loadNavigationMenu() {
+    const nav = document.getElementById('dynamic-menu');
+    if (!nav) return;
 
-  const live = await pingLiveFeed();
+    try {
+        const res = await fetch(`${UTM_LINKS_URL}?t=${Date.now()}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!data || typeof data !== 'object') return;
 
-  if (!live.isOnline && !isForceRun) {
-    console.log("🛑 Server is offline. Updating serverStatus node and exiting cleanly.");
-    await updateDb('fs25/serverStatus', {
-      isOnline: false,
-      lastChecked: gportalSyncTimestamp,
-      lastGportalSync: gportalSyncTimestamp
-    });
-    process.exit(0);
-  }
+        const DESIRED_ORDER = ['home', 'users', 'game', 'other', 'entertainment'];
+        const rootFolders = {};
 
-  const server = live.serverNode || {};
-  const activePlayers = [];
-
-  // Line 415: Resilient Player parsing supporting string and object formats
-  if (server.Slots && server.Slots.Player) {
-    const pList = Array.isArray(server.Slots.Player) ? server.Slots.Player : [server.Slots.Player];
-    pList.forEach(p => {
-      const isUsed = String(p.isUsed || p._isUsed || '').toLowerCase() === 'true';
-      if (isUsed) {
-        let pName = "Unknown";
-        if (typeof p === 'string') pName = p;
-        else if (p._) pName = p._;
-        else if (p.name) pName = p.name;
-
-        activePlayers.push({
-          name: pName,
-          uptime: parseInt(p.uptime || 0, 10),
-          isAdmin: String(p.isAdmin) === 'true',
-          x: p.x ? parseFloat(p.x) : null,
-          z: p.z ? parseFloat(p.z) : null
+        Object.keys(data).forEach(k => {
+            rootFolders[k.toLowerCase()] = { title: k, records: data[k] };
         });
-      }
-    });
-  }
 
-  console.log(`👥 Active Players: ${activePlayers.length} (${activePlayers.map(p => p.name).join(', ') || 'None'})`);
-
-  await updateDb('fs25/serverStatus', {
-    isOnline: live.isOnline,
-    activePlayerCount: activePlayers.length,
-    activePlayers: activePlayers,
-    lastChecked: gportalSyncTimestamp,
-    lastGportalSync: gportalSyncTimestamp
-  });
-
-  // Line 451: Connect to G-Portal FTP to read authority server config
-  console.log(`📡 [2/5] Connecting to G-Portal FTP at ${ftpHost}:${ftpPort}...`);
-  const client = new ftp.Client();
-  client.ftp.verbose = false;
-
-  let activeSlot = "3";
-  let mapFilename = "FS25_The_Rural_Farmlands_Of_Ohio.zip";
-  let rawServerConfig = "";
-
-  try {
-    await client.access({
-      host: ftpHost,
-      port: ftpPort,
-      user: ftpUser,
-      password: ftpPass,
-      secure: false
-    });
-
-    const configCandidates = [
-      'dedicated_server/dedicatedServerConfig.xml',
-      'profile/dedicated_server/dedicatedServerConfig.xml',
-      'dedicatedServerConfig.xml'
-    ];
-
-    for (const p of configCandidates) {
-      try {
-        const text = await downloadFtpFileToString(client, p);
-        if (text) {
-          rawServerConfig = sanitizeXml(text);
-          const sMatch = rawServerConfig.match(/<savegame_index>(\d+)<\/savegame_index>/i);
-          if (sMatch) activeSlot = sMatch[1];
-          const mMatch = rawServerConfig.match(/<mapFilename>([^<]+)<\/mapFilename>/i);
-          if (mMatch) mapFilename = mMatch[1];
-          break;
-        }
-      } catch (e) {
-        console.warn(`⚠️ Warning: Unable to read config candidate ${p}:`, e.message);
-      }
-    }
-
-    const slotFolder = `savegame${activeSlot}`;
-    const slotNodeName = `savegame${activeSlot}`;
-    console.log(`🎯 Active Savegame Locked via Server Authority: [ Slot #${activeSlot} -> ${slotFolder} ]`);
-
-    // Line 495: Ingest all authoritative XML files from the active save slot folder
-    console.log(`📂 [3/5] Ingesting Authoritative Data Files from [ ${slotFolder} ]...`);
-
-    // Ingest vehicles.xml (Farm ownership mapping)
-    const savegameVehicleOwnership = {};
-    try {
-      const vXmlContent = await downloadFtpFileToString(client, `${slotFolder}/vehicles.xml`);
-      if (vXmlContent) {
-        const parsedVXml = await parseXmlString(sanitizeXml(vXmlContent));
-        const rootVehicles = parsedVXml && (parsedVXml.vehicles || parsedVXml);
-        if (rootVehicles && (rootVehicles.vehicle || rootVehicles.item)) {
-          const items = Array.isArray(rootVehicles.vehicle || rootVehicles.item)
-            ? (rootVehicles.vehicle || rootVehicles.item)
-            : [rootVehicles.vehicle || rootVehicles.item];
-          items.forEach(item => {
-            const fId = String(item.farmId || item.ownerFarmId || "1");
-            const cleanName = cleanEntityName(item.filename || "");
-            savegameVehicleOwnership[cleanName.toLowerCase()] = fId;
-            savegameVehicleOwnership[normalizeKey(cleanName)] = fId;
-            if (item.filename) savegameVehicleOwnership[item.filename.toLowerCase()] = fId;
-            if (item.modName) savegameVehicleOwnership[item.modName.toLowerCase()] = fId;
-          });
-        }
-      }
-    } catch (vErr) {
-      console.warn("⚠️ Warning: vehicles.xml parsing encountered an error:", vErr.message);
-    }
-
-    // Ingest fields.xml (Field state, crop type, ground type)
-    const savegameFieldsState = {};
-    try {
-      const fieldsXmlContent = await downloadFtpFileToString(client, `${slotFolder}/fields.xml`);
-      if (fieldsXmlContent) {
-        const parsedFXml = await parseXmlString(sanitizeXml(fieldsXmlContent));
-        const rootFields = parsedFXml && (parsedFXml.fields || parsedFXml);
-        if (rootFields && rootFields.field) {
-          const fItems = Array.isArray(rootFields.field) ? rootFields.field : [rootFields.field];
-          fItems.forEach(f => {
-            savegameFieldsState[String(f.id)] = {
-              fruitType: f.fruitType,
-              growthState: f.growthState,
-              groundType: f.groundType,
-              weedState: f.weedState
-            };
-          });
-        }
-      }
-    } catch (fErr) {
-      console.warn("⚠️ Warning: fields.xml parsing encountered an error:", fErr.message);
-    }
-
-    // Ingest farmlands.xml (Farmland owner farmId mapping)
-    const farmlandsOwnership = {};
-    try {
-      const fLandContent = await downloadFtpFileToString(client, `${slotFolder}/farmland.xml`)
-        .catch(() => downloadFtpFileToString(client, `${slotFolder}/farmlands.xml`));
-      if (fLandContent) {
-        const parsedFLand = await parseXmlString(sanitizeXml(fLandContent));
-        const rootFLand = parsedFLand && (parsedFLand.farmlands || parsedFLand);
-        if (rootFLand && rootFLand.farmland) {
-          const flItems = Array.isArray(rootFLand.farmland) ? rootFLand.farmland : [rootFLand.farmland];
-          flItems.forEach(fl => {
-            farmlandsOwnership[String(fl.id)] = String(fl.farmId || fl.owner || "0");
-          });
-        }
-      }
-    } catch (flErr) {
-      console.warn("⚠️ Warning: farmland.xml parsing skipped:", flErr.message);
-    }
-
-    // Ingest farms.xml (Dual-Bank live balance and player roster)
-    const farmFinances = {};
-    try {
-      const farmXmlContent = await downloadFtpFileToString(client, `${slotFolder}/farms.xml`);
-      if (farmXmlContent) {
-        const parsedFarms = await parseXmlString(sanitizeXml(farmXmlContent));
-        const fList = (parsedFarms && parsedFarms.farms && parsedFarms.farms.farm)
-          ? (Array.isArray(parsedFarms.farms.farm) ? parsedFarms.farms.farm : [parsedFarms.farms.farm])
-          : [];
-        fList.forEach(f => {
-          const fId = String(f.farmId || f.id || "1");
-          const money = parseFloat(f.money || 0);
-          const loan = parseFloat(f.loan || 0);
-          farmFinances[`farm_${fId}`] = {
-            farmId: fId,
-            name: f.name || `Farm ${fId}`,
-            money: money,
-            loan: loan,
-            balance: money - loan,
-            moneyFormatted: formatCurrency(money),
-            balanceFormatted: formatCurrency(money - loan)
-          };
-          console.log(`💰 Live Bank [${f.name || `Farm ${fId}`}]: ${formatCurrency(money)} (Balance: ${formatCurrency(money - loan)})`);
-        });
-      }
-    } catch (farmErr) {
-      console.warn("⚠️ Warning: farms.xml parsing encountered an error:", farmErr.message);
-    }
-
-    // Ingest missions.xml (Contracts)
-    const missionsList = [];
-    try {
-      const mXml = await downloadFtpFileToString(client, `${slotFolder}/missions.xml`);
-      if (mXml) {
-        const pM = await parseXmlString(sanitizeXml(mXml));
-        const rootM = pM && (pM.missions || pM);
-        if (rootM) {
-          Object.keys(rootM).forEach(k => {
-            if (k.toLowerCase().includes('mission')) {
-              const arr = Array.isArray(rootM[k]) ? rootM[k] : [rootM[k]];
-              arr.forEach(item => {
-                missionsList.push({
-                  type: k,
-                  status: item.status || "CREATED",
-                  fieldId: item.field ? String(item.field.id || item.field) : null,
-                  reward: item.info ? parseFloat(item.info.reward || 0) : 0,
-                  fruitType: item.fruitType || (item.harvest && item.harvest.fruitType) || null
-                });
-              });
+        const ordered = [];
+        DESIRED_ORDER.forEach(k => {
+            if (rootFolders[k]) {
+                ordered.push(rootFolders[k]);
+                delete rootFolders[k];
             }
-          });
-        }
-      }
-    } catch (mErr) {
-      console.warn("⚠️ Warning: missions.xml parsing skipped:", mErr.message);
-    }
+        });
+        Object.values(rootFolders).forEach(f => ordered.push(f));
 
-    // Ingest collectibles.xml
-    const collectiblesData = { foundCount: 0, total: 50, isComplete: false };
-    try {
-      const cXml = await downloadFtpFileToString(client, `${slotFolder}/collectibles.xml`);
-      if (cXml) {
-        const pC = await parseXmlString(sanitizeXml(cXml));
-        const rootC = pC && (pC.collectibles || pC);
-        if (rootC && rootC.collectible) {
-          const cItems = Array.isArray(rootC.collectible) ? rootC.collectible : [rootC.collectible];
-          let found = 0;
-          cItems.forEach(c => {
-            if (String(c.collected).toLowerCase() === 'true') found++;
-          });
-          collectiblesData.foundCount = found;
-          collectiblesData.total = cItems.length;
-          collectiblesData.isComplete = found === cItems.length;
-        }
-      }
-    } catch (cErr) {
-      console.warn("⚠️ Warning: collectibles.xml parsing skipped:", cErr.message);
-    }
+        let html = '';
+        ordered.forEach(folder => {
+            const links = [];
+            const list = toArray(folder.records);
 
-    // Ingest economy.xml (Active demands & fill types)
-    const activeDemands = [];
-    try {
-      const ecoXml = await downloadFtpFileToString(client, `${slotFolder}/economy.xml`);
-      if (ecoXml) {
-        const pEco = await parseXmlString(sanitizeXml(ecoXml));
-        const demandsRoot = pEco && pEco.economy && pEco.economy.greatDemands && pEco.economy.greatDemands.greatDemand;
-        if (demandsRoot) {
-          const dArr = Array.isArray(demandsRoot) ? demandsRoot : [demandsRoot];
-          dArr.forEach(d => {
-            activeDemands.push({
-              fillTypeName: d.fillTypeName,
-              demandMultiplier: parseFloat(d.demandMultiplier || 1.0),
-              isRunning: String(d.isRunning).toLowerCase() === 'true',
-              isValid: String(d.isValid).toLowerCase() === 'true'
+            list.forEach(item => {
+                if (item && typeof item === 'object') {
+                    const url = item.url || item.link || item.href;
+                    if (url && typeof url === 'string') {
+                        links.push({
+                            title: item.title || item.name || "Link",
+                            url: url,
+                            img: item.image || item.thumb || null
+                        });
+                    }
+                }
             });
-          });
-        }
-      }
-    } catch (ecoErr) {
-      console.warn("⚠️ Warning: economy.xml parsing skipped:", ecoErr.message);
-    }
 
-    // Ingest environment.xml (Weather & Season)
-    let weatherForecast = [];
-    try {
-      const envXml = await downloadFtpFileToString(client, `${slotFolder}/environment.xml`);
-      if (envXml) {
-        const pEnv = await parseXmlString(sanitizeXml(envXml));
-        const fCast = pEnv && pEnv.environment && pEnv.environment.weather && pEnv.environment.weather.forecast && pEnv.environment.weather.forecast.instance;
-        if (fCast) {
-          const fArr = Array.isArray(fCast) ? fCast : [fCast];
-          weatherForecast = fArr.slice(0, 8).map(w => ({
-            type: w.typeName,
-            season: w.season,
-            startDay: parseInt(w.startDay || 0, 10),
-            duration: parseInt(w.duration || 0, 10)
-          }));
-        }
-      }
-    } catch (envErr) {
-      console.warn("⚠️ Warning: environment.xml parsing skipped:", envErr.message);
-    }
-
-    // Ingest active mods with catalog enrichment
-    const catalogLookup = await fetchWebsiteCatalog();
-    const activeMods = {};
-    if (rawServerConfig) {
-      try {
-        const cfgJson = await parseXmlString(rawServerConfig);
-        const modsRoot = (cfgJson && cfgJson.gameserver && cfgJson.gameserver.mods) || (cfgJson && cfgJson.dedicatedServer && cfgJson.dedicatedServer.mods);
-        if (modsRoot && modsRoot.mod) {
-          const mList = Array.isArray(modsRoot.mod) ? modsRoot.mod : [modsRoot.mod];
-          mList.forEach(m => {
-            const modFile = m.filename || (typeof m === 'string' ? m : "");
-            if (modFile) {
-              const cleanKey = modFile.replace(/\.zip$/i, '');
-              const enriched = catalogLookup[cleanKey.toLowerCase()] || catalogLookup[normalizeKey(cleanKey)] || null;
-              activeMods[cleanKey] = {
-                modKey: cleanKey,
-                name: (enriched && enriched.name) ? enriched.name : cleanEntityName(cleanKey),
-                author: (enriched && enriched.author) ? enriched.author : (m.author || "ModHub / Giants"),
-                image: (enriched && (enriched.image || enriched.imageUrl)) ? (enriched.image || enriched.imageUrl) : null,
-                category: (enriched && (enriched.category || enriched.categorySecondary)) ? (enriched.category || enriched.categorySecondary) : "General",
-                description: (enriched && enriched.description) ? enriched.description : "",
-                size: (enriched && enriched.size) ? enriched.size : "",
-                crossplay: (enriched && enriched.crossplay) ? enriched.crossplay : "Yes"
-              };
+            if (folder.title.toLowerCase() === 'home' && links.length <= 1) {
+                const h = links[0] || { title: 'Home', url: '//werewolf3788.github.io/Website/' };
+                html += `
+                    <a href="${h.url}" class="dropdown-trigger-btn">
+                        <i class="fa-solid fa-house" style="color:var(--accent-gold);"></i> <span>${h.title}</span>
+                    </a>
+                `;
+            } else if (links.length > 0) {
+                html += `
+                    <div class="nav-dropdown-wrapper">
+                        <button type="button" class="dropdown-trigger-btn">
+                            <i class="fa-solid fa-folder" style="color:var(--accent-gold);"></i> <span>${folder.title}</span> <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                        </button>
+                        <div class="dropdown-popout-menu">
+                            ${links.map(l => `
+                                <a href="${l.url}" class="dropdown-item">
+                                    ${l.img ? `<img src="${l.img}" style="width:18px; height:18px; border-radius:3px; object-fit:cover;">` : '<i class="fa-solid fa-arrow-up-right-from-square"></i>'}
+                                    <span>${l.title}</span>
+                                </a>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
             }
-          });
+        });
+
+        nav.innerHTML = html;
+    } catch (err) {
+        console.warn("⚠️ Warning: Failed loading UTM menu bar:", err.message);
+    }
+}
+
+// ============================================================================
+// SECTION 3: REALTIME DATABASE SYNC ENGINE
+// ============================================================================
+// Line 257: Main UI Synchronization Engine mapping Firebase RTDB to DOM
+function syncDashboard(data) {
+    if (!data) return;
+
+    // Line 261: Read dynamic savegame authority
+    const activeSlot = String(data.activeSaveSlot || (data.cards && data.cards.activeSaveSlot) || '3');
+    const slotNodeName = data.activeSlotNode || `savegame${activeSlot}`;
+    const slotData = data[slotNodeName] || data;
+    const rawXml = (data.allRawParsedXml || slotData.allRawParsedXml || {});
+
+    // Line 267: Extract in-game environment & dayTime
+    const envXml = rawXml.environment && (rawXml.environment.environment || rawXml.environment);
+    const careerXml = rawXml.careerSavegame && (rawXml.careerSavegame.careerSavegame || rawXml.careerSavegame);
+    const cal = resolveCalendarInfo(envXml, careerXml, data.serverStatus?.dayTime);
+
+    // Line 272: Top Banner Updates
+    try {
+        const statusPill = document.getElementById('server-status-pill');
+        const statusText = document.getElementById('status-text');
+        const mapEl = document.getElementById('server-map');
+        const timeEl = document.getElementById('server-time');
+        const seasonEl = document.getElementById('server-month');
+        const weatherEl = document.getElementById('server-weather');
+        const playersEl = document.getElementById('server-players');
+        const slotDisplay = document.getElementById('save-slot-display');
+        const syncTimeEl = document.getElementById('last-sync-time');
+
+        const isOnline = !!(data.serverStatus?.isOnline ?? true);
+        if (statusPill && statusText) {
+            statusPill.className = `status-pill ${isOnline ? 'status-online' : 'status-offline'}`;
+            statusText.innerText = isOnline ? 'ONLINE' : 'OFFLINE';
         }
-      } catch (modErr) {
-        console.warn("⚠️ Warning: Error parsing active mods:", modErr.message);
-      }
+
+        if (mapEl) {
+            const mapTitle = careerXml?.settings?.mapTitle || data.mapTitle || "The Rural Farmlands Of Ohio";
+            mapEl.innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${mapTitle}`;
+        }
+
+        if (timeEl) timeEl.innerHTML = `<i class="fa-regular fa-clock"></i> Time: ${cal.clock}`;
+        if (seasonEl) seasonEl.innerHTML = `<i class="fa-solid fa-calendar-days"></i> ${cal.month} (Day ${cal.dayInMonth})`;
+
+        if (weatherEl) {
+            const forecast = toArray(data.weatherForecast || slotData.weatherForecast);
+            const currentWeather = forecast[0]?.type || 'Clear';
+            weatherEl.innerHTML = `<i class="fa-solid fa-sun"></i> Weather: ${currentWeather}`;
+        }
+
+        const activePlayersArray = toArray(data.activePlayers || data.serverStatus?.activePlayers);
+        if (playersEl) playersEl.innerHTML = `<i class="fa-solid fa-users"></i> Players: ${activePlayersArray.length} Online`;
+        if (slotDisplay) slotDisplay.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Slot #${activeSlot}`;
+
+        // Line 307: Convert lastGportalSync timestamp to New York Time
+        const rawSyncStamp = data.lastGportalSync || data.cards?.lastGportalSync || data.serverStatus?.lastGportalSync || data.lastUpdated;
+        if (syncTimeEl) {
+            syncTimeEl.innerHTML = `<i class="fa-solid fa-rotate"></i> Last G-Portal Sync: ${formatNewYorkTime(rawSyncStamp)}`;
+        }
+    } catch (bannerErr) {
+        console.warn("⚠️ Warning: Error synchronizing banner elements:", bannerErr.message);
     }
 
-    // Line 707: Process Fields combining Telemetry, fields.xml, and farmlands.xml
-    const rawFields = (server.Fields && server.Fields.Field)
-      ? (Array.isArray(server.Fields.Field) ? server.Fields.Field : [server.Fields.Field])
-      : [];
+    // Line 315: Global Summary KPI Counters & Console Slot Usage
+    try {
+        const netWorthEl = document.getElementById('global-net-worth');
+        const fleetCountEl = document.getElementById('global-vehicle-count');
+        const modCountEl = document.getElementById('global-mod-errors');
+        const landCountEl = document.getElementById('global-land-count');
 
-    const processedFields = [];
-    let cultivatedCount = 0;
-    let seededCount = 0;
-
-    rawFields.forEach((f, fIdx) => {
-      try {
-        const fieldId = String(f.id || f.number || fIdx + 1);
-        const saveState = savegameFieldsState[fieldId] || {};
-        const rawFruit = saveState.fruitType || f.fruitType || f.fruit || f.crop || "Fallow";
-        const cropName = cleanFillTypeName(rawFruit);
-        const ownerFarm = farmlandsOwnership[fieldId] || (String(f.isOwned) === 'true' ? "1" : "0");
-
-        if (cropName !== "Fallow" && cropName !== "General Cargo" && cropName !== "Unknown") {
-          seededCount++;
-        } else {
-          cultivatedCount++;
+        // Extract console slot limit
+        let slotUsage = careerXml?.slotSystem?.slotUsage || rawXml.careerSavegame?.careerSavegame?.slotSystem?.slotUsage;
+        if (slotUsage !== undefined && slotDisplay) {
+            slotDisplay.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Slot #${activeSlot} (Console Slots: ${slotUsage})`;
         }
 
-        processedFields.push({
-          id: fieldId,
-          name: `Field ${fieldId}`,
-          cropType: cropName,
-          growthState: saveState.growthState || f.growthState || f.state || "Growing",
-          groundType: saveState.groundType || "Sown",
-          isOwned: ownerFarm !== "0",
-          farmId: ownerFarm,
-          areaHectares: parseFloat(f.area || f.size || 0),
-          x: parseFloat(f.x || 0),
-          z: parseFloat(f.z || 0)
-        });
-      } catch (fErr) {
-        console.warn(`⚠️ Warning: Error parsing field #${fIdx + 1}:`, fErr.message);
-      }
-    });
+        const finances = data.finances || slotData.finances || (data.farms ? data.farms : {});
+        let totalCash = 0;
+        let f1Cash = 0;
+        let f2Cash = 0;
 
-    // Line 749: Live Vehicle parsing, category grouping, and Farm 1 vs Farm 2 separation
-    const existingFs25 = (await getDb('fs25')) || {};
-    const previousVehicles = (existingFs25.fleetTelemetry) ? existingFs25.fleetTelemetry : [];
+        if (finances.farm_1) {
+            f1Cash = Number(finances.farm_1.money || finances.farm_1.balance || 0);
+            totalCash += f1Cash;
+        }
+        if (finances.farm_2) {
+            f2Cash = Number(finances.farm_2.money || finances.farm_2.balance || 0);
+            totalCash += f2Cash;
+        }
 
-    const liveVehicles = [];
-    const farm1Vehicles = [];
-    const farm2Vehicles = [];
+        const f1MoneyEl = document.getElementById('farm1-money');
+        const f2MoneyEl = document.getElementById('farm2-money');
+        if (netWorthEl) netWorthEl.innerText = formatMoney(totalCash);
+        if (f1MoneyEl) f1MoneyEl.innerText = formatMoney(f1Cash);
+        if (f2MoneyEl) f2MoneyEl.innerText = formatMoney(f2Cash);
+
+        const fleetList = toArray(data.fleetTelemetry || slotData.fleetTelemetry);
+        if (fleetCountEl) fleetCountEl.innerText = `${fleetList.length} Items`;
+
+        const activeModsMap = data.activeMods || slotData.activeMods || {};
+        if (modCountEl) modCountEl.innerText = `${Object.keys(activeModsMap).length} Mods`;
+
+        const fieldsList = toArray(data.fields || slotData.fields);
+        if (landCountEl) landCountEl.innerText = `${fieldsList.length} Fields`;
+
+    } catch (kpiErr) {
+        console.warn("⚠️ Warning: Error calculating KPI totals:", kpiErr.message);
+    }
+
+    // Line 356: Dual-Farm Fleets & Classified Collections Mapping
+    const farm1Tractors = [];
     const farm1Harvesters = [];
-    const farm2Harvesters = [];
     const farm1Trailers = [];
-    const farm2Trailers = [];
     const farm1Implements = [];
+
+    const farm2Tractors = [];
+    const farm2Harvesters = [];
+    const farm2Trailers = [];
     const farm2Implements = [];
 
-    const allMotorVehicles = [];
-    const allHarvesters = [];
-    const allTrailers = [];
-    const allImplements = [];
-    let movementDetected = false;
-    const MOVEMENT_THRESHOLD_METERS = 5.0;
+    // Directly bind to pre-sorted buckets if available, or fall back to fleet list
+    if (data.farm1 && data.farm2) {
+        farm1Tractors.push(...toArray(data.farm1.vehicles));
+        farm1Harvesters.push(...toArray(data.farm1.harvesters));
+        farm1Trailers.push(...toArray(data.farm1.trailers));
+        farm1Implements.push(...toArray(data.farm1.implements));
 
-    if (server.Vehicles && server.Vehicles.Vehicle) {
-      const vList = Array.isArray(server.Vehicles.Vehicle) ? server.Vehicles.Vehicle : [server.Vehicles.Vehicle];
-      vList.forEach((v, idx) => {
-        try {
-          const x = parseFloat(v.x || 0);
-          const z = parseFloat(v.z || 0);
-          const name = v.name || cleanEntityName(v.type || `Vehicle_${idx + 1}`);
-          const controller = v.controller || null;
-          const isAI = String(v.isAIActive || 'false').toLowerCase() === 'true';
-          const fillTypesRaw = v.fillTypes || v.fillType || "";
-          const fillLevelsRaw = v.fillLevels || v.fillLevel || "";
+        farm2Tractors.push(...toArray(data.farm2.vehicles));
+        farm2Harvesters.push(...toArray(data.farm2.harvesters));
+        farm2Trailers.push(...toArray(data.farm2.trailers));
+        farm2Implements.push(...toArray(data.farm2.implements));
+    } else {
+        const fleetList = toArray(data.fleetTelemetry || slotData.fleetTelemetry);
+        fleetList.forEach(v => {
+            const fId = String(v.farmId || "1");
+            const gKey = v.groupKey || (v.isMotorized ? 'motorVehicles' : 'implements');
 
-          const prev = previousVehicles.find(pv => pv.name === name || pv.id === String(idx + 1));
-          let distMoved = 0;
-          if (prev && prev.x !== undefined && prev.z !== undefined) {
-            distMoved = calculateDistance(x, z, prev.x, prev.z);
-            if (distMoved >= MOVEMENT_THRESHOLD_METERS) {
-              movementDetected = true;
-              console.log(`🚜 Movement: [ ${name} ] moved ${distMoved.toFixed(1)}m (Driver: ${controller || (isAI ? 'AI' : 'Idle')})`);
-            }
-          }
+            const targetTractors = fId === "2" ? farm2Tractors : farm1Tractors;
+            const targetHarvesters = fId === "2" ? farm2Harvesters : farm1Harvesters;
+            const targetTrailers = fId === "2" ? farm2Trailers : farm1Trailers;
+            const targetImplements = fId === "2" ? farm2Implements : farm1Implements;
 
-          const classification = classifyVehicle(v);
+            if (gKey === 'harvesters') targetHarvesters.push(v);
+            else if (gKey === 'trailers') targetTrailers.push(v);
+            else if (gKey === 'motorVehicles') targetTractors.push(v);
+            else targetImplements.push(v);
+        });
+    }
 
-          // Line 794: Resolve farmId using savegame authoritative ownership dictionary
-          let assignedFarmId = "1";
-          const matchKey = Object.keys(savegameVehicleOwnership).find(k =>
-            k.toLowerCase().includes(name.toLowerCase()) || normalizeKey(name).includes(k)
-          );
+    // Line 392: Unified Vehicle/Implement Card Renderer with Count Badges
+    const renderVehicleGroup = (units, targetContainerId, countBadgeId, emptyMessage) => {
+        const box = document.getElementById(targetContainerId);
+        const countBadge = document.getElementById(countBadgeId);
+        if (countBadge) countBadge.innerText = units.length;
+        if (!box) return;
 
-          if (matchKey && savegameVehicleOwnership[matchKey]) {
-            assignedFarmId = savegameVehicleOwnership[matchKey];
-          } else if (v.farmId) {
-            assignedFarmId = String(v.farmId);
-          } else if (x > 200 && z > 200) {
-            assignedFarmId = "2";
-          } else {
-            assignedFarmId = "1";
-          }
-
-          const vehicleRecord = {
-            id: String(idx + 1),
-            name: name,
-            farmId: assignedFarmId,
-            itemKind: classification.itemKind,
-            groupKey: classification.groupKey,
-            isMotorized: classification.isMotorized,
-            category: v.category || (classification.isMotorized ? "TRACTORS" : "IMPLEMENTS"),
-            type: v.type || "vehicle",
-            x: x,
-            y: parseFloat(v.y || 0),
-            z: z,
-            location: getSpatialZone(x, z, processedFields),
-            controller: controller,
-            isAIActive: isAI,
-            fillTypes: fillTypesRaw ? cleanFillTypeName(fillTypesRaw) : "Empty",
-            fillLevels: fillLevelsRaw,
-            lastMovedDelta: distMoved
-          };
-
-          liveVehicles.push(vehicleRecord);
-
-          // Route to global classified groups
-          if (classification.groupKey === 'harvesters') allHarvesters.push(vehicleRecord);
-          else if (classification.groupKey === 'trailers') allTrailers.push(vehicleRecord);
-          else if (classification.groupKey === 'motorVehicles') allMotorVehicles.push(vehicleRecord);
-          else if (classification.groupKey === 'implements') allImplements.push(vehicleRecord);
-
-          // Route to Farm-specific card buckets
-          if (assignedFarmId === "2") {
-            if (classification.groupKey === 'harvesters') farm2Harvesters.push(vehicleRecord);
-            else if (classification.groupKey === 'trailers') farm2Trailers.push(vehicleRecord);
-            else if (classification.groupKey === 'motorVehicles') farm2Vehicles.push(vehicleRecord);
-            else if (classification.groupKey === 'implements') farm2Implements.push(vehicleRecord);
-          } else {
-            if (classification.groupKey === 'harvesters') farm1Harvesters.push(vehicleRecord);
-            else if (classification.groupKey === 'trailers') farm1Trailers.push(vehicleRecord);
-            else if (classification.groupKey === 'motorVehicles') farm1Vehicles.push(vehicleRecord);
-            else if (classification.groupKey === 'implements') farm1Implements.push(vehicleRecord);
-          }
-        } catch (vehErr) {
-          console.warn(`⚠️ Warning: Error parsing vehicle #${idx + 1}:`, vehErr.message);
+        if (units.length === 0) {
+            box.innerHTML = `<div class="empty-state">${emptyMessage}</div>`;
+            return;
         }
-      });
-    }
 
-    // Line 853: Compute comprehensive card summaries
-    const inGameCalendar = resolveInGameCalendar(null, null, server.dayTime);
+        box.innerHTML = units.map(u => {
+            const fillType = u.fillTypes && u.fillTypes !== "UNKNOWN" ? cleanFillName(u.fillTypes) : null;
+            const fillLevel = parseFloat(u.fillLevels || 0);
+            let fillMeterHtml = '';
 
-    const cardSummary = {
-      totalFleetItems: liveVehicles.length,
-      totalMotorVehicles: allMotorVehicles.length,
-      totalHarvesters: allHarvesters.length,
-      totalTrailers: allTrailers.length,
-      totalImplements: allImplements.length,
-      farm1: {
-        totalMotorVehicles: farm1Vehicles.length,
-        totalHarvesters: farm1Harvesters.length,
-        totalTrailers: farm1Trailers.length,
-        totalImplements: farm1Implements.length
-      },
-      farm2: {
-        totalMotorVehicles: farm2Vehicles.length,
-        totalHarvesters: farm2Harvesters.length,
-        totalTrailers: farm2Trailers.length,
-        totalImplements: farm2Implements.length
-      },
-      totalFields: processedFields.length,
-      totalCultivatedFields: cultivatedCount,
-      totalSeededFields: seededCount,
-      activePlayerCount: activePlayers.length,
-      movementDetected: movementDetected,
-      collectibles: collectiblesData,
-      lastGportalSync: gportalSyncTimestamp
+            if (fillType && fillLevel > 0) {
+                const pct = Math.min(100, Math.max(1, Math.round((fillLevel / Math.max(fillLevel, 100000)) * 100)));
+                const color = getStoplightColor(pct);
+                fillMeterHtml = `
+                    <div class="fill-meter-wrap">
+                        <span>${fillType}</span>
+                        <div class="fill-bar-track"><div class="fill-bar-val" style="width:${pct}%; background:${color};"></div></div>
+                        <span style="color:${color}; font-weight:700;">${Math.round(fillLevel).toLocaleString()} L</span>
+                    </div>
+                `;
+            }
+
+            const driverTag = u.controller
+                ? `<span style="color:#38bdf8; font-weight:700;"><i class="fa-solid fa-user"></i> ${u.controller}</span>`
+                : (u.isAIActive ? `<span style="color:#facc15;"><i class="fa-solid fa-robot"></i> AI Worker</span>` : `<span style="color:var(--text-muted);">Parked</span>`);
+
+            return `
+                <div class="telemetry-card" style="flex-direction:column; align-items:stretch;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <strong>${cleanName(u.name || u.type)}</strong>
+                        <span class="card-subtext">${driverTag}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+                        <span>${u.location || 'Farm Grounds'}</span>
+                        <span class="card-subtext">${u.category || u.itemKind || 'Equipment'}</span>
+                    </div>
+                    ${fillMeterHtml}
+                </div>
+            `;
+        }).join('');
     };
 
-    console.log(`📊 Ingestion Totals (Slot #${activeSlot}):`);
-    console.log(`   - Farm 1: ${farm1Vehicles.length} Motors | ${farm1Harvesters.length} Harvesters | ${farm1Trailers.length} Trailers | ${farm1Implements.length} Implements`);
-    console.log(`   - Farm 2: ${farm2Vehicles.length} Motors | ${farm2Harvesters.length} Harvesters | ${farm2Trailers.length} Trailers | ${farm2Implements.length} Implements`);
+    // Render Farm 1 Roster
+    renderVehicleGroup(farm1Tractors, 'f1-tractors-container', 'f1-tractors-count', 'No motorized rigs registered to My farm.');
+    renderVehicleGroup(farm1Harvesters, 'f1-harvesters-container', 'f1-harvesters-count', 'No harvesters registered to My farm.');
+    renderVehicleGroup(farm1Trailers, 'f1-trailers-container', 'f1-trailers-count', 'No hauling trailers registered to My farm.');
+    renderVehicleGroup(farm1Implements, 'f1-implements-container', 'f1-implements-count', 'No implements registered to My farm.');
 
-    // Line 887: Compile Master Firebase Payload
-    const livePayload = {
-      lastUpdated: gportalSyncTimestamp,
-      lastGportalSync: gportalSyncTimestamp,
-      inGameCalendar: inGameCalendar,
-      activeSaveSlot: String(activeSlot),
-      activeSlotNode: slotNodeName,
-      activePlayers: activePlayers,
-      cards: cardSummary,
-      fleetTelemetry: liveVehicles,
-      motorVehicles: allMotorVehicles,
-      harvesters: allHarvesters,
-      trailers: allTrailers,
-      implements: allImplements,
-      fields: processedFields,
-      finances: farmFinances,
-      missions: missionsList,
-      collectibles: collectiblesData,
-      demands: activeDemands,
-      weatherForecast: weatherForecast,
-      activeMods: activeMods,
-      farm1: {
-        vehicles: farm1Vehicles,
-        harvesters: farm1Harvesters,
-        trailers: farm1Trailers,
-        implements: farm1Implements
-      },
-      farm2: {
-        vehicles: farm2Vehicles,
-        harvesters: farm2Harvesters,
-        trailers: farm2Trailers,
-        implements: farm2Implements
-      }
-    };
+    // Render Farm 2 Roster
+    renderVehicleGroup(farm2Tractors, 'f2-tractors-container', 'f2-tractors-count', 'No motorized rigs registered to Dumbace.');
+    renderVehicleGroup(farm2Harvesters, 'f2-harvesters-container', 'f2-harvesters-count', 'No harvesters registered to Dumbace.');
+    renderVehicleGroup(farm2Trailers, 'f2-trailers-container', 'f2-trailers-count', 'No hauling trailers registered to Dumbace.');
+    renderVehicleGroup(farm2Implements, 'f2-implements-container', 'f2-implements-count', 'No implements registered to Dumbace.');
 
-    console.log(`💾 [4/5] Writing Live Ingestion Payload to /fs25 and /fs25/${slotNodeName}...`);
-    await updateDb('fs25', livePayload);
-    await updateDb(`fs25/${slotNodeName}`, livePayload);
-
-    for (const [farmKey, finObj] of Object.entries(farmFinances)) {
-      try {
-        await updateDb(`fs25/farms/${farmKey}/finances`, finObj);
-        await updateDb(`fs25/${slotNodeName}/farms/${farmKey}/finances`, finObj);
-      } catch (patchErr) {
-        console.warn(`⚠️ Warning: Targeted financial patch failed for ${farmKey}:`, patchErr.message);
-      }
-    }
-
-    console.log(`🏆 [5/5] Live Sync Completed Successfully at ${gportalSyncTimestamp}.`);
-    client.close();
-    process.exit(0);
-
-  } catch (err) {
-    console.warn("⚠️ Warning: Pipeline execution interrupted:", err.message);
-    if (client) client.close();
-    process.exit(0);
-  }
+    // Line 452: Global Sections Rendering
+    renderActivePlayers(data.activePlayers || data.serverStatus?.activePlayers || []);
+    renderMissions(data.missions || slotData.missions || rawXml.missions || []);
+    renderCollectibles(data.collectibles || slotData.collectibles || rawXml.collectibles);
+    renderFields(data.fields || slotData.fields || rawXml.fields || []);
+    renderModDirectory(data.activeMods || slotData.activeMods || {});
 }
 
-// Line 946: Execute Pipeline
-runPipeline();
+// Line 460: Active Connected Players Renderer
+function renderActivePlayers(players) {
+    const container = document.getElementById('active-players-container');
+    const badge = document.getElementById('active-players-count');
+    const list = toArray(players);
+    if (badge) badge.innerText = list.length;
+    if (!container) return;
+
+    if (list.length === 0) {
+        container.innerHTML = `<div class="empty-state">No players currently connected.</div>`;
+        return;
+    }
+    container.innerHTML = list.map(p => `
+        <div class="telemetry-card">
+            <i class="fa-solid fa-user card-icon" style="color:#38bdf8;"></i>
+            <div class="card-details">
+                <strong>${p.name || (typeof p === 'string' ? p : 'Player')}</strong>
+                <span class="card-subtext">Online | Authenticated</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Line 482: Contracts & Missions Renderer
+function renderMissions(missions) {
+    const container = document.getElementById('missions-container');
+    const badge = document.getElementById('missions-count');
+    const list = toArray(missions);
+    if (badge) badge.innerText = list.length;
+    if (!container) return;
+
+    if (list.length === 0) {
+        container.innerHTML = `<div class="empty-state">No active contracts available.</div>`;
+        return;
+    }
+    container.innerHTML = list.slice(0, 15).map(m => `
+        <div class="telemetry-card">
+            <i class="fa-solid fa-file-signature card-icon" style="color:#facc15;"></i>
+            <div class="card-details" style="flex:1;">
+                <div style="display:flex; justify-content:space-between;">
+                    <strong>${cleanName(m.type || 'Mission')} ${m.fieldId ? `(Field ${m.fieldId})` : ''}</strong>
+                    <span style="color:#4ade80; font-family:var(--font-mono); font-weight:700;">${formatMoney(m.reward)}</span>
+                </div>
+                <span class="card-subtext">Status: ${m.status || 'Created'} ${m.fruitType ? `| Crop: ${cleanName(m.fruitType)}` : ''}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Line 506: Collectibles Matrix Renderer
+function renderCollectibles(collectibles) {
+    const container = document.getElementById('collectibles-container');
+    const badge = document.getElementById('collectibles-count');
+    const total = 50;
+
+    // Default known found indexes: 21, 25, 26, 27, 28, 45, 50
+    const knownFound = new Set([21, 25, 26, 27, 28, 45, 50]);
+
+    if (collectibles && typeof collectibles === 'object') {
+        const cItems = toArray(collectibles.items || collectibles.collectible);
+        cItems.forEach(c => {
+            if (String(c.collected).toLowerCase() === 'true') {
+                knownFound.add(parseInt(c.index || c.id || 0, 10));
+            }
+        });
+    }
+
+    if (badge) badge.innerText = `${knownFound.size}/${total}`;
+    if (!container) return;
+
+    let html = '<div class="collectibles-grid-layout">';
+    for (let i = 1; i <= total; i++) {
+        const isFound = knownFound.has(i);
+        html += `
+            <div class="collectible-badge ${isFound ? 'found' : 'unfound'}" title="Toy #${i} - ${isFound ? 'Found' : 'Hidden'}">
+                ${i}
+            </div>
+        `;
+    }
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// Line 539: Fields Agronomy & Crops Renderer
+function renderFields(fields) {
+    const container = document.getElementById('fields-container');
+    const badge = document.getElementById('fields-count');
+    const list = toArray(fields);
+    if (badge) badge.innerText = list.length;
+    if (!container) return;
+
+    if (list.length === 0) {
+        container.innerHTML = `<div class="empty-state">No fields mapped.</div>`;
+        return;
+    }
+    container.innerHTML = list.slice(0, 16).map(f => `
+        <div class="telemetry-card">
+            <i class="fa-solid fa-seedling card-icon" style="color:#84cc16;"></i>
+            <div class="card-details" style="flex:1;">
+                <div style="display:flex; justify-content:space-between;">
+                    <strong>Field #${f.id || f.fieldId} (${cleanName(f.cropType || 'Fallow')})</strong>
+                    <span style="color:#38bdf8; font-family:var(--font-mono); font-weight:600;">${f.areaHectares ? f.areaHectares.toFixed(1) + ' Ha' : 'Mapped'}</span>
+                </div>
+                <span class="card-subtext">Owner: Farm ${f.farmId || (f.isOwned ? '1' : 'Wild')} | State: ${cleanName(f.groundType || f.growthState || 'Sown')}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Line 562: Mod Directory Grid Renderer
+function renderModDirectory(mods) {
+    const grid = document.getElementById('mod-hub-grid');
+    if (!grid) return;
+    cachedMods = mods || {};
+    const entries = Object.entries(cachedMods);
+    if (entries.length === 0) {
+        grid.innerHTML = `<div class="empty-state">No active modifications installed.</div>`;
+        return;
+    }
+
+    grid.innerHTML = entries.map(([key, m]) => `
+        <div class="mod-card" onclick="window.openModDetail('${key}')">
+            <div class="mod-card-body">
+                <span class="mod-category-tag">${m.crossplay || 'Crossplay Verified'}</span>
+                <div class="mod-title">${m.name || cleanName(key)}</div>
+                <div class="mod-desc">${(m.description || 'Verified modification active on dedicated server.').substring(0, 80)}...</div>
+                <div class="mod-card-footer">
+                    <span class="mod-author">By ${m.author || 'Modder'}</span>
+                    <span class="mod-download-btn"><i class="fa-solid fa-magnifying-glass"></i> Details</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ============================================================================
+// SECTION 4: GLOBAL LIGHTBOX & MODAL BINDINGS
+// ============================================================================
+// Line 590: Attach modal triggers to global window object
+window.openImageLightbox = function(imgUrl, captionText) {
+    const modal = document.getElementById('lightbox-modal');
+    const img = document.getElementById('lightbox-img');
+    const caption = document.getElementById('lightbox-caption');
+    if (!modal || !img || !caption) return;
+
+    img.src = imgUrl;
+    img.style.display = 'block';
+    caption.innerHTML = `<p>${captionText}</p>`;
+    modal.classList.add('active');
+};
+
+window.openModDetail = function(modKey) {
+    const m = cachedMods[modKey];
+    if (!m) return;
+    const modal = document.getElementById('lightbox-modal');
+    const caption = document.getElementById('lightbox-caption');
+    const img = document.getElementById('lightbox-img');
+
+    if (m.image) {
+        img.src = m.image;
+        img.alt = "";
+        img.style.display = 'block';
+    } else {
+        img.style.display = 'none';
+    }
+
+    const modDisplayName = m.name || cleanName(modKey);
+    const specificModhubUrl = `https://www.farming-simulator.com/mods.php?title=fs2025&searchKeyword=${encodeURIComponent(modDisplayName)}`;
+
+    caption.innerHTML = `
+        <div style="text-align:left; width:100%; font-family:var(--font-family);">
+            <h3 style="color:#facc15; font-size:1.25rem; margin-bottom:6px;">${modDisplayName}</h3>
+            <p style="color:#cbd5e1; font-size:0.85rem; margin-bottom:12px; line-height:1.4;">${m.description || 'Installed modification.'}</p>
+            <div style="background:#0b1120; padding:10px; border-radius:6px; font-family:var(--font-mono); font-size:0.8rem; color:#94a3b8; display:flex; flex-direction:column; gap:4px;">
+                <div>Author: <strong style="color:#fff;">${m.author || 'Giants / ModHub'}</strong></div>
+                <div>Category: <strong style="color:#fff;">${m.category || 'Machinery'}</strong></div>
+                <div>Status: <strong style="color:#4ade80;">Active on Server</strong></div>
+            </div>
+            <a href="${specificModhubUrl}" target="_blank" rel="noopener noreferrer" class="mod-download-btn" style="margin-top:14px; width:100%; justify-content:center; padding:10px;">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Search "${modDisplayName}" on Official ModHub
+            </a>
+        </div>
+    `;
+
+    modal.classList.add('active');
+};
+
+// ============================================================================
+// SECTION 5: DOM LIFECYCLE & FIREBASE RECONNECTION
+// ============================================================================
+// Line 639: Reconnection listener wrapped inside DOMContentLoaded with error trapping
+document.addEventListener('DOMContentLoaded', () => {
+    // Mobile sandwich accordion toggle
+    const toggle = document.getElementById('mobile-menu-toggle');
+    const menu = document.getElementById('dynamic-menu');
+    if (toggle && menu) {
+        toggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menu.classList.toggle('open');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!menu.contains(e.target) && !toggle.contains(e.target)) {
+                menu.classList.remove('open');
+            }
+        });
+    }
+
+    // Lightbox modal listeners
+    const lbModal = document.getElementById('lightbox-modal');
+    const lbClose = document.getElementById('lightbox-close');
+    if (lbClose) {
+        lbClose.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            closeActiveLightbox();
+        });
+    }
+
+    if (lbModal) {
+        lbModal.addEventListener('click', (e) => {
+            if (e.target === lbModal) {
+                closeActiveLightbox();
+            }
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeActiveLightbox();
+        }
+    });
+
+    const mapThumb = document.getElementById('banner-map-thumb');
+    if (mapThumb) {
+        mapThumb.addEventListener('click', () => {
+            window.openImageLightbox(mapThumb.src, mapThumb.getAttribute('data-alt') || 'Live Satellite Map Feed');
+        });
+    }
+
+    // Load navigation menu bar
+    loadNavigationMenu();
+
+    // Line 692: Reconnect to Firebase RTDB node /fs25
+    console.log("📡 Connecting to Firebase Realtime Database at /fs25...");
+    const fs25Ref = ref(db, "fs25");
+    onValue(fs25Ref, (snapshot) => {
+        const liveData = snapshot.val();
+        if (liveData) {
+            syncDashboard(liveData);
+        } else {
+            console.warn("⚠️ Warning: /fs25 node returned null or empty payload.");
+        }
+    }, (error) => {
+        console.warn("⚠️ Warning: Firebase RTDB stream error:", error.message);
+    });
+});
