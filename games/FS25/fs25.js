@@ -1,6 +1,8 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: 2026-09-21 01:45:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-24 23:34:00 (EDT - 24hr New York Time)
+ * Line Count / Context: Zero-loss ingestion engine with motor vehicle vs implement
+ *                       classification, crop/field state resolution, and item count cards.
  * Project: fs25-a3563 (/fs25 RTDB Node)
  * Target Database: //fs25-a3563-default-rtdb.firebaseio.com/fs25
  * Google Analytics Tag: G-CTYHDF4MSD (Gaming, Progress Tracking, Firebase Entertainment)
@@ -11,8 +13,12 @@
  *              - Dual-bank live balance tracking across Farm 1 and Farm 2.
  *              - In-game calendar (time, month, season) extracted continuously.
  *              - Dedicated server authority locks save slot and active mods.
+ *              - Separates motorized equipment from towable implements.
+ *              - Enriches field metadata (crop type, state, area).
+ *              - Computes card totals for UI dashboards.
  * ============================================================================ */
 
+// Line 21: Load environment variables from relative script directory
 require('dotenv').config({ path: __dirname + '/.env' });
 const ftp = require('basic-ftp');
 const { Writable } = require('stream');
@@ -21,6 +27,7 @@ const xml2js = require('xml2js');
 // ============================================================================
 // SECTION 1: SAFETY TIMEOUT (4-Minute Process Failsafe)
 // ============================================================================
+// Line 30: Prevents stuck processes from blocking scheduler runners
 setTimeout(() => {
   console.log("🚨 Safety Failsafe: Process cleanly terminated after 4 minutes.");
   process.exit(0);
@@ -29,8 +36,10 @@ setTimeout(() => {
 // ============================================================================
 // SECTION 2: RELATIVE-PROTOCOL FIREBASE REST CLIENT
 // ============================================================================
+// Line 38: Firebase Realtime Database endpoint using standard REST protocol
 const RTDB_URL = "https://fs25-a3563-default-rtdb.firebaseio.com";
 
+// Line 41: PATCH helper with error trapping
 async function updateDb(path, data) {
   try {
     const res = await fetch(`${RTDB_URL}/${path}.json`, {
@@ -49,6 +58,7 @@ async function updateDb(path, data) {
   }
 }
 
+// Line 60: PUT helper for complete node state writes
 async function setDb(path, data) {
   try {
     const res = await fetch(`${RTDB_URL}/${path}.json`, {
@@ -67,6 +77,7 @@ async function setDb(path, data) {
   }
 }
 
+// Line 79: GET helper with fail-safe null return
 async function getDb(path) {
   try {
     const res = await fetch(`${RTDB_URL}/${path}.json`);
@@ -84,6 +95,7 @@ async function getDb(path) {
 // ============================================================================
 // SECTION 3: NETWORK CONFIGURATION
 // ============================================================================
+// Line 97: Host, Port, and Dedicated Server HTTP endpoints
 const ftpHost = process.env.FTP_HOST || '207.244.246.70';
 const ftpPort = parseInt(process.env.FTP_PORT, 10) || 21;
 const ftpUser = process.env.FTP_USER;
@@ -98,9 +110,18 @@ const FS_MONTHS = [
   "September", "October", "November", "December", "January", "February"
 ];
 
+// Line 112: Recognized motorized categories in FS25
+const MOTORIZED_CATEGORIES = new Set([
+  'TRACTOR', 'TRACTORS', 'TRACTORSS', 'TRACTORM', 'TRACTORL',
+  'HARVESTER', 'COMBINE', 'FORAGEHARVESTER', 'BEETHARVESTER', 'POTATOHARVESTER', 'COTTONHARVESTER',
+  'CAR', 'TRUCK', 'TRUCKS', 'TELEHANDLER', 'WHEELLOADER', 'SKIDSTEER', 'FORKLIFT',
+  'SELFPROPELLED', 'SELFPROPELLESSPRAYER', 'SLURRYVEHICLE', 'MOWER'
+]);
+
 // ============================================================================
 // SECTION 4: SANITIZERS, PARSERS & UTILITIES
 // ============================================================================
+// Line 123: Sanitizes raw XML bodies from HTTP feeds and FTP text
 function sanitizeXml(rawText) {
   if (!rawText) return "";
   let clean = rawText.toString();
@@ -122,6 +143,7 @@ function sanitizeXml(rawText) {
   return clean.trim();
 }
 
+// Line 146: Asynchronous XML-to-JSON parser
 async function parseXmlString(xmlString) {
   if (!xmlString) return null;
   const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
@@ -133,6 +155,7 @@ async function parseXmlString(xmlString) {
   }
 }
 
+// Line 158: Converts internal XML filenames and machine paths into human-readable model names
 function cleanEntityName(filepath) {
   if (!filepath) return "Equipment";
   const filename = filepath.split('/').pop().replace(/\.xml$/i, '');
@@ -144,16 +167,18 @@ function cleanEntityName(filepath) {
     .trim();
 }
 
+// Line 171: Converts internal fill and crop types to clean title-cased labels
 function cleanFillTypeName(typeName) {
   if (!typeName) return "General Cargo";
   const clean = typeName
-    .replace(/^(fillType_|filltype_|ft_)/i, '')
+    .replace(/^(fillType_|filltype_|ft_|fruitType_|fruittype_)/i, '')
     .replace(/([A-Z])/g, ' $1')
     .replace(/[_-]/g, ' ')
     .trim();
   return clean.charAt(0).toUpperCase() + clean.slice(1);
 }
 
+// Line 183: String normalizer for flexible catalog lookups
 function normalizeKey(str) {
   if (!str) return "";
   return str.toString()
@@ -162,15 +187,38 @@ function normalizeKey(str) {
     .replace(/[^a-z0-9]/g, '');
 }
 
+// Line 193: Currency formatter helper
 function formatCurrency(amount) {
   return `$${Math.round(amount || 0).toLocaleString('en-US')}`;
 }
 
+// Line 198: 2D Euclidean distance calculation
 function calculateDistance(x1, z1, x2, z2) {
   if (x1 === undefined || z1 === undefined || x2 === undefined || z2 === undefined) return 999;
   return Math.hypot(x1 - x2, z1 - z2);
 }
 
+// Line 204: Distinguishes motorized machines (tractors, harvesters, trucks) from pull implements
+function classifyVehicle(rawVehicle) {
+  const category = (rawVehicle.category || "").toUpperCase().replace(/[^A-Z]/g, '');
+  const type = (rawVehicle.type || "").toLowerCase();
+  const name = (rawVehicle.name || "").toLowerCase();
+
+  const isMotorCategory = MOTORIZED_CATEGORIES.has(category);
+  const isDriven = Boolean(rawVehicle.controller);
+  const isAIDriven = String(rawVehicle.isAIActive || 'false').toLowerCase() === 'true';
+  const hasMotorKeywords = type.includes('motor') || type.includes('tractor') || type.includes('truck') ||
+                           type.includes('combine') || type.includes('harvester') || name.includes('tractor');
+
+  const isMotorized = isMotorCategory || isDriven || isAIDriven || hasMotorKeywords;
+
+  return {
+    itemKind: isMotorized ? "Motor Vehicle" : "Implement",
+    isMotorized: isMotorized
+  };
+}
+
+// Line 224: Translates raw daytime and environment nodes into in-game calendar status
 function resolveInGameCalendar(envNode, careerNode, statsDayTime) {
   try {
     const env = envNode && (envNode.environment || envNode);
@@ -242,6 +290,7 @@ function resolveInGameCalendar(envNode, careerNode, statsDayTime) {
   }
 }
 
+// Line 298: Spatial zone determination from field centroids or map sectors
 function getSpatialZone(x, z, fieldList = []) {
   if (x === undefined || z === undefined) return "Farm Grounds";
   const numX = parseFloat(x);
@@ -262,6 +311,7 @@ function getSpatialZone(x, z, fieldList = []) {
   return `Sector (${xGrid}, ${zGrid})`;
 }
 
+// Line 320: Stream-based FTP download to UTF-8 string
 async function downloadFtpFileToString(client, remotePath) {
   const chunks = [];
   const writer = new Writable({
@@ -274,6 +324,7 @@ async function downloadFtpFileToString(client, remotePath) {
   return Buffer.concat(chunks).toString('utf-8');
 }
 
+// Line 333: Dedicated server live stats poller
 async function pingLiveFeed() {
   try {
     const controller = new AbortController();
@@ -292,6 +343,7 @@ async function pingLiveFeed() {
   return { isOnline: false, rawXml: "", serverNode: null };
 }
 
+// Line 352: Mod catalog reader from Firebase /websiteMods
 async function fetchWebsiteCatalog() {
   try {
     const rawVal = (await getDb('websiteMods')) || {};
@@ -315,6 +367,7 @@ async function fetchWebsiteCatalog() {
 // ============================================================================
 // SECTION 5: LIVE MOVEMENT DELTA & DUAL-BANK INGESTION PIPELINE
 // ============================================================================
+// Line 375: Main processing pipeline
 async function runPipeline() {
   const isForceRun = process.argv.includes('--force') || process.env.GITHUB_EVENT_NAME === 'workflow_dispatch';
   console.log(`📡 [1/4] Polling Dedicated Server Telemetry (Force Run: ${isForceRun})...`);
@@ -356,11 +409,49 @@ async function runPipeline() {
   const existingFs25 = (await getDb('fs25')) || {};
   const previousVehicles = (existingFs25.cards && existingFs25.cards.fleet) ? existingFs25.cards.fleet : [];
 
+  // Line 417: Field extraction with crop type, state, and human-readable names
   const rawFields = (server.Fields && server.Fields.Field)
     ? (Array.isArray(server.Fields.Field) ? server.Fields.Field : [server.Fields.Field])
     : [];
 
+  const processedFields = [];
+  let cultivatedFieldCount = 0;
+  let seededFieldCount = 0;
+
+  rawFields.forEach((f, fIdx) => {
+    try {
+      const rawFruit = f.fruitType || f.fruit || f.crop || "Fallow";
+      const cropName = cleanFillTypeName(rawFruit);
+      const fieldId = String(f.id || f.number || fIdx + 1);
+      const isOwned = String(f.isOwned || f.owned || 'false').toLowerCase() === 'true';
+      const growthState = f.growthState || f.state || "Growing";
+      const area = parseFloat(f.area || f.size || 0);
+
+      if (cropName !== "Fallow" && cropName !== "General Cargo") {
+        seededFieldCount++;
+      } else {
+        cultivatedFieldCount++;
+      }
+
+      processedFields.push({
+        id: fieldId,
+        name: `Field ${fieldId}`,
+        cropType: cropName,
+        growthState: growthState,
+        isOwned: isOwned,
+        areaHectares: area,
+        x: parseFloat(f.x || 0),
+        z: parseFloat(f.z || 0)
+      });
+    } catch (fieldErr) {
+      console.warn(`⚠️ Warning: Error parsing field node #${fIdx + 1}:`, fieldErr.message);
+    }
+  });
+
+  // Line 458: Vehicle and Implement Separation Pipeline
   const liveVehicles = [];
+  const motorVehicles = [];
+  const implementsList = [];
   let movementDetected = false;
   const MOVEMENT_THRESHOLD_METERS = 5.0;
 
@@ -373,6 +464,8 @@ async function runPipeline() {
         const name = v.name || cleanEntityName(v.type || `Vehicle_${idx + 1}`);
         const controller = v.controller || null;
         const isAI = String(v.isAIActive || 'false').toLowerCase() === 'true';
+        const fillTypesRaw = v.fillTypes || v.fillType || "";
+        const fillLevelsRaw = v.fillLevels || v.fillLevel || "";
 
         const prev = previousVehicles.find(pv => pv.name === name || pv.id === String(idx + 1));
         let distMoved = 0;
@@ -384,29 +477,54 @@ async function runPipeline() {
           }
         }
 
-        liveVehicles.push({
+        const classification = classifyVehicle(v);
+
+        const entityRecord = {
           id: String(idx + 1),
           name: name,
-          category: v.category || "EQUIPMENT",
-          type: v.type || "vehicle",
+          itemKind: classification.itemKind,
+          isMotorized: classification.isMotorized,
+          category: v.category || (classification.isMotorized ? "TRACTORS" : "IMPLEMENTS"),
+          type: v.type || (classification.isMotorized ? "vehicle" : "tool"),
           x: x,
           y: parseFloat(v.y || 0),
           z: z,
-          location: getSpatialZone(x, z, rawFields),
+          location: getSpatialZone(x, z, processedFields),
           controller: controller,
           isAIActive: isAI,
-          fillTypes: v.fillTypes || "",
-          fillLevels: v.fillLevels || "",
+          fillTypes: fillTypesRaw ? cleanFillTypeName(fillTypesRaw) : "Empty",
+          fillLevels: fillLevelsRaw,
           lastMovedDelta: distMoved
-        });
+        };
+
+        liveVehicles.push(entityRecord);
+
+        if (classification.isMotorized) {
+          motorVehicles.push(entityRecord);
+        } else {
+          implementsList.push(entityRecord);
+        }
       } catch (vehErr) {
         console.warn(`⚠️ Warning: Error parsing live vehicle node #${idx + 1}. Skipped:`, vehErr.message);
       }
     });
   }
 
+  // Line 519: Compute Summary Card Totals
+  const cardSummary = {
+    totalFleetItems: liveVehicles.length,
+    totalMotorVehicles: motorVehicles.length,
+    totalImplements: implementsList.length,
+    totalFields: processedFields.length,
+    totalCultivatedFields: cultivatedFieldCount,
+    totalSeededFields: seededFieldCount,
+    activePlayerCount: activePlayers.length,
+    movementDetected: movementDetected
+  };
+
   const inGameCalendar = resolveInGameCalendar(null, null, server.dayTime);
   console.log(`🕒 In-Game Live Clock: [ ${inGameCalendar.formattedStamp} ]`);
+  console.log(`📊 Fleet Separation: ${motorVehicles.length} Motor Vehicles | ${implementsList.length} Implements | ${processedFields.length} Fields Tracked`);
 
   console.log(`📡 [2/4] Connecting to G-Portal FTP at ${ftpHost}:${ftpPort}...`);
   const client = new ftp.Client();
@@ -451,9 +569,17 @@ async function runPipeline() {
     console.log(`🎯 Active Savegame Locked via Dedicated Server: [ Slot #${activeSlot} -> /fs25/${slotNodeName} ] | Map: ${mapFilename}`);
 
     if (activePlayers.length === 0 && !isForceRun) {
-      console.log("💤 No active players online. Updating live clock and server status only.");
-      await updateDb('fs25', { inGameCalendar: inGameCalendar, lastUpdated: new Date().toISOString() });
-      await updateDb(`fs25/${slotNodeName}`, { inGameCalendar: inGameCalendar, lastUpdated: new Date().toISOString() });
+      console.log("💤 No active players online. Updating live clock, cards, and server status only.");
+      await updateDb('fs25', {
+        inGameCalendar: inGameCalendar,
+        cards: cardSummary,
+        lastUpdated: new Date().toISOString()
+      });
+      await updateDb(`fs25/${slotNodeName}`, {
+        inGameCalendar: inGameCalendar,
+        cards: cardSummary,
+        lastUpdated: new Date().toISOString()
+      });
       client.close();
       process.exit(0);
     }
@@ -527,13 +653,18 @@ async function runPipeline() {
     console.log(`💾 [4/4] Writing Live Telemetry & Financial updates to Firebase via PATCH...`);
     const updateStamp = new Date().toISOString();
 
+    // Line 662: Master payload writing classified collections and total count card metrics
     const livePayload = {
       lastUpdated: updateStamp,
       inGameCalendar: inGameCalendar,
       activeSaveSlot: String(activeSlot),
       activeSlotNode: slotNodeName,
       activePlayers: activePlayers,
+      cards: cardSummary,
       fleetTelemetry: liveVehicles,
+      motorVehicles: motorVehicles,
+      implements: implementsList,
+      fields: processedFields,
       finances: farmFinances,
       activeMods: activeMods
     };
@@ -543,8 +674,12 @@ async function runPipeline() {
     await updateDb(`fs25/${slotNodeName}`, {
       lastUpdated: updateStamp,
       inGameCalendar: inGameCalendar,
+      cards: cardSummary,
       finances: farmFinances,
-      fleetTelemetry: liveVehicles
+      fleetTelemetry: liveVehicles,
+      motorVehicles: motorVehicles,
+      implements: implementsList,
+      fields: processedFields
     });
 
     for (const [farmKey, finObj] of Object.entries(farmFinances)) {
@@ -556,7 +691,7 @@ async function runPipeline() {
       }
     }
 
-    console.log(`🏆 Live Sync Completed: Processed ${liveVehicles.length} vehicles, synced ${Object.keys(farmFinances).length} farm bank accounts, and updated in-game time to ${inGameCalendar.formattedStamp}.`);
+    console.log(`🏆 Live Sync Completed: Processed ${motorVehicles.length} motor vehicles, ${implementsList.length} implements, ${processedFields.length} fields, and updated card summaries.`);
     client.close();
     process.exit(0);
 
@@ -567,4 +702,5 @@ async function runPipeline() {
   }
 }
 
+// Line 710: Trigger pipeline
 runPipeline();
