@@ -1,25 +1,24 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: 2026-09-25 20:15:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-25 20:25:00 (EDT - 24hr New York Time)
  * Project: fs25-a3563 (/fs25 RTDB Node)
  * Target Database: //fs25-a3563-default-rtdb.firebaseio.com/fs25
  * Google Analytics Tag: G-CTYHDF4MSD | Measurement ID: G-SGJF0FJPQZ
- * Description: Zero-Loss Precision G-Portal Live Ingestion Engine.
+ * Description: High-Reliability FS25 Ingestion Engine.
+ *              - Variable Scoping Fixed: Top-level declaration of live arrays.
  *              - Primary Authority: profile/dedicated_server/gameStats.xml
- *              - Secondary Authority: profile/dedicated_server/dedicatedServerConfig.xml
- *              - Dynamic Directory Ingestion: profile/savegame{slot}/*.xml
- *              - Clean Human Readability: Translates raw XML keys into titles.
- *              - Eliminates Ghost Players: Strict check on Slots numUsed.
- *              - Isolate Pallets: Prevents implement clutter.
+ *              - Dynamic Crawler: Ingests all XMLs from profile/savegame{slot}.
+ *              - Isolated Pallets: Keeps tools/implements unpolluted.
+ *              - Strict numUsed Authority: Zero phantom ghost players.
  * ============================================================================ */
 
-// Line 18: CommonJS runtime dependencies
+// Line 18: CommonJS Runtime Dependencies
 require('dotenv').config({ path: __dirname + '/.env' });
 const ftp = require('basic-ftp');
 const { Writable } = require('stream');
 const xml2js = require('xml2js');
 
-// Line 24: Process Safety Watchdog (4-Minute Failsafe)
+// Line 24: Process Safety Watchdog (4-Minute Safety Window)
 setTimeout(() => {
   console.log("🚨 Safety Failsafe: Process cleanly terminated after 4 minutes.");
   process.exit(0);
@@ -57,7 +56,7 @@ async function getDb(path) {
   }
 }
 
-// Line 62: G-Portal Server Endpoints
+// Line 62: G-Portal Server Connection Settings
 const ftpHost = process.env.FTP_HOST || '207.244.246.70';
 const ftpPort = parseInt(process.env.FTP_PORT, 10) || 21;
 const ftpUser = process.env.FTP_USER;
@@ -154,7 +153,7 @@ function calculateDistance(x1, z1, x2, z2) {
   return Math.hypot(x1 - x2, z1 - z2);
 }
 
-// Line 166: Strict Classification Logic
+// Line 166: Strict Equipment Classification
 function classifyVehicle(rawVehicle) {
   const category = (rawVehicle.category || "").toUpperCase().replace(/[^A-Z]/g, '');
   const type = (rawVehicle.type || "").toLowerCase();
@@ -170,7 +169,7 @@ function classifyVehicle(rawVehicle) {
     return { groupKey: 'implements', itemKind: 'Cutter / Header', isMotorized: false };
   }
 
-  // Harvesters & Combines
+  // Self-Propelled Harvesters & Combines
   if (HARVESTER_CATEGORIES.has(category) || type.includes('combine') || name.includes('harvester')) {
     return { groupKey: 'harvesters', itemKind: 'Harvester & Combine', isMotorized: true };
   }
@@ -198,10 +197,9 @@ function resolveInGameCalendar(envNode, careerNode, statsDayTime) {
     else if (env && env.dayTime !== undefined) rawDayTime = parseFloat(env.dayTime);
     else if (career && career.dayTime !== undefined) rawDayTime = parseFloat(career.dayTime);
 
-    // FS25 Day Time Conversion (Minutes / Milliseconds)
     let totalMins = Math.floor(parseFloat(rawDayTime || 0));
     if (totalMins > 1440) {
-      totalMins = Math.floor(totalMins / 60000) % 1440; // Convert millisecond ticks if present
+      totalMins = Math.floor(totalMins / 60000) % 1440;
     } else {
       totalMins = totalMins % 1440;
     }
@@ -297,7 +295,7 @@ async function downloadFtpFileToString(client, remotePath) {
   return Buffer.concat(chunks).toString('utf-8');
 }
 
-// Line 310: Main Execution Pipeline
+// Line 305: Main Execution Pipeline
 async function runPipeline() {
   const isForceRun = process.argv.includes('--force') || process.env.GITHUB_EVENT_NAME === 'workflow_dispatch';
   const syncTimestamp = new Date().toISOString();
@@ -306,6 +304,7 @@ async function runPipeline() {
   const client = new ftp.Client(25000);
   client.ftp.verbose = true;
 
+  // SCOPE DECLARATIONS (Available to the entire runPipeline scope)
   let activeSlot = process.env.DEFAULT_SAVE_SLOT || "3";
   let mapFilename = "FS25_The_Rural_Farmlands_Of_Ohio.zip";
   let mapName = "The Rural Farmlands Of Ohio";
@@ -316,6 +315,10 @@ async function runPipeline() {
   let isVipOnline = false;
   const activeMods = {};
   const allRawParsedXml = {};
+
+  let rawLiveVehiclesList = [];
+  let rawLiveFarmlands = [];
+  let rawLiveFields = [];
 
   try {
     console.log(`🔌 Connecting to G-Portal FTP (${ftpHost}:${ftpPort})...`);
@@ -344,11 +347,7 @@ async function runPipeline() {
       console.warn("⚠️ Could not read dedicatedServerConfig.xml, defaulting to slot 3.");
     }
 
-    // 2. Ingest gameStats.xml (PRIMARY AUTHORITY FOR ACTIVE OPERATORS & LIVE MODS)
-    let rawLiveVehiclesList = [];
-    let rawLiveFarmlands = [];
-    let rawLiveFields = [];
-
+    // 2. Ingest gameStats.xml (PRIMARY AUTHORITY)
     try {
       const statsText = await downloadFtpFileToString(client, 'profile/dedicated_server/gameStats.xml');
       if (statsText) {
@@ -391,7 +390,7 @@ async function runPipeline() {
           });
         }
 
-        // Extract Human-Readable Mods from gameStats.xml
+        // Extract Clean Mod Names from gameStats.xml
         if (srv.Mods && srv.Mods.Mod) {
           const mList = Array.isArray(srv.Mods.Mod) ? srv.Mods.Mod : [srv.Mods.Mod];
           mList.forEach(m => {
@@ -410,23 +409,20 @@ async function runPipeline() {
           });
         }
 
-        // Live Vehicles & Implements in gameStats
         if (srv.Vehicles && srv.Vehicles.Vehicle) {
           rawLiveVehiclesList = Array.isArray(srv.Vehicles.Vehicle) ? srv.Vehicles.Vehicle : [srv.Vehicles.Vehicle];
         }
 
-        // Live Farmlands in gameStats
         if (srv.Farmlands && srv.Farmlands.Farmland) {
           rawLiveFarmlands = Array.isArray(srv.Farmlands.Farmland) ? srv.Farmlands.Farmland : [srv.Farmlands.Farmland];
         }
 
-        // Live Fields in gameStats
         if (srv.Fields && srv.Fields.Field) {
           rawLiveFields = Array.isArray(srv.Fields.Field) ? srv.Fields.Field : [srv.Fields.Field];
         }
 
         allRawParsedXml['gameStats'] = statsJson;
-        console.log(`✅ Loaded: profile/dedicated_server/gameStats.xml (${activePlayers.length} verified players online)`);
+        console.log(`✅ Loaded: profile/dedicated_server/gameStats.xml (${activePlayers.length} verified online)`);
       }
     } catch (statsErr) {
       console.warn("⚠️ Could not read gameStats.xml via FTP:", statsErr.message);
@@ -435,7 +431,7 @@ async function runPipeline() {
     // 3. Dynamic XML Directory Scanner in profile/savegame{slot}
     const slotFolder = `profile/savegame${activeSlot}`;
     const slotNodeName = `savegame${activeSlot}`;
-    console.log(`📂 Dynamically scanning G-Portal savegame directory: ${slotFolder}...`);
+    console.log(`📂 Dynamically scanning G-Portal directory: ${slotFolder}...`);
 
     const directoryList = await client.list(slotFolder);
     const xmlFilesFound = directoryList
@@ -510,11 +506,13 @@ async function runPipeline() {
     });
   }
 
-  // Farmland Ownership Index
+  // Farmland Ownership Index with Scope Protection
   const farmlandsOwnership = {};
-  rawLiveFarmlands.forEach(fl => {
-    farmlandsOwnership[String(fl.id)] = String(fl.owner || "0");
-  });
+  if (Array.isArray(rawLiveFarmlands)) {
+    rawLiveFarmlands.forEach(fl => {
+      if (fl && fl.id) farmlandsOwnership[String(fl.id)] = String(fl.owner || "0");
+    });
+  }
 
   // Savegame Farmlands Backup Check
   const rootFLand = allRawParsedXml.farmland || allRawParsedXml.farmlands;
@@ -523,27 +521,31 @@ async function runPipeline() {
       ? (rootFLand.farmland || rootFLand.farmlands)
       : [rootFLand.farmland || rootFLand.farmlands];
     flItems.forEach(fl => {
-      if (fl.id && !farmlandsOwnership[String(fl.id)]) {
+      if (fl && fl.id && !farmlandsOwnership[String(fl.id)]) {
         farmlandsOwnership[String(fl.id)] = String(fl.farmId || fl.owner || "0");
       }
     });
   }
 
-  // Fields Mapping
+  // Fields Mapping with Scope Protection
   const processedFields = [];
-  rawLiveFields.forEach(f => {
-    const fId = String(f.id);
-    const ownerId = farmlandsOwnership[fId] || (String(f.isOwned) === 'true' ? "1" : "0");
-    processedFields.push({
-      id: fId,
-      ownerFarmId: ownerId,
-      isOwned: ownerId !== "0",
-      x: f.x ? parseFloat(f.x) : 0,
-      z: f.z ? parseFloat(f.z) : 0,
-      areaHectares: 0,
-      cropType: "Active Farmland"
+  if (Array.isArray(rawLiveFields)) {
+    rawLiveFields.forEach(f => {
+      if (f && f.id) {
+        const fId = String(f.id);
+        const ownerId = farmlandsOwnership[fId] || (String(f.isOwned) === 'true' ? "1" : "0");
+        processedFields.push({
+          id: fId,
+          ownerFarmId: ownerId,
+          isOwned: ownerId !== "0",
+          x: f.x ? parseFloat(f.x) : 0,
+          z: f.z ? parseFloat(f.z) : 0,
+          areaHectares: 0,
+          cropType: "Active Farmland"
+        });
+      }
     });
-  });
+  }
 
   // Extract Exact Savegame Vehicles for FarmId Mapping
   const saveVehicleOwnership = {};
