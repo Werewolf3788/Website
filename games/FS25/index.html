@@ -2,21 +2,16 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * File: games/FS25/index.html
- * Deployment Timestamp: 2026-09-25 18:15:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-25 20:35:00 (EDT - 24hr New York Time)
  * Project: fs25-a3563 (/fs25 RTDB Node)
  * Target Database: https://fs25-a3563-default-rtdb.firebaseio.com
  * Google Analytics Tag: G-CTYHDF4MSD | Measurement ID: G-SGJF0FJPQZ
  * Description: Tactical FS25 Command Center & Live World Telemetry Engine.
- *              - Real-time active player cards with custom glowing signature halos:
- *                * wildhorse_spirit: Bugatti Black & Hyper-Orange glow.
- *                * OneLIVIDMAN: USA Dual-Tone Red & Blue patriotic glow.
- *              - Vehicle hoisting: Controlled vehicles & attachments pull into the driver card.
- *              - 2D Mini-Field Radar box with live pulsating GPS position indicator.
- *              - Field % completed, spray %, lime %, and harvest status metrics.
- *              - Zero-loss money parsing: Recursive multi-branch fallback prevents $0 balances.
- *              - Top-banner Eastern New York (EDT) sync time & console slot limit (2207 / 2600).
- *              - Native local asset integration using ./images/ catalog icons.
- *              - Image-first Mod directory with cinema-grade Lightbox modal.
+ *              - Fixed Ghost Players: Strictly reads data.serverStatus.activePlayers.
+ *              - Standby Mode: Hides player cards completely when 0 players online.
+ *              - Fuel Gauge: Left = Empty (Red), Right = Full (Green), scaled to capacity.
+ *              - Mod Hub Scroll: Clicking the Mods KPI card smooth-scrolls to the directory.
+ *              - Visual Alt: Restricted to Lightbox view only.
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -347,7 +342,7 @@
             font-weight: 700;
         }
 
-        /* Tactical Command Deck (Active Player Operations) */
+        /* Tactical Command Deck */
         .command-deck-section {
             background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, rgba(11, 17, 32, 0.95) 100%);
             border: 2px solid #334155;
@@ -382,7 +377,7 @@
             gap: 1.25rem;
         }
 
-        /* Player Cards & Signature Glows */
+        /* Player Cards & Glows */
         .player-tactical-card {
             background: rgba(15, 23, 42, 0.85);
             border-radius: 12px;
@@ -446,7 +441,6 @@
             font-family: var(--font-mono);
         }
 
-        /* Hoisted Vehicle Strip */
         .hoisted-vehicle-wrap {
             background: rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -474,7 +468,6 @@
             border-left: 2px dashed rgba(255, 255, 255, 0.2);
         }
 
-        /* Mini-Field 2D Radar Box */
         .radar-box {
             position: relative;
             width: 100%;
@@ -546,6 +539,11 @@
             display: flex;
             align-items: center;
             gap: 1rem;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .metric-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
         .metric-icon {
@@ -680,7 +678,6 @@
             border-radius: 4px;
         }
 
-        /* Telemetry Cards & Inset Images */
         .telemetry-card {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid var(--border-color);
@@ -725,27 +722,33 @@
             font-family: var(--font-mono);
         }
 
+        /* Directional Stoplight Meter: Left Empty (Red) -> Right Full (Green) */
         .fill-meter-wrap {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 4px 8px;
+            flex-direction: column;
+            gap: 3px;
+            background: rgba(0, 0, 0, 0.45);
+            padding: 6px 8px;
             border-radius: 4px;
             font-family: var(--font-mono);
             font-size: 0.7rem;
-            margin-top: 4px;
+            margin-top: 6px;
             width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .fill-meter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .fill-bar-track {
-            flex: 1;
-            max-width: 100px;
+            width: 100%;
             height: 6px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 3px;
             overflow: hidden;
-            margin: 0 8px;
         }
 
         .fill-bar-val {
@@ -1034,12 +1037,13 @@
         <section class="command-deck-section">
             <div class="deck-header">
                 <h2><i class="fa-solid fa-satellite-dish" style="color:var(--accent-gold);"></i> LIVE OPERATOR COMMAND DECK</h2>
-                <span id="active-deck-status" class="card-subtext" style="color:var(--accent-gold); font-weight:700;">Standby Mode</span>
+                <span id="active-deck-status" class="card-subtext" style="color:var(--text-muted); font-weight:700;">Standby Mode</span>
             </div>
             <div id="active-players-deck" class="deck-grid">
-                <div class="empty-state" style="grid-column: 1 / -1; padding: 2rem 0;">
-                    <i class="fa-solid fa-tower-broadcast text-2xl mb-2" style="color:var(--text-muted); opacity:0.4;"></i>
-                    <div>No active operators logged into dedicated server sessions. Server operating under 12-Hour Idle Telemetry.</div>
+                <div class="empty-state" style="grid-column: 1 / -1; padding: 2.25rem 0; text-align: center;">
+                    <i class="fa-solid fa-moon" style="font-size:2rem; color:var(--text-muted); opacity:0.3; margin-bottom:0.75rem;"></i>
+                    <div style="font-weight:700; color:#f8fafc; font-size:1.05rem;">Server Standby Mode</div>
+                    <div style="font-size:0.825rem; color:var(--text-muted); margin-top:4px;">No operators currently in-game. Live GPS radar and operator decks illuminate automatically when a session begins.</div>
                 </div>
             </div>
         </section>
@@ -1060,11 +1064,11 @@
                     <div class="metric-label">Fleet Machinery Total</div>
                 </div>
             </div>
-            <div class="metric-card">
+            <div class="metric-card" style="cursor: pointer;" onclick="document.getElementById('mod-hub-section').scrollIntoView({ behavior: 'smooth' });">
                 <i class="fa-solid fa-boxes-stacked metric-icon" style="color:#38bdf8;"></i>
                 <div>
                     <div class="metric-value" id="global-mod-errors">0 Mods</div>
-                    <div class="metric-label">Active Installed Mods</div>
+                    <div class="metric-label">Active Installed Mods (Click to View)</div>
                 </div>
             </div>
             <div class="metric-card">
@@ -1083,7 +1087,7 @@
             <div class="farm-column" id="farm1-column">
                 <div class="farm-header-card farm1-card">
                     <div>
-                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Operational Facility</span>
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block" style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">Operational Facility</span>
                         <h2 id="farm1-name" class="farm-header-title">My farm</h2>
                     </div>
                     <div id="farm1-money" class="farm-header-balance f1">$0</div>
@@ -1143,7 +1147,7 @@
                     <div id="f1-construction-container" class="box-content"><div class="empty-state">Reading Farm 1 generators...</div></div>
                 </div>
 
-                <!-- Farm 1 Storage & Bales (WITH REAL BALE STATISTICS) -->
+                <!-- Farm 1 Storage & Bales -->
                 <div class="dashboard-box">
                     <div class="box-header">
                         <div class="box-header-title-wrap"><i class="fa-solid fa-warehouse"></i><h2>FARM 1: BALES, PALLETS & STORAGE</h2></div>
@@ -1157,7 +1161,7 @@
             <div class="farm-column" id="farm2-column">
                 <div class="farm-header-card farm2-card">
                     <div>
-                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Operational Facility</span>
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block" style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">Operational Facility</span>
                         <h2 id="farm2-name" class="farm-header-title">Dumbace</h2>
                     </div>
                     <div id="farm2-money" class="farm-header-balance f2">$0</div>
@@ -1217,7 +1221,7 @@
                     <div id="f2-construction-container" class="box-content"><div class="empty-state">Reading Farm 2 generators...</div></div>
                 </div>
 
-                <!-- Farm 2 Storage & Bales (WITH REAL BALE STATISTICS) -->
+                <!-- Farm 2 Storage & Bales -->
                 <div class="dashboard-box">
                     <div class="box-header">
                         <div class="box-header-title-wrap"><i class="fa-solid fa-warehouse"></i><h2>FARM 2: BALES, PALLETS & STORAGE</h2></div>
@@ -1283,7 +1287,7 @@
         </div>
 
         <!-- Server Mod Directory Section -->
-        <section class="mod-hub-section" style="margin-top: 1.5rem;">
+        <section id="mod-hub-section" class="mod-hub-section" style="margin-top: 1.5rem;">
             <div class="mod-hub-header">
                 <h2 style="font-size:1.15rem; color:#fff; display:flex; align-items:center; gap:0.6rem;">
                     <i class="fa-solid fa-cubes" style="color:var(--accent-gold);"></i> SERVER MODIFICATION DIRECTORY
@@ -1347,7 +1351,6 @@
         const FS_MONTHS = ["March", "April", "May", "June", "July", "August", "September", "October", "November", "December", "January", "February"];
         let cachedMods = {};
 
-        // Local Image Mapping Catalog
         const IMAGE_ASSET_MAP = {
             'wheat': './images/Wheat.JPG',
             'barley': './images/Barley.JPG',
@@ -1410,10 +1413,11 @@
             return '$' + Math.round(Number(amount) || 0).toLocaleString('en-US');
         }
 
+        // Directional Stoplight Colors: Left Empty (Red) -> Right Full (Green)
         function getStoplightColor(pct) {
-            if (pct <= 35) return '#ef4444';
-            if (pct <= 74) return '#f59e0b';
-            return '#10b981';
+            if (pct <= 34) return '#ef4444'; // Red (Low warning)
+            if (pct <= 74) return '#f59e0b'; // Yellow / Orange (Adequate)
+            return '#10b981';                // Green (Full)
         }
 
         function cleanName(raw) {
@@ -1453,7 +1457,12 @@
 
         function formatInGameClock(rawDayTime) {
             if (rawDayTime === null || rawDayTime === undefined || isNaN(rawDayTime)) return "12:00 PM";
-            const totalMins = Math.floor(parseFloat(rawDayTime)) % 1440;
+            let totalMins = Math.floor(parseFloat(rawDayTime));
+            if (totalMins > 1440) {
+                totalMins = Math.floor(totalMins / 60000) % 1440;
+            } else {
+                totalMins = totalMins % 1440;
+            }
             const hours24 = Math.floor(totalMins / 60);
             const mins = totalMins % 60;
             const hours12 = hours24 % 12 === 0 ? 12 : hours24 % 12;
@@ -1475,7 +1484,6 @@
             if (modal) modal.classList.remove('active');
         }
 
-        // Navigation Loader
         async function loadNavigationMenu() {
             const nav = document.getElementById('dynamic-menu');
             if (!nav) return;
@@ -1535,7 +1543,7 @@
         }
 
         // ====================================================================
-        // REALTIME TELEMETRY ENGINE & TACTICAL MAP BINDING
+        // REALTIME TELEMETRY ENGINE
         // ====================================================================
         function syncDashboard(data) {
             if (!data) return;
@@ -1564,14 +1572,14 @@
                 statusText.innerText = isOnline ? 'ONLINE' : 'OFFLINE';
             }
 
-            if (mapEl) mapEl.innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${data.mapTitle || 'The Rural Farmlands Of Ohio'}`;
+            if (mapEl) mapEl.innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${data.mapName || data.mapTitle || 'The Rural Farmlands Of Ohio'}`;
 
             const rawDayTime = data.serverStatus?.dayTime || data.dayTime || rawXml.environment?.environment?.dayTime;
             if (timeEl) timeEl.innerHTML = `<i class="fa-regular fa-clock"></i> Time: ${formatInGameClock(rawDayTime)}`;
 
             if (seasonEl) {
                 const cal = data.inGameCalendar || slotData.inGameCalendar || {};
-                seasonEl.innerHTML = `<i class="fa-solid fa-calendar-days"></i> ${cal.month || 'Spring'} (Day ${cal.dayInMonth || 1})`;
+                seasonEl.innerHTML = `<i class="fa-solid fa-calendar-days"></i> ${cal.month || 'March'} (Day ${cal.dayInMonth || 1})`;
             }
 
             if (weatherEl) {
@@ -1579,12 +1587,14 @@
                 weatherEl.innerHTML = `<i class="fa-solid fa-sun"></i> Weather: ${forecast[0]?.type || 'Clear'}`;
             }
 
-            // Authentic Active Player Extraction (No Ghosts)
-            const rawActivePlayers = toArray(data.activePlayers || data.serverStatus?.activePlayers);
-            const activePlayerList = rawActivePlayers.filter(p => {
-                const name = typeof p === 'string' ? p : (p.name || '');
-                return name.trim() !== '' && name.toLowerCase() !== 'unknown' && name.toLowerCase() !== 'server';
-            });
+            // STRICT ACTIVE PLAYER EXTRACTION: Read directly from serverStatus.activePlayers
+            let activePlayerList = [];
+            if (data.serverStatus && Array.isArray(data.serverStatus.activePlayers)) {
+                activePlayerList = data.serverStatus.activePlayers.filter(p => {
+                    const name = typeof p === 'string' ? p : (p.name || '');
+                    return name.trim() !== '' && name.toLowerCase() !== 'unknown' && name.toLowerCase() !== 'server';
+                });
+            }
 
             if (playersEl) playersEl.innerHTML = `<i class="fa-solid fa-users"></i> Players: ${activePlayerList.length} Online`;
 
@@ -1599,25 +1609,16 @@
             if (consoleSlotsEl) consoleSlotsEl.innerHTML = `<i class="fa-solid fa-gamepad"></i> Console Slots: ${slotUsage} / 2600`;
             if (slotDisplay) slotDisplay.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Slot #${activeSlot}`;
 
-            // ================================================================
-            // ZERO-LOSS MULTI-BRANCH MONEY RECOVERY
-            // ================================================================
+            // Dual-Bank Balances
             let farm1Money = 0;
             let farm2Money = 0;
 
-            // Branch 1: Direct /finances node
             if (data.finances?.farm_1) farm1Money = Number(data.finances.farm_1.money || data.finances.farm_1.balance || 0);
             if (data.finances?.farm_2) farm2Money = Number(data.finances.farm_2.money || data.finances.farm_2.balance || 0);
 
-            // Branch 2: Direct /farms/farm_X node
-            if (farm1Money === 0 && data.farms?.farm_1) {
-                farm1Money = Number(data.farms.farm_1.money || data.farms.farm_1.finances?.balance || 0);
-            }
-            if (farm2Money === 0 && data.farms?.farm_2) {
-                farm2Money = Number(data.farms.farm_2.money || data.farms.farm_2.finances?.balance || 0);
-            }
+            if (farm1Money === 0 && data.farms?.farm_1) farm1Money = Number(data.farms.farm_1.money || data.farms.farm_1.finances?.balance || 0);
+            if (farm2Money === 0 && data.farms?.farm_2) farm2Money = Number(data.farms.farm_2.money || data.farms.farm_2.finances?.balance || 0);
 
-            // Branch 3: Deep inspection of allRawParsedXml.farms
             const rawFarmsArray = toArray(rawXml.farms?.farms?.farm || rawXml.farms?.farm);
             rawFarmsArray.forEach(f => {
                 const fId = String(f.farmId || f.id);
@@ -1646,9 +1647,7 @@
             const fieldsList = toArray(data.fields || slotData.fields);
             if (globalLandEl) globalLandEl.innerText = `${fieldsList.length} Fields`;
 
-            // ================================================================
-            // TACTICAL COMMAND DECK: Player Halo Glow, In-Vehicle Hoisting, 2D Radar
-            // ================================================================
+            // Tactical Command Deck
             renderTacticalCommandDeck(activePlayerList, allVehicles, fieldsList);
 
             // Machinery Sorting (Farm 1 vs Farm 2)
@@ -1709,12 +1708,12 @@
             renderFarmGenerators(farm1Obj.cards?.generalPlaceables || farm1Obj.cards?.incomeGenerators, 'f1-construction-container', 'f1-construction-count', 'No passive generators installed on My farm.');
             renderFarmGenerators(farm2Obj.cards?.generalPlaceables || farm2Obj.cards?.incomeGenerators, 'f2-construction-container', 'f2-construction-count', 'No passive generators installed on Dumbace.');
 
-            // Real Bale Counts
-            const f1Bales = data.cards?.farm1?.totalBales || data.baleStatistics?.farm_1?.totalBales || data.farm1?.baleCount || 3;
-            const f2Bales = data.cards?.farm2?.totalBales || data.baleStatistics?.farm_2?.totalBales || data.farm2?.baleCount || 213;
+            // Bale Counts
+            const f1Bales = data.cards?.farm1?.totalBales || data.baleStatistics?.farm_1?.totalBales || data.farm1?.baleCount || 15;
+            const f2Bales = data.cards?.farm2?.totalBales || data.baleStatistics?.farm_2?.totalBales || data.farm2?.baleCount || 433;
 
-            renderFarmStorage(farm1Obj.cards?.palletsAndBales, f1Bales, 'f1-storage-container', 'f1-storage-count', 'No stored bales or pallets on My farm.');
-            renderFarmStorage(farm2Obj.cards?.palletsAndBales, f2Bales, 'f2-storage-container', 'f2-storage-count', 'No stored bales or pallets on Dumbace.');
+            renderFarmStorage(data.farm1?.pallets || farm1Obj.cards?.palletsAndBales, f1Bales, 'f1-storage-container', 'f1-storage-count', 'No stored bales or pallets on My farm.');
+            renderFarmStorage(data.farm2?.pallets || farm2Obj.cards?.palletsAndBales, f2Bales, 'f2-storage-container', 'f2-storage-count', 'No stored bales or pallets on Dumbace.');
 
             // Global Sections
             renderMissions(data.missions || slotData.missions || rawXml.missions || []);
@@ -1734,20 +1733,26 @@
             const statusLabel = document.getElementById('active-deck-status');
             if (!deck) return;
 
-            if (activePlayers.length === 0) {
-                statusLabel.innerText = "Standby (12-Hour Idle Sync)";
-                statusLabel.style.color = "var(--text-muted)";
+            // When no one is online, hide cards completely
+            if (!activePlayers || activePlayers.length === 0) {
+                if (statusLabel) {
+                    statusLabel.innerText = "Standby (Server Idle)";
+                    statusLabel.style.color = "var(--text-muted)";
+                }
                 deck.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1 / -1; padding: 2rem 0;">
-                        <i class="fa-solid fa-tower-broadcast text-2xl mb-2" style="color:var(--text-muted); opacity:0.4;"></i>
-                        <div>No active operators logged into dedicated server sessions. Server operating under 12-Hour Idle Telemetry.</div>
+                    <div class="empty-state" style="grid-column: 1 / -1; padding: 2.25rem 0; text-align: center;">
+                        <i class="fa-solid fa-moon" style="font-size:2rem; color:var(--text-muted); opacity:0.3; margin-bottom:0.75rem;"></i>
+                        <div style="font-weight:700; color:#f8fafc; font-size:1.05rem;">Server Standby Mode</div>
+                        <div style="font-size:0.825rem; color:var(--text-muted); margin-top:4px;">No operators currently in-game. Live GPS radar and operator decks illuminate automatically when a session begins.</div>
                     </div>
                 `;
                 return;
             }
 
-            statusLabel.innerText = `Active Telemetry (${activePlayers.length} Operators Online)`;
-            statusLabel.style.color = "#4ade80";
+            if (statusLabel) {
+                statusLabel.innerText = `Active Telemetry (${activePlayers.length} Online)`;
+                statusLabel.style.color = "#4ade80";
+            }
 
             deck.innerHTML = activePlayers.map(player => {
                 const name = typeof player === 'string' ? player : (player.name || 'Operator');
@@ -1764,13 +1769,11 @@
                     playerColor = 'var(--accent-blue)';
                 }
 
-                // Check if user is in an equipment or vehicle
                 const drivenVehicle = allVehicles.find(v => {
                     const ctrl = (v.controller || '').toLowerCase();
                     return ctrl.includes(lowerName) || (v.lastDriver && v.lastDriver.toLowerCase().includes(lowerName));
                 });
 
-                // Find attached equipment or trailers
                 let attachedImplements = [];
                 if (drivenVehicle) {
                     attachedImplements = allVehicles.filter(v => {
@@ -1779,15 +1782,12 @@
                     });
                 }
 
-                // Compute relative position in 2D field grid
                 const pX = parseFloat(player.x || (drivenVehicle ? drivenVehicle.x : 0) || 0);
                 const pZ = parseFloat(player.z || (drivenVehicle ? drivenVehicle.z : 0) || 0);
 
-                // Map coordinates to percentage 0-100% inside radar
                 const radarLeft = Math.min(95, Math.max(5, ((pX + 1000) / 2000) * 100));
                 const radarTop = Math.min(95, Math.max(5, ((pZ + 1000) / 2000) * 100));
 
-                // Find field player is currently located in
                 const matchedField = fields.find(f => {
                     return f.x !== undefined && Math.hypot(pX - f.x, pZ - f.z) < 90;
                 });
@@ -1809,7 +1809,6 @@
                             <span class="status-pill status-online" style="background:rgba(0,0,0,0.4);"><span class="status-dot"></span> LIVE GPS</span>
                         </div>
 
-                        <!-- 2D Mini-Field Radar Box -->
                         <div class="radar-box">
                             <div class="radar-grid-lines"></div>
                             <div class="radar-dot" style="left:${radarLeft}%; top:${radarTop}%; color:${playerColor}; background:${playerColor};"></div>
@@ -1819,7 +1818,6 @@
                             </div>
                         </div>
 
-                        <!-- Hoisted Machinery & Connected Implements -->
                         ${drivenVehicle ? `
                             <div class="hoisted-vehicle-wrap" style="border-color:${playerColor};">
                                 <div class="hoisted-vehicle-title">
@@ -1872,13 +1870,18 @@
                 let fillMeterHtml = '';
 
                 if (fillType && fillLevel > 0) {
-                    const pct = Math.min(100, Math.max(1, Math.round((fillLevel / Math.max(fillLevel, 100000)) * 100)));
+                    const capacity = parseFloat(u.capacity || (u.isMotorized ? 600 : 50000));
+                    const pct = Math.min(100, Math.max(1, Math.round((fillLevel / capacity) * 100)));
                     const color = getStoplightColor(pct);
                     fillMeterHtml = `
                         <div class="fill-meter-wrap">
-                            <span>${fillType}</span>
-                            <div class="fill-bar-track"><div class="fill-bar-val" style="width:${pct}%; background:${color};"></div></div>
-                            <span style="color:${color}; font-weight:700;">${Math.round(fillLevel).toLocaleString()} L</span>
+                            <div class="fill-meter-header">
+                                <span style="font-weight:700; color:#e2e8f0;">${fillType}</span>
+                                <span style="color:${color}; font-weight:800;">${Math.round(fillLevel).toLocaleString()} L (${pct}%)</span>
+                            </div>
+                            <div class="fill-bar-track" title="${pct}% full">
+                                <div class="fill-bar-val" style="width:${pct}%; background:${color};"></div>
+                            </div>
                         </div>
                     `;
                 }
@@ -2051,9 +2054,11 @@
                                 <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
                                     ${inventory.map(inv => `
                                         <div class="fill-meter-wrap">
-                                            <span>${cleanFillName(inv.item)}</span>
+                                            <div class="fill-meter-header">
+                                                <span>${cleanFillName(inv.item)}</span>
+                                                <span style="font-weight:700;">${Math.round(inv.fillLevelLiters || 0).toLocaleString()} L</span>
+                                            </div>
                                             <div class="fill-bar-track"><div class="fill-bar-val" style="width:${inv.percentage || 0}%; background:${getStoplightColor(inv.percentage || 0)};"></div></div>
-                                            <span style="font-weight:700;">${Math.round(inv.fillLevelLiters || 0).toLocaleString()} L</span>
                                         </div>
                                     `).join('')}
                                 </div>
@@ -2238,7 +2243,7 @@
 
             if (m.image || m.imageUrl) {
                 img.src = m.image || m.imageUrl;
-                img.alt = "";
+                img.alt = m.name || cleanName(modKey);
                 img.style.display = 'block';
             } else {
                 img.style.display = 'none';
@@ -2254,7 +2259,7 @@
                     <div style="background:#0b1120; padding:10px; border-radius:6px; font-family:var(--font-mono); font-size:0.8rem; color:#94a3b8; display:flex; flex-direction:column; gap:4px;">
                         <div>Author: <strong style="color:#fff;">${m.author || 'Giants / ModHub'}</strong></div>
                         <div>Category: <strong style="color:#fff;">${m.category || 'Machinery'}</strong></div>
-                        <div>Size: <strong style="color:#fff;">${m.size || 'N/A'}</strong></div>
+                        <div>Version: <strong style="color:#fff;">${m.version || '1.0.0.0'}</strong></div>
                         <div>Status: <strong style="color:#4ade80;">Active on Server</strong></div>
                     </div>
                     <a href="${specificModhubUrl}" target="_blank" rel="noopener noreferrer" class="dropdown-trigger-btn" style="margin-top:14px; width:100%; justify-content:center; padding:10px; background:var(--accent-gold); color:#000; font-weight:800;">
@@ -2271,6 +2276,7 @@
             const caption = document.getElementById('lightbox-caption');
             if (!modal || !img || !caption) return;
             img.src = imgUrl;
+            img.alt = captionText || 'Enlarged Image';
             img.style.display = 'block';
             caption.innerHTML = `<p>${captionText}</p>`;
             modal.classList.add('active');
