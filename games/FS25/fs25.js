@@ -1,33 +1,30 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: 2026-09-25 20:25:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-25 20:50:00 (EDT - 24hr New York Time)
  * Project: fs25-a3563 (/fs25 RTDB Node)
  * Target Database: //fs25-a3563-default-rtdb.firebaseio.com/fs25
  * Google Analytics Tag: G-CTYHDF4MSD | Measurement ID: G-SGJF0FJPQZ
- * Description: High-Reliability FS25 Ingestion Engine.
- *              - Variable Scoping Fixed: Top-level declaration of live arrays.
- *              - Primary Authority: profile/dedicated_server/gameStats.xml
- *              - Dynamic Crawler: Ingests all XMLs from profile/savegame{slot}.
- *              - Isolated Pallets: Keeps tools/implements unpolluted.
- *              - Strict numUsed Authority: Zero phantom ghost players.
+ * Description: Precision Ingestion Engine & Strict 3-Way Tri-Split:
+ *              - Farm 1: farmId="1" / owner="1"
+ *              - Farm 2: farmId="2" / owner="2"
+ *              - Public / Map: farmId="0" / owner="0" (unowned land, neutral facilities)
+ *              - Deep Field Agronomy: Merges gameStats.xml, fields.xml, and farmland.xml
+ *              - Mod Image Resolution: Matches against websiteMods catalog and brand patterns
+ *              - Strict numUsed Authority: Zero phantom ghost players
  * ============================================================================ */
 
-// Line 18: CommonJS Runtime Dependencies
 require('dotenv').config({ path: __dirname + '/.env' });
 const ftp = require('basic-ftp');
 const { Writable } = require('stream');
 const xml2js = require('xml2js');
 
-// Line 24: Process Safety Watchdog (4-Minute Safety Window)
 setTimeout(() => {
   console.log("🚨 Safety Failsafe: Process cleanly terminated after 4 minutes.");
   process.exit(0);
 }, 4 * 60 * 1000);
 
-// Line 30: Target Firebase Realtime Database
 const RTDB_URL = "https://fs25-a3563-default-rtdb.firebaseio.com";
 
-// Line 33: Asynchronous Firebase REST Helpers
 async function updateDb(path, data) {
   try {
     const res = await fetch(`${RTDB_URL}/${path}.json`, {
@@ -46,6 +43,20 @@ async function updateDb(path, data) {
   }
 }
 
+async function setDb(path, data) {
+  try {
+    const res = await fetch(`${RTDB_URL}/${path}.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    return null;
+  }
+}
+
 async function getDb(path) {
   try {
     const res = await fetch(`${RTDB_URL}/${path}.json`);
@@ -56,7 +67,6 @@ async function getDb(path) {
   }
 }
 
-// Line 62: G-Portal Server Connection Settings
 const ftpHost = process.env.FTP_HOST || '207.244.246.70';
 const ftpPort = parseInt(process.env.FTP_PORT, 10) || 21;
 const ftpUser = process.env.FTP_USER;
@@ -89,7 +99,6 @@ const TRAILER_CATEGORIES = new Set([
   'AUGERWAGONS', 'MANURESPREADERS', 'SLURRYTANKS', 'WATERBARRELS'
 ]);
 
-// Line 98: Sanitization & Parsers
 function sanitizeXml(rawText) {
   if (!rawText) return "";
   let clean = rawText.toString();
@@ -144,42 +153,39 @@ function cleanFillTypeName(typeName) {
   return clean.charAt(0).toUpperCase() + clean.slice(1);
 }
 
+function normalizeKey(str) {
+  if (!str) return "";
+  return str.toString()
+    .toLowerCase()
+    .replace(/^f\s*s\s*25[_\-\s]*/g, '')
+    .replace(/[^a-z0-9]/g, '');
+}
+
 function formatCurrency(amount) {
   return `$${Math.round(amount || 0).toLocaleString('en-US')}`;
 }
 
-function calculateDistance(x1, z1, x2, z2) {
-  if (x1 === undefined || z1 === undefined || x2 === undefined || z2 === undefined) return 999;
-  return Math.hypot(x1 - x2, z1 - z2);
-}
-
-// Line 166: Strict Equipment Classification
 function classifyVehicle(rawVehicle) {
   const category = (rawVehicle.category || "").toUpperCase().replace(/[^A-Z]/g, '');
   const type = (rawVehicle.type || "").toLowerCase();
   const name = (rawVehicle.name || "").toLowerCase();
 
-  // Strict Pallet / BigBag Isolation
   if (category.includes('PALLET') || category.includes('BIGBAG') || type.includes('pallet') || name.includes('pallet')) {
     return { groupKey: 'pallets', itemKind: 'Pallet / Cargo', isMotorized: false };
   }
 
-  // Headers and Cutters are implements, NOT harvesters
   if (category.includes('CUTTER') || category.includes('HEADER') || type.includes('cutter') || type.includes('header') || name.includes('header')) {
     return { groupKey: 'implements', itemKind: 'Cutter / Header', isMotorized: false };
   }
 
-  // Self-Propelled Harvesters & Combines
   if (HARVESTER_CATEGORIES.has(category) || type.includes('combine') || name.includes('harvester')) {
     return { groupKey: 'harvesters', itemKind: 'Harvester & Combine', isMotorized: true };
   }
 
-  // Hauling Trailers
   if (TRAILER_CATEGORIES.has(category) || name.includes('trailer') || name.includes('flatbed') || type.includes('trailer') || type.includes('wagon')) {
     return { groupKey: 'trailers', itemKind: 'Hauling Trailer', isMotorized: false };
   }
 
-  // Motor Vehicles
   if (MOTORIZED_CATEGORIES.has(category) || Boolean(rawVehicle.controller) || String(rawVehicle.isAIActive).toLowerCase() === 'true' || type.includes('motor') || type.includes('tractor') || type.includes('truck')) {
     return { groupKey: 'motorVehicles', itemKind: 'Motor Vehicle', isMotorized: true };
   }
@@ -295,7 +301,45 @@ async function downloadFtpFileToString(client, remotePath) {
   return Buffer.concat(chunks).toString('utf-8');
 }
 
-// Line 305: Main Execution Pipeline
+async function fetchWebsiteCatalog() {
+  try {
+    const rawVal = (await getDb('websiteMods')) || {};
+    const catalog = {};
+    Object.keys(rawVal).forEach(k => {
+      const item = rawVal[k];
+      if (item && typeof item === 'object') {
+        const clean = (item.filename || k).replace(/\.zip$/i, '');
+        catalog[clean.toLowerCase()] = item;
+        catalog[normalizeKey(clean)] = item;
+        if (item.name) catalog[normalizeKey(item.name)] = item;
+      }
+    });
+    return catalog;
+  } catch (err) {
+    return {};
+  }
+}
+
+function resolveModImageFallback(modName, modKey) {
+  const s = (modName + " " + modKey).toLowerCase();
+  if (s.includes('precisionfarming')) return './images/Precision_Farming.jpg';
+  if (s.includes('strawharvest')) return './images/Straw.JPG';
+  if (s.includes('caseih') || s.includes('magnum') || s.includes('axialflow') || s.includes('tigermate') || s.includes('2160')) return './images/CaseIH_Magnum.jpg';
+  if (s.includes('colossus')) return './images/Colossus_Harvester.jpg';
+  if (s.includes('baler') || s.includes('bale')) return './images/Hay_Square_Bale.JPG';
+  if (s.includes('jd') || s.includes('johndeere') || s.includes('8r')) return './images/John_Deere_8R.jpg';
+  if (s.includes('dropdeck') || s.includes('trailer')) return './images/Dropdeck_Trailer.jpg';
+  if (s.includes('roadrunner')) return './images/Roadrunner_Plus.jpg';
+  if (s.includes('cow') || s.includes('barn')) return './images/Cow.JPG';
+  if (s.includes('silo') || s.includes('grainsilo')) return './images/Old_Grain_Silo.jpg';
+  if (s.includes('water') || s.includes('pond')) return './images/Water.jpg';
+  if (s.includes('seed') || s.includes('planter') || s.includes('1775nt')) return './images/Seeds.JPG';
+  if (s.includes('fertilizer') || s.includes('kuhnaxis')) return './images/Solid_Fertilizer.JPG';
+  if (s.includes('diesel') || s.includes('gasstation')) return './images/Diesel.JPG';
+  if (s.includes('wood') || s.includes('tree')) return './images/Wood_Chips.jpg';
+  return './images/Liftable_Pallets_And_Bales.jpg';
+}
+
 async function runPipeline() {
   const isForceRun = process.argv.includes('--force') || process.env.GITHUB_EVENT_NAME === 'workflow_dispatch';
   const syncTimestamp = new Date().toISOString();
@@ -304,7 +348,6 @@ async function runPipeline() {
   const client = new ftp.Client(25000);
   client.ftp.verbose = true;
 
-  // SCOPE DECLARATIONS (Available to the entire runPipeline scope)
   let activeSlot = process.env.DEFAULT_SAVE_SLOT || "3";
   let mapFilename = "FS25_The_Rural_Farmlands_Of_Ohio.zip";
   let mapName = "The Rural Farmlands Of Ohio";
@@ -331,7 +374,6 @@ async function runPipeline() {
     });
     console.log("✅ Authenticated to G-Portal FTP.");
 
-    // 1. Ingest dedicatedServerConfig.xml
     try {
       const cfgText = await downloadFtpFileToString(client, 'profile/dedicated_server/dedicatedServerConfig.xml');
       if (cfgText) {
@@ -341,13 +383,14 @@ async function runPipeline() {
         if (settings.mapFilename) mapFilename = settings.mapFilename;
         if (settings.game_name) serverName = settings.game_name;
         allRawParsedXml['dedicatedServerConfig'] = cfgJson;
-        console.log(`✅ Loaded: profile/dedicated_server/dedicatedServerConfig.xml (Locked Slot #${activeSlot})`);
+        console.log(`✅ Loaded: profile/dedicated_server/dedicatedServerConfig.xml (Slot #${activeSlot})`);
       }
     } catch (e) {
       console.warn("⚠️ Could not read dedicatedServerConfig.xml, defaulting to slot 3.");
     }
 
-    // 2. Ingest gameStats.xml (PRIMARY AUTHORITY)
+    const catalogLookup = await fetchWebsiteCatalog();
+
     try {
       const statsText = await downloadFtpFileToString(client, 'profile/dedicated_server/gameStats.xml');
       if (statsText) {
@@ -357,10 +400,9 @@ async function runPipeline() {
         if (srv.mapName) mapName = srv.mapName;
         serverDayTime = srv.dayTime ? parseFloat(srv.dayTime) : null;
 
-        // Strict Player Presence Checking (numUsed Authority)
         const slots = srv.Slots || {};
         const numUsed = parseInt(slots.numUsed || 0, 10);
-        console.log(`🎮 gameStats.xml Slots: numUsed = ${numUsed} (Capacity: ${slots.capacity || 6})`);
+        console.log(`🎮 gameStats.xml Authority: numUsed = ${numUsed} (Capacity: ${slots.capacity || 6})`);
 
         if (numUsed > 0 && slots.Player) {
           const pList = Array.isArray(slots.Player) ? slots.Player : [slots.Player];
@@ -390,20 +432,26 @@ async function runPipeline() {
           });
         }
 
-        // Extract Clean Mod Names from gameStats.xml
         if (srv.Mods && srv.Mods.Mod) {
           const mList = Array.isArray(srv.Mods.Mod) ? srv.Mods.Mod : [srv.Mods.Mod];
           mList.forEach(m => {
             const mKey = m.name || m.filename || "";
             if (mKey) {
               const title = m._ || m.name || cleanEntityName(mKey);
+              const cleanLower = mKey.toLowerCase();
+              const enriched = catalogLookup[cleanLower] || catalogLookup[normalizeKey(mKey)] || null;
+
               activeMods[mKey] = {
                 modKey: mKey,
-                name: title,
-                author: m.author || "Giants ModHub",
+                name: enriched?.name || title,
+                author: enriched?.author || m.author || "Giants ModHub",
                 version: m.version || "1.0.0.0",
                 hash: m.hash || "",
-                category: "ModHub Verified"
+                category: enriched?.category || "ModHub Verified",
+                description: enriched?.description || "Verified server modification.",
+                size: enriched?.size || "N/A",
+                image: enriched?.image || enriched?.imageUrl || resolveModImageFallback(title, mKey),
+                crossplay: enriched?.crossplay || "Yes"
               };
             }
           });
@@ -428,10 +476,9 @@ async function runPipeline() {
       console.warn("⚠️ Could not read gameStats.xml via FTP:", statsErr.message);
     }
 
-    // 3. Dynamic XML Directory Scanner in profile/savegame{slot}
     const slotFolder = `profile/savegame${activeSlot}`;
     const slotNodeName = `savegame${activeSlot}`;
-    console.log(`📂 Dynamically scanning G-Portal directory: ${slotFolder}...`);
+    console.log(`📂 Scanning G-Portal directory: ${slotFolder}...`);
 
     const directoryList = await client.list(slotFolder);
     const xmlFilesFound = directoryList
@@ -464,7 +511,6 @@ async function runPipeline() {
 
   const slotNodeName = `savegame${activeSlot}`;
 
-  // Line 470: Savegame Farm Ownership & Bale Counts
   const farmFinances = {};
   const farmBaleStats = {};
 
@@ -506,48 +552,88 @@ async function runPipeline() {
     });
   }
 
-  // Farmland Ownership Index with Scope Protection
-  const farmlandsOwnership = {};
-  if (Array.isArray(rawLiveFarmlands)) {
-    rawLiveFarmlands.forEach(fl => {
-      if (fl && fl.id) farmlandsOwnership[String(fl.id)] = String(fl.owner || "0");
+  const saveFieldsAgronomy = {};
+  const rootFieldsXml = allRawParsedXml.fields && (allRawParsedXml.fields.fields || allRawParsedXml.fields);
+  if (rootFieldsXml && rootFieldsXml.field) {
+    const fArr = Array.isArray(rootFieldsXml.field) ? rootFieldsXml.field : [rootFieldsXml.field];
+    fArr.forEach(f => {
+      if (f.id) {
+        saveFieldsAgronomy[String(f.id)] = {
+          fruitType: cleanFillTypeName(f.fruitType || f.fruit || "Fallow"),
+          growthState: f.growthState || "Growing",
+          groundType: f.groundType || "Cultivated",
+          sprayLevel: f.sprayLevel || f.fertilizerLevel || null,
+          limeLevel: f.limeLevel || null
+        };
+      }
     });
   }
 
-  // Savegame Farmlands Backup Check
+  const farmlandRegistry = {};
+  if (Array.isArray(rawLiveFarmlands)) {
+    rawLiveFarmlands.forEach(fl => {
+      if (fl && fl.id) {
+        farmlandRegistry[String(fl.id)] = {
+          owner: String(fl.owner || "0"),
+          area: parseFloat(fl.area || 0),
+          price: parseFloat(fl.price || 0),
+          x: parseFloat(fl.x || 0),
+          z: parseFloat(fl.z || 0)
+        };
+      }
+    });
+  }
+
   const rootFLand = allRawParsedXml.farmland || allRawParsedXml.farmlands;
   if (rootFLand && (rootFLand.farmland || rootFLand.farmlands)) {
     const flItems = Array.isArray(rootFLand.farmland || rootFLand.farmlands)
       ? (rootFLand.farmland || rootFLand.farmlands)
       : [rootFLand.farmland || rootFLand.farmlands];
     flItems.forEach(fl => {
-      if (fl && fl.id && !farmlandsOwnership[String(fl.id)]) {
-        farmlandsOwnership[String(fl.id)] = String(fl.farmId || fl.owner || "0");
+      if (fl && fl.id && !farmlandRegistry[String(fl.id)]) {
+        farmlandRegistry[String(fl.id)] = {
+          owner: String(fl.farmId || fl.owner || "0"),
+          area: parseFloat(fl.area || 0),
+          price: parseFloat(fl.price || 0),
+          x: parseFloat(fl.x || 0),
+          z: parseFloat(fl.z || 0)
+        };
       }
     });
   }
 
-  // Fields Mapping with Scope Protection
+  const farm1Fields = [];
+  const farm2Fields = [];
+  const publicFields = [];
   const processedFields = [];
-  if (Array.isArray(rawLiveFields)) {
-    rawLiveFields.forEach(f => {
-      if (f && f.id) {
-        const fId = String(f.id);
-        const ownerId = farmlandsOwnership[fId] || (String(f.isOwned) === 'true' ? "1" : "0");
-        processedFields.push({
-          id: fId,
-          ownerFarmId: ownerId,
-          isOwned: ownerId !== "0",
-          x: f.x ? parseFloat(f.x) : 0,
-          z: f.z ? parseFloat(f.z) : 0,
-          areaHectares: 0,
-          cropType: "Active Farmland"
-        });
-      }
-    });
-  }
 
-  // Extract Exact Savegame Vehicles for FarmId Mapping
+  Object.entries(farmlandRegistry).forEach(([flId, info]) => {
+    const agro = saveFieldsAgronomy[flId] || {};
+    const fieldObj = {
+      id: flId,
+      ownerFarmId: info.owner,
+      isOwned: info.owner !== "0",
+      areaHectares: info.area,
+      price: info.price,
+      priceFormatted: formatCurrency(info.price),
+      cropType: agro.fruitType || "Fallow",
+      growthState: agro.growthState || (info.owner !== "0" ? "Active" : "Unmanaged"),
+      groundType: agro.groundType || "Natural",
+      x: info.x,
+      z: info.z
+    };
+
+    processedFields.push(fieldObj);
+
+    if (info.owner === "1") {
+      farm1Fields.push(fieldObj);
+    } else if (info.owner === "2") {
+      farm2Fields.push(fieldObj);
+    } else {
+      publicFields.push(fieldObj);
+    }
+  });
+
   const saveVehicleOwnership = {};
   const saveVehicleCapacities = {};
   const balerHardwareCounters = [];
@@ -585,7 +671,6 @@ async function runPipeline() {
     });
   }
 
-  // Line 570: Live Vehicle Fleet Processing & Pallet Separation
   const liveVehicles = [];
   const farm1Vehicles = [];
   const farm1Harvesters = [];
@@ -599,6 +684,8 @@ async function runPipeline() {
   const farm2Implements = [];
   const farm2Pallets = [];
 
+  const publicVehicles = [];
+
   rawLiveVehiclesList.forEach((v, idx) => {
     const vId = String(idx + 1);
     const name = v.name || cleanEntityName(v.type || `Vehicle_${vId}`);
@@ -607,7 +694,6 @@ async function runPipeline() {
     const x = parseFloat(v.x || 0);
     const z = parseFloat(v.z || 0);
 
-    // Exact Farm Ownership Binding (No Coordinate Guessing)
     let assignedFarmId = "1";
     const cleanLower = name.toLowerCase();
     if (v.farmId) {
@@ -618,7 +704,6 @@ async function runPipeline() {
       assignedFarmId = saveVehicleOwnership[cleanLower];
     }
 
-    // Extract Fill Levels & Capacities
     let fillTypes = "Empty";
     let fillLevels = 0;
     let capacity = saveVehicleCapacities[vId] || (classification.isMotorized ? 600 : 50000);
@@ -631,7 +716,6 @@ async function runPipeline() {
       fillLevels = parseFloat(parts[0] || 0);
     }
 
-    // Match Real Tank Capacity for Common Machines
     if (name.includes('Roadrunner')) capacity = 900;
     else if (name.includes('RTV') || name.includes('Rangler')) capacity = 80;
     else if (name.includes('M8')) capacity = 400;
@@ -668,20 +752,22 @@ async function runPipeline() {
       else if (classification.groupKey === 'trailers') farm2Trailers.push(vehicleRecord);
       else if (classification.groupKey === 'motorVehicles') farm2Vehicles.push(vehicleRecord);
       else farm2Implements.push(vehicleRecord);
-    } else {
+    } else if (assignedFarmId === "1") {
       if (classification.groupKey === 'pallets') farm1Pallets.push(vehicleRecord);
       else if (classification.groupKey === 'harvesters') farm1Harvesters.push(vehicleRecord);
       else if (classification.groupKey === 'trailers') farm1Trailers.push(vehicleRecord);
       else if (classification.groupKey === 'motorVehicles') farm1Vehicles.push(vehicleRecord);
       else farm1Implements.push(vehicleRecord);
+    } else {
+      publicVehicles.push(vehicleRecord);
     }
   });
 
-  // Parse Placeables (Animals, Factories, Silos, Generators)
   const farmCards = {
-    farm_1: { animals: [], factories: [], generalPlaceables: [], farmlandOwned: [], palletsAndBales: [...farm1Pallets] },
-    farm_2: { animals: [], factories: [], generalPlaceables: [], farmlandOwned: [], palletsAndBales: [...farm2Pallets] }
+    farm_1: { animals: [], factories: [], generalPlaceables: [], farmlandOwned: farm1Fields, palletsAndBales: [...farm1Pallets] },
+    farm_2: { animals: [], factories: [], generalPlaceables: [], farmlandOwned: farm2Fields, palletsAndBales: [...farm2Pallets] }
   };
+  const publicPlaceables = [];
 
   const rootPlaceables = allRawParsedXml.placeables && (allRawParsedXml.placeables.placeables || allRawParsedXml.placeables);
   if (rootPlaceables?.placeable) {
@@ -689,36 +775,36 @@ async function runPipeline() {
     pItems.forEach(p => {
       const fId = String(p.farmId || "0");
       const farmKey = `farm_${fId}`;
-      if (!farmCards[farmKey]) return;
-
       const name = cleanEntityName(p.filename || p.uniqueId || "Placeable");
+
+      const itemObj = {
+        name: name,
+        file: p.filename,
+        price: parseFloat(p.price || 0),
+        location: getSpatialZone(p.position?.split(' ')[0], p.position?.split(' ')[2], processedFields)
+      };
+
+      if (fId === "0" || !farmCards[farmKey]) {
+        publicPlaceables.push(itemObj);
+        return;
+      }
 
       if (p.husbandry) {
         farmCards[farmKey].animals.push({
-          name: name,
-          file: p.filename,
-          price: parseFloat(p.price || 0),
-          totalAnimals: p.husbandry?.numAnimals ? parseInt(p.husbandry.numAnimals, 10) : 0,
-          location: getSpatialZone(p.position?.split(' ')[0], p.position?.split(' ')[2], processedFields)
+          ...itemObj,
+          totalAnimals: p.husbandry?.numAnimals ? parseInt(p.husbandry.numAnimals, 10) : 0
         });
       } else if (p.productionPoint) {
         farmCards[farmKey].factories.push({
-          name: name,
-          file: p.filename,
-          factoryStatus: "Active",
-          location: getSpatialZone(p.position?.split(' ')[0], p.position?.split(' ')[2], processedFields)
+          ...itemObj,
+          factoryStatus: "Active"
         });
       } else {
-        farmCards[farmKey].generalPlaceables.push({
-          name: name,
-          price: parseFloat(p.price || 0),
-          location: getSpatialZone(p.position?.split(' ')[0], p.position?.split(' ')[2], processedFields)
-        });
+        farmCards[farmKey].generalPlaceables.push(itemObj);
       }
     });
   }
 
-  // Resolve In-Game Calendar & Console Slots
   const inGameCal = resolveInGameCalendar(allRawParsedXml.environment, allRawParsedXml.careerSavegame, serverDayTime);
 
   let slotUsage = 2207;
@@ -744,6 +830,7 @@ async function runPipeline() {
       totalTrailers: farm1Trailers.length,
       totalImplements: farm1Implements.length,
       totalPallets: farm1Pallets.length,
+      totalFieldsOwned: farm1Fields.length,
       totalBales: farmBaleStats.farm_1?.totalBales || 0
     },
     farm2: {
@@ -752,11 +839,16 @@ async function runPipeline() {
       totalTrailers: farm2Trailers.length,
       totalImplements: farm2Implements.length,
       totalPallets: farm2Pallets.length,
+      totalFieldsOwned: farm2Fields.length,
       totalBales: farmBaleStats.farm_2?.totalBales || 0
+    },
+    public: {
+      totalUnownedFields: publicFields.length,
+      totalPublicVehicles: publicVehicles.length,
+      totalPublicPlaceables: publicPlaceables.length
     }
   };
 
-  // Master Payload
   const masterPayload = {
     serverName: serverName,
     mapName: mapName,
@@ -789,6 +881,7 @@ async function runPipeline() {
       trailers: farm1Trailers,
       implements: farm1Implements,
       pallets: farm1Pallets,
+      fields: farm1Fields,
       baleCount: farmBaleStats.farm_1?.totalBales || 0
     },
     farm2: {
@@ -797,13 +890,21 @@ async function runPipeline() {
       trailers: farm2Trailers,
       implements: farm2Implements,
       pallets: farm2Pallets,
+      fields: farm2Fields,
       baleCount: farmBaleStats.farm_2?.totalBales || 0
+    },
+    publicAssets: {
+      fields: publicFields,
+      vehicles: publicVehicles,
+      placeables: publicPlaceables
     }
   };
 
   console.log(`💾 Committing Live Telemetry to Firebase at /fs25 and /fs25/${slotNodeName}...`);
   await updateDb('fs25', masterPayload);
   await updateDb(`fs25/${slotNodeName}`, masterPayload);
+
+  await setDb('fs25/activePlayers', null);
 
   for (const [farmKey, finObj] of Object.entries(farmFinances)) {
     await updateDb(`fs25/farms/${farmKey}/finances`, finObj);
@@ -814,7 +915,7 @@ async function runPipeline() {
     }
   }
 
-  console.log(`🏆 Sync Complete: G-Portal data parsed into human format. Players: ${activePlayers.length}.`);
+  console.log(`🏆 Sync Complete: Fully split across Farm 1, Farm 2, and Public. Online: ${activePlayers.length}`);
   process.exit(0);
 }
 
