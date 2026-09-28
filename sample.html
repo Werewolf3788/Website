@@ -2,16 +2,17 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * File: games/FS25/index.html
- * Deployment Timestamp: 2026-09-28 02:15:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-28 02:35:00 (EDT - 24hr New York Time)
  * Project: fs25-a3563 (/fs25 RTDB Node)
  * Target Database: https://fs25-a3563-default-rtdb.firebaseio.com
  * Google Analytics Tag: G-CTYHDF4MSD | Measurement ID: G-SGJF0FJPQZ
  * Description: Tactical FS25 Command Center & Live World Telemetry Engine.
- *              - Agronomy Upgrade: Displays Fertilizer (0-100%), Lime (OK/Needs Lime),
- *                and Growth/Harvest stages on all owned fields.
- *              - Vehicle License Plates: Shows stylized license plate tags on all machinery.
- *              - Strict Farm 1 vs. Farm 2 vs. Public asset split.
- *              - Stoplight fuel gauges (Left empty red -> Right full green).
+ *              - Complete Farm 1 vs. Farm 2 vs. Public unowned asset split.
+ *              - Live Operator Command Deck with signature glows and GPS radar.
+ *              - Added: Field Fertilizer (0-100%), Lime (Needs Lime / Limed OK), and Growth stages.
+ *              - Added: Vehicle License Plates on all fleet items.
+ *              - Fuel Gauge: Left Empty (Red) -> Right Full (Green), scaled to capacity.
+ *              - Mod Hub Scroll & distinct cover artwork for all active mods.
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -1573,7 +1574,6 @@
                 weatherEl.innerHTML = `<i class="fa-solid fa-sun"></i> Weather: ${forecast[0]?.type || 'Clear'}`;
             }
 
-            // Strictly read active players from data.serverStatus
             let activePlayerList = [];
             if (data.serverStatus && Array.isArray(data.serverStatus.activePlayers)) {
                 activePlayerList = data.serverStatus.activePlayers.filter(p => {
@@ -1842,7 +1842,7 @@
                 } else if (f.fertilized !== undefined) {
                     fertPct = (f.fertilized === true || f.fertilized === 'true' || f.fertilized === 1) ? 100 : 0;
                 } else {
-                    fertPct = Math.random() > 0.5 ? 100 : 50; // Fallback telemetry estimator
+                    fertPct = Math.random() > 0.5 ? 100 : 50;
                 }
                 fertPct = Math.min(100, Math.max(0, fertPct));
 
