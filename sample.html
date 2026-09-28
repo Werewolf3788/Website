@@ -2,20 +2,21 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * File: games/FS25/index.html
- * Deployment Timestamp: 2026-09-28 02:45:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-28 03:00:00 (EDT - 24hr New York Time)
  * Project: fs25-a3563 (/fs25 RTDB Node)
  * Target Database: https://fs25-a3563-default-rtdb.firebaseio.com
  * Google Analytics Tag: G-CTYHDF4MSD | Measurement ID: G-SGJF0FJPQZ
  * Description: Tactical FS25 Command Center & Live World Telemetry Engine.
  *              - Complete Farm 1 vs. Farm 2 vs. Public unowned asset split.
- *              - Farm 1 column contains Farm 1's owned fields.
- *              - Farm 2 column contains Farm 2's owned fields.
- *              - Public section above Mods displays unowned fields with purchase prices.
- *              - Field Agronomy: Shows Growth stage, Fertilizer level (0-100%), and Lime status.
+ *              - Live Operator Command Deck with signature glows and GPS radar.
+ *              - Agronomy Status Colors:
+ *                * Plowed/Cultivated/Fallow = Light Blue
+ *                * Growing = Heavy Dark Green
+ *                * Ready to Harvest = Yellow
+ *              - Self-healing image resolver (FontAwesome fallback eliminates broken icons).
  *              - Fleet Telemetry: Displays official registered vehicle license plates.
  *              - Fuel Gauge: Left Empty (Red) -> Right Full (Green), scaled to capacity.
- *              - Mod Hub Scroll: Clicking the Mods KPI card smooth-scrolls to the directory.
- *              - Mod Images: Displays distinct cover artwork for all active mods.
+ *              - Mod Hub Scroll & distinct cover artwork for all active mods.
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -657,6 +658,21 @@
             background: #020617;
         }
 
+        /* Clean Icon Fallback when image files are missing */
+        .card-icon-fallback {
+            width: 34px;
+            height: 34px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            flex-shrink: 0;
+            background: #0f172a;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-gold);
+            font-size: 1rem;
+        }
+
         .card-details {
             display: flex;
             flex-direction: column;
@@ -706,7 +722,7 @@
             border-radius: 1px;
         }
 
-        /* Agronomy Telemetry Badges */
+        /* Agronomy Telemetry Badges with User-Defined Colors */
         .agronomy-meta-row {
             display: flex;
             flex-wrap: wrap;
@@ -718,7 +734,7 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 1px 6px;
+            padding: 2px 7px;
             border-radius: 4px;
             font-size: 0.68rem;
             font-family: var(--font-mono);
@@ -726,17 +742,30 @@
             border: 1px solid transparent;
         }
 
-        .agro-growth {
-            background: rgba(56, 189, 248, 0.15);
-            color: #38bdf8;
-            border-color: rgba(56, 189, 248, 0.35);
+        /* 1. Plowed/Cultivated/Fallow: Light Blue */
+        .agro-plowed {
+            background: rgba(56, 189, 248, 0.2) !important;
+            color: #38bdf8 !important;
+            border-color: rgba(56, 189, 248, 0.5) !important;
+            font-weight: 800 !important;
         }
+
+        /* 2. Growing: Heavy Dark Green */
+        .agro-growing {
+            background: #14532d !important;
+            color: #86efac !important;
+            border-color: #166534 !important;
+            font-weight: 800 !important;
+        }
+
+        /* 3. Ready to Harvest: Yellow */
         .agro-harvest {
-            background: rgba(74, 222, 128, 0.2);
-            color: #4ade80;
-            border-color: rgba(74, 222, 128, 0.4);
-            font-weight: 800;
+            background: rgba(250, 204, 21, 0.22) !important;
+            color: #facc15 !important;
+            border-color: rgba(250, 204, 21, 0.6) !important;
+            font-weight: 800 !important;
         }
+
         .agro-fert-100 {
             background: rgba(34, 197, 94, 0.15);
             color: #4ade80;
@@ -1004,7 +1033,7 @@
                          alt=""
                          data-alt="Live Satellite Map Feed"
                          class="lightbox-trigger"
-                         onerror="this.src='./images/St_Lawrence_Map.JPG';" />
+                         onerror="handleImgError(this, 'field');" />
                 </div>
                 <div class="banner-title">
                     <div class="server-header-line">
@@ -1306,7 +1335,7 @@
     <!-- Sticky Persistent Footer -->
     <footer class="system-footer">
         <div class="footer-content">
-            <span><i class="fa-solid fa-code-commit"></i> Engine: <strong>v57.0.0 (Tactical Matrix + Agronomy)</strong></span>
+            <span><i class="fa-solid fa-code-commit"></i> Engine: <strong>v57.0.0 (Agronomy & Plates Matrix)</strong></span>
             <span id="save-slot-display" style="color:var(--accent-gold); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Slot #3</span>
             <span id="footer-sync-time"><i class="fa-solid fa-rotate"></i> Sync: Connected</span>
         </div>
@@ -1348,6 +1377,7 @@
             'canola': './images/Canola.JPG',
             'oat': './images/Oats.JPG',
             'corn': './images/Corn.JPG',
+            'maize': './images/Corn.JPG',
             'sunflower': './images/Sunflowers.JPG',
             'soybean': './images/Soybeans.JPG',
             'potato': './images/Potatoes.JPG',
@@ -1392,6 +1422,38 @@
             }
             return './images/Liftable_Pallets_And_Bales.jpg';
         }
+
+        // Global Self-Healing Image Error Handler (Swaps missing files for FontAwesome badges)
+        window.handleImgError = function(img, defaultIcon = 'seedling') {
+            if (!img) return;
+            const currentSrc = img.getAttribute('src') || '';
+
+            // Try resolving with games/FS25 relative path first if not attempted
+            if (!img.dataset.triedSubfolder && !currentSrc.includes('games/FS25/')) {
+                img.dataset.triedSubfolder = 'true';
+                const filename = currentSrc.split('/').pop();
+                img.src = `./games/FS25/images/${filename}`;
+                return;
+            }
+
+            // Replace missing image with clean FontAwesome card badge
+            const iconWrapper = document.createElement('div');
+            iconWrapper.className = 'card-icon-fallback';
+
+            let iconClass = 'fa-seedling';
+            if (defaultIcon === 'tractor') iconClass = 'fa-tractor';
+            else if (defaultIcon === 'wheat') iconClass = 'fa-wheat-awn';
+            else if (defaultIcon === 'trailer') iconClass = 'fa-truck-ramp-box';
+            else if (defaultIcon === 'cow') iconClass = 'fa-cow';
+            else if (defaultIcon === 'bale') iconClass = 'fa-box-archive';
+            else if (defaultIcon === 'field') iconClass = 'fa-mountain-sun';
+            else if (defaultIcon === 'implement') iconClass = 'fa-screwdriver-wrench';
+
+            iconWrapper.innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+            if (img.parentNode) {
+                img.parentNode.replaceChild(iconWrapper, img);
+            }
+        };
 
         function toArray(val) {
             if (!val) return [];
@@ -1577,7 +1639,6 @@
                 weatherEl.innerHTML = `<i class="fa-solid fa-sun"></i> Weather: ${forecast[0]?.type || 'Clear'}`;
             }
 
-            // Strictly read active players from data.serverStatus
             let activePlayerList = [];
             if (data.serverStatus && Array.isArray(data.serverStatus.activePlayers)) {
                 activePlayerList = data.serverStatus.activePlayers.filter(p => {
@@ -1632,7 +1693,7 @@
             // Tactical Command Deck
             renderTacticalCommandDeck(activePlayerList, allVehicles, fieldsList);
 
-            // 1. RENDER FIELDS (STRICT 3-WAY SPLIT WITH FERTILIZER, LIME & GROWTH)
+            // 1. RENDER FIELDS (STRICT 3-WAY SPLIT WITH COLOR CODED AGRONOMY)
             const f1Fields = toArray(data.farm1?.fields || fieldsList.filter(f => String(f.ownerFarmId) === '1'));
             const f2Fields = toArray(data.farm2?.fields || fieldsList.filter(f => String(f.ownerFarmId) === '2'));
             const pubFields = toArray(data.publicAssets?.fields || fieldsList.filter(f => String(f.ownerFarmId) === '0' || !f.isOwned));
@@ -1645,15 +1706,15 @@
             const f1 = data.farm1 || {};
             const f2 = data.farm2 || {};
 
-            renderVehicleCards(toArray(f1.vehicles), 'f1-tractors-container', 'f1-tractors-count', 'No motorized rigs registered to My farm.');
-            renderVehicleCards(toArray(f1.harvesters), 'f1-harvesters-container', 'f1-harvesters-count', 'No harvesters registered to My farm.');
-            renderVehicleCards(toArray(f1.trailers), 'f1-trailers-container', 'f1-trailers-count', 'No hauling trailers registered to My farm.');
-            renderVehicleCards(toArray(f1.implements), 'f1-implements-container', 'f1-implements-count', 'No implements registered to My farm.');
+            renderVehicleCards(toArray(f1.vehicles), 'f1-tractors-container', 'f1-tractors-count', 'No motorized rigs registered to My farm.', 'tractor');
+            renderVehicleCards(toArray(f1.harvesters), 'f1-harvesters-container', 'f1-harvesters-count', 'No harvesters registered to My farm.', 'wheat');
+            renderVehicleCards(toArray(f1.trailers), 'f1-trailers-container', 'f1-trailers-count', 'No hauling trailers registered to My farm.', 'trailer');
+            renderVehicleCards(toArray(f1.implements), 'f1-implements-container', 'f1-implements-count', 'No implements registered to My farm.', 'implement');
 
-            renderVehicleCards(toArray(f2.vehicles), 'f2-tractors-container', 'f2-tractors-count', 'No motorized rigs registered to Dumbace.');
-            renderVehicleCards(toArray(f2.harvesters), 'f2-harvesters-container', 'f2-harvesters-count', 'No harvesters registered to Dumbace.');
-            renderVehicleCards(toArray(f2.trailers), 'f2-trailers-container', 'f2-trailers-count', 'No hauling trailers registered to Dumbace.');
-            renderVehicleCards(toArray(f2.implements), 'f2-implements-container', 'f2-implements-count', 'No implements registered to Dumbace.');
+            renderVehicleCards(toArray(f2.vehicles), 'f2-tractors-container', 'f2-tractors-count', 'No motorized rigs registered to Dumbace.', 'tractor');
+            renderVehicleCards(toArray(f2.harvesters), 'f2-harvesters-container', 'f2-harvesters-count', 'No harvesters registered to Dumbace.', 'wheat');
+            renderVehicleCards(toArray(f2.trailers), 'f2-trailers-container', 'f2-trailers-count', 'No hauling trailers registered to Dumbace.', 'trailer');
+            renderVehicleCards(toArray(f2.implements), 'f2-implements-container', 'f2-implements-count', 'No implements registered to Dumbace.', 'implement');
 
             // 3. ANIMALS, STORAGE & BALES
             const farmsTree = data.farms || slotData.farms || {};
@@ -1801,7 +1862,7 @@
         }
 
         // ====================================================================
-        // SECTION 4: FIELD & AGRONOMY CARD RENDERERS (FERTILIZER, LIME & GROWTH)
+        // SECTION 4: FIELD & AGRONOMY CARD RENDERERS (COLOR CODED)
         // ====================================================================
         function renderFieldsList(fields, containerId, countId, emptyMsg) {
             const container = document.getElementById(containerId);
@@ -1816,28 +1877,48 @@
 
             container.innerHTML = fields.map(f => {
                 const cropImg = resolveAssetImage(f.cropType || f.fruitType || 'wheat');
+                const rawState = String(f.growthState || f.fruitState || f.state || '').toLowerCase().trim();
+                const cropLower = String(f.cropType || f.fruitType || '').toLowerCase().trim();
 
-                // 1. Growth & Harvest State Computation
-                let growthLabel = 'Cultivated';
-                let isReadyHarvest = false;
-                const rawState = String(f.growthState || f.fruitState || f.state || '').toLowerCase();
+                // Exact 3-State Color Determination:
+                // 1. Ready to Harvest = Yellow
+                // 2. Plowed / Cultivated / Fallow = Light Blue
+                // 3. Growing = Heavy Dark Green
+                let growthClass = 'agro-plowed';
+                let growthLabel = 'Plowed';
+                let growthIcon = 'fa-mountain-sun';
 
-                if (rawState.includes('harvest') || rawState === '4' || rawState === '5') {
+                if (
+                    rawState.includes('harvest') || 
+                    rawState.includes('ready') || 
+                    rawState === '4' || 
+                    rawState === '5' ||
+                    f.isHarvestReady === true
+                ) {
+                    growthClass = 'agro-harvest';
                     growthLabel = 'Ready to Harvest';
-                    isReadyHarvest = true;
-                } else if (rawState.includes('grow') || rawState === '1' || rawState === '2' || rawState === '3') {
-                    growthLabel = 'Growing Stage';
-                } else if (rawState.includes('seed') || rawState.includes('plant')) {
-                    growthLabel = 'Planted';
-                } else if (rawState.includes('fallow') || rawState.includes('plow') || rawState.includes('cultiv')) {
-                    growthLabel = 'Cultivated';
-                } else if (rawState.includes('wither')) {
-                    growthLabel = 'Withered';
-                } else if (f.growthState) {
-                    growthLabel = f.growthState;
+                    growthIcon = 'fa-wheat-awn';
+                } else if (
+                    cropLower === 'fallow' || 
+                    cropLower === '' || 
+                    cropLower === 'unknown' ||
+                    rawState.includes('plow') || 
+                    rawState.includes('cultiv') || 
+                    rawState.includes('fallow') || 
+                    rawState.includes('seedbed') ||
+                    rawState === '0' ||
+                    rawState === 'fallow'
+                ) {
+                    growthClass = 'agro-plowed';
+                    growthLabel = rawState.includes('cultiv') ? 'Cultivated' : (cropLower === 'fallow' ? 'Fallow' : 'Plowed');
+                    growthIcon = 'fa-mountain-sun';
+                } else {
+                    growthClass = 'agro-growing';
+                    growthLabel = 'Growing';
+                    growthIcon = 'fa-seedling';
                 }
 
-                // 2. Fertilization Level Computation (0%, 50%, 100%)
+                // Fertilization Percentage (0%, 50%, 100%)
                 let fertPct = 0;
                 if (f.fertilizerLevel !== undefined) {
                     fertPct = Number(f.fertilizerLevel) <= 2 ? Number(f.fertilizerLevel) * 50 : Number(f.fertilizerLevel);
@@ -1846,20 +1927,19 @@
                 } else if (f.fertilized !== undefined) {
                     fertPct = (f.fertilized === true || f.fertilized === 'true' || f.fertilized === 1) ? 100 : 0;
                 } else {
-                    fertPct = 50; // Neutral default
+                    fertPct = 50;
                 }
                 fertPct = Math.min(100, Math.max(0, fertPct));
-
                 const fertClass = fertPct >= 100 ? 'agro-fert-100' : (fertPct > 0 ? 'agro-fert-50' : 'agro-fert-0');
 
-                // 3. Lime Requirement Computation
+                // Lime Status
                 const needsLime = (f.needsLime === true || f.needsLime === 'true' || f.needsLime === 1 || f.limeLevel === 0);
                 const limeClass = needsLime ? 'agro-lime-bad' : 'agro-lime-ok';
                 const limeLabel = needsLime ? 'Needs Lime' : 'Limed OK';
 
                 return `
                     <div class="telemetry-card" style="align-items:flex-start;">
-                        <img src="${cropImg}" class="card-icon-img" style="margin-top:3px;" alt="" />
+                        <img src="${cropImg}" class="card-icon-img" style="margin-top:3px;" alt="" onerror="handleImgError(this, 'wheat');" />
                         <div class="card-details" style="flex:1;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <strong>Field #${f.id} (${cleanName(f.cropType || f.fruitType || 'Fallow')})</strong>
@@ -1871,10 +1951,10 @@
                                 <span>Yield Bonus: <strong style="color:var(--accent-gold);">${fertPct > 50 ? '+98%' : '+50%'}</strong></span>
                             </div>
 
-                            <!-- Agronomy Telemetry Indicators: Growth, Fertilizer & Lime -->
+                            <!-- User-Styled Agronomy Indicators -->
                             <div class="agronomy-meta-row">
-                                <span class="agro-pill ${isReadyHarvest ? 'agro-harvest' : 'agro-growth'}">
-                                    <i class="fa-solid ${isReadyHarvest ? 'fa-wheat-awn' : 'fa-seedling'}"></i> ${growthLabel}
+                                <span class="agro-pill ${growthClass}">
+                                    <i class="fa-solid ${growthIcon}"></i> ${growthLabel}
                                 </span>
                                 <span class="agro-pill ${fertClass}">
                                     <i class="fa-solid fa-flask"></i> Fert: ${fertPct}%
@@ -1906,7 +1986,7 @@
             container.innerHTML = publicFields.slice(0, 20).map(f => {
                 return `
                     <div class="telemetry-card">
-                        <img src="./images/Farmland.jpg" class="card-icon-img" alt="" onerror="this.src='./images/Liftable_Pallets_And_Bales.jpg';" />
+                        <img src="./images/Farmland.jpg" class="card-icon-img" alt="" onerror="handleImgError(this, 'field');" />
                         <div class="card-details" style="flex:1;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <strong>Farmland #${f.id}</strong>
@@ -1925,7 +2005,7 @@
         // ====================================================================
         // SECTION 5: VEHICLE CARD RENDERER (WITH LICENSE PLATES & FUEL GAUGES)
         // ====================================================================
-        function renderVehicleCards(units, targetId, countId, emptyMsg) {
+        function renderVehicleCards(units, targetId, countId, emptyMsg, fallbackIcon = 'tractor') {
             const box = document.getElementById(targetId);
             const badge = document.getElementById(countId);
             if (badge) badge.innerText = units.length;
@@ -1975,7 +2055,7 @@
 
                 return `
                     <div class="telemetry-card">
-                        <img src="${assetImg}" class="card-icon-img" alt="" onerror="this.src='./images/Liftable_Pallets_And_Bales.jpg';" />
+                        <img src="${assetImg}" class="card-icon-img" alt="" onerror="handleImgError(this, '${fallbackIcon}');" />
                         <div class="card-details">
                             <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
                                 <div style="display:flex; align-items:center; gap:6px; min-width:0; overflow:hidden;">
@@ -2009,7 +2089,7 @@
             if (totalBaleCount > 0) {
                 baleBannerHtml = `
                     <div class="telemetry-card" style="background: rgba(250, 204, 21, 0.1); border-color: rgba(250, 204, 21, 0.4); margin-bottom: 6px;">
-                        <img src="./images/Hay_Square_Bale.JPG" class="card-icon-img" alt="" />
+                        <img src="./images/Hay_Square_Bale.JPG" class="card-icon-img" alt="" onerror="handleImgError(this, 'bale');" />
                         <div class="card-details" style="flex:1;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <strong>Total Bales Produced</strong>
@@ -2028,7 +2108,7 @@
 
             const itemsHtml = list.slice(0, 15).map(s => `
                 <div class="telemetry-card">
-                    <img src="${resolveAssetImage(s.name || s.file)}" class="card-icon-img" alt="" />
+                    <img src="${resolveAssetImage(s.name || s.file)}" class="card-icon-img" alt="" onerror="handleImgError(this, 'bale');" />
                     <div class="card-details">
                         <strong>${cleanName(s.name || s.file)}</strong>
                         <span class="card-subtext">Stored Resource Item</span>
@@ -2053,7 +2133,7 @@
 
             container.innerHTML = list.map(a => `
                 <div class="telemetry-card" style="align-items:flex-start;">
-                    <img src="${resolveAssetImage(a.name || a.file || 'cow')}" class="card-icon-img" style="margin-top:3px;" alt="" />
+                    <img src="${resolveAssetImage(a.name || a.file || 'cow')}" class="card-icon-img" style="margin-top:3px;" alt="" onerror="handleImgError(this, 'cow');" />
                     <div class="card-details">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <strong>${cleanName(a.name || a.file)}</strong>
@@ -2078,7 +2158,7 @@
             }
             container.innerHTML = list.slice(0, 15).map(m => `
                 <div class="telemetry-card">
-                    <img src="./images/HARVEST.JPG" class="card-icon-img" alt="" />
+                    <img src="./images/HARVEST.JPG" class="card-icon-img" alt="" onerror="handleImgError(this, 'wheat');" />
                     <div class="card-details" style="flex:1;">
                         <div style="display:flex; justify-content:space-between;">
                             <strong>${cleanName(m.type || 'Mission')} ${m.fieldId ? `(Field ${m.fieldId})` : ''}</strong>
@@ -2135,7 +2215,7 @@
                 const wearPct = Math.round(parseFloat(s.wear || 0) * 100);
                 return `
                     <div class="telemetry-card">
-                        <img src="./images/Liftable_Pallets_And_Bales.jpg" class="card-icon-img" alt="" />
+                        <img src="./images/Liftable_Pallets_And_Bales.jpg" class="card-icon-img" alt="" onerror="handleImgError(this, 'tractor');" />
                         <div class="card-details" style="flex:1;">
                             <div style="display:flex; justify-content:space-between;">
                                 <strong>${cleanName(s.xmlFilename)}</strong>
@@ -2166,7 +2246,7 @@
                 return `
                     <div class="mod-card" onclick="window.openModDetail('${key}')">
                         <div class="mod-cover-frame">
-                            <img src="${coverImg}" alt="" onerror="this.src='./images/Precision_Farming.jpg';" />
+                            <img src="${coverImg}" alt="" onerror="handleImgError(this, 'tractor');" />
                         </div>
                         <div class="mod-card-body">
                             <span class="mod-category-tag">${m.crossplay || 'Crossplay Verified'}</span>
