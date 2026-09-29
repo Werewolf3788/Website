@@ -204258,19 +204258,19 @@
         }
       }
     },
-    "calculatedAt": "2026-09-29T00:08:12.214Z"
+    "calculatedAt": "2026-09-29T00:47:37.458Z"
   },
   "mutualSquadFollowers": [],
   "authDiagnostics": {
     "wildhorse_spirit_active": "yes",
-    "wildhorse_spirit_status": "ACTIVE_ACCESS_TOKEN",
+    "wildhorse_spirit_status": "ACTIVE_VIA_REFRESH",
     "ray_active": "yes",
-    "ray_status": "ACTIVE_ACCESS_TOKEN",
+    "ray_status": "ACTIVE_VIA_REFRESH",
     "active_runner": "PRIMARY_WOLF",
     "buffer_status": "PRIMARY HEALTHY (Werewolf Running)",
-    "lastCheck": "9/28/2026, 20:07:52"
+    "lastCheck": "9/28/2026, 20:47:20"
   },
-  "lastGlobalUpdate": "9/28/2026, 20:07:57",
+  "lastGlobalUpdate": "9/28/2026, 20:47:26",
   "engineVersion": "50.0.0",
   "analyticsTag": "G-CTYHDF4MSD",
   "codeTimestamp": "Monday, September 28, 2026 | 20:06 EDT"
