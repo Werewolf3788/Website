@@ -13,16 +13,16 @@
  *              4. Standalone Direct REST Pipeline: Direct HTTPS writes to Firebase
  *                 without requiring CLI deployments or external runners.
  *              5. Smart Presence Gatekeeper: Checks live squad status first;
- *                 skips heavy fetches when idle to conserve usage limits without
- *                 killing the persistent 20-minute interval loop.
+ *                 skips heavy API calls when squad is idle.
  *              6. Trophy-Driven Mode Inference & Cross-Play Detection: Non-destructively
  *                 inspects titles and trophy requirements to flag Multiplayer, Online
  *                 Co-Op, Campaign, and Cross-Platform support directly on game nodes.
- *              7. Persistent Runner Loop: Automatically cycles execution every
- *                 20 minutes (1,200,000 ms) while running continuously.
+ *              7. GitHub Actions Single-Pass Execution: Runs the full synchronization
+ *                 pipeline and cleanly terminates with process.exit(0) so automated
+ *                 CI/CD workflows complete and deploy without hanging.
  * Analytics Tagging: G-CTYHDF4MSD (Deployable via GTM).
- * Version: 49.2.0 - 20-Minute Persistent Runner Engine
- * Date & Time Stamp: 2026-09-29 18:36:17 EDT (America/New_York)
+ * Version: 50.0.0 - GitHub Actions Clean Exit CI/CD Pipeline Engine
+ * Date & Time Stamp: 2026-09-29 18:57:07 EDT (America/New_York)
  * ============================================================================ */
 
 // Line 27: Core imports for file system, routing, network protocols, and PSN API SDK
@@ -1350,21 +1350,12 @@ function writeLocalFile(payload) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: MASTER EXECUTION & 20-MINUTE PERSISTENT RUNNER LOOP]
+// [SECTION: MASTER EXECUTION & SINGLE-PASS GITHUB ACTIONS RUNNER]
 // ----------------------------------------------------------------------------
-// Line 1321: Non-terminating 20-minute execution loop that preserves background service health
-let isSyncRunning = false;
-
+// Line 1321: Executes single full telemetry pass and terminates cleanly
 async function executeSyncPass() {
-    if (isSyncRunning) {
-        console.log("[SCHEDULER] Sync pass already in progress. Skipping duplicate tick.");
-        return;
-    }
-
-    isSyncRunning = true;
-
     try {
-        console.log(`[INIT] Starting Squad Pack Sync Engine v49.2.0 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
+        console.log(`[INIT] Starting Squad Pack Sync Engine v50.0.0 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
 
         await loadPersistentTokens();
 
@@ -1418,7 +1409,6 @@ async function executeSyncPass() {
             console.log("[GATEKEEPER] Entire squad is idle and all sessions are finalized. Skipping heavy API calls this cycle.");
             diagnosticReport.lastCheck = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
             await syncNodeToFirebase("authDiagnostics", diagnosticReport);
-            isSyncRunning = false;
             return;
         }
 
@@ -1432,7 +1422,7 @@ async function executeSyncPass() {
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport,
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
-            engineVersion: "49.2.0",
+            engineVersion: "50.0.0",
             analyticsTag: GA4_MEASUREMENT_ID,
             codeTimestamp: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }) + " EDT"
         };
@@ -1471,16 +1461,14 @@ async function executeSyncPass() {
 
         writeLocalFile(finalData);
 
-        console.log(`[SUCCESS] PSN Engine v49.2.0 finished synchronization pass successfully.`);
+        console.log(`[SUCCESS] PSN Engine v50.0.0 finished synchronization pass successfully.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Synchronization cycle failed: ${criticalError.message}`);
-    } finally {
-        isSyncRunning = false;
     }
 }
 
-// Line 1445: Master continuous loop executing immediately, then repeating every 20 minutes (1,200,000 ms)
-const TWENTY_MINUTES_MS = 20 * 60 * 1000;
-
-executeSyncPass();
-setInterval(executeSyncPass, TWENTY_MINUTES_MS);
+// Line 1422: Single-pass execution cleanly exiting for GitHub Actions runner
+(async () => {
+    await executeSyncPass();
+    process.exit(0);
+})();
