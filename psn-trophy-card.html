@@ -1,462 +1,1502 @@
-<!--
-  File: trophies.html
-  Location: /trophies.html
-  Description: Squad Co-Op PlayStation Trophy & Progress Matrix
-               Reads strictly from /psn/gamertags for active PlayStation handles.
-               Displays only active gamertags (e.g. WildHorse_Spirit).
-  Database Endpoint: https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags
-  Last Modified: Saturday, August 08, 2026 | 9:20 PM EDT
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Squad Trophy Matrix | Werewolf Project</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        :root {
-            --color-wildhorse: #FF5F1F;
-            --color-lividman: #C41E3A;
-            --color-darkwing: #9333EA;
-            --color-desdemona: #00F2FF;
-        }
+  <!-- Line 1: Charset & Mobile Viewport -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Squad Pack PSN Master Catalog | Operations Terminal</title>
 
-        body {
-            background-color: #0b0f19;
-            color: #f1f5f9;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-        }
+  <!-- Line 6: Google Tag Manager / GA4 Tracking Setup (G-CTYHDF4MSD) -->
+  <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
 
-        .max-w-7xl {
-            width: 85% !important;
-            max-width: 85% !important;
-            margin-left: auto;
-            margin-right: auto;
-        }
+    gtag('config', 'G-CTYHDF4MSD', {
+      send_page_view: true,
+      page_title: 'Squad Pack PSN Catalog',
+      page_type: 'game_catalog',
+      content_group: 'psn_catalog',
+      catalog_mode: 'universal_squad_vault'
+    });
 
-        .custom-card {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+    function trackOutboundClick(url, destinationName, gameName, commId) {
+      if (typeof gtag === 'function') {
+        gtag('event', 'outbound_click', {
+          event_category: 'outbound_link',
+          event_label: destinationName || 'playstation_store',
+          destination_url: url,
+          game_title: gameName || 'unknown',
+          communication_id: commId || 'unknown',
+          transport_type: 'beacon'
+        });
+      }
+    }
+  </script>
 
-        .custom-card:hover {
-            border-color: rgba(56, 189, 248, 0.4);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 25px -3px rgba(0, 0, 0, 0.5);
-        }
+  <style>
+    /* ==========================================================================
+       Line 37: DESIGN TOKENS & HIGH-CONTRAST GLOSS PALETTE
+       ========================================================================== */
+    :root {
+      --bg-base: #06080c;
+      --bg-surface: #0e121a;
+      --bg-surface-elevated: #151b26;
+      --bg-card: rgba(18, 24, 38, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(0, 242, 254, 0.35);
+      --accent-cyan: #00f2fe;
+      --accent-blue: #4facfe;
+      --accent-purple: #7928ca;
+      --accent-green: #00e676;
+      --accent-gold: #ffb300;
+      --accent-orange: #ff9100;
+      --text-main: #f0f4fc;
+      --text-muted: #8a99b5;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --shadow-gloss: 0 8px 32px 0 rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
 
-        .trophy-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 800;
-            font-family: monospace;
-            border: 1px solid transparent;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        .trophy-platinum { background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.4); color: #c084fc; }
-        .trophy-gold { background: rgba(234, 179, 8, 0.15); border-color: rgba(234, 179, 8, 0.4); color: #fde047; }
-        .trophy-silver { background: rgba(148, 163, 184, 0.15); border-color: rgba(148, 163, 184, 0.4); color: #cbd5e1; }
-        .trophy-bronze { background: rgba(217, 119, 6, 0.15); border-color: rgba(217, 119, 6, 0.4); color: #f97316; }
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: var(--font-stack);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
-    </style>
+    /* Header & Navigation */
+    header.cockpit-header {
+      background: linear-gradient(180deg, rgba(14, 18, 26, 0.98) 0%, rgba(8, 11, 16, 0.92) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .header-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.85rem 1.5rem;
+      gap: 1.5rem;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      background: linear-gradient(90deg, #ffffff 0%, var(--accent-cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .brand-badge {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(0, 242, 254, 0.15);
+      border: 1px solid rgba(0, 242, 254, 0.4);
+      color: var(--accent-cyan);
+      -webkit-text-fill-color: initial;
+    }
+
+    /* Dynamic Menu Navigation */
+    nav.main-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+      justify-content: flex-start;
+      margin-left: 1.5rem;
+    }
+
+    .nav-item {
+      position: relative;
+    }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.5rem 0.85rem;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: 1px solid transparent;
+      min-height: 44px;
+      user-select: none;
+    }
+
+    .nav-link:hover, .nav-item.open > .nav-link {
+      color: var(--text-main);
+      background: var(--bg-surface-elevated);
+      border-color: var(--border-subtle);
+    }
+
+    .nav-thumbnail {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      object-fit: cover;
+      display: inline-block;
+      vertical-align: middle;
+      background: #111;
+    }
+
+    .dropdown-caret {
+      font-size: 0.65rem;
+      transition: transform 0.2s ease;
+      color: var(--text-muted);
+    }
+
+    .nav-item.open .dropdown-caret,
+    .nav-item:hover .dropdown-caret {
+      transform: rotate(180deg);
+      color: var(--accent-cyan);
+    }
+
+    .dropdown-panel {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-glow);
+      border-radius: var(--radius-md);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 20px rgba(0, 242, 254, 0.15);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      min-width: 260px;
+      max-width: 380px;
+      padding: 0.5rem;
+      z-index: 1050;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .nav-item.open .dropdown-panel,
+    .nav-item:hover .dropdown-panel {
+      display: flex;
+    }
+
+    .dropdown-link {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.6rem 0.75rem;
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.15s ease;
+    }
+
+    .dropdown-link:hover {
+      background: rgba(0, 242, 254, 0.1);
+      color: var(--accent-cyan);
+      transform: translateX(3px);
+    }
+
+    .dropdown-link .nav-thumbnail {
+      width: 26px;
+      height: 26px;
+      border-radius: 4px;
+    }
+
+    .dropdown-link-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dropdown-link-title {
+      font-weight: 600;
+    }
+
+    .dropdown-link-sub {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    /* Telemetry & Mobile Hamburger */
+    .header-telemetry {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .sync-status-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      padding: 0.45rem 0.9rem;
+      border-radius: 30px;
+      font-size: 0.8rem;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent-green);
+      animation: pulseAnim 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseAnim {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.6; }
+    }
+
+    .hamburger-btn {
+      display: none;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      font-size: 1.2rem;
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      min-width: 44px;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Mobile Drawer */
+    .mobile-drawer {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      z-index: 2000;
+      flex-direction: column;
+    }
+
+    .mobile-drawer.active {
+      display: flex;
+    }
+
+    .mobile-drawer-content {
+      background: var(--bg-surface);
+      width: 320px;
+      max-width: 85%;
+      height: 100%;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      overflow-y: auto;
+      border-right: 1px solid var(--border-glow);
+    }
+
+    .mobile-drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .mobile-drawer-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      min-width: 44px;
+      min-height: 44px;
+    }
+
+    .mobile-nav-group-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-cyan);
+      margin-top: 0.75rem;
+      font-weight: 700;
+    }
+
+    /* Search & Filter Strip */
+    .controls-strip {
+      max-width: 1440px;
+      margin: 1.5rem auto 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .search-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 280px;
+      max-width: 480px;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.2s ease;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.25);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      font-size: 0.95rem;
+    }
+
+    .filters-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .filter-btn:hover {
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .filter-btn.active {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.15) 0%, rgba(79, 172, 254, 0.15) 100%);
+      color: var(--accent-cyan);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 12px rgba(0, 242, 254, 0.2);
+    }
+
+    /* Catalog Grid */
+    main.catalog-viewport {
+      max-width: 1440px;
+      margin: 1.5rem auto 3rem auto;
+      padding: 0 1.5rem;
+      flex: 1;
+      width: 100%;
+    }
+
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 1.75rem;
+    }
+
+    /* Card Styling */
+    .game-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-gloss);
+      backdrop-filter: blur(12px);
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      position: relative;
+    }
+
+    .game-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-glow);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 242, 254, 0.15);
+    }
+
+    .card-banner {
+      position: relative;
+      width: 100%;
+      height: 180px;
+      background: #000;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .card-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+      display: block;
+    }
+
+    .game-card:hover .card-banner img {
+      transform: scale(1.05);
+    }
+
+    .platform-badge {
+      position: absolute;
+      top: 0.85rem;
+      right: 0.85rem;
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      color: #fff;
+    }
+
+    .card-body {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 1rem;
+    }
+
+    .title-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .game-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .game-commid {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    /* Badging Layout */
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .tag-multiplayer {
+      background: rgba(0, 230, 118, 0.12);
+      border: 1px solid rgba(0, 230, 118, 0.3);
+      color: var(--accent-green);
+    }
+
+    .tag-coop {
+      background: rgba(0, 242, 254, 0.12);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      color: var(--accent-cyan);
+    }
+
+    .tag-crossplay {
+      background: rgba(121, 40, 202, 0.15);
+      border: 1px solid rgba(121, 40, 202, 0.4);
+      color: #c084fc;
+    }
+
+    .tag-single {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-muted);
+    }
+
+    .tag-campaign {
+      background: rgba(79, 172, 254, 0.12);
+      border: 1px solid rgba(79, 172, 254, 0.3);
+      color: var(--accent-blue);
+    }
+
+    .tag-plus {
+      background: rgba(255, 179, 0, 0.15);
+      border: 1px solid rgba(255, 179, 0, 0.4);
+      color: var(--accent-gold);
+    }
+
+    /* Squad Presence */
+    .squad-presence-box {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .squad-box-header {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .operative-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .operative-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--border-subtle);
+      object-fit: cover;
+      background: #111;
+    }
+
+    .operative-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .operative-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .op-name {
+      color: var(--text-main);
+    }
+
+    .op-percent {
+      color: var(--accent-cyan);
+      font-family: monospace;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-blue) 0%, var(--accent-cyan) 100%);
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    /* Actions */
+    .card-footer-action {
+      margin-top: auto;
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .ps-store-btn {
+      flex: 1;
+      background: linear-gradient(135deg, #00439c 0%, #0070d1 100%);
+      color: #fff;
+      text-decoration: none;
+      padding: 0.65rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 14px rgba(0, 67, 156, 0.4);
+      transition: all 0.2s ease;
+      min-height: 44px;
+    }
+
+    .ps-store-btn:hover {
+      background: linear-gradient(135deg, #0056c7 0%, #0084f7 100%);
+      box-shadow: 0 6px 20px rgba(0, 112, 209, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .amazon-alt-btn {
+      background: var(--bg-surface-elevated);
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: 1px solid var(--border-subtle);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      min-height: 44px;
+    }
+
+    .amazon-alt-btn:hover {
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Lightbox Modal */
+    .lightbox-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 3000;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .lightbox-modal.active {
+      display: flex;
+    }
+
+    .lightbox-content {
+      max-width: 600px;
+      width: 100%;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-glow);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .lightbox-img {
+      width: 100%;
+      max-height: 420px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .lightbox-details {
+      padding: 1.25rem;
+    }
+
+    .lightbox-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .lightbox-alt-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+      line-height: 1.4;
+    }
+
+    .lightbox-close-btn {
+      align-self: flex-end;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem 1rem 0 0;
+    }
+
+    .lightbox-close-btn:hover {
+      color: #fff;
+    }
+
+    /* Footer */
+    footer.cockpit-footer {
+      margin-top: auto;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-subtle);
+      padding: 1.25rem 1.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .footer-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .footer-stamp {
+      font-family: monospace;
+      color: var(--accent-cyan);
+    }
+
+    .state-banner {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    @media (max-width: 1024px) {
+      nav.main-nav {
+        display: none;
+      }
+      .hamburger-btn {
+        display: inline-flex;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .header-container {
+        padding: 0.75rem 1rem;
+      }
+      .controls-strip {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-wrapper {
+        max-width: 100%;
+      }
+      .filters-group {
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+      }
+      .catalog-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
 
-    <!-- Header Navigation -->
-    <nav class="bg-slate-900/90 sticky top-0 z-50 border-b border-slate-800 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex items-center justify-between h-16">
-                <a href="https://werewolf3788.github.io/Website/" class="flex items-center space-x-3">
-                    <i class="fa-solid fa-trophy text-amber-400 text-2xl"></i>
-                    <span class="text-xl font-black tracking-tighter text-sky-400">PLAYSTATION<span class="text-white"> SQUAD MATRIX</span></span>
-                </a>
-                <a href="https://werewolf3788.github.io/Website/" class="text-xs font-bold text-slate-400 hover:text-white bg-slate-800 px-4 py-2 rounded-lg border border-slate-700 transition-colors">
-                    <i class="fa-solid fa-arrow-left mr-1.5"></i> Back to Main
-                </a>
-            </div>
+  <!-- Cockpit Header -->
+  <header class="cockpit-header">
+    <div class="header-container">
+      <div class="brand-section">
+        <a href="/" class="brand-title">
+          <span>SQUAD PACK</span>
+          <span class="brand-badge">CATALOG</span>
+        </a>
+      </div>
+
+      <nav class="main-nav" id="desktopNavMenu">
+        <div class="nav-item">
+          <span class="nav-link" style="color:var(--text-muted);">Loading Menu...</span>
         </div>
-    </nav>
+      </nav>
 
-    <!-- Page Banner -->
-    <header class="py-10 px-4">
-        <div class="max-w-7xl mx-auto text-center">
-            <h1 class="text-3xl font-black text-sky-400 tracking-tight uppercase">Co-Op Trophy Operations</h1>
-            <p class="mt-3 text-slate-400 text-sm max-w-2xl mx-auto">
-                Real-time PlayStation Network trophy progress for co-op titles shared by active PSN Gamertags (&gt;0% completion).
-            </p>
+      <div class="header-telemetry">
+        <div class="sync-status-pill">
+          <div class="pulse-dot"></div>
+          <span>PSN SYNC: <strong id="telemetrySyncTimestamp">CHECKING...</strong></span>
         </div>
-    </header>
-
-    <!-- Main Container -->
-    <main class="max-w-7xl mx-auto px-4 pb-16 flex-grow">
-        <div id="trophy-matrix-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="custom-card p-10 col-span-full text-center flex flex-col items-center justify-center min-h-[300px]">
-                <i class="fa-solid fa-spinner fa-spin text-3xl text-sky-400 mb-3"></i>
-                <span class="text-slate-400 text-sm font-mono">Syncing squad trophy payloads from Realtime Database...</span>
-            </div>
-        </div>
-    </main>
-
-    <!-- Interactive Lightbox Modal -->
-    <div id="trophy-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
-            <div id="modal-header" class="p-6 border-b border-slate-800 relative bg-cover bg-center">
-                <div class="absolute inset-0 bg-slate-950/80"></div>
-                <div class="relative z-10 flex justify-between items-start">
-                    <div>
-                        <span class="text-xs font-bold uppercase tracking-widest text-sky-400"><i class="fa-solid fa-shield-halved mr-1"></i> Squad Trophy Breakdown</span>
-                        <h2 id="modal-game-title" class="text-2xl font-black text-white mt-1 uppercase">Game Title</h2>
-                    </div>
-                    <button onclick="closeModal()" class="text-slate-400 hover:text-white bg-slate-800 p-2 rounded-lg border border-slate-700">
-                        <i class="fa-solid fa-xmark text-lg"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div id="modal-trophy-list" class="p-6 overflow-y-auto space-y-3 flex-grow">
-                <!-- Dynamic Trophy Items -->
-            </div>
-        </div>
+        <button class="hamburger-btn" id="mobileDrawerOpenBtn" aria-label="Open Navigation Menu">☰</button>
+      </div>
     </div>
+  </header>
 
-    <!-- Firebase SDK Modules -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  <!-- Mobile Drawer -->
+  <div class="mobile-drawer" id="mobileNavDrawer" role="dialog" aria-modal="true">
+    <div class="mobile-drawer-content">
+      <div class="mobile-drawer-header">
+        <span class="brand-title">NAVIGATION</span>
+        <button class="mobile-drawer-close" id="mobileDrawerCloseBtn">&times;</button>
+      </div>
+      <div id="mobileDrawerNavList"></div>
+    </div>
+  </div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
-            authDomain: "entertainment-71888.firebaseapp.com",
-            databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
-            projectId: "entertainment-71888",
-            storageBucket: "entertainment-71888.firebasestorage.app",
-            messagingSenderId: "660524340277",
-            appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c"
+  <!-- Filters & Search -->
+  <div class="controls-strip">
+    <div class="search-wrapper">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="catalogSearchInput" class="search-input" placeholder="Search by game title, operative, or NPWR...">
+    </div>
+    <div class="filters-group" id="filterButtonGroup">
+      <button class="filter-btn active" data-filter="all">All Games</button>
+      <button class="filter-btn" data-filter="multiplayer">Multiplayer & Co-Op</button>
+      <button class="filter-btn" data-filter="coop">Co-Op Dedicated</button>
+      <button class="filter-btn" data-filter="crossplay">Cross-Play</button>
+      <button class="filter-btn" data-filter="singleplayer">Pure Single Player</button>
+    </div>
+  </div>
+
+  <!-- Main Grid -->
+  <main class="catalog-viewport">
+    <div class="catalog-grid" id="catalogGrid">
+      <div class="state-banner">Connecting to Squad Pack Telemetry Node...</div>
+    </div>
+  </main>
+
+  <!-- Lightbox Modal -->
+  <div class="lightbox-modal" id="imageLightbox" role="dialog" aria-modal="true">
+    <div class="lightbox-content">
+      <button class="lightbox-close-btn" id="lightboxCloseBtn" aria-label="Close Lightbox">&times;</button>
+      <img src="" id="lightboxImg" class="lightbox-img">
+      <div class="lightbox-details">
+        <div class="lightbox-title" id="lightboxTitle">Game Poster</div>
+        <div class="lightbox-alt-desc" id="lightboxAltText">Poster preview</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="cockpit-footer">
+    <div class="footer-inner">
+      <div>Engine Version: <strong>v51.0.0</strong> | Direct Game Node & Hybrid Capabilities</div>
+      <div>Latest PSN Sync: <span id="footerSyncStamp" class="footer-stamp">Awaiting feed...</span></div>
+      <div>Timestamp: <span class="footer-stamp">2026-09-28 20:58:00 (EDT)</span></div>
+    </div>
+  </footer>
+
+  <script>
+    const FIREBASE_BASE_ENDPOINT = "//entertainment-71888-default-rtdb.firebaseio.com";
+    const PSN_ENDPOINT = `${FIREBASE_BASE_ENDPOINT}/psn.json`;
+    const UTM_LINKS_ENDPOINT = `${FIREBASE_BASE_ENDPOINT}/utm_links.json`;
+
+    let catalogMasterList = [];
+    let activeFilter = "all";
+    let searchQuery = "";
+
+    // Comprehensive Game Capabilities Directory with Dual-Mode (Solo + MP) & Co-Op tagging
+    const VERIFIED_CAPABILITIES_MAP = {
+      // It Takes Two
+      "NPWR21671_00": { isMultiplayer: true, isCoOpOnly: true, hasCampaign: true, multiplayerType: "Co-Op Only (2-Player)", isCrossPlatform: true, psPlusRequired: true },
+      "NPWR21672_00": { isMultiplayer: true, isCoOpOnly: true, hasCampaign: true, multiplayerType: "Co-Op Only (2-Player)", isCrossPlatform: true, psPlusRequired: true },
+      // Sniper Elite 5
+      "NPWR24346_00": { isMultiplayer: true, isCoOpOnly: false, hasCampaign: true, multiplayerType: "Solo Campaign + Co-Op & Invasion (2-16)", isCrossPlatform: true, psPlusRequired: true },
+      // Ghost Recon Wildlands & Breakpoint
+      "NPWR08933_00": { isMultiplayer: true, isCoOpOnly: false, hasCampaign: true, multiplayerType: "Solo Campaign + Online Co-Op (4-Player)", isCrossPlatform: false, psPlusRequired: true },
+      "NPWR10901_00": { isMultiplayer: true, isCoOpOnly: false, hasCampaign: true, multiplayerType: "Solo Campaign + Online Co-Op (4-Player)", isCrossPlatform: false, psPlusRequired: true },
+      "NPWR15843_00": { isMultiplayer: true, isCoOpOnly: false, hasCampaign: true, multiplayerType: "Solo Campaign + Online Co-Op (4-Player)", isCrossPlatform: false, psPlusRequired: true },
+      // theHunter: Call of the Wild
+      "NPWR12297_00": { isMultiplayer: true, isCoOpOnly: false, hasCampaign: true, multiplayerType: "Solo Reserves + Online Multiplayer (8-Player)", isCrossPlatform: false, psPlusRequired: true },
+      // Far Cry 5 / 6
+      "NPWR12348_00": { isMultiplayer: true, isCoOpOnly: false, hasCampaign: true, multiplayerType: "Solo Campaign + Online Co-Op (2-Player)", isCrossPlatform: false, psPlusRequired: true },
+      "NPWR20668_00": { isMultiplayer: true, isCoOpOnly: false, hasCampaign: true, multiplayerType: "Solo Campaign + Online Co-Op (2-Player)", isCrossPlatform: true, psPlusRequired: true },
+      // Farming Simulator 22 & 25
+      "NPWR23547_00": { isMultiplayer: true, isCoOpOnly: false, hasCampaign: false, multiplayerType: "Solo Farm + Online Co-Op (6-Player)", isCrossPlatform: true, psPlusRequired: true },
+      "NPWR32145_00": { isMultiplayer: true, isCoOpOnly: false, hasCampaign: false, multiplayerType: "Solo Farm + Online Co-Op (6-Player)", isCrossPlatform: true, psPlusRequired: true },
+      // Path of Titans
+      "NPWR27529_00": { isMultiplayer: true, isCoOpOnly: false, hasCampaign: false, multiplayerType: "Cross-Play MMO Survival", isCrossPlatform: true, psPlusRequired: true },
+      // A Way Out
+      "NPWR12628_00": { isMultiplayer: true, isCoOpOnly: true, hasCampaign: true, multiplayerType: "Co-Op Only (2-Player)", isCrossPlatform: false, psPlusRequired: true }
+    };
+
+    // Deep Title Matcher for Hybrid Games
+    function deriveGameCapabilities(gameTitle, commId, rootGameNode = {}) {
+      const canonical = commId ? commId.toUpperCase() : "";
+
+      // 1. Direct verified database lookup
+      if (canonical && VERIFIED_CAPABILITIES_MAP[canonical]) {
+        return VERIFIED_CAPABILITIES_MAP[canonical];
+      }
+
+      // 2. Direct root property check from Firebase (/psn/games/NPWRxxxx)
+      if (rootGameNode.isMultiplayer !== undefined && rootGameNode.isMultiplayer !== false) {
+        return {
+          isMultiplayer: true,
+          hasCampaign: rootGameNode.hasCampaign !== undefined ? rootGameNode.hasCampaign : true,
+          isCoOpOnly: !!rootGameNode.isCoOpOnly,
+          multiplayerType: rootGameNode.multiplayerType || "Online Multiplayer",
+          isCrossPlatform: !!rootGameNode.isCrossPlatform,
+          psPlusRequired: rootGameNode.psPlusRequired !== undefined ? rootGameNode.psPlusRequired : true
         };
+      }
 
-        const app = initializeApp(firebaseConfig);
-        const rtdb = getDatabase(app);
-
-        // Explicit PSN Gamertag Color & Display Configurations
-        const PLAYER_CONFIG = {
-            'WildHorse_Spirit': { label: 'WildHorse_Spirit', color: '#FF5F1F' },
-            'wildhorse_spirit': { label: 'WildHorse_Spirit', color: '#FF5F1F' },
-            'OneLIVIDMAN': { label: 'OneLIVIDMAN', color: '#C41E3A' },
-            'onelividman': { label: 'OneLIVIDMAN', color: '#C41E3A' },
-            'Darkwing69420': { label: 'Darkwing69420', color: '#9333EA' },
-            'darkwing69420': { label: 'Darkwing69420', color: '#9333EA' },
-            'DesdemonaTiger': { label: 'DesdemonaTiger', color: '#00F2FF' },
-            'desdemonatiger': { label: 'DesdemonaTiger', color: '#00F2FF' },
-            'Balto20_01': { label: 'Balto20_01', color: '#10B981' },
-            'balto20_01': { label: 'Balto20_01', color: '#10B981' },
-            'ILIMjolnirILI': { label: 'ILIMjolnirILI', color: '#EAB308' },
-            'ilimjolnirili': { label: 'ILIMjolnirILI', color: '#EAB308' },
-            'joe-punk_': { label: 'joe-punk_', color: '#EC4899' }
+      // 3. Nested multiplayerInfo object check
+      const mpInfo = rootGameNode.multiplayerInfo;
+      if (mpInfo && mpInfo.isMultiplayer) {
+        return {
+          isMultiplayer: true,
+          hasCampaign: mpInfo.hasCampaign !== undefined ? mpInfo.hasCampaign : true,
+          isCoOpOnly: !!mpInfo.isCoOpOnly,
+          multiplayerType: mpInfo.multiplayerType || "Online Multiplayer",
+          isCrossPlatform: !!mpInfo.isCrossPlatform,
+          psPlusRequired: mpInfo.psPlusRequired !== undefined ? mpInfo.psPlusRequired : true
         };
+      }
 
-        let rawGamertagsCache = {};
+      // 4. Intelligent Title-Name Keyword Heuristic
+      const clean = (gameTitle || "").toLowerCase().trim();
 
-        function listenToRealtimeTrophies() {
-            const psnRef = ref(rtdb, 'psn/gamertags');
-            onValue(psnRef, (snapshot) => {
-                const grid = document.getElementById('trophy-matrix-grid');
-                if (!snapshot.exists()) {
-                    grid.innerHTML = `<div class="custom-card p-6 text-center col-span-full"><p class="text-slate-400">No PSN data available.</p></div>`;
-                    return;
-                }
+      // Dedicated Co-Op
+      if (clean.includes("it takes two") || clean.includes("a way out") || clean.includes("we were here")) {
+        return { isMultiplayer: true, isCoOpOnly: true, hasCampaign: true, multiplayerType: "Co-Op Only (2-Player)", isCrossPlatform: clean.includes("it takes two"), psPlusRequired: true };
+      }
 
-                rawGamertagsCache = snapshot.val();
-                processCoOpGames(rawGamertagsCache);
-            });
+      // Campaign + Co-Op / PvP Hybrids
+      if (clean.includes("sniper elite")) {
+        return { isMultiplayer: true, isCoOpOnly: false, hasCampaign: true, multiplayerType: "Solo Campaign + Co-Op & Invasion (2-16)", isCrossPlatform: clean.includes("5"), psPlusRequired: true };
+      }
+      if (clean.includes("wildlands") || clean.includes("breakpoint") || clean.includes("division")) {
+        return { isMultiplayer: true, isCoOpOnly: false, hasCampaign: true, multiplayerType: "Solo Campaign + Online Co-Op (4-Player)", isCrossPlatform: false, psPlusRequired: true };
+      }
+      if (clean.includes("far cry")) {
+        return { isMultiplayer: true, isCoOpOnly: false, hasCampaign: true, multiplayerType: "Solo Campaign + Online Co-Op (2-Player)", isCrossPlatform: clean.includes("6"), psPlusRequired: true };
+      }
+      if (clean.includes("borderlands") || clean.includes("tiny tina")) {
+        return { isMultiplayer: true, isCoOpOnly: false, hasCampaign: true, multiplayerType: "Solo Campaign + Online Co-Op (4-Player)", isCrossPlatform: true, psPlusRequired: true };
+      }
+      if (clean.includes("thehunter") || clean.includes("hunter: call of the wild") || clean.includes("way of the hunter")) {
+        return { isMultiplayer: true, isCoOpOnly: false, hasCampaign: true, multiplayerType: "Solo Reserves + Online Multiplayer (8-Player)", isCrossPlatform: false, psPlusRequired: true };
+      }
+      if (clean.includes("farming simulator")) {
+        return { isMultiplayer: true, isCoOpOnly: false, hasCampaign: false, multiplayerType: "Solo Farm + Online Co-Op (6-Player)", isCrossPlatform: true, psPlusRequired: true };
+      }
+      if (clean.includes("left 4 dead") || clean.includes("back 4 blood") || clean.includes("world war z") || clean.includes("helldivers")) {
+        return { isMultiplayer: true, isCoOpOnly: false, hasCampaign: true, multiplayerType: "Campaign + Co-Op Squad (4-Player)", isCrossPlatform: true, psPlusRequired: true };
+      }
+      if (clean.includes("path of titans") || clean.includes("ark: survival") || clean.includes("conan exiles")) {
+        return { isMultiplayer: true, isCoOpOnly: false, hasCampaign: false, multiplayerType: "Survival MMO", isCrossPlatform: true, psPlusRequired: true };
+      }
+      if (clean.includes("call of duty") || clean.includes("battlefield") || clean.includes("grand theft auto") || clean.includes("gta") || clean.includes("red dead")) {
+        return { isMultiplayer: true, isCoOpOnly: false, hasCampaign: true, multiplayerType: "Story Campaign + Online Multiplayer", isCrossPlatform: clean.includes("call of duty") || clean.includes("battlefield"), psPlusRequired: true };
+      }
+      if (clean.includes("rocket league") || clean.includes("fortnite") || clean.includes("apex legends") || clean.includes("overwatch")) {
+        return { isMultiplayer: true, isCoOpOnly: false, hasCampaign: false, multiplayerType: "Online Competitive (Cross-Play)", isCrossPlatform: true, psPlusRequired: false };
+      }
+
+      // Default Pure Single Player
+      return {
+        isMultiplayer: false,
+        isCoOpOnly: false,
+        hasCampaign: true,
+        multiplayerType: "Single Player",
+        isCrossPlatform: false,
+        psPlusRequired: false
+      };
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initNavigationInteractions();
+      initFilterAndSearchControls();
+      initLightboxControls();
+      
+      loadUtmMenu();
+      loadPsnCatalog();
+    });
+
+    function isInternalUrl(url) {
+      if (!url) return false;
+      try {
+        if (url.startsWith("/") || url.startsWith("#")) return true;
+        const targetHost = new URL(url, window.location.href).hostname;
+        return targetHost === window.location.hostname;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function normalizeAssetUrl(url) {
+      if (!url || typeof url !== "string") return "";
+      let clean = url.trim();
+      if (clean.startsWith("http://")) return clean.replace("http://", "//");
+      if (clean.startsWith("https://")) return clean.replace("https://", "//");
+      return clean;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function initNavigationInteractions() {
+      const openBtn = document.getElementById("mobileDrawerOpenBtn");
+      const closeBtn = document.getElementById("mobileDrawerCloseBtn");
+      const drawer = document.getElementById("mobileNavDrawer");
+
+      if (openBtn && drawer) {
+        openBtn.addEventListener("click", () => drawer.classList.add("active"));
+      }
+      if (closeBtn && drawer) {
+        closeBtn.addEventListener("click", () => drawer.classList.remove("active"));
+      }
+      if (drawer) {
+        drawer.addEventListener("click", (e) => {
+          if (e.target === drawer) drawer.classList.remove("active");
+        });
+      }
+    }
+
+    function initFilterAndSearchControls() {
+      const searchInput = document.getElementById("catalogSearchInput");
+      if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+          searchQuery = (e.target.value || "").toLowerCase().trim();
+          renderCatalog();
+        });
+      }
+
+      const filterButtons = document.querySelectorAll("#filterButtonGroup .filter-btn");
+      filterButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          filterButtons.forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          activeFilter = btn.getAttribute("data-filter") || "all";
+          renderCatalog();
+        });
+      });
+    }
+
+    function initLightboxControls() {
+      const lightbox = document.getElementById("imageLightbox");
+      const closeBtn = document.getElementById("lightboxCloseBtn");
+      if (closeBtn && lightbox) {
+        closeBtn.addEventListener("click", () => lightbox.classList.remove("active"));
+        lightbox.addEventListener("click", (e) => {
+          if (e.target === lightbox) lightbox.classList.remove("active");
+        });
+      }
+    }
+
+    async function loadUtmMenu() {
+      const desktopNav = document.getElementById("desktopNavMenu");
+      const mobileNav = document.getElementById("mobileDrawerNavList");
+
+      try {
+        const response = await fetch(UTM_LINKS_ENDPOINT);
+        if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+        const data = await response.json();
+
+        if (!data || typeof data !== "object") {
+          if (desktopNav) desktopNav.innerHTML = `<span style="font-size:0.8rem; color:var(--text-muted);">Main Portal</span>`;
+          return;
         }
 
-        function processCoOpGames(gamertags) {
-            const grid = document.getElementById('trophy-matrix-grid');
-            const coOpGamesMap = {};
+        const folders = {};
+        const standalone = [];
 
-            Object.entries(gamertags).forEach(([tag, playerData]) => {
-                if (!playerData) return;
+        Object.entries(data).forEach(([topKey, nodeVal]) => {
+          if (!nodeVal) return;
 
-                const playerTheme = PLAYER_CONFIG[tag] || { label: tag, color: '#38bdf8' };
-                const gameList = [...(playerData.recentGames || []), ...(playerData.fullLibrary || [])];
-                const seenCommIds = new Set();
-
-                gameList.forEach(game => {
-                    const commId = game.npCommunicationId;
-                    if (!commId || seenCommIds.has(commId)) return;
-                    seenCommIds.add(commId);
-
-                    const progressVal = Number(game.progress) || 0;
-
-                    // Ignore players with 0% progress
-                    if (progressVal <= 0) return;
-
-                    const titleName = game.name || game.trophyTitleName || 'Unknown Title';
-                    const posterArt = game.art || game.trophyTitleIconUrl || game.image?.url || playerData.currentGameArt;
-                    const lastPlayedTime = game.lastPlayed ? new Date(game.lastPlayed).getTime() : 0;
-
-                    if (!coOpGamesMap[commId]) {
-                        coOpGamesMap[commId] = {
-                            commId,
-                            title: titleName,
-                            posterArt: posterArt,
-                            latestTrophyTimestamp: lastPlayedTime,
-                            players: []
-                        };
-                    } else {
-                        if (!coOpGamesMap[commId].posterArt && posterArt) {
-                            coOpGamesMap[commId].posterArt = posterArt;
-                        }
-                        if (lastPlayedTime > coOpGamesMap[commId].latestTrophyTimestamp) {
-                            coOpGamesMap[commId].latestTrophyTimestamp = lastPlayedTime;
-                        }
-                    }
-
-                    const summary = game.earnedTrophies || {
-                        platinum: game.progress === 100 ? 1 : 0,
-                        gold: 0, silver: 0, bronze: 0
-                    };
-
-                    const totalEarned = game.earnedTotal || (summary.platinum + summary.gold + summary.silver + summary.bronze) || 0;
-
-                    coOpGamesMap[commId].players.push({
-                        tag,
-                        label: playerTheme.label,
-                        color: playerTheme.color,
-                        progress: progressVal,
-                        earnedTotal: totalEarned,
-                        definedTotal: game.definedTotal || 0,
-                        lastPlayedTime: lastPlayedTime,
-                        trophies: summary
-                    });
-                });
-            });
-
-            // Keep games played by 2 OR MORE active players (>0%)
-            let filteredGames = Object.values(coOpGamesMap).filter(g => g.players.length >= 2);
-
-            // Sort cards by most recent activity date (newest first)
-            filteredGames.sort((a, b) => b.latestTrophyTimestamp - a.latestTrophyTimestamp);
-
-            if (filteredGames.length === 0) {
-                grid.innerHTML = `
-                    <div class="custom-card p-8 text-center col-span-full">
-                        <i class="fa-solid fa-gamepad text-4xl text-slate-600 mb-3"></i>
-                        <p class="text-slate-400 text-sm">No co-op games found where 2 or more PSN Gamertags have unlocked trophies (&gt;0% progress).</p>
-                    </div>
-                `;
-                return;
-            }
-
-            let html = "";
-            filteredGames.forEach(game => {
-                let playersHTML = "";
-
-                game.players.forEach(p => {
-                    playersHTML += `
-                        <div class="bg-slate-900/90 p-3 rounded-lg border border-slate-700/60 mb-2">
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="text-xs font-bold" style="color: ${p.color};">${p.label}</span>
-                                <span class="text-xs font-mono font-bold text-slate-300">${p.progress}%</span>
-                            </div>
-                            
-                            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mb-2">
-                                <div class="h-full rounded-full" style="width: ${p.progress}%; background-color: ${p.color};"></div>
-                            </div>
-
-                            <div class="flex items-center gap-1.5 flex-wrap">
-                                <span class="trophy-badge trophy-platinum"><i class="fa-solid fa-trophy"></i> ${p.trophies.platinum || 0}</span>
-                                <span class="trophy-badge trophy-gold"><i class="fa-solid fa-trophy"></i> ${p.trophies.gold || 0}</span>
-                                <span class="trophy-badge trophy-silver"><i class="fa-solid fa-trophy"></i> ${p.trophies.silver || 0}</span>
-                                <span class="trophy-badge trophy-bronze"><i class="fa-solid fa-trophy"></i> ${p.trophies.bronze || 0}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                const bgArt = game.posterArt ? `style="background-image: url('${game.posterArt}');"` : '';
-
-                html += `
-                    <div class="custom-card flex flex-col justify-between">
-                        <div class="h-32 bg-cover bg-center relative p-4 flex items-end" ${bgArt}>
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent"></div>
-                            <div class="relative z-10 w-full flex justify-between items-end">
-                                <h3 class="text-lg font-black text-white uppercase tracking-tight drop-shadow-md leading-tight">${game.title}</h3>
-                                <span class="text-[10px] font-bold bg-sky-950 text-sky-300 px-2 py-0.5 rounded border border-sky-800 shrink-0 ml-2">
-                                    ${game.players.length} Players Active
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="p-4 flex-grow flex flex-col justify-between">
-                            <div>${playersHTML}</div>
-
-                            <button onclick="window.inspectGameTrophies('${game.commId}', '${encodeURIComponent(game.title)}', '${encodeURIComponent(game.posterArt || '')}')" 
-                                    class="w-full mt-3 bg-slate-800 hover:bg-slate-700 text-sky-400 hover:text-sky-300 font-bold text-xs py-2.5 px-4 rounded-lg border border-slate-700 transition-colors flex items-center justify-between">
-                                <span>Inspect Trophy Matrix</span>
-                                <i class="fa-solid fa-magnifying-glass font-bold"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
-
-            grid.innerHTML = html;
-        }
-
-        // Interactive Lightbox Modal Trigger
-        window.inspectGameTrophies = function(commId, encodedTitle, encodedArt) {
-            const title = decodeURIComponent(encodedTitle);
-            const art = decodeURIComponent(encodedArt);
-
-            const modal = document.getElementById('trophy-modal');
-            const titleEl = document.getElementById('modal-game-title');
-            const headerEl = document.getElementById('modal-header');
-            const listEl = document.getElementById('modal-trophy-list');
-
-            titleEl.textContent = title;
-            if (art) {
-                headerEl.style.backgroundImage = `url('${art}')`;
+          if (typeof nodeVal === "object" && (nodeVal.url || nodeVal.link)) {
+            const groupName = nodeVal.group ? nodeVal.group.trim() : null;
+            if (groupName) {
+              if (!folders[groupName]) folders[groupName] = [];
+              folders[groupName].push(nodeVal);
             } else {
-                headerEl.style.backgroundImage = 'none';
+              standalone.push(nodeVal);
             }
-
-            let trophyMasterMap = {};
-            let playerSummaries = [];
-
-            // Extract trophies and progress across all squad members for this game
-            Object.entries(rawGamertagsCache).forEach(([tag, playerData]) => {
-                if (!playerData) return;
-                const playerLabel = PLAYER_CONFIG[tag]?.label || tag;
-                const playerColor = PLAYER_CONFIG[tag]?.color || '#38bdf8';
-
-                const gameList = [...(playerData.recentGames || []), ...(playerData.fullLibrary || [])];
-                const matchedGame = gameList.find(g => g.npCommunicationId === commId);
-
-                if (matchedGame && matchedGame.progress > 0) {
-                    playerSummaries.push({
-                        label: playerLabel,
-                        color: playerColor,
-                        progress: matchedGame.progress,
-                        ratio: matchedGame.ratio || `${matchedGame.earnedTotal || 0}/${matchedGame.definedTotal || 0}`,
-                        trophies: matchedGame.earnedTrophies || { platinum: 0, gold: 0, silver: 0, bronze: 0 }
-                    });
-                }
-
-                const activeHunt = playerData.activeHunt;
-                if (activeHunt && activeHunt.npCommunicationId === commId && Array.isArray(activeHunt.trophies)) {
-                    activeHunt.trophies.forEach(t => {
-                        const tId = t.trophyId || t.name;
-                        if (!trophyMasterMap[tId]) {
-                            trophyMasterMap[tId] = {
-                                name: t.name || t.trophyName,
-                                icon: t.icon || t.trophyIconUrl,
-                                type: t.type || t.trophyType || 'bronze',
-                                desc: t.description || t.trophyDetail || 'Secret Trophy',
-                                rarity: t.rarity || 'Common',
-                                earnedBy: []
-                            };
-                        }
-                        if (t.earned) {
-                            trophyMasterMap[tId].earnedBy.push({ label: playerLabel, color: playerColor });
-                        }
-                    });
-                }
+          } else if (typeof nodeVal === "object") {
+            const subItems = Array.isArray(nodeVal) ? nodeVal : Object.values(nodeVal);
+            subItems.forEach(sub => {
+              if (!sub || typeof sub !== "object") return;
+              const groupName = sub.group ? sub.group.trim() : topKey;
+              if (!folders[groupName]) folders[groupName] = [];
+              folders[groupName].push(sub);
             });
+          }
+        });
 
-            const trophiesArray = Object.values(trophyMasterMap);
+        let desktopHtml = "";
+        standalone.forEach(item => {
+          const url = item.url || item.link || "#";
+          const title = item.title || item.name || "Home";
+          const thumb = normalizeAssetUrl(item.image || item.thumbnail || item.icon);
+          const isInternal = isInternalUrl(url);
+          const targetAttr = isInternal ? `target="_self"` : `target="_blank" rel="noopener noreferrer"`;
 
-            let html = "";
+          desktopHtml += `
+            <div class="nav-item">
+              <a href="${url}" class="nav-link" ${targetAttr}>
+                ${thumb ? `<img src="${thumb}" class="nav-thumbnail" loading="lazy">` : ''}
+                <span>${escapeHtml(title)}</span>
+              </a>
+            </div>
+          `;
+        });
 
-            // Render Player Co-Op Comparison Bar at top of Modal
-            if (playerSummaries.length > 0) {
-                html += `<div class="mb-4 bg-slate-950 p-4 rounded-xl border border-slate-800"><h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3"><i class="fa-solid fa-users text-sky-400 mr-1.5"></i> Squad Completion Matrix</h4><div class="grid grid-cols-1 sm:grid-cols-2 gap-3">`;
-                playerSummaries.forEach(p => {
-                    html += `
-                        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800">
-                            <div class="flex justify-between items-center text-xs font-bold mb-1">
-                                <span style="color:${p.color};">${p.label}</span>
-                                <span class="font-mono text-slate-300">${p.progress}% (${p.ratio})</span>
-                            </div>
-                            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mb-2">
-                                <div class="h-full" style="width:${p.progress}%; background-color:${p.color};"></div>
-                            </div>
-                            <div class="flex gap-1">
-                                <span class="trophy-badge trophy-platinum"><i class="fa-solid fa-trophy"></i> ${p.trophies.platinum || 0}</span>
-                                <span class="trophy-badge trophy-gold"><i class="fa-solid fa-trophy"></i> ${p.trophies.gold || 0}</span>
-                                <span class="trophy-badge trophy-silver"><i class="fa-solid fa-trophy"></i> ${p.trophies.silver || 0}</span>
-                                <span class="trophy-badge trophy-bronze"><i class="fa-solid fa-trophy"></i> ${p.trophies.bronze || 0}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-                html += `</div></div>`;
-            }
+        Object.entries(folders).forEach(([folderName, items]) => {
+          desktopHtml += `
+            <div class="nav-item">
+              <div class="nav-link">
+                <span>${escapeHtml(folderName)}</span>
+                <span class="dropdown-caret">▼</span>
+              </div>
+              <div class="dropdown-panel">
+                ${items.map(subItem => {
+                  const subUrl = subItem.url || subItem.link || "#";
+                  const subTitle = subItem.title || subItem.name || "Item";
+                  const subDesc = subItem.description || "";
+                  const subThumb = normalizeAssetUrl(subItem.image || subItem.thumbnail || subItem.icon);
+                  const isInternal = isInternalUrl(subUrl);
+                  const targetAttr = isInternal ? `target="_self"` : `target="_blank" rel="noopener noreferrer"`;
 
-            // Render Individual Trophy Item List if Deep Scanned
-            if (trophiesArray.length > 0) {
-                html += `<h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2 mt-4"><i class="fa-solid fa-list-check text-sky-400 mr-1.5"></i> Unlocked Trophy Register</h4>`;
-                trophiesArray.forEach(t => {
-                    let earnedBadges = t.earnedBy.map(e => `
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded" style="background:${e.color}20; color:${e.color}; border:1px solid ${e.color}50;">
-                            ✓ ${e.label}
-                        </span>
-                    `).join(' ');
+                  return `
+                    <a href="${subUrl}" class="dropdown-link" ${targetAttr}>${subThumb ? `<img src="${subThumb}" class="nav-thumbnail" loading="lazy">` : ''}
+                      <div class="dropdown-link-details">
+                        <span class="dropdown-link-title">${escapeHtml(subTitle)}</span>${subDesc ? `<span class="dropdown-link-sub">${escapeHtml(subDesc)}</span>` : ''}
+                      </div>
+                    </a>
+                  `;
+                }).join("")}
+              </div>
+            </div>
+          `;
+        });
 
-                    if (!earnedBadges) {
-                        earnedBadges = `<span class="text-[10px] text-slate-500 italic">Unearned by Squad</span>`;
-                    }
+        if (desktopNav) desktopNav.innerHTML = desktopHtml;
 
-                    let badgeClass = 'trophy-bronze';
-                    if (t.type === 'platinum') badgeClass = 'trophy-platinum';
-                    if (t.type === 'gold') badgeClass = 'trophy-gold';
-                    if (t.type === 'silver') badgeClass = 'trophy-silver';
+        let mobileHtml = "";
+        standalone.forEach(item => {
+          const url = item.url || item.link || "#";
+          const title = item.title || item.name || "Home";
+          const thumb = normalizeAssetUrl(item.image || item.thumbnail || item.icon);
+          const isInternal = isInternalUrl(url);
+          const targetAttr = isInternal ? `target="_self"` : `target="_blank" rel="noopener noreferrer"`;
 
-                    html += `
-                        <div class="bg-slate-950/70 p-4 rounded-xl border border-slate-800 flex items-center gap-4 mb-2">
-                            <img src="${t.icon || 'https://placehold.co/44x44/1e293b/ff8800?text=TRPHY'}" class="w-12 h-12 rounded-lg border border-slate-700 object-cover shrink-0">
-                            <div class="flex-grow">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="trophy-badge ${badgeClass}">${t.type.toUpperCase()}</span>
-                                    <h4 class="text-sm font-bold text-white">${t.name}</h4>
-                                </div>
-                                <p class="text-xs text-slate-400 line-clamp-1 mb-2">${t.desc}</p>
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="text-[10px] text-slate-500 font-mono">Rarity: ${t.rarity}</span>
-                                    <span class="text-slate-700">•</span>
-                                    ${earnedBadges}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
+          mobileHtml += `
+            <a href="${url}" class="dropdown-link" style="padding:0.75rem 0;" ${targetAttr}>
+              ${thumb ? `<img src="${thumb}" class="nav-thumbnail" loading="lazy">` : ''}
+              <span class="dropdown-link-title">${escapeHtml(title)}</span>
+            </a>
+          `;
+        });
 
-            listEl.innerHTML = html;
-            modal.classList.remove('hidden');
-        };
+        Object.entries(folders).forEach(([folderName, items]) => {
+          mobileHtml += `<div class="mobile-nav-group-title">${escapeHtml(folderName)}</div>`;
+          items.forEach(subItem => {
+            const subUrl = subItem.url || subItem.link || "#";
+            const subTitle = subItem.title || subItem.name || "Item";
+            const subThumb = normalizeAssetUrl(subItem.image || subItem.thumbnail || subItem.icon);
+            const isInternal = isInternalUrl(subUrl);
+            const targetAttr = isInternal ? `target="_self"` : `target="_blank" rel="noopener noreferrer"`;
 
-        window.closeModal = function() {
-            document.getElementById('trophy-modal').classList.add('hidden');
-        };
+            mobileHtml += `
+              <a href="${subUrl}" class="dropdown-link" style="padding:0.6rem 0.5rem;" ${targetAttr}>
+                ${subThumb ? `<img src="${subThumb}" class="nav-thumbnail" loading="lazy">` : ''}
+                <span class="dropdown-link-title">${escapeHtml(subTitle)}</span>
+              </a>
+            `;
+          });
+        });
 
-        listenToRealtimeTrophies();
-    </script>
+        if (mobileNav) mobileNav.innerHTML = mobileHtml;
+
+      } catch (err) {
+        console.warn("[UTM MENU FETCH WARN]", err.message);
+        if (desktopNav) desktopNav.innerHTML = `<span style="font-size:0.8rem; color:var(--text-muted);">Main Portal</span>`;
+      }
+    }
+
+    async function loadPsnCatalog() {
+      const grid = document.getElementById("catalogGrid");
+      try {
+        const response = await fetch(PSN_ENDPOINT);
+        if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+        const data = await response.json();
+
+        if (!data) {
+          if (grid) grid.innerHTML = `<div class="state-banner">No game records found in PSN telemetry node.</div>`;
+          return;
+        }
+
+        const syncTimestamp = data.lastGlobalUpdate || "Unknown";
+        const headerStamp = document.getElementById("telemetrySyncTimestamp");
+        const footerStamp = document.getElementById("footerSyncStamp");
+        if (headerStamp) headerStamp.textContent = syncTimestamp;
+        if (footerStamp) footerStamp.textContent = syncTimestamp;
+
+        const games = data.games || {};
+        const gamertags = data.gamertags || {};
+
+        catalogMasterList = buildConsolidatedCatalog(games, gamertags);
+        renderCatalog();
+
+      } catch (err) {
+        console.error("[CATALOG FETCH ERROR]", err);
+        if (grid) {
+          grid.innerHTML = `<div class="state-banner">Telemetry node sync error: ${err.message}. Please retry later.</div>`;
+        }
+      }
+    }
+
+    function buildConsolidatedCatalog(games, gamertags) {
+      const catalogMap = new Map();
+
+      // 1. Ingest Master Games from /psn/games/
+      Object.entries(games).forEach(([commId, g]) => {
+        const cId = commId.toUpperCase();
+        const resolvedName = g.name || "PlayStation Title";
+        const capabilities = deriveGameCapabilities(resolvedName, cId, g);
+
+        catalogMap.set(cId, {
+          commId: cId,
+          titleId: g.titleId || null,
+          conceptId: g.conceptId || null,
+          name: resolvedName,
+          platform: g.platform || "PS5",
+          posterArt: normalizeAssetUrl(g.posterArt || g.trophyTitleIconUrl),
+          playstationStoreUrl: g.playstationStoreUrl || generateStoreUrl(g.titleId, resolvedName, g.conceptId),
+          amazonAffiliateUrl: g.amazonAffiliateUrl || null,
+          multiplayerInfo: capabilities,
+          operatives: []
+        });
+      });
+
+      // 2. Cross-reference Squad Members who have played
+      Object.entries(gamertags).forEach(([gamerTag, userData]) => {
+        const avatar = normalizeAssetUrl(userData.avatar);
+        const recentGames = userData.recentGames || [];
+
+        recentGames.forEach(rg => {
+          const cId = (rg.npCommunicationId || "").toUpperCase();
+          if (!cId) return;
+
+          const gameTitle = rg.name || rg.trophyTitleName || "PlayStation Title";
+
+          if (!catalogMap.has(cId)) {
+            const capabilities = deriveGameCapabilities(gameTitle, cId, rg);
+            catalogMap.set(cId, {
+              commId: cId,
+              titleId: rg.titleId || rg.npTitleId || null,
+              conceptId: null,
+              name: gameTitle,
+              platform: rg.platform || "PS5",
+              posterArt: normalizeAssetUrl(rg.posterArt || rg.trophyTitleIconUrl || rg.art),
+              playstationStoreUrl: rg.playstationStoreUrl || generateStoreUrl(rg.titleId || rg.npTitleId, gameTitle),
+              amazonAffiliateUrl: null,
+              multiplayerInfo: capabilities,
+              operatives: []
+            });
+          }
+
+          const entry = catalogMap.get(cId);
+          entry.operatives.push({
+            gamerTag: gamerTag,
+            avatar: avatar,
+            progress: rg.progress || 0,
+            completionRatio: rg.completionRatio || `${rg.progress || 0}%`,
+            playtimeFormatted: rg.nativePlaytimeFormatted || "Played"
+          });
+        });
+      });
+
+      return Array.from(catalogMap.values()).sort((a, b) => {
+        return b.operatives.length - a.operatives.length || a.name.localeCompare(b.name);
+      });
+    }
+
+    function generateStoreUrl(titleId, gameName, conceptId) {
+      if (conceptId) {
+        return `//store.playstation.com/en-us/concept/${conceptId}`;
+      }
+      if (titleId && (titleId.startsWith("CUSA") || titleId.startsWith("PPSA"))) {
+        return `//store.playstation.com/en-us/product/${titleId}`;
+      }
+      if (gameName && gameName !== "Dashboard") {
+        const query = encodeURIComponent(gameName.replace(/®|™/g, "").trim());
+        return `//store.playstation.com/en-us/search/${query}`;
+      }
+      return "//store.playstation.com/";
+    }
+
+    function renderCatalog() {
+      const grid = document.getElementById("catalogGrid");
+      if (!grid) return;
+
+      const filtered = catalogMasterList.filter(item => {
+        const matchesSearch = !searchQuery || 
+          item.name.toLowerCase().includes(searchQuery) ||
+          item.commId.toLowerCase().includes(searchQuery) ||
+          item.operatives.some(op => op.gamerTag.toLowerCase().includes(searchQuery));
+
+        if (!matchesSearch) return false;
+
+        const mp = item.multiplayerInfo || {};
+        if (activeFilter === "multiplayer") return !!mp.isMultiplayer;
+        if (activeFilter === "coop") return !!mp.isCoOpOnly || (mp.multiplayerType && mp.multiplayerType.toLowerCase().includes("co-op"));
+        if (activeFilter === "crossplay") return !!mp.isCrossPlatform;
+        if (activeFilter === "singleplayer") return !mp.isMultiplayer;
+
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="state-banner">No games found matching criteria "${searchQuery || activeFilter}".</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => {
+        const posterUrl = item.posterArt || "//placehold.co/600x340/151b26/ffffff?text=PlayStation";
+        const mp = item.multiplayerInfo || {};
+
+        let operativesMarkup = `<div class="squad-presence-box"><div class="squad-box-header"><span>Squad Records</span><span>${item.operatives.length} Logged</span></div>`;
+        if (item.operatives.length > 0) {
+          operativesMarkup += item.operatives.map(op => `
+            <div class="operative-row">
+              <img src="${op.avatar || '//placehold.co/40x40/111/fff?text=?'}" class="operative-avatar" loading="lazy">
+              <div class="operative-info">
+                <div class="operative-label">
+                  <span class="op-name">${escapeHtml(op.gamerTag)}</span>
+                  <span class="op-percent">${op.completionRatio}</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-fill" style="width: ${Math.min(100, Math.max(0, op.progress))}%"></div>
+                </div>
+              </div>
+            </div>
+          `).join("");
+        } else {
+          operativesMarkup += `<div style="font-size:0.75rem; color:var(--text-muted);">Available in Vault (Not actively logged by squad)</div>`;
+        }
+        operativesMarkup += `</div>`;
+
+        // Smart Hybrid Badging
+        let tagsMarkup = `<div class="tags-container">`;
+        if (mp.isCoOpOnly) {
+          tagsMarkup += `<span class="tag tag-coop">🤝 ${escapeHtml(mp.multiplayerType)}</span>`;
+        } else if (mp.isMultiplayer) {
+          tagsMarkup += `<span class="tag tag-multiplayer">🌐 ${escapeHtml(mp.multiplayerType)}</span>`;
+          if (mp.hasCampaign) {
+            tagsMarkup += `<span class="tag tag-campaign">🎯 Solo Campaign</span>`;
+          }
+        } else {
+          tagsMarkup += `<span class="tag tag-single">👤 Single Player Only</span>`;
+        }
+
+        if (mp.isCrossPlatform) {
+          tagsMarkup += `<span class="tag tag-crossplay">⚡ Cross-Play</span>`;
+        }
+        if (mp.psPlusRequired) {
+          tagsMarkup += `<span class="tag tag-plus">★ PS Plus Required</span>`;
+        }
+        tagsMarkup += `</div>`;
+
+        const psStoreUrl = item.playstationStoreUrl;
+        const isInternalStore = isInternalUrl(psStoreUrl);
+        const storeTargetAttr = isInternalStore ? `target="_self"` : `target="_blank" rel="noopener noreferrer"`;
+
+        return `
+          <article class="game-card">
+            <div class="card-banner" onclick="openLightbox('${encodeURIComponent(posterUrl)}', '${encodeURIComponent(item.name)}')">
+              <span class="platform-badge">${item.platform}</span>
+              <img src="${posterUrl}" loading="lazy">
+            </div>
+            <div class="card-body">
+              <div class="title-row">
+                <div class="game-title" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</div>
+                <div class="game-commid">${item.commId}</div>
+              </div>
+              ${tagsMarkup}
+              ${operativesMarkup}
+              <div class="card-footer-action">
+                <a href="${psStoreUrl}" class="ps-store-btn" ${storeTargetAttr} onclick="trackOutboundClick('${psStoreUrl}', 'playstation_store', '${escapeHtml(item.name)}', '${item.commId}')">
+                  <span>🛒 View in PS Store</span>
+                </a>
+                ${item.amazonAffiliateUrl ? `
+                  <a href="${item.amazonAffiliateUrl}" class="amazon-alt-btn" target="_blank" rel="noopener noreferrer" onclick="trackOutboundClick('${item.amazonAffiliateUrl}', 'amazon_affiliate', '${escapeHtml(item.name)}', '${item.commId}')">Amazon</a>
+                ` : ''}
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function openLightbox(encodedUrl, encodedTitle) {
+      const url = decodeURIComponent(encodedUrl);
+      const title = decodeURIComponent(encodedTitle);
+
+      const modal = document.getElementById("imageLightbox");
+      const img = document.getElementById("lightboxImg");
+      const titleElem = document.getElementById("lightboxTitle");
+      const altElem = document.getElementById("lightboxAltText");
+
+      if (img) {
+        img.src = url;
+        img.alt = `Official PlayStation artwork for ${title}`;
+      }
+      if (titleElem) titleElem.textContent = title;
+      if (altElem) altElem.textContent = `High-resolution promotional key art and display banner for ${title}.`;
+
+      if (modal) modal.classList.add("active");
+    }
+  </script>
 </body>
 </html>
