@@ -15,8 +15,8 @@ name: FS25 Live Backup Sync
 
 on:
   schedule:
-    # Runs every 30 minutes
-    - cron: '*/30 * * * *'
+    # Runs every 16 minutes
+    - cron: '*/16 * * * *'
   workflow_dispatch:
     inputs:
       force_sync:
