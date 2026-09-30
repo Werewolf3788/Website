@@ -5,17 +5,18 @@
  * File: /Playstation/dashboards/wildhorse_spirit.html
  * Engine: Complete Client-Side Firebase RTDB & Firestore Real-Time Dashboard
  * Description: 
- *   1. Full PSN Multi-Path Reader: Pulls from /psn/gamertags, /psn/users, and /psn.json.
- *   2. Sniper Elite 5 Service Record: Shows All Longshots (meters + crowns), All 47
- *      Official Ribbons, and Tactics/Masteries. Excludes M1-M14 collectible clutter.
- *   3. COTW Trophy Lodge: Multi-hunter comparison across all active operatives with crowns.
- *   4. Active Trophy Checklist: Compares squad members (OneLIVIDMAN, Darkwing, etc.)
- *      for every trophy in the list.
- *   5. Squad Campaigns: Formatted clean game titles & proxied poster graphics.
+ *   1. Direct Active Hunt Binding: Root /psn/gamertags/WildHorse_Spirit properties:
+ *      - currentCommunicationId, currentGame, currentGameArt
+ *      - currentGameHours, currentGameNumericHours
+ *      - earliestTrophyDate, lastUpdated, trophySummary
+ *   2. Full PSN Multi-Path Reader: Pulls from /psn/gamertags, /psn/users, and /psn.json.
+ *   3. Sniper Elite 5 Service Record: Longshots, All 47 Ribbons, Tactics/Masteries.
+ *   4. COTW Trophy Lodge: Multi-hunter comparison with squad crowns.
+ *   5. Squad Campaigns: Cloud Firestore &ge;1% campaigns with verified poster graphics.
  *   6. FS25 Farm 1 (farm_1) Telemetry: Live agronomy, crop stage, and fleet equipment.
  *   7. Smart Domain Routing: Same domain stays in current tab; external opens new tab.
  * Analytics: G-CTYHDF4MSD (New York 24h Time)
- * Date & Time Stamp: 2026-09-23 23:35:00 EDT (America/New_York)
+ * Date & Time Stamp: 2026-09-29 23:05:00 EDT (America/New_York)
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -40,7 +41,7 @@
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '45.7.0',
+            'layout_version': '46.0.0',
             'gamertag': 'WildHorse_Spirit',
             'user_handle': 'Werewolf3788',
             'engagement_timezone': 'America/New_York',
@@ -409,19 +410,6 @@
             border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 800; text-transform: uppercase;
         }
 
-        .group-pill {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 8px 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-
         .service-badge {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -574,14 +562,6 @@
                             <div class="progress-bar-container"><div id="active-game-progress-fill" class="progress-bar-fill prog-stage-1" style="width: 0%"></div></div>
                         </div>
 
-                        <!-- Trophy Groups Breakdown -->
-                        <div id="active-hunt-groups-container" class="space-y-2 pt-2 border-t border-white/5 hidden">
-                            <div class="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                <i class="fas fa-layer-group text-orange-400"></i> Trophy Groups & Expansion Packs
-                            </div>
-                            <div id="active-hunt-groups-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
-                        </div>
-
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs font-black uppercase">
                             <div class="bg-black/50 p-3 rounded-xl border border-white/5">
                                 <span class="text-gray-400 block text-xs">Campaign Timeline</span>
@@ -612,7 +592,7 @@
                 <section id="recent-hunts-section" class="glass-card p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-orange-500 text-lg uppercase tracking-wider">Recent PSN Hunts</h2>
-                        <span class="text-xs font-bold text-gray-400 uppercase">Dual PS4/PS5 & Skeleton Sync</span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">Dual PS4/PS5 &amp; Skeleton Sync</span>
                     </div>
                     <div id="recent-games-container" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
                 </section>
@@ -647,7 +627,7 @@
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-2">
                 <div>
                     <h2 class="text-2xl font-black uppercase text-white flex items-center gap-2.5">
-                        <i class="fas fa-layer-group text-orange-400"></i> Active Operations & Server Telemetry
+                        <i class="fas fa-layer-group text-orange-400"></i> Active Operations &amp; Server Telemetry
                     </h2>
                     <p class="text-xs text-gray-400 font-bold uppercase">Dedicated Real-Time Feeds for WildHorse_Spirit / Werewolf3788</p>
                 </div>
@@ -666,7 +646,7 @@
                             <div>
                                 <div class="flex items-center gap-2.5">
                                     <i class="fas fa-tractor text-lime-400 text-2xl"></i>
-                                    <h3 class="text-xl font-black uppercase text-lime-400">FS25 Telemetry & Farm 1 Fleet</h3>
+                                    <h3 class="text-xl font-black uppercase text-lime-400">FS25 Telemetry &amp; Farm 1 Fleet</h3>
                                 </div>
                                 <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Live Server Node: fs25-a3563 / Target: farms/farm_1</p>
                             </div>
@@ -698,7 +678,7 @@
                         <div class="space-y-2.5">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-2">
-                                    <i class="fas fa-truck-monster text-lime-400"></i> Farm 1 Active Implements & Heavy Machinery
+                                    <i class="fas fa-truck-monster text-lime-400"></i> Farm 1 Active Implements &amp; Heavy Machinery
                                 </h4>
                                 <span id="fs25-fleet-subtitle" class="text-xs font-black text-lime-400 uppercase font-mono">0 Units</span>
                             </div>
@@ -710,7 +690,7 @@
                         <div class="space-y-2.5 pt-2 border-t border-white/5">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-2">
-                                    <i class="fas fa-seedling text-lime-400"></i> Farm 1 Crops, Agronomy & Field Boundaries
+                                    <i class="fas fa-seedling text-lime-400"></i> Farm 1 Crops, Agronomy &amp; Field Boundaries
                                 </h4>
                                 <span id="fs25-fields-subtitle" class="text-xs font-black text-lime-400 uppercase font-mono">0 Parcels</span>
                             </div>
@@ -730,7 +710,7 @@
                                     <i class="fas fa-crosshairs text-sky-400 text-2xl"></i>
                                     <h3 class="text-xl font-black uppercase text-sky-400">Sniper Elite 5 Intelligence Matrix</h3>
                                 </div>
-                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Tactical Longshots, All 47 Ribbons & Masteries</p>
+                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Tactical Longshots, All 47 Ribbons &amp; Masteries</p>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="px-2.5 py-1 rounded-full text-xs font-black uppercase bg-emerald-950 text-emerald-400 border border-emerald-500/40 animate-pulse">
@@ -781,12 +761,12 @@
                         <div class="space-y-2.5 pt-2 border-t border-white/5">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                                    <i class="fas fa-shield-halved text-cyan-400"></i> Weapon Mastery & Tactics Medals
+                                    <i class="fas fa-shield-halved text-cyan-400"></i> Weapon Mastery &amp; Tactics Medals
                                 </h4>
                                 <span id="se5-medals-count" class="text-xs font-mono text-cyan-400 font-black">0 Masteries</span>
                             </div>
                             <div id="se5-mastery-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[260px] overflow-y-auto no-scrollbar pr-1">
-                                <div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">Ingesting Medals & Weapon Masteries...</div>
+                                <div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">Ingesting Medals &amp; Weapon Masteries...</div>
                             </div>
                         </div>
 
@@ -800,7 +780,7 @@
                             <div>
                                 <div class="flex items-center gap-2.5">
                                     <i class="fas fa-paw text-emerald-400 text-2xl"></i>
-                                    <h3 class="text-xl font-black uppercase text-emerald-400">COTW Trophy Lodge & Harvests</h3>
+                                    <h3 class="text-xl font-black uppercase text-emerald-400">COTW Trophy Lodge &amp; Harvests</h3>
                                 </div>
                                 <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">theHunter: Call of the Wild / Comparative Harvest Records</p>
                             </div>
@@ -823,7 +803,7 @@
                             <div>
                                 <div class="flex items-center gap-2.5">
                                     <i class="fas fa-users-viewfinder text-orange-400 text-2xl"></i>
-                                    <h3 class="text-xl font-black uppercase text-orange-400">Squad Campaigns & Live Objectives</h3>
+                                    <h3 class="text-xl font-black uppercase text-orange-400">Squad Campaigns &amp; Live Objectives</h3>
                                 </div>
                                 <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">
                                     Cloud Firestore Progress (&ge; 1% Progress Only)
@@ -848,10 +828,10 @@
             <div class="p-6 border-b border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                 <div>
                     <h2 id="checklist-header-text" class="text-white text-xl flex items-center gap-2.5">
-                        <i class="fas fa-list-check text-orange-500"></i> Active Trophy Checklist & Campaign Journey Log
+                        <i class="fas fa-list-check text-orange-500"></i> Active Trophy Checklist &amp; Campaign Journey Log
                     </h2>
                     <p id="checklist-timeline-sub" class="text-xs text-gray-400 font-bold uppercase mt-0.5">
-                        Interval tracking from First Trophy to Current Date & Time (24h New York Standard Time)
+                        Interval tracking from First Trophy to Current Date &amp; Time (24h New York Standard Time)
                     </p>
                 </div>
                 <span class="text-xs font-black uppercase tracking-wider text-gray-400 bg-black/40 px-3 py-1.5 rounded-lg border border-white/5">
@@ -865,10 +845,10 @@
         <footer class="mt-auto bg-slate-950 py-10 border-t border-slate-800 text-center relative">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
                 <p class="text-slate-500 text-sm">
-                    &copy; 2026 Werewolf Project. Built by Werewolf3788 & Friends.
+                    &copy; 2026 Werewolf Project. Built by Werewolf3788 &amp; Friends.
                 </p>
                 <div id="build-meta-footer" style="color: #94a3b8; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
-                    Werewolf Command Engine • v45.7.0 • Build: 2026-09-23 23:35:00 EDT
+                    Werewolf Command Engine &bull; v46.0.0 &bull; Build: 2026-09-29 23:05:00 EDT
                 </div>
                 <div class="text-center mt-2 text-xs font-black text-gray-500 uppercase tracking-[0.2em]">
                     Primary RTDB: <span class="text-orange-400">/psn/gamertags/WildHorse_Spirit.json</span> | FS25 RTDB: <span class="text-lime-400">fs25-a3563 (farm_1)</span> | Synced: <span id="sync-time" class="text-gray-300">--</span>
@@ -891,6 +871,7 @@
 
     <!-- FIRESTORE TELEMETRY & SE5 FILTER MODULE -->
     <script type="module">
+        // Line 571: Firestore Module & Cross-Hunter Real-Time Subscriptions
         import { initializeApp } from "//www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getFirestore, doc, collection, getDocs, onSnapshot } from "//www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -1430,6 +1411,7 @@
 
     <!-- REALTIME DATABASE RESILIENT MULTI-PATH LOADER -->
     <script>
+        // Line 895: Direct RTDB Node Binding & Telemetry Sync
         const WILDHORSE_RTDB_URL = "//entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/WildHorse_Spirit.json";
         const ROOT_PSN_RTDB_URL = "//entertainment-71888-default-rtdb.firebaseio.com/psn.json";
         const CANONICAL_GAMES_URL = "//entertainment-71888-default-rtdb.firebaseio.com/psn/games.json";
@@ -1513,22 +1495,6 @@
             return `${totalHours}h elapsed`;
         }
 
-        function parsePlayDurationToHours(val) {
-            if (val === undefined || val === null || val === "") return 0;
-            if (typeof val === 'number') return Math.round(val);
-            const str = String(val).trim();
-            const numericMatch = str.match(/^([\d.]+)/);
-            if (numericMatch) {
-                const num = parseFloat(numericMatch[1]);
-                if (!isNaN(num)) return Math.round(num);
-            }
-            const matchH = str.match(/(\d+)H/i);
-            const matchM = str.match(/(\d+)M/i);
-            let hours = matchH ? parseInt(matchH[1], 10) : 0;
-            let minutes = matchM ? parseInt(matchM[1], 10) : 0;
-            return Math.round(hours + (minutes / 60));
-        }
-
         function normalizeGameTitle(str) {
             if (!str) return "";
             return str.toLowerCase().replace(/®|™/g, "").replace(/[^a-z0-9]/g, "").trim();
@@ -1560,74 +1526,6 @@
                 if (normTitle && normalizeGameTitle(skel.name || skel.trophyTitleName || '') === normTitle) return skel;
             }
             return null;
-        }
-
-        function resolveActivePlaytime(user, hunt) {
-            if (!user || !hunt) return { formatted: "0 hrs", isLive: false, baseSeconds: 0, startTime: null };
-
-            const playSessions = user.playSessions || {};
-            const recentGames = convertFirebaseArray(user.recentGames);
-
-            const candidateKeys = [
-                hunt.titleId,
-                hunt.npTitleId,
-                hunt.commId,
-                hunt.npCommunicationId,
-                user.currentCommunicationId
-            ].filter(Boolean);
-
-            let matchedSession = null;
-            for (const key of candidateKeys) {
-                if (playSessions[key]) {
-                    matchedSession = playSessions[key];
-                    break;
-                }
-            }
-
-            const targetNormTitle = normalizeGameTitle(hunt.title || user.currentGame);
-            if (!matchedSession) {
-                for (const session of Object.values(playSessions)) {
-                    if (session && normalizeGameTitle(session.title) === targetNormTitle) {
-                        matchedSession = session;
-                        break;
-                    }
-                }
-            }
-
-            if (matchedSession) {
-                const isOnline = !!user.online;
-                const isActive = !!matchedSession.isActive && isOnline;
-                const baseSec = matchedSession.totalSeconds || 0;
-                const start = matchedSession.sessionStartTime || null;
-
-                if (isActive && start) {
-                    const elapsed = Math.max(0, Math.floor((Date.now() - start) / 1000));
-                    return {
-                        formatted: `${formatDuration(baseSec + elapsed)} (Active)`,
-                        isLive: true,
-                        baseSeconds: baseSec,
-                        startTime: start
-                    };
-                }
-
-                if (matchedSession.totalFormatted && matchedSession.totalFormatted !== "0 hrs") {
-                    return { formatted: matchedSession.totalFormatted, isLive: false, baseSeconds: baseSec, startTime: null };
-                }
-            }
-
-            const matchedRecent = recentGames.find(g => {
-                if (!g) return false;
-                if (hunt.npCommunicationId && g.npCommunicationId === hunt.npCommunicationId) return true;
-                if (hunt.titleId && (g.titleId === hunt.titleId || g.npTitleId === hunt.titleId)) return true;
-                return normalizeGameTitle(g.name || g.title) === targetNormTitle;
-            });
-
-            if (matchedRecent?.nativePlaytimeFormatted && matchedRecent.nativePlaytimeFormatted !== "0 hrs") {
-                return { formatted: matchedRecent.nativePlaytimeFormatted, isLive: false, baseSeconds: matchedRecent.nativePlaytimeSeconds || 0, startTime: null };
-            }
-
-            const directVal = hunt.hoursFormatted || hunt.hoursPlayed || "0 hrs";
-            return { formatted: directVal, isLive: false, baseSeconds: 0, startTime: null };
         }
 
         function extractTrophyTracking(t) {
@@ -1962,6 +1860,11 @@
             try {
                 let user = null;
                 try {
+                    const directRes = await fetch(`${WILDHORSE_RTDB_URL}?t=${Date.now()}`);
+                    if (directRes.ok) user = await directRes.json();
+                } catch (e) {}
+
+                if (!user) {
                     const rootRes = await fetch(`${ROOT_PSN_RTDB_URL}?t=${Date.now()}`);
                     if (rootRes.ok) {
                         const rootData = await rootRes.json();
@@ -1974,15 +1877,11 @@
                                rootData?.users?.wildhorse_spirit || 
                                rootData?.users?.Werewolf3788 || null;
                     }
-                } catch (e) {}
-
-                if (!user) {
-                    const directRes = await fetch(`${WILDHORSE_RTDB_URL}?t=${Date.now()}`);
-                    if (directRes.ok) user = await directRes.json();
                 }
 
                 if (!user) return;
 
+                // Sync Health / NPSSO
                 const hDot = document.getElementById('health-dot');
                 const hVal = document.getElementById('health-value');
                 const alertContainer = document.getElementById('system-alerts-container');
@@ -2002,6 +1901,7 @@
                     if (alertContainer) alertContainer.classList.add('hidden');
                 }
 
+                // Profile Info
                 const displayAdmin = document.getElementById('display-admin-name');
                 if (displayAdmin) displayAdmin.innerText = user.onlineId || "WildHorse_Spirit";
 
@@ -2026,8 +1926,10 @@
                 const ageEl = document.getElementById('psn-account-age');
                 if (ageEl) ageEl.innerText = "Age: " + (user.psnAccountAge || "Veteran");
 
+                // DIRECT BINDING: lastUpdated
                 const syncEl = document.getElementById('sync-time');
-                if (syncEl) syncEl.innerText = user.lastUpdated || formatDisplayTime();
+                const lastUpdatedVal = user.lastUpdated ? formatDisplayTime(user.lastUpdated) : formatDisplayTime();
+                if (syncEl) syncEl.innerText = lastUpdatedVal;
 
                 const gamesPlayedEl = document.getElementById('games-played-count');
                 if (gamesPlayedEl) gamesPlayedEl.innerText = user.gamesPlayed || "0";
@@ -2043,6 +1945,7 @@
                     if (actLabel) actLabel.innerText = "Activity: " + (user.currentGameActivity || (isOnline ? "Active" : "Idle"));
                 }
 
+                // Twitch Feed
                 if (user.twitch) {
                     const tw = user.twitch;
                     const followerEl = document.getElementById('follower-count');
@@ -2056,325 +1959,341 @@
                     if (liveBadge) liveBadge.classList.toggle('hidden', !tw.isLive);
                 }
 
+                // DIRECT BINDING: trophySummary
                 const summary = user.trophySummary || {};
                 const tTotal = document.getElementById('trophy-total');
-                if (tTotal) tTotal.innerText = (summary.total || 0).toLocaleString();
+                const totalTrophiesCount = summary.total !== undefined ? summary.total : ((summary.earnedTrophies?.platinum || 0) + (summary.earnedTrophies?.gold || 0) + (summary.earnedTrophies?.silver || 0) + (summary.earnedTrophies?.bronze || 0));
+                if (tTotal) tTotal.innerText = Number(totalTrophiesCount || 0).toLocaleString();
+
                 const platEl = document.getElementById('plat-count');
                 const goldEl = document.getElementById('gold-count');
                 const silverEl = document.getElementById('silver-count');
                 const bronzeEl = document.getElementById('bronze-count');
-                if (platEl) platEl.innerText = summary.platinum || 0;
-                if (goldEl) goldEl.innerText = summary.gold || 0;
-                if (silverEl) silverEl.innerText = summary.silver || 0;
-                if (bronzeEl) bronzeEl.innerText = summary.bronze || 0;
+                if (platEl) platEl.innerText = summary.platinum !== undefined ? summary.platinum : (summary.earnedTrophies?.platinum || 0);
+                if (goldEl) goldEl.innerText = summary.gold !== undefined ? summary.gold : (summary.earnedTrophies?.gold || 0);
+                if (silverEl) silverEl.innerText = summary.silver !== undefined ? summary.silver : (summary.earnedTrophies?.silver || 0);
+                if (bronzeEl) bronzeEl.innerText = summary.bronze !== undefined ? summary.bronze : (summary.earnedTrophies?.bronze || 0);
 
-                const hunt = user.activeHunt;
-                const recentGames = convertFirebaseArray(user.recentGames);
+                // =========================================================================
+                // DIRECT RTDB ACTIVE HUNT & ACTIVE TROPHY BINDINGS
+                // Root Keys: currentCommunicationId, currentGame, currentGameArt,
+                //            currentGameHours, currentGameNumericHours, earliestTrophyDate
+                // =========================================================================
+                const currentCommId = user.currentCommunicationId || user.activeHunt?.npCommunicationId || user.activeHunt?.commId || '';
+                const activeGameTitle = user.currentGame || user.activeHunt?.title || "Unknown Campaign";
+                const skeletonData = getSkeletonGameByCommId(currentCommId, activeGameTitle);
+                const activeGameArt = user.currentGameArt || skeletonData?.posterArt || user.activeHunt?.art || '';
 
-                if (hunt) {
-                    const huntCommId = hunt.npCommunicationId || hunt.commId || (recentGames[0]?.npCommunicationId) || '';
-                    const skeletonData = getSkeletonGameByCommId(huntCommId, hunt.title);
+                // Active Game Title
+                const activeTitleEl = document.getElementById('active-game-title');
+                if (activeTitleEl) activeTitleEl.innerText = activeGameTitle;
 
-                    const activeGameTitle = skeletonData?.name || hunt.title || "---";
-                    const activeTitleEl = document.getElementById('active-game-title');
-                    if (activeTitleEl) activeTitleEl.innerText = activeGameTitle;
-
-                    const personaBadge = document.getElementById('hunter-persona-badge');
-                    if (personaBadge && hunt.velocity?.hunterPersona) {
-                        personaBadge.innerText = hunt.velocity.hunterPersona;
-                        personaBadge.classList.remove('hidden');
-                    }
-
-                    const artImg = document.getElementById('active-game-art');
-                    const fbBox = document.getElementById('active-game-fallback');
-                    const resolvedArt = skeletonData?.posterArt || hunt.art || (recentGames.length > 0 ? recentGames[0].art : null);
-                    if (resolvedArt && artImg) {
-                        artImg.src = resolvedArt;
+                // Active Game Art
+                const artImg = document.getElementById('active-game-art');
+                const fbBox = document.getElementById('active-game-fallback');
+                if (artImg) {
+                    if (activeGameArt) {
+                        artImg.src = activeGameArt;
                         artImg.classList.remove('hidden');
                         if (fbBox) fbBox.classList.add('hidden');
-                    }
-
-                    const cleanName = encodeURIComponent((activeGameTitle || '').replace(/®|™/g, ''));
-                    const storesBar = document.getElementById('active-game-stores-bar');
-                    if (storesBar) {
-                        storesBar.innerHTML = `
-                            <a href="//store.playstation.com/en-us/search/${cleanName}" target="_blank" rel="noopener noreferrer" class="store-btn store-btn-ps"><i class="fab fa-playstation"></i><span>PS Store</span></a>
-                            <a href="//store.steampowered.com/search/?term=${cleanName}" target="_blank" rel="noopener noreferrer" class="store-btn store-btn-pc"><i class="fab fa-steam"></i><span>PC Store</span></a>
-                            <a href="//store.steampowered.com/search/?term=${cleanName}" target="_blank" rel="noopener noreferrer" class="store-btn store-btn-steam"><i class="fas fa-desktop"></i><span>Steam</span></a>
-                            <a href="//www.amazon.com/s?k=${cleanName}&tag=website3788-20" target="_blank" rel="noopener noreferrer" class="store-btn store-btn-amazon"><i class="fab fa-amazon"></i><span>Amazon</span></a>
-                        `;
-                    }
-
-                    const pct = hunt.progress || 0;
-                    const pctText = document.getElementById('active-game-progress-text');
-                    if (pctText) pctText.innerText = `${pct}%`;
-                    const fillBar = document.getElementById('active-game-progress-fill');
-                    if (fillBar) {
-                        fillBar.style.width = `${pct}%`;
-                        fillBar.className = `progress-bar-fill ${window.getChromaStageClass(pct)}`;
-                    }
-                    const ratioEl = document.getElementById('active-game-ratio');
-                    if (ratioEl) ratioEl.innerText = hunt.velocity?.completionStatus || "--/--";
-
-                    const liveProgNode = user.liveTrophyProgress?.[huntCommId] || user.liveTrophyProgress?.[hunt.commId] || user.liveTrophyProgress || {};
-
-                    const skelTrophies = skeletonData?.trophies ? convertFirebaseArray(skeletonData.trophies) : [];
-                    const userTrophies = hunt.userTrophies ? convertFirebaseArray(hunt.userTrophies) : (hunt.trophies ? convertFirebaseArray(hunt.trophies) : []);
-
-                    if (skelTrophies.length > 0) {
-                        currentTrophyData = skelTrophies.map((st, idx) => {
-                            const tId = st.trophyId !== undefined ? st.trophyId : idx;
-                            const liveMatch = liveProgNode[tId] || liveProgNode[String(tId)] || {};
-
-                            const utMatch = userTrophies.find(ut => {
-                                if (ut.trophyId !== undefined && ut.trophyId === tId) return true;
-                                return (ut.name || ut.trophyName || '').toLowerCase().trim() === (st.trophyName || st.name || '').toLowerCase().trim();
-                            }) || userTrophies[idx] || {};
-
-                            const isTrophyEarned = !!(liveMatch.earned !== undefined ? liveMatch.earned : utMatch.earned);
-
-                            return {
-                                id: tId,
-                                name: st.trophyName || st.name || utMatch.name || utMatch.trophyName,
-                                description: st.trophyDetail || st.description || utMatch.description || utMatch.trophyDetail,
-                                icon: st.trophyIconUrl || st.icon || utMatch.icon || utMatch.trophyIconUrl,
-                                earned: isTrophyEarned,
-                                earnedDateTime: liveMatch.earnedDate || liveMatch.timestamp || utMatch.earnedDateTime || utMatch.earnedTimestamp || utMatch.earnedDate,
-                                subProgressRatio: liveMatch.subProgressRatio || utMatch.subProgressRatio || st.subProgressRatio || null,
-                                trophyProgressTargetValue: liveMatch.targetValue || st.targetValue || st.trophyProgressTargetValue || utMatch.trophyProgressTargetValue || utMatch.targetValue || null,
-                                currentValue: liveMatch.currentValue !== undefined ? liveMatch.currentValue : (utMatch.currentValue !== undefined ? utMatch.currentValue : null),
-                                trophyProgress: utMatch.trophyProgress !== undefined ? utMatch.trophyProgress : (utMatch.progress !== undefined ? utMatch.progress : null),
-                                progressRate: utMatch.progressRate || null,
-                                groupId: String(st.groupId !== undefined ? st.groupId : (st.trophyGroupId !== undefined ? st.trophyGroupId : (utMatch.trophyGroupId || utMatch.groupId || 'default'))).toLowerCase(),
-                                hidden: !!(st.hidden !== undefined ? st.hidden : (st.trophyHidden || utMatch.hidden || false))
-                            };
-                        });
                     } else {
-                        currentTrophyData = userTrophies;
-                    }
-
-                    const earnedList = currentTrophyData.filter(t => t.earned && (t.earnedDateTime || t.earnedTimestamp || t.earnedDate));
-                    earnedList.sort((a, b) => {
-                        const tA = new Date(a.earnedDateTime || a.earnedTimestamp || a.earnedDate).getTime();
-                        const tB = new Date(b.earnedDateTime || b.earnedTimestamp || b.earnedDate).getTime();
-                        return tA - tB;
-                    });
-
-                    const firstTrophy = earnedList.length > 0 ? earnedList[0] : null;
-                    const recentTrophy = earnedList.length > 0 ? earnedList[earnedList.length - 1] : null;
-
-                    let firstDateRaw = null;
-                    const possibleFirstDates = [
-                        firstTrophy ? (firstTrophy.earnedDateTime || firstTrophy.earnedTimestamp || firstTrophy.earnedDate) : null,
-                        user.earliestTrophyDate,
-                        hunt.firstTrophyTimestamp
-                    ];
-                    for (const d of possibleFirstDates) {
-                        if (d) {
-                            const parsed = new Date(d).getTime();
-                            if (!isNaN(parsed) && parsed > 946684800000) {
-                                firstDateRaw = d;
-                                break;
-                            }
-                        }
-                    }
-
-                    const recentDateRaw = user.latestTrophyDate || (recentTrophy ? (recentTrophy.earnedDateTime || recentTrophy.earnedTimestamp || recentTrophy.earnedDate) : null);
-                    const playtimeState = resolveActivePlaytime(user, hunt);
-
-                    const timelineEl = document.getElementById('hunt-timeline-span');
-                    const hoursEl = document.getElementById('hunt-gameplay-hours');
-                    const paceEl = document.getElementById('hunt-trophy-pace');
-                    const firstDateEl = document.getElementById('hunt-first-trophy-date');
-
-                    if (firstDateRaw) {
-                        const intervalStr = formatIntervalSpan(firstDateRaw);
-                        const firstDateFormatted = formatDisplayTime(firstDateRaw).split(',')[0];
-                        if (timelineEl) timelineEl.innerText = intervalStr;
-                        if (firstDateEl) firstDateEl.innerText = `${firstDateFormatted} (${firstTrophy?.name || 'Start'})`;
-
-                        const subHeader = document.getElementById('checklist-timeline-sub');
-                        if (subHeader) {
-                            const recentAgo = recentDateRaw ? getPreciseHoursAgo(recentDateRaw) : "--";
-                            subHeader.innerText = `First: ${firstDateFormatted} | Span: ${intervalStr} | Recent Trophy: ${recentAgo}`;
-                        }
-                    } else {
-                        if (timelineEl) timelineEl.innerText = "--";
-                        if (firstDateEl) firstDateEl.innerText = "--";
-                    }
-
-                    if (hoursEl) {
-                        hoursEl.innerText = playtimeState.formatted;
-                        if (activeLiveInterval) {
-                            clearInterval(activeLiveInterval);
-                            activeLiveInterval = null;
-                        }
-                        if (playtimeState.isLive && playtimeState.startTime) {
-                            activeLiveInterval = setInterval(() => {
-                                const liveElapsed = Math.max(0, Math.floor((Date.now() - playtimeState.startTime) / 1000));
-                                hoursEl.innerText = `${formatDuration(playtimeState.baseSeconds + liveElapsed)} (Active)`;
-                            }, 1000);
-                        }
-                    }
-                    
-                    if (paceEl) {
-                        const numericHours = parsePlayDurationToHours(playtimeState.formatted);
-                        if (numericHours > 0 && earnedList.length > 0) {
-                            const hrsPerTrophy = (numericHours / earnedList.length).toFixed(1);
-                            paceEl.innerText = `1 trophy / ${hrsPerTrophy}h`;
-                        } else {
-                            paceEl.innerText = `${earnedList.length} trophies total`;
-                        }
-                    }
-
-                    const recentHoursEl = document.getElementById('hunt-recent-trophy-hours');
-                    if (recentHoursEl) {
-                        if (recentDateRaw) {
-                            const hoursSinceRecent = getPreciseHoursAgo(recentDateRaw);
-                            recentHoursEl.innerText = `${hoursSinceRecent} (${recentTrophy?.name || 'Latest'})`;
-                        } else {
-                            recentHoursEl.innerText = "--";
-                        }
-                    }
-
-                    const checklist = document.getElementById('trophy-checklist-container');
-                    if (checklist && currentTrophyData.length > 0) {
-                        checklist.innerHTML = currentTrophyData.map((t, idx) => {
-                            const isEarned = !!t.earned;
-                            const tracking = extractTrophyTracking(t);
-                            const normName = (t.name || '').toLowerCase().trim();
-                            const earnedDateRaw = t.earnedDateTime || t.earnedTimestamp || t.earnedDate || null;
-                            let dateBadgeHtml = "";
-                            let isEarnedWithin24Hours = false;
-
-                            if (isEarned && earnedDateRaw) {
-                                const earnedEpoch = typeof earnedDateRaw === 'number' ? earnedDateRaw : new Date(earnedDateRaw).getTime();
-                                if (!isNaN(earnedEpoch) && (Date.now() - earnedEpoch <= 24 * 60 * 60 * 1000)) {
-                                    isEarnedWithin24Hours = true;
-                                }
-
-                                const formattedDate = formatDisplayTime(earnedDateRaw);
-                                const timeAgo = getTimeAgoString(earnedDateRaw);
-                                dateBadgeHtml = `
-                                    <div class="flex flex-wrap items-center gap-2 mt-1 text-xs font-bold text-gray-400">
-                                        <span class="text-emerald-400"><i class="far fa-calendar-check mr-1"></i>${formattedDate}</span>
-                                        ${timeAgo ? `<span class="bg-white/5 px-2 py-0.5 rounded text-gray-300 font-mono text-xs border border-white/5">(${timeAgo})</span>` : ''}
-                                        ${isEarnedWithin24Hours ? `<span class="text-[9px] bg-yellow-500/20 text-yellow-300 border border-yellow-400/50 rounded px-1.5 py-0.5 font-black uppercase tracking-wider animate-pulse"><i class="fas fa-bolt mr-1"></i>24h Unlock</span>` : ''}
-                                    </div>
-                                `;
-                            }
-
-                            const squadMatches = [];
-                            Object.entries(globalGamertagsData).forEach(([gtag, pObj]) => {
-                                const normGKey = gtag.toLowerCase().trim();
-                                if (normGKey === 'wildhorse_spirit' || normGKey === 'werewolf3788' || normGKey === 'werewolf') return;
-                                if (normGKey === 'terrdog' || normGKey === 'terrdog420') return;
-
-                                let displayTag = gtag;
-                                if (normGKey === 'onelividman' || normGKey === 'raymystyro') displayTag = 'OneLIVIDMAN';
-                                if (normGKey === 'darkwing' || normGKey === 'darkwing69420') displayTag = 'Darkwing69420';
-                                if (normGKey === 'desdemonatiger' || normGKey === 'elu cloud') displayTag = 'DesdemonaTiger';
-
-                                const pRecent = convertFirebaseArray(pObj.recentGames);
-                                const pHunt = pObj.activeHunt;
-                                let trophies = [];
-
-                                if (pHunt) {
-                                    const huntMatch = (huntCommId && pHunt.npCommunicationId && pHunt.npCommunicationId === huntCommId) ||
-                                                      (normalizeGameTitle(pHunt.title) === normalizeGameTitle(activeGameTitle));
-                                    if (huntMatch) trophies = convertFirebaseArray(pHunt.userTrophies || pHunt.trophies);
-                                }
-                                
-                                if (trophies.length === 0 && pRecent.length > 0) {
-                                    const matched = pRecent.find(g => {
-                                        if (!g) return false;
-                                        if (huntCommId && g.npCommunicationId && g.npCommunicationId === huntCommId) return true;
-                                        return normalizeGameTitle(g.name || g.title || g.trophyTitleName) === normalizeGameTitle(activeGameTitle);
-                                    });
-                                    if (matched && matched.trophies) trophies = convertFirebaseArray(matched.trophies);
-                                }
-
-                                const pLiveNode = pObj.liveTrophyProgress?.[huntCommId] || pObj.liveTrophyProgress || {};
-                                const pLiveTrophy = pLiveNode[t.id] || pLiveNode[String(t.id)];
-
-                                const matchT = trophies.find(pt => {
-                                    if (!pt) return false;
-                                    const pName = (pt.name || pt.trophyName || '').toLowerCase().trim();
-                                    return pName === normName || (pt.trophyId !== undefined && pt.trophyId === t.id);
-                                });
-                                
-                                if (matchT || pLiveTrophy) {
-                                    const combinedObj = { ...(matchT || {}), ...(pLiveTrophy || {}) };
-                                    const tr = extractTrophyTracking(combinedObj);
-                                    const pEarned = !!combinedObj.earned;
-
-                                    let squadFraction = '';
-                                    if (pEarned) {
-                                        squadFraction = tr ? tr.fraction : (tracking ? `${tracking.target}/${tracking.target}` : 'DONE');
-                                    } else {
-                                        squadFraction = tr ? tr.fraction : (tracking ? `0/${tracking.target}` : '0/1');
-                                    }
-
-                                    squadMatches.push({
-                                        tag: displayTag,
-                                        earned: pEarned,
-                                        label: squadFraction
-                                    });
-                                }
-                            });
-
-                            let squadHtml = "";
-                            if (squadMatches.length > 0) {
-                                squadHtml = `
-                                    <div class="flex flex-wrap items-center gap-2 mt-2 pt-1.5 border-t border-white/5">
-                                        <span class="text-[11px] font-black uppercase text-gray-400 tracking-wider mr-1">Squad Presence:</span>
-                                        ${squadMatches.map(m => `
-                                            <span class="squad-member-pill ${m.earned ? 'earned' : 'locked'}">
-                                                <i class="fas ${m.earned ? 'fa-check-circle text-emerald-400' : 'fa-lock text-gray-400'}"></i>
-                                                <span>${m.tag} (${m.label})</span>
-                                            </span>
-                                        `).join('')}
-                                    </div>
-                                `;
-                            }
-
-                            const safeHuntTitle = escapeHtmlAttr(activeGameTitle);
-
-                            return `
-                                <div class="trophy-row ${isEarnedWithin24Hours ? 'recent-earn-yellow-glow' : ''}" onclick="openTrophyDetailModal(currentTrophyData[${idx}], '${safeHuntTitle}')">
-                                    <img src="${t.icon || ''}" class="trophy-icon-sq ${!isEarned && t.hidden ? 'opacity-30 blur-[2px]' : ''}" onerror="this.src='//via.placeholder.com/56x56/202024/FF5F1F?text=🏆'">
-                                    <div class="min-w-0 flex-1">
-                                        <div class="flex items-center gap-2 flex-wrap">
-                                            <div class="trophy-title-text truncate text-sm ${isEarned ? 'text-green-400' : 'text-orange-400'}">${t.name}</div>
-                                            ${tracking ? `<span class="${isEarned ? 'trophy-badge-earned' : 'trophy-badge-locked'}">${tracking.fraction}</span>` : ''}
-                                        </div>
-                                        <div class="text-xs text-gray-400 truncate mt-0.5">${t.description || ''}</div>
-                                        ${tracking && !isEarned ? `
-                                            <div class="mt-2 max-w-xs">
-                                                <div class="flex justify-between items-center text-[10px] font-mono text-gray-400 mb-1">
-                                                    <span>PS5 Target Progress</span>
-                                                    <span class="text-orange-400 font-bold">${tracking.pct}%</span>
-                                                </div>
-                                                <div class="progress-bar-container h-1.5">
-                                                    <div class="progress-bar-fill ${window.getChromaStageClass(tracking.pct)}" style="width: ${tracking.pct}%"></div>
-                                                </div>
-                                            </div>
-                                        ` : ''}
-                                        ${dateBadgeHtml}
-                                        ${squadHtml}
-                                    </div>
-                                    <div class="text-right flex flex-col items-end gap-1">
-                                        <span class="text-xs font-black uppercase px-2.5 py-1 rounded ${isEarned ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-white/5 text-gray-400 border border-white/10'}">
-                                            ${isEarned ? 'EARNED' : 'LOCKED'}
-                                        </span>
-                                        ${tracking && !isEarned ? `<span class="text-xs font-mono font-bold text-orange-400">${tracking.pct}%</span>` : ''}
-                                    </div>
-                                </div>
-                            `;
-                        }).join('');
+                        artImg.classList.add('hidden');
+                        if (fbBox) fbBox.classList.remove('hidden');
                     }
                 }
 
+                // Active Hunter Persona
+                const personaBadge = document.getElementById('hunter-persona-badge');
+                if (personaBadge) {
+                    const persona = user.activeHunt?.velocity?.hunterPersona || user.hunterPersona;
+                    if (persona) {
+                        personaBadge.innerText = persona;
+                        personaBadge.classList.remove('hidden');
+                    } else {
+                        personaBadge.classList.add('hidden');
+                    }
+                }
+
+                // Store Links
+                const cleanName = encodeURIComponent((activeGameTitle || '').replace(/®|™/g, ''));
+                const storesBar = document.getElementById('active-game-stores-bar');
+                if (storesBar) {
+                    storesBar.innerHTML = `
+                        <a href="//store.playstation.com/en-us/search/${cleanName}" target="_blank" rel="noopener noreferrer" class="store-btn store-btn-ps"><i class="fab fa-playstation"></i><span>PS Store</span></a>
+                        <a href="//store.steampowered.com/search/?term=${cleanName}" target="_blank" rel="noopener noreferrer" class="store-btn store-btn-pc"><i class="fab fa-steam"></i><span>PC Store</span></a>
+                        <a href="//store.steampowered.com/search/?term=${cleanName}" target="_blank" rel="noopener noreferrer" class="store-btn store-btn-steam"><i class="fas fa-desktop"></i><span>Steam</span></a>
+                        <a href="//www.amazon.com/s?k=${cleanName}&tag=website3788-20" target="_blank" rel="noopener noreferrer" class="store-btn store-btn-amazon"><i class="fab fa-amazon"></i><span>Amazon</span></a>
+                    `;
+                }
+
+                // Progress Bar & Percentage
+                let huntProgressPct = 0;
+                let huntRatioStr = "--/--";
+                if (summary.progress !== undefined) {
+                    huntProgressPct = Number(summary.progress);
+                } else if (user.activeHunt?.progress !== undefined) {
+                    huntProgressPct = Number(user.activeHunt.progress);
+                }
+
+                if (summary.earnedTrophies !== undefined && summary.definedTrophies !== undefined) {
+                    const earnedTotal = typeof summary.earnedTrophies === 'object' ? Object.values(summary.earnedTrophies).reduce((a, b) => Number(a) + Number(b), 0) : summary.earnedTrophies;
+                    const definedTotal = typeof summary.definedTrophies === 'object' ? Object.values(summary.definedTrophies).reduce((a, b) => Number(a) + Number(b), 0) : summary.definedTrophies;
+                    huntRatioStr = `${earnedTotal}/${definedTotal} Objectives`;
+                } else if (user.activeHunt?.velocity?.completionStatus) {
+                    huntRatioStr = `${user.activeHunt.velocity.completionStatus} Objectives`;
+                }
+
+                const pctText = document.getElementById('active-game-progress-text');
+                if (pctText) pctText.innerText = `${huntProgressPct}%`;
+
+                const fillBar = document.getElementById('active-game-progress-fill');
+                if (fillBar) {
+                    fillBar.style.width = `${huntProgressPct}%`;
+                    fillBar.className = `progress-bar-fill ${window.getChromaStageClass(huntProgressPct)}`;
+                }
+
+                const ratioEl = document.getElementById('active-game-ratio');
+                if (ratioEl) ratioEl.innerText = huntRatioStr;
+
+                // DIRECT BINDING: currentGameHours & currentGameNumericHours
+                const hoursEl = document.getElementById('hunt-gameplay-hours');
+                const numericHours = Number(user.currentGameNumericHours || 0);
+                const displayHoursStr = user.currentGameHours || (numericHours > 0 ? `${numericHours} hrs logged` : "0 hrs");
+                if (hoursEl) hoursEl.innerText = displayHoursStr;
+
+                // DIRECT BINDING: earliestTrophyDate & Campaign Timeline
+                const firstDateRaw = user.earliestTrophyDate || user.activeHunt?.firstTrophyTimestamp || null;
+                const timelineEl = document.getElementById('hunt-timeline-span');
+                const firstDateEl = document.getElementById('hunt-first-trophy-date');
+
+                if (firstDateRaw) {
+                    const intervalStr = formatIntervalSpan(firstDateRaw);
+                    const firstDateFormatted = formatDisplayTime(firstDateRaw).split(',')[0];
+                    if (timelineEl) timelineEl.innerText = intervalStr;
+                    if (firstDateEl) firstDateEl.innerText = `${firstDateFormatted} (Campaign Launch)`;
+
+                    const subHeader = document.getElementById('checklist-timeline-sub');
+                    if (subHeader) {
+                        subHeader.innerText = `First Trophy: ${firstDateFormatted} | Campaign Span: ${intervalStr} | Sync: ${lastUpdatedVal}`;
+                    }
+                } else {
+                    if (timelineEl) timelineEl.innerText = "--";
+                    if (firstDateEl) firstDateEl.innerText = "--";
+                }
+
+                // =========================================================================
+                // ACTIVE TROPHIES CHECKLIST & REALTIME NODE RESOLUTION
+                // =========================================================================
+                const liveProgNode = (currentCommId && user.liveTrophyProgress?.[currentCommId]) 
+                    ? user.liveTrophyProgress[currentCommId] 
+                    : (user.liveTrophyProgress || {});
+
+                const recentGames = convertFirebaseArray(user.recentGames);
+                const matchedRecentGame = recentGames.find(g => (currentCommId && g.npCommunicationId === currentCommId) || normalizeGameTitle(g.name || g.title) === normalizeGameTitle(activeGameTitle));
+
+                const rawSkelTrophies = skeletonData?.trophies ? convertFirebaseArray(skeletonData.trophies) : [];
+                const rawUserTrophies = user.activeHunt?.userTrophies 
+                    ? convertFirebaseArray(user.activeHunt.userTrophies) 
+                    : (user.activeHunt?.trophies ? convertFirebaseArray(user.activeHunt.trophies) : (matchedRecentGame?.trophies ? convertFirebaseArray(matchedRecentGame.trophies) : []));
+
+                const sourceTrophies = rawSkelTrophies.length > 0 ? rawSkelTrophies : rawUserTrophies;
+
+                currentTrophyData = sourceTrophies.map((st, idx) => {
+                    const tId = st.trophyId !== undefined ? st.trophyId : (st.id !== undefined ? st.id : idx);
+                    const liveMatch = liveProgNode[tId] || liveProgNode[String(tId)] || {};
+
+                    const utMatch = rawUserTrophies.find(ut => {
+                        if (ut.trophyId !== undefined && ut.trophyId === tId) return true;
+                        return (ut.name || ut.trophyName || '').toLowerCase().trim() === (st.trophyName || st.name || '').toLowerCase().trim();
+                    }) || rawUserTrophies[idx] || {};
+
+                    const isEarned = !!(liveMatch.earned !== undefined ? liveMatch.earned : (st.earned !== undefined ? st.earned : utMatch.earned));
+                    const earnedDate = liveMatch.earnedDate || liveMatch.timestamp || st.earnedDateTime || utMatch.earnedDateTime || utMatch.earnedTimestamp || utMatch.earnedDate || null;
+
+                    return {
+                        id: tId,
+                        name: st.trophyName || st.name || utMatch.name || utMatch.trophyName || `Trophy #${tId}`,
+                        description: st.trophyDetail || st.description || utMatch.description || utMatch.trophyDetail || '',
+                        icon: st.trophyIconUrl || st.icon || utMatch.icon || utMatch.trophyIconUrl || '',
+                        earned: isEarned,
+                        earnedDateTime: earnedDate,
+                        subProgressRatio: liveMatch.subProgressRatio || st.subProgressRatio || utMatch.subProgressRatio || null,
+                        trophyProgressTargetValue: liveMatch.targetValue || st.targetValue || st.trophyProgressTargetValue || utMatch.trophyProgressTargetValue || null,
+                        currentValue: liveMatch.currentValue !== undefined ? liveMatch.currentValue : (utMatch.currentValue !== undefined ? utMatch.currentValue : null),
+                        trophyProgress: utMatch.trophyProgress !== undefined ? utMatch.trophyProgress : null,
+                        progressRate: utMatch.progressRate || null,
+                        groupId: String(st.groupId !== undefined ? st.groupId : (st.trophyGroupId !== undefined ? st.trophyGroupId : (utMatch.groupId || 'default'))).toLowerCase(),
+                        hidden: !!(st.hidden !== undefined ? st.hidden : (st.trophyHidden || utMatch.hidden || false))
+                    };
+                });
+
+                // Trophy Pace Calculation
+                const earnedTrophiesList = currentTrophyData.filter(t => t.earned);
+                const paceEl = document.getElementById('hunt-trophy-pace');
+                if (paceEl) {
+                    if (numericHours > 0 && earnedTrophiesList.length > 0) {
+                        const hrsPerTrophy = (numericHours / earnedTrophiesList.length).toFixed(1);
+                        paceEl.innerText = `1 trophy / ${hrsPerTrophy}h`;
+                    } else {
+                        paceEl.innerText = `${earnedTrophiesList.length} earned total`;
+                    }
+                }
+
+                // Recent Trophy Elapsed Calculation
+                const sortedEarned = earnedTrophiesList
+                    .filter(t => t.earnedDateTime)
+                    .sort((a, b) => new Date(b.earnedDateTime).getTime() - new Date(a.earnedDateTime).getTime());
+                
+                const latestEarned = sortedEarned.length > 0 ? sortedEarned[0] : null;
+                const recentHoursEl = document.getElementById('hunt-recent-trophy-hours');
+                if (recentHoursEl) {
+                    if (latestEarned?.earnedDateTime) {
+                        recentHoursEl.innerText = `${getPreciseHoursAgo(latestEarned.earnedDateTime)} (${latestEarned.name})`;
+                    } else {
+                        recentHoursEl.innerText = "--";
+                    }
+                }
+
+                // Render Checklist
+                const checklistContainer = document.getElementById('trophy-checklist-container');
+                if (checklistContainer && currentTrophyData.length > 0) {
+                    checklistContainer.innerHTML = currentTrophyData.map((t, idx) => {
+                        const isEarned = !!t.earned;
+                        const tracking = extractTrophyTracking(t);
+                        const normName = (t.name || '').toLowerCase().trim();
+                        const earnedDateRaw = t.earnedDateTime;
+                        let dateBadgeHtml = "";
+                        let isEarnedWithin24Hours = false;
+
+                        if (isEarned && earnedDateRaw) {
+                            const earnedEpoch = typeof earnedDateRaw === 'number' ? earnedDateRaw : new Date(earnedDateRaw).getTime();
+                            if (!isNaN(earnedEpoch) && (Date.now() - earnedEpoch <= 24 * 60 * 60 * 1000)) {
+                                isEarnedWithin24Hours = true;
+                            }
+
+                            const formattedDate = formatDisplayTime(earnedDateRaw);
+                            const timeAgo = getTimeAgoString(earnedDateRaw);
+                            dateBadgeHtml = `
+                                <div class="flex flex-wrap items-center gap-2 mt-1 text-xs font-bold text-gray-400">
+                                    <span class="text-emerald-400"><i class="far fa-calendar-check mr-1"></i>${formattedDate}</span>
+                                    ${timeAgo ? `<span class="bg-white/5 px-2 py-0.5 rounded text-gray-300 font-mono text-xs border border-white/5">(${timeAgo})</span>` : ''}
+                                    ${isEarnedWithin24Hours ? `<span class="text-[9px] bg-yellow-500/20 text-yellow-300 border border-yellow-400/50 rounded px-1.5 py-0.5 font-black uppercase tracking-wider animate-pulse"><i class="fas fa-bolt mr-1"></i>24h Unlock</span>` : ''}
+                                </div>
+                            `;
+                        }
+
+                        // Squad presence comparison
+                        const squadMatches = [];
+                        Object.entries(globalGamertagsData).forEach(([gtag, pObj]) => {
+                            const normGKey = gtag.toLowerCase().trim();
+                            if (normGKey === 'wildhorse_spirit' || normGKey === 'werewolf3788' || normGKey === 'werewolf') return;
+                            if (normGKey === 'terrdog' || normGKey === 'terrdog420') return;
+
+                            let displayTag = gtag;
+                            if (normGKey === 'onelividman' || normGKey === 'raymystyro') displayTag = 'OneLIVIDMAN';
+                            if (normGKey === 'darkwing' || normGKey === 'darkwing69420') displayTag = 'Darkwing69420';
+                            if (normGKey === 'desdemonatiger' || normGKey === 'elu cloud') displayTag = 'DesdemonaTiger';
+
+                            const pRecent = convertFirebaseArray(pObj.recentGames);
+                            const pHunt = pObj.activeHunt;
+                            let trophies = [];
+
+                            if (pHunt) {
+                                const huntMatch = (currentCommId && pHunt.npCommunicationId && pHunt.npCommunicationId === currentCommId) ||
+                                                  (normalizeGameTitle(pHunt.title) === normalizeGameTitle(activeGameTitle));
+                                if (huntMatch) trophies = convertFirebaseArray(pHunt.userTrophies || pHunt.trophies);
+                            }
+                            
+                            if (trophies.length === 0 && pRecent.length > 0) {
+                                const matched = pRecent.find(g => {
+                                    if (!g) return false;
+                                    if (currentCommId && g.npCommunicationId && g.npCommunicationId === currentCommId) return true;
+                                    return normalizeGameTitle(g.name || g.title || g.trophyTitleName) === normalizeGameTitle(activeGameTitle);
+                                });
+                                if (matched && matched.trophies) trophies = convertFirebaseArray(matched.trophies);
+                            }
+
+                            const pLiveNode = pObj.liveTrophyProgress?.[currentCommId] || pObj.liveTrophyProgress || {};
+                            const pLiveTrophy = pLiveNode[t.id] || pLiveNode[String(t.id)];
+
+                            const matchT = trophies.find(pt => {
+                                if (!pt) return false;
+                                const pName = (pt.name || pt.trophyName || '').toLowerCase().trim();
+                                return pName === normName || (pt.trophyId !== undefined && pt.trophyId === t.id);
+                            });
+                            
+                            if (matchT || pLiveTrophy) {
+                                const combinedObj = { ...(matchT || {}), ...(pLiveTrophy || {}) };
+                                const tr = extractTrophyTracking(combinedObj);
+                                const pEarned = !!combinedObj.earned;
+
+                                let squadFraction = '';
+                                if (pEarned) {
+                                    squadFraction = tr ? tr.fraction : (tracking ? `${tracking.target}/${tracking.target}` : 'DONE');
+                                } else {
+                                    squadFraction = tr ? tr.fraction : (tracking ? `0/${tracking.target}` : '0/1');
+                                }
+
+                                squadMatches.push({
+                                    tag: displayTag,
+                                    earned: pEarned,
+                                    label: squadFraction
+                                });
+                            }
+                        });
+
+                        let squadHtml = "";
+                        if (squadMatches.length > 0) {
+                            squadHtml = `
+                                <div class="flex flex-wrap items-center gap-2 mt-2 pt-1.5 border-t border-white/5">
+                                    <span class="text-[11px] font-black uppercase text-gray-400 tracking-wider mr-1">Squad Presence:</span>
+                                    ${squadMatches.map(m => `
+                                        <span class="squad-member-pill ${m.earned ? 'earned' : 'locked'}">
+                                            <i class="fas ${m.earned ? 'fa-check-circle text-emerald-400' : 'fa-lock text-gray-400'}"></i>
+                                            <span>${m.tag} (${m.label})</span>
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            `;
+                        }
+
+                        const safeHuntTitle = escapeHtmlAttr(activeGameTitle);
+
+                        return `
+                            <div class="trophy-row ${isEarnedWithin24Hours ? 'recent-earn-yellow-glow' : ''}" onclick="openTrophyDetailModal(currentTrophyData[${idx}], '${safeHuntTitle}')">
+                                <img src="${t.icon || ''}" class="trophy-icon-sq ${!isEarned && t.hidden ? 'opacity-30 blur-[2px]' : ''}" onerror="this.src='//via.placeholder.com/56x56/202024/FF5F1F?text=🏆'">
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <div class="trophy-title-text truncate text-sm ${isEarned ? 'text-green-400' : 'text-orange-400'}">${t.name}</div>
+                                        ${tracking ? `<span class="${isEarned ? 'trophy-badge-earned' : 'trophy-badge-locked'}">${tracking.fraction}</span>` : ''}
+                                    </div>
+                                    <div class="text-xs text-gray-400 truncate mt-0.5">${t.description || ''}</div>
+                                    ${tracking && !isEarned ? `
+                                        <div class="mt-2 max-w-xs">
+                                            <div class="flex justify-between items-center text-[10px] font-mono text-gray-400 mb-1">
+                                                <span>PS5 Target Progress</span>
+                                                <span class="text-orange-400 font-bold">${tracking.pct}%</span>
+                                            </div>
+                                            <div class="progress-bar-container h-1.5">
+                                                <div class="progress-bar-fill ${window.getChromaStageClass(tracking.pct)}" style="width: ${tracking.pct}%"></div>
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                    ${dateBadgeHtml}
+                                    ${squadHtml}
+                                </div>
+                                <div class="text-right flex flex-col items-end gap-1">
+                                    <span class="text-xs font-black uppercase px-2.5 py-1 rounded ${isEarned ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-white/5 text-gray-400 border border-white/10'}">
+                                        ${isEarned ? 'EARNED' : 'LOCKED'}
+                                    </span>
+                                    ${tracking && !isEarned ? `<span class="text-xs font-mono font-bold text-orange-400">${tracking.pct}%</span>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // Recent PSN Hunts Thumbs
                 const recentContainer = document.getElementById('recent-games-container');
                 if (recentContainer && recentGames.length > 0) {
                     const activeOnlyGames = recentGames.filter(g => g && Number(g.progress || 0) >= 1);
@@ -2383,7 +2302,7 @@
                         const safeGName = escapeHtmlAttr(skel?.name || g.name || g.trophyTitleName || 'Game');
                         const safeArt = escapeHtmlAttr(skel?.posterArt || g.art || g.trophyTitleIconUrl || '');
                         return `
-                            <div class="game-thumb" onclick="openPSNRecentGameCompareModal('${safeGName}', '${safeArt}', ${g.progress || 0}, '${g.npCommunicationId || ''}')">
+                            <div class="game-thumb" onclick="openLightboxImage('${safeArt}', '${safeGName}')">
                                 <img src="${safeArt}" class="w-full h-full object-cover" onerror="this.src='//via.placeholder.com/150x225/1e1e24/FF5F1F?text=GAME'">
                                 <div class="game-info-overlay">
                                     <div class="text-xs font-black text-orange-400 truncate">${safeGName}</div>
@@ -2394,6 +2313,7 @@
                     }).join('');
                 }
 
+                // Latest PSN Unlock Card
                 const recentTrophies = convertFirebaseArray(user.mostRecentTrophies);
                 const recCard = document.getElementById('recent-trophy-card');
                 if (recentTrophies.length > 0) {
@@ -2520,7 +2440,8 @@
 
         function closeGenericLightbox() {
             const lb = document.getElementById('generic-lightbox');
-            if (lb) lb.style.display = 'none';
+            if (!lb) return;
+            lb.style.display = 'none';
         }
 
         // Domain-Aware Link Routing (Keeps internal same-domain links in the same tab)
