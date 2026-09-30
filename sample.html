@@ -6,21 +6,19 @@
  * Description: 
  *   1. Direct Root-Key Ingestion: Pulls currentCommunicationId, currentGame,
  *      currentGameArt, and currentGameHours directly from /psn/gamertags/DesdemonaTiger.
- *   2. Game ID Number Trophy Resolver: Maps trophies by numeric ID against
- *      liveTrophyProgress[currentCommunicationId] (e.g. NPWR15120_00) so earned
- *      status, dates, and progress ratios accurately register.
- *   3. Dynamic Recent Hunts Progress: Cross-references liveTrophyProgress to
- *      calculate accurate progress bars and badges across all recent games.
- *   4. Enhanced Game Lightbox: Displays lastPlayed, nativePlaytimeSeconds,
- *      platform, and titleId with high-resolution poster art.
- *   5. True Progression Matrix: Eliminates hardcoded COTW clutter; queries
- *      Firestore (Elu Cloud & DesdemonaTiger) for active games (>= 1%), prominently
- *      highlighting Tom Clancy's Ghost Recon Wildlands and squad campaigns.
- *   6. FS25 Farm 2 Telemetry: Live agronomy, crop stage, and fleet equipment.
- *   7. Pack Token Monitor: Watches pack engine sync tokens (Ray & Werewolf).
- *   8. Smart Domain Routing: Same domain stays in tab; external opens new tab.
+ *   2. Resilient Trophy Checklist: Builds trophy list dynamically from
+ *      user.liveTrophyProgress[currentCommunicationId] (e.g. NPWR15120_00) so
+ *      earned states, dates, and fractions display even without a games.json skeleton.
+ *   3. Dynamic Firestore Game Progress: Eliminates static SE5/COTW cards; queries
+ *      users/Elu Cloud and users/DesdemonaTiger for games with real progress (>= 1%),
+ *      prominently displaying Tom Clancy's Ghost Recon Wildlands and active squad games.
+ *   4. Recent PSN Hunts Engine: Calculates exact percentages from liveTrophyProgress
+ *      and provides detailed lightbox with lastPlayed, nativePlaytimeSeconds,
+ *      platform, and titleId.
+ *   5. FS25 Farm 2 Telemetry: Live agronomy, crop stage, and fleet equipment.
+ *   6. Smart Domain Routing: Same domain stays in tab; external opens new tab.
  * Analytics: G-CTYHDF4MSD (New York 24h Time)
- * Date & Time Stamp: 2026-09-30 15:08:00 EDT (America/New_York)
+ * Date & Time Stamp: 2026-09-30 15:45:00 EDT (America/New_York)
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -32,7 +30,7 @@
     <!-- GOOGLE ANALYTICS 4 DUAL MEASUREMENT ENGINE -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
-        // Section: Analytics Engine Configuration (Line 36) - 2026-09-30 15:08:00 EDT
+        // Section: Analytics Engine Configuration (Line 36) - 2026-09-30 15:45:00 EDT
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
@@ -45,7 +43,7 @@
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '46.5.0',
+            'layout_version': '47.5.0',
             'gamertag': 'DesdemonaTiger',
             'user_handle': 'Elu Cloud',
             'engagement_timezone': 'America/New_York',
@@ -76,7 +74,7 @@
     
     <!-- MASTER STYLESHEET -->
     <style>
-        /* Section: Design Tokens & Visual Hierarchy (Line 80) - 2026-09-30 15:08:00 EDT */
+        /* Section: Design Tokens & Visual Hierarchy (Line 80) - 2026-09-30 15:45:00 EDT */
         @import url('//fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap');
 
         :root {
@@ -233,7 +231,6 @@
         }
 
         .card-theme-emerald { border-top: 4px solid #10b981 !important; }
-        .card-theme-se5 { border-top: 4px solid #10b981 !important; }
         .card-theme-fs25 { border-top: 4px solid #84cc16 !important; }
 
         .header-stat-card {
@@ -341,19 +338,6 @@
             align-items: center;
         }
 
-        .squad-member-pill {
-            display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px;
-            border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
-        }
-        .squad-member-pill.earned { 
-            background: rgba(16, 185, 129, 0.15); color: #34d399; 
-            border: 1px solid rgba(16, 185, 129, 0.4); 
-        }
-        .squad-member-pill.locked { 
-            background: rgba(255, 255, 255, 0.04); color: #cbd5e1; 
-            border: 1px solid rgba(255, 255, 255, 0.12); 
-        }
-
         .progress-bar-container { height: 12px; background: rgba(20, 20, 28, 0.8); border-radius: 9999px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
         .progress-bar-fill { height: 100%; transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.5s ease; }
         
@@ -361,15 +345,6 @@
         .prog-stage-2 { background: linear-gradient(90deg, #ef4444, #f59e0b); box-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
         .prog-stage-3 { background: linear-gradient(90deg, #f59e0b, #84cc16); box-shadow: 0 0 10px rgba(132, 204, 22, 0.5); }
         .prog-stage-4 { background: linear-gradient(90deg, #10b981, #059669); box-shadow: 0 0 10px rgba(16, 185, 129, 0.6); }
-
-        .rank-glow-1st {
-            border: 2px solid #10b981 !important; box-shadow: 0 0 18px rgba(16, 185, 129, 0.7) !important;
-            color: #34d399 !important; background: rgba(16, 185, 129, 0.15) !important;
-        }
-        .rank-glow-2nd {
-            border: 2px solid #f59e0b !important; box-shadow: 0 0 18px rgba(245, 158, 11, 0.7) !important;
-            color: #fbbf24 !important; background: rgba(245, 158, 11, 0.15) !important;
-        }
 
         #health-monitor {
             position: fixed; bottom: 20px; left: 20px; z-index: 45000;
@@ -514,7 +489,7 @@
 
                 <div class="glass-card header-stat-card p-5 border-b-4 border-[#10b981] min-h-[160px]">
                     <div class="text-xs text-emerald-400 font-black mb-1 uppercase tracking-widest">PSN Library</div>
-                    <div id="games-played-count" class="text-3xl font-black text-white font-mono">--</div>
+                    <div id="games-played-count" class="text-3xl font-black text-white font-mono">0</div>
                     <div class="text-xs text-gray-300 font-bold uppercase mt-2">Total Games Played</div>
                 </div>
 
@@ -527,7 +502,7 @@
 
                 <div id="trophy-card" class="glass-card header-stat-card p-5 border-b-4 border-yellow-500 min-h-[160px]">
                     <div class="text-xs text-yellow-500 font-black mb-1 uppercase tracking-widest">Total Trophies</div>
-                    <div id="trophy-total" class="text-3xl lg:text-4xl font-black text-white mb-2 font-mono">--</div>
+                    <div id="trophy-total" class="text-3xl lg:text-4xl font-black text-white mb-2 font-mono">0</div>
                     <div class="grid grid-cols-4 gap-1 pt-2 border-t border-white/5 w-full">
                         <div class="flex flex-col items-center"><i class="fas fa-trophy text-emerald-300 text-xs"></i><div id="plat-count" class="text-xs font-black font-mono">0</div></div>
                         <div class="flex flex-col items-center"><i class="fas fa-trophy text-amber-400 text-xs"></i><div id="gold-count" class="text-xs font-black font-mono">0</div></div>
@@ -571,7 +546,7 @@
 
                     <div class="p-6 space-y-4">
                         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-1">
-                            <div id="active-game-title" class="text-2xl font-black text-white uppercase truncate">---</div>
+                            <div id="active-game-title" class="text-2xl font-black text-white uppercase truncate">Ghost of Tsushima</div>
                             <span id="active-game-ratio" class="text-xs font-black text-emerald-400 uppercase font-mono">--/-- Objectives</span>
                         </div>
 
@@ -646,7 +621,7 @@
             </div>
         </div>
 
-        <!-- FULL-WIDTH OPERATIONS MATRIX (NO HARDCODED COTW - PURE DYNAMIC PROGRESSION & WILDLANDS) -->
+        <!-- FULL-WIDTH OPERATIONS MATRIX -->
         <div class="w-full flex flex-col gap-6" id="dual-telemetry-row">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-2">
                 <div>
@@ -657,7 +632,7 @@
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
                     <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-lime-950 text-lime-400 border border-lime-500/40">FS25 Farm 2 Telemetry</span>
-                    <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-emerald-950 text-emerald-400 border border-emerald-500/40">Wildlands & Squad Campaigns</span>
+                    <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-emerald-950 text-emerald-400 border border-emerald-500/40">Squad Campaigns</span>
                 </div>
             </div>
 
@@ -735,7 +710,7 @@
                                     <h3 class="text-xl font-black uppercase text-emerald-400">Active Operative Campaigns</h3>
                                 </div>
                                 <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">
-                                    Tom Clancy's Ghost Recon Wildlands & Squad Progress (&ge; 1%)
+                                    Tom Clancy's Ghost Recon Wildlands & Verified Firestore Feats (&ge; 1%)
                                 </p>
                             </div>
                             <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-emerald-950 text-emerald-400 border border-emerald-500/40 font-mono">
@@ -777,7 +752,7 @@
                     &copy; 2026 Werewolf Project. Built by Werewolf3788 & Friends.
                 </p>
                 <div id="build-meta-footer" style="color: #94a3b8; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
-                    Werewolf Command Engine • v46.5.0 • Build: 2026-09-30 15:08:00 EDT
+                    Werewolf Command Engine • v47.5.0 • Build: 2026-09-30 15:45:00 EDT
                 </div>
                 <div class="text-center mt-2 text-xs font-black text-gray-500 uppercase tracking-[0.2em]">
                     Primary RTDB: <span class="text-emerald-400">/psn/gamertags/DesdemonaTiger.json</span> | FS25 RTDB: <span class="text-lime-400">fs25-a3563 (farmId2)</span> | Synced: <span id="sync-time" class="text-gray-300">--</span>
@@ -800,9 +775,9 @@
 
     <!-- FIRESTORE MODULE -->
     <script type="module">
-        // Section: Firestore & Multi-Hunter Dynamic Module (Line 485) - 2026-09-30 15:08:00 EDT
+        // Section: Firestore & Dynamic Campaign Ingestion (Line 480) - 2026-09-30 15:45:00 EDT
         import { initializeApp } from "//www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, doc, collection, getDocs, onSnapshot } from "//www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs } from "//www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -850,6 +825,9 @@
             'WILDLANDS': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/460930/header.jpg'),
             'GHOSTRECONWILDLANDS': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/460930/header.jpg'),
             'TOMCLANCYSGHOSTRECONWILDLANDS': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/460930/header.jpg'),
+            'TSUSHIMA': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/2215430/header.jpg'),
+            'GHOSTOFTSUSHIMA': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/2215430/header.jpg'),
+            'NPWR15120_00': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/2215430/header.jpg'),
             'SNIPER-ELITE-5': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg'),
             'SNIPERELITE5': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg'),
             'FS25': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg'),
@@ -865,6 +843,9 @@
             'WILDLANDS': "TOM CLANCY'S GHOST RECON WILDLANDS",
             'GHOSTRECONWILDLANDS': "TOM CLANCY'S GHOST RECON WILDLANDS",
             'TOMCLANCYSGHOSTRECONWILDLANDS': "TOM CLANCY'S GHOST RECON WILDLANDS",
+            'TSUSHIMA': 'GHOST OF TSUSHIMA',
+            'GHOSTOFTSUSHIMA': 'GHOST OF TSUSHIMA',
+            'NPWR15120_00': 'GHOST OF TSUSHIMA',
             'SNIPERELITE5': 'SNIPER ELITE 5',
             'FS25': 'FARMING SIMULATOR 25',
             'FARMINGSIMULATOR25': 'FARMING SIMULATOR 25',
@@ -877,6 +858,7 @@
             if (!str) return '';
             const clean = str.toUpperCase().replace(/[^A-Z0-9]/g, '');
             if (clean.includes('WILDLANDS') || clean.includes('GHOSTRECON')) return 'WILDLANDS';
+            if (clean.includes('TSUSHIMA') || clean.includes('NPWR15120')) return 'TSUSHIMA';
             if (clean.includes('SNIPERELITE5')) return 'SNIPERELITE5';
             if (clean.includes('FARMINGSIMULATOR25') || clean === 'FS25') return 'FS25';
             if (clean.includes('UNCHARTED') && clean.includes('DRAKE')) return 'UNCHARTEDDRAKESFORTUNEREMASTERED';
@@ -964,7 +946,6 @@
                 }
             }
 
-            // Realtime Database gamertags recentGames cross-check
             if (typeof globalGamertagsData === 'object' && globalGamertagsData !== null) {
                 Object.entries(globalGamertagsData).forEach(([gtag, pObj]) => {
                     const normG = gtag.toLowerCase();
@@ -979,7 +960,6 @@
                         let pct = Number(g.progress || 0);
                         const commId = g.npCommunicationId || '';
                         
-                        // Check liveTrophyProgress for exact percentage if missing
                         if (pct <= 0 && commId && pObj.liveTrophyProgress?.[commId]) {
                             const liveT = Object.values(pObj.liveTrophyProgress[commId]);
                             const earned = liveT.filter(t => t.earned).length;
@@ -993,7 +973,6 @@
                 });
             }
 
-            // Filter to titles that DesdemonaTiger has active progress in (or shared squad progress)
             const activeCampaigns = Object.values(gamesMap).filter(g => {
                 return (g.players['DesdemonaTiger'] && g.players['DesdemonaTiger'] >= 1) || Object.keys(g.players).length >= 2;
             });
@@ -1071,7 +1050,7 @@
 
     <!-- REALTIME DATABASE RESILIENT MULTI-PATH LOADER -->
     <script>
-        // Section: RTDB Dynamic Engine & Card Hydration (Line 720) - 2026-09-30 15:08:00 EDT
+        // Section: RTDB Dynamic Engine & Card Hydration (Line 680) - 2026-09-30 15:45:00 EDT
         const DESDEMONATIGER_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/DesdemonaTiger.json";
         const ROOT_PSN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn.json";
         const CANONICAL_GAMES_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/games.json";
@@ -1082,6 +1061,9 @@
         const FS25_FALLBACK_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
 
         const GLOBAL_FALLBACK_POSTERS = {
+            'GHOST OF TSUSHIMA': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/2215430/header.jpg',
+            'TSUSHIMA': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/2215430/header.jpg',
+            'NPWR15120_00': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/2215430/header.jpg',
             'WILDLANDS': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/460930/header.jpg',
             'GHOSTRECON': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/460930/header.jpg',
             'SNIPER-ELITE-5': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg',
@@ -1098,7 +1080,8 @@
             if (!title) return currentArt || '//via.placeholder.com/300x170/1e1e24/10b981?text=GAME';
             const clean = title.toUpperCase().replace(/[^A-Z0-9]/g, '');
             for (const [key, url] of Object.entries(GLOBAL_FALLBACK_POSTERS)) {
-                if (clean.includes(key) || key.includes(clean)) return url;
+                const cKey = key.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                if (clean.includes(cKey) || cKey.includes(clean)) return url;
             }
             return currentArt || '//via.placeholder.com/300x170/1e1e24/10b981?text=GAME';
         }
@@ -1594,7 +1577,7 @@
                 if (bioEl) bioEl.innerText = user.bio || "Official Pack Member Profile - DesdemonaTiger / Elu Cloud";
 
                 const lvlEl = document.getElementById('psn-level-label');
-                if (lvlEl) lvlEl.innerText = user.level || (user.trophySummary?.trophyLevel) || "--";
+                if (lvlEl) lvlEl.innerText = user.level || (user.trophySummary?.trophyLevel) || (user.trophySummary?.level) || "1";
 
                 const regEl = document.getElementById('psn-region');
                 if (regEl) regEl.innerText = "Region: " + (user.region || "US");
@@ -1606,7 +1589,8 @@
                 if (syncEl) syncEl.innerText = user.lastUpdated || formatDisplayTime();
 
                 const gamesPlayedEl = document.getElementById('games-played-count');
-                if (gamesPlayedEl) gamesPlayedEl.innerText = user.gamesPlayed || "0";
+                const recentArray = convertFirebaseArray(user.recentGames);
+                if (gamesPlayedEl) gamesPlayedEl.innerText = user.gamesPlayed || recentArray.length || "0";
 
                 const isOnline = !!user.online;
                 const sLabel = document.getElementById('online-status-label');
@@ -1629,7 +1613,7 @@
 
                 // Resolution of Active Hunt: Read Direct Root Keys
                 const activeCommId = (user.currentCommunicationId || (user.activeHunt?.npCommunicationId) || (user.activeHunt?.commId) || 'NPWR15120_00').trim();
-                const activeTitle = user.currentGame || user.activeHunt?.title || "---";
+                const activeTitle = user.currentGame || user.activeHunt?.title || "Ghost of Tsushima";
                 const activeArt = user.currentGameArt || user.activeHunt?.art || null;
                 const activeHoursStr = user.currentGameHours || (user.currentGameNumericHours !== undefined ? `${user.currentGameNumericHours} hrs` : "0 hrs");
 
@@ -2028,7 +2012,7 @@
 
         // Domain-Aware Link Interceptor
         document.addEventListener('DOMContentLoaded', () => {
-            // Section: DOM Event Handling & Navigation (Line 1150) - 2026-09-30 15:08:00 EDT
+            // Section: DOM Event Handling & Navigation (Line 1150) - 2026-09-30 15:45:00 EDT
             document.querySelectorAll('a[href]').forEach(link => {
                 const href = link.getAttribute('href');
                 if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
