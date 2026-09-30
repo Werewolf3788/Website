@@ -4,19 +4,25 @@
  * File: /Playstation/dashboards/desdemonatiger.html
  * Engine: 100% Client-Side Pure Firebase Realtime Database (RTDB) Engine
  * Description: 
- *   1. Deduplicated Recent PSN Hunts: Filters user.recentGames by unique game ID
+ *   1. Pure RTDB Architecture: Stripped all Firestore modules and SDKs. Operates
+ *      strictly from Firebase RTDB nodes (/psn/gamertags, /psn.json, /fs25.json).
+ *   2. Direct Root-Key Ingestion: Pulls currentCommunicationId, currentGame,
+ *      currentGameArt, and currentGameHours directly from /psn/gamertags/DesdemonaTiger.
+ *   3. Resilient Trophy Checklist: Dynamically generates trophy checklist items
+ *      directly from user.liveTrophyProgress[currentCommunicationId] (e.g. NPWR15120_00)
+ *      so earned states, dates, and fractions display reliably.
+ *   4. Deduplicated Recent PSN Hunts: Filters user.recentGames by unique game ID
  *      so duplicate launch entries never repeat in the 6-slot grid.
- *   2. Comprehensive Operative Campaigns: Displays ALL games DesdemonaTiger has
- *      played, showing his progress and cross-referencing any squad mates
- *      (Werewolf, Ray, Darkwing) who have also logged progress on that title.
- *   3. Resilient Trophy Checklist: Renders directly from liveTrophyProgress
- *      using numeric IDs (e.g., NPWR15120_00 Ghost of Tsushima).
- *   4. Enhanced Game Lightbox: Displays lastPlayed, nativePlaytimeSeconds,
+ *   5. Comprehensive Operative Campaigns: Displays ALL games DesdemonaTiger has
+ *      played, showing his progress and cross-referencing squad presence
+ *      (wildhorse_spirit, OneLIVIDMAN, Darkwing69420) from RTDB nodes.
+ *   6. Recent PSN Hunts Engine: Calculates exact percentages from liveTrophyProgress
+ *      and provides detailed lightbox with lastPlayed, nativePlaytimeSeconds,
  *      platform, and titleId.
- *   5. FS25 Farm 2 Telemetry: Live agronomy, crop stage, and fleet equipment.
- *   6. Smart Domain Routing: Same domain stays in tab; external opens new tab.
+ *   7. FS25 Farm 1 (farmId1) Telemetry: Live agronomy, crop stage, and fleet equipment.
+ *   8. Smart Domain Routing: Same domain stays in tab; external opens new tab.
  * Analytics: G-CTYHDF4MSD (New York 24h Time)
- * Date & Time Stamp: 2026-09-30 15:58:00 EDT (America/New_York)
+ * Date & Time Stamp: 2026-09-30 17:08:00 EDT (America/New_York)
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -28,7 +34,7 @@
     <!-- GOOGLE ANALYTICS 4 DUAL MEASUREMENT ENGINE -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
-        // Section: Analytics Engine Configuration (Line 36) - 2026-09-30 15:58:00 EDT
+        // Section: Analytics Engine Configuration (Line 36) - 2026-09-30 17:08:00 EDT
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
@@ -41,7 +47,7 @@
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '50.0.0',
+            'layout_version': '52.0.0',
             'gamertag': 'DesdemonaTiger',
             'user_handle': 'Elu Cloud',
             'engagement_timezone': 'America/New_York',
@@ -72,7 +78,7 @@
     
     <!-- MASTER STYLESHEET -->
     <style>
-        /* Section: Design Tokens & Visual Hierarchy (Line 80) - 2026-09-30 15:58:00 EDT */
+        /* Section: Design Tokens & Visual Hierarchy (Line 80) - 2026-09-30 17:08:00 EDT */
         @import url('//fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap');
 
         :root {
@@ -336,6 +342,19 @@
             align-items: center;
         }
 
+        .squad-member-pill {
+            display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px;
+            border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
+        }
+        .squad-member-pill.earned { 
+            background: rgba(16, 185, 129, 0.15); color: #34d399; 
+            border: 1px solid rgba(16, 185, 129, 0.4); 
+        }
+        .squad-member-pill.locked { 
+            background: rgba(255, 255, 255, 0.04); color: #cbd5e1; 
+            border: 1px solid rgba(255, 255, 255, 0.12); 
+        }
+
         .progress-bar-container { height: 12px; background: rgba(20, 20, 28, 0.8); border-radius: 9999px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
         .progress-bar-fill { height: 100%; transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.5s ease; }
         
@@ -585,7 +604,7 @@
             </div>
 
             <div class="flex flex-col gap-6">
-                <!-- RECENT PSN HUNTS CARD WITH ENHANCED CONTRAST OVERLAYS & MODAL TELEMETRY -->
+                <!-- RECENT PSN HUNTS CARD WITH DEDUPLICATION -->
                 <section id="recent-hunts-section" class="glass-card p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-emerald-400 text-lg uppercase tracking-wider">Recent PSN Hunts</h2>
@@ -619,7 +638,7 @@
             </div>
         </div>
 
-        <!-- FULL-WIDTH OPERATIONS MATRIX (PURE RTDB SQUAD CAMPAIGN CROSS-REFERENCE) -->
+        <!-- FULL-WIDTH OPERATIONS MATRIX (FS25 FARM 1 + COMPREHENSIVE SQUAD CAMPAIGNS) -->
         <div class="w-full flex flex-col gap-6" id="dual-telemetry-row">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-2">
                 <div>
@@ -629,34 +648,34 @@
                     <p class="text-xs text-gray-400 font-bold uppercase">Dynamic Progression Feeds for DesdemonaTiger / Elu Cloud</p>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
-                    <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-lime-950 text-lime-400 border border-lime-500/40">FS25 Farm 2 Telemetry</span>
+                    <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-lime-950 text-lime-400 border border-lime-500/40">FS25 Farm 1 Focused</span>
                     <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-emerald-950 text-emerald-400 border border-emerald-500/40">Squad Campaigns</span>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mobile-stack-single" id="operations-matrix-grid">
                 
-                <!-- CARD A: FS25 FARM 2 -->
+                <!-- CARD A: FS25 FARM 1 -->
                 <section id="fs25-telemetry-section" class="glass-card card-theme-fs25 p-6 sm:p-7 flex flex-col justify-between space-y-6">
                     <div class="space-y-5">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
                             <div>
                                 <div class="flex items-center gap-2.5">
                                     <i class="fas fa-tractor text-lime-400 text-2xl"></i>
-                                    <h3 class="text-xl font-black uppercase text-lime-400">FS25 Telemetry & Farm 2 Fleet</h3>
+                                    <h3 class="text-xl font-black uppercase text-lime-400">FS25 Telemetry & Farm 1 Fleet</h3>
                                 </div>
-                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Live Node: fs25-a3563 / Target: farmId2</p>
+                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Live Node: fs25-a3563 / Target: farmId1</p>
                             </div>
                             <div id="fs25-status-pill" class="fs25-badge flex items-center gap-1.5 self-start sm:self-auto">
                                 <span class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span>
-                                <span id="fs25-status-text">Farm 2 Synchronized</span>
+                                <span id="fs25-status-text">Farm 1 Synchronized</span>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
                             <div class="bg-black/40 p-3 rounded-xl border border-white/5">
                                 <div class="text-xs font-black text-gray-400 uppercase">Farm Designation</div>
-                                <div id="fs25-farm-name" class="text-xs sm:text-sm font-black text-white mt-1 truncate">Ray's Farm (Farm 2)</div>
+                                <div id="fs25-farm-name" class="text-xs sm:text-sm font-black text-white mt-1 truncate">Main Farm (Farm 1)</div>
                             </div>
                             <div class="bg-black/40 p-3 rounded-xl border border-white/5">
                                 <div class="text-xs font-black text-gray-400 uppercase">Operating Capital</div>
@@ -675,19 +694,19 @@
                         <div class="space-y-2.5">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-2">
-                                    <i class="fas fa-truck-monster text-lime-400"></i> Farm 2 Active Implements & Heavy Machinery
+                                    <i class="fas fa-truck-monster text-lime-400"></i> Farm 1 Active Implements & Heavy Machinery
                                 </h4>
                                 <span id="fs25-fleet-subtitle" class="text-xs font-black text-lime-400 uppercase font-mono">0 Units</span>
                             </div>
                             <div id="fs25-fleet-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[360px] overflow-y-auto no-scrollbar pr-1">
-                                <div class="p-6 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Ingesting Farm 2 Fleet...</div>
+                                <div class="p-6 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Ingesting Farm 1 Fleet...</div>
                             </div>
                         </div>
 
                         <div class="space-y-2.5 pt-2 border-t border-white/5">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-2">
-                                    <i class="fas fa-seedling text-lime-400"></i> Farm 2 Crops, Agronomy & Field Boundaries
+                                    <i class="fas fa-seedling text-lime-400"></i> Farm 1 Crops, Agronomy & Field Boundaries
                                 </h4>
                                 <span id="fs25-fields-subtitle" class="text-xs font-black text-lime-400 uppercase font-mono">0 Parcels</span>
                             </div>
@@ -698,7 +717,7 @@
                     </div>
                 </section>
 
-                <!-- CARD B: DYNAMIC PROGRESSION & SQUAD CAMPAIGNS (ALL GAMES PLAYED BY DESDEMONATIGER) -->
+                <!-- CARD B: COMPREHENSIVE OPERATIVE CAMPAIGNS -->
                 <section id="additional-games-section" class="glass-card card-theme-emerald p-6 sm:p-7 flex flex-col justify-between space-y-5">
                     <div class="space-y-4">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
@@ -750,10 +769,10 @@
                     &copy; 2026 Werewolf Project. Built by Werewolf3788 & Friends.
                 </p>
                 <div id="build-meta-footer" style="color: #94a3b8; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
-                    Werewolf Command Engine • v50.0.0 • Build: 2026-09-30 15:58:00 EDT
+                    Werewolf Command Engine • v52.0.0 • Build: 2026-09-30 17:08:00 EDT
                 </div>
                 <div class="text-center mt-2 text-xs font-black text-gray-500 uppercase tracking-[0.2em]">
-                    Primary RTDB: <span class="text-emerald-400">/psn/gamertags/DesdemonaTiger.json</span> | FS25 RTDB: <span class="text-lime-400">fs25-a3563 (farmId2)</span> | Synced: <span id="sync-time" class="text-gray-300">--</span>
+                    Primary RTDB: <span class="text-emerald-400">/psn/gamertags/DesdemonaTiger.json</span> | FS25 RTDB: <span class="text-lime-400">fs25-a3563 (farmId1)</span> | Synced: <span id="sync-time" class="text-gray-300">--</span>
                 </div>
             </div>
         </footer>
@@ -773,7 +792,7 @@
 
     <!-- PURE REALTIME DATABASE ENGINE SCRIPT -->
     <script>
-        // Section: Pure RTDB Architecture & Dynamic Card Hydration (Line 505) - 2026-09-30 15:58:00 EDT
+        // Section: Pure RTDB Architecture & Dynamic Card Hydration (Line 505) - 2026-09-30 17:08:00 EDT
         const DESDEMONATIGER_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/DesdemonaTiger.json";
         const ROOT_PSN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn.json";
         const CANONICAL_GAMES_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/games.json";
@@ -786,8 +805,7 @@
         const USER_THEMES = {
             'DesdemonaTiger': { color: '#10b981', glow: 'rgba(16,185,129,0.4)' },
             'Elu Cloud': { color: '#10b981', glow: 'rgba(16,185,129,0.4)' },
-            'Werewolf3788': { color: '#ff5500', glow: 'rgba(255,85,0,0.4)' },
-            'WildHorse_Spirit': { color: '#ff5500', glow: 'rgba(255,85,0,0.4)' },
+            'wildhorse_spirit': { color: '#ff5500', glow: 'rgba(255,85,0,0.4)' },
             'OneLIVIDMAN': { color: '#38bdf8', glow: 'rgba(56,189,248,0.4)' },
             'Raymystyro': { color: '#38bdf8', glow: 'rgba(56,189,248,0.4)' },
             'Terrdog': { color: '#a855f7', glow: 'rgba(168,85,247,0.4)' },
@@ -1160,7 +1178,7 @@
             }
         });
 
-        // FS25 Farm 2 Telemetry Ingestion
+        // FS25 Farm 1 Telemetry Ingestion
         async function updateFS25Telemetry() {
             try {
                 let res = await fetch(`${FS25_PRIMARY_URL}?t=${Date.now()}`);
@@ -1169,15 +1187,13 @@
                 const data = await res.json();
                 if (!data) return;
 
-                const farmData = data.farms?.farm_2 || 
-                                 data.farms?.farmId2 || 
-                                 data.farms?.[2] || 
-                                 data.farms?.Ray || 
-                                 data.farms?.OneLIVIDMAN || 
-                                 data.farmId2 || 
+                const farmData = data.farms?.farm_1 || 
+                                 data.farms?.farmId1 || 
+                                 data.farms?.[1] || 
+                                 data.farmId1 || 
                                  data;
 
-                const farmName = farmData.name || farmData.farmName || "Ray's Farm (Farm 2)";
+                const farmName = farmData.name || farmData.farmName || "Main Farm (Farm 1)";
                 const rawMoney = farmData.finances ? farmData.finances.money : farmData.money;
                 const money = rawMoney !== undefined ? `$${Math.round(Number(rawMoney)).toLocaleString()}` : "$0";
                 
@@ -1203,7 +1219,7 @@
                             const img = v.image || null;
                             const hours = v.operatingHours !== undefined ? `${v.operatingHours} hrs` : "Operational";
                             const wear = v.wear !== undefined ? `${Math.round(v.wear * 100)}% Wear` : "Clean";
-                            const cardType = v.cardType || "Farm 2 Implement";
+                            const cardType = v.cardType || "Farm 1 Implement";
 
                             return `
                                 <div class="bg-black/40 p-3 rounded-xl border border-white/5 flex gap-3 items-center hover:border-lime-500/40 transition-colors">
@@ -1220,7 +1236,7 @@
                             `;
                         }).join('');
                     } else {
-                        fleetContainer.innerHTML = `<div class="p-6 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No active machinery registered to Farm 2.</div>`;
+                        fleetContainer.innerHTML = `<div class="p-6 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No active machinery registered to Farm 1.</div>`;
                     }
                 }
 
@@ -1268,7 +1284,7 @@
                             `;
                         }).join('');
                     } else {
-                        fieldsContainer.innerHTML = `<div class="p-4 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No parcels assigned to Farm 2.</div>`;
+                        fieldsContainer.innerHTML = `<div class="p-4 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No parcels assigned to Farm 1.</div>`;
                     }
                 }
 
@@ -1291,7 +1307,7 @@
             }
         }
 
-        // Render ALL Games DesdemonaTiger has played and check who else played them
+        // Render ALL Games DesdemonaTiger has played and check who else played them (using wildhorse_spirit)
         function renderDesdemonaCampaigns() {
             const container = document.getElementById('rtdb-squad-games-grid');
             if (!container || !globalGamertagsData) return;
@@ -1300,7 +1316,6 @@
             const desRecent = convertFirebaseArray(desData.recentGames);
             const desLive = desData.liveTrophyProgress || {};
 
-            // Collect all games DesdemonaTiger has played
             const myGamesMap = {};
 
             desRecent.forEach(g => {
@@ -1329,7 +1344,6 @@
                 }
             });
 
-            // Also ingest any game directly from Desdemona's liveTrophyProgress if not in recentGames
             Object.entries(desLive).forEach(([commId, tDict]) => {
                 const cKey = canonicalKey(commId);
                 if (!cKey) return;
@@ -1352,14 +1366,13 @@
                 }
             });
 
-            // Now check all other operatives for each of Desdemona's games
             Object.entries(globalGamertagsData).forEach(([gtag, pObj]) => {
                 if (!pObj) return;
                 const normG = gtag.toLowerCase();
                 if (normG.includes('elu') || normG.includes('desdemona')) return;
 
                 let displayTag = gtag;
-                if (normG.includes('werewolf') || normG.includes('wildhorse')) displayTag = 'Werewolf3788';
+                if (normG.includes('wildhorse') || normG.includes('werewolf')) displayTag = 'wildhorse_spirit';
                 else if (normG.includes('livid') || normG.includes('ray')) displayTag = 'OneLIVIDMAN';
                 else if (normG.includes('terrdog') || normG.includes('darkwing')) displayTag = 'Darkwing69420';
 
@@ -1473,7 +1486,7 @@
                                rootData?.users?.['Elu Cloud'] || 
                                rootData?.users?.DesdemonaTiger || null;
 
-                        packSyncUser = globalSquadData?.OneLIVIDMAN || globalSquadData?.Werewolf3788;
+                        packSyncUser = globalSquadData?.OneLIVIDMAN || globalSquadData?.wildhorse_spirit;
                     }
                 } catch (e) {}
 
@@ -1486,7 +1499,6 @@
 
                 if (!user) return;
 
-                // Health Dot monitors pack engine tokens
                 const hDot = document.getElementById('health-dot');
                 const hVal = document.getElementById('health-value');
                 const syncTokenObj = packSyncUser || user;
@@ -1546,7 +1558,6 @@
                 document.getElementById('silver-count').innerText = summary.silver || 0;
                 document.getElementById('bronze-count').innerText = summary.bronze || 0;
 
-                // Resolution of Active Hunt: Read Direct Root Keys OR activeHunt
                 const activeCommId = (user.currentCommunicationId || (user.activeHunt?.npCommunicationId) || (user.activeHunt?.commId) || 'NPWR15120_00').trim();
                 const activeTitle = user.currentGame || user.activeHunt?.title || "Ghost of Tsushima";
                 const activeArt = user.currentGameArt || user.activeHunt?.art || null;
@@ -1576,7 +1587,6 @@
                     <a href="//www.amazon.com/s?k=${cleanName}&tag=website3788-20" target="_blank" rel="noopener noreferrer" class="store-btn store-btn-amazon"><i class="fab fa-amazon"></i><span>Amazon</span></a>
                 `;
 
-                // Live Trophy Progress Indexed Directly by ID Number
                 const commLiveTrophies = user.liveTrophyProgress?.[activeCommId] || {};
                 const skelTrophies = skeletonData?.trophies ? convertFirebaseArray(skeletonData.trophies) : [];
                 const userTrophies = user.activeHunt?.userTrophies ? convertFirebaseArray(user.activeHunt.userTrophies) : [];
@@ -1585,7 +1595,6 @@
                     currentTrophyData = skelTrophies.map((st, idx) => {
                         const tId = st.trophyId !== undefined ? Number(st.trophyId) : idx;
                         const liveMatch = commLiveTrophies[tId] || commLiveTrophies[String(tId)] || {};
-
                         const isTrophyEarned = !!liveMatch.earned;
 
                         return {
@@ -1621,7 +1630,6 @@
                     currentTrophyData = userTrophies;
                 }
 
-                // Calculate Completion Percentage
                 const earnedTrophiesList = currentTrophyData.filter(t => t.earned);
                 const totalTrophiesCount = currentTrophyData.length || 1;
                 const calcPct = Math.round((earnedTrophiesList.length / totalTrophiesCount) * 100);
@@ -1634,7 +1642,6 @@
                 }
                 document.getElementById('active-game-ratio').innerText = `${earnedTrophiesList.length}/${totalTrophiesCount} Objectives`;
 
-                // Timelines & Spans
                 earnedTrophiesList.sort((a, b) => {
                     const tA = new Date(a.earnedDateTime).getTime();
                     const tB = new Date(b.earnedDateTime).getTime();
@@ -1765,7 +1772,6 @@
                         
                         let pctVal = Math.round(Number(g.progress || 0));
 
-                        // Read from liveTrophyProgress if game progress is zero/unpopulated
                         if (pctVal <= 0 && commId && user.liveTrophyProgress?.[commId]) {
                             const nodeTrophies = Object.values(user.liveTrophyProgress[commId]);
                             const earned = nodeTrophies.filter(t => t.earned).length;
@@ -1855,7 +1861,6 @@
             const platform = g.platform || (g.titleId && g.titleId.startsWith('CUSA') ? 'PS4' : 'PS5');
             const titleId = g.titleId || g.npTitleId || '--';
             
-            // Format Playtime Seconds
             const totalSec = Number(g.nativePlaytimeSeconds || g.playDurationSeconds || 0);
             let playtimeFormatted = "0 hrs";
             if (totalSec > 0) {
@@ -1866,7 +1871,6 @@
                 playtimeFormatted = `${parsePlayDurationToHours(g.playDuration)} hrs`;
             }
 
-            // Format Last Played Timestamp
             const lastPlayedRaw = g.lastPlayed || g.lastPlayedDateTime || null;
             const lastPlayedFormatted = lastPlayedRaw ? formatDisplayTime(lastPlayedRaw) : "Recent";
             const lastPlayedAgo = lastPlayedRaw ? getTimeAgoString(lastPlayedRaw) : "";
@@ -1962,7 +1966,7 @@
 
         // Domain-Aware Link Interceptor
         document.addEventListener('DOMContentLoaded', () => {
-            // Section: DOM Event Handling & Navigation (Line 1050) - 2026-09-30 15:58:00 EDT
+            // Section: DOM Event Handling & Navigation (Line 1050) - 2026-09-30 17:08:00 EDT
             document.querySelectorAll('a[href]').forEach(link => {
                 const href = link.getAttribute('href');
                 if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
