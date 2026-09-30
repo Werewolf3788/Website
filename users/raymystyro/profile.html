@@ -12,11 +12,13 @@
  *   3. COTW Trophy Lodge: Multi-hunter comparison across all active operatives with crowns.
  *   4. Active Trophy Checklist: Compares squad members (WildHorse, Darkwing, etc.)
  *      for every trophy in the list.
- *   5. Squad Campaigns: Formatted clean game titles & proxied poster graphics.
- *   6. FS25 Farm 2 (farmId2) Telemetry: Live agronomy, crop stage, and fleet equipment.
- *   7. Smart Domain Routing: Same domain stays in current tab; external opens new tab.
+ *   5. Squad Campaigns: Cross-referenced shared games between OneLIVIDMAN and squad
+ *      operatives with progress >= 1%, high-res banners, and leader crowns.
+ *   6. Recent PSN Hunts: Styled overlay with legible % progress badges and bars.
+ *   7. FS25 Farm 2 (farmId2) Telemetry: Live agronomy, crop stage, and fleet equipment.
+ *   8. Smart Domain Routing: Same domain stays in current tab; external opens new tab.
  * Analytics: G-CTYHDF4MSD (New York 24h Time)
- * Date & Time Stamp: 2026-09-23 16:15:00 EDT (America/New_York)
+ * Date & Time Stamp: 2026-09-30 14:35:00 EDT (America/New_York)
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -28,6 +30,7 @@
     <!-- GOOGLE ANALYTICS 4 DUAL MEASUREMENT ENGINE -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
+        // Section: Analytics Engine Configuration (Line 31) - 2026-09-30 14:35:00 EDT
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
@@ -40,7 +43,7 @@
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '45.6.0',
+            'layout_version': '45.8.0',
             'gamertag': 'OneLIVIDMAN',
             'user_handle': 'Raymystyro',
             'engagement_timezone': 'America/New_York',
@@ -71,6 +74,7 @@
     
     <!-- MASTER STYLESHEET -->
     <style>
+        /* Section: Design Tokens & Visual Hierarchy (Line 75) - 2026-09-30 14:35:00 EDT */
         @import url('//fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap');
 
         :root {
@@ -241,6 +245,57 @@
             -webkit-text-fill-color: transparent;
         }
 
+        /* Recent Hunts Responsive Grid & High-Contrast Overlay Card */
+        .game-thumb {
+            position: relative;
+            border-radius: 14px;
+            overflow: hidden;
+            aspect-ratio: 16 / 9;
+            background: rgba(14, 14, 20, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            cursor: pointer;
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .game-thumb:hover {
+            transform: translateY(-2px);
+            border-color: rgba(56, 189, 248, 0.7);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.8), 0 0 16px rgba(56, 189, 248, 0.3);
+        }
+        .game-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .game-thumb:hover img {
+            transform: scale(1.04);
+        }
+        .game-info-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 8px 10px;
+            background: linear-gradient(180deg, rgba(7, 7, 9, 0) 0%, rgba(7, 7, 9, 0.85) 40%, rgba(7, 7, 9, 0.98) 100%);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            z-index: 5;
+        }
+        .game-progress-bar {
+            height: 4px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 2px;
+        }
+        .game-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #38bdf8, #10b981);
+            border-radius: 999px;
+        }
+
         .trophy-row {
             display: grid; grid-template-columns: 56px 1fr auto; align-items: center; gap: 16px;
             padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.06); cursor: pointer;
@@ -390,19 +445,6 @@
         .fs25-badge {
             background: rgba(132, 204, 22, 0.15); color: #bef264; border: 1px solid rgba(132, 204, 22, 0.3);
             border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 800; text-transform: uppercase;
-        }
-
-        .group-pill {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 8px 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
         }
 
         .service-badge {
@@ -556,13 +598,6 @@
                             <div class="progress-bar-container"><div id="active-game-progress-fill" class="progress-bar-fill prog-stage-1" style="width: 0%"></div></div>
                         </div>
 
-                        <div id="active-hunt-groups-container" class="space-y-2 pt-2 border-t border-white/5 hidden">
-                            <div class="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                <i class="fas fa-layer-group text-sky-400"></i> Trophy Groups & Expansion Packs
-                            </div>
-                            <div id="active-hunt-groups-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
-                        </div>
-
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs font-black uppercase">
                             <div class="bg-black/50 p-3 rounded-xl border border-white/5">
                                 <span class="text-gray-400 block text-xs">Campaign Timeline</span>
@@ -590,10 +625,11 @@
             </div>
 
             <div class="flex flex-col gap-6">
+                <!-- RECENT PSN HUNTS CARD WITH ENHANCED CONTRAST OVERLAYS -->
                 <section id="recent-hunts-section" class="glass-card p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-sky-400 text-lg uppercase tracking-wider">Recent PSN Hunts</h2>
-                        <span class="text-xs font-bold text-gray-400 uppercase">Tap for Dual PS4 & PS5 Squad Compare</span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">Dual PS4 & PS5 Activity</span>
                     </div>
                     <div id="recent-games-container" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
                 </section>
@@ -771,7 +807,6 @@
                                 <div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">Ingesting Medals & Weapon Masteries...</div>
                             </div>
                         </div>
-
                     </div>
                 </section>
 
@@ -791,7 +826,6 @@
                             </span>
                         </div>
 
-                        <!-- Comparative Animal Ranks Container across all active operatives -->
                         <div id="cotw-squad-lodge-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[460px] overflow-y-auto no-scrollbar pr-1">
                             <div class="p-6 text-center text-gray-500 font-bold uppercase text-xs col-span-full">Loading COTW Squad Harvest Records...</div>
                         </div>
@@ -808,7 +842,7 @@
                                     <h3 class="text-xl font-black uppercase text-sky-400">Squad Campaigns & Live Objectives</h3>
                                 </div>
                                 <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">
-                                    Cloud Firestore Progress (&ge; 1% Progress Only)
+                                    Shared Squad Progress (&ge; 1% Progress Only)
                                 </p>
                             </div>
                             <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-cyan-950 text-cyan-400 border border-cyan-500/40 font-mono">
@@ -817,7 +851,7 @@
                         </div>
 
                         <div id="firestore-squad-games-grid" class="flex flex-col gap-3.5 max-h-[500px] overflow-y-auto no-scrollbar pr-1">
-                            <div class="p-8 text-center text-gray-500 font-bold uppercase text-xs">Querying Firestore for active squad games...</div>
+                            <div class="p-8 text-center text-gray-500 font-bold uppercase text-xs">Querying squad progress nodes...</div>
                         </div>
                     </div>
                 </section>
@@ -850,7 +884,7 @@
                     &copy; 2026 Werewolf Project. Built by Werewolf3788 & Friends.
                 </p>
                 <div id="build-meta-footer" style="color: #94a3b8; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
-                    Werewolf Command Engine • v45.6.0 • Build: 2026-09-23 16:15:00 EDT
+                    Werewolf Command Engine • v45.8.0 • Build: 2026-09-30 14:35:00 EDT
                 </div>
                 <div class="text-center mt-2 text-xs font-black text-gray-500 uppercase tracking-[0.2em]">
                     Primary RTDB: <span class="text-sky-400">/psn/gamertags/OneLIVIDMAN.json</span> | FS25 RTDB: <span class="text-lime-400">fs25-a3563 (farmId2)</span> | Synced: <span id="sync-time" class="text-gray-300">--</span>
@@ -872,6 +906,7 @@
 
     <!-- FIRESTORE MODULE -->
     <script type="module">
+        // Section: Firestore & Multi-Hunter Module (Line 482) - 2026-09-30 14:35:00 EDT
         import { initializeApp } from "//www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getFirestore, doc, collection, getDocs, onSnapshot } from "//www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -889,7 +924,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const TARGET_USERS = ['Werewolf3788', 'Raymystyro', 'Terrdog', 'Elu Cloud'];
+        const TARGET_USERS = ['Raymystyro', 'Werewolf3788', 'Terrdog', 'Elu Cloud'];
         const USER_ALIASES = {
             'Raymystyro': ['OneLIVIDMAN', 'Raymystyro', 'Ray'],
             'Werewolf3788': ['Werewolf3788', 'WildHorse_Spirit'],
@@ -897,22 +932,42 @@
             'Elu Cloud': ['Elu Cloud', 'DesdemonaTiger']
         };
 
+        const DISPLAY_TAGS = {
+            'Raymystyro': 'OneLIVIDMAN',
+            'Werewolf3788': 'Werewolf3788',
+            'Terrdog': 'Terrdog',
+            'Elu Cloud': 'Elu Cloud'
+        };
+
         const USER_THEMES = {
+            'OneLIVIDMAN': { color: '#38bdf8', glow: 'rgba(56,189,248,0.4)' },
+            'Raymystyro': { color: '#38bdf8', glow: 'rgba(56,189,248,0.4)' },
             'Werewolf3788': { color: '#ff5500', glow: 'rgba(255,85,0,0.4)' },
-            'Raymystyro': { color: '#2563eb', glow: 'rgba(37,99,235,0.4)' },
+            'WildHorse_Spirit': { color: '#ff5500', glow: 'rgba(255,85,0,0.4)' },
             'Terrdog': { color: '#a855f7', glow: 'rgba(168,85,247,0.4)' },
-            'Elu Cloud': { color: '#10b981', glow: 'rgba(16,185,129,0.4)' }
+            'Darkwing69420': { color: '#a855f7', glow: 'rgba(168,85,247,0.4)' },
+            'Elu Cloud': { color: '#10b981', glow: 'rgba(16,185,129,0.4)' },
+            'DesdemonaTiger': { color: '#10b981', glow: 'rgba(16,185,129,0.4)' }
         };
 
         const proxyImg = (url) => `//images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}`;
 
+        // Verified High-Res Poster and Banner URLs
         const GAME_POSTERS = {
             'COTW': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg'),
             'HUNTERCOTW': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg'),
             'THEHUNTER': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg'),
+            'THEHUNTERCALLOFTHEWILD': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg'),
             'SNIPER-ELITE-5': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg'),
             'SNIPERELITE5': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg'),
+            'SNIPER-ELITE-RESISTANCE': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/2169200/header.jpg'),
+            'SNIPERELITERESISTANCE': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/2169200/header.jpg'),
             'FS25': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg'),
+            'FARMINGSIMULATOR25': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg'),
+            'UNCHARTED': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/1659420/header.jpg'),
+            'UNCHARTEDDRAKESFORTUNEREMASTERED': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/1659420/header.jpg'),
+            'EXPEDITIONSAMUDRUNNERGAME': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/2477340/header.jpg'),
+            'POKERCLUB': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/1214070/header.jpg'),
             'DEFAULT': '//images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80'
         };
 
@@ -920,10 +975,28 @@
             'COTW': 'THEHUNTER: CALL OF THE WILD',
             'HUNTERCOTW': 'THEHUNTER: CALL OF THE WILD',
             'THEHUNTER': 'THEHUNTER: CALL OF THE WILD',
-            'SNIPER-ELITE-5': 'SNIPER ELITE 5',
+            'THEHUNTERCALLOFTHEWILD': 'THEHUNTER: CALL OF THE WILD',
             'SNIPERELITE5': 'SNIPER ELITE 5',
-            'FS25': 'FARMING SIMULATOR 25'
+            'SNIPERELITERESISTANCE': 'SNIPER ELITE: RESISTANCE',
+            'FS25': 'FARMING SIMULATOR 25',
+            'FARMINGSIMULATOR25': 'FARMING SIMULATOR 25',
+            'UNCHARTEDDRAKESFORTUNEREMASTERED': "UNCHARTED: DRAKE'S FORTUNE™ REMASTERED",
+            'EXPEDITIONSAMUDRUNNERGAME': 'EXPEDITIONS: A MUDRUNNER GAME',
+            'POKERCLUB': 'POKER CLUB'
         };
+
+        function canonicalKey(str) {
+            if (!str) return '';
+            const clean = str.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (clean.includes('CALLOFTHEWILD') || clean.includes('HUNTERCOTW') || clean === 'COTW') return 'COTW';
+            if (clean.includes('SNIPERELITE5')) return 'SNIPERELITE5';
+            if (clean.includes('RESISTANCE')) return 'SNIPERELITERESISTANCE';
+            if (clean.includes('FARMINGSIMULATOR25') || clean === 'FS25') return 'FS25';
+            if (clean.includes('UNCHARTED') && clean.includes('DRAKE')) return 'UNCHARTEDDRAKESFORTUNEREMASTERED';
+            if (clean.includes('MUDRUNNER') || clean.includes('EXPEDITIONS')) return 'EXPEDITIONSAMUDRUNNERGAME';
+            if (clean.includes('POKERCLUB')) return 'POKERCLUB';
+            return clean;
+        }
 
         const LONG_SHOT_ITEMS = [
             { id: 'med_ls_m1', mission: 'Mission 1', name: 'Colline-Sur-Mer', req: 450 },
@@ -1103,7 +1176,7 @@
                 }
             }
 
-            // 3. Weapon Mastery & Tactics Medals (Cleaned - excludes M1-M14 items)
+            // 3. Weapon Mastery & Tactics Medals
             const masteryContainer = document.getElementById('se5-mastery-container');
             const medalsCountEl = document.getElementById('se5-medals-count');
             if (masteryContainer) {
@@ -1166,7 +1239,7 @@
         }
 
         /* -------------------------------------------------------------
-           Dynamic Squad Games Scanner (>= 1% Activity Only)
+           Dual-Source Squad Campaign Tracker (OneLIVIDMAN + Shared Squad >= 1%)
            ------------------------------------------------------------- */
         function calculateGameProgress(docData) {
             if (!docData) return 0;
@@ -1205,56 +1278,94 @@
 
             const gamesMap = {};
 
+            const registerPlayerProgress = (gameKey, rawTitle, displayTag, pct, posterArt) => {
+                if (pct < 1) return;
+                const cKey = canonicalKey(gameKey || rawTitle);
+                if (!cKey) return;
+
+                const cleanTitle = CLEAN_GAME_TITLES[cKey] || CLEAN_GAME_TITLES[gameKey] || rawTitle || cKey;
+
+                if (!gamesMap[cKey]) {
+                    gamesMap[cKey] = {
+                        id: cKey,
+                        title: cleanTitle,
+                        art: GAME_POSTERS[cKey] || posterArt || null,
+                        players: {}
+                    };
+                }
+
+                if (!gamesMap[cKey].players[displayTag] || gamesMap[cKey].players[displayTag] < pct) {
+                    gamesMap[cKey].players[displayTag] = pct;
+                }
+                if (!gamesMap[cKey].art && posterArt) {
+                    gamesMap[cKey].art = posterArt;
+                }
+            };
+
+            // Source 1: Firestore documents across users
             for (const user of TARGET_USERS) {
+                const displayTag = DISPLAY_TAGS[user] || user;
                 const aliases = USER_ALIASES[user] || [user];
                 for (const alias of aliases) {
                     try {
                         const colRef = collection(db, "users", alias, "platform", "playstation", "progress");
                         const snap = await getDocs(colRef);
-
                         snap.forEach(docSnap => {
                             const gameId = docSnap.id;
                             if (gameId.endsWith("_Ranks")) return;
-
                             const data = docSnap.data();
                             const pct = calculateGameProgress(data);
-
-                            if (pct >= 1) {
-                                const normKey = gameId.toUpperCase().replace(/[^A-Z0-9]/g, '');
-                                const cleanTitle = CLEAN_GAME_TITLES[normKey] || CLEAN_GAME_TITLES[gameId] || gameId.replace(/-/g, ' ').replace(/_/g, ' ').toUpperCase();
-
-                                if (!gamesMap[gameId]) {
-                                    gamesMap[gameId] = { id: gameId, title: cleanTitle, players: {} };
-                                }
-                                if (!gamesMap[gameId].players[user] || gamesMap[gameId].players[user] < pct) {
-                                    gamesMap[gameId].players[user] = pct;
-                                }
-                            }
+                            registerPlayerProgress(gameId, data.title || gameId, displayTag, pct, data.art || data.posterArt);
                         });
                     } catch (e) {}
                 }
             }
 
-            const gamesList = Object.values(gamesMap);
-            if (gamesList.length === 0) {
-                container.innerHTML = `<div class="p-8 text-center text-gray-500 font-bold uppercase text-xs col-span-full">No active squad games found with &ge; 1% progress.</div>`;
+            // Source 2: Realtime Database gamertags recentGames (cross-check)
+            if (typeof globalGamertagsData === 'object' && globalGamertagsData !== null) {
+                Object.entries(globalGamertagsData).forEach(([gtag, pObj]) => {
+                    const normG = gtag.toLowerCase();
+                    let displayTag = gtag;
+                    if (normG.includes('livid') || normG.includes('ray')) displayTag = 'OneLIVIDMAN';
+                    else if (normG.includes('werewolf') || normG.includes('wildhorse')) displayTag = 'Werewolf3788';
+                    else if (normG.includes('terrdog') || normG.includes('darkwing')) displayTag = 'Terrdog';
+                    else if (normG.includes('elu') || normG.includes('desdemona')) displayTag = 'Elu Cloud';
+
+                    const recent = convertFirebaseArray(pObj.recentGames);
+                    recent.forEach(g => {
+                        const pct = Number(g.progress || 0);
+                        const title = g.name || g.title || g.trophyTitleName;
+                        const art = g.art || g.trophyTitleIconUrl;
+                        registerPlayerProgress(title, title, displayTag, pct, art);
+                    });
+                });
+            }
+
+            // Shared games filtering: Must contain OneLIVIDMAN AND at least 1 other squad member
+            const campaigns = Object.values(gamesMap).filter(g => {
+                const players = Object.keys(g.players);
+                return players.includes('OneLIVIDMAN') && players.length >= 2;
+            });
+
+            const displayList = campaigns.length > 0 ? campaigns : Object.values(gamesMap).filter(g => Object.keys(g.players).length > 0);
+
+            if (displayList.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center text-gray-500 font-bold uppercase text-xs col-span-full">No active shared squad campaigns found with &ge; 1% progress.</div>`;
                 return;
             }
 
             let html = "";
-            gamesList.forEach(g => {
+            displayList.forEach(g => {
                 const activePlayers = Object.entries(g.players)
                     .map(([uname, pct]) => ({ uname, pct }))
                     .sort((a, b) => b.pct - a.pct);
 
-                if (activePlayers.length === 0) return;
-
-                const posterKey = g.id.toUpperCase().replace(/[^A-Z0-9]/g, '');
-                const posterUrl = GAME_POSTERS[posterKey] || GAME_POSTERS[g.id] || GAME_POSTERS['DEFAULT'];
+                const posterKey = g.id.toUpperCase();
+                const posterUrl = GAME_POSTERS[posterKey] || g.art || GAME_POSTERS['DEFAULT'];
 
                 let targetLink = "//werewolf3788.github.io/Website/";
-                if (g.id.toLowerCase().includes('cotw')) targetLink = "//werewolf3788.github.io/Website/games/HunterCOTW/cotw.html";
-                if (g.id.toLowerCase().includes('sniper')) targetLink = "//werewolf3788.github.io/Website/games/Sniper-Elite/5/index.html";
+                if (g.id.includes('COTW')) targetLink = "//werewolf3788.github.io/Website/games/HunterCOTW/cotw.html";
+                if (g.id.includes('SNIPER')) targetLink = "//werewolf3788.github.io/Website/games/Sniper-Elite/5/index.html";
 
                 const isSameDomain = (url) => {
                     try {
@@ -1272,7 +1383,7 @@
                                 <img src="${posterUrl}" referrerpolicy="no-referrer" class="w-16 h-16 object-cover rounded-lg border border-white/10 flex-shrink-0" onerror="this.src='${GAME_POSTERS['DEFAULT']}'">
                                 <div class="min-w-0 flex-1">
                                     <h4 class="text-sm font-black text-white uppercase truncate">${g.title}</h4>
-                                    <div class="text-[11px] font-bold text-sky-400 font-mono">${activePlayers.length} Active Hunter(s) &ge; 1%</div>
+                                    <div class="text-[11px] font-bold text-sky-400 font-mono">${activePlayers.length} Active Operatives &ge; 1%</div>
                                 </div>
                             </div>
 
@@ -1308,7 +1419,6 @@
 
         /* -------------------------------------------------------------
            COTW Squad Comparative Animal Harvest Lodge
-           Renders each active hunter side-by-side with crowns for category leaders
            ------------------------------------------------------------- */
         const squadCotwRanks = {};
 
@@ -1407,15 +1517,42 @@
 
     <!-- REALTIME DATABASE RESILIENT MULTI-PATH LOADER -->
     <script>
+        // Section: RTDB Dynamic Engine & Card Hydration (Line 933) - 2026-09-30 14:35:00 EDT
         const ONELIVIDMAN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/OneLIVIDMAN.json";
         const ROOT_PSN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn.json";
         const CANONICAL_GAMES_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/games.json";
         const UTM_LINKS_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
         const PSN_GAMERTAGS_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags.json";
         
-        // Exact rule-compliant endpoint for fs25-a3563
         const FS25_PRIMARY_URL = "https://fs25-a3563-default-rtdb.firebaseio.com/fs25.json";
         const FS25_FALLBACK_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
+
+        // Global Game Posters Directory for Fallback Matching
+        const GLOBAL_FALLBACK_POSTERS = {
+            'COTW': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg',
+            'HUNTERCOTW': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg',
+            'THEHUNTER': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg',
+            'THEHUNTERCALLOFTHEWILD': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg',
+            'SNIPER-ELITE-5': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg',
+            'SNIPERELITE5': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg',
+            'SNIPER-ELITE-RESISTANCE': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/2169200/header.jpg',
+            'SNIPERELITERESISTANCE': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/2169200/header.jpg',
+            'FS25': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg',
+            'FARMINGSIMULATOR25': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg',
+            'UNCHARTED': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/1659420/header.jpg',
+            'UNCHARTEDDRAKESFORTUNEREMASTERED': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/1659420/header.jpg',
+            'EXPEDITIONSAMUDRUNNERGAME': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/2477340/header.jpg',
+            'POKERCLUB': '//images.weserv.nl/?url=cdn.cloudflare.steamstatic.com/steam/apps/1214070/header.jpg'
+        };
+
+        function getHighResGamePoster(title, currentArt) {
+            if (!title) return currentArt || '//via.placeholder.com/300x170/1e1e24/38BDF8?text=GAME';
+            const clean = title.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            for (const [key, url] of Object.entries(GLOBAL_FALLBACK_POSTERS)) {
+                if (clean.includes(key) || key.includes(clean)) return url;
+            }
+            return currentArt || '//via.placeholder.com/300x170/1e1e24/38BDF8?text=GAME';
+        }
 
         let currentTrophyData = [];
         let lastEarnedTrophyData = null;
@@ -2049,7 +2186,7 @@
 
                     const artImg = document.getElementById('active-game-art');
                     const fbBox = document.getElementById('active-game-fallback');
-                    const resolvedArt = skeletonData?.posterArt || hunt.art || (recentGames.length > 0 ? recentGames[0].art : null);
+                    const resolvedArt = getHighResGamePoster(activeGameTitle, skeletonData?.posterArt || hunt.art || (recentGames.length > 0 ? recentGames[0].art : null));
                     if (resolvedArt && artImg) {
                         artImg.src = resolvedArt;
                         artImg.classList.remove('hidden');
@@ -2193,7 +2330,7 @@
                         }
                     }
 
-                    // SQUAD-COMPARED ACTIVE TROPHY CHECKLIST (All Operatives displayed side-by-side)
+                    // SQUAD-COMPARED ACTIVE TROPHY CHECKLIST
                     const checklist = document.getElementById('trophy-checklist-container');
                     if (checklist && currentTrophyData.length > 0) {
                         checklist.innerHTML = currentTrophyData.map((t, idx) => {
@@ -2317,19 +2454,29 @@
                     }
                 }
 
+                // RECENT PSN HUNTS ENGINE (Rendering High-Contrast Percentages & High-Res Posters)
                 const recentContainer = document.getElementById('recent-games-container');
                 if (recentContainer && recentGames.length > 0) {
-                    const activeOnlyGames = recentGames.filter(g => Number(g.progress || 0) >= 1);
+                    const activeOnlyGames = recentGames.filter(g => Number(g.progress || 0) >= 0);
                     recentContainer.innerHTML = activeOnlyGames.slice(0, 6).map(g => {
                         const skel = getSkeletonGameByCommId(g.npCommunicationId, g.name || g.trophyTitleName);
-                        const safeGName = escapeHtmlAttr(skel?.name || g.name || g.trophyTitleName || 'Game');
-                        const safeArt = escapeHtmlAttr(skel?.posterArt || g.art || g.trophyTitleIconUrl || '');
+                        const rawTitle = skel?.name || g.name || g.trophyTitleName || 'Game';
+                        const safeGName = escapeHtmlAttr(rawTitle);
+                        const bestPoster = getHighResGamePoster(rawTitle, skel?.posterArt || g.art || g.trophyTitleIconUrl);
+                        const safeArt = escapeHtmlAttr(bestPoster);
+                        const pctVal = Math.round(Number(g.progress || 0));
+
                         return `
-                            <div class="game-thumb" onclick="openPSNRecentGameCompareModal('${safeGName}', '${safeArt}', ${g.progress || 0}, '${g.npCommunicationId || ''}')">
-                                <img src="${safeArt}" class="w-full h-full object-cover" onerror="this.src='//via.placeholder.com/150x225/1e1e24/38BDF8?text=GAME'">
+                            <div class="game-thumb" onclick="openLightboxImage('${safeArt}', '${safeGName}')">
+                                <img src="${safeArt}" referrerpolicy="no-referrer" class="w-full h-full object-cover" onerror="this.src='//via.placeholder.com/300x170/1e1e24/38BDF8?text=GAME'">
                                 <div class="game-info-overlay">
-                                    <div class="text-xs font-black text-sky-400 truncate">${safeGName}</div>
-                                    <div class="text-xs font-black text-white/80">${g.progress || 0}%</div>
+                                    <div class="flex items-center justify-between gap-1">
+                                        <span class="text-xs font-black text-white truncate max-w-[70%]">${safeGName}</span>
+                                        <span class="text-[11px] font-black font-mono text-sky-400 bg-sky-950/90 border border-sky-400/40 px-1.5 py-0.5 rounded leading-none">${pctVal}%</span>
+                                    </div>
+                                    <div class="game-progress-bar">
+                                        <div class="game-progress-fill" style="width: ${pctVal}%"></div>
+                                    </div>
                                 </div>
                             </div>
                         `;
@@ -2456,6 +2603,7 @@
 
         // Domain-Aware Link Interceptor: Keeps internal same-domain links in the same tab
         document.addEventListener('DOMContentLoaded', () => {
+            // Section: DOM Event Handling & Navigation (Line 1320) - 2026-09-30 14:35:00 EDT
             document.querySelectorAll('a[href]').forEach(link => {
                 const href = link.getAttribute('href');
                 if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
