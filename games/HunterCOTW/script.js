@@ -8,21 +8,23 @@
                 - Dynamic Menu System via Realtime Database (/utm_links)
                 - Single Player vs. Multiplayer Mode Switcher (Story Arcs Gated)
                 - 1-33 Drift Moving Average Weight Telemetry & Fur Tier Tracking
+                - Automatic Career Rank Sync for Rare Fur Variants (Albino, Melanistic, etc.)
+                - Auto-removal of legacy/redundant 'Jump to Reserve' DOM elements
                 - Google Analytics 4 (G-CTYHDF4MSD) via GTM Integration
                 - 4-Player Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
    Database: Cloud Firestore, Realtime Database & Firebase Storage (entertainment-71888)
-   Build Version: 6.3.0
-   Date & Time Stamp: 2026-10-02 15:05:00 EDT (America/New_York)
+   Build Version: 6.4.0
+   Date & Time Stamp: 2026-10-02 15:28:00 EDT (America/New_York)
    ============================================================================ */
 
-// Line 20: Google Tag Manager & Google Analytics 4 Deployment (G-CTYHDF4MSD)
+// Line 22: Google Tag Manager & Google Analytics 4 Deployment (G-CTYHDF4MSD)
 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-W3R9F47');
 
-// Line 28: GA4 Config tag deployment with 14-month data retention & enhanced measurement
+// Line 30: GA4 Config tag deployment with 14-month data retention & enhanced measurement
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
@@ -32,7 +34,7 @@ gtag('config', 'G-CTYHDF4MSD', {
     'cookie_flags': 'SameSite=None;Secure'
 });
 
-// Line 39: Relative Protocol SDK Imports
+// Line 41: Relative Protocol SDK Imports
 import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from '//www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from '//www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
@@ -41,10 +43,10 @@ import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from '//ww
 
 /* ----------------------------------------------------
  * SECTION 1: Build Metadata, User Map & Custom Themes
- * Lines 48-135: PSN handles, custom themes, asset icons
+ * Lines 50-137: PSN handles, custom themes, asset icons
  * ---------------------------------------------------- */
-const BUILD_VERSION = "6.3.0";
-const CODE_BUILD_DATE = "2026-10-02 15:05:00 EDT";
+const BUILD_VERSION = "6.4.0";
+const CODE_BUILD_DATE = "2026-10-02 15:28:00 EDT";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -132,7 +134,7 @@ const ICONS = {
 
 /* ----------------------------------------------------
  * SECTION 2: Master Helpers & Layton Proximity Anchors
- * Lines 137-210: Checklists & 40 verified Layton anchors
+ * Lines 139-212: Checklists & 40 verified Layton anchors
  * ---------------------------------------------------- */
 const checkSet = (items) => items.map(name => ({ name, done: false }));
 
@@ -188,7 +190,7 @@ const LAYTON_ANCHORS = [
 
 /* ----------------------------------------------------
  * SECTION 3: Official Reserve Catalogs & Animal Classes
- * Lines 212-320: All 19 Maps with Classes (1-9)
+ * Lines 214-322: All 19 Maps with Classes (1-9)
  * ---------------------------------------------------- */
 const RESERVE_CATALOG = {
     'Layton Lake': {
@@ -347,7 +349,7 @@ const RESERVE_CATALOG = {
 
 /* ----------------------------------------------------
  * SECTION 4: Complete Static Trophy Database
- * Lines 322-485: All Base Game & DLC Narrative Quests
+ * Lines 324-487: All Base Game & DLC Narrative Quests
  * ---------------------------------------------------- */
 const trophyData = [
     // --- BASE GAME TROPHIES ---
@@ -540,7 +542,7 @@ const SPECIES_BENCHMARKS = {
 
 /* ----------------------------------------------------
  * SECTION 5: Application State & Safe Form Handling
- * Lines 487-835: State management, robust DOM bindings
+ * Lines 489-850: State management, robust DOM bindings
  * ---------------------------------------------------- */
 const appState = {
     activeHunter: localStorage.getItem('pinned_device_user') || 'Werewolf',
@@ -551,7 +553,7 @@ const appState = {
     sessionMode: 'single',
     selectedImageFile: null,
     hunterData: [],
-    animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 },
+    animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, Fur: 0 },
     auth: null,
     db: null,
     rtdb: null,
@@ -817,6 +819,7 @@ const appState = {
         const distance = parseFloat(distInput?.value) || 0;
         const weapon = weaponInput?.value?.trim() || '.300 Canning Magnum Frontier';
         const organ = organInput?.value?.trim() || 'Both Lungs (Double Lung)';
+        const furVariant = furInput?.value || 'Common';
 
         if (!this.knownWeaponsList.includes(weapon)) {
             this.knownWeaponsList.push(weapon);
@@ -838,7 +841,7 @@ const appState = {
             level: parseInt(levelInput?.value, 10) || 1,
             levelName: levelInput?.options[levelInput.selectedIndex]?.text || 'Level 1',
             sex: sexInput?.value || 'male',
-            fur: furInput?.value || 'Common',
+            fur: furVariant,
             rating: ratingInput?.value || 'none',
             shotDistance: distance,
             weapon: weapon,
@@ -871,7 +874,7 @@ const appState = {
 
             this.setStatus(`✓ Logged ${chosenSpecies} (${weight}kg) to ${chosenReserve}!`, "#10b981");
 
-            // STEP 3: Universal Trophy Milestones
+            // STEP 3: Auto-Check Universal Trophy Milestones
             let trophyStateChanged = false;
             if (distance >= 50) { const t = this.hunterData.find(x => x.id === 'novice_m'); if (t && t.current < t.goal) { t.current = t.goal; trophyStateChanged = true; } }
             if (distance >= 100) { const t = this.hunterData.find(x => x.id === 'skilled_m'); if (t && t.current < t.goal) { t.current = t.goal; trophyStateChanged = true; } }
@@ -904,16 +907,22 @@ const appState = {
                 }
             }
 
+            // Career Medal Rank Counter Increment
             const ratingKey = harvestPayload.rating.toLowerCase();
             if (ratingKey !== 'none' && this.animalRankData[ratingKey] !== undefined) {
                 this.adjRank(ratingKey, 1);
+            }
+
+            // AUTO-UPDATE: If fur is rare (not Common), increment Career Fur counter
+            if (furVariant.toLowerCase() !== 'common') {
+                this.adjRank('Fur', 1);
             }
 
             if (trophyStateChanged) {
                 this.sync(true);
             }
 
-            // STEP 4: Asynchronous Background Storage Upload (Runs independently without blocking UI)
+            // STEP 4: Asynchronous Background Storage Upload
             if (savedImageFile && this.storage && recordKey) {
                 (async () => {
                     try {
@@ -1079,7 +1088,19 @@ const appState = {
         if (!isAlreadyActive) targetEl.classList.add('active');
     },
 
+    /* --- DOM Cleanup: Safely removes orphaned Jump to Reserve elements --- */
+    cleanupOrphanedElements: function() {
+        const selects = document.querySelectorAll('select');
+        selects.forEach(sel => {
+            const firstOptText = sel.options[0]?.text?.toLowerCase() || '';
+            if (firstOptText.includes('jump to reserve')) {
+                sel.remove();
+            }
+        });
+    },
+
     init: async function() {
+        this.cleanupOrphanedElements();
         this.hunterData = this.getFreshTrophyTemplate();
         this.renderBuildMetadata();
         this.applyPlayerTheme(this.activeHunter);
@@ -1133,7 +1154,7 @@ const appState = {
         this.activeHunter = userName || 'Werewolf';
         this.activePlatform = normalizePlatform(platform);
         this.hunterData = this.getFreshTrophyTemplate();
-        this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
+        this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, Fur: 0 };
 
         localStorage.setItem('active_gaming_nickname', this.activeHunter);
         localStorage.setItem('active_gaming_platform', this.activePlatform);
@@ -1184,7 +1205,7 @@ const appState = {
                     gold: inc.gold || 0,
                     diamond: inc.diamond || 0,
                     greatone: inc.greatone || inc.greatOne || 0,
-                    Fur: inc.fur || 0
+                    Fur: inc.Fur || inc.fur || inc.albino || 0
                 };
             }
             this.updateRankUI();
@@ -1222,6 +1243,7 @@ const appState = {
     switchPlatform: function(code) { if (code) this.loadHunter(this.activeHunter, code); },
 
     render: function() {
+        this.cleanupOrphanedElements();
         const container = document.getElementById('section-container');
         if (!container) return;
 
@@ -1435,7 +1457,6 @@ const appState = {
                         <option value="gold">Gold 🥇</option>
                         <option value="diamond">Diamond 💎</option>
                         <option value="greatone">Great One 👑</option>
-                        <option value="albino">Albino 🌟</option>
                     </select>
                 </div>
                 <div>
@@ -1532,7 +1553,7 @@ const appState = {
     }
 };
 
-// Line 820: DOM Ready Initialization to guarantee clean DOM execution
+// Line 835: DOM Ready Initialization to guarantee clean DOM execution
 window.addEventListener('DOMContentLoaded', () => {
     window.appState = appState;
     window.adjRank = (tier, val) => appState.adjRank(tier, val);
