@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COTW Master Trophy Showcase | Werewolf Project</title>
+
+    <!-- Line 10: Google Tag Manager & Google Analytics 4 (G-CTYHDF4MSD) Deployment -->
+    <script>
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-W3R9F47');
+    </script>
+    <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-CTYHDF4MSD', {
+          'send_page_view': true,
+          'anonymize_ip': true,
+          'cookie_flags': 'SameSite=None;Secure'
+      });
+    </script>
+
+    <!-- Line 32: Sleek, Glossy, High-Contrast Responsive Styles -->
+    <style>
+        :root {
+            --bg-dark: #080c14;
+            --card-bg: rgba(15, 23, 42, 0.92);
+            --card-surface: #0f172a;
+            --card-subtle: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-werewolf: #ff5500;
+            --accent-ray: #2563eb;
+            --accent-terrdog: #a855f7;
+            --accent-tiger: #10b981;
+            --tap-target: 48px;
+            --tap-target-min: 44px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at top, rgba(30, 41, 59, 0.7) 0%, rgba(8, 12, 20, 1) 100%);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: 16px 16px 80px 16px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 900;
+        }
+        h1 { font-size: clamp(1.4rem, 3.5vw, 2rem); color: #fff; text-shadow: 0 0 15px rgba(255, 85, 0, 0.4); }
+        h2 { font-size: clamp(1.1rem, 2.5vw, 1.4rem); }
+
+        /* Top Header & Overview Deck */
+        .showcase-header {
+            background: var(--card-bg);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .squad-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .hunter-stat-card {
+            background: var(--card-surface);
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .hunter-stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+        }
+        .card-werewolf::before { background: var(--accent-werewolf); }
+        .card-raymystyro::before { background: var(--accent-ray); }
+        .card-terrdog::before { background: var(--accent-terrdog); }
+        .card-desdemonatiger::before { background: var(--accent-tiger); }
+
+        .hunter-badge-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 0.85rem;
+        }
+
+        /* Filter Controls */
+        .controls-toolbar {
+            background: var(--card-surface);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .filter-select {
+            min-height: var(--tap-target-min);
+            background: var(--card-subtle);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            padding: 8px 14px;
+            font-size: 16px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Trophy Card Wall */
+        .trophy-wall-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* Mobile Rules: Under 768px -> 85% width vertical single-column card */
+        @media (max-width: 767px) {
+            .trophy-wall-grid {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .trophy-card {
+                width: 85% !important;
+                margin: 0 auto !important;
+            }
+        }
+
+        .trophy-card {
+            background: var(--card-surface);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .trophy-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .trophy-card.is-greatone { border: 2px solid #facc15; box-shadow: 0 0 20px rgba(250, 204, 21, 0.35); }
+        .trophy-card.is-diamond { border: 2px solid #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.35); }
+        .trophy-card.is-gold { border: 2px solid #eab308; }
+
+        .trophy-image-container {
+            width: 100%;
+            height: 190px;
+            background: #020617;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .trophy-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .trophy-image-container:hover img {
+            transform: scale(1.05);
+        }
+
+        .no-photo-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            background: #0b1120;
+        }
+
+        .trophy-card-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .trophy-rank-tag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 900;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-block;
+            align-self: flex-start;
+        }
+        .rank-greatone { background: #ca8a04; color: #fff; }
+        .rank-diamond { background: #0284c7; color: #fff; }
+        .rank-gold { background: #d97706; color: #fff; }
+        .rank-silver { background: #64748b; color: #fff; }
+
+        .trophy-stats-table {
+            width: 100%;
+            font-size: 0.8rem;
+            border-collapse: collapse;
+            margin-top: 6px;
+        }
+        .trophy-stats-table td {
+            padding: 3px 0;
+            color: var(--text-muted);
+        }
+        .trophy-stats-table td strong {
+            color: var(--text-main);
+        }
+
+        /* Modal Lightbox (Constrained Image Alt Descriptions) */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .lightbox-modal.is-active {
+            display: flex;
+        }
+        .lightbox-card {
+            max-width: 900px;
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+        .lightbox-card img {
+            width: 100%;
+            max-height: 520px;
+            object-fit: contain;
+            background: #020617;
+            display: block;
+        }
+        .lightbox-caption {
+            padding: 16px;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .close-lightbox-btn {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            min-height: 44px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        /* Persistent Sticky Footer */
+        footer.tracker-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px 16px;
+            background: rgba(8, 12, 20, 0.95);
+            backdrop-filter: blur(8px);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            z-index: 9999;
+        }
+        #build-meta-footer {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-family: monospace;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Showcase Header -->
+        <header class="showcase-header">
+            <div>
+                <h1>Hunting Lodge Trophy Showcase</h1>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Consolidated Squad Progress & Verified Harvest Ledger</p>
+            </div>
+            <div>
+                <a href="//playstation-be938.web.app/games/HunterCOTW/index.html" class="filter-select" style="text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
+                    🎯 Return to Field Grind Tracker
+                </a>
+            </div>
+        </header>
+
+        <!-- Squad Career Deck -->
+        <div class="squad-summary-grid" id="squad-summary-deck">
+            <!-- Dynamically populated via Firestore COTW_Ranks -->
+            <div class="hunter-stat-card card-werewolf">
+                <h3>Werewolf</h3>
+                <div class="hunter-badge-row"><span>👑 Great Ones</span><strong id="ranks-werewolf-go">0</strong></div>
+                <div class="hunter-badge-row"><span>💎 Diamonds</span><strong id="ranks-werewolf-dia">0</strong></div>
+                <div class="hunter-badge-row"><span>🥇 Golds</span><strong id="ranks-werewolf-gold">0</strong></div>
+            </div>
+            <div class="hunter-stat-card card-raymystyro">
+                <h3>Raymystyro</h3>
+                <div class="hunter-badge-row"><span>👑 Great Ones</span><strong id="ranks-raymystyro-go">0</strong></div>
+                <div class="hunter-badge-row"><span>💎 Diamonds</span><strong id="ranks-raymystyro-dia">0</strong></div>
+                <div class="hunter-badge-row"><span>🥇 Golds</span><strong id="ranks-raymystyro-gold">0</strong></div>
+            </div>
+            <div class="hunter-stat-card card-terrdog">
+                <h3>Terrdog</h3>
+                <div class="hunter-badge-row"><span>👑 Great Ones</span><strong id="ranks-terrdog-go">0</strong></div>
+                <div class="hunter-badge-row"><span>💎 Diamonds</span><strong id="ranks-terrdog-dia">0</strong></div>
+                <div class="hunter-badge-row"><span>🥇 Golds</span><strong id="ranks-terrdog-gold">0</strong></div>
+            </div>
+            <div class="hunter-stat-card card-desdemonatiger">
+                <h3>DesdemonaTiger</h3>
+                <div class="hunter-badge-row"><span>👑 Great Ones</span><strong id="ranks-desdemonatiger-go">0</strong></div>
+                <div class="hunter-badge-row"><span>💎 Diamonds</span><strong id="ranks-desdemonatiger-dia">0</strong></div>
+                <div class="hunter-badge-row"><span>🥇 Golds</span><strong id="ranks-desdemonatiger-gold">0</strong></div>
+            </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="controls-toolbar">
+            <label style="font-weight:700;">Filter Squad:</label>
+            <select id="filter-hunter" class="filter-select" onchange="showcaseEngine.applyFilters()">
+                <option value="ALL">All Hunters</option>
+                <option value="Werewolf">Werewolf</option>
+                <option value="Raymystyro">Raymystyro</option>
+                <option value="Terrdog">Terrdog</option>
+                <option value="DesdemonaTiger">DesdemonaTiger</option>
+            </select>
+
+            <select id="filter-rating" class="filter-select" onchange="showcaseEngine.applyFilters()">
+                <option value="ALL">All Trophies</option>
+                <option value="greatone">Great Ones Only 👑</option>
+                <option value="diamond">Diamonds Only 💎</option>
+                <option value="gold">Golds & Better 🥇</option>
+                <option value="albino">Rare Fur Variants 🐇</option>
+            </select>
+
+            <span id="trophy-count-readout" style="margin-left:auto; font-weight:800; color:var(--text-muted);">Loading harvests...</span>
+        </div>
+
+        <!-- Trophy Wall Grid -->
+        <main class="trophy-wall-grid" id="trophy-wall-container">
+            <!-- Rendered dynamically -->
+        </main>
+    </div>
+
+    <!-- Lightbox Modal (Restricted to lightboxes per styling rules) -->
+    <div id="lightbox-modal" class="lightbox-modal" onclick="showcaseEngine.closeLightbox()">
+        <div class="lightbox-card" onclick="event.stopPropagation()">
+            <img id="lightbox-image" class="in-lightbox" src="" alt="Harvest Trophy Screenshot Lightbox View">
+            <div class="lightbox-caption">
+                <div id="lightbox-desc">Trophy Details</div>
+                <button type="button" class="close-lightbox-btn" onclick="showcaseEngine.closeLightbox()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Line 350: Persistent Footer With Live Timestamp -->
+    <footer class="tracker-footer">
+        <span id="build-meta-footer">Werewolf Project Engine • v1.0.0 • Build: 2026-10-02 15:15:00 EDT</span>
+    </footer>
+
+    <!-- Firebase SDK Modules -->
+    <script type="module">
+        import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getAuth, signInAnonymously } from '//www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+        import { getFirestore, doc, onSnapshot } from '//www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+        import { getDatabase, ref as rtdbRef, onValue } from '//www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
+            authDomain: "entertainment-71888.firebaseapp.com",
+            databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
+            projectId: "entertainment-71888",
+            storageBucket: "entertainment-71888.firebasestorage.app",
+            messagingSenderId: "660524340277",
+            appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
+            measurementId: "G-JDNSLD3GFE"
+        };
+
+        const HUNTERS = ['Werewolf', 'Raymystyro', 'Terrdog', 'DesdemonaTiger'];
+        const GAME_ID = 'COTW';
+
+        const showcaseEngine = {
+            auth: null,
+            db: null,
+            rtdb: null,
+            allHarvests: [],
+
+            init: async function() {
+                try {
+                    const app = initializeApp(firebaseConfig, 'COTW-Showcase-App');
+                    this.auth = getAuth(app);
+                    this.db = getFirestore(app);
+                    this.rtdb = getDatabase(app);
+
+                    await signInAnonymously(this.auth);
+
+                    // 1. Bind Career Ranks from Cloud Firestore
+                    this.bindCareerRanks();
+
+                    // 2. Fetch and aggregate all RTDB Harvest Ledgers
+                    this.bindHarvestLedgers();
+                } catch (err) {
+                    console.error("Showcase Init Error:", err);
+                }
+            },
+
+            bindCareerRanks: function() {
+                HUNTERS.forEach(hunter => {
+                    const rankDoc = doc(this.db, 'users', hunter, 'platform', 'playstation', 'progress', `${GAME_ID}_Ranks`);
+                    onSnapshot(rankDoc, (snap) => {
+                        if (snap.exists()) {
+                            const data = snap.data();
+                            const goEl = document.getElementById(`ranks-${hunter.toLowerCase()}-go`);
+                            const diaEl = document.getElementById(`ranks-${hunter.toLowerCase()}-dia`);
+                            const goldEl = document.getElementById(`ranks-${hunter.toLowerCase()}-gold`);
+                            if (goEl) goEl.innerText = data.greatone || data.greatOne || 0;
+                            if (diaEl) diaEl.innerText = data.diamond || 0;
+                            if (goldEl) goldEl.innerText = data.gold || 0;
+                        }
+                    }, (err) => console.warn(`Firestore ranks error for ${hunter}:`, err.message));
+                });
+            },
+
+            bindHarvestLedgers: function() {
+                HUNTERS.forEach(hunter => {
+                    const userLedgerRef = rtdbRef(this.rtdb, `users/${hunter}/grind_tracker`);
+                    onValue(userLedgerRef, (snapshot) => {
+                        if (!snapshot.exists()) return;
+                        const reservesData = snapshot.val();
+
+                        // Clear prior records from this user to prevent duplicates on update
+                        this.allHarvests = this.allHarvests.filter(h => h.hunter !== hunter);
+
+                        Object.keys(reservesData).forEach(reserveKey => {
+                            const speciesData = reservesData[reserveKey];
+                            if (typeof speciesData !== 'object') return;
+
+                            Object.keys(speciesData).forEach(speciesKey => {
+                                const harvestsObj = speciesData[speciesKey]?.harvests;
+                                if (!harvestsObj) return;
+
+                                Object.entries(harvestsObj).forEach(([id, item]) => {
+                                    this.allHarvests.push({
+                                        id: id,
+                                        hunter: hunter,
+                                        reserve: reserveKey.replace(/_/g, ' '),
+                                        species: item.species || speciesKey.replace(/_/g, ' '),
+                                        weight: item.weight || '—',
+                                        rating: (item.rating || 'none').toLowerCase(),
+                                        levelName: item.levelName || `Level ${item.level || 1}`,
+                                        fur: item.fur || 'Common',
+                                        weapon: item.weapon || 'Unknown',
+                                        hitOrgan: item.hitOrgan || 'Unknown',
+                                        shotDistance: item.shotDistance || 0,
+                                        imageUrl: item.imageUrl || '',
+                                        timestamp: item.timestamp || 0
+                                    });
+                                });
+                            });
+                        });
+
+                        // Sort newest harvest first
+                        this.allHarvests.sort((a, b) => b.timestamp - a.timestamp);
+                        this.applyFilters();
+                    }, (err) => console.warn(`RTDB Ledger fetch error for ${hunter}:`, err.message));
+                });
+            },
+
+            applyFilters: function() {
+                const hunterFilter = document.getElementById('filter-hunter')?.value || 'ALL';
+                const ratingFilter = document.getElementById('filter-rating')?.value || 'ALL';
+
+                const filtered = this.allHarvests.filter(h => {
+                    const matchHunter = (hunterFilter === 'ALL' || h.hunter === hunterFilter);
+                    let matchRating = true;
+                    if (ratingFilter === 'greatone') matchRating = (h.rating === 'greatone');
+                    else if (ratingFilter === 'diamond') matchRating = (h.rating === 'diamond');
+                    else if (ratingFilter === 'gold') matchRating = (h.rating === 'gold' || h.rating === 'diamond' || h.rating === 'greatone');
+                    else if (ratingFilter === 'albino') matchRating = (h.fur.toLowerCase() === 'albino' || h.rating === 'albino');
+
+                    return matchHunter && matchRating;
+                });
+
+                const countEl = document.getElementById('trophy-count-readout');
+                if (countEl) countEl.innerText = `Showing ${filtered.length} Trophies`;
+
+                this.renderWall(filtered);
+            },
+
+            renderWall: function(items) {
+                const wall = document.getElementById('trophy-wall-container');
+                if (!wall) return;
+                wall.innerHTML = '';
+
+                if (items.length === 0) {
+                    wall.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-muted);">No trophies matching the current filters.</div>`;
+                    return;
+                }
+
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = `trophy-card is-${item.rating}`;
+
+                    let photoBlock = '';
+                    if (item.imageUrl) {
+                        photoBlock = `
+                            <div class="trophy-image-container" onclick="showcaseEngine.openLightbox('${item.imageUrl}', '${item.species}', '${item.hunter}', '${item.weight} kg', '${item.rating}')">
+                                <img src="${item.imageUrl}" alt="" loading="lazy">
+                            </div>
+                        `;
+                    } else {
+                        photoBlock = `<div class="no-photo-placeholder"><span>No Capture Photo</span></div>`;
+                    }
+
+                    card.innerHTML = `
+                        ${photoBlock}
+                        <div class="trophy-card-body">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span class="trophy-rank-tag rank-${item.rating}">${item.rating}</span>
+                                <span style="font-size:0.75rem; font-weight:800; color:var(--text-muted);">${item.hunter}</span>
+                            </div>
+                            <h3 style="margin:4px 0 0 0; font-size:1rem; color:#fff;">${item.species}</h3>
+                            <span style="font-size:0.75rem; color:#38bdf8;">📍 ${item.reserve}</span>
+
+                            <table class="trophy-stats-table">
+                                <tr><td>Weight:</td><td style="text-align:right;"><strong>${item.weight} kg</strong></td></tr>
+                                <tr><td>Difficulty:</td><td style="text-align:right;"><strong>${item.levelName}</strong></td></tr>
+                                <tr><td>Fur Variant:</td><td style="text-align:right;"><strong>${item.fur}</strong></td></tr>
+                                <tr><td>Weapon:</td><td style="text-align:right;"><strong>${item.weapon}</strong></td></tr>
+                                <tr><td>Placement:</td><td style="text-align:right;"><strong>${item.hitOrgan}</strong></td></tr>
+                                <tr><td>Distance:</td><td style="text-align:right;"><strong>${item.shotDistance} m</strong></td></tr>
+                            </table>
+                        </div>
+                    `;
+                    wall.appendChild(card);
+                });
+            },
+
+            openLightbox: function(url, species, hunter, weight, rating) {
+                const modal = document.getElementById('lightbox-modal');
+                const img = document.getElementById('lightbox-image');
+                const desc = document.getElementById('lightbox-desc');
+                if (modal && img && desc) {
+                    img.src = url;
+                    img.alt = `${hunter}'s ${rating.toUpperCase()} ${species} (${weight})`;
+                    desc.innerHTML = `<strong>${hunter}'s ${species}</strong> | Rating: ${rating.toUpperCase()} | Weight: ${weight}`;
+                    modal.classList.add('is-active');
+                }
+            },
+
+            closeLightbox: function() {
+                const modal = document.getElementById('lightbox-modal');
+                if (modal) modal.classList.remove('is-active');
+            }
+        };
+
+        window.showcaseEngine = showcaseEngine;
+        window.addEventListener('DOMContentLoaded', () => {
+            showcaseEngine.init();
+        });
+    </script>
+</body>
+</html>
