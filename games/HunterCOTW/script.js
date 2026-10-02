@@ -1,17 +1,20 @@
 /* ============================================================================
    File: script.js
    Location: /games/HunterCOTW/script.js
-   Description: theHunter: Call of the Wild Responsive RTDB + Firestore Engine
-                - Loop-Free Live PSN Trophy Watcher (NPWR13211_00)
-                - Single Player vs. Multiplayer Mode Toggle (Story Missions Gated)
-                - Field Grind Telemetry: Weight (1-33 Drift), Fur, Difficulty Tiers
-                - Ballistics: Shot Distance (Marksman Auto-Trophies), Weapon Class, Hit Organ
-                - PS App Screenshot Upload to Firebase Storage with RTDB Ledger Binding
-                - 4-Player Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
-                - Geofenced Layton Lake 40-Point Anchor Auto-Fill
+   Description: theHunter: Call of the Wild Master Tracker Dual-Engine
+                - Complete 17+ Reserve Catalog with Official Animal Weapon Classes (1-9)
+                - Decoupled Harvest Logging (RTDB write precedes safe Storage upload)
+                - Dynamic Datalist Updates Based on Active Reserve
+                - True Free-Text / Datalist Manual Input for Maps, Species, Weapons & Organs
+                - Single Player vs. Multiplayer Mode Switcher (Story Arcs Gated)
+                - 1-33 Drift Moving Average Weight Telemetry & Fur Tier Tracking
+                - Distance Sniping (Auto-Marksman Trophies), Longbow Heart & Brain Hit Checks
+                - PS App Screenshot Upload to Firebase Storage with RTDB Image Binding
+                - Full 4-Player Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
+                - Layton Lake 40-Point Anchor Geofencing Proximity Auto-Fill
    Database: Cloud Firestore, Realtime Database & Firebase Storage (entertainment-71888)
-   Build Version: 4.3.0
-   Code Build Date: 2026-10-02 11:55:00 EDT (America/New_York)
+   Build Version: 6.0.0
+   Code Build Date: 2026-10-02 13:40:00 EDT (America/New_York)
    ============================================================================ */
 
 import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -22,10 +25,10 @@ import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from '//ww
 
 /* ----------------------------------------------------
  * SECTION 1: Build Metadata, User Map & Custom Themes
- * Lines 27-105: PSN handles, custom themes, asset icons
+ * Lines 28-112: PSN handles, custom themes, asset icons
  * ---------------------------------------------------- */
-const BUILD_VERSION = "4.3.0";
-const CODE_BUILD_DATE = "2026-10-02 11:55:00 EDT";
+const BUILD_VERSION = "6.0.0";
+const CODE_BUILD_DATE = "2026-10-02 13:40:00 EDT";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -34,7 +37,8 @@ const firebaseConfig = {
     projectId: "entertainment-71888",
     storageBucket: "entertainment-71888.firebasestorage.app",
     messagingSenderId: "660524340277",
-    appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c"
+    appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
+    measurementId: "G-JDNSLD3GFE"
 };
 
 const GAME_ID = 'COTW';
@@ -112,7 +116,7 @@ const ICONS = {
 
 /* ----------------------------------------------------
  * SECTION 2: Master Helpers & Ground-Truth Anchor Grid
- * Lines 107-185: Checklists & 40 verified Layton anchors
+ * Lines 114-192: Checklists & 40 verified Layton anchors
  * ---------------------------------------------------- */
 const checkSet = (items) => items.map(name => ({ name, done: false }));
 
@@ -167,8 +171,167 @@ const LAYTON_ANCHORS = [
 ];
 
 /* ----------------------------------------------------
- * SECTION 3: Raw Static Master Data Baseline
- * Lines 187-310: Complete trophy & mission database records
+ * SECTION 3: Official Reserve Catalogs & Animals
+ * Lines 194-275: Animal Rosters with Official Weapon Classes
+ * ---------------------------------------------------- */
+const RESERVE_CATALOG = {
+    'Layton Lake': {
+        animals: [
+            'Mallard (Class 1)', 'Merriam Turkey (Class 1)', 'White-tailed Jackrabbit (Class 1)',
+            'Coyote (Class 2)', 'Blacktail Deer (Class 4)', 'Whitetail Deer (Class 4)',
+            'Black Bear (Class 7)', 'Roosevelt Elk (Class 8)', 'Moose (Class 8)'
+        ]
+    },
+    'Hirschfelden': {
+        animals: [
+            'Canada Goose (Class 1)', 'Ring-Necked Pheasant (Class 1)', 'European Rabbit (Class 1)',
+            'Red Fox (Class 2)', 'Roe Deer (Class 3)', 'Fallow Deer (Class 4)',
+            'Wild Boar (Class 4)', 'Red Deer (Class 6)', 'European Bison (Class 9)'
+        ]
+    },
+    'Medved-Taiga': {
+        animals: [
+            'Western Capercaillie (Class 1)', 'Siberian Musk Deer (Class 2)', 'Eurasian Lynx (Class 3)',
+            'Wild Boar (Class 4)', 'Gray Wolf (Class 5)', 'Mountain Reindeer (Class 6)',
+            'Eurasian Brown Bear (Class 7)', 'Moose (Class 8)'
+        ]
+    },
+    'Vurhonga Savanna': {
+        animals: [
+            'Eurasian Wigeon (Class 1)', 'Scrub Hare (Class 2)', 'Side-Striped Jackal (Class 2)',
+            'Springbok (Class 3)', 'Warthog (Class 4)', 'Lesser Kudu (Class 6)',
+            'Blue Wildebeest (Class 6)', 'Gemsbok (Class 8)', 'Cape Buffalo (Class 9)', 'Lion (Class 9)'
+        ]
+    },
+    'Parque Fernando': {
+        animals: [
+            'Cinnamon Teal (Class 1)', 'Blackbuck (Class 3)', 'Axis Deer (Class 3)',
+            'Collared Peccary (Class 4)', 'Puma (Class 5)', 'Mule Deer (Class 6)',
+            'Red Deer (Class 6)', 'Water Buffalo (Class 9)'
+        ]
+    },
+    'Yukon Valley': {
+        animals: [
+            'Harlequin Duck (Class 1)', 'Canada Goose (Class 1)', 'Red Fox (Class 2)',
+            'Gray Wolf (Class 5)', 'Grant Caribou (Class 6)', 'Moose (Class 8)',
+            'Grizzly Bear (Class 8)', 'Plains Bison (Class 9)'
+        ]
+    },
+    'Cuatro Colinas': {
+        animals: [
+            'Ring-Necked Pheasant (Class 1)', 'European Hare (Class 1)', 'Roe Deer (Class 3)',
+            'Ronda Ibex (Class 4)', 'Beceite Ibex (Class 4)', 'Gredos Ibex (Class 4)',
+            'Southeastern Spanish Ibex (Class 4)', 'Iberian Mouflon (Class 4)', 'Wild Boar (Class 4)',
+            'Iberian Wolf (Class 5)', 'Red Deer (Class 6)'
+        ]
+    },
+    'Silver Ridge Peaks': {
+        animals: [
+            'Merriam Turkey (Class 1)', 'Pronghorn (Class 4)', 'Mountain Goat (Class 4)',
+            'Rocky Mountain Bighorn Sheep (Class 4)', 'Mule Deer (Class 4)', 'Mountain Lion (Class 5)',
+            'Black Bear (Class 7)', 'Rocky Mountain Elk (Class 8)', 'Plains Bison (Class 9)'
+        ]
+    },
+    'Te Awaroa': {
+        animals: [
+            'Merriam Turkey (Class 1)', 'Mallard (Class 1)', 'European Rabbit (Class 1)',
+            'Chamois (Class 3)', 'Feral Goat (Class 3)', 'Sika Deer (Class 4)',
+            'Fallow Deer (Class 4)', 'Himalayan Tahr (Class 4)', 'Feral Pig (Class 4)', 'Red Deer (Class 6)'
+        ]
+    },
+    'Rancho del Arroyo': {
+        animals: [
+            'Rio Grande Turkey (Class 1)', 'Ring-Necked Pheasant (Class 1)', 'Antelope Jackrabbit (Class 1)',
+            'Coyote (Class 2)', 'Mexican Bobcat (Class 2)', 'Collared Peccary (Class 4)',
+            'Pronghorn (Class 4)', 'Whitetail Deer (Class 4)', 'Mule Deer (Class 6)', 'Desert Bighorn Sheep (Class 6)'
+        ]
+    },
+    'Mississippi Acres': {
+        animals: [
+            'Bobwhite Quail (Class 1)', 'Eastern Wild Turkey (Class 1)', 'Green Winged Teal (Class 1)',
+            'Eastern Cottontail Rabbit (Class 1)', 'Gray Fox (Class 2)', 'Common Raccoon (Class 2)',
+            'Whitetail Deer (Class 4)', 'Wild Hog (Class 4)', 'American Alligator (Class 6)', 'Black Bear (Class 7)'
+        ]
+    },
+    'Revontuli Coast': {
+        animals: [
+            'Eurasian Wigeon (Class 1)', 'Eurasian Teal (Class 1)', 'Black Grouse (Class 1)',
+            'Goldeneye (Class 1)', 'Hazel Grouse (Class 1)', 'Mallard (Class 1)',
+            'Western Capercaillie (Class 1)', 'Tufted Duck (Class 1)', 'Rock Ptarmigan (Class 1)',
+            'Canada Goose (Class 1)', 'Willow Ptarmigan (Class 1)', 'Tundra Bean Goose (Class 1)',
+            'Mountain Hare (Class 1)', 'Greylag Goose (Class 1)', 'Raccoon Dog (Class 2)',
+            'Eurasian Lynx (Class 3)', 'Whitetail Deer (Class 4)', 'Eurasian Brown Bear (Class 7)', 'Moose (Class 8)'
+        ]
+    },
+    'New England Mountains': {
+        animals: [
+            'Ring-Necked Pheasant (Class 1)', 'Bobwhite Quail (Class 1)', 'Eastern Wild Turkey (Class 1)',
+            'Goldeneye (Class 1)', 'Mallard (Class 1)', 'Green Winged Teal (Class 1)',
+            'Eastern Cottontail Rabbit (Class 1)', 'Red Fox (Class 2)', 'Gray Fox (Class 2)',
+            'Coyote (Class 2)', 'Common Raccoon (Class 2)', 'Bobcat (Class 2)',
+            'Whitetail Deer (Class 4)', 'Black Bear (Class 7)', 'Moose (Class 8)'
+        ]
+    },
+    'Emerald Coast': {
+        animals: [
+            'Magpie Goose (Class 1)', 'Stubble Quail (Class 1)', 'Red Fox (Class 2)',
+            'Hog Deer (Class 3)', 'Axis Deer (Class 3)', 'Feral Goat (Class 3)',
+            'Eastern Gray Kangaroo (Class 4)', 'Fallow Deer (Class 4)', 'Feral Pig (Class 4)',
+            'Javan Rusa (Class 5)', 'Red Deer (Class 6)', 'Sambar (Class 6)',
+            'Saltwater Crocodile (Class 7)', 'Banteng (Class 8)'
+        ]
+    },
+    'Sundarpatan': {
+        animals: [
+            'Greylag Goose (Class 1)', 'Woolly Hare (Class 1)', 'Northern Red Muntjac (Class 2)',
+            'Tibetan Fox (Class 2)', 'Blackbuck (Class 3)', 'Blue Sheep (Class 4)',
+            'Himalayan Tahr (Class 4)', 'Barasingha (Class 5)', 'Snow Leopard (Class 5)',
+            'Nilgai (Class 6)', 'Bengal Tiger (Class 8)', 'Water Buffalo (Class 9)', 'Wild Yak (Class 9)'
+        ]
+    },
+    'Salzwiesen Park': {
+        animals: [
+            'Eurasian Teal (Class 1)', 'Eurasian Wigeon (Class 1)', 'Tundra Bean Goose (Class 1)',
+            'Ferruginous Duck (Class 1)', 'Greylag Goose (Class 1)', 'Gadwall (Class 1)',
+            'European Rabbit (Class 1)', 'Goldeneye (Class 1)', 'Ring-Necked Pheasant (Class 1)',
+            'Mallard (Class 1)', 'Black Grouse (Class 1)', 'Tufted Duck (Class 1)',
+            'Common Raccoon (Class 2)', 'Raccoon Dog (Class 2)', 'Red Fox (Class 2)'
+        ]
+    },
+    'Askiy Ridge': {
+        animals: [
+            'Ring-Necked Pheasant (Class 1)', 'Canada Goose (Class 1)', 'Snow Goose (Class 1)',
+            'Dusky Grouse (Class 1)', 'Mallard (Class 1)', 'Wood Duck (Class 1)',
+            'Northern Pintail (Class 1)', 'North American Beaver (Class 2)', 'Pronghorn (Class 4)',
+            'Mountain Goat (Class 4)', 'Whitetail Deer (Class 4)', 'Rocky Mountain Bighorn Sheep (Class 4)',
+            'Mule Deer (Class 4)', 'Gray Wolf (Class 5)', 'Woodland Caribou (Class 6)',
+            'Black Bear (Class 7)', 'Manitoban Elk (Class 8)', 'Moose (Class 8)', 'Wood Bison (Class 9)'
+        ]
+    },
+    'Tòrr nan Sithean': {
+        animals: [
+            'Black Grouse (Class 1)', 'Red Grouse (Class 1)', 'Eurasian Wigeon (Class 1)',
+            'Eurasian Woodcock (Class 1)', 'Ring-Necked Pheasant (Class 1)', 'Western Capercaillie (Class 1)',
+            'Mountain Hare (Class 1)', 'American Mink (Class 1)', 'Eurasian Pine Marten (Class 1)',
+            'European Badger (Class 2)', 'Red Fox (Class 2)', 'Feral Goat (Class 3)',
+            'Roe Deer (Class 3)', 'Fallow Deer (Class 4)', 'Sika Deer (Class 4)',
+            'Wild Boar (Class 4)', 'Red Deer (Class 6)'
+        ]
+    },
+    'Intisuyu': {
+        animals: [
+            'Western Mountain Coati (Class 1)', 'Greater Grison (Class 1)', 'Cinnamon Teal (Class 1)',
+            'Ocelot (Class 2)', 'Collared Peccary (Class 4)', 'Taruca (Class 4)',
+            'Vicuña (Class 4)', 'Whitetail Deer (Class 4)', 'Capybara (Class 5)',
+            'Puma (Class 5)', 'South American Tapir (Class 7)', 'Spectacled Bear (Class 7)',
+            'Jaguar (Class 8)', 'Black Caiman (Class 9)'
+        ]
+    }
+};
+
+/* ----------------------------------------------------
+ * SECTION 4: Complete Static Trophy Database
+ * Lines 277-440: All Base Game & DLC Narrative Quests
  * ---------------------------------------------------- */
 const trophyData = [
     // --- BASE GAME TROPHIES ---
@@ -222,17 +385,132 @@ const trophyData = [
     { id: 'nerves_of_steel_hunt', cat: 'Base Game', name: 'Nerves Of Steel', rank: 'bronze', current: 0, goal: 1, type: 'toggle', plat: true, isArc: false, desc: 'Elevated heart rate.' },
     { id: 'old_fashioned_way_hunt', cat: 'Base Game', name: 'The Old Fashioned Way', rank: 'silver', current: 0, goal: 1, type: 'toggle', plat: true, isArc: false, desc: 'Unscoped rifle.' },
 
-    // --- MISSIONS & SIDE QUESTS ---
+    // --- LAYTON LAKE MISSIONS & SIDE QUESTS ---
     { id: 'layton_side_doc', cat: 'Layton Lake Missions', name: 'Colton "Doc" Locke Side Registry (30 Missions)', rank: 'gold', current: 0, goal: 30, type: 'numeric', plat: false, isArc: true, desc: 'Complete Doc #1 through Doc #30.' },
     { id: 'layton_side_conners', cat: 'Layton Lake Missions', name: 'Emily Conners Side Registry (10 Missions)', rank: 'silver', current: 0, goal: 10, type: 'numeric', plat: false, isArc: true, desc: 'Complete Conners #1 through Conners #10.' },
     { id: 'layton_side_vualez', cat: 'Layton Lake Missions', name: 'Fiona Vualez Side Registry (10 Missions)', rank: 'silver', current: 0, goal: 10, type: 'numeric', plat: false, isArc: true, desc: 'Complete Vualez #1 through Vualez #10.' },
     { id: 'layton_side_beatty', cat: 'Layton Lake Missions', name: 'Paul Beatty Side Registry (10 Missions)', rank: 'silver', current: 0, goal: 10, type: 'numeric', plat: false, isArc: true, desc: 'Complete Beatty #1 through Beatty #10.' },
     { id: 'layton_side_hope', cat: 'Layton Lake Missions', name: 'Richard Hope Side Registry (10 Missions)', rank: 'silver', current: 0, goal: 10, type: 'numeric', plat: false, isArc: true, desc: 'Complete Hope #1 through Hope #10.' },
 
+    // --- HIRSCHFELDEN MISSIONS & SIDE QUESTS ---
+    { id: 'hirsch_side_jager', cat: 'Hirschfelden Missions', name: 'Gerlinde Jäger Side Registry (10 Missions)', rank: 'silver', current: 0, goal: 10, type: 'numeric', plat: false, isArc: true, desc: 'Complete Jäger #1 through Jäger #10.' },
+    { id: 'hirsch_side_tressler', cat: 'Hirschfelden Missions', name: 'Marwin Tressler Side Registry (10 Missions)', rank: 'silver', current: 0, goal: 10, type: 'numeric', plat: false, isArc: true, desc: 'Complete Tressler #1 through Tressler #10.' },
+    { id: 'hirsch_side_bhandari', cat: 'Hirschfelden Missions', name: 'Vinay Bhandari Side Registry (10 Missions)', rank: 'silver', current: 0, goal: 10, type: 'numeric', plat: false, isArc: true, desc: 'Complete Bhandari #1 through Bhandari #10.' },
+    { id: 'hirsch_side_sommer', cat: 'Hirschfelden Missions', name: 'Robert Sommer Side Registry (10 Missions)', rank: 'silver', current: 0, goal: 10, type: 'numeric', plat: false, isArc: true, desc: 'Complete Sommer #1 through Sommer #10.' },
+    { id: 'hirsch_side_fleischer', cat: 'Hirschfelden Missions', name: 'Albertina Fleischer Side Registry (10 Missions)', rank: 'silver', current: 0, goal: 10, type: 'numeric', plat: false, isArc: true, desc: 'Complete Fleischer #1 through Fleischer #10.' },
+    { id: 'hirsch_side_conni', cat: 'Hirschfelden Missions', name: 'Cornelia Holzer Side Registry (20 Missions)', rank: 'gold', current: 0, goal: 20, type: 'numeric', plat: false, isArc: true, desc: 'Complete Conni #1 through Conni #20.' },
+
+    // --- MEDVED TAIGA ---
+    { id: 'med_anatoly', cat: 'DLC: Medved-Taiga', name: 'Dr. Anatoly Barnyashev Arc', rank: 'gold', current: 0, goal: 5, type: 'checklist', plat: true, isArc: true, desc: 'Main arc.', subItems: checkSet(["The Best Defense", "Out of the Way", "The Lost One", "A Grave Concern", "A New Home"]) },
+    { id: 'med_columbus', cat: 'DLC: Medved-Taiga', name: 'Dr. Columbus Neidell Arc', rank: 'gold', current: 0, goal: 5, type: 'checklist', plat: true, isArc: true, desc: 'Main arc.', subItems: checkSet(["The New World", "A Helping Hand", "Into the Unknown", "The High Ground", "The Heart of the Taiga"]) },
+    { id: 'med_pushkin', cat: 'DLC: Medved-Taiga', name: 'Dimitri "Dimi" Pushkin Arc', rank: 'gold', current: 0, goal: 4, type: 'checklist', plat: true, isArc: true, desc: 'Side arc.', subItems: checkSet(["The Frozen Eye", "The Dead of Night", "In the Shadows", "The Light of Day"]) },
+    { id: 'med_georgy', cat: 'DLC: Medved-Taiga', name: 'Georgy Grankin Arc', rank: 'gold', current: 0, goal: 4, type: 'checklist', plat: true, isArc: true, desc: 'Side arc.', subItems: checkSet(["A Ghost from the Past", "The Old Guard", "The Last Stand", "A Quiet Night"]) },
+    { id: 'med_katerina', cat: 'DLC: Medved-Taiga', name: 'Katerina Khasavovna Arc', rank: 'gold', current: 0, goal: 4, type: 'checklist', plat: true, isArc: true, desc: 'Side arc.', subItems: checkSet(["The Hunter's Path", "The Spirit of the Taiga", "The Great Bear", "The Final Test"]) },
+    { id: 'med_svetlana', cat: 'DLC: Medved-Taiga', name: 'Dr. Svetlana Isakova Arc', rank: 'gold', current: 0, goal: 4, type: 'checklist', plat: true, isArc: true, desc: 'Side arc.', subItems: checkSet(["The Heart of the Lake", "The Silent Sentinel", "The Frozen River", "The Eternal Winter"]) },
+    { id: 'med_park_arc', cat: 'DLC: Medved-Taiga', name: 'Medved-Taiga National Park Arc', rank: 'gold', current: 0, goal: 1, type: 'toggle', plat: true, isArc: true, desc: 'Complete all Medved-Taiga National Park missions.' },
+    { id: 'med_apex', cat: 'DLC: Medved-Taiga', name: 'The Apex Hunter', rank: 'gold', current: 0, goal: 8, type: 'checklist', plat: true, isArc: true, desc: "Complete Dr. Alena Khasavovna's mission arc.", subItems: checkSet(["Western Capercaillie", "Siberian Musk Deer", "Eurasian Lynx", "Wild Boar", "Gray Wolf", "Mountain Reindeer", "Eurasian Brown Bear", "Moose"]) },
+    { id: 'med_sheds', cat: 'DLC: Medved-Taiga', name: 'Shed Hunter', rank: 'gold', current: 0, goal: 1, type: 'toggle', plat: true, isArc: false, desc: 'Collect all antler sheds.' },
+    { id: 'med_paleo', cat: 'DLC: Medved-Taiga', name: 'Paleontology 101', rank: 'gold', current: 0, goal: 1, type: 'toggle', plat: true, isArc: false, desc: 'Find all artifacts.' },
+    { id: 'med_critic', cat: 'DLC: Medved-Taiga', name: 'Art Critic', rank: 'gold', current: 0, goal: 1, type: 'toggle', plat: true, isArc: false, desc: 'Find all cave paintings.' },
+    { id: 'med_pilgrim', cat: 'DLC: Medved-Taiga', name: 'Pilgrim', rank: 'gold', current: 0, goal: 1, type: 'toggle', plat: true, isArc: false, desc: 'Find all Nenet monuments.' },
+
+    // --- VURHONGA SAVANNA ---
+    { id: 'vur_arc', cat: 'DLC: Vurhonga Savanna', name: 'Vurhonga Savanna Arc', rank: 'silver', current: 0, goal: 1, type: 'toggle', plat: true, isArc: true, desc: 'Complete all the Vurhonga Savanna Mission arcs.' },
+    { id: 'vur_warden', cat: 'DLC: Vurhonga Savanna', name: 'Warden Missions Arc', rank: 'bronze', current: 0, goal: 16, type: 'checklist', plat: true, isArc: true, desc: 'Main warden storyline.', subItems: checkSet(["Welcome to Vurhonga", "Mind the Traps", "Across the Savanna", "Praise the Ancestors", "The History of All Tribes", "Mucking for Science", "Mampara", "The Last Rhino", "Traffic Jam", "Observe and Report", "Take Shelter", "Our Place at the Potholes", "Hunter and Hunted", "Crossing Over", "Cave of the Ghost Jackal", "The Ghost Tree"]) },
+    { id: 'vur_mboweni', cat: 'DLC: Vurhonga Savanna', name: 'Mboweni Arc', rank: 'bronze', current: 0, goal: 7, type: 'checklist', plat: true, isArc: true, desc: "Maria Mboweni.", subItems: checkSet(["Legal Sources", "Trap Raid", "Ceremonial Warthog", "Canine Disease", "The Old Way", "Proof of Poachers", "Ceremonial Buffalo"]) },
+    { id: 'vur_ospreay', cat: 'DLC: Vurhonga Savanna', name: 'Ospreay Arc', rank: 'bronze', current: 0, goal: 9, type: 'checklist', plat: true, isArc: true, desc: "Flip Ospreay.", subItems: checkSet(["Photo Sample", "Need Zones", "Lake View", "Variety Pack", "Museum Mpfundla", "Scene of the Tragedy", "Technical Demonstration", "Flip's Naked Eye Challenge", "Flip's Danger Action Gauntlet"]) },
+    { id: 'vur_maritz', cat: 'DLC: Vurhonga Savanna', name: 'Maritz Arc', rank: 'bronze', current: 0, goal: 9, type: 'checklist', plat: true, isArc: true, desc: "Dr. Dana Maritz.", subItems: checkSet(["Begin the Maritz Test", "Brightest Day, Blackest Night", "Hog Collection", "Bogged Down", "The Maritz Standard", "King of Rifles", "Howl Like a Bunny", "Master of Widowmakers", "The Maritz Final Exam"]) },
+    { id: 'vur_brother', cat: 'DLC: Vurhonga Savanna', name: 'Brother Arc', rank: 'bronze', current: 0, goal: 7, type: 'checklist', plat: true, isArc: true, desc: "Side arc.", subItems: checkSet(["Fecal Matters", "Show Off", "Muckraker", "Drinking Buddies", "Nocturnal Predator", "Blind Master", "Heart to Heart to Heart"]) },
+    { id: 'vur_senior', cat: 'DLC: Vurhonga Savanna', name: 'An Experienced Senior Warden', rank: 'rare', current: 0, goal: 10, type: 'checklist', plat: true, isArc: false, desc: 'Harvest every Savanna species.', subItems: checkSet(["Blue Wildebeest", "Cape Buffalo", "Gemsbok", "Lesser Kudu", "Lion", "Side-Striped Jackal", "Springbok", "Scrub Hare", "Warthog", "Eurasian Wigeon"]) },
+    { id: 'vur_njabulo', cat: 'DLC: Vurhonga Savanna', name: "Njabulo's Sorrow", rank: 'bronze', current: 0, goal: 1, type: 'toggle', plat: true, isArc: false, desc: 'Find Rambolo, the last rhino of Vurhonga Savanna.' },
+    { id: 'vur_kudu', cat: 'DLC: Vurhonga Savanna', name: 'Camouflage', rank: 'bronze', current: 0, goal: 50, type: 'numeric', plat: true, isArc: false, desc: 'Spot 50 lesser kudu.' },
+    { id: 'vur_widow', cat: 'DLC: Vurhonga Savanna', name: 'A Match for the Widowmaker', rank: 'bronze', current: 0, goal: 1, type: 'toggle', plat: true, isArc: false, desc: 'Cape buffalo with .470.' },
+    { id: 'vur_spring', cat: 'DLC: Vurhonga Savanna', name: 'Springbok City', rank: 'bronze', current: 0, goal: 25, type: 'numeric', plat: true, isArc: false, desc: 'Harvest 25 springbok.' },
+    { id: 'vur_lion', cat: 'DLC: Vurhonga Savanna', name: 'The Lion of Vurhonga', rank: 'bronze', current: 0, goal: 1, type: 'toggle', plat: true, isArc: false, desc: 'Harvest in every subregion.' },
+
+    // --- PARQUE FERNANDO ---
+    { id: 'par_ave_maria', cat: 'DLC: Parque Fernando', name: 'Ave María, it works!', rank: 'gold', current: 0, goal: 1, type: 'toggle', plat: true, isArc: false, desc: 'Restore power to the lodge.' },
+    { id: 'par_milanesa', cat: 'DLC: Parque Fernando', name: 'The Truth is in the Milanesa', rank: 'gold', current: 0, goal: 18, type: 'checklist', plat: true, isArc: true, desc: "Carolina Vargas story arc.", subItems: checkSet(["Welcome to Patagonia", "Building Blocks", "Be Our Guests", "Duck Decoys", "Salvage Operation", "Flip the Switch", "Testing the Wind", "Testing the Wind II", "Sol de Mayo", "The Last Hangup", "The Last Hangup II", "Best-in-Class", "3 Star Review", "Shot for Shot", "Animal Whisperer", "Special Delivery", "The Gold Mine", "Cornered"]) },
+    { id: 'par_mark', cat: 'DLC: Parque Fernando', name: 'Hitting the Mark', rank: 'gold', current: 0, goal: 1, type: 'toggle', plat: true, isArc: false, desc: "Complete one Challenge Target." },
+    { id: 'par_targets_full', cat: 'DLC: Parque Fernando', name: "Carolina's Greatest Hits, Shot-For-Shot", rank: 'gold', current: 0, goal: 15, type: 'numeric', plat: true, isArc: false, desc: "Complete all Challenge Targets." },
+    { id: 'par_lodge_diamond', cat: 'DLC: Parque Fernando', name: 'A Sample of Parque Fernando\'s Finest', rank: 'gold', current: 0, goal: 7, type: 'checklist', plat: true, isArc: false, desc: 'Diamond from each species.', subItems: checkSet(["Cinnamon Teal", "Blackbuck", "Axis Deer", "Puma", "Mule Deer", "Red Deer", "Water Buffalo"]) },
+    { id: 'par_world_class', cat: 'DLC: Parque Fernando', name: 'A World Class Hunting Reserve', rank: 'gold', current: 0, goal: 7, type: 'numeric', plat: true, isArc: false, desc: 'Harvest seven unique species.' },
+    { id: 'par_vicente', cat: 'DLC: Parque Fernando', name: 'Vicente Vargas Arc', rank: 'gold', current: 0, goal: 6, type: 'checklist', plat: true, isArc: true, desc: "Vicente Vargas.", subItems: checkSet(["Seal of Approval", "Sharpshooter Certification", "Scouting Certification", "Duck Soup", "Marksmanship and Finesse", "Dinner for Two"]) },
+    { id: 'par_chinita', cat: 'DLC: Parque Fernando', name: 'Chinita Arc', rank: 'gold', current: 0, goal: 7, type: 'checklist', plat: true, isArc: true, desc: "Beatriz Cabrera.", subItems: checkSet(["Gunslinger", "Mule Deer Roundup", "Night Tracker", "Random Sampling", "Buffalo Chaser", "A Flower for Vicente", "Puma Control"]) },
+    { id: 'par_matmat', cat: 'DLC: Parque Fernando', name: 'Matmat Arc', rank: 'gold', current: 0, goal: 5, type: 'checklist', plat: true, isArc: true, desc: "Matias Mateo.", subItems: checkSet(["A Study in Blackbuck", "The Perfect Pelt", "Our Gift to Carolina", "Gold Medal Bird", "A Saddle for Beatriz"]) },
+    { id: 'par_luna', cat: 'DLC: Parque Fernando', name: 'Dr. Mariana Luna Arc', rank: 'gold', current: 0, goal: 3, type: 'checklist', plat: true, isArc: true, desc: "Dr. Mariana Luna.", subItems: checkSet(["Poisoned Fruit", "Junto al Lago Spotting", "Resting Behavior"]) },
+    { id: 'par_juliana', cat: 'DLC: Parque Fernando', name: 'Juliana Ferrari Arc', rank: 'gold', current: 0, goal: 7, type: 'checklist', plat: true, isArc: true, desc: "Juliana Ferrari.", subItems: checkSet(["Lodge Showcase", "Cultural Attractions", "Everybody Loves Ducks!", "The Office Trophy", "Where the Pumas Lie", "Yearbook Photos", "Word-of-Mouth"]) },
+
+    // --- YUKON VALLEY ---
+    { id: 'yuk_sandy_arc', cat: 'DLC: Yukon Valley', name: 'Sandy Murray Arc', rank: 'silver', current: 0, goal: 7, type: 'checklist', plat: true, isArc: true, desc: 'Side missions.', subItems: checkSet(["A Book By Its Cover", "A Study In Crimson", "From The Ashes", "Track Record", "Old Story, New Problems", "Mucking In", "Keep It Clean"]) },
+    { id: 'yuk_oscar_arc', cat: 'DLC: Yukon Valley', name: 'Oscar Freeman Arc', rank: 'silver', current: 0, goal: 8, type: 'checklist', plat: true, isArc: true, desc: 'Side missions.', subItems: checkSet(["A Fine Specimen", "Managing Moose", "Moose Misfortune", "Hardware Upgrade", "The Balancing of Bison", "Herd Immunity", "At a Crossroads", "Predator Becomes the Prey"]) },
+    { id: 'yuk_kayla_arc', cat: 'DLC: Yukon Valley', name: 'Kayla Johnson Arc', rank: 'gold', current: 0, goal: 8, type: 'checklist', plat: true, isArc: true, desc: 'Side missions.', subItems: checkSet(["Show Me Whatchoo Got", "Bearly Broke A Sweat", "Exact. Efficient. Effective.", "Old Skool", "Bears vs Bow", "Step Up Your Game", "The Apex Predator Challenge", "Becoming the Alpha"]) },
+    { id: 'yuk_hank_arc', cat: 'DLC: Yukon Valley', name: 'Hank Pepper Arc', rank: 'silver', current: 0, goal: 6, type: 'checklist', plat: true, isArc: true, desc: 'Side missions.', subItems: checkSet(["The Perfect Shot", "Demand For Ducks", "Band of Bison", "A Pair of Perfect Pelts", "A Rare Sight", "Yukon Gold Rush"]) },
+    { id: 'yuk_bev_arc', cat: 'DLC: Yukon Valley', name: 'Bev Parker Arc', rank: 'silver', current: 0, goal: 6, type: 'checklist', plat: true, isArc: true, desc: 'Side missions.', subItems: checkSet(["Attack is the Best Defense", "Caribou Conditions", "A Distinctive Look", "He's a Growing Boy", "Due Diligence", "Yukon Valley's Best View"]) },
+    { id: 'yuk_fire_witness', cat: 'DLC: Yukon Valley', name: 'A spark, a blaze, ashes', rank: 'rare', current: 0, goal: 1, type: 'toggle', plat: true, isArc: false, desc: 'Witness the forest fire.' },
+    { id: 'yuk_sourdough', cat: 'DLC: Yukon Valley', name: 'A Step Closer to Sourdough', rank: 'rare', current: 0, goal: 10, type: 'checklist', plat: true, isArc: true, desc: 'Complete main mission arc.', subItems: checkSet(["Welcome to Alaska", "Quarantine", "The Cost of Control", "Picking Up, Dropping Off", "Raise the Barrier", "A Place to Hang Your Hat", "Flash Point", "Tech Support", "A Mine of information", "Gabriella Baden: Bigfoot Hunter"]) },
+    { id: 'yuk_master', cat: 'DLC: Yukon Valley', name: 'Yukon Valley Arc', rank: 'gold', current: 0, goal: 1, type: 'toggle', plat: true, isArc: true, desc: 'Complete all mission arcs.' },
+    { id: 'yuk_grizzly', cat: 'DLC: Yukon Valley', name: 'Grizzled Veteran', rank: 'bronze', current: 0, goal: 1, type: 'toggle', plat: true, isArc: false, desc: 'Harvest your first grizzly bear.' },
+    { id: 'yuk_ghost', cat: 'DLC: Yukon Valley', name: 'Ghost', rank: 'gold', current: 0, goal: 1, type: 'toggle', plat: true, isArc: false, desc: 'Harvest an albino gray wolf.' },
+
+    // --- CUATRO COLINAS ---
+    { id: 'cua_red_carpet', cat: 'DLC: Cuatro Colinas', name: 'A Reddish Carpet', rank: 'rare', current: 0, goal: 1, type: 'toggle', plat: true, isArc: false, desc: "Complete the mission 'Red Carpet'." },
+    { id: 'cua_faith', cat: 'DLC: Cuatro Colinas', name: 'Faith', rank: 'gold', current: 0, goal: 9, type: 'checklist', plat: true, isArc: true, desc: "Complete Padre Abbas' mission arc.", subItems: checkSet(["Find Yourself in Nature", "Capture the Moment", "Our Night Companion", "Family Matters", "Iberia's Crowning Glory", "A Painter's Eye", "The Bigger Picture", "A View Fit For a Saint", "In the Pilgrim's Footsteps"]) },
+    { id: 'cua_shady', cat: 'DLC: Cuatro Colinas', name: 'Shady Dealings', rank: 'gold', current: 0, goal: 3, type: 'checklist', plat: true, isArc: false, desc: 'Harvest Fantasma, Ogro, and Sombra.', subItems: checkSet(["Fantasma", "Ogro", "Sombra"]) },
+    { id: 'cua_justice', cat: 'DLC: Cuatro Colinas', name: 'Justice is served', rank: 'rare', current: 0, goal: 14, type: 'checklist', plat: true, isArc: true, desc: 'Complete main mission arc.', subItems: checkSet(["Bienvenidos a Cuatro Colinas", "My Favourite Place", "Local Flavour", "Cuidado", "The Devil's Handiwork", "Doña Garcia", "Rabid Curiosity", "Field Work", "Bait & Switch", "Dearly Beloved", "The Red Carpet", "Water Worries", "The Secret in the Woods", "Divine Reckoning"]) },
+    { id: 'cua_master', cat: 'DLC: Cuatro Colinas', name: 'Cuatro Colinas Arc', rank: 'gold', current: 0, goal: 1, type: 'toggle', plat: true, isArc: true, desc: 'Complete all mission arcs.' },
+    { id: 'cua_slam', cat: 'DLC: Cuatro Colinas', name: 'The Slam of Glory', rank: 'gold', current: 0, goal: 4, type: 'checklist', plat: true, isArc: false, desc: 'Harvest 1 diamond male ibex of every species.', subItems: checkSet(["Gredos Ibex", "Beceite Ibex", "Southeastern Ibex", "Ronda Ibex"]) },
+    { id: 'cua_hubris', cat: 'DLC: Cuatro Colinas', name: 'Hubris', rank: 'gold', current: 0, goal: 9, type: 'checklist', plat: true, isArc: true, desc: "Gerhardt Baden arc.", subItems: checkSet(["G.O.A.T", "Starting to Boar Me", "Feeling Sheepish?", "Hundred-Meter Hurdles", "A Bit of a Long Shot", "Take a Shot in the Dark", "Up & At Them", "The Golden Touch", "Baden's Folly"]) },
+    { id: 'cua_tradition', cat: 'DLC: Cuatro Colinas', name: 'Tradition', rank: 'gold', current: 0, goal: 8, type: 'checklist', plat: true, isArc: true, desc: "Antonia Acosta Gonzalez arc.", subItems: checkSet(["Fresh Ingredients", "Professionally Pierced Pork", "Roe to Go", "A Wounded Hart", "Meat by Moonlight", "Peerless Pork = Champion Chorizo", "Diversity Breeds Innovation", "The Perfect Liebre"]) },
+    { id: 'cua_commit', cat: 'DLC: Cuatro Colinas', name: 'Commitment', rank: 'gold', current: 0, goal: 9, type: 'checklist', plat: true, isArc: true, desc: "Sole Santiago Serrano arc.", subItems: checkSet(["Save Some For Me", "Packed Off", "Things Are Getting Harey", "Found Further Afield", "Pre-emptive Strike", "Butt Out, Buddy", "Thinning the Pack", "Can't Show Up Empty-Handed", "Lake Woe; Be Gone"]) },
+    { id: 'cua_rebirth', cat: 'DLC: Cuatro Colinas', name: 'Rebirth', rank: 'gold', current: 0, goal: 10, type: 'checklist', plat: true, isArc: true, desc: "Don Miguel Del Bosque arc.", subItems: checkSet(["In Memoriam", "A Hunter's Reward", "A Crowning Achievement", "Spicing It Up", "Absolution", "The 'Marksman' Challenge", "The 'Stalker' Challenge", "The 'True' Grand Slam", "The Jewel in the Crown", "Just Like Old Times"]) },
+    { id: 'cua_opport', cat: 'DLC: Cuatro Colinas', name: 'Opportunism', rank: 'gold', current: 0, goal: 8, type: 'checklist', plat: true, isArc: true, desc: "Jose Ruiz Hernandez arc.", subItems: checkSet(["Blow the House Down", "Keep the Wolves From the Door", "Not Ready to Rock", "A Little Gamey", "The Farmer's Friend", "The After-Party", "Award For Best Supporting Hunter", "Press the Flesh"]) },
+
     // --- SILVER RIDGE PEAKS ---
     { id: 'srp_turkeys', cat: 'DLC: Silver Ridge', name: 'Gobble gobble', rank: 'silver', current: 0, goal: 50, type: 'numeric', plat: true, isArc: false, desc: 'Harvest 50 turkeys.' },
     { id: 'srp_badname', cat: 'DLC: Silver Ridge', name: 'You give love a bad name', rank: 'gold', current: 0, goal: 10, type: 'numeric', plat: true, isArc: false, desc: 'Down 10 animals in the heart with Alexander Longbow.' },
-    { id: 'srp_thanks', cat: 'DLC: Silver Ridge', name: 'Thanksgiving!', rank: 'gold', current: 0, goal: 1, type: 'toggle', plat: true, isArc: false, desc: 'Harvest a diamond turkey.' }
+    { id: 'srp_thanks', cat: 'DLC: Silver Ridge', name: 'Thanksgiving!', rank: 'gold', current: 0, goal: 1, type: 'toggle', plat: true, isArc: false, desc: 'Harvest a diamond turkey.' },
+    { id: 'srp_story_all', cat: 'DLC: Silver Ridge', name: 'Silver Ridge Peaks Full Story (15 Missions)', rank: 'gold', current: 0, goal: 15, type: 'checklist', plat: false, isArc: true, desc: 'All Allan Bradley missions.', subItems: checkSet(["A Rockies Start", "The Poisoned Chalice", "Up High, Down Low", "A Dangerous Reaction", "An Ill-Advised Retreat", "Bear With Me", "Out of Her Comfort Zone", "Plans are Derailed", "Old Haunts", "Sawbones", "Lock It Down", "Inner Peace, Outer Chaos", "Setting Up", "Whodunnit?", "The Ascent"]) },
+
+    // --- TE AWAROA NATIONAL PARK ---
+    { id: 'tea_story_all', cat: 'DLC: Te Awaroa', name: 'Te Awaroa Story Arc (16 Missions)', rank: 'gold', current: 0, goal: 16, type: 'checklist', plat: false, isArc: true, desc: 'Complete Kiri Taylor narrative.', subItems: checkSet(["Haere Mai!", "Propped Up", "Picture (Im)Perfect", "Mess On The Beach", "Up Close And Personal", "Elusive Prey", "A River Runs Through It", "A Trap In Time", "Toxicology Report", "The Battle Of Stonecastle Valley", "Left Behind", "The Hunt is On", "A Favor for a Friend", "Cry for Attention", "Last of its Kind", "To the Lighthouse"]) },
+
+    // --- RANCHO DEL ARROYO ---
+    { id: 'ran_story_all', cat: 'DLC: Rancho del Arroyo', name: 'Rancho del Arroyo Story Arc (12 Missions)', rank: 'gold', current: 0, goal: 12, type: 'checklist', plat: false, isArc: true, desc: 'Complete Salvador Soto Muñoz narrative.', subItems: checkSet(["Bienvenidos a Mexico", "Fencing Champion", "Clear and Pheasant Danger", "Grounded", "A Safe Place", "Blast From the Past", "Abandoned Memories", "Target Practice", "Raúl the Revolutionary", "A Place to Rest", "Y Tambien tu Hermano", "Home on the Ranch"]) },
+
+    // --- MISSISSIPPI ACRES PRESERVE ---
+    { id: 'mis_story_all', cat: 'DLC: Mississippi Acres', name: 'Mississippi Acres Story Arc (12 Missions)', rank: 'gold', current: 0, goal: 12, type: 'checklist', plat: false, isArc: true, desc: 'Complete Immi Davis narrative.', subItems: checkSet(["Hell or High Water", "Unwelcome Guests", "Southern Inhospitality", "Something Wicked This way Comes", "Gator Aid", "Lizard Brain", "Out of Reach", "B-side the Point", "Short Circuited", "Breaking and Entering", "Mississippi Goddamm", "Factory Farming"]) },
+
+    // --- REVONTULI COAST ---
+    { id: 'rev_story_all', cat: 'DLC: Revontuli Coast', name: 'Revontuli Guided Tour (8 Missions)', rank: 'gold', current: 0, goal: 8, type: 'checklist', plat: false, isArc: true, desc: 'Complete Oiva Reijo Ikävalko guided tour.', subItems: checkSet(["Welcome to Suomi", "Guided Tour Starts", "Mosquito Madness", "Guided Tour Continues 1", "360 Degrees of Sauna", "Guided Tour Continues 2", "Steady Aim", "Guided Tour Ends"]) },
+    { id: 'rev_side_19', cat: 'DLC: Revontuli Coast', name: 'Sekalaiset yhdeksäntoista (Miscellaneous 19)', rank: 'gold', current: 0, goal: 19, type: 'checklist', plat: false, isArc: false, desc: 'Harvest 19 species Gold or better.', subItems: checkSet(["Bean Goose", "Canada Goose", "Eurasian Wigeon", "Eurasian Teal", "Moose", "Rock Ptarmigan", "Brown Bear", "Whitetail Deer", "Lynx", "Raccoon Dog", "Mountain Hare", "Willow Ptarmigan", "Tufted Duck", "Mallard", "Hazel Grouse", "Greylag Goose", "Goldeneye", "Black Grouse", "Western Capercaillie"]) },
+
+    // --- NEW ENGLAND MOUNTAINS ---
+    { id: 'nem_story_all', cat: 'DLC: New England', name: 'New England Mountains Story Arc (7 Missions)', rank: 'gold', current: 0, goal: 7, type: 'checklist', plat: false, isArc: true, desc: 'Complete Trevor Locke & Doc Locke narrative.', subItems: checkSet(["Off the beaten path", "Top-secret mission", "Same old same old", "A thousand words", "Second home", "Make a difference", "Cats and cradles"]) },
+    { id: 'nem_trophy_comp', cat: 'DLC: New England', name: 'Trophy Competition (15 Species)', rank: 'gold', current: 0, goal: 15, type: 'checklist', plat: false, isArc: false, desc: 'Harvest 15 species Gold or Better.', subItems: checkSet(["Eastern Cottontail Rabbit", "Eastern Wild Turkey", "Green Wing Teal", "Golden Eye", "Mallard", "Northern Bobwhite Quail", "Ring Necked Pheasant", "Common Raccoon", "Coyote", "Gray Fox", "Red Fox", "Bobcat", "Whitetail Deer", "Black Bear", "Moose"]) },
+
+    // --- EMERALD COAST ---
+    { id: 'emc_story_all', cat: 'DLC: Emerald Coast', name: 'Emerald Coast Story Arc (8 Missions)', rank: 'gold', current: 0, goal: 8, type: 'checklist', plat: false, isArc: true, desc: 'Complete Robbo & Soph storyline.', subItems: checkSet(["Neighbours", "Kangaroo Crossing", "Introduced Species", "By A Billabong", "The Beauty Of Nature", "Sanctuary", "Report All Sightings", "In Saltie Territory"]) },
+    { id: 'emc_deer_plague', cat: 'DLC: Emerald Coast', name: 'Invasive Deer Plague', rank: 'gold', current: 0, goal: 150, type: 'numeric', plat: false, isArc: false, desc: 'Harvest 150 of either Sambar, Red, or Rusa.' },
+    { id: 'emc_going_gold', cat: 'DLC: Emerald Coast', name: 'Going For Gold (13 Species)', rank: 'gold', current: 0, goal: 13, type: 'checklist', plat: false, isArc: false, desc: 'Harvest 13 species Gold or Better.', subItems: checkSet(["Magpie Goose", "Stubble Quail", "Red Fox", "Axis Deer", "Feral Goat", "Feral Pig", "Sambar Deer", "Hog Deer", "Javan Rusa", "Banteng", "Eastern Gray Kangaroo", "Fallow Deer", "Red Deer"]) },
+
+    // --- SUNDARPATAN NEPAL ---
+    { id: 'sun_story_all', cat: 'DLC: Sundarpatan', name: 'Sundarpatan Story Arc (9 Missions)', rank: 'gold', current: 0, goal: 9, type: 'checklist', plat: false, isArc: true, desc: 'Complete Asmita Gurung & Birendra Majhi storyline.', subItems: checkSet(["Homestay", "Before The Storm", "Ghost Village", "The Man-Eater", "This Beloved Land of Ours", "Blood Bonds", "A Harsh Environment", "The Ghost of the Mountain", "At the Edge of the World"]) },
+    { id: 'sun_nilgai_cull', cat: 'DLC: Sundarpatan', name: 'Antelope Wrangling', rank: 'gold', current: 0, goal: 50, type: 'numeric', plat: false, isArc: false, desc: 'Harvest 50 Nilgai.' },
+
+    // --- SALZWIESEN PARK ---
+    { id: 'salz_pinch_salt', cat: 'DLC: Salzwiesen Park', name: 'Pinch Of Salt', rank: 'bronze', current: 0, goal: 1, type: 'toggle', plat: false, isArc: true, desc: 'Complete the main intro mission.' },
+    { id: 'salz_rabbit_hole', cat: 'DLC: Salzwiesen Park', name: 'Down The Rabbit Hole', rank: 'gold', current: 0, goal: 50, type: 'numeric', plat: false, isArc: false, desc: 'Harvest 50 European Rabbits.' },
+    { id: 'salz_bird_bingo', cat: 'DLC: Salzwiesen Park', name: 'Bird Bingo (11 Species)', rank: 'gold', current: 0, goal: 11, type: 'checklist', plat: false, isArc: false, desc: 'Harvest 11 species Gold or Better.', subItems: checkSet(["Gadwall", "Ferruginous Duck", "Greylag Goose", "Tundra Bean Goose", "Eurasian Teal", "Eurasian Wigeon", "Goldeneye", "Mallard", "Tufted Duck", "Black Grouse", "Ring Necked Pheasant"]) },
+
+    // --- ASKIY RIDGE (ALBERTA) ---
+    { id: 'ask_story_all', cat: 'DLC: Askiy Ridge', name: 'Askiy Ridge Story Arc (7 Missions)', rank: 'gold', current: 0, goal: 7, type: 'checklist', plat: false, isArc: true, desc: 'Complete Alberta wilderness campaign.', subItems: checkSet(["Minus Ten", "Southern Parklands", "Industrious Resident", "Fiddler's Bow", "Dense Boreal", "The Canadian Rockies", "Pristine Wilderness"]) },
+
+    // --- TÒRR NAN SITHEAN (SCOTLAND) ---
+    { id: 'torr_story_all', cat: 'DLC: Tòrr nan Sithean', name: 'Scotland Story Arc (8 Missions)', rank: 'gold', current: 0, goal: 8, type: 'checklist', plat: false, isArc: true, desc: 'Complete Scottish Highland folklore and mysteries.', subItems: checkSet(["Mound of Fairies", "Ruined Castles", "Stone Circles", "Loch Legends", "Remote Glens", "Game Keeper Duty", "Strange Rumours", "Wild Haggis Tracks"]) },
+
+    // --- INTISUYU (PERU) ---
+    { id: 'inti_story_all', cat: 'DLC: Intisuyu', name: 'Intisuyu Story Arc (8 Missions)', rank: 'gold', current: 0, goal: 8, type: 'checklist', plat: false, isArc: true, desc: 'Complete Maria & Freddy Andean campaign.', subItems: checkSet(["Eastern Region", "Lower Foothills", "Zoo Investigation", "Old Scar Sighting", "Andean Trail", "Cloud Forest Track", "Amazonian Headwaters", "Old Scar Resolution"]) }
 ];
 
 const SPECIES_BENCHMARKS = {
@@ -245,13 +523,14 @@ const SPECIES_BENCHMARKS = {
 };
 
 /* ----------------------------------------------------
- * SECTION 4: Application State & Core Telemetry Engine
+ * SECTION 5: Application State & Universal Input System
+ * Lines 442-700: State management, decoupled writes, datalists
  * ---------------------------------------------------- */
 const appState = {
     activeHunter: localStorage.getItem('pinned_device_user') || 'Werewolf',
     activePlatform: normalizePlatform(localStorage.getItem('active_gaming_platform')),
     activeReserve: 'Layton Lake',
-    activeSpecies: 'Black Bear',
+    activeSpecies: 'Black Bear (Class 7)',
     zoneType: 'main',
     sessionMode: 'single', // 'single' vs 'multi'
     selectedImageFile: null,
@@ -268,11 +547,19 @@ const appState = {
     rtdbTrophyRef: null,
     rtdbLedgerRef: null,
     rtdbSpeciesRef: null,
-    knownSpeciesList: [
-        'Black Bear', 'Whitetail Deer', 'Moose', 'Red Deer', 
-        'Fallow Deer', 'Roe Deer', 'Wild Boar', 'Gray Wolf', 
-        'Merriam Turkey', 'Plains Bison', 'Roosevelt Elk', 
-        'Mountain Lion', 'Mule Deer', 'Pronghorn'
+
+    knownWeaponsList: [
+        '.300 Canning Magnum Frontier', '7mm Malmer', '.270 Huntsman', '.243 Ranger',
+        '.30-06 Eckers', 'Alexander Longbow', 'Hawk-Edge CB-70', '.454 Rhino',
+        '.44 Panther Magnum', 'Caversham 12G', 'Miller Model 1891', 'Zagan Varminter .22-250',
+        'Mårtensson 6.5mm', 'F.L. Sporter .303 Burnished', 'Couso Model 1897', 'Kullman .22H Wasp',
+        'Curman .50 Inline', 'Gandhare Rifle', 'Gopi 10G Grand', 'Laperriere Outrider .30-30',
+        'Benelhag 12G', 'Dahler Reverse Draw CB-150'
+    ],
+
+    knownOrgansList: [
+        'Both Lungs (Double Lung)', 'Heart', 'Brain / Skull',
+        'Left Lung', 'Right Lung', 'Neck / Spine', 'Liver / Stomach'
     ],
 
     getFreshTrophyTemplate: function() {
@@ -351,46 +638,62 @@ const appState = {
         }
     },
 
-    renderSpeciesDropdown: function() {
-        const datalist = document.getElementById('species-datalist');
+    populateDatalist: function(listId, items) {
+        const datalist = document.getElementById(listId);
         if (!datalist) return;
         datalist.innerHTML = '';
-        const allSpecies = [...new Set(this.knownSpeciesList)].sort();
-        allSpecies.forEach(sp => {
+        [...new Set(items)].sort().forEach(item => {
             const opt = document.createElement('option');
-            opt.value = sp;
+            opt.value = item;
             datalist.appendChild(opt);
         });
-        const inputEl = document.getElementById('grind-species-input');
-        if (inputEl && !inputEl.value) inputEl.value = this.activeSpecies;
+    },
+
+    updateSpeciesDatalistForReserve: function() {
+        const reserveObj = RESERVE_CATALOG[this.activeReserve];
+        let currentSpeciesList = [];
+        if (reserveObj && reserveObj.animals) {
+            currentSpeciesList = reserveObj.animals;
+        } else {
+            currentSpeciesList = [
+                'Whitetail Deer (Class 4)', 'Black Bear (Class 7)', 'Moose (Class 8)',
+                'Red Deer (Class 6)', 'Fallow Deer (Class 4)', 'Wild Boar (Class 4)'
+            ];
+        }
+        this.populateDatalist('species-datalist', currentSpeciesList);
+
+        const specInput = document.getElementById('grind-species-input');
+        if (specInput && currentSpeciesList.length > 0) {
+            this.activeSpecies = currentSpeciesList[0];
+            specInput.value = this.activeSpecies;
+        }
+    },
+
+    renderDatalists: function() {
+        const allReserves = Object.keys(RESERVE_CATALOG);
+        this.populateDatalist('reserves-datalist', allReserves);
+        this.populateDatalist('weapons-datalist', this.knownWeaponsList);
+        this.populateDatalist('organs-datalist', this.knownOrgansList);
+        this.updateSpeciesDatalistForReserve();
+
+        const resInput = document.getElementById('grind-reserve-input');
+        if (resInput && !resInput.value) resInput.value = this.activeReserve;
+    },
+
+    handleReserveChange: async function(val) {
+        if (!val || !val.trim()) return;
+        const cleanName = val.trim();
+        this.activeReserve = cleanName;
+
+        this.updateSpeciesDatalistForReserve();
+        this.bindGrindTelemetry();
+        this.scrollToCategory(cleanName.replace(/[^a-zA-Z0-9]/g, ''));
     },
 
     handleSpeciesChange: async function(val) {
         if (!val || !val.trim()) return;
-        const cleanName = val.trim();
-        this.activeSpecies = cleanName;
-        if (!this.knownSpeciesList.includes(cleanName)) {
-            this.knownSpeciesList.push(cleanName);
-            this.renderSpeciesDropdown();
-            if (this.rtdb) {
-                const cleanMap = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '_');
-                await set(rtdbRef(this.rtdb, `shared_map_registry/${cleanMap}/known_species/${cleanName}`), true);
-            }
-        }
+        this.activeSpecies = val.trim();
         this.bindGrindTelemetry();
-    },
-
-    bindSharedSpeciesList: function() {
-        if (!this.rtdb) return;
-        if (this.rtdbSpeciesRef) off(this.rtdbSpeciesRef);
-        const cleanMap = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '_');
-        this.rtdbSpeciesRef = rtdbRef(this.rtdb, `shared_map_registry/${cleanMap}/known_species`);
-        onValue(this.rtdbSpeciesRef, (snapshot) => {
-            if (!snapshot.exists()) return;
-            const rtdbSpecies = Object.keys(snapshot.val() || {});
-            this.knownSpeciesList = [...new Set([...this.knownSpeciesList, ...rtdbSpecies])];
-            this.renderSpeciesDropdown();
-        });
     },
 
     bindGrindTelemetry: function() {
@@ -415,7 +718,8 @@ const appState = {
             const totalWeight = recent.reduce((sum, h) => sum + (parseFloat(h.weight) || 0), 0);
             const avgWeight = totalWeight / (recent.length || 1);
 
-            const specMeta = SPECIES_BENCHMARKS[this.activeSpecies] || { min: 30, max: 150, sweetLow: 45, sweetHigh: 75 };
+            const rawSpeciesName = this.activeSpecies.split('(')[0].trim();
+            const specMeta = SPECIES_BENCHMARKS[rawSpeciesName] || { min: 30, max: 150, sweetLow: 45, sweetHigh: 75 };
             const range = specMeta.max - specMeta.min;
             const pct = Math.min(100, Math.max(0, ((avgWeight - specMeta.min) / range) * 100));
 
@@ -434,9 +738,17 @@ const appState = {
         });
     },
 
-    /* --- LOG HARVEST: Uploads Screenshot, Evaluates Ballistics & Respects Mode Gating --- */
+    /* --- LOG HARVEST: Decoupled Safe RTDB Write First, Storage Upload Second --- */
     logHarvest: async function() {
-        if (!this.rtdb || !this.auth.currentUser) return;
+        if (!this.rtdb || !this.auth.currentUser) {
+            this.setStatus("❌ Database not connected. Please reload.", "#ef4444");
+            return;
+        }
+
+        const reserveInput = document.getElementById('grind-reserve-input');
+        const chosenReserve = reserveInput?.value?.trim() || this.activeReserve || 'Layton Lake';
+        this.activeReserve = chosenReserve;
+
         const speciesInput = document.getElementById('grind-species-input');
         const chosenSpecies = speciesInput?.value?.trim() || this.activeSpecies || 'Unknown';
         this.activeSpecies = chosenSpecies;
@@ -451,8 +763,8 @@ const appState = {
         const regionInput = document.getElementById('harvest-region');
         const subregionInput = document.getElementById('harvest-subregion');
         const distInput = document.getElementById('harvest-distance');
-        const weaponInput = document.getElementById('harvest-weapon');
-        const organInput = document.getElementById('harvest-organ');
+        const weaponInput = document.getElementById('harvest-weapon-input');
+        const organInput = document.getElementById('harvest-organ-input');
 
         const weight = parseFloat(weightInput?.value);
         if (isNaN(weight) || weight <= 0) {
@@ -461,22 +773,23 @@ const appState = {
         }
 
         const distance = parseFloat(distInput?.value) || 0;
-        const weapon = weaponInput?.value || 'Rifle';
-        const organ = organInput?.value || 'Lungs';
+        const weapon = weaponInput?.value?.trim() || 'Rifle';
+        const organ = organInput?.value?.trim() || 'Both Lungs';
 
-        this.setStatus("⏳ Logging harvest & uploading screenshot...", "#e67e22");
-
-        let downloadUrl = "";
-        if (this.selectedImageFile && this.storage) {
-            try {
-                const imgPath = `harvest_captures/${this.activeHunter}/${Date.now()}_${this.selectedImageFile.name}`;
-                const fileRef = storageRef(this.storage, imgPath);
-                const snapshot = await uploadBytes(fileRef, this.selectedImageFile);
-                downloadUrl = await getDownloadURL(snapshot.ref);
-            } catch (err) {
-                console.warn("Storage upload failed, continuing with telemetry save:", err.message);
-            }
+        // Auto-learn custom typed weapon or organ
+        if (!this.knownWeaponsList.includes(weapon)) {
+            this.knownWeaponsList.push(weapon);
+            this.populateDatalist('weapons-datalist', this.knownWeaponsList);
         }
+        if (!this.knownOrgansList.includes(organ)) {
+            this.knownOrgansList.push(organ);
+            this.populateDatalist('organs-datalist', this.knownOrgansList);
+        }
+
+        this.setStatus("⏳ Logging harvest to RTDB ledger...", "#e67e22");
+
+        const cleanMap = chosenReserve.replace(/[^a-zA-Z0-9]/g, '_');
+        const cleanSpecies = chosenSpecies.replace(/[^a-zA-Z0-9]/g, '_');
 
         const harvestPayload = {
             species: chosenSpecies,
@@ -491,7 +804,7 @@ const appState = {
             hitOrgan: organ,
             sessionMode: this.sessionMode,
             zoneType: this.zoneType,
-            imageUrl: downloadUrl,
+            imageUrl: "",
             lat: parseFloat(latInput?.value) || 0,
             long: parseFloat(longInput?.value) || 0,
             region: regionInput?.value?.trim() || 'Unknown',
@@ -499,31 +812,37 @@ const appState = {
             timestamp: Date.now()
         };
 
-        const cleanMap = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '_');
-        const cleanSpecies = chosenSpecies.replace(/[^a-zA-Z0-9]/g, '_');
-
         try {
-            // 1. Append immutable harvest to user's RTDB grind ledger
+            // STEP 1: Append telemetry to RTDB Ledger (Never blocked by file uploads)
             const harvestsRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/grind_tracker/${cleanMap}/${cleanSpecies}/harvests`);
-            await push(harvestsRef, harvestPayload);
+            const newHarvestRecord = await push(harvestsRef, harvestPayload);
+            const recordKey = newHarvestRecord.key;
 
-            // 2. Ensure new species is permanently saved to RTDB registry
-            if (!this.knownSpeciesList.includes(chosenSpecies)) {
-                this.knownSpeciesList.push(chosenSpecies);
-                await set(rtdbRef(this.rtdb, `shared_map_registry/${cleanMap}/known_species/${chosenSpecies}`), true);
-                this.renderSpeciesDropdown();
+            // STEP 2: Safe Storage Upload (Isolated in independent try/catch)
+            if (this.selectedImageFile && this.storage && recordKey) {
+                try {
+                    this.setStatus("📸 Uploading trophy screenshot to Storage...", "#3b82f6");
+                    const imgPath = `harvest_captures/${this.activeHunter}/${Date.now()}_${this.selectedImageFile.name}`;
+                    const fileRef = storageRef(this.storage, imgPath);
+                    const snapshot = await uploadBytes(fileRef, this.selectedImageFile);
+                    const downloadUrl = await getDownloadURL(snapshot.ref);
+
+                    await update(rtdbRef(this.rtdb, `users/${this.activeHunter}/grind_tracker/${cleanMap}/${cleanSpecies}/harvests/${recordKey}`), {
+                        imageUrl: downloadUrl
+                    });
+                } catch (storageErr) {
+                    console.warn("Storage upload bypassed or failed, telemetry preserved:", storageErr.message);
+                }
             }
 
-            // 3. UNIVERSAL TROPHY CHECKS (Track in both Single & Multiplayer)
+            // STEP 3: Universal Trophies (Active in both Single and Multiplayer)
             let trophyStateChanged = false;
 
-            // Distance Marksman Trophies
             if (distance >= 50) { const t = this.hunterData.find(x => x.id === 'novice_m'); if (t && t.current < t.goal) { t.current = t.goal; trophyStateChanged = true; } }
             if (distance >= 100) { const t = this.hunterData.find(x => x.id === 'skilled_m'); if (t && t.current < t.goal) { t.current = t.goal; trophyStateChanged = true; } }
             if (distance >= 200) { const t = this.hunterData.find(x => x.id === 'expert_m'); if (t && t.current < t.goal) { t.current = t.goal; trophyStateChanged = true; } }
             if (distance >= 400) { const t = this.hunterData.find(x => x.id === 'legend_m'); if (t && t.current < t.goal) { t.current = t.goal; trophyStateChanged = true; } }
 
-            // Brain Hits ("This Is Not A Zombie Game")
             if (organ.toLowerCase().includes('brain') || organ.toLowerCase().includes('skull')) {
                 const zombieTrophy = this.hunterData.find(x => x.id === 'not_zombie');
                 if (zombieTrophy && zombieTrophy.current < zombieTrophy.goal) {
@@ -532,8 +851,7 @@ const appState = {
                 }
             }
 
-            // Turkey Cull Bridge (SRP 50 turkeys)
-            const isSilverRidge = this.activeReserve.toLowerCase().includes('silver ridge');
+            const isSilverRidge = chosenReserve.toLowerCase().includes('silver ridge');
             const isTurkey = chosenSpecies.toLowerCase().includes('turkey');
             if (isSilverRidge && isTurkey) {
                 const turkeyTrophy = this.hunterData.find(t => t.id === 'srp_turkeys');
@@ -543,7 +861,6 @@ const appState = {
                 }
             }
 
-            // Longbow Heart Shots (SRP "You give love a bad name")
             if (isSilverRidge && weapon.toLowerCase().includes('longbow') && organ.toLowerCase().includes('heart')) {
                 const longbowTrophy = this.hunterData.find(t => t.id === 'srp_badname');
                 if (longbowTrophy && longbowTrophy.current < longbowTrophy.goal) {
@@ -552,18 +869,17 @@ const appState = {
                 }
             }
 
-            // 4. Auto-Increment Career Animal Rank
+            // STEP 4: Career Rank Counter Auto-Increment
             const ratingKey = harvestPayload.rating.toLowerCase();
             if (ratingKey !== 'none' && this.animalRankData[ratingKey] !== undefined) {
                 this.adjRank(ratingKey, 1);
             }
 
-            // 5. Commit trophy updates if any milestone met
             if (trophyStateChanged) {
                 this.sync(true);
             }
 
-            // Reset Form Inputs
+            // STEP 5: Complete Form Reset
             if (weightInput) weightInput.value = '';
             if (distInput) distInput.value = '';
             const previewContainer = document.getElementById('screenshot-preview-container');
@@ -628,6 +944,98 @@ const appState = {
         });
     },
 
+    loadNavigationFromRTDB: function() {
+        const navContainer = document.getElementById('dynamic-nav-links');
+        if (!this.rtdb || !navContainer) return;
+
+        const linksRef = rtdbRef(this.rtdb, 'utm_links');
+        onValue(linksRef, (snapshot) => {
+            if (!snapshot.exists()) return;
+            const rawData = snapshot.val();
+            const standalone = [];
+            const groups = {};
+
+            const cleanUrl = (u) => {
+                if (!u) return '#';
+                let res = String(u).trim();
+                if (res.startsWith('http://')) res = '//' + res.substring(7);
+                else if (res.startsWith('https://')) res = '//' + res.substring(8);
+                return res;
+            };
+
+            const parseItem = (item, fallbackKey) => {
+                if (!item) return null;
+                const name = item.name || item.title || fallbackKey;
+                const url = cleanUrl(item.url || item.link);
+                const folder = String(item.group || item.folder || '').trim();
+                const icon = cleanUrl(item.image || item.icon || '');
+                return { name, url, icon, folder };
+            };
+
+            Object.keys(rawData).forEach(key => {
+                const node = rawData[key];
+                if (!node) return;
+                if (Array.isArray(node)) {
+                    if (!groups[key]) groups[key] = [];
+                    node.forEach((arrItem, idx) => {
+                        const parsed = parseItem(arrItem, `${key}_${idx}`);
+                        if (parsed) groups[key].push(parsed);
+                    });
+                } else if (typeof node === 'object') {
+                    if (node.title || node.url || node.link) {
+                        const parsed = parseItem(node, key);
+                        const f = parsed.folder.toLowerCase();
+                        if (!f || f === 'home' || f === 'standalone' || f === 'none') standalone.push(parsed);
+                        else {
+                            if (!groups[parsed.folder]) groups[parsed.folder] = [];
+                            groups[parsed.folder].push(parsed);
+                        }
+                    } else {
+                        if (!groups[key]) groups[key] = [];
+                        Object.keys(node).forEach(subKey => {
+                            const parsed = parseItem(node[subKey], subKey);
+                            if (parsed) groups[key].push(parsed);
+                        });
+                    }
+                }
+            });
+
+            let navHTML = '';
+            standalone.forEach(item => {
+                const iconTag = item.icon ? `<img src="${item.icon}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
+                navHTML += `<a href="${item.url}">${iconTag}<span>${item.name}</span></a>`;
+            });
+
+            Object.keys(groups).sort().forEach(folderName => {
+                const folderId = folderName.replace(/[^a-zA-Z0-9]/g, '_');
+                const dropItems = groups[folderName].map(item => {
+                    const iconTag = item.icon ? `<img src="${item.icon}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
+                    return `<a href="${item.url}">${iconTag}<span>${item.name}</span></a>`;
+                }).join('');
+
+                navHTML += `
+                    <div class="nav-dropdown" id="dropdown-${folderId}">
+                        <button type="button" class="nav-dropbtn" onclick="appState.toggleNavFolder('dropdown-${folderId}', event)">
+                            <span>${folderName}</span> ▾
+                        </button>
+                        <div class="nav-dropdown-content">${dropItems}</div>
+                    </div>
+                `;
+            });
+
+            navContainer.innerHTML = navHTML;
+        });
+    },
+
+    toggleNavFolder: function(folderId, event) {
+        if (event) event.stopPropagation();
+        const targetEl = document.getElementById(folderId);
+        if (!targetEl) return;
+        const isAlreadyActive = targetEl.classList.contains('active');
+        document.querySelectorAll('.nav-dropdown').forEach(el => el.classList.remove('active'));
+        if (!isAlreadyActive) targetEl.classList.add('active');
+    },
+
     init: async function() {
         this.hunterData = this.getFreshTrophyTemplate();
         this.renderBuildMetadata();
@@ -640,6 +1048,8 @@ const appState = {
             this.db = getFirestore(app);
             this.rtdb = getDatabase(app);
             this.storage = getStorage(app);
+
+            this.loadNavigationFromRTDB();
 
             await signInAnonymously(this.auth);
 
@@ -693,7 +1103,6 @@ const appState = {
 
         this.render();
         this.updateRankUI();
-        this.bindSharedSpeciesList();
         this.bindGrindTelemetry();
 
         const docRef = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', GAME_ID);
@@ -771,29 +1180,14 @@ const appState = {
 
     render: function() {
         const container = document.getElementById('section-container');
-        const selector = document.getElementById('reserve-selector');
         if (!container) return;
 
         container.innerHTML = '';
         this.renderGrindTelemetryCard(container);
 
         const cats = [...new Set(this.hunterData.map(t => t.cat))];
-        if (selector && selector.options.length <= 1) {
-            cats.forEach(cat => {
-                const opt = document.createElement('option');
-                opt.value = cat;
-                opt.innerText = cat;
-                selector.appendChild(opt);
-            });
-            selector.onchange = (e) => {
-                this.activeReserve = e.target.value;
-                this.bindSharedSpeciesList();
-                this.bindGrindTelemetry();
-                this.scrollToCategory(e.target.value.replace(/[^a-zA-Z0-9]/g, ''));
-            };
-        }
-
         let globalMet = 0, globalTotal = 0;
+
         cats.forEach(cat => {
             const items = this.hunterData.filter(t => t.cat === cat);
             let catMet = 0;
@@ -904,25 +1298,24 @@ const appState = {
 
             <div class="grind-grid-2col">
                 <div>
-                    <label class="grind-input-label">Target Species</label>
-                    <input type="text" id="grind-species-input" class="grind-input" list="species-datalist" value="${this.activeSpecies}" placeholder="e.g. Black Bear, Moose" onchange="appState.handleSpeciesChange(this.value)">
-                    <datalist id="species-datalist"></datalist>
+                    <label class="grind-input-label">Select or Type Reserve Map</label>
+                    <input type="text" id="grind-reserve-input" class="grind-input" list="reserves-datalist" value="${this.activeReserve}" placeholder="Type any reserve..." onchange="appState.handleReserveChange(this.value)">
+                    <datalist id="reserves-datalist"></datalist>
                 </div>
                 <div>
-                    <label class="grind-input-label">Zone Rotation</label>
-                    <button type="button" id="zone-toggle-btn" class="zone-toggle-btn is-main" onclick="appState.setZoneType(appState.zoneType === 'main' ? 'exterior' : 'main')">
-                        🎯 Main Rotation Zone
-                    </button>
+                    <label class="grind-input-label">Select or Type Target Species</label>
+                    <input type="text" id="grind-species-input" class="grind-input" list="species-datalist" value="${this.activeSpecies}" placeholder="Select or type animal..." onchange="appState.handleSpeciesChange(this.value)">
+                    <datalist id="species-datalist"></datalist>
                 </div>
             </div>
 
             <div class="grind-grid-2col">
                 <div>
-                    <label class="grind-input-label">Harvest Weight (kg / lbs)</label>
+                    <label class="grind-input-label">Harvest Weight (kg / lbs) *Required</label>
                     <input type="number" id="harvest-weight" class="grind-input" placeholder="e.g. 94.5" step="0.1">
                 </div>
                 <div>
-                    <label class="grind-input-label">Difficulty / Level</label>
+                    <label class="grind-input-label">Difficulty Level</label>
                     <select id="harvest-level" class="grind-select">
                         <option value="1">1 - Trivial</option>
                         <option value="2">2 - Minor</option>
@@ -944,28 +1337,17 @@ const appState = {
                     <input type="number" id="harvest-distance" class="grind-input" placeholder="e.g. 150 (400m+ for Legendary)">
                 </div>
                 <div>
-                    <label class="grind-input-label">Weapon Class Used</label>
-                    <select id="harvest-weapon" class="grind-select">
-                        <option value="Rifle" selected>Rifle (.300, 7mm, .243, .30-06)</option>
-                        <option value="Bow / Longbow">Bow / Longbow (Alexander Longbow)</option>
-                        <option value="Handgun">Handgun (.44, .454)</option>
-                        <option value="Shotgun">Shotgun (12G, 16G, 20G)</option>
-                    </select>
+                    <label class="grind-input-label">Select or Type Weapon</label>
+                    <input type="text" id="harvest-weapon-input" class="grind-input" list="weapons-datalist" placeholder="Select or type weapon...">
+                    <datalist id="weapons-datalist"></datalist>
                 </div>
             </div>
 
             <div class="grind-grid-2col">
                 <div>
-                    <label class="grind-input-label">Hit Organ / Placement</label>
-                    <select id="harvest-organ" class="grind-select">
-                        <option value="Both Lungs" selected>Both Lungs (Double Lung)</option>
-                        <option value="Heart">Heart (Longbow Vital)</option>
-                        <option value="Brain / Skull">Brain / Skull (Zombie Trophy)</option>
-                        <option value="Left Lung">Left Lung</option>
-                        <option value="Right Lung">Right Lung</option>
-                        <option value="Spine / Neck">Spine / Neck</option>
-                        <option value="Liver / Stomach">Liver / Stomach</option>
-                    </select>
+                    <label class="grind-input-label">Select or Type Hit Organ / Placement</label>
+                    <input type="text" id="harvest-organ-input" class="grind-input" list="organs-datalist" placeholder="Select or type placement...">
+                    <datalist id="organs-datalist"></datalist>
                 </div>
                 <div>
                     <label class="grind-input-label">Fur Variant & Sex</label>
@@ -1000,13 +1382,11 @@ const appState = {
                     </select>
                 </div>
                 <div>
-                    <label class="grind-input-label">PS App Trophy Screenshot</label>
-                    <input type="file" id="harvest-screenshot-file" class="grind-input file-input" accept="image/*" onchange="appState.handleImageSelection(event)">
+                    <label class="grind-input-label">Zone Rotation Mode</label>
+                    <button type="button" id="zone-toggle-btn" class="zone-toggle-btn is-main" onclick="appState.setZoneType(appState.zoneType === 'main' ? 'exterior' : 'main')">
+                        🎯 Main Rotation Zone
+                    </button>
                 </div>
-            </div>
-
-            <div id="screenshot-preview-container" class="preview-box" style="display:none;">
-                <img id="screenshot-preview" src="" alt="PlayStation App Harvest Preview" class="preview-img">
             </div>
 
             <div class="grind-grid-2col">
@@ -1026,12 +1406,21 @@ const appState = {
                 </div>
             </div>
 
+            <div>
+                <label class="grind-input-label">PS App Trophy Screenshot (Optional)</label>
+                <input type="file" id="harvest-screenshot-file" class="grind-input file-input" accept="image/*" onchange="appState.handleImageSelection(event)">
+            </div>
+
+            <div id="screenshot-preview-container" class="preview-box" style="display:none;">
+                <img id="screenshot-preview" src="" alt="PlayStation App Harvest Preview" class="preview-img">
+            </div>
+
             <button type="button" class="log-harvest-btn" onclick="appState.logHarvest()">
                 📝 Log Harvest & Sync Telemetry
             </button>
         `;
         container.appendChild(card);
-        this.renderSpeciesDropdown();
+        this.renderDatalists();
     },
 
     getIcon: (t) => t.playstationImage ? t.playstationImage : (t.cat.includes('Collectibles') ? ICONS.TRACK : t.name.includes('Arc') || t.name.includes('Missions') ? ICONS.ARC : t.name.includes('Mile') ? ICONS.TRAVEL : t.name.includes('Marksman') ? ICONS.MARK : ICONS.GAME),
