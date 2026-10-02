@@ -4,6 +4,8 @@
    Description: theHunter: Call of the Wild Master Tracker Dual-Engine
                 - Complete 19 Reserve Catalog with Official Weapon Classes (1-9)
                 - Need Zones (Drinking, Feeding, Resting) with In-Game Schedule Reference
+                - Proximity Deduplication & Smart Upsert (Prevents duplicate entries for the
+                  same animal, activity, and coordinates within 50m while preserving shared water)
                 - Dedicated Need Zone Pinning to RTDB (/need_zones) with Lat/Long & Subregions
                 - Decoupled Non-Blocking RTDB Harvest Logging & Async Storage Upload
                 - Instant Form Clearing & Visual Confirmation Banner
@@ -15,18 +17,18 @@
                 - Google Analytics 4 (G-CTYHDF4MSD) via GTM Integration
                 - 4-Player Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
    Database: Cloud Firestore, Realtime Database & Firebase Storage (entertainment-71888)
-   Build Version: 6.5.0
-   Date & Time Stamp: 2026-10-02 15:45:00 EDT (America/New_York)
+   Build Version: 6.6.0
+   Date & Time Stamp: 2026-10-02 18:05:00 EDT (America/New_York)
    ============================================================================ */
 
-// Line 23: Google Tag Manager & Google Analytics 4 Deployment (G-CTYHDF4MSD)
+// Line 25: Google Tag Manager & Google Analytics 4 Deployment (G-CTYHDF4MSD)
 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-W3R9F47');
 
-// Line 31: GA4 Config tag deployment with 14-month data retention & enhanced measurement
+// Line 33: GA4 Config tag deployment with 14-month data retention & enhanced measurement
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
@@ -36,19 +38,19 @@ gtag('config', 'G-CTYHDF4MSD', {
     'cookie_flags': 'SameSite=None;Secure'
 });
 
-// Line 42: Relative Protocol SDK Imports
+// Line 44: Relative Protocol SDK Imports
 import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from '//www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from '//www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import { getDatabase, ref as rtdbRef, onValue, set, update, push, off } from '//www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+import { getDatabase, ref as rtdbRef, onValue, get, set, update, push, off } from '//www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from '//www.gstatic.com/firebasejs/10.8.0/firebase-storage.js';
 
 /* ----------------------------------------------------
  * SECTION 1: Build Metadata, User Map & Custom Themes
- * Lines 51-138: PSN handles, custom themes, asset icons
+ * Lines 53-140: PSN handles, custom themes, asset icons
  * ---------------------------------------------------- */
-const BUILD_VERSION = "6.5.0";
-const CODE_BUILD_DATE = "2026-10-02 15:45:00 EDT";
+const BUILD_VERSION = "6.6.0";
+const CODE_BUILD_DATE = "2026-10-02 18:05:00 EDT";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -136,7 +138,7 @@ const ICONS = {
 
 /* ----------------------------------------------------
  * SECTION 2: Master Helpers & Layton Proximity Anchors
- * Lines 140-213: Checklists & 40 verified Layton anchors
+ * Lines 142-215: Checklists & 40 verified Layton anchors
  * ---------------------------------------------------- */
 const checkSet = (items) => items.map(name => ({ name, done: false }));
 
@@ -192,7 +194,7 @@ const LAYTON_ANCHORS = [
 
 /* ----------------------------------------------------
  * SECTION 3: Official Need Zone Schedules Reference
- * Lines 215-265: Drink, Feed, Rest Times for Grinds
+ * Lines 217-267: Drink, Feed, Rest Times for Grinds
  * ---------------------------------------------------- */
 const NEED_ZONE_SCHEDULES = {
     'Whitetail Deer': { drink: '08:00 - 12:00', feed: '04:00 - 08:00', rest: '12:00 - 16:00' },
@@ -214,7 +216,7 @@ const NEED_ZONE_SCHEDULES = {
 
 /* ----------------------------------------------------
  * SECTION 4: Official Reserve Catalogs & Animal Classes
- * Lines 267-375: All 19 Maps with Classes (1-9)
+ * Lines 269-377: All 19 Maps with Classes (1-9)
  * ---------------------------------------------------- */
 const RESERVE_CATALOG = {
     'Layton Lake': {
@@ -362,7 +364,7 @@ const RESERVE_CATALOG = {
     },
     'Intisuyu': {
         animals: [
-            'Western Mountain Coati (Class 1)', 'Greater Grison (Class 1)', 'Cinnamon Teal (Class 1)',
+            'Western Diamond Coati (Class 1)', 'Greater Grison (Class 1)', 'Cinnamon Teal (Class 1)',
             'Ocelot (Class 2)', 'Collared Peccary (Class 4)', 'Taruca (Class 4)',
             'Vicuña (Class 4)', 'Whitetail Deer (Class 4)', 'Capybara (Class 5)',
             'Puma (Class 5)', 'South American Tapir (Class 7)', 'Spectacled Bear (Class 7)',
@@ -373,7 +375,7 @@ const RESERVE_CATALOG = {
 
 /* ----------------------------------------------------
  * SECTION 5: Complete Static Trophy Database
- * Lines 377-540: All Base Game & DLC Narrative Quests
+ * Lines 379-542: All Base Game & DLC Narrative Quests
  * ---------------------------------------------------- */
 const trophyData = [
     // --- BASE GAME TROPHIES ---
@@ -566,7 +568,7 @@ const SPECIES_BENCHMARKS = {
 
 /* ----------------------------------------------------
  * SECTION 6: Application State & Safe Form Handling
- * Lines 542-930: State management, robust DOM bindings
+ * Lines 544-965: State management, robust DOM bindings
  * ---------------------------------------------------- */
 const appState = {
     activeHunter: localStorage.getItem('pinned_device_user') || 'Werewolf',
@@ -630,7 +632,7 @@ const appState = {
             btn.innerText = '🎯 Main Rotation Zone';
         } else {
             btn.className = 'zone-toggle-btn is-exterior';
-            btn.innerText = '⚠️ Exterior Zone (Seed Check)';
+            btn.innerText = '⚠️️ Exterior Zone (Seed Check)';
         }
     },
 
@@ -769,7 +771,7 @@ const appState = {
         }
     },
 
-    /* --- Pin Need Zone Directly to RTDB Map Ledger --- */
+    /* --- Pin Need Zone: Smart Upsert with 50m Deduplication Pipeline --- */
     pinNeedZone: async function() {
         if (!this.rtdb || !this.auth.currentUser) {
             this.setStatus("❌ Database not connected. Please reload.", "#ef4444");
@@ -785,26 +787,60 @@ const appState = {
 
         const cleanMap = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '_');
         const cleanSpecies = this.activeSpecies.replace(/[^a-zA-Z0-9]/g, '_');
+        const zonePath = `users/${this.activeHunter}/need_zones/${cleanMap}/${cleanSpecies}`;
+        const zoneRef = rtdbRef(this.rtdb, zonePath);
 
-        const needZonePayload = {
-            reserve: this.activeReserve,
-            species: this.activeSpecies,
-            zoneType: zoneType,
-            activeTime: zoneTime,
-            lat: latVal,
-            long: longVal,
-            region: regionVal,
-            subRegion: subregionVal,
-            sessionMode: this.sessionMode,
-            pinnedBy: this.activeHunter,
-            timestamp: Date.now()
-        };
+        this.setStatus(`⏳ Checking coordinates for duplicate ${this.activeSpecies} zones...`, "#e67e22");
 
         try {
-            this.setStatus(`⏳ Pinning ${zoneType} Need Zone for ${this.activeSpecies}...`, "#e67e22");
-            const zoneRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/need_zones/${cleanMap}/${cleanSpecies}`);
-            await push(zoneRef, needZonePayload);
-            this.setStatus(`📌 Pinned ${this.activeSpecies} ${zoneType} Zone (${zoneTime}) at [${subregionVal}]`, "#10b981");
+            // Deduplication Check: Read existing pins for this species on this map
+            const snapshot = await get(zoneRef);
+            let duplicateKey = null;
+
+            if (snapshot.exists()) {
+                const existingPins = snapshot.val();
+                for (const [key, pin] of Object.entries(existingPins)) {
+                    // Check if this same animal already has this activity type at this spot
+                    if (pin.zoneType && pin.zoneType.toLowerCase() === zoneType.toLowerCase()) {
+                        const dist = Math.hypot((pin.long || 0) - longVal, (pin.lat || 0) - latVal);
+                        
+                        // Within 50 meters, treat as the same lake/zone
+                        if (dist <= 50) {
+                            duplicateKey = key;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (duplicateKey) {
+                // Smart Upsert: Update existing pin timestamp and active hours without creating duplicate card
+                await update(rtdbRef(this.rtdb, `${zonePath}/${duplicateKey}`), {
+                    activeTime: zoneTime,
+                    region: regionVal,
+                    subRegion: subregionVal,
+                    lastVerified: Date.now()
+                });
+                this.setStatus(`↻ Refreshed existing ${zoneType} Zone for ${this.activeSpecies} at [${subregionVal}]`, "#10b981");
+            } else {
+                // New distinct lake or different activity type -> Create new pin
+                const needZonePayload = {
+                    reserve: this.activeReserve,
+                    species: this.activeSpecies,
+                    zoneType: zoneType,
+                    activeTime: zoneTime,
+                    lat: latVal,
+                    long: longVal,
+                    region: regionVal,
+                    subRegion: subregionVal,
+                    sessionMode: this.sessionMode,
+                    pinnedBy: this.activeHunter,
+                    timestamp: Date.now()
+                };
+
+                await push(zoneRef, needZonePayload);
+                this.setStatus(`📌 Pinned new ${this.activeSpecies} ${zoneType} Zone (${zoneTime}) at [${subregionVal}]`, "#10b981");
+            }
         } catch (err) {
             console.error("Need Zone Save Error:", err);
             this.setStatus(`❌ Failed to Pin Need Zone: ${err.message}`, "#ef4444");
@@ -1481,14 +1517,14 @@ const appState = {
                 </div>
             </div>
 
-            <!-- NEED ZONE SCHEDULE & MAP PINNING -->
+            <!-- NEED ZONE SCHEDULE & MAP PINNING WITH PROXIMITY DEDUPLICATION -->
             <div class="grind-grid-2col" style="background: rgba(30, 41, 59, 0.4); padding: 12px; border-radius: 8px; border: 1px dashed rgba(255, 255, 255, 0.15);">
                 <div>
                     <label class="grind-input-label">Need Zone Activity</label>
                     <select id="needzone-type-select" class="grind-select" onchange="appState.updateNeedZoneSchedule()">
-                        <option value="Drink" selected>Drinking 💧</option>
-                        <option value="Feed">Feeding 🌾</option>
-                        <option value="Rest">Resting 💤</option>
+                        <option value="Drinking" selected>Drinking 💧</option>
+                        <option value="Feeding">Feeding 🌾</option>
+                        <option value="Resting">Resting 💤</option>
                         <option value="None">None / Travelling</option>
                     </select>
                 </div>
@@ -1669,7 +1705,7 @@ const appState = {
     }
 };
 
-// Line 928: DOM Ready Initialization to guarantee clean DOM execution
+// Line 963: DOM Ready Initialization to guarantee clean DOM execution
 window.addEventListener('DOMContentLoaded', () => {
     window.appState = appState;
     window.adjRank = (tier, val) => appState.adjRank(tier, val);
