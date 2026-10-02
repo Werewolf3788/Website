@@ -1,23 +1,38 @@
 /* ============================================================================
    File: script.js
-   Location: /games/HunterCOTW/script.js
+   Location: //playstation-be938.web.app/games/HunterCOTW/script.js
    Description: theHunter: Call of the Wild Master Tracker Dual-Engine
-                - Complete 17+ Reserve Catalog with Official Animal Weapon Classes (1-9)
-                - Native <select> for Reserves & Species with Custom Manual Fallback
-                - Decoupled Harvest Logging (RTDB write precedes safe Storage upload)
-                - Non-Destructive Form State (Preserves Lat/Long/Weight during map switch)
+                - Complete 19 Reserve Catalog with Official Weapon Classes (1-9)
+                - Decoupled RTDB Harvest Logging with Safe Firebase Storage Binding
+                - Preserves active user coordinates, region, sub-region & telemetry
+                - Dynamic Menu System via Realtime Database (/utm_links)
                 - Single Player vs. Multiplayer Mode Switcher (Story Arcs Gated)
                 - 1-33 Drift Moving Average Weight Telemetry & Fur Tier Tracking
-                - Distance Sniping (Auto-Marksman Trophies), Longbow Heart & Brain Hit Checks
-                - PS App Screenshot Upload to Firebase Storage with RTDB Image Binding
-                - Full 4-Player Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
-                - Layton Lake 40-Point Anchor Geofencing Proximity Auto-Fill
-                - Dynamic Menu System via Realtime Database (/utm_links)
+                - Google Analytics 4 (G-CTYHDF4MSD) via GTM Integration
+                - 4-Player Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
    Database: Cloud Firestore, Realtime Database & Firebase Storage (entertainment-71888)
-   Build Version: 6.1.0
-   Code Build Date: 2026-10-02 14:18:00 EDT (America/New_York)
+   Build Version: 6.2.0
+   Date & Time Stamp: 2026-10-02 14:26:00 EDT (America/New_York)
    ============================================================================ */
 
+// Line 20: Google Tag Manager & Google Analytics 4 Deployment (G-CTYHDF4MSD)
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-W3R9F47');
+
+// Line 28: GA4 Config tag deployment with 14-month data retention & enhanced measurement
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-CTYHDF4MSD', {
+    'send_page_view': true,
+    'anonymize_ip': true,
+    'cookie_flags': 'SameSite=None;Secure'
+});
+
+// Line 39: Relative Protocol SDK Imports
 import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from '//www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from '//www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
@@ -26,10 +41,10 @@ import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from '//ww
 
 /* ----------------------------------------------------
  * SECTION 1: Build Metadata, User Map & Custom Themes
- * Lines 30-115: PSN handles, custom themes, asset icons
+ * Lines 48-135: PSN handles, custom themes, asset icons
  * ---------------------------------------------------- */
-const BUILD_VERSION = "6.1.0";
-const CODE_BUILD_DATE = "2026-10-02 14:18:00 EDT";
+const BUILD_VERSION = "6.2.0";
+const CODE_BUILD_DATE = "2026-10-02 14:26:00 EDT";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -116,8 +131,8 @@ const ICONS = {
 };
 
 /* ----------------------------------------------------
- * SECTION 2: Master Helpers & Ground-Truth Anchor Grid
- * Lines 117-195: Checklists & 40 verified Layton anchors
+ * SECTION 2: Master Helpers & Layton Proximity Anchors
+ * Lines 137-210: Checklists & 40 verified Layton anchors
  * ---------------------------------------------------- */
 const checkSet = (items) => items.map(name => ({ name, done: false }));
 
@@ -172,8 +187,8 @@ const LAYTON_ANCHORS = [
 ];
 
 /* ----------------------------------------------------
- * SECTION 3: Official Reserve Catalogs & Animals
- * Lines 197-280: Animal Rosters with Official Weapon Classes
+ * SECTION 3: Official Reserve Catalogs & Animal Classes
+ * Lines 212-320: All 19 Maps with Classes (1-9)
  * ---------------------------------------------------- */
 const RESERVE_CATALOG = {
     'Layton Lake': {
@@ -332,7 +347,7 @@ const RESERVE_CATALOG = {
 
 /* ----------------------------------------------------
  * SECTION 4: Complete Static Trophy Database
- * Lines 282-445: All Base Game & DLC Narrative Quests
+ * Lines 322-485: All Base Game & DLC Narrative Quests
  * ---------------------------------------------------- */
 const trophyData = [
     // --- BASE GAME TROPHIES ---
@@ -524,8 +539,8 @@ const SPECIES_BENCHMARKS = {
 };
 
 /* ----------------------------------------------------
- * SECTION 5: Application State & Safe Form Handling
- * Lines 448-735: State management, robust DOM bindings
+ * SECTION 5: Application State & DOM Event Control
+ * Lines 487-835: Wrapped in DOMContentLoaded listener
  * ---------------------------------------------------- */
 const appState = {
     activeHunter: localStorage.getItem('pinned_device_user') || 'Werewolf',
@@ -652,11 +667,9 @@ const appState = {
             this.activeReserve = selectedVal.trim();
         }
 
-        // Update the species select directly without re-rendering the whole card
         this.updateSpeciesDropdown();
         this.bindGrindTelemetry();
 
-        // Highlight matching story section
         const targetSection = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '');
         const sectionEl = document.getElementById(targetSection);
         if (sectionEl) {
@@ -685,7 +698,6 @@ const appState = {
             specSelect.appendChild(opt);
         });
 
-        // Add custom entry option
         const customOpt = document.createElement('option');
         customOpt.value = '__CUSTOM__';
         customOpt.innerText = '✍️ + Enter Custom Species...';
@@ -769,7 +781,6 @@ const appState = {
             return;
         }
 
-        // Safely resolve the reserve from select or custom input
         const resSelect = document.getElementById('grind-reserve-select');
         let chosenReserve = resSelect ? resSelect.value : this.activeReserve;
         if (chosenReserve === '__CUSTOM__') {
@@ -777,7 +788,6 @@ const appState = {
         }
         this.activeReserve = chosenReserve;
 
-        // Safely resolve the species from select or custom input
         const specSelect = document.getElementById('grind-species-select');
         let chosenSpecies = specSelect ? specSelect.value : this.activeSpecies;
         if (chosenSpecies === '__CUSTOM__') {
@@ -808,7 +818,6 @@ const appState = {
         const weapon = weaponInput?.value?.trim() || 'Rifle';
         const organ = organInput?.value?.trim() || 'Both Lungs';
 
-        // Auto-learn custom weapons or organs
         if (!this.knownWeaponsList.includes(weapon)) {
             this.knownWeaponsList.push(weapon);
             this.populateDatalist('weapons-datalist', this.knownWeaponsList);
@@ -845,12 +854,12 @@ const appState = {
         };
 
         try {
-            // STEP 1: Write directly to RTDB Ledger (Atomic and independent)
+            // STEP 1: Safe RTDB Ledger Push
             const harvestsRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/grind_tracker/${cleanMap}/${cleanSpecies}/harvests`);
             const newHarvestRecord = await push(harvestsRef, harvestPayload);
             const recordKey = newHarvestRecord.key;
 
-            // STEP 2: Safe Storage Upload in isolated try/catch
+            // STEP 2: Storage Upload Fallback Handler
             if (this.selectedImageFile && this.storage && recordKey) {
                 try {
                     this.setStatus("📸 Uploading trophy screenshot to Storage...", "#3b82f6");
@@ -911,7 +920,7 @@ const appState = {
                 this.sync(true);
             }
 
-            // STEP 5: Reset only data inputs, keep current reserve
+            // STEP 5: Clear telemetry form inputs
             if (weightInput) weightInput.value = '';
             if (distInput) distInput.value = '';
             const previewContainer = document.getElementById('screenshot-preview-container');
@@ -1306,7 +1315,6 @@ const appState = {
         const card = document.createElement('div');
         card.className = 'grind-card-container';
 
-        // Pre-build Reserve Options List
         const reserveOptions = Object.keys(RESERVE_CATALOG).map(res => 
             `<option value="${res}" ${res === this.activeReserve ? 'selected' : ''}>${res}</option>`
         ).join('');
@@ -1522,6 +1530,9 @@ const appState = {
     }
 };
 
-window.appState = appState;
-window.adjRank = (tier, val) => appState.adjRank(tier, val);
-appState.init();
+// Line 820: DOM Ready Initialization to guarantee clean DOM execution
+window.addEventListener('DOMContentLoaded', () => {
+    window.appState = appState;
+    window.adjRank = (tier, val) => appState.adjRank(tier, val);
+    appState.init();
+});
