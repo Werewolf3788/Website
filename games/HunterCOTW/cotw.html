@@ -1,29 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- ==========================================================================
+       Project: theHunter: Call of the Wild Master Tracker
+       File: index.html
+       Location: /games/HunterCOTW/index.html
+       Version: 4.1.0
+       Date/Time Stamp: 2026-10-02 02:26:00 EDT (America/New_York)
+       Description: Master hunter console, responsive drawer navigation,
+                    career rank controls, and field telemetry container.
+       ========================================================================== -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>COTW Master Tracker | Werewolf Project</title>
-    <!-- Relative protocol link for Font Awesome -->
+
+    <!-- Google Tag Manager (Container Tag: G-CTYHDF4MSD) -->
+    <script>
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','G-CTYHDF4MSD');
+    </script>
+    <!-- End Google Tag Manager -->
+
+    <!-- Global Site Tag (gtag.js) - Google Analytics 4 (G-CTYHDF4MSD) -->
+    <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-CTYHDF4MSD', {
+        'send_page_view': true,
+        'allow_google_signals': true,
+        'cookie_flags': 'SameSite=None;Secure'
+      });
+    </script>
+
+    <!-- Relative Protocol External Stylesheets -->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Main External Stylesheet -->
-    <link rel="stylesheet" href="./style.css?v=3.2.0">
+    <link rel="stylesheet" href="./style.css?v=4.1.0">
 </head>
 <body data-active-user="Werewolf">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="//www.googletagmanager.com/ns.html?id=G-CTYHDF4MSD"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
     <div class="background-overlay"></div>
 
     <div class="container tracker-container">
         <!-- Section 1: Dynamic Top Navigation Bar (Layered at z-index 99999) -->
-        <div class="nav-wrapper-centered">
+        <header class="nav-wrapper-centered" role="banner">
             <button type="button" id="mobile-sandwich-btn" class="sandwich-btn" onclick="appState.toggleMobileMenu(event)" aria-label="Toggle Navigation Menu">
                 <span class="sandwich-icon">☰</span>
                 <span class="sandwich-label">Menu</span>
             </button>
-            <nav id="dynamic-nav-links" class="nav-collapsed-mobile"></nav>
-        </div>
+            <nav id="dynamic-nav-links" class="nav-collapsed-mobile" aria-label="Global Navigation"></nav>
+        </header>
 
         <!-- Section 2: Master Hunter Console Card -->
-        <section class="console-card profile-header">
+        <section class="console-card profile-header" aria-labelledby="hunter-name">
             <div class="console-header">
                 <div class="console-title-group">
                     <div class="sub-label">Consolidated RTDB Telemetry</div>
@@ -46,7 +83,7 @@
                     </select>
 
                     <!-- Exact 4 Standardized Player Handles -->
-                    <div class="user-btn-group">
+                    <div class="user-btn-group" role="group" aria-label="Active Profile Selectors">
                         <button type="button" class="user-nav-btn profile-btn" onclick="appState.switchHunter('Werewolf')">Werewolf</button>
                         <button type="button" class="user-nav-btn profile-btn" onclick="appState.switchHunter('Raymystyro')">Raymystyro</button>
                         <button type="button" class="user-nav-btn profile-btn" onclick="appState.switchHunter('Terrdog')">Terrdog</button>
@@ -59,7 +96,7 @@
             <div class="rank-header-label">
                 Career Animal Ranks (In-Game Profile Sync)
             </div>
-            <div class="rank-grid">
+            <div class="rank-grid" role="region" aria-label="Career Animal Ranks">
                 <div class="rank-badge rank-item">
                     <span class="icon rank-emoji">👑</span>
                     <span class="title rank-label">G.O.</span>
@@ -137,26 +174,26 @@
                 </select>
             </div>
 
-            <div id="stat-line">
-                Connecting to Realtime Database...
+            <div id="stat-line" role="status" aria-live="polite">
+                Connecting to Database...
             </div>
         </section>
 
         <!-- Section 3: Dynamic Reserve Containers (Field Telemetry Grind Card + Trophy Grids) -->
-        <main id="section-container"></main>
+        <main id="section-container" role="main"></main>
 
         <!-- Section 4: Persistent Footer -->
-        <footer class="tracker-footer">
+        <footer class="tracker-footer" role="contentinfo">
             <div class="footer-link-group">
                 Support the hunt: <a href="//playstation-be936.web.app/">Werewolf Project Home</a>
             </div>
             <div id="build-meta-footer">
-                Werewolf Project Engine • v3.2.0 • Build: 2026-10-01 21:07:00 EDT
+                Werewolf Project Engine • v4.1.0 • Build: 2026-10-02 02:26:00 EDT
             </div>
         </footer>
     </div>
 
     <!-- App Engine Script Connection -->
-    <script type="module" src="./script.js?v=3.2.0"></script>
+    <script type="module" src="./script.js?v=4.1.0"></script>
 </body>
 </html>
