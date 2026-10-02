@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COTW Squad Need Zones & Hotspot Intel | Werewolf Project</title>
+
+    <!-- Line 10: Google Tag Manager & Google Analytics 4 (G-CTYHDF4MSD) Deployment -->
+    <script>
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-W3R9F47');
+    </script>
+    <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-CTYHDF4MSD', {
+          'send_page_view': true,
+          'anonymize_ip': true,
+          'cookie_flags': 'SameSite=None;Secure'
+      });
+    </script>
+
+    <!-- Line 32: Sleek, Glossy, High-Contrast Responsive Skin -->
+    <style>
+        :root {
+            --bg-dark: #080c14;
+            --card-bg: rgba(15, 23, 42, 0.92);
+            --card-surface: #0f172a;
+            --card-subtle: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-orange: #ff5500;
+            --accent-blue: #2563eb;
+            --accent-purple: #a855f7;
+            --accent-green: #10b981;
+            --accent-gold: #eab308;
+            --accent-cyan: #06b6d4;
+            --tap-target: 48px;
+            --tap-target-min: 44px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at top, rgba(30, 41, 59, 0.7) 0%, rgba(8, 12, 20, 1) 100%);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: 16px 16px 80px 16px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 900;
+        }
+        h1 { font-size: clamp(1.4rem, 3.5vw, 2rem); color: #fff; text-shadow: 0 0 15px rgba(255, 85, 0, 0.4); }
+        h2 { font-size: clamp(1.1rem, 2.5vw, 1.4rem); }
+
+        /* Navigation & Top Control Header */
+        .intel-header {
+            background: var(--card-bg);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .nav-btn {
+            min-height: var(--tap-target-min);
+            background: #0f172a;
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        .nav-btn:hover {
+            background: var(--card-subtle);
+            border-color: var(--accent-orange);
+        }
+
+        /* Filter Controls */
+        .controls-toolbar {
+            background: var(--card-surface);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            align-items: flex-end;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .filter-select {
+            min-height: var(--tap-target-min);
+            background: var(--card-subtle);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            padding: 8px 12px;
+            font-size: 16px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Stat Summary Strip */
+        .stat-summary-strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            background: var(--card-surface);
+            border-radius: 10px;
+            padding: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .summary-card strong {
+            font-size: 1.3rem;
+            color: var(--accent-orange);
+        }
+
+        /* Dual Section Grids */
+        .intel-section-title {
+            margin: 28px 0 14px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+
+        .intel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 18px;
+        }
+
+        @media (max-width: 767px) {
+            .intel-grid {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .intel-card {
+                width: 85% !important;
+                margin: 0 auto !important;
+            }
+        }
+
+        /* Intel Cards */
+        .intel-card {
+            background: var(--card-surface);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            position: relative;
+        }
+        .intel-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .intel-card.card-drink { border-left: 5px solid #06b6d4; }
+        .intel-card.card-feed { border-left: 5px solid #eab308; }
+        .intel-card.card-rest { border-left: 5px solid #a855f7; }
+        .intel-card.card-greatone { border: 2px solid #facc15; box-shadow: 0 0 20px rgba(250, 204, 21, 0.35); }
+        .intel-card.card-diamond { border: 2px solid #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.35); }
+        .intel-card.card-gold { border: 2px solid #d97706; }
+
+        .intel-card-header {
+            padding: 14px 16px 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .intel-species {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .badge-tag {
+            font-size: 0.7rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        .tag-drink { background: rgba(6, 182, 212, 0.2); color: #06b6d4; border: 1px solid #06b6d4; }
+        .tag-feed { background: rgba(234, 179, 8, 0.2); color: #eab308; border: 1px solid #eab308; }
+        .tag-rest { background: rgba(168, 85, 247, 0.2); color: #a855f7; border: 1px solid #a855f7; }
+        .tag-greatone { background: #ca8a04; color: #fff; }
+        .tag-diamond { background: #0284c7; color: #fff; }
+        .tag-gold { background: #d97706; color: #fff; }
+
+        .intel-card-body {
+            padding: 0 16px 16px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .loc-badge-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 4px 0;
+        }
+
+        .loc-badge {
+            font-size: 0.75rem;
+            background: #1e293b;
+            color: #cbd5e1;
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .loc-coord {
+            color: #38bdf8;
+            font-family: monospace;
+            font-weight: 700;
+        }
+
+        .intel-details-table {
+            width: 100%;
+            font-size: 0.8rem;
+            border-collapse: collapse;
+            margin-top: 6px;
+        }
+        .intel-details-table td {
+            padding: 3px 0;
+            color: var(--text-muted);
+        }
+        .intel-details-table td strong {
+            color: var(--text-main);
+        }
+
+        .hunter-stamp {
+            font-size: 0.75rem;
+            font-weight: 800;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 8px;
+        }
+
+        .thumb-preview-box {
+            width: 100%;
+            height: 140px;
+            background: #020617;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+        .thumb-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+        .thumb-preview-box:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Modal Lightbox */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .lightbox-modal.is-active { display: flex; }
+        .lightbox-card {
+            max-width: 900px;
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+        .lightbox-card img {
+            width: 100%;
+            max-height: 520px;
+            object-fit: contain;
+            background: #020617;
+            display: block;
+        }
+        .lightbox-caption {
+            padding: 16px;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .close-lightbox-btn {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            min-height: 44px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        /* Persistent Sticky Footer */
+        footer.tracker-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px 16px;
+            background: rgba(8, 12, 20, 0.95);
+            backdrop-filter: blur(8px);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            z-index: 9999;
+        }
+        #build-meta-footer {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-family: monospace;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Top Control Header -->
+        <header class="intel-header">
+            <div>
+                <h1>Squad Need Zones & Hotspots</h1>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Shared Hunting Ground Intelligence, Need Zones & Trophy Coordinates</p>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <a href="//playstation-be938.web.app/games/HunterCOTW/index.html" class="nav-btn">
+                    🎯 Field Grind Tracker
+                </a>
+            </div>
+        </header>
+
+        <!-- Filters Toolbar -->
+        <section class="controls-toolbar">
+            <div class="filter-group">
+                <label class="filter-label">Reserve Map</label>
+                <select id="filter-reserve" class="filter-select" onchange="intelEngine.onReserveChange()">
+                    <!-- Populated dynamically -->
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Target Animal</label>
+                <select id="filter-species" class="filter-select" onchange="intelEngine.applyFilters()">
+                    <option value="ALL">All Animals</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Region (Optional)</label>
+                <select id="filter-region" class="filter-select" onchange="intelEngine.applyFilters()">
+                    <option value="ALL">All Known Regions</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Hunter Contribution</label>
+                <select id="filter-hunter" class="filter-select" onchange="intelEngine.applyFilters()">
+                    <option value="ALL">All Squad Members</option>
+                    <option value="Werewolf">Werewolf</option>
+                    <option value="Raymystyro">Raymystyro</option>
+                    <option value="Terrdog">Terrdog</option>
+                    <option value="DesdemonaTiger">DesdemonaTiger</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Need Zone Activity</label>
+                <select id="filter-activity" class="filter-select" onchange="intelEngine.applyFilters()">
+                    <option value="ALL">All Activities</option>
+                    <option value="Drinking">Drinking 💧</option>
+                    <option value="Feeding">Feeding 🌾</option>
+                    <option value="Resting">Resting 💤</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Stat Strip -->
+        <section class="stat-summary-strip">
+            <div class="summary-card">
+                <span>Pinned Need Zones</span>
+                <strong id="stat-count-zones">0</strong>
+            </div>
+            <div class="summary-card">
+                <span>Gold+ Hotspots</span>
+                <strong id="stat-count-hotspots">0</strong>
+            </div>
+            <div class="summary-card">
+                <span>Active Reserve</span>
+                <strong id="stat-active-map" style="font-size:1rem; color:#fff;">Layton Lake</strong>
+            </div>
+        </section>
+
+        <!-- Section 1: Pinned Need Zones -->
+        <div class="intel-section-title">
+            <h2>📌 Verified Need Zones</h2>
+            <span id="readout-needzones" style="color:var(--text-muted); font-weight:700;">Loading...</span>
+        </div>
+        <div class="intel-grid" id="needzones-grid">
+            <!-- Dynamically populated -->
+        </div>
+
+        <!-- Section 2: Diamond & Great One Hotspots -->
+        <div class="intel-section-title">
+            <h2>💎 Diamond, Great One & Gold Hotspots</h2>
+            <span id="readout-hotspots" style="color:var(--text-muted); font-weight:700;">Loading...</span>
+        </div>
+        <div class="intel-grid" id="hotspots-grid">
+            <!-- Dynamically populated -->
+        </div>
+    </div>
+
+    <!-- Modal Lightbox (Constrained Description) -->
+    <div id="lightbox-modal" class="lightbox-modal" onclick="intelEngine.closeLightbox()">
+        <div class="lightbox-card" onclick="event.stopPropagation()">
+            <img id="lightbox-image" class="in-lightbox" src="" alt="Harvest Location Trophy Proof">
+            <div class="lightbox-caption">
+                <div id="lightbox-desc">Hotspot Proof</div>
+                <button type="button" class="close-lightbox-btn" onclick="intelEngine.closeLightbox()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Persistent Sticky Footer -->
+    <footer class="tracker-footer">
+        <span id="build-meta-footer">Werewolf Project Engine • v2.1.0 • Build: 2026-10-02 16:15:00 EDT</span>
+    </footer>
+
+    <!-- Firebase SDK Logic -->
+    <script type="module">
+        import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getAuth, signInAnonymously } from '//www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+        import { getDatabase, ref as rtdbRef, onValue } from '//www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
+            authDomain: "entertainment-71888.firebaseapp.com",
+            databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
+            projectId: "entertainment-71888",
+            storageBucket: "entertainment-71888.firebasestorage.app",
+            messagingSenderId: "660524340277",
+            appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
+            measurementId: "G-JDNSLD3GFE"
+        };
+
+        const HUNTERS = ['Werewolf', 'Raymystyro', 'Terrdog', 'DesdemonaTiger'];
+
+        const KNOWN_RESERVES = [
+            'Layton Lake', 'Hirschfelden', 'Medved-Taiga', 'Vurhonga Savanna',
+            'Parque Fernando', 'Yukon Valley', 'Cuatro Colinas', 'Silver Ridge Peaks',
+            'Te Awaroa', 'Rancho del Arroyo', 'Mississippi Acres', 'Revontuli Coast',
+            'New England Mountains', 'Emerald Coast', 'Sundarpatan', 'Salzwiesen Park',
+            'Askiy Ridge', 'Tòrr nan Sithean', 'Intisuyu'
+        ];
+
+        const intelEngine = {
+            auth: null,
+            rtdb: null,
+            rawNeedZones: [],
+            rawHotspots: [],
+            activeReserve: 'Layton Lake',
+
+            init: async function() {
+                try {
+                    const app = initializeApp(firebaseConfig, 'COTW-Shared-Intel');
+                    this.auth = getAuth(app);
+                    this.rtdb = getDatabase(app);
+
+                    this.populateReserveDropdown();
+                    await signInAnonymously(this.auth);
+
+                    this.bindSharedDatabaseNodes();
+                } catch (err) {
+                    console.error("Intel Init Error:", err);
+                }
+            },
+
+            populateReserveDropdown: function() {
+                const sel = document.getElementById('filter-reserve');
+                if (!sel) return;
+                sel.innerHTML = '';
+                KNOWN_RESERVES.forEach(res => {
+                    const opt = document.createElement('option');
+                    opt.value = res;
+                    opt.innerText = res;
+                    if (res === this.activeReserve) opt.selected = true;
+                    sel.appendChild(opt);
+                });
+            },
+
+            onReserveChange: function() {
+                const sel = document.getElementById('filter-reserve');
+                if (sel) {
+                    this.activeReserve = sel.value;
+                    const mapBadge = document.getElementById('stat-active-map');
+                    if (mapBadge) mapBadge.innerText = this.activeReserve;
+                    this.updateSpeciesFilterList();
+                    this.updateRegionFilterList();
+                    this.applyFilters();
+                }
+            },
+
+            bindSharedDatabaseNodes: function() {
+                HUNTERS.forEach(hunter => {
+                    // 1. Listen for Pinned Need Zones
+                    const zonesRef = rtdbRef(this.rtdb, `users/${hunter}/need_zones`);
+                    onValue(zonesRef, (snapshot) => {
+                        this.rawNeedZones = this.rawNeedZones.filter(z => z.hunter !== hunter);
+                        if (snapshot.exists()) {
+                            const resMap = snapshot.val();
+                            Object.keys(resMap).forEach(resKey => {
+                                const specMap = resMap[resKey];
+                                if (typeof specMap !== 'object') return;
+                                Object.keys(specMap).forEach(specKey => {
+                                    const records = specMap[specKey];
+                                    if (!records) return;
+                                    Object.entries(records).forEach(([id, item]) => {
+                                        this.rawNeedZones.push({
+                                            id: id,
+                                            hunter: hunter,
+                                            reserve: (item.reserve || resKey).replace(/_/g, ' '),
+                                            species: (item.species || specKey).replace(/_/g, ' '),
+                                            zoneType: item.zoneType || 'Drinking',
+                                            activeTime: item.activeTime || 'Active Hours',
+                                            lat: parseFloat(item.lat) || 0,
+                                            long: parseFloat(item.long) || 0,
+                                            region: this.sanitizeLoc(item.region),
+                                            subRegion: this.sanitizeLoc(item.subRegion),
+                                            timestamp: item.timestamp || 0
+                                        });
+                                    });
+                                });
+                            });
+                        }
+                        this.updateSpeciesFilterList();
+                        this.updateRegionFilterList();
+                        this.applyFilters();
+                    }, (err) => console.warn(`Need Zone read failed for ${hunter}:`, err.message));
+
+                    // 2. Listen for Harvest Telemetry (Extract Golds, Diamonds & Great Ones)
+                    const grindRef = rtdbRef(this.rtdb, `users/${hunter}/grind_tracker`);
+                    onValue(grindRef, (snapshot) => {
+                        this.rawHotspots = this.rawHotspots.filter(h => h.hunter !== hunter);
+                        if (snapshot.exists()) {
+                            const resMap = snapshot.val();
+                            Object.keys(resMap).forEach(resKey => {
+                                const specMap = resMap[resKey];
+                                if (typeof specMap !== 'object') return;
+                                Object.keys(specMap).forEach(specKey => {
+                                    const harvests = specMap[specKey]?.harvests;
+                                    if (!harvests) return;
+                                    Object.entries(harvests).forEach(([id, item]) => {
+                                        const rating = (item.rating || 'none').toLowerCase();
+                                        if (rating === 'gold' || rating === 'diamond' || rating === 'greatone') {
+                                            this.rawHotspots.push({
+                                                id: id,
+                                                hunter: hunter,
+                                                reserve: (item.reserve || resKey).replace(/_/g, ' '),
+                                                species: (item.species || specKey).replace(/_/g, ' '),
+                                                rating: rating,
+                                                weight: item.weight || '—',
+                                                shotDistance: item.shotDistance || 0,
+                                                weapon: item.weapon || 'Unknown',
+                                                hitOrgan: item.hitOrgan || 'Unknown',
+                                                needZoneType: item.needZoneType || 'None',
+                                                needZoneTime: item.needZoneTime || '',
+                                                imageUrl: item.imageUrl || '',
+                                                lat: parseFloat(item.lat) || 0,
+                                                long: parseFloat(item.long) || 0,
+                                                region: this.sanitizeLoc(item.region),
+                                                subRegion: this.sanitizeLoc(item.subRegion),
+                                                timestamp: item.timestamp || 0
+                                            });
+                                        }
+                                    });
+                                });
+                            });
+                        }
+                        this.updateSpeciesFilterList();
+                        this.updateRegionFilterList();
+                        this.applyFilters();
+                    }, (err) => console.warn(`Grind read failed for ${hunter}:`, err.message));
+                });
+            },
+
+            sanitizeLoc: function(val) {
+                if (!val) return '';
+                const clean = String(val).trim();
+                if (clean.toLowerCase() === 'unknown' || clean.toLowerCase() === 'none' || clean === '0') return '';
+                return clean;
+            },
+
+            updateSpeciesFilterList: function() {
+                const specSelect = document.getElementById('filter-species');
+                if (!specSelect) return;
+
+                const currentVal = specSelect.value;
+                const relevantZones = this.rawNeedZones.filter(z => z.reserve.toLowerCase() === this.activeReserve.toLowerCase());
+                const relevantSpots = this.rawHotspots.filter(h => h.reserve.toLowerCase() === this.activeReserve.toLowerCase());
+
+                const speciesFound = new Set();
+                relevantZones.forEach(z => { if (z.species) speciesFound.add(z.species); });
+                relevantSpots.forEach(h => { if (h.species) speciesFound.add(h.species); });
+
+                specSelect.innerHTML = '<option value="ALL">All Animals</option>';
+                [...speciesFound].sort().forEach(sp => {
+                    const opt = document.createElement('option');
+                    opt.value = sp;
+                    opt.innerText = sp;
+                    if (sp === currentVal) opt.selected = true;
+                    specSelect.appendChild(opt);
+                });
+            },
+
+            updateRegionFilterList: function() {
+                const regionSelect = document.getElementById('filter-region');
+                if (!regionSelect) return;
+
+                const currentVal = regionSelect.value;
+                const relevantZones = this.rawNeedZones.filter(z => z.reserve.toLowerCase() === this.activeReserve.toLowerCase());
+                const relevantSpots = this.rawHotspots.filter(h => h.reserve.toLowerCase() === this.activeReserve.toLowerCase());
+
+                const regionsFound = new Set();
+                relevantZones.forEach(z => { if (z.region) regionsFound.add(z.region); });
+                relevantSpots.forEach(h => { if (h.region) regionsFound.add(h.region); });
+
+                regionSelect.innerHTML = '<option value="ALL">All Known Regions</option>';
+                [...regionsFound].sort().forEach(reg => {
+                    const opt = document.createElement('option');
+                    opt.value = reg;
+                    opt.innerText = reg;
+                    if (reg === currentVal) opt.selected = true;
+                    regionSelect.appendChild(opt);
+                });
+            },
+
+            applyFilters: function() {
+                const specFilter = document.getElementById('filter-species')?.value || 'ALL';
+                const regFilter = document.getElementById('filter-region')?.value || 'ALL';
+                const hunterFilter = document.getElementById('filter-hunter')?.value || 'ALL';
+                const actFilter = document.getElementById('filter-activity')?.value || 'ALL';
+
+                // Filter Need Zones
+                const filteredZones = this.rawNeedZones.filter(z => {
+                    const matchMap = z.reserve.toLowerCase() === this.activeReserve.toLowerCase();
+                    const matchSpec = (specFilter === 'ALL' || z.species.toLowerCase().includes(specFilter.toLowerCase()));
+                    const matchReg = (regFilter === 'ALL' || z.region === regFilter);
+                    const matchHunter = (hunterFilter === 'ALL' || z.hunter === hunterFilter);
+                    const matchAct = (actFilter === 'ALL' || z.zoneType.toLowerCase().includes(actFilter.toLowerCase()));
+                    return matchMap && matchSpec && matchReg && matchHunter && matchAct;
+                });
+
+                // Filter Hotspots
+                const filteredSpots = this.rawHotspots.filter(h => {
+                    const matchMap = h.reserve.toLowerCase() === this.activeReserve.toLowerCase();
+                    const matchSpec = (specFilter === 'ALL' || h.species.toLowerCase().includes(specFilter.toLowerCase()));
+                    const matchReg = (regFilter === 'ALL' || h.region === regFilter);
+                    const matchHunter = (hunterFilter === 'ALL' || h.hunter === hunterFilter);
+                    return matchMap && matchSpec && matchReg && matchHunter;
+                });
+
+                document.getElementById('stat-count-zones').innerText = filteredZones.length;
+                document.getElementById('stat-count-hotspots').innerText = filteredSpots.length;
+
+                this.renderNeedZones(filteredZones);
+                this.renderHotspots(filteredSpots);
+            },
+
+            renderNeedZones: function(items) {
+                const container = document.getElementById('needzones-grid');
+                const readout = document.getElementById('readout-needzones');
+                if (!container) return;
+                container.innerHTML = '';
+                if (readout) readout.innerText = `${items.length} Registered`;
+
+                if (items.length === 0) {
+                    container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 30px; color:var(--text-muted);">No need zones logged for ${this.activeReserve} under selected filters.</div>`;
+                    return;
+                }
+
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    const actClass = item.zoneType.toLowerCase().includes('drink') ? 'card-drink' : (item.zoneType.toLowerCase().includes('feed') ? 'card-feed' : 'card-rest');
+                    const tagClass = item.zoneType.toLowerCase().includes('drink') ? 'tag-drink' : (item.zoneType.toLowerCase().includes('feed') ? 'tag-feed' : 'tag-rest');
+                    card.className = `intel-card ${actClass}`;
+
+                    let locHTML = '';
+                    if (item.region || item.subRegion || (item.lat !== 0 && item.long !== 0)) {
+                        locHTML = `
+                            <div class="loc-badge-group">
+                                ${item.region ? `<span class="loc-badge">📍 ${item.region}</span>` : ''}
+                                ${item.subRegion ? `<span class="loc-badge">📌 ${item.subRegion}</span>` : ''}
+                                ${(item.lat !== 0 && item.long !== 0) ? `<span class="loc-badge loc-coord">⌖ (${item.long.toFixed(0)},${item.lat.toFixed(0)})</span>` : ''}
+                            </div>
+                        `;
+                    }
+
+                    card.innerHTML = `
+                        <div class="intel-card-header">
+                            <div>
+                                <div class="intel-species">${item.species}</div>
+                                <span style="font-size:0.75rem; color:#94a3b8;">${item.reserve}</span>
+                            </div>
+                            <span class="badge-tag ${tagClass}">${item.zoneType}</span>
+                        </div>
+                        <div class="intel-card-body">
+                            ${locHTML}
+                            <table class="intel-details-table">
+                                <tr><td>In-Game Schedule:</td><td style="text-align:right;"><strong>⏰ ${item.activeTime}</strong></td></tr>
+                            </table>
+                            <div class="hunter-stamp">
+                                <span style="color:var(--text-muted);">Logged By:</span>
+                                <span style="color:var(--accent-orange);">${item.hunter}</span>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            },
+
+            renderHotspots: function(items) {
+                const container = document.getElementById('hotspots-grid');
+                const readout = document.getElementById('readout-hotspots');
+                if (!container) return;
+                container.innerHTML = '';
+                if (readout) readout.innerText = `${items.length} Recorded`;
+
+                if (items.length === 0) {
+                    container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 30px; color:var(--text-muted);">No Gold, Diamond, or Great One harvests recorded for ${this.activeReserve}.</div>`;
+                    return;
+                }
+
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = `intel-card card-${item.rating}`;
+
+                    let locHTML = '';
+                    if (item.region || item.subRegion || (item.lat !== 0 && item.long !== 0)) {
+                        locHTML = `
+                            <div class="loc-badge-group">
+                                ${item.region ? `<span class="loc-badge">📍 ${item.region}</span>` : ''}
+                                ${item.subRegion ? `<span class="loc-badge">📌 ${item.subRegion}</span>` : ''}
+                                ${(item.lat !== 0 && item.long !== 0) ? `<span class="loc-badge loc-coord">⌖ (${item.long.toFixed(0)},${item.lat.toFixed(0)})</span>` : ''}
+                            </div>
+                        `;
+                    }
+
+                    let photoHTML = '';
+                    if (item.imageUrl) {
+                        photoHTML = `
+                            <div class="thumb-preview-box" onclick="intelEngine.openLightbox('${item.imageUrl}', '${item.species}', '${item.hunter}', '${item.weight} kg', '${item.rating}')">
+                                <img src="${item.imageUrl}" alt="" loading="lazy">
+                            </div>
+                        `;
+                    }
+
+                    card.innerHTML = `
+                        <div class="intel-card-header">
+                            <div>
+                                <div class="intel-species">${item.species}</div>
+                                <span style="font-size:0.75rem; color:#94a3b8;">${item.reserve}</span>
+                            </div>
+                            <span class="badge-tag tag-${item.rating}">${item.rating}</span>
+                        </div>
+                        <div class="intel-card-body">
+                            ${locHTML}
+                            <table class="intel-details-table">
+                                <tr><td>Harvest Weight:</td><td style="text-align:right;"><strong>${item.weight} kg</strong></td></tr>
+                                <tr><td>Shot Distance:</td><td style="text-align:right;"><strong>${item.shotDistance} m</strong></td></tr>
+                                <tr><td>Weapon & Organ:</td><td style="text-align:right;"><strong>${item.weapon} (${item.hitOrgan})</strong></td></tr>
+                                ${item.needZoneTime ? `<tr><td>Activity Time:</td><td style="text-align:right;"><strong>⏰ ${item.needZoneTime}</strong></td></tr>` : ''}
+                            </table>
+                            ${photoHTML}
+                            <div class="hunter-stamp">
+                                <span style="color:var(--text-muted);">Bagged By:</span>
+                                <span style="color:var(--accent-orange);">${item.hunter}</span>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            },
+
+            openLightbox: function(url, species, hunter, weight, rating) {
+                const modal = document.getElementById('lightbox-modal');
+                const img = document.getElementById('lightbox-image');
+                const desc = document.getElementById('lightbox-desc');
+                if (modal && img && desc) {
+                    img.src = url;
+                    img.alt = `${hunter}'s ${rating.toUpperCase()} ${species} (${weight})`;
+                    desc.innerHTML = `<strong>${hunter}'s ${species}</strong> | Rating: ${rating.toUpperCase()} | Weight: ${weight}`;
+                    modal.classList.add('is-active');
+                }
+            },
+
+            closeLightbox: function() {
+                const modal = document.getElementById('lightbox-modal');
+                if (modal) modal.classList.remove('is-active');
+            }
+        };
+
+        window.intelEngine = intelEngine;
+        window.addEventListener('DOMContentLoaded', () => {
+            intelEngine.init();
+        });
+    </script>
+</body>
+</html>
