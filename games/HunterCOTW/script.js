@@ -1,27 +1,26 @@
 /* ============================================================================
    File: script.js
    Location: /games/HunterCOTW/script.js
-   Description: theHunter: Call of the Wild Responsive RTDB + Firestore Engine
-   Database: Cloud Firestore & Realtime Database (entertainment-71888)
-   Firestore Target: /users/{userId}/platform/{platform}/progress/COTW
-   RTDB Trophy Source: /psn/gamertags/{Gamertag}/liveTrophyProgress/NPWR13211_00
-   RTDB Navigation Source: /utm_links
-   Analytics Tag: G-CTYHDF4MSD
-   Build Version: 2.3.0
-   Code Build Date: 2026-09-23 13:58:00 EDT (America/New_York)
+   Description: theHunter: Call of the Wild Consolidated RTDB Engine
+                - Full RTDB Trophy & PlayStation Network Sync
+                - Append-Only Weight & Harvest Telemetry Ledger (1-33 Drift Sweet Spot)
+                - Shared Geographic Need Zone & Coordinate Auto-Fill Map Registry
+                - Automated Animal Rank Auto-Increment via Harvest Entry
+   Database: Realtime Database (entertainment-71888)
+   Build Version: 3.0.0
+   Code Build Date: 2026-10-01 20:26:00 EDT (America/New_York)
    ============================================================================ */
 
 import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from '//www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-import { getFirestore, doc, setDoc, onSnapshot } from '//www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import { getDatabase, ref as rtdbRef, onValue, off } from '//www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+import { getDatabase, ref as rtdbRef, onValue, set, update, push, off, get } from '//www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
 /* ----------------------------------------------------
- * SECTION 1: Build Metadata, User Map & Custom Color Themes
- * Lines 20-75: Release signatures, normalized gamer handles & themes
+ * SECTION 1: Build Metadata, User Map & Custom Themes
+ * Lines 20-80: Version signatures, player themes, asset icons
  * ---------------------------------------------------- */
-const BUILD_VERSION = "2.3.0";
-const CODE_BUILD_DATE = "2026-09-23 13:58:00 EDT";
+const BUILD_VERSION = "3.0.0";
+const CODE_BUILD_DATE = "2026-10-01 20:26:00 EDT";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -44,11 +43,6 @@ const USER_PSN_MAP = {
     'DesdemonaTiger': 'DesdemonaTiger'
 };
 
-// Player Theme Palettes
-// Werewolf3788: Bugatti (Carbon Black & Hyper Orange)
-// OneLIVIDMAN: USA Flag (Deep Red & Electric Blue)
-// Terrdog: Royal Amethyst Purple
-// DesdemonaTiger: Emerald Teal
 const USER_THEMES = {
     'Werewolf3788': {
         accent: '#ff5500',
@@ -95,29 +89,13 @@ const ICONS = {
 
 /* ----------------------------------------------------
  * SECTION 2: Master Helpers
- * Lines 77-102: Checklist generation & alphabetization
+ * Lines 82-105: Checklists & baseline helpers
  * ---------------------------------------------------- */
 const checkSet = (items) => items.map(name => ({ name, done: false }));
 
-const formatAlphaCheckset = (items) => {
-    return items
-        .sort((a, b) => {
-            const nameA = typeof a === 'string' ? a : a.name;
-            const nameB = typeof b === 'string' ? b : b.name;
-            return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
-        })
-        .map((item, idx) => {
-            if (typeof item === 'string') {
-                return { name: `${idx + 1}. ${item}`, done: false, images: [] };
-            } else {
-                return { name: `${idx + 1}. ${item.name}`, done: false, images: item.images || [] };
-            }
-        });
-};
-
 /* ----------------------------------------------------
- * SECTION 3: Raw Static Master Data Baseline
- * Lines 104-227: Complete trophy & mission database records
+ * SECTION 3: Raw Static Master Trophy Data Baseline
+ * Lines 107-230: Complete trophy & mission database records
  * ---------------------------------------------------- */
 const trophyData = [
     // --- BASE GAME TROPHIES ---
@@ -302,28 +280,26 @@ const trophyData = [
 ];
 
 /* ----------------------------------------------------
- * SECTION 4: Platform Normalization
- * Lines 229-239: Uniform platform sanitation
+ * SECTION 4: Species Weight Baseline Table
+ * Lines 232-260: Known min/max weight benchmarks for Great One species
  * ---------------------------------------------------- */
-const normalizePlatform = (inputPlatform) => {
-    if (!inputPlatform) return 'playstation';
-    const clean = String(inputPlatform).toLowerCase().trim();
-    if (clean === 'psn' || clean === 'ps' || clean === 'playstation') {
-        return 'playstation';
-    }
-    return clean;
+const SPECIES_BENCHMARKS = {
+    'Black Bear': { min: 40, max: 290, sweetLow: 80, sweetHigh: 115, diamondLevel: 9 },
+    'Whitetail Deer': { min: 42, max: 100, sweetLow: 50, sweetHigh: 65, diamondLevel: 3 },
+    'Red Deer': { min: 90, max: 240, sweetLow: 120, sweetHigh: 155, diamondLevel: 9 },
+    'Moose': { min: 300, max: 620, sweetLow: 360, sweetHigh: 430, diamondLevel: 5 },
+    'Fallow Deer': { min: 30, max: 100, sweetLow: 45, sweetHigh: 60, diamondLevel: 5 },
+    'Gray Wolf': { min: 30, max: 80, sweetLow: 35, sweetHigh: 46, diamondLevel: 9 }
 };
 
 /* ----------------------------------------------------
- * SECTION 5: Dynamic 3-Tier Responsive Navigation Styles Injection
- * Tier 1: Desktop (>= 1280px) -> Horizontal Full Bar (Sandwich hidden)
- * Tier 2: Tablet (768px - 1279px) -> Condensed Drawer (48x48 touch targets)
- * Tier 3: Mobile (< 768px) -> Pure Sandwich Drawer (Tap-only, auto-collapse)
+ * SECTION 5: Responsive Styles Injection
+ * Lines 262-440: Glossy card UI, 48px touch targets, responsive tiers
  * ---------------------------------------------------- */
-const injectResponsiveNavbarStyles = () => {
-    if (document.getElementById('cotw-responsive-nav-styles')) return;
+const injectResponsiveStyles = () => {
+    if (document.getElementById('cotw-responsive-engine-styles')) return;
     const styleEl = document.createElement('style');
-    styleEl.id = 'cotw-responsive-nav-styles';
+    styleEl.id = 'cotw-responsive-engine-styles';
     styleEl.innerHTML = `
         .nav-wrapper-centered {
             display: flex;
@@ -338,10 +314,7 @@ const injectResponsiveNavbarStyles = () => {
 
         /* --- DESKTOP (1280px and wider) --- */
         @media (min-width: 1280px) {
-            .sandwich-btn {
-                display: none !important;
-            }
-
+            .sandwich-btn { display: none !important; }
             #dynamic-nav-links {
                 display: flex !important;
                 flex-wrap: wrap;
@@ -355,7 +328,6 @@ const injectResponsiveNavbarStyles = () => {
                 border-radius: 12px;
                 box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
             }
-
             #dynamic-nav-links a, .nav-dropbtn {
                 display: inline-flex;
                 align-items: center;
@@ -372,18 +344,12 @@ const injectResponsiveNavbarStyles = () => {
                 transition: all 0.2s ease-in-out;
                 min-height: 40px;
             }
-
             #dynamic-nav-links a:hover, .nav-dropbtn:hover {
                 background: rgba(255, 255, 255, 0.1);
                 border-color: var(--user-theme-border);
                 color: var(--user-theme-accent);
             }
-
-            .nav-dropdown {
-                position: relative;
-                display: inline-block;
-            }
-
+            .nav-dropdown { position: relative; display: inline-block; }
             .nav-dropdown-content {
                 display: none;
                 position: absolute;
@@ -401,12 +367,8 @@ const injectResponsiveNavbarStyles = () => {
                 flex-direction: column;
                 gap: 4px;
             }
-
             .nav-dropdown:hover .nav-dropdown-content,
-            .nav-dropdown.active .nav-dropdown-content {
-                display: flex;
-            }
-
+            .nav-dropdown.active .nav-dropdown-content { display: flex; }
             .nav-dropdown-content a {
                 display: flex;
                 align-items: center;
@@ -418,15 +380,14 @@ const injectResponsiveNavbarStyles = () => {
                 background: rgba(30, 41, 59, 0.6);
                 white-space: nowrap;
             }
-
             .nav-dropdown-content a:hover {
                 background: #1e293b;
                 color: var(--user-theme-accent);
             }
         }
 
-        /* --- TABLET (768px to 1279px) --- */
-        @media (min-width: 768px) and (max-width: 1279px) {
+        /* --- TABLET & MOBILE (< 1280px) --- */
+        @media (max-width: 1279px) {
             .sandwich-btn {
                 display: inline-flex !important;
                 align-items: center;
@@ -445,21 +406,15 @@ const injectResponsiveNavbarStyles = () => {
                 box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
                 margin-bottom: 8px;
             }
-
             .sandwich-icon {
                 font-size: 1.3rem;
                 color: var(--user-theme-accent);
             }
-
-            #dynamic-nav-links.nav-collapsed-mobile {
-                display: none !important;
-            }
-
+            #dynamic-nav-links.nav-collapsed-mobile { display: none !important; }
             #dynamic-nav-links.nav-expanded-mobile {
                 display: flex !important;
                 flex-direction: column;
                 width: 100%;
-                max-width: 600px;
                 background: rgba(15, 23, 42, 0.98);
                 border: 1px solid var(--user-theme-border);
                 border-radius: 12px;
@@ -467,10 +422,8 @@ const injectResponsiveNavbarStyles = () => {
                 gap: 8px;
                 box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7);
             }
-
             #dynamic-nav-links a, .nav-dropbtn {
                 min-height: 48px;
-                min-width: 48px;
                 padding: 12px 18px;
                 font-size: 0.95rem;
                 border-radius: 8px;
@@ -483,11 +436,7 @@ const injectResponsiveNavbarStyles = () => {
                 text-decoration: none;
                 border: 1px solid transparent;
             }
-
-            .nav-dropdown {
-                width: 100%;
-            }
-
+            .nav-dropdown { width: 100%; }
             .nav-dropdown-content {
                 display: none;
                 position: static;
@@ -501,119 +450,7 @@ const injectResponsiveNavbarStyles = () => {
                 flex-direction: column;
                 gap: 4px;
             }
-
-            .nav-dropdown.active .nav-dropdown-content {
-                display: flex;
-            }
-
-            .nav-dropdown-content a {
-                min-height: 48px;
-                padding: 10px 14px;
-                font-size: 0.9rem;
-                color: #e2e8f0;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                text-decoration: none;
-            }
-        }
-
-        /* --- MOBILE (Under 768px) --- */
-        @media (max-width: 767px) {
-            .sandwich-btn {
-                display: inline-flex !important;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-                width: 100%;
-                max-width: 280px;
-                min-height: 48px;
-                background: #0f172a;
-                border: 1px solid var(--user-theme-border);
-                border-radius: 10px;
-                color: #f8fafc;
-                font-size: 1rem;
-                font-weight: 700;
-                cursor: pointer;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-                margin-bottom: 8px;
-                transition: all 0.2s ease-in-out;
-            }
-
-            .sandwich-btn:active {
-                transform: scale(0.98);
-            }
-
-            .sandwich-icon {
-                font-size: 1.3rem;
-                color: var(--user-theme-accent);
-            }
-
-            #dynamic-nav-links.nav-collapsed-mobile {
-                display: none !important;
-            }
-
-            #dynamic-nav-links.nav-expanded-mobile {
-                display: flex !important;
-                flex-direction: column;
-                width: 100%;
-                background: rgba(15, 23, 42, 0.98);
-                border: 1px solid var(--user-theme-border);
-                border-radius: 10px;
-                padding: 12px;
-                box-sizing: border-box;
-                gap: 6px;
-            }
-
-            #dynamic-nav-links a, .nav-dropbtn {
-                width: 100%;
-                justify-content: space-between;
-                min-height: 48px;
-                padding: 12px 14px;
-                font-size: 0.9rem;
-                color: #f8fafc;
-                text-decoration: none;
-                background: rgba(30, 41, 59, 0.5);
-                border-radius: 8px;
-                border: 1px solid transparent;
-                display: flex;
-                align-items: center;
-            }
-
-            .nav-dropdown {
-                width: 100%;
-            }
-
-            .nav-dropdown-content {
-                display: none;
-                position: static;
-                transform: none;
-                width: 100%;
-                max-width: 100%;
-                box-shadow: none;
-                border: 1px solid rgba(255, 255, 255, 0.08);
-                background: #020617;
-                border-radius: 6px;
-                margin-top: 4px;
-                padding: 4px;
-                flex-direction: column;
-                gap: 4px;
-            }
-
-            .nav-dropdown.active .nav-dropdown-content {
-                display: flex;
-            }
-
-            .nav-dropdown-content a {
-                min-height: 48px;
-                padding: 10px 12px;
-                color: #e2e8f0;
-                font-size: 0.85rem;
-                text-decoration: none;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
+            .nav-dropdown.active .nav-dropdown-content { display: flex; }
         }
 
         .nav-icon {
@@ -623,11 +460,136 @@ const injectResponsiveNavbarStyles = () => {
             border-radius: 4px;
         }
 
-        /* Identity Lock Pin Controls */
-        .pin-device-control {
-            display: inline-flex;
+        /* --- FIELD TELEMETRY & SWEET-SPOT CARD --- */
+        .grind-card-container {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid var(--user-theme-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .grind-card-header {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .grind-grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 767px) {
+            .grind-grid-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .grind-input-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .grind-input, .grind-select {
+            width: 100%;
+            min-height: 48px;
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 8px 12px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .grind-input:focus, .grind-select:focus {
+            border-color: var(--user-theme-accent);
+            box-shadow: 0 0 8px var(--user-theme-glow);
+        }
+
+        .zone-toggle-btn {
+            min-height: 48px;
+            width: 100%;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: #1e293b;
+            color: #94a3b8;
+            transition: all 0.2s ease;
+        }
+
+        .zone-toggle-btn.is-main {
+            background: var(--user-theme-badge-bg);
+            color: var(--user-theme-badge-text);
+            border-color: transparent;
+            box-shadow: 0 0 10px var(--user-theme-glow);
+        }
+
+        .zone-toggle-btn.is-exterior {
+            background: #eab308;
+            color: #000000;
+            border-color: transparent;
+            box-shadow: 0 0 10px rgba(234, 179, 8, 0.4);
+        }
+
+        .log-harvest-btn {
+            min-height: 50px;
+            width: 100%;
+            background: var(--user-theme-accent);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 15px var(--user-theme-glow);
+            transition: transform 0.15s ease;
+        }
+
+        .log-harvest-btn:active {
+            transform: scale(0.98);
+        }
+
+        .gauge-container {
+            background: #020617;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .gauge-bar-bg {
+            width: 100%;
+            height: 12px;
+            background: #1e293b;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .gauge-bar-fill {
+            height: 100%;
+            background: var(--user-theme-accent);
+            width: 0%;
+            transition: width 0.3s ease;
         }
 
         .pin-device-btn {
@@ -642,99 +604,38 @@ const injectResponsiveNavbarStyles = () => {
             transition: all 0.2s ease-in-out;
             min-height: 48px;
         }
-
-        .pin-device-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-        }
-
         .pin-device-btn.is-pinned {
             background: var(--user-theme-badge-bg);
             color: var(--user-theme-badge-text);
             border-color: transparent;
             box-shadow: 0 0 12px var(--user-theme-glow);
         }
-
-        .trophy-card.completed {
-            border-color: var(--user-theme-accent) !important;
-            box-shadow: 0 0 15px var(--user-theme-glow) !important;
-        }
-
-        .number-control-group {
-            display: inline-flex;
-            align-items: center;
-            background: #0f172a;
-            border: 1px solid var(--user-theme-border);
-            border-radius: 8px;
-            overflow: hidden;
-            width: 100%;
-            max-width: 240px;
-        }
-
-        .number-control-group button {
-            background: #1e293b;
-            color: #f8fafc;
-            border: none;
-            padding: 8px 14px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: bold;
-            transition: background 0.2s;
-            min-height: 48px;
-            min-width: 44px;
-        }
-
-        .number-control-group button:hover {
-            background: #334155;
-        }
-
-        .number-control-group input[type="number"] {
-            flex-grow: 1;
-            width: 60px;
-            background: transparent;
-            border: none;
-            color: var(--user-theme-accent);
-            font-size: 0.95rem;
-            font-weight: 700;
-            text-align: center;
-            padding: 6px;
-            -moz-appearance: textfield;
-            min-height: 48px;
-        }
-
-        .number-control-group input[type="number"]::-webkit-outer-spin-button,
-        .number-control-group input[type="number"]::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .number-goal-label {
-            font-size: 0.8rem;
-            color: #94a3b8;
-            padding-right: 8px;
-            white-space: nowrap;
-        }
     `;
     document.head.appendChild(styleEl);
 };
 
 /* ----------------------------------------------------
- * SECTION 6: Main Application State & Engines
- * Lines 412-780: Identity cache, theme switcher, RTDB navigation
+ * SECTION 6: Main Application State & Unified RTDB Engine
+ * Lines 442-880: State, RTDB listeners, weight analyzer & auto-ranks
  * ---------------------------------------------------- */
 const appState = {
     activeHunter: localStorage.getItem('pinned_device_user') || localStorage.getItem('active_gaming_nickname') || 'Werewolf3788',
-    activePlatform: normalizePlatform(localStorage.getItem('active_gaming_platform')),
+    activePlatform: 'playstation',
+    activeReserve: 'Layton Lake',
+    activeSpecies: 'Black Bear',
+    zoneType: 'main', // 'main' or 'exterior'
     hunterData: [],
     animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 },
     auth: null,
-    db: null,
     rtdb: null,
     collapsedSections: {},
     openDropdowns: {},
-    masterUnsub: null,
-    legacyUnsub: null,
+    rtdbProgressRef: null,
+    rtdbRankRef: null,
     rtdbTrophyRef: null,
+    rtdbSharedMapRef: null,
+    knownSpeciesList: ['Black Bear', 'Whitetail Deer', 'Moose', 'Red Deer', 'Gray Wolf'],
+    knownCoordinates: [],
 
     getFreshTrophyTemplate: function() {
         return JSON.parse(JSON.stringify(trophyData));
@@ -745,9 +646,7 @@ const appState = {
         const navContainer = document.getElementById('dynamic-nav-links');
         const sandwichIcon = document.querySelector('.sandwich-icon');
         if (!navContainer) return;
-
         const isCollapsed = navContainer.classList.contains('nav-collapsed-mobile');
-
         if (isCollapsed) {
             navContainer.classList.remove('nav-collapsed-mobile');
             navContainer.classList.add('nav-expanded-mobile');
@@ -762,35 +661,29 @@ const appState = {
     applyPlayerTheme: function(gamerHandle) {
         const theme = USER_THEMES[gamerHandle] || USER_THEMES['Werewolf3788'];
         const root = document.documentElement;
-
         root.style.setProperty('--user-theme-accent', theme.accent);
         root.style.setProperty('--user-theme-glow', theme.accentGlow);
         root.style.setProperty('--user-theme-border', theme.border);
         root.style.setProperty('--user-theme-secondary', theme.secondary);
         root.style.setProperty('--user-theme-badge-bg', theme.badgeBg);
         root.style.setProperty('--user-theme-badge-text', theme.badgeText);
-
         document.body.setAttribute('data-active-user', gamerHandle);
     },
 
     togglePinDevice: function() {
         const currentPin = localStorage.getItem('pinned_device_user');
-
         if (currentPin === this.activeHunter) {
             localStorage.removeItem('pinned_device_user');
         } else {
             localStorage.setItem('pinned_device_user', this.activeHunter);
         }
-
         this.updatePinButtonUI();
     },
 
     updatePinButtonUI: function() {
         const pinBtn = document.getElementById('pin-device-btn');
         if (!pinBtn) return;
-
         const isPinned = localStorage.getItem('pinned_device_user') === this.activeHunter;
-
         if (isPinned) {
             pinBtn.classList.add('is-pinned');
             pinBtn.innerText = '📌 Pinned as Primary Device';
@@ -800,162 +693,368 @@ const appState = {
         }
     },
 
-    loadNavigationFromRTDB: function() {
-        injectResponsiveNavbarStyles();
-        const navContainer = document.getElementById('dynamic-nav-links');
-        if (!this.rtdb || !navContainer) return;
+    setZoneType: function(type) {
+        this.zoneType = type;
+        const btn = document.getElementById('zone-toggle-btn');
+        if (!btn) return;
+        if (type === 'main') {
+            btn.className = 'zone-toggle-btn is-main';
+            btn.innerText = '🎯 Main Rotation Zone (Active Target)';
+        } else {
+            btn.className = 'zone-toggle-btn is-exterior';
+            btn.innerText = '⚠️ Exterior Zone (Seed Check Target)';
+        }
+    },
 
-        // Force strictly collapsed state on initialization
-        navContainer.classList.add('nav-collapsed-mobile');
-        navContainer.classList.remove('nav-expanded-mobile');
+    /* --- Coordinate Proximity & Auto-Fill --- */
+    onCoordinateInput: function() {
+        const latVal = parseFloat(document.getElementById('coord-lat')?.value);
+        const longVal = parseFloat(document.getElementById('coord-long')?.value);
+        if (isNaN(latVal) || isNaN(longVal) || this.knownCoordinates.length === 0) return;
 
-        const linksRef = rtdbRef(this.rtdb, 'utm_links');
-        onValue(linksRef, (snapshot) => {
-            if (!snapshot.exists()) {
-                navContainer.innerHTML = `<span style="color: #94a3b8; font-size: 0.8rem; padding: 8px;">No Navigation Items Found</span>`;
-                return;
+        let closest = null;
+        let minDistance = Infinity;
+
+        this.knownCoordinates.forEach(pt => {
+            const dist = Math.hypot(pt.lat - latVal, pt.long - longVal);
+            if (dist < minDistance) {
+                minDistance = dist;
+                closest = pt;
+            }
+        });
+
+        // If within 400m radius of a known zone, auto-populate Region and Sub-Region
+        if (closest && minDistance < 400) {
+            const regInput = document.getElementById('harvest-region');
+            const subInput = document.getElementById('harvest-subregion');
+            if (regInput && !regInput.value) regInput.value = closest.region || '';
+            if (subInput && !subInput.value) subInput.value = closest.subRegion || '';
+        }
+    },
+
+    /* --- Bind Shared Map & Need Zones --- */
+    bindSharedMapRegistry: function(mapName) {
+        if (!this.rtdb) return;
+        if (this.rtdbSharedMapRef) off(this.rtdbSharedMapRef);
+
+        const cleanMap = mapName.replace(/[^a-zA-Z0-9]/g, '_');
+        this.rtdbSharedMapRef = rtdbRef(this.rtdb, `shared_map_registry/${cleanMap}`);
+
+        onValue(this.rtdbSharedMapRef, (snapshot) => {
+            if (!snapshot.exists()) return;
+            const data = snapshot.val();
+            
+            // 1. Refresh Known Species
+            if (data.known_species) {
+                const fetched = Object.keys(data.known_species);
+                this.knownSpeciesList = [...new Set([...this.knownSpeciesList, ...fetched])];
+                this.renderSpeciesDropdown();
             }
 
-            const rawData = snapshot.val();
-            const groups = {};
-            const standalone = [];
-
-            const cleanUrl = (u) => {
-                if (!u) return '#';
-                let res = String(u).trim();
-                if (res.startsWith('http://')) res = '//' + res.substring(7);
-                else if (res.startsWith('https://')) res = '//' + res.substring(8);
-                return res;
-            };
-
-            const parseItem = (item, fallbackKey) => {
-                if (!item) return null;
-                const name = item.name || item.title || fallbackKey;
-                const url = cleanUrl(item.url || item.link);
-                const folder = String(item.group || item.folder || '').trim();
-                const icon = cleanUrl(item.image || item.icon || '');
-                return { name, url, icon, folder };
-            };
-
-            Object.keys(rawData).forEach(key => {
-                const node = rawData[key];
-                if (!node) return;
-
-                if (Array.isArray(node)) {
-                    const groupKey = key;
-                    if (!groups[groupKey]) groups[groupKey] = [];
-                    node.forEach((arrItem, idx) => {
-                        const parsed = parseItem(arrItem, `${groupKey}_${idx}`);
-                        if (parsed) groups[groupKey].push(parsed);
-                    });
-                } else if (typeof node === 'object') {
-                    if (node.title || node.url || node.link) {
-                        const parsed = parseItem(node, key);
-                        const f = parsed.folder.toLowerCase();
-                        if (!f || f === 'home' || f === 'standalone' || f === 'none') {
-                            standalone.push(parsed);
-                        } else {
-                            if (!groups[parsed.folder]) groups[parsed.folder] = [];
-                            groups[parsed.folder].push(parsed);
-                        }
-                    } else {
-                        const groupKey = key;
-                        if (!groups[groupKey]) groups[groupKey] = [];
-                        Object.keys(node).forEach(subKey => {
-                            const parsed = parseItem(node[subKey], subKey);
-                            if (parsed) groups[groupKey].push(parsed);
-                        });
+            // 2. Refresh Coordinate Index for Proximity
+            this.knownCoordinates = [];
+            if (data.need_zones) {
+                Object.values(data.need_zones).forEach(z => {
+                    if (z.lat !== undefined && z.long !== undefined) {
+                        this.knownCoordinates.push(z);
                     }
-                }
-            });
-
-            let navHTML = '';
-
-            standalone.forEach(item => {
-                const iconTag = item.icon ? `<img src="${item.icon}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
-                navHTML += `<a href="${item.url}">${iconTag}<span>${item.name}</span></a>`;
-            });
-
-            const sortedFolderKeys = Object.keys(groups).sort((a, b) => {
-                const lowA = a.toLowerCase();
-                const lowB = b.toLowerCase();
-                const isUserA = lowA === 'user' || lowA === 'users';
-                const isUserB = lowB === 'user' || lowB === 'users';
-                const isGameA = lowA === 'game' || lowA === 'games';
-                const isGameB = lowB === 'game' || lowB === 'games';
-
-                if (isUserA) return -1;
-                if (isUserB) return 1;
-                if (isGameA) return -1;
-                if (isGameB) return 1;
-                return lowA.localeCompare(lowB);
-            });
-
-            sortedFolderKeys.forEach(folderName => {
-                const folderId = folderName.replace(/[^a-zA-Z0-9]/g, '_');
-                const dropItems = groups[folderName].map(item => {
-                    const iconTag = item.icon ? `<img src="${item.icon}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
-                    return `<a href="${item.url}">${iconTag}<span>${item.name}</span></a>`;
-                }).join('');
-
-                navHTML += `
-                    <div class="nav-dropdown" id="dropdown-${folderId}">
-                        <button type="button" class="nav-dropbtn" onclick="appState.toggleNavFolder('dropdown-${folderId}', event)">
-                            <span>${folderName}</span> ▾
-                        </button>
-                        <div class="nav-dropdown-content">
-                            ${dropItems}
-                        </div>
-                    </div>
-                `;
-            });
-
-            navContainer.innerHTML = navHTML;
-
-            // Retain collapsed mobile state after data load
-            if (window.innerWidth < 1280) {
-                navContainer.classList.add('nav-collapsed-mobile');
-                navContainer.classList.remove('nav-expanded-mobile');
+                });
             }
         }, (err) => {
-            console.error("RTDB Navigation Read Error:", err);
-            navContainer.innerHTML = `<span style="color: #ef4444; font-size: 0.8rem; padding: 8px;">Navigation Offline</span>`;
+            console.warn("[Shared Map Registry Error]:", err.message);
         });
     },
 
-    toggleNavFolder: function(folderId, event) {
-        if (event) event.stopPropagation();
-        const targetEl = document.getElementById(folderId);
-        if (!targetEl) return;
+    renderSpeciesDropdown: function() {
+        const select = document.getElementById('grind-species-select');
+        if (!select) return;
+        const curVal = select.value || this.activeSpecies;
+        select.innerHTML = '';
+        this.knownSpeciesList.forEach(sp => {
+            const opt = document.createElement('option');
+            opt.value = sp;
+            opt.innerText = sp;
+            select.appendChild(opt);
+        });
+        const addOpt = document.createElement('option');
+        addOpt.value = '__ADD_NEW__';
+        addOpt.innerText = '➕ Add New Species...';
+        select.appendChild(addOpt);
+        select.value = curVal;
+    },
 
-        const isAlreadyActive = targetEl.classList.contains('active');
-        document.querySelectorAll('.nav-dropdown').forEach(el => el.classList.remove('active'));
-
-        if (!isAlreadyActive) {
-            targetEl.classList.add('active');
+    handleSpeciesChange: async function(val) {
+        if (val === '__ADD_NEW__') {
+            const newName = prompt("Enter new animal species name:");
+            if (newName && newName.trim()) {
+                const formatted = newName.trim();
+                this.knownSpeciesList.push(formatted);
+                this.activeSpecies = formatted;
+                const cleanMap = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '_');
+                await set(rtdbRef(this.rtdb, `shared_map_registry/${cleanMap}/known_species/${formatted}`), true);
+                this.renderSpeciesDropdown();
+            } else {
+                this.renderSpeciesDropdown();
+            }
+        } else {
+            this.activeSpecies = val;
+            this.bindGrindTelemetry();
         }
+    },
+
+    /* --- Bind Harvest Ledger & Weight Telemetry --- */
+    bindGrindTelemetry: function() {
+        if (!this.rtdb) return;
+        const cleanMap = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '_');
+        const cleanSpecies = this.activeSpecies.replace(/[^a-zA-Z0-9]/g, '_');
+        const ledgerRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/grind_tracker/${cleanMap}/${cleanSpecies}/harvests`);
+
+        onValue(ledgerRef, (snapshot) => {
+            const fill = document.getElementById('sweet-spot-gauge');
+            const readout = document.getElementById('sweet-spot-readout');
+            if (!snapshot.exists()) {
+                if (fill) fill.style.width = '0%';
+                if (readout) readout.innerText = "No harvest data recorded yet for active grind.";
+                return;
+            }
+
+            const harvests = Object.values(snapshot.val());
+            const recent = harvests.slice(-30);
+            const totalWeight = recent.reduce((sum, h) => sum + (parseFloat(h.weight) || 0), 0);
+            const avgWeight = totalWeight / (recent.length || 1);
+
+            const specMeta = SPECIES_BENCHMARKS[this.activeSpecies] || { min: 30, max: 150, sweetLow: 45, sweetHigh: 75 };
+            const range = specMeta.max - specMeta.min;
+            const pct = Math.min(100, Math.max(0, ((avgWeight - specMeta.min) / range) * 100));
+
+            if (fill) fill.style.width = `${pct}%`;
+            if (readout) {
+                const isOptimal = avgWeight >= specMeta.sweetLow && avgWeight <= specMeta.sweetHigh;
+                const extCount = recent.filter(h => h.zoneType === 'exterior').length;
+                const extRatio = Math.round((extCount / recent.length) * 100);
+
+                let statusBadge = isOptimal ? '🎯 OPTIMAL SWEET SPOT' : (avgWeight > specMeta.sweetHigh ? '⚠️ ELEVATED WEIGHT' : '⬇️ MINIMUM TIERS');
+                readout.innerHTML = `
+                    <strong>${statusBadge}</strong> | Moving Avg: <strong>${avgWeight.toFixed(1)} kg</strong> (Range: ${specMeta.sweetLow}-${specMeta.sweetHigh}kg)
+                    <br>Recent Harvests: ${recent.length} | Exterior Cycle Ratio: <strong>${extRatio}%</strong> ${extRatio < 20 ? '(⚠️ Check exterior lakes for trapped seeds)' : '✓ Healthy Rotation'}
+                `;
+            }
+        });
+    },
+
+    /* --- Log Harvest (Append-Only + Auto Career Rank Increment) --- */
+    logHarvest: async function() {
+        if (!this.rtdb || !this.auth.currentUser) return;
+        const weightInput = document.getElementById('harvest-weight');
+        const levelInput = document.getElementById('harvest-level');
+        const sexInput = document.getElementById('harvest-sex');
+        const ratingInput = document.getElementById('harvest-rating');
+        const latInput = document.getElementById('coord-lat');
+        const longInput = document.getElementById('coord-long');
+        const regionInput = document.getElementById('harvest-region');
+        const subregionInput = document.getElementById('harvest-subregion');
+
+        const weight = parseFloat(weightInput?.value);
+        if (isNaN(weight) || weight <= 0) {
+            alert("Please enter a valid animal harvest weight.");
+            return;
+        }
+
+        const harvestPayload = {
+            weight: weight,
+            level: parseInt(levelInput?.value, 10) || 1,
+            sex: sexInput?.value || 'male',
+            rating: ratingInput?.value || 'none',
+            zoneType: this.zoneType,
+            lat: parseFloat(latInput?.value) || 0,
+            long: parseFloat(longInput?.value) || 0,
+            region: regionInput?.value?.trim() || 'Unknown',
+            subRegion: subregionInput?.value?.trim() || 'Unknown',
+            timestamp: Date.now()
+        };
+
+        const cleanMap = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '_');
+        const cleanSpecies = this.activeSpecies.replace(/[^a-zA-Z0-9]/g, '_');
+
+        try {
+            // 1. Append immutable harvest to user's ledger
+            const harvestsRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/grind_tracker/${cleanMap}/${cleanSpecies}/harvests`);
+            await push(harvestsRef, harvestPayload);
+
+            // 2. Save location to shared map registry if coordinates provided
+            if (harvestPayload.lat !== 0 || harvestPayload.long !== 0) {
+                const zoneRef = rtdbRef(this.rtdb, `shared_map_registry/${cleanMap}/need_zones`);
+                await push(zoneRef, {
+                    species: this.activeSpecies,
+                    zoneType: 'drink',
+                    lat: harvestPayload.lat,
+                    long: harvestPayload.long,
+                    region: harvestPayload.region,
+                    subRegion: harvestPayload.subRegion,
+                    discoveredBy: this.activeHunter,
+                    timestamp: Date.now()
+                });
+            }
+
+            // 3. Auto-increment career animal rank if rated
+            const ratingKey = harvestPayload.rating.toLowerCase();
+            if (ratingKey !== 'none' && this.animalRankData[ratingKey] !== undefined) {
+                this.animalRankData[ratingKey] += 1;
+                this.updateRankUI();
+                const rankRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/platform/${this.activePlatform}/ranks/COTW_Ranks`);
+                await update(rankRef, { [ratingKey]: this.animalRankData[ratingKey] });
+            }
+
+            if (weightInput) weightInput.value = '';
+            this.setStatus(`✓ Logged ${this.activeSpecies} (${weight}kg) [Auto-Ranked: ${harvestPayload.rating}]`, "#10b981");
+        } catch (err) {
+            console.error("Harvest Log Error:", err);
+            this.setStatus(`❌ Harvest Save Failed: ${err.message}`, "#ef4444");
+        }
+    },
+
+    /* --- Master Initialization & RTDB Subscriptions --- */
+    init: async function() {
+        injectResponsiveStyles();
+        this.hunterData = this.getFreshTrophyTemplate();
+        this.renderBuildMetadata();
+        this.applyPlayerTheme(this.activeHunter);
+        this.updatePinButtonUI();
+
+        try {
+            const app = initializeApp(firebaseConfig, 'COTW-RTDB-Engine');
+            this.auth = getAuth(app);
+            this.rtdb = getDatabase(app);
+
+            this.loadNavigationFromRTDB();
+
+            await signInAnonymously(this.auth);
+
+            onAuthStateChanged(this.auth, (user) => {
+                if (user) {
+                    this.setStatus(`✓ Connected to RTDB [${this.activeHunter} - ${this.activePlatform.toUpperCase()}]`, "#10b981");
+                    this.loadHunter(this.activeHunter, this.activePlatform);
+                } else {
+                    this.setStatus("❌ Auth Failed", "#ef4444");
+                }
+            });
+        } catch (err) {
+            console.error("Init Error:", err);
+            this.setStatus(`❌ Connection Error: ${err.message}`, "#ef4444");
+            this.render();
+        }
+    },
+
+    renderBuildMetadata: function() {
+        const el = document.getElementById("build-meta-footer");
+        if (el) {
+            el.innerText = `Werewolf Engine • v${BUILD_VERSION} • Build: ${CODE_BUILD_DATE}`;
+        }
+    },
+
+    setStatus: function(msg, color) {
+        const el = document.getElementById("stat-line");
+        if (el) {
+            el.innerText = msg;
+            if (color) el.style.color = color;
+        }
+    },
+
+    loadHunter: function(userName, platform) {
+        if (!this.auth || !this.auth.currentUser) return;
+
+        if (this.rtdbProgressRef) { off(this.rtdbProgressRef); this.rtdbProgressRef = null; }
+        if (this.rtdbRankRef) { off(this.rtdbRankRef); this.rtdbRankRef = null; }
+        if (this.rtdbTrophyRef) { off(this.rtdbTrophyRef); this.rtdbTrophyRef = null; }
+
+        this.activeHunter = userName || 'Werewolf3788';
+        this.activePlatform = 'playstation';
+
+        this.hunterData = this.getFreshTrophyTemplate();
+        this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
+
+        localStorage.setItem('active_gaming_nickname', this.activeHunter);
+        localStorage.setItem('active_gaming_platform', this.activePlatform);
+
+        this.applyPlayerTheme(this.activeHunter);
+        this.updatePinButtonUI();
+
+        if (document.getElementById('hunter-name')) {
+            document.getElementById('hunter-name').innerText = `${this.activeHunter.toUpperCase()} [${this.activePlatform.toUpperCase()}]`;
+        }
+
+        this.render();
+        this.updateRankUI();
+        this.bindSharedMapRegistry(this.activeReserve);
+        this.bindGrindTelemetry();
+
+        // 1. RTDB User Trophy Progress Snapshot
+        this.rtdbProgressRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/platform/${this.activePlatform}/progress/${GAME_ID}`);
+        onValue(this.rtdbProgressRef, (snap) => {
+            const freshList = this.getFreshTrophyTemplate();
+            if (snap.exists()) {
+                const incoming = snap.val().trophies || [];
+                this.hunterData = freshList.map(dt => {
+                    const found = incoming.find(it => it.id === dt.id);
+                    if (found) {
+                        if (dt.type === 'checklist' && found.subItems) {
+                            dt.subItems = dt.subItems.map((si, i) => {
+                                const dbMatch = found.subItems.find(x => x.name === si.name) || found.subItems[i];
+                                return { ...si, done: dbMatch?.done === true || dbMatch?.done === "true" };
+                            });
+                            dt.current = dt.subItems.filter(s => s.done).length;
+                        } else {
+                            dt.current = (found.done === true || found.completed === true) ? dt.goal : (Number(found.current) || 0);
+                        }
+                    } else {
+                        dt.current = 0;
+                    }
+                    return dt;
+                });
+                this.setStatus(`✓ Live RTDB Sync [${this.activeHunter}]`, "#10b981");
+            } else {
+                this.hunterData = freshList;
+                this.setStatus(`⚠️ Initial State for ${this.activeHunter}`, "#ff8800");
+            }
+            this.bindRTDBTrophyWatcher(this.activeHunter);
+            this.render();
+        }, (err) => {
+            console.error("Progress Read Error:", err);
+            this.setStatus(`❌ Read Error: ${err.message}`, "#ef4444");
+        });
+
+        // 2. RTDB Career Animal Ranks Snapshot
+        this.rtdbRankRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/platform/${this.activePlatform}/ranks/COTW_Ranks`);
+        onValue(this.rtdbRankRef, (snap) => {
+            if (snap.exists()) {
+                const incomingRank = snap.val();
+                this.animalRankData = {
+                    bronze: incomingRank.bronze || 0,
+                    silver: incomingRank.silver || 0,
+                    gold: incomingRank.gold || 0,
+                    diamond: incomingRank.diamond || 0,
+                    greatone: incomingRank.greatone || incomingRank.greatOne || 0,
+                    albino: incomingRank.albino || 0
+                };
+            } else {
+                this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
+            }
+            this.updateRankUI();
+        }, (err) => {
+            console.error("Rank Sync Error:", err);
+        });
     },
 
     bindRTDBTrophyWatcher: function(hunterKey) {
         if (!this.rtdb) return;
-
         const psnGamertag = USER_PSN_MAP[hunterKey];
-        if (!psnGamertag) {
-            console.log(`[RTDB Sync] Skipping watcher: ${hunterKey} is not in the active gamer map.`);
-            return;
-        }
+        if (!psnGamertag) return;
 
         const trophyPath = `psn/gamertags/${psnGamertag}/liveTrophyProgress/${NPWR_ID}`;
         this.rtdbTrophyRef = rtdbRef(this.rtdb, trophyPath);
 
-        console.log(`[RTDB Sync] Watching PSN Trophies at: ${trophyPath}`);
-
         onValue(this.rtdbTrophyRef, (snapshot) => {
-            if (!snapshot.exists()) {
-                console.log(`[RTDB Sync] No live PSN trophy progress found for ${psnGamertag} (${NPWR_ID})`);
-                return;
-            }
-
+            if (!snapshot.exists()) return;
             const rtdbTrophies = snapshot.val();
             let stateMutated = false;
             const trophyEntries = Array.isArray(rtdbTrophies) ? rtdbTrophies : Object.values(rtdbTrophies);
@@ -990,161 +1089,105 @@ const appState = {
         });
     },
 
-    init: async function() {
-        this.hunterData = this.getFreshTrophyTemplate();
-        this.renderBuildMetadata();
-        this.applyPlayerTheme(this.activeHunter);
-        this.updatePinButtonUI();
+    loadNavigationFromRTDB: function() {
+        const navContainer = document.getElementById('dynamic-nav-links');
+        if (!this.rtdb || !navContainer) return;
+        navContainer.classList.add('nav-collapsed-mobile');
 
-        try {
-            const app = initializeApp(firebaseConfig, 'COTW-Firestore-Engine');
-            this.auth = getAuth(app);
-            this.db = getFirestore(app);
-            this.rtdb = getDatabase(app);
+        const linksRef = rtdbRef(this.rtdb, 'utm_links');
+        onValue(linksRef, (snapshot) => {
+            if (!snapshot.exists()) {
+                navContainer.innerHTML = `<span style="color: #94a3b8; font-size: 0.8rem; padding: 8px;">No Navigation Items Found</span>`;
+                return;
+            }
 
-            this.loadNavigationFromRTDB();
+            const rawData = snapshot.val();
+            const groups = {};
+            const standalone = [];
 
-            await signInAnonymously(this.auth);
+            const cleanUrl = (u) => {
+                if (!u) return '#';
+                let res = String(u).trim();
+                if (res.startsWith('http://')) res = '//' + res.substring(7);
+                else if (res.startsWith('https://')) res = '//' + res.substring(8);
+                return res;
+            };
 
-            onAuthStateChanged(this.auth, (user) => {
-                if (user) {
-                    this.setStatus(`✓ Connected to Database [${this.activeHunter} - ${this.activePlatform.toUpperCase()}]`, "#10b981");
-                    this.loadHunter(this.activeHunter, this.activePlatform);
-                } else {
-                    this.setStatus("❌ Auth Failed", "#ef4444");
-                }
-            });
-        } catch (err) {
-            console.error("Init Error:", err);
-            this.setStatus(`❌ Connection Error: ${err.message}`, "#ef4444");
-            this.render();
-        }
-    },
+            const parseItem = (item, fallbackKey) => {
+                if (!item) return null;
+                const name = item.name || item.title || fallbackKey;
+                const url = cleanUrl(item.url || item.link);
+                const folder = String(item.group || item.folder || '').trim();
+                const icon = cleanUrl(item.image || item.icon || '');
+                return { name, url, icon, folder };
+            };
 
-    renderBuildMetadata: function() {
-        const el = document.getElementById("build-meta-footer");
-        if (el) {
-            el.innerText = `Werewolf Project Engine • v${BUILD_VERSION} • Build: ${CODE_BUILD_DATE}`;
-        }
-    },
-
-    setStatus: function(msg, color) {
-        const el = document.getElementById("stat-line");
-        if (el) {
-            el.innerText = msg;
-            if (color) el.style.color = color;
-        }
-    },
-
-    loadHunter: function(userName, platform) {
-        if (!this.auth || !this.auth.currentUser) return;
-
-        if (this.masterUnsub) { this.masterUnsub(); this.masterUnsub = null; }
-        if (this.legacyUnsub) { this.legacyUnsub(); this.legacyUnsub = null; }
-
-        if (this.rtdbTrophyRef) {
-            off(this.rtdbTrophyRef);
-            this.rtdbTrophyRef = null;
-        }
-
-        this.activeHunter = userName || 'Werewolf3788';
-        this.activePlatform = normalizePlatform(platform);
-
-        this.hunterData = this.getFreshTrophyTemplate();
-        this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
-
-        localStorage.setItem('active_gaming_nickname', this.activeHunter);
-        localStorage.setItem('active_gaming_platform', this.activePlatform);
-
-        this.applyPlayerTheme(this.activeHunter);
-        this.updatePinButtonUI();
-
-        if (document.getElementById('hunter-name')) {
-            document.getElementById('hunter-name').innerText = `${this.activeHunter.toUpperCase()} [${this.activePlatform.toUpperCase()}]`;
-        }
-
-        const platformSelector = document.getElementById("platform-selector");
-        if (platformSelector) {
-            platformSelector.value = this.activePlatform;
-        }
-
-        this.render();
-        this.updateRankUI();
-
-        // 1. Cloud Firestore Progress Snapshot
-        const docRef = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', GAME_ID);
-
-        this.masterUnsub = onSnapshot(docRef, (snap) => {
-            const freshList = this.getFreshTrophyTemplate();
-
-            if (snap.exists()) {
-                const data = snap.data();
-                const incoming = data.trophies || [];
-
-                this.hunterData = freshList.map(dt => {
-                    const found = incoming.find(it => it.id === dt.id);
-                    if (found) {
-                        if (dt.type === 'checklist' && found.subItems) {
-                            dt.subItems = dt.subItems.map((si, i) => {
-                                const dbMatch = found.subItems.find(x => x.name === si.name) || found.subItems[i];
-                                const isDone = dbMatch?.done === true || dbMatch?.done === "true";
-                                return { ...si, done: isDone };
-                            });
-                            dt.current = dt.subItems.filter(s => s.done).length;
+            Object.keys(rawData).forEach(key => {
+                const node = rawData[key];
+                if (!node) return;
+                if (Array.isArray(node)) {
+                    if (!groups[key]) groups[key] = [];
+                    node.forEach((arrItem, idx) => {
+                        const parsed = parseItem(arrItem, `${key}_${idx}`);
+                        if (parsed) groups[key].push(parsed);
+                    });
+                } else if (typeof node === 'object') {
+                    if (node.title || node.url || node.link) {
+                        const parsed = parseItem(node, key);
+                        const f = parsed.folder.toLowerCase();
+                        if (!f || f === 'home' || f === 'standalone' || f === 'none') {
+                            standalone.push(parsed);
                         } else {
-                            if (found.done === true || found.completed === true) {
-                                dt.current = dt.goal;
-                            } else {
-                                dt.current = Number(found.current) || 0;
-                            }
+                            if (!groups[parsed.folder]) groups[parsed.folder] = [];
+                            groups[parsed.folder].push(parsed);
                         }
                     } else {
-                        dt.current = 0;
+                        if (!groups[key]) groups[key] = [];
+                        Object.keys(node).forEach(subKey => {
+                            const parsed = parseItem(node[subKey], subKey);
+                            if (parsed) groups[key].push(parsed);
+                        });
                     }
-                    return dt;
-                });
-                this.setStatus(`✓ Live Firestore Sync [${this.activeHunter} - ${this.activePlatform.toUpperCase()}]`, "#10b981");
-            } else {
-                this.hunterData = freshList;
-                this.setStatus(`⚠️ Initial State for ${this.activeHunter} [${this.activePlatform.toUpperCase()}]`, "#ff8800");
-            }
+                }
+            });
 
-            this.bindRTDBTrophyWatcher(this.activeHunter);
-            this.render();
-        }, (err) => {
-            console.error("Firestore Listen Error:", err);
-            this.setStatus(`❌ Read Error: ${err.message}`, "#ef4444");
-            this.render();
-        });
+            let navHTML = '';
+            standalone.forEach(item => {
+                const iconTag = item.icon ? `<img src="${item.icon}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
+                navHTML += `<a href="${item.url}">${iconTag}<span>${item.name}</span></a>`;
+            });
 
-        // 2. Animal Rank Snapshot
-        const rankRef = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', `${GAME_ID}_Ranks`);
-        this.legacyUnsub = onSnapshot(rankRef, (snap) => {
-            if (snap.exists()) {
-                const incomingRank = snap.data();
-                this.animalRankData = {
-                    bronze: incomingRank.bronze || 0,
-                    silver: incomingRank.silver || 0,
-                    gold: incomingRank.gold || 0,
-                    diamond: incomingRank.diamond || 0,
-                    greatone: incomingRank.greatone || incomingRank.greatOne || 0,
-                    albino: incomingRank.albino || 0
-                };
-            } else {
-                this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
-            }
-            this.updateRankUI();
+            Object.keys(groups).sort().forEach(folderName => {
+                const folderId = folderName.replace(/[^a-zA-Z0-9]/g, '_');
+                const dropItems = groups[folderName].map(item => {
+                    const iconTag = item.icon ? `<img src="${item.icon}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
+                    return `<a href="${item.url}">${iconTag}<span>${item.name}</span></a>`;
+                }).join('');
+
+                navHTML += `
+                    <div class="nav-dropdown" id="dropdown-${folderId}">
+                        <button type="button" class="nav-dropbtn" onclick="appState.toggleNavFolder('dropdown-${folderId}', event)">
+                            <span>${folderName}</span> ▾
+                        </button>
+                        <div class="nav-dropdown-content">${dropItems}</div>
+                    </div>
+                `;
+            });
+
+            navContainer.innerHTML = navHTML;
         }, (err) => {
-            console.error("Rank Sync Error:", err);
+            console.error("RTDB Navigation Read Error:", err);
+            navContainer.innerHTML = `<span style="color: #ef4444; font-size: 0.8rem; padding: 8px;">Navigation Offline</span>`;
         });
     },
 
-    switchHunter: function(name) {
-        this.loadHunter(name, this.activePlatform);
-    },
-
-    switchPlatform: function(platformCode) {
-        this.loadHunter(this.activeHunter, platformCode);
+    toggleNavFolder: function(folderId, event) {
+        if (event) event.stopPropagation();
+        const targetEl = document.getElementById(folderId);
+        if (!targetEl) return;
+        const isAlreadyActive = targetEl.classList.contains('active');
+        document.querySelectorAll('.nav-dropdown').forEach(el => el.classList.remove('active'));
+        if (!isAlreadyActive) targetEl.classList.add('active');
     },
 
     render: function() {
@@ -1153,15 +1196,25 @@ const appState = {
         if (!container) return;
 
         container.innerHTML = '';
+
+        // Inject Field Telemetry Grind Card above Trophy Grids
+        this.renderGrindTelemetryCard(container);
+
         const cats = [...new Set(this.hunterData.map(t => t.cat))];
 
         if (selector && selector.options.length <= 1) {
             cats.forEach(cat => {
                 const opt = document.createElement('option');
-                opt.value = cat.replace(/[^a-zA-Z0-9]/g, '');
+                opt.value = cat;
                 opt.innerText = cat;
                 selector.appendChild(opt);
             });
+            selector.onchange = (e) => {
+                this.activeReserve = e.target.value;
+                this.bindSharedMapRegistry(this.activeReserve);
+                this.bindGrindTelemetry();
+                this.scrollToCategory(e.target.value.replace(/[^a-zA-Z0-9]/g, ''));
+            };
         }
 
         let globalMet = 0, globalTotal = 0;
@@ -1198,7 +1251,6 @@ const appState = {
                 card.className = `trophy-card ${isDone ? 'completed' : ''}`;
 
                 let ctrl = '';
-
                 if (t.type === 'numeric') {
                     ctrl = `
                         <div class="number-control-group">
@@ -1232,7 +1284,6 @@ const appState = {
                     ctrl = `<button type="button" class="${btnClass}" onclick="appState.tog('${t.id}')">${btnText}</button>`;
                 }
 
-                // Auto-Sync vs Manual Badge
                 const syncBadge = t.plat === true
                     ? `<span class="sync-badge sync-badge-psn" title="Linked to live PlayStation Network Trophy progress">🏆 PSN Auto-Sync</span>`
                     : `<span class="sync-badge sync-badge-manual" title="Manual progress entry required">📝 Manual Entry</span>`;
@@ -1263,7 +1314,112 @@ const appState = {
             bar.style.backgroundColor = 'var(--user-theme-accent)';
             bar.style.boxShadow = '0 0 10px var(--user-theme-glow)';
         }
-        if (document.getElementById('percent-text')) document.getElementById('percent-text').innerText = `Master Completion Progress ${overall}%`;
+        if (document.getElementById('percent-text')) {
+            document.getElementById('percent-text').innerText = `Master Completion Progress ${overall}%`;
+        }
+    },
+
+    renderGrindTelemetryCard: function(container) {
+        const card = document.createElement('div');
+        card.className = 'grind-card-container';
+        card.innerHTML = `
+            <div class="grind-card-header">
+                <h3 style="margin:0; font-size:1.1rem; color:var(--user-theme-accent);">🎯 Field Grind & Weight Telemetry (1-33 Drift)</h3>
+                <span style="font-size:0.8rem; color:#94a3b8;">Active Reserve: <strong>${this.activeReserve}</strong></span>
+            </div>
+
+            <div class="gauge-container">
+                <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#94a3b8;">
+                    <span>Min Weight (Lower Quartile)</span>
+                    <span>Sweet Spot (Optimal GO Window)</span>
+                    <span>Max Weight</span>
+                </div>
+                <div class="gauge-bar-bg">
+                    <div id="sweet-spot-gauge" class="gauge-bar-fill"></div>
+                </div>
+                <div id="sweet-spot-readout" style="font-size:0.8rem; color:#f8fafc; margin-top:4px;">Calculating moving average...</div>
+            </div>
+
+            <div class="grind-grid-2col">
+                <div>
+                    <label class="grind-input-label">Target Species</label>
+                    <select id="grind-species-select" class="grind-select" onchange="appState.handleSpeciesChange(this.value)"></select>
+                </div>
+                <div>
+                    <label class="grind-input-label">Zone Rotation Mode</label>
+                    <button type="button" id="zone-toggle-btn" class="zone-toggle-btn is-main" onclick="appState.setZoneType(appState.zoneType === 'main' ? 'exterior' : 'main')">
+                        🎯 Main Rotation Zone (Active Target)
+                    </button>
+                </div>
+            </div>
+
+            <div class="grind-grid-2col">
+                <div>
+                    <label class="grind-input-label">Harvest Weight (kg / lbs)</label>
+                    <input type="number" id="harvest-weight" class="grind-input" placeholder="e.g. 94.5" step="0.1">
+                </div>
+                <div>
+                    <label class="grind-input-label">Animal Level</label>
+                    <select id="harvest-level" class="grind-select">
+                        <option value="1">1 - Trivial</option>
+                        <option value="2">2 - Minor</option>
+                        <option value="3">3 - Very Easy</option>
+                        <option value="4">4 - Easy</option>
+                        <option value="5" selected>5 - Medium</option>
+                        <option value="6">6 - Hard</option>
+                        <option value="7">7 - Very Hard</option>
+                        <option value="8">8 - Mythical</option>
+                        <option value="9">9 - Legendary (Diamond Potential)</option>
+                        <option value="10">10 - Fabled (Great One)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grind-grid-2col">
+                <div>
+                    <label class="grind-input-label">Sex & Trophy Rating (Auto-Ranks)</label>
+                    <div style="display:flex; gap:8px;">
+                        <select id="harvest-sex" class="grind-select" style="width:40%;">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                        <select id="harvest-rating" class="grind-select" style="width:60%;">
+                            <option value="none">No Rating</option>
+                            <option value="bronze">Bronze</option>
+                            <option value="silver">Silver</option>
+                            <option value="gold">Gold</option>
+                            <option value="diamond">Diamond 💎</option>
+                            <option value="greatone">Great One 👑</option>
+                            <option value="albino">Albino / Rare 🌟</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="grind-input-label">Coordinates (Lat / Long) [Auto-Fill Enabled]</label>
+                    <div style="display:flex; gap:8px;">
+                        <input type="number" id="coord-lat" class="grind-input" placeholder="Lat (Y)" oninput="appState.onCoordinateInput()">
+                        <input type="number" id="coord-long" class="grind-input" placeholder="Long (X)" oninput="appState.onCoordinateInput()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="grind-grid-2col">
+                <div>
+                    <label class="grind-input-label">Region Name</label>
+                    <input type="text" id="harvest-region" class="grind-input" placeholder="e.g. Crowngold Wetlands">
+                </div>
+                <div>
+                    <label class="grind-input-label">Sub-Region / Lake Name</label>
+                    <input type="text" id="harvest-subregion" class="grind-input" placeholder="e.g. North Shallows">
+                </div>
+            </div>
+
+            <button type="button" class="log-harvest-btn" onclick="appState.logHarvest()">
+                📝 Log Harvest & Update Grind Telemetry
+            </button>
+        `;
+        container.appendChild(card);
+        this.renderSpeciesDropdown();
     },
 
     getIcon: (t) => t.playstationImage ? t.playstationImage : (t.cat.includes('Collectibles') ? ICONS.TRACK : t.name.includes('Arc') || t.name.includes('Master') || t.name.includes('Missions') || t.name.includes('Story') ? ICONS.ARC : t.name.includes('Mile') ? ICONS.TRAVEL : t.name.includes('Marksman') ? ICONS.MARK : ICONS.GAME),
@@ -1304,14 +1460,12 @@ const appState = {
     adjRank: async function(tier, val) {
         this.animalRankData[tier] = Math.max(0, (this.animalRankData[tier] || 0) + val);
         this.updateRankUI();
-
-        if (!this.db || !this.auth || !this.auth.currentUser) return;
-
+        if (!this.rtdb || !this.auth || !this.auth.currentUser) return;
         try {
-            const rankRef = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', `${GAME_ID}_Ranks`);
-            await setDoc(rankRef, this.animalRankData, { merge: true });
+            const rankRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/platform/${this.activePlatform}/ranks/COTW_Ranks`);
+            await set(rankRef, this.animalRankData);
         } catch (error) {
-            console.error("FIRESTORE RANK SAVE ERROR:", error);
+            console.error("RTDB Rank Save Error:", error);
         }
     },
 
@@ -1346,17 +1500,13 @@ const appState = {
         }, 100);
     },
 
-    /* ----------------------------------------------------
-     * SECTION 7: Cloud Firestore Sync Writer
-     * Lines 742-780: State commit and telemetry dispatch
-     * ---------------------------------------------------- */
+    /* --- RTDB Master Sync --- */
     sync: async function(silent = false) {
         this.render();
         this.updateRankUI();
 
-        if (!this.db || !this.auth || !this.auth.currentUser) return;
-
-        if (!silent) this.setStatus("⏳ Saving to Cloud Firestore...", "#e67e22");
+        if (!this.rtdb || !this.auth || !this.auth.currentUser) return;
+        if (!silent) this.setStatus("⏳ Committing to RTDB...", "#e67e22");
 
         try {
             if (typeof gtag === 'function') {
@@ -1367,8 +1517,7 @@ const appState = {
                 });
             }
 
-            const ref = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', GAME_ID);
-
+            const ref = rtdbRef(this.rtdb, `users/${this.activeHunter}/platform/${this.activePlatform}/progress/${GAME_ID}`);
             const payload = {
                 user: this.activeHunter,
                 platform: this.activePlatform,
@@ -1377,11 +1526,11 @@ const appState = {
                 lastUpdate: Date.now()
             };
 
-            await setDoc(ref, payload, { merge: true });
+            await set(ref, payload);
             const timeStr = new Date().toLocaleTimeString('en-US', { hour12: false });
-            this.setStatus(`✓ Saved to Cloud Firestore at ${timeStr}`, "#10b981");
+            this.setStatus(`✓ Saved to RTDB at ${timeStr}`, "#10b981");
         } catch (error) {
-            console.error("FIRESTORE WRITE ERROR:", error);
+            console.error("RTDB WRITE ERROR:", error);
             this.setStatus(`❌ Save Failed: ${error.message}`, "#ef4444");
         }
     }
@@ -1392,27 +1541,22 @@ window.adjRank = (tier, val) => appState.adjRank(tier, val);
 
 appState.init();
 
-// Global click & tap-out event listener: closes menus when tapping outside
+// Global tap-out listener to collapse dropdowns and mobile navigation
 window.addEventListener('click', function(event) {
     const navWrapper = event.target.closest('.nav-wrapper-centered');
     const navContainer = document.getElementById('dynamic-nav-links');
     const sandwichIcon = document.querySelector('.sandwich-icon');
 
-    // If clicking or tapping outside navigation area on viewports below 1280px, collapse the menu
     if (!navWrapper && navContainer && window.innerWidth < 1280) {
         navContainer.classList.add('nav-collapsed-mobile');
         navContainer.classList.remove('nav-expanded-mobile');
         if (sandwichIcon) sandwichIcon.innerText = '☰';
     }
 
-    // Close active dropdowns if tapping outside
     if (!event.target.closest('.nav-dropdown')) {
-        document.querySelectorAll('.nav-dropdown.active').forEach(el => {
-            el.classList.remove('active');
-        });
+        document.querySelectorAll('.nav-dropdown.active').forEach(el => el.classList.remove('active'));
     }
 
-    // Close sub-item checklists if tapping outside
     if (!event.target.matches('.dropdown-trigger') && !event.target.closest('.dropdown-content')) {
         document.querySelectorAll('.dropdown-content.show').forEach(el => {
             el.classList.remove('show');
