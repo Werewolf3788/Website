@@ -2,14 +2,15 @@
    File: script.js
    Location: /games/HunterCOTW/script.js
    Description: theHunter: Call of the Wild Consolidated RTDB Engine
-                - Full RTDB Trophy & PlayStation Network Sync
+                - Full RTDB Trophy & PlayStation Network Sync (NPWR13211_00)
+                - Exact PSN Gamertag Path Resolution (Case-Insensitive Normalization)
                 - Append-Only Weight & Harvest Telemetry Ledger (1-33 Drift Sweet Spot)
                 - Shared Geographic Need Zone & Coordinate Auto-Fill Map Registry
                 - Automated Animal Rank Auto-Increment via Harvest Entry
                 - Multi-User Profile Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
    Database: Realtime Database (entertainment-71888)
-   Build Version: 3.2.0
-   Code Build Date: 2026-10-01 21:22:00 EDT (America/New_York)
+   Build Version: 3.3.0
+   Code Build Date: 2026-10-01 22:40:00 EDT (America/New_York)
    ============================================================================ */
 
 import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -18,10 +19,10 @@ import { getDatabase, ref as rtdbRef, onValue, set, update, push, off, get } fro
 
 /* ----------------------------------------------------
  * SECTION 1: Build Metadata, User Map & Custom Themes
- * Lines 20-95: Version signatures, player themes, asset icons
+ * Lines 22-95: PSN mappings, user profiles, theme colors
  * ---------------------------------------------------- */
-const BUILD_VERSION = "3.2.0";
-const CODE_BUILD_DATE = "2026-10-01 21:22:00 EDT";
+const BUILD_VERSION = "3.3.0";
+const CODE_BUILD_DATE = "2026-10-01 22:40:00 EDT";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -36,13 +37,15 @@ const firebaseConfig = {
 const GAME_ID = 'COTW';
 const NPWR_ID = 'NPWR13211_00';
 
-// Normalized Gamer Handles: Firebase Tag -> PSN Gamertag Mapping
+// Exact PSN Target Mapping for RTDB Node:
+// /psn/gamertags/{Gamertag}/liveTrophyProgress/NPWR13211_00
 const USER_PSN_MAP = {
-    'Werewolf': 'Wildhorse_spirit',
-    'Werewolf3788': 'Wildhorse_spirit', // Legacy alias fallback
-    'Raymystyro': 'OneLIVIDMAN',
-    'OneLIVIDMAN': 'OneLIVIDMAN',        // Legacy alias fallback
-    'Terrdog': 'Darkwing69420',
+    'Werewolf': 'wildhorse_spirit',
+    'Werewolf3788': 'wildhorse_spirit',
+    'Raymystyro': 'onelividman',
+    'OneLIVIDMAN': 'onelividman',
+    'Terrdog': 'darkwing69420',
+    'Darkwing69420': 'darkwing69420',
     'DesdemonaTiger': 'DesdemonaTiger'
 };
 
@@ -108,7 +111,7 @@ const ICONS = {
 
 /* ----------------------------------------------------
  * SECTION 2: Master Helpers
- * Lines 97-120: Checklists & normalization
+ * Lines 97-122: Checklists & normalization
  * ---------------------------------------------------- */
 const checkSet = (items) => items.map(name => ({ name, done: false }));
 
@@ -123,7 +126,7 @@ const normalizePlatform = (inputPlatform) => {
 
 /* ----------------------------------------------------
  * SECTION 3: Raw Static Master Trophy Data Baseline
- * Lines 122-245: Complete trophy & mission database records
+ * Lines 124-248: Complete trophy & mission database records
  * ---------------------------------------------------- */
 const trophyData = [
     // --- BASE GAME TROPHIES ---
@@ -309,7 +312,7 @@ const trophyData = [
 
 /* ----------------------------------------------------
  * SECTION 4: Species Weight Baseline Table
- * Lines 247-260: Known min/max weight benchmarks for Great One species
+ * Lines 250-263: Known min/max weight benchmarks for Great One species
  * ---------------------------------------------------- */
 const SPECIES_BENCHMARKS = {
     'Black Bear': { min: 40, max: 290, sweetLow: 80, sweetHigh: 115, diamondLevel: 9 },
@@ -322,7 +325,7 @@ const SPECIES_BENCHMARKS = {
 
 /* ----------------------------------------------------
  * SECTION 5: Responsive Styles Injection
- * Lines 262-430: Fallback inline injection if style.css is not present
+ * Lines 265-430: Fallback inline injection if style.css is not present
  * ---------------------------------------------------- */
 const injectResponsiveStyles = () => {
     if (document.getElementById('cotw-responsive-engine-styles')) return;
@@ -345,7 +348,7 @@ const injectResponsiveStyles = () => {
 
 /* ----------------------------------------------------
  * SECTION 6: Main Application State & Unified RTDB Engine
- * Lines 432-940: State, RTDB listeners, switcher handlers, weight analyzer
+ * Lines 432-945: State, RTDB listeners, switcher handlers, weight analyzer
  * ---------------------------------------------------- */
 const appState = {
     activeHunter: localStorage.getItem('pinned_device_user') || localStorage.getItem('active_gaming_nickname') || 'Werewolf',
@@ -799,13 +802,23 @@ const appState = {
     bindRTDBTrophyWatcher: function(hunterKey) {
         if (!this.rtdb) return;
         const psnGamertag = USER_PSN_MAP[hunterKey];
-        if (!psnGamertag) return;
+        if (!psnGamertag) {
+            console.log(`[RTDB PSN Sync] No mapped PSN gamertag for ${hunterKey}. Skipping watcher.`);
+            return;
+        }
 
+        // Exact RTDB Path: /psn/gamertags/{Gamertag}/liveTrophyProgress/NPWR13211_00
         const trophyPath = `psn/gamertags/${psnGamertag}/liveTrophyProgress/${NPWR_ID}`;
         this.rtdbTrophyRef = rtdbRef(this.rtdb, trophyPath);
 
+        console.log(`[RTDB PSN Sync] Watching: ${trophyPath}`);
+
         onValue(this.rtdbTrophyRef, (snapshot) => {
-            if (!snapshot.exists()) return;
+            if (!snapshot.exists()) {
+                console.log(`[RTDB PSN Sync] No live trophy data found at: ${trophyPath}`);
+                return;
+            }
+
             const rtdbTrophies = snapshot.val();
             let stateMutated = false;
             const trophyEntries = Array.isArray(rtdbTrophies) ? rtdbTrophies : Object.values(rtdbTrophies);
@@ -832,7 +845,7 @@ const appState = {
             });
 
             if (stateMutated) {
-                console.log(`[RTDB Sync] Auto-verified PSN trophies for ${hunterKey} (${psnGamertag})`);
+                console.log(`[RTDB PSN Sync] Auto-verified PSN trophies for ${hunterKey} (${psnGamertag})`);
                 this.sync(true);
             }
         }, (err) => {
