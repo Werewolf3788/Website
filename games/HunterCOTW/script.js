@@ -3,6 +3,8 @@
    Location: //playstation-be938.web.app/games/HunterCOTW/script.js
    Description: theHunter: Call of the Wild Master Tracker Dual-Engine
                 - Complete 19 Reserve Catalog with Official Weapon Classes (1-9)
+                - Need Zones (Drinking, Feeding, Resting) with In-Game Schedule Reference
+                - Dedicated Need Zone Pinning to RTDB (/need_zones) with Lat/Long & Subregions
                 - Decoupled Non-Blocking RTDB Harvest Logging & Async Storage Upload
                 - Instant Form Clearing & Visual Confirmation Banner
                 - Dynamic Menu System via Realtime Database (/utm_links)
@@ -13,18 +15,18 @@
                 - Google Analytics 4 (G-CTYHDF4MSD) via GTM Integration
                 - 4-Player Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
    Database: Cloud Firestore, Realtime Database & Firebase Storage (entertainment-71888)
-   Build Version: 6.4.0
-   Date & Time Stamp: 2026-10-02 15:28:00 EDT (America/New_York)
+   Build Version: 6.5.0
+   Date & Time Stamp: 2026-10-02 15:45:00 EDT (America/New_York)
    ============================================================================ */
 
-// Line 22: Google Tag Manager & Google Analytics 4 Deployment (G-CTYHDF4MSD)
+// Line 23: Google Tag Manager & Google Analytics 4 Deployment (G-CTYHDF4MSD)
 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-W3R9F47');
 
-// Line 30: GA4 Config tag deployment with 14-month data retention & enhanced measurement
+// Line 31: GA4 Config tag deployment with 14-month data retention & enhanced measurement
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
@@ -34,7 +36,7 @@ gtag('config', 'G-CTYHDF4MSD', {
     'cookie_flags': 'SameSite=None;Secure'
 });
 
-// Line 41: Relative Protocol SDK Imports
+// Line 42: Relative Protocol SDK Imports
 import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from '//www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from '//www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
@@ -43,10 +45,10 @@ import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from '//ww
 
 /* ----------------------------------------------------
  * SECTION 1: Build Metadata, User Map & Custom Themes
- * Lines 50-137: PSN handles, custom themes, asset icons
+ * Lines 51-138: PSN handles, custom themes, asset icons
  * ---------------------------------------------------- */
-const BUILD_VERSION = "6.4.0";
-const CODE_BUILD_DATE = "2026-10-02 15:28:00 EDT";
+const BUILD_VERSION = "6.5.0";
+const CODE_BUILD_DATE = "2026-10-02 15:45:00 EDT";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -134,7 +136,7 @@ const ICONS = {
 
 /* ----------------------------------------------------
  * SECTION 2: Master Helpers & Layton Proximity Anchors
- * Lines 139-212: Checklists & 40 verified Layton anchors
+ * Lines 140-213: Checklists & 40 verified Layton anchors
  * ---------------------------------------------------- */
 const checkSet = (items) => items.map(name => ({ name, done: false }));
 
@@ -189,8 +191,30 @@ const LAYTON_ANCHORS = [
 ];
 
 /* ----------------------------------------------------
- * SECTION 3: Official Reserve Catalogs & Animal Classes
- * Lines 214-322: All 19 Maps with Classes (1-9)
+ * SECTION 3: Official Need Zone Schedules Reference
+ * Lines 215-265: Drink, Feed, Rest Times for Grinds
+ * ---------------------------------------------------- */
+const NEED_ZONE_SCHEDULES = {
+    'Whitetail Deer': { drink: '08:00 - 12:00', feed: '04:00 - 08:00', rest: '12:00 - 16:00' },
+    'Black Bear': { drink: '16:00 - 20:00', feed: '08:00 - 12:00', rest: '12:00 - 16:00' },
+    'Moose': { drink: '12:00 - 16:00', feed: '05:00 - 09:00', rest: '16:00 - 20:00' },
+    'Red Deer': { drink: '06:00 - 10:00', feed: '17:00 - 21:00', rest: '10:00 - 14:00' },
+    'Fallow Deer': { drink: '10:00 - 14:00', feed: '06:00 - 10:00', rest: '14:00 - 18:00' },
+    'Banteng': { drink: '17:00 - 20:00', feed: '05:00 - 09:00', rest: '09:00 - 13:00' },
+    'Wild Boar': { drink: '00:00 - 03:00', feed: '03:00 - 07:00', rest: '11:00 - 15:00' },
+    'Gray Wolf': { drink: '00:00 - 03:00', feed: '19:00 - 23:00', rest: '07:00 - 11:00' },
+    'Coyote': { drink: '00:00 - 04:00', feed: '16:00 - 20:00', rest: '04:00 - 08:00' },
+    'Lion': { drink: '12:00 - 15:00', feed: '05:00 - 09:00', rest: '18:00 - 22:00' },
+    'Cape Buffalo': { drink: '09:00 - 12:00', feed: '05:00 - 09:00', rest: '13:00 - 17:00' },
+    'Mule Deer': { drink: '15:00 - 18:00', feed: '05:00 - 09:00', rest: '09:00 - 13:00' },
+    'Pronghorn': { drink: '04:00 - 07:00', feed: '07:00 - 11:00', rest: '11:00 - 15:00' },
+    'European Bison': { drink: '11:00 - 14:00', feed: '07:00 - 11:00', rest: '03:00 - 07:00' },
+    'Plains Bison': { drink: '12:00 - 16:00', feed: '04:00 - 08:00', rest: '16:00 - 20:00' }
+};
+
+/* ----------------------------------------------------
+ * SECTION 4: Official Reserve Catalogs & Animal Classes
+ * Lines 267-375: All 19 Maps with Classes (1-9)
  * ---------------------------------------------------- */
 const RESERVE_CATALOG = {
     'Layton Lake': {
@@ -348,8 +372,8 @@ const RESERVE_CATALOG = {
 };
 
 /* ----------------------------------------------------
- * SECTION 4: Complete Static Trophy Database
- * Lines 324-487: All Base Game & DLC Narrative Quests
+ * SECTION 5: Complete Static Trophy Database
+ * Lines 377-540: All Base Game & DLC Narrative Quests
  * ---------------------------------------------------- */
 const trophyData = [
     // --- BASE GAME TROPHIES ---
@@ -541,8 +565,8 @@ const SPECIES_BENCHMARKS = {
 };
 
 /* ----------------------------------------------------
- * SECTION 5: Application State & Safe Form Handling
- * Lines 489-850: State management, robust DOM bindings
+ * SECTION 6: Application State & Safe Form Handling
+ * Lines 542-930: State management, robust DOM bindings
  * ---------------------------------------------------- */
 const appState = {
     activeHunter: localStorage.getItem('pinned_device_user') || 'Werewolf',
@@ -708,6 +732,8 @@ const appState = {
         this.activeSpecies = specSelect.value;
         const customSpecWrap = document.getElementById('custom-species-wrap');
         if (customSpecWrap) customSpecWrap.style.display = 'none';
+
+        this.updateNeedZoneSchedule();
     },
 
     handleSpeciesSelectChange: function(val) {
@@ -720,7 +746,69 @@ const appState = {
             if (customWrap) customWrap.style.display = 'none';
             this.activeSpecies = val;
         }
+        this.updateNeedZoneSchedule();
         this.bindGrindTelemetry();
+    },
+
+    /* --- Need Zone Schedule Auto-Fill --- */
+    updateNeedZoneSchedule: function() {
+        const typeSelect = document.getElementById('needzone-type-select');
+        const timeInput = document.getElementById('needzone-time-input');
+        if (!typeSelect || !timeInput) return;
+
+        const cleanSpecies = this.activeSpecies.split('(')[0].trim();
+        const schedule = NEED_ZONE_SCHEDULES[cleanSpecies];
+        const activity = typeSelect.value.toLowerCase();
+
+        if (schedule && schedule[activity]) {
+            timeInput.value = schedule[activity];
+        } else if (activity === 'none') {
+            timeInput.value = 'Roaming / No Zone';
+        } else if (!timeInput.value) {
+            timeInput.value = '08:00 - 12:00';
+        }
+    },
+
+    /* --- Pin Need Zone Directly to RTDB Map Ledger --- */
+    pinNeedZone: async function() {
+        if (!this.rtdb || !this.auth.currentUser) {
+            this.setStatus("❌ Database not connected. Please reload.", "#ef4444");
+            return;
+        }
+
+        const latVal = parseFloat(document.getElementById('coord-lat')?.value) || 0;
+        const longVal = parseFloat(document.getElementById('coord-long')?.value) || 0;
+        const regionVal = document.getElementById('harvest-region')?.value?.trim() || 'Unknown';
+        const subregionVal = document.getElementById('harvest-subregion')?.value?.trim() || 'Unknown';
+        const zoneType = document.getElementById('needzone-type-select')?.value || 'Drinking';
+        const zoneTime = document.getElementById('needzone-time-input')?.value?.trim() || 'Active Hours';
+
+        const cleanMap = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '_');
+        const cleanSpecies = this.activeSpecies.replace(/[^a-zA-Z0-9]/g, '_');
+
+        const needZonePayload = {
+            reserve: this.activeReserve,
+            species: this.activeSpecies,
+            zoneType: zoneType,
+            activeTime: zoneTime,
+            lat: latVal,
+            long: longVal,
+            region: regionVal,
+            subRegion: subregionVal,
+            sessionMode: this.sessionMode,
+            pinnedBy: this.activeHunter,
+            timestamp: Date.now()
+        };
+
+        try {
+            this.setStatus(`⏳ Pinning ${zoneType} Need Zone for ${this.activeSpecies}...`, "#e67e22");
+            const zoneRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/need_zones/${cleanMap}/${cleanSpecies}`);
+            await push(zoneRef, needZonePayload);
+            this.setStatus(`📌 Pinned ${this.activeSpecies} ${zoneType} Zone (${zoneTime}) at [${subregionVal}]`, "#10b981");
+        } catch (err) {
+            console.error("Need Zone Save Error:", err);
+            this.setStatus(`❌ Failed to Pin Need Zone: ${err.message}`, "#ef4444");
+        }
     },
 
     populateDatalist: function(listId, items) {
@@ -809,6 +897,8 @@ const appState = {
         const distInput = document.getElementById('harvest-distance');
         const weaponInput = document.getElementById('harvest-weapon-input');
         const organInput = document.getElementById('harvest-organ-input');
+        const zoneTypeSelect = document.getElementById('needzone-type-select');
+        const zoneTimeInput = document.getElementById('needzone-time-input');
 
         const weight = parseFloat(weightInput?.value);
         if (isNaN(weight) || weight <= 0) {
@@ -820,6 +910,8 @@ const appState = {
         const weapon = weaponInput?.value?.trim() || '.300 Canning Magnum Frontier';
         const organ = organInput?.value?.trim() || 'Both Lungs (Double Lung)';
         const furVariant = furInput?.value || 'Common';
+        const needZoneType = zoneTypeSelect?.value || 'None';
+        const needZoneTime = zoneTimeInput?.value?.trim() || 'Roaming';
 
         if (!this.knownWeaponsList.includes(weapon)) {
             this.knownWeaponsList.push(weapon);
@@ -848,6 +940,8 @@ const appState = {
             hitOrgan: organ,
             sessionMode: this.sessionMode,
             zoneType: this.zoneType,
+            needZoneType: needZoneType,
+            needZoneTime: needZoneTime,
             imageUrl: "",
             lat: parseFloat(latInput?.value) || 0,
             long: parseFloat(longInput?.value) || 0,
@@ -863,7 +957,7 @@ const appState = {
             const recordKey = newHarvestRecord.key;
 
             // STEP 2: Instant Form Clearing & Visual Confirmation
-            const savedImageFile = this.selectedImageFile; // Preserve pointer for background upload
+            const savedImageFile = this.selectedImageFile;
             if (weightInput) weightInput.value = '';
             if (distInput) distInput.value = '';
             const previewContainer = document.getElementById('screenshot-preview-container');
@@ -872,7 +966,7 @@ const appState = {
             if (fileInput) fileInput.value = '';
             this.selectedImageFile = null;
 
-            this.setStatus(`✓ Logged ${chosenSpecies} (${weight}kg) to ${chosenReserve}!`, "#10b981");
+            this.setStatus(`✓ Logged ${chosenSpecies} (${weight}kg) [${needZoneType} @ ${needZoneTime}] to ${chosenReserve}!`, "#10b981");
 
             // STEP 3: Auto-Check Universal Trophy Milestones
             let trophyStateChanged = false;
@@ -913,7 +1007,7 @@ const appState = {
                 this.adjRank(ratingKey, 1);
             }
 
-            // AUTO-UPDATE: If fur is rare (not Common), increment Career Fur counter
+            // Career Fur Rank Auto-Increment
             if (furVariant.toLowerCase() !== 'common') {
                 this.adjRank('Fur', 1);
             }
@@ -1088,7 +1182,6 @@ const appState = {
         if (!isAlreadyActive) targetEl.classList.add('active');
     },
 
-    /* --- DOM Cleanup: Safely removes orphaned Jump to Reserve elements --- */
     cleanupOrphanedElements: function() {
         const selects = document.querySelectorAll('select');
         selects.forEach(sel => {
@@ -1388,6 +1481,29 @@ const appState = {
                 </div>
             </div>
 
+            <!-- NEED ZONE SCHEDULE & MAP PINNING -->
+            <div class="grind-grid-2col" style="background: rgba(30, 41, 59, 0.4); padding: 12px; border-radius: 8px; border: 1px dashed rgba(255, 255, 255, 0.15);">
+                <div>
+                    <label class="grind-input-label">Need Zone Activity</label>
+                    <select id="needzone-type-select" class="grind-select" onchange="appState.updateNeedZoneSchedule()">
+                        <option value="Drink" selected>Drinking 💧</option>
+                        <option value="Feed">Feeding 🌾</option>
+                        <option value="Rest">Resting 💤</option>
+                        <option value="None">None / Travelling</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="grind-input-label">In-Game Active Hours (Official Schedule)</label>
+                    <input type="text" id="needzone-time-input" class="grind-input" placeholder="e.g. 08:00 - 12:00">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 6px;">
+                <button type="button" class="pin-device-btn" style="width: 100%; min-height: 40px; background: #0284c7; color: #fff; font-size: 0.85rem;" onclick="appState.pinNeedZone()">
+                    📌 Pin Need Zone to Map Ledger (/need_zones)
+                </button>
+            </div>
+
             <div class="grind-grid-2col">
                 <div>
                     <label class="grind-input-label">Harvest Weight (kg / lbs) *Required</label>
@@ -1553,7 +1669,7 @@ const appState = {
     }
 };
 
-// Line 835: DOM Ready Initialization to guarantee clean DOM execution
+// Line 928: DOM Ready Initialization to guarantee clean DOM execution
 window.addEventListener('DOMContentLoaded', () => {
     window.appState = appState;
     window.adjRank = (tier, val) => appState.adjRank(tier, val);
