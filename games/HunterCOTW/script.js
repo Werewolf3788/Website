@@ -1184,7 +1184,7 @@ const appState = {
                     gold: inc.gold || 0,
                     diamond: inc.diamond || 0,
                     greatone: inc.greatone || inc.greatOne || 0,
-                    albino: inc.albino || 0
+                    Fur: inc.fur || 0
                 };
             }
             this.updateRankUI();
