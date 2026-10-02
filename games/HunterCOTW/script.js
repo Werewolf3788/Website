@@ -4,8 +4,8 @@
    Description: theHunter: Call of the Wild Master Tracker Dual-Engine
                 - Complete 19 Reserve Catalog with Official Weapon Classes (1-9)
                 - Need Zones (Drinking, Feeding, Resting) with In-Game Schedule Reference
-                - Proximity Deduplication & Smart Upsert (Prevents duplicate entries for the
-                  same animal, activity, and coordinates within 50m while preserving shared water)
+                - User-Scoped Deduplication (Checks active user's node; prevents double-tap
+                  duplicates with user alert, while preserving multi-user shared squad locations)
                 - Dedicated Need Zone Pinning to RTDB (/need_zones) with Lat/Long & Subregions
                 - Decoupled Non-Blocking RTDB Harvest Logging & Async Storage Upload
                 - Instant Form Clearing & Visual Confirmation Banner
@@ -17,8 +17,8 @@
                 - Google Analytics 4 (G-CTYHDF4MSD) via GTM Integration
                 - 4-Player Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
    Database: Cloud Firestore, Realtime Database & Firebase Storage (entertainment-71888)
-   Build Version: 6.6.0
-   Date & Time Stamp: 2026-10-02 18:05:00 EDT (America/New_York)
+   Build Version: 6.7.0
+   Date & Time Stamp: 2026-10-02 18:30:00 EDT (America/New_York)
    ============================================================================ */
 
 // Line 25: Google Tag Manager & Google Analytics 4 Deployment (G-CTYHDF4MSD)
@@ -49,8 +49,8 @@ import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from '//ww
  * SECTION 1: Build Metadata, User Map & Custom Themes
  * Lines 53-140: PSN handles, custom themes, asset icons
  * ---------------------------------------------------- */
-const BUILD_VERSION = "6.6.0";
-const CODE_BUILD_DATE = "2026-10-02 18:05:00 EDT";
+const BUILD_VERSION = "6.7.0";
+const CODE_BUILD_DATE = "2026-10-02 18:30:00 EDT";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -364,7 +364,7 @@ const RESERVE_CATALOG = {
     },
     'Intisuyu': {
         animals: [
-            'Western Diamond Coati (Class 1)', 'Greater Grison (Class 1)', 'Cinnamon Teal (Class 1)',
+            'Western Mountain Coati (Class 1)', 'Greater Grison (Class 1)', 'Cinnamon Teal (Class 1)',
             'Ocelot (Class 2)', 'Collared Peccary (Class 4)', 'Taruca (Class 4)',
             'Vicuña (Class 4)', 'Whitetail Deer (Class 4)', 'Capybara (Class 5)',
             'Puma (Class 5)', 'South American Tapir (Class 7)', 'Spectacled Bear (Class 7)',
@@ -632,7 +632,7 @@ const appState = {
             btn.innerText = '🎯 Main Rotation Zone';
         } else {
             btn.className = 'zone-toggle-btn is-exterior';
-            btn.innerText = '⚠️️ Exterior Zone (Seed Check)';
+            btn.innerText = '⚠ Exterior Zone (Seed Check)';
         }
     },
 
@@ -771,7 +771,7 @@ const appState = {
         }
     },
 
-    /* --- Pin Need Zone: Smart Upsert with 50m Deduplication Pipeline --- */
+    /* --- Pin Need Zone: User-Scoped Deduplication (Preserves Squad Co-Locations) --- */
     pinNeedZone: async function() {
         if (!this.rtdb || !this.auth.currentUser) {
             this.setStatus("❌ Database not connected. Please reload.", "#ef4444");
@@ -787,41 +787,42 @@ const appState = {
 
         const cleanMap = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '_');
         const cleanSpecies = this.activeSpecies.replace(/[^a-zA-Z0-9]/g, '_');
-        const zonePath = `users/${this.activeHunter}/need_zones/${cleanMap}/${cleanSpecies}`;
-        const zoneRef = rtdbRef(this.rtdb, zonePath);
 
-        this.setStatus(`⏳ Checking coordinates for duplicate ${this.activeSpecies} zones...`, "#e67e22");
+        // Personal User Scope: Prevents double-logging for THIS hunter without blocking squadmates
+        const userZonePath = `users/${this.activeHunter}/need_zones/${cleanMap}/${cleanSpecies}`;
+        const userZoneRef = rtdbRef(this.rtdb, userZonePath);
+
+        this.setStatus(`⏳ Checking personal pins for duplicate ${this.activeSpecies} zones...`, "#e67e22");
 
         try {
-            // Deduplication Check: Read existing pins for this species on this map
-            const snapshot = await get(zoneRef);
-            let duplicateKey = null;
+            const snapshot = await get(userZoneRef);
+            let personalDuplicateKey = null;
 
             if (snapshot.exists()) {
-                const existingPins = snapshot.val();
-                for (const [key, pin] of Object.entries(existingPins)) {
-                    // Check if this same animal already has this activity type at this spot
+                const userPins = snapshot.val();
+                for (const [key, pin] of Object.entries(userPins)) {
                     if (pin.zoneType && pin.zoneType.toLowerCase() === zoneType.toLowerCase()) {
                         const dist = Math.hypot((pin.long || 0) - longVal, (pin.lat || 0) - latVal);
                         
-                        // Within 50 meters, treat as the same lake/zone
+                        // Within 50 meters, this specific user already marked this exact spot
                         if (dist <= 50) {
-                            duplicateKey = key;
+                            personalDuplicateKey = key;
                             break;
                         }
                     }
                 }
             }
 
-            if (duplicateKey) {
-                // Smart Upsert: Update existing pin timestamp and active hours without creating duplicate card
-                await update(rtdbRef(this.rtdb, `${zonePath}/${duplicateKey}`), {
+            if (personalDuplicateKey) {
+                // Personal Guardrail Triggered: Update verified timestamp, alert the user
+                await update(rtdbRef(this.rtdb, `${userZonePath}/${personalDuplicateKey}`), {
                     activeTime: zoneTime,
                     region: regionVal,
                     subRegion: subregionVal,
                     lastVerified: Date.now()
                 });
-                this.setStatus(`↻ Refreshed existing ${zoneType} Zone for ${this.activeSpecies} at [${subregionVal}]`, "#10b981");
+                this.setStatus(`ℹ️ You already added this Need Zone! Verified & timestamp updated.`, "#eab308");
+                alert(`You have already logged this ${zoneType} zone for ${this.activeSpecies} at this location. Your entry has been verified and refreshed!`);
             } else {
                 // New distinct lake or different activity type -> Create new pin
                 const needZonePayload = {
@@ -838,7 +839,7 @@ const appState = {
                     timestamp: Date.now()
                 };
 
-                await push(zoneRef, needZonePayload);
+                await push(userZoneRef, needZonePayload);
                 this.setStatus(`📌 Pinned new ${this.activeSpecies} ${zoneType} Zone (${zoneTime}) at [${subregionVal}]`, "#10b981");
             }
         } catch (err) {
@@ -1517,7 +1518,7 @@ const appState = {
                 </div>
             </div>
 
-            <!-- NEED ZONE SCHEDULE & MAP PINNING WITH PROXIMITY DEDUPLICATION -->
+            <!-- NEED ZONE SCHEDULE & MAP PINNING WITH PERSONAL DEDUPLICATION -->
             <div class="grind-grid-2col" style="background: rgba(30, 41, 59, 0.4); padding: 12px; border-radius: 8px; border: 1px dashed rgba(255, 255, 255, 0.15);">
                 <div>
                     <label class="grind-input-label">Need Zone Activity</label>
@@ -1705,7 +1706,7 @@ const appState = {
     }
 };
 
-// Line 963: DOM Ready Initialization to guarantee clean DOM execution
+// Line 965: DOM Ready Initialization to guarantee clean DOM execution
 window.addEventListener('DOMContentLoaded', () => {
     window.appState = appState;
     window.adjRank = (tier, val) => appState.adjRank(tier, val);
