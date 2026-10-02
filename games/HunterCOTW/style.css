@@ -1,12 +1,17 @@
 /* ============================================================================
    File: style.css
    Location: /games/HunterCOTW/style.css
-   Description: COTW Master Tracker Sleek, High-Contrast Responsive Skin
-   Compatibility: Desktop (>=1280px), Tablet (768px-1279px), Mobile (<768px)
-   Version: 4.3.0
-   Date & Time Stamp: 2026-10-02 11:55:00 EDT (America/New_York)
+   Description: COTW Master Tracker Sleek, Glossy, High-Contrast Responsive Skin
+   Aesthetic: Glossy high-contrast glassmorphism, clear headings, limited font palette
+   Compatibility:
+     - Desktop (>=1280px): Horizontal discovery header, CSS Grid, multi-column dropdowns
+     - Tablet (768px - 1279px): Compact bar, 44px+ touch targets, tap accordions
+     - Mobile (<768px): 85% width vertical ad cards, single-column containers, 44x44px+ CTAs
+   Build Version: 5.0.0
+   Date & Time Stamp: 2026-10-02 14:15:00 EDT (America/New_York)
    ============================================================================ */
 
+/* Line 15: Root Variables & User Theme Tokens */
 :root {
     --user-theme-accent: #ff5500;
     --user-theme-glow: rgba(255, 85, 0, 0.45);
@@ -14,13 +19,17 @@
     --user-theme-secondary: #0a0a0c;
     --user-theme-badge-bg: #ff5500;
     --user-theme-badge-text: #ffffff;
-    --bg-dark: #0b0f19;
-    --card-bg: rgba(15, 23, 42, 0.95);
+    --bg-dark: #080c14;
+    --card-bg: rgba(15, 23, 42, 0.92);
+    --card-surface: #0f172a;
+    --card-subtle: #1e293b;
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
     --tap-target: 48px;
+    --tap-target-min: 44px;
 }
 
+/* Line 33: Reset & Protocol Base */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -29,13 +38,13 @@
 
 body {
     background-color: var(--bg-dark);
-    background-image: radial-gradient(circle at top, rgba(30, 41, 59, 0.6) 0%, rgba(11, 15, 25, 1) 100%);
+    background-image: radial-gradient(circle at top, rgba(30, 41, 59, 0.7) 0%, rgba(8, 12, 20, 1) 100%);
     color: var(--text-main);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-size: 14px;
     line-height: 1.5;
     min-height: 100vh;
-    padding: 16px;
+    padding: 16px 16px 70px 16px; /* Bottom padding keeps content clear of persistent footer */
     overflow-x: hidden;
 }
 
@@ -45,7 +54,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(11, 15, 25, 0.98));
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.45), rgba(8, 12, 20, 0.98));
     z-index: -1;
     pointer-events: none !important;
 }
@@ -57,55 +66,226 @@ body {
     z-index: 1;
 }
 
+/* Line 70: Typography */
 h1, h2, h3 {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: 900;
 }
-
 h1 { font-size: clamp(1.4rem, 3.5vw, 1.8rem); }
 h2 { font-size: clamp(1.1rem, 2.5vw, 1.4rem); }
 h3 { font-size: 1.1rem; }
 
 /* ----------------------------------------------------
- * Navigation Drawer System
+ * SECTION: Universal Image Restraints & Media Shield
+ * Line 82: Prevents raw unstyled images from blowing up the page
+ * ---------------------------------------------------- */
+img {
+    max-width: 100%;
+    height: auto;
+    display: inline-block;
+}
+
+/* Lightbox-only image ALT text constraint */
+img:not(.in-lightbox) {
+    speak: none;
+}
+
+/* ----------------------------------------------------
+ * SECTION: Dynamic Navigation Header (Cross-Platform)
+ * Lines 97-195: Desktop (>=1280px), Tablet (768-1279px), Mobile (<768px)
  * ---------------------------------------------------- */
 .nav-wrapper-centered {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     width: 100%;
     position: relative;
     z-index: 1000;
     margin: 0 auto 20px auto;
 }
 
-.sandwich-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    width: 100%;
-    max-width: 340px;
-    min-height: var(--tap-target);
-    background: #0f172a;
-    border: 1px solid var(--user-theme-border);
-    border-radius: 10px;
-    color: #f8fafc;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    margin-bottom: 8px;
+/* Desktop Horizontal Header (1280px and wider) */
+@media (min-width: 1280px) {
+    .sandwich-btn {
+        display: none !important;
+    }
+    #dynamic-nav-links {
+        display: flex !important;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 12px;
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--user-theme-border);
+        border-radius: 12px;
+        padding: 10px 18px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    }
+    #dynamic-nav-links a {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-main);
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.9rem;
+        padding: 8px 14px;
+        border-radius: 8px;
+        min-height: var(--tap-target-min);
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+    #dynamic-nav-links a:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--user-theme-accent);
+    }
+    .nav-icon {
+        width: 24px !important;
+        height: 24px !important;
+        object-fit: contain;
+    }
+    .nav-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+    .nav-dropbtn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: var(--text-main);
+        font-weight: 700;
+        font-size: 0.9rem;
+        padding: 8px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        min-height: var(--tap-target-min);
+    }
+    .nav-dropdown:hover .nav-dropdown-content,
+    .nav-dropdown.active .nav-dropdown-content {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+        gap: 6px;
+    }
+    .nav-dropdown-content {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        min-width: 380px;
+        background: #0b1120;
+        border: 1px solid var(--user-theme-border);
+        border-radius: 10px;
+        padding: 10px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.75), 0 0 15px var(--user-theme-glow);
+        z-index: 1001;
+    }
+    .nav-dropdown-content a {
+        padding: 8px 10px;
+    }
 }
 
-@media (min-width: 1280px) {
-    .sandwich-btn { display: none !important; }
+/* Tablet (768px to 1279px) */
+@media (min-width: 768px) and (max-width: 1279px) {
+    .sandwich-btn {
+        width: 100%;
+        min-height: var(--tap-target);
+        background: #0f172a;
+        border: 1px solid var(--user-theme-border);
+        border-radius: 10px;
+        color: #f8fafc;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        padding: 10px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    #dynamic-nav-links {
+        display: none;
+        flex-direction: column;
+        gap: 6px;
+        background: #0b1120;
+        border: 1px solid var(--user-theme-border);
+        border-radius: 10px;
+        padding: 12px;
+        margin-top: 8px;
+    }
+    #dynamic-nav-links.is-open { display: flex; }
+    .nav-icon {
+        width: 28px !important;
+        height: 28px !important;
+        object-fit: contain;
+    }
+    .nav-dropdown-content {
+        display: none;
+        flex-direction: column;
+        padding-left: 14px;
+    }
+    .nav-dropdown.active .nav-dropdown-content { display: flex; }
+}
+
+/* Mobile (Under 768px): Hamburger Drawer & Accordions */
+@media (max-width: 767px) {
+    .sandwich-btn {
+        width: 100%;
+        min-height: var(--tap-target);
+        background: #0f172a;
+        border: 1px solid var(--user-theme-border);
+        border-radius: 10px;
+        color: #f8fafc;
+        font-size: 1rem;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    }
+    #dynamic-nav-links {
+        display: none;
+        flex-direction: column;
+        gap: 8px;
+        background: #0b1120;
+        border: 1px solid var(--user-theme-border);
+        border-radius: 10px;
+        padding: 14px;
+        margin-top: 8px;
+    }
+    #dynamic-nav-links.is-open { display: flex; }
+    #dynamic-nav-links a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: var(--tap-target);
+        padding: 10px 14px;
+        background: var(--card-surface);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        color: #fff;
+        text-decoration: none;
+        font-weight: 700;
+    }
+    .nav-icon {
+        width: 28px !important;
+        height: 28px !important;
+        object-fit: contain;
+    }
+    .nav-dropdown-content {
+        display: none;
+        flex-direction: column;
+        gap: 6px;
+        padding-left: 10px;
+        margin-top: 6px;
+    }
+    .nav-dropdown.active .nav-dropdown-content { display: flex; }
 }
 
 /* ----------------------------------------------------
- * Master Console & Rank Badges
+ * SECTION: Master Console & Rank Badges
+ * Lines 255-320: High-contrast glossy console
  * ---------------------------------------------------- */
 .console-card {
     background: var(--card-bg);
@@ -140,7 +320,7 @@ h3 { font-size: 1.1rem; }
 }
 
 .platform-select, .pin-device-btn, .user-nav-btn {
-    min-height: var(--tap-target);
+    min-height: var(--tap-target-min);
     background: #0f172a;
     color: #f8fafc;
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -179,24 +359,24 @@ h3 { font-size: 1.1rem; }
     background: #0f172a;
     color: #f8fafc;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     border-radius: 6px;
     font-weight: bold;
     cursor: pointer;
 }
-
 .rank-ctrls .val { font-size: 1rem; font-weight: 800; color: var(--user-theme-accent); }
 
 /* ----------------------------------------------------
- * Field Grind & Harvest Card (Single-Column Mobile Ready)
+ * SECTION: Field Grind & Harvest Card (Single-Column Mobile Ready)
+ * Lines 334-450: 85% mobile width constraint & touch targets
  * ---------------------------------------------------- */
 .grind-card-container {
     width: 100%;
     background: #0f172a;
     border: 1px solid var(--user-theme-border);
-    border-radius: 12px;
-    padding: 18px;
+    border-radius: 14px;
+    padding: 20px;
     margin-bottom: 24px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
     display: flex;
@@ -204,6 +384,17 @@ h3 { font-size: 1.1rem; }
     gap: 14px;
     position: relative;
     z-index: 50;
+}
+
+/* Mobile Ad / Promo Card Spec (85% Width, Clean Framing, Above the Fold) */
+@media (max-width: 767px) {
+    .grind-card-container,
+    .mobile-ad-card {
+        width: 85% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding: 16px !important;
+    }
 }
 
 .grind-card-header {
@@ -236,12 +427,12 @@ h3 { font-size: 1.1rem; }
 
 .grind-input, .grind-select {
     width: 100%;
-    min-height: var(--tap-target);
+    min-height: var(--tap-target-min);
     background: #1e293b;
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 8px;
     color: #ffffff;
-    font-size: 0.95rem;
+    font-size: 16px; /* 16px prevents mobile browser zoom */
     font-weight: 600;
     padding: 8px 12px;
     outline: none;
@@ -252,7 +443,7 @@ h3 { font-size: 1.1rem; }
 
 /* Session Mode Button */
 .session-toggle-btn {
-    min-height: 40px;
+    min-height: 44px;
     padding: 8px 14px;
     border-radius: 8px;
     font-weight: 800;
@@ -277,7 +468,7 @@ h3 { font-size: 1.1rem; }
 }
 
 .zone-toggle-btn {
-    min-height: var(--tap-target);
+    min-height: var(--tap-target-min);
     width: 100%;
     border-radius: 8px;
     font-weight: 700;
@@ -326,7 +517,6 @@ h3 { font-size: 1.1rem; }
     box-shadow: 0 4px 15px var(--user-theme-glow);
     transition: transform 0.15s ease;
 }
-
 .log-harvest-btn:active { transform: scale(0.98); }
 
 .gauge-container {
@@ -355,7 +545,8 @@ h3 { font-size: 1.1rem; }
 }
 
 /* ----------------------------------------------------
- * Trophy Grids & Mode Badges
+ * SECTION: Trophy Grids & Mode Badges
+ * Lines 488-595: Multi-column CSS Grid & Mobile Single-Column
  * ---------------------------------------------------- */
 .category-section {
     background: var(--card-bg);
@@ -385,6 +576,12 @@ h3 { font-size: 1.1rem; }
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 16px;
+}
+
+@media (max-width: 767px) {
+    .trophy-grid {
+        grid-template-columns: 1fr; /* Clean single-column mobile view */
+    }
 }
 
 .trophy-card {
@@ -456,7 +653,7 @@ h3 { font-size: 1.1rem; }
     cursor: pointer;
     font-size: 1.1rem;
     font-weight: bold;
-    min-height: var(--tap-target);
+    min-height: var(--tap-target-min);
     min-width: 44px;
 }
 
@@ -466,7 +663,7 @@ h3 { font-size: 1.1rem; }
     background: transparent;
     border: none;
     color: var(--user-theme-accent);
-    font-size: 0.95rem;
+    font-size: 16px;
     font-weight: 700;
     text-align: center;
 }
@@ -481,7 +678,7 @@ h3 { font-size: 1.1rem; }
     font-weight: 700;
     font-size: 0.85rem;
     cursor: pointer;
-    min-height: var(--tap-target);
+    min-height: var(--tap-target-min);
 }
 
 .lock-badge {
@@ -491,16 +688,31 @@ h3 { font-size: 1.1rem; }
 
 .dropdown-content { display: none; margin-top: 8px; padding: 8px; background: #020617; border-radius: 8px; }
 .dropdown-content.show { display: block; }
-.check-btn { width: 36px; height: 36px; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; cursor: pointer; }
+.check-btn { width: 44px; height: 44px; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; cursor: pointer; }
 .check-btn.is-done { background: #10b981; border-color: #10b981; }
 
+/* ----------------------------------------------------
+ * SECTION: Persistent Sticky Footer (Timestamp & Version)
+ * Lines 620-650: Always visible at bottom of viewport
+ * ---------------------------------------------------- */
 footer.tracker-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
     text-align: center;
-    padding: 30px 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    margin-top: 40px;
-    background: rgba(15, 23, 42, 0.8);
-    border-radius: 12px;
+    padding: 10px 16px;
+    background: rgba(8, 12, 20, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    z-index: 9999;
 }
 
-#build-meta-footer { color: var(--text-muted); font-size: 0.8rem; font-family: monospace; }
+#build-meta-footer {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-family: monospace;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
