@@ -4,14 +4,15 @@
    Description: theHunter: Call of the Wild Responsive RTDB + Firestore Engine
                 - Live PSN Trophy Watcher (NPWR13211_00) via Primary 'title' Match
                 - Full 4-Player Profile Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
+                - Free-Type / Datalist Target Species Input with RTDB Learning
                 - Append-Only Field Grind Ledger with Weight & 1-33 Drift Sweet Spot Engine
                 - Fur Variant Tracking & Full Animal Difficulty Tiers (Mythical, Legendary, Fabled)
                 - Live Coordinate Geofencing & Sub-Region Auto-Fill (Layton 40-Point Grid)
                 - Automated Silver Ridge Peaks 50-Turkey Cull Tracker (srp_turkeys)
                 - Auto-Incrementing Career Animal Rank Telemetry
    Database: Cloud Firestore & Realtime Database (entertainment-71888)
-   Build Version: 4.0.0
-   Code Build Date: 2026-10-02 02:08:00 EDT (America/New_York)
+   Build Version: 4.1.0
+   Code Build Date: 2026-10-02 02:24:00 EDT (America/New_York)
    ============================================================================ */
 
 import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -21,10 +22,10 @@ import { getDatabase, ref as rtdbRef, onValue, set, update, push, off } from '//
 
 /* ----------------------------------------------------
  * SECTION 1: Build Metadata, User Map & Custom Themes
- * Lines 25-100: PSN handles, custom themes, asset icons
+ * Lines 25-102: PSN handles, custom themes, asset icons
  * ---------------------------------------------------- */
-const BUILD_VERSION = "4.0.0";
-const CODE_BUILD_DATE = "2026-10-02 02:08:00 EDT";
+const BUILD_VERSION = "4.1.0";
+const CODE_BUILD_DATE = "2026-10-02 02:24:00 EDT";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -93,7 +94,7 @@ const USER_THEMES = {
     },
     'DesdemonaTiger': {
         accent: '#10b981',
-        accentGlow: 'rgba(16, 185, 129, 0.45)',
+        accentGlow: 'rgba(168, 185, 129, 0.45)',
         secondary: '#064e3b',
         border: 'rgba(16, 185, 129, 0.4)',
         badgeBg: '#10b981',
@@ -112,7 +113,7 @@ const ICONS = {
 
 /* ----------------------------------------------------
  * SECTION 2: Master Helpers & Ground-Truth Anchor Grid
- * Lines 102-180: Checklists & 40 verified Layton anchors
+ * Lines 104-182: Checklists & 40 verified Layton anchors
  * ---------------------------------------------------- */
 const checkSet = (items) => items.map(name => ({ name, done: false }));
 
@@ -169,7 +170,7 @@ const LAYTON_ANCHORS = [
 
 /* ----------------------------------------------------
  * SECTION 3: Raw Static Master Data Baseline
- * Lines 182-305: Complete trophy & mission database records
+ * Lines 184-307: Complete trophy & mission database records
  * ---------------------------------------------------- */
 const trophyData = [
     // --- BASE GAME TROPHIES ---
@@ -355,7 +356,7 @@ const trophyData = [
 
 /* ----------------------------------------------------
  * SECTION 4: Species Weight Baseline Table
- * Lines 307-320: Benchmarks for the 1-33 drift calculation
+ * Lines 309-322: Benchmarks for the 1-33 drift calculation
  * ---------------------------------------------------- */
 const SPECIES_BENCHMARKS = {
     'Black Bear': { min: 40, max: 290, sweetLow: 80, sweetHigh: 115, diamondLevel: 9 },
@@ -546,8 +547,8 @@ const injectResponsiveNavbarStyles = () => {
 };
 
 /* ----------------------------------------------------
- * SECTION 6: Main Application State & Engines
- * Lines 425-990: State, dual listeners, telemetry, auto-fill
+ * SECTION 6: Main Application State & Unified Engine
+ * Lines 427-1010: State, dual listeners, telemetry, auto-fill
  * ---------------------------------------------------- */
 const appState = {
     activeHunter: localStorage.getItem('pinned_device_user') || 'Werewolf',
@@ -566,7 +567,13 @@ const appState = {
     legacyUnsub: null,
     rtdbTrophyRef: null,
     rtdbLedgerRef: null,
-    knownSpeciesList: ['Black Bear', 'Whitetail Deer', 'Moose', 'Red Deer', 'Gray Wolf', 'Merriam Turkey'],
+    rtdbSpeciesRef: null,
+    knownSpeciesList: [
+        'Black Bear', 'Whitetail Deer', 'Moose', 'Red Deer', 
+        'Fallow Deer', 'Roe Deer', 'Wild Boar', 'Gray Wolf', 
+        'Merriam Turkey', 'Plains Bison', 'Roosevelt Elk', 
+        'Mountain Lion', 'Mule Deer', 'Pronghorn'
+    ],
 
     getFreshTrophyTemplate: function() {
         return JSON.parse(JSON.stringify(trophyData));
@@ -670,39 +677,57 @@ const appState = {
         }
     },
 
+    /* --- Free-Form Datalist Target Species Setup --- */
     renderSpeciesDropdown: function() {
-        const select = document.getElementById('grind-species-select');
-        if (!select) return;
-        const curVal = select.value || this.activeSpecies;
-        select.innerHTML = '';
-        this.knownSpeciesList.forEach(sp => {
+        const datalist = document.getElementById('species-datalist');
+        if (!datalist) return;
+        datalist.innerHTML = '';
+
+        const allSpecies = [...new Set(this.knownSpeciesList)].sort();
+        allSpecies.forEach(sp => {
             const opt = document.createElement('option');
             opt.value = sp;
-            opt.innerText = sp;
-            select.appendChild(opt);
+            datalist.appendChild(opt);
         });
-        const addOpt = document.createElement('option');
-        addOpt.value = '__ADD_NEW__';
-        addOpt.innerText = '➕ Add New Species...';
-        select.appendChild(addOpt);
-        select.value = curVal;
+
+        const inputEl = document.getElementById('grind-species-input');
+        if (inputEl && !inputEl.value) {
+            inputEl.value = this.activeSpecies;
+        }
     },
 
     handleSpeciesChange: async function(val) {
-        if (val === '__ADD_NEW__') {
-            const newName = prompt("Enter new animal species name:");
-            if (newName && newName.trim()) {
-                const formatted = newName.trim();
-                this.knownSpeciesList.push(formatted);
-                this.activeSpecies = formatted;
-                this.renderSpeciesDropdown();
-            } else {
-                this.renderSpeciesDropdown();
+        if (!val || !val.trim()) return;
+        const cleanName = val.trim();
+        this.activeSpecies = cleanName;
+
+        if (!this.knownSpeciesList.includes(cleanName)) {
+            this.knownSpeciesList.push(cleanName);
+            this.renderSpeciesDropdown();
+
+            // Persist learned species in RTDB under the reserve
+            if (this.rtdb) {
+                const cleanMap = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '_');
+                await set(rtdbRef(this.rtdb, `shared_map_registry/${cleanMap}/known_species/${cleanName}`), true);
             }
-        } else {
-            this.activeSpecies = val;
-            this.bindGrindTelemetry();
         }
+
+        this.bindGrindTelemetry();
+    },
+
+    bindSharedSpeciesList: function() {
+        if (!this.rtdb) return;
+        if (this.rtdbSpeciesRef) off(this.rtdbSpeciesRef);
+
+        const cleanMap = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '_');
+        this.rtdbSpeciesRef = rtdbRef(this.rtdb, `shared_map_registry/${cleanMap}/known_species`);
+
+        onValue(this.rtdbSpeciesRef, (snapshot) => {
+            if (!snapshot.exists()) return;
+            const rtdbSpecies = Object.keys(snapshot.val() || {});
+            this.knownSpeciesList = [...new Set([...this.knownSpeciesList, ...rtdbSpecies])];
+            this.renderSpeciesDropdown();
+        });
     },
 
     /* --- Bind Harvest Ledger & Weight Telemetry --- */
@@ -750,6 +775,10 @@ const appState = {
     /* --- Log Harvest (Append-Only + Auto Turkey Cap + Auto Career Rank) --- */
     logHarvest: async function() {
         if (!this.rtdb || !this.auth.currentUser) return;
+        const speciesInput = document.getElementById('grind-species-input');
+        const chosenSpecies = speciesInput?.value?.trim() || this.activeSpecies || 'Unknown';
+        this.activeSpecies = chosenSpecies;
+
         const weightInput = document.getElementById('harvest-weight');
         const levelInput = document.getElementById('harvest-level');
         const sexInput = document.getElementById('harvest-sex');
@@ -767,6 +796,7 @@ const appState = {
         }
 
         const harvestPayload = {
+            species: chosenSpecies,
             weight: weight,
             level: parseInt(levelInput?.value, 10) || 1,
             levelName: levelInput?.options[levelInput.selectedIndex]?.text || 'Level 1',
@@ -782,16 +812,23 @@ const appState = {
         };
 
         const cleanMap = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '_');
-        const cleanSpecies = this.activeSpecies.replace(/[^a-zA-Z0-9]/g, '_');
+        const cleanSpecies = chosenSpecies.replace(/[^a-zA-Z0-9]/g, '_');
 
         try {
             // 1. Append immutable harvest to user's RTDB grind ledger
             const harvestsRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/grind_tracker/${cleanMap}/${cleanSpecies}/harvests`);
             await push(harvestsRef, harvestPayload);
 
-            // 2. Automated Turkey Cull Bridge (Silver Ridge Peaks)
+            // 2. Ensure new species is permanently saved to RTDB registry
+            if (!this.knownSpeciesList.includes(chosenSpecies)) {
+                this.knownSpeciesList.push(chosenSpecies);
+                await set(rtdbRef(this.rtdb, `shared_map_registry/${cleanMap}/known_species/${chosenSpecies}`), true);
+                this.renderSpeciesDropdown();
+            }
+
+            // 3. Automated Turkey Cull Bridge (Silver Ridge Peaks)
             const isSilverRidge = this.activeReserve.toLowerCase().includes('silver ridge');
-            const isTurkey = this.activeSpecies.toLowerCase().includes('turkey');
+            const isTurkey = chosenSpecies.toLowerCase().includes('turkey');
             if (isSilverRidge && isTurkey) {
                 const turkeyTrophy = this.hunterData.find(t => t.id === 'srp_turkeys');
                 if (turkeyTrophy && turkeyTrophy.current < turkeyTrophy.goal) {
@@ -801,14 +838,14 @@ const appState = {
                 }
             }
 
-            // 3. Auto-increment career animal rank if rated
+            // 4. Auto-increment career animal rank if rated
             const ratingKey = harvestPayload.rating.toLowerCase();
             if (ratingKey !== 'none' && this.animalRankData[ratingKey] !== undefined) {
                 this.adjRank(ratingKey, 1);
             }
 
             if (weightInput) weightInput.value = '';
-            this.setStatus(`✓ Logged ${this.activeSpecies} (${weight}kg, ${harvestPayload.fur}) [Auto-Ranked: ${harvestPayload.rating}]`, "#10b981");
+            this.setStatus(`✓ Logged ${chosenSpecies} (${weight}kg, ${harvestPayload.fur}) [Auto-Ranked: ${harvestPayload.rating}]`, "#10b981");
         } catch (err) {
             console.error("Harvest Log Error:", err);
             this.setStatus(`❌ Harvest Save Failed: ${err.message}`, "#ef4444");
@@ -933,10 +970,11 @@ const appState = {
                 if (!node) return;
 
                 if (Array.isArray(node)) {
-                    if (!groups[key]) groups[key] = [];
+                    const groupKey = key;
+                    if (!groups[groupKey]) groups[groupKey] = [];
                     node.forEach((arrItem, idx) => {
-                        const parsed = parseItem(arrItem, `${key}_${idx}`);
-                        if (parsed) groups[key].push(parsed);
+                        const parsed = parseItem(arrItem, `${groupKey}_${idx}`);
+                        if (parsed) groups[groupKey].push(parsed);
                     });
                 } else if (typeof node === 'object') {
                     if (node.title || node.url || node.link) {
@@ -949,10 +987,11 @@ const appState = {
                             groups[parsed.folder].push(parsed);
                         }
                     } else {
-                        if (!groups[key]) groups[key] = [];
+                        const groupKey = key;
+                        if (!groups[groupKey]) groups[groupKey] = [];
                         Object.keys(node).forEach(subKey => {
                             const parsed = parseItem(node[subKey], subKey);
-                            if (parsed) groups[key].push(parsed);
+                            if (parsed) groups[groupKey].push(parsed);
                         });
                     }
                 }
@@ -1079,6 +1118,7 @@ const appState = {
 
         this.render();
         this.updateRankUI();
+        this.bindSharedSpeciesList();
         this.bindGrindTelemetry();
 
         // 1. Cloud Firestore Progress Snapshot
@@ -1182,6 +1222,7 @@ const appState = {
             });
             selector.onchange = (e) => {
                 this.activeReserve = e.target.value;
+                this.bindSharedSpeciesList();
                 this.bindGrindTelemetry();
                 this.scrollToCategory(e.target.value.replace(/[^a-zA-Z0-9]/g, ''));
             };
@@ -1311,8 +1352,15 @@ const appState = {
 
             <div class="grind-grid-2col">
                 <div>
-                    <label class="grind-input-label">Target Species</label>
-                    <select id="grind-species-select" class="grind-select" onchange="appState.handleSpeciesChange(this.value)"></select>
+                    <label class="grind-input-label">Target Species (Type or Pick)</label>
+                    <input type="text" 
+                           id="grind-species-input" 
+                           class="grind-input" 
+                           list="species-datalist" 
+                           value="${this.activeSpecies}" 
+                           placeholder="e.g. Black Bear, Moose, Turkey"
+                           onchange="appState.handleSpeciesChange(this.value)">
+                    <datalist id="species-datalist"></datalist>
                 </div>
                 <div>
                     <label class="grind-input-label">Zone Rotation Mode</label>
@@ -1353,7 +1401,7 @@ const appState = {
                             <option value="Albino">Albino (Rare 🐇)</option>
                             <option value="Melanistic">Melanistic (Rare 🖤)</option>
                             <option value="Piebald">Piebald (Rare ⚪)</option>
-                            <option value="Leucistic">Leucistic (Rare ❄️)</option>
+                            <option value="Leucistic">Leucistic (Rare ❄️️)</option>
                             <option value="Mocha">Mocha / Special</option>
                             <option value="Fabled Variant">Fabled / Great One 👑</option>
                         </select>
@@ -1482,6 +1530,10 @@ const appState = {
         }, 100);
     },
 
+    /* ----------------------------------------------------
+     * SECTION 7: Cloud Firestore Sync Writer
+     * Lines 985-1010: State commit and telemetry dispatch
+     * ---------------------------------------------------- */
     sync: async function(silent = false) {
         this.render();
         this.updateRankUI();
