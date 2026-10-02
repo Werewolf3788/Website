@@ -2,26 +2,29 @@
    File: script.js
    Location: /games/HunterCOTW/script.js
    Description: theHunter: Call of the Wild Responsive RTDB + Firestore Engine
+                - Live PSN Trophy Watcher (NPWR13211_00) via Primary 'title' Match
+                - Full 4-Player Profile Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
+                - Append-Only Field Grind Ledger with Weight & 1-33 Drift Sweet Spot Engine
+                - Fur Variant Tracking & Full Animal Difficulty Tiers (Mythical, Legendary, Fabled)
+                - Live Coordinate Geofencing & Sub-Region Auto-Fill (Layton 40-Point Grid)
+                - Automated Silver Ridge Peaks 50-Turkey Cull Tracker (srp_turkeys)
+                - Auto-Incrementing Career Animal Rank Telemetry
    Database: Cloud Firestore & Realtime Database (entertainment-71888)
-   Firestore Target: /users/{userId}/platform/{platform}/progress/COTW
-   RTDB Trophy Source: /psn/gamertags/{Gamertag}/liveTrophyProgress/NPWR13211_00
-   RTDB Navigation Source: /utm_links
-   Analytics Tag: G-CTYHDF4MSD
-   Build Version: 2.3.1
-   Code Build Date: 2026-10-02 00:04:00 EDT (America/New_York)
+   Build Version: 4.0.0
+   Code Build Date: 2026-10-02 02:08:00 EDT (America/New_York)
    ============================================================================ */
 
 import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from '//www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from '//www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import { getDatabase, ref as rtdbRef, onValue, off } from '//www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+import { getDatabase, ref as rtdbRef, onValue, set, update, push, off } from '//www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
 /* ----------------------------------------------------
- * SECTION 1: Build Metadata, User Map & Custom Color Themes
- * Lines 20-80: Release signatures, normalized gamer handles & themes
+ * SECTION 1: Build Metadata, User Map & Custom Themes
+ * Lines 25-100: PSN handles, custom themes, asset icons
  * ---------------------------------------------------- */
-const BUILD_VERSION = "2.3.1";
-const CODE_BUILD_DATE = "2026-10-02 00:04:00 EDT";
+const BUILD_VERSION = "4.0.0";
+const CODE_BUILD_DATE = "2026-10-02 02:08:00 EDT";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -36,7 +39,7 @@ const firebaseConfig = {
 const GAME_ID = 'COTW';
 const NPWR_ID = 'NPWR13211_00';
 
-// Normalized Gamer Handles: Supports both 'Werewolf' and 'Werewolf3788', points to live RTDB gamertag
+// Exact RTDB PSN Gamertag Path Map
 const USER_PSN_MAP = {
     'Werewolf': 'wildhorse_spirit',
     'Werewolf3788': 'wildhorse_spirit',
@@ -108,30 +111,65 @@ const ICONS = {
 };
 
 /* ----------------------------------------------------
- * SECTION 2: Master Helpers
- * Lines 82-108: Checklist generation & alphabetization
+ * SECTION 2: Master Helpers & Ground-Truth Anchor Grid
+ * Lines 102-180: Checklists & 40 verified Layton anchors
  * ---------------------------------------------------- */
 const checkSet = (items) => items.map(name => ({ name, done: false }));
 
-const formatAlphaCheckset = (items) => {
-    return items
-        .sort((a, b) => {
-            const nameA = typeof a === 'string' ? a : a.name;
-            const nameB = typeof b === 'string' ? b : b.name;
-            return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
-        })
-        .map((item, idx) => {
-            if (typeof item === 'string') {
-                return { name: `${idx + 1}. ${item}`, done: false, images: [] };
-            } else {
-                return { name: `${idx + 1}. ${item.name}`, done: false, images: item.images || [] };
-            }
-        });
+const normalizePlatform = (inputPlatform) => {
+    if (!inputPlatform) return 'playstation';
+    const clean = String(inputPlatform).toLowerCase().trim();
+    if (clean === 'psn' || clean === 'ps' || clean === 'playstation') return 'playstation';
+    return clean;
 };
+
+// Verified 40 Layton Lake Coordinate Anchors
+const LAYTON_ANCHORS = [
+    { id: 1, x: 10189, y: 11293, region: 'Lake District', subRegion: 'Balmont' },
+    { id: 2, x: 10622, y: 10947, region: 'Lake District', subRegion: 'Balmont' },
+    { id: 3, x: 10733, y: 10487, region: 'Lake District', subRegion: 'Balmont' },
+    { id: 4, x: 12069, y: 11244, region: 'Southern Ridge', subRegion: 'Mount Leviathan' },
+    { id: 5, x: 10912, y: 9521, region: 'Lake District', subRegion: 'Balmont' },
+    { id: 6, x: 10353, y: 8123, region: 'Lake District', subRegion: 'High Lake' },
+    { id: 7, x: 11033, y: 7990, region: 'Southern Ridge', subRegion: 'Cheelah' },
+    { id: 8, x: 11835, y: 6884, region: 'Southern Ridge', subRegion: 'Cheelah' },
+    { id: 9, x: 13135, y: 7245, region: 'Southern Ridge', subRegion: 'Cheelah' },
+    { id: 10, x: 13403, y: 5942, region: 'Northern Ridge', subRegion: 'Calburn' },
+    { id: 11, x: 13415, y: 4802, region: 'Northern Ridge', subRegion: 'Calburn' },
+    { id: 12, x: 11887, y: 4841, region: 'Northern Ridge', subRegion: 'Norden' },
+    { id: 13, x: 11048, y: 5299, region: 'Northern Ridge', subRegion: 'Norden' },
+    { id: 14, x: 10468, y: 5120, region: 'Highton Peaks', subRegion: 'Chopeeka' },
+    { id: 15, x: 9688, y: 4872, region: 'Highton Peaks', subRegion: 'Chopeeka' },
+    { id: 16, x: 8872, y: 5027, region: 'Highton Peaks', subRegion: 'Willipeg' },
+    { id: 17, x: 7557, y: 3821, region: 'Highton Peaks', subRegion: 'Willipeg' },
+    { id: 18, x: 7529, y: 5260, region: 'Highton Peaks', subRegion: 'Willipeg' },
+    { id: 19, x: 6801, y: 4843, region: 'Layton Lows', subRegion: 'Mount Kraken' },
+    { id: 20, x: 6272, y: 6500, region: 'Layton Lows', subRegion: 'Mount Kraken' },
+    { id: 21, x: 6578, y: 7146, region: 'Layton Lows', subRegion: 'Mount Kraken' },
+    { id: 22, x: 6970, y: 8391, region: 'Layton Lows', subRegion: 'Roonachee' },
+    { id: 23, x: 6544, y: 8783, region: 'Layton Lows', subRegion: 'Roonachee' },
+    { id: 24, x: 7185, y: 9161, region: 'Layton Lows', subRegion: 'Roonachee' },
+    { id: 25, x: 6909, y: 10278, region: 'Layton Lows', subRegion: 'Roonachee' },
+    { id: 26, x: 6517, y: 10567, region: 'Layton Lows', subRegion: 'Roonachee' },
+    { id: 27, x: 7155, y: 10962, region: 'Layton Lows', subRegion: 'Roonachee' },
+    { id: 28, x: 8666, y: 11472, region: 'Lake District', subRegion: 'Balmont' },
+    { id: 29, x: 8603, y: 10354, region: 'Lake District', subRegion: 'Balmont' },
+    { id: 30, x: 9923, y: 10329, region: 'Lake District', subRegion: 'Balmont' },
+    { id: 31, x: 9656, y: 10072, region: 'Lake District', subRegion: 'Balmont' },
+    { id: 32, x: 9852, y: 9647, region: 'Lake District', subRegion: 'Balmont' },
+    { id: 33, x: 8315, y: 9405, region: 'Lake District', subRegion: 'Balmont' },
+    { id: 34, x: 8932, y: 9063, region: 'Lake District', subRegion: 'Balmont' },
+    { id: 35, x: 9046, y: 7822, region: 'Lake District', subRegion: 'High Lake' },
+    { id: 36, x: 8941, y: 7455, region: 'Lake District', subRegion: 'High Lake' },
+    { id: 37, x: 8555, y: 6533, region: 'Lake District', subRegion: 'High Lake' },
+    { id: 38, x: 10104, y: 7008, region: 'Lake District', subRegion: 'High Lake' },
+    { id: 39, x: 11164, y: 9156, region: 'Southern Ridge', subRegion: 'Cheelah' },
+    { id: 40, x: 9622, y: 7176, region: 'Lake District', subRegion: 'High Lake' }
+];
 
 /* ----------------------------------------------------
  * SECTION 3: Raw Static Master Data Baseline
- * Lines 110-233: Complete trophy & mission database records
+ * Lines 182-305: Complete trophy & mission database records
  * ---------------------------------------------------- */
 const trophyData = [
     // --- BASE GAME TROPHIES ---
@@ -316,20 +354,20 @@ const trophyData = [
 ];
 
 /* ----------------------------------------------------
- * SECTION 4: Platform Normalization
- * Lines 235-245: Uniform platform sanitation
+ * SECTION 4: Species Weight Baseline Table
+ * Lines 307-320: Benchmarks for the 1-33 drift calculation
  * ---------------------------------------------------- */
-const normalizePlatform = (inputPlatform) => {
-    if (!inputPlatform) return 'playstation';
-    const clean = String(inputPlatform).toLowerCase().trim();
-    if (clean === 'psn' || clean === 'ps' || clean === 'playstation') {
-        return 'playstation';
-    }
-    return clean;
+const SPECIES_BENCHMARKS = {
+    'Black Bear': { min: 40, max: 290, sweetLow: 80, sweetHigh: 115, diamondLevel: 9 },
+    'Whitetail Deer': { min: 42, max: 100, sweetLow: 50, sweetHigh: 65, diamondLevel: 3 },
+    'Red Deer': { min: 90, max: 240, sweetLow: 120, sweetHigh: 155, diamondLevel: 9 },
+    'Moose': { min: 300, max: 620, sweetLow: 360, sweetHigh: 430, diamondLevel: 5 },
+    'Fallow Deer': { min: 30, max: 100, sweetLow: 45, sweetHigh: 60, diamondLevel: 5 },
+    'Gray Wolf': { min: 30, max: 80, sweetLow: 35, sweetHigh: 46, diamondLevel: 9 }
 };
 
 /* ----------------------------------------------------
- * SECTION 5: Dynamic Responsive Navigation Styles Injection
+ * SECTION 5: Responsive Navigation Styles Injection
  * ---------------------------------------------------- */
 const injectResponsiveNavbarStyles = () => {
     if (document.getElementById('cotw-responsive-nav-styles')) return;
@@ -503,67 +541,20 @@ const injectResponsiveNavbarStyles = () => {
             border-color: transparent;
             box-shadow: 0 0 12px var(--user-theme-glow);
         }
-        .trophy-card.completed {
-            border-color: var(--user-theme-accent) !important;
-            box-shadow: 0 0 15px var(--user-theme-glow) !important;
-        }
-        .number-control-group {
-            display: inline-flex;
-            align-items: center;
-            background: #0f172a;
-            border: 1px solid var(--user-theme-border);
-            border-radius: 8px;
-            overflow: hidden;
-            width: 100%;
-            max-width: 240px;
-        }
-        .number-control-group button {
-            background: #1e293b;
-            color: #f8fafc;
-            border: none;
-            padding: 8px 14px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: bold;
-            min-height: 48px;
-            min-width: 44px;
-        }
-        .number-control-group button:hover { background: #334155; }
-        .number-control-group input[type="number"] {
-            flex-grow: 1;
-            width: 60px;
-            background: transparent;
-            border: none;
-            color: var(--user-theme-accent);
-            font-size: 0.95rem;
-            font-weight: 700;
-            text-align: center;
-            padding: 6px;
-            -moz-appearance: textfield;
-            min-height: 48px;
-        }
-        .number-control-group input[type="number"]::-webkit-outer-spin-button,
-        .number-control-group input[type="number"]::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        .number-goal-label {
-            font-size: 0.8rem;
-            color: #94a3b8;
-            padding-right: 8px;
-            white-space: nowrap;
-        }
     `;
     document.head.appendChild(styleEl);
 };
 
 /* ----------------------------------------------------
  * SECTION 6: Main Application State & Engines
- * Lines 412-800: Identity cache, theme switcher, RTDB navigation
+ * Lines 425-990: State, dual listeners, telemetry, auto-fill
  * ---------------------------------------------------- */
 const appState = {
     activeHunter: localStorage.getItem('pinned_device_user') || 'Werewolf',
     activePlatform: normalizePlatform(localStorage.getItem('active_gaming_platform')),
+    activeReserve: 'Layton Lake',
+    activeSpecies: 'Black Bear',
+    zoneType: 'main',
     hunterData: [],
     animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 },
     auth: null,
@@ -574,6 +565,8 @@ const appState = {
     masterUnsub: null,
     legacyUnsub: null,
     rtdbTrophyRef: null,
+    rtdbLedgerRef: null,
+    knownSpeciesList: ['Black Bear', 'Whitetail Deer', 'Moose', 'Red Deer', 'Gray Wolf', 'Merriam Turkey'],
 
     getFreshTrophyTemplate: function() {
         return JSON.parse(JSON.stringify(trophyData));
@@ -614,22 +607,18 @@ const appState = {
 
     togglePinDevice: function() {
         const currentPin = localStorage.getItem('pinned_device_user');
-
         if (currentPin === this.activeHunter) {
             localStorage.removeItem('pinned_device_user');
         } else {
             localStorage.setItem('pinned_device_user', this.activeHunter);
         }
-
         this.updatePinButtonUI();
     },
 
     updatePinButtonUI: function() {
         const pinBtn = document.getElementById('pin-device-btn');
         if (!pinBtn) return;
-
         const isPinned = localStorage.getItem('pinned_device_user') === this.activeHunter;
-
         if (isPinned) {
             pinBtn.classList.add('is-pinned');
             pinBtn.innerText = '📌 Pinned as Primary Device';
@@ -637,6 +626,270 @@ const appState = {
             pinBtn.classList.remove('is-pinned');
             pinBtn.innerText = '📌 Pin Device to This User';
         }
+    },
+
+    setZoneType: function(type) {
+        this.zoneType = type;
+        const btn = document.getElementById('zone-toggle-btn');
+        if (!btn) return;
+        if (type === 'main') {
+            btn.className = 'zone-toggle-btn is-main';
+            btn.innerText = '🎯 Main Rotation Zone (Active Target)';
+        } else {
+            btn.className = 'zone-toggle-btn is-exterior';
+            btn.innerText = '⚠️ Exterior Zone (Seed Check Target)';
+        }
+    },
+
+    /* --- Coordinate Proximity & Auto-Fill --- */
+    onCoordinateInput: function() {
+        const latVal = parseFloat(document.getElementById('coord-lat')?.value);
+        const longVal = parseFloat(document.getElementById('coord-long')?.value);
+        if (isNaN(latVal) || isNaN(longVal)) return;
+
+        let closest = null;
+        let minDistance = Infinity;
+
+        // Check Layton Lake 40 anchors first if active reserve is Layton
+        if (this.activeReserve.toLowerCase().includes('layton')) {
+            LAYTON_ANCHORS.forEach(pt => {
+                const dist = Math.hypot(pt.x - longVal, pt.y - latVal);
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    closest = pt;
+                }
+            });
+        }
+
+        // Auto-fill Region & Subregion if within 1200m radius of an anchor
+        if (closest && minDistance < 1200) {
+            const regInput = document.getElementById('harvest-region');
+            const subInput = document.getElementById('harvest-subregion');
+            if (regInput && !regInput.value) regInput.value = closest.region || '';
+            if (subInput && !subInput.value) subInput.value = closest.subRegion || '';
+        }
+    },
+
+    renderSpeciesDropdown: function() {
+        const select = document.getElementById('grind-species-select');
+        if (!select) return;
+        const curVal = select.value || this.activeSpecies;
+        select.innerHTML = '';
+        this.knownSpeciesList.forEach(sp => {
+            const opt = document.createElement('option');
+            opt.value = sp;
+            opt.innerText = sp;
+            select.appendChild(opt);
+        });
+        const addOpt = document.createElement('option');
+        addOpt.value = '__ADD_NEW__';
+        addOpt.innerText = '➕ Add New Species...';
+        select.appendChild(addOpt);
+        select.value = curVal;
+    },
+
+    handleSpeciesChange: async function(val) {
+        if (val === '__ADD_NEW__') {
+            const newName = prompt("Enter new animal species name:");
+            if (newName && newName.trim()) {
+                const formatted = newName.trim();
+                this.knownSpeciesList.push(formatted);
+                this.activeSpecies = formatted;
+                this.renderSpeciesDropdown();
+            } else {
+                this.renderSpeciesDropdown();
+            }
+        } else {
+            this.activeSpecies = val;
+            this.bindGrindTelemetry();
+        }
+    },
+
+    /* --- Bind Harvest Ledger & Weight Telemetry --- */
+    bindGrindTelemetry: function() {
+        if (!this.rtdb) return;
+        if (this.rtdbLedgerRef) off(this.rtdbLedgerRef);
+
+        const cleanMap = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '_');
+        const cleanSpecies = this.activeSpecies.replace(/[^a-zA-Z0-9]/g, '_');
+        this.rtdbLedgerRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/grind_tracker/${cleanMap}/${cleanSpecies}/harvests`);
+
+        onValue(this.rtdbLedgerRef, (snapshot) => {
+            const fill = document.getElementById('sweet-spot-gauge');
+            const readout = document.getElementById('sweet-spot-readout');
+            if (!snapshot.exists()) {
+                if (fill) fill.style.width = '0%';
+                if (readout) readout.innerText = "No harvest data recorded yet for active grind.";
+                return;
+            }
+
+            const harvests = Object.values(snapshot.val());
+            const recent = harvests.slice(-30);
+            const totalWeight = recent.reduce((sum, h) => sum + (parseFloat(h.weight) || 0), 0);
+            const avgWeight = totalWeight / (recent.length || 1);
+
+            const specMeta = SPECIES_BENCHMARKS[this.activeSpecies] || { min: 30, max: 150, sweetLow: 45, sweetHigh: 75 };
+            const range = specMeta.max - specMeta.min;
+            const pct = Math.min(100, Math.max(0, ((avgWeight - specMeta.min) / range) * 100));
+
+            if (fill) fill.style.width = `${pct}%`;
+            if (readout) {
+                const isOptimal = avgWeight >= specMeta.sweetLow && avgWeight <= specMeta.sweetHigh;
+                const extCount = recent.filter(h => h.zoneType === 'exterior').length;
+                const extRatio = Math.round((extCount / recent.length) * 100);
+
+                let statusBadge = isOptimal ? '🎯 OPTIMAL SWEET SPOT' : (avgWeight > specMeta.sweetHigh ? '⚠️ ELEVATED WEIGHT' : '⬇️ MINIMUM TIERS');
+                readout.innerHTML = `
+                    <strong>${statusBadge}</strong> | Moving Avg: <strong>${avgWeight.toFixed(1)} kg</strong> (Range: ${specMeta.sweetLow}-${specMeta.sweetHigh}kg)
+                    <br>Recent Harvests: ${recent.length} | Exterior Cycle Ratio: <strong>${extRatio}%</strong> ${extRatio < 20 ? '(⚠️ Check exterior lakes for trapped seeds)' : '✓ Healthy Rotation'}
+                `;
+            }
+        });
+    },
+
+    /* --- Log Harvest (Append-Only + Auto Turkey Cap + Auto Career Rank) --- */
+    logHarvest: async function() {
+        if (!this.rtdb || !this.auth.currentUser) return;
+        const weightInput = document.getElementById('harvest-weight');
+        const levelInput = document.getElementById('harvest-level');
+        const sexInput = document.getElementById('harvest-sex');
+        const furInput = document.getElementById('harvest-fur');
+        const ratingInput = document.getElementById('harvest-rating');
+        const latInput = document.getElementById('coord-lat');
+        const longInput = document.getElementById('coord-long');
+        const regionInput = document.getElementById('harvest-region');
+        const subregionInput = document.getElementById('harvest-subregion');
+
+        const weight = parseFloat(weightInput?.value);
+        if (isNaN(weight) || weight <= 0) {
+            alert("Please enter a valid animal harvest weight.");
+            return;
+        }
+
+        const harvestPayload = {
+            weight: weight,
+            level: parseInt(levelInput?.value, 10) || 1,
+            levelName: levelInput?.options[levelInput.selectedIndex]?.text || 'Level 1',
+            sex: sexInput?.value || 'male',
+            fur: furInput?.value || 'Common',
+            rating: ratingInput?.value || 'none',
+            zoneType: this.zoneType,
+            lat: parseFloat(latInput?.value) || 0,
+            long: parseFloat(longInput?.value) || 0,
+            region: regionInput?.value?.trim() || 'Unknown',
+            subRegion: subregionInput?.value?.trim() || 'Unknown',
+            timestamp: Date.now()
+        };
+
+        const cleanMap = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '_');
+        const cleanSpecies = this.activeSpecies.replace(/[^a-zA-Z0-9]/g, '_');
+
+        try {
+            // 1. Append immutable harvest to user's RTDB grind ledger
+            const harvestsRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/grind_tracker/${cleanMap}/${cleanSpecies}/harvests`);
+            await push(harvestsRef, harvestPayload);
+
+            // 2. Automated Turkey Cull Bridge (Silver Ridge Peaks)
+            const isSilverRidge = this.activeReserve.toLowerCase().includes('silver ridge');
+            const isTurkey = this.activeSpecies.toLowerCase().includes('turkey');
+            if (isSilverRidge && isTurkey) {
+                const turkeyTrophy = this.hunterData.find(t => t.id === 'srp_turkeys');
+                if (turkeyTrophy && turkeyTrophy.current < turkeyTrophy.goal) {
+                    turkeyTrophy.current = Math.min(turkeyTrophy.goal, turkeyTrophy.current + 1);
+                    console.log(`[Auto-Trophy] Silver Ridge Turkey logged: ${turkeyTrophy.current}/${turkeyTrophy.goal}`);
+                    this.sync(true);
+                }
+            }
+
+            // 3. Auto-increment career animal rank if rated
+            const ratingKey = harvestPayload.rating.toLowerCase();
+            if (ratingKey !== 'none' && this.animalRankData[ratingKey] !== undefined) {
+                this.adjRank(ratingKey, 1);
+            }
+
+            if (weightInput) weightInput.value = '';
+            this.setStatus(`✓ Logged ${this.activeSpecies} (${weight}kg, ${harvestPayload.fur}) [Auto-Ranked: ${harvestPayload.rating}]`, "#10b981");
+        } catch (err) {
+            console.error("Harvest Log Error:", err);
+            this.setStatus(`❌ Harvest Save Failed: ${err.message}`, "#ef4444");
+        }
+    },
+
+    /* --- FIXED RTDB TROPHY WATCHER: Primary 'title' Match + PlayStation Icons --- */
+    bindRTDBTrophyWatcher: function(hunterKey) {
+        if (!this.rtdb) return;
+
+        // Exact mapping from your RTDB /psn/gamertags/ tree
+        const psnGamertag = USER_PSN_MAP[hunterKey] || USER_PSN_MAP[this.activeHunter] || 'wildhorse_spirit';
+        if (!psnGamertag) return;
+
+        // Exact RTDB Path: /psn/gamertags/{Gamertag}/liveTrophyProgress/NPWR13211_00
+        const trophyPath = `psn/gamertags/${psnGamertag}/liveTrophyProgress/${NPWR_ID}`;
+        this.rtdbTrophyRef = rtdbRef(this.rtdb, trophyPath);
+
+        console.log(`[RTDB Sync] Watching PSN Trophies at: ${trophyPath}`);
+
+        onValue(this.rtdbTrophyRef, (snapshot) => {
+            if (!snapshot.exists()) {
+                console.log(`[RTDB Sync] No live PSN trophy progress found for ${psnGamertag} (${NPWR_ID})`);
+                return;
+            }
+
+            const rtdbTrophies = snapshot.val();
+            let stateMutated = false;
+            const trophyEntries = Array.isArray(rtdbTrophies) 
+                ? rtdbTrophies 
+                : Object.entries(rtdbTrophies).map(([k, v]) => ({ _index: k, ...v }));
+
+            trophyEntries.forEach(rItem => {
+                if (!rItem) return;
+
+                // 1. Verify Earned Flag
+                const isEarned = rItem.earned === true || rItem.unlocked === true || rItem.achieved === 1 || String(rItem.earned).toLowerCase() === 'true';
+
+                // 2. Read 'title' FIRST (matches your /0/title field)
+                const psnTitle = String(rItem.title || rItem.trophyName || rItem.name || '').trim().toLowerCase();
+                const psnIdNum = rItem.trophyId !== undefined ? Number(rItem.trophyId) : null;
+
+                if (!psnTitle && psnIdNum === null) return;
+
+                // 3. Match against local master baseline
+                const match = this.hunterData.find((t, idx) => {
+                    const localName = t.name.trim().toLowerCase();
+                    return (psnTitle && localName === psnTitle) || (psnIdNum !== null && psnIdNum === idx);
+                });
+
+                if (match) {
+                    if (rItem.icon && !match.playstationImage) {
+                        match.playstationImage = rItem.icon;
+                        stateMutated = true;
+                    }
+
+                    if (isEarned) {
+                        if (match.current < match.goal) {
+                            match.current = match.goal;
+                            if (match.type === 'checklist' && match.subItems) {
+                                match.subItems.forEach(si => si.done = true);
+                            }
+                            stateMutated = true;
+                        }
+                    } else if (rItem.trophyProgress !== undefined && match.type === 'numeric') {
+                        const currentVal = Number(rItem.trophyProgress);
+                        if (!isNaN(currentVal) && currentVal > match.current) {
+                            match.current = Math.min(match.goal, currentVal);
+                            stateMutated = true;
+                        }
+                    }
+                }
+            });
+
+            if (stateMutated) {
+                console.log(`[RTDB Sync] Auto-verified PSN trophies for ${hunterKey} (${psnGamertag})`);
+                this.sync(true);
+            }
+        }, (err) => {
+            console.warn("RTDB Trophy watcher error:", err.message);
+        });
     },
 
     loadNavigationFromRTDB: function() {
@@ -680,11 +933,10 @@ const appState = {
                 if (!node) return;
 
                 if (Array.isArray(node)) {
-                    const groupKey = key;
-                    if (!groups[groupKey]) groups[groupKey] = [];
+                    if (!groups[key]) groups[key] = [];
                     node.forEach((arrItem, idx) => {
-                        const parsed = parseItem(arrItem, `${groupKey}_${idx}`);
-                        if (parsed) groups[groupKey].push(parsed);
+                        const parsed = parseItem(arrItem, `${key}_${idx}`);
+                        if (parsed) groups[key].push(parsed);
                     });
                 } else if (typeof node === 'object') {
                     if (node.title || node.url || node.link) {
@@ -697,39 +949,22 @@ const appState = {
                             groups[parsed.folder].push(parsed);
                         }
                     } else {
-                        const groupKey = key;
-                        if (!groups[groupKey]) groups[groupKey] = [];
+                        if (!groups[key]) groups[key] = [];
                         Object.keys(node).forEach(subKey => {
                             const parsed = parseItem(node[subKey], subKey);
-                            if (parsed) groups[groupKey].push(parsed);
+                            if (parsed) groups[key].push(parsed);
                         });
                     }
                 }
             });
 
             let navHTML = '';
-
             standalone.forEach(item => {
                 const iconTag = item.icon ? `<img src="${item.icon}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
                 navHTML += `<a href="${item.url}">${iconTag}<span>${item.name}</span></a>`;
             });
 
-            const sortedFolderKeys = Object.keys(groups).sort((a, b) => {
-                const lowA = a.toLowerCase();
-                const lowB = b.toLowerCase();
-                const isUserA = lowA === 'user' || lowA === 'users';
-                const isUserB = lowB === 'user' || lowB === 'users';
-                const isGameA = lowA === 'game' || lowA === 'games';
-                const isGameB = lowB === 'game' || lowB === 'games';
-
-                if (isUserA) return -1;
-                if (isUserB) return 1;
-                if (isGameA) return -1;
-                if (isGameB) return 1;
-                return lowA.localeCompare(lowB);
-            });
-
-            sortedFolderKeys.forEach(folderName => {
+            Object.keys(groups).sort().forEach(folderName => {
                 const folderId = folderName.replace(/[^a-zA-Z0-9]/g, '_');
                 const dropItems = groups[folderName].map(item => {
                     const iconTag = item.icon ? `<img src="${item.icon}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
@@ -741,19 +976,12 @@ const appState = {
                         <button type="button" class="nav-dropbtn" onclick="appState.toggleNavFolder('dropdown-${folderId}', event)">
                             <span>${folderName}</span> ▾
                         </button>
-                        <div class="nav-dropdown-content">
-                            ${dropItems}
-                        </div>
+                        <div class="nav-dropdown-content">${dropItems}</div>
                     </div>
                 `;
             });
 
             navContainer.innerHTML = navHTML;
-
-            if (window.innerWidth < 1280) {
-                navContainer.classList.add('nav-collapsed-mobile');
-                navContainer.classList.remove('nav-expanded-mobile');
-            }
         }, (err) => {
             console.error("RTDB Navigation Read Error:", err);
             navContainer.innerHTML = `<span style="color: #ef4444; font-size: 0.8rem; padding: 8px;">Navigation Offline</span>`;
@@ -764,82 +992,9 @@ const appState = {
         if (event) event.stopPropagation();
         const targetEl = document.getElementById(folderId);
         if (!targetEl) return;
-
         const isAlreadyActive = targetEl.classList.contains('active');
         document.querySelectorAll('.nav-dropdown').forEach(el => el.classList.remove('active'));
-
-        if (!isAlreadyActive) {
-            targetEl.classList.add('active');
-        }
-    },
-
-    /* --- FIXED RTDB TROPHY WATCHER: Matches 'title', 'trophyName', 'name', 'icon' --- */
-    bindRTDBTrophyWatcher: function(hunterKey) {
-        if (!this.rtdb) return;
-
-        // Clean lookup: resolves exact PSN ID from map
-        const psnGamertag = USER_PSN_MAP[hunterKey] || USER_PSN_MAP[this.activeHunter] || 'wildhorse_spirit';
-        if (!psnGamertag) {
-            console.log(`[RTDB Sync] Skipping watcher: ${hunterKey} is not in the active gamer map.`);
-            return;
-        }
-
-        // Exact RTDB Path: /psn/gamertags/{Gamertag}/liveTrophyProgress/NPWR13211_00
-        const trophyPath = `psn/gamertags/${psnGamertag}/liveTrophyProgress/${NPWR_ID}`;
-        this.rtdbTrophyRef = rtdbRef(this.rtdb, trophyPath);
-
-        console.log(`[RTDB Sync] Watching PSN Trophies at: ${trophyPath}`);
-
-        onValue(this.rtdbTrophyRef, (snapshot) => {
-            if (!snapshot.exists()) {
-                console.log(`[RTDB Sync] No live PSN trophy progress found for ${psnGamertag} (${NPWR_ID})`);
-                return;
-            }
-
-            const rtdbTrophies = snapshot.val();
-            let stateMutated = false;
-            const trophyEntries = Array.isArray(rtdbTrophies) ? rtdbTrophies : Object.values(rtdbTrophies);
-
-            trophyEntries.forEach(rItem => {
-                if (!rItem) return;
-
-                // Support boolean true or string "true"
-                const isEarned = rItem.earned === true || rItem.unlocked === true || rItem.achieved === 1 || String(rItem.earned).toLowerCase() === 'true';
-
-                // Check 'title' FIRST, then 'trophyName', then 'name'
-                const rTitle = String(rItem.title || rItem.trophyName || rItem.name || '').trim().toLowerCase();
-
-                if (rTitle) {
-                    const match = this.hunterData.find(t =>
-                        t.name.trim().toLowerCase() === rTitle ||
-                        t.id.toLowerCase() === rTitle
-                    );
-
-                    if (match) {
-                        // Dynamically update trophy icon from PSN feed if available
-                        if (rItem.icon && !match.playstationImage) {
-                            match.playstationImage = rItem.icon;
-                            stateMutated = true;
-                        }
-
-                        if (isEarned && match.current < match.goal) {
-                            match.current = match.goal;
-                            if (match.type === 'checklist' && match.subItems) {
-                                match.subItems.forEach(si => si.done = true);
-                            }
-                            stateMutated = true;
-                        }
-                    }
-                }
-            });
-
-            if (stateMutated) {
-                console.log(`[RTDB Sync] Auto-verified PSN trophies for ${hunterKey} (${psnGamertag})`);
-                this.sync(true);
-            }
-        }, (err) => {
-            console.warn("RTDB Trophy watcher error:", err.message);
-        });
+        if (!isAlreadyActive) targetEl.classList.add('active');
     },
 
     init: async function() {
@@ -849,7 +1004,7 @@ const appState = {
         this.updatePinButtonUI();
 
         try {
-            const app = initializeApp(firebaseConfig, 'COTW-Firestore-Engine');
+            const app = initializeApp(firebaseConfig, 'COTW-Dual-Engine');
             this.auth = getAuth(app);
             this.db = getFirestore(app);
             this.rtdb = getDatabase(app);
@@ -891,7 +1046,7 @@ const appState = {
     loadHunter: function(userName, platform) {
         if (!this.auth || !this.auth.currentUser) return;
 
-        // Unsubscribe from existing listeners safely
+        // Unsubscribe safely before switching
         if (this.masterUnsub) { this.masterUnsub(); this.masterUnsub = null; }
         if (this.legacyUnsub) { this.legacyUnsub(); this.legacyUnsub = null; }
 
@@ -912,8 +1067,9 @@ const appState = {
         this.applyPlayerTheme(this.activeHunter);
         this.updatePinButtonUI();
 
-        if (document.getElementById('hunter-name')) {
-            document.getElementById('hunter-name').innerText = `${this.activeHunter.toUpperCase()} [${this.activePlatform.toUpperCase()}]`;
+        const hunterHeader = document.getElementById('hunter-name');
+        if (hunterHeader) {
+            hunterHeader.innerText = `${this.activeHunter.toUpperCase()} [${this.activePlatform.toUpperCase()}]`;
         }
 
         const platformSelector = document.getElementById("platform-selector");
@@ -923,6 +1079,7 @@ const appState = {
 
         this.render();
         this.updateRankUI();
+        this.bindGrindTelemetry();
 
         // 1. Cloud Firestore Progress Snapshot
         const docRef = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', GAME_ID);
@@ -962,7 +1119,7 @@ const appState = {
                 this.setStatus(`⚠️ Initial State for ${this.activeHunter} [${this.activePlatform.toUpperCase()}]`, "#ff8800");
             }
 
-            // Immediately bind the live RTDB trophy watcher for this user
+            // Immediately bind the live RTDB trophy watcher
             this.bindRTDBTrophyWatcher(this.activeHunter);
             this.render();
         }, (err) => {
@@ -1010,15 +1167,24 @@ const appState = {
         if (!container) return;
 
         container.innerHTML = '';
+
+        // Inject Field Telemetry Grind Card above Trophy Grids
+        this.renderGrindTelemetryCard(container);
+
         const cats = [...new Set(this.hunterData.map(t => t.cat))];
 
         if (selector && selector.options.length <= 1) {
             cats.forEach(cat => {
                 const opt = document.createElement('option');
-                opt.value = cat.replace(/[^a-zA-Z0-9]/g, '');
+                opt.value = cat;
                 opt.innerText = cat;
                 selector.appendChild(opt);
             });
+            selector.onchange = (e) => {
+                this.activeReserve = e.target.value;
+                this.bindGrindTelemetry();
+                this.scrollToCategory(e.target.value.replace(/[^a-zA-Z0-9]/g, ''));
+            };
         }
 
         let globalMet = 0, globalTotal = 0;
@@ -1122,6 +1288,120 @@ const appState = {
         if (document.getElementById('percent-text')) document.getElementById('percent-text').innerText = `Master Completion Progress ${overall}%`;
     },
 
+    renderGrindTelemetryCard: function(container) {
+        const card = document.createElement('div');
+        card.className = 'grind-card-container';
+        card.innerHTML = `
+            <div class="grind-card-header">
+                <h3 style="margin:0; font-size:1.1rem; color:var(--user-theme-accent);">🎯 Field Grind & Weight Telemetry (1-33 Drift)</h3>
+                <span style="font-size:0.8rem; color:#94a3b8;">Active Reserve: <strong>${this.activeReserve}</strong></span>
+            </div>
+
+            <div class="gauge-container">
+                <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#94a3b8;">
+                    <span>Min Weight (Lower Tier)</span>
+                    <span>Sweet Spot (Optimal GO Window)</span>
+                    <span>Max Weight</span>
+                </div>
+                <div class="gauge-bar-bg">
+                    <div id="sweet-spot-gauge" class="gauge-bar-fill"></div>
+                </div>
+                <div id="sweet-spot-readout" style="font-size:0.8rem; color:#f8fafc; margin-top:4px;">Calculating moving average...</div>
+            </div>
+
+            <div class="grind-grid-2col">
+                <div>
+                    <label class="grind-input-label">Target Species</label>
+                    <select id="grind-species-select" class="grind-select" onchange="appState.handleSpeciesChange(this.value)"></select>
+                </div>
+                <div>
+                    <label class="grind-input-label">Zone Rotation Mode</label>
+                    <button type="button" id="zone-toggle-btn" class="zone-toggle-btn is-main" onclick="appState.setZoneType(appState.zoneType === 'main' ? 'exterior' : 'main')">
+                        🎯 Main Rotation Zone (Active Target)
+                    </button>
+                </div>
+            </div>
+
+            <div class="grind-grid-2col">
+                <div>
+                    <label class="grind-input-label">Harvest Weight (kg / lbs)</label>
+                    <input type="number" id="harvest-weight" class="grind-input" placeholder="e.g. 94.5" step="0.1">
+                </div>
+                <div>
+                    <label class="grind-input-label">Animal Level / Difficulty</label>
+                    <select id="harvest-level" class="grind-select">
+                        <option value="1">1 - Trivial</option>
+                        <option value="2">2 - Minor</option>
+                        <option value="3">3 - Very Easy</option>
+                        <option value="4">4 - Easy</option>
+                        <option value="5" selected>5 - Medium</option>
+                        <option value="6">6 - Hard</option>
+                        <option value="7">7 - Very Hard</option>
+                        <option value="8">8 - Mythical</option>
+                        <option value="9">9 - Legendary (Diamond Potential)</option>
+                        <option value="10">10 - Fabled (Great One 👑)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grind-grid-2col">
+                <div>
+                    <label class="grind-input-label">Fur Type & Sex</label>
+                    <div style="display:flex; gap:8px;">
+                        <select id="harvest-fur" class="grind-select" style="width:60%;">
+                            <option value="Common" selected>Common</option>
+                            <option value="Albino">Albino (Rare 🐇)</option>
+                            <option value="Melanistic">Melanistic (Rare 🖤)</option>
+                            <option value="Piebald">Piebald (Rare ⚪)</option>
+                            <option value="Leucistic">Leucistic (Rare ❄️)</option>
+                            <option value="Mocha">Mocha / Special</option>
+                            <option value="Fabled Variant">Fabled / Great One 👑</option>
+                        </select>
+                        <select id="harvest-sex" class="grind-select" style="width:40%;">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="grind-input-label">Trophy Rating (Auto-Ranks)</label>
+                    <select id="harvest-rating" class="grind-select">
+                        <option value="none">No Rating</option>
+                        <option value="bronze">Bronze 🥉</option>
+                        <option value="silver">Silver 🥈</option>
+                        <option value="gold">Gold 🥇</option>
+                        <option value="diamond">Diamond 💎</option>
+                        <option value="greatone">Great One 👑</option>
+                        <option value="albino">Albino / Rare 🌟</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grind-grid-2col">
+                <div>
+                    <label class="grind-input-label">Coordinates (Lat Y / Long X) [Auto-Fill Enabled]</label>
+                    <div style="display:flex; gap:8px;">
+                        <input type="number" id="coord-lat" class="grind-input" placeholder="Lat (Y)" oninput="appState.onCoordinateInput()">
+                        <input type="number" id="coord-long" class="grind-input" placeholder="Long (X)" oninput="appState.onCoordinateInput()">
+                    </div>
+                </div>
+                <div>
+                    <label class="grind-input-label">Region & Sub-Region</label>
+                    <div style="display:flex; gap:8px;">
+                        <input type="text" id="harvest-region" class="grind-input" placeholder="e.g. Lake District" style="width:50%;">
+                        <input type="text" id="harvest-subregion" class="grind-input" placeholder="e.g. Balmont" style="width:50%;">
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="log-harvest-btn" onclick="appState.logHarvest()">
+                📝 Log Harvest & Update Grind Telemetry
+            </button>
+        `;
+        container.appendChild(card);
+        this.renderSpeciesDropdown();
+    },
+
     getIcon: (t) => t.playstationImage ? t.playstationImage : (t.cat.includes('Collectibles') ? ICONS.TRACK : t.name.includes('Arc') || t.name.includes('Master') || t.name.includes('Missions') || t.name.includes('Story') ? ICONS.ARC : t.name.includes('Mile') ? ICONS.TRAVEL : t.name.includes('Marksman') ? ICONS.MARK : ICONS.GAME),
 
     adj: function(id, val) {
@@ -1202,10 +1482,6 @@ const appState = {
         }, 100);
     },
 
-    /* ----------------------------------------------------
-     * SECTION 7: Cloud Firestore Sync Writer
-     * Lines 742-780: State commit and telemetry dispatch
-     * ---------------------------------------------------- */
     sync: async function(silent = false) {
         this.render();
         this.updateRankUI();
@@ -1261,7 +1537,9 @@ window.addEventListener('click', function(event) {
     }
 
     if (!event.target.closest('.nav-dropdown')) {
-        document.querySelectorAll('.nav-dropdown.active').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-dropdown.active').forEach(el => {
+            el.classList.remove('active');
+        });
     }
 
     if (!event.target.matches('.dropdown-trigger') && !event.target.closest('.dropdown-content')) {
