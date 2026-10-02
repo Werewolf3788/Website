@@ -3,21 +3,9 @@
    Location: /games/HunterCOTW/style.css
    Description: COTW Master Tracker Sleek, High-Contrast Responsive Skin
    Compatibility: Desktop (>=1280px), Tablet (768px-1279px), Mobile (<768px)
-   Version: 4.2.0
-   Date & Time Stamp: 2026-10-02 02:40:00 EDT (America/New_York)
+   Version: 4.3.0
+   Date & Time Stamp: 2026-10-02 11:55:00 EDT (America/New_York)
    ============================================================================ */
-
-/* ----------------------------------------------------
- * SECTION 0: Line Reference & CSS Custom Properties
- * Lines ~20: Viewport Root, Color Themes, Tap Targets
- * Lines ~60: Global Reset & Background Gradient
- * Lines ~85: Top Navigation & Mobile Sandwich System (Layered Safely)
- * Lines ~210: Master Hunter Console & Profile Controls
- * Lines ~280: Career Animal Rank Badges
- * Lines ~330: Field Grind & Weight Telemetry Card (Click-Through Fixed)
- * Lines ~440: Trophy Grids, Badges & Verification States
- * Lines ~550: Responsive Viewport Rules (1280px / 768px / 480px)
- * ---------------------------------------------------- */
 
 :root {
     --user-theme-accent: #ff5500;
@@ -80,7 +68,7 @@ h2 { font-size: clamp(1.1rem, 2.5vw, 1.4rem); }
 h3 { font-size: 1.1rem; }
 
 /* ----------------------------------------------------
- * SECTION 1: Top Navigation Bar & Responsive Drawer
+ * Navigation Drawer System
  * ---------------------------------------------------- */
 .nav-wrapper-centered {
     display: flex;
@@ -93,190 +81,31 @@ h3 { font-size: 1.1rem; }
     margin: 0 auto 20px auto;
 }
 
-/* --- Desktop Navigation (>= 1280px) --- */
+.sandwich-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 340px;
+    min-height: var(--tap-target);
+    background: #0f172a;
+    border: 1px solid var(--user-theme-border);
+    border-radius: 10px;
+    color: #f8fafc;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    margin-bottom: 8px;
+}
+
 @media (min-width: 1280px) {
-    .sandwich-btn {
-        display: none !important;
-    }
-
-    #dynamic-nav-links {
-        display: flex !important;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 16px;
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(12px);
-        border: 1px solid var(--user-theme-border);
-        border-radius: 12px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-    }
-
-    #dynamic-nav-links a, .nav-dropbtn {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: #f8fafc;
-        text-decoration: none;
-        font-size: 0.9rem;
-        font-weight: 600;
-        padding: 8px 14px;
-        border-radius: 8px;
-        border: 1px solid transparent;
-        background: transparent;
-        cursor: pointer;
-        transition: all 0.2s ease-in-out;
-        min-height: 40px;
-    }
-
-    #dynamic-nav-links a:hover, .nav-dropbtn:hover {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: var(--user-theme-border);
-        color: var(--user-theme-accent);
-    }
-
-    .nav-dropdown {
-        position: relative;
-        display: inline-block;
-    }
-
-    .nav-dropdown-content {
-        display: none;
-        position: absolute;
-        top: calc(100% + 6px);
-        left: 50%;
-        transform: translateX(-50%);
-        background: #0f172a;
-        min-width: 220px;
-        max-width: 320px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.85);
-        border: 1px solid var(--user-theme-border);
-        border-radius: 10px;
-        padding: 8px;
-        z-index: 10001;
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .nav-dropdown:hover .nav-dropdown-content,
-    .nav-dropdown.active .nav-dropdown-content {
-        display: flex;
-    }
-
-    .nav-dropdown-content a {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 12px;
-        border-radius: 6px;
-        color: #e2e8f0;
-        font-size: 0.85rem;
-        background: rgba(30, 41, 59, 0.6);
-        white-space: nowrap;
-    }
-
-    .nav-dropdown-content a:hover {
-        background: #1e293b;
-        color: var(--user-theme-accent);
-    }
-}
-
-/* --- Tablet & Mobile Navigation (< 1280px) --- */
-@media (max-width: 1279px) {
-    .sandwich-btn {
-        display: inline-flex !important;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        width: 100%;
-        max-width: 340px;
-        min-height: var(--tap-target);
-        background: #0f172a;
-        border: 1px solid var(--user-theme-border);
-        border-radius: 10px;
-        color: #f8fafc;
-        font-size: 1rem;
-        font-weight: 700;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-        margin-bottom: 8px;
-        transition: transform 0.15s ease;
-    }
-
-    .sandwich-btn:active {
-        transform: scale(0.98);
-    }
-
-    .sandwich-icon {
-        font-size: 1.3rem;
-        color: var(--user-theme-accent);
-    }
-
-    #dynamic-nav-links.nav-collapsed-mobile {
-        display: none !important;
-    }
-
-    #dynamic-nav-links.nav-expanded-mobile {
-        display: flex !important;
-        flex-direction: column;
-        width: 100%;
-        max-width: 600px;
-        background: rgba(15, 23, 42, 0.98);
-        border: 1px solid var(--user-theme-border);
-        border-radius: 12px;
-        padding: 14px;
-        gap: 8px;
-        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7);
-    }
-
-    #dynamic-nav-links a, .nav-dropbtn {
-        min-height: var(--tap-target);
-        padding: 12px 16px;
-        font-size: 0.92rem;
-        border-radius: 8px;
-        background: rgba(30, 41, 59, 0.4);
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        color: #f8fafc;
-        text-decoration: none;
-        border: 1px solid transparent;
-    }
-
-    .nav-dropdown {
-        width: 100%;
-    }
-
-    .nav-dropdown-content {
-        display: none;
-        position: static;
-        transform: none;
-        width: 100%;
-        background: #020617;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        padding: 6px;
-        margin-top: 4px;
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .nav-dropdown.active .nav-dropdown-content {
-        display: flex;
-    }
-}
-
-.nav-icon {
-    width: 22px;
-    height: 22px;
-    object-fit: contain;
-    border-radius: 4px;
+    .sandwich-btn { display: none !important; }
 }
 
 /* ----------------------------------------------------
- * SECTION 2: Master Hunter Console & Profile Controls
+ * Master Console & Rank Badges
  * ---------------------------------------------------- */
 .console-card {
     background: var(--card-bg);
@@ -285,7 +114,6 @@ h3 { font-size: 1.1rem; }
     padding: 24px;
     margin-bottom: 24px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--user-theme-glow);
-    transition: all 0.3s ease;
     position: relative;
     z-index: 10;
 }
@@ -301,20 +129,8 @@ h3 { font-size: 1.1rem; }
     margin-bottom: 20px;
 }
 
-.console-title-group h1 {
-    color: var(--user-theme-accent);
-}
-
-.console-title-group .sub-label {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-}
-
-.hunter-glow {
-    text-shadow: 0 0 15px var(--user-theme-glow);
-}
+.console-title-group h1 { color: var(--user-theme-accent); }
+.hunter-glow { text-shadow: 0 0 15px var(--user-theme-glow); }
 
 .console-controls {
     display: flex;
@@ -323,74 +139,21 @@ h3 { font-size: 1.1rem; }
     gap: 10px;
 }
 
-.platform-select {
+.platform-select, .pin-device-btn, .user-nav-btn {
+    min-height: var(--tap-target);
     background: #0f172a;
     color: #f8fafc;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 0.85rem;
-    cursor: pointer;
-    min-height: var(--tap-target);
-    outline: none;
-}
-
-.user-btn-group {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.user-nav-btn {
-    background: #1e293b;
-    color: #e2e8f0;
-    border: 1px solid rgba(255, 255, 255, 0.15);
     padding: 8px 14px;
     border-radius: 8px;
     font-weight: 700;
-    font-size: 0.85rem;
     cursor: pointer;
-    transition: all 0.2s ease;
-    min-height: var(--tap-target);
-}
-
-.user-nav-btn:hover {
-    border-color: var(--user-theme-border);
-    color: var(--user-theme-accent);
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.pin-device-btn {
-    background: #1e293b;
-    color: #94a3b8;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 8px 14px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    min-height: var(--tap-target);
 }
 
 .pin-device-btn.is-pinned {
     background: var(--user-theme-badge-bg);
     color: var(--user-theme-badge-text);
-    border-color: transparent;
     box-shadow: 0 0 12px var(--user-theme-glow);
-}
-
-/* ----------------------------------------------------
- * SECTION 3: Career Animal Rank Badges
- * ---------------------------------------------------- */
-.rank-header-label {
-    text-align: center;
-    font-size: 0.8rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    color: var(--text-muted);
-    text-transform: uppercase;
 }
 
 .rank-grid {
@@ -405,31 +168,13 @@ h3 { font-size: 1.1rem; }
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     padding: 12px 8px;
-    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 6px;
 }
 
-.rank-badge .icon {
-    font-size: 1.6rem;
-}
-
-.rank-badge .title {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    text-transform: uppercase;
-}
-
-.rank-ctrls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 4px;
-}
-
+.rank-ctrls { display: flex; align-items: center; gap: 8px; }
 .rank-ctrls button {
     background: #0f172a;
     color: #f8fafc;
@@ -439,94 +184,13 @@ h3 { font-size: 1.1rem; }
     border-radius: 6px;
     font-weight: bold;
     cursor: pointer;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 34px;
-    min-width: 34px;
 }
 
-.rank-ctrls button:hover {
-    border-color: var(--user-theme-border);
-    color: var(--user-theme-accent);
-}
-
-.rank-ctrls .val {
-    font-size: 1rem;
-    font-weight: 800;
-    color: var(--user-theme-accent);
-    min-width: 24px;
-    text-align: center;
-}
-
-/* Master Progress Bar & Reserve Selector */
-.progress-box {
-    text-align: center;
-    margin: 24px 0 16px 0;
-}
-
-.progress-box h2 {
-    font-size: 1.25rem;
-    margin-bottom: 6px;
-}
-
-.progress-box p {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin-bottom: 12px;
-}
-
-.progress-track {
-    background: #1e293b;
-    border-radius: 999px;
-    height: 14px;
-    overflow: hidden;
-    width: 100%;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.progress-fill {
-    background: var(--user-theme-accent);
-    height: 100%;
-    width: 0%;
-    transition: width 0.4s ease;
-    box-shadow: 0 0 10px var(--user-theme-glow);
-}
-
-.reserve-jump {
-    margin: 16px 0;
-    display: flex;
-    justify-content: center;
-}
-
-.reserve-select {
-    background: #0f172a;
-    color: #f8fafc;
-    border: 1px solid var(--user-theme-border);
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-weight: 700;
-    width: 100%;
-    max-width: 340px;
-    min-height: var(--tap-target);
-    cursor: pointer;
-    outline: none;
-}
-
-#stat-line {
-    text-align: center;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #10b981;
-    margin-top: 8px;
-}
+.rank-ctrls .val { font-size: 1rem; font-weight: 800; color: var(--user-theme-accent); }
 
 /* ----------------------------------------------------
- * SECTION 4: Field Telemetry & Sweet Spot Card
- * Guaranteed Click-Through & Stacking Fixes
+ * Field Grind & Harvest Card (Single-Column Mobile Ready)
  * ---------------------------------------------------- */
-#grind-telemetry-anchor,
 .grind-card-container {
     width: 100%;
     background: #0f172a;
@@ -538,9 +202,8 @@ h3 { font-size: 1.1rem; }
     display: flex;
     flex-direction: column;
     gap: 14px;
-    position: relative !important;
-    z-index: 50 !important;
-    pointer-events: auto !important;
+    position: relative;
+    z-index: 50;
 }
 
 .grind-card-header {
@@ -548,9 +211,9 @@ h3 { font-size: 1.1rem; }
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 10px;
+    padding-bottom: 12px;
 }
 
 .grind-grid-2col {
@@ -560,9 +223,7 @@ h3 { font-size: 1.1rem; }
 }
 
 @media (max-width: 767px) {
-    .grind-grid-2col {
-        grid-template-columns: 1fr;
-    }
+    .grind-grid-2col { grid-template-columns: 1fr; }
 }
 
 .grind-input-label {
@@ -584,15 +245,35 @@ h3 { font-size: 1.1rem; }
     font-weight: 600;
     padding: 8px 12px;
     outline: none;
-    position: relative !important;
-    z-index: 55 !important;
-    pointer-events: auto !important;
-    touch-action: manipulation !important;
+    touch-action: manipulation;
 }
 
-.grind-input:focus, .grind-select:focus {
-    border-color: var(--user-theme-accent);
-    box-shadow: 0 0 8px var(--user-theme-glow);
+.file-input { padding: 10px; cursor: pointer; }
+
+/* Session Mode Button */
+.session-toggle-btn {
+    min-height: 40px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.2s ease;
+}
+
+.session-toggle-btn.is-single {
+    background: #10b981;
+    color: #ffffff;
+    border-color: #059669;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+.session-toggle-btn.is-multi {
+    background: #6366f1;
+    color: #ffffff;
+    border-color: #4f46e5;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
 }
 
 .zone-toggle-btn {
@@ -600,54 +281,53 @@ h3 { font-size: 1.1rem; }
     width: 100%;
     border-radius: 8px;
     font-weight: 700;
-    font-size: 0.9rem;
     cursor: pointer;
     border: 1px solid rgba(255, 255, 255, 0.2);
     background: #1e293b;
     color: #94a3b8;
-    transition: all 0.2s ease;
-    position: relative !important;
-    z-index: 55 !important;
-    pointer-events: auto !important;
-    touch-action: manipulation !important;
 }
 
 .zone-toggle-btn.is-main {
     background: var(--user-theme-badge-bg);
     color: var(--user-theme-badge-text);
-    border-color: transparent;
     box-shadow: 0 0 10px var(--user-theme-glow);
 }
 
 .zone-toggle-btn.is-exterior {
     background: #eab308;
-    color: #000000;
-    border-color: transparent;
-    box-shadow: 0 0 10px rgba(234, 179, 8, 0.4);
+    color: #000;
+}
+
+.preview-box {
+    background: #020617;
+    border: 1px solid var(--user-theme-border);
+    border-radius: 8px;
+    padding: 8px;
+    text-align: center;
+}
+
+.preview-img {
+    max-width: 100%;
+    max-height: 240px;
+    border-radius: 6px;
+    object-fit: contain;
 }
 
 .log-harvest-btn {
-    min-height: 50px;
+    min-height: 52px;
     width: 100%;
     background: var(--user-theme-accent);
-    color: #ffffff;
+    color: #fff;
     border: none;
     border-radius: 10px;
     font-size: 1rem;
-    font-weight: 800;
+    font-weight: 900;
     cursor: pointer;
     box-shadow: 0 4px 15px var(--user-theme-glow);
     transition: transform 0.15s ease;
-    margin-top: 6px;
-    position: relative !important;
-    z-index: 55 !important;
-    pointer-events: auto !important;
-    touch-action: manipulation !important;
 }
 
-.log-harvest-btn:active {
-    transform: scale(0.98);
-}
+.log-harvest-btn:active { transform: scale(0.98); }
 
 .gauge-container {
     background: #020617;
@@ -665,7 +345,6 @@ h3 { font-size: 1.1rem; }
     background: #1e293b;
     border-radius: 7px;
     overflow: hidden;
-    position: relative;
 }
 
 .gauge-bar-fill {
@@ -676,7 +355,7 @@ h3 { font-size: 1.1rem; }
 }
 
 /* ----------------------------------------------------
- * SECTION 5: Dynamic Trophy Sections & Grid Layout
+ * Trophy Grids & Mode Badges
  * ---------------------------------------------------- */
 .category-section {
     background: var(--card-bg);
@@ -695,19 +374,12 @@ h3 { font-size: 1.1rem; }
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    user-select: none;
     background: rgba(30, 41, 59, 0.4);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     min-height: var(--tap-target);
 }
 
-.section-content {
-    padding: 16px;
-}
-
-.section-collapsed .section-content {
-    display: none;
-}
+.section-content { padding: 16px; }
+.section-collapsed .section-content { display: none; }
 
 .trophy-grid {
     display: grid;
@@ -723,7 +395,6 @@ h3 { font-size: 1.1rem; }
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: all 0.2s ease;
 }
 
 .trophy-card.completed {
@@ -736,14 +407,12 @@ h3 { font-size: 1.1rem; }
     height: 44px;
     border-radius: 8px;
     object-fit: cover;
-    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .trophy-badges-row {
     display: flex;
     align-items: center;
     gap: 6px;
-    flex-wrap: wrap;
     margin-bottom: 4px;
 }
 
@@ -755,35 +424,20 @@ h3 { font-size: 1.1rem; }
     border-radius: 4px;
 }
 
-.rank-platinum { background: #0284c7; color: #ffffff; }
-.rank-gold { background: #d97706; color: #ffffff; }
-.rank-silver { background: #64748b; color: #ffffff; }
-.rank-bronze { background: #b45309; color: #ffffff; }
-.rank-rare { background: #7c3aed; color: #ffffff; }
+.rank-platinum { background: #0284c7; color: #fff; }
+.rank-gold { background: #d97706; color: #fff; }
+.rank-silver { background: #64748b; color: #fff; }
+.rank-bronze { background: #b45309; color: #fff; }
 
-.sync-badge {
+.mode-badge {
     font-size: 0.65rem;
     font-weight: 800;
     padding: 2px 6px;
     border-radius: 4px;
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
 }
 
-.sync-badge-psn {
-    background: rgba(234, 179, 8, 0.2);
-    color: #facc15;
-    border: 1px solid rgba(234, 179, 8, 0.4);
-}
-
-.sync-badge-manual {
-    background: rgba(148, 163, 184, 0.15);
-    color: #94a3b8;
-    border: 1px solid rgba(148, 163, 184, 0.25);
-}
+.mode-badge.is-solo { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+.mode-badge.is-shared { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
 
 .number-control-group {
     display: inline-flex;
@@ -791,7 +445,6 @@ h3 { font-size: 1.1rem; }
     background: #0f172a;
     border: 1px solid var(--user-theme-border);
     border-radius: 8px;
-    overflow: hidden;
     width: 100%;
 }
 
@@ -807,10 +460,6 @@ h3 { font-size: 1.1rem; }
     min-width: 44px;
 }
 
-.number-control-group button:hover {
-    background: #334155;
-}
-
 .number-control-group input[type="number"] {
     flex-grow: 1;
     width: 60px;
@@ -820,22 +469,6 @@ h3 { font-size: 1.1rem; }
     font-size: 0.95rem;
     font-weight: 700;
     text-align: center;
-    padding: 6px;
-    -moz-appearance: textfield;
-    min-height: var(--tap-target);
-}
-
-.number-control-group input[type="number"]::-webkit-outer-spin-button,
-.number-control-group input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-.number-goal-label {
-    font-size: 0.8rem;
-    color: #94a3b8;
-    padding-right: 8px;
-    white-space: nowrap;
 }
 
 .toggle-btn, .dropdown-trigger {
@@ -848,56 +481,19 @@ h3 { font-size: 1.1rem; }
     font-weight: 700;
     font-size: 0.85rem;
     cursor: pointer;
-    transition: all 0.2s;
     min-height: var(--tap-target);
-}
-
-.toggle-btn:hover, .dropdown-trigger:hover {
-    border-color: var(--user-theme-border);
-    color: var(--user-theme-accent);
 }
 
 .lock-badge {
     background: var(--user-theme-badge-bg) !important;
     color: var(--user-theme-badge-text) !important;
-    border-color: transparent !important;
 }
 
-.dropdown-content {
-    display: none;
-    margin-top: 8px;
-    padding: 8px;
-    background: #020617;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
+.dropdown-content { display: none; margin-top: 8px; padding: 8px; background: #020617; border-radius: 8px; }
+.dropdown-content.show { display: block; }
+.check-btn { width: 36px; height: 36px; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; cursor: pointer; }
+.check-btn.is-done { background: #10b981; border-color: #10b981; }
 
-.dropdown-content.show {
-    display: block;
-}
-
-.check-btn {
-    background: #1e293b;
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    width: 36px;
-    height: 36px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1rem;
-    min-height: 36px;
-    min-width: 36px;
-}
-
-.check-btn.is-done {
-    background: #10b981;
-    border-color: #10b981;
-}
-
-/* ----------------------------------------------------
- * SECTION 6: Footer & Build Metadata
- * ---------------------------------------------------- */
 footer.tracker-footer {
     text-align: center;
     padding: 30px 16px;
@@ -905,78 +501,6 @@ footer.tracker-footer {
     margin-top: 40px;
     background: rgba(15, 23, 42, 0.8);
     border-radius: 12px;
-    position: relative;
-    z-index: 10;
 }
 
-.footer-link-group {
-    font-size: 0.85rem;
-    color: #cbd5e1;
-    margin-bottom: 8px;
-}
-
-.footer-link-group a {
-    color: var(--user-theme-accent);
-    text-decoration: none;
-    font-weight: bold;
-}
-
-#build-meta-footer {
-    display: block;
-    color: var(--text-muted);
-    font-size: 0.8rem;
-    font-family: monospace;
-    letter-spacing: 0.05em;
-    margin-top: 4px;
-}
-
-/* ----------------------------------------------------
- * SECTION 7: Strict Mobile Breakpoints (< 768px & < 480px)
- * ---------------------------------------------------- */
-@media (max-width: 768px) {
-    body {
-        padding: 8px;
-    }
-
-    .container {
-        width: 100%;
-    }
-
-    .console-header {
-        flex-direction: column;
-        align-items: stretch;
-        text-align: center;
-    }
-
-    .console-controls {
-        justify-content: center;
-    }
-
-    .user-btn-group {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .user-nav-btn {
-        flex: 1 1 calc(50% - 8px);
-    }
-
-    .rank-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-    }
-
-    .trophy-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 480px) {
-    .rank-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .platform-select, .pin-device-btn {
-        width: 100%;
-    }
-}
+#build-meta-footer { color: var(--text-muted); font-size: 0.8rem; font-family: monospace; }
