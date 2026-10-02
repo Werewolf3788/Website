@@ -3,18 +3,19 @@
    Location: /games/HunterCOTW/script.js
    Description: theHunter: Call of the Wild Master Tracker Dual-Engine
                 - Complete 17+ Reserve Catalog with Official Animal Weapon Classes (1-9)
+                - Native <select> for Reserves & Species with Custom Manual Fallback
                 - Decoupled Harvest Logging (RTDB write precedes safe Storage upload)
-                - Dynamic Datalist Updates Based on Active Reserve
-                - True Free-Text / Datalist Manual Input for Maps, Species, Weapons & Organs
+                - Non-Destructive Form State (Preserves Lat/Long/Weight during map switch)
                 - Single Player vs. Multiplayer Mode Switcher (Story Arcs Gated)
                 - 1-33 Drift Moving Average Weight Telemetry & Fur Tier Tracking
                 - Distance Sniping (Auto-Marksman Trophies), Longbow Heart & Brain Hit Checks
                 - PS App Screenshot Upload to Firebase Storage with RTDB Image Binding
                 - Full 4-Player Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
                 - Layton Lake 40-Point Anchor Geofencing Proximity Auto-Fill
+                - Dynamic Menu System via Realtime Database (/utm_links)
    Database: Cloud Firestore, Realtime Database & Firebase Storage (entertainment-71888)
-   Build Version: 6.0.0
-   Code Build Date: 2026-10-02 13:40:00 EDT (America/New_York)
+   Build Version: 6.1.0
+   Code Build Date: 2026-10-02 14:18:00 EDT (America/New_York)
    ============================================================================ */
 
 import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -25,10 +26,10 @@ import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from '//ww
 
 /* ----------------------------------------------------
  * SECTION 1: Build Metadata, User Map & Custom Themes
- * Lines 28-112: PSN handles, custom themes, asset icons
+ * Lines 30-115: PSN handles, custom themes, asset icons
  * ---------------------------------------------------- */
-const BUILD_VERSION = "6.0.0";
-const CODE_BUILD_DATE = "2026-10-02 13:40:00 EDT";
+const BUILD_VERSION = "6.1.0";
+const CODE_BUILD_DATE = "2026-10-02 14:18:00 EDT";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -116,7 +117,7 @@ const ICONS = {
 
 /* ----------------------------------------------------
  * SECTION 2: Master Helpers & Ground-Truth Anchor Grid
- * Lines 114-192: Checklists & 40 verified Layton anchors
+ * Lines 117-195: Checklists & 40 verified Layton anchors
  * ---------------------------------------------------- */
 const checkSet = (items) => items.map(name => ({ name, done: false }));
 
@@ -172,7 +173,7 @@ const LAYTON_ANCHORS = [
 
 /* ----------------------------------------------------
  * SECTION 3: Official Reserve Catalogs & Animals
- * Lines 194-275: Animal Rosters with Official Weapon Classes
+ * Lines 197-280: Animal Rosters with Official Weapon Classes
  * ---------------------------------------------------- */
 const RESERVE_CATALOG = {
     'Layton Lake': {
@@ -331,7 +332,7 @@ const RESERVE_CATALOG = {
 
 /* ----------------------------------------------------
  * SECTION 4: Complete Static Trophy Database
- * Lines 277-440: All Base Game & DLC Narrative Quests
+ * Lines 282-445: All Base Game & DLC Narrative Quests
  * ---------------------------------------------------- */
 const trophyData = [
     // --- BASE GAME TROPHIES ---
@@ -523,8 +524,8 @@ const SPECIES_BENCHMARKS = {
 };
 
 /* ----------------------------------------------------
- * SECTION 5: Application State & Universal Input System
- * Lines 442-700: State management, decoupled writes, datalists
+ * SECTION 5: Application State & Safe Form Handling
+ * Lines 448-735: State management, robust DOM bindings
  * ---------------------------------------------------- */
 const appState = {
     activeHunter: localStorage.getItem('pinned_device_user') || 'Werewolf',
@@ -532,7 +533,7 @@ const appState = {
     activeReserve: 'Layton Lake',
     activeSpecies: 'Black Bear (Class 7)',
     zoneType: 'main',
-    sessionMode: 'single', // 'single' vs 'multi'
+    sessionMode: 'single',
     selectedImageFile: null,
     hunterData: [],
     animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 },
@@ -546,7 +547,6 @@ const appState = {
     legacyUnsub: null,
     rtdbTrophyRef: null,
     rtdbLedgerRef: null,
-    rtdbSpeciesRef: null,
 
     knownWeaponsList: [
         '.300 Canning Magnum Frontier', '7mm Malmer', '.270 Huntsman', '.243 Ranger',
@@ -638,6 +638,77 @@ const appState = {
         }
     },
 
+    /* --- Non-Destructive Reserve Change Handler --- */
+    handleReserveChange: function(selectedVal) {
+        if (!selectedVal) return;
+        const customWrap = document.getElementById('custom-reserve-wrap');
+
+        if (selectedVal === '__CUSTOM__') {
+            if (customWrap) customWrap.style.display = 'block';
+            const customInput = document.getElementById('custom-reserve-input');
+            this.activeReserve = customInput?.value?.trim() || 'Custom Reserve';
+        } else {
+            if (customWrap) customWrap.style.display = 'none';
+            this.activeReserve = selectedVal.trim();
+        }
+
+        // Update the species select directly without re-rendering the whole card
+        this.updateSpeciesDropdown();
+        this.bindGrindTelemetry();
+
+        // Highlight matching story section
+        const targetSection = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '');
+        const sectionEl = document.getElementById(targetSection);
+        if (sectionEl) {
+            this.collapsedSections[targetSection] = false;
+            sectionEl.classList.remove('section-collapsed');
+            sectionEl.scrollIntoView({ behavior: 'smooth' });
+        }
+    },
+
+    updateSpeciesDropdown: function() {
+        const specSelect = document.getElementById('grind-species-select');
+        if (!specSelect) return;
+
+        const reserveObj = RESERVE_CATALOG[this.activeReserve];
+        let animals = reserveObj ? reserveObj.animals : [
+            'Whitetail Deer (Class 4)', 'Black Bear (Class 7)', 'Moose (Class 8)',
+            'Red Deer (Class 6)', 'Fallow Deer (Class 4)', 'Wild Boar (Class 4)'
+        ];
+
+        specSelect.innerHTML = '';
+        animals.forEach((anim, i) => {
+            const opt = document.createElement('option');
+            opt.value = anim;
+            opt.innerText = anim;
+            if (i === 0) opt.selected = true;
+            specSelect.appendChild(opt);
+        });
+
+        // Add custom entry option
+        const customOpt = document.createElement('option');
+        customOpt.value = '__CUSTOM__';
+        customOpt.innerText = '✍️ + Enter Custom Species...';
+        specSelect.appendChild(customOpt);
+
+        this.activeSpecies = specSelect.value;
+        const customSpecWrap = document.getElementById('custom-species-wrap');
+        if (customSpecWrap) customSpecWrap.style.display = 'none';
+    },
+
+    handleSpeciesSelectChange: function(val) {
+        const customWrap = document.getElementById('custom-species-wrap');
+        if (val === '__CUSTOM__') {
+            if (customWrap) customWrap.style.display = 'block';
+            const customInput = document.getElementById('custom-species-input');
+            this.activeSpecies = customInput?.value?.trim() || 'Custom Animal';
+        } else {
+            if (customWrap) customWrap.style.display = 'none';
+            this.activeSpecies = val;
+        }
+        this.bindGrindTelemetry();
+    },
+
     populateDatalist: function(listId, items) {
         const datalist = document.getElementById(listId);
         if (!datalist) return;
@@ -647,53 +718,6 @@ const appState = {
             opt.value = item;
             datalist.appendChild(opt);
         });
-    },
-
-    updateSpeciesDatalistForReserve: function() {
-        const reserveObj = RESERVE_CATALOG[this.activeReserve];
-        let currentSpeciesList = [];
-        if (reserveObj && reserveObj.animals) {
-            currentSpeciesList = reserveObj.animals;
-        } else {
-            currentSpeciesList = [
-                'Whitetail Deer (Class 4)', 'Black Bear (Class 7)', 'Moose (Class 8)',
-                'Red Deer (Class 6)', 'Fallow Deer (Class 4)', 'Wild Boar (Class 4)'
-            ];
-        }
-        this.populateDatalist('species-datalist', currentSpeciesList);
-
-        const specInput = document.getElementById('grind-species-input');
-        if (specInput && currentSpeciesList.length > 0) {
-            this.activeSpecies = currentSpeciesList[0];
-            specInput.value = this.activeSpecies;
-        }
-    },
-
-    renderDatalists: function() {
-        const allReserves = Object.keys(RESERVE_CATALOG);
-        this.populateDatalist('reserves-datalist', allReserves);
-        this.populateDatalist('weapons-datalist', this.knownWeaponsList);
-        this.populateDatalist('organs-datalist', this.knownOrgansList);
-        this.updateSpeciesDatalistForReserve();
-
-        const resInput = document.getElementById('grind-reserve-input');
-        if (resInput && !resInput.value) resInput.value = this.activeReserve;
-    },
-
-    handleReserveChange: async function(val) {
-        if (!val || !val.trim()) return;
-        const cleanName = val.trim();
-        this.activeReserve = cleanName;
-
-        this.updateSpeciesDatalistForReserve();
-        this.bindGrindTelemetry();
-        this.scrollToCategory(cleanName.replace(/[^a-zA-Z0-9]/g, ''));
-    },
-
-    handleSpeciesChange: async function(val) {
-        if (!val || !val.trim()) return;
-        this.activeSpecies = val.trim();
-        this.bindGrindTelemetry();
     },
 
     bindGrindTelemetry: function() {
@@ -738,19 +762,27 @@ const appState = {
         });
     },
 
-    /* --- LOG HARVEST: Decoupled Safe RTDB Write First, Storage Upload Second --- */
+    /* --- LOG HARVEST: Decoupled RTDB Record First, Storage Second --- */
     logHarvest: async function() {
         if (!this.rtdb || !this.auth.currentUser) {
             this.setStatus("❌ Database not connected. Please reload.", "#ef4444");
             return;
         }
 
-        const reserveInput = document.getElementById('grind-reserve-input');
-        const chosenReserve = reserveInput?.value?.trim() || this.activeReserve || 'Layton Lake';
+        // Safely resolve the reserve from select or custom input
+        const resSelect = document.getElementById('grind-reserve-select');
+        let chosenReserve = resSelect ? resSelect.value : this.activeReserve;
+        if (chosenReserve === '__CUSTOM__') {
+            chosenReserve = document.getElementById('custom-reserve-input')?.value?.trim() || 'Custom Reserve';
+        }
         this.activeReserve = chosenReserve;
 
-        const speciesInput = document.getElementById('grind-species-input');
-        const chosenSpecies = speciesInput?.value?.trim() || this.activeSpecies || 'Unknown';
+        // Safely resolve the species from select or custom input
+        const specSelect = document.getElementById('grind-species-select');
+        let chosenSpecies = specSelect ? specSelect.value : this.activeSpecies;
+        if (chosenSpecies === '__CUSTOM__') {
+            chosenSpecies = document.getElementById('custom-species-input')?.value?.trim() || 'Custom Animal';
+        }
         this.activeSpecies = chosenSpecies;
 
         const weightInput = document.getElementById('harvest-weight');
@@ -776,7 +808,7 @@ const appState = {
         const weapon = weaponInput?.value?.trim() || 'Rifle';
         const organ = organInput?.value?.trim() || 'Both Lungs';
 
-        // Auto-learn custom typed weapon or organ
+        // Auto-learn custom weapons or organs
         if (!this.knownWeaponsList.includes(weapon)) {
             this.knownWeaponsList.push(weapon);
             this.populateDatalist('weapons-datalist', this.knownWeaponsList);
@@ -786,7 +818,7 @@ const appState = {
             this.populateDatalist('organs-datalist', this.knownOrgansList);
         }
 
-        this.setStatus("⏳ Logging harvest to RTDB ledger...", "#e67e22");
+        this.setStatus(`⏳ Logging ${chosenSpecies} to ${chosenReserve}...`, "#e67e22");
 
         const cleanMap = chosenReserve.replace(/[^a-zA-Z0-9]/g, '_');
         const cleanSpecies = chosenSpecies.replace(/[^a-zA-Z0-9]/g, '_');
@@ -813,12 +845,12 @@ const appState = {
         };
 
         try {
-            // STEP 1: Append telemetry to RTDB Ledger (Never blocked by file uploads)
+            // STEP 1: Write directly to RTDB Ledger (Atomic and independent)
             const harvestsRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/grind_tracker/${cleanMap}/${cleanSpecies}/harvests`);
             const newHarvestRecord = await push(harvestsRef, harvestPayload);
             const recordKey = newHarvestRecord.key;
 
-            // STEP 2: Safe Storage Upload (Isolated in independent try/catch)
+            // STEP 2: Safe Storage Upload in isolated try/catch
             if (this.selectedImageFile && this.storage && recordKey) {
                 try {
                     this.setStatus("📸 Uploading trophy screenshot to Storage...", "#3b82f6");
@@ -835,7 +867,7 @@ const appState = {
                 }
             }
 
-            // STEP 3: Universal Trophies (Active in both Single and Multiplayer)
+            // STEP 3: Auto-Check Universal Trophies
             let trophyStateChanged = false;
 
             if (distance >= 50) { const t = this.hunterData.find(x => x.id === 'novice_m'); if (t && t.current < t.goal) { t.current = t.goal; trophyStateChanged = true; } }
@@ -869,7 +901,7 @@ const appState = {
                 }
             }
 
-            // STEP 4: Career Rank Counter Auto-Increment
+            // STEP 4: Career Rank Auto-Increment
             const ratingKey = harvestPayload.rating.toLowerCase();
             if (ratingKey !== 'none' && this.animalRankData[ratingKey] !== undefined) {
                 this.adjRank(ratingKey, 1);
@@ -879,7 +911,7 @@ const appState = {
                 this.sync(true);
             }
 
-            // STEP 5: Complete Form Reset
+            // STEP 5: Reset only data inputs, keep current reserve
             if (weightInput) weightInput.value = '';
             if (distInput) distInput.value = '';
             const previewContainer = document.getElementById('screenshot-preview-container');
@@ -888,7 +920,7 @@ const appState = {
             if (fileInput) fileInput.value = '';
             this.selectedImageFile = null;
 
-            this.setStatus(`✓ Logged ${chosenSpecies} (${weight}kg) [Mode: ${this.sessionMode.toUpperCase()}]`, "#10b981");
+            this.setStatus(`✓ Logged ${chosenSpecies} (${weight}kg) to ${chosenReserve} [Mode: ${this.sessionMode.toUpperCase()}]`, "#10b981");
         } catch (err) {
             console.error("Harvest Log Error:", err);
             this.setStatus(`❌ Harvest Save Failed: ${err.message}`, "#ef4444");
@@ -1273,6 +1305,12 @@ const appState = {
     renderGrindTelemetryCard: function(container) {
         const card = document.createElement('div');
         card.className = 'grind-card-container';
+
+        // Pre-build Reserve Options List
+        const reserveOptions = Object.keys(RESERVE_CATALOG).map(res => 
+            `<option value="${res}" ${res === this.activeReserve ? 'selected' : ''}>${res}</option>`
+        ).join('');
+
         card.innerHTML = `
             <div class="grind-card-header">
                 <div>
@@ -1298,14 +1336,23 @@ const appState = {
 
             <div class="grind-grid-2col">
                 <div>
-                    <label class="grind-input-label">Select or Type Reserve Map</label>
-                    <input type="text" id="grind-reserve-input" class="grind-input" list="reserves-datalist" value="${this.activeReserve}" placeholder="Type any reserve..." onchange="appState.handleReserveChange(this.value)">
-                    <datalist id="reserves-datalist"></datalist>
+                    <label class="grind-input-label">Select Active Reserve Map</label>
+                    <select id="grind-reserve-select" class="grind-select" onchange="appState.handleReserveChange(this.value)">
+                        ${reserveOptions}
+                        <option value="__CUSTOM__">✍️ + Enter Custom Reserve...</option>
+                    </select>
+                    <div id="custom-reserve-wrap" style="display:none; margin-top:6px;">
+                        <input type="text" id="custom-reserve-input" class="grind-input" placeholder="Type custom reserve name..." oninput="appState.activeReserve = this.value.trim()">
+                    </div>
                 </div>
                 <div>
-                    <label class="grind-input-label">Select or Type Target Species</label>
-                    <input type="text" id="grind-species-input" class="grind-input" list="species-datalist" value="${this.activeSpecies}" placeholder="Select or type animal..." onchange="appState.handleSpeciesChange(this.value)">
-                    <datalist id="species-datalist"></datalist>
+                    <label class="grind-input-label">Select Target Species (Official Classes 1-9)</label>
+                    <select id="grind-species-select" class="grind-select" onchange="appState.handleSpeciesSelectChange(this.value)">
+                        <!-- Populated dynamically via updateSpeciesDropdown() -->
+                    </select>
+                    <div id="custom-species-wrap" style="display:none; margin-top:6px;">
+                        <input type="text" id="custom-species-input" class="grind-input" placeholder="Type custom species..." oninput="appState.activeSpecies = this.value.trim()">
+                    </div>
                 </div>
             </div>
 
@@ -1419,8 +1466,11 @@ const appState = {
                 📝 Log Harvest & Sync Telemetry
             </button>
         `;
+
         container.appendChild(card);
-        this.renderDatalists();
+        this.populateDatalist('weapons-datalist', this.knownWeaponsList);
+        this.populateDatalist('organs-datalist', this.knownOrgansList);
+        this.updateSpeciesDropdown();
     },
 
     getIcon: (t) => t.playstationImage ? t.playstationImage : (t.cat.includes('Collectibles') ? ICONS.TRACK : t.name.includes('Arc') || t.name.includes('Missions') ? ICONS.ARC : t.name.includes('Mile') ? ICONS.TRAVEL : t.name.includes('Marksman') ? ICONS.MARK : ICONS.GAME),
@@ -1448,7 +1498,6 @@ const appState = {
 
     toggleSection: function(id) { this.collapsedSections[id] = !this.collapsedSections[id]; this.render(); },
     toggleDrop: function(id) { const el = document.getElementById('drop-' + id); if (el) { el.classList.toggle('show'); this.openDropdowns[id] = el.classList.contains('show'); } },
-    scrollToCategory: function(id) { if (!id) return; this.collapsedSections[id] = false; this.render(); setTimeout(() => { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }, 100); },
 
     sync: async function(silent = false) {
         this.render();
