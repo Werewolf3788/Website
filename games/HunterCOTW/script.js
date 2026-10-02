@@ -3,16 +3,16 @@
    Location: //playstation-be938.web.app/games/HunterCOTW/script.js
    Description: theHunter: Call of the Wild Master Tracker Dual-Engine
                 - Complete 19 Reserve Catalog with Official Weapon Classes (1-9)
-                - Decoupled RTDB Harvest Logging with Safe Firebase Storage Binding
-                - Preserves active user coordinates, region, sub-region & telemetry
+                - Decoupled Non-Blocking RTDB Harvest Logging & Async Storage Upload
+                - Instant Form Clearing & Visual Confirmation Banner
                 - Dynamic Menu System via Realtime Database (/utm_links)
                 - Single Player vs. Multiplayer Mode Switcher (Story Arcs Gated)
                 - 1-33 Drift Moving Average Weight Telemetry & Fur Tier Tracking
                 - Google Analytics 4 (G-CTYHDF4MSD) via GTM Integration
                 - 4-Player Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
    Database: Cloud Firestore, Realtime Database & Firebase Storage (entertainment-71888)
-   Build Version: 6.2.0
-   Date & Time Stamp: 2026-10-02 14:26:00 EDT (America/New_York)
+   Build Version: 6.3.0
+   Date & Time Stamp: 2026-10-02 15:05:00 EDT (America/New_York)
    ============================================================================ */
 
 // Line 20: Google Tag Manager & Google Analytics 4 Deployment (G-CTYHDF4MSD)
@@ -43,8 +43,8 @@ import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from '//ww
  * SECTION 1: Build Metadata, User Map & Custom Themes
  * Lines 48-135: PSN handles, custom themes, asset icons
  * ---------------------------------------------------- */
-const BUILD_VERSION = "6.2.0";
-const CODE_BUILD_DATE = "2026-10-02 14:26:00 EDT";
+const BUILD_VERSION = "6.3.0";
+const CODE_BUILD_DATE = "2026-10-02 15:05:00 EDT";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -539,8 +539,8 @@ const SPECIES_BENCHMARKS = {
 };
 
 /* ----------------------------------------------------
- * SECTION 5: Application State & DOM Event Control
- * Lines 487-835: Wrapped in DOMContentLoaded listener
+ * SECTION 5: Application State & Safe Form Handling
+ * Lines 487-835: State management, robust DOM bindings
  * ---------------------------------------------------- */
 const appState = {
     activeHunter: localStorage.getItem('pinned_device_user') || 'Werewolf',
@@ -774,7 +774,7 @@ const appState = {
         });
     },
 
-    /* --- LOG HARVEST: Decoupled RTDB Record First, Storage Second --- */
+    /* --- LOG HARVEST: Decoupled Non-Blocking RTDB Write First, Background Storage Upload Second --- */
     logHarvest: async function() {
         if (!this.rtdb || !this.auth.currentUser) {
             this.setStatus("❌ Database not connected. Please reload.", "#ef4444");
@@ -815,8 +815,8 @@ const appState = {
         }
 
         const distance = parseFloat(distInput?.value) || 0;
-        const weapon = weaponInput?.value?.trim() || 'Rifle';
-        const organ = organInput?.value?.trim() || 'Both Lungs';
+        const weapon = weaponInput?.value?.trim() || '.300 Canning Magnum Frontier';
+        const organ = organInput?.value?.trim() || 'Both Lungs (Double Lung)';
 
         if (!this.knownWeaponsList.includes(weapon)) {
             this.knownWeaponsList.push(weapon);
@@ -854,31 +854,25 @@ const appState = {
         };
 
         try {
-            // STEP 1: Safe RTDB Ledger Push
+            // STEP 1: Direct, non-blocking RTDB push
             const harvestsRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/grind_tracker/${cleanMap}/${cleanSpecies}/harvests`);
             const newHarvestRecord = await push(harvestsRef, harvestPayload);
             const recordKey = newHarvestRecord.key;
 
-            // STEP 2: Storage Upload Fallback Handler
-            if (this.selectedImageFile && this.storage && recordKey) {
-                try {
-                    this.setStatus("📸 Uploading trophy screenshot to Storage...", "#3b82f6");
-                    const imgPath = `harvest_captures/${this.activeHunter}/${Date.now()}_${this.selectedImageFile.name}`;
-                    const fileRef = storageRef(this.storage, imgPath);
-                    const snapshot = await uploadBytes(fileRef, this.selectedImageFile);
-                    const downloadUrl = await getDownloadURL(snapshot.ref);
+            // STEP 2: Instant Form Clearing & Visual Confirmation
+            const savedImageFile = this.selectedImageFile; // Preserve pointer for background upload
+            if (weightInput) weightInput.value = '';
+            if (distInput) distInput.value = '';
+            const previewContainer = document.getElementById('screenshot-preview-container');
+            if (previewContainer) previewContainer.style.display = 'none';
+            const fileInput = document.getElementById('harvest-screenshot-file');
+            if (fileInput) fileInput.value = '';
+            this.selectedImageFile = null;
 
-                    await update(rtdbRef(this.rtdb, `users/${this.activeHunter}/grind_tracker/${cleanMap}/${cleanSpecies}/harvests/${recordKey}`), {
-                        imageUrl: downloadUrl
-                    });
-                } catch (storageErr) {
-                    console.warn("Storage upload bypassed or failed, telemetry preserved:", storageErr.message);
-                }
-            }
+            this.setStatus(`✓ Logged ${chosenSpecies} (${weight}kg) to ${chosenReserve}!`, "#10b981");
 
-            // STEP 3: Auto-Check Universal Trophies
+            // STEP 3: Universal Trophy Milestones
             let trophyStateChanged = false;
-
             if (distance >= 50) { const t = this.hunterData.find(x => x.id === 'novice_m'); if (t && t.current < t.goal) { t.current = t.goal; trophyStateChanged = true; } }
             if (distance >= 100) { const t = this.hunterData.find(x => x.id === 'skilled_m'); if (t && t.current < t.goal) { t.current = t.goal; trophyStateChanged = true; } }
             if (distance >= 200) { const t = this.hunterData.find(x => x.id === 'expert_m'); if (t && t.current < t.goal) { t.current = t.goal; trophyStateChanged = true; } }
@@ -910,7 +904,6 @@ const appState = {
                 }
             }
 
-            // STEP 4: Career Rank Auto-Increment
             const ratingKey = harvestPayload.rating.toLowerCase();
             if (ratingKey !== 'none' && this.animalRankData[ratingKey] !== undefined) {
                 this.adjRank(ratingKey, 1);
@@ -920,16 +913,25 @@ const appState = {
                 this.sync(true);
             }
 
-            // STEP 5: Clear telemetry form inputs
-            if (weightInput) weightInput.value = '';
-            if (distInput) distInput.value = '';
-            const previewContainer = document.getElementById('screenshot-preview-container');
-            if (previewContainer) previewContainer.style.display = 'none';
-            const fileInput = document.getElementById('harvest-screenshot-file');
-            if (fileInput) fileInput.value = '';
-            this.selectedImageFile = null;
+            // STEP 4: Asynchronous Background Storage Upload (Runs independently without blocking UI)
+            if (savedImageFile && this.storage && recordKey) {
+                (async () => {
+                    try {
+                        const imgPath = `harvest_captures/${this.activeHunter}/${Date.now()}_${savedImageFile.name}`;
+                        const fileRef = storageRef(this.storage, imgPath);
+                        const snapshot = await uploadBytes(fileRef, savedImageFile);
+                        const downloadUrl = await getDownloadURL(snapshot.ref);
 
-            this.setStatus(`✓ Logged ${chosenSpecies} (${weight}kg) to ${chosenReserve} [Mode: ${this.sessionMode.toUpperCase()}]`, "#10b981");
+                        await update(rtdbRef(this.rtdb, `users/${this.activeHunter}/grind_tracker/${cleanMap}/${cleanSpecies}/harvests/${recordKey}`), {
+                            imageUrl: downloadUrl
+                        });
+                        console.log(`[Storage Success] Image linked to RTDB record: ${recordKey}`);
+                    } catch (storageErr) {
+                        console.warn("[Storage Background Warning] Image upload skipped or unauthorized:", storageErr.message);
+                    }
+                })();
+            }
+
         } catch (err) {
             console.error("Harvest Log Error:", err);
             this.setStatus(`❌ Harvest Save Failed: ${err.message}`, "#ef4444");
