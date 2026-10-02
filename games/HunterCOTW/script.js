@@ -2,27 +2,25 @@
    File: script.js
    Location: /games/HunterCOTW/script.js
    Description: theHunter: Call of the Wild Consolidated RTDB Engine
-                - Direct RTDB PlayStation Trophy Sync via NPWR13211_00
-                - Exact Schema Mapping: 'title', 'earned', 'icon', 'trophyProgress'
-                - Append-Only Weight & Harvest Telemetry Ledger (1-33 Drift Sweet Spot)
-                - Shared Geographic Need Zone & Coordinate Auto-Fill Map Registry
-                - Automated Animal Rank Auto-Increment via Harvest Entry
-                - Multi-User Profile Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
+                - Direct PSN Source-of-Truth Sync (/psn/gamertags/.../NPWR13211_00)
+                - Exact Match on 'title', 'earned', 'trophyId', 'icon'
+                - Non-Destructive User Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
+                - Append-Only Weight & Need Zone Grind Tracker
    Database: Realtime Database (entertainment-71888)
-   Build Version: 3.4.0
-   Code Build Date: 2026-10-01 23:26:00 EDT (America/New_York)
+   Build Version: 3.5.0
+   Code Build Date: 2026-10-01 23:45:00 EDT (America/New_York)
    ============================================================================ */
 
 import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from '//www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-import { getDatabase, ref as rtdbRef, onValue, set, update, push, off, get } from '//www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+import { getDatabase, ref as rtdbRef, onValue, set, update, push, off } from '//www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
 /* ----------------------------------------------------
  * SECTION 1: Build Metadata, User Map & Custom Themes
- * Lines 22-95: PSN mappings, user profiles, theme colors
+ * Lines 22-95: Exact PSN mappings & theme definitions
  * ---------------------------------------------------- */
-const BUILD_VERSION = "3.4.0";
-const CODE_BUILD_DATE = "2026-10-01 23:26:00 EDT";
+const BUILD_VERSION = "3.5.0";
+const CODE_BUILD_DATE = "2026-10-01 23:45:00 EDT";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -37,8 +35,7 @@ const firebaseConfig = {
 const GAME_ID = 'COTW';
 const NPWR_ID = 'NPWR13211_00';
 
-// Exact PSN Target Mapping for RTDB Node:
-// /psn/gamertags/{Gamertag}/liveTrophyProgress/NPWR13211_00
+// Exact RTDB PSN Gamertag Path Map
 const USER_PSN_MAP = {
     'Werewolf': 'wildhorse_spirit',
     'Werewolf3788': 'wildhorse_spirit',
@@ -111,22 +108,20 @@ const ICONS = {
 
 /* ----------------------------------------------------
  * SECTION 2: Master Helpers
- * Lines 97-122: Checklists & normalization
+ * Lines 97-120: Checklists & normalizers
  * ---------------------------------------------------- */
 const checkSet = (items) => items.map(name => ({ name, done: false }));
 
 const normalizePlatform = (inputPlatform) => {
     if (!inputPlatform) return 'playstation';
     const clean = String(inputPlatform).toLowerCase().trim();
-    if (clean === 'psn' || clean === 'ps' || clean === 'playstation') {
-        return 'playstation';
-    }
+    if (clean === 'psn' || clean === 'ps' || clean === 'playstation') return 'playstation';
     return clean;
 };
 
 /* ----------------------------------------------------
  * SECTION 3: Raw Static Master Trophy Data Baseline
- * Lines 124-248: Complete trophy & mission database records
+ * Lines 122-245: Complete trophy & mission database records
  * ---------------------------------------------------- */
 const trophyData = [
     // --- BASE GAME TROPHIES ---
@@ -351,20 +346,19 @@ const injectResponsiveStyles = () => {
  * Lines 432-960: State, RTDB listeners, switcher handlers, weight analyzer
  * ---------------------------------------------------- */
 const appState = {
-    activeHunter: localStorage.getItem('pinned_device_user') || localStorage.getItem('active_gaming_nickname') || 'Werewolf',
-    activePlatform: normalizePlatform(localStorage.getItem('active_gaming_platform')),
+    activeHunter: localStorage.getItem('pinned_device_user') || 'Werewolf',
+    activePlatform: 'playstation',
     activeReserve: 'Layton Lake',
     activeSpecies: 'Black Bear',
-    zoneType: 'main', // 'main' or 'exterior'
+    zoneType: 'main',
     hunterData: [],
     animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 },
     auth: null,
     rtdb: null,
     collapsedSections: {},
     openDropdowns: {},
-    rtdbProgressRef: null,
-    rtdbRankRef: null,
     rtdbTrophyRef: null,
+    rtdbRankRef: null,
     rtdbSharedMapRef: null,
     rtdbLedgerRef: null,
     knownSpeciesList: ['Black Bear', 'Whitetail Deer', 'Moose', 'Red Deer', 'Gray Wolf', 'Fallow Deer'],
@@ -470,7 +464,6 @@ const appState = {
             }
         });
 
-        // If within 400m radius of a known zone, auto-populate Region and Sub-Region
         if (closest && minDistance < 400) {
             const regInput = document.getElementById('harvest-region');
             const subInput = document.getElementById('harvest-subregion');
@@ -491,14 +484,12 @@ const appState = {
             if (!snapshot.exists()) return;
             const data = snapshot.val();
             
-            // 1. Refresh Known Species
             if (data.known_species) {
                 const fetched = Object.keys(data.known_species);
                 this.knownSpeciesList = [...new Set([...this.knownSpeciesList, ...fetched])];
                 this.renderSpeciesDropdown();
             }
 
-            // 2. Refresh Coordinate Index for Proximity
             this.knownCoordinates = [];
             if (data.need_zones) {
                 Object.values(data.need_zones).forEach(z => {
@@ -626,11 +617,9 @@ const appState = {
         const cleanSpecies = this.activeSpecies.replace(/[^a-zA-Z0-9]/g, '_');
 
         try {
-            // 1. Append immutable harvest to user's ledger
             const harvestsRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/grind_tracker/${cleanMap}/${cleanSpecies}/harvests`);
             await push(harvestsRef, harvestPayload);
 
-            // 2. Save location to shared map registry if coordinates provided
             if (harvestPayload.lat !== 0 || harvestPayload.long !== 0) {
                 const zoneRef = rtdbRef(this.rtdb, `shared_map_registry/${cleanMap}/need_zones`);
                 await push(zoneRef, {
@@ -645,7 +634,6 @@ const appState = {
                 });
             }
 
-            // 3. Auto-increment career animal rank if rated
             const ratingKey = harvestPayload.rating.toLowerCase();
             if (ratingKey !== 'none' && this.animalRankData[ratingKey] !== undefined) {
                 this.animalRankData[ratingKey] += 1;
@@ -665,7 +653,6 @@ const appState = {
     /* --- Master Initialization & RTDB Subscriptions --- */
     init: async function() {
         injectResponsiveStyles();
-        this.hunterData = this.getFreshTrophyTemplate();
         this.renderBuildMetadata();
         this.applyPlayerTheme(this.activeHunter);
         this.updatePinButtonUI();
@@ -690,7 +677,6 @@ const appState = {
         } catch (err) {
             console.error("Init Error:", err);
             this.setStatus(`❌ Connection Error: ${err.message}`, "#ef4444");
-            this.render();
         }
     },
 
@@ -712,24 +698,23 @@ const appState = {
     loadHunter: function(userName, platform) {
         if (!this.auth || !this.auth.currentUser) return;
 
-        if (this.rtdbProgressRef) { off(this.rtdbProgressRef); this.rtdbProgressRef = null; }
+        // Disconnect existing listeners before switching
         if (this.rtdbRankRef) { off(this.rtdbRankRef); this.rtdbRankRef = null; }
         if (this.rtdbTrophyRef) { off(this.rtdbTrophyRef); this.rtdbTrophyRef = null; }
 
         this.activeHunter = userName || 'Werewolf';
         this.activePlatform = normalizePlatform(platform);
 
+        // Reset base trophy template
         this.hunterData = this.getFreshTrophyTemplate();
         this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
-
-        localStorage.setItem('active_gaming_nickname', this.activeHunter);
-        localStorage.setItem('active_gaming_platform', this.activePlatform);
 
         this.applyPlayerTheme(this.activeHunter);
         this.updatePinButtonUI();
 
-        if (document.getElementById('hunter-name')) {
-            document.getElementById('hunter-name').innerText = `${this.activeHunter.toUpperCase()} [${this.activePlatform.toUpperCase()}]`;
+        const hunterHeader = document.getElementById('hunter-name');
+        if (hunterHeader) {
+            hunterHeader.innerText = `${this.activeHunter.toUpperCase()} [${this.activePlatform.toUpperCase()}]`;
         }
 
         const platformSelector = document.getElementById("platform-selector");
@@ -742,42 +727,10 @@ const appState = {
         this.bindSharedMapRegistry(this.activeReserve);
         this.bindGrindTelemetry();
 
-        // 1. RTDB User Trophy Progress Snapshot
-        this.rtdbProgressRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/platform/${this.activePlatform}/progress/${GAME_ID}`);
-        onValue(this.rtdbProgressRef, (snap) => {
-            const freshList = this.getFreshTrophyTemplate();
-            if (snap.exists()) {
-                const incoming = snap.val().trophies || [];
-                this.hunterData = freshList.map(dt => {
-                    const found = incoming.find(it => it.id === dt.id);
-                    if (found) {
-                        if (dt.type === 'checklist' && found.subItems) {
-                            dt.subItems = dt.subItems.map((si, i) => {
-                                const dbMatch = found.subItems.find(x => x.name === si.name) || found.subItems[i];
-                                return { ...si, done: dbMatch?.done === true || dbMatch?.done === "true" };
-                            });
-                            dt.current = dt.subItems.filter(s => s.done).length;
-                        } else {
-                            dt.current = (found.done === true || found.completed === true) ? dt.goal : (Number(found.current) || 0);
-                        }
-                    } else {
-                        dt.current = 0;
-                    }
-                    return dt;
-                });
-                this.setStatus(`✓ Live RTDB Sync [${this.activeHunter}]`, "#10b981");
-            } else {
-                this.hunterData = freshList;
-                this.setStatus(`⚠️ Initial State for ${this.activeHunter}`, "#ff8800");
-            }
-            this.bindRTDBTrophyWatcher(this.activeHunter);
-            this.render();
-        }, (err) => {
-            console.error("Progress Read Error:", err);
-            this.setStatus(`❌ Read Error: ${err.message}`, "#ef4444");
-        });
+        // 1. Direct PSN Master Sync (Source of Truth for All PSN Trophies)
+        this.bindRTDBTrophyWatcher(this.activeHunter);
 
-        // 2. RTDB Career Animal Ranks Snapshot
+        // 2. Career Animal Ranks Snapshot
         this.rtdbRankRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/platform/${this.activePlatform}/ranks/COTW_Ranks`);
         onValue(this.rtdbRankRef, (snap) => {
             if (snap.exists()) {
@@ -802,7 +755,6 @@ const appState = {
     bindRTDBTrophyWatcher: function(hunterKey) {
         if (!this.rtdb) return;
 
-        // Exact mapping from your RTDB /psn/gamertags/ tree
         const psnGamertag = USER_PSN_MAP[hunterKey] || USER_PSN_MAP[this.activeHunter] || 'wildhorse_spirit';
         if (!psnGamertag) return;
 
@@ -815,13 +767,13 @@ const appState = {
         onValue(this.rtdbTrophyRef, (snapshot) => {
             if (!snapshot.exists()) {
                 console.warn(`[RTDB PSN Sync] No live data found at: ${trophyPath}`);
+                this.setStatus(`⚠️ No live PSN data found for ${psnGamertag}`, "#eab308");
                 return;
             }
 
             const rawData = snapshot.val();
             let stateMutated = false;
 
-            // Handle whether Firebase returns an indexed array or keyed object
             const trophyEntries = Array.isArray(rawData) 
                 ? rawData 
                 : Object.entries(rawData).map(([k, v]) => ({ _index: k, ...v }));
@@ -829,30 +781,27 @@ const appState = {
             trophyEntries.forEach((rItem) => {
                 if (!rItem) return;
 
-                // 1. Verify Earned Flag (handles boolean true or string "true")
+                // 1. Verify Earned Flag
                 const isEarned = rItem.earned === true || String(rItem.earned).toLowerCase() === 'true';
 
-                // 2. Read 'title' FIRST (matches your Firebase schema: .../0/title)
+                // 2. Read 'title' FIRST (Direct match to your /0/title field)
                 const psnTitle = String(rItem.title || rItem.trophyName || rItem.name || '').trim().toLowerCase();
                 const psnIdNum = rItem.trophyId !== undefined ? Number(rItem.trophyId) : null;
 
                 if (!psnTitle && psnIdNum === null) return;
 
-                // 3. Find matching trophy in your master trophyData
+                // 3. Match against local master baseline
                 const match = this.hunterData.find((t, idx) => {
                     const localName = t.name.trim().toLowerCase();
-                    // Match against exact title or index
                     return (psnTitle && localName === psnTitle) || (psnIdNum !== null && psnIdNum === idx);
                 });
 
                 if (match) {
-                    // Update live icon from PlayStation CDN if present
                     if (rItem.icon && !match.playstationImage) {
                         match.playstationImage = rItem.icon;
                         stateMutated = true;
                     }
 
-                    // If earned on PSN, force completion
                     if (isEarned) {
                         if (match.current < match.goal) {
                             match.current = match.goal;
@@ -862,7 +811,6 @@ const appState = {
                             stateMutated = true;
                         }
                     } else if (rItem.trophyProgress !== undefined && match.type === 'numeric') {
-                        // Track live numeric milestone progress if available
                         const currentVal = Number(rItem.trophyProgress);
                         if (!isNaN(currentVal) && currentVal > match.current) {
                             match.current = Math.min(match.goal, currentVal);
@@ -875,7 +823,7 @@ const appState = {
             if (stateMutated) {
                 console.log(`[RTDB PSN Sync] ✓ Successfully matched and updated trophies for ${hunterKey} (${psnGamertag})`);
                 this.render();
-                this.sync(true); // Commits progress to /users/{hunterKey}/platform/playstation/progress/COTW
+                this.setStatus(`✓ PSN Live Synced: ${hunterKey} (${psnGamertag})`, "#10b981");
             }
         }, (err) => {
             console.warn("[RTDB PSN Sync Error]:", err.message);
@@ -1293,7 +1241,6 @@ const appState = {
         }, 100);
     },
 
-    /* --- RTDB Master Sync --- */
     sync: async function(silent = false) {
         this.render();
         this.updateRankUI();
@@ -1302,14 +1249,6 @@ const appState = {
         if (!silent) this.setStatus("⏳ Committing to RTDB...", "#e67e22");
 
         try {
-            if (typeof gtag === 'function') {
-                gtag('event', 'tracker_sync', {
-                    'event_category': 'Tracker',
-                    'hunter_name': this.activeHunter,
-                    'platform': this.activePlatform
-                });
-            }
-
             const ref = rtdbRef(this.rtdb, `users/${this.activeHunter}/platform/${this.activePlatform}/progress/${GAME_ID}`);
             const payload = {
                 user: this.activeHunter,
@@ -1329,12 +1268,13 @@ const appState = {
     }
 };
 
+// Global Exposure for HTML onclick listeners
 window.appState = appState;
 window.adjRank = (tier, val) => appState.adjRank(tier, val);
 
 appState.init();
 
-// Global tap-out listener to collapse dropdowns and mobile navigation
+// Global tap-out listener
 window.addEventListener('click', function(event) {
     const navWrapper = event.target.closest('.nav-wrapper-centered');
     const navContainer = document.getElementById('dynamic-nav-links');
