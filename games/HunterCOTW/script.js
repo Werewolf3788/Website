@@ -2,15 +2,15 @@
    File: script.js
    Location: /games/HunterCOTW/script.js
    Description: theHunter: Call of the Wild Consolidated RTDB Engine
-                - Full RTDB Trophy & PlayStation Network Sync (NPWR13211_00)
-                - Exact PSN Gamertag Path Resolution (Case-Insensitive Normalization)
+                - Direct RTDB PlayStation Trophy Sync via NPWR13211_00
+                - Exact Schema Mapping: 'title', 'earned', 'icon', 'trophyProgress'
                 - Append-Only Weight & Harvest Telemetry Ledger (1-33 Drift Sweet Spot)
                 - Shared Geographic Need Zone & Coordinate Auto-Fill Map Registry
                 - Automated Animal Rank Auto-Increment via Harvest Entry
                 - Multi-User Profile Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
    Database: Realtime Database (entertainment-71888)
-   Build Version: 3.3.0
-   Code Build Date: 2026-10-01 22:40:00 EDT (America/New_York)
+   Build Version: 3.4.0
+   Code Build Date: 2026-10-01 23:26:00 EDT (America/New_York)
    ============================================================================ */
 
 import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -21,8 +21,8 @@ import { getDatabase, ref as rtdbRef, onValue, set, update, push, off, get } fro
  * SECTION 1: Build Metadata, User Map & Custom Themes
  * Lines 22-95: PSN mappings, user profiles, theme colors
  * ---------------------------------------------------- */
-const BUILD_VERSION = "3.3.0";
-const CODE_BUILD_DATE = "2026-10-01 22:40:00 EDT";
+const BUILD_VERSION = "3.4.0";
+const CODE_BUILD_DATE = "2026-10-01 23:26:00 EDT";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -348,7 +348,7 @@ const injectResponsiveStyles = () => {
 
 /* ----------------------------------------------------
  * SECTION 6: Main Application State & Unified RTDB Engine
- * Lines 432-945: State, RTDB listeners, switcher handlers, weight analyzer
+ * Lines 432-960: State, RTDB listeners, switcher handlers, weight analyzer
  * ---------------------------------------------------- */
 const appState = {
     activeHunter: localStorage.getItem('pinned_device_user') || localStorage.getItem('active_gaming_nickname') || 'Werewolf',
@@ -801,55 +801,84 @@ const appState = {
 
     bindRTDBTrophyWatcher: function(hunterKey) {
         if (!this.rtdb) return;
-        const psnGamertag = USER_PSN_MAP[hunterKey];
-        if (!psnGamertag) {
-            console.log(`[RTDB PSN Sync] No mapped PSN gamertag for ${hunterKey}. Skipping watcher.`);
-            return;
-        }
+
+        // Exact mapping from your RTDB /psn/gamertags/ tree
+        const psnGamertag = USER_PSN_MAP[hunterKey] || USER_PSN_MAP[this.activeHunter] || 'wildhorse_spirit';
+        if (!psnGamertag) return;
 
         // Exact RTDB Path: /psn/gamertags/{Gamertag}/liveTrophyProgress/NPWR13211_00
         const trophyPath = `psn/gamertags/${psnGamertag}/liveTrophyProgress/${NPWR_ID}`;
         this.rtdbTrophyRef = rtdbRef(this.rtdb, trophyPath);
 
-        console.log(`[RTDB PSN Sync] Watching: ${trophyPath}`);
+        console.log(`[RTDB PSN Sync] Subscribing directly to: ${trophyPath}`);
 
         onValue(this.rtdbTrophyRef, (snapshot) => {
             if (!snapshot.exists()) {
-                console.log(`[RTDB PSN Sync] No live trophy data found at: ${trophyPath}`);
+                console.warn(`[RTDB PSN Sync] No live data found at: ${trophyPath}`);
                 return;
             }
 
-            const rtdbTrophies = snapshot.val();
+            const rawData = snapshot.val();
             let stateMutated = false;
-            const trophyEntries = Array.isArray(rtdbTrophies) ? rtdbTrophies : Object.values(rtdbTrophies);
 
-            trophyEntries.forEach(rItem => {
+            // Handle whether Firebase returns an indexed array or keyed object
+            const trophyEntries = Array.isArray(rawData) 
+                ? rawData 
+                : Object.entries(rawData).map(([k, v]) => ({ _index: k, ...v }));
+
+            trophyEntries.forEach((rItem) => {
                 if (!rItem) return;
-                const isEarned = rItem.earned === true || rItem.unlocked === true || rItem.achieved === 1;
-                const rName = String(rItem.trophyName || rItem.name || '').trim().toLowerCase();
 
-                if (isEarned && rName) {
-                    const match = this.hunterData.find(t =>
-                        t.name.trim().toLowerCase() === rName ||
-                        t.id.toLowerCase() === rName
-                    );
+                // 1. Verify Earned Flag (handles boolean true or string "true")
+                const isEarned = rItem.earned === true || String(rItem.earned).toLowerCase() === 'true';
 
-                    if (match && match.current < match.goal) {
-                        match.current = match.goal;
-                        if (match.type === 'checklist' && match.subItems) {
-                            match.subItems.forEach(si => si.done = true);
-                        }
+                // 2. Read 'title' FIRST (matches your Firebase schema: .../0/title)
+                const psnTitle = String(rItem.title || rItem.trophyName || rItem.name || '').trim().toLowerCase();
+                const psnIdNum = rItem.trophyId !== undefined ? Number(rItem.trophyId) : null;
+
+                if (!psnTitle && psnIdNum === null) return;
+
+                // 3. Find matching trophy in your master trophyData
+                const match = this.hunterData.find((t, idx) => {
+                    const localName = t.name.trim().toLowerCase();
+                    // Match against exact title or index
+                    return (psnTitle && localName === psnTitle) || (psnIdNum !== null && psnIdNum === idx);
+                });
+
+                if (match) {
+                    // Update live icon from PlayStation CDN if present
+                    if (rItem.icon && !match.playstationImage) {
+                        match.playstationImage = rItem.icon;
                         stateMutated = true;
+                    }
+
+                    // If earned on PSN, force completion
+                    if (isEarned) {
+                        if (match.current < match.goal) {
+                            match.current = match.goal;
+                            if (match.type === 'checklist' && match.subItems) {
+                                match.subItems.forEach(si => si.done = true);
+                            }
+                            stateMutated = true;
+                        }
+                    } else if (rItem.trophyProgress !== undefined && match.type === 'numeric') {
+                        // Track live numeric milestone progress if available
+                        const currentVal = Number(rItem.trophyProgress);
+                        if (!isNaN(currentVal) && currentVal > match.current) {
+                            match.current = Math.min(match.goal, currentVal);
+                            stateMutated = true;
+                        }
                     }
                 }
             });
 
             if (stateMutated) {
-                console.log(`[RTDB PSN Sync] Auto-verified PSN trophies for ${hunterKey} (${psnGamertag})`);
-                this.sync(true);
+                console.log(`[RTDB PSN Sync] ✓ Successfully matched and updated trophies for ${hunterKey} (${psnGamertag})`);
+                this.render();
+                this.sync(true); // Commits progress to /users/{hunterKey}/platform/playstation/progress/COTW
             }
         }, (err) => {
-            console.warn("RTDB Trophy watcher error:", err.message);
+            console.warn("[RTDB PSN Sync Error]:", err.message);
         });
     },
 
