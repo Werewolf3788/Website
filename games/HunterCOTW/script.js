@@ -6,9 +6,10 @@
                 - Append-Only Weight & Harvest Telemetry Ledger (1-33 Drift Sweet Spot)
                 - Shared Geographic Need Zone & Coordinate Auto-Fill Map Registry
                 - Automated Animal Rank Auto-Increment via Harvest Entry
+                - Multi-User Profile Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
    Database: Realtime Database (entertainment-71888)
-   Build Version: 3.0.0
-   Code Build Date: 2026-10-01 20:26:00 EDT (America/New_York)
+   Build Version: 3.2.0
+   Code Build Date: 2026-10-01 21:22:00 EDT (America/New_York)
    ============================================================================ */
 
 import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -17,10 +18,10 @@ import { getDatabase, ref as rtdbRef, onValue, set, update, push, off, get } fro
 
 /* ----------------------------------------------------
  * SECTION 1: Build Metadata, User Map & Custom Themes
- * Lines 20-80: Version signatures, player themes, asset icons
+ * Lines 20-95: Version signatures, player themes, asset icons
  * ---------------------------------------------------- */
-const BUILD_VERSION = "3.0.0";
-const CODE_BUILD_DATE = "2026-10-01 20:26:00 EDT";
+const BUILD_VERSION = "3.2.0";
+const CODE_BUILD_DATE = "2026-10-01 21:22:00 EDT";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -35,21 +36,39 @@ const firebaseConfig = {
 const GAME_ID = 'COTW';
 const NPWR_ID = 'NPWR13211_00';
 
-// Normalized Gamer Handles: Only 4 profiles, zero duplicates
+// Normalized Gamer Handles: Firebase Tag -> PSN Gamertag Mapping
 const USER_PSN_MAP = {
-    'Werewolf3788': 'WildHorse_Spirit',
-    'OneLIVIDMAN': 'OneLIVIDMAN',
+    'Werewolf': 'Wildhorse_spirit',
+    'Werewolf3788': 'Wildhorse_spirit', // Legacy alias fallback
+    'Raymystyro': 'OneLIVIDMAN',
+    'OneLIVIDMAN': 'OneLIVIDMAN',        // Legacy alias fallback
     'Terrdog': 'Darkwing69420',
     'DesdemonaTiger': 'DesdemonaTiger'
 };
 
 const USER_THEMES = {
+    'Werewolf': {
+        accent: '#ff5500',
+        accentGlow: 'rgba(255, 85, 0, 0.45)',
+        secondary: '#0a0a0c',
+        border: 'rgba(255, 85, 0, 0.35)',
+        badgeBg: '#ff5500',
+        badgeText: '#ffffff'
+    },
     'Werewolf3788': {
         accent: '#ff5500',
         accentGlow: 'rgba(255, 85, 0, 0.45)',
         secondary: '#0a0a0c',
         border: 'rgba(255, 85, 0, 0.35)',
         badgeBg: '#ff5500',
+        badgeText: '#ffffff'
+    },
+    'Raymystyro': {
+        accent: '#2563eb',
+        accentGlow: 'rgba(37, 99, 235, 0.45)',
+        secondary: '#ef4444',
+        border: 'rgba(37, 99, 235, 0.4)',
+        badgeBg: '#ef4444',
         badgeText: '#ffffff'
     },
     'OneLIVIDMAN': {
@@ -89,13 +108,22 @@ const ICONS = {
 
 /* ----------------------------------------------------
  * SECTION 2: Master Helpers
- * Lines 82-105: Checklists & baseline helpers
+ * Lines 97-120: Checklists & normalization
  * ---------------------------------------------------- */
 const checkSet = (items) => items.map(name => ({ name, done: false }));
 
+const normalizePlatform = (inputPlatform) => {
+    if (!inputPlatform) return 'playstation';
+    const clean = String(inputPlatform).toLowerCase().trim();
+    if (clean === 'psn' || clean === 'ps' || clean === 'playstation') {
+        return 'playstation';
+    }
+    return clean;
+};
+
 /* ----------------------------------------------------
  * SECTION 3: Raw Static Master Trophy Data Baseline
- * Lines 107-230: Complete trophy & mission database records
+ * Lines 122-245: Complete trophy & mission database records
  * ---------------------------------------------------- */
 const trophyData = [
     // --- BASE GAME TROPHIES ---
@@ -281,7 +309,7 @@ const trophyData = [
 
 /* ----------------------------------------------------
  * SECTION 4: Species Weight Baseline Table
- * Lines 232-260: Known min/max weight benchmarks for Great One species
+ * Lines 247-260: Known min/max weight benchmarks for Great One species
  * ---------------------------------------------------- */
 const SPECIES_BENCHMARKS = {
     'Black Bear': { min: 40, max: 290, sweetLow: 80, sweetHigh: 115, diamondLevel: 9 },
@@ -294,7 +322,7 @@ const SPECIES_BENCHMARKS = {
 
 /* ----------------------------------------------------
  * SECTION 5: Responsive Styles Injection
- * Lines 262-440: Glossy card UI, 48px touch targets, responsive tiers
+ * Lines 262-430: Fallback inline injection if style.css is not present
  * ---------------------------------------------------- */
 const injectResponsiveStyles = () => {
     if (document.getElementById('cotw-responsive-engine-styles')) return;
@@ -311,316 +339,17 @@ const injectResponsiveStyles = () => {
             z-index: 99999;
             margin: 0 auto 20px auto;
         }
-
-        /* --- DESKTOP (1280px and wider) --- */
-        @media (min-width: 1280px) {
-            .sandwich-btn { display: none !important; }
-            #dynamic-nav-links {
-                display: flex !important;
-                flex-wrap: wrap;
-                justify-content: center;
-                align-items: center;
-                gap: 12px;
-                padding: 10px 16px;
-                background: rgba(15, 23, 42, 0.95);
-                backdrop-filter: blur(12px);
-                border: 1px solid var(--user-theme-border);
-                border-radius: 12px;
-                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-            }
-            #dynamic-nav-links a, .nav-dropbtn {
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-                color: #f8fafc;
-                text-decoration: none;
-                font-size: 0.9rem;
-                font-weight: 600;
-                padding: 8px 14px;
-                border-radius: 8px;
-                border: 1px solid transparent;
-                background: transparent;
-                cursor: pointer;
-                transition: all 0.2s ease-in-out;
-                min-height: 40px;
-            }
-            #dynamic-nav-links a:hover, .nav-dropbtn:hover {
-                background: rgba(255, 255, 255, 0.1);
-                border-color: var(--user-theme-border);
-                color: var(--user-theme-accent);
-            }
-            .nav-dropdown { position: relative; display: inline-block; }
-            .nav-dropdown-content {
-                display: none;
-                position: absolute;
-                top: calc(100% + 6px);
-                left: 50%;
-                transform: translateX(-50%);
-                background: #0f172a;
-                min-width: 220px;
-                max-width: 320px;
-                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.85);
-                border: 1px solid var(--user-theme-border);
-                border-radius: 10px;
-                padding: 8px;
-                z-index: 100001;
-                flex-direction: column;
-                gap: 4px;
-            }
-            .nav-dropdown:hover .nav-dropdown-content,
-            .nav-dropdown.active .nav-dropdown-content { display: flex; }
-            .nav-dropdown-content a {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                padding: 10px 12px;
-                border-radius: 6px;
-                color: #e2e8f0;
-                font-size: 0.85rem;
-                background: rgba(30, 41, 59, 0.6);
-                white-space: nowrap;
-            }
-            .nav-dropdown-content a:hover {
-                background: #1e293b;
-                color: var(--user-theme-accent);
-            }
-        }
-
-        /* --- TABLET & MOBILE (< 1280px) --- */
-        @media (max-width: 1279px) {
-            .sandwich-btn {
-                display: inline-flex !important;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-                width: 100%;
-                max-width: 340px;
-                min-height: 48px;
-                background: #0f172a;
-                border: 1px solid var(--user-theme-border);
-                border-radius: 10px;
-                color: #f8fafc;
-                font-size: 1rem;
-                font-weight: 700;
-                cursor: pointer;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-                margin-bottom: 8px;
-            }
-            .sandwich-icon {
-                font-size: 1.3rem;
-                color: var(--user-theme-accent);
-            }
-            #dynamic-nav-links.nav-collapsed-mobile { display: none !important; }
-            #dynamic-nav-links.nav-expanded-mobile {
-                display: flex !important;
-                flex-direction: column;
-                width: 100%;
-                background: rgba(15, 23, 42, 0.98);
-                border: 1px solid var(--user-theme-border);
-                border-radius: 12px;
-                padding: 16px;
-                gap: 8px;
-                box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7);
-            }
-            #dynamic-nav-links a, .nav-dropbtn {
-                min-height: 48px;
-                padding: 12px 18px;
-                font-size: 0.95rem;
-                border-radius: 8px;
-                background: rgba(30, 41, 59, 0.4);
-                width: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                color: #f8fafc;
-                text-decoration: none;
-                border: 1px solid transparent;
-            }
-            .nav-dropdown { width: 100%; }
-            .nav-dropdown-content {
-                display: none;
-                position: static;
-                transform: none;
-                width: 100%;
-                background: #020617;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                border-radius: 8px;
-                padding: 6px;
-                margin-top: 4px;
-                flex-direction: column;
-                gap: 4px;
-            }
-            .nav-dropdown.active .nav-dropdown-content { display: flex; }
-        }
-
-        .nav-icon {
-            width: 22px;
-            height: 22px;
-            object-fit: contain;
-            border-radius: 4px;
-        }
-
-        /* --- FIELD TELEMETRY & SWEET-SPOT CARD --- */
-        .grind-card-container {
-            width: 100%;
-            background: #0f172a;
-            border: 1px solid var(--user-theme-border);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 24px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .grind-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 10px;
-        }
-
-        .grind-grid-2col {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        @media (max-width: 767px) {
-            .grind-grid-2col {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .grind-input-label {
-            font-size: 0.8rem;
-            color: #94a3b8;
-            font-weight: 700;
-            margin-bottom: 4px;
-            display: block;
-        }
-
-        .grind-input, .grind-select {
-            width: 100%;
-            min-height: 48px;
-            background: #1e293b;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 8px;
-            color: #ffffff;
-            font-size: 0.95rem;
-            font-weight: 600;
-            padding: 8px 12px;
-            outline: none;
-            box-sizing: border-box;
-        }
-
-        .grind-input:focus, .grind-select:focus {
-            border-color: var(--user-theme-accent);
-            box-shadow: 0 0 8px var(--user-theme-glow);
-        }
-
-        .zone-toggle-btn {
-            min-height: 48px;
-            width: 100%;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: #1e293b;
-            color: #94a3b8;
-            transition: all 0.2s ease;
-        }
-
-        .zone-toggle-btn.is-main {
-            background: var(--user-theme-badge-bg);
-            color: var(--user-theme-badge-text);
-            border-color: transparent;
-            box-shadow: 0 0 10px var(--user-theme-glow);
-        }
-
-        .zone-toggle-btn.is-exterior {
-            background: #eab308;
-            color: #000000;
-            border-color: transparent;
-            box-shadow: 0 0 10px rgba(234, 179, 8, 0.4);
-        }
-
-        .log-harvest-btn {
-            min-height: 50px;
-            width: 100%;
-            background: var(--user-theme-accent);
-            color: #ffffff;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 4px 15px var(--user-theme-glow);
-            transition: transform 0.15s ease;
-        }
-
-        .log-harvest-btn:active {
-            transform: scale(0.98);
-        }
-
-        .gauge-container {
-            background: #020617;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .gauge-bar-bg {
-            width: 100%;
-            height: 12px;
-            background: #1e293b;
-            border-radius: 6px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .gauge-bar-fill {
-            height: 100%;
-            background: var(--user-theme-accent);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .pin-device-btn {
-            background: #1e293b;
-            color: #94a3b8;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 8px 14px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            min-height: 48px;
-        }
-        .pin-device-btn.is-pinned {
-            background: var(--user-theme-badge-bg);
-            color: var(--user-theme-badge-text);
-            border-color: transparent;
-            box-shadow: 0 0 12px var(--user-theme-glow);
-        }
     `;
     document.head.appendChild(styleEl);
 };
 
 /* ----------------------------------------------------
  * SECTION 6: Main Application State & Unified RTDB Engine
- * Lines 442-880: State, RTDB listeners, weight analyzer & auto-ranks
+ * Lines 432-940: State, RTDB listeners, switcher handlers, weight analyzer
  * ---------------------------------------------------- */
 const appState = {
-    activeHunter: localStorage.getItem('pinned_device_user') || localStorage.getItem('active_gaming_nickname') || 'Werewolf3788',
-    activePlatform: 'playstation',
+    activeHunter: localStorage.getItem('pinned_device_user') || localStorage.getItem('active_gaming_nickname') || 'Werewolf',
+    activePlatform: normalizePlatform(localStorage.getItem('active_gaming_platform')),
     activeReserve: 'Layton Lake',
     activeSpecies: 'Black Bear',
     zoneType: 'main', // 'main' or 'exterior'
@@ -634,7 +363,8 @@ const appState = {
     rtdbRankRef: null,
     rtdbTrophyRef: null,
     rtdbSharedMapRef: null,
-    knownSpeciesList: ['Black Bear', 'Whitetail Deer', 'Moose', 'Red Deer', 'Gray Wolf'],
+    rtdbLedgerRef: null,
+    knownSpeciesList: ['Black Bear', 'Whitetail Deer', 'Moose', 'Red Deer', 'Gray Wolf', 'Fallow Deer'],
     knownCoordinates: [],
 
     getFreshTrophyTemplate: function() {
@@ -659,7 +389,7 @@ const appState = {
     },
 
     applyPlayerTheme: function(gamerHandle) {
-        const theme = USER_THEMES[gamerHandle] || USER_THEMES['Werewolf3788'];
+        const theme = USER_THEMES[gamerHandle] || USER_THEMES['Werewolf'];
         const root = document.documentElement;
         root.style.setProperty('--user-theme-accent', theme.accent);
         root.style.setProperty('--user-theme-glow', theme.accentGlow);
@@ -691,6 +421,20 @@ const appState = {
             pinBtn.classList.remove('is-pinned');
             pinBtn.innerText = '📌 Pin Device to This User';
         }
+    },
+
+    /* --- PROFILE & PLATFORM SWITCHERS --- */
+    switchHunter: function(name) {
+        if (!name) return;
+        console.log(`[Profile Switch] Switching active hunter to: ${name}`);
+        this.loadHunter(name, this.activePlatform);
+    },
+
+    switchPlatform: function(platformCode) {
+        if (!platformCode) return;
+        const cleanPlatform = normalizePlatform(platformCode);
+        console.log(`[Platform Switch] Switching platform to: ${cleanPlatform}`);
+        this.loadHunter(this.activeHunter, cleanPlatform);
     },
 
     setZoneType: function(type) {
@@ -805,11 +549,13 @@ const appState = {
     /* --- Bind Harvest Ledger & Weight Telemetry --- */
     bindGrindTelemetry: function() {
         if (!this.rtdb) return;
+        if (this.rtdbLedgerRef) off(this.rtdbLedgerRef);
+
         const cleanMap = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '_');
         const cleanSpecies = this.activeSpecies.replace(/[^a-zA-Z0-9]/g, '_');
-        const ledgerRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/grind_tracker/${cleanMap}/${cleanSpecies}/harvests`);
+        this.rtdbLedgerRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/grind_tracker/${cleanMap}/${cleanSpecies}/harvests`);
 
-        onValue(ledgerRef, (snapshot) => {
+        onValue(this.rtdbLedgerRef, (snapshot) => {
             const fill = document.getElementById('sweet-spot-gauge');
             const readout = document.getElementById('sweet-spot-readout');
             if (!snapshot.exists()) {
@@ -967,8 +713,8 @@ const appState = {
         if (this.rtdbRankRef) { off(this.rtdbRankRef); this.rtdbRankRef = null; }
         if (this.rtdbTrophyRef) { off(this.rtdbTrophyRef); this.rtdbTrophyRef = null; }
 
-        this.activeHunter = userName || 'Werewolf3788';
-        this.activePlatform = 'playstation';
+        this.activeHunter = userName || 'Werewolf';
+        this.activePlatform = normalizePlatform(platform);
 
         this.hunterData = this.getFreshTrophyTemplate();
         this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
@@ -981,6 +727,11 @@ const appState = {
 
         if (document.getElementById('hunter-name')) {
             document.getElementById('hunter-name').innerText = `${this.activeHunter.toUpperCase()} [${this.activePlatform.toUpperCase()}]`;
+        }
+
+        const platformSelector = document.getElementById("platform-selector");
+        if (platformSelector) {
+            platformSelector.value = this.activePlatform;
         }
 
         this.render();
