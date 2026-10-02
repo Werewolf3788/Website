@@ -2,7 +2,7 @@
    File: script.js
    Location: /games/HunterCOTW/script.js
    Description: theHunter: Call of the Wild Responsive RTDB + Firestore Engine
-                - Live PSN Trophy Watcher (NPWR13211_00) via Primary 'title' Match
+                - Loop-Free Live PSN Trophy Watcher (NPWR13211_00) via Primary 'title' Match
                 - Full 4-Player Profile Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
                 - Free-Type / Datalist Target Species Input with RTDB Learning
                 - Append-Only Field Grind Ledger with Weight & 1-33 Drift Sweet Spot Engine
@@ -11,8 +11,8 @@
                 - Automated Silver Ridge Peaks 50-Turkey Cull Tracker (srp_turkeys)
                 - Auto-Incrementing Career Animal Rank Telemetry
    Database: Cloud Firestore & Realtime Database (entertainment-71888)
-   Build Version: 4.1.0
-   Code Build Date: 2026-10-02 02:24:00 EDT (America/New_York)
+   Build Version: 4.2.0
+   Code Build Date: 2026-10-02 02:48:00 EDT (America/New_York)
    ============================================================================ */
 
 import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -24,8 +24,8 @@ import { getDatabase, ref as rtdbRef, onValue, set, update, push, off } from '//
  * SECTION 1: Build Metadata, User Map & Custom Themes
  * Lines 25-102: PSN handles, custom themes, asset icons
  * ---------------------------------------------------- */
-const BUILD_VERSION = "4.1.0";
-const CODE_BUILD_DATE = "2026-10-02 02:24:00 EDT";
+const BUILD_VERSION = "4.2.0";
+const CODE_BUILD_DATE = "2026-10-02 02:48:00 EDT";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -94,7 +94,7 @@ const USER_THEMES = {
     },
     'DesdemonaTiger': {
         accent: '#10b981',
-        accentGlow: 'rgba(168, 185, 129, 0.45)',
+        accentGlow: 'rgba(16, 185, 129, 0.45)',
         secondary: '#064e3b',
         border: 'rgba(16, 185, 129, 0.4)',
         badgeBg: '#10b981',
@@ -255,7 +255,7 @@ const trophyData = [
 
     // --- VURHONGA SAVANNA ---
     { id: 'vur_arc', cat: 'DLC: Vurhonga Savanna', name: 'Vurhonga Savanna Arc', rank: 'silver', current: 0, goal: 1, type: 'toggle', plat: true, desc: 'Complete all the Vurhonga Savanna Mission arcs.' },
-    { id: 'vur_warden', cat: 'DLC: Vurhonga Savanna', name: 'Warden Missions Arc', rank: 'bronze', current: 0, goal: 16, type: 'checklist', plat: true, desc: 'Main warden storyline.', subItems: checkSet(["Welcome to Vurhonga", "Mind the Traps", "Across the Savanna", "Praise the Ancestors", "The History of All Tribes", "Mucking for Science", "Mampara", "The Last Rhino", "Traffic Jam", "Observe and Report", "Take Shelter", "Our Place at the Potholes", "Hunter and Hunted", "Crossing Over", "Cave of the Ghost Jackal", "The Ghost Tree"]) },
+    { id: 'vur_warden', cat: 'DLC: Vurhonga Savanna', name: 'Warden Missions Arc', rank: 'bronze', current: 0, goal: 16, type: 'checklist', plat: true, desc: 'Main warden storyline.', subItems: checkSet(["Welcome to Vurhonga", "Mind the Traps", "Across the Savanna", "Praise the Ancestors", "The History of All Tribes", "Mucking for Science", "Mampara", "The Last Rhino", "Traffic Jam", "Observe and Report", "Take Shelter", "Our Place at the Pothholes", "Hunter and Hunted", "Crossing Over", "Cave of the Ghost Jackal", "The Ghost Tree"]) },
     { id: 'vur_mboweni', cat: 'DLC: Vurhonga Savanna', name: 'Mboweni Arc', rank: 'bronze', current: 0, goal: 7, type: 'checklist', plat: true, desc: "Maria Mboweni.", subItems: checkSet(["Legal Sources", "Trap Raid", "Ceremonial Warthog", "Canine Disease", "The Old Way", "Proof of Poachers", "Ceremonial Buffalo"]) },
     { id: 'vur_ospreay', cat: 'DLC: Vurhonga Savanna', name: 'Ospreay Arc', rank: 'bronze', current: 0, goal: 9, type: 'checklist', plat: true, desc: "Flip Ospreay.", subItems: checkSet(["Photo Sample", "Need Zones", "Lake View", "Variety Pack", "Museum Mpfundla", "Scene of the Tragedy", "Technical Demonstration", "Flip's Naked Eye Challenge", "Flip's Danger Action Gauntlet"]) },
     { id: 'vur_maritz', cat: 'DLC: Vurhonga Savanna', name: 'Maritz Arc', rank: 'bronze', current: 0, goal: 9, type: 'checklist', plat: true, desc: "Dr. Dana Maritz.", subItems: checkSet(["Begin the Maritz Test", "Brightest Day, Blackest Night", "Hog Collection", "Bogged Down", "The Maritz Standard", "King of Rifles", "Howl Like a Bunny", "Master of Widowmakers", "The Maritz Final Exam"]) },
@@ -852,7 +852,7 @@ const appState = {
         }
     },
 
-    /* --- FIXED RTDB TROPHY WATCHER: Primary 'title' Match + PlayStation Icons --- */
+    /* --- FIXED RTDB TROPHY WATCHER: Primary 'title' Match + PlayStation Icons (No Infinite Loop) --- */
     bindRTDBTrophyWatcher: function(hunterKey) {
         if (!this.rtdb) return;
 
@@ -920,9 +920,10 @@ const appState = {
                 }
             });
 
+            // FIXED: Render the UI without writing back to Firestore to prevent an infinite feedback loop
             if (stateMutated) {
                 console.log(`[RTDB Sync] Auto-verified PSN trophies for ${hunterKey} (${psnGamertag})`);
-                this.sync(true);
+                this.render();
             }
         }, (err) => {
             console.warn("RTDB Trophy watcher error:", err.message);
@@ -1159,14 +1160,15 @@ const appState = {
                 this.setStatus(`⚠️ Initial State for ${this.activeHunter} [${this.activePlatform.toUpperCase()}]`, "#ff8800");
             }
 
-            // Immediately bind the live RTDB trophy watcher
-            this.bindRTDBTrophyWatcher(this.activeHunter);
             this.render();
         }, (err) => {
             console.error("Firestore Listen Error:", err);
             this.setStatus(`❌ Read Error: ${err.message}`, "#ef4444");
             this.render();
         });
+
+        // FIXED: Bind PSN watcher ONCE per hunter, outside the Firestore snapshot to stop the loop
+        this.bindRTDBTrophyWatcher(this.activeHunter);
 
         // 2. Animal Rank Snapshot
         const rankRef = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', `${GAME_ID}_Ranks`);
@@ -1401,7 +1403,7 @@ const appState = {
                             <option value="Albino">Albino (Rare 🐇)</option>
                             <option value="Melanistic">Melanistic (Rare 🖤)</option>
                             <option value="Piebald">Piebald (Rare ⚪)</option>
-                            <option value="Leucistic">Leucistic (Rare ❄️️)</option>
+                            <option value="Leucistic">Leucistic (Rare ❄)</option>
                             <option value="Mocha">Mocha / Special</option>
                             <option value="Fabled Variant">Fabled / Great One 👑</option>
                         </select>
