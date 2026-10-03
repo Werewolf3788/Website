@@ -8,7 +8,7 @@
   <!-- Google Tag Manager (Deploying GA4: G-CTYHDF4MSD) -->
   <script>
     // Line 11: Google Tag Manager Configuration
-    // Account: G-CTYHDF4MSD | 2026-10-03 11:55 EDT
+    // Account: G-CTYHDF4MSD | 2026-10-03 13:40 EDT
     (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -17,7 +17,7 @@
   </script>
 
   <style>
-    /* CSS Variables: Glossy Dark Theme */
+    /* Line 21: CSS Variables - Dark & High Contrast Glossy Aesthetic */
     :root {
       --bg-dark: #0a0d12;
       --card-bg: #161b22;
@@ -34,7 +34,7 @@
       --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     }
 
-    /* Light Theme Overrides */
+    /* Line 38: Light Theme Overrides */
     body.light-theme {
       --bg-dark: #f6f8fa;
       --card-bg: #ffffff;
@@ -62,7 +62,7 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    /* Header Navigation */
+    /* Line 66: Header Layout */
     header {
       background: var(--header-bg);
       border-bottom: 1px solid var(--card-border);
@@ -96,10 +96,10 @@
       color: var(--accent);
     }
 
-    /* Site Search Input */
+    /* Line 99: Site Search Input */
     .search-wrapper {
       flex: 1;
-      max-width: 380px;
+      max-width: 420px;
       position: relative;
       display: flex;
       align-items: center;
@@ -143,7 +143,7 @@
       flex-wrap: wrap;
     }
 
-    /* Google Translate Dropdown Styling */
+    /* Line 146: Google Translate Element */
     #google_translate_element {
       display: inline-block;
     }
@@ -167,7 +167,7 @@
       margin-right: 6px !important;
     }
 
-    /* Light/Dark Mode Switcher */
+    /* Line 169: Theme Toggle Button */
     .theme-toggle-btn {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -187,18 +187,42 @@
       border-color: var(--accent);
     }
 
-    .tab-pills {
-      display: flex;
-      gap: 8px;
+    /* Line 186: Ordered Category Pill Strip */
+    .category-pills-bar {
+      background: var(--bg-dark);
+      border-bottom: 1px solid var(--card-border);
+      padding: 10px 24px;
+      position: sticky;
+      top: 69px;
+      z-index: 998;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     }
 
-    .tab-btn {
-      background: transparent;
+    .category-pills-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding-bottom: 2px;
+    }
+
+    .category-pills-inner::-webkit-scrollbar {
+      display: none;
+    }
+
+    .pill-btn {
+      background: var(--card-bg);
       border: 1px solid var(--card-border);
       color: var(--text-muted);
-      padding: 8px 16px;
+      padding: 8px 18px;
       border-radius: 20px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
       min-height: 44px;
@@ -206,24 +230,37 @@
       text-decoration: none;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
-    .tab-btn:hover, .tab-btn.active {
+    .pill-btn:hover {
+      border-color: var(--accent);
+      color: var(--text-main);
+    }
+
+    .pill-btn.active {
       background: var(--accent);
       color: #111;
-      font-weight: 600;
       border-color: var(--accent);
       box-shadow: 0 0 10px var(--accent-glow);
     }
 
-    .tab-btn[data-view="movies"].active {
+    .pill-btn[data-pill="movies"].active {
       background: var(--prime-blue);
       border-color: var(--prime-blue);
       box-shadow: 0 0 10px var(--prime-glow);
       color: #fff;
     }
 
-    /* Top Sticky Announcement Banner */
+    .pill-btn.cat-pill.active {
+      background: var(--pill-color, var(--accent));
+      border-color: var(--pill-color, var(--accent));
+      color: #111;
+      box-shadow: 0 0 10px var(--pill-color, var(--accent-glow));
+    }
+
+    /* Line 260: Header Announcement Banner (Placement: header_banner) */
     .header-placement-banner {
       background: linear-gradient(90deg, #ff9900 0%, #ff5e00 100%);
       color: #111;
@@ -235,7 +272,7 @@
       justify-content: space-between;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
       position: relative;
-      z-index: 999;
+      z-index: 997;
     }
 
     .header-placement-banner a {
@@ -250,7 +287,7 @@
       align-items: center;
     }
 
-    /* Content Layout Wrapper */
+    /* Line 287: Layout Wrappers */
     .content-layout-wrapper {
       max-width: 1400px;
       margin: 0 auto;
@@ -269,7 +306,7 @@
       gap: 36px;
     }
 
-    /* Sidebar Rail */
+    /* Line 306: Sidebar Rail (Placement: sidebar) */
     .sidebar-placement-rail {
       width: 300px;
       flex-shrink: 0;
@@ -337,7 +374,7 @@
       text-overflow: ellipsis;
     }
 
-    /* Catalog Sections & Carousels */
+    /* Line 373: Carousel & Section Containers */
     .catalog-section {
       display: flex;
       flex-direction: column;
@@ -437,7 +474,7 @@
     .carousel-arrow.left { left: -12px; }
     .carousel-arrow.right { right: -12px; }
 
-    /* Card Layout */
+    /* Line 470: Cards Architecture */
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -458,6 +495,7 @@
       border-color: var(--cat-color, #58a6ff);
     }
 
+    /* Glow Effect for Live Promotional Sales or Active Holidays */
     .card.prime-glow-deal {
       border: 2px solid var(--badge-red);
       box-shadow: var(--sale-glow);
@@ -622,7 +660,7 @@
       opacity: 0.9;
     }
 
-    /* Grid View Mode */
+    /* Line 639: Grid Layout Mode */
     .grid-view-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -634,7 +672,7 @@
       width: 100%;
     }
 
-    /* Lightbox Modal */
+    /* Line 650: Lightbox Modal Structure */
     .lightbox-modal {
       display: none;
       position: fixed;
@@ -655,7 +693,7 @@
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 8px;
-      max-width: 720px;
+      max-width: 760px;
       width: 100%;
       max-height: 90vh;
       overflow-y: auto;
@@ -673,8 +711,8 @@
     }
 
     .lightbox-poster {
-      width: 180px;
-      height: 260px;
+      width: 200px;
+      height: 290px;
       object-fit: cover;
       border-radius: 6px;
       flex-shrink: 0;
@@ -686,6 +724,16 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+    }
+
+    .lightbox-field {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .lightbox-field strong {
+      color: var(--text-main);
     }
 
     .lightbox-close {
@@ -704,7 +752,7 @@
       justify-content: center;
     }
 
-    /* Footer */
+    /* Line 735: Footer */
     footer {
       background: var(--header-bg);
       border-top: 1px solid var(--card-border);
@@ -715,7 +763,7 @@
       margin-top: auto;
     }
 
-    /* Responsive Mobile Rules */
+    /* Line 745: Cross-Platform Responsive Adjustments */
     @media (max-width: 1024px) {
       .content-layout-wrapper {
         flex-direction: column;
@@ -726,6 +774,10 @@
     }
 
     @media (max-width: 768px) {
+      .category-pills-bar {
+        top: 65px;
+        padding: 8px 16px;
+      }
       .carousel-arrow {
         display: none;
       }
@@ -758,7 +810,7 @@
 
       <!-- Instant Search Filter -->
       <div class="search-wrapper">
-        <input type="text" id="siteSearch" class="search-input" placeholder="Search movies, deals, tags, edition...">
+        <input type="text" id="siteSearch" class="search-input" placeholder="Search movies, deals, tags, studio, edition...">
         <button id="searchClear" class="search-clear-btn" aria-label="Clear Search">&times;</button>
       </div>
 
@@ -768,16 +820,18 @@
 
         <!-- Light/Dark Mode Switcher -->
         <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle Theme">🌙</button>
-
-        <!-- View Tabs: Home (All Grid), Movies, Deals Hub -->
-        <nav class="tab-pills" id="primaryNav">
-          <button class="tab-btn active" data-view="home">Home</button>
-          <button class="tab-btn" data-view="movies">Prime Video</button>
-          <button class="tab-btn" data-view="deals">Deals Hub</button>
-        </nav>
       </div>
     </div>
   </header>
+
+  <!-- Ordered Category Pill Strip: 1 = All Categories, 2 = Deals, 3 = Prime Video, 4+ = Dynamic Custom Categories -->
+  <nav class="category-pills-bar" aria-label="Catalog categories">
+    <div class="category-pills-inner" id="categoryPillStrip">
+      <button class="pill-btn active" data-pill="home">1. All Categories</button>
+      <button class="pill-btn" data-pill="deals">2. Deals</button>
+      <button class="pill-btn" data-pill="movies">3. Prime Video</button>
+    </div>
+  </nav>
 
   <!-- Sticky Top Announcement Banner (placement: header_banner) -->
   <div id="headerBannerArea" class="header-placement-banner" style="display: none;"></div>
@@ -785,7 +839,7 @@
   <!-- Content Layout: Main Catalog & Featured Sidebar -->
   <div class="content-layout-wrapper">
     <main id="catalogRoot">
-      <!-- Loading Placeholder -->
+      <!-- Initial Loading Placeholder -->
       <div id="loadingIndicator" style="text-align: center; color: var(--text-muted); padding: 60px 0;">
         Loading live catalog...
       </div>
@@ -810,6 +864,10 @@
           <h2 id="lbTitle" style="color: var(--text-main); font-size: 1.4rem;"></h2>
           <div class="meta-row" id="lbMetaRow"></div>
           <div class="tag-container" id="lbTags"></div>
+          
+          <!-- Dedicated Lightbox Fields -->
+          <div id="lbExtraFields" style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px;"></div>
+          
           <p id="lbDesc" style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5;"></p>
         </div>
       </div>
@@ -821,7 +879,7 @@
 
   <!-- Footer with Persistent 24-hr NY Timestamp & Version Number -->
   <footer>
-    <div id="footerTimestamp">Version 1.7.0 | Deployed: 2026-10-03 11:55 EDT</div>
+    <div id="footerTimestamp">Version 2.1.0 | Deployed: 2026-10-03 13:40 EDT</div>
   </footer>
 
   <!-- Google Translate Official Scripts -->
@@ -841,15 +899,17 @@
      * -------------------------------------------------------------------------
      * Application Core: Dual-Firebase Real-Time WebSocket Synchronization
      * Databases: smlc-fuel-monitor-default-rtdb & entertainment-71888-default-rtdb
-     * Timestamp: 2026-10-03 11:55 EDT (New York / Eastern Time)
+     * Balanced Home Catalog: Front-loading store deals when count < movies,
+     * alternating/interleaving when count matches or exceeds movies.
+     * Timestamp: 2026-10-03 13:40 EDT (New York / Eastern Time)
      * -------------------------------------------------------------------------
      */
 
-    // Line 571: Import Modular Firebase SDKs via CDN
+    // Line 874: Import Modular Firebase SDKs via CDN with relative protocol
     import { initializeApp } from "//www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, onValue } from "//www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    // Line 575: Firebase Project Configurations
+    // Line 878: Firebase Project Configurations
     const smlcConfig = {
       apiKey: "AIzaSyBYPbGWDhPUnCSnPWDP9wtiKe2P5WpinXg",
       authDomain: "smlc-fuel-monitor.firebaseapp.com",
@@ -867,10 +927,11 @@
       projectId: "entertainment-71888",
       storageBucket: "entertainment-71888.firebasestorage.app",
       messagingSenderId: "660524340277",
-      appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c"
+      appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
+      measurementId: "G-JDNSLD3GFE"
     };
 
-    // Line 598: Initialize distinct app instances with try/catch error boundaries
+    // Line 902: Initialize distinct app instances with try/catch error boundaries
     let smlcDb = null;
     let entertainmentDb = null;
 
@@ -888,7 +949,7 @@
       console.error("Initialization failed for entertainment-71888:", err);
     }
 
-    // Master Event Windows for Promotional Deals
+    // Line 919: Master Event Windows for Promotional Deals (October Prime Deals 2026)
     const EVENT_SCHEDULE = {
       "oct. prime deal":  { start: "2026-10-06", end: "2026-10-07" },
       "oct. prime deals": { start: "2026-10-06", end: "2026-10-07" },
@@ -897,18 +958,51 @@
       "cyber-monday":     { start: "2026-11-30", end: "2026-11-30" }
     };
 
+    // Line 928: Holiday Calendar Month Mapping (0-indexed: Jan=0, Oct=9, Nov=10, Dec=11)
+    const HOLIDAY_CALENDAR = {
+      "halloween": 9,       // October
+      "thanksgiving": 10,   // November
+      "christmas": 11,      // December
+      "holiday": 11,        // December
+      "new year": 0,        // January
+      "valentine": 1,       // February
+      "st. patrick": 2,     // March
+      "easter": 3,          // April
+      "independence": 6,    // July
+      "4th of july": 6      // July
+    };
+
     const AppState = {
       deals: [],
       movies: [],
-      currentView: "home", // Default home page (combined grid)
+      categories: [],
+      currentView: "home", // 'home', 'deals', 'movies', or 'category'
       selectedCategory: "all",
-      displayMode: "grid", // 'grid' for home/view-all, 'carousel' for deals
+      displayMode: "grid", // 'grid' for home/category/search, 'carousel' for deals
       searchQuery: "",
       theme: "dark"
     };
 
     /**
-     * Line 640: Dynamic Category Color Engine
+     * Line 954: Checks if film belongs to a holiday active during the CURRENT calendar month
+     */
+    function isHolidayActiveThisMonth(holidayString) {
+      if (!holidayString || typeof holidayString !== "string") return false;
+      const str = holidayString.trim().toLowerCase();
+      if (str === "all" || str === "none" || str === "") return false;
+
+      const currentMonth = new Date().getMonth(); // 0 to 11
+
+      for (const [key, targetMonth] of Object.entries(HOLIDAY_CALENDAR)) {
+        if (str.includes(key) && currentMonth === targetMonth) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    /**
+     * Line 973: Dynamic Category Color Engine
      */
     function getCategoryColor(categoryName) {
       if (!categoryName) return "var(--accent)";
@@ -928,9 +1022,13 @@
     }
 
     /**
-     * Line 661: Centralized Dynamic Outbound UTM Generator
+     * Line 994: Device & App-Aware Outbound Deep-Link Router
      */
-    function buildDynamicUtmUrl(rawUrl, campaignId, mediumType, contentElement) {
+    function isMobileDevice() {
+      return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || navigator.vendor || window.opera);
+    }
+
+    function buildDynamicUtmUrl(rawUrl, campaignId, mediumType, contentElement, itemType) {
       if (!rawUrl || rawUrl.trim() === "" || rawUrl === "#") return "#";
 
       try {
@@ -948,15 +1046,40 @@
           }
         }
 
-        return url.toString();
+        const webUrl = url.toString();
+
+        if (!isMobileDevice()) {
+          return webUrl;
+        }
+
+        const type = (itemType || "").toLowerCase();
+
+        if (type === "movie" || type === "movies" || webUrl.includes("primevideo.com") || webUrl.includes("/video/")) {
+          return `primevideo://watch?gti=${campaignId}&url=${encodeURIComponent(webUrl)}`;
+        }
+
+        if (type === "music" || webUrl.includes("music.amazon.com")) {
+          return `amznmp3://play?url=${encodeURIComponent(webUrl)}`;
+        }
+
+        if (type === "book" || type === "ebook" || type === "kindle") {
+          return `kindle://book?asin=${campaignId}&fallback=${encodeURIComponent(webUrl)}`;
+        }
+
+        if (webUrl.includes("amazon.com") || webUrl.includes("amzn.to")) {
+          const pathAndQuery = url.pathname + url.search;
+          return `com.amazon.mobile.shopping.web://amazon.com${pathAndQuery}`;
+        }
+
+        return webUrl;
       } catch (err) {
-        console.warn("Invalid URL passed to UTM generator:", rawUrl, err);
+        console.warn("Invalid URL passed to router:", rawUrl, err);
         return rawUrl;
       }
     }
 
     /**
-     * Line 691: Promotional Date Window Check
+     * Line 1052: Promotional Deals Date Window Check
      */
     function isPromotionalSaleLive(item) {
       const todayStr = new Date().toISOString().split("T")[0];
@@ -971,13 +1094,15 @@
         }
       }
 
+      if (!startDate && !endDate) return false;
+
       if (startDate && todayStr < startDate) return false;
       if (endDate && todayStr > endDate) return false;
-      return Boolean(startDate || endDate || item.event_tag);
+      return true;
     }
 
     /**
-     * Line 713: Modal Lightbox Handler
+     * Line 1075: Modal Lightbox Controller
      */
     function openLightbox(item) {
       const modal = document.getElementById("lightbox");
@@ -985,6 +1110,7 @@
       const title = document.getElementById("lbTitle");
       const metaRow = document.getElementById("lbMetaRow");
       const tagsBox = document.getElementById("lbTags");
+      const extraFields = document.getElementById("lbExtraFields");
       const desc = document.getElementById("lbDesc");
       const outboundBtn = document.getElementById("lbOutboundBtn");
 
@@ -995,9 +1121,11 @@
       poster.src = item.image_url || "";
       poster.alt = item.title || "Product preview";
       title.textContent = item.title || "";
-      desc.textContent = item.description || "No synopsis available.";
+      desc.textContent = item.description || "No full synopsis available.";
 
       metaRow.innerHTML = "";
+      extraFields.innerHTML = "";
+
       if (isMovie) {
         if (item.imdb_id) metaRow.innerHTML += `<span class="meta-badge">${item.imdb_id}</span>`;
         if (item.year) metaRow.innerHTML += `<span class="meta-badge">${item.year}</span>`;
@@ -1005,6 +1133,19 @@
         if (item.rating) metaRow.innerHTML += `<span class="meta-badge">★ ${item.rating}</span>`;
         if (item.runtime) metaRow.innerHTML += `<span class="meta-badge">${item.runtime}</span>`;
         if (item.type) metaRow.innerHTML += `<span class="meta-badge" style="text-transform: capitalize;">${item.type}</span>`;
+
+        if (item.collection) {
+          extraFields.innerHTML += `<div class="lightbox-field"><strong>Collection:</strong> ${item.collection}</div>`;
+        }
+        if (item.studio) {
+          extraFields.innerHTML += `<div class="lightbox-field"><strong>Studio:</strong> ${item.studio}</div>`;
+        }
+        if (item.streaming) {
+          extraFields.innerHTML += `<div class="lightbox-field"><strong>Streaming Availability:</strong> ${item.streaming}</div>`;
+        }
+        if (item.holidays && item.holidays.toLowerCase() !== "all") {
+          extraFields.innerHTML += `<div class="lightbox-field"><strong>Holiday:</strong> ${item.holidays}</div>`;
+        }
       } else {
         const catColor = getCategoryColor(item.category);
         metaRow.innerHTML += `<span class="meta-badge" style="color: ${catColor}; border-color: ${catColor};">${item.category}</span>`;
@@ -1014,8 +1155,9 @@
 
       tagsBox.innerHTML = (item.tags || []).map(t => `<span class="tag-pill">${t}</span>`).join("");
 
+      const itemType = isMovie ? "movie" : (item.sub_category || item.category);
       const medium = isMovie ? "prime_video_modal" : "deal_modal";
-      const finalLink = buildDynamicUtmUrl(item.site_url, item.id, medium, "lightbox_cta");
+      const finalLink = buildDynamicUtmUrl(item.site_url, item.id, medium, "lightbox_cta", itemType);
 
       outboundBtn.href = finalLink;
       outboundBtn.className = `cta-btn ${isMovie ? 'movie-btn' : ''}`;
@@ -1032,7 +1174,7 @@
     }
 
     /**
-     * Line 768: Real-Time WebSocket Listeners with Fallbacks
+     * Line 1145: Real-Time WebSocket Listeners
      */
     function setupLiveFirebaseListeners() {
       if (smlcDb) {
@@ -1042,6 +1184,8 @@
             try {
               const val = snapshot.val();
               AppState.deals = parseDealsTree(val);
+              updateCategoriesList();
+              renderCategoryPills();
               renderCatalog();
             } catch (err) {
               console.error("Error processing deals update:", err);
@@ -1075,7 +1219,7 @@
     }
 
     /**
-     * Line 817: Parse Deals from Firebase
+     * Line 1194: Parse Deals Tree
      */
     function parseDealsTree(tree) {
       if (!tree) return [];
@@ -1085,8 +1229,12 @@
         if (typeof group === "object" && group !== null) {
           Object.keys(group).forEach(itemKey => {
             const item = group[itemKey];
-            const activeState = (item.is_active === true || String(item.is_active).toUpperCase() === "TRUE");
-            if (item && activeState) {
+            if (!item) return;
+
+            const rawActive = item.is_active;
+            const isActive = (rawActive === true || rawActive === 1 || String(rawActive).trim().toLowerCase() === "true");
+
+            if (isActive) {
               list.push({
                 ...item,
                 isMovie: false,
@@ -1102,45 +1250,138 @@
     }
 
     /**
-     * Line 844: Parse Movies from Firebase
+     * Line 1224: Parse Movies Tree
      */
     function parseMoviesTree(tree) {
       if (!tree) return [];
       const list = [];
+
       Object.keys(tree).forEach(key => {
         const movie = tree[key];
         if (!movie || typeof movie !== "object") return;
 
         const amazonUrl = movie.amazon || movie.site_url || "";
-        if (!amazonUrl || amazonUrl.trim() === "") return;
+        if (!amazonUrl || String(amazonUrl).trim() === "") return;
 
-        const imdbId = movie.imdb_id || (key.includes("tt") ? key.substring(key.indexOf("tt")) : key);
+        const imdbId = movie.id || movie.imdb_id || (key.includes("tt") ? key.substring(key.indexOf("tt")) : key);
+
+        let genreList = [];
+        if (Array.isArray(movie.genre)) {
+          genreList = movie.genre;
+        } else if (typeof movie.genre === "string" && movie.genre.trim() !== "") {
+          genreList = movie.genre.split(",").map(g => g.trim());
+        } else {
+          genreList = ["Feature"];
+        }
+
+        const isHolidayActive = isHolidayActiveThisMonth(movie.holidays);
 
         list.push({
           id: imdbId,
           imdb_id: imdbId,
           isMovie: true,
           title: movie.title || "Untitled Film",
-          description: movie.description || movie.overview || movie.plot || "",
-          image_url: movie.poster || movie.image_url || "",
-          site_url: amazonUrl,
-          category: "Movies",
-          sub_category: movie.type || (movie.year ? String(movie.year) : "Feature"),
-          placement: (movie.placement || "deals_page").toLowerCase().trim(),
           year: movie.year || "",
-          rating: movie.rating || movie.vote_average || "",
+          rating: movie.rating || "",
           runtime: movie.runtime || "",
           type: movie.type || "movie",
           edition: movie.edition || "",
+          collection: movie.collection || "",
+          genre: movie.genre || "",
+          holidays: movie.holidays || "",
+          studio: movie.studio || "",
+          image_url: movie.poster || movie.image_url || "",
+          site_url: amazonUrl,
+          description: movie.description || movie.overview || movie.plot || "",
+          streaming: movie.streaming || "",
+          category: "Movies",
+          sub_category: movie.type || (movie.year ? String(movie.year) : "Feature"),
+          placement: (movie.placement || "deals_page").toLowerCase().trim(),
           isSaleActive: false,
-          tags: Array.isArray(movie.genre) ? movie.genre : (movie.genre ? movie.genre.split(",").map(g => g.trim()) : ["Movie"])
+          isHolidayActive: isHolidayActive,
+          tags: genreList
         });
       });
+
       return list;
     }
 
     /**
-     * Line 882: Render Column J Placement Targets
+     * Line 1285: Extract and Sort Unique Categories dynamically
+     */
+    function updateCategoriesList() {
+      const catSet = new Set();
+      AppState.deals.forEach(item => {
+        if (item.category && item.category.trim() !== "") {
+          catSet.add(item.category.trim());
+        }
+      });
+      AppState.categories = Array.from(catSet).sort((a, b) => a.localeCompare(b));
+    }
+
+    /**
+     * Line 1297: Render Dynamic Pill Strip
+     */
+    function renderCategoryPills() {
+      const container = document.getElementById("categoryPillStrip");
+      if (!container) return;
+
+      container.innerHTML = "";
+
+      // 1. All Categories / Home
+      const homeBtn = document.createElement("button");
+      homeBtn.className = `pill-btn ${AppState.currentView === 'home' ? 'active' : ''}`;
+      homeBtn.dataset.pill = "home";
+      homeBtn.textContent = "1. All Categories";
+      homeBtn.addEventListener("click", () => {
+        AppState.searchQuery = "";
+        window.location.hash = "#/home";
+      });
+      container.appendChild(homeBtn);
+
+      // 2. Deals Hub
+      const dealsBtn = document.createElement("button");
+      dealsBtn.className = `pill-btn ${AppState.currentView === 'deals' ? 'active' : ''}`;
+      dealsBtn.dataset.pill = "deals";
+      dealsBtn.textContent = "2. Deals";
+      dealsBtn.addEventListener("click", () => {
+        AppState.searchQuery = "";
+        window.location.hash = "#/deals";
+      });
+      container.appendChild(dealsBtn);
+
+      // 3. Prime Video Movies
+      const moviesBtn = document.createElement("button");
+      moviesBtn.className = `pill-btn ${AppState.currentView === 'movies' ? 'active' : ''}`;
+      moviesBtn.dataset.pill = "movies";
+      moviesBtn.textContent = "3. Prime Video";
+      moviesBtn.addEventListener("click", () => {
+        AppState.searchQuery = "";
+        window.location.hash = "#/movies";
+      });
+      container.appendChild(moviesBtn);
+
+      // 4+. Dynamic Categories
+      AppState.categories.forEach((catName) => {
+        const catBtn = document.createElement("button");
+        const isCatActive = (AppState.currentView === "category" && AppState.selectedCategory.toLowerCase() === catName.toLowerCase());
+        const catColor = getCategoryColor(catName);
+
+        catBtn.className = `pill-btn cat-pill ${isCatActive ? 'active' : ''}`;
+        catBtn.style.setProperty("--pill-color", catColor);
+        catBtn.textContent = catName;
+
+        catBtn.addEventListener("click", () => {
+          AppState.searchQuery = "";
+          window.location.hash = `#/category/${encodeURIComponent(catName)}`;
+        });
+
+        container.appendChild(catBtn);
+      });
+    }
+
+    /**
+     * Line 1358: Render Column J Placement Targets
      */
     function renderPlacements(activeCatalog) {
       const bannerEl = document.getElementById("headerBannerArea");
@@ -1155,7 +1396,8 @@
       });
 
       if (bannerItem) {
-        const link = buildDynamicUtmUrl(bannerItem.site_url, bannerItem.id, "header_banner", "banner_cta");
+        const itemType = bannerItem.isMovie ? "movie" : (bannerItem.sub_category || bannerItem.category);
+        const link = buildDynamicUtmUrl(bannerItem.site_url, bannerItem.id, "header_banner", "banner_cta", itemType);
         bannerEl.innerHTML = `
           <span>🔥 <strong>Spotlight:</strong> ${bannerItem.title}</span>
           <a href="${link}" target="_blank" rel="noopener noreferrer">${bannerItem.isMovie ? 'Watch Now' : 'Check Deal'}</a>
@@ -1170,7 +1412,8 @@
       if (sidebarItems.length > 0) {
         sidebarList.innerHTML = "";
         sidebarItems.forEach(item => {
-          const link = buildDynamicUtmUrl(item.site_url, item.id, "sidebar_rail", "sidebar_card");
+          const itemType = item.isMovie ? "movie" : (item.sub_category || item.category);
+          const link = buildDynamicUtmUrl(item.site_url, item.id, "sidebar_rail", "sidebar_card", itemType);
           const miniCard = document.createElement("div");
           miniCard.className = "sidebar-mini-card";
           miniCard.innerHTML = `
@@ -1193,23 +1436,29 @@
     }
 
     /**
-     * Line 939: Build Single Card DOM Element
+     * Line 1416: Build Single Card DOM Element
      */
     function createCardElement(item) {
       const card = document.createElement("div");
       const isMovie = (item.isMovie === true);
       const catColor = isMovie ? "var(--prime-blue)" : getCategoryColor(item.category);
 
-      card.className = `card ${item.isSaleActive ? 'prime-glow-deal' : ''}`;
+      card.className = `card ${(item.isSaleActive || item.isHolidayActive) ? 'prime-glow-deal' : ''}`;
       card.id = `item-${item.id}`;
       card.style.setProperty("--cat-color", catColor);
 
+      const itemType = isMovie ? "movie" : (item.sub_category || item.category);
       const medium = isMovie ? "prime_video" : (item.isSaleActive ? "flash_sale" : "deals_catalog");
-      const outboundLink = buildDynamicUtmUrl(item.site_url, item.id, medium, "card_cta");
+      const outboundLink = buildDynamicUtmUrl(item.site_url, item.id, medium, "card_cta", itemType);
 
+      // Badging Logic: Holiday badge displays during the active holiday month
       let badgeHtml = "";
       if (isMovie) {
-        badgeHtml = `<div class="badge-pill prime">Prime Video</div>`;
+        if (item.isHolidayActive) {
+          badgeHtml = `<div class="badge-pill" style="background: #ff5722; box-shadow: 0 0 10px rgba(255, 87, 34, 0.6);">🎃 ${item.holidays}</div>`;
+        } else {
+          badgeHtml = `<div class="badge-pill prime">Prime Video</div>`;
+        }
       } else if (item.isSaleActive) {
         badgeHtml = `<div class="badge-pill">⚡ ${item.event_tag || 'Prime Deal'}</div>`;
       }
@@ -1258,7 +1507,7 @@
     }
 
     /**
-     * Line 1007: Carousel Section Builder
+     * Line 1484: Carousel Section Builder
      */
     function createCarouselSection(title, items, isMovie, viewAllHash, customColor) {
       const section = document.createElement("section");
@@ -1297,7 +1546,53 @@
     }
 
     /**
-     * Line 1047: Master View Renderer
+     * Line 1524: Intelligent Home Catalog Balancer
+     * - Holiday films active this month sit up front at the top.
+     * - Store deals and flash sales are placed up front when store inventory is smaller than movies.
+     * - When store inventory is similar/equal to movies (ratio between 0.75 and 1.33) or larger,
+     *   they alternate evenly (Store -> Movie -> Store -> Movie...).
+     */
+    function buildBalancedHomeCatalog(dealsList, moviesList) {
+      const holidayMovies = moviesList.filter(m => m.isHolidayActive);
+      const standardMovies = moviesList.filter(m => !m.isHolidayActive);
+
+      // Sort both catalogs alphabetically A-Z
+      standardMovies.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+      const sortedDeals = [...dealsList].sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+
+      let balancedBody = [];
+
+      const dealsCount = sortedDeals.length;
+      const moviesCount = standardMovies.length;
+
+      // Calculate ratio of deals to movies
+      const ratio = moviesCount > 0 ? (dealsCount / moviesCount) : 1;
+
+      // Condition 1: Less store items than movies (ratio < 0.75) -> Store deals front-loaded
+      if (dealsCount > 0 && ratio < 0.75) {
+        balancedBody = [...sortedDeals, ...standardMovies];
+      } 
+      // Condition 2: Similar amount of store items & movies (or more store items) -> Alternate evenly
+      else {
+        const maxLen = Math.max(dealsCount, moviesCount);
+        for (let i = 0; i < maxLen; i++) {
+          // Alternate: Deal first, then Movie
+          if (i < dealsCount) balancedBody.push(sortedDeals[i]);
+          if (i < moviesCount) balancedBody.push(standardMovies[i]);
+        }
+      }
+
+      // Holiday films active this calendar month always lead at the top
+      if (holidayMovies.length > 0) {
+        holidayMovies.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+        return [...holidayMovies, ...balancedBody];
+      }
+
+      return balancedBody;
+    }
+
+    /**
+     * Line 1572: Master View Renderer
      */
     function renderCatalog() {
       const root = document.getElementById("catalogRoot");
@@ -1306,16 +1601,13 @@
 
       let activeCatalog = [];
 
-      // Determine active catalog set based on view
       if (AppState.currentView === "home") {
-        // Combined catalog: all active deals + movies together!
-        activeCatalog = [...AppState.deals, ...AppState.movies];
+        activeCatalog = buildBalancedHomeCatalog(AppState.deals, AppState.movies);
       } else if (AppState.currentView === "movies") {
         activeCatalog = AppState.movies;
       } else if (AppState.currentView === "deals") {
         activeCatalog = AppState.deals;
       } else if (AppState.currentView === "category") {
-        // Direct category filter
         activeCatalog = AppState.deals.filter(i => 
           i.category && i.category.toLowerCase() === AppState.selectedCategory.toLowerCase()
         );
@@ -1323,7 +1615,7 @@
 
       renderPlacements(activeCatalog);
 
-      // Search filtering across title, description, category, edition, tags
+      // Search filtering across title, description, category, edition, studio, collection, tags
       const query = AppState.searchQuery.toLowerCase().trim();
       const searchFiltered = activeCatalog.filter(item => {
         if (!query) return true;
@@ -1332,8 +1624,10 @@
         const inCat = item.category && item.category.toLowerCase().includes(query);
         const inSub = item.sub_category && item.sub_category.toLowerCase().includes(query);
         const inEdition = item.edition && item.edition.toLowerCase().includes(query);
+        const inStudio = item.studio && item.studio.toLowerCase().includes(query);
+        const inCollection = item.collection && item.collection.toLowerCase().includes(query);
         const inTags = (item.tags || []).some(t => t.toLowerCase().includes(query));
-        return inTitle || inDesc || inCat || inSub || inEdition || inTags;
+        return inTitle || inDesc || inCat || inSub || inEdition || inStudio || inCollection || inTags;
       });
 
       if (searchFiltered.length === 0) {
@@ -1341,7 +1635,7 @@
         return;
       }
 
-      // --- HOME VIEW OR SEARCH ACTIVE OR DIRECT CATEGORY: RENDER IN FULL GRID ---
+      // --- HOME, SEARCH, CATEGORY, OR GRID MODE: RENDER IN FULL RESPONSIVE GRID ---
       if (AppState.currentView === "home" || AppState.currentView === "category" || AppState.displayMode === "grid" || query.length > 0) {
         let headerTitle = "";
         let catColor = "var(--accent)";
@@ -1368,7 +1662,7 @@
         gridSection.innerHTML = `
           <div class="section-header">
             <h2 class="section-title">${headerTitle}</h2>
-            ${(AppState.currentView !== "home" && !query) ? `<a href="#/deals" class="view-all-btn">&larr; Back to Deals</a>` : ''}
+            ${(AppState.currentView !== "home" && !query) ? `<a href="#/home" class="view-all-btn">&larr; Back to All</a>` : ''}
           </div>
           <div class="grid-view-container"></div>
         `;
@@ -1379,14 +1673,36 @@
         return;
       }
 
-      // --- MOVIES VIEW: Single unified library carousel ---
+      // --- MOVIES VIEW: Automatic Monthly Holiday Spotlight + A-Z Library ---
       if (AppState.currentView === "movies") {
-        const movieSection = createCarouselSection("Prime Video Library", searchFiltered, true, `#/movies/all/grid`, "var(--prime-blue)");
+        const holidayMovies = searchFiltered.filter(m => m.isHolidayActive);
+        const standardMovies = searchFiltered.filter(m => !m.isHolidayActive);
+
+        standardMovies.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+
+        if (holidayMovies.length > 0 && !query) {
+          holidayMovies.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+          const holidaySection = createCarouselSection(
+            `🎃 Featured Holiday Picks (${holidayMovies[0].holidays})`, 
+            holidayMovies, 
+            true, 
+            `#/movies/all/grid`, 
+            "#ff5722"
+          );
+          root.appendChild(holidaySection);
+        }
+
+        const libraryList = query ? searchFiltered : (holidayMovies.length > 0 ? standardMovies : searchFiltered);
+        if (!query) {
+          libraryList.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+        }
+
+        const movieSection = createCarouselSection("Prime Video Library", libraryList, true, `#/movies/all/grid`, "var(--prime-blue)");
         root.appendChild(movieSection);
         return;
       }
 
-      // --- DEALS VIEW: Category carousels with individual colors ---
+      // --- DEALS VIEW: Category Carousels with individual dynamic colors ---
       const activeDeals = searchFiltered.filter(i => i.isSaleActive);
       if (activeDeals.length > 0) {
         const promoSection = createCarouselSection("⚡ Live Prime & Holiday Deals", activeDeals, false, `#/deals/active-sales/grid`, "var(--badge-red)");
@@ -1403,6 +1719,7 @@
 
       Object.keys(categoriesMap).sort().forEach(catName => {
         const catItems = categoriesMap[catName];
+        catItems.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
         const viewAllHash = `#/category/${encodeURIComponent(catName)}`;
         const carousel = createCarouselSection(catName, catItems, false, viewAllHash);
         root.appendChild(carousel);
@@ -1410,7 +1727,7 @@
     }
 
     /**
-     * Line 1148: Hash Router (#/home, #/movies, #/deals, #/category/name)
+     * Line 1698: Hash Router
      */
     function routeFromHash() {
       const hash = window.location.hash.replace("#/", "").replace("#", "");
@@ -1438,35 +1755,19 @@
         AppState.displayMode = "grid";
       }
 
-      // Highlight corresponding tab pill
-      document.querySelectorAll(".tab-btn").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.view === AppState.currentView);
-      });
-
+      renderCategoryPills();
       renderCatalog();
     }
 
     /**
-     * Line 1184: Initialize DOM Bindings & Start Persistent Listeners
+     * Line 1734: Initialize DOM Bindings & Start Persistent Listeners
      */
     function init() {
-      // Primary Tab Navigation
-      document.querySelectorAll(".tab-btn").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-          const view = e.target.dataset.view;
-          AppState.searchQuery = "";
-          const sInput = document.getElementById("siteSearch");
-          const sClear = document.getElementById("searchClear");
-          if (sInput) sInput.value = "";
-          if (sClear) sClear.style.display = "none";
-          window.location.hash = (view === "home") ? "#/home" : `#/${view}`;
-        });
-      });
-
       // Brand Title click returns to Home
       const brand = document.getElementById("brandTitle");
       if (brand) {
         brand.addEventListener("click", () => {
+          AppState.searchQuery = "";
           window.location.hash = "#/home";
         });
       }
@@ -1498,6 +1799,7 @@
           const isLight = document.body.classList.contains("light-theme");
           themeBtn.textContent = isLight ? "☀️" : "🌙";
           AppState.theme = isLight ? "light" : "dark";
+          renderCategoryPills();
           renderCatalog();
         });
       }
