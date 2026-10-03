@@ -4,19 +4,45 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Entertainment & Affiliate Deals Hub</title>
-  
+
+  <!-- Google Analytics Tracking (G-CTYHDF4MSD) via GTM -->
+  <script>
+    // Line 11: Google Tag Manager Configuration
+    // Account: G-CTYHDF4MSD | 2026-10-03 11:20 EDT
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','G-CTYHDF4MSD');
+  </script>
+
   <style>
+    /* CSS Variables: Glossy Dark Theme */
     :root {
-      --bg-dark: #0d1117;
+      --bg-dark: #0a0d12;
       --card-bg: #161b22;
       --card-border: #30363d;
-      --accent: #ff9900;
-      --accent-glow: rgba(255, 153, 0, 0.25);
       --text-main: #f0f6fc;
       --text-muted: #8b949e;
+      --header-bg: linear-gradient(180deg, #1b2128 0%, #11151b 100%);
+      --accent: #ff9900;
+      --accent-glow: rgba(255, 153, 0, 0.45);
       --prime-blue: #00a8e1;
-      --prime-glow: rgba(0, 168, 225, 0.25);
-      --badge-red: #e50914;
+      --prime-glow: rgba(0, 168, 225, 0.4);
+      --badge-red: #ff3b30;
+      --sale-glow: 0 0 15px rgba(255, 59, 48, 0.5), 0 0 30px rgba(255, 153, 0, 0.25);
+      --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Light Mode Overrides */
+    body.light-theme {
+      --bg-dark: #f6f8fa;
+      --card-bg: #ffffff;
+      --card-border: #d0d7de;
+      --text-main: #1f2328;
+      --text-muted: #57606a;
+      --header-bg: linear-gradient(180deg, #ffffff 0%, #eaeef2 100%);
+      --card-shadow: 0 4px 15px rgba(140, 149, 159, 0.2);
     }
 
     * {
@@ -33,21 +59,23 @@
       flex-direction: column;
       min-height: 100vh;
       overflow-x: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    /* Glossy Header */
+    /* Header Navigation */
     header {
-      background: linear-gradient(180deg, #1f242d 0%, #161b22 100%);
+      background: var(--header-bg);
       border-bottom: 1px solid var(--card-border);
       position: sticky;
       top: 0;
       z-index: 1000;
       padding: 12px 24px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      transition: background 0.3s ease, border-color 0.3s ease;
     }
 
     .nav-container {
-      max-width: 1280px;
+      max-width: 1400px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
@@ -58,13 +86,104 @@
 
     .brand-title {
       font-size: 1.25rem;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.5px;
-      color: #fff;
+      color: var(--text-main);
     }
 
     .brand-title span {
       color: var(--accent);
+    }
+
+    /* Site Search Input */
+    .search-wrapper {
+      flex: 1;
+      max-width: 420px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg-dark);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.2s ease;
+      min-height: 44px;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .search-clear-btn {
+      position: absolute;
+      right: 12px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: none;
+      min-width: 32px;
+      min-height: 32px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Google Translate Widget Styling */
+    #google_translate_element {
+      display: inline-block;
+    }
+
+    .goog-te-gadget-simple {
+      background-color: var(--card-bg) !important;
+      border: 1px solid var(--card-border) !important;
+      padding: 6px 10px !important;
+      border-radius: 6px !important;
+      font-size: 0.85rem !important;
+      min-height: 40px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+    }
+
+    .goog-te-gadget-simple span {
+      color: var(--text-main) !important;
+    }
+
+    .goog-te-gadget-icon {
+      margin-right: 6px !important;
+    }
+
+    /* Light/Dark Mode Switcher */
+    .theme-toggle-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s ease;
+    }
+
+    .theme-toggle-btn:hover {
+      border-color: var(--accent);
     }
 
     .tab-pills {
@@ -100,71 +219,154 @@
       color: #fff;
     }
 
-    /* Sub-Category Filter Bar */
-    #subCategoryBar {
-      background: #12151b;
-      border-bottom: 1px solid var(--card-border);
-      padding: 8px 24px;
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 24px 16px;
       display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      white-space: nowrap;
+      flex-direction: column;
+      gap: 36px;
     }
 
-    .sub-filter-chip {
-      background: #1b2129;
-      border: 1px solid #3b434e;
-      color: var(--text-muted);
-      padding: 6px 14px;
-      border-radius: 16px;
-      font-size: 0.8rem;
+    /* Section & Carousel Row */
+    .catalog-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 14px;
+      border-radius: 8px;
+      background: var(--card-bg);
+      border-left: 6px solid var(--cat-color, var(--card-border));
+      box-shadow: var(--card-shadow);
+      border-top: 1px solid var(--card-border);
+      border-right: 1px solid var(--card-border);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--cat-color, var(--text-main));
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .view-all-btn {
+      background: transparent;
+      border: none;
+      color: var(--cat-color, var(--accent));
+      font-size: 0.85rem;
+      font-weight: 600;
       cursor: pointer;
+      padding: 8px;
+      border-radius: 4px;
+      text-decoration: none;
       min-height: 44px;
       display: inline-flex;
       align-items: center;
     }
 
-    .sub-filter-chip.active, .sub-filter-chip:hover {
+    .view-all-btn:hover {
+      text-decoration: underline;
+    }
+
+    /* Carousel Outer Wrapper */
+    .carousel-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      padding: 8px 4px 16px 4px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .carousel-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      font-size: 1.5rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      box-shadow: var(--card-shadow);
+      transition: all 0.2s ease;
+    }
+
+    .carousel-arrow:hover {
+      background: var(--accent);
+      color: #111;
       border-color: var(--accent);
-      color: #fff;
     }
 
-    /* Grid Layout */
-    main {
-      flex: 1;
-      max-width: 1280px;
-      margin: 0 auto;
-      width: 100%;
-      padding: 24px 16px;
-    }
+    .carousel-arrow.left { left: -12px; }
+    .carousel-arrow.right { right: -12px; }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    /* Modern Card Layout */
+    /* Cards */
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
+      border-top: 3px solid var(--cat-color, var(--card-border));
       border-radius: 8px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       position: relative;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      flex: 0 0 260px;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     }
 
     .card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-      border-color: #4b5563;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      border-color: var(--cat-color, #58a6ff);
+    }
+
+    .card.prime-glow-deal {
+      border: 2px solid var(--badge-red);
+      box-shadow: var(--sale-glow);
+      animation: pulseBorder 2.5s infinite alternate;
+    }
+
+    @keyframes pulseBorder {
+      0% { box-shadow: 0 0 10px rgba(255, 59, 48, 0.4), 0 0 20px rgba(255, 153, 0, 0.2); }
+      100% { box-shadow: 0 0 20px rgba(255, 59, 48, 0.8), 0 0 35px rgba(255, 153, 0, 0.45); }
     }
 
     .card-media {
       width: 100%;
-      height: 320px;
+      height: 280px;
       background: #000;
       position: relative;
       cursor: pointer;
@@ -199,7 +401,7 @@
     }
 
     .card-content {
-      padding: 16px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
       flex: 1;
@@ -208,41 +410,53 @@
     .meta-row {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 0.75rem;
+      gap: 6px;
+      font-size: 0.72rem;
       color: var(--text-muted);
       margin-bottom: 6px;
       flex-wrap: wrap;
     }
 
     .meta-badge {
-      border: 1px solid #30363d;
+      border: 1px solid var(--card-border);
       padding: 2px 6px;
       border-radius: 4px;
-      background: #0d1117;
+      background: var(--bg-dark);
+      color: var(--text-muted);
+    }
+
+    .meta-badge.edition {
+      color: var(--accent);
+      border-color: rgba(255, 153, 0, 0.4);
+      font-weight: 600;
     }
 
     .card-title {
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       font-weight: 600;
-      color: #fff;
-      margin-bottom: 8px;
+      color: var(--text-main);
+      margin-bottom: 6px;
       line-height: 1.3;
       cursor: pointer;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 2.5em;
     }
 
     .card-title:hover {
-      color: var(--accent);
+      color: var(--cat-color, var(--accent));
     }
 
     .card-desc {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
       line-height: 1.4;
       flex: 1;
       margin-bottom: 12px;
       display: -webkit-box;
-      -webkit-line-clamp: 3;
+      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
@@ -251,21 +465,22 @@
       display: flex;
       flex-wrap: wrap;
       gap: 4px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .tag-pill {
-      background: #21262d;
-      color: #8b949e;
-      font-size: 0.7rem;
-      padding: 2px 8px;
+      background: var(--bg-dark);
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      padding: 2px 6px;
       border-radius: 4px;
-      border: 1px solid #30363d;
+      border: 1px solid var(--card-border);
     }
 
     .btn-group {
       display: flex;
-      gap: 8px;
+      gap: 6px;
+      margin-top: auto;
     }
 
     .cta-btn {
@@ -276,9 +491,9 @@
       background: linear-gradient(180deg, #ff9900 0%, #e68a00 100%);
       color: #111;
       font-weight: 700;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       text-decoration: none;
-      padding: 10px;
+      padding: 8px;
       border-radius: 6px;
       min-height: 44px;
       transition: opacity 0.2s ease;
@@ -292,14 +507,26 @@
     }
 
     .cta-btn.details-btn {
-      background: #21262d;
+      background: var(--bg-dark);
       color: var(--text-main);
       border: 1px solid var(--card-border);
-      flex: 0 0 80px;
+      flex: 0 0 70px;
     }
 
     .cta-btn:hover {
       opacity: 0.9;
+    }
+
+    /* Grid View Mode */
+    .grid-view-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .grid-view-container .card {
+      flex: initial;
+      width: 100%;
     }
 
     /* Lightbox Modal */
@@ -332,6 +559,7 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
     }
 
     .lightbox-header {
@@ -361,7 +589,7 @@
       right: 12px;
       background: transparent;
       border: none;
-      color: #fff;
+      color: var(--text-main);
       font-size: 1.8rem;
       cursor: pointer;
       min-width: 44px;
@@ -371,8 +599,9 @@
       justify-content: center;
     }
 
+    /* Footer */
     footer {
-      background: #0d1117;
+      background: var(--header-bg);
       border-top: 1px solid var(--card-border);
       padding: 16px;
       font-size: 0.8rem;
@@ -381,9 +610,13 @@
       margin-top: auto;
     }
 
+    /* Responsive Mobile Rules */
     @media (max-width: 768px) {
-      .grid {
-        grid-template-columns: 1fr;
+      .carousel-arrow {
+        display: none;
+      }
+      .card {
+        flex: 0 0 85%;
       }
       .lightbox-header {
         flex-direction: column;
@@ -391,8 +624,13 @@
       }
       .lightbox-poster {
         width: 100%;
-        max-width: 240px;
+        max-width: 220px;
         height: auto;
+      }
+      .search-wrapper {
+        order: 3;
+        max-width: 100%;
+        width: 100%;
       }
     }
   </style>
@@ -403,21 +641,32 @@
   <header>
     <div class="nav-container">
       <div class="brand-title">MEDIA &amp; DEALS <span>HUB</span></div>
-      <nav class="tab-pills" id="primaryNav">
-        <button class="tab-btn" data-view="movies">Prime Video</button>
-        <button class="tab-btn active" data-view="deals">Affiliate Deals</button>
-      </nav>
+
+      <!-- Instant Search Filter -->
+      <div class="search-wrapper">
+        <input type="text" id="siteSearch" class="search-input" placeholder="Search by title, category, tags, edition...">
+        <button id="searchClear" class="search-clear-btn" aria-label="Clear Search">&times;</button>
+      </div>
+
+      <div class="header-actions">
+        <!-- Google Translate Dropdown -->
+        <div id="google_translate_element"></div>
+
+        <!-- Light/Dark Mode Switcher -->
+        <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle Theme">🌙</button>
+
+        <!-- View Tabs -->
+        <nav class="tab-pills" id="primaryNav">
+          <button class="tab-btn" data-view="movies">Prime Video</button>
+          <button class="tab-btn active" data-view="deals">Deals Hub</button>
+        </nav>
+      </div>
     </div>
   </header>
 
-  <!-- Dynamic Filter Sub-Bar -->
-  <div id="subCategoryBar"></div>
-
-  <!-- Primary Content Area -->
-  <main>
-    <div id="gridRoot" class="grid">
-      <!-- Injected dynamically -->
-    </div>
+  <!-- Main View Area (Carousels or Grid) -->
+  <main id="catalogRoot">
+    <!-- Rendered dynamically -->
   </main>
 
   <!-- Detailed Lightbox Modal -->
@@ -427,10 +676,10 @@
       <div class="lightbox-header">
         <img id="lbPoster" class="lightbox-poster" src="" alt="">
         <div class="lightbox-info">
-          <h2 id="lbTitle" style="color: #fff; font-size: 1.4rem;"></h2>
+          <h2 id="lbTitle" style="color: var(--text-main); font-size: 1.4rem;"></h2>
           <div class="meta-row" id="lbMetaRow"></div>
           <div class="tag-container" id="lbTags"></div>
-          <p id="lbDesc" style="color: #c9d1d9; font-size: 0.9rem; line-height: 1.5;"></p>
+          <p id="lbDesc" style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5;"></p>
         </div>
       </div>
       <a id="lbOutboundBtn" class="cta-btn" href="#" target="_blank" rel="noopener noreferrer">
@@ -439,25 +688,39 @@
     </div>
   </div>
 
-  <!-- Footer -->
+  <!-- Footer with Persistent NY Time Stamp -->
   <footer>
-    <div id="footerTimestamp">Version 1.1.0 | Deployed: 2026-10-03 11:00 EDT</div>
+    <div id="footerTimestamp">Version 1.4.0 | Deployed: 2026-10-03 11:20 EDT</div>
   </footer>
 
+  <!-- Google Translate Official Scripts -->
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <!-- Main Application Script -->
   <script type="module">
     /**
      * -------------------------------------------------------------------------
      * Application Core: Deals & Movies Guide Multi-Firebase Sync
-     * Timestamp: 2026-10-03 11:00 EDT (New York / Eastern Time)
+     * Category Dynamic Color Generation & Automated Outbound UTM Injection
+     * Timestamp: 2026-10-03 11:20 EDT (New York / Eastern Time)
      * -------------------------------------------------------------------------
      */
 
-    // Relative protocol endpoints for security and live GitHub deployment
+    // Relative protocol endpoints for Firebase Realtime Databases
     const ENDPOINTS = {
       deals: "//smlc-fuel-monitor-default-rtdb.firebaseio.com/deals.json",
       movies: "//entertainment-71888-default-rtdb.firebaseio.com/movies_guide.json"
     };
 
+    // Central Promotional Event Schedule
     const EVENT_SCHEDULE = {
       "oct. prime deal":  { start: "2026-10-06", end: "2026-10-07" },
       "oct. prime deals": { start: "2026-10-06", end: "2026-10-07" },
@@ -471,32 +734,68 @@
       movies: [],
       currentView: "deals",
       selectedCategory: "all",
-      selectedSub: "all"
+      displayMode: "carousel",
+      searchQuery: "",
+      theme: "dark"
     };
 
-    // Outbound UTM Parameter Construction
-    function constructOutboundUrl(rawUrl, id, mediumType) {
-      if (!rawUrl) return "#";
+    /**
+     * Line 590: Dynamic Category Color Engine
+     * Generates persistent HSL colors for each unique category name
+     * Automatically adjusts lightness for dark vs. light theme readability
+     */
+    function getCategoryColor(categoryName) {
+      if (!categoryName) return "var(--accent)";
+
+      let hash = 0;
+      for (let i = 0; i < categoryName.length; i++) {
+        hash = categoryName.charCodeAt(i) + ((hash << 5) - hash);
+      }
+
+      const hue = Math.abs(hash % 360);
+      const isLight = document.body.classList.contains("light-theme");
+
+      const saturation = isLight ? 75 : 85;
+      const lightness = isLight ? 40 : 62;
+
+      return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+    }
+
+    /**
+     * Line 612: Centralized Dynamic Outbound UTM Generator
+     * Automatically appends utm_source, utm_medium, utm_campaign, and utm_content
+     * Enforces target="_blank" only for external domains; preserves Amazon Associate tags
+     */
+    function buildDynamicUtmUrl(rawUrl, campaignId, mediumType, contentElement) {
+      if (!rawUrl || rawUrl.trim() === "" || rawUrl === "#") return "#";
+
       try {
         const url = new URL(rawUrl, window.location.origin);
+
+        // Only append UTM parameters if the destination domain is external
         if (url.hostname !== window.location.hostname) {
-          url.searchParams.set("utm_source", window.location.hostname || "media_hub");
+          const sourceName = window.location.hostname.replace("www.", "") || "entertainment_hub";
+
+          url.searchParams.set("utm_source", sourceName);
           url.searchParams.set("utm_medium", mediumType || "affiliate_link");
-          url.searchParams.set("utm_campaign", id || "catalog");
+          url.searchParams.set("utm_campaign", (campaignId || "catalog").toLowerCase().replace(/[^a-z0-9-_]/g, "-"));
+
+          if (contentElement) {
+            url.searchParams.set("utm_content", contentElement);
+          }
         }
+
         return url.toString();
-      } catch (e) {
+      } catch (err) {
+        console.warn("Invalid URL passed to UTM generator:", rawUrl, err);
         return rawUrl;
       }
     }
 
-    // Strict Date & is_active Validation
-    function isDealActive(item) {
-      // 1. Strict boolean check (ignores false, "FALSE", undefined)
-      if (item.is_active !== true && String(item.is_active).toUpperCase() !== "TRUE") {
-        return false;
-      }
-
+    /**
+     * Line 644: Promotional Date Window Check
+     */
+    function isPromotionalSaleLive(item) {
       const todayStr = new Date().toISOString().split("T")[0];
       let startDate = item.start_date;
       let endDate = item.end_date;
@@ -511,10 +810,13 @@
 
       if (startDate && todayStr < startDate) return false;
       if (endDate && todayStr > endDate) return false;
-      return true;
+      return Boolean(startDate || endDate || item.event_tag);
     }
 
-    // Modal Lightbox Controller
+    /**
+     * Line 666: Lightbox Modal Handler
+     * Note: Image alt descriptions are restricted strictly to lightbox view
+     */
     function openLightbox(item, isMovie) {
       const modal = document.getElementById("lightbox");
       const poster = document.getElementById("lbPoster");
@@ -527,20 +829,30 @@
       if (!modal) return;
 
       poster.src = item.image_url || "";
-      poster.alt = ""; // Alt descriptions restricted to lightbox view
+      poster.alt = item.title || "Product image preview"; // Restricted to lightbox
       title.textContent = item.title || "";
-      desc.textContent = item.description || "No full synopsis available.";
+      desc.textContent = item.description || "No synopsis available.";
 
       metaRow.innerHTML = "";
-      if (item.imdb_id) metaRow.innerHTML += `<span class="meta-badge">${item.imdb_id}</span>`;
-      if (item.year) metaRow.innerHTML += `<span class="meta-badge">${item.year}</span>`;
-      if (item.rating) metaRow.innerHTML += `<span class="meta-badge">★ ${item.rating}</span>`;
-      if (item.runtime) metaRow.innerHTML += `<span class="meta-badge">${item.runtime}</span>`;
-      if (item.type) metaRow.innerHTML += `<span class="meta-badge" style="text-transform: capitalize;">${item.type}</span>`;
+      if (isMovie) {
+        if (item.imdb_id) metaRow.innerHTML += `<span class="meta-badge">${item.imdb_id}</span>`;
+        if (item.year) metaRow.innerHTML += `<span class="meta-badge">${item.year}</span>`;
+        if (item.edition) metaRow.innerHTML += `<span class="meta-badge edition">${item.edition}</span>`;
+        if (item.rating) metaRow.innerHTML += `<span class="meta-badge">★ ${item.rating}</span>`;
+        if (item.runtime) metaRow.innerHTML += `<span class="meta-badge">${item.runtime}</span>`;
+        if (item.type) metaRow.innerHTML += `<span class="meta-badge" style="text-transform: capitalize;">${item.type}</span>`;
+      } else {
+        const catColor = getCategoryColor(item.category);
+        metaRow.innerHTML += `<span class="meta-badge" style="color: ${catColor}; border-color: ${catColor};">${item.category}</span>`;
+        if (item.sub_category) metaRow.innerHTML += `<span class="meta-badge">${item.sub_category}</span>`;
+        if (item.isSaleActive) metaRow.innerHTML += `<span class="meta-badge" style="border-color: var(--badge-red); color: var(--badge-red); font-weight: 700;">⚡ ${item.event_tag || 'Prime Deal'}</span>`;
+      }
 
       tagsBox.innerHTML = (item.tags || []).map(t => `<span class="tag-pill">${t}</span>`).join("");
 
-      const finalLink = constructOutboundUrl(item.site_url, item.id, isMovie ? "movie_guide" : "deal_card");
+      const medium = isMovie ? "prime_video_modal" : "deal_modal";
+      const finalLink = buildDynamicUtmUrl(item.site_url, item.id, medium, "lightbox_cta");
+
       outboundBtn.href = finalLink;
       outboundBtn.className = `cta-btn ${isMovie ? 'movie-btn' : ''}`;
       outboundBtn.textContent = isMovie ? "Watch on Prime Video" : "View on Amazon";
@@ -548,7 +860,9 @@
       modal.classList.add("active");
     }
 
-    // Fetch and Process Data from Firebase
+    /**
+     * Line 714: Fetch and Process Data from Firebase RTDB
+     */
     async function loadData() {
       try {
         const [dealsRes, moviesRes] = await Promise.all([
@@ -572,7 +886,9 @@
       }
     }
 
-    // Parse Deals from /deals/{category}/{id}
+    /**
+     * Line 741: Parse /deals/{category}/{id}
+     */
     function parseDealsTree(tree) {
       if (!tree) return [];
       const list = [];
@@ -581,10 +897,12 @@
         if (typeof group === "object" && group !== null) {
           Object.keys(group).forEach(itemKey => {
             const item = group[itemKey];
-            if (item && isDealActive(item)) {
+            const activeState = (item.is_active === true || String(item.is_active).toUpperCase() === "TRUE");
+            if (item && activeState) {
               list.push({
                 ...item,
-                category: item.category || catKey
+                category: item.category || catKey,
+                isSaleActive: isPromotionalSaleLive(item)
               });
             }
           });
@@ -593,16 +911,16 @@
       return list;
     }
 
-    // Parse Movies Guide (Only items with an amazon URL are shown)
+    /**
+     * Line 765: Parse /movies_guide
+     */
     function parseMoviesTree(tree) {
       if (!tree) return [];
       const list = [];
-
       Object.keys(tree).forEach(key => {
         const movie = tree[key];
         if (!movie || typeof movie !== "object") return;
 
-        // Condition: Must have an Amazon link to be eligible
         const amazonUrl = movie.amazon || movie.site_url || "";
         if (!amazonUrl || amazonUrl.trim() === "") return;
 
@@ -621,158 +939,259 @@
           rating: movie.rating || movie.vote_average || "",
           runtime: movie.runtime || "",
           type: movie.type || "movie",
+          edition: movie.edition || "",
+          isSaleActive: false,
           tags: Array.isArray(movie.genre) ? movie.genre : (movie.genre ? movie.genre.split(",").map(g => g.trim()) : ["Movie"])
         });
       });
-
       return list;
     }
 
-    // Render Grid
-    function renderGrid() {
-      const root = document.getElementById("gridRoot");
+    /**
+     * Line 801: Card DOM Construction with Dynamic Outbound UTM Link
+     */
+    function createCardElement(item, isMovie) {
+      const card = document.createElement("div");
+      const catColor = isMovie ? "var(--prime-blue)" : getCategoryColor(item.category);
+
+      card.className = `card ${item.isSaleActive ? 'prime-glow-deal' : ''}`;
+      card.id = `item-${item.id}`;
+      card.style.setProperty("--cat-color", catColor);
+
+      const medium = isMovie ? "prime_video" : (item.isSaleActive ? "flash_sale" : "deals_catalog");
+      const outboundLink = buildDynamicUtmUrl(item.site_url, item.id, medium, "card_cta");
+
+      let badgeHtml = "";
+      if (isMovie) {
+        badgeHtml = `<div class="badge-pill prime">Prime Video</div>`;
+      } else if (item.isSaleActive) {
+        badgeHtml = `<div class="badge-pill">⚡ ${item.event_tag || 'Prime Deal'}</div>`;
+      }
+
+      const metaRowHtml = isMovie ? `
+        <div class="meta-row">
+          ${item.imdb_id ? `<span class="meta-badge">${item.imdb_id}</span>` : ''}
+          ${item.year ? `<span class="meta-badge">${item.year}</span>` : ''}
+          ${item.edition ? `<span class="meta-badge edition">${item.edition}</span>` : ''}
+          ${item.rating ? `<span class="meta-badge">★ ${item.rating}</span>` : ''}
+          ${item.runtime ? `<span class="meta-badge">${item.runtime}</span>` : ''}
+        </div>
+      ` : `
+        <div class="meta-row">
+          <span class="meta-badge" style="color: ${catColor}; border-color: ${catColor};">${item.category}</span>
+          ${item.sub_category ? `<span class="meta-badge">${item.sub_category}</span>` : ''}
+        </div>
+      `;
+
+      const tagsHtml = (item.tags || []).slice(0, 3).map(t => `<span class="tag-pill">${t}</span>`).join("");
+
+      card.innerHTML = `
+        <div class="card-media">
+          ${badgeHtml}
+          <img src="${item.image_url || ''}" loading="lazy" alt="">
+        </div>
+        <div class="card-content">
+          ${metaRowHtml}
+          <h3 class="card-title">${item.title}</h3>
+          <p class="card-desc">${item.description}</p>
+          <div class="tag-container">${tagsHtml}</div>
+          <div class="btn-group">
+            <button class="cta-btn details-btn" type="button">Details</button>
+            <a href="${outboundLink}" class="cta-btn ${isMovie ? 'movie-btn' : ''}" target="_blank" rel="noopener noreferrer">
+              ${isMovie ? 'Watch' : (item.isSaleActive ? 'Claim Deal' : 'Buy Now')}
+            </a>
+          </div>
+        </div>
+      `;
+
+      card.querySelector(".card-media").addEventListener("click", () => openLightbox(item, isMovie));
+      card.querySelector(".card-title").addEventListener("click", () => openLightbox(item, isMovie));
+      card.querySelector(".details-btn").addEventListener("click", () => openLightbox(item, isMovie));
+
+      return card;
+    }
+
+    /**
+     * Line 866: Carousel Construction with Navigation Arrows
+     */
+    function createCarouselSection(title, items, isMovie, viewAllHash, customColor) {
+      const section = document.createElement("section");
+      section.className = "catalog-section";
+
+      const catColor = customColor || (isMovie ? "var(--prime-blue)" : getCategoryColor(title));
+      section.style.setProperty("--cat-color", catColor);
+
+      section.innerHTML = `
+        <div class="section-header">
+          <h2 class="section-title">${title}</h2>
+          ${viewAllHash ? `<a href="${viewAllHash}" class="view-all-btn">View All (${items.length}) &rarr;</a>` : ''}
+        </div>
+        <div class="carousel-wrapper">
+          <button class="carousel-arrow left" aria-label="Scroll left">&#8249;</button>
+          <div class="carousel-track"></div>
+          <button class="carousel-arrow right" aria-label="Scroll right">&#8250;</button>
+        </div>
+      `;
+
+      const track = section.querySelector(".carousel-track");
+      items.forEach(item => track.appendChild(createCardElement(item, isMovie)));
+
+      const leftBtn = section.querySelector(".carousel-arrow.left");
+      const rightBtn = section.querySelector(".carousel-arrow.right");
+
+      leftBtn.addEventListener("click", () => {
+        track.scrollBy({ left: -560, behavior: "smooth" });
+      });
+
+      rightBtn.addEventListener("click", () => {
+        track.scrollBy({ left: 560, behavior: "smooth" });
+      });
+
+      return section;
+    }
+
+    /**
+     * Line 906: Master View Renderer
+     */
+    function renderCatalog() {
+      const root = document.getElementById("catalogRoot");
       if (!root) return;
       root.innerHTML = "";
 
       const isMovie = AppState.currentView === "movies";
-      const activeSet = isMovie ? AppState.movies : AppState.deals;
+      const activeCatalog = isMovie ? AppState.movies : AppState.deals;
 
-      const filtered = activeSet.filter(item => {
-        const matchCat = (AppState.selectedCategory === "all") || 
-                         (item.category && item.category.toLowerCase() === AppState.selectedCategory.toLowerCase());
-        const matchSub = (AppState.selectedSub === "all") || 
-                         (item.sub_category && item.sub_category.toLowerCase() === AppState.selectedSub.toLowerCase());
-        return matchCat && matchSub;
+      // In-page search filtering across all primary fields
+      const query = AppState.searchQuery.toLowerCase().trim();
+      const searchFiltered = activeCatalog.filter(item => {
+        if (!query) return true;
+        const inTitle = item.title && item.title.toLowerCase().includes(query);
+        const inDesc = item.description && item.description.toLowerCase().includes(query);
+        const inCat = item.category && item.category.toLowerCase().includes(query);
+        const inSub = item.sub_category && item.sub_category.toLowerCase().includes(query);
+        const inEdition = item.edition && item.edition.toLowerCase().includes(query);
+        const inTags = (item.tags || []).some(t => t.toLowerCase().includes(query));
+        return inTitle || inDesc || inCat || inSub || inEdition || inTags;
       });
 
-      if (filtered.length === 0) {
-        root.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px 0;">No active listings found in this category.</div>`;
+      if (searchFiltered.length === 0) {
+        root.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 60px 0;">No matching items found for "${AppState.searchQuery}".</div>`;
         return;
       }
 
-      filtered.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.id = `item-${item.id}`;
+      // If viewing all for a category or search is active, render Grid View
+      if (AppState.displayMode === "grid" || query.length > 0) {
+        const headerTitle = query ? `Search Results for "${AppState.searchQuery}" (${searchFiltered.length})`
+                                  : `${AppState.selectedCategory} (All ${searchFiltered.length})`;
 
-        const outboundLink = constructOutboundUrl(item.site_url, item.id, isMovie ? "movie_guide" : "deal_card");
-        const eventBadge = item.event_tag ? `<div class="badge-pill">${item.event_tag}</div>` : 
-                          (isMovie ? `<div class="badge-pill prime">Prime Video</div>` : "");
+        const catColor = isMovie ? "var(--prime-blue)" : getCategoryColor(AppState.selectedCategory);
+        const gridSection = document.createElement("section");
+        gridSection.className = "catalog-section";
+        gridSection.style.setProperty("--cat-color", catColor);
 
-        const metaRowHtml = isMovie ? `
-          <div class="meta-row">
-            ${item.imdb_id ? `<span class="meta-badge">${item.imdb_id}</span>` : ''}
-            ${item.year ? `<span class="meta-badge">${item.year}</span>` : ''}
-            ${item.rating ? `<span class="meta-badge">★ ${item.rating}</span>` : ''}
-            ${item.runtime ? `<span class="meta-badge">${item.runtime}</span>` : ''}
+        gridSection.innerHTML = `
+          <div class="section-header">
+            <h2 class="section-title">${headerTitle}</h2>
+            ${!query ? `<a href="#/${AppState.currentView}/all" class="view-all-btn">&larr; Back to Carousels</a>` : ''}
           </div>
-        ` : `
-          <div class="meta-row">
-            <span class="meta-badge">${item.category}</span>
-            ${item.sub_category ? `<span class="meta-badge">${item.sub_category}</span>` : ''}
-          </div>
+          <div class="grid-view-container"></div>
         `;
-
-        const tagsHtml = (item.tags || []).slice(0, 3).map(t => `<span class="tag-pill">${t}</span>`).join("");
-
-        card.innerHTML = `
-          <div class="card-media">
-            ${eventBadge}
-            <img src="${item.image_url || ''}" loading="lazy">
-          </div>
-          <div class="card-content">
-            ${metaRowHtml}
-            <h3 class="card-title">${item.title}</h3>
-            <p class="card-desc">${item.description}</p>
-            <div class="tag-container">${tagsHtml}</div>
-            <div class="btn-group">
-              <button class="cta-btn details-btn" type="button">Details</button>
-              <a href="${outboundLink}" class="cta-btn ${isMovie ? 'movie-btn' : ''}" target="_blank" rel="noopener noreferrer">
-                ${isMovie ? 'Watch' : 'Buy Now'}
-              </a>
-            </div>
-          </div>
-        `;
-
-        // Click handlers to launch rich lightbox
-        card.querySelector(".card-media").addEventListener("click", () => openLightbox(item, isMovie));
-        card.querySelector(".card-title").addEventListener("click", () => openLightbox(item, isMovie));
-        card.querySelector(".details-btn").addEventListener("click", () => openLightbox(item, isMovie));
-
-        root.appendChild(card);
-      });
-    }
-
-    // Dynamic Filter Chips
-    function renderSubFilters() {
-      const bar = document.getElementById("subCategoryBar");
-      if (!bar) return;
-      bar.innerHTML = "";
-
-      const activeSet = AppState.currentView === "movies" ? AppState.movies : AppState.deals;
-      const subCategories = new Set();
-
-      activeSet.forEach(item => {
-        if (item.sub_category) subCategories.add(item.sub_category);
-      });
-
-      if (subCategories.size === 0) {
-        bar.style.display = "none";
+        const gridContainer = gridSection.querySelector(".grid-view-container");
+        searchFiltered.forEach(item => gridContainer.appendChild(createCardElement(item, isMovie)));
+        root.appendChild(gridSection);
         return;
       }
-      bar.style.display = "flex";
 
-      const allChip = document.createElement("button");
-      allChip.className = `sub-filter-chip ${AppState.selectedSub === 'all' ? 'active' : ''}`;
-      allChip.textContent = "All Items";
-      allChip.addEventListener("click", () => {
-        AppState.selectedSub = "all";
-        window.location.hash = `#/${AppState.currentView}/${AppState.selectedCategory}/all`;
+      // 1. Promotional Flash Deals Spotlight Carousel (Only in Deals view when active)
+      if (!isMovie) {
+        const activeDeals = searchFiltered.filter(i => i.isSaleActive);
+        if (activeDeals.length > 0) {
+          const promoSection = createCarouselSection("⚡ Live Prime & Holiday Deals", activeDeals, false, `#/deals/active-sales/grid`, "var(--badge-red)");
+          root.appendChild(promoSection);
+        }
+      }
+
+      // 2. Group Inventory by Category into Carousels
+      const categoriesMap = {};
+      searchFiltered.forEach(item => {
+        const cat = item.category || (isMovie ? "Movies" : "General");
+        if (!categoriesMap[cat]) categoriesMap[cat] = [];
+        categoriesMap[cat].push(item);
       });
-      bar.appendChild(allChip);
 
-      subCategories.forEach(sub => {
-        const chip = document.createElement("button");
-        chip.className = `sub-filter-chip ${AppState.selectedSub.toLowerCase() === sub.toLowerCase() ? 'active' : ''}`;
-        chip.textContent = sub;
-        chip.addEventListener("click", () => {
-          AppState.selectedSub = sub;
-          window.location.hash = `#/${AppState.currentView}/${AppState.selectedCategory}/${encodeURIComponent(sub)}`;
-        });
-        bar.appendChild(chip);
+      Object.keys(categoriesMap).sort().forEach(catName => {
+        const catItems = categoriesMap[catName];
+        const viewAllHash = `#/${AppState.currentView}/${encodeURIComponent(catName)}/grid`;
+        const carousel = createCarouselSection(catName, catItems, isMovie, viewAllHash);
+        root.appendChild(carousel);
       });
     }
 
-    // Hash Router (#/view/category/subcategory)
+    /**
+     * Line 977: Hash Router (#/view/category/displayMode)
+     */
     function routeFromHash() {
       const hash = window.location.hash.replace("#/", "").replace("#", "");
       const segments = hash.split("/").map(s => decodeURIComponent(s));
 
       const view = segments[0] || "deals";
       const cat = segments[1] || "all";
-      const sub = segments[2] || "all";
+      const mode = segments[2] || "carousel";
 
       AppState.currentView = (view === "movies") ? "movies" : "deals";
       AppState.selectedCategory = cat;
-      AppState.selectedSub = sub;
+      AppState.displayMode = (mode === "grid" || cat !== "all") ? "grid" : "carousel";
 
       document.querySelectorAll(".tab-btn").forEach(btn => {
         btn.classList.toggle("active", btn.dataset.view === AppState.currentView);
       });
 
-      renderSubFilters();
-      renderGrid();
+      renderCatalog();
     }
 
-    // DOM Ready Initialization
+    /**
+     * Line 999: DOM Ready Setup & Event Binding
+     */
     window.addEventListener("DOMContentLoaded", () => {
+      // Primary Tab Navigation
       document.querySelectorAll(".tab-btn").forEach(btn => {
         btn.addEventListener("click", (e) => {
           const view = e.target.dataset.view;
-          window.location.hash = `#/${view}/all/all`;
+          AppState.searchQuery = "";
+          document.getElementById("siteSearch").value = "";
+          document.getElementById("searchClear").style.display = "none";
+          window.location.hash = `#/${view}/all`;
         });
       });
 
+      // Site Search Controller
+      const searchInput = document.getElementById("siteSearch");
+      const searchClear = document.getElementById("searchClear");
+
+      searchInput.addEventListener("input", (e) => {
+        AppState.searchQuery = e.target.value;
+        searchClear.style.display = AppState.searchQuery ? "block" : "none";
+        renderCatalog();
+      });
+
+      searchClear.addEventListener("click", () => {
+        searchInput.value = "";
+        AppState.searchQuery = "";
+        searchClear.style.display = "none";
+        renderCatalog();
+      });
+
+      // Light/Dark Theme Switcher Controller
+      const themeBtn = document.getElementById("themeToggleBtn");
+      themeBtn.addEventListener("click", () => {
+        document.body.classList.toggle("light-theme");
+        const isLight = document.body.classList.contains("light-theme");
+        themeBtn.textContent = isLight ? "☀️" : "🌙";
+        AppState.theme = isLight ? "light" : "dark";
+        renderCatalog(); // Re-render to adapt category colors for contrast
+      });
+
+      // Lightbox Close Handlers
       const closeBtn = document.getElementById("lightboxClose");
       const modal = document.getElementById("lightbox");
       if (closeBtn && modal) {
