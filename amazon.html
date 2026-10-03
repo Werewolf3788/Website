@@ -8,7 +8,7 @@
   <!-- Google Tag Manager (Deploying GA4: G-CTYHDF4MSD) -->
   <script>
     // Line 11: Google Tag Manager Configuration
-    // Account: G-CTYHDF4MSD | 2026-10-03 13:40 EDT
+    // Account: G-CTYHDF4MSD | 2026-10-03 13:48 EDT
     (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -62,7 +62,7 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    /* Line 66: Header Layout */
+    /* Line 66: Top Navigation Header (Reunified Layout) */
     header {
       background: var(--header-bg);
       border-bottom: 1px solid var(--card-border);
@@ -96,10 +96,10 @@
       color: var(--accent);
     }
 
-    /* Line 99: Site Search Input */
+    /* Line 99: Search Bar */
     .search-wrapper {
       flex: 1;
-      max-width: 420px;
+      max-width: 380px;
       position: relative;
       display: flex;
       align-items: center;
@@ -139,11 +139,11 @@
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
-    /* Line 146: Google Translate Element */
+    /* Line 146: Google Translate Dropdown */
     #google_translate_element {
       display: inline-block;
     }
@@ -187,80 +187,116 @@
       border-color: var(--accent);
     }
 
-    /* Line 186: Ordered Category Pill Strip */
-    .category-pills-bar {
-      background: var(--bg-dark);
-      border-bottom: 1px solid var(--card-border);
-      padding: 10px 24px;
-      position: sticky;
-      top: 69px;
-      z-index: 998;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    }
-
-    .category-pills-inner {
-      max-width: 1400px;
-      margin: 0 auto;
+    /* Line 186: Primary Nav Pills (Home with Dropdown, Prime Video, Deals Hub) */
+    .tab-pills {
       display: flex;
       align-items: center;
       gap: 8px;
-      overflow-x: auto;
-      white-space: nowrap;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      padding-bottom: 2px;
     }
 
-    .category-pills-inner::-webkit-scrollbar {
-      display: none;
-    }
-
-    .pill-btn {
-      background: var(--card-bg);
+    .nav-btn {
+      background: transparent;
       border: 1px solid var(--card-border);
       color: var(--text-muted);
       padding: 8px 18px;
       border-radius: 20px;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
       min-height: 44px;
-      min-width: 44px;
-      text-decoration: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
+      text-decoration: none;
+      user-select: none;
     }
 
-    .pill-btn:hover {
-      border-color: var(--accent);
-      color: var(--text-main);
-    }
-
-    .pill-btn.active {
+    .nav-btn:hover, .nav-btn.active {
       background: var(--accent);
       color: #111;
       border-color: var(--accent);
       box-shadow: 0 0 10px var(--accent-glow);
     }
 
-    .pill-btn[data-pill="movies"].active {
+    .nav-btn[data-view="movies"].active {
       background: var(--prime-blue);
       border-color: var(--prime-blue);
       box-shadow: 0 0 10px var(--prime-glow);
       color: #fff;
     }
 
-    .pill-btn.cat-pill.active {
-      background: var(--pill-color, var(--accent));
-      border-color: var(--pill-color, var(--accent));
-      color: #111;
-      box-shadow: 0 0 10px var(--pill-color, var(--accent-glow));
+    /* Line 224: Dropdown Menu Structure for Home Categories */
+    .dropdown-container {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
     }
 
-    /* Line 260: Header Announcement Banner (Placement: header_banner) */
+    .dropdown-arrow-btn {
+      background: transparent;
+      border: none;
+      color: inherit;
+      font-size: 0.75rem;
+      margin-left: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+      height: 100%;
+    }
+
+    .category-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      min-width: 200px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+      z-index: 1100;
+      padding: 6px;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+
+    .category-dropdown-menu.show {
+      display: block;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.2s ease, color 0.2s ease;
+      cursor: pointer;
+      min-height: 40px;
+    }
+
+    .dropdown-item:hover, .dropdown-item.active {
+      background: rgba(255, 153, 0, 0.15);
+      color: var(--accent);
+    }
+
+    .dropdown-item-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--item-dot-color, var(--accent));
+      display: inline-block;
+      margin-right: 8px;
+    }
+
+    /* Line 288: Header Announcement Banner (Placement: header_banner) */
     .header-placement-banner {
       background: linear-gradient(90deg, #ff9900 0%, #ff5e00 100%);
       color: #111;
@@ -287,7 +323,7 @@
       align-items: center;
     }
 
-    /* Line 287: Layout Wrappers */
+    /* Line 315: Layout Wrappers */
     .content-layout-wrapper {
       max-width: 1400px;
       margin: 0 auto;
@@ -306,7 +342,7 @@
       gap: 36px;
     }
 
-    /* Line 306: Sidebar Rail (Placement: sidebar) */
+    /* Line 334: Sidebar Rail (Placement: sidebar) */
     .sidebar-placement-rail {
       width: 300px;
       flex-shrink: 0;
@@ -374,7 +410,7 @@
       text-overflow: ellipsis;
     }
 
-    /* Line 373: Carousel & Section Containers */
+    /* Line 401: Carousel & Section Containers */
     .catalog-section {
       display: flex;
       flex-direction: column;
@@ -474,7 +510,7 @@
     .carousel-arrow.left { left: -12px; }
     .carousel-arrow.right { right: -12px; }
 
-    /* Line 470: Cards Architecture */
+    /* Line 498: Card Component Structure */
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -495,7 +531,6 @@
       border-color: var(--cat-color, #58a6ff);
     }
 
-    /* Glow Effect for Live Promotional Sales or Active Holidays */
     .card.prime-glow-deal {
       border: 2px solid var(--badge-red);
       box-shadow: var(--sale-glow);
@@ -660,7 +695,7 @@
       opacity: 0.9;
     }
 
-    /* Line 639: Grid Layout Mode */
+    /* Line 667: Grid Layout Mode */
     .grid-view-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -672,7 +707,7 @@
       width: 100%;
     }
 
-    /* Line 650: Lightbox Modal Structure */
+    /* Line 678: Lightbox Modal Structure */
     .lightbox-modal {
       display: none;
       position: fixed;
@@ -752,7 +787,7 @@
       justify-content: center;
     }
 
-    /* Line 735: Footer */
+    /* Line 763: Footer */
     footer {
       background: var(--header-bg);
       border-top: 1px solid var(--card-border);
@@ -763,7 +798,7 @@
       margin-top: auto;
     }
 
-    /* Line 745: Cross-Platform Responsive Adjustments */
+    /* Line 773: Mobile and Tablet Responsiveness */
     @media (max-width: 1024px) {
       .content-layout-wrapper {
         flex-direction: column;
@@ -774,10 +809,6 @@
     }
 
     @media (max-width: 768px) {
-      .category-pills-bar {
-        top: 65px;
-        padding: 8px 16px;
-      }
       .carousel-arrow {
         display: none;
       }
@@ -803,7 +834,7 @@
 </head>
 <body>
 
-  <!-- Navigation Header -->
+  <!-- Reunified Navigation Header with Home Dropdown, Prime Video, Deals Hub (matching image_d6ef9e.png) -->
   <header>
     <div class="nav-container">
       <div class="brand-title" id="brandTitle">MEDIA &amp; DEALS <span>HUB</span></div>
@@ -820,18 +851,27 @@
 
         <!-- Light/Dark Mode Switcher -->
         <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle Theme">🌙</button>
+
+        <!-- Navigation Tabs with Subfolder Dropdown on Home -->
+        <nav class="tab-pills" id="primaryNav">
+          <div class="dropdown-container" id="homeDropdownContainer">
+            <button class="nav-btn active" id="homeMainBtn" data-view="home">
+              Home <span class="dropdown-arrow-btn" id="homeMenuTrigger">▼</span>
+            </button>
+            <div class="category-dropdown-menu" id="homeCategoryMenu">
+              <a class="dropdown-item" data-cat="all">
+                <span>All Categories</span>
+              </a>
+              <!-- Subfolder category items injected dynamically -->
+              <div id="homeCategorySubfolderList"></div>
+            </div>
+          </div>
+          <button class="nav-btn" data-view="movies">Prime Video</button>
+          <button class="nav-btn" data-view="deals">Deals Hub</button>
+        </nav>
       </div>
     </div>
   </header>
-
-  <!-- Ordered Category Pill Strip: 1 = All Categories, 2 = Deals, 3 = Prime Video, 4+ = Dynamic Custom Categories -->
-  <nav class="category-pills-bar" aria-label="Catalog categories">
-    <div class="category-pills-inner" id="categoryPillStrip">
-      <button class="pill-btn active" data-pill="home">1. All Categories</button>
-      <button class="pill-btn" data-pill="deals">2. Deals</button>
-      <button class="pill-btn" data-pill="movies">3. Prime Video</button>
-    </div>
-  </nav>
 
   <!-- Sticky Top Announcement Banner (placement: header_banner) -->
   <div id="headerBannerArea" class="header-placement-banner" style="display: none;"></div>
@@ -879,7 +919,7 @@
 
   <!-- Footer with Persistent 24-hr NY Timestamp & Version Number -->
   <footer>
-    <div id="footerTimestamp">Version 2.1.0 | Deployed: 2026-10-03 13:40 EDT</div>
+    <div id="footerTimestamp">Version 2.2.0 | Deployed: 2026-10-03 13:48 EDT</div>
   </footer>
 
   <!-- Google Translate Official Scripts -->
@@ -899,17 +939,16 @@
      * -------------------------------------------------------------------------
      * Application Core: Dual-Firebase Real-Time WebSocket Synchronization
      * Databases: smlc-fuel-monitor-default-rtdb & entertainment-71888-default-rtdb
-     * Balanced Home Catalog: Front-loading store deals when count < movies,
-     * alternating/interleaving when count matches or exceeds movies.
-     * Timestamp: 2026-10-03 13:40 EDT (New York / Eastern Time)
+     * Intelligent Home Catalog with Subfolder Dropdown on Home Button
+     * Timestamp: 2026-10-03 13:48 EDT (New York / Eastern Time)
      * -------------------------------------------------------------------------
      */
 
-    // Line 874: Import Modular Firebase SDKs via CDN with relative protocol
+    // Line 902: Import Modular Firebase SDKs via CDN with relative protocol
     import { initializeApp } from "//www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, onValue } from "//www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    // Line 878: Firebase Project Configurations
+    // Line 906: Firebase Project Configurations
     const smlcConfig = {
       apiKey: "AIzaSyBYPbGWDhPUnCSnPWDP9wtiKe2P5WpinXg",
       authDomain: "smlc-fuel-monitor.firebaseapp.com",
@@ -931,7 +970,7 @@
       measurementId: "G-JDNSLD3GFE"
     };
 
-    // Line 902: Initialize distinct app instances with try/catch error boundaries
+    // Line 930: Initialize distinct app instances with try/catch error boundaries
     let smlcDb = null;
     let entertainmentDb = null;
 
@@ -949,7 +988,7 @@
       console.error("Initialization failed for entertainment-71888:", err);
     }
 
-    // Line 919: Master Event Windows for Promotional Deals (October Prime Deals 2026)
+    // Line 947: Master Event Windows for Promotional Deals (October Prime Deals 2026)
     const EVENT_SCHEDULE = {
       "oct. prime deal":  { start: "2026-10-06", end: "2026-10-07" },
       "oct. prime deals": { start: "2026-10-06", end: "2026-10-07" },
@@ -958,7 +997,7 @@
       "cyber-monday":     { start: "2026-11-30", end: "2026-11-30" }
     };
 
-    // Line 928: Holiday Calendar Month Mapping (0-indexed: Jan=0, Oct=9, Nov=10, Dec=11)
+    // Line 956: Holiday Calendar Month Mapping (0-indexed: Jan=0, Oct=9, Nov=10, Dec=11)
     const HOLIDAY_CALENDAR = {
       "halloween": 9,       // October
       "thanksgiving": 10,   // November
@@ -984,7 +1023,7 @@
     };
 
     /**
-     * Line 954: Checks if film belongs to a holiday active during the CURRENT calendar month
+     * Line 982: Checks if film belongs to a holiday active during the CURRENT calendar month
      */
     function isHolidayActiveThisMonth(holidayString) {
       if (!holidayString || typeof holidayString !== "string") return false;
@@ -1002,7 +1041,7 @@
     }
 
     /**
-     * Line 973: Dynamic Category Color Engine
+     * Line 1001: Dynamic Category Color Engine
      */
     function getCategoryColor(categoryName) {
       if (!categoryName) return "var(--accent)";
@@ -1022,7 +1061,7 @@
     }
 
     /**
-     * Line 994: Device & App-Aware Outbound Deep-Link Router
+     * Line 1022: Device & App-Aware Outbound Deep-Link Router
      */
     function isMobileDevice() {
       return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || navigator.vendor || window.opera);
@@ -1079,7 +1118,7 @@
     }
 
     /**
-     * Line 1052: Promotional Deals Date Window Check
+     * Line 1080: Promotional Deals Date Window Check
      */
     function isPromotionalSaleLive(item) {
       const todayStr = new Date().toISOString().split("T")[0];
@@ -1102,7 +1141,7 @@
     }
 
     /**
-     * Line 1075: Modal Lightbox Controller
+     * Line 1103: Modal Lightbox Controller
      */
     function openLightbox(item) {
       const modal = document.getElementById("lightbox");
@@ -1174,7 +1213,7 @@
     }
 
     /**
-     * Line 1145: Real-Time WebSocket Listeners
+     * Line 1173: Real-Time WebSocket Listeners
      */
     function setupLiveFirebaseListeners() {
       if (smlcDb) {
@@ -1185,7 +1224,7 @@
               const val = snapshot.val();
               AppState.deals = parseDealsTree(val);
               updateCategoriesList();
-              renderCategoryPills();
+              renderHomeCategoryDropdown();
               renderCatalog();
             } catch (err) {
               console.error("Error processing deals update:", err);
@@ -1219,7 +1258,7 @@
     }
 
     /**
-     * Line 1194: Parse Deals Tree
+     * Line 1222: Parse Deals Tree
      */
     function parseDealsTree(tree) {
       if (!tree) return [];
@@ -1250,7 +1289,7 @@
     }
 
     /**
-     * Line 1224: Parse Movies Tree
+     * Line 1252: Parse Movies Tree
      */
     function parseMoviesTree(tree) {
       if (!tree) return [];
@@ -1307,7 +1346,7 @@
     }
 
     /**
-     * Line 1285: Extract and Sort Unique Categories dynamically
+     * Line 1313: Extract Dynamic Category List
      */
     function updateCategoriesList() {
       const catSet = new Set();
@@ -1320,63 +1359,34 @@
     }
 
     /**
-     * Line 1297: Render Dynamic Pill Strip
+     * Line 1325: Render Dynamic Home Subfolder Dropdown Menu
      */
-    function renderCategoryPills() {
-      const container = document.getElementById("categoryPillStrip");
-      if (!container) return;
+    function renderHomeCategoryDropdown() {
+      const subfolderContainer = document.getElementById("homeCategorySubfolderList");
+      if (!subfolderContainer) return;
 
-      container.innerHTML = "";
+      subfolderContainer.innerHTML = "";
 
-      // 1. All Categories / Home
-      const homeBtn = document.createElement("button");
-      homeBtn.className = `pill-btn ${AppState.currentView === 'home' ? 'active' : ''}`;
-      homeBtn.dataset.pill = "home";
-      homeBtn.textContent = "1. All Categories";
-      homeBtn.addEventListener("click", () => {
-        AppState.searchQuery = "";
-        window.location.hash = "#/home";
-      });
-      container.appendChild(homeBtn);
+      AppState.categories.forEach(catName => {
+        const item = document.createElement("a");
+        item.className = "dropdown-item";
+        item.dataset.cat = catName;
 
-      // 2. Deals Hub
-      const dealsBtn = document.createElement("button");
-      dealsBtn.className = `pill-btn ${AppState.currentView === 'deals' ? 'active' : ''}`;
-      dealsBtn.dataset.pill = "deals";
-      dealsBtn.textContent = "2. Deals";
-      dealsBtn.addEventListener("click", () => {
-        AppState.searchQuery = "";
-        window.location.hash = "#/deals";
-      });
-      container.appendChild(dealsBtn);
+        const dotColor = getCategoryColor(catName);
+        item.innerHTML = `
+          <span style="display: flex; align-items: center;">
+            <span class="dropdown-item-dot" style="--item-dot-color: ${dotColor};"></span>
+            ${catName}
+          </span>
+        `;
 
-      // 3. Prime Video Movies
-      const moviesBtn = document.createElement("button");
-      moviesBtn.className = `pill-btn ${AppState.currentView === 'movies' ? 'active' : ''}`;
-      moviesBtn.dataset.pill = "movies";
-      moviesBtn.textContent = "3. Prime Video";
-      moviesBtn.addEventListener("click", () => {
-        AppState.searchQuery = "";
-        window.location.hash = "#/movies";
-      });
-      container.appendChild(moviesBtn);
-
-      // 4+. Dynamic Categories
-      AppState.categories.forEach((catName) => {
-        const catBtn = document.createElement("button");
-        const isCatActive = (AppState.currentView === "category" && AppState.selectedCategory.toLowerCase() === catName.toLowerCase());
-        const catColor = getCategoryColor(catName);
-
-        catBtn.className = `pill-btn cat-pill ${isCatActive ? 'active' : ''}`;
-        catBtn.style.setProperty("--pill-color", catColor);
-        catBtn.textContent = catName;
-
-        catBtn.addEventListener("click", () => {
-          AppState.searchQuery = "";
+        item.addEventListener("click", (e) => {
+          e.stopPropagation();
+          document.getElementById("homeCategoryMenu").classList.remove("show");
           window.location.hash = `#/category/${encodeURIComponent(catName)}`;
         });
 
-        container.appendChild(catBtn);
+        subfolderContainer.appendChild(item);
       });
     }
 
@@ -1451,7 +1461,7 @@
       const medium = isMovie ? "prime_video" : (item.isSaleActive ? "flash_sale" : "deals_catalog");
       const outboundLink = buildDynamicUtmUrl(item.site_url, item.id, medium, "card_cta", itemType);
 
-      // Badging Logic: Holiday badge displays during the active holiday month
+      // Badging: Holiday badge displays during the active calendar month
       let badgeHtml = "";
       if (isMovie) {
         if (item.isHolidayActive) {
@@ -1547,16 +1557,15 @@
 
     /**
      * Line 1524: Intelligent Home Catalog Balancer
-     * - Holiday films active this month sit up front at the top.
+     * - Holiday films active this month sit up front at the very top.
      * - Store deals and flash sales are placed up front when store inventory is smaller than movies.
-     * - When store inventory is similar/equal to movies (ratio between 0.75 and 1.33) or larger,
-     *   they alternate evenly (Store -> Movie -> Store -> Movie...).
+     * - When store inventory is similar/equal to movies (or larger), alternate evenly (Store -> Movie -> Store...).
      */
     function buildBalancedHomeCatalog(dealsList, moviesList) {
       const holidayMovies = moviesList.filter(m => m.isHolidayActive);
       const standardMovies = moviesList.filter(m => !m.isHolidayActive);
 
-      // Sort both catalogs alphabetically A-Z
+      // Sort catalogs alphabetically A-Z
       standardMovies.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
       const sortedDeals = [...dealsList].sort((a, b) => (a.title || "").localeCompare(b.title || ""));
 
@@ -1565,18 +1574,17 @@
       const dealsCount = sortedDeals.length;
       const moviesCount = standardMovies.length;
 
-      // Calculate ratio of deals to movies
+      // Ratio of deals to movies
       const ratio = moviesCount > 0 ? (dealsCount / moviesCount) : 1;
 
-      // Condition 1: Less store items than movies (ratio < 0.75) -> Store deals front-loaded
+      // 1. Less store items than movies (ratio < 0.75) -> Store deals front-loaded
       if (dealsCount > 0 && ratio < 0.75) {
         balancedBody = [...sortedDeals, ...standardMovies];
       } 
-      // Condition 2: Similar amount of store items & movies (or more store items) -> Alternate evenly
+      // 2. Similar amount of store items & movies (or more store items) -> Alternate evenly
       else {
         const maxLen = Math.max(dealsCount, moviesCount);
         for (let i = 0; i < maxLen; i++) {
-          // Alternate: Deal first, then Movie
           if (i < dealsCount) balancedBody.push(sortedDeals[i]);
           if (i < moviesCount) balancedBody.push(standardMovies[i]);
         }
@@ -1755,12 +1763,30 @@
         AppState.displayMode = "grid";
       }
 
-      renderCategoryPills();
+      // Update active nav button state
+      document.querySelectorAll(".nav-btn").forEach(btn => {
+        const isMatch = (btn.dataset.view === AppState.currentView) || 
+                        (btn.dataset.view === "home" && AppState.currentView === "category");
+        btn.classList.toggle("active", isMatch);
+      });
+
+      // Highlight active dropdown category item
+      document.querySelectorAll(".dropdown-item").forEach(item => {
+        const itemCat = item.dataset.cat;
+        if (AppState.currentView === "category") {
+          item.classList.toggle("active", itemCat.toLowerCase() === AppState.selectedCategory.toLowerCase());
+        } else if (AppState.currentView === "home") {
+          item.classList.toggle("active", itemCat === "all");
+        } else {
+          item.classList.remove("active");
+        }
+      });
+
       renderCatalog();
     }
 
     /**
-     * Line 1734: Initialize DOM Bindings & Start Persistent Listeners
+     * Line 1756: Initialize DOM Bindings & Start Persistent Listeners
      */
     function init() {
       // Brand Title click returns to Home
@@ -1770,6 +1796,51 @@
           AppState.searchQuery = "";
           window.location.hash = "#/home";
         });
+      }
+
+      // Primary Navigation Tabs
+      document.querySelectorAll(".nav-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          // If clicking dropdown arrow specifically, toggle dropdown only
+          if (e.target.id === "homeMenuTrigger") return;
+
+          const view = btn.dataset.view;
+          AppState.searchQuery = "";
+          const sInput = document.getElementById("siteSearch");
+          const sClear = document.getElementById("searchClear");
+          if (sInput) sInput.value = "";
+          if (sClear) sClear.style.display = "none";
+
+          window.location.hash = (view === "home") ? "#/home" : `#/${view}`;
+        });
+      });
+
+      // Home Dropdown Trigger Handlers
+      const trigger = document.getElementById("homeMenuTrigger");
+      const menu = document.getElementById("homeCategoryMenu");
+
+      if (trigger && menu) {
+        trigger.addEventListener("click", (e) => {
+          e.stopPropagation();
+          menu.classList.toggle("show");
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", (e) => {
+          if (!menu.contains(e.target) && e.target !== trigger) {
+            menu.classList.remove("show");
+          }
+        });
+
+        // All Categories dropdown option click
+        const allOption = menu.querySelector('[data-cat="all"]');
+        if (allOption) {
+          allOption.addEventListener("click", (e) => {
+            e.stopPropagation();
+            menu.classList.remove("show");
+            window.location.hash = "#/home";
+          });
+        }
       }
 
       // In-Page Instant Search Controller
@@ -1799,7 +1870,6 @@
           const isLight = document.body.classList.contains("light-theme");
           themeBtn.textContent = isLight ? "☀️" : "🌙";
           AppState.theme = isLight ? "light" : "dark";
-          renderCategoryPills();
           renderCatalog();
         });
       }
