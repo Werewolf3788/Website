@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entertainment & Affiliate Deals Hub</title>
+  
+  <style>
+    :root {
+      --bg-dark: #0d1117;
+      --card-bg: #161b22;
+      --card-border: #30363d;
+      --accent: #ff9900;
+      --accent-glow: rgba(255, 153, 0, 0.25);
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+      --prime-blue: #00a8e1;
+      --prime-glow: rgba(0, 168, 225, 0.25);
+      --badge-red: #e50914;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Glossy Header */
+    header {
+      background: linear-gradient(180deg, #1f242d 0%, #161b22 100%);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      padding: 12px 24px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    }
+
+    .nav-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+
+    .brand-title span {
+      color: var(--accent);
+    }
+
+    .tab-pills {
+      display: flex;
+      gap: 8px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    .tab-btn:hover, .tab-btn.active {
+      background: var(--accent);
+      color: #111;
+      font-weight: 600;
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .tab-btn[data-view="movies"].active {
+      background: var(--prime-blue);
+      border-color: var(--prime-blue);
+      box-shadow: 0 0 10px var(--prime-glow);
+      color: #fff;
+    }
+
+    /* Sub-Category Filter Bar */
+    #subCategoryBar {
+      background: #12151b;
+      border-bottom: 1px solid var(--card-border);
+      padding: 8px 24px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .sub-filter-chip {
+      background: #1b2129;
+      border: 1px solid #3b434e;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .sub-filter-chip.active, .sub-filter-chip:hover {
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* Grid Layout */
+    main {
+      flex: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 24px 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    /* Modern Card Layout */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+      border-color: #4b5563;
+    }
+
+    .card-media {
+      width: 100%;
+      height: 320px;
+      background: #000;
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .badge-pill {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: var(--badge-red);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+      z-index: 2;
+    }
+
+    .badge-pill.prime {
+      background: var(--prime-blue);
+    }
+
+    .card-content {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .meta-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+
+    .meta-badge {
+      border: 1px solid #30363d;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #0d1117;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 8px;
+      line-height: 1.3;
+      cursor: pointer;
+    }
+
+    .card-title:hover {
+      color: var(--accent);
+    }
+
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      flex: 1;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 14px;
+    }
+
+    .tag-pill {
+      background: #21262d;
+      color: #8b949e;
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #30363d;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .cta-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #ff9900 0%, #e68a00 100%);
+      color: #111;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-decoration: none;
+      padding: 10px;
+      border-radius: 6px;
+      min-height: 44px;
+      transition: opacity 0.2s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .cta-btn.movie-btn {
+      background: linear-gradient(180deg, #00a8e1 0%, #0082af 100%);
+      color: #fff;
+    }
+
+    .cta-btn.details-btn {
+      background: #21262d;
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+      flex: 0 0 80px;
+    }
+
+    .cta-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* Lightbox Modal */
+    .lightbox-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      backdrop-filter: blur(4px);
+    }
+
+    .lightbox-modal.active {
+      display: flex;
+    }
+
+    .lightbox-content {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      max-width: 720px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .lightbox-header {
+      display: flex;
+      gap: 20px;
+    }
+
+    .lightbox-poster {
+      width: 180px;
+      height: 260px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+      background: #000;
+    }
+
+    .lightbox-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 1.8rem;
+      cursor: pointer;
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    footer {
+      background: #0d1117;
+      border-top: 1px solid var(--card-border);
+      padding: 16px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: auto;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .lightbox-header {
+        flex-direction: column;
+        align-items: center;
+      }
+      .lightbox-poster {
+        width: 100%;
+        max-width: 240px;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header>
+    <div class="nav-container">
+      <div class="brand-title">MEDIA &amp; DEALS <span>HUB</span></div>
+      <nav class="tab-pills" id="primaryNav">
+        <button class="tab-btn" data-view="movies">Prime Video</button>
+        <button class="tab-btn active" data-view="deals">Affiliate Deals</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Dynamic Filter Sub-Bar -->
+  <div id="subCategoryBar"></div>
+
+  <!-- Primary Content Area -->
+  <main>
+    <div id="gridRoot" class="grid">
+      <!-- Injected dynamically -->
+    </div>
+  </main>
+
+  <!-- Detailed Lightbox Modal -->
+  <div id="lightbox" class="lightbox-modal">
+    <div class="lightbox-content">
+      <button class="lightbox-close" id="lightboxClose" aria-label="Close modal">&times;</button>
+      <div class="lightbox-header">
+        <img id="lbPoster" class="lightbox-poster" src="" alt="">
+        <div class="lightbox-info">
+          <h2 id="lbTitle" style="color: #fff; font-size: 1.4rem;"></h2>
+          <div class="meta-row" id="lbMetaRow"></div>
+          <div class="tag-container" id="lbTags"></div>
+          <p id="lbDesc" style="color: #c9d1d9; font-size: 0.9rem; line-height: 1.5;"></p>
+        </div>
+      </div>
+      <a id="lbOutboundBtn" class="cta-btn" href="#" target="_blank" rel="noopener noreferrer">
+        Watch on Prime Video
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div id="footerTimestamp">Version 1.1.0 | Deployed: 2026-10-03 11:00 EDT</div>
+  </footer>
+
+  <script type="module">
+    /**
+     * -------------------------------------------------------------------------
+     * Application Core: Deals & Movies Guide Multi-Firebase Sync
+     * Timestamp: 2026-10-03 11:00 EDT (New York / Eastern Time)
+     * -------------------------------------------------------------------------
+     */
+
+    // Relative protocol endpoints for security and live GitHub deployment
+    const ENDPOINTS = {
+      deals: "//smlc-fuel-monitor-default-rtdb.firebaseio.com/deals.json",
+      movies: "//entertainment-71888-default-rtdb.firebaseio.com/movies_guide.json"
+    };
+
+    const EVENT_SCHEDULE = {
+      "oct. prime deal":  { start: "2026-10-06", end: "2026-10-07" },
+      "oct. prime deals": { start: "2026-10-06", end: "2026-10-07" },
+      "prime-days":       { start: "2026-10-06", end: "2026-10-07" },
+      "black-friday":     { start: "2026-11-27", end: "2026-11-29" },
+      "cyber-monday":     { start: "2026-11-30", end: "2026-11-30" }
+    };
+
+    const AppState = {
+      deals: [],
+      movies: [],
+      currentView: "deals",
+      selectedCategory: "all",
+      selectedSub: "all"
+    };
+
+    // Outbound UTM Parameter Construction
+    function constructOutboundUrl(rawUrl, id, mediumType) {
+      if (!rawUrl) return "#";
+      try {
+        const url = new URL(rawUrl, window.location.origin);
+        if (url.hostname !== window.location.hostname) {
+          url.searchParams.set("utm_source", window.location.hostname || "media_hub");
+          url.searchParams.set("utm_medium", mediumType || "affiliate_link");
+          url.searchParams.set("utm_campaign", id || "catalog");
+        }
+        return url.toString();
+      } catch (e) {
+        return rawUrl;
+      }
+    }
+
+    // Strict Date & is_active Validation
+    function isDealActive(item) {
+      // 1. Strict boolean check (ignores false, "FALSE", undefined)
+      if (item.is_active !== true && String(item.is_active).toUpperCase() !== "TRUE") {
+        return false;
+      }
+
+      const todayStr = new Date().toISOString().split("T")[0];
+      let startDate = item.start_date;
+      let endDate = item.end_date;
+
+      if ((!startDate || !endDate) && item.event_tag) {
+        const tag = item.event_tag.trim().toLowerCase();
+        if (EVENT_SCHEDULE[tag]) {
+          startDate = EVENT_SCHEDULE[tag].start;
+          endDate = EVENT_SCHEDULE[tag].end;
+        }
+      }
+
+      if (startDate && todayStr < startDate) return false;
+      if (endDate && todayStr > endDate) return false;
+      return true;
+    }
+
+    // Modal Lightbox Controller
+    function openLightbox(item, isMovie) {
+      const modal = document.getElementById("lightbox");
+      const poster = document.getElementById("lbPoster");
+      const title = document.getElementById("lbTitle");
+      const metaRow = document.getElementById("lbMetaRow");
+      const tagsBox = document.getElementById("lbTags");
+      const desc = document.getElementById("lbDesc");
+      const outboundBtn = document.getElementById("lbOutboundBtn");
+
+      if (!modal) return;
+
+      poster.src = item.image_url || "";
+      poster.alt = ""; // Alt descriptions restricted to lightbox view
+      title.textContent = item.title || "";
+      desc.textContent = item.description || "No full synopsis available.";
+
+      metaRow.innerHTML = "";
+      if (item.imdb_id) metaRow.innerHTML += `<span class="meta-badge">${item.imdb_id}</span>`;
+      if (item.year) metaRow.innerHTML += `<span class="meta-badge">${item.year}</span>`;
+      if (item.rating) metaRow.innerHTML += `<span class="meta-badge">★ ${item.rating}</span>`;
+      if (item.runtime) metaRow.innerHTML += `<span class="meta-badge">${item.runtime}</span>`;
+      if (item.type) metaRow.innerHTML += `<span class="meta-badge" style="text-transform: capitalize;">${item.type}</span>`;
+
+      tagsBox.innerHTML = (item.tags || []).map(t => `<span class="tag-pill">${t}</span>`).join("");
+
+      const finalLink = constructOutboundUrl(item.site_url, item.id, isMovie ? "movie_guide" : "deal_card");
+      outboundBtn.href = finalLink;
+      outboundBtn.className = `cta-btn ${isMovie ? 'movie-btn' : ''}`;
+      outboundBtn.textContent = isMovie ? "Watch on Prime Video" : "View on Amazon";
+
+      modal.classList.add("active");
+    }
+
+    // Fetch and Process Data from Firebase
+    async function loadData() {
+      try {
+        const [dealsRes, moviesRes] = await Promise.all([
+          fetch(ENDPOINTS.deals),
+          fetch(ENDPOINTS.movies)
+        ]);
+
+        if (dealsRes.ok) {
+          const dealsJson = await dealsRes.json();
+          AppState.deals = parseDealsTree(dealsJson);
+        }
+
+        if (moviesRes.ok) {
+          const moviesJson = await moviesRes.json();
+          AppState.movies = parseMoviesTree(moviesJson);
+        }
+
+        routeFromHash();
+      } catch (err) {
+        console.error("Firebase fetch error:", err);
+      }
+    }
+
+    // Parse Deals from /deals/{category}/{id}
+    function parseDealsTree(tree) {
+      if (!tree) return [];
+      const list = [];
+      Object.keys(tree).forEach(catKey => {
+        const group = tree[catKey];
+        if (typeof group === "object" && group !== null) {
+          Object.keys(group).forEach(itemKey => {
+            const item = group[itemKey];
+            if (item && isDealActive(item)) {
+              list.push({
+                ...item,
+                category: item.category || catKey
+              });
+            }
+          });
+        }
+      });
+      return list;
+    }
+
+    // Parse Movies Guide (Only items with an amazon URL are shown)
+    function parseMoviesTree(tree) {
+      if (!tree) return [];
+      const list = [];
+
+      Object.keys(tree).forEach(key => {
+        const movie = tree[key];
+        if (!movie || typeof movie !== "object") return;
+
+        // Condition: Must have an Amazon link to be eligible
+        const amazonUrl = movie.amazon || movie.site_url || "";
+        if (!amazonUrl || amazonUrl.trim() === "") return;
+
+        const imdbId = movie.imdb_id || (key.includes("tt") ? key.substring(key.indexOf("tt")) : key);
+
+        list.push({
+          id: imdbId,
+          imdb_id: imdbId,
+          title: movie.title || "Untitled Film",
+          description: movie.description || movie.overview || movie.plot || "",
+          image_url: movie.poster || movie.image_url || "",
+          site_url: amazonUrl,
+          category: movie.genre || "Movies",
+          sub_category: movie.type || (movie.year ? String(movie.year) : "Feature"),
+          year: movie.year || "",
+          rating: movie.rating || movie.vote_average || "",
+          runtime: movie.runtime || "",
+          type: movie.type || "movie",
+          tags: Array.isArray(movie.genre) ? movie.genre : (movie.genre ? movie.genre.split(",").map(g => g.trim()) : ["Movie"])
+        });
+      });
+
+      return list;
+    }
+
+    // Render Grid
+    function renderGrid() {
+      const root = document.getElementById("gridRoot");
+      if (!root) return;
+      root.innerHTML = "";
+
+      const isMovie = AppState.currentView === "movies";
+      const activeSet = isMovie ? AppState.movies : AppState.deals;
+
+      const filtered = activeSet.filter(item => {
+        const matchCat = (AppState.selectedCategory === "all") || 
+                         (item.category && item.category.toLowerCase() === AppState.selectedCategory.toLowerCase());
+        const matchSub = (AppState.selectedSub === "all") || 
+                         (item.sub_category && item.sub_category.toLowerCase() === AppState.selectedSub.toLowerCase());
+        return matchCat && matchSub;
+      });
+
+      if (filtered.length === 0) {
+        root.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px 0;">No active listings found in this category.</div>`;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.id = `item-${item.id}`;
+
+        const outboundLink = constructOutboundUrl(item.site_url, item.id, isMovie ? "movie_guide" : "deal_card");
+        const eventBadge = item.event_tag ? `<div class="badge-pill">${item.event_tag}</div>` : 
+                          (isMovie ? `<div class="badge-pill prime">Prime Video</div>` : "");
+
+        const metaRowHtml = isMovie ? `
+          <div class="meta-row">
+            ${item.imdb_id ? `<span class="meta-badge">${item.imdb_id}</span>` : ''}
+            ${item.year ? `<span class="meta-badge">${item.year}</span>` : ''}
+            ${item.rating ? `<span class="meta-badge">★ ${item.rating}</span>` : ''}
+            ${item.runtime ? `<span class="meta-badge">${item.runtime}</span>` : ''}
+          </div>
+        ` : `
+          <div class="meta-row">
+            <span class="meta-badge">${item.category}</span>
+            ${item.sub_category ? `<span class="meta-badge">${item.sub_category}</span>` : ''}
+          </div>
+        `;
+
+        const tagsHtml = (item.tags || []).slice(0, 3).map(t => `<span class="tag-pill">${t}</span>`).join("");
+
+        card.innerHTML = `
+          <div class="card-media">
+            ${eventBadge}
+            <img src="${item.image_url || ''}" loading="lazy">
+          </div>
+          <div class="card-content">
+            ${metaRowHtml}
+            <h3 class="card-title">${item.title}</h3>
+            <p class="card-desc">${item.description}</p>
+            <div class="tag-container">${tagsHtml}</div>
+            <div class="btn-group">
+              <button class="cta-btn details-btn" type="button">Details</button>
+              <a href="${outboundLink}" class="cta-btn ${isMovie ? 'movie-btn' : ''}" target="_blank" rel="noopener noreferrer">
+                ${isMovie ? 'Watch' : 'Buy Now'}
+              </a>
+            </div>
+          </div>
+        `;
+
+        // Click handlers to launch rich lightbox
+        card.querySelector(".card-media").addEventListener("click", () => openLightbox(item, isMovie));
+        card.querySelector(".card-title").addEventListener("click", () => openLightbox(item, isMovie));
+        card.querySelector(".details-btn").addEventListener("click", () => openLightbox(item, isMovie));
+
+        root.appendChild(card);
+      });
+    }
+
+    // Dynamic Filter Chips
+    function renderSubFilters() {
+      const bar = document.getElementById("subCategoryBar");
+      if (!bar) return;
+      bar.innerHTML = "";
+
+      const activeSet = AppState.currentView === "movies" ? AppState.movies : AppState.deals;
+      const subCategories = new Set();
+
+      activeSet.forEach(item => {
+        if (item.sub_category) subCategories.add(item.sub_category);
+      });
+
+      if (subCategories.size === 0) {
+        bar.style.display = "none";
+        return;
+      }
+      bar.style.display = "flex";
+
+      const allChip = document.createElement("button");
+      allChip.className = `sub-filter-chip ${AppState.selectedSub === 'all' ? 'active' : ''}`;
+      allChip.textContent = "All Items";
+      allChip.addEventListener("click", () => {
+        AppState.selectedSub = "all";
+        window.location.hash = `#/${AppState.currentView}/${AppState.selectedCategory}/all`;
+      });
+      bar.appendChild(allChip);
+
+      subCategories.forEach(sub => {
+        const chip = document.createElement("button");
+        chip.className = `sub-filter-chip ${AppState.selectedSub.toLowerCase() === sub.toLowerCase() ? 'active' : ''}`;
+        chip.textContent = sub;
+        chip.addEventListener("click", () => {
+          AppState.selectedSub = sub;
+          window.location.hash = `#/${AppState.currentView}/${AppState.selectedCategory}/${encodeURIComponent(sub)}`;
+        });
+        bar.appendChild(chip);
+      });
+    }
+
+    // Hash Router (#/view/category/subcategory)
+    function routeFromHash() {
+      const hash = window.location.hash.replace("#/", "").replace("#", "");
+      const segments = hash.split("/").map(s => decodeURIComponent(s));
+
+      const view = segments[0] || "deals";
+      const cat = segments[1] || "all";
+      const sub = segments[2] || "all";
+
+      AppState.currentView = (view === "movies") ? "movies" : "deals";
+      AppState.selectedCategory = cat;
+      AppState.selectedSub = sub;
+
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.view === AppState.currentView);
+      });
+
+      renderSubFilters();
+      renderGrid();
+    }
+
+    // DOM Ready Initialization
+    window.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const view = e.target.dataset.view;
+          window.location.hash = `#/${view}/all/all`;
+        });
+      });
+
+      const closeBtn = document.getElementById("lightboxClose");
+      const modal = document.getElementById("lightbox");
+      if (closeBtn && modal) {
+        closeBtn.addEventListener("click", () => modal.classList.remove("active"));
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) modal.classList.remove("active");
+        });
+      }
+
+      window.addEventListener("hashchange", routeFromHash);
+      loadData();
+    });
+  </script>
+</body>
+</html>
