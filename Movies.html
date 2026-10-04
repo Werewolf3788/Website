@@ -3,16 +3,17 @@
 <!-- WEREWOLF CINEMA LIBRARY - MULTI-PLATFORM PILL TILES & PWA ENGINE  -->
 <!-- Line 1: HTML Document Structure & GA4 Setup (Stream: Game Tracker)-->
 <!-- Line 18: Standard Browser Tab Favicon & Touch Icon Config         -->
-<!-- Line 65: Top Sticky Navbar with Brand Icon & Dynamic Drawer       -->
-<!-- Line 140: Ordered Platform Pills with Strict Direct Link Counts   -->
+<!-- Line 25: Official Firebase Realtime SDK (WebSocket Zero-Refresh)  -->
+<!-- Line 75: Top Sticky Navbar with Brand Icon & Dynamic Drawer       -->
+<!-- Line 150: Ordered Platform Pills with Strict Direct Link Counts   -->
 <!--           (Amazon -> Apple TV -> Fandango -> All Content ->       -->
 <!--            Google TV -> JustWatch -> Movies Anywhere -> YouTube)  -->
-<!-- Line 260: CSS Styles (Glossy Aesthetic, 85% Bounds, Icon Pills)   -->
-<!-- Line 630: Live Realtime Firebase Sync & Isolated Lightbox Engine  -->
-<!-- Line 820: Deep-Link Hash Anchor (#imdbId) Handler                 -->
-<!-- Line 980: Outbound UTM Parameter Construction & Amazon Rule       -->
-<!-- Line 1060: Clean Lightbox Button Rendering (No Duplicates)        -->
-<!-- Date & Time (NYT 24hr): 10/04/2026 17:30:00 EDT                   -->
+<!-- Line 270: CSS Styles (Glossy Aesthetic, 85% Bounds, Icon Pills)   -->
+<!-- Line 640: Realtime WebSocket Stream (.on('value')) & Link Filter  -->
+<!-- Line 830: Deep-Link Hash Anchor (#imdbId) Handler                 -->
+<!-- Line 990: Outbound UTM Parameter Construction & Amazon Rule       -->
+<!-- Line 1070: Clean Lightbox Button Rendering (No Duplicates)        -->
+<!-- Date & Time (NYT 24hr): 10/04/2026 17:45:00 EDT                   -->
 <!-- ================================================================= -->
 <html lang="en">
 <head>
@@ -27,13 +28,17 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#8b0000">
 
+    <!-- Official Firebase App & Realtime Database SDKs for Persistent WebSockets -->
+    <script src="//www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="//www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
     <script src="//raw.githack.com/Werewolf3788/SKVentureSigns/main/Languge_Fonts/language_alphabets.js"></script>
     <script src="//raw.githack.com/Werewolf3788/SKVentureSigns/main/Languge_Fonts/fontSwitcher.js"></script>
 
     <!-- Google Analytics 4 (GA4) via G-JDNSLD3GFE (Stream: Game Tracker / ID: 15350523518) -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-JDNSLD3GFE"></script>
     <script>
-      /* Line 27: Production Analytics with Enhanced Cookie Rules (NYT: 10/04/2026 17:30:00 EDT) */
+      /* Line 38: Production Analytics with Enhanced Cookie Rules (NYT: 10/04/2026 17:45:00 EDT) */
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
@@ -229,8 +234,8 @@
 
     <!-- Persistent Time & Version Footer -->
     <footer id="app-version-footer">
-        <span class="footer-build-tag black-outline">Werewolf Cinema Engine v2.8.5</span>
-        <span class="footer-timestamp black-outline">Live Stamp (NYT): 10/04/2026 17:30 EDT</span>
+        <span class="footer-build-tag black-outline">Werewolf Cinema Engine v2.9.0</span>
+        <span class="footer-timestamp black-outline">Live Stamp (NYT): 10/04/2026 17:45 EDT</span>
     </footer>
 </div>
 
@@ -350,7 +355,7 @@
 
 <style>
 /* ========================================================= */
-/* CSS STYLING SECTION (Line 260)                            */
+/* CSS STYLING SECTION (Line 270)                            */
 /* ========================================================= */
 :root { 
     --text-main: #fff; 
@@ -1313,7 +1318,7 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
 
 <script>
 // =========================================================
-// JAVASCRIPT LOGIC & ISOLATED PLATFORM ENGINE (Line 630)   
+// JAVASCRIPT LOGIC & ISOLATED PLATFORM ENGINE (Line 640)   
 // =========================================================
 (function() {
     let moviesMap = {};
@@ -1326,9 +1331,16 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
     const BATCH_SIZE = 60;
     let currentRenderLimit = BATCH_SIZE;
 
-    const FIREBASE_ENDPOINT = "https://entertainment-71888-default-rtdb.firebaseio.com/movies_guide.json";
-    const FIREBASE_UTM_ENDPOINT = "https://entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
-    const CACHE_STORAGE_KEY = "ww_cinema_cache_v2";
+    // Official Firebase Realtime Database Configuration
+    const firebaseConfig = {
+        databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com"
+    };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const database = firebase.database();
+
+    const CACHE_STORAGE_KEY = "ww_cinema_cache_v3";
     const NOTIFY_PREF_KEY = "ww_cinema_push_enabled";
     const NOTIFY_SCOPE_KEY = "ww_cinema_notify_platform";
     const PINNED_PLATFORM_KEY = "ww_cinema_pinned_platform";
@@ -1536,7 +1548,7 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
     }
 
     /* ------------------------------------------------------------------ */
-    /* LINE 820: DEEP-LINK HASH ANCHOR HANDLER (#imdbId)                  */
+    /* LINE 830: DEEP-LINK HASH ANCHOR HANDLER (#imdbId)                  */
     /* ------------------------------------------------------------------ */
     function checkUrlHashAndOpenMovie() {
         const hash = window.location.hash.replace('#', '').trim();
@@ -1683,41 +1695,56 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
     }
 
     /* ------------------------------------------------------------------ */
-    /* FIREBASE & MENU SYNC (REALTIME SSE EVENTSOURCE)                    */
+    /* REALTIME WEBSOCKET LISTENER VIA FIREBASE SDK                       */
     /* ------------------------------------------------------------------ */
+    function initLiveFirebaseStream() {
+        const syncDot = document.getElementById('sync-dot');
+        const syncText = document.getElementById('sync-text');
+
+        // Check local cache for immediate paint
+        const cachedData = localStorage.getItem(CACHE_STORAGE_KEY);
+        if (cachedData) {
+            try {
+                moviesMap = JSON.parse(cachedData);
+                rebuildMoviesArray(false);
+            } catch (e) {}
+        }
+
+        // Establish continuous Realtime Database WebSocket listener
+        const moviesRef = database.ref('movies_guide');
+        moviesRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data && typeof data === 'object') {
+                moviesMap = data;
+                rebuildMoviesArray(true);
+                if (syncDot && syncText) {
+                    syncDot.className = 'dot-synced';
+                    syncText.textContent = 'Live Realtime Firebase Stream Active';
+                }
+            } else {
+                moviesMap = {};
+                rebuildMoviesArray(true);
+            }
+        }, (error) => {
+            console.error("Firebase Realtime WebSocket Error:", error);
+            if (syncDot && syncText) {
+                syncDot.className = 'dot-error';
+                syncText.textContent = 'Firebase Connection Error';
+            }
+        });
+    }
+
     function initLiveUtmStream() {
-        fetch(FIREBASE_UTM_ENDPOINT)
-            .then(res => res.json())
-            .then(data => {
-                if (data && typeof data === 'object') {
-                    utmLinksMap = data;
-                    renderBothMenuBars();
-                }
-            })
-            .catch(err => console.error("Error fetching UTM links:", err));
-
-        try {
-            const utmEventSource = new EventSource(FIREBASE_UTM_ENDPOINT);
-            utmEventSource.addEventListener('put', function(e) {
-                try {
-                    const parsed = JSON.parse(e.data);
-                    if (parsed) {
-                        const path = parsed.path || '/';
-                        const payload = parsed.data;
-
-                        if (path === '/' && payload && typeof payload === 'object') {
-                            utmLinksMap = payload;
-                        } else if (path.startsWith('/') && payload !== undefined) {
-                            const groupKey = path.substring(1).split('/')[0];
-                            if (groupKey) utmLinksMap[groupKey] = payload;
-                        }
-                        renderBothMenuBars();
-                    }
-                } catch (err) {
-                    console.error("Live UTM SSE parse error:", err);
-                }
-            });
-        } catch (e) {}
+        const utmRef = database.ref('utm_links');
+        utmRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data && typeof data === 'object') {
+                utmLinksMap = data;
+                renderBothMenuBars();
+            }
+        }, (error) => {
+            console.error("UTM Realtime WebSocket Error:", error);
+        });
     }
 
     function renderBothMenuBars() {
@@ -1887,7 +1914,7 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
     }
 
     /* ------------------------------------------------------------------ */
-    /* LINE 980: OUTBOUND UTM LINK BUILDER & STRICT AFFILIATE LOGIC       */
+    /* LINE 990: OUTBOUND UTM LINK BUILDER & STRICT AFFILIATE LOGIC       */
     /* ------------------------------------------------------------------ */
     window.appendUtm = (url, title = 'outbound') => {
         if (!url) return '';
@@ -2066,68 +2093,9 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
         return rawDateStr || '';
     }
 
-    async function initLiveFirebaseStream() {
-        const syncDot = document.getElementById('sync-dot');
-        const syncText = document.getElementById('sync-text');
-
-        try {
-            const res = await fetch(`${FIREBASE_ENDPOINT}?cb=${Date.now()}`);
-            if (res.ok) {
-                const data = await res.json();
-                if (data && typeof data === 'object') {
-                    moviesMap = data;
-                    localStorage.removeItem(CACHE_STORAGE_KEY);
-                    rebuildMoviesArray(true);
-                    if (syncDot && syncText) {
-                        syncDot.className = 'dot-synced';
-                        syncText.textContent = 'Live Realtime Firebase Stream Active';
-                    }
-                }
-            }
-        } catch (err) {
-            console.error("Direct fetch error: ", err);
-            const cachedData = localStorage.getItem(CACHE_STORAGE_KEY);
-            if (cachedData) {
-                moviesMap = JSON.parse(cachedData);
-                rebuildMoviesArray(false);
-            }
-            if (syncDot && syncText) {
-                syncDot.className = 'dot-error';
-                syncText.textContent = 'Firebase Offline';
-            }
-        }
-
-        try {
-            const eventSource = new EventSource(FIREBASE_ENDPOINT);
-            eventSource.addEventListener('put', function(e) {
-                try {
-                    const parsed = JSON.parse(e.data);
-                    if (parsed) {
-                        const path = parsed.path || '/';
-                        const payload = parsed.data;
-
-                        if (path === '/' && payload && typeof payload === 'object') {
-                            moviesMap = payload;
-                        } else if (path.startsWith('/') && payload !== undefined) {
-                            const movieKey = path.substring(1).split('/')[0];
-                            if (movieKey) {
-                                if (payload === null) {
-                                    delete moviesMap[movieKey];
-                                } else {
-                                    moviesMap[movieKey] = Object.assign({}, moviesMap[movieKey] || {}, payload);
-                                }
-                            }
-                        }
-                        localStorage.removeItem(CACHE_STORAGE_KEY);
-                        rebuildMoviesArray(true);
-                    }
-                } catch (err) {
-                    console.error("Firebase SSE parsing error: ", err);
-                }
-            });
-        } catch (e) {}
-    }
-
+    /* ------------------------------------------------------------------ */
+    /* MASTER REBUILD & STRICT LINK FILTER (NO DEAD MOVIES ON SITE)       */
+    /* ------------------------------------------------------------------ */
     function rebuildMoviesArray(saveCache = true) {
         if (!moviesMap || typeof moviesMap !== 'object') return;
 
@@ -2154,6 +2122,22 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
             };
 
             const isMA = !!(p.moviesanywhere && p.moviesanywhere.trim() !== '' && !p.moviesanywhere.toLowerCase().includes('not in library'));
+            const isFamilyShareChecked = v.googleFamilyShare === true || v.googleFamilyShare === 'true' || v.googleFamilyShare === 1 || v.googleFamilyShare === 'TRUE';
+            const isYouTubeFreeChecked = v.youtubeFree === true || v.youtubeFree === 'true' || v.youtubeFree === 1 || v.youtubeFree === 'TRUE';
+
+            // STRICT VISIBILITY CHECK: Title MUST possess at least one active link
+            const hasAnyLink = (
+                (p.amazon && p.amazon.trim() !== '') ||
+                (p.apple && p.apple.trim() !== '') ||
+                (p.fandango && p.fandango.trim() !== '') ||
+                (p.google && p.google.trim() !== '') || isFamilyShareChecked ||
+                (p.justwatch && p.justwatch.trim() !== '') ||
+                isMA ||
+                (p.youtube && p.youtube.trim() !== '') || isYouTubeFreeChecked
+            );
+
+            // Exclude titles with 0 clickable links completely from the site
+            if (!hasAnyLink) return null;
 
             let castArr = [];
             if (Array.isArray(v.actors)) {
@@ -2165,9 +2149,6 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
             const rawStreamingStr = v.streaming || '';
             const cleanStreamPlatforms = extractCleanStreamPlatforms(rawStreamingStr);
             
-            const isFamilyShareChecked = v.googleFamilyShare === true || v.googleFamilyShare === 'true' || v.googleFamilyShare === 1 || v.googleFamilyShare === 'TRUE';
-            const isYouTubeFreeChecked = v.youtubeFree === true || v.youtubeFree === 'true' || v.youtubeFree === 1 || v.youtubeFree === 'TRUE';
-
             if (isYouTubeFreeChecked && !cleanStreamPlatforms.some(sp => sp.toLowerCase() === 'youtube (free with ads)')) {
                 cleanStreamPlatforms.unshift('YouTube (Free with Ads)');
             }
@@ -2508,7 +2489,7 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
     }
 
     /* ------------------------------------------------------------------ */
-    /* LINE 1060: CLEAN LIGHTBOX BUTTON RENDERING (NO DUPLICATES)         */
+    /* LINE 1070: CLEAN LIGHTBOX BUTTON RENDERING (NO DUPLICATES)         */
     /* ------------------------------------------------------------------ */
     function renderLightboxButtons(m) {
         const storeHeading = document.getElementById('lb-store-heading');
