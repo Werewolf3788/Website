@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <!-- ================================================================= -->
-<!-- WEREWOLF CINEMA LIBRARY - LIVE UTM STREAM & PWA NAVIGATION        -->
-<!-- Line 1: HTML Document Structure & GA4 / GTM Setup                 -->
-<!-- Line 65: Top Navigation Bar & Dynamic Menu Scaffolding            -->
-<!-- Line 180: CSS Styles (85% Layout, Dropdown Bounds & Mobile Spec)  -->
-<!-- Line 470: App Core & Movie Gallery Scaffolding                    -->
-<!-- Line 590: Live Realtime Firebase Sync Engine (Universal Dates)    -->
-<!-- Line 1060: Universal Clickable Outbound Storefronts & YouTube Fix -->
-<!-- Date & Time (NYT 24hr): 09/22/2026 23:55:00 EDT                   -->
+<!-- WEREWOLF CINEMA LIBRARY - MULTI-PLATFORM PILL TILES & PWA ENGINE  -->
+<!-- Line 1: HTML Document Structure & GA4 Setup (Stream: Game Tracker)-->
+<!-- Line 65: Top Sticky Navbar & Dynamic Drawer Scaffolding           -->
+<!-- Line 140: Ordered Platform Pills with Strict Direct Link Counts   -->
+<!--           (Amazon -> Apple TV -> Fandango -> All Content ->       -->
+<!--            Google TV -> JustWatch -> Movies Anywhere -> YouTube)  -->
+<!-- Line 260: CSS Styles (Glossy Aesthetic, 85% Bounds, Icon Pills)   -->
+<!-- Line 630: Live Realtime Firebase Sync & Isolated Lightbox Engine  -->
+<!-- Line 980: Browser-First Amazon Affiliate URL Resolution           -->
+<!-- Line 1190: YouTube DRM-Safe Direct Launcher & Mobile Fix          -->
+<!-- Date & Time (NYT 24hr): 10/04/2026 13:48:00 EDT                   -->
 <!-- ================================================================= -->
 <html lang="en">
 <head>
@@ -23,21 +26,22 @@
     <script src="//raw.githack.com/Werewolf3788/SKVentureSigns/main/Languge_Fonts/language_alphabets.js"></script>
     <script src="//raw.githack.com/Werewolf3788/SKVentureSigns/main/Languge_Fonts/fontSwitcher.js"></script>
 
-    <!-- Google Analytics 4 (GA4) via G-CTYHDF4MSD (Works across HTTP & HTTPS) -->
-    <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
-    <script async src="//www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
+    <!-- Google Analytics 4 (GA4) via G-JDNSLD3GFE (Stream: Game Tracker / ID: 15350523518) -->
+    <script async src="//www.googletagmanager.com/gtag/js?id=G-JDNSLD3GFE"></script>
     <script>
+      /* Line 23: Production Analytics with Enhanced Cookie Rules (NYT: 10/04/2026 13:48:00 EDT) */
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-CTYHDF4MSD', { 'send_page_view': true, 'cookie_flags': 'SameSite=None;Secure' });
-      gtag('config', 'G-Z9M5LXQ5XN');
-      gtag('config', 'G-L376P3NPY4');
+      gtag('config', 'G-JDNSLD3GFE', { 
+        'send_page_view': true, 
+        'cookie_flags': 'SameSite=None;Secure' 
+      });
     </script>
 </head>
 <body class="theme-dark">
 
-<!-- Top App Bar Navigation with Desktop Menu & Mobile Hamburger (85% Width Centered) -->
+<!-- Top App Bar Navigation with Desktop Menu & Mobile Drawer (85% Width Centered) -->
 <header id="top-navbar-wrapper">
     <nav id="top-navbar" class="master-85-width">
         <div class="nav-left-zone">
@@ -56,14 +60,14 @@
         </div>
 
         <div class="nav-actions">
-            <button id="notify-toggle-btn" class="nav-btn notify-bell black-outline" onclick="toggleNotifications()" title="Push Notifications Toggle">
+            <button id="notify-toggle-btn" class="nav-btn notify-bell black-outline" onclick="openNotifyModal()" title="Push Notifications Settings">
                 🔔 <span id="notify-status-text">OFF</span>
             </button>
         </div>
     </nav>
 </header>
 
-<!-- Dynamic Mobile Navigation Drawer (Sandwich Slide-out) -->
+<!-- Dynamic Mobile Navigation Drawer -->
 <div id="nav-drawer-overlay" onclick="closeNavMenu()"></div>
 <div id="nav-drawer">
     <div class="drawer-header">
@@ -72,10 +76,10 @@
     </div>
     
     <div class="drawer-notify-box">
-        <div class="drawer-section-label">🔔 New Movie Notifications</div>
+        <div class="drawer-section-label">🔔 Platform Push Alerts</div>
         <div class="notify-control-row">
-            <span id="drawer-notify-desc">Get instant alerts when films are added.</span>
-            <button id="drawer-notify-toggle" class="f-btn black-outline" onclick="toggleNotifications()">Enable</button>
+            <span id="drawer-notify-desc">Receive alerts tailored to your favorite storefront.</span>
+            <button id="drawer-notify-toggle" class="f-btn black-outline" onclick="openNotifyModal()">Configure Alerts</button>
         </div>
     </div>
 
@@ -94,7 +98,6 @@
         <div id="header-clock" class="black-outline">Loading Time...</div>
         <div id="cinema-logo" class="black-outline">WEREWOLF <span>CINEMA</span></div>
         <div id="movie-counter" class="black-outline">Cinema Inventory: <span>...</span></div>
-        <div id="user-owned-counter" class="black-outline" style="font-size: 0.75rem; color: #ffd166; margin-top: 4px; display: none;"></div>
         
         <div id="sync-status-badge" class="black-outline">
             <span id="sync-dot" class="dot-checking"></span>
@@ -103,13 +106,59 @@
         
         <div id="affiliate-disclosure">
             <p class="black-outline">As an Amazon Associate, <strong class="black-outline">Werewolf3788</strong> earns from qualifying purchases.  
-            <br><span class="ma-highlight black-outline">🚀 PRO TIP:</span> Buy on Amazon to sync with <strong>Movies Anywhere (MA)</strong>!</p>
+            <br><span class="ma-highlight black-outline">🚀 UNIVERSAL SYNC:</span> Titles synced with <strong>Movies Anywhere (MA)</strong> mirror across participating connected lockers!</p>
+        </div>
+
+        <!-- Ordered Platform Filter Pills Bar (A-Z with All Content Centered) -->
+        <div id="platform-pills-bar">
+            <div class="pills-scroll-track" id="pills-track">
+                <!-- 1. Amazon -->
+                <button type="button" class="platform-pill black-outline" data-platform="amazon" onclick="selectPlatformPill('amazon', this)">
+                    <img src="https://www.citypng.com/public/uploads/preview/square-amazon-prime-video-app-logo-701751695133988syacpc2hqk.png" class="pill-icon" alt="Amazon"> Amazon <span class="pill-count" id="count-pill-amazon">(0)</span>
+                </button>
+                <!-- 2. Apple TV -->
+                <button type="button" class="platform-pill black-outline" data-platform="apple" onclick="selectPlatformPill('apple', this)">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Apple_TV.png" class="pill-icon" alt="Apple TV"> Apple TV <span class="pill-count" id="count-pill-apple">(0)</span>
+                </button>
+                <!-- 3. Fandango at Home -->
+                <button type="button" class="platform-pill black-outline" data-platform="fandango" onclick="selectPlatformPill('fandango', this)">
+                    <img src="https://downloadr2.apkmirror.com/wp-content/uploads/2025/12/17/69417168c0da3_air.com.vudu.air.DownloaderTablet.png" class="pill-icon" alt="Fandango"> Fandango <span class="pill-count" id="count-pill-fandango">(0)</span>
+                </button>
+                <!-- 4. All Content (Centered Anchor) -->
+                <button type="button" class="platform-pill active black-outline pill-center-all" data-platform="" onclick="selectPlatformPill('', this)">
+                    🎬 All Content <span class="pill-count" id="count-pill-all">(0)</span>
+                </button>
+                <!-- 5. Google TV -->
+                <button type="button" class="platform-pill black-outline" data-platform="google" onclick="selectPlatformPill('google', this)">
+                    <img src="https://cdn.iconscout.com/icon/premium/png-256-thumb/google-tv-icon-svg-download-png-7683467.png?f=webp" class="pill-icon" alt="Google TV"> Google TV <span class="pill-count" id="count-pill-google">(0)</span>
+                </button>
+                <!-- 6. JustWatch -->
+                <button type="button" class="platform-pill black-outline" data-platform="justwatch" onclick="selectPlatformPill('justwatch', this)">
+                    <img src="https://www.justwatch.com/static/support/about-justwatch.png" class="pill-icon" alt="JustWatch"> JustWatch <span class="pill-count" id="count-pill-justwatch">(0)</span>
+                </button>
+                <!-- 7. Movies Anywhere -->
+                <button type="button" class="platform-pill black-outline" data-platform="moviesanywhere" onclick="selectPlatformPill('moviesanywhere', this)">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTv4dFyoSAX7KrunrNIXW4K5U-mojIpmyjDbi4TGN3a0TxP5Ic8ITFxovPl&s=10" class="pill-icon" alt="Movies Anywhere"> Movies Anywhere <span class="pill-count" id="count-pill-moviesanywhere">(0)</span>
+                </button>
+                <!-- 8. YouTube -->
+                <button type="button" class="platform-pill black-outline" data-platform="youtube" onclick="selectPlatformPill('youtube', this)">
+                    <img src="https://cdn.pixabay.com/photo/2021/03/02/12/04/youtube-6062251_1280.png" class="pill-icon" alt="YouTube"> YouTube <span class="pill-count" id="count-pill-youtube">(0)</span>
+                </button>
+            </div>
+            
+            <!-- Pin Default Platform Toolbar -->
+            <div id="pin-platform-toolbar">
+                <span id="pinned-notice-label" class="black-outline">Default View: <strong>All Content</strong></span>
+                <button type="button" id="pin-platform-btn" class="f-btn black-outline" onclick="togglePinCurrentPlatform()">
+                    📌 Set Current View as Home
+                </button>
+            </div>
         </div>
 
         <!-- Controls & Filters -->
         <div id="controls-container">
             <div id="search-box-wrapper">
-                <input type="text" id="movie-search" placeholder="Type to instantly filter by title, actor, or year..." oninput="runFilters()">
+                <input type="text" id="movie-search" placeholder="Type to filter titles, actors, genres, or release years..." oninput="runFilters()">
             </div>
             
             <div id="filter-dropdowns">
@@ -121,20 +170,6 @@
                 
                 <select id="rating-select" class="f-select" onchange="runFilters()">
                     <option value="">All Ratings</option>
-                </select>
-                
-                <select id="platform-select" class="f-select" onchange="runFilters()">
-                    <option value="">All Digital Stores</option>
-                    <option value="my_owned_yt">⭐ My Owned Films (YouTube)</option>
-                    <option value="youtube_free">🆓 YouTube (Free Movies)</option>
-                    <option value="family_share">👨‍👩‍👧‍👦 Google Family Share</option>
-                    <option value="amazon">Amazon</option>
-                    <option value="google">Google Play</option>
-                    <option value="youtube">YouTube</option>
-                    <option value="moviesanywhere">Movies Anywhere</option>
-                    <option value="apple">Apple TV</option>
-                    <option value="fandango">Fandango</option>
-                    <option value="justwatch">JustWatch</option>
                 </select>
 
                 <select id="stream-service-select" class="f-select" onchange="runFilters()">
@@ -154,7 +189,7 @@
                 </select>
                 
                 <select id="artist-select" class="f-select" onchange="runFilters()">
-                    <option value="">All Artists</option>
+                    <option value="">All Artists / Actors</option>
                 </select>
                 
                 <select id="sort-select" class="f-select" onchange="runFilters()">
@@ -166,7 +201,7 @@
                     <option value="old-new">Year: Old-New</option>
                 </select>
                 
-                <button class="f-btn btn-reset black-outline" onclick="resetFilters()">Reset</button>
+                <button class="f-btn btn-reset black-outline" onclick="resetFilters()">Reset All</button>
             </div>
         </div>
     </div>
@@ -180,9 +215,15 @@
             💰 Support the Library - Send a Tip!
         </a>
     </div>
+
+    <!-- Persistent Time & Version Footer -->
+    <footer id="app-version-footer">
+        <span class="footer-build-tag black-outline">Werewolf Cinema Engine v2.8.0</span>
+        <span class="footer-timestamp black-outline">Live Stamp (NYT): 10/04/2026 13:48 EDT</span>
+    </footer>
 </div>
 
-<!-- Adaptive Dynamic Sidebar -->
+<!-- Dynamic Vertical Alphabet & Decade Sidebar -->
 <div id="dynamic-nav-sidebar" class="black-outline"></div>
 
 <!-- Back to Top Button -->
@@ -191,8 +232,14 @@
 <!-- Movie Lightbox Modal -->
 <div id="movie-lightbox" class="hidden-ui" onclick="closeLightbox(event)">
     <div class="lightbox-content" id="lightbox-inner" onclick="event.stopPropagation()">
+        <!-- YouTube Inline Trailer Player (Safe DRM-free preview mode) -->
         <div id="lb-video-wrapper" style="display: none;">
-            <button class="close-video-btn black-outline" onclick="closeYouTube(event)">⬅ Close Video</button>
+            <div style="display: flex; gap: 8px; position: absolute; top: 10px; left: 10px; z-index: 150;">
+                <button class="close-video-btn black-outline" onclick="closeYouTube(event)">⬅ Close Player</button>
+                <a id="lb-yt-external-btn" href="#" target="_blank" rel="noopener noreferrer" class="f-btn black-outline" style="font-size: 0.72rem; min-height: 48px; border-color: #ff0000; color: #fff;">
+                    ▶ Open in YouTube App
+                </a>
+            </div>
             <iframe id="lb-yt-iframe" src="" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
         </div>
         <button class="close-btn black-outline" onclick="closeLightbox(event)" aria-label="Close modal">✕</button>
@@ -202,6 +249,7 @@
                 <div id="lb-meta-container" class="lb-meta black-outline"></div>
                 <div id="lb-rating-desc" class="lb-meta black-outline" style="color: #f5c518; font-size: 0.8rem; margin-top: 5px; font-weight: 700; display: none;"></div>
 
+                <div id="lb-ma-status-banner" class="black-outline" style="display: none;"></div>
                 <div id="lb-streaming" class="lb-meta black-outline" style="color: #00aeef; font-size: 0.85rem; margin: 10px 0; display: none; white-space: pre-line; text-align: left; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px; border: 1px solid #222;"></div>
                 <div id="lb-date-added" class="black-outline" style="font-size: 0.8rem; color:#1ce783; margin-bottom:10px;"></div>
                 
@@ -213,19 +261,63 @@
                     <div id="lb-artists" class="lb-cast-scrollbox"></div>
                 </div>
                 
+                <!-- ALT Description strictly isolated inside Lightbox -->
                 <p id="lb-image-alt-desc" class="black-outline" style="font-size: 0.75rem; color: #f5c518; margin-top: 6px; font-style: italic;"></p>
                 <p id="lb-description-text" class="black-outline" style="font-size: 0.85rem; color: #ccc; line-height: 1.5; margin-top: 10px; text-align: left;"></p>
-                
-                <!-- Personal Device YouTube Ownership Toggle -->
-                <div style="margin: 12px 0 6px;">
-                    <button id="lb-owned-toggle-btn" class="f-btn black-outline" style="font-size: 0.75rem; padding: 6px 14px; min-height: 38px; border-color: #ffd166; color: #ffd166;" onclick="toggleCurrentMovieOwnedState()">
-                        ⭐ Mark as Owned in My YouTube
-                    </button>
-                </div>
             </div>
 
+            <!-- Isolated Platform Button Heading -->
             <h3 id="lb-store-heading" class="black-outline" style="font-size: 0.9rem; color: #fff; margin: 15px 0 10px; text-transform: uppercase; font-weight: 400; display: none;">Buy / Rent / Watch</h3>
             <div id="lb-buttons" class="button-container"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Notification Configuration Modal -->
+<div id="notify-config-modal" class="hidden-ui" onclick="closeNotifyModal(event)">
+    <div class="notify-modal-card" onclick="event.stopPropagation()">
+        <button class="close-btn black-outline" onclick="closeNotifyModal(event)">✕</button>
+        <h3 class="black-outline" style="color: #ff0000; margin-top:0;">🔔 Push Notification Preferences</h3>
+        <p style="font-size: 0.85rem; color: #ccc;">Select which platform storefront triggers instant notifications:</p>
+        
+        <div class="notify-select-group">
+            <label class="notify-option">
+                <input type="radio" name="notify_platform_scope" value="all" checked>
+                <span>🌐 All Platforms (Full Library Additions)</span>
+            </label>
+            <label class="notify-option">
+                <input type="radio" name="notify_platform_scope" value="amazon">
+                <span>🛒 Amazon Prime / Video Links</span>
+            </label>
+            <label class="notify-option">
+                <input type="radio" name="notify_platform_scope" value="apple">
+                <span>🍎 Apple TV / iTunes Store</span>
+            </label>
+            <label class="notify-option">
+                <input type="radio" name="notify_platform_scope" value="fandango">
+                <span>🎟️ Fandango at Home</span>
+            </label>
+            <label class="notify-option">
+                <input type="radio" name="notify_platform_scope" value="google">
+                <span>📺 Google TV (Includes Family Share)</span>
+            </label>
+            <label class="notify-option">
+                <input type="radio" name="notify_platform_scope" value="justwatch">
+                <span>🟡 JustWatch Catalog</span>
+            </label>
+            <label class="notify-option">
+                <input type="radio" name="notify_platform_scope" value="moviesanywhere">
+                <span>🔄 Movies Anywhere Direct</span>
+            </label>
+            <label class="notify-option">
+                <input type="radio" name="notify_platform_scope" value="youtube">
+                <span>▶ YouTube (Store & Free with Ads)</span>
+            </label>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
+            <button class="f-btn black-outline" onclick="saveNotificationSettings(true)">Enable Alerts</button>
+            <button class="f-btn black-outline" style="border-color:#555; color:#999;" onclick="saveNotificationSettings(false)">Mute Alerts</button>
         </div>
     </div>
 </div>
@@ -247,11 +339,11 @@
 
 <style>
 /* ========================================================= */
-/* CSS STYLING SECTION (Line 180)                            */
+/* CSS STYLING SECTION (Line 260)                            */
 /* ========================================================= */
 :root { 
     --text-main: #fff; 
-    --header-bg: rgba(0, 0, 0, 0.9); 
+    --header-bg: rgba(0, 0, 0, 0.92); 
     --card-bg: rgba(15, 15, 15, 0.98); 
     --accent-red: #8b0000; 
 }
@@ -468,9 +560,7 @@ body {
     gap: 8px;
     min-height: 48px;
 }
-.menu-link-anchor:hover {
-    color: #ff0000;
-}
+.menu-link-anchor:hover { color: #ff0000; }
 .menu-item-thumb {
     width: 44px;
     height: 44px;
@@ -482,10 +572,7 @@ body {
     transition: 0.2s;
     flex-shrink: 0;
 }
-.menu-item-thumb:hover {
-    transform: scale(1.08);
-    border-color: #ff0000;
-}
+.menu-item-thumb:hover { transform: scale(1.08); border-color: #ff0000; }
 
 #nav-drawer-overlay {
     position: fixed;
@@ -538,23 +625,6 @@ body {
 #drawer-notify-desc { font-size: 0.75rem; color: #aaa; }
 
 #mobile-home-container { margin-bottom: 10px; }
-.mobile-home-btn {
-    width: 100%;
-    min-height: 48px;
-    background: #181824;
-    border: 1px solid #3b2a5c;
-    color: #ffd166;
-    font-size: 0.85rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    text-decoration: none;
-}
-
 .utm-group-box { margin-bottom: 10px; }
 .utm-group-btn {
     width: 100%;
@@ -585,51 +655,108 @@ body {
 }
 .utm-group-items.open { display: flex; }
 
-#image-viewer-lightbox {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.92);
-    z-index: 30000;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-#image-viewer-lightbox.active { display: flex; }
-.img-viewer-card {
-    position: relative;
-    max-width: 90vw;
-    max-height: 85vh;
+/* Dedicated Custom Platform Pill Icons Strip */
+#platform-pills-bar {
+    width: 100%;
+    margin-top: 1.25rem;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 10px;
+}
+.pills-scroll-track {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+}
+.platform-pill {
     background: #111;
-    border: 2px solid #8b0000;
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 0 30px rgba(255, 0, 0, 0.4);
-}
-#img-viewer-element {
-    max-width: 100%;
-    max-height: 70vh;
-    object-fit: contain;
-    border-radius: 8px;
-}
-#img-viewer-caption {
-    margin-top: 10px;
+    color: #ccc;
+    border: 1px solid #333;
+    padding: 6px 14px;
+    border-radius: 50px;
     font-size: 0.85rem;
-    font-weight: 700;
-    color: #ffd166;
-    text-align: center;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 46px;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    white-space: nowrap;
+}
+.platform-pill:hover {
+    background: #1c1c28;
+    color: #fff;
+    border-color: #666;
+    transform: translateY(-2px);
+}
+.platform-pill.active {
+    background: #8b0000;
+    border-color: #ff0000;
+    color: #fff;
+    box-shadow: 0 0 14px rgba(255, 0, 0, 0.6);
 }
 
-h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%; }
-.black-outline { text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000 !important; }
+.pill-center-all {
+    background: #181824;
+    border-color: #4f3b78;
+    color: #ffd166;
+}
+.pill-center-all.active {
+    background: #8b0000;
+    border-color: #ff0000;
+    color: #fff;
+}
 
+.pill-icon {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.pill-count {
+    font-size: 0.72rem;
+    color: #aaa;
+    font-weight: 700;
+    margin-left: 2px;
+}
+.platform-pill.active .pill-count {
+    color: #ffd166;
+}
+
+#pin-platform-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 4px;
+    font-size: 0.75rem;
+    color: #888;
+    flex-wrap: wrap;
+}
+#pin-platform-btn {
+    min-height: 36px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    border-radius: 20px;
+    background: #181824;
+    color: #ffd166;
+    border-color: #3b2a5c;
+}
+#pin-platform-btn:hover { background: #232336; border-color: #ffd166; }
+
+/* Dynamic Radial Gradients */
 body.theme-dark { background: radial-gradient(circle at center top, #1a1010 0%, #050505 50%, #000000 100%) fixed !important; }
 body.theme-dark.bg-amazon { background: radial-gradient(circle at center top, #3d1b00 0%, #0d0600 50%, #000000 100%) fixed !important; }
-body.theme-dark.bg-google, body.theme-dark.bg-family_share { background: radial-gradient(circle at center top, #0c1a3a 0%, #030612 50%, #000000 100%) fixed !important; }
-body.theme-dark.bg-youtube, body.theme-dark.bg-youtube_free, body.theme-dark.bg-my_owned_yt { background: radial-gradient(circle at center top, #3a0303 0%, #0e0101 50%, #000000 100%) fixed !important; }
+body.theme-dark.bg-google { background: radial-gradient(circle at center top, #0c1a3a 0%, #030612 50%, #000000 100%) fixed !important; }
+body.theme-dark.bg-youtube { background: radial-gradient(circle at center top, #3a0303 0%, #0e0101 50%, #000000 100%) fixed !important; }
 body.theme-dark.bg-moviesanywhere { background: radial-gradient(circle at center top, #002d40 0%, #000a10 50%, #000000 100%) fixed !important; }
 body.theme-dark.bg-apple { background: radial-gradient(circle at center top, #242426 0%, #0a0a0b 50%, #000000 100%) fixed !important; }
 body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, #3a1600 0%, #0e0500 50%, #000000 100%) fixed !important; }
@@ -669,7 +796,7 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
 .toast { background: rgba(10, 10, 10, 0.95); border: 1px solid #1ce783; box-shadow: 0 0 15px rgba(28, 231, 131, 0.4); color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; pointer-events: auto; transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; max-width: 320px; }
 .toast.show { transform: translateY(0); opacity: 1; }
 
-#controls-container { width: 100%; margin-top: 1.5rem; display: flex; flex-direction: column; align-items: center; }
+#controls-container { width: 100%; margin-top: 1rem; display: flex; flex-direction: column; align-items: center; }
 #movie-search { width: 100%; max-width: 600px; padding: 12px 20px; border-radius: 50px; background: #111; border: 1px solid #333; color: #fff; margin-bottom: 1.25rem; text-align: center; outline: none; min-height: 48px; font-size: 1rem; }
 #movie-search:focus { border-color: #ff0000; }
 #filter-dropdowns { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 100%; }
@@ -708,10 +835,7 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
     justify-content: center;
     white-space: nowrap;
 }
-.nav-item:hover {
-    color: #ff0000;
-    transform: scale(1.3);
-}
+.nav-item:hover { color: #ff0000; transform: scale(1.3); }
 
 #back-to-top {
     position: fixed;
@@ -730,10 +854,7 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
     box-shadow: 0 0 10px rgba(255,0,0,0.5);
     min-height: 48px;
 }
-#back-to-top:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(255,0,0,0.8);
-}
+#back-to-top:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,0,0,0.8); }
 
 .status-badge {
     position: absolute;
@@ -747,16 +868,8 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
     text-transform: uppercase;
     box-shadow: 0 2px 8px rgba(0,0,0,0.7);
 }
-.badge-new {
-    background: linear-gradient(135deg, #1ce783, #00aeef);
-    color: #fff;
-    border: 1px solid #1ce783;
-}
-.badge-oldest {
-    background: linear-gradient(135deg, #f5c518, #ff7300);
-    color: #000;
-    border: 1px solid #f5c518;
-}
+.badge-new { background: linear-gradient(135deg, #1ce783, #00aeef); color: #fff; border: 1px solid #1ce783; }
+.badge-oldest { background: linear-gradient(135deg, #f5c518, #ff7300); color: #000; border: 1px solid #f5c518; }
 .holiday-badge {
     position: absolute;
     top: 8px;
@@ -787,7 +900,21 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
     border: 1px solid rgba(255,255,255,0.4);
 }
 
-/* YouTube Free Vector Thumbnail Badge on Poster */
+.ma-eligible-badge {
+    position: absolute;
+    bottom: 30px;
+    left: 8px;
+    background: rgba(0, 45, 64, 0.9);
+    border: 1px solid #00aeef;
+    color: #00aeef;
+    font-size: 0.65rem;
+    font-weight: 900;
+    padding: 2px 6px;
+    border-radius: 4px;
+    z-index: 8;
+    letter-spacing: 0.3px;
+}
+
 .yt-free-badge {
     position: absolute;
     top: 58px;
@@ -806,41 +933,14 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
     display: flex;
     align-items: center;
     gap: 5px;
-    width: auto !important;
-    height: auto !important;
-    max-width: 140px;
 }
-.yt-free-badge svg {
-    width: 15px !important;
-    height: 15px !important;
-    flex-shrink: 0;
-}
-.user-owned-badge {
-    position: absolute;
-    top: 82px;
-    left: 8px;
-    background: linear-gradient(135deg, #d97706, #b45309);
-    color: #fff;
-    font-size: 0.65rem;
-    font-weight: 900;
-    padding: 3px 6px;
-    border-radius: 4px;
-    z-index: 10;
-    letter-spacing: 0.3px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.6);
-    border: 1px solid #ffd166;
-}
+.yt-free-badge svg { width: 15px; height: 15px; flex-shrink: 0; }
 
 .btn-youtube-free {
     background: linear-gradient(135deg, #991b1b, #dc2626) !important;
     border: 2px solid #1ce783 !important;
     color: #fff !important;
     animation: freeGlowPulse 1.5s infinite alternate;
-}
-.btn-youtube-owned {
-    background: linear-gradient(135deg, #15803d, #16a34a) !important;
-    border: 2px solid #ffd166 !important;
-    color: #fff !important;
 }
 .btn-justwatch {
     background: linear-gradient(135deg, #f5c518, #eab308) !important;
@@ -851,6 +951,11 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
 .btn-justwatch:hover {
     background: #ffd166 !important;
     box-shadow: 0 0 15px rgba(245, 197, 24, 0.6);
+}
+.btn-ma-bridge {
+    background: #00364d !important;
+    border: 1px dashed #00aeef !important;
+    color: #88d7ff !important;
 }
 
 @keyframes freeGlowPulse {
@@ -872,9 +977,7 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
     letter-spacing: 0.5px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.6);
 }
-.tv-show-card {
-    border-color: #3b2a5c;
-}
+.tv-show-card { border-color: #3b2a5c; }
 .tv-show-card:hover {
     box-shadow: 0 10px 30px rgba(139, 92, 246, 0.5) !important;
     border-color: #8b5cf6 !important;
@@ -888,6 +991,18 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
     margin: 15px 0;
     text-align: left;
     box-shadow: inset 0 0 10px rgba(139, 92, 246, 0.2);
+}
+
+#lb-ma-status-banner {
+    background: rgba(0, 45, 64, 0.85);
+    border: 1px solid #00aeef;
+    color: #88d7ff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin: 8px 0;
+    text-align: center;
 }
 
 #movie-library-grid { 
@@ -928,7 +1043,7 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
 .movie-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(139,0,0,0.5); border-color: #8b0000; }
 .poster-box { position: relative; aspect-ratio: 2/3; background: #000; overflow: hidden; }
 
-/* Target ONLY the main movie poster image, NOT badges or icons */
+/* Enforce clean image presentation */
 .movie-card .poster-box > img.poster-main { 
     width: 100%; 
     height: 100%; 
@@ -1003,16 +1118,14 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
 
 .imdb-link { color: #f5c518; text-decoration: none; transition: color 0.3s ease; }
 .imdb-link:hover { color: #fff; text-decoration: underline; }
-.stream-link { color: #00aeef; text-decoration: none; transition: color 0.3s ease; }
-.stream-link:hover { color: #fff; text-decoration: underline; }
 #lb-video-wrapper { position: absolute; inset: 0; width: 100%; height: 100%; background: #000; z-index: 100; display: none; flex-direction: column; border-radius: 16px; overflow: hidden; }
 #lb-video-wrapper.active { display: flex; }
 .close-btn { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.8); border: 1px solid #fff; color: #fff; border-radius: 50%; width: 48px; height: 48px; font-weight: 900; cursor: pointer; z-index: 200; display: flex; align-items: center; justify-content: center; }
-.close-video-btn { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.85); border: 1px solid #ff0000; color: #ff0000; padding: 6px 14px; font-size: 0.75rem; font-weight: 700; border-radius: 4px; cursor: pointer; z-index: 150; min-height: 48px; }
+.close-video-btn { background: rgba(0,0,0,0.85); border: 1px solid #ff0000; color: #ff0000; padding: 6px 14px; font-size: 0.75rem; font-weight: 700; border-radius: 4px; cursor: pointer; min-height: 48px; }
 #lb-yt-iframe { width: 100%; height: 100%; border: none; }
 
-.button-container { display: grid; gap: 8px; width: 100%; margin-top: 8px; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); }
-.m-link { padding: 8px 4px; border-radius: 8px; font-size: 0.75rem; font-weight: 700 !important; text-transform: uppercase; color: #fff; text-decoration: none; text-align: center; transition: 0.3s; text-shadow: none !important; min-height: 48px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; }
+.button-container { display: grid; gap: 8px; width: 100%; margin-top: 8px; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+.m-link { padding: 8px 6px; border-radius: 8px; font-size: 0.75rem; font-weight: 700 !important; text-transform: uppercase; color: #fff; text-decoration: none; text-align: center; transition: 0.3s; text-shadow: none !important; min-height: 48px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; gap: 6px; }
 .btn-amazon { background: #FF9900 !important; color: #000 !important; }
 .btn-google { background: #4285F4; position: relative; }
 .btn-google.glow-family-share {
@@ -1030,14 +1143,97 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
 .btn-youtube { background: #FF0000; }
 .f-btn { background: #111; color: #ff0000; border: 1px solid #444; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; min-height: 48px; font-size: 0.85rem; }
 .f-btn:hover { background: #ff0000; color: #fff; border-color: #ff0000; }
+
+#notify-config-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 25000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+#notify-config-modal.active { display: flex; }
+.notify-modal-card {
+    background: #111;
+    border: 2px solid #8b0000;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 420px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 0 30px rgba(139, 0, 0, 0.7);
+}
+.notify-select-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 15px 0;
+}
+.notify-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    background: #181824;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+.notify-option:hover { background: #232336; }
+
+#image-viewer-lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.92);
+    z-index: 30000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+#image-viewer-lightbox.active { display: flex; }
+.img-viewer-card {
+    position: relative;
+    max-width: 90vw;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #111;
+    border: 2px solid #8b0000;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.4);
+}
+#img-viewer-element { max-width: 100%; max-height: 70vh; object-fit: contain; border-radius: 8px; }
+#img-viewer-caption { margin-top: 10px; font-size: 0.85rem; font-weight: 700; color: #ffd166; text-align: center; }
+
+#app-version-footer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 1.5rem 0;
+    border-top: 1px solid #222;
+    margin-top: 2rem;
+    font-size: 0.75rem;
+    color: #666;
+}
+
 #kf-watermark { position: fixed; bottom: 10px; left: 10px; font-size: 1.25rem; font-weight: 900; opacity: 0.8; z-index: 10000; pointer-events: none; }
 .kf-k { color: #FF4500; transform: scaleX(-1); display: inline-block; }
 .kf-f { color: #000; margin-left: -0.22em; text-shadow: 0 0 2px #fff; }
-#library-footer-tip { width: 100%; display: flex; justify-content: center; margin: 2.5rem 0; }
+#library-footer-tip { width: 100%; display: flex; justify-content: center; margin: 2.5rem 0 1rem; }
 .tip-link { padding: 12px 30px; background: linear-gradient(135deg, #8b0000, #ff0000); color: #fff !important; font-weight: 900; border-radius: 50px; text-decoration: none; border: 2px solid #fff; transition: 0.3s; min-height: 48px; display: flex; align-items: center; }
 .tip-link:hover { transform: scale(1.03); box-shadow: 0 0 20px rgba(255,0,0,0.6); }
 
-/* Responsive Media Adjustments */
+h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%; }
+.black-outline { text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000 !important; }
+
+/* Responsive Adjustments */
 @media (max-width: 950px) {
     #desktop-menubar-container { display: none; }
     #nav-toggle-btn { display: flex; }
@@ -1050,9 +1246,11 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
 @media (max-width: 768px) {
     .master-85-width { width: 92%; }
     #library-header { padding: 1.5rem 0.85rem; }
+    .platform-pill { font-size: 0.78rem; padding: 6px 10px; }
+    .pill-icon { width: 18px; height: 18px; }
 }
 @media (max-width: 480px) {
-    .button-container { grid-template-columns: repeat(2, 1fr) !important; }
+    .button-container { grid-template-columns: 1fr !important; }
     #dynamic-nav-sidebar { padding: 4px 2px; right: 2px; }
     .nav-item { font-size: 0.65rem; padding: 2px 2px; }
     #back-to-top { right: 15px; font-size: 0.7rem; padding: 6px 10px; }
@@ -1069,20 +1267,20 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
     vertical-align: middle;
     margin-right: 5px;
 }
-@keyframes spinAround {
-    to { transform: rotate(360deg); }
-}
+@keyframes spinAround { to { transform: rotate(360deg); } }
 </style>
 
 <script>
 // =========================================================
-// JAVASCRIPT APP LOGIC & LIVE REALTIME ENGINE (Line 590)   
+// JAVASCRIPT LOGIC & ISOLATED PLATFORM ENGINE (Line 630)   
 // =========================================================
 (function() {
     let moviesMap = {};
     let movies = [];
     let currentFilteredList = [];
     let utmLinksMap = {};
+    
+    let activePlatformFilter = ""; // Default empty string = "All Content"
     
     const BATCH_SIZE = 60;
     let currentRenderLimit = BATCH_SIZE;
@@ -1091,8 +1289,9 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
     const FIREBASE_UTM_ENDPOINT = "https://entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
     const CACHE_STORAGE_KEY = "ww_cinema_cache_v2";
     const NOTIFY_PREF_KEY = "ww_cinema_push_enabled";
+    const NOTIFY_SCOPE_KEY = "ww_cinema_notify_platform";
+    const PINNED_PLATFORM_KEY = "ww_cinema_pinned_platform";
     const SEEN_MOVIES_KEY = "ww_cinema_seen_ids";
-    const USER_OWNED_YT_KEY = "ww_cinema_user_owned_youtube";
 
     let oldestMovieIndex = null;
     let newestMoviesSet = new Set();
@@ -1106,8 +1305,9 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
         const isLightboxActive = document.getElementById('movie-lightbox')?.classList.contains('active');
         const isDrawerActive = document.getElementById('nav-drawer')?.classList.contains('active');
         const isImgViewerActive = document.getElementById('image-viewer-lightbox')?.classList.contains('active');
+        const isNotifyActive = document.getElementById('notify-config-modal')?.classList.contains('active');
 
-        if (isLightboxActive || isDrawerActive || isImgViewerActive) {
+        if (isLightboxActive || isDrawerActive || isImgViewerActive || isNotifyActive) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = '';
@@ -1181,6 +1381,7 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
             closeLightbox();
             closeImageViewer();
             closeNavMenu();
+            closeNotifyModal();
             document.querySelectorAll('.nav-folder-dropdown.open').forEach(el => el.classList.remove('open'));
         }
     });
@@ -1191,67 +1392,229 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
         }
     });
 
-    function getUserOwnedMovieIds() {
-        try {
-            return JSON.parse(localStorage.getItem(USER_OWNED_YT_KEY) || '[]');
-        } catch (e) {
-            return [];
-        }
+    /* ------------------------------------------------------------------ */
+    /* STRICT DIRECT LINK COUNTS PER PILL                                 */
+    /* ------------------------------------------------------------------ */
+    function updatePillDirectCounts() {
+        let amazonCount = 0;
+        let appleCount = 0;
+        let fandangoCount = 0;
+        let googleCount = 0;
+        let justwatchCount = 0;
+        let maCount = 0;
+        let youtubeCount = 0;
+
+        movies.forEach(m => {
+            const p = m.platforms || {};
+            if (p.amazon && p.amazon.trim() !== '') amazonCount++;
+            if (p.apple && p.apple.trim() !== '') appleCount++;
+            if (p.fandango && p.fandango.trim() !== '') fandangoCount++;
+            if ((p.google && p.google.trim() !== '') || m.googleFamilyShare) googleCount++;
+            if (p.justwatch && p.justwatch.trim() !== '') justwatchCount++;
+            if (m.isMAEligible) maCount++;
+            if ((p.youtube && p.youtube.trim() !== '') || m.youtubeFree) youtubeCount++;
+        });
+
+        const setPillText = (id, count) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = `(${count})`;
+        };
+
+        setPillText('count-pill-amazon', amazonCount);
+        setPillText('count-pill-apple', appleCount);
+        setPillText('count-pill-fandango', fandangoCount);
+        setPillText('count-pill-all', movies.length);
+        setPillText('count-pill-google', googleCount);
+        setPillText('count-pill-justwatch', justwatchCount);
+        setPillText('count-pill-moviesanywhere', maCount);
+        setPillText('count-pill-youtube', youtubeCount);
     }
 
-    window.toggleCurrentMovieOwnedState = () => {
-        if (!currentActiveMovie) return;
-        const movieId = (currentActiveMovie.imdbId || currentActiveMovie.title || '').toString().trim();
-        if (!movieId) return;
-
-        let owned = getUserOwnedMovieIds();
-        const index = owned.indexOf(movieId);
-        let nowOwned = false;
-
-        if (index > -1) {
-            owned.splice(index, 1);
-            nowOwned = false;
+    /* ------------------------------------------------------------------ */
+    /* PLATFORM PILL & PINNING SYSTEM                                     */
+    /* ------------------------------------------------------------------ */
+    window.selectPlatformPill = (platformKey, btnElement) => {
+        activePlatformFilter = platformKey;
+        
+        document.querySelectorAll('.platform-pill').forEach(pill => pill.classList.remove('active'));
+        if (btnElement) {
+            btnElement.classList.add('active');
         } else {
-            owned.push(movieId);
-            nowOwned = true;
+            const match = document.querySelector(`.platform-pill[data-platform="${platformKey}"]`);
+            if (match) match.classList.add('active');
         }
 
-        try {
-            localStorage.setItem(USER_OWNED_YT_KEY, JSON.stringify(owned));
-        } catch (e) {}
+        if (typeof gtag === 'function') {
+            gtag('event', 'select_platform_pill', {
+                'platform': platformKey || 'all_content',
+                'event_category': 'Catalog Navigation'
+            });
+        }
 
-        currentActiveMovie.userOwned = nowOwned;
-        updateLightboxOwnedUI(nowOwned);
-        renderMovieGridBatch();
-        updateUserOwnedCounter();
-        triggerToast(nowOwned ? 'Marked as Owned in My YouTube!' : 'Removed from Owned list');
+        runFilters();
     };
 
-    function updateLightboxOwnedUI(isOwned) {
-        const toggleBtn = document.getElementById('lb-owned-toggle-btn');
-        if (toggleBtn) {
-            toggleBtn.textContent = isOwned ? '✓ Owned in My YouTube' : '⭐ Mark as Owned in My YouTube';
-            toggleBtn.style.background = isOwned ? '#d97706' : '#111';
-            toggleBtn.style.color = isOwned ? '#fff' : '#ffd166';
+    window.togglePinCurrentPlatform = () => {
+        const currentPinned = localStorage.getItem(PINNED_PLATFORM_KEY) || "";
+        if (currentPinned === activePlatformFilter) {
+            localStorage.removeItem(PINNED_PLATFORM_KEY);
+            triggerToast('Default view reset to All Content');
+        } else {
+            localStorage.setItem(PINNED_PLATFORM_KEY, activePlatformFilter);
+            const label = getPlatformDisplayName(activePlatformFilter);
+            triggerToast(`Pinned "${label}" as your default Home view!`);
         }
-        if (currentActiveMovie) {
-            renderLightboxButtons(currentActiveMovie);
+        updatePinnedToolbarUI();
+    };
+
+    function getPlatformDisplayName(pKey) {
+        switch (pKey) {
+            case 'amazon': return 'Amazon';
+            case 'apple': return 'Apple TV';
+            case 'fandango': return 'Fandango at Home';
+            case 'google': return 'Google TV';
+            case 'justwatch': return 'JustWatch';
+            case 'moviesanywhere': return 'Movies Anywhere';
+            case 'youtube': return 'YouTube';
+            default: return 'All Content';
         }
     }
 
-    function updateUserOwnedCounter() {
-        const owned = getUserOwnedMovieIds();
-        const counter = document.getElementById('user-owned-counter');
-        if (counter) {
-            if (owned.length > 0) {
-                counter.innerHTML = `Personal Locker: <span>${owned.length}</span> Owned on YouTube`;
-                counter.style.display = 'block';
-            } else {
-                counter.style.display = 'none';
+    function updatePinnedToolbarUI() {
+        const pinned = localStorage.getItem(PINNED_PLATFORM_KEY) || "";
+        const labelEl = document.getElementById('pinned-notice-label');
+        const pinBtn = document.getElementById('pin-platform-btn');
+
+        if (labelEl) {
+            labelEl.innerHTML = `Default View: <strong>${getPlatformDisplayName(pinned)}</strong>`;
+        }
+        if (pinBtn) {
+            pinBtn.textContent = (pinned === activePlatformFilter) ? "✓ Currently Pinned as Home" : "📌 Set Current View as Home";
+            pinBtn.style.color = (pinned === activePlatformFilter) ? "#1ce783" : "#ffd166";
+        }
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* CUSTOM TARGETED PUSH NOTIFICATIONS                                 */
+    /* ------------------------------------------------------------------ */
+    window.openNotifyModal = () => {
+        const modal = document.getElementById('notify-config-modal');
+        const currentScope = localStorage.getItem(NOTIFY_SCOPE_KEY) || 'all';
+        const radio = document.querySelector(`input[name="notify_platform_scope"][value="${currentScope}"]`);
+        if (radio) radio.checked = true;
+
+        if (modal) {
+            modal.classList.add('active');
+            syncScrollLockState();
+        }
+    };
+
+    window.closeNotifyModal = (e) => {
+        if (e) e.stopPropagation();
+        const modal = document.getElementById('notify-config-modal');
+        if (modal) {
+            modal.classList.remove('active');
+            syncScrollLockState();
+        }
+    };
+
+    window.saveNotificationSettings = async (enable) => {
+        if (!enable) {
+            localStorage.setItem(NOTIFY_PREF_KEY, 'false');
+            updateNotificationUI(false);
+            closeNotifyModal();
+            triggerToast('Push notifications muted.');
+            return;
+        }
+
+        if (!('Notification' in window)) {
+            alert('Push Notifications are not supported on this browser.');
+            return;
+        }
+
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+            const selectedScope = document.querySelector('input[name="notify_platform_scope"]:checked')?.value || 'all';
+            localStorage.setItem(NOTIFY_PREF_KEY, 'true');
+            localStorage.setItem(NOTIFY_SCOPE_KEY, selectedScope);
+            
+            updateNotificationUI(true);
+            closeNotifyModal();
+            triggerToast(`Push alerts enabled for: ${getPlatformDisplayName(selectedScope)}`);
+            
+            new Notification('🎬 Werewolf Cinema', {
+                body: `Notifications active for ${getPlatformDisplayName(selectedScope)}!`,
+                icon: '//raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'
+            });
+        } else {
+            alert('Notification permission was denied in your browser settings.');
+        }
+    };
+
+    function updateNotificationUI(isEnabled) {
+        const statusText = document.getElementById('notify-status-text');
+        const bellBtn = document.getElementById('notify-toggle-btn');
+        const drawerBtn = document.getElementById('drawer-notify-toggle');
+
+        if (!statusText || !bellBtn || !drawerBtn) return;
+
+        if (isEnabled) {
+            statusText.textContent = 'ON';
+            bellBtn.classList.add('active');
+            drawerBtn.textContent = 'Manage Alerts';
+            drawerBtn.style.background = '#8b0000';
+        } else {
+            statusText.textContent = 'OFF';
+            bellBtn.classList.remove('active');
+            drawerBtn.textContent = 'Configure Alerts';
+            drawerBtn.style.background = '#111';
+        }
+    }
+
+    function checkNewMoviePushAlerts(movieList) {
+        const isEnabled = localStorage.getItem(NOTIFY_PREF_KEY) === 'true';
+        if (!isEnabled || !('Notification' in window) || Notification.permission !== 'granted') return;
+
+        const notifyScope = localStorage.getItem(NOTIFY_SCOPE_KEY) || 'all';
+        let seenIds = JSON.parse(localStorage.getItem(SEEN_MOVIES_KEY) || '[]');
+        const todayString = new Date().toLocaleDateString();
+
+        movieList.forEach(m => {
+            const movieId = m.imdbId || m.title;
+            if (!seenIds.includes(movieId)) {
+                const addedDateObj = new Date(m.timestamp);
+                const isAddedToday = m.timestamp > 0 && (addedDateObj.toLocaleDateString() === todayString || (Date.now() - m.timestamp < 86400000));
+                
+                let matchesScope = true;
+                if (notifyScope !== 'all') {
+                    if (notifyScope === 'moviesanywhere') {
+                        matchesScope = m.isMAEligible;
+                    } else if (notifyScope === 'google') {
+                        matchesScope = !!(m.platforms && m.platforms.google && m.platforms.google.trim() !== '') || m.googleFamilyShare;
+                    } else if (notifyScope === 'youtube') {
+                        matchesScope = !!(m.platforms && m.platforms.youtube && m.platforms.youtube.trim() !== '') || m.youtubeFree;
+                    } else {
+                        matchesScope = !!(m.platforms && m.platforms[notifyScope] && m.platforms[notifyScope].trim() !== '');
+                    }
+                }
+
+                if (isAddedToday && seenIds.length > 0 && matchesScope) {
+                    new Notification(`🎬 New Addition: ${m.title}`, {
+                        body: `${m.title} (${m.year}) is now available in your tracked catalog!`,
+                        icon: m.image || '//raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg',
+                        tag: `movie-add-${movieId}`
+                    });
+                }
+                seenIds.push(movieId);
             }
-        }
+        });
+
+        localStorage.setItem(SEEN_MOVIES_KEY, JSON.stringify(seenIds));
     }
 
+    /* ------------------------------------------------------------------ */
+    /* FIREBASE & MENU SYNC                                               */
+    /* ------------------------------------------------------------------ */
     function initLiveUtmStream() {
         fetch(FIREBASE_UTM_ENDPOINT)
             .then(res => res.json())
@@ -1438,83 +1801,6 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
         mobileLinksContainer.innerHTML = mobileDrawerHtml || '<div style="color:#666; font-size:12px;">No active folders found.</div>';
     }
 
-    function updateNotificationUI(isEnabled) {
-        const statusText = document.getElementById('notify-status-text');
-        const bellBtn = document.getElementById('notify-toggle-btn');
-        const drawerBtn = document.getElementById('drawer-notify-toggle');
-
-        if (!statusText || !bellBtn || !drawerBtn) return;
-
-        if (isEnabled) {
-            statusText.textContent = 'ON';
-            bellBtn.classList.add('active');
-            drawerBtn.textContent = 'Disable';
-            drawerBtn.style.background = '#8b0000';
-        } else {
-            statusText.textContent = 'OFF';
-            bellBtn.classList.remove('active');
-            drawerBtn.textContent = 'Enable';
-            drawerBtn.style.background = '#111';
-        }
-    }
-
-    window.toggleNotifications = async () => {
-        const currentlyEnabled = localStorage.getItem(NOTIFY_PREF_KEY) === 'true';
-
-        if (currentlyEnabled) {
-            localStorage.setItem(NOTIFY_PREF_KEY, 'false');
-            updateNotificationUI(false);
-            triggerToast('Push notifications disabled.');
-            return;
-        }
-
-        if (!('Notification' in window)) {
-            alert('Push Notifications are not supported in this browser.');
-            return;
-        }
-
-        const permission = await Notification.requestPermission();
-        if (permission === 'granted') {
-            localStorage.setItem(NOTIFY_PREF_KEY, 'true');
-            updateNotificationUI(true);
-            triggerToast('Push notifications enabled for new movies!');
-            
-            new Notification('🎬 Werewolf Cinema', {
-                body: 'Instant alerts activated. You will be notified when new movies are added!',
-                icon: '//raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'
-            });
-        } else {
-            alert('Notification permission was denied.');
-        }
-    };
-
-    function checkNewMoviePushAlerts(movieList) {
-        const isEnabled = localStorage.getItem(NOTIFY_PREF_KEY) === 'true';
-        if (!isEnabled || !('Notification' in window) || Notification.permission !== 'granted') return;
-
-        let seenIds = JSON.parse(localStorage.getItem(SEEN_MOVIES_KEY) || '[]');
-        const todayString = new Date().toLocaleDateString();
-
-        movieList.forEach(m => {
-            const movieId = m.imdbId || m.title;
-            if (!seenIds.includes(movieId)) {
-                const addedDateObj = new Date(m.timestamp);
-                const isAddedToday = m.timestamp > 0 && (addedDateObj.toLocaleDateString() === todayString || (Date.now() - m.timestamp < 86400000));
-                
-                if (isAddedToday && seenIds.length > 0) {
-                    new Notification(`🎬 New Movie Added: ${m.title}`, {
-                        body: `${m.title} (${m.year}) is now available in the library!`,
-                        icon: m.image || '//raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg',
-                        tag: `movie-add-${movieId}`
-                    });
-                }
-                seenIds.push(movieId);
-            }
-        });
-
-        localStorage.setItem(SEEN_MOVIES_KEY, JSON.stringify(seenIds));
-    }
-
     function isValidUrl(str) {
         if (!str) return false;
         const s = str.toString().trim().toLowerCase();
@@ -1570,21 +1856,24 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
         }
     };
 
+    /* ------------------------------------------------------------------ */
+    /* LINE 980: BROWSER-FIRST URL RESOLUTION ENGINE                      */
+    /* ------------------------------------------------------------------ */
     function resolveAppOrWebUrl(url, platform) {
         if (!url) return "";
         let finalUrl = normalizeUrl(url);
 
+        // Amazon Resolution: Ensure affiliate tag is attached, but ALWAYS 
+        // open standard HTTPS browser URL first so referral cookies register
         if (finalUrl.includes('amazon.com')) {
             if (!finalUrl.includes('moviesanywhere02-20')) {
                 const sep = finalUrl.includes('?') ? '&' : '?';
                 finalUrl += `${sep}tag=moviesanywhere02-20`;
             }
-            if (isMobileDevice) {
-                return finalUrl.replace(/^(https?:)?\/\/(www\.)?amazon\.com/i, 'primevideo://');
-            }
             return finalUrl;
         }
 
+        // YouTube Resolution: Allow app scheme on mobile for DRM playback
         if (platform === 'youtube' && isMobileDevice) {
             const vidMatch = finalUrl.match(/(?:youtu\.be\/|v\/|embed\/|watch\?v=|\&v=)([^#\&\?]*)/);
             if (vidMatch && vidMatch[1].length === 11) {
@@ -1631,7 +1920,7 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
         let isActiveSeason = false;
 
         const now = new Date();
-        const month = now.getMonth() + 1; // 1-12
+        const month = now.getMonth() + 1;
         const day = now.getDate();
 
         if (lower.includes('christmas') || lower.includes('xmas')) {
@@ -1719,7 +2008,7 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
                     rebuildMoviesArray(true);
                     if (syncDot && syncText) {
                         syncDot.className = 'dot-synced';
-                        syncText.textContent = 'Live Firebase Realtime Stream Active';
+                        syncText.textContent = 'Live Realtime Firebase Stream Active';
                     }
                 }
             }
@@ -1776,7 +2065,6 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
             } catch (e) {}
         }
 
-        const userOwnedIds = getUserOwnedMovieIds();
         const rawKeys = Object.keys(moviesMap);
         
         movies = rawKeys.map((key, index) => {
@@ -1792,6 +2080,8 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
                 fandango: (v.fandango && isValidUrl(v.fandango)) ? normalizeUrl(v.fandango) : '',
                 justwatch: (v.justwatch && isValidUrl(v.justwatch)) ? normalizeUrl(v.justwatch) : ''
             };
+
+            const isMA = !!(p.moviesanywhere && p.moviesanywhere.trim() !== '' && !p.moviesanywhere.toLowerCase().includes('not in library'));
 
             let castArr = [];
             if (Array.isArray(v.actors)) {
@@ -1816,13 +2106,12 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
             const rawHolidayTag = (v.holidays && v.holidays.toString().trim().toLowerCase() !== 'none') ? v.holidays.toString().trim() : '';
             const ts = getSafeTimestamp(v.dateAdded);
 
-            const isOwnedLocally = userOwnedIds.includes(rawMediaId) || userOwnedIds.includes((v.title || key || '').toString().trim());
-
             return {
                 title: (v.title || key || '').toString().trim(),
                 image: finalPoster,
                 year: (v.year || '').toString().trim(),
                 platforms: p,
+                isMAEligible: isMA,
                 dateAdded: getDisplayDateString(v.dateAdded, ts),
                 imdbId: rawMediaId,
                 cast: castArr,
@@ -1839,7 +2128,6 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
                 ratingDescription: (v.ratingReason || '').toString().trim(),
                 googleFamilyShare: isFamilyShareChecked,
                 youtubeFree: isYouTubeFreeChecked,
-                userOwned: isOwnedLocally,
                 timestamp: ts,
                 libIndex: index
             };
@@ -1863,7 +2151,7 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
         }
 
         checkNewMoviePushAlerts(movies);
-        updateUserOwnedCounter();
+        updatePillDirectCounts();
         updateDropdowns();
         runFilters();
     }
@@ -1902,13 +2190,14 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
                 ribbonBadgeHtml = `<div class="status-badge badge-new black-outline">🆕 New to Library</div>`;
             }
 
+            // Strictly isolate badges according to active platform
             let familyShareBadgeHtml = '';
-            if (m.googleFamilyShare) {
-                familyShareBadgeHtml = `<div class="family-share-badge black-outline">👨‍👩‍👧‍👦 Family Share</div>`;
+            if (m.googleFamilyShare && (activePlatformFilter === 'google' || activePlatformFilter === '')) {
+                familyShareBadgeHtml = `<div class="family-share-badge black-outline">👨‍👩‍👧‍‍👦 Family Share</div>`;
             }
 
             let ytFreeBadgeHtml = '';
-            if (m.youtubeFree) {
+            if (m.youtubeFree && (activePlatformFilter === 'youtube' || activePlatformFilter === '')) {
                 ytFreeBadgeHtml = `
                     <div class="yt-free-badge black-outline">
                         <svg viewBox="0 0 24 24" fill="#ff0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
@@ -1916,9 +2205,9 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
                     </div>`;
             }
 
-            let userOwnedBadgeHtml = '';
-            if (m.userOwned) {
-                userOwnedBadgeHtml = `<div class="user-owned-badge black-outline">⭐ Owned</div>`;
+            let maEligibleHtml = '';
+            if (m.isMAEligible && (activePlatformFilter === 'moviesanywhere' || activePlatformFilter === '')) {
+                maEligibleHtml = `<div class="ma-eligible-badge black-outline">🔄 Movies Anywhere</div>`;
             }
 
             let holidayBadgeHtml = '';
@@ -1963,9 +2252,9 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
                     ${ribbonBadgeHtml}
                     ${familyShareBadgeHtml}
                     ${ytFreeBadgeHtml}
-                    ${userOwnedBadgeHtml}
                     ${holidayBadgeHtml}
-                    <img class="poster-main" src="${posterSrc}" alt="${m.title}" loading="lazy" onerror="this.src='//raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'">
+                    ${maEligibleHtml}
+                    <img class="poster-main" src="${posterSrc}" alt="" loading="lazy" onerror="this.src='//raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'">
                     ${tvBadgeHtml}
                     <div class="poster-year-badge black-outline">${m.year}</div>
                 </div>
@@ -1998,7 +2287,6 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
         const rawQuery = (document.getElementById('movie-search')?.value || '').toLowerCase().trim();
         const typeF = (document.getElementById('type-select')?.value || '').trim();
         const ratingF = (document.getElementById('rating-select')?.value || '').trim();
-        const platformF = (document.getElementById('platform-select')?.value || '').trim();
         const streamF = (document.getElementById('stream-service-select')?.value || '').toLowerCase().trim();
         const holidayF = (document.getElementById('holiday-select')?.value || '').toLowerCase().trim();
         const genreF = (document.getElementById('genre-select')?.value || '').toLowerCase().trim();
@@ -2006,12 +2294,12 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
         const artF = (document.getElementById('artist-select')?.value || '').toLowerCase().trim();
         const sort = document.getElementById('sort-select')?.value || 'newest';
 
-        document.body.classList.remove('bg-amazon', 'bg-google', 'bg-youtube', 'bg-youtube_free', 'bg-my_owned_yt', 'bg-moviesanywhere', 'bg-apple', 'bg-fandango', 'bg-justwatch', 'bg-family_share');
-        if (platformF) {
-            document.body.classList.add('bg-' + platformF);
+        document.body.classList.remove('bg-amazon', 'bg-google', 'bg-youtube', 'bg-moviesanywhere', 'bg-apple', 'bg-fandango', 'bg-justwatch');
+        if (activePlatformFilter) {
+            document.body.classList.add('bg-' + activePlatformFilter);
         }
 
-        const isFiltered = !!(rawQuery || typeF || ratingF || platformF || streamF || holidayF || genreF || collF || artF);
+        const isFiltered = !!(rawQuery || typeF || ratingF || streamF || holidayF || genreF || collF || artF);
 
         currentFilteredList = movies.filter(m => {
             let searchMatch = true;
@@ -2029,16 +2317,23 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
                 if (typeF === 'Movie' && isTv) return false;
             }
 
-            if (platformF) {
-                if (platformF === 'family_share') {
-                    if (!m.googleFamilyShare) return false;
-                } else if (platformF === 'youtube_free') {
-                    if (!m.youtubeFree) return false;
-                } else if (platformF === 'my_owned_yt') {
-                    if (!m.userOwned) return false;
+            /* Strict Direct Link Platform Pill Filtering */
+            if (activePlatformFilter) {
+                if (activePlatformFilter === 'moviesanywhere') {
+                    if (!m.isMAEligible) return false;
+                } else if (activePlatformFilter === 'google') {
+                    const hasGoogle = !!(m.platforms && m.platforms.google && m.platforms.google.trim() !== '');
+                    const hasFamily = m.googleFamilyShare;
+                    if (!hasGoogle && !hasFamily) return false;
+                } else if (activePlatformFilter === 'youtube') {
+                    const hasYT = !!(m.platforms && m.platforms.youtube && m.platforms.youtube.trim() !== '');
+                    const isYTFree = m.youtubeFree;
+                    if (!hasYT && !isYTFree) return false;
                 } else {
-                    const storeUrl = m.platforms ? m.platforms[platformF] : '';
-                    if (!storeUrl || storeUrl.trim() === '') return false;
+                    const storeUrl = m.platforms ? m.platforms[activePlatformFilter] : '';
+                    if (!storeUrl || storeUrl.trim() === '') {
+                        return false;
+                    }
                 }
             }
 
@@ -2091,9 +2386,11 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
 
         const counter = document.getElementById('movie-counter');
         if (counter) {
-            if (platformF === 'my_owned_yt') {
-                counter.innerHTML = `My Owned Films (YouTube): <span>${currentFilteredList.length}</span>`;
+            if (activePlatformFilter) {
+                // Platform pills show ONLY their count, NEVER x / xx
+                counter.innerHTML = `${getPlatformDisplayName(activePlatformFilter)} Inventory: <span>${currentFilteredList.length}</span>`;
             } else if (isFiltered) {
+                // Only "All Content" shows filtered out of total
                 counter.innerHTML = `Filtered Inventory: <span>${currentFilteredList.length}</span> / <span>${movies.length}</span>`;
             } else {
                 counter.innerHTML = `Cinema Inventory: <span>${movies.length}</span>`;
@@ -2103,6 +2400,7 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
         currentRenderLimit = BATCH_SIZE;
         renderMovieGridBatch();
         buildAdaptiveSidebar(currentFilteredList, sort);
+        updatePinnedToolbarUI();
     };
 
     window.filterByActor = (actorName) => {
@@ -2139,68 +2437,117 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
         return match ? match[1] : null;
     }
 
+    /* ------------------------------------------------------------------ */
+    /* STRICT ISOLATED LIGHTBOX BUTTON RENDERING                          */
+    /* ------------------------------------------------------------------ */
     function renderLightboxButtons(m) {
         const storeHeading = document.getElementById('lb-store-heading');
         const buttonBox = document.getElementById('lb-buttons');
         let btns = [];
-        const p = m.platforms;
+        const p = m.platforms || {};
         const sanitizedTitle = m.title.replace(/'/g, '');
 
-        if (p.amazon && p.amazon.trim() !== '') {
-            const amz = resolveAppOrWebUrl(p.amazon, 'amazon');
-            btns.push(`<a href="${amz}" onclick="trackOutboundClick(this.href, 'Amazon: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-amazon">Amazon</a>`);
-        }
-        if (p.google && p.google.trim() !== '') {
-            const goog = appendUtm(p.google, m.title + '_google');
-            const familyGlowClass = m.googleFamilyShare ? ' glow-family-share' : '';
-            btns.push(`<a href="${goog}" onclick="trackOutboundClick(this.href, 'Google: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-google${familyGlowClass}">Google Play</a>`);
-        }
-        if (p.moviesanywhere && p.moviesanywhere.trim() !== '' && !p.moviesanywhere.toLowerCase().includes('not in library')) {
-            const ma = appendUtm(p.moviesanywhere, m.title + '_moviesanywhere');
-            btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MoviesAnywhere: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-moviesanywhere">Movies Anywhere</a>`);
-        }
-        if (p.apple && p.apple.trim() !== '') {
-            const app = appendUtm(p.apple, m.title + '_apple');
-            btns.push(`<a href="${app}" onclick="trackOutboundClick(this.href, 'AppleTV: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-apple">Apple TV</a>`);
-        }
-        if (p.fandango && p.fandango.trim() !== '') {
-            const fan = appendUtm(p.fandango, m.title + '_fandango');
-            btns.push(`<a href="${fan}" onclick="trackOutboundClick(this.href, 'Fandango: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-fandango">Fandango</a>`);
-        }
-        if (p.youtube && p.youtube.trim() !== '') {
-            const ytVidId = extractYouTubeVideoId(p.youtube);
-            
-            if (m.youtubeFree) {
-                if (ytVidId) {
-                    btns.push(`<button type="button" onclick="playYouTube('${p.youtube}')" class="m-link btn-youtube-free">▶ Watch Free on YouTube</button>`);
+        const renderAmazonBtn = () => {
+            if (p.amazon && p.amazon.trim() !== '') {
+                const amz = resolveAppOrWebUrl(p.amazon, 'amazon');
+                btns.push(`<a href="${amz}" onclick="trackOutboundClick(this.href, 'Amazon: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-amazon">Buy / Watch on Amazon</a>`);
+            }
+            if (m.isMAEligible) {
+                btns.push(`<a href="${p.moviesanywhere}" onclick="trackOutboundClick(this.href, 'MA Sync Amazon: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-ma-bridge">Buy on Movies Anywhere</a>`);
+            }
+        };
+
+        const renderAppleBtn = () => {
+            if (p.apple && p.apple.trim() !== '') {
+                const app = appendUtm(p.apple, m.title + '_apple');
+                btns.push(`<a href="${app}" onclick="trackOutboundClick(this.href, 'AppleTV: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-apple">Buy / Watch on Apple TV</a>`);
+            }
+            if (m.isMAEligible) {
+                btns.push(`<a href="${p.moviesanywhere}" onclick="trackOutboundClick(this.href, 'MA Sync Apple: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-ma-bridge">Buy on Movies Anywhere</a>`);
+            }
+        };
+
+        const renderFandangoBtn = () => {
+            if (p.fandango && p.fandango.trim() !== '') {
+                const fan = appendUtm(p.fandango, m.title + '_fandango');
+                btns.push(`<a href="${fan}" onclick="trackOutboundClick(this.href, 'Fandango: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-fandango">Buy / Watch on Fandango</a>`);
+            }
+            if (m.isMAEligible) {
+                btns.push(`<a href="${p.moviesanywhere}" onclick="trackOutboundClick(this.href, 'MA Sync Fandango: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-ma-bridge">Buy on Movies Anywhere</a>`);
+            }
+        };
+
+        const renderGoogleBtn = () => {
+            if (p.google && p.google.trim() !== '') {
+                const goog = appendUtm(p.google, m.title + '_google');
+                const familyGlowClass = m.googleFamilyShare ? ' glow-family-share' : '';
+                btns.push(`<a href="${goog}" onclick="trackOutboundClick(this.href, 'Google: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-google${familyGlowClass}">Buy / Watch on Google TV</a>`);
+            }
+            if (m.isMAEligible) {
+                btns.push(`<a href="${p.moviesanywhere}" onclick="trackOutboundClick(this.href, 'MA Sync Google: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-ma-bridge">Buy on Movies Anywhere</a>`);
+            }
+        };
+
+        const renderJustWatchBtn = () => {
+            // Strictly JustWatch ONLY - No Movies Anywhere button
+            if (p.justwatch && p.justwatch.trim() !== '') {
+                btns.push(`<a href="${p.justwatch}" onclick="trackOutboundClick(this.href, 'JustWatch: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-justwatch">🟡 JustWatch Directory</a>`);
+            }
+        };
+
+        const renderMABtn = () => {
+            if (m.isMAEligible) {
+                const ma = appendUtm(p.moviesanywhere, m.title + '_moviesanywhere');
+                btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MoviesAnywhere: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-moviesanywhere">Buy on Movies Anywhere</a>`);
+            }
+        };
+
+        const renderYouTubeBtn = () => {
+            // Strictly YouTube ONLY - No Movies Anywhere button
+            if (p.youtube && p.youtube.trim() !== '') {
+                const ytVidId = extractYouTubeVideoId(p.youtube);
+                const ytAppUrl = resolveAppOrWebUrl(p.youtube, 'youtube');
+                
+                if (m.youtubeFree) {
+                    btns.push(`<a href="${ytAppUrl}" onclick="trackOutboundClick(this.href, 'YouTube Free: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-youtube-free">▶ Watch Free on YouTube</a>`);
+                    if (ytVidId) {
+                        btns.push(`<button type="button" onclick="playYouTube('${p.youtube}')" class="m-link btn-youtube">🎬 Preview Trailer</button>`);
+                    }
                 } else {
-                    const ytUrl = resolveAppOrWebUrl(p.youtube, 'youtube');
-                    btns.push(`<a href="${ytUrl}" onclick="trackOutboundClick(this.href, 'YouTube Free: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-youtube-free">▶ Watch Free on YouTube</a>`);
-                }
-            } else if (m.userOwned) {
-                if (ytVidId) {
-                    btns.push(`<button type="button" onclick="playYouTube('${p.youtube}')" class="m-link btn-youtube-owned">▶ Watch Now on YouTube</button>`);
-                } else {
-                    const ytUrl = resolveAppOrWebUrl(p.youtube, 'youtube');
-                    btns.push(`<a href="${ytUrl}" onclick="trackOutboundClick(this.href, 'YouTube Owned: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-youtube-owned">▶ Watch Now on YouTube</a>`);
-                }
-            } else {
-                if (ytVidId) {
-                    btns.push(`<button type="button" onclick="playYouTube('${p.youtube}')" class="m-link btn-youtube">▶ Watch Trailer</button>`);
-                } else {
-                    const ytUrl = resolveAppOrWebUrl(p.youtube, 'youtube');
-                    btns.push(`<a href="${ytUrl}" onclick="trackOutboundClick(this.href, 'YouTube: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-youtube">YouTube</a>`);
+                    if (ytVidId) {
+                        btns.push(`<button type="button" onclick="playYouTube('${p.youtube}')" class="m-link btn-youtube">▶ Watch Trailer</button>`);
+                    }
+                    btns.push(`<a href="${ytAppUrl}" onclick="trackOutboundClick(this.href, 'YouTube Store: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-youtube">YouTube Store</a>`);
                 }
             }
-        }
-        if (p.justwatch && p.justwatch.trim() !== '') {
-            btns.push(`<a href="${p.justwatch}" onclick="trackOutboundClick(this.href, 'JustWatch: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-justwatch">🟡 JustWatch</a>`);
+        };
+
+        // Strict platform visibility check
+        if (!activePlatformFilter) {
+            // "All Content" -> Show available platform buttons
+            renderAmazonBtn();
+            renderAppleBtn();
+            renderFandangoBtn();
+            renderGoogleBtn();
+            renderJustWatchBtn();
+            renderMABtn();
+            renderYouTubeBtn();
+        } else {
+            // Specific pill -> Render ONLY that platform's isolated buttons
+            switch (activePlatformFilter) {
+                case 'amazon': renderAmazonBtn(); break;
+                case 'apple': renderAppleBtn(); break;
+                case 'fandango': renderFandangoBtn(); break;
+                case 'google': renderGoogleBtn(); break;
+                case 'justwatch': renderJustWatchBtn(); break;
+                case 'moviesanywhere': renderMABtn(); break;
+                case 'youtube': renderYouTubeBtn(); break;
+            }
         }
 
         buttonBox.innerHTML = btns.join('');
         if (btns.length > 0) {
-            const hasMA = p.moviesanywhere && p.moviesanywhere.trim() !== '' && !p.moviesanywhere.toLowerCase().includes('not in library');
-            storeHeading.textContent = hasMA ? "Sync / Rent / Buy (Movies Anywhere Compatible)" : "Buy / Rent / Watch";
+            storeHeading.textContent = activePlatformFilter ? `${getPlatformDisplayName(activePlatformFilter)} Access` : (m.isMAEligible ? "Sync / Rent / Buy (Movies Anywhere Compatible)" : "Buy / Rent / Watch");
             storeHeading.style.display = 'block';
         } else {
             storeHeading.style.display = 'none';
@@ -2230,6 +2577,7 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
                 sourceLinkHtml = `<a href="//www.themoviedb.org/${mediaType}/${tmdbNumeric}" target="werewolf_cinema_window" class="imdb-link black-outline">TMDb: ${rawId}</a> | `;
             } else if (lowerId.startsWith('tvdb-')) {
                 const tvdbNumeric = rawId.replace(/^tvdb-/i, '');
+                const mediaType = isTv ? 'tv' : 'movie';
                 sourceLinkHtml = `<a href="//thetvdb.com/dereferrer/series/${tvdbNumeric}" target="werewolf_cinema_window" class="imdb-link black-outline">TVDb: ${rawId}</a> | `;
             } else if (lowerId.startsWith('tt')) {
                 sourceLinkHtml = `<a href="//www.imdb.com/title/${rawId}/" target="werewolf_cinema_window" class="imdb-link black-outline">IMDb: ${rawId}</a> | `;
@@ -2248,7 +2596,14 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
             lbRatingDesc.style.display = 'none';
         }
 
-        updateLightboxOwnedUI(m.userOwned);
+        // MA Banner strictly visible on MA pill or All Content
+        const maBanner = document.getElementById('lb-ma-status-banner');
+        if (m.isMAEligible && (activePlatformFilter === 'moviesanywhere' || activePlatformFilter === '')) {
+            maBanner.innerHTML = `🔄 <strong>Movies Anywhere Verified</strong>: Synchronizes playback across Amazon, Apple TV, Google TV, & Fandango.`;
+            maBanner.style.display = 'block';
+        } else {
+            maBanner.style.display = 'none';
+        }
 
         const isTV = m.type && m.type.toLowerCase().includes('tv');
         const tvBingeBox = document.getElementById('lb-tv-binge-container');
@@ -2288,6 +2643,7 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
             artistsContainer.innerHTML = '<div style="color:#888; font-size:11px;">Cast details unavailable.</div>';
         }
         
+        // Strict ALT preview description inside Lightbox
         const altDescEl = document.getElementById('lb-image-alt-desc');
         altDescEl.textContent = `Poster view for ${m.title} (${m.year})`;
 
@@ -2307,13 +2663,21 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
         currentActiveMovie = null;
     };
     
+    /* ------------------------------------------------------------------ */
+    /* DRM-SAFE YOUTUBE PLAYER & ERROR RECOVERY                           */
+    /* ------------------------------------------------------------------ */
     window.playYouTube = (u) => {
         const vidId = extractYouTubeVideoId(u);
         const wrapper = document.getElementById('lb-video-wrapper');
         const iframe = document.getElementById('lb-yt-iframe');
+        const extBtn = document.getElementById('lb-yt-external-btn');
+
+        if (extBtn) {
+            extBtn.href = resolveAppOrWebUrl(u, 'youtube');
+        }
 
         if (vidId && wrapper && iframe) {
-            iframe.src = `//www.youtube-nocookie.com/embed/${vidId}?autoplay=1&rel=0&enablejsapi=1`;
+            iframe.src = `//www.youtube.com/embed/${vidId}?autoplay=1&rel=0&enablejsapi=1&origin=${encodeURIComponent(window.location.origin)}`;
             wrapper.classList.add('active');
             wrapper.style.display = "flex";
             trackOutboundClick(u, 'YouTube Player Embedded');
@@ -2387,12 +2751,14 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
     }
 
     window.resetFilters = () => { 
-        ['movie-search','type-select','rating-select','platform-select','stream-service-select','holiday-select','genre-select','collection-select','artist-select'].forEach(id => {
+        ['movie-search','type-select','rating-select','stream-service-select','holiday-select','genre-select','collection-select','artist-select'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.value = '';
         }); 
         document.getElementById('sort-select').value = 'newest'; 
-        runFilters(); 
+        
+        const pinned = localStorage.getItem(PINNED_PLATFORM_KEY) || "";
+        selectPlatformPill(pinned, document.querySelector(`.platform-pill[data-platform="${pinned}"]`));
     };
 
     function buildAdaptiveSidebar(filteredList, sortMode) {
@@ -2506,11 +2872,25 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
     window.addEventListener('DOMContentLoaded', () => { 
         document.body.style.overflow = '';
         startClock(); 
+        
+        // Restore pinned platform if saved
+        const pinnedPlatform = localStorage.getItem(PINNED_PLATFORM_KEY) || "";
+        activePlatformFilter = pinnedPlatform;
+        
+        document.querySelectorAll('.platform-pill').forEach(pill => {
+            if (pill.getAttribute('data-platform') === pinnedPlatform) {
+                pill.classList.add('active');
+            } else {
+                pill.classList.remove('active');
+            }
+        });
+        
         initLiveFirebaseStream(); 
         initLiveUtmStream();
 
         const isNotifyActive = localStorage.getItem(NOTIFY_PREF_KEY) === 'true';
         updateNotificationUI(isNotifyActive);
+        updatePinnedToolbarUI();
     });
 })();
 </script>
