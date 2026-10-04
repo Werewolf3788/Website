@@ -8,9 +8,10 @@
 <!--            Google TV -> JustWatch -> Movies Anywhere -> YouTube)  -->
 <!-- Line 260: CSS Styles (Glossy Aesthetic, 85% Bounds, Icon Pills)   -->
 <!-- Line 630: Live Realtime Firebase Sync & Isolated Lightbox Engine  -->
-<!-- Line 980: Browser-First Amazon Affiliate URL Resolution           -->
-<!-- Line 1190: YouTube DRM-Safe Direct Launcher & Mobile Fix          -->
-<!-- Date & Time (NYT 24hr): 10/04/2026 13:48:00 EDT                   -->
+<!-- Line 820: Deep-Link Hash Anchor (#imdbId) Handler                 -->
+<!-- Line 980: Outbound UTM Parameter Construction & Amazon Rule       -->
+<!-- Line 1060: Clean Lightbox Button Rendering (No Duplicates)        -->
+<!-- Date & Time (NYT 24hr): 10/04/2026 17:15:00 EDT                   -->
 <!-- ================================================================= -->
 <html lang="en">
 <head>
@@ -29,7 +30,7 @@
     <!-- Google Analytics 4 (GA4) via G-JDNSLD3GFE (Stream: Game Tracker / ID: 15350523518) -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-JDNSLD3GFE"></script>
     <script>
-      /* Line 23: Production Analytics with Enhanced Cookie Rules (NYT: 10/04/2026 13:48:00 EDT) */
+      /* Line 23: Production Analytics with Enhanced Cookie Rules (NYT: 10/04/2026 17:15:00 EDT) */
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
@@ -218,8 +219,8 @@
 
     <!-- Persistent Time & Version Footer -->
     <footer id="app-version-footer">
-        <span class="footer-build-tag black-outline">Werewolf Cinema Engine v2.8.0</span>
-        <span class="footer-timestamp black-outline">Live Stamp (NYT): 10/04/2026 13:48 EDT</span>
+        <span class="footer-build-tag black-outline">Werewolf Cinema Engine v2.8.5</span>
+        <span class="footer-timestamp black-outline">Live Stamp (NYT): 10/04/2026 17:15 EDT</span>
     </footer>
 </div>
 
@@ -295,7 +296,7 @@
             </label>
             <label class="notify-option">
                 <input type="radio" name="notify_platform_scope" value="fandango">
-                <span>🎟️ Fandango at Home</span>
+                <span>🎟️️ Fandango at Home</span>
             </label>
             <label class="notify-option">
                 <input type="radio" name="notify_platform_scope" value="google">
@@ -1043,7 +1044,6 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
 .movie-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(139,0,0,0.5); border-color: #8b0000; }
 .poster-box { position: relative; aspect-ratio: 2/3; background: #000; overflow: hidden; }
 
-/* Enforce clean image presentation */
 .movie-card .poster-box > img.poster-main { 
     width: 100%; 
     height: 100%; 
@@ -1495,6 +1495,35 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
     }
 
     /* ------------------------------------------------------------------ */
+    /* LINE 820: DEEP-LINK HASH ANCHOR HANDLER (#imdbId)                  */
+    /* ------------------------------------------------------------------ */
+    function checkUrlHashAndOpenMovie() {
+        const hash = window.location.hash.replace('#', '').trim();
+        if (!hash || movies.length === 0) return;
+
+        const targetMovie = movies.find(m => {
+            const cleanId = (m.imdbId || '').toLowerCase().trim();
+            const cleanTitle = encodeURIComponent(m.title.toLowerCase().replace(/\s+/g, '-'));
+            return cleanId === hash.toLowerCase() || m.title.toLowerCase() === hash.toLowerCase() || cleanTitle === hash.toLowerCase();
+        });
+
+        if (targetMovie) {
+            // Discord links must always route to "All Content"
+            selectPlatformPill('', document.querySelector('.platform-pill.pill-center-all'));
+            
+            setTimeout(() => {
+                const card = document.querySelector(`.movie-card[data-lib-index="${targetMovie.libIndex}"]`);
+                if (card) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                openLightbox(targetMovie, false);
+            }, 300);
+        }
+    }
+
+    window.addEventListener('hashchange', checkUrlHashAndOpenMovie);
+
+    /* ------------------------------------------------------------------ */
     /* CUSTOM TARGETED PUSH NOTIFICATIONS                                 */
     /* ------------------------------------------------------------------ */
     window.openNotifyModal = () => {
@@ -1613,7 +1642,7 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
     }
 
     /* ------------------------------------------------------------------ */
-    /* FIREBASE & MENU SYNC                                               */
+    /* FIREBASE & MENU SYNC (REALTIME SSE EVENTSOURCE)                    */
     /* ------------------------------------------------------------------ */
     function initLiveUtmStream() {
         fetch(FIREBASE_UTM_ENDPOINT)
@@ -1816,10 +1845,15 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
         return u;
     }
 
+    /* ------------------------------------------------------------------ */
+    /* LINE 980: OUTBOUND UTM LINK BUILDER & STRICT AFFILIATE LOGIC       */
+    /* ------------------------------------------------------------------ */
     window.appendUtm = (url, title = 'outbound') => {
         if (!url) return '';
         const cleanUrl = normalizeUrl(url);
-        if (cleanUrl.includes('amazon.com') || cleanUrl.includes('amzn.to') || cleanUrl.includes('justwatch.com')) {
+
+        // Keep raw Amazon links handled via Associate tag, not standard UTM
+        if (cleanUrl.includes('amazon.com') || cleanUrl.includes('amzn.to')) {
             return cleanUrl;
         }
         
@@ -1856,15 +1890,11 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
         }
     };
 
-    /* ------------------------------------------------------------------ */
-    /* LINE 980: BROWSER-FIRST URL RESOLUTION ENGINE                      */
-    /* ------------------------------------------------------------------ */
-    function resolveAppOrWebUrl(url, platform) {
+    function resolveAppOrWebUrl(url, platform, title = 'outbound') {
         if (!url) return "";
         let finalUrl = normalizeUrl(url);
 
-        // Amazon Resolution: Ensure affiliate tag is attached, but ALWAYS 
-        // open standard HTTPS browser URL first so referral cookies register
+        // Amazon: Ensure affiliate tag is attached and open via browser URL first
         if (finalUrl.includes('amazon.com')) {
             if (!finalUrl.includes('moviesanywhere02-20')) {
                 const sep = finalUrl.includes('?') ? '&' : '?';
@@ -1873,7 +1903,7 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
             return finalUrl;
         }
 
-        // YouTube Resolution: Allow app scheme on mobile for DRM playback
+        // Mobile YouTube Scheme for direct app opening
         if (platform === 'youtube' && isMobileDevice) {
             const vidMatch = finalUrl.match(/(?:youtu\.be\/|v\/|embed\/|watch\?v=|\&v=)([^#\&\?]*)/);
             if (vidMatch && vidMatch[1].length === 11) {
@@ -1881,7 +1911,8 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
             }
         }
 
-        return finalUrl;
+        // Append UTM tags to other external provider links
+        return appendUtm(finalUrl, title);
     }
 
     function extractCleanStreamPlatforms(rawStreaming) {
@@ -2154,6 +2185,7 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
         updatePillDirectCounts();
         updateDropdowns();
         runFilters();
+        checkUrlHashAndOpenMovie();
     }
 
     function renderMovieGridBatch() {
@@ -2179,7 +2211,7 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
             card.setAttribute('data-lib-index', m.libIndex);
             card.setAttribute('data-year', m.year || '');
             card.setAttribute('data-added-year', m.dateAdded ? (m.dateAdded.split('/')[2] || '') : '');
-            card.onclick = () => openLightbox(m);
+            card.onclick = () => openLightbox(m, true);
             
             const hasEdition = m.edition && m.edition.toLowerCase() !== 'standard' && m.edition.trim() !== '';
             
@@ -2190,7 +2222,6 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
                 ribbonBadgeHtml = `<div class="status-badge badge-new black-outline">🆕 New to Library</div>`;
             }
 
-            // Strictly isolate badges according to active platform
             let familyShareBadgeHtml = '';
             if (m.googleFamilyShare && (activePlatformFilter === 'google' || activePlatformFilter === '')) {
                 familyShareBadgeHtml = `<div class="family-share-badge black-outline">👨‍👩‍👧‍‍👦 Family Share</div>`;
@@ -2387,10 +2418,8 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
         const counter = document.getElementById('movie-counter');
         if (counter) {
             if (activePlatformFilter) {
-                // Platform pills show ONLY their count, NEVER x / xx
                 counter.innerHTML = `${getPlatformDisplayName(activePlatformFilter)} Inventory: <span>${currentFilteredList.length}</span>`;
             } else if (isFiltered) {
-                // Only "All Content" shows filtered out of total
                 counter.innerHTML = `Filtered Inventory: <span>${currentFilteredList.length}</span> / <span>${movies.length}</span>`;
             } else {
                 counter.innerHTML = `Cinema Inventory: <span>${movies.length}</span>`;
@@ -2438,7 +2467,7 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
     }
 
     /* ------------------------------------------------------------------ */
-    /* STRICT ISOLATED LIGHTBOX BUTTON RENDERING                          */
+    /* LINE 1060: CLEAN LIGHTBOX BUTTON RENDERING (NO DUPLICATES)         */
     /* ------------------------------------------------------------------ */
     function renderLightboxButtons(m) {
         const storeHeading = document.getElementById('lb-store-heading');
@@ -2447,67 +2476,43 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
         const p = m.platforms || {};
         const sanitizedTitle = m.title.replace(/'/g, '');
 
-        const renderAmazonBtn = () => {
-            if (p.amazon && p.amazon.trim() !== '') {
-                const amz = resolveAppOrWebUrl(p.amazon, 'amazon');
+        const hasAmazon = !!(p.amazon && p.amazon.trim() !== '');
+        const hasApple = !!(p.apple && p.apple.trim() !== '');
+        const hasFandango = !!(p.fandango && p.fandango.trim() !== '');
+        const hasGoogle = !!(p.google && p.google.trim() !== '' || m.googleFamilyShare);
+        const hasJustWatch = !!(p.justwatch && p.justwatch.trim() !== '');
+        const hasYouTube = !!(p.youtube && p.youtube.trim() !== '' || m.youtubeFree);
+
+        if (!activePlatformFilter) {
+            // "All Content" Master View: Each store appears once, exactly one MA button
+            if (hasAmazon) {
+                const amz = resolveAppOrWebUrl(p.amazon, 'amazon', m.title + '_amazon');
                 btns.push(`<a href="${amz}" onclick="trackOutboundClick(this.href, 'Amazon: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-amazon">Buy / Watch on Amazon</a>`);
             }
-            if (m.isMAEligible) {
-                btns.push(`<a href="${p.moviesanywhere}" onclick="trackOutboundClick(this.href, 'MA Sync Amazon: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-ma-bridge">Buy on Movies Anywhere</a>`);
-            }
-        };
-
-        const renderAppleBtn = () => {
-            if (p.apple && p.apple.trim() !== '') {
-                const app = appendUtm(p.apple, m.title + '_apple');
+            if (hasApple) {
+                const app = resolveAppOrWebUrl(p.apple, 'apple', m.title + '_apple');
                 btns.push(`<a href="${app}" onclick="trackOutboundClick(this.href, 'AppleTV: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-apple">Buy / Watch on Apple TV</a>`);
             }
-            if (m.isMAEligible) {
-                btns.push(`<a href="${p.moviesanywhere}" onclick="trackOutboundClick(this.href, 'MA Sync Apple: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-ma-bridge">Buy on Movies Anywhere</a>`);
-            }
-        };
-
-        const renderFandangoBtn = () => {
-            if (p.fandango && p.fandango.trim() !== '') {
-                const fan = appendUtm(p.fandango, m.title + '_fandango');
+            if (hasFandango) {
+                const fan = resolveAppOrWebUrl(p.fandango, 'fandango', m.title + '_fandango');
                 btns.push(`<a href="${fan}" onclick="trackOutboundClick(this.href, 'Fandango: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-fandango">Buy / Watch on Fandango</a>`);
             }
-            if (m.isMAEligible) {
-                btns.push(`<a href="${p.moviesanywhere}" onclick="trackOutboundClick(this.href, 'MA Sync Fandango: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-ma-bridge">Buy on Movies Anywhere</a>`);
-            }
-        };
-
-        const renderGoogleBtn = () => {
-            if (p.google && p.google.trim() !== '') {
-                const goog = appendUtm(p.google, m.title + '_google');
+            if (hasGoogle) {
+                const goog = resolveAppOrWebUrl(p.google, 'google', m.title + '_google');
                 const familyGlowClass = m.googleFamilyShare ? ' glow-family-share' : '';
                 btns.push(`<a href="${goog}" onclick="trackOutboundClick(this.href, 'Google: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-google${familyGlowClass}">Buy / Watch on Google TV</a>`);
             }
-            if (m.isMAEligible) {
-                btns.push(`<a href="${p.moviesanywhere}" onclick="trackOutboundClick(this.href, 'MA Sync Google: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-ma-bridge">Buy on Movies Anywhere</a>`);
+            if (hasJustWatch) {
+                const jw = resolveAppOrWebUrl(p.justwatch, 'justwatch', m.title + '_justwatch');
+                btns.push(`<a href="${jw}" onclick="trackOutboundClick(this.href, 'JustWatch: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-justwatch">🟡 JustWatch Directory</a>`);
             }
-        };
-
-        const renderJustWatchBtn = () => {
-            // Strictly JustWatch ONLY - No Movies Anywhere button
-            if (p.justwatch && p.justwatch.trim() !== '') {
-                btns.push(`<a href="${p.justwatch}" onclick="trackOutboundClick(this.href, 'JustWatch: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-justwatch">🟡 JustWatch Directory</a>`);
-            }
-        };
-
-        const renderMABtn = () => {
             if (m.isMAEligible) {
-                const ma = appendUtm(p.moviesanywhere, m.title + '_moviesanywhere');
+                const ma = resolveAppOrWebUrl(p.moviesanywhere, 'moviesanywhere', m.title + '_ma');
                 btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MoviesAnywhere: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-moviesanywhere">Buy on Movies Anywhere</a>`);
             }
-        };
-
-        const renderYouTubeBtn = () => {
-            // Strictly YouTube ONLY - No Movies Anywhere button
-            if (p.youtube && p.youtube.trim() !== '') {
+            if (hasYouTube) {
                 const ytVidId = extractYouTubeVideoId(p.youtube);
-                const ytAppUrl = resolveAppOrWebUrl(p.youtube, 'youtube');
-                
+                const ytAppUrl = resolveAppOrWebUrl(p.youtube, 'youtube', m.title + '_youtube');
                 if (m.youtubeFree) {
                     btns.push(`<a href="${ytAppUrl}" onclick="trackOutboundClick(this.href, 'YouTube Free: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-youtube-free">▶ Watch Free on YouTube</a>`);
                     if (ytVidId) {
@@ -2520,28 +2525,79 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
                     btns.push(`<a href="${ytAppUrl}" onclick="trackOutboundClick(this.href, 'YouTube Store: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-youtube">YouTube Store</a>`);
                 }
             }
-        };
-
-        // Strict platform visibility check
-        if (!activePlatformFilter) {
-            // "All Content" -> Show available platform buttons
-            renderAmazonBtn();
-            renderAppleBtn();
-            renderFandangoBtn();
-            renderGoogleBtn();
-            renderJustWatchBtn();
-            renderMABtn();
-            renderYouTubeBtn();
         } else {
-            // Specific pill -> Render ONLY that platform's isolated buttons
+            // Isolated Platform View: Only active platform + optional single MA bridge button
             switch (activePlatformFilter) {
-                case 'amazon': renderAmazonBtn(); break;
-                case 'apple': renderAppleBtn(); break;
-                case 'fandango': renderFandangoBtn(); break;
-                case 'google': renderGoogleBtn(); break;
-                case 'justwatch': renderJustWatchBtn(); break;
-                case 'moviesanywhere': renderMABtn(); break;
-                case 'youtube': renderYouTubeBtn(); break;
+                case 'amazon':
+                    if (hasAmazon) {
+                        const amz = resolveAppOrWebUrl(p.amazon, 'amazon', m.title + '_amazon');
+                        btns.push(`<a href="${amz}" onclick="trackOutboundClick(this.href, 'Amazon: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-amazon">Buy / Watch on Amazon</a>`);
+                    }
+                    if (m.isMAEligible) {
+                        const ma = resolveAppOrWebUrl(p.moviesanywhere, 'moviesanywhere', m.title + '_ma');
+                        btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MA Sync Amazon: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-ma-bridge">Buy on Movies Anywhere</a>`);
+                    }
+                    break;
+                case 'apple':
+                    if (hasApple) {
+                        const app = resolveAppOrWebUrl(p.apple, 'apple', m.title + '_apple');
+                        btns.push(`<a href="${app}" onclick="trackOutboundClick(this.href, 'AppleTV: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-apple">Buy / Watch on Apple TV</a>`);
+                    }
+                    if (m.isMAEligible) {
+                        const ma = resolveAppOrWebUrl(p.moviesanywhere, 'moviesanywhere', m.title + '_ma');
+                        btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MA Sync Apple: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-ma-bridge">Buy on Movies Anywhere</a>`);
+                    }
+                    break;
+                case 'fandango':
+                    if (hasFandango) {
+                        const fan = resolveAppOrWebUrl(p.fandango, 'fandango', m.title + '_fandango');
+                        btns.push(`<a href="${fan}" onclick="trackOutboundClick(this.href, 'Fandango: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-fandango">Buy / Watch on Fandango</a>`);
+                    }
+                    if (m.isMAEligible) {
+                        const ma = resolveAppOrWebUrl(p.moviesanywhere, 'moviesanywhere', m.title + '_ma');
+                        btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MA Sync Fandango: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-ma-bridge">Buy on Movies Anywhere</a>`);
+                    }
+                    break;
+                case 'google':
+                    if (hasGoogle) {
+                        const goog = resolveAppOrWebUrl(p.google, 'google', m.title + '_google');
+                        const familyGlowClass = m.googleFamilyShare ? ' glow-family-share' : '';
+                        btns.push(`<a href="${goog}" onclick="trackOutboundClick(this.href, 'Google: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-google${familyGlowClass}">Buy / Watch on Google TV</a>`);
+                    }
+                    if (m.isMAEligible) {
+                        const ma = resolveAppOrWebUrl(p.moviesanywhere, 'moviesanywhere', m.title + '_ma');
+                        btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MA Sync Google: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-ma-bridge">Buy on Movies Anywhere</a>`);
+                    }
+                    break;
+                case 'justwatch':
+                    if (hasJustWatch) {
+                        const jw = resolveAppOrWebUrl(p.justwatch, 'justwatch', m.title + '_justwatch');
+                        btns.push(`<a href="${jw}" onclick="trackOutboundClick(this.href, 'JustWatch: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-justwatch">🟡 JustWatch Directory</a>`);
+                    }
+                    break;
+                case 'moviesanywhere':
+                    if (m.isMAEligible) {
+                        const ma = resolveAppOrWebUrl(p.moviesanywhere, 'moviesanywhere', m.title + '_ma');
+                        btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MoviesAnywhere: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-moviesanywhere">Buy on Movies Anywhere</a>`);
+                    }
+                    break;
+                case 'youtube':
+                    if (hasYouTube) {
+                        const ytVidId = extractYouTubeVideoId(p.youtube);
+                        const ytAppUrl = resolveAppOrWebUrl(p.youtube, 'youtube', m.title + '_youtube');
+                        if (m.youtubeFree) {
+                            btns.push(`<a href="${ytAppUrl}" onclick="trackOutboundClick(this.href, 'YouTube Free: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-youtube-free">▶ Watch Free on YouTube</a>`);
+                            if (ytVidId) {
+                                btns.push(`<button type="button" onclick="playYouTube('${p.youtube}')" class="m-link btn-youtube">🎬 Preview Trailer</button>`);
+                            }
+                        } else {
+                            if (ytVidId) {
+                                btns.push(`<button type="button" onclick="playYouTube('${p.youtube}')" class="m-link btn-youtube">▶ Watch Trailer</button>`);
+                            }
+                            btns.push(`<a href="${ytAppUrl}" onclick="trackOutboundClick(this.href, 'YouTube Store: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-youtube">YouTube Store</a>`);
+                        }
+                    }
+                    break;
             }
         }
 
@@ -2554,7 +2610,7 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
         }
     }
 
-    window.openLightbox = (m) => {
+    window.openLightbox = (m, updateUrlHash = true) => {
         currentActiveMovie = m;
         const lb = document.getElementById('movie-lightbox');
         const posterImg = m.image || '//raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg';
@@ -2596,7 +2652,6 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
             lbRatingDesc.style.display = 'none';
         }
 
-        // MA Banner strictly visible on MA pill or All Content
         const maBanner = document.getElementById('lb-ma-status-banner');
         if (m.isMAEligible && (activePlatformFilter === 'moviesanywhere' || activePlatformFilter === '')) {
             maBanner.innerHTML = `🔄 <strong>Movies Anywhere Verified</strong>: Synchronizes playback across Amazon, Apple TV, Google TV, & Fandango.`;
@@ -2643,13 +2698,16 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
             artistsContainer.innerHTML = '<div style="color:#888; font-size:11px;">Cast details unavailable.</div>';
         }
         
-        // Strict ALT preview description inside Lightbox
         const altDescEl = document.getElementById('lb-image-alt-desc');
         altDescEl.textContent = `Poster view for ${m.title} (${m.year})`;
 
         document.getElementById('lb-description-text').textContent = m.description || 'No description available.';
 
         renderLightboxButtons(m);
+
+        if (updateUrlHash && m.imdbId) {
+            history.replaceState(null, null, `#${m.imdbId}`);
+        }
 
         lb.classList.add('active');
         syncScrollLockState();
@@ -2659,6 +2717,12 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
         const lb = document.getElementById('movie-lightbox');
         if (lb) lb.classList.remove('active');
         closeYouTube(); 
+        
+        // Clean URL hash on close without reloading
+        if (window.location.hash) {
+            history.replaceState(null, null, window.location.pathname + window.location.search);
+        }
+
         syncScrollLockState();
         currentActiveMovie = null;
     };
