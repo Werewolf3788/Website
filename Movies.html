@@ -2,7 +2,8 @@
 <!-- ================================================================= -->
 <!-- WEREWOLF CINEMA LIBRARY - MULTI-PLATFORM PILL TILES & PWA ENGINE  -->
 <!-- Line 1: HTML Document Structure & GA4 Setup (Stream: Game Tracker)-->
-<!-- Line 65: Top Sticky Navbar & Dynamic Drawer Scaffolding           -->
+<!-- Line 18: Standard Browser Tab Favicon & Touch Icon Config         -->
+<!-- Line 65: Top Sticky Navbar with Brand Icon & Dynamic Drawer       -->
 <!-- Line 140: Ordered Platform Pills with Strict Direct Link Counts   -->
 <!--           (Amazon -> Apple TV -> Fandango -> All Content ->       -->
 <!--            Google TV -> JustWatch -> Movies Anywhere -> YouTube)  -->
@@ -11,7 +12,7 @@
 <!-- Line 820: Deep-Link Hash Anchor (#imdbId) Handler                 -->
 <!-- Line 980: Outbound UTM Parameter Construction & Amazon Rule       -->
 <!-- Line 1060: Clean Lightbox Button Rendering (No Duplicates)        -->
-<!-- Date & Time (NYT 24hr): 10/04/2026 17:15:00 EDT                   -->
+<!-- Date & Time (NYT 24hr): 10/04/2026 17:30:00 EDT                   -->
 <!-- ================================================================= -->
 <html lang="en">
 <head>
@@ -19,10 +20,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Werewolf Cinema Library</title>
     
-    <!-- Web App Manifest for PWA Support -->
+    <!-- Standard Browser Tab Icon (Favicon) & PWA Support -->
+    <link rel="icon" type="image/jpeg" href="//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg">
+    <link rel="shortcut icon" href="//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg">
+    <link rel="apple-touch-icon" href="//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#8b0000">
-    <link rel="apple-touch-icon" href="//raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg">
 
     <script src="//raw.githack.com/Werewolf3788/SKVentureSigns/main/Languge_Fonts/language_alphabets.js"></script>
     <script src="//raw.githack.com/Werewolf3788/SKVentureSigns/main/Languge_Fonts/fontSwitcher.js"></script>
@@ -30,7 +33,7 @@
     <!-- Google Analytics 4 (GA4) via G-JDNSLD3GFE (Stream: Game Tracker / ID: 15350523518) -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-JDNSLD3GFE"></script>
     <script>
-      /* Line 23: Production Analytics with Enhanced Cookie Rules (NYT: 10/04/2026 17:15:00 EDT) */
+      /* Line 27: Production Analytics with Enhanced Cookie Rules (NYT: 10/04/2026 17:30:00 EDT) */
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
@@ -50,6 +53,7 @@
                 ☰
             </button>
             <div class="nav-brand black-outline" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                <img src="//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg" class="nav-brand-img" alt="Werewolf Cinema Logo">
                 WEREWOLF <span>CINEMA</span>
             </div>
         </div>
@@ -97,7 +101,13 @@
     <!-- Header Section -->
     <div id="library-header">
         <div id="header-clock" class="black-outline">Loading Time...</div>
-        <div id="cinema-logo" class="black-outline">WEREWOLF <span>CINEMA</span></div>
+        
+        <!-- Center Header Brand Badge -->
+        <div class="header-logo-container">
+            <img src="//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg" class="cinema-header-icon" alt="Cinema Logo" onclick="openImageViewer('//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg', 'Werewolf Cinema')">
+            <div id="cinema-logo" class="black-outline">WEREWOLF <span>CINEMA</span></div>
+        </div>
+
         <div id="movie-counter" class="black-outline">Cinema Inventory: <span>...</span></div>
         
         <div id="sync-status-badge" class="black-outline">
@@ -220,7 +230,7 @@
     <!-- Persistent Time & Version Footer -->
     <footer id="app-version-footer">
         <span class="footer-build-tag black-outline">Werewolf Cinema Engine v2.8.5</span>
-        <span class="footer-timestamp black-outline">Live Stamp (NYT): 10/04/2026 17:15 EDT</span>
+        <span class="footer-timestamp black-outline">Live Stamp (NYT): 10/04/2026 17:30 EDT</span>
     </footer>
 </div>
 
@@ -296,7 +306,7 @@
             </label>
             <label class="notify-option">
                 <input type="radio" name="notify_platform_scope" value="fandango">
-                <span>🎟️️ Fandango at Home</span>
+                <span>🎟 Fandango at Home</span>
             </label>
             <label class="notify-option">
                 <input type="radio" name="notify_platform_scope" value="google">
@@ -405,8 +415,19 @@ body {
     cursor: pointer;
     text-transform: uppercase;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 .nav-brand span { color: #ff0000; }
+.nav-brand-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--accent-red);
+    box-shadow: 0 0 6px rgba(255, 0, 0, 0.4);
+}
 
 .nav-btn {
     min-width: 48px;
@@ -777,6 +798,26 @@ body.theme-dark.bg-justwatch { background: radial-gradient(circle at center top,
     position: relative; 
 }
 #header-clock { position: absolute; top: 10px; right: 20px; font-size: 0.75rem; color: #ff0000; }
+
+.header-logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+.cinema-header-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #8b0000;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+.cinema-header-icon:hover { transform: scale(1.06); }
+
 #cinema-logo span { color: #8b0000; }
 #movie-counter { margin-top: 5px; font-weight: 700; color: #aaa; transition: color 0.3s; }
 #movie-counter span { color: #ff0000; }
@@ -1573,7 +1614,7 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
             
             new Notification('🎬 Werewolf Cinema', {
                 body: `Notifications active for ${getPlatformDisplayName(selectedScope)}!`,
-                icon: '//raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'
+                icon: '//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg'
             });
         } else {
             alert('Notification permission was denied in your browser settings.');
@@ -1630,7 +1671,7 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
                 if (isAddedToday && seenIds.length > 0 && matchesScope) {
                     new Notification(`🎬 New Addition: ${m.title}`, {
                         body: `${m.title} (${m.year}) is now available in your tracked catalog!`,
-                        icon: m.image || '//raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg',
+                        icon: m.image || '//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg',
                         tag: `movie-add-${movieId}`
                     });
                 }
@@ -2276,7 +2317,7 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
                 }
             }
 
-            const posterSrc = m.image || '//raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg';
+            const posterSrc = m.image || '//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg';
 
             card.innerHTML = `
                 <div class="poster-box">
@@ -2285,7 +2326,7 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
                     ${ytFreeBadgeHtml}
                     ${holidayBadgeHtml}
                     ${maEligibleHtml}
-                    <img class="poster-main" src="${posterSrc}" alt="" loading="lazy" onerror="this.src='//raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'">
+                    <img class="poster-main" src="${posterSrc}" alt="" loading="lazy" onerror="this.src='//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg'">
                     ${tvBadgeHtml}
                     <div class="poster-year-badge black-outline">${m.year}</div>
                 </div>
@@ -2613,7 +2654,7 @@ h2, #cinema-logo { font-size: 1.8rem !important; text-align: center; width: 100%
     window.openLightbox = (m, updateUrlHash = true) => {
         currentActiveMovie = m;
         const lb = document.getElementById('movie-lightbox');
-        const posterImg = m.image || '//raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg';
+        const posterImg = m.image || '//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg';
         document.getElementById('lightbox-inner').style.backgroundImage = `url('${posterImg}')`;
         
         const holidayMeta = getHolidayMetadata(m);
