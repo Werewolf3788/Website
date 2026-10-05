@@ -1,36 +1,42 @@
 <!-- ==========================================================================
-     Section 1: Document Head & Layout Shell
-     Version: 1.0.8 | NY Build Stamp: 2026-10-05 05:09 EDT
+     Section 1: Werewolf Cinema Master Shell
+     Timestamp: 2026-10-05 05:18 EDT | Version: 1.1.1
      ========================================================================== -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Line 8: Strict Viewport for Mobile Devices -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Werewolf Cinema Library</title>
 
-  <!-- Line 12: Unified Brand & Visual Assets Synchronization -->
-  <!-- Browser Tab Icon, Apple Touch Icon, and Open Graph mirror the identical header mark -->
+  <!-- Line 13: Unified Branding & Favicon Synchronization (Relative Protocol //) -->
   <link rel="icon" type="image/jpeg" href="//assets.werewolfcinema.com/brand/cinema-logo.jpg">
   <link rel="apple-touch-icon" href="//assets.werewolfcinema.com/brand/cinema-logo.jpg">
   <meta property="og:image" content="//assets.werewolfcinema.com/brand/cinema-logo.jpg">
   <meta property="og:title" content="Werewolf Cinema Library">
-  <meta property="og:description" content="Streaming & digital ownership storefront aggregator.">
+  <meta property="og:description" content="Official streaming storefront aggregator and media database.">
 
-  <!-- Line 20: Progressive Web App Manifest & Meta Tags -->
+  <!-- Line 21: PWA Web App Manifest -->
   <link rel="manifest" href="//werewolfcinema.com/manifest.json">
   <meta name="theme-color" content="#0a0a0c">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- Line 26: Stylesheet Binding with Live Smart Cache-Buster Parameter -->
-  <link rel="stylesheet" href="//werewolfcinema.com/css/main.css?v=20261005-0509">
+  <!-- Line 27: Google Tag Manager (Container Tag: G-CTYHDF4MSD) -->
+  <script>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','G-CTYHDF4MSD');
+  </script>
 
   <style>
-    /* Sleek, glossy, high-contrast UI themes */
+    /* Line 38: Glossy, high-contrast, professional dark theme */
     :root {
       --bg-dark: #0a0a0c;
-      --card-bg: rgba(22, 22, 26, 0.85);
+      --card-bg: rgba(20, 20, 24, 0.85);
       --glass-gloss: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.01) 100%);
       --accent-red: #ff3344;
       --accent-glow: 0 0 15px rgba(255, 51, 68, 0.45);
@@ -38,6 +44,8 @@
       --text-muted: #8e8e93;
       --border-subtle: rgba(255, 255, 255, 0.12);
     }
+
+    * { box-sizing: border-box; }
 
     body {
       background-color: var(--bg-dark);
@@ -48,16 +56,16 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Header & Metrics Section */
+    /* Header & Branding Area */
     .header-container {
       text-align: center;
       padding: 24px 16px 12px 16px;
     }
     .header-logo {
-      height: 52px;
+      height: 54px;
       width: auto;
       display: inline-block;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
     .main-title {
       font-size: 26px;
@@ -67,7 +75,7 @@
       margin: 0;
     }
     .main-title span { color: var(--accent-red); }
-    
+
     .inventory-status-bar {
       margin-top: 8px;
       font-size: 14px;
@@ -95,7 +103,7 @@
       box-shadow: 0 0 8px #34c759;
     }
 
-    /* Filter Pills Container */
+    /* Filter Pills Navigation */
     .pills-container {
       display: flex;
       flex-wrap: wrap;
@@ -126,7 +134,7 @@
       box-shadow: var(--accent-glow);
     }
 
-    /* Catalog Grid Layout (Responsive) */
+    /* Media Grid Layout */
     .catalog-grid {
       display: grid;
       gap: 20px;
@@ -147,7 +155,7 @@
       }
     }
 
-    /* Media Poster Card */
+    /* Media Cards */
     .media-card {
       background: var(--card-bg);
       background-image: var(--glass-gloss);
@@ -173,7 +181,7 @@
       position: absolute;
       top: 10px;
       right: 10px;
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.8);
       border: 1px solid var(--accent-red);
       color: #fff;
       font-size: 11px;
@@ -188,7 +196,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.88);
+      background: rgba(0, 0, 0, 0.9);
       backdrop-filter: blur(8px);
       z-index: 9999;
       justify-content: center;
@@ -225,7 +233,7 @@
       justify-content: center;
     }
 
-    /* TV Episode Scrollable Rail */
+    /* Scrollable Horizontal Episode Selector Rail */
     .episode-rail-container {
       margin: 16px 0;
       border-top: 1px solid var(--border-subtle);
@@ -270,7 +278,7 @@
       box-shadow: var(--accent-glow);
     }
 
-    /* Storefront Button Bars */
+    /* Storefront Buttons */
     .storefront-container {
       display: flex;
       flex-wrap: wrap;
@@ -311,7 +319,6 @@
       display: block;
     }
 
-    /* Footer Stamp */
     footer {
       text-align: center;
       padding: 24px;
@@ -324,14 +331,14 @@
 </head>
 <body>
 
-  <!-- Line 222: Primary Brand Header -->
+  <!-- Line 301: Header Element with Synchronized Logo Source -->
   <header class="header-container">
     <a href="//werewolfcinema.com">
       <img src="//assets.werewolfcinema.com/brand/cinema-logo.jpg" class="header-logo" alt="">
     </a>
     <h1 class="main-title">Werewolf <span>Cinema</span></h1>
     
-    <!-- Cinema Inventory Ratio Display: [Direct Store Links] / [Master IMDb Catalog] -->
+    <!-- Direct Store Links / Master IMDb Titles -->
     <div class="inventory-status-bar">
       Cinema Inventory: <span id="stat-links-count" class="stat-count">0</span> Links / <span id="stat-imdb-count" class="stat-count">0</span> Titles
     </div>
@@ -346,7 +353,7 @@
   <!-- Master Media Grid Container -->
   <main class="catalog-grid" id="catalog-grid"></main>
 
-  <!-- Episode & Media Lightbox Modal -->
+  <!-- Lightbox Modal -->
   <div class="lightbox-modal" id="lightbox-modal" role="dialog" aria-modal="true">
     <div class="lightbox-content">
       <button class="lightbox-close" id="lightbox-close" aria-label="Close modal">&times;</button>
@@ -357,13 +364,12 @@
         <div id="modal-metadata" style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;"></div>
       </div>
 
-      <!-- Scrollable Episode Rail for TV Series (Hidden automatically for standalone Movies) -->
+      <!-- Scrollable Episode Rail for TV Series -->
       <div class="episode-rail-container" id="episode-rail-wrapper" style="display: none;">
         <span class="episode-rail-label">Select Episode:</span>
         <div class="episode-scroll-rail" id="episode-scroll-rail"></div>
       </div>
 
-      <!-- Episode Summary & Synopsis -->
       <p id="modal-synopsis" style="font-size: 14px; line-height: 1.5; color: #d1d1d6;"></p>
 
       <!-- Storefront CTA Links Bar -->
@@ -376,5 +382,10 @@
 
   <!-- Persistent 24-Hour NY Time & Version Footer -->
   <footer>
-    <div id="footer-stamp">Built: 2026-10-05 05:09 EDT | Version: 1.0.8 | Target: /utm_links</div>
+    <div id="footer-stamp">Built: 2026-10-05 05:18 EDT | Version: 1.1.1 | Target: /utm_links</div>
   </footer>
+
+  <!-- Line 356: Core Application Script Loading -->
+  <script src="//werewolfcinema.com/js/app.js?v=20261005-0518"></script>
+</body>
+</html>
