@@ -2,7 +2,7 @@
 <!-- ==========================================================================
      FILE: Movies.html
      PROJECT: Werewolf Cinema Library / S&K Ventures Web Portal
-     TIMESTAMP (24-hr NY Time): 2026-10-04 21:44:00 EDT
+     TIMESTAMP (24-hr NY Time): 2026-10-04 22:10:00 EDT
      LINE 6: Complete Document Structure, PWA Manifest, & GA4 Integration
      ========================================================================== -->
 <html lang="en">
@@ -1265,8 +1265,8 @@
 
     <!-- Persistent Time & Version Footer -->
     <footer id="app-version-footer">
-        <span class="footer-build-tag black-outline">Werewolf Cinema Engine v3.1.5 (PWA & Dynamic Navigation Sync)</span>
-        <span class="footer-timestamp black-outline">Live Stamp (NYT): 10/04/2026 21:44 EDT</span>
+        <span class="footer-build-tag black-outline">Werewolf Cinema Engine v3.1.8 (Edition Rating Fallback Sync)</span>
+        <span class="footer-timestamp black-outline">Live Stamp (NYT): 10/04/2026 22:10 EDT</span>
     </footer>
 </div>
 
@@ -2309,6 +2309,27 @@
             const rawHolidayTag = (v.holidays && v.holidays.toString().trim().toLowerCase() !== 'none') ? v.holidays.toString().trim() : '';
             const ts = getSafeTimestamp(v.dateAdded);
 
+            // Rating & Edition Fallback Parser
+            let resolvedRating = (v.rating || '').toString().trim();
+            const rawEdition = (v.edition || '').toString().trim();
+            let displayEdition = rawEdition;
+
+            const isEditionUnrated = /unrated|not\s*rated|\bnr\b|\bur\b/i.test(rawEdition);
+
+            if (!resolvedRating || resolvedRating.toUpperCase() === 'N/A' || resolvedRating.toUpperCase() === 'NOT RATED' || resolvedRating.toUpperCase() === 'UNRATED') {
+                if (isEditionUnrated) {
+                    resolvedRating = 'Unrated';
+                }
+            }
+
+            if (isEditionUnrated) {
+                if (/^unrated$/i.test(rawEdition) || /^not\s*rated$/i.test(rawEdition)) {
+                    displayEdition = '';
+                } else {
+                    displayEdition = rawEdition.replace(/\s*-\s*unrated/gi, '').replace(/\s*unrated\s*/gi, '').trim();
+                }
+            }
+
             const movieObj = {
                 title: rawTitle,
                 image: finalPoster,
@@ -2318,7 +2339,7 @@
                 dateAdded: getDisplayDateString(v.dateAdded, ts),
                 imdbId: rawMediaId,
                 cast: castArr,
-                edition: (v.edition || '').toString().trim(),
+                edition: displayEdition,
                 collection: (v.collection || '').toString().trim(),
                 genre: (v.genre || '').toString().trim(),
                 runtime: (v.runtime || '').toString().trim(),
@@ -2327,7 +2348,7 @@
                 streamPlatforms: cleanStreamPlatforms,
                 description: (v.description || '').toString().trim(),
                 holidayTag: rawHolidayTag,
-                videoRating: (v.rating || '').toString().trim(),
+                videoRating: resolvedRating,
                 ratingDescription: (v.ratingReason || '').toString().trim(),
                 googleFamilyShare: isFamilyShareChecked,
                 youtubeFree: isYouTubeFreeChecked,
@@ -2559,7 +2580,9 @@
             }
 
             if (ratingF) {
-                if ((m.videoRating || '').toLowerCase() !== ratingF.toLowerCase()) return false;
+                const rMatch = (m.videoRating || '').toLowerCase() === ratingF.toLowerCase();
+                const edMatch = /unrated/i.test(ratingF) && /unrated|not\s*rated|\bnr\b|\bur\b/i.test(m.edition || '');
+                if (!rMatch && !edMatch) return false;
             }
 
             if (holidayF) {
@@ -2845,7 +2868,7 @@
         
         const lbRatingDesc = document.getElementById('lb-rating-desc');
         if (m.ratingDescription && m.ratingDescription.trim() !== '') {
-            lbRatingDesc.innerHTML = `⚠️ Rating Warning: ${m.ratingDescription}`;
+            lbRatingDesc.innerHTML = `⚠️️ Rating Warning: ${m.ratingDescription}`;
             lbRatingDesc.style.display = 'block';
         } else {
             lbRatingDesc.style.display = 'none';
@@ -3035,7 +3058,6 @@
     function scrollToMovieIndex(targetIdx) {
         if (targetIdx < 0 || targetIdx >= currentFilteredList.length) return;
         
-        // Auto-expand batch rendering if the target movie is beyond the currently loaded slice
         if (targetIdx >= currentRenderLimit) {
             currentRenderLimit = Math.min(currentFilteredList.length, targetIdx + BATCH_SIZE);
             renderMovieGridBatch();
@@ -3055,7 +3077,6 @@
         if (!filteredList || filteredList.length === 0) return;
 
         // 1. TITLE ALPHABET MODE (A-Z, Z-A)
-        // Shows only letters present in the catalog
         if (sortMode === 'az' || sortMode === 'za') {
             const letterMap = new Map();
 
@@ -3094,7 +3115,6 @@
             });
         } 
         // 2. LIBRARY ADDED YEAR MODE (Recently Added, Oldest Added)
-        // Shows only the years when movies were added to library
         else if (sortMode === 'newest' || sortMode === 'oldest') {
             const addedYearMap = new Map();
 
@@ -3124,7 +3144,6 @@
             });
         } 
         // 3. EXACT MOVIE RELEASE YEAR MODE (Year: New-Old, Year: Old-New)
-        // Shows exact 4-digit release years present in Firebase
         else if (sortMode === 'new-old' || sortMode === 'old-new') {
             const movieYearMap = new Map();
 
