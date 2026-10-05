@@ -2,7 +2,7 @@
 <!-- ==========================================================================
      FILE: Movies.html
      PROJECT: Werewolf Cinema Library / S&K Ventures Web Portal
-     TIMESTAMP (24-hr NY Time): 2026-10-05 03:40:00 EDT
+     TIMESTAMP (24-hr NY Time): 2026-10-05 03:58:00 EDT
      LINE 6: Complete Document Structure, PWA Manifest, & GA4 Integration
      ========================================================================== -->
 <html lang="en">
@@ -917,7 +917,7 @@
           scrollbar-color: #8b0000 #111;
       }
 
-      /* Clean Top Poster Display: Uncovered Artwork with Click-to-Expand */
+      /* Clean Top Poster Display */
       .lb-poster-wrapper {
           width: 100%;
           display: flex;
@@ -1351,7 +1351,7 @@
     <!-- Persistent Time & Version Footer -->
     <footer id="app-version-footer">
         <span class="footer-build-tag black-outline">Werewolf Cinema Engine v3.3.0 (TVDB Series & Multi-Source TV Streaming Support)</span>
-        <span class="footer-timestamp black-outline">Live Stamp (NYT): 10/05/2026 03:40 EDT</span>
+        <span class="footer-timestamp black-outline">Live Stamp (NYT): 10/05/2026 03:58 EDT</span>
     </footer>
 </div>
 
@@ -1450,7 +1450,6 @@
 <script>
 // ==========================================================================
 // JAVASCRIPT APPLICATION CORE & REALTIME SYNCHRONIZATION
-// Line 650: Smart cache buster, dynamic batch expansion, and exact filters
 // ==========================================================================
 (function() {
     let moviesMap = {};
@@ -1730,6 +1729,7 @@
         return { name: holidayName, emoji: emoji, color: color, isSeason: isActiveSeason, raw: tag };
     }
 
+    // ACCURATE PLATFORM PILL COUNTER
     function updatePillDirectCounts() {
         let amazonCount = 0;
         let appleCount = 0;
@@ -2215,10 +2215,12 @@
         mobileLinksContainer.innerHTML = mobileDrawerHtml || '<div style="color:#666; font-size:12px;">No active directory entries found.</div>';
     }
 
+    // ROBUST UNIVERSAL URL CHECKER (Supports Apple, Fandango, JustWatch, TVDB)
     function isValidUrl(str) {
         if (!str) return false;
         const s = str.toString().trim().toLowerCase();
-        return s.startsWith('http://') || s.startsWith('https://') || s.startsWith('//') || s.includes('play.google.com') || s.includes('amazon.com') || s.includes('amzn.to') || s.includes('youtu') || s.includes('justwatch.com');
+        if (s.startsWith('http://') || s.startsWith('https://') || s.startsWith('//')) return true;
+        return s.includes('apple.com') || s.includes('amazon.') || s.includes('google.') || s.includes('fandango.') || s.includes('vudu.') || s.includes('youtu') || s.includes('justwatch.') || s.includes('moviesanywhere.');
     }
 
     function normalizeUrl(url) {
@@ -2312,6 +2314,7 @@
         return Array.from(uniqueSet);
     }
 
+    // RELIABLE REBUILD FUNCTION
     function rebuildMoviesArray(saveCache = true) {
         if (!moviesMap || typeof moviesMap !== 'object') return;
 
@@ -2333,8 +2336,10 @@
 
             const rawMediaId = v.id ? v.id.toString().trim() : '';
             const rawYear = (v.year || '').toString().trim();
+            const rawEdition = (v.edition || '').toString().trim();
 
-            const dedupKey = rawMediaId ? rawMediaId.toLowerCase() : `${rawTitle.toLowerCase()}_${rawYear}`;
+            // Explicit key ensures season & episode variants don't overwrite each other
+            const dedupKey = key.toLowerCase();
 
             const p = { 
                 amazon: (v.amazon && isValidUrl(v.amazon)) ? normalizeUrl(v.amazon) : '', 
@@ -2350,22 +2355,8 @@
             const isFamilyShareChecked = v.googleFamilyShare === true || v.googleFamilyShare === 'true' || v.googleFamilyShare === 1 || v.googleFamilyShare === 'TRUE';
             const isYouTubeFreeChecked = v.youtubeFree === true || v.youtubeFree === 'true' || v.youtubeFree === 1 || v.youtubeFree === 'TRUE';
 
-            // CRITICAL FIX: Allow entries that have streaming platform availability OR are TV shows to render even if locker purchase links are pending
             const isTvShow = (v.type && v.type.toLowerCase().includes('tv')) || (v.id && v.id.toLowerCase().includes('tvdb'));
             const hasStreamingData = !!(v.streaming && v.streaming.trim() !== '');
-
-            const hasAnyLink = (
-                (p.amazon && p.amazon.trim() !== '') ||
-                (p.apple && p.apple.trim() !== '') ||
-                (p.fandango && p.fandango.trim() !== '') ||
-                (p.google && p.google.trim() !== '') || isFamilyShareChecked ||
-                (p.justwatch && p.justwatch.trim() !== '') ||
-                isMA ||
-                (p.youtube && p.youtube.trim() !== '') || isYouTubeFreeChecked ||
-                isTvShow || hasStreamingData
-            );
-
-            if (!hasAnyLink) return;
 
             let castArr = [];
             if (Array.isArray(v.actors)) {
@@ -2396,6 +2387,7 @@
             const ts = getSafeTimestamp(v.dateAdded);
 
             const movieObj = {
+                nodeKey: key,
                 title: rawTitle,
                 image: finalPoster,
                 year: rawYear,
@@ -2404,7 +2396,7 @@
                 dateAdded: getDisplayDateString(v.dateAdded, ts),
                 imdbId: rawMediaId,
                 cast: castArr,
-                edition: (v.edition || '').toString().trim(),
+                edition: rawEdition,
                 collection: (v.collection || '').toString().trim(),
                 genre: (v.genre || '').toString().trim(),
                 runtime: (v.runtime || '').toString().trim(),
@@ -2421,24 +2413,7 @@
                 libIndex: index
             };
 
-            if (uniqueMap.has(dedupKey)) {
-                const existing = uniqueMap.get(dedupKey);
-                Object.keys(movieObj.platforms).forEach(plat => {
-                    if (!existing.platforms[plat] && movieObj.platforms[plat]) {
-                        existing.platforms[plat] = movieObj.platforms[plat];
-                    }
-                });
-                if (!existing.image && movieObj.image) existing.image = movieObj.image;
-                if (!existing.holidayTag && movieObj.holidayTag) existing.holidayTag = movieObj.holidayTag;
-                if (!existing.edition && movieObj.edition) existing.edition = movieObj.edition;
-                if (!existing.videoRating && movieObj.videoRating) existing.videoRating = movieObj.videoRating;
-                if (movieObj.googleFamilyShare) existing.googleFamilyShare = true;
-                if (movieObj.youtubeFree) existing.youtubeFree = true;
-                if (movieObj.isMAEligible) existing.isMAEligible = true;
-                if (!existing.streaming && movieObj.streaming) existing.streaming = movieObj.streaming;
-            } else {
-                uniqueMap.set(dedupKey, movieObj);
-            }
+            uniqueMap.set(dedupKey, movieObj);
         });
 
         movies = Array.from(uniqueMap.values());
@@ -2752,7 +2727,6 @@
         document.getElementById('controls-container')?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    // Clean Single Platform Button Generator (Amazon Affiliate + Clean YouTube)
     function renderLightboxButtons(m) {
         const storeHeading = document.getElementById('lb-store-heading');
         const buttonBox = document.getElementById('lb-buttons');
@@ -2875,7 +2849,6 @@
         const lb = document.getElementById('movie-lightbox');
         const posterImg = m.image || '//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg';
         
-        // Render Visible Poster Artwork at Top
         const posterEl = document.getElementById('lb-poster-display');
         if (posterEl) {
             posterEl.src = posterImg;
@@ -2887,7 +2860,6 @@
         
         const hasEdition = m.edition && m.edition.toLowerCase() !== 'standard' && m.edition.trim() !== '';
         
-        // CRITICAL FIX: Universal TVDB, IMDb & TMDb dereferencing logic
         let sourceLinkHtml = '';
         if (m.imdbId) {
             const rawId = m.imdbId.toString().trim();
@@ -2970,7 +2942,6 @@
             artistsContainer.innerHTML = '<div style="color:#888; font-size:11px;">Cast details unavailable.</div>';
         }
         
-        // Image ALT descriptions restricted strictly to the lightbox modal view
         const altDescEl = document.getElementById('lb-image-alt-desc');
         altDescEl.textContent = `Poster view for ${m.title} (${m.year}) [Tap image to view full size]`;
 
@@ -3091,7 +3062,6 @@
         sidebar.innerHTML = '';
         if (!filteredList || filteredList.length === 0) return;
 
-        // 1. TITLE ALPHABET MODE (A-Z, Z-A)
         if (sortMode === 'az' || sortMode === 'za') {
             const letterMap = new Map();
 
@@ -3129,7 +3099,6 @@
                 sidebar.appendChild(btn);
             });
         } 
-        // 2. LIBRARY ADDED YEAR MODE (Recently Added, Oldest Added)
         else if (sortMode === 'newest' || sortMode === 'oldest') {
             const addedYearMap = new Map();
 
@@ -3158,7 +3127,6 @@
                 sidebar.appendChild(btn);
             });
         } 
-        // 3. EXACT MOVIE RELEASE YEAR MODE (Year: New-Old, Year: Old-New)
         else if (sortMode === 'new-old' || sortMode === 'old-new') {
             const movieYearMap = new Map();
 
