@@ -3,6 +3,7 @@
    Location: //playstation-be938.web.app/games/HunterCOTW/script.js
    Description: theHunter: Call of the Wild Master Tracker Dual-Engine
                 - Complete 19 Reserve Catalog with Official Weapon Classes (1-9)
+                - Live Reserve Cull Board & Map-Specific Species Kill Counter
                 - Need Zones (Drinking, Feeding, Resting) with In-Game Schedule Reference
                 - User-Scoped Deduplication (Checks active user's node; prevents double-tap
                   duplicates with user alert, while preserving multi-user shared squad locations)
@@ -17,18 +18,18 @@
                 - Google Analytics 4 (G-CTYHDF4MSD) via GTM Integration
                 - 4-Player Switcher (Werewolf, Raymystyro, Terrdog, DesdemonaTiger)
    Database: Cloud Firestore, Realtime Database & Firebase Storage (entertainment-71888)
-   Build Version: 6.7.0
-   Date & Time Stamp: 2026-10-02 18:30:00 EDT (America/New_York)
+   Build Version: 6.8.0
+   Date & Time Stamp: 2026-10-05 17:39:00 EDT (America/New_York)
    ============================================================================ */
 
-// Line 25: Google Tag Manager & Google Analytics 4 Deployment (G-CTYHDF4MSD)
+// Line 26: Google Tag Manager & Google Analytics 4 Deployment (G-CTYHDF4MSD)
 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-W3R9F47');
 
-// Line 33: GA4 Config tag deployment with 14-month data retention & enhanced measurement
+// Line 34: GA4 Config tag deployment with 14-month data retention & enhanced measurement
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
@@ -38,7 +39,7 @@ gtag('config', 'G-CTYHDF4MSD', {
     'cookie_flags': 'SameSite=None;Secure'
 });
 
-// Line 44: Relative Protocol SDK Imports
+// Line 45: Relative Protocol SDK Imports
 import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from '//www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from '//www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
@@ -47,10 +48,10 @@ import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from '//ww
 
 /* ----------------------------------------------------
  * SECTION 1: Build Metadata, User Map & Custom Themes
- * Lines 53-140: PSN handles, custom themes, asset icons
+ * Lines 54-141: PSN handles, custom themes, asset icons
  * ---------------------------------------------------- */
-const BUILD_VERSION = "6.7.0";
-const CODE_BUILD_DATE = "2026-10-02 18:30:00 EDT";
+const BUILD_VERSION = "6.8.0";
+const CODE_BUILD_DATE = "2026-10-05 17:39:00 EDT";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -138,7 +139,7 @@ const ICONS = {
 
 /* ----------------------------------------------------
  * SECTION 2: Master Helpers & Layton Proximity Anchors
- * Lines 142-215: Checklists & 40 verified Layton anchors
+ * Lines 143-216: Checklists & 40 verified Layton anchors
  * ---------------------------------------------------- */
 const checkSet = (items) => items.map(name => ({ name, done: false }));
 
@@ -194,7 +195,7 @@ const LAYTON_ANCHORS = [
 
 /* ----------------------------------------------------
  * SECTION 3: Official Need Zone Schedules Reference
- * Lines 217-267: Drink, Feed, Rest Times for Grinds
+ * Lines 218-268: Drink, Feed, Rest Times for Grinds
  * ---------------------------------------------------- */
 const NEED_ZONE_SCHEDULES = {
     'Whitetail Deer': { drink: '08:00 - 12:00', feed: '04:00 - 08:00', rest: '12:00 - 16:00' },
@@ -211,12 +212,13 @@ const NEED_ZONE_SCHEDULES = {
     'Mule Deer': { drink: '15:00 - 18:00', feed: '05:00 - 09:00', rest: '09:00 - 13:00' },
     'Pronghorn': { drink: '04:00 - 07:00', feed: '07:00 - 11:00', rest: '11:00 - 15:00' },
     'European Bison': { drink: '11:00 - 14:00', feed: '07:00 - 11:00', rest: '03:00 - 07:00' },
-    'Plains Bison': { drink: '12:00 - 16:00', feed: '04:00 - 08:00', rest: '16:00 - 20:00' }
+    'Plains Bison': { drink: '12:00 - 16:00', feed: '04:00 - 08:00', rest: '16:00 - 20:00' },
+    'American Alligator': { drink: '16:00 - 20:00', feed: '04:00 - 08:00', rest: '10:00 - 14:00' }
 };
 
 /* ----------------------------------------------------
  * SECTION 4: Official Reserve Catalogs & Animal Classes
- * Lines 269-377: All 19 Maps with Classes (1-9)
+ * Lines 270-380: All 19 Maps with Classes (1-9)
  * ---------------------------------------------------- */
 const RESERVE_CATALOG = {
     'Layton Lake': {
@@ -375,7 +377,7 @@ const RESERVE_CATALOG = {
 
 /* ----------------------------------------------------
  * SECTION 5: Complete Static Trophy Database
- * Lines 379-542: All Base Game & DLC Narrative Quests
+ * Lines 382-545: All Base Game & DLC Narrative Quests
  * ---------------------------------------------------- */
 const trophyData = [
     // --- BASE GAME TROPHIES ---
@@ -563,12 +565,13 @@ const SPECIES_BENCHMARKS = {
     'Red Deer': { min: 90, max: 240, sweetLow: 120, sweetHigh: 155, diamondLevel: 9 },
     'Moose': { min: 300, max: 620, sweetLow: 360, sweetHigh: 430, diamondLevel: 5 },
     'Fallow Deer': { min: 30, max: 100, sweetLow: 45, sweetHigh: 60, diamondLevel: 5 },
-    'Gray Wolf': { min: 30, max: 80, sweetLow: 35, sweetHigh: 46, diamondLevel: 9 }
+    'Gray Wolf': { min: 30, max: 80, sweetLow: 35, sweetHigh: 46, diamondLevel: 9 },
+    'American Alligator': { min: 100, max: 500, sweetLow: 220, sweetHigh: 340, diamondLevel: 9 }
 };
 
 /* ----------------------------------------------------
  * SECTION 6: Application State & Safe Form Handling
- * Lines 544-965: State management, robust DOM bindings
+ * Lines 547-1045: State management, robust DOM bindings
  * ---------------------------------------------------- */
 const appState = {
     activeHunter: localStorage.getItem('pinned_device_user') || 'Werewolf',
@@ -580,6 +583,7 @@ const appState = {
     selectedImageFile: null,
     hunterData: [],
     animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, Fur: 0 },
+    activeReserveCullCounts: {},
     auth: null,
     db: null,
     rtdb: null,
@@ -590,6 +594,7 @@ const appState = {
     legacyUnsub: null,
     rtdbTrophyRef: null,
     rtdbLedgerRef: null,
+    rtdbReserveCullRef: null,
 
     knownWeaponsList: [
         '.300 Canning Magnum Frontier', '7mm Malmer', '.270 Huntsman', '.243 Ranger',
@@ -697,6 +702,7 @@ const appState = {
 
         this.updateSpeciesDropdown();
         this.bindGrindTelemetry();
+        this.bindReserveCullWatcher();
 
         const targetSection = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '');
         const sectionEl = document.getElementById(targetSection);
@@ -736,6 +742,7 @@ const appState = {
         if (customSpecWrap) customSpecWrap.style.display = 'none';
 
         this.updateNeedZoneSchedule();
+        this.renderReserveCullBoard();
     },
 
     handleSpeciesSelectChange: function(val) {
@@ -750,6 +757,7 @@ const appState = {
         }
         this.updateNeedZoneSchedule();
         this.bindGrindTelemetry();
+        this.renderReserveCullBoard();
     },
 
     /* --- Need Zone Schedule Auto-Fill --- */
@@ -859,6 +867,110 @@ const appState = {
         });
     },
 
+    /* --- Bind Reserve Cull Watcher: Live Kill Counts Across Entire Active Map --- */
+    bindReserveCullWatcher: function() {
+        if (!this.rtdb) return;
+        if (this.rtdbReserveCullRef) off(this.rtdbReserveCullRef);
+
+        const cleanMap = this.activeReserve.replace(/[^a-zA-Z0-9]/g, '_');
+        this.rtdbReserveCullRef = rtdbRef(this.rtdb, `users/${this.activeHunter}/grind_tracker/${cleanMap}`);
+
+        onValue(this.rtdbReserveCullRef, (snapshot) => {
+            this.activeReserveCullCounts = {};
+            if (snapshot.exists()) {
+                const mapData = snapshot.val();
+                Object.keys(mapData).forEach(speciesKey => {
+                    const node = mapData[speciesKey];
+                    if (node && node.harvests) {
+                        const count = Object.keys(node.harvests).length;
+                        this.activeReserveCullCounts[speciesKey] = count;
+                    }
+                });
+            }
+            this.renderReserveCullBoard();
+        });
+    },
+
+    /* --- Render Live Reserve Cull Board --- */
+    renderReserveCullBoard: function() {
+        const boardEl = document.getElementById('reserve-cull-board');
+        const activeCountBadge = document.getElementById('active-species-count-badge');
+        if (!boardEl) return;
+
+        const reserveObj = RESERVE_CATALOG[this.activeReserve];
+        let animals = reserveObj ? reserveObj.animals : [
+            'Whitetail Deer (Class 4)', 'Black Bear (Class 7)', 'Moose (Class 8)',
+            'Red Deer (Class 6)', 'Fallow Deer (Class 4)', 'Wild Boar (Class 4)'
+        ];
+
+        let totalMapHarvests = 0;
+        let activeSpeciesKills = 0;
+        const cleanActiveKey = this.activeSpecies.replace(/[^a-zA-Z0-9]/g, '_');
+
+        let chipsHTML = animals.map(anim => {
+            const animKey = anim.replace(/[^a-zA-Z0-9]/g, '_');
+            const killCount = this.activeReserveCullCounts[animKey] || 0;
+            totalMapHarvests += killCount;
+
+            const isCurrent = (anim === this.activeSpecies);
+            if (isCurrent) activeSpeciesKills = killCount;
+
+            return `
+                <div class="cull-chip ${isCurrent ? 'active-cull-chip' : ''}" 
+                     onclick="appState.selectSpeciesFromCull('${anim.replace(/'/g, "\\'")}')" 
+                     title="Click to select ${anim}">
+                    <span class="cull-chip-name">${anim}</span>
+                    <span class="cull-chip-count">${killCount}</span>
+                </div>
+            `;
+        }).join('');
+
+        // Include any custom species logged on this reserve not in the static catalog
+        Object.keys(this.activeReserveCullCounts).forEach(loggedKey => {
+            const isCataloged = animals.some(a => a.replace(/[^a-zA-Z0-9]/g, '_') === loggedKey);
+            if (!isCataloged) {
+                const count = this.activeReserveCullCounts[loggedKey] || 0;
+                totalMapHarvests += count;
+                const isCurrent = (cleanActiveKey === loggedKey);
+                if (isCurrent) activeSpeciesKills = count;
+                chipsHTML += `
+                    <div class="cull-chip ${isCurrent ? 'active-cull-chip' : ''}" 
+                         onclick="appState.selectSpeciesFromCull('${loggedKey}')" 
+                         title="Custom Harvest Track">
+                        <span class="cull-chip-name">${loggedKey.replace(/_/g, ' ')}</span>
+                        <span class="cull-chip-count">${count}</span>
+                    </div>
+                `;
+            }
+        });
+
+        boardEl.innerHTML = chipsHTML || '<div style="font-size:0.75rem; color:#94a3b8;">No harvests logged for this reserve yet.</div>';
+
+        if (activeCountBadge) {
+            activeCountBadge.innerHTML = `🎯 <strong>${this.activeSpecies}</strong> Total on ${this.activeReserve}: <strong>${activeSpeciesKills}</strong> | Reserve Total: <strong>${totalMapHarvests}</strong>`;
+        }
+    },
+
+    selectSpeciesFromCull: function(speciesName) {
+        const specSelect = document.getElementById('grind-species-select');
+        if (!specSelect) return;
+
+        let matchedOpt = Array.from(specSelect.options).find(o => o.value === speciesName);
+        if (matchedOpt) {
+            specSelect.value = speciesName;
+            this.handleSpeciesSelectChange(speciesName);
+        } else {
+            specSelect.value = '__CUSTOM__';
+            this.handleSpeciesSelectChange('__CUSTOM__');
+            const customInput = document.getElementById('custom-species-input');
+            if (customInput) customInput.value = speciesName.replace(/_/g, ' ');
+            this.activeSpecies = speciesName.replace(/_/g, ' ');
+            this.updateNeedZoneSchedule();
+            this.bindGrindTelemetry();
+            this.renderReserveCullBoard();
+        }
+    },
+
     bindGrindTelemetry: function() {
         if (!this.rtdb) return;
         if (this.rtdbLedgerRef) off(this.rtdbLedgerRef);
@@ -872,7 +984,7 @@ const appState = {
             const readout = document.getElementById('sweet-spot-readout');
             if (!snapshot.exists()) {
                 if (fill) fill.style.width = '0%';
-                if (readout) readout.innerText = "No harvest data recorded yet for active grind.";
+                if (readout) readout.innerText = `No harvest data recorded yet for ${this.activeSpecies} on ${this.activeReserve}.`;
                 return;
             }
 
@@ -895,7 +1007,7 @@ const appState = {
                 let statusBadge = isOptimal ? '🎯 OPTIMAL SWEET SPOT' : (avgWeight > specMeta.sweetHigh ? '⚠️ ELEVATED WEIGHT' : '⬇️ MINIMUM TIERS');
                 readout.innerHTML = `
                     <strong>${statusBadge}</strong> | Moving Avg: <strong>${avgWeight.toFixed(1)} kg</strong> (${specMeta.sweetLow}-${specMeta.sweetHigh}kg)
-                    <br>Recent: ${recent.length} | Exterior Ratio: <strong>${extRatio}%</strong> ${extRatio < 20 ? '(⚠️ Check exterior lakes)' : '✓ Healthy Rotation'}
+                    <br>Recent: ${recent.length} (Total Logged: ${harvests.length}) | Exterior Ratio: <strong>${extRatio}%</strong> ${extRatio < 20 ? '(⚠️ Check exterior lakes)' : '✓ Healthy Rotation'}
                 `;
             }
         });
@@ -1133,8 +1245,25 @@ const appState = {
 
         const linksRef = rtdbRef(this.rtdb, 'utm_links');
         onValue(linksRef, (snapshot) => {
-            if (!snapshot.exists()) return;
-            const rawData = snapshot.val();
+            let rawData = null;
+            if (snapshot.exists()) {
+                rawData = snapshot.val();
+                try {
+                    localStorage.setItem('cached_utm_links', JSON.stringify(rawData));
+                } catch (e) {
+                    console.warn('[Cache Guard] Failed to write /utm_links to localStorage:', e);
+                }
+            } else {
+                console.warn('[Firebase Sync Warning] /utm_links snapshot is empty or null. Falling back to localStorage.');
+                try {
+                    const cached = localStorage.getItem('cached_utm_links');
+                    if (cached) rawData = JSON.parse(cached);
+                } catch (e) {
+                    console.error('[Cache Guard] Failed to parse local fallback links:', e);
+                }
+            }
+
+            if (!rawData) return;
             const standalone = [];
             const groups = {};
 
@@ -1280,11 +1409,13 @@ const appState = {
         if (this.masterUnsub) { this.masterUnsub(); this.masterUnsub = null; }
         if (this.legacyUnsub) { this.legacyUnsub(); this.legacyUnsub = null; }
         if (this.rtdbTrophyRef) { off(this.rtdbTrophyRef); this.rtdbTrophyRef = null; }
+        if (this.rtdbReserveCullRef) { off(this.rtdbReserveCullRef); this.rtdbReserveCullRef = null; }
 
         this.activeHunter = userName || 'Werewolf';
         this.activePlatform = normalizePlatform(platform);
         this.hunterData = this.getFreshTrophyTemplate();
         this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, Fur: 0 };
+        this.activeReserveCullCounts = {};
 
         localStorage.setItem('active_gaming_nickname', this.activeHunter);
         localStorage.setItem('active_gaming_platform', this.activePlatform);
@@ -1298,6 +1429,7 @@ const appState = {
         this.render();
         this.updateRankUI();
         this.bindGrindTelemetry();
+        this.bindReserveCullWatcher();
 
         const docRef = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', GAME_ID);
         this.masterUnsub = onSnapshot(docRef, (snap) => {
@@ -1483,6 +1615,17 @@ const appState = {
                     <button type="button" id="session-mode-btn" class="session-toggle-btn ${this.sessionMode === 'single' ? 'is-single' : 'is-multi'}" onclick="appState.toggleSessionMode()">
                         ${this.sessionMode === 'single' ? '🎮 Mode: Single Player (Story Active)' : '👥 Mode: Multiplayer (Story Muted)'}
                     </button>
+                </div>
+            </div>
+
+            <!-- LIVE SPECIES HARVEST COUNTER & RESERVE CULL BOARD -->
+            <div style="background: rgba(15, 23, 42, 0.65); padding: 12px; border-radius: 8px; border: 1px solid var(--user-theme-border); margin-bottom: 12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <span style="font-weight:900; font-size:0.85rem; color:var(--user-theme-accent);">🏹 Active Reserve Cull Board</span>
+                    <span id="active-species-count-badge" style="font-size:0.8rem; color:#f8fafc; font-weight:700;">Loading map cull counts...</span>
+                </div>
+                <div id="reserve-cull-board" class="reserve-cull-grid" style="display:flex; flex-wrap:wrap; gap:6px;">
+                    <!-- Populated dynamically via renderReserveCullBoard() -->
                 </div>
             </div>
 
@@ -1706,7 +1849,7 @@ const appState = {
     }
 };
 
-// Line 965: DOM Ready Initialization to guarantee clean DOM execution
+// Line 1045: DOM Ready Initialization to guarantee clean DOM execution
 window.addEventListener('DOMContentLoaded', () => {
     window.appState = appState;
     window.adjRank = (tier, val) => appState.adjRank(tier, val);
