@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <!-- ==========================================================================
      FILE: Movies.html
-     PROJECT: Werewolf Cinema Library / S&K Ventures Web Portal
-     TIMESTAMP (24-hr NY Time): 2026-10-05 13:55:00 EDT
-     VERSION: 3.4.3
+     PROJECT: Werewolf Cinema Library
+     TIMESTAMP (24-hr NY Time): 2026-10-05 16:37:00 EDT
+     VERSION: 3.5.6
      LINE 6: Complete Document Structure, PWA Manifest, & GA4 Integration
      ========================================================================== -->
 <html lang="en">
@@ -26,17 +26,17 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Werewolf Cinema">
 
-    <!-- Official Firebase App & Realtime Database SDKs for Persistent WebSockets -->
+    <!-- Official Firebase App & Realtime Database SDKs -->
     <script src="//www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="//www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
+    <!-- Language & Typography Extensions -->
     <script src="//raw.githack.com/Werewolf3788/SKVentureSigns/main/Languge_Fonts/language_alphabets.js"></script>
     <script src="//raw.githack.com/Werewolf3788/SKVentureSigns/main/Languge_Fonts/fontSwitcher.js"></script>
 
     <!-- Google Analytics 4 (Stream: Werewolf Cinema Library / Tag: G-CTYHDF4MSD) -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
-      /* Line 36: GA4 Initialization with Enhanced Measurement & Demographics */
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
@@ -61,9 +61,7 @@
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <style>
-      /* ========================================================= */
-      /* CSS STYLING SECTION (Glossy Aesthetic, 85% Bounds)       */
-      /* ========================================================= */
+      /* Glossy, High-Contrast Professional Dark Theme */
       :root { 
           --text-main: #fff; 
           --header-bg: rgba(0, 0, 0, 0.92); 
@@ -745,11 +743,6 @@
           background: #ffd166 !important;
           box-shadow: 0 0 15px rgba(245, 197, 24, 0.6);
       }
-      .btn-ma-bridge {
-          background: #00364d !important;
-          border: 1px dashed #00aeef !important;
-          color: #88d7ff !important;
-      }
 
       .tv-series-badge {
           position: absolute;
@@ -1240,8 +1233,8 @@
             <div id="cinema-logo" class="black-outline">WEREWOLF <span>CINEMA</span></div>
         </div>
 
-        <!-- Cinema Inventory explicitly matches the sum of the 6 buying store pills -->
-        <div id="movie-counter" class="black-outline">Cinema Inventory: <span>...</span></div>
+        <!-- Cinema Inventory dynamically displays Active Pill Links / Total Titles from /movies_stats -->
+        <div id="movie-counter" class="black-outline">Cinema Inventory: <span id="active-count-num">...</span> / <span id="total-titles-num">...</span> Titles</div>
         
         <div id="sync-status-badge" class="black-outline">
             <span id="sync-dot" class="dot-checking"></span>
@@ -1253,7 +1246,7 @@
             <br><span class="ma-highlight black-outline">🚀 UNIVERSAL SYNC:</span> Titles synced with <strong>Movies Anywhere (MA)</strong> mirror across participating connected lockers!</p>
         </div>
 
-        <!-- Ordered Platform Filter Pills Bar -->
+        <!-- Ordered Platform Filter Pills Bar (Pill numbers pull strictly from /movies_stats) -->
         <div id="platform-pills-bar">
             <div class="pills-scroll-track" id="pills-track">
                 <button type="button" class="platform-pill black-outline" data-platform="amazon" onclick="selectPlatformPill('amazon', this)">
@@ -1352,8 +1345,8 @@
 
     <!-- Persistent Time & Version Footer -->
     <footer id="app-version-footer">
-        <span class="footer-build-tag black-outline">Werewolf Cinema Engine v3.4.3 (Strict Storefront Math & Exact IMDb Hash Deep-Link)</span>
-        <span class="footer-timestamp black-outline">Live Stamp (NYT): 10/05/2026 13:55 EDT</span>
+        <span class="footer-build-tag black-outline">Werewolf Cinema Engine v3.5.6 (Direct /movies_stats Live Node & Strict Link Filter)</span>
+        <span class="footer-timestamp black-outline">Live Stamp (NYT): 10/05/2026 16:37 EDT</span>
     </footer>
 </div>
 
@@ -1362,7 +1355,7 @@
 
 <button id="back-to-top" class="black-outline" onclick="window.scrollTo({top:0, behavior:'smooth'})">⬆ TOP</button>
 
-<!-- Movie Lightbox Modal: Artwork Highlighted at Top -->
+<!-- Movie Lightbox Modal -->
 <div id="movie-lightbox" class="hidden-ui" onclick="closeLightbox(event)">
     <div class="lightbox-content" id="lightbox-inner" onclick="event.stopPropagation()">
         <button class="close-btn black-outline" onclick="closeLightbox(event)" aria-label="Close modal">✕</button>
@@ -1460,7 +1453,21 @@
     let utmLinksMap = {};
     
     let activePlatformFilter = ""; 
-    let computedAllContentSum = 0;
+
+    // Directly updated by Firebase /movies_stats node
+    let statsCache = {
+        total_links: 0,
+        total_titles: 0,
+        platforms: {
+            amazon: 0,
+            apple: 0,
+            fandango: 0,
+            google: 0,
+            justwatch: 0,
+            moviesanywhere: 0,
+            youtube: 0
+        }
+    };
     
     const BATCH_SIZE = 60;
     let currentRenderLimit = BATCH_SIZE;
@@ -1732,49 +1739,43 @@
         return { name: holidayName, emoji: emoji, color: color, isSeason: isActiveSeason, raw: tag };
     }
 
-    // ACCURATE PLATFORM PILL COUNTER: All Content strictly equals the sum of the 6 buying store pills (excluding JustWatch)
-    function updatePillDirectCounts() {
-        let amazonCount = 0;
-        let appleCount = 0;
-        let fandangoCount = 0;
-        let googleCount = 0;
-        let justwatchCount = 0;
-        let maCount = 0;
-        let youtubeCount = 0;
-
-        movies.forEach(m => {
-            const p = m.platforms || {};
-            if (p.amazon && p.amazon.trim() !== '') amazonCount++;
-            if (p.apple && p.apple.trim() !== '') appleCount++;
-            if (p.fandango && p.fandango.trim() !== '') fandangoCount++;
-            if ((p.google && p.google.trim() !== '') || m.googleFamilyShare) googleCount++;
-            if (p.justwatch && p.justwatch.trim() !== '') justwatchCount++;
-            if (m.isMAEligible) maCount++;
-            if ((p.youtube && p.youtube.trim() !== '') || m.youtubeFree) youtubeCount++;
-        });
-
-        // The All Content total is the mathematical sum of the 6 buying store pills
-        computedAllContentSum = amazonCount + appleCount + fandangoCount + googleCount + maCount + youtubeCount;
+    // Direct UI Stat Hydration from /movies_stats node
+    function applyStatsToPillsAndHeader() {
+        const pStats = statsCache.platforms || {};
 
         const setPillText = (id, count) => {
             const el = document.getElementById(id);
-            if (el) el.textContent = `(${count})`;
+            if (el) el.textContent = `(${count || 0})`;
         };
 
-        setPillText('count-pill-amazon', amazonCount);
-        setPillText('count-pill-apple', appleCount);
-        setPillText('count-pill-fandango', fandangoCount);
-        setPillText('count-pill-google', googleCount);
-        setPillText('count-pill-justwatch', justwatchCount);
-        setPillText('count-pill-moviesanywhere', maCount);
-        setPillText('count-pill-youtube', youtubeCount);
-        setPillText('count-pill-all', computedAllContentSum);
+        // Populate platform pills directly from locked Google Sheet formula numbers
+        setPillText('count-pill-amazon', pStats.amazon);
+        setPillText('count-pill-apple', pStats.apple);
+        setPillText('count-pill-fandango', pStats.fandango);
+        setPillText('count-pill-google', pStats.google);
+        setPillText('count-pill-justwatch', pStats.justwatch);
+        setPillText('count-pill-moviesanywhere', pStats.moviesanywhere);
+        setPillText('count-pill-youtube', pStats.youtube);
+        setPillText('count-pill-all', statsCache.total_links);
 
-        // Update header counter to match the exact All Content sum
-        const counterEl = document.getElementById('movie-counter');
-        if (counterEl) {
-            counterEl.innerHTML = `Cinema Inventory: <span>${computedAllContentSum}</span>`;
+        // Update Cinema Inventory Header: Active Pill Count / Total Titles
+        updateCinemaInventoryHeader();
+    }
+
+    function updateCinemaInventoryHeader() {
+        const activeNumEl = document.getElementById('active-count-num');
+        const totalTitlesEl = document.getElementById('total-titles-num');
+        if (!activeNumEl || !totalTitlesEl) return;
+
+        totalTitlesEl.textContent = statsCache.total_titles || 0;
+
+        let activeCount = statsCache.total_links || 0;
+        if (activePlatformFilter) {
+            const pStats = statsCache.platforms || {};
+            activeCount = pStats[activePlatformFilter] !== undefined ? pStats[activePlatformFilter] : 0;
         }
+
+        activeNumEl.textContent = activeCount;
     }
 
     window.selectPlatformPill = (platformKey, btnElement) => {
@@ -1795,6 +1796,7 @@
             });
         }
 
+        updateCinemaInventoryHeader();
         runFilters();
     };
 
@@ -1854,7 +1856,6 @@
         });
 
         if (targetMovie) {
-            // Revert view to All Content to ensure deep-linked film is visible
             selectPlatformPill('', document.querySelector('.platform-pill.pill-center-all'));
             setTimeout(() => {
                 const card = document.querySelector(`.movie-card[data-lib-index="${targetMovie.libIndex}"]`);
@@ -2021,10 +2022,19 @@
             }
         }
 
+        // 1. Dedicated Realtime Listener for /movies_stats
+        database.ref('movies_stats').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data && typeof data === 'object') {
+                statsCache = data;
+                applyStatsToPillsAndHeader();
+            }
+        });
+
+        // 2. Realtime Listener for /movies_guide (Catalog Data)
         const moviesRef = database.ref('movies_guide');
         moviesRef.on('value', (snapshot) => {
             const data = snapshot.val();
-            // Write-Protection Gate: verify incoming snapshot exists and is non-empty before updating localStorage
             if (data && typeof data === 'object' && Object.keys(data).length > 0) {
                 let hasFreshChanges = false;
                 if (!cachedRaw) {
@@ -2071,7 +2081,6 @@
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
             const data = await response.json();
-            // Write-Protection Gate: verify snapshot is non-empty before updating local navigation state
             if (data && typeof data === 'object') {
                 utmLinksMap = data;
                 renderBothMenuBars();
@@ -2339,7 +2348,7 @@
         return Array.from(uniqueSet);
     }
 
-    // STRICT STOREFRONT REBUILD: Only titles owned on a paid storefront/locker generate a movie card
+    // STRICT STOREFRONT REBUILD: Only titles with an actual URL in a storefront appear
     function rebuildMoviesArray(saveCache = true) {
         if (!moviesMap || typeof moviesMap !== 'object') return;
 
@@ -2379,9 +2388,8 @@
             const isFamilyShareChecked = v.googleFamilyShare === true || v.googleFamilyShare === 'true' || v.googleFamilyShare === 1 || v.googleFamilyShare === 'TRUE';
             const isYouTubeFreeChecked = v.youtubeFree === true || v.youtubeFree === 'true' || v.youtubeFree === 1 || v.youtubeFree === 'TRUE';
 
-            // STRICT OWNED LOCKER GATE: Must have an active link in an actual paid storefront/locker.
-            // JustWatch is explicitly excluded from this gate.
-            const hasPaidStorefrontLink = (
+            // STRICT OWNED LOCKER GATE: Drop completely if no storefront link exists
+            const hasActiveStorefrontLink = (
                 (p.amazon && p.amazon.trim() !== '') ||
                 (p.apple && p.apple.trim() !== '') ||
                 (p.fandango && p.fandango.trim() !== '') ||
@@ -2390,8 +2398,8 @@
                 (p.youtube && p.youtube.trim() !== '') || isYouTubeFreeChecked
             );
 
-            // If there are no links in any of your 6 paid storefronts, do not generate a card
-            if (!hasPaidStorefrontLink) return;
+            // Zero ghost cards: if there is no storefront link, it does not exist in the library
+            if (!hasActiveStorefrontLink) return;
 
             const isTvShow = (v.type && v.type.toLowerCase().includes('tv')) || (v.id && v.id.toLowerCase().includes('tvdb'));
 
@@ -2473,7 +2481,7 @@
         }
 
         checkNewMoviePushAlerts(movies);
-        updatePillDirectCounts();
+        applyStatsToPillsAndHeader();
         updateDropdowns();
         runFilters();
         checkUrlHashAndOpenMovie();
@@ -2617,8 +2625,6 @@
             document.body.classList.add('bg-' + activePlatformFilter);
         }
 
-        const isFiltered = !!(rawQuery || typeF || ratingF || streamF || holidayF || genreF || collF || artF);
-
         currentFilteredList = movies.filter(m => {
             let searchMatch = true;
             if (rawQuery.length > 0) {
@@ -2705,17 +2711,6 @@
             }
         }
 
-        const counter = document.getElementById('movie-counter');
-        if (counter) {
-            if (activePlatformFilter) {
-                counter.innerHTML = `${getPlatformDisplayName(activePlatformFilter)} Inventory: <span>${currentFilteredList.length}</span>`;
-            } else if (isFiltered) {
-                counter.innerHTML = `Filtered Inventory: <span>${currentFilteredList.length}</span> / <span>${computedAllContentSum}</span>`;
-            } else {
-                counter.innerHTML = `Cinema Inventory: <span>${computedAllContentSum}</span>`;
-            }
-        }
-
         const grid = document.getElementById('movie-library-grid');
         if (grid) grid.innerHTML = '';
         currentRenderLimit = BATCH_SIZE;
@@ -2723,6 +2718,7 @@
         renderMovieGridBatch();
         buildAdaptiveSidebar(currentFilteredList, sort);
         updatePinnedToolbarUI();
+        updateCinemaInventoryHeader();
     };
 
     window.filterByActor = (actorName) => {
