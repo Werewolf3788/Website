@@ -2,8 +2,8 @@
 <!-- ==========================================================================
      FILE: Movies.html
      PROJECT: Werewolf Cinema Library / S&K Ventures Web Portal
-     TIMESTAMP (24-hr NY Time): 2026-10-05 12:20:00 EDT
-     VERSION: 3.3.8
+     TIMESTAMP (24-hr NY Time): 2026-10-05 13:55:00 EDT
+     VERSION: 3.4.3
      LINE 6: Complete Document Structure, PWA Manifest, & GA4 Integration
      ========================================================================== -->
 <html lang="en">
@@ -1178,7 +1178,7 @@
                 ☰
             </button>
             <div class="nav-brand black-outline" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-                <img src="//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg" class="nav-brand-img" alt="Werewolf Cinema Logo">
+                <img src="//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg" class="nav-brand-img" alt="">
                 WEREWOLF <span>CINEMA</span>
             </div>
             <div id="translate-wrapper">
@@ -1236,10 +1236,11 @@
         <div id="header-clock" class="black-outline">Loading Time...</div>
         
         <div class="header-logo-container">
-            <img src="//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg" class="cinema-header-icon" alt="Cinema Logo" onclick="openImageViewer('//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg', 'Werewolf Cinema')">
+            <img src="//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg" class="cinema-header-icon" alt="" onclick="openImageViewer('//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg', 'Werewolf Cinema')">
             <div id="cinema-logo" class="black-outline">WEREWOLF <span>CINEMA</span></div>
         </div>
 
+        <!-- Cinema Inventory explicitly matches the sum of the 6 buying store pills -->
         <div id="movie-counter" class="black-outline">Cinema Inventory: <span>...</span></div>
         
         <div id="sync-status-badge" class="black-outline">
@@ -1256,28 +1257,28 @@
         <div id="platform-pills-bar">
             <div class="pills-scroll-track" id="pills-track">
                 <button type="button" class="platform-pill black-outline" data-platform="amazon" onclick="selectPlatformPill('amazon', this)">
-                    <img src="https://www.citypng.com/public/uploads/preview/square-amazon-prime-video-app-logo-701751695133988syacpc2hqk.png" class="pill-icon" alt="Amazon"> Amazon <span class="pill-count" id="count-pill-amazon">(0)</span>
+                    <img src="https://www.citypng.com/public/uploads/preview/square-amazon-prime-video-app-logo-701751695133988syacpc2hqk.png" class="pill-icon" alt=""> Amazon <span class="pill-count" id="count-pill-amazon">(0)</span>
                 </button>
                 <button type="button" class="platform-pill black-outline" data-platform="apple" onclick="selectPlatformPill('apple', this)">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Apple_TV.png" class="pill-icon" alt="Apple TV"> Apple TV <span class="pill-count" id="count-pill-apple">(0)</span>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Apple_TV.png" class="pill-icon" alt=""> Apple TV <span class="pill-count" id="count-pill-apple">(0)</span>
                 </button>
                 <button type="button" class="platform-pill black-outline" data-platform="fandango" onclick="selectPlatformPill('fandango', this)">
-                    <img src="https://downloadr2.apkmirror.com/wp-content/uploads/2025/12/17/69417168c0da3_air.com.vudu.air.DownloaderTablet.png" class="pill-icon" alt="Fandango"> Fandango <span class="pill-count" id="count-pill-fandango">(0)</span>
+                    <img src="https://downloadr2.apkmirror.com/wp-content/uploads/2025/12/17/69417168c0da3_air.com.vudu.air.DownloaderTablet.png" class="pill-icon" alt=""> Fandango <span class="pill-count" id="count-pill-fandango">(0)</span>
                 </button>
                 <button type="button" class="platform-pill active black-outline pill-center-all" data-platform="" onclick="selectPlatformPill('', this)">
                     🎬 All Content <span class="pill-count" id="count-pill-all">(0)</span>
                 </button>
                 <button type="button" class="platform-pill black-outline" data-platform="google" onclick="selectPlatformPill('google', this)">
-                    <img src="https://cdn.iconscout.com/icon/premium/png-256-thumb/google-tv-icon-svg-download-png-7683467.png?f=webp" class="pill-icon" alt="Google TV"> Google TV <span class="pill-count" id="count-pill-google">(0)</span>
+                    <img src="https://cdn.iconscout.com/icon/premium/png-256-thumb/google-tv-icon-svg-download-png-7683467.png?f=webp" class="pill-icon" alt=""> Google TV <span class="pill-count" id="count-pill-google">(0)</span>
                 </button>
                 <button type="button" class="platform-pill black-outline" data-platform="justwatch" onclick="selectPlatformPill('justwatch', this)">
-                    <img src="https://www.justwatch.com/static/support/about-justwatch.png" class="pill-icon" alt="JustWatch"> JustWatch <span class="pill-count" id="count-pill-justwatch">(0)</span>
+                    <img src="https://www.justwatch.com/static/support/about-justwatch.png" class="pill-icon" alt=""> JustWatch <span class="pill-count" id="count-pill-justwatch">(0)</span>
                 </button>
                 <button type="button" class="platform-pill black-outline" data-platform="moviesanywhere" onclick="selectPlatformPill('moviesanywhere', this)">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTv4dFyoSAX7KrunrNIXW4K5U-mojIpmyjDbi4TGN3a0TxP5Ic8ITFxovPl&s=10" class="pill-icon" alt="Movies Anywhere"> Movies Anywhere <span class="pill-count" id="count-pill-moviesanywhere">(0)</span>
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTv4dFyoSAX7KrunrNIXW4K5U-mojIpmyjDbi4TGN3a0TxP5Ic8ITFxovPl&s=10" class="pill-icon" alt=""> Movies Anywhere <span class="pill-count" id="count-pill-moviesanywhere">(0)</span>
                 </button>
                 <button type="button" class="platform-pill black-outline" data-platform="youtube" onclick="selectPlatformPill('youtube', this)">
-                    <img src="https://cdn.pixabay.com/photo/2021/03/02/12/04/youtube-6062251_1280.png" class="pill-icon" alt="YouTube"> YouTube <span class="pill-count" id="count-pill-youtube">(0)</span>
+                    <img src="https://cdn.pixabay.com/photo/2021/03/02/12/04/youtube-6062251_1280.png" class="pill-icon" alt=""> YouTube <span class="pill-count" id="count-pill-youtube">(0)</span>
                 </button>
             </div>
             
@@ -1351,8 +1352,8 @@
 
     <!-- Persistent Time & Version Footer -->
     <footer id="app-version-footer">
-        <span class="footer-build-tag black-outline">Werewolf Cinema Engine v3.3.8 (Paid Locker Inventory Strict Gate)</span>
-        <span class="footer-timestamp black-outline">Live Stamp (NYT): 10/05/2026 12:20 EDT</span>
+        <span class="footer-build-tag black-outline">Werewolf Cinema Engine v3.4.3 (Strict Storefront Math & Exact IMDb Hash Deep-Link)</span>
+        <span class="footer-timestamp black-outline">Live Stamp (NYT): 10/05/2026 13:55 EDT</span>
     </footer>
 </div>
 
@@ -1459,6 +1460,7 @@
     let utmLinksMap = {};
     
     let activePlatformFilter = ""; 
+    let computedAllContentSum = 0;
     
     const BATCH_SIZE = 60;
     let currentRenderLimit = BATCH_SIZE;
@@ -1730,7 +1732,7 @@
         return { name: holidayName, emoji: emoji, color: color, isSeason: isActiveSeason, raw: tag };
     }
 
-    // ACCURATE PLATFORM PILL COUNTER: JustWatch does not count toward owned inventory totals
+    // ACCURATE PLATFORM PILL COUNTER: All Content strictly equals the sum of the 6 buying store pills (excluding JustWatch)
     function updatePillDirectCounts() {
         let amazonCount = 0;
         let appleCount = 0;
@@ -1751,6 +1753,9 @@
             if ((p.youtube && p.youtube.trim() !== '') || m.youtubeFree) youtubeCount++;
         });
 
+        // The All Content total is the mathematical sum of the 6 buying store pills
+        computedAllContentSum = amazonCount + appleCount + fandangoCount + googleCount + maCount + youtubeCount;
+
         const setPillText = (id, count) => {
             const el = document.getElementById(id);
             if (el) el.textContent = `(${count})`;
@@ -1759,12 +1764,17 @@
         setPillText('count-pill-amazon', amazonCount);
         setPillText('count-pill-apple', appleCount);
         setPillText('count-pill-fandango', fandangoCount);
-        // All Content represents the exact total of unique cards collected
-        setPillText('count-pill-all', movies.length);
         setPillText('count-pill-google', googleCount);
         setPillText('count-pill-justwatch', justwatchCount);
         setPillText('count-pill-moviesanywhere', maCount);
         setPillText('count-pill-youtube', youtubeCount);
+        setPillText('count-pill-all', computedAllContentSum);
+
+        // Update header counter to match the exact All Content sum
+        const counterEl = document.getElementById('movie-counter');
+        if (counterEl) {
+            counterEl.innerHTML = `Cinema Inventory: <span>${computedAllContentSum}</span>`;
+        }
     }
 
     window.selectPlatformPill = (platformKey, btnElement) => {
@@ -1829,17 +1839,22 @@
         }
     }
 
+    // EXACT IMDb / ID HASH LOOKUP: Matches #tt... and #tvdb... directly in URL
     function checkUrlHashAndOpenMovie() {
-        const hash = window.location.hash.replace('#', '').trim();
+        const hash = window.location.hash.replace('#', '').trim().toLowerCase();
         if (!hash || movies.length === 0) return;
 
         const targetMovie = movies.find(m => {
-            const cleanId = (m.imdbId || '').toLowerCase().trim();
+            const rawId = (m.imdbId || '').toLowerCase().trim();
             const cleanTitle = encodeURIComponent(m.title.toLowerCase().replace(/\s+/g, '-'));
-            return cleanId === hash.toLowerCase() || m.title.toLowerCase() === hash.toLowerCase() || cleanTitle === hash.toLowerCase();
+            return rawId === hash || 
+                   rawId === `imdb-${hash}` || 
+                   m.title.toLowerCase() === hash || 
+                   cleanTitle === hash;
         });
 
         if (targetMovie) {
+            // Revert view to All Content to ensure deep-linked film is visible
             selectPlatformPill('', document.querySelector('.platform-pill.pill-center-all'));
             setTimeout(() => {
                 const card = document.querySelector(`.movie-card[data-lib-index="${targetMovie.libIndex}"]`);
@@ -2227,7 +2242,6 @@
         mobileLinksContainer.innerHTML = mobileDrawerHtml || '<div style="color:#666; font-size:12px;">No active directory entries found.</div>';
     }
 
-    // Comprehensive URL validator accepting all major video locker & storefront links
     function isValidUrl(str) {
         if (!str) return false;
         const s = str.toString().trim().toLowerCase();
@@ -2365,8 +2379,8 @@
             const isFamilyShareChecked = v.googleFamilyShare === true || v.googleFamilyShare === 'true' || v.googleFamilyShare === 1 || v.googleFamilyShare === 'TRUE';
             const isYouTubeFreeChecked = v.youtubeFree === true || v.youtubeFree === 'true' || v.youtubeFree === 1 || v.youtubeFree === 'TRUE';
 
-            // STRICT OWNED LOCKER GATE: Must have an active link in an actual storefront/locker you paid for.
-            // JustWatch is explicitly excluded from this gate because it is a search index, not an owned purchase.
+            // STRICT OWNED LOCKER GATE: Must have an active link in an actual paid storefront/locker.
+            // JustWatch is explicitly excluded from this gate.
             const hasPaidStorefrontLink = (
                 (p.amazon && p.amazon.trim() !== '') ||
                 (p.apple && p.apple.trim() !== '') ||
@@ -2611,7 +2625,8 @@
                 const titleLower = m.title.toLowerCase();
                 const yearLower = (m.year || '').toString().toLowerCase();
                 const castStr = (m.cast || []).join(' ').toLowerCase();
-                searchMatch = titleLower.includes(rawQuery) || yearLower.includes(rawQuery) || castStr.includes(rawQuery);
+                const rawId = (m.imdbId || '').toLowerCase();
+                searchMatch = titleLower.includes(rawQuery) || yearLower.includes(rawQuery) || castStr.includes(rawQuery) || rawId.includes(rawQuery);
             }
             if (!searchMatch) return false;
 
@@ -2621,6 +2636,7 @@
                 if (typeF === 'Movie' && isTv) return false;
             }
 
+            // STRICT PLATFORM PILL VIEW ISOLATION: When a pill is selected, only that platform's titles show
             if (activePlatformFilter) {
                 if (activePlatformFilter === 'moviesanywhere') {
                     if (!m.isMAEligible) return false;
@@ -2694,9 +2710,9 @@
             if (activePlatformFilter) {
                 counter.innerHTML = `${getPlatformDisplayName(activePlatformFilter)} Inventory: <span>${currentFilteredList.length}</span>`;
             } else if (isFiltered) {
-                counter.innerHTML = `Filtered Inventory: <span>${currentFilteredList.length}</span> / <span>${movies.length}</span>`;
+                counter.innerHTML = `Filtered Inventory: <span>${currentFilteredList.length}</span> / <span>${computedAllContentSum}</span>`;
             } else {
-                counter.innerHTML = `Cinema Inventory: <span>${movies.length}</span>`;
+                counter.innerHTML = `Cinema Inventory: <span>${computedAllContentSum}</span>`;
             }
         }
 
@@ -2750,6 +2766,9 @@
         document.getElementById('controls-container')?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    // STRICT PLATFORM BUTTON VISIBILITY RULE:
+    // If a platform pill is clicked, ONLY that platform's button is rendered.
+    // If on All Content, ALL available platforms (including JustWatch) are rendered.
     function renderLightboxButtons(m) {
         const storeHeading = document.getElementById('lb-store-heading');
         const buttonBox = document.getElementById('lb-buttons');
@@ -2765,6 +2784,7 @@
         const hasYouTube = !!(p.youtube && p.youtube.trim() !== '' || m.youtubeFree);
 
         if (!activePlatformFilter) {
+            // ALL CONTENT VIEW: Renders every platform button present, including JustWatch
             if (hasAmazon) {
                 const amz = resolveAppOrWebUrl(p.amazon, 'amazon', m.title + '_amazon');
                 btns.push(`<a href="${amz}" onclick="trackOutboundClick(this.href, 'Amazon: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-amazon">Amazon</a>`);
@@ -2782,10 +2802,6 @@
                 const familyGlowClass = m.googleFamilyShare ? ' glow-family-share' : '';
                 btns.push(`<a href="${goog}" onclick="trackOutboundClick(this.href, 'Google: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-google${familyGlowClass}">Google TV</a>`);
             }
-            if (hasJustWatch) {
-                const jw = resolveAppOrWebUrl(p.justwatch, 'justwatch', m.title + '_justwatch');
-                btns.push(`<a href="${jw}" onclick="trackOutboundClick(this.href, 'JustWatch: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-justwatch">JustWatch</a>`);
-            }
             if (m.isMAEligible) {
                 const ma = resolveAppOrWebUrl(p.ma, 'moviesanywhere', m.title + '_ma');
                 btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MoviesAnywhere: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-moviesanywhere">Movies Anywhere</a>`);
@@ -2794,16 +2810,17 @@
                 const ytUrl = resolveAppOrWebUrl(p.youtube, 'youtube', m.title + '_youtube');
                 btns.push(`<a href="${ytUrl}" onclick="trackOutboundClick(this.href, 'YouTube: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-youtube">YouTube</a>`);
             }
+            if (hasJustWatch) {
+                const jw = resolveAppOrWebUrl(p.justwatch, 'justwatch', m.title + '_justwatch');
+                btns.push(`<a href="${jw}" onclick="trackOutboundClick(this.href, 'JustWatch: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-justwatch">JustWatch</a>`);
+            }
         } else {
+            // STRICT ISOLATION VIEW: ONLY show the button for the active platform pill
             switch (activePlatformFilter) {
                 case 'amazon':
                     if (hasAmazon) {
                         const amz = resolveAppOrWebUrl(p.amazon, 'amazon', m.title + '_amazon');
                         btns.push(`<a href="${amz}" onclick="trackOutboundClick(this.href, 'Amazon: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-amazon">Amazon</a>`);
-                    }
-                    if (m.isMAEligible) {
-                        const ma = resolveAppOrWebUrl(p.ma, 'moviesanywhere', m.title + '_ma');
-                        btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MA Sync Amazon: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-ma-bridge">Movies Anywhere</a>`);
                     }
                     break;
                 case 'apple':
@@ -2811,19 +2828,11 @@
                         const app = resolveAppOrWebUrl(p.apple, 'apple', m.title + '_apple');
                         btns.push(`<a href="${app}" onclick="trackOutboundClick(this.href, 'AppleTV: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-apple">Apple TV</a>`);
                     }
-                    if (m.isMAEligible) {
-                        const ma = resolveAppOrWebUrl(p.ma, 'moviesanywhere', m.title + '_ma');
-                        btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MA Sync Apple: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-ma-bridge">Movies Anywhere</a>`);
-                    }
                     break;
                 case 'fandango':
                     if (hasFandango) {
                         const fan = resolveAppOrWebUrl(p.fandango, 'fandango', m.title + '_fandango');
                         btns.push(`<a href="${fan}" onclick="trackOutboundClick(this.href, 'Fandango: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-fandango">Fandango</a>`);
-                    }
-                    if (m.isMAEligible) {
-                        const ma = resolveAppOrWebUrl(p.ma, 'moviesanywhere', m.title + '_ma');
-                        btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MA Sync Fandango: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-ma-bridge">Movies Anywhere</a>`);
                     }
                     break;
                 case 'google':
@@ -2831,16 +2840,6 @@
                         const goog = resolveAppOrWebUrl(p.google, 'google', m.title + '_google');
                         const familyGlowClass = m.googleFamilyShare ? ' glow-family-share' : '';
                         btns.push(`<a href="${goog}" onclick="trackOutboundClick(this.href, 'Google: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-google${familyGlowClass}">Google TV</a>`);
-                    }
-                    if (m.isMAEligible) {
-                        const ma = resolveAppOrWebUrl(p.ma, 'moviesanywhere', m.title + '_ma');
-                        btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MA Sync Google: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-ma-bridge">Movies Anywhere</a>`);
-                    }
-                    break;
-                case 'justwatch':
-                    if (hasJustWatch) {
-                        const jw = resolveAppOrWebUrl(p.justwatch, 'justwatch', m.title + '_justwatch');
-                        btns.push(`<a href="${jw}" onclick="trackOutboundClick(this.href, 'JustWatch: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-justwatch">JustWatch</a>`);
                     }
                     break;
                 case 'moviesanywhere':
@@ -2853,6 +2852,12 @@
                     if (hasYouTube) {
                         const ytUrl = resolveAppOrWebUrl(p.youtube, 'youtube', m.title + '_youtube');
                         btns.push(`<a href="${ytUrl}" onclick="trackOutboundClick(this.href, 'YouTube: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-youtube">YouTube</a>`);
+                    }
+                    break;
+                case 'justwatch':
+                    if (hasJustWatch) {
+                        const jw = resolveAppOrWebUrl(p.justwatch, 'justwatch', m.title + '_justwatch');
+                        btns.push(`<a href="${jw}" onclick="trackOutboundClick(this.href, 'JustWatch: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-justwatch">JustWatch</a>`);
                     }
                     break;
             }
@@ -2973,6 +2978,7 @@
 
         renderLightboxButtons(m);
 
+        // Update URL hash directly with canonical ID (tt... or tvdb...) for sharing
         if (updateUrlHash && m.imdbId) {
             history.replaceState(null, null, `#${m.imdbId}`);
         }
