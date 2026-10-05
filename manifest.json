@@ -1,21 +1,25 @@
 {
   "name": "Werewolf Cinema Library",
   "short_name": "Werewolf Cinema",
+  "description": "Werewolf Cinema Multi-Platform Movie & TV Library Tracker",
   "start_url": "./Movies.html",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#000000",
   "theme_color": "#8b0000",
-  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg",
+      "src": "//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg",
       "sizes": "192x192",
-      "type": "image/jpeg"
+      "type": "image/jpeg",
+      "purpose": "any"
     },
     {
-      "src": "https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg",
+      "src": "//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/jpeg",
+      "purpose": "maskable"
     }
   ]
 }
