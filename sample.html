@@ -2,8 +2,8 @@
 <!-- ==========================================================================
      FILE: Movies.html
      PROJECT: Werewolf Cinema Library / S&K Ventures Web Portal
-     TIMESTAMP (24-hr NY Time): 2026-10-04 21:32:00 EDT
-     LINE 6: Clean Document Head, PWA Manifest, and GA4 (G-CTYHDF4MSD)
+     TIMESTAMP (24-hr NY Time): 2026-10-04 21:44:00 EDT
+     LINE 6: Complete Document Structure, PWA Manifest, & GA4 Integration
      ========================================================================== -->
 <html lang="en">
 <head>
@@ -32,7 +32,7 @@
     <!-- Google Analytics 4 (Stream: Werewolf Cinema Library / ID: 14585751521 / Tag: G-CTYHDF4MSD) -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
-      /* Line 36: GA4 Initialization with Enhanced Measurement & Signals */
+      /* Line 36: GA4 Initialization with Enhanced Measurement & Demographics */
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
@@ -44,7 +44,7 @@
       });
     </script>
 
-    <!-- Google Translate Initialization Script -->
+    <!-- Google Translate Loader -->
     <script type="text/javascript">
       function googleTranslateElementInit() {
         new google.translate.TranslateElement({
@@ -182,7 +182,6 @@
           color: #1ce783;
       }
 
-      /* Google Translate Wrapper Integration */
       #translate-wrapper {
           display: flex;
           align-items: center;
@@ -1085,7 +1084,7 @@
 </head>
 <body class="theme-dark">
 
-<!-- Top App Bar Navigation with Desktop Menu & Dynamic Translate Header -->
+<!-- Top App Bar Navigation -->
 <header id="top-navbar-wrapper">
     <nav id="top-navbar" class="master-85-width">
         <div class="nav-left-zone">
@@ -1096,13 +1095,11 @@
                 <img src="//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg" class="nav-brand-img" alt="Werewolf Cinema Logo">
                 WEREWOLF <span>CINEMA</span>
             </div>
-            <!-- Google Translate Dropdown Visual Element -->
             <div id="translate-wrapper">
                 <div id="google_translate_element"></div>
             </div>
         </div>
 
-        <!-- Desktop & Tablet Menu Bar -->
         <div id="desktop-menubar-container">
             <div id="desktop-home-slot"></div>
             <div id="desktop-folders-slot"></div>
@@ -1119,7 +1116,7 @@
     </nav>
 </header>
 
-<!-- Dynamic Mobile Navigation Drawer -->
+<!-- Mobile Navigation Drawer -->
 <div id="nav-drawer-overlay" onclick="closeNavMenu()"></div>
 <div id="nav-drawer">
     <div class="drawer-header">
@@ -1139,7 +1136,6 @@
         </div>
     </div>
 
-    <!-- Mobile Home Slot -->
     <div id="mobile-home-container"></div>
 
     <div class="drawer-section-label">📂 LIVE LINK DIRECTORY</div>
@@ -1261,7 +1257,6 @@
     <!-- Movie Gallery Grid -->
     <div id="movie-library-grid"></div>
 
-    <!-- Support Tip Footer -->
     <div id="library-footer-tip">
         <a href="//streamlabs.com/werewolf3788/tip?utm_source=werewolf_cinema_library&utm_medium=outbound_link&utm_campaign=cinema_navigation&utm_content=support_tip" onclick="trackOutboundClick(this.href, 'Support Tip')" target="werewolf_cinema_window" class="tip-link black-outline">
             💰 Support the Library - Send a Tip!
@@ -1270,12 +1265,12 @@
 
     <!-- Persistent Time & Version Footer -->
     <footer id="app-version-footer">
-        <span class="footer-build-tag black-outline">Werewolf Cinema Engine v3.1.2 (PWA & Translation Active)</span>
-        <span class="footer-timestamp black-outline">Live Stamp (NYT): 10/04/2026 21:32 EDT</span>
+        <span class="footer-build-tag black-outline">Werewolf Cinema Engine v3.1.5 (PWA & Dynamic Navigation Sync)</span>
+        <span class="footer-timestamp black-outline">Live Stamp (NYT): 10/04/2026 21:44 EDT</span>
     </footer>
 </div>
 
-<!-- Dynamic Vertical Alphabet & Decade Sidebar -->
+<!-- Dynamic Vertical Navigation Sidebar (Letters, Release Years, or Added Years) -->
 <div id="dynamic-nav-sidebar" class="black-outline"></div>
 
 <button id="back-to-top" class="black-outline" onclick="window.scrollTo({top:0, behavior:'smooth'})">⬆ TOP</button>
@@ -1373,8 +1368,8 @@
 
 <script>
 // ==========================================================================
-// JAVASCRIPT APPLICATION CORE & FIREBASE SYNCHRONIZATION
-// Line 650: Smart cache buster, PWA install prompt, and relative endpoints
+// JAVASCRIPT APPLICATION CORE & REALTIME SYNCHRONIZATION
+// Line 650: Smart cache buster, dynamic batch expansion, and exact filters
 // ==========================================================================
 (function() {
     let moviesMap = {};
@@ -1426,7 +1421,6 @@
         }
     }
 
-    // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js')
@@ -1435,7 +1429,6 @@
         });
     }
 
-    // Capture Native PWA 'beforeinstallprompt'
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPwaPrompt = e;
@@ -1909,7 +1902,6 @@
         const syncDot = document.getElementById('sync-dot');
         const syncText = document.getElementById('sync-text');
 
-        // Instant First Paint from Cache
         const cachedRaw = localStorage.getItem(CACHE_STORAGE_KEY);
         if (cachedRaw) {
             try {
@@ -1922,7 +1914,6 @@
             } catch (e) {}
         }
 
-        // Live WebSocket Synchronization with lastSynced Comparison
         const moviesRef = database.ref('movies_guide');
         moviesRef.on('value', (snapshot) => {
             const data = snapshot.val();
@@ -1961,9 +1952,7 @@
         });
     }
 
-    // Protocol-relative REST Sync for Global UTM Link Directory
     async function syncPortalNodes() {
-        const mobileContainer = document.getElementById("utm-links-container");
         const endpoint = "//entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
 
         try {
@@ -1976,7 +1965,7 @@
                 renderBothMenuBars();
             }
         } catch (fetchError) {
-            console.warn("[Portal Sync] Fallback: Live WebSocket fallback initiated.", fetchError);
+            console.warn("[Portal Sync] Live WebSocket fallback initiated.", fetchError);
             const utmRef = database.ref('utm_links');
             utmRef.on('value', (snapshot) => {
                 const data = snapshot.val();
@@ -3039,84 +3028,127 @@
         selectPlatformPill(pinned, document.querySelector(`.platform-pill[data-platform="${pinned}"]`));
     };
 
+    /* ========================================================================== */
+    /* DYNAMIC NAV SIDEBAR ENGINE & BATCH-AWARE SCROLL ROUTER                     */
+    /* Line 1220: Displays only letters/years that exist in current library view  */
+    /* ========================================================================== */
+    function scrollToMovieIndex(targetIdx) {
+        if (targetIdx < 0 || targetIdx >= currentFilteredList.length) return;
+        
+        // Auto-expand batch rendering if the target movie is beyond the currently loaded slice
+        if (targetIdx >= currentRenderLimit) {
+            currentRenderLimit = Math.min(currentFilteredList.length, targetIdx + BATCH_SIZE);
+            renderMovieGridBatch();
+        }
+
+        const targetMovie = currentFilteredList[targetIdx];
+        const card = document.querySelector(`.movie-card[data-lib-index="${targetMovie.libIndex}"]`);
+        if (card) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
     function buildAdaptiveSidebar(filteredList, sortMode) {
         const sidebar = document.getElementById('dynamic-nav-sidebar');
         if (!sidebar) return;
         sidebar.innerHTML = '';
-        
-        if (sortMode === 'az' || sortMode === 'za') {
-            const letters = ['#','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
-            letters.forEach(l => {
-                const d = document.createElement('div');
-                d.className = 'nav-item';
-                d.textContent = l;
-                d.onclick = () => {
-                    const cards = document.querySelectorAll('.movie-card');
-                    for (let c of cards) {
-                        const title = c.querySelector('.movie-title')?.textContent.trim().toUpperCase();
-                        if (title && ((l === '#' && /^[0-9]/.test(title)) || title.startsWith(l))) {
-                            c.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            break;
-                        }
-                    }
-                };
-                sidebar.appendChild(d);
-            });
-        } else if (sortMode === 'newest' || sortMode === 'oldest') {
-            const yearSet = new Set();
-            filteredList.forEach(m => {
-                if (m.dateAdded) {
-                    const parts = m.dateAdded.split('/');
-                    if (parts.length === 3 && parts[2]) yearSet.add(parts[2].trim());
-                }
-            });
-            const sortedYears = Array.from(yearSet).sort((a, b) => sortMode === 'newest' ? b.localeCompare(a) : a.localeCompare(b));
-            
-            sortedYears.forEach(fullYear => {
-                const shortLabel = `'${fullYear.slice(-2)}`;
-                const d = document.createElement('div');
-                d.className = 'nav-item';
-                d.textContent = shortLabel;
-                d.title = `Added in ${fullYear}`;
-                d.onclick = () => {
-                    const cards = document.querySelectorAll('.movie-card');
-                    for (let c of cards) {
-                        if (c.getAttribute('data-added-year') === fullYear) {
-                            c.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            break;
-                        }
-                    }
-                };
-                sidebar.appendChild(d);
-            });
-        } else if (sortMode === 'new-old' || sortMode === 'old-new') {
-            const decadeSet = new Set();
-            filteredList.forEach(m => {
-                const y = parseInt(m.year);
-                if (y && !isNaN(y)) {
-                    const dec = Math.floor(y / 10) * 10;
-                    decadeSet.add(dec);
-                }
-            });
-            const sortedDecades = Array.from(decadeSet).sort((a, b) => sortMode === 'new-old' ? b - a : a - b);
+        if (!filteredList || filteredList.length === 0) return;
 
-            sortedDecades.forEach(dec => {
-                const label = dec >= 2000 ? `${dec}s` : `'${String(dec).slice(-2)}s`;
-                const d = document.createElement('div');
-                d.className = 'nav-item';
-                d.textContent = label;
-                d.title = `Released in the ${dec}s`;
-                d.onclick = () => {
-                    const cards = document.querySelectorAll('.movie-card');
-                    for (let c of cards) {
-                        const y = parseInt(c.getAttribute('data-year'));
-                        if (y && Math.floor(y / 10) * 10 === dec) {
-                            c.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            break;
-                        }
+        // 1. TITLE ALPHABET MODE (A-Z, Z-A)
+        // Shows only letters present in the catalog
+        if (sortMode === 'az' || sortMode === 'za') {
+            const letterMap = new Map();
+
+            filteredList.forEach((m, idx) => {
+                const title = (m.title || '').trim().toUpperCase();
+                if (!title) return;
+                const firstChar = title[0];
+                const key = /^[A-Z]/.test(firstChar) ? firstChar : '#';
+
+                if (!letterMap.has(key)) {
+                    letterMap.set(key, idx);
+                }
+            });
+
+            const keys = Array.from(letterMap.keys());
+            if (sortMode === 'az') {
+                keys.sort((a, b) => {
+                    if (a === '#') return -1;
+                    if (b === '#') return 1;
+                    return a.localeCompare(b);
+                });
+            } else {
+                keys.sort((a, b) => {
+                    if (a === '#') return 1;
+                    if (b === '#') return -1;
+                    return b.localeCompare(a);
+                });
+            }
+
+            keys.forEach(k => {
+                const btn = document.createElement('div');
+                btn.className = 'nav-item black-outline';
+                btn.textContent = k;
+                btn.onclick = () => scrollToMovieIndex(letterMap.get(k));
+                sidebar.appendChild(btn);
+            });
+        } 
+        // 2. LIBRARY ADDED YEAR MODE (Recently Added, Oldest Added)
+        // Shows only the years when movies were added to library
+        else if (sortMode === 'newest' || sortMode === 'oldest') {
+            const addedYearMap = new Map();
+
+            filteredList.forEach((m, idx) => {
+                if (!m.dateAdded) return;
+                const parts = m.dateAdded.split('/');
+                if (parts.length === 3) {
+                    const y = parts[2].trim();
+                    if (y && !addedYearMap.has(y)) {
+                        addedYearMap.set(y, idx);
                     }
-                };
-                sidebar.appendChild(d);
+                }
+            });
+
+            const keys = Array.from(addedYearMap.keys()).sort((a, b) => {
+                return sortMode === 'newest' ? b.localeCompare(a) : a.localeCompare(b);
+            });
+
+            keys.forEach(fullYear => {
+                const shortLabel = `'${fullYear.slice(-2)}`;
+                const btn = document.createElement('div');
+                btn.className = 'nav-item black-outline';
+                btn.textContent = shortLabel;
+                btn.title = `Added in ${fullYear}`;
+                btn.onclick = () => scrollToMovieIndex(addedYearMap.get(fullYear));
+                sidebar.appendChild(btn);
+            });
+        } 
+        // 3. EXACT MOVIE RELEASE YEAR MODE (Year: New-Old, Year: Old-New)
+        // Shows exact 4-digit release years present in Firebase
+        else if (sortMode === 'new-old' || sortMode === 'old-new') {
+            const movieYearMap = new Map();
+
+            filteredList.forEach((m, idx) => {
+                const y = parseInt(m.year, 10);
+                if (y && !isNaN(y)) {
+                    const yStr = y.toString();
+                    if (!movieYearMap.has(yStr)) {
+                        movieYearMap.set(yStr, idx);
+                    }
+                }
+            });
+
+            const keys = Array.from(movieYearMap.keys()).sort((a, b) => {
+                return sortMode === 'new-old' ? parseInt(b, 10) - parseInt(a, 10) : parseInt(a, 10) - parseInt(b, 10);
+            });
+
+            keys.forEach(yearStr => {
+                const btn = document.createElement('div');
+                btn.className = 'nav-item black-outline';
+                btn.textContent = yearStr;
+                btn.title = `Released in ${yearStr}`;
+                btn.onclick = () => scrollToMovieIndex(movieYearMap.get(yearStr));
+                sidebar.appendChild(btn);
             });
         }
     }
