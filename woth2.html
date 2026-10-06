@@ -1,281 +1,139 @@
 <!DOCTYPE html>
-<!-- Line 1: Way of the Hunter 2 - Universal Cross-Device Realtime Field Tracker -->
-<!-- Stamped: 2026-10-05 21:57 EDT | Firebase Sync Target: /utm_links | Version: 2.6.0 -->
+<!-- Line 1: PlayStation Portal - Way of the Hunter 2 Official Inspection Companion -->
+<!-- Stamped: 2026-10-06 00:45 EDT | Firebase Sync Target: /utm_links | Version: 2.8.0 -->
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Way of the Hunter 2 - Cross-Device Cloud Tracker</title>
-
-  <!-- Canonical & Search Engine Meta -->
-  <meta name="description" content="Cross-device real-time companion for Way of the Hunter 2. Synchronize in-game days, animal lifespans, harvests, and hit diagnostics." />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="//playstation-be936.web.app/" />
-
-  <!-- Unified Branding Favicon & Touch Icon -->
+  <title>PlayStation Hub &bull; Way of the Hunter 2 Field Tracker</title>
+  
   <link rel="icon" type="image/jpeg" href="//playstation-be936.web.app/favicon.ico" />
   <link rel="apple-touch-icon" href="//playstation-be936.web.app/favicon.ico" />
 
   <style>
-    /* High-contrast, glossy dark aesthetic */
     :root {
-      --bg-dark: #070d18;
-      --panel-dark: #121c2d;
-      --card-dark: #1c273c;
-      --accent-gold: #f59e0b;
-      --accent-green: #10b981;
-      --accent-blue: #38bdf8;
-      --accent-red: #ef4444;
-      --accent-purple: #c084fc;
-      --hazard-crimson: #b91c1c;
-      --text-main: #f8fafc;
-      --text-dim: #94a3b8;
+      --bg: #070d18;
+      --panel: #121c2d;
+      --card: #1c273c;
+      --gold: #f59e0b;
+      --green: #10b981;
+      --blue: #38bdf8;
+      --red: #ef4444;
+      --purple: #c084fc;
       --border: #28374d;
+      --text: #f8fafc;
+      --dim: #94a3b8;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 40px; }
+    
+    header { background: var(--panel); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+    .brand { font-size: 1.1rem; font-weight: 700; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+    .brand a { color: var(--gold); text-decoration: none; }
 
-    header {
-      background: var(--panel-dark);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 20px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-    }
+    /* Mode & Clock Control Bar */
+    .sync-bar { background: #0b1322; border-bottom: 1px solid var(--border); padding: 10px 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; font-size: 0.9rem; }
+    .sync-bar input, .sync-bar select, .sync-bar button { min-height: 38px; padding: 4px 10px; background: #070d18; border: 1px solid var(--border); color: #fff; border-radius: 4px; }
+    
+    .mode-toggle { display: flex; align-items: center; background: #070d18; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    .mode-btn { border: none; padding: 8px 16px; font-size: 0.85rem; font-weight: 700; cursor: pointer; color: var(--dim); background: transparent; min-height: 38px; }
+    .mode-btn.active { background: var(--gold); color: #000; }
+    
+    nav.tab-bar { background: #080f1e; border-bottom: 1px solid var(--border); padding: 0 20px; display: flex; gap: 6px; overflow-x: auto; }
+    .nav-tab { background: none; border: none; border-bottom: 3px solid transparent; color: var(--dim); padding: 12px 16px; font-size: 0.9rem; font-weight: 600; cursor: pointer; min-height: 44px; white-space: nowrap; }
+    .nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--accent-gold);
-    }
-
-    .brand img {
-      width: 28px;
-      height: 28px;
-      border-radius: 4px;
-    }
-
-    /* Cross-Device Universal Game Clock Bar */
-    .game-clock-bar {
-      background: #0b1322;
-      border-bottom: 1px solid var(--border);
-      padding: 10px 20px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      font-size: 0.9rem;
-    }
-
-    .clock-inputs {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .sync-status {
-      font-size: 0.8rem;
-      color: var(--accent-green);
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    nav.tab-bar {
-      background: #080f1e;
-      border-bottom: 1px solid var(--border);
-      padding: 0 20px;
-      display: flex;
-      gap: 6px;
-      overflow-x: auto;
-    }
-
-    .nav-tab {
-      background: none;
-      border: none;
-      border-bottom: 3px solid transparent;
-      color: var(--text-dim);
-      padding: 12px 16px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      min-height: 44px;
-      white-space: nowrap;
-    }
-
-    .nav-tab.active {
-      color: var(--accent-gold);
-      border-bottom-color: var(--accent-gold);
-    }
-
-    input, select, button {
-      background: #070d18;
-      border: 1px solid var(--border);
-      color: var(--text-main);
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      min-height: 44px;
-    }
-
-    button { cursor: pointer; font-weight: 600; transition: opacity 0.2s; }
-    button:hover { opacity: 0.9; }
-
-    .btn-gold { background: var(--accent-gold); color: #000; border: none; }
-    .btn-green { background: var(--accent-green); color: #fff; border: none; }
-    .btn-red { background: var(--accent-red); color: #fff; border: none; }
-
-    .tab-content { display: none; padding: 16px; flex: 1; }
+    .tab-content { display: none; padding: 16px; }
     .tab-content.active { display: block; }
 
-    .two-col-grid {
-      display: grid;
-      grid-template-columns: 420px 1fr;
-      gap: 16px;
-    }
+    .main-grid { display: grid; grid-template-columns: 500px 1fr; gap: 16px; }
+    @media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } }
+    
+    .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .panel h2 { font-size: 1rem; color: var(--gold); border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+    
+    .form-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+    .form-group label { font-size: 0.8rem; color: var(--dim); }
+    .form-group input, .form-group select { background: #070d18; border: 1px solid var(--border); color: #fff; padding: 8px; border-radius: 4px; min-height: 40px; font-size: 0.85rem; }
+    
+    .btn { background: var(--gold); color: #000; border: none; font-weight: 700; padding: 10px; border-radius: 4px; cursor: pointer; min-height: 44px; }
+    .btn-green { background: var(--green); color: #fff; }
+    
+    .feed-card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+    .feed-card-header { display: flex; justify-content: space-between; align-items: center; }
+    .badge { font-size: 0.75rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
 
-    @media (max-width: 960px) {
-      .two-col-grid { grid-template-columns: 1fr; }
-    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
 
-    .panel {
-      background: var(--panel-dark);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+    .stat-counter { display: flex; align-items: center; justify-content: space-between; background: #070d18; border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; }
+    .counter-btn { width: 32px; height: 32px; min-height: 32px; padding: 0; background: var(--card); color: #fff; border: 1px solid var(--border); border-radius: 4px; font-weight: 800; cursor: pointer; }
 
-    .panel h2 {
-      font-size: 1.05rem;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 8px;
-      color: var(--accent-gold);
-    }
-
-    .card {
-      background: var(--card-dark);
-      border: 1px solid var(--border);
-      padding: 12px;
-      border-radius: 6px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-    }
-
-    .data-table th, .data-table td {
-      padding: 10px 8px;
-      border-bottom: 1px solid var(--border);
-      text-align: left;
-    }
-
-    .data-table th { color: var(--text-dim); }
-
-    .tag-badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 700;
-    }
-
-    footer {
-      background: var(--panel-dark);
-      border-top: 1px solid var(--border);
-      padding: 10px 16px;
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      display: flex;
-      justify-content: space-between;
-    }
+    footer { background: var(--panel); border-top: 1px solid var(--border); padding: 10px 16px; font-size: 0.75rem; color: var(--dim); display: flex; justify-content: space-between; margin-top: 20px; }
   </style>
 </head>
 <body>
 
-  <!-- Header Navigation & Multi-Device Auth -->
   <header>
     <div class="brand">
-      <img src="//playstation-be936.web.app/favicon.ico" alt="" />
-      <span>🌲 Way of the Hunter 2 &bull; Cloud Companion</span>
+      <a href="/">&larr; PlayStation Hub</a>
+      <span>| Way of the Hunter 2 Companion</span>
     </div>
-    <div id="authSection" style="display: flex; align-items: center; gap: 10px;">
-      <button id="btnLogin" class="btn-gold">Sign in with Google</button>
-      <div id="userProfile" style="display: none; align-items: center; gap: 8px;">
-        <span>Hunter: <strong id="hunterTagText">Syncing...</strong></span>
-        <button id="btnLogout" style="padding: 4px 10px; min-height: 32px;">Logout</button>
-      </div>
+    <div id="authStatus" style="font-size: 0.85rem; color: var(--dim);">
+      Database: <strong>entertainment-71888</strong>
     </div>
   </header>
 
-  <!-- Realtime Synced In-Game Calendar & Clock Bar -->
-  <div class="game-clock-bar">
-    <div class="clock-inputs">
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <label for="currentInGameDay" style="color: var(--accent-gold); font-weight: 700;">In-Game Day:</label>
-        <input type="number" id="currentInGameDay" value="1" min="1" max="999" style="width: 80px; min-height: 36px;" />
+  <!-- Cross-Device Game Mode & Clock Sync Bar -->
+  <div class="sync-bar">
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <div class="mode-toggle">
+        <button id="btnModeSP" class="mode-btn active" data-mode="single_player">Single Player</button>
+        <button id="btnModeMP" class="mode-btn" data-mode="multiplayer">Multiplayer</button>
       </div>
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <label for="currentInGameTime" style="color: var(--accent-gold); font-weight: 700;">Time of Day:</label>
-        <input type="time" id="currentInGameTime" value="08:00" style="min-height: 36px;" />
+
+      <div style="display:flex; align-items:center; gap:8px;">
+        <label style="color:var(--gold); font-weight:700;">Day:</label>
+        <input type="number" id="inGameDay" value="1" min="1" style="width:65px;" />
+        <label style="color:var(--gold); font-weight:700;">Time:</label>
+        <input type="time" id="inGameTime" value="08:30" />
+        <button id="btnPushTime" class="btn" style="min-height:38px;">Sync Devices</button>
       </div>
-      <button id="btnSaveTime" class="btn-gold" style="min-height: 36px; padding: 0 12px; font-size: 0.8rem;">Sync Time Across Devices</button>
     </div>
-    <div class="sync-status" id="cloudSyncStatus">
-      <span>● Firebase RTDB Connected</span>
-    </div>
+    <span id="activeModeDisplay" style="font-size:0.8rem; color:var(--green);">● Live: Single Player Cloud Branch</span>
   </div>
 
-  <!-- Navigation Tabs -->
   <nav class="tab-bar">
-    <button class="nav-tab active" data-tab="tab-kills">Kill & Harvest Log</button>
-    <button class="nav-tab" data-tab="tab-watchlist">Target Watchlist & Mortality Clock</button>
-    <button class="nav-tab" data-tab="tab-zones">Need Zones & Schedules</button>
-    <button class="nav-tab" data-tab="tab-missions">Missions (33)</button>
-    <button class="nav-tab" data-tab="tab-infrastructure">Infrastructure (32)</button>
+    <button class="nav-tab active" data-tab="tab-harvest">Full Harvest Inspection</button>
+    <button class="nav-tab" data-tab="tab-watchlist">Target Watchlist & Age (X/Y)</button>
+    <button class="nav-tab" data-tab="tab-k9">Dog Companion Profile</button>
+    <button class="nav-tab" data-tab="tab-challenges">Challenges & Perks</button>
+    <button class="nav-tab" data-tab="tab-missions">Missions</button>
+    <button class="nav-tab" data-tab="tab-infrastructure">Infrastructure</button>
   </nav>
 
-  <!-- TAB 1: Kill & Harvest Log -->
-  <div id="tab-kills" class="tab-content active">
-    <div class="two-col-grid">
+  <!-- TAB 1: Harvest Inspection Screen (Overview, Weight/Price, Trophy Score) -->
+  <div id="tab-harvest" class="tab-content active">
+    <div class="main-grid">
       
-      <!-- Harvest Form -->
+      <!-- Full Official Inspection Log Form -->
       <section class="panel">
-        <h2>Record Completed Harvest</h2>
-        <form id="harvestForm" style="display: flex; flex-direction: column; gap: 10px;">
+        <h2>Record Harvest Inspection Screen</h2>
+        <form id="harvestForm">
           
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div>
-              <label style="font-size: 0.8rem; color: var(--text-dim);">Species</label>
-              <select id="harvestSpecies" style="width: 100%;"></select>
+          <!-- Section 1: Overview & Ballistics -->
+          <div style="border-left: 3px solid var(--gold); padding-left: 8px; margin-bottom: 4px;">
+            <strong style="font-size:0.85rem; color:var(--gold);">1. Overview & Ballistics</strong>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Species</label>
+              <select id="harvestSpecies"></select>
             </div>
-            <div>
-              <label style="font-size: 0.8rem; color: var(--text-dim);">Region</label>
-              <select id="harvestRegion" style="width: 100%;">
+            <div class="form-group">
+              <label>Location / Sector</label>
+              <select id="harvestRegion">
                 <option value="Wetiko Foothills">Wetiko Foothills</option>
                 <option value="Slalakum Shore">Slalakum Shore</option>
                 <option value="Thunderbird Muskeg">Thunderbird Muskeg</option>
@@ -287,190 +145,356 @@
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div>
-              <label style="font-size: 0.8rem; color: var(--text-dim);">Shot Distance (Yards)</label>
-              <input type="number" id="harvestDistance" placeholder="e.g. 185" required style="width: 100%;" />
+          <div class="grid-3">
+            <div class="form-group">
+              <label>Firearm</label>
+              <input type="text" id="harvestFirearm" placeholder="e.g. Steyr Monobloc" required />
             </div>
-            <div>
-              <label style="font-size: 0.8rem; color: var(--text-dim);">Hit Location / Organ</label>
-              <select id="harvestOrgan" style="width: 100%;">
-                <option value="Heart">Heart (Instant Drop)</option>
-                <option value="Left Lung">Left Lung (Vital)</option>
-                <option value="Right Lung">Right Lung (Vital)</option>
-                <option value="Double Lung">Double Lung (Fatal Drop)</option>
-                <option value="Liver">Liver (Long Track)</option>
-                <option value="Stomach">Stomach / Guts (Low Ethics)</option>
-                <option value="Neck / Spine">Neck / Spine</option>
-                <option value="Flesh / Non-Vital">Flesh / Non-Vital</option>
+            <div class="form-group">
+              <label>Caliber</label>
+              <input type="text" id="harvestCaliber" placeholder="e.g. .30-06 Sprg" required />
+            </div>
+            <div class="form-group">
+              <label>Ammo Type</label>
+              <input type="text" id="harvestAmmo" placeholder="e.g. Polymer Tip" required />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Shot Distance (Yds)</label>
+              <input type="number" id="harvestShotDist" placeholder="185" required />
+            </div>
+            <div class="form-group">
+              <label>Tracking Distance (Yds)</label>
+              <input type="number" id="harvestTrackDist" placeholder="0 or 45" required />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Multiple Organ Damage Hit</label>
+              <input type="text" id="harvestOrgan" placeholder="e.g. Left Lung, Liver, Stomach" required />
+            </div>
+            <div class="form-group">
+              <label>Hunter Detected</label>
+              <select id="harvestDetected">
+                <option value="No (Undetected / Calm)">No (Undetected / Calm)</option>
+                <option value="Yes (Alerted / Spooked)">Yes (Alerted / Spooked)</option>
               </select>
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div>
-              <label style="font-size: 0.8rem; color: var(--text-dim);">Trophy Rating</label>
-              <select id="harvestTrophy" style="width: 100%;">
-                <option value="5-Star (Max Trophy / Diamond)">⭐⭐⭐⭐⭐ (5-Star / Diamond tier)</option>
-                <option value="4-Star">⭐⭐⭐⭐ (4-Star)</option>
-                <option value="3-Star">⭐⭐⭐ (3-Star)</option>
-                <option value="2-Star">⭐⭐ (2-Star)</option>
-                <option value="1-Star">⭐ (1-Star Low Fitness)</option>
-              </select>
+          <div class="grid-3">
+            <div class="form-group">
+              <label>Dog Used</label>
+              <input type="text" id="harvestDog" placeholder="None or Dogmeat (Level 3)" />
             </div>
-            <div>
-              <label style="font-size: 0.8rem; color: var(--text-dim);">Ethical Hunt Rating</label>
-              <select id="harvestHuntRating" style="width: 100%;">
-                <option value="5-Star Hunt (Clean Vital / 1 Shot)">⭐⭐⭐⭐⭐ (Clean Vital, 1 Shot)</option>
-                <option value="4-Star Hunt">⭐⭐⭐⭐ (Minor meat damage)</option>
-                <option value="3-Star Hunt">⭐⭐⭐ (Overpowered caliber)</option>
-                <option value="2-Star Hunt">⭐⭐ (Multiple shots)</option>
-                <option value="1-Star Hunt">⭐ (Unethical / Guts)</option>
-              </select>
+            <div class="form-group">
+              <label>Wind</label>
+              <input type="text" id="harvestWind" placeholder="e.g. Light Breeze 5mph" />
+            </div>
+            <div class="form-group">
+              <label>Weather</label>
+              <input type="text" id="harvestWeather" placeholder="e.g. Clear or Heavy Rain" />
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div>
-              <label style="font-size: 0.8rem; color: var(--text-dim);">Weapon & Caliber Used</label>
-              <input type="text" id="harvestWeapon" placeholder="e.g. .30-06 Steyr Pro Hunter" required style="width: 100%;" />
+          <!-- Section 2: Weight, Degradation & Economics -->
+          <div style="border-left: 3px solid var(--green); padding-left: 8px; margin-top: 8px; margin-bottom: 4px;">
+            <strong style="font-size:0.85rem; color:var(--green);">2. Weight & Price Breakdown</strong>
+          </div>
+          <div class="grid-3">
+            <div class="form-group">
+              <label>Raw Weight</label>
+              <input type="text" id="harvestRawWeight" placeholder="e.g. 182.4 kg" />
             </div>
-            <div>
-              <label style="font-size: 0.8rem; color: var(--text-dim);">Fitness % Recorded</label>
-              <input type="text" id="harvestFitness" placeholder="e.g. 96.5% or 42.1%" style="width: 100%;" />
+            <div class="form-group">
+              <label>Dressing Waste</label>
+              <input type="text" id="harvestWaste" placeholder="e.g. 38.2 kg" />
+            </div>
+            <div class="form-group">
+              <label>Dressed Weight</label>
+              <input type="text" id="harvestDressedWeight" placeholder="e.g. 144.2 kg" />
             </div>
           </div>
 
-          <button type="submit" class="btn-green">Sync Harvest to Cloud</button>
+          <div class="grid-3">
+            <div class="form-group">
+              <label>Time Degradation</label>
+              <input type="text" id="harvestTimeDeg" placeholder="e.g. 0% or -12%" />
+            </div>
+            <div class="form-group">
+              <label>Shot Degradation</label>
+              <input type="text" id="harvestShotDeg" placeholder="e.g. -5%" />
+            </div>
+            <div class="form-group">
+              <label>Final Sell Price</label>
+              <input type="text" id="harvestSellPrice" placeholder="e.g. $1,280" />
+            </div>
+          </div>
+
+          <!-- Section 3: Trophy & Antler Scoring -->
+          <div style="border-left: 3px solid var(--purple); padding-left: 8px; margin-top: 8px; margin-bottom: 4px;">
+            <strong style="font-size:0.85rem; color:var(--purple);">3. Trophy Score & Rarity</strong>
+          </div>
+          <div class="grid-4">
+            <div class="form-group">
+              <label>Sex & Stage</label>
+              <input type="text" id="harvestSexStage" placeholder="e.g. Male Adult" />
+            </div>
+            <div class="form-group">
+              <label>Fitness %</label>
+              <input type="text" id="harvestFitness" placeholder="e.g. 88.5%" />
+            </div>
+            <div class="form-group">
+              <label>Coat Rarity</label>
+              <input type="text" id="harvestCoat" placeholder="e.g. Common or Albino" />
+            </div>
+            <div class="form-group">
+              <label>Weight Rarity</label>
+              <input type="text" id="harvestWeightRarity" placeholder="e.g. Top 10%" />
+            </div>
+          </div>
+
+          <div class="grid-4">
+            <div class="form-group">
+              <label>Main Beam</label>
+              <input type="text" id="harvestBeam" placeholder="e.g. 24.2 in" />
+            </div>
+            <div class="form-group">
+              <label>Inside Spread</label>
+              <input type="text" id="harvestInsideSpread" placeholder="e.g. 18.5 in" />
+            </div>
+            <div class="form-group">
+              <label>Base Circumf.</label>
+              <input type="text" id="harvestBaseCirc" placeholder="e.g. 4.8 in" />
+            </div>
+            <div class="form-group">
+              <label>Typical Points</label>
+              <input type="text" id="harvestPoints" placeholder="e.g. 10 Pts" />
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="form-group">
+              <label>Trophy Rating</label>
+              <select id="harvestTrophy">
+                <option value="⭐⭐⭐⭐⭐ (5-Star)">⭐⭐⭐⭐⭐ (5-Star)</option>
+                <option value="⭐⭐⭐⭐ (4-Star)">⭐⭐⭐⭐ (4-Star)</option>
+                <option value="⭐⭐⭐ (3-Star)">⭐⭐⭐ (3-Star)</option>
+                <option value="⭐⭐ (2-Star)">⭐⭐ (2-Star)</option>
+                <option value="⭐ (1-Star Cull)">⭐ (1-Star Cull)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Hunt Rating</label>
+              <select id="harvestHuntRating">
+                <option value="⭐⭐⭐⭐⭐ (Clean Vital)">⭐⭐⭐⭐⭐ (Clean Vital)</option>
+                <option value="⭐⭐⭐⭐ (Minor Loss)">⭐⭐⭐⭐ (Minor Loss)</option>
+                <option value="⭐⭐⭐ (Overpowered)">⭐⭐⭐ (Overpowered)</option>
+                <option value="⭐⭐ (Multiple Shots)">⭐⭐ (Multiple Shots)</option>
+                <option value="⭐ (Unethical)">⭐ (Unethical)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Total Trophy Score</label>
+              <input type="text" id="harvestTotalScore" placeholder="e.g. 448.2" />
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-green" style="width:100%; margin-top:8px;">Sync Inspection to Cloud</button>
         </form>
       </section>
 
-      <!-- Realtime Harvest List -->
+      <!-- Recorded Harvests Live Inspection Feed -->
       <section class="panel">
-        <h2>Cloud-Synced Harvest History</h2>
-        <div id="harvestList" style="display: flex; flex-direction: column; gap: 8px; max-height: 600px; overflow-y: auto;"></div>
+        <h2>Inspection History (<span id="feedModeLabel">Single Player</span>)</h2>
+        <div id="harvestFeed" style="display:flex; flex-direction:column; gap:10px; max-height:850px; overflow-y:auto;"></div>
       </section>
     </div>
   </div>
 
-  <!-- TAB 2: Live Watchlist & Mortality Clock -->
+  <!-- TAB 2: Live Watchlist with X/Y Lifespan Age Counter -->
   <div id="tab-watchlist" class="tab-content">
-    <div class="two-col-grid">
-      
-      <!-- Add Target Form -->
+    <div class="main-grid">
       <section class="panel">
         <h2>Add Live Animal to Watchlist</h2>
-        <p style="font-size: 0.8rem; color: var(--text-dim);">
-          Saw a high-fitness trophy or a low-fitness cull? Add it here to track its remaining lifespan across all devices.
-        </p>
-
-        <form id="watchlistForm" style="display: flex; flex-direction: column; gap: 10px;">
-          <div>
-            <label style="font-size: 0.8rem; color: var(--text-dim);">Target Identifier / Nickname</label>
-            <input type="text" id="watchName" placeholder="e.g. Patience the Ram or Chance the Wolf" required style="width: 100%;" />
+        <form id="watchlistForm">
+          <div class="form-group">
+            <label>Target Identifier / Label</label>
+            <input type="text" id="watchName" placeholder="e.g. Patience the Ram" required />
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div>
-              <label style="font-size: 0.8rem; color: var(--text-dim);">Species</label>
-              <select id="watchSpecies" style="width: 100%;"></select>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Species</label>
+              <select id="watchSpecies"></select>
             </div>
-            <div>
-              <label style="font-size: 0.8rem; color: var(--text-dim);">Region</label>
-              <select id="watchRegion" style="width: 100%;">
-                <option value="Jackalope Cordillera">Jackalope Cordillera</option>
-                <option value="Kermode Plateau">Kermode Plateau</option>
-                <option value="Lake Sasquatch">Lake Sasquatch</option>
-                <option value="Mishipeshu Swamp">Mishipeshu Swamp</option>
-                <option value="Slalakum Shore">Slalakum Shore</option>
-                <option value="Thunderbird Muskeg">Thunderbird Muskeg</option>
-                <option value="Wetiko Foothills">Wetiko Foothills</option>
-              </select>
+            <div class="form-group">
+              <label>Observed Fitness %</label>
+              <input type="number" id="watchFitness" step="0.1" placeholder="89.5" required />
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div>
-              <label style="font-size: 0.8rem; color: var(--text-dim);">Observed Life Stage</label>
-              <select id="watchStage" style="width: 100%;">
-                <option value="Young">Young (1-3 yrs old)</option>
-                <option value="Adult">Adult (Mid-life)</option>
-                <option value="Mature Early">Mature Early (Growing Racks)</option>
-                <option value="Mature Late">Mature Late (Final Year Window!)</option>
-              </select>
+          <!-- Dynamic Age Tracker (X/Y) -->
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Observed Age (Years)</label>
+              <input type="number" id="watchCurrentAge" placeholder="e.g. 3 (for 3/12)" required />
             </div>
-            <div>
-              <label style="font-size: 0.8rem; color: var(--text-dim);">Fitness Decimal %</label>
-              <input type="number" id="watchFitness" step="0.1" placeholder="e.g. 89.5" required style="width: 100%;" />
+            <div class="form-group">
+              <label>Max Lifespan Cap (Years)</label>
+              <input type="number" id="watchMaxAge" placeholder="e.g. 12 (for 3/12)" required />
             </div>
           </div>
 
-          <div>
-            <label style="font-size: 0.8rem; color: var(--text-dim);">Observed Location / Landmarks</label>
-            <input type="text" id="watchLocation" placeholder="e.g. North rim crags 200m from camp" required style="width: 100%;" />
+          <div class="form-group">
+            <label>Location / Need Zone Landmark</label>
+            <input type="text" id="watchLocation" placeholder="North ridge clearing near river" required />
           </div>
-
-          <button type="submit" class="btn-gold">Sync Target to Watchlist</button>
+          <button type="submit" class="btn" style="width:100%;">Add to Cloud Watchlist</button>
         </form>
       </section>
 
-      <!-- Realtime Watchlist Feed -->
       <section class="panel">
-        <h2>Live Animal Trackers & Mortality Countdown</h2>
-        <div id="watchlistFeed" style="display: flex; flex-direction: column; gap: 10px; max-height: 600px; overflow-y: auto;"></div>
+        <h2>Live Herd Watchlist (<span id="watchModeLabel">Single Player</span>)</h2>
+        <div id="watchlistFeed" style="display:flex; flex-direction:column; gap:8px;"></div>
       </section>
     </div>
   </div>
 
-  <!-- TAB 3: Need Zones & Schedules -->
-  <div id="tab-zones" class="tab-content">
-    <div class="panel">
-      <h2>Need Zone Schedules & Best Hunting Hours</h2>
-      <p style="font-size: 0.85rem; color: var(--text-dim);">
-        Match your in-game clock to these windows to intercept herds during feeding, drinking, or resting.
-      </p>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Species</th>
-            <th>Primary Feeding Window</th>
-            <th>Primary Drinking Window</th>
-            <th>Resting / Bedding Window</th>
-            <th>Key Hunting Tip</th>
-          </tr>
-        </thead>
-        <tbody id="zonesTableBody"></tbody>
-      </table>
+  <!-- TAB 3: Dog Companion Profile -->
+  <div id="tab-k9" class="tab-content">
+    <div class="main-grid">
+      <section class="panel">
+        <h2>K9 Companion Skills</h2>
+        <div class="form-group">
+          <label>Dog Name & Breed</label>
+          <input type="text" id="k9Name" value="Dogmeat (Foxhound)" />
+        </div>
+
+        <div class="form-group">
+          <label>Bonding Level</label>
+          <input type="text" id="k9Bonding" value="Loyal (Level 3)" />
+        </div>
+
+        <div class="stat-counter">
+          <span>Following Commands: <strong id="valCommands">0</strong>/6</span>
+          <div style="display:flex; gap:6px;">
+            <button class="counter-btn" data-type="commands" data-dir="-1">-</button>
+            <button class="counter-btn" data-type="commands" data-dir="1">+</button>
+          </div>
+        </div>
+
+        <div class="stat-counter">
+          <span>Blood Tracking: <strong id="valBlood">3</strong>/6</span>
+          <div style="display:flex; gap:6px;">
+            <button class="counter-btn" data-type="blood" data-dir="-1">-</button>
+            <button class="counter-btn" data-type="blood" data-dir="1">+</button>
+          </div>
+        </div>
+
+        <div class="stat-counter">
+          <span>Search and Quartering: <strong id="valSearch">0</strong>/6</span>
+          <div style="display:flex; gap:6px;">
+            <button class="counter-btn" data-type="search" data-dir="-1">-</button>
+            <button class="counter-btn" data-type="search" data-dir="1">+</button>
+          </div>
+        </div>
+
+        <button id="btnSaveDog" class="btn btn-green" style="width:100%; margin-top:8px;">Sync Dog Stats to Cloud</button>
+      </section>
+
+      <section class="panel">
+        <h2>Hunting Dog Field Guide</h2>
+        <div class="feed-card">
+          <strong style="color:var(--gold);">Blood Tracking (3/6 Active)</strong>
+          <p style="font-size:0.8rem; color:var(--dim);">Your dog can reliably follow mid-range blood trails. At 4/6 and above, it can track faint scratch wounds across solid rock and through heavy rain.</p>
+        </div>
+        <div class="feed-card">
+          <strong style="color:var(--gold);">Search and Quartering (Upland Birds)</strong>
+          <p style="font-size:0.8rem; color:var(--dim);">Weaves ahead in brush to locate hiding Pheasants, Ptarmigans, and Wild Turkeys, flushing them into shotgun range.</p>
+        </div>
+      </section>
     </div>
   </div>
 
-  <!-- TAB 4: Missions -->
+  <!-- TAB 4: Challenges & Perk Trees -->
+  <div id="tab-challenges" class="tab-content">
+    <div class="panel">
+      <h2>Mastery & Perk Challenge Trees</h2>
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:12px;">
+        
+        <div class="feed-card">
+          <div class="feed-card-header">
+            <strong>Features</strong>
+            <span class="badge" style="background:var(--blue); color:#000;">0 / 24</span>
+          </div>
+          <p style="font-size:0.8rem; color:var(--dim);">Equipment, photo mode, tripod blinds, and caller mastery.</p>
+        </div>
+
+        <div class="feed-card">
+          <div class="feed-card-header">
+            <strong>Naturalist</strong>
+            <span class="badge" style="background:var(--green); color:#000;">1 / 23</span>
+          </div>
+          <p style="font-size:0.8rem; color:var(--dim);">Need zone analysis, droppings freshness, and track identification.</p>
+        </div>
+
+        <div class="feed-card">
+          <div class="feed-card-header">
+            <strong>Scout</strong>
+            <span class="badge" style="background:var(--green); color:#000;">1 / 23</span>
+          </div>
+          <p style="font-size:0.8rem; color:var(--dim);">Viewpoints discovered, trail mapping, and stamina efficiency.</p>
+        </div>
+
+        <div class="feed-card">
+          <div class="feed-card-header">
+            <strong>Sharpshooter</strong>
+            <span class="badge" style="background:var(--green); color:#000;">1 / 18</span>
+          </div>
+          <p style="font-size:0.8rem; color:var(--dim);">Long-distance vitals (150m+), breath control, and wingshooting.</p>
+        </div>
+
+        <div class="feed-card">
+          <div class="feed-card-header">
+            <strong>Stalker</strong>
+            <span class="badge" style="background:var(--red); color:#fff;">0 / 12</span>
+          </div>
+          <p style="font-size:0.8rem; color:var(--dim);">Close-quarter stalking under 50m, scent masking, and noise suppression.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 5: Missions -->
   <div id="tab-missions" class="tab-content">
     <div class="panel">
-      <h2>New Laurentia Campaign Missions (33 Total)</h2>
-      <div id="missionsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px;"></div>
+      <h2>New Laurentia Campaign Missions</h2>
+      <div id="missionsList" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:12px;"></div>
     </div>
   </div>
 
-  <!-- TAB 5: Infrastructure -->
+  <!-- TAB 6: Infrastructure -->
   <div id="tab-infrastructure" class="tab-content">
     <div class="panel">
-      <h2>Habitat Enhancements & Cleanups (32 Total)</h2>
-      <div id="infrastructureList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px;"></div>
+      <h2>Habitat Enhancements & Infrastructure</h2>
+      <div id="infrastructureList" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:12px;"></div>
     </div>
   </div>
 
-  <!-- Visible Stamped 24-Hour Footer -->
   <footer>
     <span>Way of the Hunter 2 &bull; playstation-be936.web.app</span>
-    <span id="systemStamp">2026-10-05 21:57 EDT | Version: 2.6.0</span>
+    <span>2026-10-06 00:45 EDT | Version: 2.8.0</span>
   </footer>
 
-  <!-- Firebase Integration Script -->
+  <!-- Firebase & Open-Source Cloud Sync -->
   <script type="module">
     import { initializeApp } from "//www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "//www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-    import { getDatabase, ref, push, onValue, set, remove } from "//www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+    import { getDatabase, ref, push, set, onValue, remove } from "//www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -483,446 +507,368 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getDatabase(app);
-    const provider = new GoogleAuthProvider();
 
-    let currentUser = null;
-    let localCurrentDay = 1;
+    let activeMode = "single_player"; // 'single_player' or 'multiplayer'
+    let currentSyncedDay = 1;
+    let currentSyncedTime = "08:30";
+    let watchlistCache = [];
 
-    // Database Root Path Resolver
-    function getRootDbPath() {
-      // Binds to user's UID when authenticated, or shared tracker when using standard mode
-      return currentUser ? `woth2_users/${currentUser.uid}` : `woth2_shared_tracker`;
+    // Dog Stats
+    let dogStats = { commands: 0, blood: 3, search: 0 };
+
+    const inGameDayInput = document.getElementById("inGameDay");
+    const inGameTimeInput = document.getElementById("inGameTime");
+    const btnPushTime = document.getElementById("btnPushTime");
+    const activeModeDisplay = document.getElementById("activeModeDisplay");
+    const feedModeLabel = document.getElementById("feedModeLabel");
+    const watchModeLabel = document.getElementById("watchModeLabel");
+
+    // Mode Toggle Logic
+    const btnSP = document.getElementById("btnModeSP");
+    const btnMP = document.getElementById("btnModeMP");
+
+    btnSP.addEventListener("click", () => switchMode("single_player"));
+    btnMP.addEventListener("click", () => switchMode("multiplayer"));
+
+    function switchMode(newMode) {
+      activeMode = newMode;
+      if (newMode === "single_player") {
+        btnSP.classList.add("active");
+        btnMP.classList.remove("active");
+        activeModeDisplay.textContent = "● Live: Single Player Cloud Branch";
+        feedModeLabel.textContent = "Single Player";
+        watchModeLabel.textContent = "Single Player";
+      } else {
+        btnMP.classList.add("active");
+        btnSP.classList.remove("active");
+        activeModeDisplay.textContent = "● Live: Multiplayer Cloud Branch";
+        feedModeLabel.textContent = "Multiplayer";
+        watchModeLabel.textContent = "Multiplayer";
+      }
+      initCloudListeners();
     }
 
-    // Static Datasets
-    const SpeciesRoster = [
-      { name: "Northwestern white-tailed deer", lifespanDays: 30, feed: "06:00 - 10:00", drink: "10:00 - 14:00", rest: "14:00 - 18:00", tip: "Cull 1-star matures. Lake Sasquatch cleanup unlocks 5-star ceiling." },
-      { name: "Rocky Mountain mule deer", lifespanDays: 33, feed: "07:00 - 11:00", drink: "11:00 - 15:00", rest: "15:00 - 19:00", tip: "Check sunny ridges in Wetiko. Large antlers reach full size around Day 30." },
-      { name: "Rocky Mountain elk", lifespanDays: 42, feed: "05:00 - 09:00", drink: "09:00 - 13:00", rest: "13:00 - 17:00", tip: "Bulls bed on Kermode Plateau edges. 5-stars appear after Year 12." },
-      { name: "Dall sheep", lifespanDays: 39, feed: "08:00 - 12:00", drink: "12:00 - 15:00", rest: "15:00 - 20:00", tip: "High Jackalope crags. Look for full curl horns in mature rams." },
-      { name: "Western moose", lifespanDays: 48, feed: "06:00 - 10:00", drink: "10:00 - 14:00", rest: "14:00 - 18:00", tip: "Thunderbird Muskeg peatlands. Beware of aggressive charging bulls." },
-      { name: "Wood bison", lifespanDays: 54, feed: "07:00 - 11:00", drink: "11:00 - 15:00", rest: "15:00 - 19:00", tip: "Slalakum shoreline. Will trample you if approached inside 50m." },
-      { name: "Grizzly bear", lifespanDays: 66, feed: "18:00 - 22:00", drink: "22:00 - 02:00", rest: "02:00 - 07:00", tip: "Ages slowly. Aggressive apex predator. Carry .44 Mag / .454 backup." },
-      { name: "Northwestern wolf", lifespanDays: 36, feed: "20:00 - 01:00", drink: "01:00 - 05:00", rest: "05:00 - 10:00", tip: "Active at night. Packs rotate large territories across multiple sectors." },
-      { name: "Rocky Mountain pronghorn", lifespanDays: 30, feed: "07:00 - 11:00", drink: "11:00 - 14:00", rest: "14:00 - 18:00", tip: "Open plains of Kermode. Extremely sharp eyesight; stalk from 250m+." },
-      { name: "Central European boar", lifespanDays: 33, feed: "19:00 - 23:00", drink: "23:00 - 03:00", rest: "03:00 - 08:00", tip: "Aggressive charges when startled. Look for wallows along swamp borders." },
-      { name: "American wolverine", lifespanDays: 24, feed: "05:00 - 09:00", drink: "09:00 - 12:00", rest: "12:00 - 17:00", tip: "Solitary scavenger. Moves quickly along timber edges." },
-      { name: "Eastern wild turkey", lifespanDays: 15, feed: "06:00 - 10:00", drink: "10:00 - 13:00", rest: "13:00 - 17:00", tip: "Spurs max out in Year 5. Use box caller from heavy brush." },
-      { name: "White-tailed ptarmigan", lifespanDays: 9, feed: "07:00 - 11:00", drink: "11:00 - 14:00", rest: "14:00 - 18:00", tip: "Shortest lifespan. Found on high rocks and scree slopes." },
-      { name: "Snowshoe Hare", lifespanDays: 12, feed: "18:00 - 22:00", drink: "22:00 - 01:00", rest: "01:00 - 06:00", tip: "Quiet stalking required. Uses .22 LR small game rimfire." },
-      { name: "Mallard", lifespanDays: 12, feed: "06:00 - 10:00", drink: "10:00 - 14:00", rest: "14:00 - 18:00", tip: "Flocks in lakes and marshes. Look for greenhead drakes." }
-    ];
-
-    const MissionsData = [
-      { name: "For the Hearth", source: "Angel", reward: "Story Progress", desc: "Harvest a male Mule deer near Lodge. Taxidermy it." },
-      { name: "For the Hunt", source: "Angel", reward: "Story Progress", desc: "Place Mule deer in lodge diorama with mid-sized herbivore." },
-      { name: "Angel on your shoulder", source: "Angel", reward: "$600 | 15 XP", desc: "Check out Hearth & Hunt files on the locals." },
-      { name: "Fox Fires", source: "Mikael", reward: "$1,050 | 40 XP", desc: "Analyze Dall sheep feeding/resting zones and harvest one." },
-      { name: "Loudest deer", source: "Mikael", reward: "$1,050 | 40 XP", desc: "Harvest a male Rocky Mountain elk with 70%+ fitness." },
-      { name: "Pack Dynamics", source: "Mikael", reward: "$1,050 | 40 XP", desc: "Learn wolf concealment behavior and calling tactics." },
-      { name: "One shot, no waste", source: "Mikael", reward: "$1,050 | 40 XP", desc: "Save up and purchase a higher caliber rifle for large game." },
-      { name: "Heterochromia Iridum", source: "Juniper", reward: "$600 | 15 XP", desc: "Harvest Whitetail with Dog active; track blood trail." },
-      { name: "Who let the bloodhounds out?", source: "Juniper", reward: "$1,050 | 40 XP", desc: "Harvest an Elk between 00:00-05:00 with Dog active." },
-      { name: "Friendly competition", source: "Juniper", reward: "$600 | 15 XP", desc: "Shoot and harvest 3 Wolverines." },
-      { name: "Parasomnias", source: "Juniper", reward: "$1,050 | 40 XP", desc: "Locate and harvest the lone Dall sheep." },
-      { name: "Pieris Marginalis", source: "Regina", reward: "$1,050 | 40 XP", desc: "Remove invasive plants and create butterfly garden." },
-      { name: "Cercyonis Pegala", source: "Regina", reward: "$1,050 | 40 XP", desc: "Cull 3 White-tailed deer with fitness 60% or lower." },
-      { name: "Eynnis lucilius", source: "Regina", reward: "$1,050 | 40 XP", desc: "Harvest the 3 sick moose in highlighted area." },
-      { name: "Speiredonia mutabilis", source: "Regina", reward: "$600 | 15 XP", desc: "Reach last sighting of moose with bloodied antlers." },
-      { name: "Tyria Jacobaeae", source: "Story", reward: "Campaign Choice", desc: "Enter swamp: Harvest or spare moose with bloodied antlers." },
-      { name: "Crystal clarity", source: "Patrick", reward: "$1,800 | 100 XP", desc: "Harvest with bow sight, crossbow sight, and ironsight bolt-action." },
-      { name: "Talk turkey to me", source: "Patrick", reward: "$1,800 | 100 XP", desc: "Call 3 Wild turkeys to within 100 meters." },
-      { name: "Hunting Solo", source: "Thunderbird Muskeg", reward: "$1,800 | 100 XP", desc: "Harvest 5 Mallards without Dog (each 1.3kg+)." },
-      { name: "Wattle Bearers", source: "Slalakum Shore", reward: "$800 | 15 XP", desc: "Harvest 2 male & 2 female turkeys with fitness under 60%." },
-      { name: "Cycle of Life", source: "Slalakum Shore", reward: "$800 | 15 XP", desc: "Harvest 3 Snowshoe hares (1.3kg+ each)." },
-      { name: "Iconic pairing", source: "Slalakum Shore", reward: "$1,200 | 40 XP", desc: "Create a taxidermy diorama with Grizzly bear & Wood Bison." },
-      { name: "Weather Extremes", source: "Jackalope Cordillera", reward: "$1,800 | 100 XP", desc: "Harvest Dall sheep from 400m+ using Primacy Vision Unity." },
-      { name: "Fifteen stars", source: "Kermode Plateau", reward: "$2,100 | 250 XP", desc: "Harvest 3 Elk with 5-star Trophy ratings." },
-      { name: "Bison Bank", source: "Kermode Plateau", reward: "$300 | 5 XP", desc: "Harvest a male Bison with fitness 40% or higher." },
-      { name: "Lure in", source: "Kermode Plateau", reward: "$1,200 | 40 XP", desc: "Harvest a male Grizzly bear using luring scent." },
-      { name: "Zip up", source: "Wetiko Foothills", reward: "$1,200 | 40 XP", desc: "Harvest Mule deer between 00:00-03:00 with night vision." },
-      { name: "Superhero of the wilderness", source: "Lake Sasquatch", reward: "$300 | 5 XP", desc: "Harvest a Wolverine using a tripod stand." },
-      { name: "Quail country", source: "Slalakum Shore", reward: "$1,200 | 40 XP", desc: "Harvest male & female ptarmigan with fitness 60%+." },
-      { name: "Which one has a white butt?", source: "Kermode Plateau", reward: "$2,100 | 250 XP", desc: "Harvest both a 5-star Whitetail and a 5-star Mule deer." },
-      { name: "Super pigs", source: "Kermode Plateau", reward: "$1,800 | 100 XP", desc: "Call an 80%+ fitness Wild boar to within 100 meters." },
-      { name: "MooseNews", source: "Thunderbird Muskeg", reward: "$800 | 15 XP", desc: "Harvest a Moose in one shot using .338 Lapua Mag." },
-      { name: "Artificial route", source: "Slalakum Shore", reward: "$1,800 | 100 XP", desc: "Harvest 70%+ Pronghorn heart shot from 200m+." }
-    ];
-
-    const InfrastructureData = [
-      { name: "Lake Sasquatch Pollution Cleanse", cost: "$5,670", impact: "High", desc: "Clears toxic water so Whitetail deer can reach Thriving." },
-      { name: "Thunderbird Muskeg Weed Cleanse (3 Sites)", cost: "$3,015 ea", impact: "High", desc: "Removes invasive plant species affecting turkeys/mallards." },
-      { name: "Slalakum Shore Big Game Feeders (2)", cost: "$2,970 - $3,540", impact: "Low", desc: "Boosts fitness potential for Bison, Elk, and Wolves." },
-      { name: "Thunderbird Moose Feeders (2)", cost: "$2,355 ea", impact: "Low", desc: "Provides mineral supplements for Western moose." },
-      { name: "Lake Sasquatch Deer & Sheep Feeders (3)", cost: "$2,355 - $2,970", impact: "Low", desc: "Unlocks population boost for Dall sheep & Whitetail." },
-      { name: "Slalakum Shore Damaged Bridges (3)", cost: "$2,610 - $3,220", impact: "Transport", desc: "Repairs vehicle bridges across western shoreline." },
-      { name: "Wetiko Foothills Creek Bridges (2)", cost: "$1,215 ea", impact: "Transport", desc: "Opens rapid vehicle access near main lodge." },
-      { name: "Kermode Plateau SE Boulder Clear", cost: "$1,830", impact: "Transport", desc: "Demolishes rock blockade on mountain trail." },
-      { name: "Mishipeshu Swamp Elevated Stands (2)", cost: "$3,300 - $3,735", impact: "Advantage", desc: "Erects observation stands over deep swamp water." },
-      { name: "Kermode Plateau Highland Stands (2)", cost: "$3,030 - $3,735", impact: "Advantage", desc: "Constructs 360-degree glassing positions." }
-    ];
-
-    document.addEventListener("DOMContentLoaded", () => {
-      // Tab Navigation
-      const tabs = document.querySelectorAll(".nav-tab");
-      tabs.forEach(tab => {
-        tab.addEventListener("click", () => {
-          tabs.forEach(t => t.classList.remove("active"));
-          document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-          tab.classList.add("active");
-          document.getElementById(tab.dataset.tab).classList.add("active");
-        });
+    // Tab Switching
+    document.querySelectorAll(".nav-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(tab.dataset.tab).classList.add("active");
       });
-
-      // Populate Selects
-      const harvestSpecies = document.getElementById("harvestSpecies");
-      const watchSpecies = document.getElementById("watchSpecies");
-      SpeciesRoster.forEach(s => {
-        const opt1 = document.createElement("option");
-        opt1.value = s.name;
-        opt1.textContent = s.name;
-        harvestSpecies.appendChild(opt1);
-
-        const opt2 = document.createElement("option");
-        opt2.value = s.name;
-        opt2.textContent = s.name;
-        watchSpecies.appendChild(opt2);
-      });
-
-      // Populate Need Zones
-      const zonesBody = document.getElementById("zonesTableBody");
-      SpeciesRoster.forEach(s => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><strong>${s.name}</strong></td>
-          <td><span style="color:var(--accent-green); font-weight:600;">${s.feed}</span></td>
-          <td><span style="color:var(--accent-blue); font-weight:600;">${s.drink}</span></td>
-          <td><span style="color:var(--accent-purple); font-weight:600;">${s.rest}</span></td>
-          <td style="font-size:0.8rem; color:var(--text-dim);">${s.tip}</td>
-        `;
-        zonesBody.appendChild(tr);
-      });
-
-      // Populate Missions & Infrastructure
-      const missionsList = document.getElementById("missionsList");
-      MissionsData.forEach(m => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong>${m.name}</strong>
-            <span style="color:var(--accent-gold); font-size:0.75rem;">${m.reward}</span>
-          </div>
-          <span style="color:var(--accent-blue); font-size:0.8rem;">Contact: ${m.source}</span>
-          <p style="color:var(--text-dim); font-size:0.8rem;">${m.desc}</p>
-        `;
-        missionsList.appendChild(card);
-      });
-
-      const infraList = document.getElementById("infrastructureList");
-      InfrastructureData.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong>${item.name}</strong>
-            <span style="color:var(--accent-green); font-size:0.8rem; font-weight:700;">${item.cost}</span>
-          </div>
-          <span style="color:${item.impact === 'High' ? 'var(--accent-red)' : 'var(--text-dim)'}; font-size:0.75rem;">Impact: ${item.impact}</span>
-          <p style="color:var(--text-dim); font-size:0.8rem;">${item.desc}</p>
-        `;
-        infraList.appendChild(card);
-      });
-
-      // Elements
-      const btnLogin = document.getElementById("btnLogin");
-      const btnLogout = document.getElementById("btnLogout");
-      const userProfile = document.getElementById("userProfile");
-      const hunterTagText = document.getElementById("hunterTagText");
-      const currentDayInput = document.getElementById("currentInGameDay");
-      const currentTimeInput = document.getElementById("currentInGameTime");
-      const btnSaveTime = document.getElementById("btnSaveTime");
-
-      // Auth Observer
-      onAuthStateChanged(auth, (user) => {
-        currentUser = user;
-        if (user) {
-          btnLogin.style.display = "none";
-          userProfile.style.display = "flex";
-          hunterTagText.textContent = user.displayName || "Hunter";
-        } else {
-          btnLogin.style.display = "block";
-          userProfile.style.display = "none";
-          hunterTagText.textContent = "Syncing...";
-        }
-        // Initialize Realtime Listeners across devices
-        bindGameClock();
-        bindHarvests();
-        bindWatchlist();
-      });
-
-      if (btnLogin) btnLogin.addEventListener("click", () => signInWithPopup(auth, provider));
-      if (btnLogout) btnLogout.addEventListener("click", () => signOut(auth));
-
-      // 1. Cross-Device Clock Synchronization
-      function bindGameClock() {
-        const clockRef = ref(db, `${getRootDbPath()}/game_clock`);
-        onValue(clockRef, (snapshot) => {
-          if (snapshot.exists() && snapshot.val() !== null) {
-            const data = snapshot.val();
-            localCurrentDay = data.current_day || 1;
-            currentDayInput.value = localCurrentDay;
-            currentTimeInput.value = data.current_time || "08:00";
-            // Re-render watchlist with newly synced day count
-            renderWatchlistFromCache();
-          }
-        });
-      }
-
-      if (btnSaveTime) {
-        btnSaveTime.addEventListener("click", async () => {
-          const day = parseInt(currentDayInput.value, 10) || 1;
-          const time = currentTimeInput.value || "08:00";
-          try {
-            const clockRef = ref(db, `${getRootDbPath()}/game_clock`);
-            await set(clockRef, { current_day: day, current_time: time });
-            localCurrentDay = day;
-            renderWatchlistFromCache();
-          } catch (err) {
-            console.warn("RTDB time sync failed:", err);
-          }
-        });
-      }
-
-      // 2. Realtime Harvests Synchronization
-      const harvestForm = document.getElementById("harvestForm");
-      if (harvestForm) {
-        harvestForm.addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const day = parseInt(currentDayInput.value, 10) || 1;
-          const time = currentTimeInput.value;
-          const species = document.getElementById("harvestSpecies").value;
-          const region = document.getElementById("harvestRegion").value;
-          const distance = document.getElementById("harvestDistance").value;
-          const organ = document.getElementById("harvestOrgan").value;
-          const trophy = document.getElementById("harvestTrophy").value;
-          const huntRating = document.getElementById("harvestHuntRating").value;
-          const weapon = document.getElementById("harvestWeapon").value;
-          const fitness = document.getElementById("harvestFitness").value || "N/A";
-
-          const hunterName = currentUser ? (currentUser.displayName || "Hunter") : "Hunter";
-
-          const payload = {
-            hunter: hunterName,
-            day,
-            time,
-            species,
-            region,
-            distance: `${distance} yds`,
-            organ,
-            trophy,
-            huntRating,
-            weapon,
-            fitness,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          };
-
-          try {
-            const harvestRef = ref(db, `${getRootDbPath()}/harvests`);
-            await push(harvestRef, payload);
-          } catch (err) {
-            console.warn("RTDB write prevented, using fallback buffer:", err);
-            const key = `woth2_fallback_harvests`;
-            const existing = JSON.parse(localStorage.getItem(key) || "[]");
-            existing.push(payload);
-            localStorage.setItem(key, JSON.stringify(existing));
-            renderHarvestCards(existing);
-          }
-
-          document.getElementById("harvestDistance").value = "";
-          document.getElementById("harvestWeapon").value = "";
-          document.getElementById("harvestFitness").value = "";
-        });
-      }
-
-      function bindHarvests() {
-        const harvestRef = ref(db, `${getRootDbPath()}/harvests`);
-        onValue(harvestRef, (snapshot) => {
-          if (snapshot.exists() && snapshot.val() !== null) {
-            const data = Object.values(snapshot.val());
-            localStorage.setItem("woth2_cache_harvests", JSON.stringify(data));
-            renderHarvestCards(data);
-          } else {
-            const cached = JSON.parse(localStorage.getItem("woth2_cache_harvests") || "[]");
-            renderHarvestCards(cached);
-          }
-        }, (err) => {
-          console.warn("RTDB harvest fetch failed, reading local buffer:", err);
-          const cached = JSON.parse(localStorage.getItem("woth2_cache_harvests") || "[]");
-          renderHarvestCards(cached);
-        });
-      }
-
-      function renderHarvestCards(data) {
-        const harvestList = document.getElementById("harvestList");
-        harvestList.innerHTML = "";
-        if (!data.length) {
-          harvestList.innerHTML = `<p style="font-size:0.85rem; color:var(--text-dim);">No harvests recorded in database yet.</p>`;
-          return;
-        }
-
-        data.slice(-15).reverse().forEach(h => {
-          const card = document.createElement("div");
-          card.className = "card";
-          card.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <strong>${h.species} &bull; ${h.region}</strong>
-              <span class="tag-badge" style="background:var(--accent-gold); color:#000;">${h.trophy}</span>
-            </div>
-            <p style="font-size:0.85rem; color:var(--text-dim); margin-top:4px;">
-              <strong>Shot:</strong> ${h.distance} with ${h.weapon} | <strong>Hit:</strong> ${h.organ}
-            </p>
-            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#94a3b8; margin-top:4px;">
-              <span>Hunt Ethics: ${h.huntRating}</span>
-              <span>Day ${h.day} at ${h.time} (Hunter: ${h.hunter})</span>
-            </div>
-          `;
-          harvestList.appendChild(card);
-        });
-      }
-
-      // 3. Realtime Watchlist Synchronization
-      const watchlistForm = document.getElementById("watchlistForm");
-      if (watchlistForm) {
-        watchlistForm.addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const daySighted = parseInt(currentDayInput.value, 10) || 1;
-          const name = document.getElementById("watchName").value;
-          const species = document.getElementById("watchSpecies").value;
-          const region = document.getElementById("watchRegion").value;
-          const stage = document.getElementById("watchStage").value;
-          const fitness = parseFloat(document.getElementById("watchFitness").value);
-          const location = document.getElementById("watchLocation").value;
-
-          const matchedSpecies = SpeciesRoster.find(s => s.name === species);
-          const lifespanDays = matchedSpecies ? matchedSpecies.lifespanDays : 30;
-
-          const payload = {
-            name,
-            species,
-            region,
-            stage,
-            fitness,
-            location,
-            daySighted,
-            lifespanDays,
-            deathDay: daySighted + lifespanDays
-          };
-
-          try {
-            const watchRef = ref(db, `${getRootDbPath()}/watchlist`);
-            await push(watchRef, payload);
-          } catch (err) {
-            console.warn("RTDB watchlist write failed, using local buffer:", err);
-            const key = `woth2_fallback_watchlist`;
-            const existing = JSON.parse(localStorage.getItem(key) || "[]");
-            existing.push(payload);
-            localStorage.setItem(key, JSON.stringify(existing));
-            renderWatchlistCards(existing);
-          }
-
-          document.getElementById("watchName").value = "";
-          document.getElementById("watchFitness").value = "";
-          document.getElementById("watchLocation").value = "";
-        });
-      }
-
-      let cachedWatchlistData = [];
-      function bindWatchlist() {
-        const watchRef = ref(db, `${getRootDbPath()}/watchlist`);
-        onValue(watchRef, (snapshot) => {
-          if (snapshot.exists() && snapshot.val() !== null) {
-            cachedWatchlistData = Object.entries(snapshot.val()).map(([key, val]) => ({ ...val, firebaseKey: key }));
-            localStorage.setItem("woth2_cache_watchlist", JSON.stringify(cachedWatchlistData));
-            renderWatchlistCards(cachedWatchlistData);
-          } else {
-            cachedWatchlistData = JSON.parse(localStorage.getItem("woth2_cache_watchlist") || "[]");
-            renderWatchlistCards(cachedWatchlistData);
-          }
-        }, (err) => {
-          console.warn("RTDB watchlist fetch failed, reading local buffer:", err);
-          cachedWatchlistData = JSON.parse(localStorage.getItem("woth2_cache_watchlist") || "[]");
-          renderWatchlistCards(cachedWatchlistData);
-        });
-      }
-
-      function renderWatchlistFromCache() {
-        renderWatchlistCards(cachedWatchlistData);
-      }
-
-      function renderWatchlistCards(data) {
-        const feed = document.getElementById("watchlistFeed");
-        feed.innerHTML = "";
-        const currentDay = localCurrentDay;
-
-        if (!data.length) {
-          feed.innerHTML = `<p style="font-size:0.85rem; color:var(--text-dim);">No targets currently tracked in database.</p>`;
-          return;
-        }
-
-        data.forEach(t => {
-          const card = document.createElement("div");
-          card.className = "card";
-
-          const daysRemaining = t.deathDay - currentDay;
-
-          let urgencyColor = "var(--accent-green)";
-          let statusAdvice = "Growing in the wild. Check back next generation.";
-
-          if (t.fitness < 55.0) {
-            urgencyColor = "var(--accent-red)";
-            statusAdvice = "CULL TARGET: Inferior genetics! Harvest now to clear herd gene pool.";
-          } else if (daysRemaining <= 3) {
-            urgencyColor = "var(--accent-red)";
-            statusAdvice = "⚠️ CRITICAL TROPHY WINDOW: Will die of old age and despawn within 1 in-game year! Harvest now!";
-          } else if (t.fitness >= 85.0) {
-            urgencyColor = "var(--accent-gold)";
-            statusAdvice = "⭐ 5-STAR BREEDER: Keep alive to seed future fawns until mature late stage.";
-          }
-
-          card.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <strong style="color:var(--accent-gold); font-size:1rem;">${t.name} (${t.species})</strong>
-              <span class="tag-badge" style="background:${urgencyColor}; color:#000;">${daysRemaining > 0 ? daysRemaining + ' Days Left' : 'DESPAWNED / DEAD'}</span>
-            </div>
-            <p style="font-size:0.85rem; color:var(--text-dim); margin-top:2px;">
-              <strong>Sector:</strong> ${t.region} (${t.location}) &bull; <strong>Fitness:</strong> ${t.fitness}% &bull; <strong>Stage:</strong> ${t.stage}
-            </p>
-            <div style="background:#070d18; padding:8px; border-radius:4px; margin-top:6px; font-size:0.8rem; border-left:3px solid ${urgencyColor};">
-              <strong style="color:${urgencyColor};">Action:</strong> ${statusAdvice}
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:#64748b; margin-top:4px;">
-              <span>Sighted on Day ${t.daySighted} &bull; Current Day: ${currentDay}</span>
-              ${t.firebaseKey ? `<button class="btn-delete" data-key="${t.firebaseKey}" style="background:none; border:none; color:var(--accent-red); cursor:pointer; font-size:0.75rem;">[Delete Harvested]</button>` : ''}
-            </div>
-          `;
-          feed.appendChild(card);
-        });
-
-        // Delete button listener
-        feed.querySelectorAll(".btn-delete").forEach(btn => {
-          btn.addEventListener("click", async (e) => {
-            const key = e.target.dataset.key;
-            if (key) {
-              const itemRef = ref(db, `${getRootDbPath()}/watchlist/${key}`);
-              await remove(itemRef);
-            }
-          });
-        });
-      }
     });
+
+    // 1. Fetch Open-Source Datasets
+    async function loadOpenSourceData() {
+      try {
+        const base = "https://raw.githubusercontent.com/Werewolf3788/WOTH2/main/data";
+        const [specRes, missRes, infraRes] = await Promise.all([
+          fetch(`${base}/species.json`).catch(() => null),
+          fetch(`${base}/missions.json`).catch(() => null),
+          fetch(`${base}/infrastructure.json`).catch(() => null)
+        ]);
+
+        if (specRes && specRes.ok) {
+          const specData = await specRes.json();
+          const harvestSelect = document.getElementById("harvestSpecies");
+          const watchSelect = document.getElementById("watchSpecies");
+          harvestSelect.innerHTML = "";
+          watchSelect.innerHTML = "";
+          specData.species.forEach(s => {
+            harvestSelect.innerHTML += `<option value="${s.name}">${s.name} (Tier ${s.tier})</option>`;
+            watchSelect.innerHTML += `<option value="${s.name}">${s.name}</option>`;
+          });
+        }
+
+        if (missRes && missRes.ok) {
+          const missData = await missRes.json();
+          const mList = document.getElementById("missionsList");
+          mList.innerHTML = "";
+          missData.missions.forEach(m => {
+            mList.innerHTML += `
+              <div class="feed-card">
+                <div class="feed-card-header">
+                  <strong>${m.name}</strong>
+                  <span style="color:var(--gold); font-size:0.75rem;">${m.reward}</span>
+                </div>
+                <span style="color:var(--blue); font-size:0.8rem;">Contact: ${m.contact}</span>
+                <p style="color:var(--dim); font-size:0.8rem;">${m.objective}</p>
+              </div>
+            `;
+          });
+        }
+
+        if (infraRes && infraRes.ok) {
+          const infraData = await infraRes.json();
+          const iList = document.getElementById("infrastructureList");
+          iList.innerHTML = "";
+          infraData.infrastructure_projects.forEach(p => {
+            iList.innerHTML += `
+              <div class="feed-card">
+                <div class="feed-card-header">
+                  <strong>${p.name}</strong>
+                  <span style="color:var(--green); font-size:0.8rem; font-weight:700;">${p.cost}</span>
+                </div>
+                <span style="color:var(--red); font-size:0.75rem;">Impact: ${p.impact}</span>
+                <p style="color:var(--dim); font-size:0.8rem;">${p.description}</p>
+              </div>
+            `;
+          });
+        }
+      } catch (err) {
+        console.warn("Using default game datasets", err);
+      }
+    }
+
+    // 2. Realtime Listeners for Mode Branch
+    function initCloudListeners() {
+      const modePath = `woth2_cloud/${activeMode}`;
+
+      // A. Clock
+      onValue(ref(db, `${modePath}/clock`), (snapshot) => {
+        if (snapshot.exists()) {
+          const val = snapshot.val();
+          currentSyncedDay = val.day || 1;
+          currentSyncedTime = val.time || "08:30";
+          inGameDayInput.value = currentSyncedDay;
+          inGameTimeInput.value = currentSyncedTime;
+          renderWatchlist();
+        }
+      });
+
+      // B. Harvest Feed
+      onValue(ref(db, `${modePath}/harvests`), (snapshot) => {
+        const container = document.getElementById("harvestFeed");
+        container.innerHTML = "";
+        if (!snapshot.exists()) {
+          container.innerHTML = `<p style="font-size:0.85rem; color:var(--dim);">No harvest inspection screens logged in ${activeMode}.</p>`;
+          return;
+        }
+        const list = Object.values(snapshot.val()).reverse();
+        list.forEach(h => {
+          const card = document.createElement("div");
+          card.className = "feed-card";
+          card.innerHTML = `
+            <div class="feed-card-header">
+              <strong style="color:var(--gold); font-size:1.05rem;">${h.species} &bull; ${h.region}</strong>
+              <span class="badge" style="background:var(--gold); color:#000;">${h.trophy}</span>
+            </div>
+
+            <!-- Overview Section -->
+            <div style="font-size:0.8rem; display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-top:4px;">
+              <div><strong>Firearm:</strong> ${h.firearm} (${h.caliber} - ${h.ammo})</div>
+              <div><strong>Shot/Track:</strong> ${h.shotDistance} / ${h.trackingDistance}</div>
+              <div><strong>Hit:</strong> ${h.organ}</div>
+              <div><strong>Hunter Detected:</strong> ${h.detected}</div>
+              <div><strong>Dog / Weather:</strong> ${h.dog} | ${h.wind}, ${h.weather}</div>
+              <div><strong>Ethics Rating:</strong> ${h.huntRating}</div>
+            </div>
+
+            <!-- Weight & Price Section -->
+            <div style="background:#070d18; border:1px solid var(--border); border-radius:4px; padding:6px; margin-top:4px; font-size:0.75rem; display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px;">
+              <div>Raw: <strong>${h.rawWeight || 'N/A'}</strong></div>
+              <div>Dressed: <strong>${h.dressedWeight || 'N/A'}</strong></div>
+              <div>Waste: <strong>${h.waste || 'N/A'}</strong></div>
+              <div>Time Deg: <strong>${h.timeDeg || '0%'}</strong></div>
+              <div>Shot Deg: <strong>${h.shotDeg || '0%'}</strong></div>
+              <div>Payout: <strong style="color:var(--green);">${h.sellPrice || 'N/A'}</strong></div>
+            </div>
+
+            <!-- Trophy Section -->
+            <div style="font-size:0.75rem; color:#cbd5e1; margin-top:4px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px;">
+              <span>Score: <strong style="color:var(--purple);">${h.totalScore || 'N/A'}</strong></span>
+              <span>Beam: ${h.beam || 'N/A'} &bull; Spread: ${h.insideSpread || 'N/A'}</span>
+              <span>Fitness: <strong>${h.fitness || 'N/A'}</strong> &bull; Coat: <strong>${h.coat || 'Common'}</strong></span>
+            </div>
+
+            <div style="font-size:0.7rem; color:#64748b; margin-top:2px;">
+              Day ${h.inGameDay} @ ${h.timeOfDeath} &bull; Recorded: ${h.timestamp}
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      });
+
+      // C. Watchlist Feed
+      onValue(ref(db, `${modePath}/watchlist`), (snapshot) => {
+        if (snapshot.exists()) {
+          watchlistCache = Object.entries(snapshot.val()).map(([id, data]) => ({ id, ...data }));
+        } else {
+          watchlistCache = [];
+        }
+        renderWatchlist();
+      });
+
+      // D. Dog Stats
+      onValue(ref(db, `woth2_cloud/dog_stats`), (snapshot) => {
+        if (snapshot.exists()) {
+          dogStats = snapshot.val();
+          document.getElementById("valCommands").textContent = dogStats.commands || 0;
+          document.getElementById("valBlood").textContent = dogStats.blood || 3;
+          document.getElementById("valSearch").textContent = dogStats.search || 0;
+        }
+      });
+    }
+
+    // 3. Time Sync Handler
+    btnPushTime.addEventListener("click", () => {
+      const day = parseInt(inGameDayInput.value, 10) || 1;
+      const time = inGameTimeInput.value || "08:30";
+      set(ref(db, `woth2_cloud/${activeMode}/clock`), { day, time });
+    });
+
+    // 4. Harvest Form Submission
+    const harvestForm = document.getElementById("harvestForm");
+    harvestForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      
+      const payload = {
+        species: document.getElementById("harvestSpecies").value,
+        region: document.getElementById("harvestRegion").value,
+        firearm: document.getElementById("harvestFirearm").value,
+        caliber: document.getElementById("harvestCaliber").value,
+        ammo: document.getElementById("harvestAmmo").value,
+        shotDistance: document.getElementById("harvestShotDist").value + " yds",
+        trackingDistance: document.getElementById("harvestTrackDist").value + " yds",
+        organ: document.getElementById("harvestOrgan").value,
+        detected: document.getElementById("harvestDetected").value,
+        dog: document.getElementById("harvestDog").value || "None",
+        wind: document.getElementById("harvestWind").value || "Calm",
+        weather: document.getElementById("harvestWeather").value || "Clear",
+        rawWeight: document.getElementById("harvestRawWeight").value,
+        waste: document.getElementById("harvestWaste").value,
+        dressedWeight: document.getElementById("harvestDressedWeight").value,
+        timeDeg: document.getElementById("harvestTimeDeg").value,
+        shotDeg: document.getElementById("harvestShotDeg").value,
+        sellPrice: document.getElementById("harvestSellPrice").value,
+        sexStage: document.getElementById("harvestSexStage").value,
+        fitness: document.getElementById("harvestFitness").value,
+        coat: document.getElementById("harvestCoat").value,
+        weightRarity: document.getElementById("harvestWeightRarity").value,
+        beam: document.getElementById("harvestBeam").value,
+        insideSpread: document.getElementById("harvestInsideSpread").value,
+        baseCirc: document.getElementById("harvestBaseCirc").value,
+        points: document.getElementById("harvestPoints").value,
+        trophy: document.getElementById("harvestTrophy").value,
+        huntRating: document.getElementById("harvestHuntRating").value,
+        totalScore: document.getElementById("harvestTotalScore").value,
+        timeOfDeath: currentSyncedTime,
+        inGameDay: currentSyncedDay,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+
+      push(ref(db, `woth2_cloud/${activeMode}/harvests`), payload);
+
+      // Clear input fields
+      document.getElementById("harvestShotDist").value = "";
+      document.getElementById("harvestTrackDist").value = "";
+      document.getElementById("harvestOrgan").value = "";
+      document.getElementById("harvestTotalScore").value = "";
+    });
+
+    // 5. Watchlist Submission with Age (X/Y)
+    const watchlistForm = document.getElementById("watchlistForm");
+    watchlistForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const currentAgeYears = parseInt(document.getElementById("watchCurrentAge").value, 10);
+      const maxAgeYears = parseInt(document.getElementById("watchMaxAge").value, 10);
+      const remainingYears = maxAgeYears - currentAgeYears;
+      const remainingDays = remainingYears * 3;
+
+      const payload = {
+        name: document.getElementById("watchName").value,
+        species: document.getElementById("watchSpecies").value,
+        fitness: parseFloat(document.getElementById("watchFitness").value),
+        currentAgeYears,
+        maxAgeYears,
+        sightedDay: currentSyncedDay,
+        deathDay: currentSyncedDay + remainingDays,
+        location: document.getElementById("watchLocation").value
+      };
+
+      push(ref(db, `woth2_cloud/${activeMode}/watchlist`), payload);
+      document.getElementById("watchName").value = "";
+      document.getElementById("watchFitness").value = "";
+      document.getElementById("watchLocation").value = "";
+    });
+
+    function renderWatchlist() {
+      const container = document.getElementById("watchlistFeed");
+      container.innerHTML = "";
+      if (!watchlistCache.length) {
+        container.innerHTML = `<p style="font-size:0.85rem; color:var(--dim);">No live animals tracked in ${activeMode}.</p>`;
+        return;
+      }
+
+      watchlistCache.forEach(item => {
+        const daysLeft = item.deathDay - currentSyncedDay;
+        const yearsLeft = (daysLeft / 3).toFixed(1);
+
+        let color = "var(--green)";
+        let advice = "Growing in the wild. Check back next generation.";
+
+        if (item.fitness < 55.0) {
+          color = "var(--red)";
+          advice = "CULL TARGET: Low genetic fitness. Remove to clear herd pool.";
+        } else if (daysLeft <= 3) {
+          color = "var(--red)";
+          advice = "⚠ FINAL YEAR: Animal is in final year of life! Harvest now!";
+        } else if (item.fitness >= 85.0) {
+          color = "var(--gold)";
+          advice = "⭐ 5-STAR BREEDER: Allow rack to grow to max score.";
+        }
+
+        const card = document.createElement("div");
+        card.className = "feed-card";
+        card.innerHTML = `
+          <div class="feed-card-header">
+            <strong>${item.name} (${item.species})</strong>
+            <span class="badge" style="background:${color}; color:#000;">
+              Age: ${item.currentAgeYears}/${item.maxAgeYears} yrs (${daysLeft > 0 ? daysLeft + ' Days Left' : 'DEAD'})
+            </span>
+          </div>
+          <p style="font-size:0.8rem; color:var(--dim);">Location: ${item.location} &bull; Fitness: <strong>${item.fitness}%</strong></p>
+          <div style="background:#070d18; padding:6px; border-left:3px solid ${color}; font-size:0.75rem; margin-top:4px;">
+            <strong style="color:${color};">Action:</strong> ${advice}
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:#64748b; margin-top:4px;">
+            <span>Sighted Day ${item.sightedDay} &bull; Current Day: ${currentSyncedDay}</span>
+            <button data-id="${item.id}" class="btn-del" style="background:none; border:none; color:var(--red); cursor:pointer;">[Delete Harvested]</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      container.querySelectorAll(".btn-del").forEach(b => {
+        b.addEventListener("click", (e) => {
+          remove(ref(db, `woth2_cloud/${activeMode}/watchlist/${e.target.dataset.id}`));
+        });
+      });
+    }
+
+    // 6. Dog Companion Counters
+    document.querySelectorAll(".counter-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const type = btn.dataset.type;
+        const dir = parseInt(btn.dataset.dir, 10);
+        let current = dogStats[type] || 0;
+        current = Math.max(0, Math.min(6, current + dir));
+        dogStats[type] = current;
+
+        if (type === "commands") document.getElementById("valCommands").textContent = current;
+        if (type === "blood") document.getElementById("valBlood").textContent = current;
+        if (type === "search") document.getElementById("valSearch").textContent = current;
+      });
+    });
+
+    document.getElementById("btnSaveDog").addEventListener("click", () => {
+      set(ref(db, `woth2_cloud/dog_stats`), dogStats);
+    });
+
+    // Start
+    loadOpenSourceData();
+    initCloudListeners();
   </script>
 </body>
 </html>
