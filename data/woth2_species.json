@@ -1,0 +1,141 @@
+{
+  "reserve": "New Laurentia",
+  "total_species": 15,
+  "species": [
+    {
+      "name": "Mallard",
+      "scientific_name": "Anas platyrhynchos platyrhynchos",
+      "tier": 1,
+      "aggression_level": "Passive",
+      "charge_trigger": "None (Flees on sound/sight)",
+      "defensive_sidearm": "None needed",
+      "regions": ["Lake Sasquatch", "Mishipeshu Swamp", "Slalakum Shore", "Thunderbird Muskeg", "Wetiko Foothills"]
+    },
+    {
+      "name": "Snowshoe Hare",
+      "scientific_name": "Lepus americanus americanus",
+      "tier": 1,
+      "aggression_level": "Passive",
+      "charge_trigger": "None (Flees)",
+      "defensive_sidearm": "None needed",
+      "regions": ["Jackalope Cordillera", "Lake Sasquatch"]
+    },
+    {
+      "name": "White-tailed ptarmigan",
+      "scientific_name": "Lagopus leucura",
+      "tier": 1,
+      "aggression_level": "Passive",
+      "charge_trigger": "None (Flees)",
+      "defensive_sidearm": "None needed",
+      "regions": ["Jackalope Cordillera", "Lake Sasquatch"]
+    },
+    {
+      "name": "Eastern wild turkey",
+      "scientific_name": "Meleagris gallopavo silvestris",
+      "tier": 2,
+      "aggression_level": "Passive",
+      "charge_trigger": "None (Flees)",
+      "defensive_sidearm": "None needed",
+      "regions": ["Mishipeshu Swamp", "Slalakum Shore", "Thunderbird Muskeg", "Wetiko Foothills"]
+    },
+    {
+      "name": "American wolverine",
+      "scientific_name": "Gulo gulo luscus",
+      "tier": 3,
+      "aggression_level": "Defensive / Territorial",
+      "charge_trigger": "Cornered in close brush or defending feeding kills",
+      "defensive_sidearm": ".357 Magnum / 10mm Auto",
+      "regions": ["Jackalope Cordillera", "Kermode Plateau", "Slalakum Shore"]
+    },
+    {
+      "name": "Northwestern white-tailed deer",
+      "scientific_name": "Odocoileus virginianus borealis",
+      "tier": 4,
+      "aggression_level": "Passive",
+      "charge_trigger": "None (Flees on spook)",
+      "defensive_sidearm": "None needed",
+      "regions": ["Lake Sasquatch", "Kermode Plateau", "Mishipeshu Swamp", "Slalakum Shore", "Wetiko Foothills"]
+    },
+    {
+      "name": "Rocky Mountain pronghorn",
+      "scientific_name": "Antilocapra americana americana",
+      "tier": 4,
+      "aggression_level": "Passive",
+      "charge_trigger": "None (Relies on high speed escape)",
+      "defensive_sidearm": "None needed",
+      "regions": ["Kermode Plateau", "Slalakum Shore"]
+    },
+    {
+      "name": "Northwestern wolf",
+      "scientific_name": "Canis lupus occidentalis",
+      "tier": 4,
+      "aggression_level": "Predatory / Pack Aggression",
+      "charge_trigger": "Encircling hunter at close range, night stalking, or pack defense",
+      "defensive_sidearm": "10mm Auto / .357 Magnum (Rapid follow-up)",
+      "regions": ["Jackalope Cordillera", "Kermode Plateau", "Lake Sasquatch", "Mishipeshu Swamp", "Slalakum Shore", "Thunderbird Muskeg", "Wetiko Foothills"]
+    },
+    {
+      "name": "Central European boar",
+      "scientific_name": "Sus scrofa scrofa",
+      "tier": 5,
+      "aggression_level": "Aggressive Charge",
+      "charge_trigger": "Wounded non-fatal shots, startling sound under 40m, or sow with piglets",
+      "defensive_sidearm": ".44 Magnum / 10mm Auto",
+      "regions": ["Lake Sasquatch", "Mishipeshu Swamp", "Slalakum Shore", "Wetiko Foothills"]
+    },
+    {
+      "name": "Dall sheep",
+      "scientific_name": "Ovis dalli dalli",
+      "tier": 5,
+      "aggression_level": "Passive",
+      "charge_trigger": "None (Escapes to high steep cliffs)",
+      "defensive_sidearm": "None needed",
+      "regions": ["Jackalope Cordillera", "Lake Sasquatch", "Kermode Plateau"]
+    },
+    {
+      "name": "Rocky Mountain mule deer",
+      "scientific_name": "Odocoileus hemionus hemionus",
+      "tier": 6,
+      "aggression_level": "Passive",
+      "charge_trigger": "None (Flees)",
+      "defensive_sidearm": "None needed",
+      "regions": ["Jackalope Cordillera", "Kermode Plateau", "Slalakum Shore", "Wetiko Foothills"]
+    },
+    {
+      "name": "Grizzly bear",
+      "scientific_name": "Ursus arctos horribilis",
+      "tier": 7,
+      "aggression_level": "Apex Lethal Aggression",
+      "charge_trigger": "Close encounter (<60m), wounded non-vitals, or defending kill site",
+      "defensive_sidearm": ".44 Magnum / .454 Casull / Heavy 12ga Slug",
+      "regions": ["Jackalope Cordillera", "Kermode Plateau", "Lake Sasquatch"]
+    },
+    {
+      "name": "Rocky Mountain elk",
+      "scientific_name": "Cervus canadensis nelsoni",
+      "tier": 7,
+      "aggression_level": "Defensive Rut",
+      "charge_trigger": "Bull rut season when pressed closely or wounded",
+      "defensive_sidearm": ".44 Magnum",
+      "regions": ["Kermode Plateau", "Slalakum Shore", "Wetiko Foothills"]
+    },
+    {
+      "name": "Western moose",
+      "scientific_name": "Alces alces andersoni",
+      "tier": 8,
+      "aggression_level": "Territorial / Violent Charge",
+      "charge_trigger": "Cornered in swamp water, sick moose encounters, or sudden approach",
+      "defensive_sidearm": ".44 Magnum / .454 Casull",
+      "regions": ["Mishipeshu Swamp", "Thunderbird Muskeg"]
+    },
+    {
+      "name": "Wood bison",
+      "scientific_name": "Bison bison athabascae",
+      "tier": 8,
+      "aggression_level": "Territorial Trample",
+      "charge_trigger": "Approaching herd within 50m, wounding lead bull, or blocking movement",
+      "defensive_sidearm": ".454 Casull / .375 Backup Rifle",
+      "regions": ["Kermode Plateau", "Slalakum Shore"]
+    }
+  ]
+}
