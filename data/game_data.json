@@ -1,0 +1,376 @@
+{
+  "system": {
+    "version": "v1.1.0.212672",
+    "map": "New Laurentia",
+    "difficulty": "Normal",
+    "platforms": ["PlayStation 5", "Xbox Series X/S"]
+  },
+  "player": {
+    "name": "Ryder Holloway",
+    "title": "Not a Hunter Yet",
+    "level": 2,
+    "xp": 60,
+    "xp_next_level": 200,
+    "credits": 318,
+    "perks_unlocked_level_3": 250
+  },
+  "companion_dog": {
+    "name": "Bacon",
+    "breed": "American Foxhound",
+    "bonding_level": 3,
+    "bonding_xp": 454,
+    "bonding_xp_max": 650,
+    "skills": {
+      "search_and_quartering": {
+        "level": 0,
+        "max_level": 6,
+        "xp": 30,
+        "xp_max": 100
+      },
+      "following_commands": {
+        "level": 0,
+        "max_level": 6,
+        "xp": 55,
+        "xp_max": 100
+      },
+      "blood_tracking": {
+        "level": 3,
+        "max_level": 6,
+        "xp": 330,
+        "xp_max": 400
+      }
+    }
+  },
+  "controller_bindings": [
+    {
+      "action": "Fire / Place animal marker (Hold) / Use caller or field gear",
+      "ps5_input": "R2",
+      "ps5_trigger_type": "Press / Hold",
+      "xbox_input": "RT",
+      "xbox_trigger_type": "Press / Hold"
+    },
+    {
+      "action": "Firearm ADS / Binocular Use / Select call",
+      "ps5_input": "L2",
+      "ps5_trigger_type": "Press",
+      "xbox_input": "LT",
+      "xbox_trigger_type": "Press"
+    },
+    {
+      "action": "Place marker",
+      "ps5_input": "R1",
+      "ps5_trigger_type": "Press",
+      "xbox_input": "RB",
+      "xbox_trigger_type": "Press"
+    },
+    {
+      "action": "Open radial menu / Firearm Hold breath",
+      "ps5_input": "L1",
+      "ps5_trigger_type": "Press",
+      "xbox_input": "LB",
+      "xbox_trigger_type": "Press"
+    },
+    {
+      "action": "Open Hunting map",
+      "ps5_input": "Touchpad",
+      "ps5_trigger_type": "Press",
+      "xbox_input": "View Button",
+      "xbox_trigger_type": "Press"
+    },
+    {
+      "action": "Pause menu / Show tracker",
+      "ps5_input": "Options",
+      "ps5_trigger_type": "Toggle",
+      "xbox_input": "Menu Button",
+      "xbox_trigger_type": "Toggle"
+    },
+    {
+      "action": "Interact",
+      "ps5_input": "Square",
+      "ps5_trigger_type": "Press",
+      "xbox_input": "X",
+      "xbox_trigger_type": "Press"
+    },
+    {
+      "action": "Jump",
+      "ps5_input": "Cross",
+      "ps5_trigger_type": "Press",
+      "xbox_input": "A",
+      "xbox_trigger_type": "Press"
+    },
+    {
+      "action": "Crouch / Prone",
+      "ps5_input": "Circle",
+      "ps5_trigger_type": "Press / Hold",
+      "xbox_input": "B",
+      "xbox_trigger_type": "Press / Hold"
+    },
+    {
+      "action": "Hunter assist",
+      "ps5_input": "Triangle",
+      "ps5_trigger_type": "Press",
+      "xbox_input": "Y",
+      "xbox_trigger_type": "Press"
+    },
+    {
+      "action": "Move / Run",
+      "ps5_input": "L3 (Left Stick Click)",
+      "ps5_trigger_type": "Press",
+      "xbox_input": "LS (Left Stick Click)",
+      "xbox_trigger_type": "Press"
+    },
+    {
+      "action": "Look / Walk",
+      "ps5_input": "R3 (Right Stick Click)",
+      "ps5_trigger_type": "Press",
+      "xbox_input": "RS (Right Stick Click)",
+      "xbox_trigger_type": "Press"
+    },
+    {
+      "action": "Gear slot 1 / Mount shooting stick",
+      "ps5_input": "D-Pad Up",
+      "ps5_trigger_type": "Press / Hold",
+      "xbox_input": "D-Pad Up",
+      "xbox_trigger_type": "Press / Hold"
+    },
+    {
+      "action": "Gear slot 4",
+      "ps5_input": "D-Pad Down",
+      "ps5_trigger_type": "Press",
+      "xbox_input": "D-Pad Down",
+      "xbox_trigger_type": "Press"
+    },
+    {
+      "action": "Gear slot 5 / Toggle headlight",
+      "ps5_input": "D-Pad Left",
+      "ps5_trigger_type": "Press / Hold",
+      "xbox_input": "D-Pad Left",
+      "xbox_trigger_type": "Press / Hold"
+    },
+    {
+      "action": "Gear slot 6",
+      "ps5_input": "D-Pad Right",
+      "ps5_trigger_type": "Press",
+      "xbox_input": "D-Pad Right",
+      "xbox_trigger_type": "Press"
+    }
+  ],
+  "gear": {
+    "firearms": [
+      {
+        "id": "primacy_classic_hunter_mk_ii",
+        "name": "Primacy Classic Hunter MK II",
+        "caliber": ".308 Winchester",
+        "tier": 6,
+        "recommended_ammo_type": "Polymer-tipped hollow point",
+        "ammo_brand": "Lewellings Grande Swift",
+        "ammo_tier_compatibility": "Tier 3-5 / 6"
+      }
+    ],
+    "optics": [
+      {
+        "id": "primacy_vision_deluxe_4_16x50_woth_e",
+        "name": "Primacy Vision Deluxe 4-16x50 WotH Edition",
+        "brand": "Primacy Firearms",
+        "description": "Custom long-range scope with mounting rings and a unique engraving. Intended for experienced hunters.",
+        "magnification": "4x - 16x",
+        "lens_size_mm": 50,
+        "lens_quality": "Enhanced",
+        "night_vision_performance": null
+      },
+      {
+        "id": "zoomxd_blackout_nv",
+        "name": "ZOOMXD Blackout-NV",
+        "brand": "ZOOM XD",
+        "description": "Very high-quality reflex sight with a night vision overlay for fast-moving targets at a close range.",
+        "magnification": "1x",
+        "lens_size_mm": 20,
+        "lens_quality": "Enhanced",
+        "night_vision_performance": "Enhanced"
+      },
+      {
+        "id": "zoomxd_vision_professional_1_5_6x42",
+        "name": "ZOOMXD Vision Professional 1.5-6x42",
+        "brand": "ZOOM XD",
+        "description": "Scope intended for closer ranges, equipped with a lens that is large for its category.",
+        "magnification": "1.5x - 6x",
+        "lens_size_mm": 42,
+        "lens_quality": "Standard",
+        "night_vision_performance": null
+      }
+    ],
+    "scents": [
+      {
+        "id": "wildheart_smoked_meat_scent",
+        "name": "WildHeart Smoked Meat Scent",
+        "brand": "WildHeart",
+        "category": "Food-based luring scent",
+        "description": "This luring scent imitates the smell of smoked meat.",
+        "price": 20,
+        "required_level": 13,
+        "target_animals": [
+          "Northwestern wolf",
+          "Grizzly bear",
+          "Spotted hyena",
+          "Nile crocodile",
+          "Southern lion"
+        ],
+        "max_effective_distance": "Close",
+        "attraction_strength": "Enhanced",
+        "effective_duration": "Long",
+        "owned": false
+      },
+      {
+        "id": "wildheart_sweet_corn_scent",
+        "name": "WildHeart Sweet Corn Scent",
+        "brand": "WildHeart",
+        "category": "Food-based luring scent",
+        "description": "This luring scent imitates the smell of sweet corn.",
+        "price": 20,
+        "required_level": 0,
+        "target_animals": [
+          "Dall sheep",
+          "Blue wildebeest",
+          "Rocky Mountain pronghorn",
+          "Southern warthog",
+          "Central European boar"
+        ],
+        "max_effective_distance": "Close",
+        "attraction_strength": "Enhanced",
+        "effective_duration": "Long",
+        "owned": true
+      },
+      {
+        "id": "wildheart_doe_attraction_scent",
+        "name": "WildHeart Doe Attraction Scent",
+        "brand": "WildHeart",
+        "price": 15,
+        "required_level": 9,
+        "owned": false
+      },
+      {
+        "id": "wildheart_rabbit_scent",
+        "name": "WildHeart Rabbit Scent",
+        "brand": "WildHeart",
+        "price": 10,
+        "required_level": 0,
+        "owned": false
+      },
+      {
+        "id": "wildheart_deer_estrus_scent",
+        "name": "WildHeart Deer Estrus Scent",
+        "brand": "WildHeart",
+        "price": 15,
+        "required_level": 0,
+        "owned": false
+      }
+    ]
+  },
+  "harvest_records": [
+    {
+      "log_id": 2,
+      "date": "October 5, 2026",
+      "timestamp": "23:45",
+      "species": "Rocky Mountain Mule Deer",
+      "scientific_name": "Odocoileus hemionus hemionus",
+      "animal_tier": 6,
+      "sex": "Male",
+      "age_years": 7,
+      "age_class": "Adult",
+      "fitness_percentage": 59.9,
+      "coat": "Regular",
+      "weight_lbs": 231.5,
+      "rarity": "Common",
+      "firearm": "Primacy Classic Hunter MK II",
+      "caliber": ".308 Winchester",
+      "ammo_type": "Polymer-tipped hollow point",
+      "ammo_tier": "3-5",
+      "time_of_death": "09:54",
+      "shot_distance_yds": 96,
+      "tracking_distance_yds": 84,
+      "hunter_detected": false,
+      "dog_used": false,
+      "location": "New Laurentia",
+      "wind_mph": 7,
+      "weather": "Partly cloudy",
+      "hunt_rating": "S++",
+      "trophy_rating_stars": 1,
+      "cull_decision": "Keeper/Balanced"
+    },
+    {
+      "log_id": 1,
+      "species": "Grizzly Bear",
+      "scientific_name": "Ursus arctos horribilis",
+      "animal_tier": 7,
+      "sex": "Female",
+      "age_years": 19,
+      "age_class": "Adult",
+      "fitness_percentage": 42.9,
+      "coat": "Regular",
+      "weight_lbs": 379.7,
+      "rarity": "Common",
+      "firearm": "Primacy Classic Hunter MK II",
+      "caliber": ".308 Winchester",
+      "ammo_type": "Polymer-tipped hollow point",
+      "ammo_tier": "3-5",
+      "time_of_death": "13:26",
+      "shot_distance_yds": 158,
+      "tracking_distance_yds": 64,
+      "tracking_time": "6m 2s",
+      "hunter_detected": true,
+      "dog_used": false,
+      "location": "New Laurentia",
+      "wind_mph": 8,
+      "weather": "Partly cloudy",
+      "raw_weight_lbs": 379.7,
+      "time_degradation_lbs": 0.0,
+      "shot_degradation_lbs": 77.6,
+      "dressing_waste_lbs": 151.9,
+      "dressed_weight_lbs": 150.2,
+      "price_per_unit": 1.0,
+      "sell_price": 149,
+      "hunt_rating": "A++",
+      "trophy_rating_stars": 1,
+      "trophy_details": {
+        "skull_length_inches": 12,
+        "skull_width_inches": 7,
+        "total_trophy_score": 490
+      },
+      "shots_landed": [
+        { "shot_num": 1, "energy_j": 2186, "organ": "Left Lung / Bone" },
+        { "shot_num": 2, "organ": "Flesh / Bone" },
+        { "shot_num": 3, "organ": "Flesh" },
+        { "shot_num": 4, "energy_j": 2072, "organ": "Right Lung / Flesh" },
+        { "shot_num": 5, "energy_j": 2280, "organ": "Intestine / Flesh" },
+        { "shot_num": 6, "energy_j": 1361, "organ": "Left Lung / Flesh" }
+      ],
+      "cull_decision": "Cull (Low Fitness / Max Age)"
+    }
+  ],
+  "species_encyclopedia": {
+    "rocky_mountain_mule_deer": {
+      "tier": 6,
+      "activity_cycle": "Crepuscular (Active at dawn and dusk)",
+      "senses": {
+        "vision": "Good",
+        "smell": "Good",
+        "hearing": "Good"
+      },
+      "preferred_biomes": "Forests, grasslands, arid areas and mountains",
+      "trophy_type": "Antlers",
+      "trophy_estimated_range": "115 - 610",
+      "recommended_hit_energy_and_distance": {
+        "bullet": "1500 - 4000 J",
+        "birdshot": "Inappropriate",
+        "buckshot": "11 - 33 yd",
+        "slug": "700 - 3000 J",
+        "arrow_bolt": "70 - 300 J"
+      },
+      "management_rules": {
+        "cull_threshold_fitness": "< 50.0%",
+        "trophy_threshold_fitness": "> 75.0%",
+        "prime_harvest_age_years": "9 - 12"
+      }
+    }
+  }
+}
