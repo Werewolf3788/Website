@@ -1,0 +1,162 @@
+<!-- Line 1: Main HTML Structure - Way of the Hunter 2 Companion & UTM Portal -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Line 4: Required responsive viewport -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Way of the Hunter Hub & Portal</title>
+
+  <!-- Line 8: Unified branding assets using relative protocol -->
+  <link rel="icon" type="image/jpeg" href="//werewolf3788.github.io/Website/assets/logo.jpg">
+  <link rel="apple-touch-icon" href="//werewolf3788.github.io/Website/assets/logo.jpg">
+
+  <!-- Line 12: External Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Line 15: Firebase SDKs (Compat version for simplified multi-auth and RTDB integration) -->
+  <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+  <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+  <!-- Line 24: Sleek, high-contrast dynamic header with RTDB-driven navigation -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="brand-area">
+        <img src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="Portal Logo" class="brand-logo">
+        <span class="brand-title">WOTH HUNTING HUB</span>
+      </div>
+
+      <!-- Line 32: Mobile Hamburger Toggle -->
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation">☰</button>
+
+      <!-- Line 35: Dynamic navigation filled by Firebase RTDB /utm_links -->
+      <nav class="site-nav" id="dynamicNav">
+        <ul class="nav-list" id="navList">
+          <!-- Populated dynamically via app.js -->
+        </ul>
+      </nav>
+
+      <!-- Line 42: Auth Profile & Action Trigger Area (Visible on Desktop Right) -->
+      <div class="auth-toolbar">
+        <button id="authModalBtn" class="btn btn-primary">Sign In / Account</button>
+        <div id="userProfile" class="user-profile-badge hidden">
+          <span id="userDisplayName">Guest</span>
+          <button id="logoutBtn" class="btn btn-secondary btn-sm">Logout</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Line 53: Main Content Area (Cross-Referencing Hub for WOTH JSONs) -->
+  <main class="main-container">
+    <section class="dashboard-controls card">
+      <h2>Database & Hunting Cross-Reference</h2>
+      <div class="control-grid">
+        <div class="control-group">
+          <label for="reserveSelect">Filter by Reserve:</label>
+          <select id="reserveSelect">
+            <option value="ALL">All Reserves</option>
+            <option value="Nez Perce Valley">Nez Perce Valley</option>
+            <option value="Transylvania">Transylvania</option>
+            <option value="Aurora Shores">Aurora Shores</option>
+            <option value="Tikamoon Plains">Tikamoon Plains</option>
+            <option value="Matariki Park">Matariki Park</option>
+            <option value="Lintukoto Reserve">Lintukoto Reserve</option>
+            <option value="Elkcrest Island">Elkcrest Island</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="speciesSearch">Search Animal / Habitat:</label>
+          <input type="text" id="speciesSearch" placeholder="e.g. Elk, Moose, Badger...">
+        </div>
+        <div class="control-group status-sync-box">
+          <span class="sync-indicator" id="syncStatus">Storage: LocalStorage (Offline / Guest)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Line 82: Species Display Cards & Need Zone Cross-References -->
+    <section class="data-viewport card">
+      <div class="viewport-header">
+        <h3 id="currentDisplayTitle">Species Lifecycle & Harvest Reference</h3>
+        <span id="recordCount" class="badge">0 Records</span>
+      </div>
+      <div class="species-grid" id="speciesCardsContainer">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Line 94: Authentication Modal (Google, Email/Password, Phone Recaptcha) -->
+  <div class="modal-overlay hidden" id="authModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>User Authentication</h3>
+        <button class="modal-close" id="authModalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="auth-helper-text">Sign in to automatically sync and cloud-backup your harvest logs, trophy pins, and challenge progress across devices.</p>
+        
+        <!-- Google Sign-In -->
+        <button id="googleSignInBtn" class="btn btn-google full-width">Sign In with Google</button>
+
+        <div class="separator"><span>OR</span></div>
+
+        <!-- Email & Password Form -->
+        <form id="emailAuthForm" class="auth-form">
+          <div class="form-group">
+            <label for="authEmail">Email Address</label>
+            <input type="email" id="authEmail" required autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label for="authPassword">Password</label>
+            <input type="password" id="authPassword" required autocomplete="current-password">
+          </div>
+          <div class="btn-dual-row">
+            <button type="button" id="emailSignInBtn" class="btn btn-primary">Log In</button>
+            <button type="button" id="emailSignUpBtn" class="btn btn-secondary">Sign Up</button>
+          </div>
+        </form>
+
+        <div class="separator"><span>OR PHONE</span></div>
+
+        <!-- Phone Verification -->
+        <form id="phoneAuthForm" class="auth-form">
+          <div class="form-group">
+            <label for="phoneNumber">Mobile Number (+1234567890)</label>
+            <input type="tel" id="phoneNumber" placeholder="+1...">
+          </div>
+          <div id="recaptcha-container"></div>
+          <button type="button" id="sendPhoneCodeBtn" class="btn btn-primary full-width">Send Verification Code</button>
+          
+          <div id="phoneVerificationGroup" class="form-group hidden" style="margin-top: 10px;">
+            <label for="verificationCode">Enter 6-Digit Code</label>
+            <input type="text" id="verificationCode" placeholder="123456">
+            <button type="button" id="verifyPhoneCodeBtn" class="btn btn-success full-width" style="margin-top: 8px;">Confirm Code</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Line 148: Global Footer with required 24-hr NY Timestamp and Status -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <p>&copy; 2026 WOTH Hunting Hub & UTM Portal | All Rights Reserved.</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 12:19 EDT</span> | Version: 1.0.0</p>
+      </div>
+      <div class="footer-col text-right">
+        <span id="firebaseStatusBadge" class="status-pill status-connecting">RTDB: Connecting...</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Line 161: Load Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
