@@ -1,702 +1,919 @@
-/* Line 1: Way of the Hunter 2 - Tactical Theme Variables */
-:root {
-  --bg-primary: #07090d;
-  --bg-secondary: #0f141c;
-  --bg-surface: #151c27;
-  --bg-hover: #1e2838;
-  --bg-active: #28374d;
-  --accent-amber: #f5a623;
-  --accent-orange: #ff7700;
-  --accent-blue: #0088ff;
-  --text-main: #f0f4f8;
-  --text-muted: #8b9bb4;
-  --border-color: #243042;
-  --danger: #e74c3c;
-  --success: #2ecc71;
-  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Line 18: Reset & Core Layout */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: var(--font-family);
-  background-color: var(--bg-primary);
-  color: var(--text-main);
-  line-height: 1.5;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow-x: hidden;
-}
-
-/* Line 35: Top Master Header */
-.site-header {
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-color);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  width: 100vw;
-}
-
-.header-container {
-  width: 100%;
-  padding: 0 clamp(16px, 2vw, 36px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 64px;
-  gap: 16px;
-}
-
-.brand-area {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-}
-
-.back-link {
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 1.3rem;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: var(--transition);
-}
-
-.back-link:hover {
-  color: var(--accent-amber);
-  background: var(--bg-surface);
-}
-
-.brand-logo {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
-  border: 1px solid var(--border-color);
-  object-fit: cover;
-}
-
-.brand-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-}
-
-/* Line 83: Dynamic Navbar */
-.site-nav {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  margin: 0 16px;
-}
-
-.nav-list {
-  display: flex;
-  list-style: none;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.nav-item {
-  position: relative;
-}
-
-.nav-pill, .dropdown-trigger {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  color: var(--text-main);
-  text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 500;
-  border-radius: 5px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border-color);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: var(--transition);
-}
-
-.nav-pill:hover, .dropdown-trigger:hover {
-  background: var(--bg-hover);
-  color: var(--accent-amber);
-  border-color: var(--accent-amber);
-}
-
-.nav-thumb {
-  width: 18px;
-  height: 18px;
-  border-radius: 3px;
-  object-fit: cover;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  min-width: 220px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  padding: 6px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(6px);
-  transition: var(--transition);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  z-index: 1001;
-}
-
-.nav-item:hover .dropdown-menu {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
-}
-
-.dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  color: var(--text-main);
-  text-decoration: none;
-  border-radius: 4px;
-  font-size: 0.82rem;
-  transition: var(--transition);
-}
-
-.dropdown-item:hover {
-  background: var(--bg-hover);
-  color: var(--accent-amber);
-}
-
-.auth-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-  margin-left: auto;
-}
-
-.database-indicator {
-  font-size: 0.76rem;
-  color: var(--text-muted);
-}
-.database-indicator strong { color: var(--accent-amber); }
-
-.user-profile-badge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--bg-surface);
-  padding: 3px 8px 3px 4px;
-  border-radius: 20px;
-  border: 1px solid var(--border-color);
-}
-
-.header-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid var(--accent-amber);
-}
-
-/* Line 187: Operations Strip (Hunter Status & Day/Time Clock) */
-.operations-bar {
-  background: #0a0d14;
-  border-bottom: 1px solid var(--border-color);
-  padding: 8px clamp(16px, 2vw, 36px);
-}
-
-.operations-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.hunter-stats-strip {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.stat-pill {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  padding: 4px 10px;
-  font-size: 0.82rem;
-}
-
-.stat-label { color: var(--text-muted); }
-.stat-pill strong { color: var(--accent-amber); margin-left: 4px; }
-
-.clock-sync-strip {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.day-controller, .time-controller {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.82rem;
-  color: var(--text-muted);
-}
-
-.day-controller input, .time-controller input {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  color: #fff;
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 0.82rem;
-  width: 60px;
-}
-.time-controller input { width: 95px; }
-
-/* Line 238: Weather Radar Strip */
-.weather-bar {
-  background: #07090d;
-  border-bottom: 1px solid var(--border-color);
-  padding: 6px clamp(16px, 2vw, 36px);
-  font-size: 0.78rem;
-}
-
-.weather-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.weather-forecast {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  overflow-x: auto;
-}
-
-.forecast-label {
-  color: var(--accent-amber);
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.weather-slot {
-  background: rgba(255, 255, 255, 0.03);
-  padding: 2px 8px;
-  border-radius: 3px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  color: var(--text-main);
-  white-space: nowrap;
-}
-
-.weather-forecast-control {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-muted);
-}
-
-.weather-forecast-control select {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  color: #fff;
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-size: 0.78rem;
-}
-
-.weather-delay-tag {
-  color: var(--accent-amber);
-  font-size: 0.72rem;
-}
-
-/* Line 293: Tactical Tab Ribbon */
-.tactical-ribbon {
-  background: var(--bg-secondary);
-  border-bottom: 2px solid var(--border-color);
-  padding: 0 clamp(16px, 2vw, 36px);
-  overflow-x: auto;
-}
-
-.ribbon-container {
-  display: flex;
-  gap: 2px;
-}
-
-.ribbon-btn {
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--text-muted);
-  font-size: 0.84rem;
-  font-weight: 600;
-  padding: 12px 16px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: var(--transition);
-}
-
-.ribbon-btn:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.ribbon-btn.active {
-  color: var(--accent-amber);
-  border-bottom-color: var(--accent-amber);
-  background: rgba(245, 166, 35, 0.06);
-}
-
-/* Line 329: Master Main Container & Panes */
-.main-container {
-  flex: 1;
-  width: 100%;
-  padding: 20px clamp(16px, 2vw, 36px);
-}
-
-.tab-pane {
-  display: none;
-}
-.tab-pane.active {
-  display: block;
-}
-
-.dual-pane-grid {
-  display: grid;
-  grid-template-columns: 460px 1fr;
-  gap: 20px;
-}
-
-.card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 18px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 14px;
-}
-
-.card-header h3 {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #fff;
-}
-
-.badge {
-  background: rgba(245, 166, 35, 0.12);
-  color: var(--accent-amber);
-  border: 1px solid rgba(245, 166, 35, 0.3);
-  padding: 3px 8px;
-  border-radius: 12px;
-  font-size: 0.74rem;
-  font-weight: 700;
-}
-
-/* Line 381: Forms & Tactical Inputs */
-.form-section-title {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--accent-amber);
-  text-transform: uppercase;
-  margin: 14px 0 8px;
-  letter-spacing: 0.5px;
-}
-
-.form-grid-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.form-grid-3 {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 10px;
-}
-
-.input-group label {
-  font-size: 0.76rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  font-weight: 600;
-}
-
-input, select {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
-  padding: 8px 10px;
-  border-radius: 5px;
-  font-size: 0.85rem;
-  outline: none;
-  transition: var(--transition);
-}
-
-input:focus, select:focus {
-  border-color: var(--accent-amber);
-  box-shadow: 0 0 0 2px rgba(245, 166, 35, 0.2);
-}
-
-.dynamic-schema-box {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px dashed var(--border-color);
-  border-radius: 6px;
-  padding: 10px;
-  margin-top: 8px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-/* Line 443: History List & Dynamic Watchlist Cards */
-.history-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-height: calc(100vh - 280px);
-  overflow-y: auto;
-}
-
-.telemetry-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  padding: 12px 14px;
-  transition: var(--transition);
-}
-
-.telemetry-card:hover {
-  border-color: var(--accent-amber);
-}
-
-.card-top-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
-}
-
-.animal-title {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #fff;
-}
-
-.action-banner {
-  padding: 6px 10px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  margin: 8px 0;
-  font-weight: 600;
-}
-
-.banner-cull {
-  background: rgba(231, 76, 60, 0.15);
-  border-left: 3px solid var(--danger);
-  color: #ff9999;
-}
-
-.banner-breeder {
-  background: rgba(245, 166, 35, 0.15);
-  border-left: 3px solid var(--accent-amber);
-  color: #ffe099;
-}
-
-.banner-balanced {
-  background: rgba(0, 136, 255, 0.15);
-  border-left: 3px solid var(--accent-blue);
-  color: #99ccff;
-}
-
-.card-footer-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.76rem;
-  color: var(--text-muted);
-  margin-top: 6px;
-}
-
-.card-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.btn-link {
-  background: transparent;
-  border: none;
-  font-size: 0.78rem;
-  cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 3px;
-  transition: var(--transition);
-}
-
-.btn-link-edit { color: var(--accent-blue); }
-.btn-link-edit:hover { background: rgba(0, 136, 255, 0.1); }
-.btn-link-delete { color: var(--danger); }
-.btn-link-delete:hover { background: rgba(231, 76, 60, 0.1); }
-
-/* Line 523: Generic Cards Grid Viewports */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 16px;
-  margin-top: 14px;
-}
-
-.info-box {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.advisory-callout {
-  background: rgba(245, 166, 35, 0.08);
-  border-left: 3px solid var(--accent-amber);
-  padding: 10px 14px;
-  border-radius: 0 6px 6px 0;
-  font-size: 0.8rem;
-  color: #ffe0b3;
-}
-.advisory-callout ul { padding-left: 18px; margin-top: 6px; }
-
-/* Line 549: Buttons */
-.btn {
-  padding: 8px 14px;
-  border-radius: 5px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: var(--transition);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-sm { padding: 4px 8px; font-size: 0.78rem; }
-.btn-primary { background: var(--accent-amber); color: #000; }
-.btn-primary:hover { background: #e09418; }
-.btn-secondary { background: var(--bg-surface); color: var(--text-main); border-color: var(--border-color); }
-.btn-secondary:hover { background: var(--bg-hover); }
-.btn-google { background: #4285f4; color: #fff; }
-.full-width { width: 100%; }
-
-/* Line 571: Modal & Footer */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-}
-
-.modal-card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  width: 90%;
-  max-width: 380px;
-  border-radius: 8px;
-  padding: 20px;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
-}
-
-.modal-close {
-  background: transparent;
-  border: none;
-  font-size: 1.4rem;
-  color: var(--text-muted);
-  cursor: pointer;
-}
-
-.site-footer {
-  background: var(--bg-secondary);
-  border-top: 1px solid var(--border-color);
-  padding: 14px clamp(16px, 2vw, 36px);
-  margin-top: auto;
-  font-size: 0.78rem;
-  color: var(--text-muted);
-}
-
-.footer-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.status-pill {
-  padding: 3px 8px;
-  border-radius: 10px;
-  font-size: 0.72rem;
-  font-weight: 600;
-}
-.status-connecting { background: rgba(245, 166, 35, 0.15); color: var(--accent-amber); }
-.status-connected { background: rgba(46, 204, 113, 0.15); color: var(--success); }
-
-.hidden { display: none !important; }
-.menu-toggle { display: none; }
-
-/* Line 629: Responsive Breakpoints */
-@media (max-width: 1024px) {
-  .dual-pane-grid { grid-template-columns: 1fr; }
-  .menu-toggle { display: block; font-size: 1.4rem; background: transparent; border: none; color: #fff; cursor: pointer; }
-  .site-nav { display: none; width: 100%; margin: 0; }
-  .site-nav.open { display: block; position: absolute; top: 64px; left: 0; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); padding: 12px 20px; }
-  .nav-list { flex-direction: column; align-items: stretch; }
-  .dropdown-menu { position: static; box-shadow: none; border-left: 2px solid var(--accent-amber); padding-left: 10px; }
-}
+// Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
+// [Smart Cache-Buster Time: 2026-10-07 16:24 EDT | Firebase Sync Target: /utm_links | Version: 4.1.0]
+
+document.addEventListener("DOMContentLoaded", () => {
+  const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
+
+  // Production Config for entertainment-71888
+  const firebaseConfig = {
+    apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
+    authDomain: "entertainment-71888.firebaseapp.com",
+    databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
+    projectId: "entertainment-71888",
+    storageBucket: "entertainment-71888.firebasestorage.app",
+    messagingSenderId: "660524340277",
+    appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
+    measurementId: "G-JDNSLD3GFE"
+  };
+
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const rtdb = firebase.database();
+  const db = firebase.firestore();
+
+  const CompanionApp = {
+    // Exact JSON File Targets in ./data/
+    files: {
+      challenges: "woth2_challenges.json",
+      dogSkills: "woth2_dog_skills.json",
+      gameData: "woth2_game_data.json",
+      harvestSchemas: "woth2_harvest_schemas.json",
+      infrastructure: "woth2_infrastructure.json",
+      lifecycles: "woth2_lifecycles.json",
+      missions: "woth2_missions.json",
+      needZones: "woth2_need_zones.json",
+      regions: "woth2_regions.json",
+      reserves: "woth2_reserves.json",
+      species: "woth2_species.json",
+      stewardship: "woth2_stewardship.json",
+      trails: "woth2_trails.json"
+    },
+
+    db: {},
+    currentDay: 1,
+    currentTime: "08:30",
+    currentUser: null,
+    watchlist: [],
+
+    async init() {
+      this.loadSavedState();
+      this.bindUI();
+      this.initAuth();
+      this.initRTDB();
+      await this.loadAllJSONs();
+      this.initDynamicFeatures();
+    },
+
+    // Line 58: Data Fetcher with Directory Fallbacks
+    async fetchJSON(fileName) {
+      const paths = [
+        "./data/" + fileName,
+        "../data/" + fileName,
+        "/Website/data/" + fileName,
+        "//werewolf3788.github.io/Website/data/" + fileName
+      ];
+
+      for (let i = 0; i < paths.length; i++) {
+        try {
+          const res = await fetch(paths[i] + "?v=" + Date.now());
+          if (res.ok) return await res.json();
+        } catch (e) {}
+      }
+      return null;
+    },
+
+    async loadAllJSONs() {
+      const keys = Object.keys(this.files);
+      const promises = keys.map(k => this.fetchJSON(this.files[k]));
+      const results = await Promise.all(promises);
+
+      keys.forEach((k, idx) => {
+        this.db[k] = results[idx] || {};
+      });
+    },
+
+    loadSavedState() {
+      const savedDay = localStorage.getItem("woth2_day");
+      const savedTime = localStorage.getItem("woth2_time");
+      const savedWatch = localStorage.getItem("woth2_watchlist");
+
+      if (savedDay) this.currentDay = parseInt(savedDay, 10);
+      if (savedTime) this.currentTime = savedTime;
+      if (savedWatch) {
+        try { this.watchlist = JSON.parse(savedWatch); } catch (e) { this.watchlist = []; }
+      }
+
+      document.getElementById("currentDayInput").value = this.currentDay;
+      document.getElementById("currentTimeInput").value = this.currentTime;
+    },
+
+    saveSession() {
+      localStorage.setItem("woth2_day", this.currentDay);
+      localStorage.setItem("woth2_time", this.currentTime);
+      localStorage.setItem("woth2_watchlist", JSON.stringify(this.watchlist));
+
+      if (this.currentUser) {
+        db.collection("users").doc(this.currentUser.uid).set({
+          companion_day: this.currentDay,
+          companion_time: this.currentTime,
+          watchlist: this.watchlist,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true }).catch(e => console.warn("Cloud save sync:", e));
+      }
+
+      alert("Telemetry synced successfully!");
+    },
+
+    // Line 119: RTDB Dynamic Menu & Tag-Based Favicon Sync
+    initRTDB() {
+      rtdb.ref("/utm_links").on("value", snapshot => {
+        const raw = snapshot.val();
+        const badge = document.getElementById("firebaseStatusBadge");
+        if (badge) {
+          badge.textContent = "RTDB: Live Connected";
+          badge.className = "status-pill status-connected";
+        }
+        if (!raw) return;
+
+        const items = [];
+        Object.entries(raw).forEach(([parentKey, val]) => {
+          if (Array.isArray(val)) {
+            val.forEach((entry, idx) => {
+              if (entry) items.push(this.normalizeItem(entry, `${parentKey}_${idx}`));
+            });
+          } else if (typeof val === "object" && val !== null) {
+            if (val.url || val.title) {
+              items.push(this.normalizeItem(val, parentKey));
+            } else {
+              Object.entries(val).forEach(([childKey, childVal]) => {
+                if (typeof childVal === "object" && childVal !== null) {
+                  items.push(this.normalizeItem(childVal, `${parentKey}_${childKey}`));
+                }
+              });
+            }
+          }
+        });
+
+        this.syncSettingsFavicon(items, raw);
+        this.renderNav(items);
+      });
+    },
+
+    normalizeItem(item, fallbackKey) {
+      return {
+        title: item.title || fallbackKey,
+        url: item.url || "#",
+        image: (item.image && typeof item.image === "string") ? item.image.trim() : "",
+        group: (item.group && typeof item.group === "string") ? item.group.trim() : "",
+        tag: (item.tag && typeof item.tag === "string") ? item.tag.trim() : "",
+        rowNumber: (item.rowNumber !== undefined && item.rowNumber !== null) ? Number(item.rowNumber) : 9999,
+        updatedAt: item.updatedAt || ""
+      };
+    },
+
+    syncSettingsFavicon(items, raw) {
+      let settingsImg = "";
+      let settingsStamp = "";
+
+      const taggedEntry = items.find(i => i.tag && i.tag.toLowerCase() === "settings");
+
+      if (taggedEntry) {
+        settingsImg = taggedEntry.image;
+        settingsStamp = taggedEntry.updatedAt;
+      } else if (raw.Settings && raw.Settings[0] && raw.Settings[0].image) {
+        settingsImg = raw.Settings[0].image;
+        settingsStamp = raw.Settings[0].updatedAt;
+      } else {
+        const titleMatch = items.find(i => i.title.toLowerCase() === "settings");
+        if (titleMatch) {
+          settingsImg = titleMatch.image;
+          settingsStamp = titleMatch.updatedAt;
+        }
+      }
+
+      if (settingsImg) {
+        const favicon = document.getElementById("dynamicFavicon");
+        const appleIcon = document.getElementById("dynamicAppleIcon");
+        const brandLogo = document.getElementById("navBrandLogo");
+
+        if (favicon) favicon.href = settingsImg;
+        if (appleIcon) appleIcon.href = settingsImg;
+        if (brandLogo) brandLogo.src = settingsImg;
+      }
+
+      if (settingsStamp) {
+        const stampEl = document.getElementById("nyBuildTimestamp");
+        if (stampEl) stampEl.textContent = settingsStamp;
+      }
+    },
+
+    renderNav(items) {
+      const navList = document.getElementById("navList");
+      if (!navList) return;
+      navList.innerHTML = "";
+
+      const standaloneLinks = [];
+      const folderGroups = {};
+
+      items.forEach(item => {
+        if (!item.group) {
+          standaloneLinks.push(item);
+        } else {
+          if (!folderGroups[item.group]) {
+            folderGroups[item.group] = {
+              name: item.group,
+              items: [],
+              minRow: item.rowNumber,
+              folderImage: item.image
+            };
+          }
+          folderGroups[item.group].items.push(item);
+          if (item.rowNumber < folderGroups[item.group].minRow) {
+            folderGroups[item.group].minRow = item.rowNumber;
+            if (item.image) folderGroups[item.group].folderImage = item.image;
+          }
+        }
+      });
+
+      const topLevelBuckets = [];
+
+      standaloneLinks.forEach(link => {
+        topLevelBuckets.push({
+          type: "bare_link",
+          rank: link.rowNumber,
+          data: link
+        });
+      });
+
+      Object.values(folderGroups).forEach(grp => {
+        grp.items.sort((a, b) => a.rowNumber - b.rowNumber);
+        topLevelBuckets.push({
+          type: "folder",
+          rank: grp.minRow,
+          data: grp
+        });
+      });
+
+      topLevelBuckets.sort((a, b) => a.rank - b.rank);
+
+      topLevelBuckets.forEach(bucket => {
+        const li = document.createElement("li");
+        li.className = "nav-item";
+
+        if (bucket.type === "bare_link") {
+          const item = bucket.data;
+          const imgTag = item.image ? `<img src="${item.image}" alt="" class="nav-thumb">` : '';
+          li.innerHTML = `
+            <a href="${item.url}" class="nav-pill">
+              ${imgTag}
+              <span>${item.title}</span>
+            </a>
+          `;
+        } else {
+          const grp = bucket.data;
+          const folderImg = grp.folderImage ? `<img src="${grp.folderImage}" alt="" class="nav-thumb">` : '';
+
+          let dropdownHtml = `<div class="dropdown-menu">`;
+          grp.items.forEach(child => {
+            const childImg = child.image ? `<img src="${child.image}" alt="" class="nav-thumb">` : '';
+            dropdownHtml += `
+              <a href="${child.url}" class="dropdown-item">
+                ${childImg}
+                <span>${child.title}</span>
+              </a>
+            `;
+          });
+          dropdownHtml += `</div>`;
+
+          li.innerHTML = `
+            <button class="dropdown-trigger">
+              ${folderImg}
+              <span>${grp.name} &#9662;</span>
+            </button>
+            ${dropdownHtml}
+          `;
+        }
+        navList.appendChild(li);
+      });
+    },
+
+    // Line 283: User Auth Binding
+    initAuth() {
+      auth.onAuthStateChanged(async user => {
+        const modalBtn = document.getElementById("authModalBtn");
+        const profileBadge = document.getElementById("userProfile");
+        const nameEl = document.getElementById("userDisplayName");
+        const avatarEl = document.getElementById("headerUserAvatar");
+
+        if (user) {
+          this.currentUser = user;
+          if (modalBtn) modalBtn.classList.add("hidden");
+          if (profileBadge) profileBadge.classList.remove("hidden");
+
+          let gamerTag = user.displayName || "Ryder Holloway";
+          let avatarUrl = user.photoURL || DEFAULT_USER_AVATAR;
+
+          try {
+            const doc = await db.collection("users").doc(user.uid).get();
+            if (doc.exists) {
+              const data = doc.data();
+              if (data.username) gamerTag = data.username;
+              if (data.avatar_url) avatarUrl = data.avatar_url;
+              if (data.companion_day) {
+                this.currentDay = data.companion_day;
+                document.getElementById("currentDayInput").value = this.currentDay;
+              }
+              if (data.watchlist && Array.isArray(data.watchlist)) {
+                this.watchlist = data.watchlist;
+                this.renderWatchlist();
+              }
+            }
+          } catch (e) {}
+
+          if (nameEl) nameEl.textContent = gamerTag;
+          if (avatarEl) avatarEl.src = avatarUrl;
+        } else {
+          this.currentUser = null;
+          if (modalBtn) modalBtn.classList.remove("hidden");
+          if (profileBadge) profileBadge.classList.add("hidden");
+        }
+      });
+
+      document.getElementById("googleSignInBtn").addEventListener("click", () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider).then(() => {
+          document.getElementById("authModal").classList.add("hidden");
+        }).catch(e => alert("Sign In Error: " + e.message));
+      });
+
+      document.getElementById("logoutBtn").addEventListener("click", () => auth.signOut());
+    },
+
+    // Line 333: Tactical Dynamic Views Initializer
+    initDynamicFeatures() {
+      this.populatePlayerStats();
+      this.populateSelects();
+      this.renderHarvestHistory();
+      this.renderWatchlist();
+      this.renderNeedZones();
+      this.renderLifeCycles();
+      this.renderDogProfile();
+      this.renderChallenges();
+      this.renderMissions();
+      this.renderInfrastructure();
+      this.renderTrails();
+      this.renderSpeciesCatalog();
+      this.updateDynamicHarvestSchema();
+    },
+
+    populatePlayerStats() {
+      const g = this.db.gameData || {};
+      const player = g.player || { name: "Ryder Holloway", level: 2, credits: 318 };
+      const dog = g.companion_dog || { name: "Bacon", breed: "American Foxhound" };
+
+      document.getElementById("hunterNameDisplay").textContent = player.name;
+      document.getElementById("hunterLevelDisplay").textContent = `Lv. ${player.level}`;
+      document.getElementById("hunterCreditsDisplay").textContent = `$${player.credits}`;
+      document.getElementById("dogCompanionDisplay").textContent = `${dog.name} (${dog.breed.split(" ")[1] || dog.breed})`;
+    },
+
+    populateSelects() {
+      const speciesList = (this.db.species && this.db.species.species) ? this.db.species.species : [];
+      const harvestSelect = document.getElementById("harvestSpeciesSelect");
+      const watchSelect = document.getElementById("watchSpeciesSelect");
+      const locationSelect = document.getElementById("harvestLocationSelect");
+
+      harvestSelect.innerHTML = "";
+      watchSelect.innerHTML = "";
+
+      speciesList.forEach(s => {
+        const opt1 = document.createElement("option");
+        opt1.value = s.name;
+        opt1.textContent = `${s.name} (Tier ${s.tier})`;
+        harvestSelect.appendChild(opt1);
+
+        const opt2 = document.createElement("option");
+        opt2.value = s.name;
+        opt2.textContent = s.name;
+        watchSelect.appendChild(opt2);
+      });
+
+      const regions = (this.db.regions && this.db.regions.regions) ? this.db.regions.regions : [];
+      locationSelect.innerHTML = "";
+      regions.forEach(r => {
+        const opt = document.createElement("option");
+        opt.value = r.name;
+        opt.textContent = r.name;
+        locationSelect.appendChild(opt);
+      });
+
+      this.updateWatchlistMaxAge();
+    },
+
+    // Line 392: Dynamic Trophy Schema Input Generator
+    updateDynamicHarvestSchema() {
+      const container = document.getElementById("dynamicSchemaFieldsContainer");
+      const selectedSpecies = document.getElementById("harvestSpeciesSelect").value;
+      const schemas = this.db.harvestSchemas || {};
+      const mapping = schemas.species_mapping || {};
+      const templates = schemas.scoring_templates || {};
+
+      const templateKey = mapping[selectedSpecies] || "cervid_antler";
+      const template = templates[templateKey] || { category: "Measurements", fields: [] };
+
+      container.innerHTML = `<span style="grid-column: 1/-1; font-size: 0.76rem; color: var(--accent-amber); font-weight: 700;">${template.category}</span>`;
+
+      template.fields.forEach(f => {
+        const div = document.createElement("div");
+        div.className = "input-group";
+        div.innerHTML = `
+          <label for="schema_${f.id}">${f.label} (${f.unit})</label>
+          <input type="text" id="schema_${f.id}" placeholder="${f.placeholder}">
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    // Line 417: Target Watchlist Engine
+    updateWatchlistMaxAge() {
+      const selectedSpecies = document.getElementById("watchSpeciesSelect").value;
+      const lifecycles = (this.db.lifecycles && this.db.lifecycles.species_lifecycles) ? this.db.lifecycles.species_lifecycles : [];
+      const match = lifecycles.find(l => l.species.toLowerCase() === selectedSpecies.toLowerCase());
+      const maxCap = match ? match.max_age_years : 12;
+      document.getElementById("watchMaxAge").value = maxCap;
+    },
+
+    saveWatchlistEntry() {
+      const editId = document.getElementById("editWatchlistId").value;
+      const tag = document.getElementById("watchIdentifier").value.trim();
+      const species = document.getElementById("watchSpeciesSelect").value;
+      const fitness = parseFloat(document.getElementById("watchFitness").value);
+      const age = parseInt(document.getElementById("watchAge").value, 10);
+      const maxAge = parseInt(document.getElementById("watchMaxAge").value, 10);
+      const stars = parseInt(document.getElementById("watchStars").value, 10);
+      const landmark = document.getElementById("watchLandmark").value.trim();
+
+      if (!tag || isNaN(fitness) || isNaN(age) || !landmark) {
+        return alert("Please complete all target fields.");
+      }
+
+      if (editId) {
+        const idx = this.watchlist.findIndex(w => w.id === editId);
+        if (idx !== -1) {
+          this.watchlist[idx] = { ...this.watchlist[idx], tag, species, fitness, age, maxAge, stars, landmark };
+        }
+      } else {
+        const newEntry = {
+          id: "target_" + Date.now(),
+          tag,
+          species,
+          fitness,
+          sightedAge: age,
+          age,
+          maxAge,
+          stars,
+          landmark,
+          sightedDay: this.currentDay
+        };
+        this.watchlist.unshift(newEntry);
+      }
+
+      this.resetWatchlistForm();
+      this.renderWatchlist();
+      this.saveSession();
+    },
+
+    resetWatchlistForm() {
+      document.getElementById("editWatchlistId").value = "";
+      document.getElementById("watchIdentifier").value = "";
+      document.getElementById("watchFitness").value = "";
+      document.getElementById("watchAge").value = "8";
+      document.getElementById("watchLandmark").value = "";
+      document.getElementById("watchlistFormHeader").textContent = "Add Live Animal to Watchlist";
+      document.getElementById("saveWatchlistBtn").textContent = "Add to Watchlist";
+      document.getElementById("cancelEditWatchlistBtn").classList.add("hidden");
+    },
+
+    editWatchlistEntry(id) {
+      const item = this.watchlist.find(w => w.id === id);
+      if (!item) return;
+
+      document.getElementById("editWatchlistId").value = item.id;
+      document.getElementById("watchIdentifier").value = item.tag;
+      document.getElementById("watchSpeciesSelect").value = item.species;
+      document.getElementById("watchFitness").value = item.fitness;
+      document.getElementById("watchAge").value = item.age;
+      document.getElementById("watchMaxAge").value = item.maxAge;
+      document.getElementById("watchStars").value = item.stars;
+      document.getElementById("watchLandmark").value = item.landmark;
+
+      document.getElementById("watchlistFormHeader").textContent = "Edit Watchlist Target";
+      document.getElementById("saveWatchlistBtn").textContent = "Update Target";
+      document.getElementById("cancelEditWatchlistBtn").classList.remove("hidden");
+    },
+
+    deleteWatchlistEntry(id) {
+      if (!confirm("Remove this animal from the live watchlist (Harvested or Despawned)?")) return;
+      this.watchlist = this.watchlist.filter(w => w.id !== id);
+      this.renderWatchlist();
+      this.saveSession();
+    },
+
+    renderWatchlist() {
+      const container = document.getElementById("watchlistContainer");
+      const countEl = document.getElementById("watchlistCount");
+      if (!container) return;
+
+      countEl.textContent = `${this.watchlist.length} Tracked Animals`;
+      container.innerHTML = "";
+
+      if (this.watchlist.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem; padding:12px;">No animals currently on the watchlist. Add spotted animals on the left.</p>';
+        return;
+      }
+
+      this.watchlist.forEach(item => {
+        // Dynamic aging: every 3 game days advances age by +1
+        const elapsedDays = Math.max(0, this.currentDay - (item.sightedDay || 1));
+        const effectiveAge = (item.sightedAge || item.age) + Math.floor(elapsedDays / 3);
+        const daysLeft = Math.max(0, (item.maxAge - effectiveAge) * 3);
+
+        // Evaluation Logic
+        let actionClass = "banner-balanced";
+        let actionText = "⚖️ BALANCED: Stable genetics. Monitor antler development.";
+
+        if (item.fitness < 50.0) {
+          actionClass = "banner-cull";
+          actionText = `🚨 CULL TARGET: Low fitness (${item.fitness}%). Harvest immediately to lift herd genetics.`;
+        } else if (item.fitness >= 80.0 && effectiveAge < item.maxAge) {
+          actionClass = "banner-breeder";
+          actionText = `⭐ 5-STAR BREEDER: Elite fitness (${item.fitness}%). Allow rack to reach late mature stage.`;
+        } else if (item.stars === 1 && effectiveAge >= (item.maxAge - 2)) {
+          actionClass = "banner-cull";
+          actionText = "⚠️ CULL MATURE: 1-Star rack at end of lifecycle. Harvest before despawn.";
+        }
+
+        const div = document.createElement("div");
+        div.className = "telemetry-card";
+        div.innerHTML = `
+          <div class="card-top-row">
+            <span class="animal-title">${item.tag} <span style="color:var(--text-muted); font-size:0.82rem;">(${item.species})</span></span>
+            <span class="badge" style="background:#28374d; border-color:#486082;">Age: ${effectiveAge}/${item.maxAge} yrs (${daysLeft} Days Left)</span>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">
+            Location: <strong>${item.landmark}</strong> &bull; Fitness: <strong>${item.fitness}%</strong> &bull; Stars: <strong>${item.stars}&#9733;</strong>
+          </div>
+          <div class="action-banner ${actionClass}">${actionText}</div>
+          <div class="card-footer-row">
+            <span>Sighted Day: <strong>${item.sightedDay || 1}</strong> &bull; Current Day: <strong>${this.currentDay}</strong></span>
+            <div class="card-actions">
+              <button class="btn-link btn-link-edit" onclick="window.CompanionApp.editWatchlistEntry('${item.id}')">Edit</button>
+              <button class="btn-link btn-link-delete" onclick="window.CompanionApp.deleteWatchlistEntry('${item.id}')">Harvested / Remove</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    // Line 555: Harvest Inspection Logger
+    renderHarvestHistory() {
+      const container = document.getElementById("harvestHistoryContainer");
+      const badge = document.getElementById("harvestRecordCount");
+      const records = (this.db.gameData && this.db.gameData.harvest_records) ? this.db.gameData.harvest_records : [];
+
+      badge.textContent = `${records.length} Harvest Records`;
+      container.innerHTML = "";
+
+      records.forEach(r => {
+        const div = document.createElement("div");
+        div.className = "telemetry-card";
+        div.innerHTML = `
+          <div class="card-top-row">
+            <span class="animal-title">${r.species} <span style="color:var(--text-muted); font-size:0.8rem;">(Tier ${r.animal_tier})</span></span>
+            <span class="badge">${r.trophy_rating_stars}&#9733; Trophy</span>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">
+            Shot: <strong>${r.shot_distance_yds} yds</strong> &bull; Firearm: <strong>${r.firearm} (${r.caliber})</strong>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+            Fitness: <strong>${r.fitness_percentage}%</strong> &bull; Age: <strong>${r.age_years} Yrs (${r.age_class})</strong> &bull; Sell: <strong>$${r.sell_price || 149}</strong>
+          </div>
+          <div class="action-banner ${r.fitness_percentage < 50 ? 'banner-cull' : 'banner-breeder'}" style="margin-top:6px;">
+            ${r.cull_decision || 'Keeper Specimen'}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    submitHarvestInspection() {
+      const species = document.getElementById("harvestSpeciesSelect").value;
+      const location = document.getElementById("harvestLocationSelect").value;
+      const firearm = document.getElementById("harvestFirearm").value;
+      const caliber = document.getElementById("harvestCaliber").value;
+      const shotDist = document.getElementById("harvestShotDist").value;
+      const fitness = parseFloat(document.getElementById("harvestFitness").value) || 60;
+      const stars = parseInt(document.getElementById("harvestRatingStars").value, 10);
+      const sellPrice = document.getElementById("harvestSellPrice").value;
+
+      const newRecord = {
+        species,
+        animal_tier: 5,
+        location,
+        firearm,
+        caliber,
+        shot_distance_yds: shotDist,
+        fitness_percentage: fitness,
+        trophy_rating_stars: stars,
+        sell_price: sellPrice,
+        cull_decision: fitness < 50 ? "Cull (Low Fitness)" : "Keeper / Trophy",
+        date: "October 7, 2026"
+      };
+
+      if (!this.db.gameData) this.db.gameData = {};
+      if (!this.db.gameData.harvest_records) this.db.gameData.harvest_records = [];
+
+      this.db.gameData.harvest_records.unshift(newRecord);
+      this.renderHarvestHistory();
+      alert("Harvest inspection record logged successfully!");
+    },
+
+    // Line 616: Dynamic Viewports Rendering
+    renderNeedZones() {
+      const container = document.getElementById("needZoneClustersGrid");
+      const badge = document.getElementById("needZoneCount");
+      const clusters = (this.db.needZones && this.db.needZones.clusters) ? this.db.needZones.clusters : [];
+
+      badge.textContent = `${clusters.length} Tactical Clusters`;
+      container.innerHTML = "";
+
+      clusters.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        let zonesHtml = "";
+        c.zones.forEach(z => {
+          zonesHtml += `
+            <div style="font-size:0.8rem; background:rgba(0,0,0,0.2); padding:6px; border-radius:4px; margin-top:4px;">
+              <strong>${z.type} (${z.schedule}):</strong> ${z.landmark} (+${z.proximity_to_center_yds} yds)
+            </div>
+          `;
+        });
+
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>${c.species}</strong>
+            <span class="badge">${c.region}</span>
+          </div>
+          <p style="font-size:0.78rem; color:var(--text-muted);">${c.cluster_notes}</p>
+          <div style="margin-top:4px;">${zonesHtml}</div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    renderLifeCycles() {
+      const container = document.getElementById("lifecyclesGrid");
+      const badge = document.getElementById("lifecycleCount");
+      const list = (this.db.lifecycles && this.db.lifecycles.species_lifecycles) ? this.db.lifecycles.species_lifecycles : [];
+
+      badge.textContent = `${list.length} Species Cycles`;
+      container.innerHTML = "";
+
+      list.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#fff;">${item.species}</strong>
+            <span class="badge">${item.max_age_years} Yrs (${item.total_lifespan_days} Days)</span>
+          </div>
+          <div class="advisory-callout" style="margin-top:6px;">
+            <strong>Cull Advisory:</strong> ${item.cull_advisory}
+          </div>
+          <div style="font-size:0.78rem; color:#ff9999; margin-top:4px;">
+            <strong>Despawn Rule:</strong> ${item.mortality_warning}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    renderDogProfile() {
+      const summaryContainer = document.getElementById("dogSummaryCard");
+      const skillsContainer = document.getElementById("dogSkillsGrid");
+      const g = this.db.gameData || {};
+      const dog = g.companion_dog || { name: "Bacon", breed: "American Foxhound", bonding_level: 3, bonding_xp: 454, bonding_xp_max: 650 };
+      const skillsDef = (this.db.dogSkills && this.db.dogSkills.skills) ? this.db.dogSkills.skills : {};
+
+      summaryContainer.innerHTML = `
+        <div class="telemetry-card" style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h4 style="color:#fff; font-size:1.1rem;">${dog.name} (${dog.breed})</h4>
+            <div style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">
+              Bonding Level: <strong>${dog.bonding_level} / 6</strong> &bull; XP: <strong>${dog.bonding_xp} / ${dog.bonding_xp_max}</strong>
+            </div>
+          </div>
+          <span class="badge" style="font-size:0.85rem;">Active Partner</span>
+        </div>
+      `;
+
+      skillsContainer.innerHTML = "";
+      Object.entries(skillsDef).forEach(([k, s]) => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <strong style="color:var(--accent-amber);">${s.name}</strong>
+          <p style="font-size:0.8rem; color:var(--text-muted);">${s.description}</p>
+        `;
+        skillsContainer.appendChild(div);
+      });
+    },
+
+    renderChallenges() {
+      const container = document.getElementById("challengeTreesGrid");
+      const trees = (this.db.challenges && this.db.challenges.trees) ? this.db.challenges.trees : {};
+
+      container.innerHTML = "";
+      Object.entries(trees).forEach(([k, t]) => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#fff;">${t.name} Mastery</strong>
+            <span class="badge">${t.total} Challenges</span>
+          </div>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-top:6px;">${t.description}</p>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    renderMissions() {
+      const container = document.getElementById("missionsGrid");
+      const badge = document.getElementById("missionsCount");
+      const list = (this.db.missions && this.db.missions.missions) ? this.db.missions.missions : [];
+
+      badge.textContent = `${list.length} Missions`;
+      container.innerHTML = "";
+
+      list.forEach(m => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#fff;">${m.name}</strong>
+            <span class="badge">${m.source}</span>
+          </div>
+          <ul style="font-size:0.8rem; color:var(--text-muted); padding-left:18px; margin-top:6px;">
+            ${m.objectives.map(o => `<li>${o}</li>`).join("")}
+          </ul>
+          <div style="font-size:0.78rem; color:var(--accent-amber); margin-top:6px;">
+            Reward: ${m.money ? `$${m.money}` : 'XP'} ${m.xp ? `&bull; ${m.xp} XP` : ''}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    renderInfrastructure() {
+      const container = document.getElementById("infrastructureGrid");
+      const notesBox = document.getElementById("infraNotesBox");
+      const badge = document.getElementById("infrastructureCount");
+      const infra = this.db.infrastructure || {};
+      const tasks = infra.tasks || [];
+
+      badge.textContent = `${tasks.length} Enhancements`;
+      notesBox.innerHTML = `<strong>Warden Protocol:</strong> ${infra.mechanic_notes || "Feeders and pollution removal impact genetic ceilings."}`;
+
+      container.innerHTML = "";
+      tasks.forEach(t => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#fff;">${t.type}</strong>
+            <span class="badge">$${t.cost}</span>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">
+            Location: <strong>${t.location}</strong>
+          </div>
+          <div style="font-size:0.76rem; color:var(--accent-amber); margin-top:4px;">
+            Affected: ${t.affected_species && t.affected_species.length ? t.affected_species.join(", ") : "Regional Infrastructure"}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    renderTrails() {
+      const container = document.getElementById("trailsGrid");
+      const list = (this.db.trails && this.db.trails.seasonal_corridors) ? this.db.trails.seasonal_corridors : [];
+
+      container.innerHTML = "";
+      list.forEach(t => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#fff;">${t.species}</strong>
+            <span class="badge">${t.region}</span>
+          </div>
+          <div style="font-size:0.8rem; margin-top:6px;">
+            <strong>Summer:</strong> <span style="color:var(--text-muted);">${t.summer_trail}</span>
+          </div>
+          <div style="font-size:0.8rem; margin-top:4px;">
+            <strong>Winter:</strong> <span style="color:var(--text-muted);">${t.winter_trail}</span>
+          </div>
+          <div style="font-size:0.78rem; color:var(--accent-amber); margin-top:6px;">
+            <strong>Grazing:</strong> ${t.grazing_area}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    renderSpeciesCatalog() {
+      const container = document.getElementById("speciesCatalogGrid");
+      const badge = document.getElementById("speciesCatalogCount");
+      const list = (this.db.species && this.db.species.species) ? this.db.species.species : [];
+
+      badge.textContent = `${list.length} Reserve Species`;
+      container.innerHTML = "";
+
+      list.forEach(s => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#fff;">${s.name}</strong>
+            <span class="badge">Tier ${s.tier}</span>
+          </div>
+          <div style="font-size:0.78rem; color:var(--text-muted); font-style:italic;">${s.scientific_name}</div>
+          <div style="font-size:0.8rem; margin-top:6px;">
+            <strong>Aggression:</strong> <span style="color:#ff9999;">${s.aggression_level}</span>
+          </div>
+          <div style="font-size:0.8rem; margin-top:2px;">
+            <strong>Defense Sidearm:</strong> <span style="color:var(--accent-amber);">${s.defensive_sidearm}</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    // Line 808: Bind UI Listeners
+    bindUI() {
+      // Tab Ribbon Switcher
+      document.querySelectorAll(".ribbon-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".ribbon-btn").forEach(b => b.classList.remove("active"));
+          document.querySelectorAll(".tab-pane").forEach(p => p.classList.remove("active"));
+          btn.classList.add("active");
+          const target = document.getElementById(`tab-${btn.dataset.tab}`);
+          if (target) target.classList.add("active");
+        });
+      });
+
+      // Day & Time Controls
+      document.getElementById("currentDayInput").addEventListener("change", e => {
+        this.currentDay = parseInt(e.target.value, 10) || 1;
+        this.renderWatchlist();
+      });
+
+      document.getElementById("advanceDayBtn").addEventListener("click", () => {
+        this.currentDay++;
+        document.getElementById("currentDayInput").value = this.currentDay;
+        this.renderWatchlist();
+      });
+
+      document.getElementById("advanceTwoHoursBtn").addEventListener("click", () => {
+        let [hours, mins] = document.getElementById("currentTimeInput").value.split(":").map(Number);
+        hours = (hours + 2) % 24;
+        if (hours === 0 || hours === 1) {
+          this.currentDay++;
+          document.getElementById("currentDayInput").value = this.currentDay;
+        }
+        const timeStr = `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
+        this.currentTime = timeStr;
+        document.getElementById("currentTimeInput").value = timeStr;
+        this.renderWatchlist();
+      });
+
+      document.getElementById("saveSessionBtn").addEventListener("click", () => this.saveSession());
+
+      // Watchlist UI
+      document.getElementById("watchSpeciesSelect").addEventListener("change", () => this.updateWatchlistMaxAge());
+      document.getElementById("saveWatchlistBtn").addEventListener("click", () => this.saveWatchlistEntry());
+      document.getElementById("cancelEditWatchlistBtn").addEventListener("click", () => this.resetWatchlistForm());
+
+      // Harvest UI
+      document.getElementById("harvestSpeciesSelect").addEventListener("change", () => this.updateDynamicHarvestSchema());
+      document.getElementById("submitHarvestRecordBtn").addEventListener("click", () => this.submitHarvestInspection());
+
+      // Auth Modal Controls
+      const modal = document.getElementById("authModal");
+      document.getElementById("authModalBtn").addEventListener("click", () => modal.classList.remove("hidden"));
+      document.getElementById("authModalClose").addEventListener("click", () => modal.classList.add("hidden"));
+
+      // Mobile Menu
+      const menuBtn = document.getElementById("menuToggle");
+      const nav = document.getElementById("dynamicNav");
+      if (menuBtn && nav) {
+        menuBtn.addEventListener("click", () => nav.classList.toggle("open"));
+      }
+    }
+  };
+
+  window.CompanionApp = CompanionApp;
+  CompanionApp.init();
+});
