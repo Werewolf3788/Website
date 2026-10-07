@@ -1,0 +1,19 @@
+{
+  "trophy_categories": [
+    "Typical (1-5 Star)",
+    "Non-Typical",
+    "Superior",
+    "Mythical"
+  ],
+  "gear_attachments": [
+    "Muzzle Brake",
+    "Suppressor",
+    "Bow Silencer",
+    "Bow Stabilizer"
+  ],
+  "species_status": {
+    "v1_0_active_count": 28,
+    "upcoming_update_count": 2,
+    "total_target": 30
+  }
+}
