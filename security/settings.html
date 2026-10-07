@@ -1,5 +1,5 @@
-<!-- Line 1: Standalone Hunter Identity, Profile & RTDB Dynamic Menu Engine -->
-<!-- [Smart Cache-Buster Time: 2026-10-07 13:54 EDT | Firebase Sync Target: /utm_links | Version: 3.4.0] -->
+<!-- Line 1: Hunter Identity & Settings - Single File Architecture -->
+<!-- [Smart Cache-Buster Time: 2026-10-07 14:28 EDT | Firebase Sync Target: /utm_links | Version: 3.6.0] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,9 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hunter Profile & Settings</title>
 
-  <!-- Default Favicons (Dynamically overridden by RTDB /utm_links/Settings/0/image) -->
-  <link id="dynamicFavicon" rel="icon" type="image/png" href="https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png">
-  <link id="dynamicAppleIcon" rel="apple-touch-icon" href="https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png">
+  <!-- Favicon elements dynamically rebound from RTDB /utm_links/Settings/0/image -->
+  <link id="dynamicFavicon" rel="icon" type="image/png" href="//werewolf3788.github.io/Website/assets/logo.jpg">
+  <link id="dynamicAppleIcon" rel="apple-touch-icon" href="//werewolf3788.github.io/Website/assets/logo.jpg">
 
   <!-- Firebase Core SDKs (Compat v10.13.0) -->
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
@@ -18,6 +18,7 @@
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
   <style>
+    /* Line 20: Design Tokens - Sleek High-Contrast Dark System */
     :root {
       --bg-primary: #0a0d12;
       --bg-secondary: #131821;
@@ -50,7 +51,7 @@
       flex-direction: column;
     }
 
-    /* Sticky Navigation Header */
+    /* Line 50: Desktop Sticky Navbar */
     .site-header {
       background: var(--bg-secondary);
       border-bottom: 1px solid var(--border-color);
@@ -61,7 +62,7 @@
     }
 
     .header-container {
-      max-width: 1400px;
+      max-width: 1440px;
       margin: 0 auto;
       padding: 0 20px;
       display: flex;
@@ -76,14 +77,16 @@
       align-items: center;
       gap: 10px;
       flex-shrink: 0;
+      text-decoration: none;
     }
 
     .brand-logo {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 8px;
       border: 1px solid var(--border-color);
       object-fit: cover;
+      background: var(--bg-surface);
     }
 
     .brand-title {
@@ -93,26 +96,27 @@
       letter-spacing: 0.5px;
     }
 
-    /* Dynamic Menu Navigation */
+    /* Line 88: Clean Nav List without Scrollbars */
     .site-nav {
       display: flex;
       align-items: center;
       flex: 1;
-      overflow-x: auto;
+      overflow: visible;
     }
 
     .nav-list {
       display: flex;
       list-style: none;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
+      flex-wrap: wrap;
     }
 
     .nav-item {
       position: relative;
     }
 
-    .nav-link, .dropdown-trigger {
+    .nav-pill, .dropdown-trigger {
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -122,17 +126,17 @@
       font-size: 0.88rem;
       font-weight: 500;
       border-radius: 6px;
-      background: transparent;
-      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
       cursor: pointer;
       white-space: nowrap;
       transition: var(--transition);
     }
 
-    .nav-link:hover, .dropdown-trigger:hover {
+    .nav-pill:hover, .dropdown-trigger:hover {
       background: var(--bg-hover);
       color: var(--accent-blue);
-      border-color: var(--border-color);
+      border-color: var(--accent-blue);
     }
 
     .nav-thumb {
@@ -142,11 +146,12 @@
       object-fit: cover;
     }
 
+    /* Line 132: Dropdown Submenu */
     .dropdown-menu {
       position: absolute;
       top: 100%;
       left: 0;
-      min-width: 230px;
+      min-width: 220px;
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       border-radius: 8px;
@@ -186,7 +191,7 @@
       color: var(--accent-gold);
     }
 
-    /* Auth Toolbar & Profile Widget */
+    /* Line 171: Header Auth & User Avatar */
     .auth-toolbar {
       display: flex;
       align-items: center;
@@ -223,7 +228,7 @@
       white-space: nowrap;
     }
 
-    /* Settings Main Layout */
+    /* Line 203: Settings Viewport */
     .settings-container {
       max-width: 1050px;
       width: 100%;
@@ -301,7 +306,6 @@
       box-shadow: 0 0 0 2px rgba(0, 136, 255, 0.2);
     }
 
-    /* Provider Rows */
     .provider-row {
       display: flex;
       justify-content: space-between;
@@ -330,7 +334,6 @@
       gap: 8px;
     }
 
-    /* Friends List Roster */
     .friend-roster {
       display: flex;
       flex-direction: column;
@@ -360,7 +363,6 @@
       font-weight: 600;
     }
 
-    /* Buttons */
     .btn {
       padding: 8px 16px;
       border-radius: 6px;
@@ -390,10 +392,8 @@
       border: 1px solid var(--danger);
       background: rgba(231, 76, 60, 0.05);
     }
-
     .danger-zone h3 { color: var(--danger); }
 
-    /* Footer */
     .site-footer {
       background: var(--bg-secondary);
       border-top: 1px solid var(--border-color);
@@ -402,7 +402,7 @@
     }
 
     .footer-container {
-      max-width: 1400px;
+      max-width: 1440px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
@@ -417,7 +417,6 @@
       font-size: 0.76rem;
       font-weight: 600;
     }
-
     .status-connecting { background: rgba(245, 166, 35, 0.15); color: var(--accent-gold); }
     .status-connected { background: rgba(46, 204, 113, 0.15); color: var(--success); }
 
@@ -435,24 +434,24 @@
 </head>
 <body>
 
-  <!-- Top Sticky Navigation Bar -->
+  <!-- Line 404: Sticky Top Header with Dynamic Favicon Brand Logo -->
   <header class="site-header">
     <div class="header-container">
-      <div class="brand-area">
-        <img id="navSettingsLogo" src="https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png" alt="" class="brand-logo">
+      <a href="../games/woth2/index.html" class="brand-area">
+        <img id="navSettingsLogo" src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" class="brand-logo">
         <span class="brand-title">SETTINGS HUB</span>
-      </div>
+      </a>
 
       <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">☰</button>
 
-      <!-- Dynamic RTDB Group & Row-Sorted Nav -->
+      <!-- Programmatically Sorted RTDB Navbar -->
       <nav class="site-nav" id="dynamicNav">
         <ul class="nav-list" id="navList">
-          <!-- Dynamically inserted from RTDB /utm_links -->
+          <!-- Populated from RTDB /utm_links -->
         </ul>
       </nav>
 
-      <!-- Auth & Header Profile Image Placement -->
+      <!-- Right Header Profile Area -->
       <div class="auth-toolbar">
         <button id="authModalBtn" class="btn btn-primary btn-sm">Log In</button>
         <div id="userProfileBadge" class="user-profile-badge hidden">
@@ -464,14 +463,14 @@
     </div>
   </header>
 
-  <!-- Main Settings Workspace -->
+  <!-- Line 434: Master Workspace -->
   <main class="settings-container">
     
-    <!-- Guest Notification Card -->
+    <!-- Guest Notification -->
     <section id="guestSignInPrompt" class="card">
       <h2>Hunter Authentication Required</h2>
       <p style="font-size: 0.9rem; color: var(--text-muted); margin: 8px 0 16px;">
-        Sign in to customize your profile, set your avatar, link login providers, or look up companions:
+        Sign in to customize your profile, set your avatar, link login providers, or manage companions:
       </p>
       <div style="max-width: 320px;">
         <button id="inlineGoogleBtn" class="btn btn-google full-width" style="margin-bottom: 12px;">Sign In with Google</button>
@@ -486,7 +485,7 @@
       </div>
     </section>
 
-    <!-- Master Authenticated Section -->
+    <!-- Authenticated Settings Engine -->
     <div id="authenticatedSection" class="hidden" style="display: flex; flex-direction: column; gap: 24px;">
       
       <!-- Profile Customization -->
@@ -532,11 +531,11 @@
       <!-- Multi-Auth Linking & Friends -->
       <div class="settings-grid">
         
-        <!-- Providers -->
+        <!-- Multi-Provider Linking -->
         <section class="card">
           <h3>Linked Sign-In Providers</h3>
           <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 16px;">
-            Link multiple credentials to this single account so your game progress follows you everywhere:
+            Connect multiple sign-in credentials to this single account so your progress follows you everywhere:
           </p>
 
           <div class="provider-row">
@@ -579,7 +578,7 @@
           </div>
         </section>
 
-        <!-- Companions -->
+        <!-- Social Companions Roster -->
         <section class="card">
           <h3>Hunting Companions & Friends</h3>
           <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 14px;">
@@ -597,7 +596,7 @@
         </section>
       </div>
 
-      <!-- Account Deletion -->
+      <!-- Permanent Data Deletion -->
       <section class="card danger-zone">
         <h3>Delete Account & Erase Cloud Records</h3>
         <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 14px;">
@@ -609,12 +608,12 @@
     </div>
   </main>
 
-  <!-- Global Footer -->
+  <!-- Line 579: 24-hr Timestamp Footer -->
   <footer class="site-footer">
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Werewolf Project | User Identity Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 13:54 EDT</span> | Version: 3.4.0</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 14:28 EDT</span> | Version: 3.6.0</p>
       </div>
       <div class="footer-col text-right">
         <span id="accountStatusPill" class="status-pill status-connecting">RTDB: Connecting...</span>
@@ -622,19 +621,22 @@
     </div>
   </footer>
 
-  <!-- EMBEDDED JAVASCRIPT: Dynamic Menu, RTDB Favicon & Auth Engine -->
+  <!-- Line 592: Embedded JavaScript Engine -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const DEFAULT_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
+      // Default placeholder avatar strictly for user accounts without profile photos
+      const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
 
+      // Verified Firebase Config
       const firebaseConfig = {
-        apiKey: "AIzaSyDummyKeyReplaceWithYourOwnAuthKey",
+        apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
         authDomain: "entertainment-71888.firebaseapp.com",
         databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
         projectId: "entertainment-71888",
-        storageBucket: "entertainment-71888.appspot.com",
-        messagingSenderId: "1234567890",
-        appId: "1:1234567890:web:abcdef123456"
+        storageBucket: "entertainment-71888.firebasestorage.app",
+        messagingSenderId: "660524340277",
+        appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
+        measurementId: "G-JDNSLD3GFE"
       };
 
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
@@ -650,7 +652,7 @@
         size: "invisible"
       });
 
-      // 1. RTDB Dynamic Menu Engine & Favicon Synchronization
+      // 1. RTDB Menu Engine & Favicon / Brand Logo Binding
       function initRTDBMenu() {
         const utmRef = rtdb.ref("/utm_links");
 
@@ -664,52 +666,51 @@
 
           if (!raw) return;
 
-          // Process and flatten links
+          // Flatten incoming node entries
           const items = [];
           Object.entries(raw).forEach(([parentKey, val]) => {
             if (Array.isArray(val)) {
               val.forEach((entry, idx) => {
-                if (entry) items.push(normalizeItem(entry, `${parentKey}_${idx}`, parentKey));
+                if (entry) items.push(normalizeItem(entry, `${parentKey}_${idx}`));
               });
             } else if (typeof val === "object" && val !== null) {
               if (val.url || val.title) {
-                items.push(normalizeItem(val, parentKey, val.group || ""));
+                items.push(normalizeItem(val, parentKey));
               } else {
                 Object.entries(val).forEach(([childKey, childVal]) => {
                   if (typeof childVal === "object" && childVal !== null) {
-                    items.push(normalizeItem(childVal, `${parentKey}_${childKey}`, parentKey));
+                    items.push(normalizeItem(childVal, `${parentKey}_${childKey}`));
                   }
                 });
               }
             }
           });
 
-          // Sync Settings Favicon & Brand Image from RTDB
+          // Sync Favicon and Header Logo strictly from /utm_links/Settings/0/image
           syncSettingsFavicon(items, raw);
 
-          // Build Sorted Menu Hierarchy
+          // Build Sorted Navbar (Bare links & Folders side-by-side; No "Standalone" folder)
           renderSortedMenu(items);
         }, (err) => {
           console.warn("RTDB load warning:", err);
         });
       }
 
-      function normalizeItem(item, fallbackKey, fallbackGroup) {
+      function normalizeItem(item, fallbackKey) {
         return {
           title: item.title || fallbackKey,
           url: item.url || "#",
-          image: item.image || DEFAULT_AVATAR,
-          group: (item.group && item.group.trim()) ? item.group.trim() : (fallbackGroup && fallbackGroup !== "Settings" && isNaN(fallbackGroup) ? fallbackGroup.trim() : ""),
+          image: (item.image && typeof item.image === "string") ? item.image.trim() : "",
+          group: (item.group && typeof item.group === "string") ? item.group.trim() : "",
           rowNumber: (item.rowNumber !== undefined && item.rowNumber !== null) ? Number(item.rowNumber) : 9999,
           updatedAt: item.updatedAt || ""
         };
       }
 
-      // Favicon & Logo Binding
+      // Syncs Tab Favicon and Header Logo from Settings node
       function syncSettingsFavicon(items, raw) {
         let settingsImg = "";
 
-        // Check explicit /utm_links/Settings/0/image or match title === "Settings"
         if (raw.Settings && raw.Settings[0] && raw.Settings[0].image) {
           settingsImg = raw.Settings[0].image;
         } else if (raw.Settings && raw.Settings.image) {
@@ -730,80 +731,84 @@
         }
       }
 
-      // Group & Row Sorting Logic
+      // Mathematical Horizontal and Vertical Navbar Rendering
       function renderSortedMenu(items) {
         const navList = document.getElementById("navList");
         if (!navList) return;
         navList.innerHTML = "";
 
-        // Partition into standalone links and groups
-        const standalone = [];
-        const groups = {};
+        const standaloneLinks = [];
+        const folderGroups = {};
 
+        // Strict partition: Bare links vs true groups (Never creating a "Standalone" folder)
         items.forEach(item => {
           if (!item.group) {
-            standalone.push(item);
+            standaloneLinks.push(item);
           } else {
-            if (!groups[item.group]) {
-              groups[item.group] = {
+            if (!folderGroups[item.group]) {
+              folderGroups[item.group] = {
                 name: item.group,
                 items: [],
                 minRow: item.rowNumber,
-                groupImage: item.image
+                folderImage: item.image
               };
             }
-            groups[item.group].items.push(item);
-            if (item.rowNumber < groups[item.group].minRow) {
-              groups[item.group].minRow = item.rowNumber;
-              groups[item.group].groupImage = item.image; // Use lowest row's image for folder
+            folderGroups[item.group].items.push(item);
+            if (item.rowNumber < folderGroups[item.group].minRow) {
+              folderGroups[item.group].minRow = item.rowNumber;
+              if (item.image) folderGroups[item.group].folderImage = item.image;
             }
           }
         });
 
-        // Combined top-level buckets: each entry has a sortRank based on rowNumber
+        // Top-level competing buckets
         const topLevelBuckets = [];
 
-        standalone.forEach(item => {
+        standaloneLinks.forEach(link => {
           topLevelBuckets.push({
-            type: "standalone",
-            sortRank: item.rowNumber,
-            data: item
+            type: "bare_link",
+            rank: link.rowNumber,
+            data: link
           });
         });
 
-        Object.values(groups).forEach(grp => {
-          // Sort items inside group ascending (row 1 on top, row 2 next)
+        Object.values(folderGroups).forEach(grp => {
+          // Inner dropdown links stack vertically ascending by rowNumber
           grp.items.sort((a, b) => a.rowNumber - b.rowNumber);
           topLevelBuckets.push({
-            type: "group",
-            sortRank: grp.minRow,
+            type: "folder",
+            rank: grp.minRow,
             data: grp
           });
         });
 
-        // Sort top-level horizontally: lowest rowNumber on left
-        topLevelBuckets.sort((a, b) => a.sortRank - b.sortRank);
+        // Sort top-level horizontally ascending by rank (lowest on left)
+        topLevelBuckets.sort((a, b) => a.rank - b.rank);
 
-        // Render HTML elements
+        // Render to DOM
         topLevelBuckets.forEach(bucket => {
           const li = document.createElement("li");
           li.className = "nav-item";
 
-          if (bucket.type === "standalone") {
+          if (bucket.type === "bare_link") {
             const item = bucket.data;
+            const imgTag = item.image ? `<img src="${item.image}" alt="" class="nav-thumb">` : '';
             li.innerHTML = `
-              <a href="${item.url}" class="nav-link">
-                <img src="${item.image}" alt="" class="nav-thumb" onerror="this.src='${DEFAULT_AVATAR}'">
+              <a href="${item.url}" class="nav-pill">
+                ${imgTag}
                 <span>${item.title}</span>
               </a>
             `;
           } else {
             const grp = bucket.data;
+            const folderImg = grp.folderImage ? `<img src="${grp.folderImage}" alt="" class="nav-thumb">` : '';
+
             let dropdownHtml = `<div class="dropdown-menu">`;
             grp.items.forEach(child => {
+              const childImg = child.image ? `<img src="${child.image}" alt="" class="nav-thumb">` : '';
               dropdownHtml += `
                 <a href="${child.url}" class="dropdown-item">
-                  <img src="${child.image}" alt="" class="nav-thumb" onerror="this.src='${DEFAULT_AVATAR}'">
+                  ${childImg}
                   <span>${child.title}</span>
                 </a>
               `;
@@ -812,7 +817,7 @@
 
             li.innerHTML = `
               <button class="dropdown-trigger">
-                <img src="${grp.groupImage}" alt="" class="nav-thumb" onerror="this.src='${DEFAULT_AVATAR}'">
+                ${folderImg}
                 <span>${grp.name} ▾</span>
               </button>
               ${dropdownHtml}
@@ -822,7 +827,7 @@
         });
       }
 
-      // 2. Authentication Watcher & Profile Sync
+      // 2. Authentication State Management
       auth.onAuthStateChanged(async (user) => {
         const guestPrompt = document.getElementById("guestSignInPrompt");
         const authSection = document.getElementById("authenticatedSection");
@@ -849,9 +854,9 @@
         }
       });
 
-      // 3. Load & Render User Profile
+      // 3. Load & Render User Profile (Google photo / Fallback photo)
       async function loadUserProfile(user) {
-        let avatarUrl = DEFAULT_AVATAR;
+        let avatarUrl = user.photoURL || DEFAULT_USER_AVATAR;
         let gamerTag = user.displayName || "Hunter";
         let platform = "playstation";
 
@@ -869,12 +874,10 @@
           console.warn("Firestore profile fetch:", e);
         }
 
-        // Update Inputs
         document.getElementById("usernameInput").value = gamerTag;
         document.getElementById("primaryPlatformSelect").value = platform;
-        document.getElementById("avatarUrlInput").value = (avatarUrl === DEFAULT_AVATAR) ? "" : avatarUrl;
+        document.getElementById("avatarUrlInput").value = (avatarUrl === DEFAULT_USER_AVATAR) ? "" : avatarUrl;
 
-        // Update UI displays
         document.getElementById("displayGamerTag").textContent = gamerTag;
         document.getElementById("avatarPreview").src = avatarUrl;
         document.getElementById("headerUserTag").textContent = gamerTag;
@@ -888,7 +891,7 @@
         const platform = document.getElementById("primaryPlatformSelect").value;
         let avatar = document.getElementById("avatarUrlInput").value.trim();
 
-        if (!avatar) avatar = DEFAULT_AVATAR;
+        if (!avatar) avatar = currentUser.photoURL || DEFAULT_USER_AVATAR;
 
         try {
           await db.collection("users").doc(currentUser.uid).set({
@@ -904,7 +907,7 @@
           document.getElementById("headerUserAvatar").src = avatar;
 
           const msg = document.getElementById("saveProfileMsg");
-          msg.textContent = "Profile updated!";
+          msg.textContent = "Profile saved successfully!";
           setTimeout(() => msg.textContent = "", 3000);
         } catch (err) {
           alert("Error saving profile: " + err.message);
@@ -933,7 +936,7 @@
         const provider = new firebase.auth.GoogleAuthProvider();
         currentUser.linkWithPopup(provider)
           .then(res => {
-            alert("Google linked!");
+            alert("Google account linked successfully!");
             renderLinkedProviders(res.user);
           })
           .catch(e => alert("Link Error: " + e.message));
@@ -950,7 +953,7 @@
         const cred = firebase.auth.EmailAuthProvider.credential(email, pass);
         currentUser.linkWithCredential(cred)
           .then(res => {
-            alert("Email linked!");
+            alert("Email linked successfully!");
             document.getElementById("emailLinkBox").classList.add("hidden");
             renderLinkedProviders(res.user);
           })
@@ -963,24 +966,24 @@
 
       document.getElementById("sendPhoneLinkCodeBtn").addEventListener("click", () => {
         const phone = document.getElementById("linkPhoneInput").value.trim();
-        if (!phone) return alert("Enter phone number.");
+        if (!phone) return alert("Enter valid phone number.");
         const provider = new firebase.auth.PhoneAuthProvider();
         provider.verifyPhoneNumber(phone, window.recaptchaVerifier)
           .then(id => {
             confirmationResultRef = id;
             document.getElementById("phoneConfirmRow").classList.remove("hidden");
-            alert("SMS sent!");
+            alert("Verification SMS sent!");
           })
           .catch(e => alert("SMS Error: " + e.message));
       });
 
       document.getElementById("submitPhoneLinkBtn").addEventListener("click", () => {
         const code = document.getElementById("phoneLinkCode").value.trim();
-        if (!code || !confirmationResultRef) return alert("Enter code.");
+        if (!code || !confirmationResultRef) return alert("Enter 6-digit code.");
         const cred = firebase.auth.PhoneAuthProvider.credential(confirmationResultRef, code);
         currentUser.linkWithCredential(cred)
           .then(res => {
-            alert("Phone linked!");
+            alert("Phone number linked successfully!");
             document.getElementById("phoneLinkBox").classList.add("hidden");
             renderLinkedProviders(res.user);
           })
@@ -1001,13 +1004,13 @@
             const friendProfile = await db.collection("users").doc(doc.id).get();
             const fName = friendProfile.exists ? (friendProfile.data().username || "Unknown Hunter") : doc.id.substring(0, 8);
             const fPlatform = friendProfile.exists ? (friendProfile.data().primary_platform || "PC") : "PSN";
-            const fAvatar = (friendProfile.exists && friendProfile.data().avatar_url) ? friendProfile.data().avatar_url : DEFAULT_AVATAR;
+            const fAvatar = (friendProfile.exists && friendProfile.data().avatar_url) ? friendProfile.data().avatar_url : DEFAULT_USER_AVATAR;
 
             const div = document.createElement("div");
             div.className = "friend-item";
             div.innerHTML = `
               <div style="display:flex; align-items:center; gap:10px;">
-                <img src="${fAvatar}" class="nav-thumb" style="border-radius:50%; width:28px; height:28px;" onerror="this.src='${DEFAULT_AVATAR}'">
+                <img src="${fAvatar}" class="nav-thumb" style="border-radius:50%; width:28px; height:28px;" onerror="this.src='${DEFAULT_USER_AVATAR}'">
                 <div>
                   <strong>${fName}</strong>
                   <div style="font-size: 0.74rem; color: var(--text-muted);">${fPlatform.toUpperCase()}</div>
@@ -1025,7 +1028,7 @@
       document.getElementById("addFriendBtn").addEventListener("click", async () => {
         if (!currentUser) return;
         const code = document.getElementById("friendCodeInput").value.trim();
-        if (!code) return alert("Enter friend code.");
+        if (!code) return alert("Enter valid friend code.");
         if (code === currentUser.uid) return alert("You cannot add yourself.");
 
         try {
@@ -1040,7 +1043,7 @@
         }
       });
 
-      // 7. Delete Account
+      // 7. Delete Account (Firestore + Auth Purge)
       document.getElementById("deleteAccountBtn").addEventListener("click", async () => {
         if (!currentUser) return;
         if (!confirm("Permanently erase your account and all game records?")) return;
@@ -1056,7 +1059,7 @@
         }
       });
 
-      // 8. Sign In / Sign Out Triggers
+      // 8. Sign In / Out Triggers
       document.getElementById("inlineGoogleBtn").addEventListener("click", () => {
         const provider = new firebase.auth.GoogleAuthProvider();
         auth.signInWithPopup(provider).catch(e => alert("Sign In Error: " + e.message));
