@@ -1,9 +1,27 @@
 // Line 1: Way of the Hunter Master Data Controller
-// [Smart Cache-Buster Time: 2026-10-07 13:21 EDT | Firebase Sync Target: /utm_links | Version: 2.9.4]
+// [Smart Cache-Buster Time: 2026-10-07 15:42 EDT | Firebase Sync Target: /utm_links | Version: 3.0.0]
 
 document.addEventListener("DOMContentLoaded", () => {
+  const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
+
+  // Production Config for entertainment-71888
+  const firebaseConfig = {
+    apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
+    authDomain: "entertainment-71888.firebaseapp.com",
+    databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
+    projectId: "entertainment-71888",
+    storageBucket: "entertainment-71888.firebasestorage.app",
+    messagingSenderId: "660524340277",
+    appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
+    measurementId: "G-JDNSLD3GFE"
+  };
+
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const rtdb = firebase.database();
+  const db = firebase.firestore();
+
   const App = {
-    // Exact file targets in /Website/data/
     files: {
       challenges: "woth2_challenges.json",
       dogSkills: "woth2_dog_skills.json",
@@ -28,11 +46,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async init() {
       this.bindUI();
+      this.initAuth();
       this.initRTDB();
       await this.loadAllJSONs();
     },
 
-    // Line 36: Resolves relative paths or live site root
+    // Resolves JSON data files with relative fallbacks
     async fetchJSON(fileName) {
       const paths = [
         "../../data/" + fileName,
@@ -43,12 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
       for (let i = 0; i < paths.length; i++) {
         try {
           const res = await fetch(paths[i] + "?v=" + Date.now());
-          if (res.ok) {
-            return await res.json();
-          }
-        } catch (e) {
-          // Continue to next path
-        }
+          if (res.ok) return await res.json();
+        } catch (e) {}
       }
       return null;
     },
@@ -79,6 +94,233 @@ document.addEventListener("DOMContentLoaded", () => {
       this.render();
     },
 
+    // Dynamic Navigation & Tag-Based Favicon Sync
+    initRTDB() {
+      try {
+        const utmRef = rtdb.ref("/utm_links");
+        utmRef.on("value", snapshot => {
+          const raw = snapshot.val();
+          const badge = document.getElementById("firebaseStatusBadge");
+          if (badge) {
+            badge.textContent = "RTDB: Live Connected";
+            badge.className = "status-pill status-connected";
+          }
+
+          if (!raw) return;
+
+          const items = [];
+          Object.entries(raw).forEach(([parentKey, val]) => {
+            if (Array.isArray(val)) {
+              val.forEach((entry, idx) => {
+                if (entry) items.push(this.normalizeItem(entry, `${parentKey}_${idx}`));
+              });
+            } else if (typeof val === "object" && val !== null) {
+              if (val.url || val.title) {
+                items.push(this.normalizeItem(val, parentKey));
+              } else {
+                Object.entries(val).forEach(([childKey, childVal]) => {
+                  if (typeof childVal === "object" && childVal !== null) {
+                    items.push(this.normalizeItem(childVal, `${parentKey}_${childKey}`));
+                  }
+                });
+              }
+            }
+          });
+
+          this.syncSettingsFavicon(items, raw);
+          this.renderNav(items);
+        });
+      } catch (e) {
+        console.warn("RTDB offline:", e);
+      }
+    },
+
+    normalizeItem(item, fallbackKey) {
+      return {
+        title: item.title || fallbackKey,
+        url: item.url || "#",
+        image: (item.image && typeof item.image === "string") ? item.image.trim() : "",
+        group: (item.group && typeof item.group === "string") ? item.group.trim() : "",
+        tag: (item.tag && typeof item.tag === "string") ? item.tag.trim() : "",
+        rowNumber: (item.rowNumber !== undefined && item.rowNumber !== null) ? Number(item.rowNumber) : 9999,
+        updatedAt: item.updatedAt || ""
+      };
+    },
+
+    syncSettingsFavicon(items, raw) {
+      let settingsImg = "";
+      let settingsStamp = "";
+
+      const taggedEntry = items.find(i => i.tag && i.tag.toLowerCase() === "settings");
+
+      if (taggedEntry) {
+        settingsImg = taggedEntry.image;
+        settingsStamp = taggedEntry.updatedAt;
+      } else if (raw.Settings && raw.Settings[0] && raw.Settings[0].image) {
+        settingsImg = raw.Settings[0].image;
+        settingsStamp = raw.Settings[0].updatedAt;
+      } else {
+        const titleMatch = items.find(i => i.title.toLowerCase() === "settings");
+        if (titleMatch) {
+          settingsImg = titleMatch.image;
+          settingsStamp = titleMatch.updatedAt;
+        }
+      }
+
+      if (settingsImg) {
+        const favicon = document.getElementById("dynamicFavicon");
+        const appleIcon = document.getElementById("dynamicAppleIcon");
+        const brandLogo = document.getElementById("navBrandLogo");
+
+        if (favicon) favicon.href = settingsImg;
+        if (appleIcon) appleIcon.href = settingsImg;
+        if (brandLogo) brandLogo.src = settingsImg;
+      }
+
+      if (settingsStamp) {
+        const stampEl = document.getElementById("nyBuildTimestamp");
+        if (stampEl) stampEl.textContent = settingsStamp;
+      }
+    },
+
+    renderNav(items) {
+      const navList = document.getElementById("navList");
+      if (!navList) return;
+      navList.innerHTML = "";
+
+      const standaloneLinks = [];
+      const folderGroups = {};
+
+      // Strict partition: Bare links vs true groups (No standalone folder created)
+      items.forEach(item => {
+        if (!item.group) {
+          standaloneLinks.push(item);
+        } else {
+          if (!folderGroups[item.group]) {
+            folderGroups[item.group] = {
+              name: item.group,
+              items: [],
+              minRow: item.rowNumber,
+              folderImage: item.image
+            };
+          }
+          folderGroups[item.group].items.push(item);
+          if (item.rowNumber < folderGroups[item.group].minRow) {
+            folderGroups[item.group].minRow = item.rowNumber;
+            if (item.image) folderGroups[item.group].folderImage = item.image;
+          }
+        }
+      });
+
+      const topLevelBuckets = [];
+
+      standaloneLinks.forEach(link => {
+        topLevelBuckets.push({
+          type: "bare_link",
+          rank: link.rowNumber,
+          data: link
+        });
+      });
+
+      Object.values(folderGroups).forEach(grp => {
+        grp.items.sort((a, b) => a.rowNumber - b.rowNumber);
+        topLevelBuckets.push({
+          type: "folder",
+          rank: grp.minRow,
+          data: grp
+        });
+      });
+
+      topLevelBuckets.sort((a, b) => a.rank - b.rank);
+
+      topLevelBuckets.forEach(bucket => {
+        const li = document.createElement("li");
+        li.className = "nav-item";
+
+        if (bucket.type === "bare_link") {
+          const item = bucket.data;
+          const imgTag = item.image ? `<img src="${item.image}" alt="" class="nav-thumb">` : '';
+          li.innerHTML = `
+            <a href="${item.url}" class="nav-pill">
+              ${imgTag}
+              <span>${item.title}</span>
+            </a>
+          `;
+        } else {
+          const grp = bucket.data;
+          const folderImg = grp.folderImage ? `<img src="${grp.folderImage}" alt="" class="nav-thumb">` : '';
+
+          let dropdownHtml = `<div class="dropdown-menu">`;
+          grp.items.forEach(child => {
+            const childImg = child.image ? `<img src="${child.image}" alt="" class="nav-thumb">` : '';
+            dropdownHtml += `
+              <a href="${child.url}" class="dropdown-item">
+                ${childImg}
+                <span>${child.title}</span>
+              </a>
+            `;
+          });
+          dropdownHtml += `</div>`;
+
+          li.innerHTML = `
+            <button class="dropdown-trigger">
+              ${folderImg}
+              <span>${grp.name} ▾</span>
+            </button>
+            ${dropdownHtml}
+          `;
+        }
+        navList.appendChild(li);
+      });
+    },
+
+    // Authentication Binding
+    initAuth() {
+      auth.onAuthStateChanged(async user => {
+        const modalBtn = document.getElementById("authModalBtn");
+        const profileBadge = document.getElementById("userProfile");
+        const nameEl = document.getElementById("userDisplayName");
+        const avatarEl = document.getElementById("headerUserAvatar");
+
+        if (user) {
+          if (modalBtn) modalBtn.classList.add("hidden");
+          if (profileBadge) profileBadge.classList.remove("hidden");
+
+          let gamerTag = user.displayName || "Hunter";
+          let avatarUrl = user.photoURL || DEFAULT_USER_AVATAR;
+
+          try {
+            const doc = await db.collection("users").doc(user.uid).get();
+            if (doc.exists && doc.data().username) gamerTag = doc.data().username;
+            if (doc.exists && doc.data().avatar_url) avatarUrl = doc.data().avatar_url;
+          } catch (e) {}
+
+          if (nameEl) nameEl.textContent = gamerTag;
+          if (avatarEl) avatarEl.src = avatarUrl;
+        } else {
+          if (modalBtn) modalBtn.classList.remove("hidden");
+          if (profileBadge) profileBadge.classList.add("hidden");
+        }
+      });
+
+      const googleBtn = document.getElementById("googleSignInBtn");
+      if (googleBtn) {
+        googleBtn.addEventListener("click", () => {
+          const provider = new firebase.auth.GoogleAuthProvider();
+          auth.signInWithPopup(provider).then(() => {
+            const modal = document.getElementById("authModal");
+            if (modal) modal.style.display = "none";
+          }).catch(e => alert("Auth Error: " + e.message));
+        });
+      }
+
+      const logoutBtn = document.getElementById("logoutBtn");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => auth.signOut());
+      }
+    },
+
+    // Render Data Viewports
     render() {
       const container = document.getElementById("dataDisplayContainer");
       const title = document.getElementById("currentDisplayTitle");
@@ -316,61 +558,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (closeBtn && modal) {
         closeBtn.addEventListener("click", () => modal.style.display = "none");
       }
-    },
 
-    initRTDB() {
-      try {
-        if (typeof firebase !== "undefined" && firebase.database) {
-          const rtdb = firebase.database();
-          rtdb.ref("/utm_links").on("value", snap => {
-            const data = snap.val();
-            if (data) this.renderNav(data);
-          });
-        }
-      } catch (e) {
-        console.warn("RTDB offline:", e);
+      const menuToggle = document.getElementById("menuToggle");
+      const dynamicNav = document.getElementById("dynamicNav");
+      if (menuToggle && dynamicNav) {
+        menuToggle.addEventListener("click", () => dynamicNav.classList.toggle("open"));
       }
-    },
-
-    renderNav(data) {
-      const list = document.getElementById("navList");
-      if (!list || !data) return;
-      list.innerHTML = "";
-
-      const groups = {};
-      const standalone = [];
-
-      Object.entries(data).forEach(([k, v]) => {
-        if (v.group && v.group.trim()) {
-          const g = v.group.trim();
-          if (!groups[g]) groups[g] = [];
-          groups[g].push({ k, ...v });
-        } else {
-          standalone.push({ k, ...v });
-        }
-      });
-
-      Object.entries(groups).forEach(([name, items]) => {
-        const li = document.createElement("li");
-        li.className = "nav-item";
-        
-        let innerLinks = "";
-        items.forEach(i => {
-          innerLinks += '<a class="dropdown-item" href="' + (i.url || '#') + '">' + (i.title || i.k) + '</a>';
-        });
-
-        li.innerHTML = 
-          '<button class="dropdown-trigger">' + name + ' ▾</button>' +
-          '<div class="dropdown-menu">' + innerLinks + '</div>';
-        list.appendChild(li);
-      });
-
-      standalone.forEach(i => {
-        const li = document.createElement("li");
-        li.className = "nav-item";
-        li.innerHTML = '<a class="nav-link" href="' + (i.url || '#') + '">' + (i.title || i.k) + '</a>';
-        list.appendChild(li);
-      });
     }
   };
 
