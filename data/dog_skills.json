@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0",
+  "max_level_cap": 6,
+  "skills": {
+    "bonding_level": {
+      "name": "Bonding Level",
+      "description": "Determines hunter trust, obedience range, and calm composure around aggressive predators like bears and wolves."
+    },
+    "following_commands": {
+      "name": "Following Commands",
+      "max": 6,
+      "description": "Controls response speed to Heel, Sit, Stay, and Lie Down. High ranks prevent barking or rustling brush."
+    },
+    "blood_tracking": {
+      "name": "Blood Tracking",
+      "max": 6,
+      "description": "Level 1-3 tracks heavy, fresh blood. Level 4-6 can follow faint flesh scratches through water, rocks, and rain to stop meat degradation."
+    },
+    "search_and_quartering": {
+      "name": "Search and Quartering",
+      "max": 6,
+      "description": "Weaves in zig-zag patterns ahead of the hunter through thick brush to flush upland birds and retrieve small game."
+    }
+  }
+}
