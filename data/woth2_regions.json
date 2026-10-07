@@ -1,0 +1,48 @@
+{
+  "reserve": "New Laurentia",
+  "genetic_rule": "Species existing across multiple regions maintain completely isolated populations with independent fitness calculations.",
+  "regions": [
+    {
+      "id": "jackalope_cordillera",
+      "name": "Jackalope Cordillera",
+      "npc": "Patrick Harper",
+      "terrain": "mountains"
+    },
+    {
+      "id": "kermode_plateau",
+      "name": "Kermode Plateau",
+      "npc": null,
+      "terrain": "lowlands and highlands"
+    },
+    {
+      "id": "lake_sasquatch",
+      "name": "Lake Sasquatch",
+      "npc": null,
+      "terrain": "lowlands and highlands"
+    },
+    {
+      "id": "mishipeshu_swamp",
+      "name": "Mishipeshu Swamp",
+      "npc": null,
+      "terrain": "swamps"
+    },
+    {
+      "id": "slalakum_shore",
+      "name": "Slalakum Shore",
+      "npc": "Juniper",
+      "terrain": "shoreline and highlands"
+    },
+    {
+      "id": "thunderbird_muskeg",
+      "name": "Thunderbird Muskeg",
+      "npc": "Regina Harper",
+      "terrain": "swamps"
+    },
+    {
+      "id": "wetiko_foothills",
+      "name": "Wetiko Foothills",
+      "npc": "Mikael Anderson",
+      "terrain": "lowlands and highlands"
+    }
+  ]
+}
