@@ -1,5 +1,5 @@
 <!-- Line 1: Hunter Identity & Settings - Single File Architecture -->
-<!-- [Smart Cache-Buster Time: 2026-10-07 15:28 EDT | Firebase Sync Target: /utm_links | Version: 3.8.0] -->
+<!-- [Smart Cache-Buster Time: 2026-10-07 15:39 EDT | Firebase Sync Target: /utm_links | Version: 3.9.0] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,40 +49,44 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      overflow-x: hidden;
     }
 
-    /* Line 50: Desktop Sticky Navbar */
+    /* Line 51: Full Width Edge-to-Edge Desktop Sticky Navbar */
     .site-header {
       background: var(--bg-secondary);
       border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
       z-index: 1000;
+      width: 100vw;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     }
 
     .header-container {
-      max-width: 1440px;
-      margin: 0 auto;
-      padding: 0 20px;
+      width: 100%;
+      max-width: 100% !important;
+      margin: 0;
+      padding: 0 clamp(16px, 2vw, 36px);
       display: flex;
       align-items: center;
       justify-content: space-between;
       height: 68px;
-      gap: 16px;
+      gap: 18px;
     }
 
+    /* Far-Left Anchored Brand / Favicon Node */
     .brand-area {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       flex-shrink: 0;
       text-decoration: none;
     }
 
     .brand-logo {
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       border-radius: 8px;
       border: 1px solid var(--border-color);
       object-fit: cover;
@@ -94,20 +98,23 @@
       font-weight: 700;
       color: #fff;
       letter-spacing: 0.5px;
+      white-space: nowrap;
     }
 
-    /* Line 88: Clean Nav List without Scrollbars */
+    /* Responsive Menu Across Full Screen Width */
     .site-nav {
       display: flex;
       align-items: center;
       flex: 1;
+      width: auto;
+      margin: 0 16px;
       overflow: visible;
     }
 
     .nav-list {
       display: flex;
       list-style: none;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
       flex-wrap: wrap;
     }
@@ -120,7 +127,7 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 7px 12px;
+      padding: 7px 14px;
       color: var(--text-main);
       text-decoration: none;
       font-size: 0.88rem;
@@ -146,7 +153,7 @@
       object-fit: cover;
     }
 
-    /* Line 132: Dropdown Submenu */
+    /* Dropdown Submenu */
     .dropdown-menu {
       position: absolute;
       top: 100%;
@@ -191,12 +198,13 @@
       color: var(--accent-gold);
     }
 
-    /* Line 171: Header Auth & User Avatar */
+    /* Far-Right Anchored Auth Area */
     .auth-toolbar {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       flex-shrink: 0;
+      margin-left: auto;
     }
 
     .user-profile-badge {
@@ -222,18 +230,17 @@
       font-size: 0.85rem;
       font-weight: 600;
       color: #fff;
-      max-width: 120px;
+      max-width: 140px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    /* Line 203: Settings Viewport */
+    /* Full-Width Workspace with Adaptive Padding */
     .settings-container {
-      max-width: 1050px;
-      width: 100%;
+      width: 95vw;
+      max-width: 1800px;
       margin: 28px auto;
-      padding: 0 20px;
       display: flex;
       flex-direction: column;
       gap: 24px;
@@ -244,7 +251,7 @@
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: 10px;
-      padding: 24px;
+      padding: clamp(18px, 2vw, 28px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
@@ -266,13 +273,13 @@
 
     .settings-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
       gap: 20px;
     }
 
     .control-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 16px;
       margin-top: 14px;
     }
@@ -397,13 +404,14 @@
     .site-footer {
       background: var(--bg-secondary);
       border-top: 1px solid var(--border-color);
-      padding: 16px 20px;
+      padding: 16px clamp(16px, 2vw, 36px);
       margin-top: auto;
+      width: 100vw;
     }
 
     .footer-container {
-      max-width: 1440px;
-      margin: 0 auto;
+      width: 100%;
+      margin: 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -425,7 +433,7 @@
 
     @media (max-width: 1024px) {
       .menu-toggle { display: block; font-size: 1.5rem; background: transparent; border: none; color: #fff; cursor: pointer; }
-      .site-nav { display: none; width: 100%; }
+      .site-nav { display: none; width: 100%; margin: 0; }
       .site-nav.open { display: block; position: absolute; top: 68px; left: 0; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); padding: 12px 20px; }
       .nav-list { flex-direction: column; align-items: stretch; }
       .dropdown-menu { position: static; box-shadow: none; border-left: 2px solid var(--accent-blue); }
@@ -434,7 +442,7 @@
 </head>
 <body>
 
-  <!-- Line 251: Sticky Top Header with Dynamic Favicon Brand Logo -->
+  <!-- Sticky Full-Width Header -->
   <header class="site-header">
     <div class="header-container">
       <a href="../games/woth2/index.html" class="brand-area">
@@ -444,14 +452,14 @@
 
       <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">☰</button>
 
-      <!-- Programmatically Sorted RTDB Navbar -->
+      <!-- Full-Width Fluid Nav -->
       <nav class="site-nav" id="dynamicNav">
         <ul class="nav-list" id="navList">
           <!-- Populated from RTDB /utm_links -->
         </ul>
       </nav>
 
-      <!-- Right Header Profile Area -->
+      <!-- Far-Right User Account Area -->
       <div class="auth-toolbar">
         <button id="authModalBtn" class="btn btn-primary btn-sm">Log In</button>
         <div id="userProfileBadge" class="user-profile-badge hidden">
@@ -463,7 +471,7 @@
     </div>
   </header>
 
-  <!-- Line 281: Master Workspace -->
+  <!-- Master Settings Workspace -->
   <main class="settings-container">
     
     <!-- Guest Notification -->
@@ -531,7 +539,7 @@
       <!-- Multi-Auth Linking & Friends -->
       <div class="settings-grid">
         
-        <!-- Multi-Provider Linking (Google & Email Only) -->
+        <!-- Multi-Provider Linking -->
         <section class="card">
           <h3>Linked Sign-In Providers</h3>
           <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 16px;">
@@ -560,7 +568,7 @@
           </div>
         </section>
 
-        <!-- Social Companions Roster -->
+        <!-- Companions Roster -->
         <section class="card">
           <h3>Hunting Companions & Friends</h3>
           <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 14px;">
@@ -578,7 +586,7 @@
         </section>
       </div>
 
-      <!-- Permanent Data Deletion -->
+      <!-- Delete Account -->
       <section class="card danger-zone">
         <h3>Delete Account & Erase Cloud Records</h3>
         <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 14px;">
@@ -590,12 +598,12 @@
     </div>
   </main>
 
-  <!-- Line 405: 24-hr Timestamp Footer -->
+  <!-- 24-hr Timestamp Footer -->
   <footer class="site-footer">
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Werewolf Project | User Identity Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 15:28 EDT</span> | Version: 3.8.0</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 15:39 EDT</span> | Version: 3.9.0</p>
       </div>
       <div class="footer-col text-right">
         <span id="accountStatusPill" class="status-pill status-connecting">RTDB: Connecting...</span>
@@ -603,13 +611,13 @@
     </div>
   </footer>
 
-  <!-- Line 418: Embedded JavaScript Engine -->
+  <!-- Embedded Script Engine -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // Default placeholder avatar strictly for user accounts without profile photos
+      // Default placeholder avatar strictly for user profiles
       const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
 
-      // Verified Production Firebase Config for entertainment-71888
+      // Production Config for entertainment-71888
       const firebaseConfig = {
         apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
         authDomain: "entertainment-71888.firebaseapp.com",
@@ -628,7 +636,7 @@
 
       let currentUser = null;
 
-      // 1. RTDB Menu Engine & Favicon / Brand Logo Binding
+      // 1. RTDB Dynamic Menu Engine & Tag-Based Favicon Binding
       function initRTDBMenu() {
         const utmRef = rtdb.ref("/utm_links");
 
@@ -665,7 +673,7 @@
           // Sync Favicon and Header Logo via explicit tag === "settings"
           syncSettingsFavicon(items, raw);
 
-          // Build Sorted Navbar (Bare links & Folders side-by-side; No "Standalone" folder)
+          // Build Fluid Sorted Navbar (Zero standalone dummy folders)
           renderSortedMenu(items);
         }, (err) => {
           console.warn("RTDB load warning:", err);
@@ -689,7 +697,6 @@
         let settingsImg = "";
         let settingsStamp = "";
 
-        // Look for explicit tag: "Settings" or "settings" across all groups
         const taggedEntry = items.find(i => i.tag && i.tag.toLowerCase() === "settings");
 
         if (taggedEntry) {
@@ -731,7 +738,6 @@
         const standaloneLinks = [];
         const folderGroups = {};
 
-        // Strict partition: Bare links vs true groups (Never creating a "Standalone" folder)
         items.forEach(item => {
           if (!item.group) {
             standaloneLinks.push(item);
@@ -752,7 +758,6 @@
           }
         });
 
-        // Top-level competing buckets
         const topLevelBuckets = [];
 
         standaloneLinks.forEach(link => {
@@ -772,9 +777,10 @@
           });
         });
 
+        // Lowest rowNumber placed on left
         topLevelBuckets.sort((a, b) => a.rank - b.rank);
 
-        // Render to DOM
+        // Render fluid pills
         topLevelBuckets.forEach(bucket => {
           const li = document.createElement("li");
           li.className = "nav-item";
@@ -998,7 +1004,7 @@
         }
       });
 
-      // 7. Delete Account (Firestore + Auth Purge)
+      // 7. Delete Account
       document.getElementById("deleteAccountBtn").addEventListener("click", async () => {
         if (!currentUser) return;
         if (!confirm("Permanently erase your account and all game records?")) return;
