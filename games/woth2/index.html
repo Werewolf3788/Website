@@ -1,20 +1,21 @@
-<!-- Line 1: Way of the Hunter Master Hub - Integrated Architecture -->
-<!-- [Smart Cache-Buster Time: 2026-10-07 12:44 EDT | Firebase Sync Target: /utm_links | Version: 2.4.0] -->
+<!-- Line 1: Way of the Hunter Master Hub -->
+<!-- [Smart Cache-Buster Time: 2026-10-07 12:57 EDT | Firebase Sync Target: /utm_links | Version: 2.8.0] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Line 6: Required mobile-responsive viewport -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Way of the Hunter 2 - Database & UTM Hub</title>
 
-  <!-- Line 10: Favicons & Apple Touch Icons -->
-  <link rel="icon" type="image/jpeg" href="//werewolf3788.github.io/Website/assets/logo.jpg">
-  <link rel="apple-touch-icon" href="//werewolf3788.github.io/Website/assets/logo.jpg">
+  <!-- Line 11: Synchronized Branding Icons via Relative Protocol -->
+  <link rel="icon" type="image/jpeg" href="//static.wikia.nocookie.net/way-of-the-hunter/images/f/fb/Way_of_the_Hunter_2.jpg/revision/latest?cb=20260405105432">
+  <link rel="apple-touch-icon" href="//static.wikia.nocookie.net/way-of-the-hunter/images/f/fb/Way_of_the_Hunter_2.jpg/revision/latest?cb=20260405105432">
 
-  <!-- Line 14: Direct Local Sibling CSS -->
+  <!-- Line 15: Sibling Stylesheet link -->
   <link rel="stylesheet" href="./style.css">
 
-  <!-- Line 17: Firebase SDKs (Compat Layer) -->
+  <!-- Line 18: Firebase SDKs (Compat Layer) -->
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
@@ -22,24 +23,22 @@
 </head>
 <body>
 
-  <!-- Line 25: Sticky Header with Navigation & Auth -->
+  <!-- Line 26: Header with Synchronized Brand Logo & Navigation -->
   <header class="site-header">
     <div class="header-container">
       <div class="brand-area">
-        <img src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="Portal Logo" class="brand-logo">
+        <img src="//static.wikia.nocookie.net/way-of-the-hunter/images/f/fb/Way_of_the_Hunter_2.jpg/revision/latest?cb=20260405105432" alt="" class="brand-logo">
         <span class="brand-title">WOTH2 HUNTING HUB</span>
       </div>
 
       <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">☰</button>
 
-      <!-- Dynamic RTDB UTM Navigation Menu -->
       <nav class="site-nav" id="dynamicNav">
         <ul class="nav-list" id="navList">
-          <!-- Populated from RTDB /utm_links or local cache -->
+          <!-- Populated dynamically from RTDB /utm_links -->
         </ul>
       </nav>
 
-      <!-- User Auth State Area -->
       <div class="auth-toolbar">
         <button id="authModalBtn" class="btn btn-primary btn-sm">Sign In / Account</button>
         <div id="userProfile" class="user-profile-badge hidden">
@@ -50,10 +49,8 @@
     </div>
   </header>
 
-  <!-- Line 53: Main Content Display -->
+  <!-- Line 52: Main Application Viewport & Data Hub -->
   <main class="main-container">
-    
-    <!-- Dashboard Filters -->
     <section class="card dashboard-controls">
       <h2>Master Wildlife & Habitat Navigator</h2>
       <div class="control-grid">
@@ -61,10 +58,11 @@
           <label for="categorySelect">Active Module</label>
           <select id="categorySelect">
             <option value="species">Animals & Lifecycles</option>
-            <option value="needZones">Need Zones & Daily Schedules</option>
+            <option value="needZones">Need Zones & Schedules</option>
             <option value="challenges">Challenges & Milestones</option>
             <option value="dogSkills">Hunting Dog Skills</option>
-            <option value="infrastructure">Infrastructure & Fast Travel</option>
+            <option value="infrastructure">Infrastructure & Cabins</option>
+            <option value="missions">Missions & Story</option>
           </select>
         </div>
 
@@ -84,17 +82,17 @@
 
         <div class="control-group">
           <label for="globalSearch">Search Name / Trait</label>
-          <input type="text" id="globalSearch" placeholder="e.g. Elk, Badger, 5-Star, Drinking...">
+          <input type="text" id="globalSearch" placeholder="e.g. Elk, Badger, 5-Star...">
         </div>
 
         <div class="control-group status-sync-box">
           <label>Storage Status</label>
-          <span class="sync-indicator" id="syncStatus">Storage: LocalStorage (Offline / Guest)</span>
+          <span class="sync-indicator" id="syncStatus">Storage: LocalStorage (Offline Mode)</span>
         </div>
       </div>
     </section>
 
-    <!-- Data Cards Container -->
+    <!-- Line 98: Live Dynamic Data Card Grid -->
     <section class="card data-viewport">
       <div class="viewport-header">
         <h3 id="currentDisplayTitle">Animals & Lifecycles</h3>
@@ -106,7 +104,7 @@
     </section>
   </main>
 
-  <!-- Line 110: Modal Overlay (Hidden by default) -->
+  <!-- Line 110: Hidden Authentication Modal -->
   <div class="modal-overlay hidden" id="authModal" style="display: none;">
     <div class="modal-card">
       <div class="modal-header">
@@ -114,61 +112,25 @@
         <button class="modal-close" id="authModalClose" aria-label="Close Modal">&times;</button>
       </div>
       <div class="modal-body">
-        <p class="auth-helper-text">Sign in to sync your harvest logs, culls, and discovered zones across devices.</p>
-
         <button id="googleSignInBtn" class="btn btn-google full-width">Sign In with Google</button>
-
-        <div class="separator"><span>OR EMAIL</span></div>
-
-        <form id="emailAuthForm" onsubmit="return false;">
-          <div class="form-group">
-            <label for="authEmail">Email Address</label>
-            <input type="email" id="authEmail" required autocomplete="email" placeholder="hunter@example.com">
-          </div>
-          <div class="form-group">
-            <label for="authPassword">Password</label>
-            <input type="password" id="authPassword" required autocomplete="current-password" placeholder="••••••••">
-          </div>
-          <div class="btn-dual-row">
-            <button type="button" id="emailSignInBtn" class="btn btn-primary">Log In</button>
-            <button type="button" id="emailSignUpBtn" class="btn btn-secondary">Register</button>
-          </div>
-        </form>
-
-        <div class="separator"><span>OR PHONE SMS</span></div>
-
-        <form id="phoneAuthForm" onsubmit="return false;">
-          <div class="form-group">
-            <label for="phoneNumber">Mobile Number</label>
-            <input type="tel" id="phoneNumber" placeholder="+1...">
-          </div>
-          <div id="recaptcha-container"></div>
-          <button type="button" id="sendPhoneCodeBtn" class="btn btn-primary full-width" style="margin-top: 8px;">Send SMS Code</button>
-
-          <div id="phoneVerificationGroup" class="form-group hidden" style="margin-top: 10px; display: none;">
-            <label for="verificationCode">Enter 6-Digit Code</label>
-            <input type="text" id="verificationCode" placeholder="123456">
-            <button type="button" id="verifyPhoneCodeBtn" class="btn btn-success full-width" style="margin-top: 8px;">Confirm & Sign In</button>
-          </div>
-        </form>
       </div>
     </div>
   </div>
 
-  <!-- Line 163: Global Footer -->
+  <!-- Line 122: Persistent Footer with NY Timestamp -->
   <footer class="site-footer">
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Way of the Hunter 2 Master Hub</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 12:44 EDT</span> | Version: 2.4.0</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 12:57 EDT</span> | Version: 2.8.0</p>
       </div>
       <div class="footer-col text-right">
-        <span id="firebaseStatusBadge" class="status-pill status-connecting">RTDB: Offline Cache</span>
+        <span id="firebaseStatusBadge" class="status-pill status-connected">RTDB: Live Connected</span>
       </div>
     </div>
   </footer>
 
-  <!-- Line 176: Direct Local Sibling Script -->
+  <!-- Line 135: Sibling Script Execution -->
   <script src="./script.js"></script>
 </body>
 </html>
