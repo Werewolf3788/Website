@@ -1,5 +1,5 @@
-<!-- Line 1: Hunter Identity & Master User Settings -->
-<!-- [Smart Cache-Buster Time: 2026-10-07 19:40 EDT | Firebase Sync Target: /utm_links | Version: 4.6.0] -->
+<!-- Line 1: Hunter Identity & Master User Settings - Single File Architecture -->
+<!-- [Smart Cache-Buster Time: 2026-10-07 19:48 EDT | Firebase Sync Target: /utm_links | Version: 4.6.2] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,6 +18,7 @@
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
   <style>
+    /* Section 1: Color Design Tokens & Tactical Card Highlights (Lines 20-55) */
     :root {
       --bg-primary: #07090e;
       --bg-secondary: #0f141d;
@@ -50,7 +51,7 @@
       overflow-x: hidden;
     }
 
-    /* Edge-to-Edge Sticky Navbar */
+    /* Section 2: Header, Navbar & Profile Toolbar (Lines 56-125) */
     .site-header {
       background: var(--bg-secondary);
       border-bottom: 1px solid var(--border-color);
@@ -138,6 +139,7 @@
     .header-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent-blue); background: var(--bg-secondary); }
     .header-user-tag { font-size: 0.85rem; font-weight: 600; color: #fff; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+    /* Section 3: Workspace Layout & Custom Color-Coded Cards (Lines 126-210) */
     .settings-container {
       width: 95vw;
       max-width: 1800px;
@@ -148,7 +150,6 @@
       flex: 1;
     }
 
-    /* Distinct Card Theming */
     .card {
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
@@ -158,7 +159,6 @@
       position: relative;
     }
 
-    /* Card Specific Colors */
     .card-profile { border-top: 3px solid var(--accent-blue); }
     .card-platforms { border-top: 3px solid var(--accent-gold); }
     .card-links { border-top: 3px solid var(--accent-cyan); }
@@ -274,7 +274,7 @@
     .btn-google { background: #4285f4; color: #fff; }
     .btn-danger { background: var(--danger); color: #fff; }
     .btn-danger:hover { background: #c0392b; }
-    .btn-whatsapp { background: #25d366; color: #fff; }
+    .btn-whatsapp { background: var(--accent-green); color: #fff; }
     .btn-whatsapp:hover { background: #1ebc57; }
     .full-width { width: 100%; }
 
@@ -288,7 +288,7 @@
       margin-top: 8px;
     }
 
-    /* Floating WhatsApp Widget */
+    /* Section 4: WhatsApp Floating Messenger & Footer (Lines 211-265) */
     .floating-whatsapp-widget {
       position: fixed;
       bottom: 24px;
@@ -375,7 +375,7 @@
 </head>
 <body>
 
-  <!-- Sticky Full-Width Header -->
+  <!-- Line 270: Sticky Full-Width Header -->
   <header class="site-header">
     <div class="header-container">
       <a href="../games/woth2/index.html" class="brand-area">
@@ -400,7 +400,7 @@
     </div>
   </header>
 
-  <!-- Master Settings Workspace -->
+  <!-- Line 298: Master Settings Workspace -->
   <main class="settings-container">
     
     <!-- Guest Notification -->
@@ -422,7 +422,7 @@
       </div>
     </section>
 
-    <!-- Authenticated Settings Engine -->
+    <!-- Line 322: Authenticated Settings Engine -->
     <div id="authenticatedSection" class="hidden" style="display: flex; flex-direction: column; gap: 24px;">
       
       <!-- Card 1: Profile & Identity (Electric Blue) -->
@@ -680,7 +680,7 @@
     </div>
   </main>
 
-  <!-- Anonymous Floating WhatsApp Messaging Widget -->
+  <!-- Line 562: Anonymous Floating WhatsApp Messaging Widget -->
   <div class="floating-whatsapp-widget" id="whatsappFloatingWidget">
     <div class="whatsapp-chat-box hidden" id="whatsappChatBox">
       <div class="whatsapp-box-header">
@@ -701,12 +701,12 @@
     <button class="whatsapp-trigger-btn" id="toggleWhatsappBtn" title="Direct WhatsApp Support">💬</button>
   </div>
 
-  <!-- Persistent 24-hr Timestamp Footer -->
+  <!-- Line 587: Persistent 24-hr Timestamp Footer -->
   <footer class="site-footer">
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Werewolf Project | User Identity Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 19:40 EDT</span> | Version: 4.6.0</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 19:48 EDT</span> | Version: 4.6.2</p>
       </div>
       <div class="footer-col text-right">
         <span id="accountStatusPill" class="status-pill status-connecting">RTDB: Connecting...</span>
@@ -714,8 +714,9 @@
     </div>
   </footer>
 
-  <!-- Embedded Script Engine -->
+  <!-- Line 600: Complete Embedded JavaScript Engine -->
   <script>
+    // Section 1: Core Initialization and Global Listeners (Lines 602-646)
     document.addEventListener("DOMContentLoaded", () => {
       const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
 
@@ -737,11 +738,31 @@
 
       let currentUser = null;
 
+      // Section 2: Email Key Resolution (Lines 647-676)
+      // Resolves primary email: Google Account email takes precedence, falling back to registered email
+      function getResolvedPrimaryEmail(user) {
+        if (!user) return "";
+        const googleProvider = user.providerData.find(p => p && p.providerId === "google.com");
+        if (googleProvider && googleProvider.email) {
+          return googleProvider.email.toLowerCase().trim();
+        }
+        if (user.email) {
+          return user.email.toLowerCase().trim();
+        }
+        const anyProvider = user.providerData.find(p => p && p.email);
+        if (anyProvider && anyProvider.email) {
+          return anyProvider.email.toLowerCase().trim();
+        }
+        return "hunter@guest.local";
+      }
+
+      // Safely converts email to RTDB path key
       function getEmailKey(email) {
         if (!email) return "unknown_user";
         return email.toLowerCase().replace(/@/g, "_at_").replace(/\./g, "_");
       }
 
+      // Section 3: Navbar Sorting Engine & Favicon Synchronization (Lines 677-801)
       function initRTDBMenu() {
         const utmRef = rtdb.ref("/utm_links");
         utmRef.on("value", (snapshot) => {
@@ -875,7 +896,7 @@
         });
       }
 
-      // Dual-Database Auto-Provisioning on Auth Change
+      // Section 4: Auth State Observer & Dual Provisioning Engine (Lines 802-896)
       auth.onAuthStateChanged(async (user) => {
         const guestPrompt = document.getElementById("guestSignInPrompt");
         const authSection = document.getElementById("authenticatedSection");
@@ -889,17 +910,18 @@
           if (profileBadge) profileBadge.classList.remove("hidden");
           if (authModalBtn) authModalBtn.classList.add("hidden");
 
-          const primaryEmail = (user.email || "hunter@guest.local").toLowerCase();
+          const primaryEmail = getResolvedPrimaryEmail(user);
           const emailKey = getEmailKey(primaryEmail);
           const friendCode = user.uid.substring(0, 8).toUpperCase();
 
-          document.getElementById("friendCodeDisplay").textContent = friendCode;
-          document.getElementById("primaryEmailDisplay").textContent = primaryEmail;
+          const friendCodeDisplay = document.getElementById("friendCodeDisplay");
+          const primaryEmailDisplay = document.getElementById("primaryEmailDisplay");
+          if (friendCodeDisplay) friendCodeDisplay.textContent = friendCode;
+          if (primaryEmailDisplay) primaryEmailDisplay.textContent = primaryEmail;
 
-          // 1. Dual Provisioning: Write to RTDB and Firestore
+          // Dual-Provision: Synchronize RTDB (/users/{emailKey}) & Firestore (users/{email})
           await autoProvisionDualDatabases(user, primaryEmail, emailKey, friendCode);
 
-          // 2. Real-time RTDB listener for Settings Updates
           loadRTDBUserProfile(emailKey, friendCode);
           renderProvidersUI(user);
         } else {
@@ -911,12 +933,11 @@
         }
       });
 
-      // Synchronizes both database root tags simultaneously
       async function autoProvisionDualDatabases(user, primaryEmail, emailKey, friendCode) {
         const fallbackName = user.displayName || "Hunter";
         const fallbackAvatar = user.photoURL || DEFAULT_USER_AVATAR;
 
-        // Provision Cloud Firestore document under users/{email}
+        // 1. Provision Cloud Firestore root document under users/{primaryEmail}
         try {
           await db.collection("users").doc(primaryEmail).set({
             email: primaryEmail,
@@ -931,7 +952,7 @@
           console.warn("Firestore provisioning warning:", e);
         }
 
-        // Provision RTDB nodes (/users/{emailKey} & /friend_codes/{code})
+        // 2. Provision RTDB nodes at /users/{emailKey} & /friend_codes/{friendCode}
         try {
           const userRef = rtdb.ref(`/users/${emailKey}`);
           const snap = await userRef.once("value");
@@ -946,7 +967,6 @@
             });
           }
 
-          // Mint lookup index in RTDB
           await rtdb.ref(`/friend_codes/${friendCode}`).set({
             email: primaryEmail,
             email_key: emailKey,
@@ -958,6 +978,7 @@
         }
       }
 
+      // Section 5: Profile Sync & DecAPI Twitch Avatar Handlers (Lines 897-1011)
       function loadRTDBUserProfile(emailKey, friendCode) {
         const userRef = rtdb.ref(`/users/${emailKey}`);
         userRef.on("value", async (snapshot) => {
@@ -982,7 +1003,7 @@
           document.getElementById("avatarPreview").src = avatarUrl;
           document.getElementById("headerUserAvatar").src = avatarUrl;
 
-          // Populate Gaming Handles
+          // Populate Gaming Handles & Scopes
           document.getElementById("psnUsernameInput").value = data.psn_username || "";
           document.getElementById("psnUsernameScope").value = data.psn_username_scope || "public";
           document.getElementById("psnAccountIdInput").value = data.psn_account_id || "";
@@ -1020,7 +1041,6 @@
         toggleCustomAvatarField(e.target.value);
       });
 
-      // DecAPI Twitch Live Check
       async function checkTwitchLiveGame(twitchUser) {
         const tag = document.getElementById("twitchLiveGameTag");
         if (!tag || !twitchUser) return;
@@ -1035,7 +1055,8 @@
         }
       }
 
-      // One-Click Friend Code Clipboard Copy (No Popups)
+      // Section 6: Silent Save Operations (Lines 1012-1131)
+      // One-Click Friend Code Clipboard Copy
       document.getElementById("copyFriendCodeBtn").addEventListener("click", () => {
         const code = document.getElementById("friendCodeDisplay").textContent.trim();
         if (!code || code === "Loading...") return;
@@ -1061,10 +1082,10 @@
         });
       });
 
-      // Silent Save: Profile Details & Twitch Avatar Resolution
+      // Silent Save: Profile Details & Twitch Avatar DecAPI Resolution
       document.getElementById("saveProfileBtn").addEventListener("click", async () => {
         if (!currentUser) return;
-        const primaryEmail = currentUser.email.toLowerCase();
+        const primaryEmail = getResolvedPrimaryEmail(currentUser);
         const emailKey = getEmailKey(primaryEmail);
         const newTag = document.getElementById("usernameInput").value.trim() || "Hunter";
         const avatarSource = document.getElementById("avatarSourceSelect").value;
@@ -1076,7 +1097,6 @@
           const twitchUser = document.getElementById("twitchUsernameInput").value.trim();
           if (twitchUser) {
             try {
-              // Fetch raw DecAPI image URL string
               const decRes = await fetch(`https://decapi.me/twitch/avatar/${encodeURIComponent(twitchUser)}`);
               if (decRes.ok) {
                 const resolvedUrl = (await decRes.text()).trim();
@@ -1092,7 +1112,7 @@
 
         const friendCode = currentUser.uid.substring(0, 8).toUpperCase();
 
-        // 1. Silent update RTDB
+        // Silent RTDB sync
         await rtdb.ref(`/users/${emailKey}`).update({
           username: newTag,
           avatar_source: avatarSource,
@@ -1105,7 +1125,7 @@
           avatar_url: avatarUrl || DEFAULT_USER_AVATAR
         });
 
-        // 2. Silent update Firestore
+        // Silent Firestore sync
         await db.collection("users").doc(primaryEmail).set({
           username: newTag,
           avatar_url: avatarUrl || DEFAULT_USER_AVATAR,
@@ -1116,7 +1136,7 @@
       // Silent Save: Gaming Handles & Visibility Scopes
       document.getElementById("saveGamingProfilesBtn").addEventListener("click", async () => {
         if (!currentUser) return;
-        const primaryEmail = currentUser.email.toLowerCase();
+        const primaryEmail = getResolvedPrimaryEmail(currentUser);
         const emailKey = getEmailKey(primaryEmail);
         const twitchUser = document.getElementById("twitchUsernameInput").value.trim();
 
@@ -1134,10 +1154,8 @@
           last_profile_sync: new Date().toISOString()
         };
 
-        // 1. Silent save to RTDB
         await rtdb.ref(`/users/${emailKey}`).update(payload);
 
-        // 2. Silent save to Firestore
         await db.collection("users").doc(primaryEmail).set({
           gaming_platforms: payload
         }, { merge: true });
@@ -1145,14 +1163,14 @@
         if (twitchUser) checkTwitchLiveGame(twitchUser);
       });
 
-      // Silent Save: User Personal Links
+      // Section 7: Personal Links Management (Lines 1132-1186)
       document.getElementById("addUserLinkBtn").addEventListener("click", async () => {
         if (!currentUser) return;
         const title = document.getElementById("linkTitleInput").value.trim();
         const url = document.getElementById("linkUrlInput").value.trim();
         if (!title || !url) return;
 
-        const emailKey = getEmailKey(currentUser.email);
+        const emailKey = getEmailKey(getResolvedPrimaryEmail(currentUser));
         const linkId = "link_" + Date.now();
 
         await rtdb.ref(`/users/${emailKey}/links/${linkId}`).set({ title, url });
@@ -1187,27 +1205,27 @@
 
       window.removeUserLink = async (id) => {
         if (!currentUser) return;
-        const emailKey = getEmailKey(currentUser.email);
+        const emailKey = getEmailKey(getResolvedPrimaryEmail(currentUser));
         await rtdb.ref(`/users/${emailKey}/links/${id}`).remove();
       };
 
-      // Add Companion via Dedicated /friend_codes Index
+      // Section 8: Companions Roster & Dual Linking (Lines 1187-1271)
       document.getElementById("addFriendBtn").addEventListener("click", async () => {
         if (!currentUser) return;
         const code = document.getElementById("friendCodeInput").value.trim().toUpperCase();
         if (!code || code.length < 6) return;
         if (code === currentUser.uid.substring(0, 8).toUpperCase()) return;
 
-        const emailKey = getEmailKey(currentUser.email);
+        const primaryEmail = getResolvedPrimaryEmail(currentUser);
+        const emailKey = getEmailKey(primaryEmail);
 
         try {
-          // Direct lookup in index
           const snap = await rtdb.ref(`/friend_codes/${code}`).once("value");
           if (!snap.exists()) return;
 
           const friend = snap.val();
 
-          // Link companion silently into RTDB
+          // Write friend reference to RTDB
           await rtdb.ref(`/users/${emailKey}/friends/${code}`).set({
             friend_code: code,
             username: friend.username || "Companion",
@@ -1216,16 +1234,17 @@
             linked_at: new Date().toISOString()
           });
 
-          // Link companion into Firestore
-          await db.collection("users").doc(currentUser.email.toLowerCase())
-            .collection("friends").doc(code).set({
-              friend_code: code,
-              target_email: friend.email,
-              linked_at: firebase.firestore.FieldValue.serverTimestamp()
-            });
+          // Write friend reference to Firestore
+          await db.collection("users").doc(primaryEmail).collection("friends").doc(code).set({
+            friend_code: code,
+            target_email: friend.email,
+            linked_at: firebase.firestore.FieldValue.serverTimestamp()
+          });
 
           document.getElementById("friendCodeInput").value = "";
-        } catch (e) {}
+        } catch (e) {
+          console.warn("Companion addition failed:", e);
+        }
       });
 
       function renderFriendsRoster(friendsObj) {
@@ -1256,41 +1275,45 @@
         });
       }
 
-      // Action 1: Remove Companion (Yes/No Confirmation)
+      // Section 9: The 4 Protected Actions with Yes/No Confirmation Dialogs (Lines 1272-1346)
+      // Protected Action 1: Remove Companion
       window.removeCompanion = async (code) => {
         if (!currentUser) return;
         const confirmRemove = window.confirm("Are you sure you want to remove this companion from your roster?");
         if (!confirmRemove) return;
 
-        const emailKey = getEmailKey(currentUser.email);
+        const primaryEmail = getResolvedPrimaryEmail(currentUser);
+        const emailKey = getEmailKey(primaryEmail);
+
         await rtdb.ref(`/users/${emailKey}/friends/${code}`).remove();
-        await db.collection("users").doc(currentUser.email.toLowerCase()).collection("friends").doc(code).delete();
+        await db.collection("users").doc(primaryEmail).collection("friends").doc(code).delete();
       };
 
-      // Action 2: Disconnect Google (Yes/No Confirmation)
+      // Protected Action 2: Disconnect Google Account
       document.getElementById("disconnectGoogleBtn").addEventListener("click", () => {
         const confirmDisconnect = window.confirm("Are you sure you want to open the Google Security console to disconnect this app authorization?");
         if (!confirmDisconnect) return;
         window.open("https://myaccount.google.com/linkedapps?continue=https%3A%2F%2Fmyaccount.google.com%2Fsecurity", "_blank");
       });
 
-      // Action 3: Password Reset (Yes/No Confirmation)
+      // Protected Action 3: Password Reset
       document.getElementById("sendPasswordResetBtn").addEventListener("click", () => {
-        if (!currentUser || !currentUser.email) return;
-        const confirmReset = window.confirm(`Send password reset instructions to ${currentUser.email}?`);
+        if (!currentUser) return;
+        const email = getResolvedPrimaryEmail(currentUser);
+        const confirmReset = window.confirm(`Send password reset instructions to ${email}?`);
         if (!confirmReset) return;
 
-        auth.sendPasswordResetEmail(currentUser.email).catch(() => {});
+        auth.sendPasswordResetEmail(email).catch(() => {});
       });
 
-      // Action 4: Delete Account (Yes/No Confirmation)
+      // Protected Action 4: Delete Account
       document.getElementById("deleteAccountBtn").addEventListener("click", async () => {
         if (!currentUser) return;
         const confirmDelete = window.confirm("Are you sure you want to permanently erase your hunter profile, friend code, and gaming records? This cannot be undone.");
         if (!confirmDelete) return;
 
         try {
-          const primaryEmail = currentUser.email.toLowerCase();
+          const primaryEmail = getResolvedPrimaryEmail(currentUser);
           const emailKey = getEmailKey(primaryEmail);
           const friendCode = currentUser.uid.substring(0, 8).toUpperCase();
 
@@ -1306,19 +1329,22 @@
         }
       });
 
+      // Section 10: Provider Identification & Account Handlers (Lines 1347-1431)
       function renderProvidersUI(user) {
         const providers = user.providerData.map(p => p.providerId);
         const googleText = document.getElementById("googleStatusText");
         const passText = document.getElementById("passwordStatusText");
 
+        const primaryEmail = getResolvedPrimaryEmail(user);
+
         if (providers.includes("google.com")) {
-          googleText.textContent = `Connected (${user.email})`;
+          googleText.textContent = `Connected (${primaryEmail})`;
         } else {
           googleText.textContent = "Not Connected";
         }
 
         if (providers.includes("password")) {
-          passText.textContent = `Active Password Set (${user.email})`;
+          passText.textContent = `Active Password Set (${primaryEmail})`;
         } else {
           passText.textContent = "Google OAuth Login Active";
         }
@@ -1337,7 +1363,7 @@
         }
       });
 
-      // Anonymous WhatsApp Messenger
+      // Anonymous WhatsApp Messenger (Phone Number Concealed)
       const toggleWhatsappBtn = document.getElementById("toggleWhatsappBtn");
       const openWhatsAppModalBtn = document.getElementById("openWhatsAppModalBtn");
       const whatsappChatBox = document.getElementById("whatsappChatBox");
@@ -1366,7 +1392,7 @@
         closeChat();
       });
 
-      // Simple Auth Triggers
+      // Basic Auth Triggers
       document.getElementById("inlineGoogleBtn").addEventListener("click", () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()));
       document.getElementById("authModalBtn").addEventListener("click", () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()));
       document.getElementById("quickLoginBtn").addEventListener("click", () => {
