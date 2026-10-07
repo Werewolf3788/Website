@@ -1,0 +1,16 @@
+{
+  "new_laurentia": {
+    "name": "New Laurentia",
+    "location": "Southern Canadian Rockies / Northern Wetlands",
+    "area_sq_km": 100,
+    "hub_lodge": "Whitetail Foothills Main Lodge",
+    "story_campaign": "Moose Population Investigation & Warden Support",
+    "primary_features": [
+      "Hunting Dog Blood Tracking",
+      "Deployable Tents & Fast Travel",
+      "Species-Specific Lodge Dioramas",
+      "Habitat Enhancement Tasks"
+    ],
+    "species_count": 15
+  }
+}
