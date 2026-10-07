@@ -1,5 +1,5 @@
 <!-- Line 1: Way of the Hunter 2 - Master Tactical Companion -->
-<!-- [Smart Cache-Buster Time: 2026-10-07 16:45 EDT | Firebase Sync Target: /utm_links | Version: 4.1.3] -->
+<!-- [Smart Cache-Buster Time: 2026-10-07 17:16 EDT | Firebase Sync Target: /utm_links | Version: 4.2.0] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,11 +37,7 @@
       --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: var(--font-family);
@@ -75,12 +71,7 @@
       gap: 16px;
     }
 
-    .brand-area {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-shrink: 0;
-    }
+    .brand-area { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
     .back-link {
       color: var(--text-muted);
@@ -90,11 +81,7 @@
       border-radius: 4px;
       transition: var(--transition);
     }
-
-    .back-link:hover {
-      color: var(--accent-amber);
-      background: var(--bg-surface);
-    }
+    .back-link:hover { color: var(--accent-amber); background: var(--bg-surface); }
 
     .brand-logo {
       width: 36px;
@@ -113,24 +100,10 @@
       white-space: nowrap;
     }
 
-    .site-nav {
-      display: flex;
-      align-items: center;
-      flex: 1;
-      margin: 0 16px;
-    }
+    .site-nav { display: flex; align-items: center; flex: 1; margin: 0 16px; }
 
-    .nav-list {
-      display: flex;
-      list-style: none;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .nav-item {
-      position: relative;
-    }
+    .nav-list { display: flex; list-style: none; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .nav-item { position: relative; }
 
     .nav-pill, .dropdown-trigger {
       display: inline-flex;
@@ -148,19 +121,13 @@
       white-space: nowrap;
       transition: var(--transition);
     }
-
     .nav-pill:hover, .dropdown-trigger:hover {
       background: var(--bg-hover);
       color: var(--accent-amber);
       border-color: var(--accent-amber);
     }
 
-    .nav-thumb {
-      width: 18px;
-      height: 18px;
-      border-radius: 3px;
-      object-fit: cover;
-    }
+    .nav-thumb { width: 18px; height: 18px; border-radius: 3px; object-fit: cover; }
 
     .dropdown-menu {
       position: absolute;
@@ -181,12 +148,7 @@
       gap: 4px;
       z-index: 1001;
     }
-
-    .nav-item:hover .dropdown-menu {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateY(0);
-    }
+    .nav-item:hover .dropdown-menu { opacity: 1; pointer-events: auto; transform: translateY(0); }
 
     .dropdown-item {
       display: flex;
@@ -199,11 +161,7 @@
       font-size: 0.82rem;
       transition: var(--transition);
     }
-
-    .dropdown-item:hover {
-      background: var(--bg-hover);
-      color: var(--accent-amber);
-    }
+    .dropdown-item:hover { background: var(--bg-hover); color: var(--accent-amber); }
 
     .auth-toolbar {
       display: flex;
@@ -213,10 +171,7 @@
       margin-left: auto;
     }
 
-    .database-indicator {
-      font-size: 0.76rem;
-      color: var(--text-muted);
-    }
+    .database-indicator { font-size: 0.76rem; color: var(--text-muted); }
     .database-indicator strong { color: var(--accent-amber); }
 
     .user-profile-badge {
@@ -237,7 +192,7 @@
       border: 1px solid var(--accent-amber);
     }
 
-    /* Operations Strip */
+    /* Editable Operations Strip */
     .operations-bar {
       background: #0a0d14;
       border-bottom: 1px solid var(--border-color);
@@ -254,7 +209,7 @@
 
     .hunter-stats-strip {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
       flex-wrap: wrap;
     }
@@ -263,19 +218,29 @@
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       border-radius: 4px;
-      padding: 4px 10px;
+      padding: 4px 8px;
       font-size: 0.82rem;
-    }
-
-    .stat-label { color: var(--text-muted); }
-    .stat-pill strong { color: var(--accent-amber); margin-left: 4px; }
-
-    .clock-sync-strip {
-      display: flex;
-      gap: 12px;
+      display: inline-flex;
       align-items: center;
-      flex-wrap: wrap;
+      gap: 5px;
     }
+    .stat-label { color: var(--text-muted); }
+
+    .stat-pill input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px dashed var(--accent-amber);
+      color: var(--accent-amber);
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 1px 3px;
+      outline: none;
+    }
+    .stat-pill input.stat-input-short { width: 50px; }
+    .stat-pill input.stat-input-med { width: 90px; }
+    .stat-pill input.stat-input-long { width: 140px; }
+
+    .clock-sync-strip { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
     .day-controller, .time-controller {
       display: flex;
@@ -290,9 +255,9 @@
       border: 1px solid var(--border-color);
       color: #fff;
       border-radius: 4px;
-      padding: 4px 8px;
+      padding: 4px 6px;
       font-size: 0.82rem;
-      width: 60px;
+      width: 55px;
     }
     .time-controller input { width: 95px; }
 
@@ -312,18 +277,8 @@
       gap: 12px;
     }
 
-    .weather-forecast {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      overflow-x: auto;
-    }
-
-    .forecast-label {
-      color: var(--accent-amber);
-      font-weight: 700;
-      text-transform: uppercase;
-    }
+    .weather-forecast { display: flex; gap: 8px; align-items: center; overflow-x: auto; }
+    .forecast-label { color: var(--accent-amber); font-weight: 700; text-transform: uppercase; }
 
     .weather-slot {
       background: rgba(255, 255, 255, 0.03);
@@ -334,13 +289,7 @@
       white-space: nowrap;
     }
 
-    .weather-forecast-control {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--text-muted);
-    }
-
+    .weather-forecast-control { display: flex; align-items: center; gap: 8px; color: var(--text-muted); }
     .weather-forecast-control select {
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
@@ -349,11 +298,7 @@
       border-radius: 4px;
       font-size: 0.78rem;
     }
-
-    .weather-delay-tag {
-      color: var(--accent-amber);
-      font-size: 0.72rem;
-    }
+    .weather-delay-tag { color: var(--accent-amber); font-size: 0.72rem; }
 
     /* Tactical Tab Ribbon */
     .tactical-ribbon {
@@ -363,10 +308,7 @@
       overflow-x: auto;
     }
 
-    .ribbon-container {
-      display: flex;
-      gap: 2px;
-    }
+    .ribbon-container { display: flex; gap: 2px; }
 
     .ribbon-btn {
       background: transparent;
@@ -380,36 +322,29 @@
       white-space: nowrap;
       transition: var(--transition);
     }
-
-    .ribbon-btn:hover {
-      color: #fff;
-      background: rgba(255, 255, 255, 0.03);
-    }
-
+    .ribbon-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.03); }
     .ribbon-btn.active {
       color: var(--accent-amber);
       border-bottom-color: var(--accent-amber);
       background: rgba(245, 166, 35, 0.06);
     }
 
-    /* Main Container & Dual-Pane */
+    /* Main Container & Adjusted Responsive Dual-Pane */
     .main-container {
       flex: 1;
       width: 100%;
       padding: 20px clamp(16px, 2vw, 36px);
     }
 
-    .tab-pane {
-      display: none;
-    }
-    .tab-pane.active {
-      display: block;
-    }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
 
+    /* Expanded form pane to prevent field overlap */
     .dual-pane-grid {
       display: grid;
-      grid-template-columns: 460px 1fr;
-      gap: 20px;
+      grid-template-columns: minmax(420px, 520px) 1fr;
+      gap: 24px;
+      align-items: start;
     }
 
     .card {
@@ -428,12 +363,7 @@
       border-bottom: 1px solid var(--border-color);
       margin-bottom: 14px;
     }
-
-    .card-header h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #fff;
-    }
+    .card-header h3 { font-size: 1rem; font-weight: 700; color: #fff; }
 
     .badge {
       background: rgba(245, 166, 35, 0.12);
@@ -454,32 +384,35 @@
       letter-spacing: 0.5px;
     }
 
+    /* Clean spacing grids for inputs */
     .form-grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 10px;
+      gap: 12px;
+      margin-bottom: 8px;
     }
 
     .form-grid-3 {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       gap: 10px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .input-group {
       display: flex;
       flex-direction: column;
       gap: 4px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
+      width: 100%;
     }
 
     .input-group label {
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       color: var(--text-muted);
       text-transform: uppercase;
       font-weight: 600;
+      white-space: nowrap;
     }
 
     input, select {
@@ -490,9 +423,9 @@
       border-radius: 5px;
       font-size: 0.85rem;
       outline: none;
+      width: 100%;
       transition: var(--transition);
     }
-
     input:focus, select:focus {
       border-color: var(--accent-amber);
       box-shadow: 0 0 0 2px rgba(245, 166, 35, 0.2);
@@ -505,8 +438,8 @@
       padding: 10px;
       margin-top: 8px;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
     }
 
     .history-list {
@@ -517,81 +450,78 @@
       overflow-y: auto;
     }
 
+    /* 4-Cards Across Watchlist Grid */
+    .watchlist-grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+      max-height: calc(100vh - 280px);
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
     .telemetry-card {
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       border-radius: 6px;
-      padding: 12px 14px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 6px;
       transition: var(--transition);
     }
-
-    .telemetry-card:hover {
-      border-color: var(--accent-amber);
-    }
+    .telemetry-card:hover { border-color: var(--accent-amber); }
 
     .card-top-row {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
+      align-items: flex-start;
+      gap: 6px;
     }
 
     .animal-title {
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 700;
       color: #fff;
+      line-height: 1.2;
     }
 
     .action-banner {
-      padding: 6px 10px;
+      padding: 5px 8px;
       border-radius: 4px;
-      font-size: 0.8rem;
-      margin: 8px 0;
+      font-size: 0.76rem;
+      margin: 4px 0;
       font-weight: 600;
+      line-height: 1.3;
     }
 
-    .banner-cull {
-      background: rgba(231, 76, 60, 0.15);
-      border-left: 3px solid var(--danger);
-      color: #ff9999;
-    }
-
-    .banner-breeder {
-      background: rgba(245, 166, 35, 0.15);
-      border-left: 3px solid var(--accent-amber);
-      color: #ffe099;
-    }
-
-    .banner-balanced {
-      background: rgba(0, 136, 255, 0.15);
-      border-left: 3px solid var(--accent-blue);
-      color: #99ccff;
-    }
+    .banner-cull { background: rgba(231, 76, 60, 0.15); border-left: 3px solid var(--danger); color: #ff9999; }
+    .banner-breeder { background: rgba(245, 166, 35, 0.15); border-left: 3px solid var(--accent-amber); color: #ffe099; }
+    .banner-balanced { background: rgba(0, 136, 255, 0.15); border-left: 3px solid var(--accent-blue); color: #99ccff; }
 
     .card-footer-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       color: var(--text-muted);
-      margin-top: 6px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 6px;
+      margin-top: 4px;
     }
 
-    .card-actions {
-      display: flex;
-      gap: 8px;
-    }
+    .card-actions { display: flex; gap: 6px; }
 
     .btn-link {
       background: transparent;
       border: none;
-      font-size: 0.78rem;
+      font-size: 0.74rem;
       cursor: pointer;
-      padding: 2px 6px;
+      padding: 2px 4px;
       border-radius: 3px;
       transition: var(--transition);
     }
-
     .btn-link-edit { color: var(--accent-blue); }
     .btn-link-edit:hover { background: rgba(0, 136, 255, 0.1); }
     .btn-link-delete { color: var(--danger); }
@@ -599,7 +529,7 @@
 
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
       gap: 16px;
       margin-top: 14px;
     }
@@ -636,7 +566,6 @@
       align-items: center;
       justify-content: center;
     }
-
     .btn-sm { padding: 4px 8px; font-size: 0.78rem; }
     .btn-primary { background: var(--accent-amber); color: #000; }
     .btn-primary:hover { background: #e09418; }
@@ -688,25 +617,16 @@
       color: var(--text-muted);
     }
 
-    .footer-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    .footer-container { display: flex; justify-content: space-between; align-items: center; }
 
-    .status-pill {
-      padding: 3px 8px;
-      border-radius: 10px;
-      font-size: 0.72rem;
-      font-weight: 600;
-    }
+    .status-pill { padding: 3px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 600; }
     .status-connecting { background: rgba(245, 166, 35, 0.15); color: var(--accent-amber); }
     .status-connected { background: rgba(46, 204, 113, 0.15); color: var(--success); }
 
     .hidden { display: none !important; }
     .menu-toggle { display: none; }
 
-    @media (max-width: 1024px) {
+    @media (max-width: 1180px) {
       .dual-pane-grid { grid-template-columns: 1fr; }
       .menu-toggle { display: block; font-size: 1.4rem; background: transparent; border: none; color: #fff; cursor: pointer; }
       .site-nav { display: none; width: 100%; margin: 0; }
@@ -729,14 +649,12 @@
 
       <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">&#9776;</button>
 
-      <!-- Programmatically Sorted RTDB Navigation -->
       <nav class="site-nav" id="dynamicNav">
         <ul class="nav-list" id="navList">
           <!-- Populated from RTDB /utm_links -->
         </ul>
       </nav>
 
-      <!-- Far Right Auth Profile Area -->
       <div class="auth-toolbar">
         <span class="database-indicator">Database: <strong>entertainment-71888</strong></span>
         <button id="authModalBtn" class="btn btn-primary btn-sm">Sign In / Account</button>
@@ -749,14 +667,26 @@
     </div>
   </header>
 
-  <!-- Operations Bar -->
+  <!-- Editable Operations Strip -->
   <section class="operations-bar">
     <div class="operations-container">
       <div class="hunter-stats-strip">
-        <div class="stat-pill"><span class="stat-label">Hunter:</span> <strong id="hunterNameDisplay">Ryder Holloway</strong></div>
-        <div class="stat-pill"><span class="stat-label">Level:</span> <strong id="hunterLevelDisplay">Lv. 2</strong></div>
-        <div class="stat-pill"><span class="stat-label">Credits:</span> <strong id="hunterCreditsDisplay">$318</strong></div>
-        <div class="stat-pill"><span class="stat-label">Dog:</span> <strong id="dogCompanionDisplay">Bacon (Foxhound)</strong></div>
+        <div class="stat-pill">
+          <span class="stat-label">Hunter:</span>
+          <input type="text" id="hunterNameInput" class="stat-input-med" value="Ryder Holloway" title="Click to edit Hunter Name">
+        </div>
+        <div class="stat-pill">
+          <span class="stat-label">Level:</span>
+          <input type="number" id="hunterLevelInput" class="stat-input-short" value="2" min="1" max="100" title="Click to edit Level">
+        </div>
+        <div class="stat-pill">
+          <span class="stat-label">Credits:</span>
+          $<input type="number" id="hunterCreditsInput" class="stat-input-med" value="318" min="0" title="Click to edit Credits">
+        </div>
+        <div class="stat-pill">
+          <span class="stat-label">Dog:</span>
+          <input type="text" id="dogCompanionInput" class="stat-input-long" value="Bacon (Foxhound)" title="Click to edit Dog">
+        </div>
       </div>
 
       <div class="clock-sync-strip">
@@ -910,7 +840,7 @@
               </div>
             </div>
 
-            <div class="form-section-title">3. Trophy Score &amp; Dynamic Schema</div>
+            <div class="form-section-title">3. Trophy Score &amp; Organ Measurements</div>
             <div class="form-grid-3">
               <div class="input-group">
                 <label for="harvestSex">Sex &amp; Stage</label>
@@ -956,6 +886,7 @@
     <!-- Tab 2: Target Watchlist & Live Herd Management Console -->
     <section id="tab-targetWatchlist" class="tab-pane">
       <div class="dual-pane-grid">
+        <!-- Watchlist Input / Editor -->
         <div class="card pane-form">
           <div class="card-header">
             <h3 id="watchlistFormHeader">Add Live Animal to Watchlist</h3>
@@ -966,7 +897,7 @@
 
             <div class="input-group">
               <label for="watchIdentifier">Target Identifier / Tag Name</label>
-              <input type="text" id="watchIdentifier" placeholder="e.g. Broken Left Brow Muley" required>
+              <input type="text" id="watchIdentifier" placeholder="e.g. Asymmetrical Left Brow Bull" required>
             </div>
 
             <div class="form-grid-2">
@@ -977,6 +908,17 @@
               <div class="input-group">
                 <label for="watchFitness">Observed Fitness %</label>
                 <input type="number" id="watchFitness" step="0.1" placeholder="e.g. 43.4 or 88.5" required>
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="input-group">
+                <label for="watchRegionSelect">Reserve / Region</label>
+                <select id="watchRegionSelect"></select>
+              </div>
+              <div class="input-group">
+                <label for="watchLandmark">Need Zone Landmark</label>
+                <input type="text" id="watchLandmark" placeholder="e.g. Shingle Riverbank Waterway" required>
               </div>
             </div>
 
@@ -1001,11 +943,6 @@
               </div>
             </div>
 
-            <div class="input-group">
-              <label for="watchLandmark">Location / Need Zone Landmark</label>
-              <input type="text" id="watchLandmark" placeholder="e.g. North Shingle Riverbank (Lake Sasquatch)" required>
-            </div>
-
             <div style="display: flex; gap: 10px; margin-top: 12px;">
               <button type="button" id="saveWatchlistBtn" class="btn btn-primary full-width">Add to Watchlist</button>
               <button type="button" id="cancelEditWatchlistBtn" class="btn btn-secondary hidden">Cancel</button>
@@ -1013,22 +950,23 @@
           </form>
 
           <div class="advisory-callout" style="margin-top: 18px;">
-            <h4>Genetic Management Protocols:</h4>
+            <h4>Herd Management Rules:</h4>
             <ul>
-              <li><strong>Fitness &lt; 50%:</strong> Immediate Cull. Low genetics degrade herd potential[cite: 10].</li>
-              <li><strong>Fitness &ge; 80%:</strong> Protected Breeder. Let mature into 5-star trophy rack[cite: 10, 13].</li>
-              <li><strong>1-Star Mature:</strong> End of cycle cull. Remove before old-age despawn[cite: 10, 13].</li>
-              <li><strong>Aging Rate:</strong> 3 in-game days equals 1 year of animal age[cite: 13].</li>
+              <li><strong>Asymmetry = Low Fitness (&lt;50%):</strong> Cull immediately to clear corrupted genetics[cite: 10, 21].</li>
+              <li><strong>Symmetry = High Fitness (&ge;80%):</strong> 5-Star breeder. Protect rack until late mature stage[cite: 10, 13].</li>
+              <li><strong>1-Star Mature:</strong> End-of-cycle cull before despawn[cite: 10, 13].</li>
+              <li><strong>Rate:</strong> 3 in-game days equals 1 year of age[cite: 13].</li>
             </ul>
           </div>
         </div>
 
+        <!-- 4-Cards Across Watchlist Section -->
         <div class="card pane-history">
           <div class="card-header">
             <h3>Live Herd Watchlist</h3>
             <span id="watchlistCount" class="badge">0 Tracked Animals</span>
           </div>
-          <div id="watchlistContainer" class="history-list"></div>
+          <div id="watchlistContainer" class="watchlist-grid-cards"></div>
         </div>
       </div>
     </section>
@@ -1145,7 +1083,7 @@
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Way of the Hunter 2 Companion &bull; Tactical Operations Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 16:45 EDT</span> | Version: 4.1.3</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 17:16 EDT</span> | Version: 4.2.0</p>
       </div>
       <div class="footer-col text-right">
         <span id="firebaseStatusBadge" class="status-pill status-connecting">RTDB: Connecting...</span>
