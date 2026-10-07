@@ -1,0 +1,86 @@
+{
+  "version": "2.0.0",
+  "cluster_proximity_yards": 50,
+  "clusters": [
+    {
+      "cluster_id": "sasquatch_river_cervid_01",
+      "region": "Lake Sasquatch",
+      "species": "Rocky Mountain mule deer",
+      "cluster_notes": "Interacting with any point in this 50-yd river corridor unlocks all linked watering spots.",
+      "zones": [
+        {
+          "zone_id": "sas_mule_drink_01",
+          "type": "Drinking",
+          "schedule": "09:00 - 13:00",
+          "landmark": "North Shingle Riverbank (Middle Point)",
+          "proximity_to_center_yds": 0
+        },
+        {
+          "zone_id": "sas_mule_drink_02",
+          "type": "Drinking",
+          "schedule": "09:00 - 13:00",
+          "landmark": "East Gravel Shallows",
+          "proximity_to_center_yds": 37
+        },
+        {
+          "zone_id": "sas_mule_feed_01",
+          "type": "Feeding",
+          "schedule": "05:00 - 09:00",
+          "landmark": "Alder Clearing Ridge",
+          "proximity_to_center_yds": 58
+        }
+      ]
+    },
+    {
+      "cluster_id": "wetiko_basin_bear_01",
+      "region": "Wetiko Foothills",
+      "species": "Grizzly bear",
+      "cluster_notes": "Creek bend feeding and resting zone cluster.",
+      "zones": [
+        {
+          "zone_id": "wet_bear_feed_01",
+          "type": "Feeding",
+          "schedule": "04:00 - 08:00",
+          "landmark": "Salmon Shallows Rapids",
+          "proximity_to_center_yds": 0
+        },
+        {
+          "zone_id": "wet_bear_drink_01",
+          "type": "Drinking",
+          "schedule": "11:00 - 15:00",
+          "landmark": "Rapids Downstream Eddy",
+          "proximity_to_center_yds": 42
+        },
+        {
+          "zone_id": "wet_bear_rest_01",
+          "type": "Resting",
+          "schedule": "15:00 - 19:00",
+          "landmark": "Thick Spruce Bluff",
+          "proximity_to_center_yds": 50
+        }
+      ]
+    },
+    {
+      "cluster_id": "cordillera_dall_sheep_01",
+      "region": "Jackalope Cordillera",
+      "species": "Dall sheep",
+      "cluster_notes": "High alpine scree mineral lick and watering pocket.",
+      "zones": [
+        {
+          "zone_id": "cor_dall_drink_01",
+          "type": "Drinking",
+          "schedule": "10:00 - 14:00",
+          "landmark": "Alpine Tarn Shoreline",
+          "proximity_to_center_yds": 0
+        },
+        {
+          "zone_id": "cor_dall_feed_01",
+          "type": "Feeding",
+          "schedule": "06:00 - 10:00",
+          "landmark": "Upper Scree Meadow",
+          "proximity_to_center_yds": 45
+        }
+      ]
+    }
+  ]
+}
