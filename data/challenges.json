@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0",
+  "total_challenges": 100,
+  "trees": {
+    "features": {
+      "name": "Features",
+      "total": 24,
+      "description": "Unlocks and mastery for equipment, callers, tripod stands, photo mode, and reserve utilities."
+    },
+    "naturalist": {
+      "name": "Naturalist",
+      "total": 23,
+      "description": "Need zone identification, track analysis, droppings freshness, and spotting genetic fitness potential."
+    },
+    "scout": {
+      "name": "Scout",
+      "total": 23,
+      "description": "Unlocking viewpoints, trail navigation, hunting stands, and stamina sprint efficiency."
+    },
+    "sharpshooter": {
+      "name": "Sharpshooter",
+      "total": 18,
+      "description": "Long-range heart/lung vitals (150m+), breath control hold duration, recoil reduction, and wingshooting."
+    },
+    "stalker": {
+      "name": "Stalker",
+      "total": 12,
+      "description": "Close-range approach under 50m, downwind masking, noise dampening in brush, and crawling stealth."
+    }
+  }
+}
