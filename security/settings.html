@@ -1,71 +1,336 @@
-<!-- Line 1: User Account Settings, Provider Linking & Social Hub -->
-<!-- [Smart Cache-Buster Time: 2026-10-07 13:28 EDT | Firebase Sync Target: /utm_links | Version: 3.0.0] -->
+<!-- Line 1: Standalone Hunter Identity, Profile & RTDB Dynamic Menu Engine -->
+<!-- [Smart Cache-Buster Time: 2026-10-07 13:54 EDT | Firebase Sync Target: /utm_links | Version: 3.4.0] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Line 5: Required responsive viewport -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Account Settings & Hunter ID - WOTH Hub</title>
+  <title>Hunter Profile & Settings</title>
 
-  <!-- Line 10: Unified Branding Favicons via Relative Protocol -->
-  <link rel="icon" type="image/jpeg" href="//werewolf3788.github.io/Website/assets/logo.jpg">
-  <link rel="apple-touch-icon" href="//werewolf3788.github.io/Website/assets/logo.jpg">
+  <!-- Default Favicons (Dynamically overridden by RTDB /utm_links/Settings/0/image) -->
+  <link id="dynamicFavicon" rel="icon" type="image/png" href="https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png">
+  <link id="dynamicAppleIcon" rel="apple-touch-icon" href="https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png">
 
-  <!-- Line 14: Sibling Stylesheet link -->
-  <link rel="stylesheet" href="./style.css">
-
-  <!-- Line 17: Firebase SDKs (Compat Layer) -->
+  <!-- Firebase Core SDKs (Compat v10.13.0) -->
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
-  <!-- Line 24: Page-Specific Layout Styling -->
   <style>
+    :root {
+      --bg-primary: #0a0d12;
+      --bg-secondary: #131821;
+      --bg-surface: #1a2230;
+      --bg-hover: #242f42;
+      --accent-blue: #0088ff;
+      --accent-gold: #f5a623;
+      --text-main: #f0f4f8;
+      --text-muted: #8b9bb4;
+      --border-color: #273447;
+      --danger: #e74c3c;
+      --success: #2ecc71;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Sticky Navigation Header */
+    .site-header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+      gap: 16px;
+    }
+
+    .brand-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      object-fit: cover;
+    }
+
+    .brand-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+
+    /* Dynamic Menu Navigation */
+    .site-nav {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      overflow-x: auto;
+    }
+
+    .nav-list {
+      display: flex;
+      list-style: none;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .nav-item {
+      position: relative;
+    }
+
+    .nav-link, .dropdown-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      border-radius: 6px;
+      background: transparent;
+      border: 1px solid transparent;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition);
+    }
+
+    .nav-link:hover, .dropdown-trigger:hover {
+      background: var(--bg-hover);
+      color: var(--accent-blue);
+      border-color: var(--border-color);
+    }
+
+    .nav-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      object-fit: cover;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      min-width: 230px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 1001;
+    }
+
+    .nav-item:hover .dropdown-menu,
+    .nav-item:focus-within .dropdown-menu {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      color: var(--text-main);
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      transition: var(--transition);
+    }
+
+    .dropdown-item:hover {
+      background: var(--bg-hover);
+      color: var(--accent-gold);
+    }
+
+    /* Auth Toolbar & Profile Widget */
+    .auth-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .user-profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-surface);
+      padding: 4px 10px 4px 6px;
+      border-radius: 30px;
+      border: 1px solid var(--border-color);
+    }
+
+    .header-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid var(--accent-blue);
+      background: var(--bg-secondary);
+    }
+
+    .header-user-tag {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #fff;
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Settings Main Layout */
     .settings-container {
-      max-width: 1000px;
-      margin: 30px auto;
+      max-width: 1050px;
+      width: 100%;
+      margin: 28px auto;
       padding: 0 20px;
       display: flex;
       flex-direction: column;
       gap: 24px;
+      flex: 1;
     }
-    .settings-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
+
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
+
     .profile-card-header {
       display: flex;
       align-items: center;
-      gap: 16px;
-      margin-bottom: 16px;
+      gap: 18px;
+      margin-bottom: 20px;
     }
-    .avatar-preview {
-      width: 64px;
-      height: 64px;
+
+    .avatar-preview-lg {
+      width: 76px;
+      height: 76px;
       border-radius: 50%;
       border: 2px solid var(--accent-blue);
       object-fit: cover;
       background: var(--bg-surface);
     }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .control-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-group label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    input, select {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 2px rgba(0, 136, 255, 0.2);
+    }
+
+    /* Provider Rows */
     .provider-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 12px 14px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+
+    .provider-status {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .expandable-link-box {
+      margin-bottom: 14px;
       padding: 12px;
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       border-radius: 6px;
-      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-    .provider-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.85rem;
-    }
+
+    /* Friends List Roster */
     .friend-roster {
       display: flex;
       flex-direction: column;
@@ -74,6 +339,7 @@
       max-height: 280px;
       overflow-y: auto;
     }
+
     .friend-item {
       display: flex;
       justify-content: space-between;
@@ -83,181 +349,284 @@
       border-radius: 6px;
       border: 1px solid var(--border-color);
     }
+
+    .badge-tag {
+      display: inline-block;
+      padding: 3px 8px;
+      background: rgba(0, 136, 255, 0.15);
+      color: var(--accent-blue);
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-sm { padding: 4px 10px; font-size: 0.8rem; }
+    .btn-primary { background: var(--accent-blue); color: #fff; }
+    .btn-primary:hover { background: #0070d2; }
+    .btn-secondary { background: var(--bg-surface); color: var(--text-main); border-color: var(--border-color); }
+    .btn-secondary:hover { background: var(--bg-hover); }
+    .btn-google { background: #4285f4; color: #fff; }
+    .btn-google:hover { background: #3367d6; }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { background: #c0392b; }
+    .full-width { width: 100%; }
+
     .danger-zone {
       border: 1px solid var(--danger);
       background: rgba(231, 76, 60, 0.05);
     }
-    .danger-zone h3 {
-      color: var(--danger);
+
+    .danger-zone h3 { color: var(--danger); }
+
+    /* Footer */
+    .site-footer {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      padding: 16px 20px;
+      margin-top: auto;
+    }
+
+    .footer-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .status-pill {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.76rem;
+      font-weight: 600;
+    }
+
+    .status-connecting { background: rgba(245, 166, 35, 0.15); color: var(--accent-gold); }
+    .status-connected { background: rgba(46, 204, 113, 0.15); color: var(--success); }
+
+    .hidden { display: none !important; }
+    .menu-toggle { display: none; }
+
+    @media (max-width: 1024px) {
+      .menu-toggle { display: block; font-size: 1.5rem; background: transparent; border: none; color: #fff; cursor: pointer; }
+      .site-nav { display: none; width: 100%; }
+      .site-nav.open { display: block; position: absolute; top: 68px; left: 0; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); padding: 12px 20px; }
+      .nav-list { flex-direction: column; align-items: stretch; }
+      .dropdown-menu { position: static; box-shadow: none; border-left: 2px solid var(--accent-blue); }
     }
   </style>
 </head>
 <body>
 
-  <!-- Line 98: Navigation Header with Direct Relative Portal Links -->
+  <!-- Top Sticky Navigation Bar -->
   <header class="site-header">
     <div class="header-container">
       <div class="brand-area">
-        <img src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" class="brand-logo">
-        <span class="brand-title">HUNTER ACCOUNT SETTINGS</span>
+        <img id="navSettingsLogo" src="https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png" alt="" class="brand-logo">
+        <span class="brand-title">SETTINGS HUB</span>
       </div>
 
-      <nav class="site-nav">
-        <ul class="nav-list">
-          <li class="nav-item">
-            <a href="./index.html" class="nav-link">← Back to Hub</a>
-          </li>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">☰</button>
+
+      <!-- Dynamic RTDB Group & Row-Sorted Nav -->
+      <nav class="site-nav" id="dynamicNav">
+        <ul class="nav-list" id="navList">
+          <!-- Dynamically inserted from RTDB /utm_links -->
         </ul>
       </nav>
 
+      <!-- Auth & Header Profile Image Placement -->
       <div class="auth-toolbar">
-        <button id="logoutBtn" class="btn btn-secondary btn-sm">Sign Out</button>
+        <button id="authModalBtn" class="btn btn-primary btn-sm">Log In</button>
+        <div id="userProfileBadge" class="user-profile-badge hidden">
+          <img id="headerUserAvatar" src="https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png" alt="" class="header-avatar">
+          <span id="headerUserTag" class="header-user-tag">Hunter</span>
+          <button id="logoutBtn" class="btn btn-secondary btn-sm">Log Out</button>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- Line 122: Main Settings Dashboard -->
+  <!-- Main Settings Workspace -->
   <main class="settings-container">
     
-    <!-- Profile & Gamer Tag Customization -->
-    <section class="card">
-      <div class="profile-card-header">
-        <img id="avatarPreview" src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" class="avatar-preview">
-        <div>
-          <h2 id="displayGamerTag">Hunter</h2>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">
-            Friend Code: <strong id="friendCodeDisplay" style="color: var(--accent-gold);">Logging in...</strong>
-          </p>
+    <!-- Guest Notification Card -->
+    <section id="guestSignInPrompt" class="card">
+      <h2>Hunter Authentication Required</h2>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin: 8px 0 16px;">
+        Sign in to customize your profile, set your avatar, link login providers, or look up companions:
+      </p>
+      <div style="max-width: 320px;">
+        <button id="inlineGoogleBtn" class="btn btn-google full-width" style="margin-bottom: 12px;">Sign In with Google</button>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <input type="email" id="quickEmail" placeholder="Email address">
+          <input type="password" id="quickPass" placeholder="Password">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <button id="quickLoginBtn" class="btn btn-primary btn-sm">Log In</button>
+            <button id="quickRegisterBtn" class="btn btn-secondary btn-sm">Register</button>
+          </div>
         </div>
       </div>
-
-      <form id="profileForm" onsubmit="return false;">
-        <div class="control-grid">
-          <div class="control-group">
-            <label for="usernameInput">Display Gamer Tag / Username</label>
-            <input type="text" id="usernameInput" placeholder="Enter username (e.g. Werewolf)">
-          </div>
-
-          <div class="control-group">
-            <label for="primaryPlatformSelect">Primary Platform</label>
-            <select id="primaryPlatformSelect">
-              <option value="playstation">PlayStation Network</option>
-              <option value="pc">PC (Steam / Epic)</option>
-              <option value="xbox">Xbox Series X|S</option>
-            </select>
-          </div>
-
-          <div class="control-group">
-            <label for="avatarUrlInput">Custom Avatar Image URL</label>
-            <input type="text" id="avatarUrlInput" placeholder="//path-to-image.jpg">
-          </div>
-        </div>
-        <div style="margin-top: 16px;">
-          <button type="button" id="saveProfileBtn" class="btn btn-primary">Save Profile Changes</button>
-          <span id="saveProfileMsg" style="font-size: 0.85rem; margin-left: 12px; color: var(--success);"></span>
-        </div>
-      </form>
     </section>
 
-    <!-- Two-Column Grid: Linked Sign-In Providers & Friend System -->
-    <div class="settings-grid">
+    <!-- Master Authenticated Section -->
+    <div id="authenticatedSection" class="hidden" style="display: flex; flex-direction: column; gap: 24px;">
       
-      <!-- Column 1: Multi-Provider Linking (Google, Email, Phone) -->
+      <!-- Profile Customization -->
       <section class="card">
-        <h3>Linked Authentication Providers</h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 16px;">
-          Link multiple login methods to this single hunter profile so you can access your progress anywhere.
-        </p>
-
-        <!-- Google Auth Row -->
-        <div class="provider-row">
+        <div class="profile-card-header">
+          <img id="avatarPreview" src="https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png" alt="" class="avatar-preview-lg">
           <div>
-            <strong>Google Account</strong>
-            <div id="googleStatusText" style="font-size: 0.78rem; color: var(--text-muted);">Not Linked</div>
+            <h2 id="displayGamerTag">Hunter</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
+              Friend Code: <strong id="friendCodeDisplay" style="color: var(--accent-gold); letter-spacing: 0.5px;">Loading...</strong>
+            </p>
           </div>
-          <button id="linkGoogleBtn" class="btn btn-secondary btn-sm">Link Google</button>
         </div>
 
-        <!-- Email & Password Row -->
-        <div class="provider-row">
-          <div>
-            <strong>Email & Password</strong>
-            <div id="emailStatusText" style="font-size: 0.78rem; color: var(--text-muted);">Not Linked</div>
-          </div>
-          <button id="linkEmailToggleBtn" class="btn btn-secondary btn-sm">Link Email</button>
-        </div>
-        <div id="emailLinkBox" class="hidden" style="margin-bottom: 12px; padding: 10px; background: var(--bg-surface); border-radius: 6px;">
-          <input type="email" id="linkEmailInput" placeholder="new-email@example.com" style="margin-bottom: 6px; width: 100%;">
-          <input type="password" id="linkPasswordInput" placeholder="Set password" style="margin-bottom: 8px; width: 100%;">
-          <button id="submitLinkEmailBtn" class="btn btn-primary btn-sm full-width">Confirm Email Link</button>
-        </div>
+        <form id="profileForm" onsubmit="return false;">
+          <div class="control-grid">
+            <div class="control-group">
+              <label for="usernameInput">Display Gamer Tag / Username</label>
+              <input type="text" id="usernameInput" placeholder="e.g. Werewolf">
+            </div>
 
-        <!-- Phone Verification Row -->
-        <div class="provider-row">
-          <div>
-            <strong>Phone SMS</strong>
-            <div id="phoneStatusText" style="font-size: 0.78rem; color: var(--text-muted);">Not Linked</div>
+            <div class="control-group">
+              <label for="primaryPlatformSelect">Primary Platform</label>
+              <select id="primaryPlatformSelect">
+                <option value="playstation">PlayStation Network (PSN)</option>
+                <option value="pc">PC (Steam / Epic Games)</option>
+                <option value="xbox">Xbox Series X|S</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <label for="avatarUrlInput">Custom Avatar Image URL</label>
+              <input type="text" id="avatarUrlInput" placeholder="Paste image URL (defaults to no-user icon if blank)">
+            </div>
           </div>
-          <button id="linkPhoneToggleBtn" class="btn btn-secondary btn-sm">Link Phone</button>
-        </div>
-        <div id="phoneLinkBox" class="hidden" style="padding: 10px; background: var(--bg-surface); border-radius: 6px;">
-          <input type="tel" id="linkPhoneInput" placeholder="+1234567890" style="margin-bottom: 6px; width: 100%;">
-          <div id="recaptcha-settings-container"></div>
-          <button id="sendPhoneLinkCodeBtn" class="btn btn-primary btn-sm full-width">Send SMS Code</button>
-          
-          <div id="phoneConfirmRow" class="hidden" style="margin-top: 8px;">
-            <input type="text" id="phoneLinkCode" placeholder="6-digit verification code" style="margin-bottom: 6px; width: 100%;">
-            <button id="submitPhoneLinkBtn" class="btn btn-success btn-sm full-width">Verify & Link Phone</button>
+          <div style="margin-top: 18px; display: flex; align-items: center; gap: 12px;">
+            <button type="button" id="saveProfileBtn" class="btn btn-primary">Save Profile Changes</button>
+            <span id="saveProfileMsg" style="font-size: 0.85rem; color: var(--success); font-weight: 600;"></span>
           </div>
-        </div>
+        </form>
       </section>
 
-      <!-- Column 2: Friends Roster & Cross-Progress -->
-      <section class="card">
-        <h3>Hunting Companions & Friends</h3>
+      <!-- Multi-Auth Linking & Friends -->
+      <div class="settings-grid">
+        
+        <!-- Providers -->
+        <section class="card">
+          <h3>Linked Sign-In Providers</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 16px;">
+            Link multiple credentials to this single account so your game progress follows you everywhere:
+          </p>
+
+          <div class="provider-row">
+            <div>
+              <strong>Google Account</strong>
+              <div id="googleStatusText" class="provider-status">Not Linked</div>
+            </div>
+            <button id="linkGoogleBtn" class="btn btn-secondary btn-sm">Link Google</button>
+          </div>
+
+          <div class="provider-row">
+            <div>
+              <strong>Email & Password</strong>
+              <div id="emailStatusText" class="provider-status">Not Linked</div>
+            </div>
+            <button id="linkEmailToggleBtn" class="btn btn-secondary btn-sm">Link Email</button>
+          </div>
+          <div id="emailLinkBox" class="expandable-link-box hidden">
+            <input type="email" id="linkEmailInput" placeholder="email@example.com">
+            <input type="password" id="linkPasswordInput" placeholder="Set password">
+            <button id="submitLinkEmailBtn" class="btn btn-primary btn-sm full-width">Confirm Email Link</button>
+          </div>
+
+          <div class="provider-row">
+            <div>
+              <strong>Phone SMS</strong>
+              <div id="phoneStatusText" class="provider-status">Not Linked</div>
+            </div>
+            <button id="linkPhoneToggleBtn" class="btn btn-secondary btn-sm">Link Phone</button>
+          </div>
+          <div id="phoneLinkBox" class="expandable-link-box hidden">
+            <input type="tel" id="linkPhoneInput" placeholder="+1234567890">
+            <div id="recaptcha-settings-container"></div>
+            <button id="sendPhoneLinkCodeBtn" class="btn btn-primary btn-sm full-width">Send SMS Code</button>
+            
+            <div id="phoneConfirmRow" class="hidden" style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
+              <input type="text" id="phoneLinkCode" placeholder="6-digit SMS verification code">
+              <button id="submitPhoneLinkBtn" class="btn btn-success btn-sm full-width">Verify & Link Phone</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Companions -->
+        <section class="card">
+          <h3>Hunting Companions & Friends</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 14px;">
+            Add friends using their unique Friend Code to view their stats (without exposing login credentials):
+          </p>
+
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="friendCodeInput" placeholder="Paste friend code..." style="flex: 1;">
+            <button id="addFriendBtn" class="btn btn-primary btn-sm">Add Friend</button>
+          </div>
+
+          <div class="friend-roster" id="friendRosterContainer">
+            <p style="font-size: 0.82rem; color: var(--text-muted);">No companions added yet.</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- Account Deletion -->
+      <section class="card danger-zone">
+        <h3>Delete Account & Erase Cloud Records</h3>
         <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 14px;">
-          Add friends by their Friend Code to view their trophy counts and unlocked zones (without revealing login credentials).
+          Permanently deletes your hunter profile, trophies, and platform saves from Firestore. This action is irreversible.
         </p>
-
-        <div style="display: flex; gap: 8px;">
-          <input type="text" id="friendCodeInput" placeholder="Paste friend's code here..." style="flex: 1;">
-          <button id="addFriendBtn" class="btn btn-primary btn-sm">Add Friend</button>
-        </div>
-
-        <div class="friend-roster" id="friendRosterContainer">
-          <p style="font-size: 0.82rem; color: var(--text-muted);">No companions added yet.</p>
-        </div>
+        <button id="deleteAccountBtn" class="btn btn-danger">Permanently Delete Account</button>
       </section>
+
     </div>
-
-    <!-- Danger Zone: Account Deletion -->
-    <section class="card danger-zone">
-      <h3>Delete Account & Erase Cloud Data</h3>
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 14px;">
-        Closing your account will permanently delete your hunter profile, trophies, and platform game saves from Firestore. This action cannot be undone.
-      </p>
-      <button id="deleteAccountBtn" class="btn" style="background: var(--danger); color: #fff;">Permanently Delete Account</button>
-    </section>
-
   </main>
 
-  <!-- Line 250: Global Footer with Required 24-hr NY Timestamp -->
+  <!-- Global Footer -->
   <footer class="site-footer">
     <div class="footer-container">
       <div class="footer-col">
-        <p>&copy; 2026 Way of the Hunter 2 Master Hub | User Identity Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 13:28 EDT</span> | Version: 3.0.0</p>
+        <p>&copy; 2026 Werewolf Project | User Identity Protocol</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 13:54 EDT</span> | Version: 3.4.0</p>
       </div>
       <div class="footer-col text-right">
-        <span id="accountStatusPill" class="status-pill status-connecting">Checking Auth...</span>
+        <span id="accountStatusPill" class="status-pill status-connecting">RTDB: Connecting...</span>
       </div>
     </div>
   </footer>
 
-  <!-- Line 263: Account Controller Logic -->
+  <!-- EMBEDDED JAVASCRIPT: Dynamic Menu, RTDB Favicon & Auth Engine -->
   <script>
-    // Line 264: Settings & Multi-Auth Bridge
     document.addEventListener("DOMContentLoaded", () => {
+      const DEFAULT_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
+
       const firebaseConfig = {
         apiKey: "AIzaSyDummyKeyReplaceWithYourOwnAuthKey",
         authDomain: "entertainment-71888.firebaseapp.com",
@@ -270,6 +639,7 @@
 
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       const auth = firebase.auth();
+      const rtdb = firebase.database();
       const db = firebase.firestore();
 
       let currentUser = null;
@@ -280,174 +650,344 @@
         size: "invisible"
       });
 
-      // 1. Auth State Watcher
-      auth.onAuthStateChanged(async (user) => {
-        const pill = document.getElementById("accountStatusPill");
-        if (user) {
-          currentUser = user;
+      // 1. RTDB Dynamic Menu Engine & Favicon Synchronization
+      function initRTDBMenu() {
+        const utmRef = rtdb.ref("/utm_links");
+
+        utmRef.on("value", (snapshot) => {
+          const raw = snapshot.val();
+          const pill = document.getElementById("accountStatusPill");
           if (pill) {
-            pill.textContent = "Authenticated";
+            pill.textContent = "RTDB: Live Connected";
             pill.className = "status-pill status-connected";
           }
+
+          if (!raw) return;
+
+          // Process and flatten links
+          const items = [];
+          Object.entries(raw).forEach(([parentKey, val]) => {
+            if (Array.isArray(val)) {
+              val.forEach((entry, idx) => {
+                if (entry) items.push(normalizeItem(entry, `${parentKey}_${idx}`, parentKey));
+              });
+            } else if (typeof val === "object" && val !== null) {
+              if (val.url || val.title) {
+                items.push(normalizeItem(val, parentKey, val.group || ""));
+              } else {
+                Object.entries(val).forEach(([childKey, childVal]) => {
+                  if (typeof childVal === "object" && childVal !== null) {
+                    items.push(normalizeItem(childVal, `${parentKey}_${childKey}`, parentKey));
+                  }
+                });
+              }
+            }
+          });
+
+          // Sync Settings Favicon & Brand Image from RTDB
+          syncSettingsFavicon(items, raw);
+
+          // Build Sorted Menu Hierarchy
+          renderSortedMenu(items);
+        }, (err) => {
+          console.warn("RTDB load warning:", err);
+        });
+      }
+
+      function normalizeItem(item, fallbackKey, fallbackGroup) {
+        return {
+          title: item.title || fallbackKey,
+          url: item.url || "#",
+          image: item.image || DEFAULT_AVATAR,
+          group: (item.group && item.group.trim()) ? item.group.trim() : (fallbackGroup && fallbackGroup !== "Settings" && isNaN(fallbackGroup) ? fallbackGroup.trim() : ""),
+          rowNumber: (item.rowNumber !== undefined && item.rowNumber !== null) ? Number(item.rowNumber) : 9999,
+          updatedAt: item.updatedAt || ""
+        };
+      }
+
+      // Favicon & Logo Binding
+      function syncSettingsFavicon(items, raw) {
+        let settingsImg = "";
+
+        // Check explicit /utm_links/Settings/0/image or match title === "Settings"
+        if (raw.Settings && raw.Settings[0] && raw.Settings[0].image) {
+          settingsImg = raw.Settings[0].image;
+        } else if (raw.Settings && raw.Settings.image) {
+          settingsImg = raw.Settings.image;
+        } else {
+          const match = items.find(i => i.title.toLowerCase() === "settings");
+          if (match && match.image) settingsImg = match.image;
+        }
+
+        if (settingsImg) {
+          const favicon = document.getElementById("dynamicFavicon");
+          const appleIcon = document.getElementById("dynamicAppleIcon");
+          const brandLogo = document.getElementById("navSettingsLogo");
+
+          if (favicon) favicon.href = settingsImg;
+          if (appleIcon) appleIcon.href = settingsImg;
+          if (brandLogo) brandLogo.src = settingsImg;
+        }
+      }
+
+      // Group & Row Sorting Logic
+      function renderSortedMenu(items) {
+        const navList = document.getElementById("navList");
+        if (!navList) return;
+        navList.innerHTML = "";
+
+        // Partition into standalone links and groups
+        const standalone = [];
+        const groups = {};
+
+        items.forEach(item => {
+          if (!item.group) {
+            standalone.push(item);
+          } else {
+            if (!groups[item.group]) {
+              groups[item.group] = {
+                name: item.group,
+                items: [],
+                minRow: item.rowNumber,
+                groupImage: item.image
+              };
+            }
+            groups[item.group].items.push(item);
+            if (item.rowNumber < groups[item.group].minRow) {
+              groups[item.group].minRow = item.rowNumber;
+              groups[item.group].groupImage = item.image; // Use lowest row's image for folder
+            }
+          }
+        });
+
+        // Combined top-level buckets: each entry has a sortRank based on rowNumber
+        const topLevelBuckets = [];
+
+        standalone.forEach(item => {
+          topLevelBuckets.push({
+            type: "standalone",
+            sortRank: item.rowNumber,
+            data: item
+          });
+        });
+
+        Object.values(groups).forEach(grp => {
+          // Sort items inside group ascending (row 1 on top, row 2 next)
+          grp.items.sort((a, b) => a.rowNumber - b.rowNumber);
+          topLevelBuckets.push({
+            type: "group",
+            sortRank: grp.minRow,
+            data: grp
+          });
+        });
+
+        // Sort top-level horizontally: lowest rowNumber on left
+        topLevelBuckets.sort((a, b) => a.sortRank - b.sortRank);
+
+        // Render HTML elements
+        topLevelBuckets.forEach(bucket => {
+          const li = document.createElement("li");
+          li.className = "nav-item";
+
+          if (bucket.type === "standalone") {
+            const item = bucket.data;
+            li.innerHTML = `
+              <a href="${item.url}" class="nav-link">
+                <img src="${item.image}" alt="" class="nav-thumb" onerror="this.src='${DEFAULT_AVATAR}'">
+                <span>${item.title}</span>
+              </a>
+            `;
+          } else {
+            const grp = bucket.data;
+            let dropdownHtml = `<div class="dropdown-menu">`;
+            grp.items.forEach(child => {
+              dropdownHtml += `
+                <a href="${child.url}" class="dropdown-item">
+                  <img src="${child.image}" alt="" class="nav-thumb" onerror="this.src='${DEFAULT_AVATAR}'">
+                  <span>${child.title}</span>
+                </a>
+              `;
+            });
+            dropdownHtml += `</div>`;
+
+            li.innerHTML = `
+              <button class="dropdown-trigger">
+                <img src="${grp.groupImage}" alt="" class="nav-thumb" onerror="this.src='${DEFAULT_AVATAR}'">
+                <span>${grp.name} ▾</span>
+              </button>
+              ${dropdownHtml}
+            `;
+          }
+          navList.appendChild(li);
+        });
+      }
+
+      // 2. Authentication Watcher & Profile Sync
+      auth.onAuthStateChanged(async (user) => {
+        const guestPrompt = document.getElementById("guestSignInPrompt");
+        const authSection = document.getElementById("authenticatedSection");
+        const profileBadge = document.getElementById("userProfileBadge");
+        const authModalBtn = document.getElementById("authModalBtn");
+
+        if (user) {
+          currentUser = user;
+          if (guestPrompt) guestPrompt.classList.add("hidden");
+          if (authSection) authSection.classList.remove("hidden");
+          if (profileBadge) profileBadge.classList.remove("hidden");
+          if (authModalBtn) authModalBtn.classList.add("hidden");
+
           document.getElementById("friendCodeDisplay").textContent = user.uid;
           await loadUserProfile(user);
           renderLinkedProviders(user);
           loadFriendsList(user.uid);
         } else {
-          // If guest, send them to hub to sign in
-          if (pill) pill.textContent = "Not Signed In";
-          alert("Please sign in from the main portal first.");
-          window.location.href = "./index.html";
+          currentUser = null;
+          if (guestPrompt) guestPrompt.classList.remove("hidden");
+          if (authSection) authSection.classList.add("hidden");
+          if (profileBadge) profileBadge.classList.add("hidden");
+          if (authModalBtn) authModalBtn.classList.remove("hidden");
         }
       });
 
-      // 2. Load Firestore Profile
+      // 3. Load & Render User Profile
       async function loadUserProfile(user) {
+        let avatarUrl = DEFAULT_AVATAR;
+        let gamerTag = user.displayName || "Hunter";
+        let platform = "playstation";
+
         try {
           const doc = await db.collection("users").doc(user.uid).get();
           if (doc.exists) {
             const data = doc.data();
-            const gamerTag = data.username || user.displayName || "Hunter";
-            document.getElementById("displayGamerTag").textContent = gamerTag;
-            document.getElementById("usernameInput").value = gamerTag;
-            document.getElementById("primaryPlatformSelect").value = data.primary_platform || "playstation";
-            if (data.avatar_url) {
-              document.getElementById("avatarUrlInput").value = data.avatar_url;
-              document.getElementById("avatarPreview").src = data.avatar_url;
+            gamerTag = data.username || gamerTag;
+            platform = data.primary_platform || platform;
+            if (data.avatar_url && data.avatar_url.trim()) {
+              avatarUrl = data.avatar_url.trim();
             }
-          } else {
-            // Seed profile
-            await db.collection("users").doc(user.uid).set({
-              username: user.displayName || "Hunter",
-              primary_platform: "playstation",
-              avatar_url: "//werewolf3788.github.io/Website/assets/logo.jpg",
-              createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
           }
         } catch (e) {
-          console.warn("Could not load Firestore profile:", e);
+          console.warn("Firestore profile fetch:", e);
         }
+
+        // Update Inputs
+        document.getElementById("usernameInput").value = gamerTag;
+        document.getElementById("primaryPlatformSelect").value = platform;
+        document.getElementById("avatarUrlInput").value = (avatarUrl === DEFAULT_AVATAR) ? "" : avatarUrl;
+
+        // Update UI displays
+        document.getElementById("displayGamerTag").textContent = gamerTag;
+        document.getElementById("avatarPreview").src = avatarUrl;
+        document.getElementById("headerUserTag").textContent = gamerTag;
+        document.getElementById("headerUserAvatar").src = avatarUrl;
       }
 
-      // 3. Save Profile Changes
+      // 4. Save Profile Changes
       document.getElementById("saveProfileBtn").addEventListener("click", async () => {
         if (!currentUser) return;
-        const newTag = document.getElementById("usernameInput").value.trim();
+        const newTag = document.getElementById("usernameInput").value.trim() || "Hunter";
         const platform = document.getElementById("primaryPlatformSelect").value;
-        const avatar = document.getElementById("avatarUrlInput").value.trim();
+        let avatar = document.getElementById("avatarUrlInput").value.trim();
+
+        if (!avatar) avatar = DEFAULT_AVATAR;
 
         try {
           await db.collection("users").doc(currentUser.uid).set({
-            username: newTag || "Hunter",
+            username: newTag,
             primary_platform: platform,
-            avatar_url: avatar || "//werewolf3788.github.io/Website/assets/logo.jpg",
+            avatar_url: avatar,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
           }, { merge: true });
 
           document.getElementById("displayGamerTag").textContent = newTag;
-          if (avatar) document.getElementById("avatarPreview").src = avatar;
-          
+          document.getElementById("avatarPreview").src = avatar;
+          document.getElementById("headerUserTag").textContent = newTag;
+          document.getElementById("headerUserAvatar").src = avatar;
+
           const msg = document.getElementById("saveProfileMsg");
           msg.textContent = "Profile updated!";
           setTimeout(() => msg.textContent = "", 3000);
         } catch (err) {
-          alert("Error updating profile: " + err.message);
+          alert("Error saving profile: " + err.message);
         }
       });
 
-      // 4. Provider Linking Logic
+      // 5. Providers Management
       function renderLinkedProviders(user) {
         const providers = user.providerData.map(p => p.providerId);
-
-        // Google
         if (providers.includes("google.com")) {
           document.getElementById("googleStatusText").textContent = "Linked (" + (user.email || "Active") + ")";
           document.getElementById("linkGoogleBtn").style.display = "none";
         }
-
-        // Email / Password
         if (providers.includes("password")) {
           document.getElementById("emailStatusText").textContent = "Linked (" + (user.email || "Active") + ")";
           document.getElementById("linkEmailToggleBtn").style.display = "none";
         }
-
-        // Phone
         if (providers.includes("phone")) {
           document.getElementById("phoneStatusText").textContent = "Linked (" + (user.phoneNumber || "Active") + ")";
           document.getElementById("linkPhoneToggleBtn").style.display = "none";
         }
       }
 
-      // Link Google Account
       document.getElementById("linkGoogleBtn").addEventListener("click", () => {
         if (!currentUser) return;
         const provider = new firebase.auth.GoogleAuthProvider();
         currentUser.linkWithPopup(provider)
-          .then((result) => {
-            alert("Google account linked successfully!");
-            renderLinkedProviders(result.user);
+          .then(res => {
+            alert("Google linked!");
+            renderLinkedProviders(res.user);
           })
-          .catch(err => alert("Linking failed: " + err.message));
+          .catch(e => alert("Link Error: " + e.message));
       });
 
-      // Toggle Email Link Box
       document.getElementById("linkEmailToggleBtn").addEventListener("click", () => {
         document.getElementById("emailLinkBox").classList.toggle("hidden");
       });
 
-      // Confirm Email Link
       document.getElementById("submitLinkEmailBtn").addEventListener("click", () => {
         const email = document.getElementById("linkEmailInput").value.trim();
         const pass = document.getElementById("linkPasswordInput").value;
         if (!email || !pass) return alert("Enter email and password.");
-
         const cred = firebase.auth.EmailAuthProvider.credential(email, pass);
         currentUser.linkWithCredential(cred)
-          .then((res) => {
-            alert("Email & password login linked!");
+          .then(res => {
+            alert("Email linked!");
             document.getElementById("emailLinkBox").classList.add("hidden");
             renderLinkedProviders(res.user);
           })
-          .catch(err => alert("Email link error: " + err.message));
+          .catch(e => alert("Link Error: " + e.message));
       });
 
-      // Toggle Phone Box
       document.getElementById("linkPhoneToggleBtn").addEventListener("click", () => {
         document.getElementById("phoneLinkBox").classList.toggle("hidden");
       });
 
-      // Send Phone SMS Code
       document.getElementById("sendPhoneLinkCodeBtn").addEventListener("click", () => {
         const phone = document.getElementById("linkPhoneInput").value.trim();
-        if (!phone) return alert("Enter valid phone number.");
-
-        const appVerifier = window.recaptchaVerifier;
+        if (!phone) return alert("Enter phone number.");
         const provider = new firebase.auth.PhoneAuthProvider();
-        provider.verifyPhoneNumber(phone, appVerifier)
-          .then((verificationId) => {
-            confirmationResultRef = verificationId;
+        provider.verifyPhoneNumber(phone, window.recaptchaVerifier)
+          .then(id => {
+            confirmationResultRef = id;
             document.getElementById("phoneConfirmRow").classList.remove("hidden");
-            alert("Verification code sent via SMS!");
+            alert("SMS sent!");
           })
-          .catch(err => alert("SMS send error: " + err.message));
+          .catch(e => alert("SMS Error: " + e.message));
       });
 
-      // Confirm Phone Link
       document.getElementById("submitPhoneLinkBtn").addEventListener("click", () => {
         const code = document.getElementById("phoneLinkCode").value.trim();
-        if (!code || !confirmationResultRef) return alert("Enter 6-digit code.");
-
+        if (!code || !confirmationResultRef) return alert("Enter code.");
         const cred = firebase.auth.PhoneAuthProvider.credential(confirmationResultRef, code);
         currentUser.linkWithCredential(cred)
-          .then((res) => {
-            alert("Phone number linked to your account!");
+          .then(res => {
+            alert("Phone linked!");
             document.getElementById("phoneLinkBox").classList.add("hidden");
             renderLinkedProviders(res.user);
           })
-          .catch(err => alert("Phone link error: " + err.message));
+          .catch(e => alert("Verification Error: " + e.message));
       });
 
-      // 5. Friends System
+      // 6. Friends System
       async function loadFriendsList(uid) {
         const roster = document.getElementById("friendRosterContainer");
         try {
@@ -456,32 +996,32 @@
             roster.innerHTML = '<p style="font-size: 0.82rem; color: var(--text-muted);">No companions added yet.</p>';
             return;
           }
-
           roster.innerHTML = "";
           for (const doc of snapshot.docs) {
-            const fData = doc.data();
-            // Fetch friend's public username
             const friendProfile = await db.collection("users").doc(doc.id).get();
             const fName = friendProfile.exists ? (friendProfile.data().username || "Unknown Hunter") : doc.id.substring(0, 8);
             const fPlatform = friendProfile.exists ? (friendProfile.data().primary_platform || "PC") : "PSN";
+            const fAvatar = (friendProfile.exists && friendProfile.data().avatar_url) ? friendProfile.data().avatar_url : DEFAULT_AVATAR;
 
             const div = document.createElement("div");
             div.className = "friend-item";
             div.innerHTML = `
-              <div>
-                <strong>${fName}</strong>
-                <div style="font-size: 0.76rem; color: var(--text-muted);">Platform: ${fPlatform}</div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <img src="${fAvatar}" class="nav-thumb" style="border-radius:50%; width:28px; height:28px;" onerror="this.src='${DEFAULT_AVATAR}'">
+                <div>
+                  <strong>${fName}</strong>
+                  <div style="font-size: 0.74rem; color: var(--text-muted);">${fPlatform.toUpperCase()}</div>
+                </div>
               </div>
-              <span class="badge-tag">Active Hunter</span>
+              <span class="badge-tag">Companion</span>
             `;
             roster.appendChild(div);
           }
         } catch (e) {
-          console.warn("Error fetching friends:", e);
+          console.warn("Friends loading:", e);
         }
       }
 
-      // Add Friend
       document.getElementById("addFriendBtn").addEventListener("click", async () => {
         if (!currentUser) return;
         const code = document.getElementById("friendCodeInput").value.trim();
@@ -495,36 +1035,65 @@
           document.getElementById("friendCodeInput").value = "";
           alert("Companion added!");
           loadFriendsList(currentUser.uid);
-        } catch (err) {
-          alert("Failed to add companion: " + err.message);
+        } catch (e) {
+          alert("Add failed: " + e.message);
         }
       });
 
-      // 6. Delete Account (Erase Firestore Data + Wipe Auth Credentials)
+      // 7. Delete Account
       document.getElementById("deleteAccountBtn").addEventListener("click", async () => {
         if (!currentUser) return;
-        const confirmDelete = confirm("Are you sure? This will delete all your harvest records, unlocked zones, and settings permanently.");
-        if (!confirmDelete) return;
+        if (!confirm("Permanently erase your account and all game records?")) return;
 
         try {
-          // Delete main profile doc
           await db.collection("users").doc(currentUser.uid).delete();
-          
-          // Delete Auth Account
           await currentUser.delete();
-          
           localStorage.clear();
-          alert("Your account and records have been deleted.");
-          window.location.href = "./index.html";
-        } catch (err) {
-          alert("To delete your account, please sign in again recently for security: " + err.message);
+          alert("Account erased.");
+          window.location.reload();
+        } catch (e) {
+          alert("Re-authentication required before account deletion: " + e.message);
         }
       });
 
-      // Sign Out
-      document.getElementById("logoutBtn").addEventListener("click", () => {
-        auth.signOut().then(() => window.location.href = "./index.html");
+      // 8. Sign In / Sign Out Triggers
+      document.getElementById("inlineGoogleBtn").addEventListener("click", () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider).catch(e => alert("Sign In Error: " + e.message));
       });
+
+      document.getElementById("authModalBtn").addEventListener("click", () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider).catch(e => alert("Sign In Error: " + e.message));
+      });
+
+      document.getElementById("quickLoginBtn").addEventListener("click", () => {
+        const email = document.getElementById("quickEmail").value.trim();
+        const pass = document.getElementById("quickPass").value;
+        if (!email || !pass) return alert("Enter email and password.");
+        auth.signInWithEmailAndPassword(email, pass).catch(e => alert("Login Error: " + e.message));
+      });
+
+      document.getElementById("quickRegisterBtn").addEventListener("click", () => {
+        const email = document.getElementById("quickEmail").value.trim();
+        const pass = document.getElementById("quickPass").value;
+        if (!email || !pass) return alert("Enter email and password.");
+        auth.createUserWithEmailAndPassword(email, pass).catch(e => alert("Register Error: " + e.message));
+      });
+
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        auth.signOut().then(() => window.location.reload());
+      });
+
+      // Mobile Menu Toggle
+      const menuBtn = document.getElementById("menuToggle");
+      const nav = document.getElementById("dynamicNav");
+      if (menuBtn && nav) {
+        menuBtn.addEventListener("click", () => nav.classList.toggle("open"));
+      }
+
+      // Initialize Menu
+      initRTDBMenu();
     });
   </script>
 </body>
