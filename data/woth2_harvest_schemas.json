@@ -1,0 +1,64 @@
+{
+  "version": "1.0.0",
+  "scoring_templates": {
+    "cervid_antler": {
+      "category": "Antlered Big Game",
+      "fields": [
+        { "id": "main_beam", "label": "Main Beam Length", "unit": "in", "placeholder": "24.5" },
+        { "id": "inside_spread", "label": "Inside Spread", "unit": "in", "placeholder": "18.2" },
+        { "id": "outside_spread", "label": "Outside Spread", "unit": "in", "placeholder": "20.1" },
+        { "id": "base_circumference", "label": "Circumference at Base", "unit": "in", "placeholder": "4.8" },
+        { "id": "typical_points_len", "label": "Length of Typical Points", "unit": "in", "placeholder": "7.4" },
+        { "id": "point_count", "label": "Total Points Count", "unit": "count", "placeholder": "10" }
+      ]
+    },
+    "palmate_moose": {
+      "category": "Palmate Antlers",
+      "fields": [
+        { "id": "palm_length", "label": "Palm Length", "unit": "in", "placeholder": "32.0" },
+        { "id": "palm_width", "label": "Palm Width", "unit": "in", "placeholder": "12.5" },
+        { "id": "inside_spread", "label": "Inside Spread", "unit": "in", "placeholder": "45.0" },
+        { "id": "points_left", "label": "Left Palm Points", "unit": "count", "placeholder": "9" },
+        { "id": "points_right", "label": "Right Palm Points", "unit": "count", "placeholder": "8" }
+      ]
+    },
+    "predator_skull": {
+      "category": "Carnivore Skull",
+      "fields": [
+        { "id": "skull_length", "label": "Skull Length", "unit": "in", "placeholder": "15.4" },
+        { "id": "skull_width", "label": "Skull Width", "unit": "in", "placeholder": "10.2" }
+      ]
+    },
+    "horned_bovid": {
+      "category": "Horns",
+      "fields": [
+        { "id": "horn_length", "label": "Horn Length", "unit": "in", "placeholder": "36.8" },
+        { "id": "base_circumference", "label": "Circumference at Base", "unit": "in", "placeholder": "14.2" },
+        { "id": "tip_to_tip", "label": "Tip-to-Tip Spread", "unit": "in", "placeholder": "22.0" }
+      ]
+    },
+    "avian_game": {
+      "category": "Birds & Waterfowl",
+      "fields": [
+        { "id": "beard_length", "label": "Beard Length", "unit": "in", "placeholder": "10.5" },
+        { "id": "spur_left", "label": "Left Spur Length", "unit": "in", "placeholder": "1.25" },
+        { "id": "spur_right", "label": "Right Spur Length", "unit": "in", "placeholder": "1.25" }
+      ]
+    }
+  },
+  "species_mapping": {
+    "Rocky Mountain mule deer": "cervid_antler",
+    "Northwestern white-tailed deer": "cervid_antler",
+    "Rocky Mountain elk": "cervid_antler",
+    "Western moose": "palmate_moose",
+    "Grizzly bear": "predator_skull",
+    "Northwestern wolf": "predator_skull",
+    "American wolverine": "predator_skull",
+    "Dall sheep": "horned_bovid",
+    "Wood bison": "horned_bovid",
+    "Rocky Mountain pronghorn": "horned_bovid",
+    "Eastern wild turkey": "avian_game",
+    "Mallard": "avian_game",
+    "White-tailed ptarmigan": "avian_game"
+  }
+}
