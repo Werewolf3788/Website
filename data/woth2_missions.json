@@ -1,0 +1,237 @@
+{
+  "reserve": "New Laurentia",
+  "total_missions": 33,
+  "missions": [
+    {
+      "name": "For the Hearth",
+      "source": "Angel",
+      "objectives": ["Harvest a male Mule deer near your Lodge. Choose to taxidermy it when harvesting."],
+      "money": null,
+      "xp": null
+    },
+    {
+      "name": "For the Hunt",
+      "source": "Angel",
+      "objectives": ["Place a male Mule deer in a diorama with a mid-sized herbivore in your lodge.", "Take a look at your surroundings at a Map board in the Lodge."],
+      "money": null,
+      "xp": null
+    },
+    {
+      "name": "Angel on your shoulder",
+      "source": "Angel",
+      "objectives": ["Check out the Hearth & Hunt files on the locals."],
+      "money": 600,
+      "xp": 15
+    },
+    {
+      "name": "Fox Fires",
+      "source": "Mikael",
+      "objectives": ["Analyze any Dall sheep feeding or resting zones. The areas where to find them are highlighted on the Hunting map.", "Harvest a Dall sheep."],
+      "money": 1050,
+      "xp": 40
+    },
+    {
+      "name": "Loudest deer",
+      "source": "Mikael",
+      "objectives": ["Harvest a male Rocky Mountain elk. Its Fitness must be 70% or higher."],
+      "money": 1050,
+      "xp": 40
+    },
+    {
+      "name": "Pack Dynamics",
+      "source": "Mikael",
+      "objectives": ["Animals possess intelligence that often surprises people. The older and fitter an animal is, the better it conceals itself. Calling becomes essential."],
+      "money": 1050,
+      "xp": 40
+    },
+    {
+      "name": "One shot, no waste",
+      "source": "Mikael",
+      "objectives": ["Save up money and buy a better rifle for larger animals so meat is not damaged by improper ammunition."],
+      "money": 1050,
+      "xp": 40
+    },
+    {
+      "name": "Heterochromia Iridum",
+      "source": "Juniper",
+      "objectives": ["Harvest a male White-tailed deer with your Dog companion active at the time of the shot.", "Have your Dog companion successfully find and follow the blood trail of any shot White-tailed deer."],
+      "money": 600,
+      "xp": 15
+    },
+    {
+      "name": "Who let the bloodhounds out?",
+      "source": "Juniper",
+      "objectives": ["Shoot and harvest an Elk between 00:00-05:00 with your Dog companion active at the time of the shot."],
+      "money": 1050,
+      "xp": 40
+    },
+    {
+      "name": "Friendly competition",
+      "source": "Juniper",
+      "objectives": ["Shoot and harvest 3 Wolverines."],
+      "money": 600,
+      "xp": 15
+    },
+    {
+      "name": "Parasomnias",
+      "source": "Juniper",
+      "objectives": ["Locate and harvest the lone Dall sheep."],
+      "money": 1050,
+      "xp": 40
+    },
+    {
+      "name": "Pieris Marginalis",
+      "source": "Regina",
+      "objectives": ["Find invasive plant species in the location highlighted on your Map and remove them.", "Create a butterfly garden."],
+      "money": 1050,
+      "xp": 40
+    },
+    {
+      "name": "Cercyonis Pegala",
+      "source": "Regina",
+      "objectives": ["Harvest 3 White-tailed deer with their Fitness at 60% or lower."],
+      "money": 1050,
+      "xp": 40
+    },
+    {
+      "name": "Eynnis lucilius",
+      "source": "Regina",
+      "objectives": ["Harvest the sick moose in the highlighted area on the hunting map. (0/3)"],
+      "money": 1050,
+      "xp": 40
+    },
+    {
+      "name": "Speiredonia mutabilis",
+      "source": "Regina",
+      "objectives": ["Get to the area of the last known sighting of the moose with bloodied antlers."],
+      "money": 600,
+      "xp": 15
+    },
+    {
+      "name": "Tyria Jacobaeae",
+      "source": "automatic after Speiredonia mutabilis",
+      "objectives": ["Enter the swamps and get ready for the moose with bloodied antlers.", "Option 1: Shoot and harvest the moose with bloodied antlers. Option 2: Leave the highlighted zone and let the moose live.", "Talk to Regina. Talk to Patrick."],
+      "money": null,
+      "xp": null
+    },
+    {
+      "name": "Crystal clarity",
+      "source": "Patrick",
+      "objectives": ["Harvest an animal using a bow sight.", "Harvest an animal using a crossbow sight.", "Harvest an animal with a bolt-action rifle without using a scope."],
+      "money": 1800,
+      "xp": 100
+    },
+    {
+      "name": "Talk turkey to me",
+      "source": "Patrick",
+      "objectives": ["Call 3 Wild turkeys to a distance of 100 m or less from you."],
+      "money": 1800,
+      "xp": 100
+    },
+    {
+      "name": "Hunting Solo",
+      "source": "Campsite, northern Thunderbird Muskeg",
+      "objectives": ["Harvest 5 Mallards without using your Dog companion. Each bird must weigh 1.3 kg or more."],
+      "money": 1800,
+      "xp": 100
+    },
+    {
+      "name": "Wattle Bearers",
+      "source": "Campsite, northeastern Slalakum Shore",
+      "objectives": ["Harvest 2 female Wild turkeys with Fitness 60% or lower.", "Harvest 2 male Wild turkeys with Fitness 60% or lower."],
+      "money": 800,
+      "xp": 15
+    },
+    {
+      "name": "Cycle of Life",
+      "source": "Campsite, central Slalakum Shore",
+      "objectives": ["Harvest 3 Snowshoe hares. Each animal must weigh 1.3 kg or more."],
+      "money": 800,
+      "xp": 15
+    },
+    {
+      "name": "Iconic pairing",
+      "source": "Campsite, central Slalakum Shore",
+      "objectives": ["Create a taxidermy diorama with a Grizzly bear and a Wood Bison."],
+      "money": 1200,
+      "xp": 40
+    },
+    {
+      "name": "Weather Extremes",
+      "source": "Campsite, east of Jackalope Cordillera",
+      "objectives": ["Harvest a Dall sheep. Shoot it only once from 400 m or more with the Primacy Vision Unity scope attached."],
+      "money": 1800,
+      "xp": 100
+    },
+    {
+      "name": "Fifteen stars",
+      "source": "Campsite, Kermode Plateau west",
+      "objectives": ["Harvest 3 Elk with their Trophy ratings at 5 stars."],
+      "money": 2100,
+      "xp": 250
+    },
+    {
+      "name": "Bison Bank",
+      "source": "Campsite, Kermode Plateau center east",
+      "objectives": ["Harvest a male Bison with its Fitness at 40% or higher."],
+      "money": 300,
+      "xp": 5
+    },
+    {
+      "name": "Lure in",
+      "source": "Campsite, Kermode Plateau far east",
+      "objectives": ["Harvest a male Grizzly bear using a luring scent."],
+      "money": 1200,
+      "xp": 40
+    },
+    {
+      "name": "Zip up",
+      "source": "Campsite, Wetiko Foothills northwest",
+      "objectives": ["Harvest a Mule deer. Shoot it between 00:00-03:00 with a night vision scope attached."],
+      "money": 1200,
+      "xp": 40
+    },
+    {
+      "name": "Superhero of the wilderness",
+      "source": "Campsite, Lake Sasquatch east",
+      "objectives": ["Harvest a Wolverine using a tripod stand."],
+      "money": 300,
+      "xp": 5
+    },
+    {
+      "name": "Quail country",
+      "source": "Campsite, Slalakum Shore south",
+      "objectives": ["Harvest a male White-tailed ptarmigan with Fitness 60% or higher.", "Harvest a female White-tailed ptarmigan with Fitness 60% or higher."],
+      "money": 1200,
+      "xp": 40
+    },
+    {
+      "name": "Which one has a white butt?",
+      "source": "Campsite, Kermode Plateau center",
+      "objectives": ["Harvest a White-tailed deer with a 5-star Trophy rating.", "Harvest a Mule deer with a 5-star Trophy rating."],
+      "money": 2100,
+      "xp": 250
+    },
+    {
+      "name": "Super pigs",
+      "source": "Campsite, Kermode Plateau southeast",
+      "objectives": ["Call a Wild boar with Fitness 80% or more. Make sure it reacts and wait until it is 100 m away or closer."],
+      "money": 1800,
+      "xp": 100
+    },
+    {
+      "name": "MooseNews",
+      "source": "Campsite, Thunderbird Muskeg southeast",
+      "objectives": ["Harvest a Moose. Shoot it only once using the .338 Lapua Magnum caliber."],
+      "money": 800,
+      "xp": 15
+    },
+    {
+      "name": "Artificial route",
+      "source": "Campsite, Slalakum Shore center east",
+      "objectives": ["Harvest a Pronghorn with Fitness 70% or higher. Shoot it only once to the heart from 200 m or more."],
+      "money": 1800,
+      "xp": 100
+    }
+  ]
+}
