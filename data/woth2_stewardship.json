@@ -1,0 +1,14 @@
+{
+  "stewardship_levels": [
+    { "level": "Critical", "avg_fitness_range": "< 50%", "status_desc": "Habitat neglected. Heavy inbreeding and poor genetics dominate the herds." },
+    { "level": "Vulnerable", "avg_fitness_range": "50% - 59%", "status_desc": "Genetic potential compromised. Aggressive culling of low-tier males required." },
+    { "level": "Stable", "avg_fitness_range": "60% - 69%", "status_desc": "Baseline ecosystem health. Feeders and clean water will elevate the herd." },
+    { "level": "Healthy", "avg_fitness_range": "70% - 79%", "status_desc": "Strong genetics. 3-star and 4-star trophies appearing regularly." },
+    { "level": "Thriving", "avg_fitness_range": "80%+", "status_desc": "Elite ecosystem. Habitat enhancements active; 5-star trophies spawn consistently." }
+  ],
+  "interventions": {
+    "culling_quota": "Remove at least 2 mature males under 55% fitness per generation to lift regional average.",
+    "pollution_removal": "Eliminating toxic runoffs (e.g., Lake Sasquatch) unlocks the genetic ceiling for all surrounding herds.",
+    "feeder_installation": "Mineral feeders provide consistent nutrition, shielding young animals from genetic stalls during harsh weather."
+  }
+}
