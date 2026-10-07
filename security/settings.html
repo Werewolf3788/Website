@@ -1,5 +1,5 @@
 <!-- Line 1: Hunter Identity & Settings - Single File Architecture -->
-<!-- [Smart Cache-Buster Time: 2026-10-07 15:13 EDT | Firebase Sync Target: /utm_links | Version: 3.7.1] -->
+<!-- [Smart Cache-Buster Time: 2026-10-07 15:28 EDT | Firebase Sync Target: /utm_links | Version: 3.8.0] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -434,7 +434,7 @@
 </head>
 <body>
 
-  <!-- Line 404: Sticky Top Header with Dynamic Favicon Brand Logo -->
+  <!-- Line 251: Sticky Top Header with Dynamic Favicon Brand Logo -->
   <header class="site-header">
     <div class="header-container">
       <a href="../games/woth2/index.html" class="brand-area">
@@ -463,7 +463,7 @@
     </div>
   </header>
 
-  <!-- Line 434: Master Workspace -->
+  <!-- Line 281: Master Workspace -->
   <main class="settings-container">
     
     <!-- Guest Notification -->
@@ -531,11 +531,11 @@
       <!-- Multi-Auth Linking & Friends -->
       <div class="settings-grid">
         
-        <!-- Multi-Provider Linking -->
+        <!-- Multi-Provider Linking (Google & Email Only) -->
         <section class="card">
           <h3>Linked Sign-In Providers</h3>
           <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 16px;">
-            Connect multiple sign-in credentials to this single account so your progress follows you everywhere:
+            Connect your login credentials to this single account so your progress follows you everywhere:
           </p>
 
           <div class="provider-row">
@@ -557,24 +557,6 @@
             <input type="email" id="linkEmailInput" placeholder="email@example.com">
             <input type="password" id="linkPasswordInput" placeholder="Set password">
             <button id="submitLinkEmailBtn" class="btn btn-primary btn-sm full-width">Confirm Email Link</button>
-          </div>
-
-          <div class="provider-row">
-            <div>
-              <strong>Phone SMS</strong>
-              <div id="phoneStatusText" class="provider-status">Not Linked</div>
-            </div>
-            <button id="linkPhoneToggleBtn" class="btn btn-secondary btn-sm">Link Phone</button>
-          </div>
-          <div id="phoneLinkBox" class="expandable-link-box hidden">
-            <input type="tel" id="linkPhoneInput" placeholder="+1234567890">
-            <div id="recaptcha-settings-container"></div>
-            <button id="sendPhoneLinkCodeBtn" class="btn btn-primary btn-sm full-width">Send SMS Code</button>
-            
-            <div id="phoneConfirmRow" class="hidden" style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
-              <input type="text" id="phoneLinkCode" placeholder="6-digit SMS verification code">
-              <button id="submitPhoneLinkBtn" class="btn btn-success btn-sm full-width">Verify & Link Phone</button>
-            </div>
           </div>
         </section>
 
@@ -608,12 +590,12 @@
     </div>
   </main>
 
-  <!-- Line 579: 24-hr Timestamp Footer -->
+  <!-- Line 405: 24-hr Timestamp Footer -->
   <footer class="site-footer">
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Werewolf Project | User Identity Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 15:13 EDT</span> | Version: 3.7.1</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 15:28 EDT</span> | Version: 3.8.0</p>
       </div>
       <div class="footer-col text-right">
         <span id="accountStatusPill" class="status-pill status-connecting">RTDB: Connecting...</span>
@@ -621,7 +603,7 @@
     </div>
   </footer>
 
-  <!-- Line 592: Embedded JavaScript Engine -->
+  <!-- Line 418: Embedded JavaScript Engine -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       // Default placeholder avatar strictly for user accounts without profile photos
@@ -645,12 +627,6 @@
       const db = firebase.firestore();
 
       let currentUser = null;
-      let confirmationResultRef = null;
-
-      // Phone Recaptcha
-      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-settings-container", {
-        size: "invisible"
-      });
 
       // 1. RTDB Menu Engine & Favicon / Brand Logo Binding
       function initRTDBMenu() {
@@ -713,18 +689,16 @@
         let settingsImg = "";
         let settingsStamp = "";
 
-        // 1. Look for explicit tag: "Settings" or "settings" across all groups
+        // Look for explicit tag: "Settings" or "settings" across all groups
         const taggedEntry = items.find(i => i.tag && i.tag.toLowerCase() === "settings");
 
         if (taggedEntry) {
           settingsImg = taggedEntry.image;
           settingsStamp = taggedEntry.updatedAt;
         } else if (raw.Settings && raw.Settings[0] && raw.Settings[0].image) {
-          // 2. Direct fallback to /utm_links/Settings/0
           settingsImg = raw.Settings[0].image;
           settingsStamp = raw.Settings[0].updatedAt;
         } else {
-          // 3. Fallback matching display title
           const titleMatch = items.find(i => i.title.toLowerCase() === "settings");
           if (titleMatch) {
             settingsImg = titleMatch.image;
@@ -790,7 +764,6 @@
         });
 
         Object.values(folderGroups).forEach(grp => {
-          // Inner dropdown links stack vertically ascending by rowNumber
           grp.items.sort((a, b) => a.rowNumber - b.rowNumber);
           topLevelBuckets.push({
             type: "folder",
@@ -799,7 +772,6 @@
           });
         });
 
-        // Sort top-level horizontally ascending by rank (lowest on left)
         topLevelBuckets.sort((a, b) => a.rank - b.rank);
 
         // Render to DOM
@@ -871,7 +843,7 @@
         }
       });
 
-      // 3. Load & Render User Profile (Google photo / Fallback photo)
+      // 3. Load & Render User Profile
       async function loadUserProfile(user) {
         let avatarUrl = user.photoURL || DEFAULT_USER_AVATAR;
         let gamerTag = user.displayName || "Hunter";
@@ -931,7 +903,7 @@
         }
       });
 
-      // 5. Providers Management
+      // 5. Providers Management (Google & Email Only)
       function renderLinkedProviders(user) {
         const providers = user.providerData.map(p => p.providerId);
         if (providers.includes("google.com")) {
@@ -941,10 +913,6 @@
         if (providers.includes("password")) {
           document.getElementById("emailStatusText").textContent = "Linked (" + (user.email || "Active") + ")";
           document.getElementById("linkEmailToggleBtn").style.display = "none";
-        }
-        if (providers.includes("phone")) {
-          document.getElementById("phoneStatusText").textContent = "Linked (" + (user.phoneNumber || "Active") + ")";
-          document.getElementById("linkPhoneToggleBtn").style.display = "none";
         }
       }
 
@@ -975,36 +943,6 @@
             renderLinkedProviders(res.user);
           })
           .catch(e => alert("Link Error: " + e.message));
-      });
-
-      document.getElementById("linkPhoneToggleBtn").addEventListener("click", () => {
-        document.getElementById("phoneLinkBox").classList.toggle("hidden");
-      });
-
-      document.getElementById("sendPhoneLinkCodeBtn").addEventListener("click", () => {
-        const phone = document.getElementById("linkPhoneInput").value.trim();
-        if (!phone) return alert("Enter valid phone number.");
-        const provider = new firebase.auth.PhoneAuthProvider();
-        provider.verifyPhoneNumber(phone, window.recaptchaVerifier)
-          .then(id => {
-            confirmationResultRef = id;
-            document.getElementById("phoneConfirmRow").classList.remove("hidden");
-            alert("Verification SMS sent!");
-          })
-          .catch(e => alert("SMS Error: " + e.message));
-      });
-
-      document.getElementById("submitPhoneLinkBtn").addEventListener("click", () => {
-        const code = document.getElementById("phoneLinkCode").value.trim();
-        if (!code || !confirmationResultRef) return alert("Enter 6-digit code.");
-        const cred = firebase.auth.PhoneAuthProvider.credential(confirmationResultRef, code);
-        currentUser.linkWithCredential(cred)
-          .then(res => {
-            alert("Phone number linked successfully!");
-            document.getElementById("phoneLinkBox").classList.add("hidden");
-            renderLinkedProviders(res.user);
-          })
-          .catch(e => alert("Verification Error: " + e.message));
       });
 
       // 6. Friends System
