@@ -1,5 +1,5 @@
 <!-- Line 1: Way of the Hunter 2 - Master Tactical Companion -->
-<!-- [Smart Cache-Buster Time: 2026-10-07 16:40 EDT | Firebase Sync Target: /utm_links | Version: 4.1.2] -->
+<!-- [Smart Cache-Buster Time: 2026-10-07 16:45 EDT | Firebase Sync Target: /utm_links | Version: 4.1.3] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,27 +7,723 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PlayStation Hub | Way of the Hunter 2 Companion</title>
 
-  <!-- Line 10: Dynamic Favicon & Tab Icons (Bound to RTDB tag: "woth2") -->
-  <link id="dynamicFavicon" rel="icon" type="image/jpeg" href="//static.wikia.nocookie.net/way-of-the-hunter/images/f/fb/Way_of_the_Hunter_2.jpg/revision/latest?cb=20260405105432">
-  <link id="dynamicAppleIcon" rel="apple-touch-icon" href="//static.wikia.nocookie.net/way-of-the-hunter/images/f/fb/Way_of_the_Hunter_2.jpg/revision/latest?cb=20260405105432">
+  <!-- Line 10: Dynamic Favicon & Tab Icons (Fallback to assets/logo.jpg) -->
+  <link id="dynamicFavicon" rel="icon" type="image/jpeg" href="//werewolf3788.github.io/Website/assets/logo.jpg">
+  <link id="dynamicAppleIcon" rel="apple-touch-icon" href="//werewolf3788.github.io/Website/assets/logo.jpg">
 
-  <!-- Line 14: Sibling Stylesheet in /games/woth2/ -->
-  <link rel="stylesheet" href="./style.css">
-
-  <!-- Line 17: Firebase SDKs (Compat v10.13.0) -->
+  <!-- Line 15: Firebase SDKs (Compat v10.13.0) -->
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    /* Line 23: Complete Inlined Tactical Theme */
+    :root {
+      --bg-primary: #07090d;
+      --bg-secondary: #0f141c;
+      --bg-surface: #151c27;
+      --bg-hover: #1e2838;
+      --bg-active: #28374d;
+      --accent-amber: #f5a623;
+      --accent-orange: #ff7700;
+      --accent-blue: #0088ff;
+      --text-main: #f0f4f8;
+      --text-muted: #8b9bb4;
+      --border-color: #243042;
+      --danger: #e74c3c;
+      --success: #2ecc71;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-primary) !important;
+      background-image: none !important;
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Top Master Header */
+    .site-header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      width: 100vw;
+    }
+
+    .header-container {
+      width: 100%;
+      padding: 0 clamp(16px, 2vw, 36px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      gap: 16px;
+    }
+
+    .brand-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .back-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 1.3rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: var(--transition);
+    }
+
+    .back-link:hover {
+      color: var(--accent-amber);
+      background: var(--bg-surface);
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      object-fit: cover;
+      background: var(--bg-surface);
+    }
+
+    .brand-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .site-nav {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      margin: 0 16px;
+    }
+
+    .nav-list {
+      display: flex;
+      list-style: none;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .nav-item {
+      position: relative;
+    }
+
+    .nav-pill, .dropdown-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition);
+    }
+
+    .nav-pill:hover, .dropdown-trigger:hover {
+      background: var(--bg-hover);
+      color: var(--accent-amber);
+      border-color: var(--accent-amber);
+    }
+
+    .nav-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 3px;
+      object-fit: cover;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      min-width: 220px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 6px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(6px);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 1001;
+    }
+
+    .nav-item:hover .dropdown-menu {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      color: var(--text-main);
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      transition: var(--transition);
+    }
+
+    .dropdown-item:hover {
+      background: var(--bg-hover);
+      color: var(--accent-amber);
+    }
+
+    .auth-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+
+    .database-indicator {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+    .database-indicator strong { color: var(--accent-amber); }
+
+    .user-profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-surface);
+      padding: 3px 8px 3px 4px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+    }
+
+    .header-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--accent-amber);
+    }
+
+    /* Operations Strip */
+    .operations-bar {
+      background: #0a0d14;
+      border-bottom: 1px solid var(--border-color);
+      padding: 8px clamp(16px, 2vw, 36px);
+    }
+
+    .operations-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .hunter-stats-strip {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .stat-pill {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 0.82rem;
+    }
+
+    .stat-label { color: var(--text-muted); }
+    .stat-pill strong { color: var(--accent-amber); margin-left: 4px; }
+
+    .clock-sync-strip {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .day-controller, .time-controller {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .day-controller input, .time-controller input {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: #fff;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 0.82rem;
+      width: 60px;
+    }
+    .time-controller input { width: 95px; }
+
+    /* Weather Radar Strip */
+    .weather-bar {
+      background: #07090d;
+      border-bottom: 1px solid var(--border-color);
+      padding: 6px clamp(16px, 2vw, 36px);
+      font-size: 0.78rem;
+    }
+
+    .weather-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .weather-forecast {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      overflow-x: auto;
+    }
+
+    .forecast-label {
+      color: var(--accent-amber);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .weather-slot {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 2px 8px;
+      border-radius: 3px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    .weather-forecast-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+    }
+
+    .weather-forecast-control select {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+    }
+
+    .weather-delay-tag {
+      color: var(--accent-amber);
+      font-size: 0.72rem;
+    }
+
+    /* Tactical Tab Ribbon */
+    .tactical-ribbon {
+      background: var(--bg-secondary);
+      border-bottom: 2px solid var(--border-color);
+      padding: 0 clamp(16px, 2vw, 36px);
+      overflow-x: auto;
+    }
+
+    .ribbon-container {
+      display: flex;
+      gap: 2px;
+    }
+
+    .ribbon-btn {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      font-size: 0.84rem;
+      font-weight: 600;
+      padding: 12px 16px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition);
+    }
+
+    .ribbon-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .ribbon-btn.active {
+      color: var(--accent-amber);
+      border-bottom-color: var(--accent-amber);
+      background: rgba(245, 166, 35, 0.06);
+    }
+
+    /* Main Container & Dual-Pane */
+    .main-container {
+      flex: 1;
+      width: 100%;
+      padding: 20px clamp(16px, 2vw, 36px);
+    }
+
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+    }
+
+    .dual-pane-grid {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 14px;
+    }
+
+    .card-header h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .badge {
+      background: rgba(245, 166, 35, 0.12);
+      color: var(--accent-amber);
+      border: 1px solid rgba(245, 166, 35, 0.3);
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.74rem;
+      font-weight: 700;
+    }
+
+    .form-section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent-amber);
+      text-transform: uppercase;
+      margin: 14px 0 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .input-group label {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    input, select {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 10px;
+      border-radius: 5px;
+      font-size: 0.85rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent-amber);
+      box-shadow: 0 0 0 2px rgba(245, 166, 35, 0.2);
+    }
+
+    .dynamic-schema-box {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px dashed var(--border-color);
+      border-radius: 6px;
+      padding: 10px;
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: calc(100vh - 280px);
+      overflow-y: auto;
+    }
+
+    .telemetry-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 12px 14px;
+      transition: var(--transition);
+    }
+
+    .telemetry-card:hover {
+      border-color: var(--accent-amber);
+    }
+
+    .card-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .animal-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .action-banner {
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      margin: 8px 0;
+      font-weight: 600;
+    }
+
+    .banner-cull {
+      background: rgba(231, 76, 60, 0.15);
+      border-left: 3px solid var(--danger);
+      color: #ff9999;
+    }
+
+    .banner-breeder {
+      background: rgba(245, 166, 35, 0.15);
+      border-left: 3px solid var(--accent-amber);
+      color: #ffe099;
+    }
+
+    .banner-balanced {
+      background: rgba(0, 136, 255, 0.15);
+      border-left: 3px solid var(--accent-blue);
+      color: #99ccff;
+    }
+
+    .card-footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-link {
+      background: transparent;
+      border: none;
+      font-size: 0.78rem;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 3px;
+      transition: var(--transition);
+    }
+
+    .btn-link-edit { color: var(--accent-blue); }
+    .btn-link-edit:hover { background: rgba(0, 136, 255, 0.1); }
+    .btn-link-delete { color: var(--danger); }
+    .btn-link-delete:hover { background: rgba(231, 76, 60, 0.1); }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    .info-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .advisory-callout {
+      background: rgba(245, 166, 35, 0.08);
+      border-left: 3px solid var(--accent-amber);
+      padding: 10px 14px;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.8rem;
+      color: #ffe0b3;
+    }
+    .advisory-callout ul { padding-left: 18px; margin-top: 6px; }
+
+    .btn {
+      padding: 8px 14px;
+      border-radius: 5px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-sm { padding: 4px 8px; font-size: 0.78rem; }
+    .btn-primary { background: var(--accent-amber); color: #000; }
+    .btn-primary:hover { background: #e09418; }
+    .btn-secondary { background: var(--bg-surface); color: var(--text-main); border-color: var(--border-color); }
+    .btn-secondary:hover { background: var(--bg-hover); }
+    .btn-google { background: #4285f4; color: #fff; }
+    .full-width { width: 100%; }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .modal-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      width: 90%;
+      max-width: 380px;
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .site-footer {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      padding: 14px clamp(16px, 2vw, 36px);
+      margin-top: auto;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .footer-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .status-pill {
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .status-connecting { background: rgba(245, 166, 35, 0.15); color: var(--accent-amber); }
+    .status-connected { background: rgba(46, 204, 113, 0.15); color: var(--success); }
+
+    .hidden { display: none !important; }
+    .menu-toggle { display: none; }
+
+    @media (max-width: 1024px) {
+      .dual-pane-grid { grid-template-columns: 1fr; }
+      .menu-toggle { display: block; font-size: 1.4rem; background: transparent; border: none; color: #fff; cursor: pointer; }
+      .site-nav { display: none; width: 100%; margin: 0; }
+      .site-nav.open { display: block; position: absolute; top: 64px; left: 0; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); padding: 12px 20px; }
+      .nav-list { flex-direction: column; align-items: stretch; }
+      .dropdown-menu { position: static; box-shadow: none; border-left: 2px solid var(--accent-amber); padding-left: 10px; }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Line 26: Top Navigation & Operational Hub -->
+  <!-- Top Master Header -->
   <header class="site-header">
     <div class="header-container">
       <div class="brand-area">
         <a href="../../security/settings.html" class="back-link" title="Return to Settings Hub">&larr;</a>
-        <img id="navBrandLogo" src="//static.wikia.nocookie.net/way-of-the-hunter/images/f/fb/Way_of_the_Hunter_2.jpg/revision/latest?cb=20260405105432" alt="" class="brand-logo">
+        <img id="navBrandLogo" src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" class="brand-logo" onerror="this.src='//werewolf3788.github.io/Website/assets/logo.jpg'">
         <span class="brand-title">WOTH2 TACTICAL COMPANION</span>
       </div>
 
@@ -53,10 +749,9 @@
     </div>
   </header>
 
-  <!-- Line 59: Tactical Telemetry Operations Bar -->
+  <!-- Operations Bar -->
   <section class="operations-bar">
     <div class="operations-container">
-      <!-- Player Rank & Bankroll -->
       <div class="hunter-stats-strip">
         <div class="stat-pill"><span class="stat-label">Hunter:</span> <strong id="hunterNameDisplay">Ryder Holloway</strong></div>
         <div class="stat-pill"><span class="stat-label">Level:</span> <strong id="hunterLevelDisplay">Lv. 2</strong></div>
@@ -64,7 +759,6 @@
         <div class="stat-pill"><span class="stat-label">Dog:</span> <strong id="dogCompanionDisplay">Bacon (Foxhound)</strong></div>
       </div>
 
-      <!-- In-Game Day, Time & Rest Engine -->
       <div class="clock-sync-strip">
         <div class="day-controller">
           <label for="currentDayInput">Day:</label>
@@ -81,7 +775,7 @@
     </div>
   </section>
 
-  <!-- Line 89: Live Tactical Weather Radar -->
+  <!-- Live Weather Radar -->
   <section class="weather-bar">
     <div class="weather-container">
       <div class="weather-forecast">
@@ -105,7 +799,7 @@
     </div>
   </section>
 
-  <!-- Line 116: Tactical Navigation Tabs Ribbon -->
+  <!-- Tactical Navigation Tabs Ribbon -->
   <nav class="tactical-ribbon">
     <div class="ribbon-container">
       <button class="ribbon-btn active" data-tab="harvestInspection">Harvest Inspection</button>
@@ -121,20 +815,18 @@
     </div>
   </nav>
 
-  <!-- Line 133: Master Workspace Viewports -->
+  <!-- Master Workspace -->
   <main class="main-container">
 
-    <!-- Tab 1: Harvest Inspection Console (Dual-Pane) -->
+    <!-- Tab 1: Harvest Inspection Console -->
     <section id="tab-harvestInspection" class="tab-pane active">
       <div class="dual-pane-grid">
-        <!-- Left Pane: Record Harvest Logger -->
         <div class="card pane-form">
           <div class="card-header">
             <h3>Record Harvest Inspection Screen</h3>
           </div>
 
           <form id="harvestInspectionForm" onsubmit="return false;">
-            <!-- Section 1: Overview & Ballistics -->
             <div class="form-section-title">1. Overview &amp; Ballistics</div>
             <div class="form-grid-2">
               <div class="input-group">
@@ -187,7 +879,6 @@
               </div>
             </div>
 
-            <!-- Section 2: Weight & Price Breakdown -->
             <div class="form-section-title">2. Weight &amp; Price Breakdown</div>
             <div class="form-grid-3">
               <div class="input-group">
@@ -219,7 +910,6 @@
               </div>
             </div>
 
-            <!-- Section 3: Dynamic Trophy Score & Schema Mapping -->
             <div class="form-section-title">3. Trophy Score &amp; Dynamic Schema</div>
             <div class="form-grid-3">
               <div class="input-group">
@@ -247,14 +937,12 @@
               </div>
             </div>
 
-            <!-- Dynamic Schema Injected Measurements -->
             <div id="dynamicSchemaFieldsContainer" class="dynamic-schema-box"></div>
 
             <button type="button" id="submitHarvestRecordBtn" class="btn btn-primary full-width" style="margin-top: 14px;">Log Harvest Inspection</button>
           </form>
         </div>
 
-        <!-- Right Pane: Inspection History Roster -->
         <div class="card pane-history">
           <div class="card-header">
             <h3>Inspection History</h3>
@@ -268,7 +956,6 @@
     <!-- Tab 2: Target Watchlist & Live Herd Management Console -->
     <section id="tab-targetWatchlist" class="tab-pane">
       <div class="dual-pane-grid">
-        <!-- Watchlist Input / Editor -->
         <div class="card pane-form">
           <div class="card-header">
             <h3 id="watchlistFormHeader">Add Live Animal to Watchlist</h3>
@@ -325,7 +1012,6 @@
             </div>
           </form>
 
-          <!-- Herd Management Advisory Box -->
           <div class="advisory-callout" style="margin-top: 18px;">
             <h4>Genetic Management Protocols:</h4>
             <ul>
@@ -337,7 +1023,6 @@
           </div>
         </div>
 
-        <!-- Live Watchlist Roster -->
         <div class="card pane-history">
           <div class="card-header">
             <h3>Live Herd Watchlist</h3>
@@ -377,7 +1062,7 @@
       <div class="card">
         <div class="card-header">
           <h3>Hunting Dog Telemetry &amp; Skill Progression</h3>
-          <span class="badge">Max Level Cap: 6</span>
+          <span class="badge">Max Level Cap: 6[cite: 9]</span>
         </div>
         <div class="dog-profile-summary" id="dogSummaryCard"></div>
         <div id="dogSkillsGrid" class="cards-grid" style="margin-top: 20px;"></div>
@@ -389,7 +1074,7 @@
       <div class="card">
         <div class="card-header">
           <h3>Hunter Challenges &amp; Perk Mastery Trees</h3>
-          <span class="badge">100 Challenges Across 5 Trees</span>
+          <span class="badge">100 Challenges Across 5 Trees[cite: 8]</span>
         </div>
         <div id="challengeTreesGrid" class="cards-grid"></div>
       </div>
@@ -399,7 +1084,7 @@
     <section id="tab-missions" class="tab-pane">
       <div class="card">
         <div class="card-header">
-          <h3>Warden &amp; Lodge Story Missions (New Laurentia)</h3>
+          <h3>Warden &amp; Lodge Story Missions (New Laurentia)[cite: 14]</h3>
           <span id="missionsCount" class="badge">Loading Missions...</span>
         </div>
         <div id="missionsGrid" class="cards-grid"></div>
@@ -411,7 +1096,7 @@
       <div class="card">
         <div class="card-header">
           <h3>Habitat Enhancements, Feeders &amp; Bridge Tasks</h3>
-          <span id="infrastructureCount" class="badge">32 Enhancements</span>
+          <span id="infrastructureCount" class="badge">32 Enhancements[cite: 12]</span>
         </div>
         <div class="advisory-callout" id="infraNotesBox"></div>
         <div id="infrastructureGrid" class="cards-grid" style="margin-top: 16px;"></div>
@@ -434,7 +1119,7 @@
       <div class="card">
         <div class="card-header">
           <h3>Reserve Species Catalog, Tiers &amp; Defense Sidearms</h3>
-          <span id="speciesCatalogCount" class="badge">15 Reserve Species</span>
+          <span id="speciesCatalogCount" class="badge">15 Reserve Species[cite: 20]</span>
         </div>
         <div id="speciesCatalogGrid" class="cards-grid"></div>
       </div>
@@ -442,7 +1127,7 @@
 
   </main>
 
-  <!-- Line 419: Authentication Modal -->
+  <!-- Authentication Modal -->
   <div class="modal-overlay hidden" id="authModal">
     <div class="modal-card">
       <div class="modal-header">
@@ -455,12 +1140,12 @@
     </div>
   </div>
 
-  <!-- Line 432: Footer -->
+  <!-- Persistent Footer -->
   <footer class="site-footer">
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Way of the Hunter 2 Companion &bull; Tactical Operations Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 16:40 EDT</span> | Version: 4.1.2</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 16:45 EDT</span> | Version: 4.1.3</p>
       </div>
       <div class="footer-col text-right">
         <span id="firebaseStatusBadge" class="status-pill status-connecting">RTDB: Connecting...</span>
