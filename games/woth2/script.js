@@ -1,5 +1,5 @@
-// Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-07 17:16 EDT | Firebase Sync Target: /utm_links | Version: 4.2.0]
+// Line 1: Way of the Hunter 2 - Master Tactical Companion Engine (Pure JSON Loader)
+// [Smart Cache-Buster Time: 2026-10-07 17:35 EDT | Firebase Sync Target: /utm_links | Version: 4.2.2]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const db = firebase.firestore();
 
   const CompanionApp = {
+    // Pure file targets located in your repository /data/ folder
     files: {
       challenges: "woth2_challenges.json",
       dogSkills: "woth2_dog_skills.json",
@@ -37,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
       trails: "woth2_trails.json"
     },
 
+    // Completely empty - populated strictly by fetching JSON
     db: {},
     currentDay: 1,
     currentTime: "08:30",
@@ -52,10 +54,15 @@ document.addEventListener("DOMContentLoaded", () => {
       this.bindUI();
       this.initAuth();
       this.initRTDB();
+
+      // Load all 13 external JSON files asynchronously
       await this.loadAllJSONs();
+
+      // Render the UI once JSON data is in memory
       this.initDynamicFeatures();
     },
 
+    // Fetches JSON files navigating up from /games/woth2/
     async fetchJSON(fileName) {
       const paths = [
         "../../data/" + fileName,
@@ -71,6 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (res.ok) return await res.json();
         } catch (e) {}
       }
+      console.warn("Could not load JSON file:", fileName);
       return null;
     },
 
@@ -104,19 +112,34 @@ document.addEventListener("DOMContentLoaded", () => {
         try { this.watchlist = JSON.parse(savedWatch); } catch (e) { this.watchlist = []; }
       }
 
-      document.getElementById("currentDayInput").value = this.currentDay;
-      document.getElementById("currentTimeInput").value = this.currentTime;
-      document.getElementById("hunterNameInput").value = this.hunterName;
-      document.getElementById("hunterLevelInput").value = this.hunterLevel;
-      document.getElementById("hunterCreditsInput").value = this.hunterCredits;
-      document.getElementById("dogCompanionInput").value = this.dogCompanion;
+      this.safeSetValue("currentDayInput", this.currentDay);
+      this.safeSetValue("currentTimeInput", this.currentTime);
+      this.safeSetValue("hunterNameInput", this.hunterName);
+      this.safeSetValue("hunterLevelInput", this.hunterLevel);
+      this.safeSetValue("hunterCreditsInput", this.hunterCredits);
+      this.safeSetValue("dogCompanionInput", this.dogCompanion);
+    },
+
+    safeSetValue(id, val) {
+      const el = document.getElementById(id);
+      if (el) el.value = val;
+    },
+
+    safeSetText(id, text) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
     },
 
     saveSession() {
-      this.hunterName = document.getElementById("hunterNameInput").value.trim() || "Hunter";
-      this.hunterLevel = parseInt(document.getElementById("hunterLevelInput").value, 10) || 1;
-      this.hunterCredits = parseInt(document.getElementById("hunterCreditsInput").value, 10) || 0;
-      this.dogCompanion = document.getElementById("dogCompanionInput").value.trim() || "Bacon (Foxhound)";
+      const nameEl = document.getElementById("hunterNameInput");
+      const lvlEl = document.getElementById("hunterLevelInput");
+      const crdEl = document.getElementById("hunterCreditsInput");
+      const dogEl = document.getElementById("dogCompanionInput");
+
+      if (nameEl) this.hunterName = nameEl.value.trim() || "Hunter";
+      if (lvlEl) this.hunterLevel = parseInt(lvlEl.value, 10) || 1;
+      if (crdEl) this.hunterCredits = parseInt(crdEl.value, 10) || 0;
+      if (dogEl) this.dogCompanion = dogEl.value.trim() || "Bacon (Foxhound)";
 
       localStorage.setItem("woth2_day", this.currentDay);
       localStorage.setItem("woth2_time", this.currentTime);
@@ -145,11 +168,9 @@ document.addEventListener("DOMContentLoaded", () => {
     initRTDB() {
       rtdb.ref("/utm_links").on("value", snapshot => {
         const raw = snapshot.val();
+        this.safeSetText("firebaseStatusBadge", "RTDB: Live Connected");
         const badge = document.getElementById("firebaseStatusBadge");
-        if (badge) {
-          badge.textContent = "RTDB: Live Connected";
-          badge.className = "status-pill status-connected";
-        }
+        if (badge) badge.className = "status-pill status-connected";
         if (!raw) return;
 
         const items = [];
@@ -222,8 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (woth2Stamp) {
-        const stampEl = document.getElementById("nyBuildTimestamp");
-        if (stampEl) stampEl.textContent = woth2Stamp;
+        this.safeSetText("nyBuildTimestamp", woth2Stamp);
       }
     },
 
@@ -340,23 +360,23 @@ document.addEventListener("DOMContentLoaded", () => {
               if (data.avatar_url) avatarUrl = data.avatar_url;
               if (data.hunter_name) {
                 this.hunterName = data.hunter_name;
-                document.getElementById("hunterNameInput").value = this.hunterName;
+                this.safeSetValue("hunterNameInput", this.hunterName);
               }
               if (data.hunter_level) {
                 this.hunterLevel = data.hunter_level;
-                document.getElementById("hunterLevelInput").value = this.hunterLevel;
+                this.safeSetValue("hunterLevelInput", this.hunterLevel);
               }
               if (data.hunter_credits) {
                 this.hunterCredits = data.hunter_credits;
-                document.getElementById("hunterCreditsInput").value = this.hunterCredits;
+                this.safeSetValue("hunterCreditsInput", this.hunterCredits);
               }
               if (data.dog_companion) {
                 this.dogCompanion = data.dog_companion;
-                document.getElementById("dogCompanionInput").value = this.dogCompanion;
+                this.safeSetValue("dogCompanionInput", this.dogCompanion);
               }
               if (data.companion_day) {
                 this.currentDay = data.companion_day;
-                document.getElementById("currentDayInput").value = this.currentDay;
+                this.safeSetValue("currentDayInput", this.currentDay);
               }
               if (data.watchlist && Array.isArray(data.watchlist)) {
                 this.watchlist = data.watchlist;
@@ -374,17 +394,26 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
 
-      document.getElementById("googleSignInBtn").addEventListener("click", () => {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).then(() => {
-          document.getElementById("authModal").classList.add("hidden");
-        }).catch(e => alert("Sign In Error: " + e.message));
-      });
+      const googleBtn = document.getElementById("googleSignInBtn");
+      if (googleBtn) {
+        googleBtn.addEventListener("click", () => {
+          const provider = new firebase.auth.GoogleAuthProvider();
+          auth.signInWithPopup(provider).then(() => {
+            const modal = document.getElementById("authModal");
+            if (modal) modal.classList.add("hidden");
+          }).catch(e => alert("Sign In Error: " + e.message));
+        });
+      }
 
-      document.getElementById("logoutBtn").addEventListener("click", () => auth.signOut());
+      const logoutBtn = document.getElementById("logoutBtn");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => auth.signOut());
+      }
     },
 
+    // Renders all views using parsed JSON data
     initDynamicFeatures() {
+      this.populatePlayerStatsFromJSON();
       this.populateSelects();
       this.renderHarvestHistory();
       this.renderWatchlist();
@@ -399,6 +428,17 @@ document.addEventListener("DOMContentLoaded", () => {
       this.updateDynamicHarvestSchema();
     },
 
+    populatePlayerStatsFromJSON() {
+      const g = this.db.gameData || {};
+      const player = g.player || {};
+      const dog = g.companion_dog || {};
+
+      if (player.name && !localStorage.getItem("woth2_name")) this.safeSetValue("hunterNameInput", player.name);
+      if (player.level && !localStorage.getItem("woth2_level")) this.safeSetValue("hunterLevelInput", player.level);
+      if (player.credits && !localStorage.getItem("woth2_credits")) this.safeSetValue("hunterCreditsInput", player.credits);
+      if (dog.name && !localStorage.getItem("woth2_dog")) this.safeSetValue("dogCompanionInput", `${dog.name} (${dog.breed})`);
+    },
+
     populateSelects() {
       const speciesList = (this.db.species && this.db.species.species) ? this.db.species.species : [];
       const harvestSelect = document.getElementById("harvestSpeciesSelect");
@@ -406,81 +446,118 @@ document.addEventListener("DOMContentLoaded", () => {
       const locationSelect = document.getElementById("harvestLocationSelect");
       const watchRegionSelect = document.getElementById("watchRegionSelect");
 
-      harvestSelect.innerHTML = "";
-      watchSelect.innerHTML = "";
+      if (harvestSelect) harvestSelect.innerHTML = "";
+      if (watchSelect) watchSelect.innerHTML = "";
 
       speciesList.forEach(s => {
-        const opt1 = document.createElement("option");
-        opt1.value = s.name;
-        opt1.textContent = `${s.name} (Tier ${s.tier})`;
-        harvestSelect.appendChild(opt1);
-
-        const opt2 = document.createElement("option");
-        opt2.value = s.name;
-        opt2.textContent = s.name;
-        watchSelect.appendChild(opt2);
+        if (harvestSelect) {
+          const opt1 = document.createElement("option");
+          opt1.value = s.name;
+          opt1.textContent = `${s.name} (Tier ${s.tier})`;
+          harvestSelect.appendChild(opt1);
+        }
+        if (watchSelect) {
+          const opt2 = document.createElement("option");
+          opt2.value = s.name;
+          opt2.textContent = s.name;
+          watchSelect.appendChild(opt2);
+        }
       });
 
       const regions = (this.db.regions && this.db.regions.regions) ? this.db.regions.regions : [];
-      locationSelect.innerHTML = "";
-      watchRegionSelect.innerHTML = "";
+      if (locationSelect) locationSelect.innerHTML = "";
+      if (watchRegionSelect) watchRegionSelect.innerHTML = "";
 
       regions.forEach(r => {
-        const opt1 = document.createElement("option");
-        opt1.value = r.name;
-        opt1.textContent = r.name;
-        locationSelect.appendChild(opt1);
-
-        const opt2 = document.createElement("option");
-        opt2.value = r.name;
-        opt2.textContent = r.name;
-        watchRegionSelect.appendChild(opt2);
+        if (locationSelect) {
+          const opt1 = document.createElement("option");
+          opt1.value = r.name;
+          opt1.textContent = r.name;
+          locationSelect.appendChild(opt1);
+        }
+        if (watchRegionSelect) {
+          const opt2 = document.createElement("option");
+          opt2.value = r.name;
+          opt2.textContent = r.name;
+          watchRegionSelect.appendChild(opt2);
+        }
       });
 
       this.updateWatchlistMaxAge();
     },
 
-    // Dynamic Trophy Schema Generator Based on Animal Category
     updateDynamicHarvestSchema() {
       const container = document.getElementById("dynamicSchemaFieldsContainer");
-      const selectedSpecies = document.getElementById("harvestSpeciesSelect").value.toLowerCase();
-      const schemas = this.db.harvestSchemas || {};
-      const templates = schemas.scoring_templates || {};
+      const speciesEl = document.getElementById("harvestSpeciesSelect");
+      if (!container || !speciesEl) return;
 
-      let templateKey = "cervid_antler";
+      const selectedSpecies = speciesEl.value.toLowerCase();
+      let category = "Antlers";
+      let fields = [
+        { id: "main_beam", label: "Main Beam", unit: "in", ph: "24.5" },
+        { id: "inside_spread", label: "Inside Spread", unit: "in", ph: "18.2" },
+        { id: "points_count", label: "Total Points", unit: "count", ph: "10" }
+      ];
+
       if (selectedSpecies.includes("bear") || selectedSpecies.includes("wolf") || selectedSpecies.includes("badger") || selectedSpecies.includes("wolverine")) {
-        templateKey = "predator_skull";
-      } else if (selectedSpecies.includes("boar") || selectedSpecies.includes("pig") || selectedSpecies.includes("peccary")) {
-        templateKey = "predator_skull"; // Tusks and Skull dimensions
-      } else if (selectedSpecies.includes("sheep") || selectedSpecies.includes("goat") || selectedSpecies.includes("bison") || selectedSpecies.includes("pronghorn") || selectedSpecies.includes("chamois")) {
-        templateKey = "horned_bovid";
+        category = "Skull & Weight (Predator)";
+        fields = [
+          { id: "skull_length", label: "Skull Length", unit: "in", ph: "15.4" },
+          { id: "skull_width", label: "Skull Width", unit: "in", ph: "10.2" },
+          { id: "body_weight", label: "Body Weight", unit: "lbs", ph: "379.7" }
+        ];
+      } else if (selectedSpecies.includes("boar") || selectedSpecies.includes("pig")) {
+        category = "Tusks & Skull";
+        fields = [
+          { id: "tusk_length", label: "Lower Tusk Length", unit: "in", ph: "7.8" },
+          { id: "tusk_thickness", label: "Tusk Circumference", unit: "in", ph: "3.2" }
+        ];
+      } else if (selectedSpecies.includes("sheep") || selectedSpecies.includes("goat") || selectedSpecies.includes("bison") || selectedSpecies.includes("pronghorn")) {
+        category = "Horns (Bovidae)";
+        fields = [
+          { id: "horn_length", label: "Horn Length", unit: "in", ph: "36.8" },
+          { id: "base_circ", label: "Base Circumference", unit: "in", ph: "14.2" },
+          { id: "curl_spread", label: "Tip Spread", unit: "in", ph: "22.0" }
+        ];
       } else if (selectedSpecies.includes("moose")) {
-        templateKey = "palmate_moose";
-      } else if (selectedSpecies.includes("turkey") || selectedSpecies.includes("mallard") || selectedSpecies.includes("ptarmigan") || selectedSpecies.includes("duck") || selectedSpecies.includes("goose") || selectedSpecies.includes("pheasant") || selectedSpecies.includes("hare")) {
-        templateKey = "avian_game";
+        category = "Palmate Antlers";
+        fields = [
+          { id: "palm_len", label: "Palm Length", unit: "in", ph: "32.0" },
+          { id: "palm_width", label: "Palm Width", unit: "in", ph: "12.5" },
+          { id: "points_left", label: "Points Left", unit: "count", ph: "9" },
+          { id: "points_right", label: "Points Right", unit: "count", ph: "8" }
+        ];
+      } else if (selectedSpecies.includes("turkey") || selectedSpecies.includes("mallard") || selectedSpecies.includes("ptarmigan") || selectedSpecies.includes("hare")) {
+        category = "Body Weight & Plumage";
+        fields = [
+          { id: "body_weight", label: "Total Body Weight", unit: "lbs", ph: "18.5" },
+          { id: "beard_len", label: "Beard Length", unit: "in", ph: "10.5" },
+          { id: "spur_len", label: "Spur Length", unit: "in", ph: "1.25" }
+        ];
       }
 
-      const template = templates[templateKey] || { category: "Organ Measurements", fields: [] };
+      container.innerHTML = `<span style="grid-column: 1/-1; font-size: 0.76rem; color: var(--accent-amber); font-weight: 700;">Trophy Type: ${category}</span>`;
 
-      container.innerHTML = `<span style="grid-column: 1/-1; font-size: 0.76rem; color: var(--accent-amber); font-weight: 700;">Trophy Type: ${template.category}</span>`;
-
-      template.fields.forEach(f => {
+      fields.forEach(f => {
         const div = document.createElement("div");
         div.className = "input-group";
         div.innerHTML = `
           <label for="schema_${f.id}">${f.label} (${f.unit})</label>
-          <input type="text" id="schema_${f.id}" placeholder="${f.placeholder}">
+          <input type="text" id="schema_${f.id}" placeholder="${f.ph}">
         `;
         container.appendChild(div);
       });
     },
 
     updateWatchlistMaxAge() {
-      const selectedSpecies = document.getElementById("watchSpeciesSelect").value;
+      const speciesEl = document.getElementById("watchSpeciesSelect");
+      const maxAgeEl = document.getElementById("watchMaxAge");
+      if (!speciesEl || !maxAgeEl) return;
+
+      const selectedSpecies = speciesEl.value;
       const lifecycles = (this.db.lifecycles && this.db.lifecycles.species_lifecycles) ? this.db.lifecycles.species_lifecycles : [];
       const match = lifecycles.find(l => l.species.toLowerCase() === selectedSpecies.toLowerCase());
-      const maxCap = match ? match.max_age_years : 12;
-      document.getElementById("watchMaxAge").value = maxCap;
+      maxAgeEl.value = match ? match.max_age_years : 12;
     },
 
     saveWatchlistEntry() {
@@ -495,7 +572,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const stars = parseInt(document.getElementById("watchStars").value, 10);
 
       if (!tag || isNaN(fitness) || isNaN(age) || !landmark) {
-        return alert("Please complete the animal tag, fitness %, age, and landmark.");
+        return alert("Please enter the animal identifier, fitness %, age, and need zone landmark.");
       }
 
       if (editId) {
@@ -506,16 +583,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         const newEntry = {
           id: "target_" + Date.now(),
-          tag,
-          species,
-          region,
-          landmark,
-          fitness,
-          sightedAge: age,
-          age,
-          maxAge,
-          stars,
-          sightedDay: this.currentDay
+          tag, species, region, landmark, fitness, sightedAge: age, age, maxAge, stars, sightedDay: this.currentDay
         };
         this.watchlist.unshift(newEntry);
       }
@@ -526,33 +594,35 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     resetWatchlistForm() {
-      document.getElementById("editWatchlistId").value = "";
-      document.getElementById("watchIdentifier").value = "";
-      document.getElementById("watchFitness").value = "";
-      document.getElementById("watchAge").value = "8";
-      document.getElementById("watchLandmark").value = "";
-      document.getElementById("watchlistFormHeader").textContent = "Add Live Animal to Watchlist";
-      document.getElementById("saveWatchlistBtn").textContent = "Add to Watchlist";
-      document.getElementById("cancelEditWatchlistBtn").classList.add("hidden");
+      this.safeSetValue("editWatchlistId", "");
+      this.safeSetValue("watchIdentifier", "");
+      this.safeSetValue("watchFitness", "");
+      this.safeSetValue("watchAge", "8");
+      this.safeSetValue("watchLandmark", "");
+      this.safeSetText("watchlistFormHeader", "Add Live Animal to Watchlist");
+      this.safeSetText("saveWatchlistBtn", "Add to Watchlist");
+      const cancelBtn = document.getElementById("cancelEditWatchlistBtn");
+      if (cancelBtn) cancelBtn.classList.add("hidden");
     },
 
     editWatchlistEntry(id) {
       const item = this.watchlist.find(w => w.id === id);
       if (!item) return;
 
-      document.getElementById("editWatchlistId").value = item.id;
-      document.getElementById("watchIdentifier").value = item.tag;
-      document.getElementById("watchSpeciesSelect").value = item.species;
-      document.getElementById("watchRegionSelect").value = item.region || "Jackalope Cordillera";
-      document.getElementById("watchLandmark").value = item.landmark || "";
-      document.getElementById("watchFitness").value = item.fitness;
-      document.getElementById("watchAge").value = item.age;
-      document.getElementById("watchMaxAge").value = item.maxAge;
-      document.getElementById("watchStars").value = item.stars;
+      this.safeSetValue("editWatchlistId", item.id);
+      this.safeSetValue("watchIdentifier", item.tag);
+      this.safeSetValue("watchSpeciesSelect", item.species);
+      this.safeSetValue("watchRegionSelect", item.region || "Jackalope Cordillera");
+      this.safeSetValue("watchLandmark", item.landmark || "");
+      this.safeSetValue("watchFitness", item.fitness);
+      this.safeSetValue("watchAge", item.age);
+      this.safeSetValue("watchMaxAge", item.maxAge);
+      this.safeSetValue("watchStars", item.stars);
 
-      document.getElementById("watchlistFormHeader").textContent = "Edit Watchlist Target";
-      document.getElementById("saveWatchlistBtn").textContent = "Update Target";
-      document.getElementById("cancelEditWatchlistBtn").classList.remove("hidden");
+      this.safeSetText("watchlistFormHeader", "Edit Watchlist Target");
+      this.safeSetText("saveWatchlistBtn", "Update Target");
+      const cancelBtn = document.getElementById("cancelEditWatchlistBtn");
+      if (cancelBtn) cancelBtn.classList.remove("hidden");
     },
 
     deleteWatchlistEntry(id) {
@@ -564,10 +634,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderWatchlist() {
       const container = document.getElementById("watchlistContainer");
-      const countEl = document.getElementById("watchlistCount");
       if (!container) return;
 
-      countEl.textContent = `${this.watchlist.length} Tracked Animals`;
+      this.safeSetText("watchlistCount", `${this.watchlist.length} Tracked Animals`);
       container.innerHTML = "";
 
       if (this.watchlist.length === 0) {
@@ -576,13 +645,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       this.watchlist.forEach(item => {
-        // 3 in-game days = 1 year of animal aging
         const elapsedDays = Math.max(0, this.currentDay - (item.sightedDay || 1));
         const effectiveAge = (item.sightedAge || item.age) + Math.floor(elapsedDays / 3);
         const daysLeft = Math.max(0, (item.maxAge - effectiveAge) * 3);
 
         let actionClass = "banner-balanced";
-        let actionText = "⚖️ BALANCED: Stable genetics. Monitor development.";
+        let actionText = "⚖️ BALANCED: Stable genetics. Monitor.";
 
         if (item.fitness < 50.0) {
           actionClass = "banner-cull";
@@ -628,10 +696,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderHarvestHistory() {
       const container = document.getElementById("harvestHistoryContainer");
-      const badge = document.getElementById("harvestRecordCount");
+      if (!container) return;
       const records = (this.db.gameData && this.db.gameData.harvest_records) ? this.db.gameData.harvest_records : [];
 
-      badge.textContent = `${records.length} Harvest Records`;
+      this.safeSetText("harvestRecordCount", `${records.length} Harvest Records`);
       container.innerHTML = "";
 
       records.forEach(r => {
@@ -667,16 +735,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const sellPrice = document.getElementById("harvestSellPrice").value;
 
       const newRecord = {
-        species,
-        animal_tier: 5,
-        location,
-        firearm,
-        caliber,
-        shot_distance_yds: shotDist,
-        fitness_percentage: fitness,
-        trophy_rating_stars: stars,
-        sell_price: sellPrice,
-        cull_decision: fitness < 50 ? "Cull (Low Fitness)" : "Keeper / Trophy",
+        species, animal_tier: 5, location, firearm, caliber,
+        shot_distance_yds: shotDist, fitness_percentage: fitness, trophy_rating_stars: stars,
+        sell_price: sellPrice, cull_decision: fitness < 50 ? "Cull (Low Fitness)" : "Keeper / Trophy",
         date: "October 7, 2026"
       };
 
@@ -690,30 +751,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderNeedZones() {
       const container = document.getElementById("needZoneClustersGrid");
-      const badge = document.getElementById("needZoneCount");
+      if (!container) return;
       const clusters = (this.db.needZones && this.db.needZones.clusters) ? this.db.needZones.clusters : [];
 
-      badge.textContent = `${clusters.length} Tactical Clusters`;
+      this.safeSetText("needZoneCount", `${clusters.length} Tactical Clusters`);
       container.innerHTML = "";
 
       clusters.forEach(c => {
         const div = document.createElement("div");
         div.className = "info-box";
         let zonesHtml = "";
-        c.zones.forEach(z => {
-          zonesHtml += `
-            <div style="font-size:0.8rem; background:rgba(0,0,0,0.2); padding:6px; border-radius:4px; margin-top:4px;">
-              <strong>${z.type} (${z.schedule}):</strong> ${z.landmark} (+${z.proximity_to_center_yds} yds)
-            </div>
-          `;
-        });
+        if (c.zones && Array.isArray(c.zones)) {
+          c.zones.forEach(z => {
+            zonesHtml += `
+              <div style="font-size:0.8rem; background:rgba(0,0,0,0.2); padding:6px; border-radius:4px; margin-top:4px;">
+                <strong>${z.type} (${z.schedule}):</strong> ${z.landmark} (+${z.proximity_to_center_yds} yds)
+              </div>
+            `;
+          });
+        }
 
         div.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <strong>${c.species}</strong>
             <span class="badge">${c.region}</span>
           </div>
-          <p style="font-size:0.78rem; color:var(--text-muted);">${c.cluster_notes}</p>
+          <p style="font-size:0.78rem; color:var(--text-muted);">${c.cluster_notes || ''}</p>
           <div style="margin-top:4px;">${zonesHtml}</div>
         `;
         container.appendChild(div);
@@ -722,10 +785,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderLifeCycles() {
       const container = document.getElementById("lifecyclesGrid");
-      const badge = document.getElementById("lifecycleCount");
+      if (!container) return;
       const list = (this.db.lifecycles && this.db.lifecycles.species_lifecycles) ? this.db.lifecycles.species_lifecycles : [];
 
-      badge.textContent = `${list.length} Species Cycles`;
+      this.safeSetText("lifecycleCount", `${list.length} Species Cycles`);
       container.innerHTML = "";
 
       list.forEach(item => {
@@ -750,6 +813,8 @@ document.addEventListener("DOMContentLoaded", () => {
     renderDogProfile() {
       const summaryContainer = document.getElementById("dogSummaryCard");
       const skillsContainer = document.getElementById("dogSkillsGrid");
+      if (!summaryContainer || !skillsContainer) return;
+
       const g = this.db.gameData || {};
       const dog = g.companion_dog || { name: "Bacon", breed: "American Foxhound", bonding_level: 3, bonding_xp: 454, bonding_xp_max: 650 };
       const skillsDef = (this.db.dogSkills && this.db.dogSkills.skills) ? this.db.dogSkills.skills : {};
@@ -780,6 +845,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderChallenges() {
       const container = document.getElementById("challengeTreesGrid");
+      if (!container) return;
       const trees = (this.db.challenges && this.db.challenges.trees) ? this.db.challenges.trees : {};
 
       container.innerHTML = "";
@@ -799,10 +865,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderMissions() {
       const container = document.getElementById("missionsGrid");
-      const badge = document.getElementById("missionsCount");
+      if (!container) return;
       const list = (this.db.missions && this.db.missions.missions) ? this.db.missions.missions : [];
 
-      badge.textContent = `${list.length} Missions`;
+      this.safeSetText("missionsCount", `${list.length} Missions`);
       container.innerHTML = "";
 
       list.forEach(m => {
@@ -826,13 +892,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderInfrastructure() {
       const container = document.getElementById("infrastructureGrid");
-      const notesBox = document.getElementById("infraNotesBox");
-      const badge = document.getElementById("infrastructureCount");
+      if (!container) return;
       const infra = this.db.infrastructure || {};
       const tasks = infra.tasks || [];
 
-      badge.textContent = `${tasks.length} Enhancements`;
-      notesBox.innerHTML = `<strong>Warden Protocol:</strong> ${infra.mechanic_notes || "Feeders and pollution removal impact genetic ceilings."}`;
+      this.safeSetText("infrastructureCount", `${tasks.length} Enhancements`);
+      const notesBox = document.getElementById("infraNotesBox");
+      if (notesBox) {
+        notesBox.innerHTML = `<strong>Warden Protocol:</strong> ${infra.mechanic_notes || "Feeders and pollution removal impact genetic ceilings."}`;
+      }
 
       container.innerHTML = "";
       tasks.forEach(t => {
@@ -856,6 +924,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderTrails() {
       const container = document.getElementById("trailsGrid");
+      if (!container) return;
       const list = (this.db.trails && this.db.trails.seasonal_corridors) ? this.db.trails.seasonal_corridors : [];
 
       container.innerHTML = "";
@@ -883,10 +952,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderSpeciesCatalog() {
       const container = document.getElementById("speciesCatalogGrid");
-      const badge = document.getElementById("speciesCatalogCount");
+      if (!container) return;
       const list = (this.db.species && this.db.species.species) ? this.db.species.species : [];
 
-      badge.textContent = `${list.length} Reserve Species`;
+      this.safeSetText("speciesCatalogCount", `${list.length} Reserve Species`);
       container.innerHTML = "";
 
       list.forEach(s => {
@@ -920,42 +989,65 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
 
-      document.getElementById("currentDayInput").addEventListener("change", e => {
-        this.currentDay = parseInt(e.target.value, 10) || 1;
-        this.renderWatchlist();
-      });
+      const dayInput = document.getElementById("currentDayInput");
+      if (dayInput) {
+        dayInput.addEventListener("change", e => {
+          this.currentDay = parseInt(e.target.value, 10) || 1;
+          this.renderWatchlist();
+        });
+      }
 
-      document.getElementById("advanceDayBtn").addEventListener("click", () => {
-        this.currentDay++;
-        document.getElementById("currentDayInput").value = this.currentDay;
-        this.renderWatchlist();
-      });
-
-      document.getElementById("advanceTwoHoursBtn").addEventListener("click", () => {
-        let [hours, mins] = document.getElementById("currentTimeInput").value.split(":").map(Number);
-        hours = (hours + 2) % 24;
-        if (hours === 0 || hours === 1) {
+      const advDayBtn = document.getElementById("advanceDayBtn");
+      if (advDayBtn) {
+        advDayBtn.addEventListener("click", () => {
           this.currentDay++;
-          document.getElementById("currentDayInput").value = this.currentDay;
-        }
-        const timeStr = `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
-        this.currentTime = timeStr;
-        document.getElementById("currentTimeInput").value = timeStr;
-        this.renderWatchlist();
-      });
+          this.safeSetValue("currentDayInput", this.currentDay);
+          this.renderWatchlist();
+        });
+      }
 
-      document.getElementById("saveSessionBtn").addEventListener("click", () => this.saveSession());
+      const advTwoHrsBtn = document.getElementById("advanceTwoHoursBtn");
+      if (advTwoHrsBtn) {
+        advTwoHrsBtn.addEventListener("click", () => {
+          const timeInput = document.getElementById("currentTimeInput");
+          if (!timeInput) return;
+          let [hours, mins] = timeInput.value.split(":").map(Number);
+          hours = (hours + 2) % 24;
+          if (hours === 0 || hours === 1) {
+            this.currentDay++;
+            this.safeSetValue("currentDayInput", this.currentDay);
+          }
+          const timeStr = `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
+          this.currentTime = timeStr;
+          timeInput.value = timeStr;
+          this.renderWatchlist();
+        });
+      }
 
-      document.getElementById("watchSpeciesSelect").addEventListener("change", () => this.updateWatchlistMaxAge());
-      document.getElementById("saveWatchlistBtn").addEventListener("click", () => this.saveWatchlistEntry());
-      document.getElementById("cancelEditWatchlistBtn").addEventListener("click", () => this.resetWatchlistForm());
+      const syncBtn = document.getElementById("saveSessionBtn");
+      if (syncBtn) syncBtn.addEventListener("click", () => this.saveSession());
 
-      document.getElementById("harvestSpeciesSelect").addEventListener("change", () => this.updateDynamicHarvestSchema());
-      document.getElementById("submitHarvestRecordBtn").addEventListener("click", () => this.submitHarvestInspection());
+      const watchSpecies = document.getElementById("watchSpeciesSelect");
+      if (watchSpecies) watchSpecies.addEventListener("change", () => this.updateWatchlistMaxAge());
+
+      const saveWatchBtn = document.getElementById("saveWatchlistBtn");
+      if (saveWatchBtn) saveWatchBtn.addEventListener("click", () => this.saveWatchlistEntry());
+
+      const cancelWatchBtn = document.getElementById("cancelEditWatchlistBtn");
+      if (cancelWatchBtn) cancelWatchBtn.addEventListener("click", () => this.resetWatchlistForm());
+
+      const harvestSpecies = document.getElementById("harvestSpeciesSelect");
+      if (harvestSpecies) harvestSpecies.addEventListener("change", () => this.updateDynamicHarvestSchema());
+
+      const submitHarvestBtn = document.getElementById("submitHarvestRecordBtn");
+      if (submitHarvestBtn) submitHarvestBtn.addEventListener("click", () => this.submitHarvestInspection());
 
       const modal = document.getElementById("authModal");
-      document.getElementById("authModalBtn").addEventListener("click", () => modal.classList.remove("hidden"));
-      document.getElementById("authModalClose").addEventListener("click", () => modal.classList.add("hidden"));
+      const authBtn = document.getElementById("authModalBtn");
+      const authClose = document.getElementById("authModalClose");
+
+      if (authBtn && modal) authBtn.addEventListener("click", () => modal.classList.remove("hidden"));
+      if (authClose && modal) authClose.addEventListener("click", () => modal.classList.add("hidden"));
 
       const menuBtn = document.getElementById("menuToggle");
       const nav = document.getElementById("dynamicNav");
