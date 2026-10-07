@@ -1,447 +1,531 @@
-<!-- ==========================================================================
-     SYSTEM: Werewolf Project - Central User & Operator Settings Engine
-     ARCHITECTURE: Firebase Firestore (v11 ESM) - Session Persistence
-     PATH STRUCTURE: /users/{gamingNickname}
-     ========================================================================== -->
+<!-- Line 1: User Account Settings, Provider Linking & Social Hub -->
+<!-- [Smart Cache-Buster Time: 2026-10-07 13:28 EDT | Firebase Sync Target: /utm_links | Version: 3.0.0] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings | Werewolf Project</title>
-    
-    <!-- Tailwind CSS & FontAwesome -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        :root {
-            --primary-color: #ff5f1f;  
-            --secondary-color: #38bdf8; 
-            --bg-dark: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.85);
-        }
+  <!-- Line 5: Required responsive viewport -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Settings & Hunter ID - WOTH Hub</title>
 
-        body {
-            background-color: var(--bg-dark);
-            color: #ffffff;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+  <!-- Line 10: Unified Branding Favicons via Relative Protocol -->
+  <link rel="icon" type="image/jpeg" href="//werewolf3788.github.io/Website/assets/logo.jpg">
+  <link rel="apple-touch-icon" href="//werewolf3788.github.io/Website/assets/logo.jpg">
 
-        .custom-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-        }
+  <!-- Line 14: Sibling Stylesheet link -->
+  <link rel="stylesheet" href="./style.css">
 
-        .btn-primary-dynamic {
-            background-color: var(--primary-color);
-            color: #ffffff;
-            transition: filter 0.2s ease, transform 0.1s ease;
-        }
-        .btn-primary-dynamic:hover {
-            filter: brightness(1.15);
-        }
+  <!-- Line 17: Firebase SDKs (Compat Layer) -->
+  <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+  <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
-        .text-primary-dynamic { color: var(--primary-color); }
-        .text-secondary-dynamic { color: var(--secondary-color); }
-
-        .kf-watermark {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            font-family: 'Arial Black', sans-serif;
-            font-size: 28px;
-            z-index: 999;
-            pointer-events: none;
-            user-select: none;
-            opacity: 0.8;
-        }
-        .k-sig { color: #FF4500; display: inline-block; transform: scaleX(-1); position: relative; z-index: 2; }
-        .f-sig { color: #000000; display: inline-block; margin-left: -0.22em; position: relative; z-index: 1; }
-    </style>
+  <!-- Line 24: Page-Specific Layout Styling -->
+  <style>
+    .settings-container {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .profile-card-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .avatar-preview {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 2px solid var(--accent-blue);
+      object-fit: cover;
+      background: var(--bg-surface);
+    }
+    .provider-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    .provider-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+    }
+    .friend-roster {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+    .friend-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: var(--bg-surface);
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+    .danger-zone {
+      border: 1px solid var(--danger);
+      background: rgba(231, 76, 60, 0.05);
+    }
+    .danger-zone h3 {
+      color: var(--danger);
+    }
+  </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body>
 
-    <!-- Global Navigation Header -->
-    <nav class="bg-slate-900/90 sticky top-0 z-50 border-b border-slate-700 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-3">
-                    <a href="index.html" class="text-xl font-black tracking-tighter text-sky-400 hover:opacity-90">
-                        WEREWOLF<span class="text-white">PROJECT</span>
-                    </a>
-                    <span class="text-xs bg-slate-800 text-slate-400 font-mono px-2 py-1 rounded border border-slate-700">SETTINGS</span>
-                </div>
+  <!-- Line 98: Navigation Header with Direct Relative Portal Links -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="brand-area">
+        <img src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" class="brand-logo">
+        <span class="brand-title">HUNTER ACCOUNT SETTINGS</span>
+      </div>
 
-                <div id="dynamic-nav-links" class="hidden md:flex items-center space-x-6 text-sm">
-                    <a href="index.html" class="text-white hover:text-yellow-400">Home</a>
-                </div>
+      <nav class="site-nav">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="./index.html" class="nav-link">← Back to Hub</a>
+          </li>
+        </ul>
+      </nav>
 
-                <!-- Global Auth Control -->
-                <div id="authContainer" class="flex items-center gap-3">
-                    <button id="googleSignInBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2 px-4 rounded-lg border border-emerald-400 shadow-sm transition-all flex items-center gap-2 cursor-pointer">
-                        <i class="fa-brands fa-google"></i>
-                        <span>Login with Google</span>
-                    </button>
-                    <div id="userProfileStatus" class="hidden items-center gap-3">
-                        <img id="userAvatar" src="https://placehold.co/32x32/1e293b/ff8800?text=U" alt="Avatar" class="w-8 h-8 rounded-full border-2 border-sky-400 object-cover">
-                        <span id="userAccountEmail" class="text-xs text-slate-300 font-mono hidden sm:inline-block"></span>
-                        <button id="signOutBtn" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs py-1.5 px-3 rounded-lg border border-slate-600 transition-all cursor-pointer">
-                            Logout
-                        </button>
-                    </div>
-                </div>
-            </div>
+      <div class="auth-toolbar">
+        <button id="logoutBtn" class="btn btn-secondary btn-sm">Sign Out</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Line 122: Main Settings Dashboard -->
+  <main class="settings-container">
+    
+    <!-- Profile & Gamer Tag Customization -->
+    <section class="card">
+      <div class="profile-card-header">
+        <img id="avatarPreview" src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" class="avatar-preview">
+        <div>
+          <h2 id="displayGamerTag">Hunter</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            Friend Code: <strong id="friendCodeDisplay" style="color: var(--accent-gold);">Logging in...</strong>
+          </p>
         </div>
-    </nav>
+      </div>
 
-    <!-- Main Settings Interface -->
-    <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-8">
-        <div class="mb-8 border-b border-slate-800 pb-4">
-            <h1 class="text-3xl font-black text-sky-400 flex items-center gap-3">
-                <i class="fa-solid fa-sliders text-2xl"></i>
-                <span>Operator Profile &amp; Control Settings</span>
-            </h1>
-            <p class="text-slate-400 text-sm mt-1">Configure your gaming nickname, theme accents, and cross-platform handles. Personal emails stay private to settings.</p>
+      <form id="profileForm" onsubmit="return false;">
+        <div class="control-grid">
+          <div class="control-group">
+            <label for="usernameInput">Display Gamer Tag / Username</label>
+            <input type="text" id="usernameInput" placeholder="Enter username (e.g. Werewolf)">
+          </div>
+
+          <div class="control-group">
+            <label for="primaryPlatformSelect">Primary Platform</label>
+            <select id="primaryPlatformSelect">
+              <option value="playstation">PlayStation Network</option>
+              <option value="pc">PC (Steam / Epic)</option>
+              <option value="xbox">Xbox Series X|S</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="avatarUrlInput">Custom Avatar Image URL</label>
+            <input type="text" id="avatarUrlInput" placeholder="//path-to-image.jpg">
+          </div>
+        </div>
+        <div style="margin-top: 16px;">
+          <button type="button" id="saveProfileBtn" class="btn btn-primary">Save Profile Changes</button>
+          <span id="saveProfileMsg" style="font-size: 0.85rem; margin-left: 12px; color: var(--success);"></span>
+        </div>
+      </form>
+    </section>
+
+    <!-- Two-Column Grid: Linked Sign-In Providers & Friend System -->
+    <div class="settings-grid">
+      
+      <!-- Column 1: Multi-Provider Linking (Google, Email, Phone) -->
+      <section class="card">
+        <h3>Linked Authentication Providers</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 16px;">
+          Link multiple login methods to this single hunter profile so you can access your progress anywhere.
+        </p>
+
+        <!-- Google Auth Row -->
+        <div class="provider-row">
+          <div>
+            <strong>Google Account</strong>
+            <div id="googleStatusText" style="font-size: 0.78rem; color: var(--text-muted);">Not Linked</div>
+          </div>
+          <button id="linkGoogleBtn" class="btn btn-secondary btn-sm">Link Google</button>
         </div>
 
-        <form id="settingsForm" class="space-y-8">
-            
-            <!-- CARD 1: Gaming Identity -->
-            <div class="custom-card p-6 border border-slate-700">
-                <div class="flex items-center gap-3 border-b border-slate-700/60 pb-3 mb-6">
-                    <i class="fa-solid fa-id-card text-sky-400 text-lg"></i>
-                    <h2 class="text-lg font-bold text-white">1. Gaming Identity &amp; Handle</h2>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-xs font-black uppercase text-slate-300 tracking-wider mb-2">
-                            Gaming Nickname / Handle <span class="text-amber-400">*</span>
-                        </label>
-                        <input type="text" id="operatorNameInput" required value="Werewolf3788" placeholder="e.g. Werewolf3788" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
-                        <p class="text-[11px] text-slate-500 mt-1 italic">This is the public username used for all game trackers and repository progress files.</p>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-black uppercase text-slate-300 tracking-wider mb-2">
-                            Custom Avatar Image URL
-                        </label>
-                        <input type="url" id="avatarUrlInput" placeholder="https://..." class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
-                        <p class="text-[11px] text-slate-500 mt-1 italic">Leave blank to use your default Google profile photo.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CARD 2: Custom Page Theme & Colors -->
-            <div class="custom-card p-6 border border-slate-700">
-                <div class="flex items-center gap-3 border-b border-slate-700/60 pb-3 mb-6">
-                    <i class="fa-solid fa-palette text-amber-500 text-lg"></i>
-                    <h2 class="text-lg font-bold text-white">2. Visual Theme &amp; Accent Customization</h2>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-                    <div>
-                        <label class="block text-xs font-black uppercase text-slate-300 tracking-wider mb-2">Primary Accent Color</label>
-                        <div class="flex items-center gap-3">
-                            <input type="color" id="primaryColorInput" value="#ff5f1f" class="w-12 h-10 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
-                            <span id="primaryHexLabel" class="font-mono text-xs text-slate-300">#FF5F1F</span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-black uppercase text-slate-300 tracking-wider mb-2">Secondary Accent Color</label>
-                        <div class="flex items-center gap-3">
-                            <input type="color" id="secondaryColorInput" value="#38bdf8" class="w-12 h-10 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
-                            <span id="secondaryHexLabel" class="font-mono text-xs text-slate-300">#38BDF8</span>
-                        </div>
-                    </div>
-
-                    <div id="themePreviewBox" class="p-4 rounded-xl border border-slate-700 bg-slate-900/90 text-center space-y-2">
-                        <div class="text-[10px] font-black uppercase tracking-widest text-slate-400">Live Card Preview</div>
-                        <div class="text-sm font-black text-primary-dynamic">Operator Theme Active</div>
-                        <div class="text-xs font-semibold text-secondary-dynamic">Secondary Highlight Line</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CARD 3: Multi-Platform Gamertags -->
-            <div class="custom-card p-6 border border-slate-700">
-                <div class="flex items-center gap-3 border-b border-slate-700/60 pb-3 mb-6">
-                    <i class="fa-solid fa-gamepad text-emerald-400 text-lg"></i>
-                    <h2 class="text-lg font-bold text-white">3. Multi-Platform Gamertags</h2>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div>
-                        <label class="block text-xs font-black uppercase text-slate-300 tracking-wider mb-2">PlayStation Network (PSN)</label>
-                        <input type="text" id="psnTagInput" placeholder="e.g. Werewolf3788" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black uppercase text-slate-300 tracking-wider mb-2">Xbox Live Gamertag</label>
-                        <input type="text" id="xboxTagInput" placeholder="e.g. Werewolf3788" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black uppercase text-slate-300 tracking-wider mb-2">Steam ID / Vanity URL</label>
-                        <input type="text" id="steamTagInput" placeholder="e.g. 76561198000000000" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black uppercase text-slate-300 tracking-wider mb-2">Epic Games Display Name</label>
-                        <input type="text" id="epicTagInput" placeholder="e.g. Werewolf_Epic" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black uppercase text-slate-300 tracking-wider mb-2">EA App / Origin ID</label>
-                        <input type="text" id="eaTagInput" placeholder="e.g. Werewolf_EA" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black uppercase text-slate-300 tracking-wider mb-2">Ubisoft Connect Username</label>
-                        <input type="text" id="ubisoftTagInput" placeholder="e.g. Werewolf_Ubi" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Submit Controls -->
-            <div class="flex items-center justify-between pt-4">
-                <span id="saveStatusMessage" class="text-xs font-mono font-bold text-emerald-400"></span>
-                <button type="submit" id="saveSettingsBtn" class="btn-primary-dynamic font-black text-sm py-3 px-8 rounded-xl shadow-lg border border-white/20 transition-all flex items-center gap-2 cursor-pointer">
-                    <i class="fa-solid fa-floppy-disk"></i>
-                    <span>Save Operator Profile Settings</span>
-                </button>
-            </div>
-
-        </form>
-    </main>
-
-    <!-- Footer -->
-    <footer class="mt-auto bg-slate-950 py-8 border-t border-slate-800 text-center relative">
-        <div class="max-w-7xl mx-auto px-4">
-            <p class="text-slate-500 text-xs">
-                &copy; 2026 Werewolf Project. Central Settings Engine Active.
-            </p>
+        <!-- Email & Password Row -->
+        <div class="provider-row">
+          <div>
+            <strong>Email & Password</strong>
+            <div id="emailStatusText" style="font-size: 0.78rem; color: var(--text-muted);">Not Linked</div>
+          </div>
+          <button id="linkEmailToggleBtn" class="btn btn-secondary btn-sm">Link Email</button>
         </div>
-        <div class="kf-watermark">
-            <span class="k-sig">K</span><span class="f-sig">F</span>
+        <div id="emailLinkBox" class="hidden" style="margin-bottom: 12px; padding: 10px; background: var(--bg-surface); border-radius: 6px;">
+          <input type="email" id="linkEmailInput" placeholder="new-email@example.com" style="margin-bottom: 6px; width: 100%;">
+          <input type="password" id="linkPasswordInput" placeholder="Set password" style="margin-bottom: 8px; width: 100%;">
+          <button id="submitLinkEmailBtn" class="btn btn-primary btn-sm full-width">Confirm Email Link</button>
         </div>
-    </footer>
 
-    <!-- Firebase Settings Engine Module -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { 
-            getAuth, 
-            setPersistence, 
-            browserLocalPersistence, 
-            GoogleAuthProvider, 
-            signInWithPopup, 
-            signOut, 
-            onAuthStateChanged 
-        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        <!-- Phone Verification Row -->
+        <div class="provider-row">
+          <div>
+            <strong>Phone SMS</strong>
+            <div id="phoneStatusText" style="font-size: 0.78rem; color: var(--text-muted);">Not Linked</div>
+          </div>
+          <button id="linkPhoneToggleBtn" class="btn btn-secondary btn-sm">Link Phone</button>
+        </div>
+        <div id="phoneLinkBox" class="hidden" style="padding: 10px; background: var(--bg-surface); border-radius: 6px;">
+          <input type="tel" id="linkPhoneInput" placeholder="+1234567890" style="margin-bottom: 6px; width: 100%;">
+          <div id="recaptcha-settings-container"></div>
+          <button id="sendPhoneLinkCodeBtn" class="btn btn-primary btn-sm full-width">Send SMS Code</button>
+          
+          <div id="phoneConfirmRow" class="hidden" style="margin-top: 8px;">
+            <input type="text" id="phoneLinkCode" placeholder="6-digit verification code" style="margin-bottom: 6px; width: 100%;">
+            <button id="submitPhoneLinkBtn" class="btn btn-success btn-sm full-width">Verify & Link Phone</button>
+          </div>
+        </div>
+      </section>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
-            authDomain: "entertainment-71888.firebaseapp.com",
-            databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
-            projectId: "entertainment-71888",
-            storageBucket: "entertainment-71888.firebasestorage.app",
-            messagingSenderId: "660524340277",
-            appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
-            measurementId: "G-JDNSLD3GFE"
-        };
+      <!-- Column 2: Friends Roster & Cross-Progress -->
+      <section class="card">
+        <h3>Hunting Companions & Friends</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 14px;">
+          Add friends by their Friend Code to view their trophy counts and unlocked zones (without revealing login credentials).
+        </p>
 
-        let auth, db, currentUser = null;
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="friendCodeInput" placeholder="Paste friend's code here..." style="flex: 1;">
+          <button id="addFriendBtn" class="btn btn-primary btn-sm">Add Friend</button>
+        </div>
 
-        // Cookie & Theme Utilities
-        function setGamertagCookie(gamertag) {
-            const d = new Date();
-            d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
-            document.cookie = `wildlands_active_gamertag=${encodeURIComponent(gamertag)};expires=${d.toUTCString()};path=/;SameSite=Lax`;
+        <div class="friend-roster" id="friendRosterContainer">
+          <p style="font-size: 0.82rem; color: var(--text-muted);">No companions added yet.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- Danger Zone: Account Deletion -->
+    <section class="card danger-zone">
+      <h3>Delete Account & Erase Cloud Data</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 14px;">
+        Closing your account will permanently delete your hunter profile, trophies, and platform game saves from Firestore. This action cannot be undone.
+      </p>
+      <button id="deleteAccountBtn" class="btn" style="background: var(--danger); color: #fff;">Permanently Delete Account</button>
+    </section>
+
+  </main>
+
+  <!-- Line 250: Global Footer with Required 24-hr NY Timestamp -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <p>&copy; 2026 Way of the Hunter 2 Master Hub | User Identity Protocol</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 13:28 EDT</span> | Version: 3.0.0</p>
+      </div>
+      <div class="footer-col text-right">
+        <span id="accountStatusPill" class="status-pill status-connecting">Checking Auth...</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Line 263: Account Controller Logic -->
+  <script>
+    // Line 264: Settings & Multi-Auth Bridge
+    document.addEventListener("DOMContentLoaded", () => {
+      const firebaseConfig = {
+        apiKey: "AIzaSyDummyKeyReplaceWithYourOwnAuthKey",
+        authDomain: "entertainment-71888.firebaseapp.com",
+        databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
+        projectId: "entertainment-71888",
+        storageBucket: "entertainment-71888.appspot.com",
+        messagingSenderId: "1234567890",
+        appId: "1:1234567890:web:abcdef123456"
+      };
+
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      let currentUser = null;
+      let confirmationResultRef = null;
+
+      // Phone Recaptcha
+      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-settings-container", {
+        size: "invisible"
+      });
+
+      // 1. Auth State Watcher
+      auth.onAuthStateChanged(async (user) => {
+        const pill = document.getElementById("accountStatusPill");
+        if (user) {
+          currentUser = user;
+          if (pill) {
+            pill.textContent = "Authenticated";
+            pill.className = "status-pill status-connected";
+          }
+          document.getElementById("friendCodeDisplay").textContent = user.uid;
+          await loadUserProfile(user);
+          renderLinkedProviders(user);
+          loadFriendsList(user.uid);
+        } else {
+          // If guest, send them to hub to sign in
+          if (pill) pill.textContent = "Not Signed In";
+          alert("Please sign in from the main portal first.");
+          window.location.href = "./index.html";
+        }
+      });
+
+      // 2. Load Firestore Profile
+      async function loadUserProfile(user) {
+        try {
+          const doc = await db.collection("users").doc(user.uid).get();
+          if (doc.exists) {
+            const data = doc.data();
+            const gamerTag = data.username || user.displayName || "Hunter";
+            document.getElementById("displayGamerTag").textContent = gamerTag;
+            document.getElementById("usernameInput").value = gamerTag;
+            document.getElementById("primaryPlatformSelect").value = data.primary_platform || "playstation";
+            if (data.avatar_url) {
+              document.getElementById("avatarUrlInput").value = data.avatar_url;
+              document.getElementById("avatarPreview").src = data.avatar_url;
+            }
+          } else {
+            // Seed profile
+            await db.collection("users").doc(user.uid).set({
+              username: user.displayName || "Hunter",
+              primary_platform: "playstation",
+              avatar_url: "//werewolf3788.github.io/Website/assets/logo.jpg",
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+          }
+        } catch (e) {
+          console.warn("Could not load Firestore profile:", e);
+        }
+      }
+
+      // 3. Save Profile Changes
+      document.getElementById("saveProfileBtn").addEventListener("click", async () => {
+        if (!currentUser) return;
+        const newTag = document.getElementById("usernameInput").value.trim();
+        const platform = document.getElementById("primaryPlatformSelect").value;
+        const avatar = document.getElementById("avatarUrlInput").value.trim();
+
+        try {
+          await db.collection("users").doc(currentUser.uid).set({
+            username: newTag || "Hunter",
+            primary_platform: platform,
+            avatar_url: avatar || "//werewolf3788.github.io/Website/assets/logo.jpg",
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+
+          document.getElementById("displayGamerTag").textContent = newTag;
+          if (avatar) document.getElementById("avatarPreview").src = avatar;
+          
+          const msg = document.getElementById("saveProfileMsg");
+          msg.textContent = "Profile updated!";
+          setTimeout(() => msg.textContent = "", 3000);
+        } catch (err) {
+          alert("Error updating profile: " + err.message);
+        }
+      });
+
+      // 4. Provider Linking Logic
+      function renderLinkedProviders(user) {
+        const providers = user.providerData.map(p => p.providerId);
+
+        // Google
+        if (providers.includes("google.com")) {
+          document.getElementById("googleStatusText").textContent = "Linked (" + (user.email || "Active") + ")";
+          document.getElementById("linkGoogleBtn").style.display = "none";
         }
 
-        function applyDynamicTheme(primary, secondary) {
-            const p = primary || '#ff5f1f';
-            const s = secondary || '#38bdf8';
-            document.documentElement.style.setProperty('--primary-color', p);
-            document.documentElement.style.setProperty('--secondary-color', s);
-            
-            const pLabel = document.getElementById('primaryHexLabel');
-            const sLabel = document.getElementById('secondaryHexLabel');
-            if (pLabel) pLabel.innerText = p.toUpperCase();
-            if (sLabel) sLabel.innerText = s.toUpperCase();
-
-            localStorage.setItem('user_primary_color', p);
-            localStorage.setItem('user_secondary_color', s);
+        // Email / Password
+        if (providers.includes("password")) {
+          document.getElementById("emailStatusText").textContent = "Linked (" + (user.email || "Active") + ")";
+          document.getElementById("linkEmailToggleBtn").style.display = "none";
         }
 
-        document.getElementById('primaryColorInput')?.addEventListener('input', (e) => {
-            applyDynamicTheme(e.target.value, document.getElementById('secondaryColorInput').value);
-        });
-
-        document.getElementById('secondaryColorInput')?.addEventListener('input', (e) => {
-            applyDynamicTheme(document.getElementById('primaryColorInput').value, e.target.value);
-        });
-
-        async function initSettingsEngine() {
-            try {
-                const app = initializeApp(firebaseConfig, 'Settings-App');
-                auth = getAuth(app);
-                db = getFirestore(app);
-
-                // Preserve Login State across pages
-                await setPersistence(auth, browserLocalPersistence);
-
-                onAuthStateChanged(auth, async (user) => {
-                    handleAuthState(user);
-                });
-
-            } catch (err) {
-                console.error("Firebase Settings Init Error:", err);
-            }
+        // Phone
+        if (providers.includes("phone")) {
+          document.getElementById("phoneStatusText").textContent = "Linked (" + (user.phoneNumber || "Active") + ")";
+          document.getElementById("linkPhoneToggleBtn").style.display = "none";
         }
+      }
 
-        async function handleAuthState(user) {
-            currentUser = user;
-            const googleBtn = document.getElementById("googleSignInBtn");
-            const userStatus = document.getElementById("userProfileStatus");
-            const userAvatar = document.getElementById("userAvatar");
-            const userEmail = document.getElementById("userAccountEmail");
+      // Link Google Account
+      document.getElementById("linkGoogleBtn").addEventListener("click", () => {
+        if (!currentUser) return;
+        const provider = new firebase.auth.GoogleAuthProvider();
+        currentUser.linkWithPopup(provider)
+          .then((result) => {
+            alert("Google account linked successfully!");
+            renderLinkedProviders(result.user);
+          })
+          .catch(err => alert("Linking failed: " + err.message));
+      });
 
-            if (user) {
-                if (googleBtn) googleBtn.style.display = "none";
-                if (userStatus) userStatus.style.display = "flex";
-                if (userAvatar) userAvatar.src = user.photoURL || "https://placehold.co/32x32/1e293b/ff8800?text=U";
-                if (userEmail) userEmail.textContent = user.email;
+      // Toggle Email Link Box
+      document.getElementById("linkEmailToggleBtn").addEventListener("click", () => {
+        document.getElementById("emailLinkBox").classList.toggle("hidden");
+      });
 
-                // Priority: Local Storage Nickname > Display Name > Default
-                const activeNickname = localStorage.getItem('active_gaming_nickname') || user.displayName || "Werewolf3788";
-                document.getElementById('operatorNameInput').value = activeNickname;
+      // Confirm Email Link
+      document.getElementById("submitLinkEmailBtn").addEventListener("click", () => {
+        const email = document.getElementById("linkEmailInput").value.trim();
+        const pass = document.getElementById("linkPasswordInput").value;
+        if (!email || !pass) return alert("Enter email and password.");
 
-                // Load existing Firestore profile under activeNickname
-                if (db) {
-                    try {
-                        const userDocRef = doc(db, 'users', activeNickname);
-                        const snap = await getDoc(userDocRef);
-                        if (snap.exists()) {
-                            const data = snap.data();
-                            if (data.photoURL) document.getElementById('avatarUrlInput').value = data.photoURL;
-                            if (data.primaryColor) document.getElementById('primaryColorInput').value = data.primaryColor;
-                            if (data.secondaryColor) document.getElementById('secondaryColorInput').value = data.secondaryColor;
-                            
-                            if (data.gamertags) {
-                                document.getElementById('psnTagInput').value = data.gamertags.psn || "";
-                                document.getElementById('xboxTagInput').value = data.gamertags.xbox || "";
-                                document.getElementById('steamTagInput').value = data.gamertags.steam || "";
-                                document.getElementById('epicTagInput').value = data.gamertags.epic || "";
-                                document.getElementById('eaTagInput').value = data.gamertags.ea || "";
-                                document.getElementById('ubisoftTagInput').value = data.gamertags.ubisoft || "";
-                            }
+        const cred = firebase.auth.EmailAuthProvider.credential(email, pass);
+        currentUser.linkWithCredential(cred)
+          .then((res) => {
+            alert("Email & password login linked!");
+            document.getElementById("emailLinkBox").classList.add("hidden");
+            renderLinkedProviders(res.user);
+          })
+          .catch(err => alert("Email link error: " + err.message));
+      });
 
-                            applyDynamicTheme(data.primaryColor, data.secondaryColor);
-                        }
-                    } catch (e) {
-                        console.warn("Notice loading profile settings:", e.message);
-                    }
-                }
-            } else {
-                if (googleBtn) googleBtn.style.display = "inline-flex";
-                if (userStatus) userStatus.style.display = "none";
+      // Toggle Phone Box
+      document.getElementById("linkPhoneToggleBtn").addEventListener("click", () => {
+        document.getElementById("phoneLinkBox").classList.toggle("hidden");
+      });
 
-                // Guest state fallback
-                const guestNickname = localStorage.getItem('active_gaming_nickname') || "Werewolf3788";
-                document.getElementById('operatorNameInput').value = guestNickname;
-            }
+      // Send Phone SMS Code
+      document.getElementById("sendPhoneLinkCodeBtn").addEventListener("click", () => {
+        const phone = document.getElementById("linkPhoneInput").value.trim();
+        if (!phone) return alert("Enter valid phone number.");
+
+        const appVerifier = window.recaptchaVerifier;
+        const provider = new firebase.auth.PhoneAuthProvider();
+        provider.verifyPhoneNumber(phone, appVerifier)
+          .then((verificationId) => {
+            confirmationResultRef = verificationId;
+            document.getElementById("phoneConfirmRow").classList.remove("hidden");
+            alert("Verification code sent via SMS!");
+          })
+          .catch(err => alert("SMS send error: " + err.message));
+      });
+
+      // Confirm Phone Link
+      document.getElementById("submitPhoneLinkBtn").addEventListener("click", () => {
+        const code = document.getElementById("phoneLinkCode").value.trim();
+        if (!code || !confirmationResultRef) return alert("Enter 6-digit code.");
+
+        const cred = firebase.auth.PhoneAuthProvider.credential(confirmationResultRef, code);
+        currentUser.linkWithCredential(cred)
+          .then((res) => {
+            alert("Phone number linked to your account!");
+            document.getElementById("phoneLinkBox").classList.add("hidden");
+            renderLinkedProviders(res.user);
+          })
+          .catch(err => alert("Phone link error: " + err.message));
+      });
+
+      // 5. Friends System
+      async function loadFriendsList(uid) {
+        const roster = document.getElementById("friendRosterContainer");
+        try {
+          const snapshot = await db.collection("users").doc(uid).collection("friends").get();
+          if (snapshot.empty) {
+            roster.innerHTML = '<p style="font-size: 0.82rem; color: var(--text-muted);">No companions added yet.</p>';
+            return;
+          }
+
+          roster.innerHTML = "";
+          for (const doc of snapshot.docs) {
+            const fData = doc.data();
+            // Fetch friend's public username
+            const friendProfile = await db.collection("users").doc(doc.id).get();
+            const fName = friendProfile.exists ? (friendProfile.data().username || "Unknown Hunter") : doc.id.substring(0, 8);
+            const fPlatform = friendProfile.exists ? (friendProfile.data().primary_platform || "PC") : "PSN";
+
+            const div = document.createElement("div");
+            div.className = "friend-item";
+            div.innerHTML = `
+              <div>
+                <strong>${fName}</strong>
+                <div style="font-size: 0.76rem; color: var(--text-muted);">Platform: ${fPlatform}</div>
+              </div>
+              <span class="badge-tag">Active Hunter</span>
+            `;
+            roster.appendChild(div);
+          }
+        } catch (e) {
+          console.warn("Error fetching friends:", e);
         }
+      }
 
-        // Login Handler
-        document.getElementById("googleSignInBtn")?.addEventListener("click", () => {
-            const provider = new GoogleAuthProvider();
-            signInWithPopup(auth, provider)
-                .then((result) => {
-                    const nickname = localStorage.getItem('active_gaming_nickname') || result.user.displayName || "Werewolf3788";
-                    localStorage.setItem('active_gaming_nickname', nickname);
-                })
-                .catch((e) => console.error("Login Notice:", e));
-        });
+      // Add Friend
+      document.getElementById("addFriendBtn").addEventListener("click", async () => {
+        if (!currentUser) return;
+        const code = document.getElementById("friendCodeInput").value.trim();
+        if (!code) return alert("Enter friend code.");
+        if (code === currentUser.uid) return alert("You cannot add yourself.");
 
-        // Logout Handler
-        document.getElementById("signOutBtn")?.addEventListener("click", () => {
-            signOut(auth).then(() => {
-                location.reload();
-            });
-        });
+        try {
+          await db.collection("users").doc(currentUser.uid).collection("friends").doc(code).set({
+            addedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          document.getElementById("friendCodeInput").value = "";
+          alert("Companion added!");
+          loadFriendsList(currentUser.uid);
+        } catch (err) {
+          alert("Failed to add companion: " + err.message);
+        }
+      });
 
-        // Save Settings Form
-        document.getElementById('settingsForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+      // 6. Delete Account (Erase Firestore Data + Wipe Auth Credentials)
+      document.getElementById("deleteAccountBtn").addEventListener("click", async () => {
+        if (!currentUser) return;
+        const confirmDelete = confirm("Are you sure? This will delete all your harvest records, unlocked zones, and settings permanently.");
+        if (!confirmDelete) return;
 
-            if (!currentUser) {
-                alert("🔒 You must be logged in to save settings and progress to Firebase.");
-                return;
-            }
+        try {
+          // Delete main profile doc
+          await db.collection("users").doc(currentUser.uid).delete();
+          
+          // Delete Auth Account
+          await currentUser.delete();
+          
+          localStorage.clear();
+          alert("Your account and records have been deleted.");
+          window.location.href = "./index.html";
+        } catch (err) {
+          alert("To delete your account, please sign in again recently for security: " + err.message);
+        }
+      });
 
-            const gamingNickname = document.getElementById('operatorNameInput').value.trim();
-            if (!gamingNickname) {
-                alert("Please enter a valid Gaming Nickname.");
-                return;
-            }
-
-            // Lock in Nickname across all pages
-            localStorage.setItem('active_gaming_nickname', gamingNickname);
-            setGamertagCookie(gamingNickname);
-
-            const primaryColor = document.getElementById('primaryColorInput').value;
-            const secondaryColor = document.getElementById('secondaryColorInput').value;
-            const avatarUrl = document.getElementById('avatarUrlInput').value.trim();
-
-            const gamertags = {
-                psn: document.getElementById('psnTagInput').value.trim(),
-                xbox: document.getElementById('xboxTagInput').value.trim(),
-                steam: document.getElementById('steamTagInput').value.trim(),
-                epic: document.getElementById('epicTagInput').value.trim(),
-                ea: document.getElementById('eaTagInput').value.trim(),
-                ubisoft: document.getElementById('ubisoftTagInput').value.trim()
-            };
-
-            const payload = {
-                displayName: gamingNickname,
-                operatorProfileName: gamingNickname,
-                primaryColor,
-                secondaryColor,
-                photoURL: avatarUrl || currentUser.photoURL,
-                email: currentUser.email,
-                ownerUid: currentUser.uid,
-                gamertags,
-                lastUpdated: new Date().toISOString()
-            };
-
-            applyDynamicTheme(primaryColor, secondaryColor);
-
-            if (db) {
-                try {
-                    // Document path saved under Gaming Nickname: /users/{gamingNickname}
-                    const userDocRef = doc(db, 'users', gamingNickname);
-                    await setDoc(userDocRef, payload, { merge: true });
-
-                    const msg = document.getElementById('saveStatusMessage');
-                    if (msg) {
-                        msg.innerText = `✓ Profile saved cleanly under Gaming Nickname: '${gamingNickname}'!`;
-                        setTimeout(() => { msg.innerText = ""; }, 4000);
-                    }
-                } catch (err) {
-                    console.error("Firestore Save Error:", err);
-                    alert("Error saving settings: " + err.message);
-                }
-            }
-        });
-
-        window.onload = () => {
-            initSettingsEngine();
-        };
-    </script>
+      // Sign Out
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        auth.signOut().then(() => window.location.href = "./index.html");
+      });
+    });
+  </script>
 </body>
 </html>
