@@ -1,5 +1,5 @@
 <!-- Line 1: Hunter Identity & Settings - Single File Architecture -->
-<!-- [Smart Cache-Buster Time: 2026-10-07 14:28 EDT | Firebase Sync Target: /utm_links | Version: 3.6.0] -->
+<!-- [Smart Cache-Buster Time: 2026-10-07 15:13 EDT | Firebase Sync Target: /utm_links | Version: 3.7.1] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hunter Profile & Settings</title>
 
-  <!-- Favicon elements dynamically rebound from RTDB /utm_links/Settings/0/image -->
+  <!-- Favicon elements dynamically rebound from RTDB /utm_links via tag === "settings" -->
   <link id="dynamicFavicon" rel="icon" type="image/png" href="//werewolf3788.github.io/Website/assets/logo.jpg">
   <link id="dynamicAppleIcon" rel="apple-touch-icon" href="//werewolf3788.github.io/Website/assets/logo.jpg">
 
@@ -613,7 +613,7 @@
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Werewolf Project | User Identity Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 14:28 EDT</span> | Version: 3.6.0</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 15:13 EDT</span> | Version: 3.7.1</p>
       </div>
       <div class="footer-col text-right">
         <span id="accountStatusPill" class="status-pill status-connecting">RTDB: Connecting...</span>
@@ -627,7 +627,7 @@
       // Default placeholder avatar strictly for user accounts without profile photos
       const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
 
-      // Verified Firebase Config
+      // Verified Production Firebase Config for entertainment-71888
       const firebaseConfig = {
         apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
         authDomain: "entertainment-71888.firebaseapp.com",
@@ -686,7 +686,7 @@
             }
           });
 
-          // Sync Favicon and Header Logo strictly from /utm_links/Settings/0/image
+          // Sync Favicon and Header Logo via explicit tag === "settings"
           syncSettingsFavicon(items, raw);
 
           // Build Sorted Navbar (Bare links & Folders side-by-side; No "Standalone" folder)
@@ -702,22 +702,34 @@
           url: item.url || "#",
           image: (item.image && typeof item.image === "string") ? item.image.trim() : "",
           group: (item.group && typeof item.group === "string") ? item.group.trim() : "",
+          tag: (item.tag && typeof item.tag === "string") ? item.tag.trim() : "",
           rowNumber: (item.rowNumber !== undefined && item.rowNumber !== null) ? Number(item.rowNumber) : 9999,
           updatedAt: item.updatedAt || ""
         };
       }
 
-      // Syncs Tab Favicon and Header Logo from Settings node
+      // Syncs Tab Favicon and Header Logo prioritizing tag === "settings"
       function syncSettingsFavicon(items, raw) {
         let settingsImg = "";
+        let settingsStamp = "";
 
-        if (raw.Settings && raw.Settings[0] && raw.Settings[0].image) {
+        // 1. Look for explicit tag: "Settings" or "settings" across all groups
+        const taggedEntry = items.find(i => i.tag && i.tag.toLowerCase() === "settings");
+
+        if (taggedEntry) {
+          settingsImg = taggedEntry.image;
+          settingsStamp = taggedEntry.updatedAt;
+        } else if (raw.Settings && raw.Settings[0] && raw.Settings[0].image) {
+          // 2. Direct fallback to /utm_links/Settings/0
           settingsImg = raw.Settings[0].image;
-        } else if (raw.Settings && raw.Settings.image) {
-          settingsImg = raw.Settings.image;
+          settingsStamp = raw.Settings[0].updatedAt;
         } else {
-          const match = items.find(i => i.title.toLowerCase() === "settings");
-          if (match && match.image) settingsImg = match.image;
+          // 3. Fallback matching display title
+          const titleMatch = items.find(i => i.title.toLowerCase() === "settings");
+          if (titleMatch) {
+            settingsImg = titleMatch.image;
+            settingsStamp = titleMatch.updatedAt;
+          }
         }
 
         if (settingsImg) {
@@ -728,6 +740,11 @@
           if (favicon) favicon.href = settingsImg;
           if (appleIcon) appleIcon.href = settingsImg;
           if (brandLogo) brandLogo.src = settingsImg;
+        }
+
+        if (settingsStamp) {
+          const stampEl = document.getElementById("nyBuildTimestamp");
+          if (stampEl) stampEl.textContent = settingsStamp;
         }
       }
 
