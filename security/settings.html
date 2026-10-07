@@ -1,5 +1,5 @@
 <!-- Line 1: Hunter Identity & Master User Settings -->
-<!-- [Smart Cache-Buster Time: 2026-10-07 19:16 EDT | Firebase Sync Target: /utm_links | Version: 4.5.0] -->
+<!-- [Smart Cache-Buster Time: 2026-10-07 19:40 EDT | Firebase Sync Target: /utm_links | Version: 4.6.0] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hunter Profile & Settings</title>
 
-  <!-- Favicon elements dynamically rebound from RTDB /utm_links via tag === "settings" -->
+  <!-- Dynamic Favicons Bound from RTDB /utm_links via tag === "settings" -->
   <link id="dynamicFavicon" rel="icon" type="image/png" href="//werewolf3788.github.io/Website/assets/logo.jpg">
   <link id="dynamicAppleIcon" rel="apple-touch-icon" href="//werewolf3788.github.io/Website/assets/logo.jpg">
 
@@ -19,17 +19,18 @@
 
   <style>
     :root {
-      --bg-primary: #0a0d12;
-      --bg-secondary: #131821;
-      --bg-surface: #1a2230;
-      --bg-hover: #242f42;
+      --bg-primary: #07090e;
+      --bg-secondary: #0f141d;
+      --bg-surface: #151c27;
+      --bg-hover: #1e2736;
       --accent-blue: #0088ff;
       --accent-gold: #f5a623;
-      --accent-green: #25d366;
-      --accent-purple: #9146ff;
+      --accent-green: #2ecc71;
+      --accent-purple: #9b59b6;
+      --accent-cyan: #00d2d3;
       --text-main: #f0f4f8;
       --text-muted: #8b9bb4;
-      --border-color: #273447;
+      --border-color: #222d3d;
       --danger: #e74c3c;
       --success: #2ecc71;
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -49,6 +50,7 @@
       overflow-x: hidden;
     }
 
+    /* Edge-to-Edge Sticky Navbar */
     .site-header {
       background: var(--bg-secondary);
       border-bottom: 1px solid var(--border-color);
@@ -146,16 +148,27 @@
       flex: 1;
     }
 
+    /* Distinct Card Theming */
     .card {
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: 10px;
-      padding: clamp(18px, 2vw, 28px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      padding: clamp(18px, 2vw, 26px);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+      position: relative;
     }
 
+    /* Card Specific Colors */
+    .card-profile { border-top: 3px solid var(--accent-blue); }
+    .card-platforms { border-top: 3px solid var(--accent-gold); }
+    .card-links { border-top: 3px solid var(--accent-cyan); }
+    .card-companions { border-top: 3px solid var(--accent-purple); }
+    .card-auth { border-top: 3px solid #38bdf8; }
+    .card-help { border-top: 3px solid var(--accent-green); }
+    .card-danger { border-top: 3px solid var(--danger); background: rgba(231, 76, 60, 0.03); }
+
     .profile-card-header { display: flex; align-items: center; gap: 18px; margin-bottom: 20px; }
-    .avatar-preview-lg { width: 76px; height: 76px; border-radius: 50%; border: 2px solid var(--accent-blue); object-fit: cover; background: var(--bg-surface); }
+    .avatar-preview-lg { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent-blue); object-fit: cover; background: var(--bg-surface); }
 
     .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; }
 
@@ -227,13 +240,7 @@
       font-weight: 600;
     }
 
-    .user-links-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
+    .user-links-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
     .user-link-item {
       display: flex;
       justify-content: space-between;
@@ -267,12 +274,9 @@
     .btn-google { background: #4285f4; color: #fff; }
     .btn-danger { background: var(--danger); color: #fff; }
     .btn-danger:hover { background: #c0392b; }
-    .btn-whatsapp { background: var(--accent-green); color: #fff; }
+    .btn-whatsapp { background: #25d366; color: #fff; }
     .btn-whatsapp:hover { background: #1ebc57; }
     .full-width { width: 100%; }
-
-    .danger-zone { border: 1px solid var(--danger); background: rgba(231, 76, 60, 0.05); }
-    .danger-zone h3 { color: var(--danger); }
 
     .admin-info-callout {
       background: rgba(245, 166, 35, 0.08);
@@ -284,6 +288,7 @@
       margin-top: 8px;
     }
 
+    /* Floating WhatsApp Widget */
     .floating-whatsapp-widget {
       position: fixed;
       bottom: 24px;
@@ -299,7 +304,7 @@
       width: 54px;
       height: 54px;
       border-radius: 50%;
-      background: var(--accent-green);
+      background: #25d366;
       border: none;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
       cursor: pointer;
@@ -399,10 +404,10 @@
   <main class="settings-container">
     
     <!-- Guest Notification -->
-    <section id="guestSignInPrompt" class="card">
+    <section id="guestSignInPrompt" class="card card-profile">
       <h2>Hunter Authentication Required</h2>
       <p style="font-size: 0.9rem; color: var(--text-muted); margin: 8px 0 16px;">
-        Sign in to manage your gaming IDs, visibility scopes, and security records stored at <code>/users/</code> in RTDB:
+        Sign in to establish your profile across Realtime Database and Cloud Firestore:
       </p>
       <div style="max-width: 320px;">
         <button id="inlineGoogleBtn" class="btn btn-google full-width" style="margin-bottom: 12px;">Sign In with Google</button>
@@ -420,17 +425,20 @@
     <!-- Authenticated Settings Engine -->
     <div id="authenticatedSection" class="hidden" style="display: flex; flex-direction: column; gap: 24px;">
       
-      <!-- Profile Customization & Avatar Source Selector -->
-      <section class="card">
+      <!-- Card 1: Profile & Identity (Electric Blue) -->
+      <section class="card card-profile">
         <div class="profile-card-header">
           <img id="avatarPreview" src="https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png" alt="" class="avatar-preview-lg">
           <div>
             <h2 id="displayGamerTag">Hunter</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
-              Friend Code: <strong id="friendCodeDisplay" style="color: var(--accent-gold); letter-spacing: 0.5px;">Loading...</strong>
-            </p>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; gap: 8px;">
+              Friend Code: 
+              <strong id="friendCodeDisplay" style="color: var(--accent-gold); letter-spacing: 0.5px;">Loading...</strong>
+              <button id="copyFriendCodeBtn" class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 0.74rem;">📋 Copy</button>
+              <span id="copyFeedback" style="font-size: 0.74rem; color: var(--success); font-weight: 600;"></span>
+            </div>
             <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">
-              RTDB Target: <code id="rtdbUserNodeDisplay">/users/guest</code>
+              Root Keys: <code id="primaryEmailDisplay">user@email.com</code>
             </p>
           </div>
         </div>
@@ -451,31 +459,30 @@
               </select>
             </div>
 
-            <div class="control-group" id="customAvatarGroup">
+            <div class="control-group hidden" id="customAvatarGroup">
               <label for="avatarUrlInput">Custom Avatar URL</label>
               <input type="text" id="avatarUrlInput" placeholder="https://example.com/avatar.jpg">
             </div>
           </div>
-          <div style="margin-top: 14px; display: flex; align-items: center; gap: 10px;">
+          <div style="margin-top: 14px;">
             <button type="button" id="saveProfileBtn" class="btn btn-primary btn-sm">Save Profile Details</button>
-            <span id="saveProfileMsg" style="font-size: 0.82rem; color: var(--success); font-weight: 600;"></span>
           </div>
         </form>
       </section>
 
-      <!-- Multi-Platform Gamer Handles & Privacy Scopes -->
-      <section class="card">
+      <!-- Card 2: Connected Gaming Platforms & Scopes (Trophy Gold) -->
+      <section class="card card-platforms">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
           <div>
             <h3>Connected Gaming Platforms &amp; Visibility</h3>
             <p style="font-size: 0.82rem; color: var(--text-muted);">
-              Set handles and choose visibility (Public, Friends Only, or No One) to build your profile card:
+              Set handles and choose visibility (Public, Friends Only, or No One) to configure profile view:
             </p>
           </div>
           <button id="saveGamingProfilesBtn" class="btn btn-primary btn-sm">Save Gaming Profiles</button>
         </div>
 
-        <!-- PlayStation Network Section -->
+        <!-- PlayStation Network -->
         <div class="platform-scope-row">
           <span class="platform-scope-label">PSN Online ID</span>
           <input type="text" id="psnUsernameInput" placeholder="e.g. wildhorse_spirit">
@@ -486,7 +493,7 @@
           </select>
         </div>
 
-        <!-- PlayStation Account ID Number (Conditional Gate + Flipscreen Helper) -->
+        <!-- PlayStation Account ID Number -->
         <div class="platform-scope-row">
           <div>
             <span class="platform-scope-label">PSN Account ID #</span>
@@ -525,7 +532,7 @@
           </select>
         </div>
 
-        <!-- Twitch Integration via DecAPI -->
+        <!-- Twitch Username & DecAPI Status -->
         <div class="platform-scope-row">
           <div>
             <span class="platform-scope-label">Twitch Username</span>
@@ -534,7 +541,7 @@
           <div>
             <input type="text" id="twitchUsernameInput" placeholder="e.g. werewolf3788">
             <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 4px;">
-              Pulls your currently played game via <code>decapi.me/twitch/game/{user}</code> and avatar for your hunter card.
+              Pulls currently played game via <code>decapi.me/twitch/game/{user}</code> and avatar for your profile.
             </div>
           </div>
           <select id="twitchScope">
@@ -548,11 +555,11 @@
       <!-- Connected Links & Companions Roster Grid -->
       <div class="settings-grid">
         
-        <!-- User Personal Connected Links -->
-        <section class="card">
+        <!-- Card 3: Personal Links (Tactical Cyan) -->
+        <section class="card card-links">
           <h3>Your Connected Links</h3>
           <p style="font-size: 0.82rem; color: var(--text-muted); margin: 6px 0 12px;">
-            Add links to display on your personal profile card (stored in your user settings only):
+            Add personal links to display on your profile (stored in settings only):
           </p>
 
           <div style="display: flex; gap: 8px; margin-bottom: 8px;">
@@ -566,14 +573,14 @@
           </div>
         </section>
 
-        <!-- Hunting Companions (Friend Code Linked) -->
-        <section class="card">
+        <!-- Card 4: Hunting Companions (Cyber Purple) -->
+        <section class="card card-companions">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <h3>Hunting Companions</h3>
             <span class="badge-tag">Friends Only Access</span>
           </div>
           <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
-            Enter a friend code to link accounts and view their hunting progress in Firestore:
+            Enter an 8-character friend code to link accounts and view their hunting progress:
           </p>
 
           <div style="display: flex; gap: 8px;">
@@ -587,17 +594,17 @@
         </section>
       </div>
 
-      <!-- Account Credentials & Identity Security -->
+      <!-- Account Credentials & Identity Security Grid -->
       <div class="settings-grid">
         
-        <!-- Sign-In Providers & Email Management -->
-        <section class="card">
+        <!-- Card 5: Authentication & Providers (Steel Blue) -->
+        <section class="card card-auth">
           <h3>Authentication &amp; Linked Providers</h3>
           <p style="font-size: 0.82rem; color: var(--text-muted); margin: 6px 0 14px;">
-            Update primary credentials or manage your third-party connections:
+            Manage primary login credentials or update password:
           </p>
 
-          <!-- Email Change Box -->
+          <!-- Email Update -->
           <div style="margin-bottom: 16px; padding: 12px; background: var(--bg-surface); border-radius: 6px; border: 1px solid var(--border-color);">
             <label style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Update Primary Email Address</label>
             <div style="display: flex; gap: 8px; margin-top: 6px;">
@@ -606,20 +613,16 @@
             </div>
           </div>
 
-          <!-- Connected Providers with Google Self-Service + Admin Gate Note -->
+          <!-- Connected Google Provider -->
           <div class="provider-row">
             <div>
               <strong>Google Account</strong>
               <div id="googleStatusText" class="provider-status">Checking...</div>
             </div>
-            <div id="googleActionArea" style="display: flex; align-items: center; gap: 8px;">
-              <a href="https://myaccount.google.com/linkedapps?continue=https%3A%2F%2Fmyaccount.google.com%2Fsecurity" 
-                 target="_blank" 
-                 rel="noopener" 
-                 class="btn btn-secondary btn-sm" 
-                 title="Open your Google Account Linked Apps page to remove app authorization">
+            <div id="googleActionArea">
+              <button id="disconnectGoogleBtn" class="btn btn-secondary btn-sm" title="Disconnect Google via Google Security console">
                 Disconnect via Google &nearr;
-              </a>
+              </button>
             </div>
           </div>
 
@@ -629,7 +632,7 @@
             <p style="margin-top: 4px;">
               &bull; If you have access to your Google account, you can revoke access directly through your 
               <a href="https://myaccount.google.com/linkedapps?continue=https%3A%2F%2Fmyaccount.google.com%2Fsecurity" target="_blank" rel="noopener" style="color:var(--accent-gold); text-decoration:underline;">Google Linked Apps Security Console</a>.<br>
-              &bull; If you are <strong>locked out of your Google account</strong>, please message the site administrator below to manually clear your credentials from the database.
+              &bull; If you are <strong>locked out of your Google account</strong>, please message the administrator below to manually clear your credentials from the database.
             </p>
           </div>
 
@@ -642,21 +645,19 @@
           </div>
         </section>
 
-        <!-- Direct Contact & Admin Support -->
-        <section class="card">
+        <!-- Card 6: Help & Admin Inquiries (Emerald Green) -->
+        <section class="card card-help">
           <h3>Help &amp; Admin Inquiries</h3>
           <p style="font-size: 0.82rem; color: var(--text-muted); margin: 6px 0 14px;">
             Reach out directly regarding account locks, Google disconnection requests, or bug reports:
           </p>
 
           <div style="display: flex; flex-direction: column; gap: 10px;">
-            <!-- Secure Email Link -->
             <a href="mailto:tryouts-96-billet@icloud.com?subject=Hunter%20Account%20Support%20Request" class="btn btn-secondary full-width">
               <span>✉ Email Administrator</span>
               <span style="font-size: 0.78rem; color: var(--text-muted);">(tryouts-96-billet@icloud.com)</span>
             </a>
 
-            <!-- Anonymous WhatsApp Trigger -->
             <button id="openWhatsAppModalBtn" class="btn btn-whatsapp full-width">
               <span>💬 Contact via WhatsApp (Live Messaging)</span>
             </button>
@@ -667,11 +668,11 @@
         </section>
       </div>
 
-      <!-- Delete Account -->
-      <section class="card danger-zone">
-        <h3>Delete Account &amp; Erase Cloud Records</h3>
+      <!-- Card 7: Danger Zone (Crimson Red) -->
+      <section class="card card-danger">
+        <h3 style="color: var(--danger);">Delete Account &amp; Erase Cloud Records</h3>
         <p style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 14px;">
-          Permanently deletes your hunter identity, trophies, and profile node from RTDB at <code>/users/</code>. This action is irreversible.
+          Permanently deletes your hunter identity, friend code, and records from both Realtime Database (<code>/users/</code>) and Cloud Firestore (<code>users/{email}</code>).
         </p>
         <button id="deleteAccountBtn" class="btn btn-danger">Permanently Delete Account</button>
       </section>
@@ -679,19 +680,19 @@
     </div>
   </main>
 
-  <!-- Anonymous Floating WhatsApp Messaging Widget (Settings Page Only) -->
+  <!-- Anonymous Floating WhatsApp Messaging Widget -->
   <div class="floating-whatsapp-widget" id="whatsappFloatingWidget">
     <div class="whatsapp-chat-box hidden" id="whatsappChatBox">
       <div class="whatsapp-box-header">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <div style="width: 10px; height: 10px; border-radius: 50%; background: #25d366;"></div>
+          <div style="width: 10px; height: 10px; border-radius: 50%; background: #2ecc71;"></div>
           <strong>Support Messenger</strong>
         </div>
         <button id="closeWhatsappBoxBtn" style="background:transparent; border:none; color:#fff; font-size:1.2rem; cursor:pointer;">&times;</button>
       </div>
       <div class="whatsapp-box-body">
         <p style="font-size: 0.8rem; color: var(--text-muted);">
-          Send a direct encrypted message to our dispatch center without disclosing your contact number:
+          Send a direct message to our support dispatch without disclosing your contact number:
         </p>
         <textarea id="whatsappMessageInput" placeholder="Type your inquiry or account request here..." rows="3" style="width:100%; resize:none; background:var(--bg-secondary); border:1px solid var(--border-color); color:#fff; padding:8px; border-radius:6px; font-size:0.85rem; outline:none;"></textarea>
         <button id="sendWhatsappMessageBtn" class="btn btn-whatsapp btn-sm full-width">Transmit via WhatsApp</button>
@@ -705,7 +706,7 @@
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Werewolf Project | User Identity Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 19:16 EDT</span> | Version: 4.5.0</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 19:40 EDT</span> | Version: 4.6.0</p>
       </div>
       <div class="footer-col text-right">
         <span id="accountStatusPill" class="status-pill status-connecting">RTDB: Connecting...</span>
@@ -732,9 +733,9 @@
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       const auth = firebase.auth();
       const rtdb = firebase.database();
+      const db = firebase.firestore();
 
       let currentUser = null;
-      let cachedUserData = {};
 
       function getEmailKey(email) {
         if (!email) return "unknown_user";
@@ -874,6 +875,7 @@
         });
       }
 
+      // Dual-Database Auto-Provisioning on Auth Change
       auth.onAuthStateChanged(async (user) => {
         const guestPrompt = document.getElementById("guestSignInPrompt");
         const authSection = document.getElementById("authenticatedSection");
@@ -887,12 +889,18 @@
           if (profileBadge) profileBadge.classList.remove("hidden");
           if (authModalBtn) authModalBtn.classList.add("hidden");
 
-          const emailKey = getEmailKey(user.email);
+          const primaryEmail = (user.email || "hunter@guest.local").toLowerCase();
+          const emailKey = getEmailKey(primaryEmail);
           const friendCode = user.uid.substring(0, 8).toUpperCase();
-          document.getElementById("friendCodeDisplay").textContent = friendCode;
-          document.getElementById("rtdbUserNodeDisplay").textContent = `/users/${emailKey}`;
 
-          await loadRTDBUserProfile(user, emailKey, friendCode);
+          document.getElementById("friendCodeDisplay").textContent = friendCode;
+          document.getElementById("primaryEmailDisplay").textContent = primaryEmail;
+
+          // 1. Dual Provisioning: Write to RTDB and Firestore
+          await autoProvisionDualDatabases(user, primaryEmail, emailKey, friendCode);
+
+          // 2. Real-time RTDB listener for Settings Updates
+          loadRTDBUserProfile(emailKey, friendCode);
           renderProvidersUI(user);
         } else {
           currentUser = null;
@@ -903,15 +911,61 @@
         }
       });
 
-      async function loadRTDBUserProfile(user, emailKey, friendCode) {
+      // Synchronizes both database root tags simultaneously
+      async function autoProvisionDualDatabases(user, primaryEmail, emailKey, friendCode) {
+        const fallbackName = user.displayName || "Hunter";
+        const fallbackAvatar = user.photoURL || DEFAULT_USER_AVATAR;
+
+        // Provision Cloud Firestore document under users/{email}
+        try {
+          await db.collection("users").doc(primaryEmail).set({
+            email: primaryEmail,
+            email_key: emailKey,
+            friend_code: friendCode,
+            username: fallbackName,
+            avatar_url: fallbackAvatar,
+            primary_platform: "playstation",
+            last_login: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+        } catch (e) {
+          console.warn("Firestore provisioning warning:", e);
+        }
+
+        // Provision RTDB nodes (/users/{emailKey} & /friend_codes/{code})
+        try {
+          const userRef = rtdb.ref(`/users/${emailKey}`);
+          const snap = await userRef.once("value");
+          if (!snap.exists()) {
+            await userRef.set({
+              email: primaryEmail,
+              friend_code: friendCode,
+              username: fallbackName,
+              avatar_source: "google",
+              avatar_url: fallbackAvatar,
+              created_at: new Date().toISOString()
+            });
+          }
+
+          // Mint lookup index in RTDB
+          await rtdb.ref(`/friend_codes/${friendCode}`).set({
+            email: primaryEmail,
+            email_key: emailKey,
+            username: snap.exists() ? (snap.val().username || fallbackName) : fallbackName,
+            avatar_url: snap.exists() ? (snap.val().avatar_url || fallbackAvatar) : fallbackAvatar
+          });
+        } catch (e) {
+          console.warn("RTDB provisioning warning:", e);
+        }
+      }
+
+      function loadRTDBUserProfile(emailKey, friendCode) {
         const userRef = rtdb.ref(`/users/${emailKey}`);
         userRef.on("value", async (snapshot) => {
           const data = snapshot.val() || {};
-          cachedUserData = data;
 
-          const gamerTag = data.username || user.displayName || "Hunter";
+          const gamerTag = data.username || "Hunter";
           const avatarSource = data.avatar_source || "google";
-          let avatarUrl = data.avatar_url || user.photoURL || DEFAULT_USER_AVATAR;
+          let avatarUrl = data.avatar_url || DEFAULT_USER_AVATAR;
 
           document.getElementById("usernameInput").value = gamerTag;
           document.getElementById("avatarSourceSelect").value = avatarSource;
@@ -919,20 +973,16 @@
           document.getElementById("displayGamerTag").textContent = gamerTag;
           document.getElementById("headerUserTag").textContent = gamerTag;
 
-          // Toggle visibility of custom avatar input
           toggleCustomAvatarField(avatarSource);
 
-          // Apply avatar based on chosen source
-          if (avatarSource === "google") {
-            avatarUrl = user.photoURL || DEFAULT_USER_AVATAR;
-          } else if (avatarSource === "twitch" && data.twitch_username) {
-            avatarUrl = `https://decapi.me/twitch/avatar/${encodeURIComponent(data.twitch_username.trim())}`;
+          if (avatarSource === "google" && currentUser) {
+            avatarUrl = currentUser.photoURL || DEFAULT_USER_AVATAR;
           }
 
           document.getElementById("avatarPreview").src = avatarUrl;
           document.getElementById("headerUserAvatar").src = avatarUrl;
 
-          // Gaming Handles & Privacy Scopes
+          // Populate Gaming Handles
           document.getElementById("psnUsernameInput").value = data.psn_username || "";
           document.getElementById("psnUsernameScope").value = data.psn_username_scope || "public";
           document.getElementById("psnAccountIdInput").value = data.psn_account_id || "";
@@ -946,7 +996,6 @@
           document.getElementById("twitchUsernameInput").value = data.twitch_username || "";
           document.getElementById("twitchScope").value = data.twitch_scope || "public";
 
-          // Pull Twitch live game if provided
           if (data.twitch_username) {
             checkTwitchLiveGame(data.twitch_username);
           }
@@ -971,6 +1020,7 @@
         toggleCustomAvatarField(e.target.value);
       });
 
+      // DecAPI Twitch Live Check
       async function checkTwitchLiveGame(twitchUser) {
         const tag = document.getElementById("twitchLiveGameTag");
         if (!tag || !twitchUser) return;
@@ -978,16 +1028,44 @@
           const res = await fetch(`https://decapi.me/twitch/game/${encodeURIComponent(twitchUser.trim())}`);
           if (res.ok) {
             const gameText = await res.text();
-            tag.textContent = gameText ? `Currently Streaming: ${gameText}` : "Twitch Offline / No Stream";
+            tag.textContent = gameText ? `Streaming: ${gameText}` : "Twitch Offline / No Stream";
           }
         } catch (e) {
-          tag.textContent = "Twitch DecAPI Connected";
+          tag.textContent = "Twitch DecAPI Active";
         }
       }
 
+      // One-Click Friend Code Clipboard Copy (No Popups)
+      document.getElementById("copyFriendCodeBtn").addEventListener("click", () => {
+        const code = document.getElementById("friendCodeDisplay").textContent.trim();
+        if (!code || code === "Loading...") return;
+
+        navigator.clipboard.writeText(code).then(() => {
+          const fb = document.getElementById("copyFeedback");
+          if (fb) {
+            fb.textContent = "Copied!";
+            setTimeout(() => { fb.textContent = ""; }, 2000);
+          }
+        }).catch(() => {
+          const temp = document.createElement("input");
+          temp.value = code;
+          document.body.appendChild(temp);
+          temp.select();
+          document.execCommand("copy");
+          document.body.removeChild(temp);
+          const fb = document.getElementById("copyFeedback");
+          if (fb) {
+            fb.textContent = "Copied!";
+            setTimeout(() => { fb.textContent = ""; }, 2000);
+          }
+        });
+      });
+
+      // Silent Save: Profile Details & Twitch Avatar Resolution
       document.getElementById("saveProfileBtn").addEventListener("click", async () => {
         if (!currentUser) return;
-        const emailKey = getEmailKey(currentUser.email);
+        const primaryEmail = currentUser.email.toLowerCase();
+        const emailKey = getEmailKey(primaryEmail);
         const newTag = document.getElementById("usernameInput").value.trim() || "Hunter";
         const avatarSource = document.getElementById("avatarSourceSelect").value;
         let avatarUrl = document.getElementById("avatarUrlInput").value.trim();
@@ -996,29 +1074,50 @@
           avatarUrl = currentUser.photoURL || DEFAULT_USER_AVATAR;
         } else if (avatarSource === "twitch") {
           const twitchUser = document.getElementById("twitchUsernameInput").value.trim();
-          if (twitchUser) avatarUrl = `https://decapi.me/twitch/avatar/${encodeURIComponent(twitchUser)}`;
+          if (twitchUser) {
+            try {
+              // Fetch raw DecAPI image URL string
+              const decRes = await fetch(`https://decapi.me/twitch/avatar/${encodeURIComponent(twitchUser)}`);
+              if (decRes.ok) {
+                const resolvedUrl = (await decRes.text()).trim();
+                if (resolvedUrl && resolvedUrl.startsWith("http")) {
+                  avatarUrl = resolvedUrl;
+                }
+              }
+            } catch (e) {
+              avatarUrl = DEFAULT_USER_AVATAR;
+            }
+          }
         }
 
-        try {
-          await rtdb.ref(`/users/${emailKey}`).update({
-            username: newTag,
-            avatar_source: avatarSource,
-            avatar_url: avatarUrl || DEFAULT_USER_AVATAR,
-            friend_code: currentUser.uid.substring(0, 8).toUpperCase(),
-            updated_at: new Date().toISOString()
-          });
+        const friendCode = currentUser.uid.substring(0, 8).toUpperCase();
 
-          const msg = document.getElementById("saveProfileMsg");
-          msg.textContent = "Profile updated in RTDB!";
-          setTimeout(() => msg.textContent = "", 3000);
-        } catch (e) {
-          alert("Update Failed: " + e.message);
-        }
+        // 1. Silent update RTDB
+        await rtdb.ref(`/users/${emailKey}`).update({
+          username: newTag,
+          avatar_source: avatarSource,
+          avatar_url: avatarUrl || DEFAULT_USER_AVATAR,
+          updated_at: new Date().toISOString()
+        });
+
+        await rtdb.ref(`/friend_codes/${friendCode}`).update({
+          username: newTag,
+          avatar_url: avatarUrl || DEFAULT_USER_AVATAR
+        });
+
+        // 2. Silent update Firestore
+        await db.collection("users").doc(primaryEmail).set({
+          username: newTag,
+          avatar_url: avatarUrl || DEFAULT_USER_AVATAR,
+          updated_at: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
       });
 
+      // Silent Save: Gaming Handles & Visibility Scopes
       document.getElementById("saveGamingProfilesBtn").addEventListener("click", async () => {
         if (!currentUser) return;
-        const emailKey = getEmailKey(currentUser.email);
+        const primaryEmail = currentUser.email.toLowerCase();
+        const emailKey = getEmailKey(primaryEmail);
         const twitchUser = document.getElementById("twitchUsernameInput").value.trim();
 
         const payload = {
@@ -1035,32 +1134,30 @@
           last_profile_sync: new Date().toISOString()
         };
 
-        try {
-          await rtdb.ref(`/users/${emailKey}`).update(payload);
-          if (twitchUser) checkTwitchLiveGame(twitchUser);
-          alert("Gaming handles and scopes saved to /users/" + emailKey);
-        } catch (err) {
-          alert("Save Error: " + err.message);
-        }
+        // 1. Silent save to RTDB
+        await rtdb.ref(`/users/${emailKey}`).update(payload);
+
+        // 2. Silent save to Firestore
+        await db.collection("users").doc(primaryEmail).set({
+          gaming_platforms: payload
+        }, { merge: true });
+
+        if (twitchUser) checkTwitchLiveGame(twitchUser);
       });
 
-      // User Connected Links Operations
+      // Silent Save: User Personal Links
       document.getElementById("addUserLinkBtn").addEventListener("click", async () => {
         if (!currentUser) return;
         const title = document.getElementById("linkTitleInput").value.trim();
         const url = document.getElementById("linkUrlInput").value.trim();
-        if (!title || !url) return alert("Enter link title and URL.");
+        if (!title || !url) return;
 
         const emailKey = getEmailKey(currentUser.email);
         const linkId = "link_" + Date.now();
 
-        try {
-          await rtdb.ref(`/users/${emailKey}/links/${linkId}`).set({ title, url });
-          document.getElementById("linkTitleInput").value = "";
-          document.getElementById("linkUrlInput").value = "";
-        } catch (e) {
-          alert("Failed to add link: " + e.message);
-        }
+        await rtdb.ref(`/users/${emailKey}/links/${linkId}`).set({ title, url });
+        document.getElementById("linkTitleInput").value = "";
+        document.getElementById("linkUrlInput").value = "";
       });
 
       function renderUserLinks(linksObj) {
@@ -1080,7 +1177,7 @@
           div.innerHTML = `
             <div>
               <strong>${item.title}</strong>
-              <div style="font-size: 0.76rem; color: var(--accent-blue);">${item.url}</div>
+              <div style="font-size: 0.76rem; color: var(--accent-cyan);">${item.url}</div>
             </div>
             <button class="btn btn-danger btn-sm" onclick="window.removeUserLink('${id}')">Remove</button>
           `;
@@ -1094,48 +1191,41 @@
         await rtdb.ref(`/users/${emailKey}/links/${id}`).remove();
       };
 
-      // Companions Roster (Friend Code lookup without exposing email)
+      // Add Companion via Dedicated /friend_codes Index
       document.getElementById("addFriendBtn").addEventListener("click", async () => {
         if (!currentUser) return;
         const code = document.getElementById("friendCodeInput").value.trim().toUpperCase();
-        if (!code || code.length < 6) return alert("Enter a valid 8-character friend code.");
-        if (code === currentUser.uid.substring(0, 8).toUpperCase()) return alert("You cannot add yourself.");
+        if (!code || code.length < 6) return;
+        if (code === currentUser.uid.substring(0, 8).toUpperCase()) return;
 
         const emailKey = getEmailKey(currentUser.email);
 
-        // Search RTDB /users for matching friend_code
         try {
-          const usersSnap = await rtdb.ref("/users").once("value");
-          const allUsers = usersSnap.val() || {};
+          // Direct lookup in index
+          const snap = await rtdb.ref(`/friend_codes/${code}`).once("value");
+          if (!snap.exists()) return;
 
-          let foundFriendKey = null;
-          let friendData = null;
+          const friend = snap.val();
 
-          Object.entries(allUsers).forEach(([k, u]) => {
-            if (u.friend_code && u.friend_code.toUpperCase() === code) {
-              foundFriendKey = k;
-              friendData = u;
-            }
-          });
-
-          if (!foundFriendKey || !friendData) {
-            return alert("No hunter found matching that friend code.");
-          }
-
-          // Save friend association using only their public handle & avatar
+          // Link companion silently into RTDB
           await rtdb.ref(`/users/${emailKey}/friends/${code}`).set({
             friend_code: code,
-            username: friendData.username || "Companion",
-            avatar_url: friendData.avatar_url || DEFAULT_USER_AVATAR,
-            primary_platform: friendData.psn_username ? "PlayStation" : (friendData.steam_id ? "Steam" : "Hunter"),
+            username: friend.username || "Companion",
+            avatar_url: friend.avatar_url || DEFAULT_USER_AVATAR,
+            target_email: friend.email,
             linked_at: new Date().toISOString()
           });
 
+          // Link companion into Firestore
+          await db.collection("users").doc(currentUser.email.toLowerCase())
+            .collection("friends").doc(code).set({
+              friend_code: code,
+              target_email: friend.email,
+              linked_at: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
           document.getElementById("friendCodeInput").value = "";
-          alert("Companion linked successfully!");
-        } catch (e) {
-          alert("Add Companion Error: " + e.message);
-        }
+        } catch (e) {}
       });
 
       function renderFriendsRoster(friendsObj) {
@@ -1154,10 +1244,10 @@
           div.className = "friend-item";
           div.innerHTML = `
             <div style="display:flex; align-items:center; gap:10px;">
-              <img src="${friend.avatar_url || DEFAULT_USER_AVATAR}" class="nav-thumb" style="border-radius:50%; width:28px; height:28px;" onerror="this.src='${DEFAULT_USER_AVATAR}'">
+              <img src="${friend.avatar_url || DEFAULT_USER_AVATAR}" class="nav-thumb" style="border-radius:50%; width:30px; height:30px;" onerror="this.src='${DEFAULT_USER_AVATAR}'">
               <div>
                 <strong>${friend.username}</strong>
-                <div style="font-size: 0.74rem; color: var(--text-muted);">${friend.primary_platform || 'Player'} &bull; Code: ${code}</div>
+                <div style="font-size: 0.74rem; color: var(--text-muted);">Code: ${code}</div>
               </div>
             </div>
             <button class="btn btn-danger btn-sm" onclick="window.removeCompanion('${code}')">Remove</button>
@@ -1166,12 +1256,55 @@
         });
       }
 
+      // Action 1: Remove Companion (Yes/No Confirmation)
       window.removeCompanion = async (code) => {
         if (!currentUser) return;
-        if (!confirm("Remove this companion from your roster?")) return;
+        const confirmRemove = window.confirm("Are you sure you want to remove this companion from your roster?");
+        if (!confirmRemove) return;
+
         const emailKey = getEmailKey(currentUser.email);
         await rtdb.ref(`/users/${emailKey}/friends/${code}`).remove();
+        await db.collection("users").doc(currentUser.email.toLowerCase()).collection("friends").doc(code).delete();
       };
+
+      // Action 2: Disconnect Google (Yes/No Confirmation)
+      document.getElementById("disconnectGoogleBtn").addEventListener("click", () => {
+        const confirmDisconnect = window.confirm("Are you sure you want to open the Google Security console to disconnect this app authorization?");
+        if (!confirmDisconnect) return;
+        window.open("https://myaccount.google.com/linkedapps?continue=https%3A%2F%2Fmyaccount.google.com%2Fsecurity", "_blank");
+      });
+
+      // Action 3: Password Reset (Yes/No Confirmation)
+      document.getElementById("sendPasswordResetBtn").addEventListener("click", () => {
+        if (!currentUser || !currentUser.email) return;
+        const confirmReset = window.confirm(`Send password reset instructions to ${currentUser.email}?`);
+        if (!confirmReset) return;
+
+        auth.sendPasswordResetEmail(currentUser.email).catch(() => {});
+      });
+
+      // Action 4: Delete Account (Yes/No Confirmation)
+      document.getElementById("deleteAccountBtn").addEventListener("click", async () => {
+        if (!currentUser) return;
+        const confirmDelete = window.confirm("Are you sure you want to permanently erase your hunter profile, friend code, and gaming records? This cannot be undone.");
+        if (!confirmDelete) return;
+
+        try {
+          const primaryEmail = currentUser.email.toLowerCase();
+          const emailKey = getEmailKey(primaryEmail);
+          const friendCode = currentUser.uid.substring(0, 8).toUpperCase();
+
+          await rtdb.ref(`/users/${emailKey}`).remove();
+          await rtdb.ref(`/friend_codes/${friendCode}`).remove();
+          await db.collection("users").doc(primaryEmail).delete();
+
+          await currentUser.delete();
+          localStorage.clear();
+          window.location.reload();
+        } catch (e) {
+          alert("Account Deletion Error (re-login may be required): " + e.message);
+        }
+      });
 
       function renderProvidersUI(user) {
         const providers = user.providerData.map(p => p.providerId);
@@ -1194,41 +1327,17 @@
       document.getElementById("updateEmailBtn").addEventListener("click", async () => {
         if (!currentUser) return;
         const newEmail = document.getElementById("changeEmailInput").value.trim();
-        if (!newEmail || !newEmail.includes("@")) return alert("Enter valid email address.");
+        if (!newEmail || !newEmail.includes("@")) return;
 
         try {
           await currentUser.updateEmail(newEmail);
-          alert("Verification email dispatched. Log in with your new email address to sync.");
           window.location.reload();
         } catch (e) {
-          alert("Email Update Failed (Re-authentication required): " + e.message);
+          alert("Email Update Failed: " + e.message);
         }
       });
 
-      document.getElementById("sendPasswordResetBtn").addEventListener("click", () => {
-        if (!currentUser || !currentUser.email) return;
-        auth.sendPasswordResetEmail(currentUser.email)
-          .then(() => alert(`Password reset instructions sent to ${currentUser.email}`))
-          .catch(e => alert("Reset Error: " + e.message));
-      });
-
-      document.getElementById("deleteAccountBtn").addEventListener("click", async () => {
-        if (!currentUser) return;
-        if (!confirm("Permanently erase your account, gaming handles, and cloud profile from /users/?")) return;
-
-        try {
-          const emailKey = getEmailKey(currentUser.email);
-          await rtdb.ref(`/users/${emailKey}`).remove();
-          await currentUser.delete();
-          localStorage.clear();
-          alert("Account erased from RTDB.");
-          window.location.reload();
-        } catch (e) {
-          alert("Error deleting account: " + e.message);
-        }
-      });
-
-      // Anonymous WhatsApp Dispatch (Masked Destination Parameters)
+      // Anonymous WhatsApp Messenger
       const toggleWhatsappBtn = document.getElementById("toggleWhatsappBtn");
       const openWhatsAppModalBtn = document.getElementById("openWhatsAppModalBtn");
       const whatsappChatBox = document.getElementById("whatsappChatBox");
@@ -1243,9 +1352,8 @@
 
       document.getElementById("sendWhatsappMessageBtn").addEventListener("click", () => {
         const msg = document.getElementById("whatsappMessageInput").value.trim();
-        if (!msg) return alert("Please type your inquiry first.");
+        if (!msg) return;
 
-        // Destination number constructed at dispatch: 16185736060
         const p1 = "1";
         const p2 = "618";
         const p3 = "573";
@@ -1253,30 +1361,23 @@
         const destination = [p1, p2, p3, p4].join("");
 
         const encodedMsg = encodeURIComponent(`[Hunter Support Inbound]: ${msg}`);
-        const proxyUrl = `https://api.whatsapp.com/send?phone=${destination}&text=${encodedMsg}`;
-
-        window.open(proxyUrl, "_blank");
+        window.open(`https://api.whatsapp.com/send?phone=${destination}&text=${encodedMsg}`, "_blank");
         document.getElementById("whatsappMessageInput").value = "";
         closeChat();
       });
 
-      document.getElementById("inlineGoogleBtn").addEventListener("click", () => {
-        auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => alert("Auth Error: " + e.message));
-      });
-      document.getElementById("authModalBtn").addEventListener("click", () => {
-        auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => alert("Auth Error: " + e.message));
-      });
+      // Simple Auth Triggers
+      document.getElementById("inlineGoogleBtn").addEventListener("click", () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()));
+      document.getElementById("authModalBtn").addEventListener("click", () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()));
       document.getElementById("quickLoginBtn").addEventListener("click", () => {
         const email = document.getElementById("quickEmail").value.trim();
         const pass = document.getElementById("quickPass").value;
-        if (!email || !pass) return alert("Enter credentials.");
-        auth.signInWithEmailAndPassword(email, pass).catch(e => alert("Login Error: " + e.message));
+        if (email && pass) auth.signInWithEmailAndPassword(email, pass);
       });
       document.getElementById("quickRegisterBtn").addEventListener("click", () => {
         const email = document.getElementById("quickEmail").value.trim();
         const pass = document.getElementById("quickPass").value;
-        if (!email || !pass) return alert("Enter credentials.");
-        auth.createUserWithEmailAndPassword(email, pass).catch(e => alert("Register Error: " + e.message));
+        if (email && pass) auth.createUserWithEmailAndPassword(email, pass);
       });
       document.getElementById("logoutBtn").addEventListener("click", () => auth.signOut().then(() => window.location.reload()));
 
