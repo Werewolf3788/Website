@@ -1,10 +1,9 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-07 16:40 EDT | Firebase Sync Target: /utm_links | Version: 4.1.2]
+// [Smart Cache-Buster Time: 2026-10-07 17:16 EDT | Firebase Sync Target: /utm_links | Version: 4.2.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
 
-  // Production Config for entertainment-71888
   const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -22,7 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const db = firebase.firestore();
 
   const CompanionApp = {
-    // Exact JSON File Targets in ../../data/ relative to /games/woth2/
     files: {
       challenges: "woth2_challenges.json",
       dogSkills: "woth2_dog_skills.json",
@@ -42,6 +40,10 @@ document.addEventListener("DOMContentLoaded", () => {
     db: {},
     currentDay: 1,
     currentTime: "08:30",
+    hunterName: "Ryder Holloway",
+    hunterLevel: 2,
+    hunterCredits: 318,
+    dogCompanion: "Bacon (Foxhound)",
     currentUser: null,
     watchlist: [],
 
@@ -54,7 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
       this.initDynamicFeatures();
     },
 
-    // Resolves JSON data files navigating upward from /games/woth2/
     async fetchJSON(fileName) {
       const paths = [
         "../../data/" + fileName,
@@ -87,35 +88,60 @@ document.addEventListener("DOMContentLoaded", () => {
       const savedDay = localStorage.getItem("woth2_day");
       const savedTime = localStorage.getItem("woth2_time");
       const savedWatch = localStorage.getItem("woth2_watchlist");
+      const savedName = localStorage.getItem("woth2_name");
+      const savedLevel = localStorage.getItem("woth2_level");
+      const savedCredits = localStorage.getItem("woth2_credits");
+      const savedDog = localStorage.getItem("woth2_dog");
 
       if (savedDay) this.currentDay = parseInt(savedDay, 10);
       if (savedTime) this.currentTime = savedTime;
+      if (savedName) this.hunterName = savedName;
+      if (savedLevel) this.hunterLevel = parseInt(savedLevel, 10);
+      if (savedCredits) this.hunterCredits = parseInt(savedCredits, 10);
+      if (savedDog) this.dogCompanion = savedDog;
+
       if (savedWatch) {
         try { this.watchlist = JSON.parse(savedWatch); } catch (e) { this.watchlist = []; }
       }
 
       document.getElementById("currentDayInput").value = this.currentDay;
       document.getElementById("currentTimeInput").value = this.currentTime;
+      document.getElementById("hunterNameInput").value = this.hunterName;
+      document.getElementById("hunterLevelInput").value = this.hunterLevel;
+      document.getElementById("hunterCreditsInput").value = this.hunterCredits;
+      document.getElementById("dogCompanionInput").value = this.dogCompanion;
     },
 
     saveSession() {
+      this.hunterName = document.getElementById("hunterNameInput").value.trim() || "Hunter";
+      this.hunterLevel = parseInt(document.getElementById("hunterLevelInput").value, 10) || 1;
+      this.hunterCredits = parseInt(document.getElementById("hunterCreditsInput").value, 10) || 0;
+      this.dogCompanion = document.getElementById("dogCompanionInput").value.trim() || "Bacon (Foxhound)";
+
       localStorage.setItem("woth2_day", this.currentDay);
       localStorage.setItem("woth2_time", this.currentTime);
+      localStorage.setItem("woth2_name", this.hunterName);
+      localStorage.setItem("woth2_level", this.hunterLevel);
+      localStorage.setItem("woth2_credits", this.hunterCredits);
+      localStorage.setItem("woth2_dog", this.dogCompanion);
       localStorage.setItem("woth2_watchlist", JSON.stringify(this.watchlist));
 
       if (this.currentUser) {
         db.collection("users").doc(this.currentUser.uid).set({
           companion_day: this.currentDay,
           companion_time: this.currentTime,
+          hunter_name: this.hunterName,
+          hunter_level: this.hunterLevel,
+          hunter_credits: this.hunterCredits,
+          dog_companion: this.dogCompanion,
           watchlist: this.watchlist,
           updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true }).catch(e => console.warn("Cloud save sync:", e));
+        }, { merge: true }).catch(e => console.warn("Cloud save:", e));
       }
 
-      alert("Telemetry synced successfully!");
+      alert("Telemetry, hunter stats, and watchlist synced successfully!");
     },
 
-    // RTDB Dynamic Menu & Tag-Based Favicon Sync Bound to tag: "woth2"
     initRTDB() {
       rtdb.ref("/utm_links").on("value", snapshot => {
         const raw = snapshot.val();
@@ -162,23 +188,19 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     },
 
-    // Strictly syncs Tab Favicon and Header Logo via tag === "woth2"
     syncWoth2Favicon(items, raw) {
       let woth2Img = "";
       let woth2Stamp = "";
 
-      // 1. Look for explicit tag: "woth2" or "WOTH2"
       const taggedEntry = items.find(i => i.tag && i.tag.toLowerCase() === "woth2");
 
       if (taggedEntry) {
         woth2Img = taggedEntry.image;
         woth2Stamp = taggedEntry.updatedAt;
       } else if (raw.WOTH2 && raw.WOTH2[0] && raw.WOTH2[0].image) {
-        // 2. Direct folder fallback: /utm_links/WOTH2/0/image
         woth2Img = raw.WOTH2[0].image;
         woth2Stamp = raw.WOTH2[0].updatedAt;
       } else {
-        // 3. Title fallback: title includes "woth2" or "way of the hunter"
         const titleMatch = items.find(i => {
           const t = i.title.toLowerCase();
           return t.includes("woth2") || t.includes("way of the hunter");
@@ -295,7 +317,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // User Auth Binding
     initAuth() {
       auth.onAuthStateChanged(async user => {
         const modalBtn = document.getElementById("authModalBtn");
@@ -308,7 +329,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (modalBtn) modalBtn.classList.add("hidden");
           if (profileBadge) profileBadge.classList.remove("hidden");
 
-          let gamerTag = user.displayName || "Ryder Holloway";
+          let gamerTag = user.displayName || this.hunterName;
           let avatarUrl = user.photoURL || DEFAULT_USER_AVATAR;
 
           try {
@@ -317,6 +338,22 @@ document.addEventListener("DOMContentLoaded", () => {
               const data = doc.data();
               if (data.username) gamerTag = data.username;
               if (data.avatar_url) avatarUrl = data.avatar_url;
+              if (data.hunter_name) {
+                this.hunterName = data.hunter_name;
+                document.getElementById("hunterNameInput").value = this.hunterName;
+              }
+              if (data.hunter_level) {
+                this.hunterLevel = data.hunter_level;
+                document.getElementById("hunterLevelInput").value = this.hunterLevel;
+              }
+              if (data.hunter_credits) {
+                this.hunterCredits = data.hunter_credits;
+                document.getElementById("hunterCreditsInput").value = this.hunterCredits;
+              }
+              if (data.dog_companion) {
+                this.dogCompanion = data.dog_companion;
+                document.getElementById("dogCompanionInput").value = this.dogCompanion;
+              }
               if (data.companion_day) {
                 this.currentDay = data.companion_day;
                 document.getElementById("currentDayInput").value = this.currentDay;
@@ -347,9 +384,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("logoutBtn").addEventListener("click", () => auth.signOut());
     },
 
-    // Tactical Dynamic Views Initializer
     initDynamicFeatures() {
-      this.populatePlayerStats();
       this.populateSelects();
       this.renderHarvestHistory();
       this.renderWatchlist();
@@ -364,22 +399,12 @@ document.addEventListener("DOMContentLoaded", () => {
       this.updateDynamicHarvestSchema();
     },
 
-    populatePlayerStats() {
-      const g = this.db.gameData || {};
-      const player = g.player || { name: "Ryder Holloway", level: 2, credits: 318 };
-      const dog = g.companion_dog || { name: "Bacon", breed: "American Foxhound" };
-
-      document.getElementById("hunterNameDisplay").textContent = player.name;
-      document.getElementById("hunterLevelDisplay").textContent = `Lv. ${player.level}`;
-      document.getElementById("hunterCreditsDisplay").textContent = `$${player.credits}`;
-      document.getElementById("dogCompanionDisplay").textContent = `${dog.name} (${dog.breed.split(" ")[1] || dog.breed})`;
-    },
-
     populateSelects() {
       const speciesList = (this.db.species && this.db.species.species) ? this.db.species.species : [];
       const harvestSelect = document.getElementById("harvestSpeciesSelect");
       const watchSelect = document.getElementById("watchSpeciesSelect");
       const locationSelect = document.getElementById("harvestLocationSelect");
+      const watchRegionSelect = document.getElementById("watchRegionSelect");
 
       harvestSelect.innerHTML = "";
       watchSelect.innerHTML = "";
@@ -398,28 +423,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const regions = (this.db.regions && this.db.regions.regions) ? this.db.regions.regions : [];
       locationSelect.innerHTML = "";
+      watchRegionSelect.innerHTML = "";
+
       regions.forEach(r => {
-        const opt = document.createElement("option");
-        opt.value = r.name;
-        opt.textContent = r.name;
-        locationSelect.appendChild(opt);
+        const opt1 = document.createElement("option");
+        opt1.value = r.name;
+        opt1.textContent = r.name;
+        locationSelect.appendChild(opt1);
+
+        const opt2 = document.createElement("option");
+        opt2.value = r.name;
+        opt2.textContent = r.name;
+        watchRegionSelect.appendChild(opt2);
       });
 
       this.updateWatchlistMaxAge();
     },
 
-    // Dynamic Trophy Schema Input Generator
+    // Dynamic Trophy Schema Generator Based on Animal Category
     updateDynamicHarvestSchema() {
       const container = document.getElementById("dynamicSchemaFieldsContainer");
-      const selectedSpecies = document.getElementById("harvestSpeciesSelect").value;
+      const selectedSpecies = document.getElementById("harvestSpeciesSelect").value.toLowerCase();
       const schemas = this.db.harvestSchemas || {};
-      const mapping = schemas.species_mapping || {};
       const templates = schemas.scoring_templates || {};
 
-      const templateKey = mapping[selectedSpecies] || "cervid_antler";
-      const template = templates[templateKey] || { category: "Measurements", fields: [] };
+      let templateKey = "cervid_antler";
+      if (selectedSpecies.includes("bear") || selectedSpecies.includes("wolf") || selectedSpecies.includes("badger") || selectedSpecies.includes("wolverine")) {
+        templateKey = "predator_skull";
+      } else if (selectedSpecies.includes("boar") || selectedSpecies.includes("pig") || selectedSpecies.includes("peccary")) {
+        templateKey = "predator_skull"; // Tusks and Skull dimensions
+      } else if (selectedSpecies.includes("sheep") || selectedSpecies.includes("goat") || selectedSpecies.includes("bison") || selectedSpecies.includes("pronghorn") || selectedSpecies.includes("chamois")) {
+        templateKey = "horned_bovid";
+      } else if (selectedSpecies.includes("moose")) {
+        templateKey = "palmate_moose";
+      } else if (selectedSpecies.includes("turkey") || selectedSpecies.includes("mallard") || selectedSpecies.includes("ptarmigan") || selectedSpecies.includes("duck") || selectedSpecies.includes("goose") || selectedSpecies.includes("pheasant") || selectedSpecies.includes("hare")) {
+        templateKey = "avian_game";
+      }
 
-      container.innerHTML = `<span style="grid-column: 1/-1; font-size: 0.76rem; color: var(--accent-amber); font-weight: 700;">${template.category}</span>`;
+      const template = templates[templateKey] || { category: "Organ Measurements", fields: [] };
+
+      container.innerHTML = `<span style="grid-column: 1/-1; font-size: 0.76rem; color: var(--accent-amber); font-weight: 700;">Trophy Type: ${template.category}</span>`;
 
       template.fields.forEach(f => {
         const div = document.createElement("div");
@@ -432,7 +475,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Target Watchlist Engine
     updateWatchlistMaxAge() {
       const selectedSpecies = document.getElementById("watchSpeciesSelect").value;
       const lifecycles = (this.db.lifecycles && this.db.lifecycles.species_lifecycles) ? this.db.lifecycles.species_lifecycles : [];
@@ -445,32 +487,34 @@ document.addEventListener("DOMContentLoaded", () => {
       const editId = document.getElementById("editWatchlistId").value;
       const tag = document.getElementById("watchIdentifier").value.trim();
       const species = document.getElementById("watchSpeciesSelect").value;
+      const region = document.getElementById("watchRegionSelect").value;
+      const landmark = document.getElementById("watchLandmark").value.trim();
       const fitness = parseFloat(document.getElementById("watchFitness").value);
       const age = parseInt(document.getElementById("watchAge").value, 10);
       const maxAge = parseInt(document.getElementById("watchMaxAge").value, 10);
       const stars = parseInt(document.getElementById("watchStars").value, 10);
-      const landmark = document.getElementById("watchLandmark").value.trim();
 
       if (!tag || isNaN(fitness) || isNaN(age) || !landmark) {
-        return alert("Please complete all target fields.");
+        return alert("Please complete the animal tag, fitness %, age, and landmark.");
       }
 
       if (editId) {
         const idx = this.watchlist.findIndex(w => w.id === editId);
         if (idx !== -1) {
-          this.watchlist[idx] = { ...this.watchlist[idx], tag, species, fitness, age, maxAge, stars, landmark };
+          this.watchlist[idx] = { ...this.watchlist[idx], tag, species, region, landmark, fitness, age, maxAge, stars };
         }
       } else {
         const newEntry = {
           id: "target_" + Date.now(),
           tag,
           species,
+          region,
+          landmark,
           fitness,
           sightedAge: age,
           age,
           maxAge,
           stars,
-          landmark,
           sightedDay: this.currentDay
         };
         this.watchlist.unshift(newEntry);
@@ -499,11 +543,12 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("editWatchlistId").value = item.id;
       document.getElementById("watchIdentifier").value = item.tag;
       document.getElementById("watchSpeciesSelect").value = item.species;
+      document.getElementById("watchRegionSelect").value = item.region || "Jackalope Cordillera";
+      document.getElementById("watchLandmark").value = item.landmark || "";
       document.getElementById("watchFitness").value = item.fitness;
       document.getElementById("watchAge").value = item.age;
       document.getElementById("watchMaxAge").value = item.maxAge;
       document.getElementById("watchStars").value = item.stars;
-      document.getElementById("watchLandmark").value = item.landmark;
 
       document.getElementById("watchlistFormHeader").textContent = "Edit Watchlist Target";
       document.getElementById("saveWatchlistBtn").textContent = "Update Target";
@@ -511,7 +556,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     deleteWatchlistEntry(id) {
-      if (!confirm("Remove this animal from the live watchlist (Harvested or Despawned)?")) return;
+      if (!confirm("Harvested or remove this target from the watchlist?")) return;
       this.watchlist = this.watchlist.filter(w => w.id !== id);
       this.renderWatchlist();
       this.saveSession();
@@ -526,47 +571,54 @@ document.addEventListener("DOMContentLoaded", () => {
       container.innerHTML = "";
 
       if (this.watchlist.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem; padding:12px;">No animals currently on the watchlist. Add spotted animals on the left.</p>';
+        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem; padding:12px; grid-column:1/-1;">No animals currently on the watchlist. Add spotted animals on the left.</p>';
         return;
       }
 
       this.watchlist.forEach(item => {
-        // Dynamic aging: every 3 game days advances age by +1
+        // 3 in-game days = 1 year of animal aging
         const elapsedDays = Math.max(0, this.currentDay - (item.sightedDay || 1));
         const effectiveAge = (item.sightedAge || item.age) + Math.floor(elapsedDays / 3);
         const daysLeft = Math.max(0, (item.maxAge - effectiveAge) * 3);
 
-        // Evaluation Logic
         let actionClass = "banner-balanced";
-        let actionText = "⚖️ BALANCED: Stable genetics. Monitor antler development.";
+        let actionText = "⚖️ BALANCED: Stable genetics. Monitor development.";
 
         if (item.fitness < 50.0) {
           actionClass = "banner-cull";
-          actionText = `🚨 CULL TARGET: Low fitness (${item.fitness}%). Harvest immediately to lift herd genetics.`;
+          actionText = `🚨 CULL: Low Fitness (${item.fitness}%). Asymmetry degrades herd.`;
         } else if (item.fitness >= 80.0 && effectiveAge < item.maxAge) {
           actionClass = "banner-breeder";
-          actionText = `⭐ 5-STAR BREEDER: Elite fitness (${item.fitness}%). Allow rack to reach late mature stage.`;
+          actionText = `⭐ 5-STAR BREEDER (${item.fitness}%): Allow rack to mature.`;
         } else if (item.stars === 1 && effectiveAge >= (item.maxAge - 2)) {
           actionClass = "banner-cull";
-          actionText = "⚠️ CULL MATURE: 1-Star rack at end of lifecycle. Harvest before despawn.";
+          actionText = "⚠️ CULL MATURE: 1-Star rack at end of lifecycle.";
         }
 
         const div = document.createElement("div");
         div.className = "telemetry-card";
         div.innerHTML = `
-          <div class="card-top-row">
-            <span class="animal-title">${item.tag} <span style="color:var(--text-muted); font-size:0.82rem;">(${item.species})</span></span>
-            <span class="badge" style="background:#28374d; border-color:#486082;">Age: ${effectiveAge}/${item.maxAge} yrs (${daysLeft} Days Left)</span>
+          <div>
+            <div class="card-top-row">
+              <span class="animal-title">${item.tag}</span>
+              <span class="badge" style="background:#28374d; border-color:#486082;">${item.stars}&#9733;</span>
+            </div>
+            <div style="font-size:0.76rem; color:var(--text-muted); margin-top:2px;">
+              <strong>${item.species}</strong> &bull; ${item.region || 'Region'}
+            </div>
+            <div style="font-size:0.75rem; color:#ffe099; margin-top:2px;">
+              Zone: <strong>${item.landmark || 'Waterway'}</strong>
+            </div>
+            <div style="font-size:0.76rem; color:var(--text-muted); margin-top:2px;">
+              Age: <strong>${effectiveAge}/${item.maxAge} yrs</strong> (${daysLeft}d left) &bull; Fit: <strong>${item.fitness}%</strong>
+            </div>
+            <div class="action-banner ${actionClass}">${actionText}</div>
           </div>
-          <div style="font-size:0.8rem; color:var(--text-muted);">
-            Location: <strong>${item.landmark}</strong> &bull; Fitness: <strong>${item.fitness}%</strong> &bull; Stars: <strong>${item.stars}&#9733;</strong>
-          </div>
-          <div class="action-banner ${actionClass}">${actionText}</div>
           <div class="card-footer-row">
-            <span>Sighted Day: <strong>${item.sightedDay || 1}</strong> &bull; Current Day: <strong>${this.currentDay}</strong></span>
+            <span>Day: <strong>${item.sightedDay || 1}</strong> &rarr; <strong>${this.currentDay}</strong></span>
             <div class="card-actions">
               <button class="btn-link btn-link-edit" onclick="window.CompanionApp.editWatchlistEntry('${item.id}')">Edit</button>
-              <button class="btn-link btn-link-delete" onclick="window.CompanionApp.deleteWatchlistEntry('${item.id}')">Harvested / Remove</button>
+              <button class="btn-link btn-link-delete" onclick="window.CompanionApp.deleteWatchlistEntry('${item.id}')">Harvest</button>
             </div>
           </div>
         `;
@@ -574,7 +626,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Harvest Inspection Logger
     renderHarvestHistory() {
       const container = document.getElementById("harvestHistoryContainer");
       const badge = document.getElementById("harvestRecordCount");
@@ -637,7 +688,6 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Harvest inspection record logged successfully!");
     },
 
-    // Dynamic Viewports Rendering
     renderNeedZones() {
       const container = document.getElementById("needZoneClustersGrid");
       const badge = document.getElementById("needZoneCount");
@@ -859,9 +909,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Bind UI Listeners
     bindUI() {
-      // Tab Ribbon Switcher
       document.querySelectorAll(".ribbon-btn").forEach(btn => {
         btn.addEventListener("click", () => {
           document.querySelectorAll(".ribbon-btn").forEach(b => b.classList.remove("active"));
@@ -872,7 +920,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
 
-      // Day & Time Controls
       document.getElementById("currentDayInput").addEventListener("change", e => {
         this.currentDay = parseInt(e.target.value, 10) || 1;
         this.renderWatchlist();
@@ -899,21 +946,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
       document.getElementById("saveSessionBtn").addEventListener("click", () => this.saveSession());
 
-      // Watchlist UI
       document.getElementById("watchSpeciesSelect").addEventListener("change", () => this.updateWatchlistMaxAge());
       document.getElementById("saveWatchlistBtn").addEventListener("click", () => this.saveWatchlistEntry());
       document.getElementById("cancelEditWatchlistBtn").addEventListener("click", () => this.resetWatchlistForm());
 
-      // Harvest UI
       document.getElementById("harvestSpeciesSelect").addEventListener("change", () => this.updateDynamicHarvestSchema());
       document.getElementById("submitHarvestRecordBtn").addEventListener("click", () => this.submitHarvestInspection());
 
-      // Auth Modal Controls
       const modal = document.getElementById("authModal");
       document.getElementById("authModalBtn").addEventListener("click", () => modal.classList.remove("hidden"));
       document.getElementById("authModalClose").addEventListener("click", () => modal.classList.add("hidden"));
 
-      // Mobile Menu
       const menuBtn = document.getElementById("menuToggle");
       const nav = document.getElementById("dynamicNav");
       if (menuBtn && nav) {
