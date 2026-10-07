@@ -1,5 +1,5 @@
-// Line 1: Way of the Hunter Master Data Controller
-// [Smart Cache-Buster Time: 2026-10-07 15:42 EDT | Firebase Sync Target: /utm_links | Version: 3.0.0]
+// Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
+// [Smart Cache-Buster Time: 2026-10-07 16:40 EDT | Firebase Sync Target: /utm_links | Version: 4.1.2]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
@@ -21,7 +21,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const rtdb = firebase.database();
   const db = firebase.firestore();
 
-  const App = {
+  const CompanionApp = {
+    // Exact JSON File Targets in ../../data/ relative to /games/woth2/
     files: {
       challenges: "woth2_challenges.json",
       dogSkills: "woth2_dog_skills.json",
@@ -33,28 +34,32 @@ document.addEventListener("DOMContentLoaded", () => {
       needZones: "woth2_need_zones.json",
       regions: "woth2_regions.json",
       reserves: "woth2_reserves.json",
-      schemaUpdate: "woth2_schema-update.json",
       species: "woth2_species.json",
       stewardship: "woth2_stewardship.json",
       trails: "woth2_trails.json"
     },
 
     db: {},
-    activeTab: "species",
-    selectedReserve: "ALL",
-    searchTerm: "",
+    currentDay: 1,
+    currentTime: "08:30",
+    currentUser: null,
+    watchlist: [],
 
     async init() {
+      this.loadSavedState();
       this.bindUI();
       this.initAuth();
       this.initRTDB();
       await this.loadAllJSONs();
+      this.initDynamicFeatures();
     },
 
-    // Resolves JSON data files with relative fallbacks
+    // Resolves JSON data files navigating upward from /games/woth2/
     async fetchJSON(fileName) {
       const paths = [
         "../../data/" + fileName,
+        "../data/" + fileName,
+        "./data/" + fileName,
         "/Website/data/" + fileName,
         "//werewolf3788.github.io/Website/data/" + fileName
       ];
@@ -68,71 +73,81 @@ document.addEventListener("DOMContentLoaded", () => {
       return null;
     },
 
-    extractArray(payload) {
-      if (!payload) return [];
-      if (Array.isArray(payload)) return payload;
-      const keys = Object.keys(payload);
-      for (let i = 0; i < keys.length; i++) {
-        const val = payload[keys[i]];
-        if (Array.isArray(val)) return val;
-      }
-      return [];
-    },
-
     async loadAllJSONs() {
-      const badge = document.getElementById("recordCount");
-      if (badge) badge.textContent = "Loading Data...";
-
       const keys = Object.keys(this.files);
       const promises = keys.map(k => this.fetchJSON(this.files[k]));
       const results = await Promise.all(promises);
 
       keys.forEach((k, idx) => {
-        this.db[k] = this.extractArray(results[idx]);
+        this.db[k] = results[idx] || {};
       });
-
-      this.render();
     },
 
-    // Dynamic Navigation & Tag-Based Favicon Sync
-    initRTDB() {
-      try {
-        const utmRef = rtdb.ref("/utm_links");
-        utmRef.on("value", snapshot => {
-          const raw = snapshot.val();
-          const badge = document.getElementById("firebaseStatusBadge");
-          if (badge) {
-            badge.textContent = "RTDB: Live Connected";
-            badge.className = "status-pill status-connected";
-          }
+    loadSavedState() {
+      const savedDay = localStorage.getItem("woth2_day");
+      const savedTime = localStorage.getItem("woth2_time");
+      const savedWatch = localStorage.getItem("woth2_watchlist");
 
-          if (!raw) return;
-
-          const items = [];
-          Object.entries(raw).forEach(([parentKey, val]) => {
-            if (Array.isArray(val)) {
-              val.forEach((entry, idx) => {
-                if (entry) items.push(this.normalizeItem(entry, `${parentKey}_${idx}`));
-              });
-            } else if (typeof val === "object" && val !== null) {
-              if (val.url || val.title) {
-                items.push(this.normalizeItem(val, parentKey));
-              } else {
-                Object.entries(val).forEach(([childKey, childVal]) => {
-                  if (typeof childVal === "object" && childVal !== null) {
-                    items.push(this.normalizeItem(childVal, `${parentKey}_${childKey}`));
-                  }
-                });
-              }
-            }
-          });
-
-          this.syncSettingsFavicon(items, raw);
-          this.renderNav(items);
-        });
-      } catch (e) {
-        console.warn("RTDB offline:", e);
+      if (savedDay) this.currentDay = parseInt(savedDay, 10);
+      if (savedTime) this.currentTime = savedTime;
+      if (savedWatch) {
+        try { this.watchlist = JSON.parse(savedWatch); } catch (e) { this.watchlist = []; }
       }
+
+      document.getElementById("currentDayInput").value = this.currentDay;
+      document.getElementById("currentTimeInput").value = this.currentTime;
+    },
+
+    saveSession() {
+      localStorage.setItem("woth2_day", this.currentDay);
+      localStorage.setItem("woth2_time", this.currentTime);
+      localStorage.setItem("woth2_watchlist", JSON.stringify(this.watchlist));
+
+      if (this.currentUser) {
+        db.collection("users").doc(this.currentUser.uid).set({
+          companion_day: this.currentDay,
+          companion_time: this.currentTime,
+          watchlist: this.watchlist,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true }).catch(e => console.warn("Cloud save sync:", e));
+      }
+
+      alert("Telemetry synced successfully!");
+    },
+
+    // RTDB Dynamic Menu & Tag-Based Favicon Sync Bound to tag: "woth2"
+    initRTDB() {
+      rtdb.ref("/utm_links").on("value", snapshot => {
+        const raw = snapshot.val();
+        const badge = document.getElementById("firebaseStatusBadge");
+        if (badge) {
+          badge.textContent = "RTDB: Live Connected";
+          badge.className = "status-pill status-connected";
+        }
+        if (!raw) return;
+
+        const items = [];
+        Object.entries(raw).forEach(([parentKey, val]) => {
+          if (Array.isArray(val)) {
+            val.forEach((entry, idx) => {
+              if (entry) items.push(this.normalizeItem(entry, `${parentKey}_${idx}`));
+            });
+          } else if (typeof val === "object" && val !== null) {
+            if (val.url || val.title) {
+              items.push(this.normalizeItem(val, parentKey));
+            } else {
+              Object.entries(val).forEach(([childKey, childVal]) => {
+                if (typeof childVal === "object" && childVal !== null) {
+                  items.push(this.normalizeItem(childVal, `${parentKey}_${childKey}`));
+                }
+              });
+            }
+          }
+        });
+
+        this.syncWoth2Favicon(items, raw);
+        this.renderNav(items);
+      });
     },
 
     normalizeItem(item, fallbackKey) {
@@ -147,39 +162,46 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     },
 
-    syncSettingsFavicon(items, raw) {
-      let settingsImg = "";
-      let settingsStamp = "";
+    // Strictly syncs Tab Favicon and Header Logo via tag === "woth2"
+    syncWoth2Favicon(items, raw) {
+      let woth2Img = "";
+      let woth2Stamp = "";
 
-      const taggedEntry = items.find(i => i.tag && i.tag.toLowerCase() === "settings");
+      // 1. Look for explicit tag: "woth2" or "WOTH2"
+      const taggedEntry = items.find(i => i.tag && i.tag.toLowerCase() === "woth2");
 
       if (taggedEntry) {
-        settingsImg = taggedEntry.image;
-        settingsStamp = taggedEntry.updatedAt;
-      } else if (raw.Settings && raw.Settings[0] && raw.Settings[0].image) {
-        settingsImg = raw.Settings[0].image;
-        settingsStamp = raw.Settings[0].updatedAt;
+        woth2Img = taggedEntry.image;
+        woth2Stamp = taggedEntry.updatedAt;
+      } else if (raw.WOTH2 && raw.WOTH2[0] && raw.WOTH2[0].image) {
+        // 2. Direct folder fallback: /utm_links/WOTH2/0/image
+        woth2Img = raw.WOTH2[0].image;
+        woth2Stamp = raw.WOTH2[0].updatedAt;
       } else {
-        const titleMatch = items.find(i => i.title.toLowerCase() === "settings");
+        // 3. Title fallback: title includes "woth2" or "way of the hunter"
+        const titleMatch = items.find(i => {
+          const t = i.title.toLowerCase();
+          return t.includes("woth2") || t.includes("way of the hunter");
+        });
         if (titleMatch) {
-          settingsImg = titleMatch.image;
-          settingsStamp = titleMatch.updatedAt;
+          woth2Img = titleMatch.image;
+          woth2Stamp = titleMatch.updatedAt;
         }
       }
 
-      if (settingsImg) {
+      if (woth2Img) {
         const favicon = document.getElementById("dynamicFavicon");
         const appleIcon = document.getElementById("dynamicAppleIcon");
         const brandLogo = document.getElementById("navBrandLogo");
 
-        if (favicon) favicon.href = settingsImg;
-        if (appleIcon) appleIcon.href = settingsImg;
-        if (brandLogo) brandLogo.src = settingsImg;
+        if (favicon) favicon.href = woth2Img;
+        if (appleIcon) appleIcon.href = woth2Img;
+        if (brandLogo) brandLogo.src = woth2Img;
       }
 
-      if (settingsStamp) {
+      if (woth2Stamp) {
         const stampEl = document.getElementById("nyBuildTimestamp");
-        if (stampEl) stampEl.textContent = settingsStamp;
+        if (stampEl) stampEl.textContent = woth2Stamp;
       }
     },
 
@@ -191,7 +213,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const standaloneLinks = [];
       const folderGroups = {};
 
-      // Strict partition: Bare links vs true groups (No standalone folder created)
       items.forEach(item => {
         if (!item.group) {
           standaloneLinks.push(item);
@@ -265,7 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
           li.innerHTML = `
             <button class="dropdown-trigger">
               ${folderImg}
-              <span>${grp.name} ▾</span>
+              <span>${grp.name} &#9662;</span>
             </button>
             ${dropdownHtml}
           `;
@@ -274,7 +295,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Authentication Binding
+    // User Auth Binding
     initAuth() {
       auth.onAuthStateChanged(async user => {
         const modalBtn = document.getElementById("authModalBtn");
@@ -283,289 +304,624 @@ document.addEventListener("DOMContentLoaded", () => {
         const avatarEl = document.getElementById("headerUserAvatar");
 
         if (user) {
+          this.currentUser = user;
           if (modalBtn) modalBtn.classList.add("hidden");
           if (profileBadge) profileBadge.classList.remove("hidden");
 
-          let gamerTag = user.displayName || "Hunter";
+          let gamerTag = user.displayName || "Ryder Holloway";
           let avatarUrl = user.photoURL || DEFAULT_USER_AVATAR;
 
           try {
             const doc = await db.collection("users").doc(user.uid).get();
-            if (doc.exists && doc.data().username) gamerTag = doc.data().username;
-            if (doc.exists && doc.data().avatar_url) avatarUrl = doc.data().avatar_url;
+            if (doc.exists) {
+              const data = doc.data();
+              if (data.username) gamerTag = data.username;
+              if (data.avatar_url) avatarUrl = data.avatar_url;
+              if (data.companion_day) {
+                this.currentDay = data.companion_day;
+                document.getElementById("currentDayInput").value = this.currentDay;
+              }
+              if (data.watchlist && Array.isArray(data.watchlist)) {
+                this.watchlist = data.watchlist;
+                this.renderWatchlist();
+              }
+            }
           } catch (e) {}
 
           if (nameEl) nameEl.textContent = gamerTag;
           if (avatarEl) avatarEl.src = avatarUrl;
         } else {
+          this.currentUser = null;
           if (modalBtn) modalBtn.classList.remove("hidden");
           if (profileBadge) profileBadge.classList.add("hidden");
         }
       });
 
-      const googleBtn = document.getElementById("googleSignInBtn");
-      if (googleBtn) {
-        googleBtn.addEventListener("click", () => {
-          const provider = new firebase.auth.GoogleAuthProvider();
-          auth.signInWithPopup(provider).then(() => {
-            const modal = document.getElementById("authModal");
-            if (modal) modal.style.display = "none";
-          }).catch(e => alert("Auth Error: " + e.message));
-        });
-      }
+      document.getElementById("googleSignInBtn").addEventListener("click", () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider).then(() => {
+          document.getElementById("authModal").classList.add("hidden");
+        }).catch(e => alert("Sign In Error: " + e.message));
+      });
 
-      const logoutBtn = document.getElementById("logoutBtn");
-      if (logoutBtn) {
-        logoutBtn.addEventListener("click", () => auth.signOut());
-      }
+      document.getElementById("logoutBtn").addEventListener("click", () => auth.signOut());
     },
 
-    // Render Data Viewports
-    render() {
-      const container = document.getElementById("dataDisplayContainer");
-      const title = document.getElementById("currentDisplayTitle");
-      const badge = document.getElementById("recordCount");
+    // Tactical Dynamic Views Initializer
+    initDynamicFeatures() {
+      this.populatePlayerStats();
+      this.populateSelects();
+      this.renderHarvestHistory();
+      this.renderWatchlist();
+      this.renderNeedZones();
+      this.renderLifeCycles();
+      this.renderDogProfile();
+      this.renderChallenges();
+      this.renderMissions();
+      this.renderInfrastructure();
+      this.renderTrails();
+      this.renderSpeciesCatalog();
+      this.updateDynamicHarvestSchema();
+    },
+
+    populatePlayerStats() {
+      const g = this.db.gameData || {};
+      const player = g.player || { name: "Ryder Holloway", level: 2, credits: 318 };
+      const dog = g.companion_dog || { name: "Bacon", breed: "American Foxhound" };
+
+      document.getElementById("hunterNameDisplay").textContent = player.name;
+      document.getElementById("hunterLevelDisplay").textContent = `Lv. ${player.level}`;
+      document.getElementById("hunterCreditsDisplay").textContent = `$${player.credits}`;
+      document.getElementById("dogCompanionDisplay").textContent = `${dog.name} (${dog.breed.split(" ")[1] || dog.breed})`;
+    },
+
+    populateSelects() {
+      const speciesList = (this.db.species && this.db.species.species) ? this.db.species.species : [];
+      const harvestSelect = document.getElementById("harvestSpeciesSelect");
+      const watchSelect = document.getElementById("watchSpeciesSelect");
+      const locationSelect = document.getElementById("harvestLocationSelect");
+
+      harvestSelect.innerHTML = "";
+      watchSelect.innerHTML = "";
+
+      speciesList.forEach(s => {
+        const opt1 = document.createElement("option");
+        opt1.value = s.name;
+        opt1.textContent = `${s.name} (Tier ${s.tier})`;
+        harvestSelect.appendChild(opt1);
+
+        const opt2 = document.createElement("option");
+        opt2.value = s.name;
+        opt2.textContent = s.name;
+        watchSelect.appendChild(opt2);
+      });
+
+      const regions = (this.db.regions && this.db.regions.regions) ? this.db.regions.regions : [];
+      locationSelect.innerHTML = "";
+      regions.forEach(r => {
+        const opt = document.createElement("option");
+        opt.value = r.name;
+        opt.textContent = r.name;
+        locationSelect.appendChild(opt);
+      });
+
+      this.updateWatchlistMaxAge();
+    },
+
+    // Dynamic Trophy Schema Input Generator
+    updateDynamicHarvestSchema() {
+      const container = document.getElementById("dynamicSchemaFieldsContainer");
+      const selectedSpecies = document.getElementById("harvestSpeciesSelect").value;
+      const schemas = this.db.harvestSchemas || {};
+      const mapping = schemas.species_mapping || {};
+      const templates = schemas.scoring_templates || {};
+
+      const templateKey = mapping[selectedSpecies] || "cervid_antler";
+      const template = templates[templateKey] || { category: "Measurements", fields: [] };
+
+      container.innerHTML = `<span style="grid-column: 1/-1; font-size: 0.76rem; color: var(--accent-amber); font-weight: 700;">${template.category}</span>`;
+
+      template.fields.forEach(f => {
+        const div = document.createElement("div");
+        div.className = "input-group";
+        div.innerHTML = `
+          <label for="schema_${f.id}">${f.label} (${f.unit})</label>
+          <input type="text" id="schema_${f.id}" placeholder="${f.placeholder}">
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    // Target Watchlist Engine
+    updateWatchlistMaxAge() {
+      const selectedSpecies = document.getElementById("watchSpeciesSelect").value;
+      const lifecycles = (this.db.lifecycles && this.db.lifecycles.species_lifecycles) ? this.db.lifecycles.species_lifecycles : [];
+      const match = lifecycles.find(l => l.species.toLowerCase() === selectedSpecies.toLowerCase());
+      const maxCap = match ? match.max_age_years : 12;
+      document.getElementById("watchMaxAge").value = maxCap;
+    },
+
+    saveWatchlistEntry() {
+      const editId = document.getElementById("editWatchlistId").value;
+      const tag = document.getElementById("watchIdentifier").value.trim();
+      const species = document.getElementById("watchSpeciesSelect").value;
+      const fitness = parseFloat(document.getElementById("watchFitness").value);
+      const age = parseInt(document.getElementById("watchAge").value, 10);
+      const maxAge = parseInt(document.getElementById("watchMaxAge").value, 10);
+      const stars = parseInt(document.getElementById("watchStars").value, 10);
+      const landmark = document.getElementById("watchLandmark").value.trim();
+
+      if (!tag || isNaN(fitness) || isNaN(age) || !landmark) {
+        return alert("Please complete all target fields.");
+      }
+
+      if (editId) {
+        const idx = this.watchlist.findIndex(w => w.id === editId);
+        if (idx !== -1) {
+          this.watchlist[idx] = { ...this.watchlist[idx], tag, species, fitness, age, maxAge, stars, landmark };
+        }
+      } else {
+        const newEntry = {
+          id: "target_" + Date.now(),
+          tag,
+          species,
+          fitness,
+          sightedAge: age,
+          age,
+          maxAge,
+          stars,
+          landmark,
+          sightedDay: this.currentDay
+        };
+        this.watchlist.unshift(newEntry);
+      }
+
+      this.resetWatchlistForm();
+      this.renderWatchlist();
+      this.saveSession();
+    },
+
+    resetWatchlistForm() {
+      document.getElementById("editWatchlistId").value = "";
+      document.getElementById("watchIdentifier").value = "";
+      document.getElementById("watchFitness").value = "";
+      document.getElementById("watchAge").value = "8";
+      document.getElementById("watchLandmark").value = "";
+      document.getElementById("watchlistFormHeader").textContent = "Add Live Animal to Watchlist";
+      document.getElementById("saveWatchlistBtn").textContent = "Add to Watchlist";
+      document.getElementById("cancelEditWatchlistBtn").classList.add("hidden");
+    },
+
+    editWatchlistEntry(id) {
+      const item = this.watchlist.find(w => w.id === id);
+      if (!item) return;
+
+      document.getElementById("editWatchlistId").value = item.id;
+      document.getElementById("watchIdentifier").value = item.tag;
+      document.getElementById("watchSpeciesSelect").value = item.species;
+      document.getElementById("watchFitness").value = item.fitness;
+      document.getElementById("watchAge").value = item.age;
+      document.getElementById("watchMaxAge").value = item.maxAge;
+      document.getElementById("watchStars").value = item.stars;
+      document.getElementById("watchLandmark").value = item.landmark;
+
+      document.getElementById("watchlistFormHeader").textContent = "Edit Watchlist Target";
+      document.getElementById("saveWatchlistBtn").textContent = "Update Target";
+      document.getElementById("cancelEditWatchlistBtn").classList.remove("hidden");
+    },
+
+    deleteWatchlistEntry(id) {
+      if (!confirm("Remove this animal from the live watchlist (Harvested or Despawned)?")) return;
+      this.watchlist = this.watchlist.filter(w => w.id !== id);
+      this.renderWatchlist();
+      this.saveSession();
+    },
+
+    renderWatchlist() {
+      const container = document.getElementById("watchlistContainer");
+      const countEl = document.getElementById("watchlistCount");
       if (!container) return;
 
+      countEl.textContent = `${this.watchlist.length} Tracked Animals`;
       container.innerHTML = "";
 
-      if (this.activeTab === "species") {
-        if (title) title.textContent = "Animals & Lifecycles";
-        this.renderSpecies(container, badge);
-      } else if (this.activeTab === "needZones") {
-        if (title) title.textContent = "Need Zones & Schedules";
-        this.renderNeedZones(container, badge);
-      } else if (this.activeTab === "challenges") {
-        if (title) title.textContent = "Challenges & Objectives";
-        this.renderChallenges(container, badge);
-      } else if (this.activeTab === "dogSkills") {
-        if (title) title.textContent = "Hunting Dog Skills";
-        this.renderDogSkills(container, badge);
-      } else if (this.activeTab === "infrastructure") {
-        if (title) title.textContent = "Cabins & Fast Travel";
-        this.renderInfrastructure(container, badge);
-      } else if (this.activeTab === "missions") {
-        if (title) title.textContent = "Story Missions & Hunts";
-        this.renderMissions(container, badge);
-      }
-    },
-
-    renderSpecies(container, badge) {
-      const list = (this.db.lifecycles && this.db.lifecycles.length) ? this.db.lifecycles : (this.db.species || []);
-      const q = this.searchTerm.toLowerCase();
-      const res = this.selectedReserve;
-
-      const filtered = list.filter(item => {
-        const name = (item.species || item.name || "").toLowerCase();
-        const itemReserves = item.reserves || [];
-        const matchQ = !q || name.includes(q);
-        const matchRes = (res === "ALL") || itemReserves.includes(res);
-        return matchQ && matchRes;
-      });
-
-      if (badge) badge.textContent = filtered.length + " Animals";
-
-      if (filtered.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-muted); grid-column:1/-1;">No matching animal records found.</p>';
+      if (this.watchlist.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem; padding:12px;">No animals currently on the watchlist. Add spotted animals on the left.</p>';
         return;
       }
 
-      filtered.forEach(item => {
-        const name = item.species || item.name || "Unknown Animal";
-        const maxYears = item.max_age_years || (item.mature_years ? item.mature_years[item.mature_years.length - 1] : "N/A");
-        const days = item.total_lifespan_days || (maxYears !== "N/A" ? maxYears * 3 : "N/A");
-        const reservesStr = Array.isArray(item.reserves) ? item.reserves.join(", ") : "All Regions";
-        const yLen = (item.young_years || [1]).length;
-        const aLen = (item.adult_years || [1]).length;
-        const mLen = (item.mature_years || [1]).length;
+      this.watchlist.forEach(item => {
+        // Dynamic aging: every 3 game days advances age by +1
+        const elapsedDays = Math.max(0, this.currentDay - (item.sightedDay || 1));
+        const effectiveAge = (item.sightedAge || item.age) + Math.floor(elapsedDays / 3);
+        const daysLeft = Math.max(0, (item.maxAge - effectiveAge) * 3);
 
-        const card = document.createElement("div");
-        card.className = "info-card";
-        card.innerHTML = 
-          '<div class="card-title">' + name + '</div>' +
-          '<div class="card-meta-row">' +
-            '<span>Lifespan: <strong>' + maxYears + ' Yrs</strong> (' + days + ' Days)</span>' +
-            '<span class="badge-tag">' + (item.reserves ? item.reserves.length + ' Reserves' : 'General') + '</span>' +
-          '</div>' +
-          '<div class="life-bar">' +
-            '<div class="life-young" style="flex:' + yLen + '"></div>' +
-            '<div class="life-adult" style="flex:' + aLen + '"></div>' +
-            '<div class="life-mature" style="flex:' + mLen + '"></div>' +
-          '</div>' +
-          '<div class="advisory-box">' +
-            '<strong>Advisory:</strong> ' + (item.cull_advisory || item.mortality_warning || "Target low-fitness mature specimens.") +
-          '</div>' +
-          '<div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">' +
-            '<strong>Reserves:</strong> ' + reservesStr +
-          '</div>';
-        container.appendChild(card);
+        // Evaluation Logic
+        let actionClass = "banner-balanced";
+        let actionText = "⚖️ BALANCED: Stable genetics. Monitor antler development.";
+
+        if (item.fitness < 50.0) {
+          actionClass = "banner-cull";
+          actionText = `🚨 CULL TARGET: Low fitness (${item.fitness}%). Harvest immediately to lift herd genetics.`;
+        } else if (item.fitness >= 80.0 && effectiveAge < item.maxAge) {
+          actionClass = "banner-breeder";
+          actionText = `⭐ 5-STAR BREEDER: Elite fitness (${item.fitness}%). Allow rack to reach late mature stage.`;
+        } else if (item.stars === 1 && effectiveAge >= (item.maxAge - 2)) {
+          actionClass = "banner-cull";
+          actionText = "⚠️ CULL MATURE: 1-Star rack at end of lifecycle. Harvest before despawn.";
+        }
+
+        const div = document.createElement("div");
+        div.className = "telemetry-card";
+        div.innerHTML = `
+          <div class="card-top-row">
+            <span class="animal-title">${item.tag} <span style="color:var(--text-muted); font-size:0.82rem;">(${item.species})</span></span>
+            <span class="badge" style="background:#28374d; border-color:#486082;">Age: ${effectiveAge}/${item.maxAge} yrs (${daysLeft} Days Left)</span>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">
+            Location: <strong>${item.landmark}</strong> &bull; Fitness: <strong>${item.fitness}%</strong> &bull; Stars: <strong>${item.stars}&#9733;</strong>
+          </div>
+          <div class="action-banner ${actionClass}">${actionText}</div>
+          <div class="card-footer-row">
+            <span>Sighted Day: <strong>${item.sightedDay || 1}</strong> &bull; Current Day: <strong>${this.currentDay}</strong></span>
+            <div class="card-actions">
+              <button class="btn-link btn-link-edit" onclick="window.CompanionApp.editWatchlistEntry('${item.id}')">Edit</button>
+              <button class="btn-link btn-link-delete" onclick="window.CompanionApp.deleteWatchlistEntry('${item.id}')">Harvested / Remove</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
       });
     },
 
-    renderNeedZones(container, badge) {
-      const list = this.db.needZones || [];
-      const q = this.searchTerm.toLowerCase();
-      const res = this.selectedReserve;
+    // Harvest Inspection Logger
+    renderHarvestHistory() {
+      const container = document.getElementById("harvestHistoryContainer");
+      const badge = document.getElementById("harvestRecordCount");
+      const records = (this.db.gameData && this.db.gameData.harvest_records) ? this.db.gameData.harvest_records : [];
 
-      const filtered = list.filter(z => {
-        const name = (z.species || z.animal || "").toLowerCase();
-        const reserve = z.reserve || "";
-        return (!q || name.includes(q)) && (res === "ALL" || reserve === res);
-      });
+      badge.textContent = `${records.length} Harvest Records`;
+      container.innerHTML = "";
 
-      if (badge) badge.textContent = filtered.length + " Need Zones";
-
-      if (filtered.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-muted); grid-column:1/-1;">No need zones found.</p>';
-        return;
-      }
-
-      filtered.forEach(z => {
-        const card = document.createElement("div");
-        card.className = "info-card";
-        card.innerHTML = 
-          '<div class="card-title">' + (z.species || z.animal) + '</div>' +
-          '<div class="card-meta-row">' +
-            '<span>Reserve: <strong>' + (z.reserve || "General") + '</strong></span>' +
-            '<span class="badge-tag">' + (z.habitat || "Zone") + '</span>' +
-          '</div>' +
-          '<div class="zone-row">' +
-            '<div>💧 <strong>Drink:</strong> ' + (z.drinking_time || z.drink || "N/A") + '</div>' +
-            '<div>🌾 <strong>Feed:</strong> ' + (z.feeding_time || z.feed || "N/A") + '</div>' +
-            '<div>💤 <strong>Rest:</strong> ' + (z.resting_time || z.rest || "N/A") + '</div>' +
-            '<div>🎯 <strong>Tier:</strong> ' + (z.caller_tier || "Level 1-2") + '</div>' +
-          '</div>';
-        container.appendChild(card);
+      records.forEach(r => {
+        const div = document.createElement("div");
+        div.className = "telemetry-card";
+        div.innerHTML = `
+          <div class="card-top-row">
+            <span class="animal-title">${r.species} <span style="color:var(--text-muted); font-size:0.8rem;">(Tier ${r.animal_tier})</span></span>
+            <span class="badge">${r.trophy_rating_stars}&#9733; Trophy</span>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">
+            Shot: <strong>${r.shot_distance_yds} yds</strong> &bull; Firearm: <strong>${r.firearm} (${r.caliber})</strong>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+            Fitness: <strong>${r.fitness_percentage}%</strong> &bull; Age: <strong>${r.age_years} Yrs (${r.age_class})</strong> &bull; Sell: <strong>$${r.sell_price || 149}</strong>
+          </div>
+          <div class="action-banner ${r.fitness_percentage < 50 ? 'banner-cull' : 'banner-breeder'}" style="margin-top:6px;">
+            ${r.cull_decision || 'Keeper Specimen'}
+          </div>
+        `;
+        container.appendChild(div);
       });
     },
 
-    renderChallenges(container, badge) {
-      const list = this.db.challenges || [];
-      const q = this.searchTerm.toLowerCase();
+    submitHarvestInspection() {
+      const species = document.getElementById("harvestSpeciesSelect").value;
+      const location = document.getElementById("harvestLocationSelect").value;
+      const firearm = document.getElementById("harvestFirearm").value;
+      const caliber = document.getElementById("harvestCaliber").value;
+      const shotDist = document.getElementById("harvestShotDist").value;
+      const fitness = parseFloat(document.getElementById("harvestFitness").value) || 60;
+      const stars = parseInt(document.getElementById("harvestRatingStars").value, 10);
+      const sellPrice = document.getElementById("harvestSellPrice").value;
 
-      const filtered = list.filter(c => {
-        const title = (c.title || c.name || "").toLowerCase();
-        const desc = (c.description || "").toLowerCase();
-        return !q || title.includes(q) || desc.includes(q);
-      });
+      const newRecord = {
+        species,
+        animal_tier: 5,
+        location,
+        firearm,
+        caliber,
+        shot_distance_yds: shotDist,
+        fitness_percentage: fitness,
+        trophy_rating_stars: stars,
+        sell_price: sellPrice,
+        cull_decision: fitness < 50 ? "Cull (Low Fitness)" : "Keeper / Trophy",
+        date: "October 7, 2026"
+      };
 
-      if (badge) badge.textContent = filtered.length + " Challenges";
+      if (!this.db.gameData) this.db.gameData = {};
+      if (!this.db.gameData.harvest_records) this.db.gameData.harvest_records = [];
 
-      filtered.forEach(c => {
-        const card = document.createElement("div");
-        card.className = "info-card";
-        card.innerHTML = 
-          '<div class="card-title">' + (c.title || c.name) + '</div>' +
-          '<p style="font-size:0.85rem; color:var(--text-muted);">' + (c.description || "") + '</p>' +
-          '<div class="card-meta-row" style="margin-top:6px;">' +
-            '<span>Target: <strong>' + (c.target || c.species || "Any") + '</strong></span>' +
-            '<span class="badge-tag">Reward: ' + (c.reward || "XP") + '</span>' +
-          '</div>';
-        container.appendChild(card);
+      this.db.gameData.harvest_records.unshift(newRecord);
+      this.renderHarvestHistory();
+      alert("Harvest inspection record logged successfully!");
+    },
+
+    // Dynamic Viewports Rendering
+    renderNeedZones() {
+      const container = document.getElementById("needZoneClustersGrid");
+      const badge = document.getElementById("needZoneCount");
+      const clusters = (this.db.needZones && this.db.needZones.clusters) ? this.db.needZones.clusters : [];
+
+      badge.textContent = `${clusters.length} Tactical Clusters`;
+      container.innerHTML = "";
+
+      clusters.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        let zonesHtml = "";
+        c.zones.forEach(z => {
+          zonesHtml += `
+            <div style="font-size:0.8rem; background:rgba(0,0,0,0.2); padding:6px; border-radius:4px; margin-top:4px;">
+              <strong>${z.type} (${z.schedule}):</strong> ${z.landmark} (+${z.proximity_to_center_yds} yds)
+            </div>
+          `;
+        });
+
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>${c.species}</strong>
+            <span class="badge">${c.region}</span>
+          </div>
+          <p style="font-size:0.78rem; color:var(--text-muted);">${c.cluster_notes}</p>
+          <div style="margin-top:4px;">${zonesHtml}</div>
+        `;
+        container.appendChild(div);
       });
     },
 
-    renderDogSkills(container, badge) {
-      const list = this.db.dogSkills || [];
-      if (badge) badge.textContent = list.length + " Dog Skills";
+    renderLifeCycles() {
+      const container = document.getElementById("lifecyclesGrid");
+      const badge = document.getElementById("lifecycleCount");
+      const list = (this.db.lifecycles && this.db.lifecycles.species_lifecycles) ? this.db.lifecycles.species_lifecycles : [];
 
-      list.forEach(s => {
-        const card = document.createElement("div");
-        card.className = "info-card";
-        card.innerHTML = 
-          '<div class="card-title">' + (s.name || s.skill) + '</div>' +
-          '<div class="card-meta-row">' +
-            '<span>Tier: <strong>' + (s.tier || "1") + '</strong></span>' +
-            '<span class="badge-tag">' + (s.category || "Skill") + '</span>' +
-          '</div>' +
-          '<p style="font-size:0.85rem; color:var(--text-muted);">' + (s.description || "") + '</p>';
-        container.appendChild(card);
+      badge.textContent = `${list.length} Species Cycles`;
+      container.innerHTML = "";
+
+      list.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#fff;">${item.species}</strong>
+            <span class="badge">${item.max_age_years} Yrs (${item.total_lifespan_days} Days)</span>
+          </div>
+          <div class="advisory-callout" style="margin-top:6px;">
+            <strong>Cull Advisory:</strong> ${item.cull_advisory}
+          </div>
+          <div style="font-size:0.78rem; color:#ff9999; margin-top:4px;">
+            <strong>Despawn Rule:</strong> ${item.mortality_warning}
+          </div>
+        `;
+        container.appendChild(div);
       });
     },
 
-    renderInfrastructure(container, badge) {
-      const list = this.db.infrastructure || [];
-      const res = this.selectedReserve;
+    renderDogProfile() {
+      const summaryContainer = document.getElementById("dogSummaryCard");
+      const skillsContainer = document.getElementById("dogSkillsGrid");
+      const g = this.db.gameData || {};
+      const dog = g.companion_dog || { name: "Bacon", breed: "American Foxhound", bonding_level: 3, bonding_xp: 454, bonding_xp_max: 650 };
+      const skillsDef = (this.db.dogSkills && this.db.dogSkills.skills) ? this.db.dogSkills.skills : {};
 
-      const filtered = list.filter(item => (res === "ALL" || item.reserve === res));
-      if (badge) badge.textContent = filtered.length + " Cabins/Stands";
+      summaryContainer.innerHTML = `
+        <div class="telemetry-card" style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h4 style="color:#fff; font-size:1.1rem;">${dog.name} (${dog.breed})</h4>
+            <div style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">
+              Bonding Level: <strong>${dog.bonding_level} / 6</strong> &bull; XP: <strong>${dog.bonding_xp} / ${dog.bonding_xp_max}</strong>
+            </div>
+          </div>
+          <span class="badge" style="font-size:0.85rem;">Active Partner</span>
+        </div>
+      `;
 
-      filtered.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "info-card";
-        card.innerHTML = 
-          '<div class="card-title">' + item.name + '</div>' +
-          '<div class="card-meta-row">' +
-            '<span>Reserve: <strong>' + item.reserve + '</strong></span>' +
-            '<span class="badge-tag">' + (item.type || "Cabin") + '</span>' +
-          '</div>' +
-          '<p style="font-size:0.85rem; color:var(--text-muted);">Location: ' + (item.location || "General Map") + '</p>';
-        container.appendChild(card);
+      skillsContainer.innerHTML = "";
+      Object.entries(skillsDef).forEach(([k, s]) => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <strong style="color:var(--accent-amber);">${s.name}</strong>
+          <p style="font-size:0.8rem; color:var(--text-muted);">${s.description}</p>
+        `;
+        skillsContainer.appendChild(div);
       });
     },
 
-    renderMissions(container, badge) {
-      const list = this.db.missions || [];
-      if (badge) badge.textContent = list.length + " Missions";
+    renderChallenges() {
+      const container = document.getElementById("challengeTreesGrid");
+      const trees = (this.db.challenges && this.db.challenges.trees) ? this.db.challenges.trees : {};
+
+      container.innerHTML = "";
+      Object.entries(trees).forEach(([k, t]) => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#fff;">${t.name} Mastery</strong>
+            <span class="badge">${t.total} Challenges</span>
+          </div>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-top:6px;">${t.description}</p>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    renderMissions() {
+      const container = document.getElementById("missionsGrid");
+      const badge = document.getElementById("missionsCount");
+      const list = (this.db.missions && this.db.missions.missions) ? this.db.missions.missions : [];
+
+      badge.textContent = `${list.length} Missions`;
+      container.innerHTML = "";
 
       list.forEach(m => {
-        const card = document.createElement("div");
-        card.className = "info-card";
-        card.innerHTML = 
-          '<div class="card-title">' + (m.title || m.name) + '</div>' +
-          '<div class="card-meta-row">' +
-            '<span>Client: <strong>' + (m.client || "Story") + '</strong></span>' +
-            '<span class="badge-tag">' + (m.reward || "Objective") + '</span>' +
-          '</div>' +
-          '<p style="font-size:0.85rem; color:var(--text-muted);">' + (m.description || "") + '</p>';
-        container.appendChild(card);
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#fff;">${m.name}</strong>
+            <span class="badge">${m.source}</span>
+          </div>
+          <ul style="font-size:0.8rem; color:var(--text-muted); padding-left:18px; margin-top:6px;">
+            ${m.objectives.map(o => `<li>${o}</li>`).join("")}
+          </ul>
+          <div style="font-size:0.78rem; color:var(--accent-amber); margin-top:6px;">
+            Reward: ${m.money ? `$${m.money}` : 'XP'} ${m.xp ? `&bull; ${m.xp} XP` : ''}
+          </div>
+        `;
+        container.appendChild(div);
       });
     },
 
+    renderInfrastructure() {
+      const container = document.getElementById("infrastructureGrid");
+      const notesBox = document.getElementById("infraNotesBox");
+      const badge = document.getElementById("infrastructureCount");
+      const infra = this.db.infrastructure || {};
+      const tasks = infra.tasks || [];
+
+      badge.textContent = `${tasks.length} Enhancements`;
+      notesBox.innerHTML = `<strong>Warden Protocol:</strong> ${infra.mechanic_notes || "Feeders and pollution removal impact genetic ceilings."}`;
+
+      container.innerHTML = "";
+      tasks.forEach(t => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#fff;">${t.type}</strong>
+            <span class="badge">$${t.cost}</span>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">
+            Location: <strong>${t.location}</strong>
+          </div>
+          <div style="font-size:0.76rem; color:var(--accent-amber); margin-top:4px;">
+            Affected: ${t.affected_species && t.affected_species.length ? t.affected_species.join(", ") : "Regional Infrastructure"}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    renderTrails() {
+      const container = document.getElementById("trailsGrid");
+      const list = (this.db.trails && this.db.trails.seasonal_corridors) ? this.db.trails.seasonal_corridors : [];
+
+      container.innerHTML = "";
+      list.forEach(t => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#fff;">${t.species}</strong>
+            <span class="badge">${t.region}</span>
+          </div>
+          <div style="font-size:0.8rem; margin-top:6px;">
+            <strong>Summer:</strong> <span style="color:var(--text-muted);">${t.summer_trail}</span>
+          </div>
+          <div style="font-size:0.8rem; margin-top:4px;">
+            <strong>Winter:</strong> <span style="color:var(--text-muted);">${t.winter_trail}</span>
+          </div>
+          <div style="font-size:0.78rem; color:var(--accent-amber); margin-top:6px;">
+            <strong>Grazing:</strong> ${t.grazing_area}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    renderSpeciesCatalog() {
+      const container = document.getElementById("speciesCatalogGrid");
+      const badge = document.getElementById("speciesCatalogCount");
+      const list = (this.db.species && this.db.species.species) ? this.db.species.species : [];
+
+      badge.textContent = `${list.length} Reserve Species`;
+      container.innerHTML = "";
+
+      list.forEach(s => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#fff;">${s.name}</strong>
+            <span class="badge">Tier ${s.tier}</span>
+          </div>
+          <div style="font-size:0.78rem; color:var(--text-muted); font-style:italic;">${s.scientific_name}</div>
+          <div style="font-size:0.8rem; margin-top:6px;">
+            <strong>Aggression:</strong> <span style="color:#ff9999;">${s.aggression_level}</span>
+          </div>
+          <div style="font-size:0.8rem; margin-top:2px;">
+            <strong>Defense Sidearm:</strong> <span style="color:var(--accent-amber);">${s.defensive_sidearm}</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    // Bind UI Listeners
     bindUI() {
-      const catSelect = document.getElementById("categorySelect");
-      const resSelect = document.getElementById("reserveSelect");
-      const searchBox = document.getElementById("globalSearch");
-
-      if (catSelect) {
-        catSelect.addEventListener("change", (e) => {
-          this.activeTab = e.target.value;
-          this.render();
+      // Tab Ribbon Switcher
+      document.querySelectorAll(".ribbon-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".ribbon-btn").forEach(b => b.classList.remove("active"));
+          document.querySelectorAll(".tab-pane").forEach(p => p.classList.remove("active"));
+          btn.classList.add("active");
+          const target = document.getElementById(`tab-${btn.dataset.tab}`);
+          if (target) target.classList.add("active");
         });
-      }
+      });
 
-      if (resSelect) {
-        resSelect.addEventListener("change", (e) => {
-          this.selectedReserve = e.target.value;
-          this.render();
-        });
-      }
+      // Day & Time Controls
+      document.getElementById("currentDayInput").addEventListener("change", e => {
+        this.currentDay = parseInt(e.target.value, 10) || 1;
+        this.renderWatchlist();
+      });
 
-      if (searchBox) {
-        searchBox.addEventListener("input", (e) => {
-          this.searchTerm = e.target.value.trim();
-          this.render();
-        });
-      }
+      document.getElementById("advanceDayBtn").addEventListener("click", () => {
+        this.currentDay++;
+        document.getElementById("currentDayInput").value = this.currentDay;
+        this.renderWatchlist();
+      });
 
+      document.getElementById("advanceTwoHoursBtn").addEventListener("click", () => {
+        let [hours, mins] = document.getElementById("currentTimeInput").value.split(":").map(Number);
+        hours = (hours + 2) % 24;
+        if (hours === 0 || hours === 1) {
+          this.currentDay++;
+          document.getElementById("currentDayInput").value = this.currentDay;
+        }
+        const timeStr = `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
+        this.currentTime = timeStr;
+        document.getElementById("currentTimeInput").value = timeStr;
+        this.renderWatchlist();
+      });
+
+      document.getElementById("saveSessionBtn").addEventListener("click", () => this.saveSession());
+
+      // Watchlist UI
+      document.getElementById("watchSpeciesSelect").addEventListener("change", () => this.updateWatchlistMaxAge());
+      document.getElementById("saveWatchlistBtn").addEventListener("click", () => this.saveWatchlistEntry());
+      document.getElementById("cancelEditWatchlistBtn").addEventListener("click", () => this.resetWatchlistForm());
+
+      // Harvest UI
+      document.getElementById("harvestSpeciesSelect").addEventListener("change", () => this.updateDynamicHarvestSchema());
+      document.getElementById("submitHarvestRecordBtn").addEventListener("click", () => this.submitHarvestInspection());
+
+      // Auth Modal Controls
       const modal = document.getElementById("authModal");
-      const openBtn = document.getElementById("authModalBtn");
-      const closeBtn = document.getElementById("authModalClose");
+      document.getElementById("authModalBtn").addEventListener("click", () => modal.classList.remove("hidden"));
+      document.getElementById("authModalClose").addEventListener("click", () => modal.classList.add("hidden"));
 
-      if (openBtn && modal) {
-        openBtn.addEventListener("click", () => modal.style.display = "flex");
-      }
-      if (closeBtn && modal) {
-        closeBtn.addEventListener("click", () => modal.style.display = "none");
-      }
-
-      const menuToggle = document.getElementById("menuToggle");
-      const dynamicNav = document.getElementById("dynamicNav");
-      if (menuToggle && dynamicNav) {
-        menuToggle.addEventListener("click", () => dynamicNav.classList.toggle("open"));
+      // Mobile Menu
+      const menuBtn = document.getElementById("menuToggle");
+      const nav = document.getElementById("dynamicNav");
+      if (menuBtn && nav) {
+        menuBtn.addEventListener("click", () => nav.classList.toggle("open"));
       }
     }
   };
 
-  App.init();
+  window.CompanionApp = CompanionApp;
+  CompanionApp.init();
 });
