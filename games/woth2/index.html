@@ -1,21 +1,20 @@
-<!-- Line 1: Way of the Hunter Master Hub -->
-<!-- [Smart Cache-Buster Time: 2026-10-07 15:42 EDT | Firebase Sync Target: /utm_links | Version: 3.0.0] -->
+<!-- Line 1: Way of the Hunter 2 - Master Tactical Companion -->
+<!-- [Smart Cache-Buster Time: 2026-10-07 16:24 EDT | Firebase Sync Target: /utm_links | Version: 4.1.0] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Line 6: Required mobile-responsive viewport -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Way of the Hunter 2 - Database & UTM Hub</title>
+  <title>PlayStation Hub | Way of the Hunter 2 Companion</title>
 
-  <!-- Line 11: Dynamic Favicon elements bound via RTDB tag === "settings" -->
+  <!-- Line 10: Dynamic Favicon & Tab Icons -->
   <link id="dynamicFavicon" rel="icon" type="image/jpeg" href="//static.wikia.nocookie.net/way-of-the-hunter/images/f/fb/Way_of_the_Hunter_2.jpg/revision/latest?cb=20260405105432">
   <link id="dynamicAppleIcon" rel="apple-touch-icon" href="//static.wikia.nocookie.net/way-of-the-hunter/images/f/fb/Way_of_the_Hunter_2.jpg/revision/latest?cb=20260405105432">
 
-  <!-- Line 15: Sibling Stylesheet link -->
+  <!-- Line 14: Stylesheet Link -->
   <link rel="stylesheet" href="./style.css">
 
-  <!-- Line 18: Firebase SDKs (Compat Layer) -->
+  <!-- Line 17: Firebase SDKs (Compat v10.13.0) -->
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
@@ -23,89 +22,427 @@
 </head>
 <body>
 
-  <!-- Line 26: Header with Dynamic Brand Logo & Full-Width Navigation -->
+  <!-- Line 26: Top Navigation & Operational Hub -->
   <header class="site-header">
     <div class="header-container">
-      <a href="./index.html" class="brand-area">
+      <div class="brand-area">
+        <a href="../../security/settings.html" class="back-link">&larr;</a>
         <img id="navBrandLogo" src="//static.wikia.nocookie.net/way-of-the-hunter/images/f/fb/Way_of_the_Hunter_2.jpg/revision/latest?cb=20260405105432" alt="" class="brand-logo">
-        <span class="brand-title">WOTH2 HUNTING HUB</span>
-      </a>
+        <span class="brand-title">WOTH2 TACTICAL COMPANION</span>
+      </div>
 
-      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">☰</button>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">&#9776;</button>
 
+      <!-- Programmatically Sorted RTDB Navigation -->
       <nav class="site-nav" id="dynamicNav">
         <ul class="nav-list" id="navList">
-          <!-- Populated dynamically and sorted from RTDB /utm_links -->
+          <!-- Populated from RTDB /utm_links -->
         </ul>
       </nav>
 
+      <!-- Far Right Auth Profile Area -->
       <div class="auth-toolbar">
+        <span class="database-indicator">Database: <strong>entertainment-71888</strong></span>
         <button id="authModalBtn" class="btn btn-primary btn-sm">Sign In / Account</button>
         <div id="userProfile" class="user-profile-badge hidden">
           <img id="headerUserAvatar" src="https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png" alt="" class="header-avatar">
-          <span id="userDisplayName">Hunter</span>
+          <span id="userDisplayName">Ryder Holloway</span>
           <button id="logoutBtn" class="btn btn-secondary btn-sm">Logout</button>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Line 55: Main Application Viewport & Data Hub -->
+  <!-- Line 59: Tactical Telemetry Operations Bar -->
+  <section class="operations-bar">
+    <div class="operations-container">
+      <!-- Player Rank & Bankroll -->
+      <div class="hunter-stats-strip">
+        <div class="stat-pill"><span class="stat-label">Hunter:</span> <strong id="hunterNameDisplay">Ryder Holloway</strong></div>
+        <div class="stat-pill"><span class="stat-label">Level:</span> <strong id="hunterLevelDisplay">Lv. 2</strong></div>
+        <div class="stat-pill"><span class="stat-label">Credits:</span> <strong id="hunterCreditsDisplay">$318</strong></div>
+        <div class="stat-pill"><span class="stat-label">Dog:</span> <strong id="dogCompanionDisplay">Bacon (Foxhound)</strong></div>
+      </div>
+
+      <!-- In-Game Day, Time & Rest Engine -->
+      <div class="clock-sync-strip">
+        <div class="day-controller">
+          <label for="currentDayInput">Day:</label>
+          <input type="number" id="currentDayInput" value="1" min="1" step="1">
+          <button id="advanceDayBtn" class="btn btn-secondary btn-sm" title="Advance +1 Day (Aging trigger at Day 3)">&plus;1 Day (Rest)</button>
+        </div>
+        <div class="time-controller">
+          <label for="currentTimeInput">Time:</label>
+          <input type="time" id="currentTimeInput" value="08:30">
+          <button id="advanceTwoHoursBtn" class="btn btn-secondary btn-sm">&plus;2 Hrs</button>
+        </div>
+        <button id="saveSessionBtn" class="btn btn-primary btn-sm">Sync Telemetry</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Line 89: Live Tactical Weather Radar -->
+  <section class="weather-bar">
+    <div class="weather-container">
+      <div class="weather-forecast">
+        <span class="forecast-label">Forecast:</span>
+        <span class="weather-slot" id="weatherNow">+0h: Clear 7&deg;C</span>
+        <span class="weather-slot" id="weatherPlus2">+2h: Partly Cloudy</span>
+        <span class="weather-slot" id="weatherPlus4">+4h: Partly Cloudy</span>
+        <span class="weather-slot" id="weatherPlus6">+6h: Light Snow</span>
+        <span class="weather-slot" id="weatherPlus8">+8h: Light Snow</span>
+        <span class="weather-slot" id="weatherPlus10">+10h: Overcast</span>
+        <span class="weather-slot" id="weatherPlus12">+12h: Light Fog</span>
+      </div>
+      <div class="weather-forecast-control">
+        <label for="longTermForecastSelect">Forecast Pattern:</label>
+        <select id="longTermForecastSelect">
+          <option value="standard">Standard Conditions (Balanced)</option>
+          <option value="snow">Increased Snowfall (Colder)</option>
+        </select>
+        <span class="weather-delay-tag">Activates in 48 In-Game Hours</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Line 116: Tactical Navigation Tabs Ribbon -->
+  <nav class="tactical-ribbon">
+    <div class="ribbon-container">
+      <button class="ribbon-btn active" data-tab="harvestInspection">Harvest Inspection</button>
+      <button class="ribbon-btn" data-tab="targetWatchlist">Target Watchlist &amp; Age (X/Y)</button>
+      <button class="ribbon-btn" data-tab="needZoneClusters">Need Zone Clusters (~50yd)</button>
+      <button class="ribbon-btn" data-tab="lifeCycles">Life Cycles &amp; Mortality</button>
+      <button class="ribbon-btn" data-tab="dogProfile">Dog Companion Profile</button>
+      <button class="ribbon-btn" data-tab="challenges">Challenges &amp; Perks</button>
+      <button class="ribbon-btn" data-tab="missions">Missions</button>
+      <button class="ribbon-btn" data-tab="infrastructure">Infrastructure</button>
+      <button class="ribbon-btn" data-tab="trails">Corridors &amp; Trails</button>
+      <button class="ribbon-btn" data-tab="speciesCatalog">Species Encyclopedia</button>
+    </div>
+  </nav>
+
+  <!-- Line 133: Master Workspace Viewports -->
   <main class="main-container">
-    <section class="card dashboard-controls">
-      <h2>Master Wildlife & Habitat Navigator</h2>
-      <div class="control-grid">
-        <div class="control-group">
-          <label for="categorySelect">Active Module</label>
-          <select id="categorySelect">
-            <option value="species">Animals & Lifecycles</option>
-            <option value="needZones">Need Zones & Schedules</option>
-            <option value="challenges">Challenges & Milestones</option>
-            <option value="dogSkills">Hunting Dog Skills</option>
-            <option value="infrastructure">Infrastructure & Cabins</option>
-            <option value="missions">Missions & Story</option>
-          </select>
+
+    <!-- Tab 1: Harvest Inspection Console (Dual-Pane) -->
+    <section id="tab-harvestInspection" class="tab-pane active">
+      <div class="dual-pane-grid">
+        <!-- Left Pane: Record Harvest Logger -->
+        <div class="card pane-form">
+          <div class="card-header">
+            <h3>Record Harvest Inspection Screen</h3>
+          </div>
+
+          <form id="harvestInspectionForm" onsubmit="return false;">
+            <!-- Section 1: Overview & Ballistics -->
+            <div class="form-section-title">1. Overview &amp; Ballistics</div>
+            <div class="form-grid-2">
+              <div class="input-group">
+                <label for="harvestSpeciesSelect">Species</label>
+                <select id="harvestSpeciesSelect"></select>
+              </div>
+              <div class="input-group">
+                <label for="harvestLocationSelect">Location / Sector</label>
+                <select id="harvestLocationSelect"></select>
+              </div>
+            </div>
+
+            <div class="form-grid-3">
+              <div class="input-group">
+                <label for="harvestFirearm">Firearm</label>
+                <input type="text" id="harvestFirearm" value="Primacy Classic Hunter MK II">
+              </div>
+              <div class="input-group">
+                <label for="harvestCaliber">Caliber</label>
+                <input type="text" id="harvestCaliber" value=".308 Winchester">
+              </div>
+              <div class="input-group">
+                <label for="harvestAmmo">Ammo Type</label>
+                <input type="text" id="harvestAmmo" value="Polymer-tipped hollow point">
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="input-group">
+                <label for="harvestShotDist">Shot Distance (Yds)</label>
+                <input type="number" id="harvestShotDist" value="125">
+              </div>
+              <div class="input-group">
+                <label for="harvestTrackDist">Tracking Distance (Yds)</label>
+                <input type="number" id="harvestTrackDist" value="45">
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="input-group">
+                <label for="harvestOrgans">Organs Hit</label>
+                <input type="text" id="harvestOrgans" placeholder="e.g. Left Lung, Liver">
+              </div>
+              <div class="input-group">
+                <label for="harvestDetected">Hunter Detected</label>
+                <select id="harvestDetected">
+                  <option value="No">No (Undetected / Calm)</option>
+                  <option value="Yes">Yes (Alerted / Spooked)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Section 2: Weight & Price Breakdown -->
+            <div class="form-section-title">2. Weight &amp; Price Breakdown</div>
+            <div class="form-grid-3">
+              <div class="input-group">
+                <label for="harvestRawWeight">Raw Weight (lbs)</label>
+                <input type="number" id="harvestRawWeight" step="0.1" value="231.5">
+              </div>
+              <div class="input-group">
+                <label for="harvestWaste">Dressing Waste (lbs)</label>
+                <input type="number" id="harvestWaste" step="0.1" value="75.0">
+              </div>
+              <div class="input-group">
+                <label for="harvestDressedWeight">Dressed Weight (lbs)</label>
+                <input type="number" id="harvestDressedWeight" step="0.1" value="156.5">
+              </div>
+            </div>
+
+            <div class="form-grid-3">
+              <div class="input-group">
+                <label for="harvestTimeDegradation">Time Degradation</label>
+                <input type="text" id="harvestTimeDegradation" value="0.0 lbs">
+              </div>
+              <div class="input-group">
+                <label for="harvestShotDegradation">Shot Degradation</label>
+                <input type="text" id="harvestShotDegradation" value="0.0 lbs">
+              </div>
+              <div class="input-group">
+                <label for="harvestSellPrice">Sell Price ($)</label>
+                <input type="number" id="harvestSellPrice" value="210">
+              </div>
+            </div>
+
+            <!-- Section 3: Dynamic Trophy Score & Schema Mapping -->
+            <div class="form-section-title">3. Trophy Score &amp; Dynamic Schema</div>
+            <div class="form-grid-3">
+              <div class="input-group">
+                <label for="harvestSex">Sex &amp; Stage</label>
+                <select id="harvestSex">
+                  <option value="Male Adult">Male Adult</option>
+                  <option value="Male Mature">Male Mature</option>
+                  <option value="Female Adult">Female Adult</option>
+                  <option value="Male Young">Male Young</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <label for="harvestFitness">Genetic Fitness %</label>
+                <input type="number" id="harvestFitness" step="0.1" value="65.4">
+              </div>
+              <div class="input-group">
+                <label for="harvestRatingStars">Trophy Rating</label>
+                <select id="harvestRatingStars">
+                  <option value="1">1 Star</option>
+                  <option value="2">2 Stars</option>
+                  <option value="3">3 Stars</option>
+                  <option value="4">4 Stars</option>
+                  <option value="5">5 Stars</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Dynamic Schema Injected Measurements (Antler, Skull, Horn, Avian) -->
+            <div id="dynamicSchemaFieldsContainer" class="dynamic-schema-box"></div>
+
+            <button type="button" id="submitHarvestRecordBtn" class="btn btn-primary full-width" style="margin-top: 14px;">Log Harvest Inspection</button>
+          </form>
         </div>
 
-        <div class="control-group">
-          <label for="reserveSelect">Reserve Filter</label>
-          <select id="reserveSelect">
-            <option value="ALL">All Reserves</option>
-            <option value="Nez Perce Valley">Nez Perce Valley</option>
-            <option value="Transylvania">Transylvania</option>
-            <option value="Aurora Shores">Aurora Shores</option>
-            <option value="Tikamoon Plains">Tikamoon Plains</option>
-            <option value="Matariki Park">Matariki Park</option>
-            <option value="Lintukoto Reserve">Lintukoto Reserve</option>
-            <option value="Elkcrest Island">Elkcrest Island</option>
-          </select>
-        </div>
-
-        <div class="control-group">
-          <label for="globalSearch">Search Name / Trait</label>
-          <input type="text" id="globalSearch" placeholder="e.g. Elk, Badger, 5-Star...">
-        </div>
-
-        <div class="control-group status-sync-box">
-          <label>Storage Status</label>
-          <span class="sync-indicator" id="syncStatus">Storage: Realtime Database</span>
+        <!-- Right Pane: Inspection History Roster -->
+        <div class="card pane-history">
+          <div class="card-header">
+            <h3>Inspection History</h3>
+            <span id="harvestRecordCount" class="badge">Loading Records...</span>
+          </div>
+          <div id="harvestHistoryContainer" class="history-list"></div>
         </div>
       </div>
     </section>
 
-    <!-- Line 101: Live Dynamic Data Card Grid -->
-    <section class="card data-viewport">
-      <div class="viewport-header">
-        <h3 id="currentDisplayTitle">Animals & Lifecycles</h3>
-        <span id="recordCount" class="badge">Loading Data...</span>
-      </div>
-      <div class="data-grid species-grid" id="dataDisplayContainer">
-        <!-- Rendered dynamically via script.js -->
+    <!-- Tab 2: Target Watchlist & Live Herd Management Console -->
+    <section id="tab-targetWatchlist" class="tab-pane">
+      <div class="dual-pane-grid">
+        <!-- Watchlist Input / Editor -->
+        <div class="card pane-form">
+          <div class="card-header">
+            <h3 id="watchlistFormHeader">Add Live Animal to Watchlist</h3>
+          </div>
+
+          <form id="watchlistForm" onsubmit="return false;">
+            <input type="hidden" id="editWatchlistId" value="">
+
+            <div class="input-group">
+              <label for="watchIdentifier">Target Identifier / Tag Name</label>
+              <input type="text" id="watchIdentifier" placeholder="e.g. Broken Left Brow Muley" required>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="input-group">
+                <label for="watchSpeciesSelect">Species</label>
+                <select id="watchSpeciesSelect"></select>
+              </div>
+              <div class="input-group">
+                <label for="watchFitness">Observed Fitness %</label>
+                <input type="number" id="watchFitness" step="0.1" placeholder="e.g. 43.4 or 88.5" required>
+              </div>
+            </div>
+
+            <div class="form-grid-3">
+              <div class="input-group">
+                <label for="watchAge">Current Age (Yrs)</label>
+                <input type="number" id="watchAge" value="8" min="1" max="25" required>
+              </div>
+              <div class="input-group">
+                <label for="watchMaxAge">Lifespan Cap (Yrs)</label>
+                <input type="number" id="watchMaxAge" value="12" readonly>
+              </div>
+              <div class="input-group">
+                <label for="watchStars">Observed Stars</label>
+                <select id="watchStars">
+                  <option value="1">1 Star</option>
+                  <option value="2">2 Stars</option>
+                  <option value="3">3 Stars</option>
+                  <option value="4">4 Stars</option>
+                  <option value="5">5 Stars</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="watchLandmark">Location / Need Zone Landmark</label>
+              <input type="text" id="watchLandmark" placeholder="e.g. North Shingle Riverbank (Lake Sasquatch)" required>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 12px;">
+              <button type="button" id="saveWatchlistBtn" class="btn btn-primary full-width">Add to Watchlist</button>
+              <button type="button" id="cancelEditWatchlistBtn" class="btn btn-secondary hidden">Cancel</button>
+            </div>
+          </form>
+
+          <!-- Herd Management Advisory Box -->
+          <div class="advisory-callout" style="margin-top: 18px;">
+            <h4>Genetic Management Protocols:</h4>
+            <ul>
+              <li><strong>Fitness &lt; 50%:</strong> Immediate Cull. Low genetics degrade herd potential[cite: 10, 21].</li>
+              <li><strong>Fitness &ge; 80%:</strong> Protected Breeder. Let mature into 5-star trophy rack[cite: 10, 13, 23].</li>
+              <li><strong>1-Star Mature:</strong> End of cycle cull. Remove before old-age despawn[cite: 10, 13].</li>
+              <li><strong>Aging Rate:</strong> 3 in-game days equals 1 year of animal age[cite: 13].</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Live Watchlist Roster -->
+        <div class="card pane-history">
+          <div class="card-header">
+            <h3>Live Herd Watchlist</h3>
+            <span id="watchlistCount" class="badge">0 Tracked Animals</span>
+          </div>
+          <div id="watchlistContainer" class="history-list"></div>
+        </div>
       </div>
     </section>
+
+    <!-- Tab 3: Need Zone Clusters (~50yd) -->
+    <section id="tab-needZoneClusters" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <h3>Corridor Need Zone Clusters (&sim;50-Yard Radius)</h3>
+          <span id="needZoneCount" class="badge">Loading Clusters...</span>
+        </div>
+        <p class="section-desc">Interacting with any individual watering, feeding, or resting point in a 50-yd cluster unlocks all linked corridor markers[cite: 15].</p>
+        <div id="needZoneClustersGrid" class="cards-grid"></div>
+      </div>
+    </section>
+
+    <!-- Tab 4: Life Cycles & Mortality -->
+    <section id="tab-lifeCycles" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <h3>Species Lifespans, Stage Brackets &amp; Despawn Schedules</h3>
+          <span id="lifecycleCount" class="badge">Loading Lifecycles...</span>
+        </div>
+        <p class="section-desc">1 in-game year equals exactly 3 in-game days[cite: 13]. Animals despawn of old age if unharvested upon reaching max lifespan[cite: 13].</p>
+        <div id="lifecyclesGrid" class="cards-grid"></div>
+      </div>
+    </section>
+
+    <!-- Tab 5: Dog Companion Profile -->
+    <section id="tab-dogProfile" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <h3>Hunting Dog Telemetry &amp; Skill Progression</h3>
+          <span class="badge">Max Level Cap: 6</span>
+        </div>
+        <div class="dog-profile-summary" id="dogSummaryCard"></div>
+        <div id="dogSkillsGrid" class="cards-grid" style="margin-top: 20px;"></div>
+      </div>
+    </section>
+
+    <!-- Tab 6: Challenges & Perks Trees -->
+    <section id="tab-challenges" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <h3>Hunter Challenges &amp; Perk Mastery Trees</h3>
+          <span class="badge">100 Challenges Across 5 Trees</span>
+        </div>
+        <div id="challengeTreesGrid" class="cards-grid"></div>
+      </div>
+    </section>
+
+    <!-- Tab 7: Missions & Story -->
+    <section id="tab-missions" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <h3>Warden &amp; Lodge Story Missions (New Laurentia)</h3>
+          <span id="missionsCount" class="badge">Loading Missions...</span>
+        </div>
+        <div id="missionsGrid" class="cards-grid"></div>
+      </div>
+    </section>
+
+    <!-- Tab 8: Infrastructure & Habitat Tasks -->
+    <section id="tab-infrastructure" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <h3>Habitat Enhancements, Feeders &amp; Bridge Tasks</h3>
+          <span id="infrastructureCount" class="badge">32 Enhancements</span>
+        </div>
+        <div class="advisory-callout" id="infraNotesBox"></div>
+        <div id="infrastructureGrid" class="cards-grid" style="margin-top: 16px;"></div>
+      </div>
+    </section>
+
+    <!-- Tab 9: Corridors & Trails -->
+    <section id="tab-trails" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <h3>Seasonal Grazing Corridors &amp; Trail Navigation</h3>
+          <span class="badge">V-Split Cloven Hoof Tracking Rule</span>
+        </div>
+        <div id="trailsGrid" class="cards-grid"></div>
+      </div>
+    </section>
+
+    <!-- Tab 10: Species Encyclopedia -->
+    <section id="tab-speciesCatalog" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <h3>Reserve Species Catalog, Tiers &amp; Defense Sidearms</h3>
+          <span id="speciesCatalogCount" class="badge">15 Reserve Species</span>
+        </div>
+        <div id="speciesCatalogGrid" class="cards-grid"></div>
+      </div>
+    </section>
+
   </main>
 
-  <!-- Line 113: Authentication Modal -->
+  <!-- Line 419: Authentication Modal -->
   <div class="modal-overlay hidden" id="authModal">
     <div class="modal-card">
       <div class="modal-header">
@@ -118,12 +455,12 @@
     </div>
   </div>
 
-  <!-- Line 125: Persistent Footer with NY Timestamp -->
+  <!-- Line 432: Footer -->
   <footer class="site-footer">
     <div class="footer-container">
       <div class="footer-col">
-        <p>&copy; 2026 Way of the Hunter 2 Master Hub</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 15:42 EDT</span> | Version: 3.0.0</p>
+        <p>&copy; 2026 Way of the Hunter 2 Companion &bull; Tactical Operations Protocol</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 16:24 EDT</span> | Version: 4.1.0</p>
       </div>
       <div class="footer-col text-right">
         <span id="firebaseStatusBadge" class="status-pill status-connecting">RTDB: Connecting...</span>
@@ -131,7 +468,7 @@
     </div>
   </footer>
 
-  <!-- Line 138: Sibling Script Execution -->
+  <!-- Sibling Script Execution -->
   <script src="./script.js"></script>
 </body>
 </html>
