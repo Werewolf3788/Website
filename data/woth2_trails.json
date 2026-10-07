@@ -1,0 +1,54 @@
+{
+  "tracking_rule": "The V-split in cloven hoof prints always points in the direction of animal movement. Follow split prints to intercept active grazing corridors.",
+  "seasonal_corridors": [
+    {
+      "species": "Rocky Mountain mule deer",
+      "region": "Wetiko Foothills",
+      "summer_trail": "High ridge elevation transitions along sunlit northern slopes.",
+      "winter_trail": "Sheltered creek beds and pine valley brush to escape deep snow drifts.",
+      "grazing_area": "Open scrub clearings between 07:00 and 11:00; slow meandering herd pattern."
+    },
+    {
+      "species": "Northwestern white-tailed deer",
+      "region": "Lake Sasquatch",
+      "summer_trail": "Lakeshore riverbanks and willow fringes near water sources.",
+      "winter_trail": "Dense hemlock and spruce canopies for thermal bedding cover.",
+      "grazing_area": "Agricultural grass corridors and lake marsh edges."
+    },
+    {
+      "species": "Rocky Mountain elk",
+      "region": "Kermode Plateau",
+      "summer_trail": "Alpine meadows and highland scree plateaus.",
+      "winter_trail": "South-facing lower foothills and grassy river bottoms.",
+      "grazing_area": "Large open plateaus; bulls feed in perimeter meadows while cows graze center."
+    },
+    {
+      "species": "Western moose",
+      "region": "Thunderbird Muskeg",
+      "summer_trail": "Wet peatland marshes, shallow lakes, and birch flats.",
+      "winter_trail": "Subalpine river valleys with willow thickets for winter browse.",
+      "grazing_area": "Submerged vegetation and willow shrub corridors."
+    },
+    {
+      "species": "Wood bison",
+      "region": "Slalakum Shore",
+      "summer_trail": "Coastal sedge flats and breeze-cooled shore terraces.",
+      "winter_trail": "Deep-forest windbreak hollows with shallow snowpack.",
+      "grazing_area": "Expansive coastal grasslands; herds graze in line formations."
+    },
+    {
+      "species": "Dall sheep",
+      "region": "Jackalope Cordillera",
+      "summer_trail": "Exposed high crags, rocky saddles, and wind-scoured ridgelines.",
+      "winter_trail": "Lower south-facing alpine cliffs where wind strips away snow.",
+      "grazing_area": "Steep alpine tundra slopes with escape cliffs within 50 meters."
+    },
+    {
+      "species": "Northwestern wolf",
+      "region": "All Regions",
+      "summer_trail": "High ridge passes and game trail choke points.",
+      "winter_trail": "Frozen river drainages and low valley deer yards.",
+      "grazing_area": "Territory patrol perimeter; pack travels 8-15km between kills."
+    }
+  ]
+}
