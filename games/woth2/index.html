@@ -1,5 +1,5 @@
 <!-- Line 1: Way of the Hunter 2 - Master Tactical Companion -->
-<!-- [Smart Cache-Buster Time: 2026-10-07 17:16 EDT | Firebase Sync Target: /utm_links | Version: 4.2.0] -->
+<!-- [Smart Cache-Buster Time: 2026-10-07 17:42 EDT | Firebase Sync Target: /utm_links | Version: 4.3.0] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,18 +7,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PlayStation Hub | Way of the Hunter 2 Companion</title>
 
-  <!-- Line 10: Dynamic Favicon & Tab Icons (Fallback to assets/logo.jpg) -->
   <link id="dynamicFavicon" rel="icon" type="image/jpeg" href="//werewolf3788.github.io/Website/assets/logo.jpg">
   <link id="dynamicAppleIcon" rel="apple-touch-icon" href="//werewolf3788.github.io/Website/assets/logo.jpg">
 
-  <!-- Line 15: Firebase SDKs (Compat v10.13.0) -->
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
   <style>
-    /* Line 23: Complete Inlined Tactical Theme */
     :root {
       --bg-primary: #07090d;
       --bg-secondary: #0f141c;
@@ -51,7 +48,6 @@
       overflow-x: hidden;
     }
 
-    /* Top Master Header */
     .site-header {
       background: var(--bg-secondary);
       border-bottom: 1px solid var(--border-color);
@@ -101,7 +97,6 @@
     }
 
     .site-nav { display: flex; align-items: center; flex: 1; margin: 0 16px; }
-
     .nav-list { display: flex; list-style: none; gap: 8px; align-items: center; flex-wrap: wrap; }
     .nav-item { position: relative; }
 
@@ -192,7 +187,6 @@
       border: 1px solid var(--accent-amber);
     }
 
-    /* Editable Operations Strip */
     .operations-bar {
       background: #0a0d14;
       border-bottom: 1px solid var(--border-color);
@@ -261,7 +255,6 @@
     }
     .time-controller input { width: 95px; }
 
-    /* Weather Radar Strip */
     .weather-bar {
       background: #07090d;
       border-bottom: 1px solid var(--border-color);
@@ -300,7 +293,6 @@
     }
     .weather-delay-tag { color: var(--accent-amber); font-size: 0.72rem; }
 
-    /* Tactical Tab Ribbon */
     .tactical-ribbon {
       background: var(--bg-secondary);
       border-bottom: 2px solid var(--border-color);
@@ -329,7 +321,6 @@
       background: rgba(245, 166, 35, 0.06);
     }
 
-    /* Main Container & Adjusted Responsive Dual-Pane */
     .main-container {
       flex: 1;
       width: 100%;
@@ -339,10 +330,9 @@
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
 
-    /* Expanded form pane to prevent field overlap */
     .dual-pane-grid {
       display: grid;
-      grid-template-columns: minmax(420px, 520px) 1fr;
+      grid-template-columns: minmax(420px, 500px) 1fr;
       gap: 24px;
       align-items: start;
     }
@@ -384,7 +374,6 @@
       letter-spacing: 0.5px;
     }
 
-    /* Clean spacing grids for inputs */
     .form-grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -442,12 +431,14 @@
       gap: 10px;
     }
 
-    .history-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    /* Grid for Inspection History: 2 to 3 compact cards across */
+    .history-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 14px;
       max-height: calc(100vh - 280px);
       overflow-y: auto;
+      padding-right: 4px;
     }
 
     /* 4-Cards Across Watchlist Grid */
@@ -526,6 +517,37 @@
     .btn-link-edit:hover { background: rgba(0, 136, 255, 0.1); }
     .btn-link-delete { color: var(--danger); }
     .btn-link-delete:hover { background: rgba(231, 76, 60, 0.1); }
+
+    /* Interactive Dog Progression Steppers */
+    .dog-stepper-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      margin-top: 8px;
+    }
+
+    .stepper-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stepper-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--accent-amber);
+      font-weight: 700;
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .stepper-btn:hover { background: var(--accent-amber); color: #000; }
 
     .cards-grid {
       display: grid;
@@ -650,9 +672,7 @@
       <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">&#9776;</button>
 
       <nav class="site-nav" id="dynamicNav">
-        <ul class="nav-list" id="navList">
-          <!-- Populated from RTDB /utm_links -->
-        </ul>
+        <ul class="nav-list" id="navList"></ul>
       </nav>
 
       <div class="auth-toolbar">
@@ -760,12 +780,12 @@
             <div class="form-section-title">1. Overview &amp; Ballistics</div>
             <div class="form-grid-2">
               <div class="input-group">
-                <label for="harvestSpeciesSelect">Species</label>
-                <select id="harvestSpeciesSelect"></select>
-              </div>
-              <div class="input-group">
                 <label for="harvestLocationSelect">Location / Sector</label>
                 <select id="harvestLocationSelect"></select>
+              </div>
+              <div class="input-group">
+                <label for="harvestSpeciesSelect">Species (Filtered by Location)</label>
+                <select id="harvestSpeciesSelect"></select>
               </div>
             </div>
 
@@ -878,7 +898,8 @@
             <h3>Inspection History</h3>
             <span id="harvestRecordCount" class="badge">Loading Records...</span>
           </div>
-          <div id="harvestHistoryContainer" class="history-list"></div>
+          <!-- Grid for compact Inspection History cards -->
+          <div id="harvestHistoryContainer" class="history-cards-grid"></div>
         </div>
       </div>
     </section>
@@ -886,7 +907,6 @@
     <!-- Tab 2: Target Watchlist & Live Herd Management Console -->
     <section id="tab-targetWatchlist" class="tab-pane">
       <div class="dual-pane-grid">
-        <!-- Watchlist Input / Editor -->
         <div class="card pane-form">
           <div class="card-header">
             <h3 id="watchlistFormHeader">Add Live Animal to Watchlist</h3>
@@ -902,23 +922,23 @@
 
             <div class="form-grid-2">
               <div class="input-group">
-                <label for="watchSpeciesSelect">Species</label>
-                <select id="watchSpeciesSelect"></select>
+                <label for="watchRegionSelect">Reserve / Region</label>
+                <select id="watchRegionSelect"></select>
               </div>
               <div class="input-group">
-                <label for="watchFitness">Observed Fitness %</label>
-                <input type="number" id="watchFitness" step="0.1" placeholder="e.g. 43.4 or 88.5" required>
+                <label for="watchSpeciesSelect">Species (Filtered by Region)</label>
+                <select id="watchSpeciesSelect"></select>
               </div>
             </div>
 
             <div class="form-grid-2">
               <div class="input-group">
-                <label for="watchRegionSelect">Reserve / Region</label>
-                <select id="watchRegionSelect"></select>
-              </div>
-              <div class="input-group">
                 <label for="watchLandmark">Need Zone Landmark</label>
                 <input type="text" id="watchLandmark" placeholder="e.g. Shingle Riverbank Waterway" required>
+              </div>
+              <div class="input-group">
+                <label for="watchFitness">Observed Fitness %</label>
+                <input type="number" id="watchFitness" step="0.1" placeholder="e.g. 43.4 or 88.5" required>
               </div>
             </div>
 
@@ -960,7 +980,6 @@
           </div>
         </div>
 
-        <!-- 4-Cards Across Watchlist Section -->
         <div class="card pane-history">
           <div class="card-header">
             <h3>Live Herd Watchlist</h3>
@@ -978,7 +997,7 @@
           <h3>Corridor Need Zone Clusters (&sim;50-Yard Radius)</h3>
           <span id="needZoneCount" class="badge">Loading Clusters...</span>
         </div>
-        <p class="section-desc">Interacting with any individual watering, feeding, or resting point in a 50-yd cluster unlocks all linked corridor markers[cite: 15].</p>
+        <p class="section-desc">Interacting with any individual watering, feeding, or resting point in a 50-yd cluster unlocks all linked corridor markers.</p>
         <div id="needZoneClustersGrid" class="cards-grid"></div>
       </div>
     </section>
@@ -995,7 +1014,7 @@
       </div>
     </section>
 
-    <!-- Tab 5: Dog Companion Profile -->
+    <!-- Tab 5: Dog Companion Profile with Steppers -->
     <section id="tab-dogProfile" class="tab-pane">
       <div class="card">
         <div class="card-header">
@@ -1046,7 +1065,7 @@
       <div class="card">
         <div class="card-header">
           <h3>Seasonal Grazing Corridors &amp; Trail Navigation</h3>
-          <span class="badge">V-Split Cloven Hoof Tracking Rule</span>
+          <span class="badge">V-Split Cloven Hoof Tracking Rule[cite: 17]</span>
         </div>
         <div id="trailsGrid" class="cards-grid"></div>
       </div>
@@ -1057,7 +1076,7 @@
       <div class="card">
         <div class="card-header">
           <h3>Reserve Species Catalog, Tiers &amp; Defense Sidearms</h3>
-          <span id="speciesCatalogCount" class="badge">15 Reserve Species[cite: 20]</span>
+          <span id="speciesCatalogCount" class="badge">15 Reserve Species[cite: 15]</span>
         </div>
         <div id="speciesCatalogGrid" class="cards-grid"></div>
       </div>
@@ -1065,7 +1084,6 @@
 
   </main>
 
-  <!-- Authentication Modal -->
   <div class="modal-overlay hidden" id="authModal">
     <div class="modal-card">
       <div class="modal-header">
@@ -1078,12 +1096,11 @@
     </div>
   </div>
 
-  <!-- Persistent Footer -->
   <footer class="site-footer">
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Way of the Hunter 2 Companion &bull; Tactical Operations Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 17:16 EDT</span> | Version: 4.2.0</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 17:42 EDT</span> | Version: 4.3.0</p>
       </div>
       <div class="footer-col text-right">
         <span id="firebaseStatusBadge" class="status-pill status-connecting">RTDB: Connecting...</span>
@@ -1091,7 +1108,6 @@
     </div>
   </footer>
 
-  <!-- Sibling Script Execution in /games/woth2/ -->
   <script src="./script.js"></script>
 </body>
 </html>
