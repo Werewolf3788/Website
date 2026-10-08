@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-07 23:59 EDT | Firebase Sync Target: /utm_links | Version: 5.8.0]
+// [Smart Cache-Buster Time: 2026-10-08 00:06 EDT | Firebase Sync Target: /utm_links | Version: 5.9.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
@@ -68,12 +68,12 @@ document.addEventListener("DOMContentLoaded", () => {
     currentUser: null,
     currentEmail: "",
     currentEmailKey: "",
-    currentPlatform: "ps", // Supported: "ps", "xbox", "steam", "microsoft"
+    currentPlatform: "ps", // "ps", "xbox", "steam", "microsoft"
     watchlist: [],
     psnAccountId: "",
     psnOnlineId: "",
     masterTrophies: [],
-    userTrophyProgress: {}, // trophyId -> { earned, timestamp, currentValue, targetValue, manual }
+    userTrophyProgress: {}, // trophyId -> { earned, timestamp, currentValue, targetValue, manual, source }
     trophyGroups: [],
     selectedTrophyGroup: "all",
     gameMetadata: {},
@@ -206,7 +206,6 @@ document.addEventListener("DOMContentLoaded", () => {
       this.safeSetValue("dogCompanionInput", `${this.dogCompanionName} (Lv. ${this.dogBondingLevel})`);
     },
 
-    // Central Brand Visual Engine: Sets Favicon, Apple Touch Icon, and Nav Brand Logo
     applyBrandArt(imgUrl) {
       if (!imgUrl || typeof imgUrl !== "string") return;
       const cleanUrl = imgUrl.trim();
@@ -219,25 +218,22 @@ document.addEventListener("DOMContentLoaded", () => {
       if (brandLogo) brandLogo.src = cleanUrl;
     },
 
-    // 1. Primary Game Encyclopedia & Poster Art Listener: /psn/games/NPWR52231_00
+    // 1. Master Game Catalog Listener: /psn/games/NPWR52231_00
     initMasterGameData() {
       rtdb.ref(`/psn/games/${this.titleId}`).on("value", snapshot => {
         const game = snapshot.val();
         if (!game) return;
         this.gameMetadata = game;
 
-        // Primary Visual Asset: PlayStation Game Poster Art
         if (game.posterArt && typeof game.posterArt === "string" && game.posterArt.trim() !== "") {
           this.applyBrandArt(game.posterArt);
           this.hasLoadedPrimaryPoster = true;
         }
 
-        // Parse DLC / Expansion Groups
         if (game.groups) {
           this.trophyGroups = Array.isArray(game.groups) ? game.groups : Object.values(game.groups);
         }
 
-        // Parse Master Trophies
         let rawTrophies = [];
         if (game.rawSonyMetadata && game.rawSonyMetadata.trophies) {
           rawTrophies = Array.isArray(game.rawSonyMetadata.trophies)
@@ -265,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // 2. Silent Background Telemetry Sync: Writes directly to users/{emailKey}/platform/{platform}/progress/woth2
+    // 2. Silent Telemetry Sync: Writes user data & FULL trophy checklist map to Firestore
     async silentSaveGameTelemetry() {
       const nameEl = document.getElementById("hunterNameInput");
       const lvlEl = document.getElementById("hunterLevelInput");
@@ -301,6 +297,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const activeUser = auth.currentUser;
       const targetUserKey = this.currentEmailKey || (this.currentEmail ? getEmailKey(this.currentEmail) : "");
 
+      // Execute write to Firestore progress subcollection
       if (activeUser && targetUserKey) {
         try {
           const gameDocRef = db.collection("users")
@@ -322,9 +319,12 @@ document.addEventListener("DOMContentLoaded", () => {
             companion_time: this.currentTime,
             weather: this.currentWeather,
             platform: this.currentPlatform,
+            psn_online_id: this.psnOnlineId || null,
+            psn_account_id: this.psnAccountId || null,
             trophies_earned: earnedCount,
             trophies_total: totalTrophies,
             trophies_percent: trophyPct,
+            trophies: this.userTrophyProgress, // Stores the complete trophy map inside Firestore
             dog_stats: {
               name: this.dogCompanionName,
               breed: this.dogBreed,
@@ -344,7 +344,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    // 3. Navbar Architecture & Secondary Fallback Asset Engine
+    // 3. Dynamic Navbar Architecture & Brand Fallback
     initRTDB() {
       rtdb.ref("/utm_links").on("value", snapshot => {
         const raw = snapshot.val();
@@ -514,7 +514,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // 4. User Identity & Multi-Platform Telemetry Binding
+    // 4. User Identity & Firestore Progress Restore Engine
     initAuth() {
       auth.onAuthStateChanged(async user => {
         const modalBtn = document.getElementById("authModalBtn");
@@ -606,6 +606,23 @@ document.addEventListener("DOMContentLoaded", () => {
               if (data.watchlist && Array.isArray(data.watchlist)) {
                 this.watchlist = data.watchlist;
                 this.renderWatchlist();
+              }
+
+              // RESTORE TROPHIES FROM FIRESTORE
+              if (data.trophies && typeof data.trophies === "object") {
+                Object.entries(data.trophies).forEach(([id, t]) => {
+                  if (t.earned) {
+                    this.userTrophyProgress[id] = {
+                      earned: true,
+                      timestamp: t.timestamp || null,
+                      currentValue: t.currentValue || null,
+                      targetValue: t.targetValue || null,
+                      manual: Boolean(t.manual),
+                      source: t.source || "firestore"
+                    };
+                  }
+                });
+                this.renderTrophies();
               }
             }
           } catch (e) {
@@ -731,7 +748,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const isEarned = Boolean(t.earned || t.unlocked || t.timestamp || t.earnedDateTime);
             const dateStr = t.timestamp || t.earnedDateTime || (isEarned ? (t.updatedAt || new Date().toISOString()) : null);
 
-            // Merge with existing progress so local or JSON completions are preserved
             const existing = this.userTrophyProgress[id] || {};
 
             this.userTrophyProgress[id] = {
@@ -760,7 +776,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const current = this.userTrophyProgress[id] || { earned: false };
 
       if (current.earned) {
-        // Toggle OFF (accidental click reversal)
         this.userTrophyProgress[id] = {
           earned: false,
           timestamp: null,
@@ -770,7 +785,6 @@ document.addEventListener("DOMContentLoaded", () => {
           source: "manual"
         };
       } else {
-        // Toggle ON
         this.userTrophyProgress[id] = {
           earned: true,
           timestamp: new Date().toISOString(),
@@ -785,9 +799,8 @@ document.addEventListener("DOMContentLoaded", () => {
       this.silentSaveGameTelemetry();
     },
 
-    // 6. Dedicated Trophy & Achievement Chamber Renderer (Master List, Groups, Hybrid Done-Checking)
+    // 6. Dedicated Trophy & Achievement Chamber Renderer
     renderTrophies() {
-      // Primary targets: checks for dedicated chamber container or sidebar container
       const container = document.getElementById("trophyChamberGrid") || document.getElementById("psnTrophiesContainer");
       if (!container) return;
 
@@ -797,7 +810,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const earnedCount = earnedList.length;
       const progressPercent = total > 0 ? Math.round((earnedCount / total) * 100) : 0;
 
-      // Calculate earliest trophy unlocked milestone
       let firstTrophyText = "No milestones earned yet across platforms";
       if (earnedList.length > 0) {
         const sortedEarned = [...earnedList].sort((a, b) => new Date(a.timestamp || 0) - new Date(b.timestamp || 0));
@@ -815,7 +827,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const isLivePS = this.currentPlatform === "ps" && (this.psnOnlineId || this.psnAccountId);
       const platformName = this.currentPlatform.toUpperCase();
 
-      // Filter tabs for Base Game vs DLC Expansions
       let groupTabsHtml = "";
       if (this.trophyGroups && this.trophyGroups.length > 0) {
         groupTabsHtml = `
@@ -862,7 +873,6 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       `;
 
-      // Filtered Master Trophies
       const displayTrophies = this.masterTrophies.filter(t => {
         if (this.selectedTrophyGroup === "all") return true;
         if (this.selectedTrophyGroup === "default") return t.groupId === "default" || t.groupId === "0" || !t.groupId;
@@ -894,7 +904,6 @@ document.addEventListener("DOMContentLoaded", () => {
             : "Recorded";
         }
 
-        // Milestone Progress bar (X / X)
         let milestoneHtml = "";
         if (userState.targetValue && userState.targetValue > 0) {
           const cur = userState.currentValue || 0;
@@ -913,13 +922,14 @@ document.addEventListener("DOMContentLoaded", () => {
           `;
         }
 
-        // Status Tag
         let statusBadge = `<span style="font-size:0.8rem; font-weight:600; color:var(--text-muted);">🔒 Locked</span>`;
         if (isEarned) {
           if (userState.source === "psn") {
             statusBadge = `<span style="font-size:0.8rem; font-weight:700; color:var(--success);">✔ Earned (PSN Sync)</span>`;
           } else if (userState.source === "json") {
             statusBadge = `<span style="font-size:0.8rem; font-weight:700; color:var(--success);">✔ Earned (Game Data)</span>`;
+          } else if (userState.source === "firestore") {
+            statusBadge = `<span style="font-size:0.8rem; font-weight:700; color:var(--success);">✔ Earned (Synced)</span>`;
           } else {
             statusBadge = `<span style="font-size:0.8rem; font-weight:700; color:var(--success);">✔ Earned (Manual)</span>`;
           }
@@ -1400,7 +1410,7 @@ document.addEventListener("DOMContentLoaded", () => {
         trophy_rating_stars: stars,
         sell_price: sellPrice,
         cull_decision: fitness < 50 ? "Cull (Low Fitness)" : "Keeper / Trophy",
-        date: "October 7, 2026",
+        date: "October 8, 2026",
         hunt_rating: "A++"
       };
 
