@@ -1,22 +1,17 @@
 /* ============================================================================
  * File: psn.js
  * Location: /Playstation/psn.js
- * Description: Squad Pack Master Telemetry Engine - Universal Squad Sync:
- *              1. Single, Clean Root-Level commId under /psn/gamertags/{tag}/.
- *              2. Human-Readable Game Name preserved under currentGame.
- *              3. Zero duplicate NPWR entries flooding the tree view.
- *              4. Bulletproof Game Catalog Write-Protection (/psn/games/{commId}).
- *              5. Full DLC Metadata: Images, Descriptions, Pricing & Entitlements.
- *              6. Real-time Hardware, Remote Play & Build Version Detection.
- *              7. Lifetime Playtime Anchor (never wipes to 0 on Dashboard).
- *              8. Dynamic token pulling from RTDB (/users & /user_secrets).
- *              9. Complete Null-Safe Catalog and Defined Trophies evaluation.
+ * Description: Master PSN Telemetry & Deep Catalog Ingestion Engine:
+ *              1. Master Catalog under /psn/games/{commId} merges NPWR primary
+ *                 and CUSA/PPSA secondary data with full trophies & DLCs.
+ *              2. User Progress isolated strictly to /psn/gamertags/{onlineId}.
+ *              3. Single root commId for rapid external site dev lookups.
+ *              4. Hardware presence, devices, PS5 (x/x) objectives & entitlements.
  * Analytics Tagging: G-CTYHDF4MSD (Deployable via GTM).
- * Version: 60.9.5 - Single Root commId & Complete Clean Architecture
- * Date & Time Stamp: 2026-10-08 05:58:00 EDT (America/New_York)
+ * Version: 62.0.0 - Unified NPWR/CUSA Master Catalog & Deep Telemetry
+ * Date & Time Stamp: 2026-10-08 06:12:00 EDT (America/New_York)
  * ============================================================================ */
 
-// Line 21: Core dependencies and official PSN API SDK imports
 const fs = require("fs");
 const path = require("path");
 const http = require("http");
@@ -43,17 +38,14 @@ const {
     getAccountDevices,
     getProfileShareableLink,
     getUserPlayedGames,
-    getPurchasedGames,
-    makeUniversalSearch
+    getPurchasedGames
 } = psnApi;
 
-// Line 51: Base endpoints and local cache path
 const FIREBASE_BASE_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn";
 const RTDB_ROOT_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
 const GA4_MEASUREMENT_ID = "G-CTYHDF4MSD";
 const LOCAL_TOKENS_PATH = path.join(__dirname, ".psn_tokens.json");
 
-// Line 58: Core 4 Gamertag mappings
 const SQUAD_GAMERTAGS = {
     wildhorse_spirit: "WildHorse_Spirit",
     ray: "OneLIVIDMAN",
@@ -61,7 +53,6 @@ const SQUAD_GAMERTAGS = {
     marc: "DesdemonaTiger"
 };
 
-// Line 66: Permanent Squad PSN Account IDs
 const ACCOUNT_IDS = {
     wildhorse_spirit: "4087137467908566201",
     ray: "2732733730346312494",
@@ -69,7 +60,6 @@ const ACCOUNT_IDS = {
     marc: "6551906246515882523"
 };
 
-// Line 74: Core 4 Pack Definitions
 const CORE_PACK = [
     { key: "wildhorse_spirit", tag: "WildHorse_Spirit", id: ACCOUNT_IDS.wildhorse_spirit },
     { key: "ray", tag: "OneLIVIDMAN", id: ACCOUNT_IDS.ray },
@@ -77,12 +67,11 @@ const CORE_PACK = [
     { key: "marc", tag: "DesdemonaTiger", id: ACCOUNT_IDS.marc }
 ];
 
-// Line 82: Initial friend seeds to guarantee bootstrap coverage
 const SEED_TARGET_ACCOUNT_IDS = [
-    "4087137467908566201", // WildHorse_Spirit
-    "2732733730346312494", // OneLIVIDMAN (Ray)
-    "4398462806362115916", // Darkwing69420
-    "6551906246515882523", // DesdemonaTiger (Marc)
+    "4087137467908566201",
+    "2732733730346312494",
+    "4398462806362115916",
+    "6551906246515882523",
     "7742137722487951585",
     "2288010536299512532",
     "5194904245822471614",
@@ -92,7 +81,6 @@ const SEED_TARGET_ACCOUNT_IDS = [
     "1749160004083248186"
 ];
 
-// Line 97: Affiliate tracking
 const AMAZON_TAG = "moviesanywhere02-20";
 
 let tokenStore = { ray: {}, wildhorse_spirit: {} };
@@ -163,7 +151,7 @@ async function resilientFetch(url, options = {}) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: FIREBASE SECURE REST API UTILITIES]
+// [SECTION: FIREBASE AUTHENTICATED REST API UTILITIES]
 // ----------------------------------------------------------------------------
 function buildRtdbUrl(pathWithLeadingSlash) {
     const secret = process.env.FIREBASE_AUTH_SECRET;
@@ -211,7 +199,7 @@ async function deleteNodeFromFirebase(endpointPath) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: HARDWARE, STREAMING & PLATFORM IDENTIFICATION]
+// [SECTION: HARDWARE, PLATFORM & FILE SIZES]
 // ----------------------------------------------------------------------------
 function parseDetailedHardwareContext(rawPresence, matchedGame = {}) {
     const primaryInfo = rawPresence?.primaryPlatformInfo || {};
@@ -274,9 +262,28 @@ function normalizePlatform(game) {
     return "PS5";
 }
 
-// ----------------------------------------------------------------------------
-// [SECTION: TIME & FORMATTING HELPERS]
-// ----------------------------------------------------------------------------
+function estimateGameFileSize(gameName = "", platform = "PS5") {
+    const nameLower = gameName.toLowerCase();
+    if (nameLower.includes("ghost recon wildlands")) return "62.4 GB";
+    if (nameLower.includes("thehunter") || nameLower.includes("call of the wild")) return "48.2 GB";
+    if (nameLower.includes("way of the hunter")) return "22.6 GB";
+    if (nameLower.includes("sniper elite 5")) return "55.1 GB";
+    if (nameLower.includes("farming simulator 25")) return "38.5 GB";
+    if (nameLower.includes("path of titans")) return "12.8 GB";
+    if (nameLower.includes("left 4 dead")) return "7.5 GB";
+    return platform === "PS5" ? "42.0 GB" : "28.5 GB";
+}
+
+function estimateDlcFileSize(dlcName = "") {
+    const dLower = dlcName.toLowerCase();
+    if (dLower.includes("narco road")) return "9.2 GB";
+    if (dLower.includes("fallen ghosts")) return "10.4 GB";
+    if (dLower.includes("night hunting")) return "1.2 GB";
+    if (dLower.includes("reserve") || dLower.includes("map")) return "4.8 GB";
+    if (dLower.includes("weapon") || dLower.includes("pack")) return "850 MB";
+    return "2.4 GB";
+}
+
 function formatDuration(totalSeconds) {
     if (!totalSeconds || totalSeconds < 60) return "< 1 min";
     const hours = Math.floor(totalSeconds / 3600);
@@ -395,26 +402,38 @@ function inferGameCapabilitiesFromTrophies(gameName, trophies = [], commId = nul
     const isCrossPlay = isDedicatedCoop || isTsushima || cleanName.includes("unbound") || isFarmSim || cleanName.includes("sniper elite 5") || isTitans;
 
     let multiplayerType = "Single Player Only";
+    let onlineMode = "Offline Only";
+
     if (isDedicatedCoop) {
         multiplayerType = "Co-Op Only (2-Player)";
+        onlineMode = "Online Play Required";
     } else if (isTsushima) {
         multiplayerType = "Solo Campaign + Legends Co-Op (2-4)";
+        onlineMode = "Online & Offline Playable";
     } else if (isSniperElite) {
         multiplayerType = "Solo Campaign + Co-Op & Invasion (2-16)";
+        onlineMode = "Online & Offline Playable";
     } else if (isFarmSim) {
         multiplayerType = "Solo Farm + Online Co-Op (6-Player)";
+        onlineMode = "Online & Offline Playable";
     } else if (isNfs) {
         multiplayerType = "Solo Story + Online Racing (8-16)";
+        onlineMode = "Online & Offline Playable";
     } else if (isWildlands) {
         multiplayerType = "Solo Campaign + Online Co-Op (4-Player)";
+        onlineMode = "Online & Offline Playable";
     } else if (isHunter) {
         multiplayerType = "Solo Reserves + Online Multiplayer (8-Player)";
+        onlineMode = "Online & Offline Playable";
     } else if (hasCoopTrophies && hasPvpTrophies) {
         multiplayerType = "Solo Campaign + Co-Op & Online PvP";
+        onlineMode = "Online & Offline Playable";
     } else if (hasCoopTrophies) {
         multiplayerType = "Solo Campaign + Online Co-Op";
+        onlineMode = "Online & Offline Playable";
     } else if (hasPvpTrophies) {
         multiplayerType = "Solo Story + Online Multiplayer";
+        onlineMode = "Online & Offline Playable";
     }
 
     return {
@@ -422,6 +441,7 @@ function inferGameCapabilitiesFromTrophies(gameName, trophies = [], commId = nul
         isCoOpOnly: isDedicatedCoop,
         hasCampaign: isDedicatedCoop ? true : (hasCampaignTrophies || !isTitans),
         multiplayerType: multiplayerType,
+        onlineMode: onlineMode,
         isCrossPlatform: isCrossPlay,
         crossPlayPlatforms: isCrossPlay ? ["PS5", "PS4", "PC", "Xbox Series X|S"] : ["PlayStation Network"],
         psPlusRequired: isMulti && !cleanName.includes("free to play")
@@ -637,7 +657,8 @@ async function enrichDLCGroups(canonicalCommId, mappedGroups, userPurchasedTitle
     const safeGroups = Array.isArray(mappedGroups) ? mappedGroups : [];
 
     return safeGroups.map(grp => {
-        const groupNameLower = (grp.name || "").toLowerCase().trim();
+        const groupName = grp.name || "Add-On Content";
+        const groupNameLower = groupName.toLowerCase().trim();
         
         const matchedCloudPack = Object.values(safeCatalog).find(pack => {
             if (!pack || typeof pack !== "object") return false;
@@ -658,9 +679,11 @@ async function enrichDLCGroups(canonicalCommId, mappedGroups, userPurchasedTitle
 
         return {
             groupId: grp.trophyGroupId,
-            name: grp.name || "Add-On Content",
-            description: matchedCloudPack.summary || matchedCloudPack.description || "Official PlayStation add-on / expansion content pack.",
+            name: groupName,
+            title: groupName,
+            description: matchedCloudPack.summary || matchedCloudPack.description || `Official PlayStation add-on expansion pack: ${groupName}.`,
             price: matchedCloudPack.price !== undefined ? matchedCloudPack.price : "Store Listing",
+            size: matchedCloudPack.size || estimateDlcFileSize(groupName),
             image: resolvedDlcImage,
             isOwned: isUserOwned,
             isDLC: true,
@@ -671,16 +694,15 @@ async function enrichDLCGroups(canonicalCommId, mappedGroups, userPurchasedTitle
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: BULLETPROOF GAME SKELETON INGESTION (/psn/games/{commId})]
+// [SECTION: UNIFIED MASTER GAME INGESTION (/psn/games/{commId})]
 // ----------------------------------------------------------------------------
-async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, iconArt, definedTrophies, globalGames, userPurchasedTitles = [], cloudDlcCatalog = {}) {
+async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, iconArt, definedTrophies, globalGames, userPurchasedTitles = [], cloudDlcCatalog = {}, subTitleId = null) {
     if (!commId || commId === "Dashboard" || !auth) return null;
 
     const canonicalCommId = String(commId).trim().toUpperCase();
 
-    // STRICT GATE 1: Sony Trophy endpoints ONLY accept NPWR IDs.
     if (!canonicalCommId.startsWith("NPWR")) {
-        console.log(`[PRESERVE SKELETON] ${canonicalCommId} is a Product Title SKU, not an NPWR ID. Preserving existing record.`);
+        console.log(`[PRESERVE SKELETON] ${canonicalCommId} is not an NPWR ID. Preserving existing record.`);
         return globalGames[canonicalCommId] || null;
     }
 
@@ -700,7 +722,7 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
             }
         }
 
-        // STRICT GATE 2 (ZERO-DATA-LOSS WRITE PROTECTION):
+        // STRICT ZERO-DATA-LOSS WRITE-PROTECTION GATE
         if ((!metaRes || !metaRes.trophies || metaRes.trophies.length === 0) && previousRecord.trophies && previousRecord.trophies.length > 0) {
             console.warn(`[WRITE-PROTECTION ACTIVE] Sony returned 0 trophies for ${canonicalCommId}. Preserving existing ${previousRecord.trophies.length} trophies in RTDB.`);
             return previousRecord;
@@ -716,18 +738,20 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
 
         const mappedTrophies = (metaRes?.trophies && metaRes.trophies.length > 0) ? metaRes.trophies.map(t => {
             const earnedRate = t.trophyEarnedRate || "0.0";
+            const tRank = (t.trophyType || "bronze").toLowerCase();
+            const targetVal = t.trophyProgressTargetValue ? parseInt(t.trophyProgressTargetValue, 10) : 0;
             return {
-                ...t,
                 trophyId: t.trophyId,
                 name: t.trophyName || "Unknown Trophy",
                 title: t.trophyName || "Unknown Trophy",
                 description: t.trophyDetail || (t.trophyHidden ? "Secret Objective" : "No description available."),
                 detail: t.trophyDetail || (t.trophyHidden ? "Secret Objective" : "No description available."),
-                type: (t.trophyType || "bronze").toLowerCase(),
+                type: tRank,
+                rank: tRank.toUpperCase(),
                 icon: t.trophyIconUrl || null,
                 groupId: t.trophyGroupId || "default",
-                targetValue: t.trophyProgressTargetValue ? parseInt(t.trophyProgressTargetValue, 10) : 0,
-                rarity: t.trophyRare !== undefined ? `${t.trophyRare}%` : "Rare",
+                targetValue: targetVal,
+                rarity: t.trophyRare !== undefined ? `${t.trophyRare}%` : `${earnedRate}%`,
                 earnedRate: earnedRate,
                 difficultyTier: getDifficultyTier(earnedRate),
                 hidden: !!t.trophyHidden
@@ -753,41 +777,50 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
             return acc;
         }, { bronze: 0, silver: 0, gold: 0, platinum: 0 });
 
-        // Safe null-checked evaluation for definedTrophies
         const hasDefinedTrophies = definedTrophies && typeof definedTrophies === "object" && Object.keys(definedTrophies).length > 0;
         const resolvedDefinedTrophies = hasDefinedTrophies 
             ? definedTrophies 
             : (previousRecord.definedTrophies || gradeCounts);
 
-        const skeletonData = {
+        const resolvedDescription = previousRecord.description || 
+            `Official PlayStation title: ${resolvedName}. Features: ${capabilities.multiplayerType}. Mode: ${capabilities.onlineMode}. Cross-platform play: ${capabilities.isCrossPlatform ? 'Supported' : 'PlayStation Network'}.`;
+
+        // Unified CUSA / PPSA resolution
+        const resolvedCusaId = subTitleId || previousRecord.cusaId || previousRecord.titleId || null;
+
+        const masterGameData = {
             commId: canonicalCommId,
             npCommunicationId: canonicalCommId,
+            cusaId: resolvedCusaId,
+            titleId: resolvedCusaId,
             name: resolvedName,
+            description: resolvedDescription,
             platform: platform || previousRecord.platform || "PS5",
             npServiceName: opt.npServiceName,
             posterArt: safePoster,
             trophyTitleIconUrl: iconArt || previousRecord.trophyTitleIconUrl || safePoster,
+            fileSize: previousRecord.fileSize || estimateGameFileSize(resolvedName, platform),
+            isMultiplayer: capabilities.isMultiplayer,
+            isCoOpOnly: capabilities.isCoOpOnly,
+            hasCampaign: capabilities.hasCampaign,
+            multiplayerType: capabilities.multiplayerType,
+            onlineMode: capabilities.onlineMode,
+            isCrossPlatform: capabilities.isCrossPlatform,
+            crossPlayPlatforms: capabilities.crossPlayPlatforms,
+            psPlusRequired: capabilities.psPlusRequired,
+            multiplayerInfo: capabilities,
             definedTrophies: resolvedDefinedTrophies,
             totalTrophies: mappedTrophies.length || previousRecord.totalTrophies || 0,
             trophies: mappedTrophies,
             groups: rawGroups,
             dlcs: enrichedDlcs,
             rawSonyMetadata: (metaRes && metaRes.trophies && metaRes.trophies.length > 0) ? metaRes : (previousRecord.rawSonyMetadata || {}),
-            isMultiplayer: capabilities.isMultiplayer,
-            isCoOpOnly: capabilities.isCoOpOnly,
-            hasCampaign: capabilities.hasCampaign,
-            multiplayerType: capabilities.multiplayerType,
-            isCrossPlatform: capabilities.isCrossPlatform,
-            crossPlayPlatforms: capabilities.crossPlayPlatforms,
-            psPlusRequired: capabilities.psPlusRequired,
-            multiplayerInfo: capabilities,
-            description: `Official PlayStation title: ${resolvedName}. Supports: ${capabilities.multiplayerType}. Cross-platform: ${capabilities.isCrossPlatform ? 'Yes' : 'No'}.`,
             lastUpdated: new Date().toISOString()
         };
 
-        globalGames[canonicalCommId] = skeletonData;
-        await syncNodeToFirebase(`games/${canonicalCommId}`, skeletonData);
-        return skeletonData;
+        globalGames[canonicalCommId] = masterGameData;
+        await syncNodeToFirebase(`games/${canonicalCommId}`, masterGameData);
+        return masterGameData;
     } catch (err) {
         console.warn(`[SKELETON ERROR] Failed to ingest skeleton for ${canonicalCommId}:`, err.message);
         return globalGames[canonicalCommId] || null;
@@ -795,7 +828,7 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: DEEP TROPHY PROGRESS & INTER-TROPHY INTERVAL INGESTION]
+// [SECTION: DEEP TROPHY PROGRESS WITH PS5 OBJECTIVE RATIOS (x/x)]
 // ----------------------------------------------------------------------------
 async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, platform, globalGames, existingGameProgress = {}) {
     if (!commId || commId === "Dashboard" || !auth) return null;
@@ -853,8 +886,9 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
                 progressRatio = targetVal > 0 ? `${targetVal}/${targetVal}` : "100%";
             }
 
+            const tRank = (skelTrophy?.type || s.trophyType || "bronze").toLowerCase();
+
             standaloneProgressMap[s.trophyId] = {
-                ...s,
                 trophyId: s.trophyId,
                 gameTitle: titleName,
                 commId: canonicalCommId,
@@ -864,7 +898,8 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
                 detail: skelTrophy?.detail || "Objective detail",
                 description: skelTrophy?.detail || "Objective detail",
                 icon: skelTrophy?.icon || null,
-                type: skelTrophy?.type || "bronze",
+                type: tRank,
+                rank: tRank.toUpperCase(),
                 rarity: skelTrophy?.rarity || "Rare",
                 earnedRate: skelTrophy?.earnedRate || "0.0",
                 difficultyTier: skelTrophy?.difficultyTier || getDifficultyTier(skelTrophy?.earnedRate),
@@ -889,7 +924,8 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
                     npCommunicationId: canonicalCommId,
                     name: skelTrophy?.name || "Unlocked Trophy",
                     icon: skelTrophy?.icon || null,
-                    type: skelTrophy?.type || "bronze",
+                    type: tRank,
+                    rank: tRank.toUpperCase(),
                     rarity: skelTrophy?.rarity || "Rare",
                     difficultyTier: skelTrophy?.difficultyTier || getDifficultyTier(skelTrophy?.earnedRate),
                     timestamp: s.earnedDateTime ? new Date(s.earnedDateTime).getTime() : 0,
@@ -997,7 +1033,7 @@ async function evaluateUserActivityDelta(agentAuth, targetId, knownKey, knownGam
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: FULL USER TELEMETRY INGESTION (SINGLE commId ANCHOR)]
+// [SECTION: FULL USER TELEMETRY INGESTION (SINGLE ROOT commId)]
 // ----------------------------------------------------------------------------
 async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, isManualRun, globalGames, cloudDlcCatalog = {}) {
     let resolvedTargetId = String(targetId || ACCOUNT_IDS[userKey]);
@@ -1243,7 +1279,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             }
         }
 
-        // SINGLE PERMANENT ROOT COMM ID ANCHOR (Never drops to null on Dashboard)
+        // Single permanent commId anchor
         const fallbackCommId = allRecentGames[0]?.npCommunicationId || 
                                existingData?.commId || 
                                existingData?.activeHunt?.commId || 
@@ -1277,7 +1313,8 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                     g.definedTrophies,
                     globalGames,
                     purchasedGames,
-                    cloudDlcCatalog
+                    cloudDlcCatalog,
+                    g.titleId || g.npTitleId
                 );
             }
         }
@@ -1344,6 +1381,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                         npCommunicationId: persistentRootCommId, 
                         commId: persistentRootCommId,
                         titleId: isDashboard ? null : activeTitleId,
+                        cusaId: isDashboard ? null : activeTitleId,
                         title: matchedGame.name || resolvedTitle, 
                         platform: hwContext.activeHardware, 
                         gameBuildVersion: hwContext.gameBuildVersion,
@@ -1381,10 +1419,10 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
             .slice(0, 25);
 
-        // Clean presence payload: SINGLE commId, human readable currentGame, NO DUPLICATES
+        // Core presence payload: Single commId, human readable currentGame, accurate SKU
         const presence = {
             online: isPlayerOnline,
-            currentGame: resolvedTitle,                          // Human-readable title (e.g. "Way of the Hunter 2")
+            currentGame: resolvedTitle,                          // Readable Title (e.g. "Way of the Hunter 2")
             commId: persistentRootCommId,                         // SINGLE commId for external site lookups
             currentGameId: isDashboard ? null : activeTitleId,    // Product SKU (PPSA/CUSA) or null when on Dashboard
             currentGameArt: resolvedPoster,
@@ -1401,7 +1439,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         return {
             onlineId: canonicalOnlineId, 
             accountId: resolvedTargetId,
-            commId: persistentRootCommId,                         // ONLY ONCE at user root
+            commId: persistentRootCommId,                         // Single clean root commId
             npssoValid: true,
             npssoStatus: "ACTIVE",
             handshakeText: `${canonicalOnlineId.toUpperCase()} HANDSHAKE: FIREBASE LIVE`,
@@ -1510,11 +1548,10 @@ function buildSquadIntelligence(allGamertagsData) {
 // ----------------------------------------------------------------------------
 async function executeSyncPass() {
     try {
-        console.log(`[INIT] Starting Pure PSN Engine v60.9.5 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
+        console.log(`[INIT] Starting Full PSN Engine v62.0.0 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
 
         await loadPersistentTokens();
 
-        // 1. Discover registered users, private secrets & cloud DLC catalog
         const siteUsersRaw = await resilientFetch(buildRtdbUrl("/users")).then(r => r.json()).catch(() => ({}));
         const userSecretsRaw = await resilientFetch(buildRtdbUrl("/user_secrets")).then(r => r.json()).catch(() => ({}));
         const cloudDlcCatalog = await resilientFetch(buildRtdbUrl("/woth2_cloud/data/dlcs")).then(r => r.json()).catch(() => ({}));
@@ -1522,7 +1559,6 @@ async function executeSyncPass() {
         const previousFirebaseData = await fetchFromFirebase();
         const globalGames = previousFirebaseData.games || {};
 
-        // 2. Discover cookies for WildHorse_Spirit and Ray from Firebase
         let wolfNpsso = process.env.PSN_NPSSO_WEREWOLF || "";
         let rayNpsso = process.env.PSN_NPSSO_RAY || "";
 
@@ -1539,7 +1575,6 @@ async function executeSyncPass() {
             });
         }
 
-        // 3. Resolve Master Squad Session
         const sessionState = await resolveMasterSession(wolfNpsso, rayNpsso);
         const { masterAuth, failoverState } = sessionState;
 
@@ -1557,7 +1592,7 @@ async function executeSyncPass() {
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport, 
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
-            engineVersion: "60.9.5", 
+            engineVersion: "62.0.0", 
             analyticsTag: GA4_MEASUREMENT_ID, 
             codeTimestamp: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }) + " EDT"
         };
@@ -1565,7 +1600,6 @@ async function executeSyncPass() {
         const activeCanonicalGamertags = new Set();
         let anyProfileUpdated = false;
 
-        // 4. Ingest the Core 4 Squad (WildHorse_Spirit, Ray, Darkwing69420, DesdemonaTiger)
         if (masterAuth && masterAuth.accessToken) {
             console.log(`[CORE PACK] Ingesting Core 4 squad members using session: ${masterAuth.userKey}...`);
             for (const member of CORE_PACK) {
@@ -1599,7 +1633,6 @@ async function executeSyncPass() {
             CORE_PACK.forEach(m => activeCanonicalGamertags.add(m.tag));
         }
 
-        // 5. Ingest Outside Hunters (Requires personal cookie)
         if (siteUsersRaw && typeof siteUsersRaw === "object") {
             for (const [emailKey, userRecord] of Object.entries(siteUsersRaw)) {
                 const gaming = userRecord.gaming_platforms || userRecord;
@@ -1607,7 +1640,6 @@ async function executeSyncPass() {
                 const accountId = gaming.psn_account_id ? String(gaming.psn_account_id).trim() : null;
                 const rawNpsso = userSecretsRaw?.[emailKey]?.psn_npsso || gaming.psn_npsso;
 
-                // Skip Core 4 members (handled above)
                 const isCore = CORE_PACK.some(m => m.tag.toLowerCase() === tag.toLowerCase() || m.id === accountId);
                 if (isCore) continue;
 
@@ -1651,7 +1683,6 @@ async function executeSyncPass() {
             }
         }
 
-        // 6. Automatic Roster Cleanup
         const existingRemoteKeys = Object.keys(previousFirebaseData?.gamertags || {});
         for (const oldKey of existingRemoteKeys) {
             if (!activeCanonicalGamertags.has(oldKey)) {
@@ -1661,7 +1692,6 @@ async function executeSyncPass() {
             }
         }
 
-        // 7. Recalculate Squad Leaderboard & Social Matrix
         const squadIntel = buildSquadIntelligence(finalData.gamertags);
         finalData.squadLeaderboard = squadIntel.leaderboard;
         finalData.squadAnalytics = {
@@ -1680,13 +1710,12 @@ async function executeSyncPass() {
         diagnosticReport.lastCheck = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
         await syncNodeToFirebase("authDiagnostics", diagnosticReport);
 
-        console.log(`[SUCCESS] PSN Engine v60.9.5 completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
+        console.log(`[SUCCESS] Full PSN Engine v62.0.0 completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Synchronization cycle failed: ${criticalError.message}`);
     }
 }
 
-// Line 1130: Clean exit for GitHub Actions workflow runner
 (async () => {
     await executeSyncPass();
     process.exit(0);
