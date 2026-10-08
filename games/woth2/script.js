@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-08 00:20 EDT | Firebase Sync Target: /utm_links | Version: 6.0.0]
+// [Smart Cache-Buster Time: 2026-10-08 00:35 EDT | Firebase Sync Target: /utm_links | Version: 6.0.1]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
@@ -1214,15 +1214,15 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     saveWatchlistEntry() {
-      const editId = document.getElementById("editWatchlistId").value;
-      const tag = document.getElementById("watchIdentifier").value.trim();
-      const species = document.getElementById("watchSpeciesSelect").value;
-      const region = document.getElementById("watchRegionSelect").value;
-      const landmark = document.getElementById("watchLandmark").value.trim();
-      const fitness = parseFloat(document.getElementById("watchFitness").value);
-      const age = parseInt(document.getElementById("watchAge").value, 10);
-      const maxAge = parseInt(document.getElementById("watchMaxAge").value, 10);
-      const stars = parseInt(document.getElementById("watchStars").value, 10);
+      const editId = document.getElementById("editWatchlistId") ? document.getElementById("editWatchlistId").value : "";
+      const tag = document.getElementById("watchIdentifier") ? document.getElementById("watchIdentifier").value.trim() : "";
+      const species = document.getElementById("watchSpeciesSelect") ? document.getElementById("watchSpeciesSelect").value : "";
+      const region = document.getElementById("watchRegionSelect") ? document.getElementById("watchRegionSelect").value : "";
+      const landmark = document.getElementById("watchLandmark") ? document.getElementById("watchLandmark").value.trim() : "";
+      const fitness = document.getElementById("watchFitness") ? parseFloat(document.getElementById("watchFitness").value) : NaN;
+      const age = document.getElementById("watchAge") ? parseInt(document.getElementById("watchAge").value, 10) : NaN;
+      const maxAge = document.getElementById("watchMaxAge") ? parseInt(document.getElementById("watchMaxAge").value, 10) : 12;
+      const stars = document.getElementById("watchStars") ? parseInt(document.getElementById("watchStars").value, 10) : 1;
 
       if (!tag || isNaN(fitness) || isNaN(age) || !landmark) {
         return alert("Please enter the animal identifier, fitness %, age, and need zone landmark.");
@@ -1339,8 +1339,8 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="card-footer-row">
             <span>Day: <strong>${item.sightedDay || 1}</strong> &rarr; <strong>${this.currentDay}</strong></span>
             <div class="card-actions">
-              <button class="btn-link btn-link-edit" onclick="window.CompanionApp.editWatchlistEntry('${item.id}')">Edit</button>
-              <button class="btn-link btn-link-delete" onclick="window.CompanionApp.deleteWatchlistEntry('${item.id}')">Harvest</button>
+              <button type="button" class="btn-link btn-link-edit" onclick="window.CompanionApp.editWatchlistEntry('${item.id}')">Edit</button>
+              <button type="button" class="btn-link btn-link-delete" onclick="window.CompanionApp.deleteWatchlistEntry('${item.id}')">Harvest</button>
             </div>
           </div>
         `;
@@ -1391,15 +1391,15 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     submitHarvestInspection() {
-      const species = document.getElementById("harvestSpeciesSelect").value;
-      const location = document.getElementById("harvestLocationSelect").value;
-      const firearm = document.getElementById("harvestFirearm").value;
-      const caliber = document.getElementById("harvestCaliber").value;
-      const shotDist = document.getElementById("harvestShotDist").value;
-      const trackDist = document.getElementById("harvestTrackDist").value;
-      const fitness = parseFloat(document.getElementById("harvestFitness").value) || 60;
-      const stars = parseInt(document.getElementById("harvestRatingStars").value, 10);
-      const sellPrice = document.getElementById("harvestSellPrice").value;
+      const species = document.getElementById("harvestSpeciesSelect") ? document.getElementById("harvestSpeciesSelect").value : "Elk";
+      const location = document.getElementById("harvestLocationSelect") ? document.getElementById("harvestLocationSelect").value : "New Laurentia";
+      const firearm = document.getElementById("harvestFirearm") ? document.getElementById("harvestFirearm").value : "Rifle";
+      const caliber = document.getElementById("harvestCaliber") ? document.getElementById("harvestCaliber").value : ".308";
+      const shotDist = document.getElementById("harvestShotDist") ? document.getElementById("harvestShotDist").value : 100;
+      const trackDist = document.getElementById("harvestTrackDist") ? document.getElementById("harvestTrackDist").value : 20;
+      const fitness = document.getElementById("harvestFitness") ? (parseFloat(document.getElementById("harvestFitness").value) || 60) : 60;
+      const stars = document.getElementById("harvestRatingStars") ? parseInt(document.getElementById("harvestRatingStars").value, 10) : 1;
+      const sellPrice = document.getElementById("harvestSellPrice") ? document.getElementById("harvestSellPrice").value : 200;
 
       const newRecord = {
         species,
@@ -1423,6 +1423,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.db.gameData.harvest_records.unshift(newRecord);
       this.renderHarvestHistory();
       this.silentSaveGameTelemetry();
+      alert("✅ Harvest logged successfully!");
     },
 
     renderDogProfile() {
@@ -1440,9 +1441,9 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
           <div class="stepper-controls">
             <span style="font-size:0.8rem; color:var(--text-muted);">Bonding:</span>
-            <button class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('bonding', -1)">&minus;</button>
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('bonding', -1)">&minus;</button>
             <strong style="color:var(--accent-amber); font-size:0.95rem;">${this.dogBondingLevel} / 6</strong>
-            <button class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('bonding', 1)">&plus;</button>
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('bonding', 1)">&plus;</button>
           </div>
         </div>
       `;
@@ -1454,9 +1455,9 @@ document.addEventListener("DOMContentLoaded", () => {
             <p style="font-size:0.78rem; color:var(--text-muted);">Controls response speed to Heel, Sit, Stay. Stops brush rustling.</p>
           </div>
           <div class="stepper-controls">
-            <button class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('following', -1)">&minus;</button>
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('following', -1)">&minus;</button>
             <strong style="color:#fff; font-size:0.95rem;">${this.dogFollowingCommandsLevel} / 6</strong>
-            <button class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('following', 1)">&plus;</button>
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('following', 1)">&plus;</button>
           </div>
         </div>
 
@@ -1466,9 +1467,9 @@ document.addEventListener("DOMContentLoaded", () => {
             <p style="font-size:0.78rem; color:var(--text-muted);">Follows faint blood tracks over water and rain to stop meat degradation.</p>
           </div>
           <div class="stepper-controls">
-            <button class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('blood', -1)">&minus;</button>
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('blood', -1)">&minus;</button>
             <strong style="color:#fff; font-size:0.95rem;">${this.dogBloodTrackingLevel} / 6</strong>
-            <button class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('blood', 1)">&plus;</button>
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('blood', 1)">&plus;</button>
           </div>
         </div>
 
@@ -1478,9 +1479,9 @@ document.addEventListener("DOMContentLoaded", () => {
             <p style="font-size:0.78rem; color:var(--text-muted);">Weaves ahead in zig-zag patterns to flush birds and retrieve small game.</p>
           </div>
           <div class="stepper-controls">
-            <button class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('search', -1)">&minus;</button>
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('search', -1)">&minus;</button>
             <strong style="color:#fff; font-size:0.95rem;">${this.dogSearchQuarteringLevel} / 6</strong>
-            <button class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('search', 1)">&plus;</button>
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('search', 1)">&plus;</button>
           </div>
         </div>
       `;
@@ -1698,7 +1699,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Tactical Sandwich Routing Engine
     bindUI() {
       const sandwichBtn = document.getElementById("moduleSandwichBtn");
       const dropdownMenu = document.getElementById("moduleDropdownMenu");
@@ -1710,15 +1710,18 @@ document.addEventListener("DOMContentLoaded", () => {
           dropdownMenu.classList.toggle("hidden");
         });
 
-        document.addEventListener("click", () => {
+        document.addEventListener("click", (e) => {
           if (!dropdownMenu.classList.contains("hidden")) {
-            dropdownMenu.classList.add("hidden");
+            if (!dropdownMenu.contains(e.target) && e.target !== sandwichBtn) {
+              dropdownMenu.classList.add("hidden");
+            }
           }
         });
       }
 
       document.querySelectorAll(".module-item-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
           document.querySelectorAll(".module-item-btn").forEach(b => b.classList.remove("active"));
           document.querySelectorAll(".tab-pane").forEach(p => p.classList.remove("active"));
           
@@ -1808,17 +1811,33 @@ document.addEventListener("DOMContentLoaded", () => {
       const watchSpecies = document.getElementById("watchSpeciesSelect");
       if (watchSpecies) watchSpecies.addEventListener("change", () => this.updateWatchlistMaxAge());
 
+      // Direct explicit click listeners with preventDefault
       const saveWatchBtn = document.getElementById("saveWatchlistBtn");
-      if (saveWatchBtn) saveWatchBtn.addEventListener("click", () => this.saveWatchlistEntry());
+      if (saveWatchBtn) {
+        saveWatchBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          this.saveWatchlistEntry();
+        });
+      }
 
       const cancelWatchBtn = document.getElementById("cancelEditWatchlistBtn");
-      if (cancelWatchBtn) cancelWatchBtn.addEventListener("click", () => this.resetWatchlistForm());
+      if (cancelWatchBtn) {
+        cancelWatchBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          this.resetWatchlistForm();
+        });
+      }
 
       const harvestSpecies = document.getElementById("harvestSpeciesSelect");
       if (harvestSpecies) harvestSpecies.addEventListener("change", () => this.updateDynamicHarvestSchema());
 
       const submitHarvestBtn = document.getElementById("submitHarvestRecordBtn");
-      if (submitHarvestBtn) submitHarvestBtn.addEventListener("click", () => this.submitHarvestInspection());
+      if (submitHarvestBtn) {
+        submitHarvestBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          this.submitHarvestInspection();
+        });
+      }
 
       const modal = document.getElementById("authModal");
       const authBtn = document.getElementById("authModalBtn");
