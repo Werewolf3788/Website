@@ -707,11 +707,11 @@
     },
     {
       "species": "Wood Bison",
-      "max_age_years": 18,
+      "max_age_years": 25,
       "total_lifespan_days": 54,
-      "young_years": [1, 2, 3, 4, 5],
-      "adult_years": [6, 7, 8, 9, 10, 11, 12],
-      "mature_years": [13, 14, 15, 16, 17, 18],
+      "young_years": [1, 2, 3, 4, 5,6, 7, 8],
+      "adult_years": [9, 10, 11, 12,13, 14, 15, 16],
+      "mature_years": [17, 18, 19, 20, 21, 22, 23,24, 25],
       "reserves": ["Aurora Shores", "Elkcrest Island"],
       "cull_advisory": "Heavy horn bases require full maturity. Cull thin-curled adult bulls.",
       "mortality_warning": "Heavy horn bases require full maturity. Natural death occurs after 54 in-game days."
