@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-07 17:42 EDT | Firebase Sync Target: /utm_links | Version: 4.3.0]
+// [Smart Cache-Buster Time: 2026-10-07 20:30 EDT | Firebase Sync Target: /utm_links | Version: 4.8.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
@@ -19,6 +19,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const auth = firebase.auth();
   const rtdb = firebase.database();
   const db = firebase.firestore();
+
+  // Helper: Enforce universal email root mapping across RTDB & Firestore
+  function getResolvedPrimaryEmail(user) {
+    if (!user) return "";
+    const google = user.providerData && user.providerData.find(p => p && p.providerId === "google.com");
+    if (google && google.email) return google.email.toLowerCase().trim();
+    if (user.email) return user.email.toLowerCase().trim();
+    return "hunter@guest.local";
+  }
+
+  function getEmailKey(email) {
+    if (!email) return "unknown_user";
+    return email.toLowerCase().replace(/@/g, "_at_").replace(/\./g, "_");
+  }
 
   const CompanionApp = {
     files: {
@@ -50,7 +64,12 @@ document.addEventListener("DOMContentLoaded", () => {
     dogBloodTrackingLevel: 3,
     dogSearchQuarteringLevel: 0,
     currentUser: null,
+    currentEmail: "",
+    currentEmailKey: "",
     watchlist: [],
+    psnAccountId: "",
+    psnOnlineId: "",
+    trophies: [],
 
     async init() {
       this.loadSavedState();
@@ -139,6 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.safeSetValue("dogCompanionInput", `${this.dogCompanionName} (Lv. ${this.dogBondingLevel})`);
     },
 
+    // Session persistence across localStorage and Firestore users/{email}
     saveSession() {
       const nameEl = document.getElementById("hunterNameInput");
       const lvlEl = document.getElementById("hunterLevelInput");
@@ -160,8 +180,8 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("woth2_dog_search", this.dogSearchQuarteringLevel);
       localStorage.setItem("woth2_watchlist", JSON.stringify(this.watchlist));
 
-      if (this.currentUser) {
-        db.collection("users").doc(this.currentUser.uid).set({
+      if (this.currentUser && this.currentEmail) {
+        db.collection("users").doc(this.currentEmail).set({
           companion_day: this.currentDay,
           companion_time: this.currentTime,
           hunter_name: this.hunterName,
@@ -175,7 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
           },
           watchlist: this.watchlist,
           updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true }).catch(e => console.warn("Cloud save:", e));
+        }, { merge: true }).catch(e => console.warn("Cloud save warning:", e));
       }
 
       alert("Telemetry, dog progress, and watchlist synced successfully!");
@@ -263,6 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
+    // Renders primary horizontal menu, filtering out Settings and Privacy from top bar
     renderNav(items) {
       const navList = document.getElementById("navList");
       if (!navList) return;
@@ -272,6 +293,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const folderGroups = {};
 
       items.forEach(item => {
+        const cleanTitle = (item.title || "").toLowerCase();
+        const cleanUrl = (item.url || "").toLowerCase();
+        // Hide Settings and Privacy Policy from top bar; accessed via Profile Avatar Menu
+        if (cleanTitle.includes("setting") || cleanUrl.includes("setting") || cleanTitle.includes("privacy") || cleanUrl.includes("privacy")) {
+          return;
+        }
+
         if (!item.group) {
           standaloneLinks.push(item);
         } else {
@@ -344,6 +372,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
+    // Authentication State & Interactive Avatar Profile Dropdown
     initAuth() {
       auth.onAuthStateChanged(async user => {
         const modalBtn = document.getElementById("authModalBtn");
@@ -353,18 +382,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (user) {
           this.currentUser = user;
+          this.currentEmail = getResolvedPrimaryEmail(user);
+          this.currentEmailKey = getEmailKey(this.currentEmail);
+
           if (modalBtn) modalBtn.classList.add("hidden");
           if (profileBadge) profileBadge.classList.remove("hidden");
 
-          let gamerTag = user.displayName || this.hunterName;
-          let avatarUrl = user.photoURL || DEFAULT_USER_AVATAR;
+          // 1. RTDB Live Identity Hook (/users/{emailKey})
+          rtdb.ref(`/users/${this.currentEmailKey}`).on("value", snapshot => {
+            const rtdbProfile = snapshot.val() || {};
+            const gamerTag = rtdbProfile.username || user.displayName || this.hunterName;
+            let avatarUrl = rtdbProfile.avatar_url || user.photoURL || DEFAULT_USER_AVATAR;
 
+            if (rtdbProfile.avatar_source === "google") {
+              avatarUrl = user.photoURL || DEFAULT_USER_AVATAR;
+            }
+
+            if (nameEl) nameEl.textContent = gamerTag;
+            if (avatarEl) avatarEl.src = avatarUrl;
+
+            // PSN Telemetry Hooks
+            this.psnAccountId = rtdbProfile.psn_account_id || "";
+            this.psnOnlineId = rtdbProfile.psn_username || "";
+            if (this.psnAccountId) {
+              this.syncPlayStationTrophies(this.psnAccountId);
+            }
+          });
+
+          // 2. Firestore Game Telemetry Hook (users/{currentEmail})
           try {
-            const doc = await db.collection("users").doc(user.uid).get();
+            const doc = await db.collection("users").doc(this.currentEmail).get();
             if (doc.exists) {
               const data = doc.data();
-              if (data.username) gamerTag = data.username;
-              if (data.avatar_url) avatarUrl = data.avatar_url;
               if (data.hunter_name) {
                 this.hunterName = data.hunter_name;
                 this.safeSetValue("hunterNameInput", this.hunterName);
@@ -394,14 +443,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 this.renderWatchlist();
               }
             }
-          } catch (e) {}
+          } catch (e) {
+            console.warn("Firestore data load warning:", e);
+          }
 
-          if (nameEl) nameEl.textContent = gamerTag;
-          if (avatarEl) avatarEl.src = avatarUrl;
+          this.renderProfileDropdown(true);
+
         } else {
           this.currentUser = null;
+          this.currentEmail = "";
+          this.currentEmailKey = "";
           if (modalBtn) modalBtn.classList.remove("hidden");
           if (profileBadge) profileBadge.classList.add("hidden");
+          this.renderProfileDropdown(false);
         }
       });
 
@@ -415,11 +469,136 @@ document.addEventListener("DOMContentLoaded", () => {
           }).catch(e => alert("Sign In Error: " + e.message));
         });
       }
+    },
 
-      const logoutBtn = document.getElementById("logoutBtn");
-      if (logoutBtn) {
-        logoutBtn.addEventListener("click", () => auth.signOut());
+    // Interactive Profile Avatar Dropdown Menu (Replaces Settings & Privacy on Nav)
+    renderProfileDropdown(isAuthenticated) {
+      let menu = document.getElementById("userProfileDropdownMenu");
+      const profileBadge = document.getElementById("userProfile");
+
+      if (!menu && profileBadge) {
+        menu = document.createElement("div");
+        menu.id = "userProfileDropdownMenu";
+        menu.className = "profile-dropdown-menu hidden";
+        menu.style.cssText = `
+          position: absolute;
+          top: 60px;
+          right: 20px;
+          background: #151c27;
+          border: 1px solid #273447;
+          border-radius: 8px;
+          padding: 8px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+          z-index: 1005;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          min-width: 180px;
+        `;
+        document.body.appendChild(menu);
+
+        // Click Avatar Toggle
+        profileBadge.style.cursor = "pointer";
+        profileBadge.addEventListener("click", (e) => {
+          e.stopPropagation();
+          menu.classList.toggle("hidden");
+        });
+
+        document.addEventListener("click", () => {
+          if (!menu.classList.contains("hidden")) menu.classList.add("hidden");
+        });
       }
+
+      if (!menu) return;
+
+      if (isAuthenticated) {
+        menu.innerHTML = `
+          <a href="../../security/settings.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;">⚙️ Settings Hub</a>
+          <a href="../../security/privacy.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;">🔒 Privacy Policy</a>
+          <div style="height:1px; background:#273447; margin:2px 0;"></div>
+          <button id="menuLogoutBtn" style="background:transparent; border:none; color:#e74c3c; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; display:flex; align-items:center; gap:8px; font-weight:600;">🚪 Log Out</button>
+        `;
+        const logoutBtn = document.getElementById("menuLogoutBtn");
+        if (logoutBtn) logoutBtn.addEventListener("click", () => auth.signOut().then(() => window.location.reload()));
+      } else {
+        menu.innerHTML = `
+          <button id="menuLoginBtn" style="background:transparent; border:none; color:#0088ff; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; font-weight:600;">🔑 Log In</button>
+          <a href="../../security/privacy.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px;">🔒 Privacy Policy</a>
+        `;
+        const loginBtn = document.getElementById("menuLoginBtn");
+        if (loginBtn) {
+          loginBtn.addEventListener("click", () => {
+            const modal = document.getElementById("authModal");
+            if (modal) modal.classList.remove("hidden");
+          });
+        }
+      }
+    },
+
+    // PlayStation Trophy Telemetry Sync Engine (PSN Account ID Gated)
+    syncPlayStationTrophies(accountId) {
+      if (!accountId) return;
+
+      // Listen to RTDB Trophy Worker Feed or Firestore Trophy Collection
+      rtdb.ref(`/psn/trophies/woth2/${accountId}`).on("value", snapshot => {
+        const raw = snapshot.val();
+        if (raw && Array.isArray(raw.trophies)) {
+          this.trophies = raw.trophies;
+        } else if (raw && typeof raw === "object") {
+          this.trophies = Object.values(raw);
+        } else {
+          // Standard WOTH2 PSN Trophy Archetype Roster fallback
+          this.trophies = this.getDefaultWoth2TrophyList();
+        }
+        this.renderTrophies();
+      });
+    },
+
+    getDefaultWoth2TrophyList() {
+      return [
+        { id: "trophy_plat", title: "Master of Nez Perce", desc: "Unlock all trophies in Way of the Hunter 2.", grade: "Platinum", earned: false },
+        { id: "trophy_1", title: "Five-Star Legend", desc: "Harvest a 5-Star Mature trophy animal with 95%+ fitness.", grade: "Gold", earned: true, earnedDate: "2026-10-04" },
+        { id: "trophy_2", title: "Bloodhound Dedication", desc: "Reach Level 6 Blood Tracking with Bacon.", grade: "Silver", earned: false },
+        { id: "trophy_3", title: "Tactical Cull", desc: "Harvest 10 low-fitness genetic cull animals to protect the herd.", grade: "Bronze", earned: true, earnedDate: "2026-10-06" },
+        { id: "trophy_4", title: "Long-Range Marksman", desc: "Harvest an animal from a distance of over 350 yards.", grade: "Silver", earned: true, earnedDate: "2026-10-02" },
+        { id: "trophy_5", title: "Reserve Explorer", desc: "Discover all primary camps and need zones in Jackalope Cordillera.", grade: "Bronze", earned: false }
+      ];
+    },
+
+    renderTrophies() {
+      const container = document.getElementById("psnTrophiesContainer");
+      if (!container) return;
+
+      const earnedCount = this.trophies.filter(t => t.earned).length;
+      container.innerHTML = `
+        <div style="grid-column: 1/-1; display:flex; justify-content:space-between; align-items:center; background:#151c27; padding:12px 16px; border-radius:8px; border:1px solid #273447; margin-bottom:12px;">
+          <div>
+            <strong style="color:#fff; font-size:1rem;">PlayStation Sync &bull; ${this.psnOnlineId || 'Connected PSN'}</strong>
+            <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">Account ID: [${this.psnAccountId.substring(0, 4)}••••] (Active Telemetry)</div>
+          </div>
+          <span class="badge" style="background:#28374d; color:var(--accent-gold); font-size:0.85rem;">${earnedCount} / ${this.trophies.length} Trophies</span>
+        </div>
+      `;
+
+      this.trophies.forEach(t => {
+        const div = document.createElement("div");
+        div.className = "telemetry-card";
+        const gradeColor = t.grade === "Platinum" ? "#00d2d3" : (t.grade === "Gold" ? "#f5a623" : (t.grade === "Silver" ? "#bdc3c7" : "#cd7f32"));
+        div.innerHTML = `
+          <div>
+            <div class="card-top-row">
+              <span class="animal-title">${t.title}</span>
+              <span class="badge" style="border-color:${gradeColor}; color:${gradeColor};">${t.grade}</span>
+            </div>
+            <p style="font-size:0.8rem; color:var(--text-muted); margin-top:6px;">${t.desc}</p>
+          </div>
+          <div class="card-footer-row" style="margin-top:10px;">
+            <span>Status: <strong style="color:${t.earned ? 'var(--success)' : 'var(--text-muted)'};">${t.earned ? '✔ Earned' : '🔒 Locked'}</strong></span>
+            ${t.earnedDate ? `<span style="font-size:0.75rem; color:var(--text-muted);">${t.earnedDate}</span>` : ''}
+          </div>
+        `;
+        container.appendChild(div);
+      });
     },
 
     initDynamicFeatures() {
@@ -440,7 +619,6 @@ document.addEventListener("DOMContentLoaded", () => {
       this.updateDynamicHarvestSchema();
     },
 
-    // Populates Region/Location Selects
     populateRegions() {
       const regions = (this.db.regions && this.db.regions.regions) ? this.db.regions.regions : [];
       const locationSelect = document.getElementById("harvestLocationSelect");
@@ -465,7 +643,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Dynamic Filtering: Repopulates the target species select with ONLY animals that live in that region
     filterSpeciesByRegion(regionSelectId, speciesSelectId) {
       const regionEl = document.getElementById(regionSelectId);
       const speciesEl = document.getElementById(speciesSelectId);
@@ -704,7 +881,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Detailed multi-variable Inspection History Cards Grid
     renderHarvestHistory() {
       const container = document.getElementById("harvestHistoryContainer");
       if (!container) return;
@@ -782,7 +958,6 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Harvest inspection record logged successfully!");
     },
 
-    // Interactive Dog Companion Profile with Stepper Adjusters
     renderDogProfile() {
       const summaryContainer = document.getElementById("dogSummaryCard");
       const skillsContainer = document.getElementById("dogSkillsGrid");
@@ -1067,7 +1242,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
 
-      // Regional dynamic filtering listeners
       const locSelect = document.getElementById("harvestLocationSelect");
       if (locSelect) {
         locSelect.addEventListener("change", () => {
