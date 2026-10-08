@@ -2,20 +2,18 @@
  * File: psn.js
  * Location: /Playstation/psn.js
  * Description: Squad Pack Master Telemetry Engine - Universal Squad Sync:
- *              1. Multi-tier Hardware Detection (PS5, PS4, PS3, PSP, Vita).
- *              2. Remote Play / Cloud Streaming status detection.
- *              3. Game binary build format (PS5 Native vs PS4 Back-Compat).
- *              4. Enriched DLC extraction: official badge art, descriptions,
- *                 prices, included items, and per-user entitlement ownership.
- *              5. Direct root currentGameId, currentTitleId, and currentCommunicationId.
+ *              1. Explicit Root-Level commId inside /psn/gamertags/{tag}/.
+ *              2. Bulletproof Game Catalog Write-Protection (/psn/games/{commId}).
+ *              3. Full DLC Metadata: Images, Descriptions, Pricing & Entitlements.
+ *              4. Real-time Hardware, Remote Play & Build Version Detection.
+ *              5. Lifetime Playtime Anchor (never wipes to 0 on Dashboard).
  *              6. Dynamic token pulling from RTDB (/users & /user_secrets).
- *              7. Lifetime Playtime Anchor (prevents hours resetting on Dashboard).
  * Analytics Tagging: G-CTYHDF4MSD (Deployable via GTM).
- * Version: 60.6.0 - Advanced Platform Detection & Complete DLC Metadata Engine
- * Date & Time Stamp: 2026-10-08 05:17:00 EDT (America/New_York)
+ * Version: 60.9.0 - Universal Root commId & Bulletproof Catalog Restoration
+ * Date & Time Stamp: 2026-10-08 05:37:00 EDT (America/New_York)
  * ============================================================================ */
 
-// Line 20: Core dependencies and official PSN API SDK imports
+// Line 18: Core dependencies and official PSN API SDK imports
 const fs = require("fs");
 const path = require("path");
 const http = require("http");
@@ -46,13 +44,13 @@ const {
     makeUniversalSearch
 } = psnApi;
 
-// Line 50: Endpoints, Secrets & Local Tokens Configuration
+// Line 48: Base endpoints and local cache path
 const FIREBASE_BASE_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn";
 const RTDB_ROOT_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
 const GA4_MEASUREMENT_ID = "G-CTYHDF4MSD";
 const LOCAL_TOKENS_PATH = path.join(__dirname, ".psn_tokens.json");
 
-// Line 57: Squad Gamertag roster mappings
+// Line 55: Core 4 Gamertag mappings
 const SQUAD_GAMERTAGS = {
     wildhorse_spirit: "WildHorse_Spirit",
     ray: "OneLIVIDMAN",
@@ -60,7 +58,7 @@ const SQUAD_GAMERTAGS = {
     marc: "DesdemonaTiger"
 };
 
-// Line 65: Permanent Core Squad PSN Account IDs
+// Line 63: Permanent Squad PSN Account IDs
 const ACCOUNT_IDS = {
     wildhorse_spirit: "4087137467908566201",
     ray: "2732733730346312494",
@@ -68,7 +66,7 @@ const ACCOUNT_IDS = {
     marc: "6551906246515882523"
 };
 
-// Line 73: Core 4 Pack Definitions
+// Line 71: Core 4 Pack Definitions
 const CORE_PACK = [
     { key: "wildhorse_spirit", tag: "WildHorse_Spirit", id: ACCOUNT_IDS.wildhorse_spirit },
     { key: "ray", tag: "OneLIVIDMAN", id: ACCOUNT_IDS.ray },
@@ -76,7 +74,7 @@ const CORE_PACK = [
     { key: "marc", tag: "DesdemonaTiger", id: ACCOUNT_IDS.marc }
 ];
 
-// Line 81: Initial friend seeds to guarantee bootstrap coverage
+// Line 79: Initial friend seeds to guarantee bootstrap coverage
 const SEED_TARGET_ACCOUNT_IDS = [
     "4087137467908566201", // WildHorse_Spirit
     "2732733730346312494", // OneLIVIDMAN (Ray)
@@ -91,7 +89,7 @@ const SEED_TARGET_ACCOUNT_IDS = [
     "1749160004083248186"
 ];
 
-// Line 96: Affiliate tracking
+// Line 94: Affiliate tracking
 const AMAZON_TAG = "moviesanywhere02-20";
 
 let tokenStore = { ray: {}, wildhorse_spirit: {} };
@@ -109,7 +107,6 @@ let diagnosticReport = {
 // ----------------------------------------------------------------------------
 // [SECTION: HTTP & HTTPS RESILIENT FETCH LAYER]
 // ----------------------------------------------------------------------------
-// Line 113: Resilient network fetch layer for node environments
 async function resilientFetch(url, options = {}) {
     const isHttps = url.startsWith("https://");
     const client = isHttps ? https : http;
@@ -163,9 +160,8 @@ async function resilientFetch(url, options = {}) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: FIREBASE AUTHENTICATED REST API UTILITIES]
+// [SECTION: FIREBASE SECURE REST API UTILITIES]
 // ----------------------------------------------------------------------------
-// Line 170: Appends secret key if provided in environment
 function buildRtdbUrl(pathWithLeadingSlash) {
     const secret = process.env.FIREBASE_AUTH_SECRET;
     const authQuery = secret ? `?auth=${encodeURIComponent(secret)}` : "";
@@ -214,12 +210,10 @@ async function deleteNodeFromFirebase(endpointPath) {
 // ----------------------------------------------------------------------------
 // [SECTION: HARDWARE, STREAMING & PLATFORM IDENTIFICATION]
 // ----------------------------------------------------------------------------
-// Line 220: Comprehensive platform and session inspection
 function parseDetailedHardwareContext(rawPresence, matchedGame = {}) {
     const primaryInfo = rawPresence?.primaryPlatformInfo || {};
     const rawPlatform = (primaryInfo.platform || rawPresence?.platform || "").toUpperCase();
     
-    // 1. Detect physical hardware
     let activeHardware = "Unknown";
     if (rawPlatform.includes("PS5")) activeHardware = "PS5";
     else if (rawPlatform.includes("PS4")) activeHardware = "PS4";
@@ -228,7 +222,6 @@ function parseDetailedHardwareContext(rawPresence, matchedGame = {}) {
     else if (rawPlatform.includes("PSP")) activeHardware = "PSP";
     else activeHardware = (matchedGame?.platform || "PS5");
 
-    // 2. Detect Remote Play / Cloud Streaming status
     const isStreaming = !!(
         primaryInfo.isInGameStreaming || 
         primaryInfo.streamingType || 
@@ -237,7 +230,6 @@ function parseDetailedHardwareContext(rawPresence, matchedGame = {}) {
         String(primaryInfo.platform).toUpperCase().includes("STREAM")
     );
 
-    // 3. Detect binary build format (PS5 Native vs PS4 Back-Compat vs PS3)
     const gameInfoList = rawPresence?.gameTitleInfoList?.[0] || primaryInfo?.gameTitleInfoList?.[0] || {};
     const rawFormatValue = (gameInfoList.formatValue || matchedGame.category || matchedGame.npServiceName || "").toUpperCase();
 
@@ -373,7 +365,7 @@ function generateAffiliateUrl(gameName) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: TROPHY CAPABILITIES & MULTIPLAYER PARSER]
+// [SECTION: CAPABILITY & MULTIPLAYER PARSER]
 // ----------------------------------------------------------------------------
 function inferGameCapabilitiesFromTrophies(gameName, trophies = [], commId = null) {
     const combinedTrophyText = (trophies || []).map(t => `${t.name || ""} ${t.description || ""} ${t.detail || ""}`).join(" ").toLowerCase();
@@ -636,18 +628,15 @@ async function resolveMasterSession(wildHorseNpsso, rayNpsso) {
 // ----------------------------------------------------------------------------
 // [SECTION: DLC & ADD-ON EXTRACTION WITH STORE CATALOG FALLBACK]
 // ----------------------------------------------------------------------------
-// Line 575: Enriches DLCs with official artwork, descriptions, prices & gear
 async function enrichDLCGroups(canonicalCommId, mappedGroups, userPurchasedTitles = [], cloudDlcCatalog = {}) {
     return mappedGroups.map(grp => {
         const groupNameLower = (grp.name || "").toLowerCase().trim();
         
-        // Match against cloud catalog
         const matchedCloudPack = Object.values(cloudDlcCatalog).find(pack => {
             const packNameLower = (pack.pack_name || pack.name || "").toLowerCase().trim();
             return packNameLower.includes(groupNameLower) || groupNameLower.includes(packNameLower);
         }) || {};
 
-        // Resolve official square badge image or wide cloud banner
         const resolvedDlcImage = resolveGamePosterArt([
             grp.trophyGroupIconUrl,
             matchedCloudPack.image,
@@ -655,7 +644,6 @@ async function enrichDLCGroups(canonicalCommId, mappedGroups, userPurchasedTitle
             matchedCloudPack.thumbnail
         ]);
 
-        // Resolve ownership
         const isUserOwned = userPurchasedTitles.some(p => (p.name || "").toLowerCase().includes(groupNameLower)) ||
                             matchedCloudPack.price === "Free" ||
                             (grp.definedTrophies && Object.values(grp.definedTrophies).some(count => count > 0));
@@ -675,13 +663,21 @@ async function enrichDLCGroups(canonicalCommId, mappedGroups, userPurchasedTitle
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: COMPLETE MASTER GAME SKELETON INGESTION (/psn/games/{gameId})]
+// [SECTION: BULLETPROOF GAME SKELETON INGESTION (/psn/games/{commId})]
 // ----------------------------------------------------------------------------
-// Line 625: Stores game catalog data under /psn/games/
 async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, iconArt, definedTrophies, globalGames, userPurchasedTitles = [], cloudDlcCatalog = {}) {
     if (!commId || commId === "Dashboard" || !auth) return null;
 
     const canonicalCommId = String(commId).trim().toUpperCase();
+
+    // STRICT GATE 1: Sony Trophy endpoints ONLY accept NPWR IDs.
+    // If a CUSA or PPSA title ID is supplied, preserve existing record and do not query trophies.
+    if (!canonicalCommId.startsWith("NPWR")) {
+        console.log(`[PRESERVE SKELETON] ${canonicalCommId} is a Product Title SKU, not an NPWR ID. Preserving existing record.`);
+        return globalGames[canonicalCommId] || null;
+    }
+
+    const previousRecord = globalGames[canonicalCommId] || {};
 
     try {
         const isPs5 = platform === "PS5";
@@ -696,16 +692,20 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
                 metaRes = altRes;
             }
         }
-        metaRes = metaRes || { trophies: [] };
+
+        // STRICT GATE 2 (ZERO-DATA-LOSS WRITE PROTECTION):
+        // If Sony returned 0 trophies and we have existing trophies, abort write immediately.
+        if ((!metaRes || !metaRes.trophies || metaRes.trophies.length === 0) && previousRecord.trophies && previousRecord.trophies.length > 0) {
+            console.warn(`[WRITE-PROTECTION ACTIVE] Sony returned 0 trophies for ${canonicalCommId}. Preserving existing ${previousRecord.trophies.length} trophies in RTDB.`);
+            return previousRecord;
+        }
 
         let groupsRes = await getTitleTrophyGroups(auth, canonicalCommId, opt).catch(() => null);
         if (!groupsRes || !groupsRes.trophyGroups) {
             const altService = opt.npServiceName === "trophy2" ? "trophy" : "trophy2";
             groupsRes = await getTitleTrophyGroups(auth, canonicalCommId, { npServiceName: altService }).catch(() => ({ trophyGroups: [] }));
         }
-        groupsRes = groupsRes || { trophyGroups: [] };
 
-        const previousRecord = globalGames[canonicalCommId] || {};
         const safePoster = resolveGamePosterArt([posterArt, iconArt, previousRecord.posterArt, previousRecord.trophyTitleIconUrl]);
 
         const mappedTrophies = (metaRes?.trophies && metaRes.trophies.length > 0) ? metaRes.trophies.map(t => {
@@ -736,7 +736,6 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
             definedTrophies: g.definedTrophies || {}
         })) : (previousRecord.groups || []);
 
-        // Fully enrich DLC groups with art, descriptions, pricing and items
         const enrichedDlcs = await enrichDLCGroups(canonicalCommId, rawGroups, userPurchasedTitles, cloudDlcCatalog);
 
         const resolvedName = gameName || previousRecord.name || "PlayStation Game";
@@ -756,12 +755,12 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
             npServiceName: opt.npServiceName,
             posterArt: safePoster,
             trophyTitleIconUrl: iconArt || previousRecord.trophyTitleIconUrl || safePoster,
-            definedTrophies: definedTrophies || gradeCounts,
+            definedTrophies: (definedTrophies && Object.keys(definedTrophies).length > 0) ? definedTrophies : (previousRecord.definedTrophies || gradeCounts),
             totalTrophies: mappedTrophies.length || previousRecord.totalTrophies || 0,
             trophies: mappedTrophies,
             groups: rawGroups,
             dlcs: enrichedDlcs,
-            rawSonyMetadata: (metaRes && metaRes.trophies) ? metaRes : (previousRecord.rawSonyMetadata || {}),
+            rawSonyMetadata: (metaRes && metaRes.trophies && metaRes.trophies.length > 0) ? metaRes : (previousRecord.rawSonyMetadata || {}),
             isMultiplayer: capabilities.isMultiplayer,
             isCoOpOnly: capabilities.isCoOpOnly,
             hasCampaign: capabilities.hasCampaign,
@@ -986,7 +985,7 @@ async function evaluateUserActivityDelta(agentAuth, targetId, knownKey, knownGam
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: FULL USER TELEMETRY INGESTION (PURE PLAYSTATION DATA)]
+// [SECTION: FULL USER TELEMETRY INGESTION (ROOT commId ANCHOR)]
 // ----------------------------------------------------------------------------
 async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, isManualRun, globalGames, cloudDlcCatalog = {}) {
     let resolvedTargetId = String(targetId || ACCOUNT_IDS[userKey]);
@@ -1089,7 +1088,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 
         const mergedGamesMap = new Map();
 
-        // 1. Ingest native playtime and recently played games
+        // 1. Ingest native playtime and recently played titles
         telemetryData.forEach(g => {
             const commId = g.npCommunicationId;
             const titleId = g.titleId || g.npTitleId;
@@ -1232,16 +1231,29 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             }
         }
 
-        if (!canonicalActiveCommId && resolvedTitle !== "Dashboard") {
-            canonicalActiveCommId = allRecentGames[0]?.npCommunicationId || existingData?.currentCommunicationId || existingData?.activeHunt?.commId || null;
-        }
+        // PERMANENT ROOT COMM ID ANCHOR (Never drops to null on Dashboard)
+        const fallbackCommId = allRecentGames[0]?.npCommunicationId || 
+                               existingData?.commId || 
+                               existingData?.currentCommunicationId || 
+                               existingData?.activeHunt?.commId || 
+                               "NPWR_ACTIVE";
+
+        const persistentRootCommId = (canonicalActiveCommId && canonicalActiveCommId !== "Dashboard")
+            ? canonicalActiveCommId
+            : fallbackCommId;
+
+        const persistentTitleId = activeTitleId || 
+                                  allRecentGames[0]?.titleId || 
+                                  allRecentGames[0]?.npTitleId || 
+                                  existingData?.currentTitleId || 
+                                  persistentRootCommId;
 
         const { playSessions, currentGameDurationFormatted, activeSessionSeconds } = updateGameSessionTracking(
             existingData,
-            canonicalActiveCommId,
+            persistentRootCommId,
             resolvedTitle,
             isPlayerOnline,
-            activeTitleId
+            persistentTitleId
         );
 
         // Ingest Master Game Skeletons into /psn/games/
@@ -1263,21 +1275,19 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             }
         }
 
-        const matchedGame = (canonicalActiveCommId && mergedGamesMap.get(canonicalActiveCommId)) || (resolvedTitle !== "Dashboard" ? allRecentGames[0] : null) || {};
+        const matchedGame = (persistentRootCommId && mergedGamesMap.get(persistentRootCommId)) || (resolvedTitle !== "Dashboard" ? allRecentGames[0] : null) || {};
 
-        // Parse detailed active hardware, streaming, and build version
         const hwContext = parseDetailedHardwareContext(rawP, matchedGame);
 
         const isDashboard = !resolvedTitle || resolvedTitle.toUpperCase() === "DASHBOARD";
         const resolvedPoster = isDashboard ? null : resolveGamePosterArt([
-            (canonicalActiveCommId && mergedGamesMap.get(canonicalActiveCommId)?.art),
-            (activeTitleId && mergedGamesMap.get(activeTitleId)?.art),
+            (persistentRootCommId && mergedGamesMap.get(persistentRootCommId)?.art),
+            (persistentTitleId && mergedGamesMap.get(persistentTitleId)?.art),
             matchedGame.art,
             matchedGame.trophyTitleIconUrl,
             existingData?.currentGameArt
         ]);
 
-        // Retain lifetime hours across dashboard/idle states
         const persistentLifetimeFormatted = matchedGame.nativePlaytimeFormatted || 
                                            existingData?.currentGameHours || 
                                            existingData?.activeHunt?.hoursFormatted || 
@@ -1296,10 +1306,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             ? (Math.round((activeSessionSeconds / 3600) * 10) / 10)
             : persistentLifetimeNumeric;
 
-        // Resolve canonical root game IDs (Product Title SKU & Trophy Comm ID)
-        const canonicalGameId = activeTitleId || matchedGame.titleId || matchedGame.npTitleId || null;
-        const canonicalTrophyCommId = canonicalActiveCommId || matchedGame.npCommunicationId || null;
-
         const stats = await getUserTrophyProfileSummary(auth, resolvedTargetId).catch(() => ({}));
         let activeHunt = existingData?.activeHunt || null;
         
@@ -1307,8 +1313,8 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         const cumulativeUnlockedTrophies = [];
 
         const titlesToIngestProgress = [
-            ...(canonicalActiveCommId ? [canonicalActiveCommId] : []),
-            ...allRecentGames.slice(0, 10).map(g => g.npCommunicationId).filter(id => id && String(id).startsWith("NPWR") && id !== canonicalActiveCommId)
+            ...(persistentRootCommId ? [persistentRootCommId] : []),
+            ...allRecentGames.slice(0, 10).map(g => g.npCommunicationId).filter(id => id && String(id).startsWith("NPWR") && id !== persistentRootCommId)
         ];
 
         for (const cId of titlesToIngestProgress) {
@@ -1324,14 +1330,14 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                     cumulativeUnlockedTrophies.push(...subtree.earnedTrophiesList);
                 }
 
-                if (cId === canonicalActiveCommId) {
+                if (cId === persistentRootCommId) {
                     const sortedEarned = [...subtree.earnedTrophiesList].sort((a, b) => a.timestamp - b.timestamp);
                     const earliestActiveTrophyTimestamp = sortedEarned.length > 0 ? sortedEarned[0].timestamp : null;
 
                     activeHunt = { 
-                        npCommunicationId: canonicalActiveCommId, 
-                        commId: canonicalActiveCommId,
-                        titleId: canonicalGameId,
+                        npCommunicationId: persistentRootCommId, 
+                        commId: persistentRootCommId,
+                        titleId: persistentTitleId,
                         title: matchedGame.name || resolvedTitle, 
                         platform: hwContext.activeHardware, 
                         gameBuildVersion: hwContext.gameBuildVersion,
@@ -1349,7 +1355,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                             ratio: matchedGame.completionRatio || "0%"
                         },
                         groupEarnings: subtree.groupEarnings,
-                        dlcs: globalGames[canonicalActiveCommId]?.dlcs || []
+                        dlcs: globalGames[persistentRootCommId]?.dlcs || []
                     };
                 }
             }
@@ -1369,13 +1375,14 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
             .slice(0, 25);
 
-        // Core presence state (Twitch completely removed; Full hardware and game IDs exposed)
+        // Core presence payload
         const presence = {
             online: isPlayerOnline,
             currentGame: resolvedTitle,
-            currentGameId: isDashboard ? (canonicalGameId || canonicalTrophyCommId) : (canonicalGameId || canonicalTrophyCommId),
-            currentTitleId: canonicalGameId,
-            currentCommunicationId: canonicalTrophyCommId,
+            commId: persistentRootCommId,                      // ROOT COMM ID (Pinned)
+            currentCommunicationId: persistentRootCommId,      // ROOT COMM ID (Pinned)
+            currentGameId: persistentTitleId,                  // ROOT GAME ID (Pinned)
+            currentTitleId: persistentTitleId,
             currentGameArt: resolvedPoster,
             currentGameHours: safePlaytimeFormatted,
             currentGameNumericHours: safeNumericHours,
@@ -1390,6 +1397,9 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         return {
             onlineId: canonicalOnlineId, 
             accountId: resolvedTargetId,
+            commId: persistentRootCommId,                      // ROOT COMM ID (Under Gamertag)
+            currentCommunicationId: persistentRootCommId,      // ROOT COMM ID (Under Gamertag)
+            currentGameId: persistentTitleId,                  // ROOT GAME ID (Under Gamertag)
             npssoValid: true,
             npssoStatus: "ACTIVE",
             handshakeText: `${canonicalOnlineId.toUpperCase()} HANDSHAKE: FIREBASE LIVE`,
@@ -1456,6 +1466,7 @@ function buildSquadIntelligence(allGamertagsData) {
         gamesPlayed: p.gamesPlayed || 0,
         isOnline: !!p.online,
         currentGame: p.currentGame || "Dashboard",
+        commId: p.commId || p.currentCommunicationId || null,
         currentGameId: p.currentGameId || null,
         platform: p.platform || "PS5",
         gameBuildVersion: p.gameBuildVersion || "PS5 Native Game",
@@ -1497,11 +1508,11 @@ function buildSquadIntelligence(allGamertagsData) {
 // ----------------------------------------------------------------------------
 async function executeSyncPass() {
     try {
-        console.log(`[INIT] Starting Pure PSN Engine v60.6.0 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
+        console.log(`[INIT] Starting Pure PSN Engine v60.9.0 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
 
         await loadPersistentTokens();
 
-        // 1. Discover registered users, private credentials & curated cloud DLC catalog
+        // 1. Discover registered users, private secrets & cloud DLC catalog
         const siteUsersRaw = await resilientFetch(buildRtdbUrl("/users")).then(r => r.json()).catch(() => ({}));
         const userSecretsRaw = await resilientFetch(buildRtdbUrl("/user_secrets")).then(r => r.json()).catch(() => ({}));
         const cloudDlcCatalog = await resilientFetch(buildRtdbUrl("/woth2_cloud/data/dlcs")).then(r => r.json()).catch(() => ({}));
@@ -1544,7 +1555,7 @@ async function executeSyncPass() {
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport, 
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
-            engineVersion: "60.6.0", 
+            engineVersion: "60.9.0", 
             analyticsTag: GA4_MEASUREMENT_ID, 
             codeTimestamp: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }) + " EDT"
         };
@@ -1667,7 +1678,7 @@ async function executeSyncPass() {
         diagnosticReport.lastCheck = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
         await syncNodeToFirebase("authDiagnostics", diagnosticReport);
 
-        console.log(`[SUCCESS] PSN Engine v60.6.0 completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
+        console.log(`[SUCCESS] PSN Engine v60.9.0 completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Synchronization cycle failed: ${criticalError.message}`);
     }
