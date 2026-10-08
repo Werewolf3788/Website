@@ -2,20 +2,19 @@
  * File: psn.js
  * Location: /Playstation/psn.js
  * Description: Master PSN Telemetry & Deep Catalog Ingestion Engine:
- * 1. Master Catalog under /psn/games/{commId} merges NPWR primary
- * and CUSA/PPSA secondary data with full trophies & DLCs.
- * 2. PlayStation Store Deep Metadata Ingestion Engine:
- * - Direct ingestion of complete raw store descriptions, features, 
- * weapon/animal/map lists, and DLC pack details.
- * - Extracts platform badges (PS Plus, players, 4K, DualSense haptics).
- * - Extracts complete 7-category accessibility features & controls.
- * - Supports Concept URLs (/concept/:id) & Product SKUs (/product/:id).
- * 3. User Progress isolated strictly to /psn/gamertags/{onlineId}.
- * 4. Single root commId for rapid external site dev lookups.
- * 5. Hardware presence, devices, PS5 (x/x) objectives & entitlements.
+ * 1. Master Skeleton under /psn/games/{commId} strictly holds universal game facts:
+ * - NPWR primary commId, CUSA/PPSA SKU, and conceptId (e.g., 10008946).
+ * - Full uncompressed Store storyline, animal/weapon rosters, feature bullets.
+ * - Hardware, online, player-count & trigger/vibration store badges.
+ * - 7-category accessibility features & master trophies list.
+ * - Itemized DLC groups & edition tiers (e.g., Heirloom Pack EP4389-PPSA17911_00-WOTH2PREORDERDLC).
+ * 2. User Overlays isolated strictly to /psn/gamertags/{onlineId}:
+ * - Root commId acts as foreign key pointer directly to /psn/games/{commId}.
+ * - liveTrophyProgress contains earned flags, EDT timestamps, and (x/x) sub-progress.
+ * 3. Hot-standby failover across WildHorse_Spirit and Ray.
  * Analytics Tagging: G-CTYHDF4MSD (Deployable via GTM).
- * Version: 64.0.0 - Full PS Store Rich Descriptions, Badges, Accessibility & DLC Ingestion
- * Date & Time Stamp: 2026-10-08 14:35:00 EDT (America/New_York)
+ * Version: 65.0.0 - Base-Layer Skeleton & Player Overlay Architecture
+ * Date & Time Stamp: 2026-10-08 14:48:00 EDT (America/New_York)
  * ============================================================================ */
 
 const fs = require("fs");
@@ -218,7 +217,7 @@ function parseStoreHtmlFeatures(html) {
     const accessibility = {};
     let currentCategory = "General";
 
-    // 1. Extract platform & network badges
+    // 1. Platform, Network, and Controller Badges
     const badgeRegex = /<li[^>]*data-qa="gameInfo#releaseInformation#gameBadges#item[^>]*>([\s\S]*?)<\/li>/gi;
     let badgeMatch;
     while ((badgeMatch = badgeRegex.exec(html)) !== null) {
@@ -226,7 +225,6 @@ function parseStoreHtmlFeatures(html) {
         if (clean && !badges.includes(clean)) badges.push(clean);
     }
 
-    // Fallback badge extraction from raw paragraph tags matching Sony patterns
     const fallbackBadges = [
         "PS Plus required for online play",
         "In-game purchases optional",
@@ -247,7 +245,7 @@ function parseStoreHtmlFeatures(html) {
         if (html.includes(b) && !badges.includes(b)) badges.push(b);
     });
 
-    // 2. Extract structured Accessibility elements
+    // 2. Structured Accessibility Suite
     const accessMatch = html.match(/Accessibility Features([\s\S]*?)(?:Game and Legal Info|<footer)/i);
     if (accessMatch && accessMatch[1]) {
         const rawAccess = accessMatch[1];
@@ -295,7 +293,6 @@ async function queryStoreMetadata(identifier, isProductSku = false) {
         const entity = pageProps.concept || pageProps.product || {};
         const parsedFeatures = parseStoreHtmlFeatures(html);
 
-        // Extract deep description: prioritize official store raw description over summary
         let richDescription = entity.longDescription || entity.description || null;
         if (!richDescription) {
             const descMatch = html.match(/<p data-qa="gameInfo#releaseInformation#description"[^>]*>([\s\S]*?)<\/p>/i) ||
@@ -551,7 +548,7 @@ function generateAffiliateUrl(gameName) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: CAPABILITY & MULTIPLAYER PARSER WITH STORE BADGE OVERRIDE]
+// [SECTION: CAPABILITY & MULTIPLAYER PARSER WITH STORE BADGES]
 // ----------------------------------------------------------------------------
 function inferGameCapabilitiesFromTrophies(gameName, trophies = [], commId = null, storeBadges = []) {
     const combinedTrophyText = (trophies || []).map(t => `${t.name || ""} ${t.description || ""} ${t.detail || ""}`).join(" ").toLowerCase();
@@ -954,9 +951,7 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
         const resolvedName = gameName || previousRecord.name || "PlayStation Game";
         const resolvedCusaId = subTitleId || previousRecord.cusaId || previousRecord.titleId || null;
 
-        // --------------------------------------------------------------------
-        // DEEP PLAYSTATION STORE INGESTION: CONCEPTS & PRODUCT SKUS
-        // --------------------------------------------------------------------
+        // Auto Concept Resolution & Multi-Tier Store Fetch
         let resolvedConceptId = initialConceptId || 
                                 previousRecord.conceptId || 
                                 extractConceptIdFromText(posterArt) || 
@@ -969,14 +964,13 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
 
         let storeListing = previousRecord.storeListing || null;
 
-        // Ingest from Concept ID or fallback directly to Product SKU (CUSA/PPSA)
         if (!storeListing || !storeListing.longDescription) {
             if (resolvedConceptId) {
-                console.log(`[STORE INGESTION] Pulling Store details via concept/${resolvedConceptId} (${resolvedName})...`);
+                console.log(`[STORE SKELETON INGESTION] Pulling Store via concept/${resolvedConceptId} (${resolvedName})...`);
                 storeListing = await queryStoreMetadata(resolvedConceptId, false);
             }
             if ((!storeListing || !storeListing.longDescription) && resolvedCusaId) {
-                console.log(`[STORE INGESTION] Secondary lookup via product/${resolvedCusaId}...`);
+                console.log(`[STORE SKELETON INGESTION] Fallback Store lookup via product/${resolvedCusaId}...`);
                 const productListing = await queryStoreMetadata(resolvedCusaId, true);
                 if (productListing) {
                     storeListing = { ...(storeListing || {}), ...productListing };
@@ -998,7 +992,7 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
             ? definedTrophies 
             : (previousRecord.definedTrophies || gradeCounts);
 
-        // PRIORITY DESCRIPTION RESOLUTION: NEVER STRIP DETAILED GAMEPLAY / WEAPONS / ANIMAL LISTS
+        // Store Full Uncompressed Storyline, Animal/Weapon details & Legal info
         const resolvedDescription = storeListing?.longDescription || 
                                     previousRecord.description || 
                                     `Official PlayStation title: ${resolvedName}. Features: ${capabilities.multiplayerType}. Mode: ${capabilities.onlineMode}. Cross-platform play: ${capabilities.isCrossPlatform ? 'Supported' : 'PlayStation Network'}.`;
@@ -1107,6 +1101,7 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
 
             const tRank = (skelTrophy?.type || s.trophyType || "bronze").toLowerCase();
 
+            // PURE OVERLAY RECORD: Stored per player, maps directly to master trophy skeleton
             standaloneProgressMap[s.trophyId] = {
                 trophyId: s.trophyId,
                 gameTitle: titleName,
@@ -1252,7 +1247,7 @@ async function evaluateUserActivityDelta(agentAuth, targetId, knownKey, knownGam
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: FULL USER TELEMETRY INGESTION (SINGLE ROOT commId)]
+// [SECTION: FULL USER TELEMETRY INGESTION (SINGLE ROOT commId POINTER)]
 // ----------------------------------------------------------------------------
 async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, isManualRun, globalGames, cloudDlcCatalog = {}) {
     let resolvedTargetId = String(targetId || ACCOUNT_IDS[userKey]);
@@ -1355,7 +1350,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 
         const mergedGamesMap = new Map();
 
-        // 1. Ingest native playtime and recently played titles
+        // Ingest native playtime & recently played titles
         telemetryData.forEach(g => {
             const commId = g.npCommunicationId;
             const titleId = g.titleId || g.npTitleId;
@@ -1395,7 +1390,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             if (titleId) mergedGamesMap.set(titleId, gameRecord);
         });
 
-        // 2. Ingest trophy titles catalog
+        // Ingest trophy titles catalog
         sortedTitles.forEach(t => {
             const commId = t.npCommunicationId;
             const titleId = t.npTitleId;
@@ -1500,6 +1495,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             }
         }
 
+        // Persistent Pointer: Anchor commId for external site lookups
         const fallbackCommId = allRecentGames[0]?.npCommunicationId || 
                                existingData?.commId || 
                                existingData?.activeHunt?.commId || 
@@ -1645,10 +1641,11 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
             .slice(0, 25);
 
+        // Core presence: single commId foreign key pointer, clean SKU & human-readable title
         const presence = {
             online: isPlayerOnline,
-            currentGame: resolvedTitle,                          // Readable Title (e.g. "Way of the Hunter 2")
-            commId: persistentRootCommId,                         // SINGLE commId for external site lookups
+            currentGame: resolvedTitle,                          // Human Readable Title
+            commId: persistentRootCommId,                         // SINGLE commId key pointer to /psn/games/{commId}
             currentGameId: isDashboard ? null : activeTitleId,    // Product SKU (PPSA/CUSA) or null when on Dashboard
             conceptId: globalGames[persistentRootCommId]?.conceptId || matchedGame.conceptId || null,
             currentGameArt: resolvedPoster,
@@ -1665,7 +1662,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         return {
             onlineId: canonicalOnlineId, 
             accountId: resolvedTargetId,
-            commId: persistentRootCommId,                         // Single clean root commId
+            commId: persistentRootCommId,                         // SINGLE root commId foreign key pointer
             conceptId: globalGames[persistentRootCommId]?.conceptId || matchedGame.conceptId || null,
             storeListing: globalGames[persistentRootCommId]?.storeListing || null,
             storeBadges: globalGames[persistentRootCommId]?.storeBadges || [],
@@ -1779,7 +1776,7 @@ function buildSquadIntelligence(allGamertagsData) {
 // ----------------------------------------------------------------------------
 async function executeSyncPass() {
     try {
-        console.log(`[INIT] Starting Full PSN Engine v64.0.0 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
+        console.log(`[INIT] Starting Full PSN Engine v65.0.0 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
 
         await loadPersistentTokens();
 
@@ -1823,7 +1820,7 @@ async function executeSyncPass() {
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport, 
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
-            engineVersion: "64.0.0", 
+            engineVersion: "65.0.0", 
             analyticsTag: GA4_MEASUREMENT_ID, 
             codeTimestamp: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }) + " EDT"
         };
@@ -1941,7 +1938,7 @@ async function executeSyncPass() {
         diagnosticReport.lastCheck = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
         await syncNodeToFirebase("authDiagnostics", diagnosticReport);
 
-        console.log(`[SUCCESS] Full PSN Engine v64.0.0 completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
+        console.log(`[SUCCESS] Full PSN Engine v65.0.0 completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Synchronization cycle failed: ${criticalError.message}`);
     }
