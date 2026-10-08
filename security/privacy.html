@@ -1,5 +1,5 @@
 <!-- Line 1: Privacy Policy & User Data Protection Protocol -->
-<!-- [Smart Cache-Buster Time: 2026-10-07 13:32 EDT | Firebase Sync Target: /utm_links | Version: 2.0.0] -->
+<!-- [Smart Cache-Buster Time: 2026-10-07 20:09 EDT | Firebase Sync Target: /utm_links | Version: 2.1.0] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,6 +22,8 @@
             --text-muted: #8b9bb4;
             --accent-blue: #0088ff;
             --accent-gold: #f5a623;
+            --accent-green: #2ecc71;
+            --accent-purple: #9b59b6;
             --danger: #e74c3c;
             --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
@@ -100,6 +102,25 @@
             margin: 16px 0;
         }
 
+        .callout-warning {
+            border-left-color: var(--danger);
+            background: rgba(231, 76, 60, 0.08);
+        }
+
+        .callout-security {
+            border-left-color: var(--accent-gold);
+            background: rgba(245, 166, 35, 0.08);
+        }
+
+        code {
+            background: var(--bg-surface);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
         footer {
             margin-top: 40px;
             text-align: center;
@@ -119,42 +140,65 @@
 
         <!-- Section 1 -->
         <h2>1. Information We Collect</h2>
-        <p>When you interact with our platform, companion apps, or sign in through Firebase Authentication, we may collect the following information:</p>
+        <p>When you sign in and interact with our platform, companion apps, or synchronization tools across Firebase, we collect and process the following information:</p>
         <ul>
-            <li><strong>Authentication Identifiers:</strong> Email addresses, telephone numbers (used strictly for single-use SMS verification), and third-party authentication tokens (such as Google Sign-In).</li>
-            <li><strong>User Profile Data:</strong> Custom display gamer tags, preferred gaming platform (PlayStation, PC, Xbox), avatar image links, and generated Friend Codes.</li>
-            <li><strong>Game & Telemetry State:</strong> Harvest logs, trophy ratings, discovered need zones, dog skill allocations, checklist progression, and active challenge markers synced to Cloud Firestore and browser localStorage.</li>
+            <li><strong>Primary Authentication Identifiers:</strong> Your verified email address (resolved with precedence given to your Google OAuth profile if linked, or your standard registration address). Email addresses serve as the unique document identifier in Cloud Firestore (<code>users/{email}</code>) and as the sanitized root key in Firebase Realtime Database (<code>/users/{emailKey}</code>).</li>
+            <li><strong>Public & Shared Hunter Profile:</strong> Your custom display name/gamer tag, selected avatar preference (Google profile image, live Twitch DecAPI avatar, or custom URL), connected social links (capped at 5 personal shortcuts), and an auto-generated 8-character Friend Code.</li>
+            <li><strong>Gaming Handles & Telemetry Identifiers:</strong> Public and friend-scoped usernames for PlayStation Network, Steam, and Xbox Live, as well as Twitch handles used to query streaming state via DecAPI.</li>
+            <li><strong>Hunting Progress & Companion Logs:</strong> Harvest records, trophy ratings, watchlists, cull progression, herd management lifecycles, and dog skill allocations recorded in Cloud Firestore.</li>
         </ul>
 
         <!-- Section 2 -->
-        <h2>2. How We Use and Share Information</h2>
-        <p>Your information is used strictly to provide core gaming tools and synchronization features across your devices:</p>
+        <h2>2. Strictly Private & Sensitive Credentials</h2>
+        <div class="callout-box callout-security">
+            <p><strong>Owner-Only Security Isolation:</strong> Backend telemetry keys—specifically your <strong>PSN Account ID #</strong> and your <strong>PSN NPSSO Session Cookie</strong>—are classified as strictly private credentials.</p>
+        </div>
         <ul>
-            <li>To verify identity and persist your personal hunting progress across browser refreshes and sessions.</li>
-            <li>To permit companion social features: when a player connects using your Friend Code, they can view your chosen display gamer tag, primary platform, and game progress metrics. <strong>Your private login details (email and phone number) are never exposed to other players.</strong></li>
-            <li>We do not sell, rent, or monetize personal user data to any third-party advertisers.</li>
+            <li><strong>Zero Public Exposure:</strong> These sensitive keys are locked to <code>No One (Private)</code> and are never shared with friends, displayed on public badges, or leaked in search queries. They are stored solely in your private RTDB record to authenticate background trophy synchronization workers.</li>
+            <li><strong>In-Browser Auto-Masking:</strong> On the Settings dashboard, sensitive credentials default to masked password fields and feature a 60-second timed reveal safeguard before automatically re-masking to prevent unauthorized over-the-shoulder viewing.</li>
+            <li><strong>Input Sanitization:</strong> NPSSO payloads pasted as raw Sony API responses are parsed client-side to isolate the bare 64-character token; expired session error responses are detected without storing unauthorized session tokens.</li>
         </ul>
 
         <!-- Section 3 -->
-        <h2>3. Data Deletion & Self-Service Account Closure</h2>
-        <div class="callout-box">
-            <p><strong>Immediate Self-Service Deletion:</strong> You retain complete control over your stored records. You can permanently erase your entire profile, trophy logs, and cloud documents at any time by navigating to your <strong>Account Settings</strong> and clicking <strong>"Permanently Delete Account"</strong>.</p>
-        </div>
-        <p>Upon confirming deletion, your Firestore user document tree is wiped immediately and your Firebase Authentication record is revoked.</p>
-        <p>Alternatively, you may request manual data purge by contacting us directly at <a href="mailto:raykevin71888@gmail.com">raykevin71888@gmail.com</a>. Manual requests are processed within 48 hours.</p>
+        <h2>3. How Information is Used and Shared</h2>
+        <p>We process your data strictly to maintain core game companion utilities and multi-device synchronizations:</p>
+        <ul>
+            <li><strong>Telemetry & Session Persistence:</strong> Your settings, live presence, and linked platforms stay synced in real time across desktop, tablet, and mobile browsers.</li>
+            <li><strong>Friend-Gated Telemetry Access:</strong> When another hunter exchanges an 8-character Friend Code with you, they receive access only to your display name, platform badge, and hunting logs. <strong>Your private email address and backend credentials remain completely invisible to companions.</strong></li>
+            <li><strong>Third-Party Microservices:</strong> When utilizing live Twitch lookups, your channel handle queries public DecAPI endpoints (<code>decapi.me/twitch/game/</code> and <code>decapi.me/twitch/avatar/</code>) to retrieve game titles and avatar artwork. No authentication tokens are transmitted to DecAPI.</li>
+            <li><strong>No Data Monetization:</strong> We never sell, lease, track, or share personal information with third-party advertising networks.</li>
+        </ul>
 
         <!-- Section 4 -->
-        <h2>4. Local Storage & Offline Usage</h2>
-        <p>If you use the portal without signing in, all application state (harvests, filters, and preferences) is stored locally on your device within browser <code>localStorage</code>. You can clear this data at any time through your browser settings.</p>
+        <h2>4. Data Erasure & Self-Service Account Closure</h2>
+        <div class="callout-box callout-warning">
+            <p><strong>Full Self-Service Erasure:</strong> You retain complete ownership over your cloud data. You can permanently delete your entire profile and cloud telemetry at any time via <strong>Settings &gt; Delete Account &amp; Erase Cloud Records</strong>.</p>
+        </div>
+        <p>Executing account deletion performs an immediate, simultaneous purge across our cloud architecture:</p>
+        <ul>
+            <li>Erases your settings node and linked handles from Firebase Realtime Database at <code>/users/{emailKey}</code>.</li>
+            <li>Removes your permanent lookup token from <code>/friend_codes/{code}</code>.</li>
+            <li>Purges your user document and companion subcollections from Cloud Firestore at <code>users/{email}</code>.</li>
+            <li>Revokes and deletes your master Firebase Authentication record.</li>
+        </ul>
+        <p>Alternatively, you may request manual data purge by contacting our administration directly at <a href="mailto:tryouts-96-billet@icloud.com">tryouts-96-billet@icloud.com</a>. Manual requests are processed within 48 hours.</p>
 
         <!-- Section 5 -->
-        <h2>5. Contact Information</h2>
-        <p>If you have questions, feedback, or concerns regarding your privacy or data handling, reach out to the project administrator at <a href="mailto:raykevin71888@gmail.com">raykevin71888@gmail.com</a>.</p>
+        <h2>5. Local Storage & Client Cache</h2>
+        <p>For visitors using our tools without signing in, configuration data (such as active filters, local checklists, and view toggles) is retained entirely in browser <code>localStorage</code>. This data never touches our servers and can be wiped instantly by clearing browser site data.</p>
+
+        <!-- Section 6 -->
+        <h2>6. Administration & Inquiries</h2>
+        <p>For support inquiries, Google authorization disconnect assistance if locked out, or questions regarding our data protection standards, contact our dispatch team:</p>
+        <ul>
+            <li><strong>Direct Support Email:</strong> <a href="mailto:tryouts-96-billet@icloud.com">tryouts-96-billet@icloud.com</a></li>
+            <li><strong>Live Support Queue:</strong> Settings Hub floating WhatsApp encrypted dispatch portal.</li>
+        </ul>
     </div>
 
     <footer>
         <p>&copy; 2026 Werewolf Project & WOTH Hunting Hub. All rights reserved.</p>
-        <p>Build / Cache Stamp: 2026-10-07 13:32 EDT | Version: 2.0.0</p>
+        <p>Build / Cache Stamp: 2026-10-07 20:09 EDT | Version: 2.1.0</p>
     </footer>
 </body>
 </html>
