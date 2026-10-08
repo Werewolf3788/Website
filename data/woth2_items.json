@@ -1,0 +1,96 @@
+{
+  "update_metadata": {
+    "version": "0.4.0",
+    "codename": "Hearth & Hunt Headquarters",
+    "release_date": "2026-08-13",
+    "announcement_url": "https://ninerocksgames.com/posts/update-0-4-0",
+    "trailer_url": "https://youtu.be/hIpdk_Hlxe8",
+    "image": "//images.ctfassets.net/woth2_update_0_4_0_banner.webp",
+    "thumbnail": "//images.ctfassets.net/woth2_update_0_4_0_thumb.webp"
+  },
+  "maps": {
+    "hearth_hunt_headquarters": {
+      "id": "map_hhh_01",
+      "name": "Hearth & Hunt Headquarters",
+      "type": "Central Operations Hub & Reserve",
+      "size_km2": 16,
+      "size_sq_mi": 6,
+      "region": "North America",
+      "description": "A dedicated operations region featuring your expandable master lodge to bring together trophies collected across every reserve, alongside an on-site shooting range and NPC Elijah.",
+      "features": [
+        "Upgradable Master Trophy Lodge",
+        "Ballistic Testing & Sighting Range",
+        "Cross-Reserve Trophy Showcasing",
+        "Shooting Range Targets"
+      ],
+      "image": "//images.ctfassets.net/maps/hearth_hunt_headquarters_hero.webp",
+      "thumbnail": "//images.ctfassets.net/maps/hearth_hunt_headquarters_thumb.webp",
+      "map_icon": "//images.ctfassets.net/maps/hearth_hunt_headquarters_icon.webp"
+    }
+  },
+  "weapons": {
+    "merkel_45e": {
+      "id": "wep_sg_merkel_45e",
+      "name": "Merkel SxS Shotgun 45E",
+      "category": "Shotguns",
+      "action": "Side-by-Side Break Action",
+      "caliber": "12 Gauge",
+      "capacity": 2,
+      "manufacturer": "Merkel",
+      "tier": 2,
+      "rebalance_note": "Rebalanced lethal damage and pellet kinetic transfer.",
+      "image": "//images.ctfassets.net/weapons/merkel_45e_full.webp",
+      "thumbnail": "//images.ctfassets.net/weapons/merkel_45e_thumb.webp",
+      "icon": "//images.ctfassets.net/weapons/icons/merkel_45e.webp"
+    },
+    "primacy_hunter": {
+      "id": "wep_sg_primacy_hunter",
+      "name": "Primacy Hunter Shotgun",
+      "category": "Shotguns",
+      "action": "Over/Under Break Action",
+      "caliber": "12 Gauge",
+      "capacity": 2,
+      "manufacturer": "Primacy",
+      "tier": 2,
+      "rebalance_note": "Optimized for upland bird and waterfowl hunting.",
+      "image": "//images.ctfassets.net/weapons/primacy_hunter_full.webp",
+      "thumbnail": "//images.ctfassets.net/weapons/primacy_hunter_thumb.webp",
+      "icon": "//images.ctfassets.net/weapons/icons/primacy_hunter.webp"
+    }
+  },
+  "attachments": {
+    "primacy_long_range_choke": {
+      "id": "att_choke_primacy_lr",
+      "name": "Primacy Long Range Choke",
+      "category": "Shotgun Attachments",
+      "compatible_weapons": [
+        "wep_sg_merkel_45e",
+        "wep_sg_primacy_hunter"
+      ],
+      "effect": "Constricts pellet spread for tighter patterns at extended distances.",
+      "image": "//images.ctfassets.net/attachments/primacy_choke_full.webp",
+      "thumbnail": "//images.ctfassets.net/attachments/primacy_choke_thumb.webp",
+      "icon": "//images.ctfassets.net/attachments/icons/choke_icon.webp"
+    }
+  },
+  "npcs": {
+    "elijah": {
+      "id": "npc_elijah_01",
+      "name": "Elijah",
+      "role": "Headquarters Caretaker & Guide",
+      "location": "Hearth & Hunt Headquarters",
+      "description": "Guides you through upgrading your master lodge and setting up trophy mounts.",
+      "image": "//images.ctfassets.net/npcs/elijah_portrait.webp",
+      "thumbnail": "//images.ctfassets.net/npcs/elijah_thumb.webp",
+      "icon": "//images.ctfassets.net/npcs/icons/elijah.webp"
+    }
+  },
+  "patch_highlights": [
+    "Resized Crocodiles for true-to-life scale",
+    "Improved Duck AI flocking, spooking, and water landing",
+    "Rebalanced lethal damage and kinetic energy transfer",
+    "Herd group sizing and dynamic dispersion improvements",
+    "Over 100 bug fixes and stability improvements",
+    "Multiplayer Experimental Branch synchronization and waypoint marker overhaul"
+  ]
+}
