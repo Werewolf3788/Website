@@ -1,5 +1,5 @@
 <!-- Line 1: Way of the Hunter 2 - Master Tactical Companion -->
-<!-- [Smart Cache-Buster Time: 2026-10-07 17:42 EDT | Firebase Sync Target: /utm_links | Version: 4.3.0] -->
+<!-- [Smart Cache-Buster Time: 2026-10-08 00:08 EDT | Firebase Sync Target: /utm_links | Version: 5.9.0] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,8 +23,10 @@
       --bg-hover: #1e2838;
       --bg-active: #28374d;
       --accent-amber: #f5a623;
+      --accent-gold: #ffd700;
       --accent-orange: #ff7700;
       --accent-blue: #0088ff;
+      --accent-teal: #00d2d3;
       --text-main: #f0f4f8;
       --text-muted: #8b9bb4;
       --border-color: #243042;
@@ -177,6 +179,7 @@
       padding: 3px 8px 3px 4px;
       border-radius: 20px;
       border: 1px solid var(--border-color);
+      cursor: pointer;
     }
 
     .header-avatar {
@@ -233,6 +236,18 @@
     .stat-pill input.stat-input-short { width: 50px; }
     .stat-pill input.stat-input-med { width: 90px; }
     .stat-pill input.stat-input-long { width: 140px; }
+
+    .platform-select-pill {
+      background: var(--bg-surface);
+      border: 1px solid var(--accent-blue);
+      border-radius: 4px;
+      padding: 2px 6px;
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+    }
 
     .clock-sync-strip { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
@@ -431,7 +446,6 @@
       gap: 10px;
     }
 
-    /* Grid for Inspection History: 2 to 3 compact cards across */
     .history-cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -441,7 +455,6 @@
       padding-right: 4px;
     }
 
-    /* 4-Cards Across Watchlist Grid */
     .watchlist-grid-cards {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -455,14 +468,20 @@
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       border-radius: 6px;
-      padding: 12px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 6px;
+      gap: 8px;
       transition: var(--transition);
     }
     .telemetry-card:hover { border-color: var(--accent-amber); }
+
+    .trophy-card-earned {
+      background: #111a24;
+      border-color: var(--success);
+      box-shadow: 0 0 12px rgba(46, 204, 113, 0.15);
+    }
 
     .card-top-row {
       display: flex;
@@ -472,7 +491,7 @@
     }
 
     .animal-title {
-      font-size: 0.92rem;
+      font-size: 0.95rem;
       font-weight: 700;
       color: #fff;
       line-height: 1.2;
@@ -518,7 +537,6 @@
     .btn-link-delete { color: var(--danger); }
     .btn-link-delete:hover { background: rgba(231, 76, 60, 0.1); }
 
-    /* Interactive Dog Progression Steppers */
     .dog-stepper-row {
       display: flex;
       justify-content: space-between;
@@ -564,6 +582,23 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+    }
+
+    .trophy-group-pill {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .trophy-group-pill:hover, .trophy-group-pill.active {
+      border-color: var(--accent-amber);
+      color: #fff;
+      background: var(--bg-hover);
     }
 
     .advisory-callout {
@@ -681,16 +716,25 @@
         <div id="userProfile" class="user-profile-badge hidden">
           <img id="headerUserAvatar" src="https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png" alt="" class="header-avatar">
           <span id="userDisplayName">Ryder Holloway</span>
-          <button id="logoutBtn" class="btn btn-secondary btn-sm">Logout</button>
+          <button id="logoutBtn" class="btn btn-secondary btn-sm" style="display:none;">Logout</button>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Editable Operations Strip -->
+  <!-- Operations Bar with Platform Key Selector -->
   <section class="operations-bar">
     <div class="operations-container">
       <div class="hunter-stats-strip">
+        <div class="stat-pill">
+          <span class="stat-label">Platform:</span>
+          <select id="platformSelect" class="platform-select-pill">
+            <option value="ps">PS (PlayStation)</option>
+            <option value="xbox">Xbox</option>
+            <option value="steam">Steam</option>
+            <option value="microsoft">Microsoft (PC)</option>
+          </select>
+        </div>
         <div class="stat-pill">
           <span class="stat-label">Hunter:</span>
           <input type="text" id="hunterNameInput" class="stat-input-med" value="Ryder Holloway" title="Click to edit Hunter Name">
@@ -705,7 +749,7 @@
         </div>
         <div class="stat-pill">
           <span class="stat-label">Dog:</span>
-          <input type="text" id="dogCompanionInput" class="stat-input-long" value="Bacon (Foxhound)" title="Click to edit Dog">
+          <input type="text" id="dogCompanionInput" class="stat-input-long" value="Bacon (Lv. 3)" title="Click to edit Dog">
         </div>
       </div>
 
@@ -720,7 +764,7 @@
           <input type="time" id="currentTimeInput" value="08:30">
           <button id="advanceTwoHoursBtn" class="btn btn-secondary btn-sm">&plus;2 Hrs</button>
         </div>
-        <button id="saveSessionBtn" class="btn btn-primary btn-sm">Sync Telemetry</button>
+        <input type="hidden" id="weatherConditionInput" value="Clear / Morning Breeze">
       </div>
     </div>
   </section>
@@ -749,10 +793,12 @@
     </div>
   </section>
 
-  <!-- Tactical Navigation Tabs Ribbon -->
+  <!-- Tactical Ribbon: Added Dedicated Trophies & Companion Roster Tabs -->
   <nav class="tactical-ribbon">
     <div class="ribbon-container">
-      <button class="ribbon-btn active" data-tab="harvestInspection">Harvest Inspection</button>
+      <button class="ribbon-btn active" data-tab="trophies">🏆 Trophies &amp; Achievements</button>
+      <button class="ribbon-btn" data-tab="companionRoster">👥 Companion Roster</button>
+      <button class="ribbon-btn" data-tab="harvestInspection">Harvest Inspection</button>
       <button class="ribbon-btn" data-tab="targetWatchlist">Target Watchlist &amp; Age (X/Y)</button>
       <button class="ribbon-btn" data-tab="needZoneClusters">Need Zone Clusters (~50yd)</button>
       <button class="ribbon-btn" data-tab="lifeCycles">Life Cycles &amp; Mortality</button>
@@ -768,8 +814,34 @@
   <!-- Master Workspace -->
   <main class="main-container">
 
-    <!-- Tab 1: Harvest Inspection Console -->
-    <section id="tab-harvestInspection" class="tab-pane active">
+    <!-- Tab: Dedicated Trophies & Achievements Chamber -->
+    <section id="tab-trophies" class="tab-pane active">
+      <div class="card">
+        <div class="card-header">
+          <h3>Trophy &amp; Achievement Telemetry Engine</h3>
+          <span class="badge">Master Node: NPWR52231_00</span>
+        </div>
+        <div id="trophyChamberGrid" class="cards-grid"></div>
+        <div id="psnTrophiesContainer" style="display:none;"></div>
+      </div>
+    </section>
+
+    <!-- Tab: Cross-Platform Companion Roster -->
+    <section id="tab-companionRoster" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <h3>Cross-Platform Companion Telemetry Roster</h3>
+          <span class="badge">Live Squad Sync</span>
+        </div>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">
+          Compare real-time hunter levels, in-game timestamps, harvests, watchdog genetics, and trophy percentages across PlayStation, Xbox, Steam, and Microsoft PC companions.
+        </p>
+        <div id="friendsComparisonContainer" class="cards-grid"></div>
+      </div>
+    </section>
+
+    <!-- Tab: Harvest Inspection Console -->
+    <section id="tab-harvestInspection" class="tab-pane">
       <div class="dual-pane-grid">
         <div class="card pane-form">
           <div class="card-header">
@@ -898,13 +970,12 @@
             <h3>Inspection History</h3>
             <span id="harvestRecordCount" class="badge">Loading Records...</span>
           </div>
-          <!-- Grid for compact Inspection History cards -->
           <div id="harvestHistoryContainer" class="history-cards-grid"></div>
         </div>
       </div>
     </section>
 
-    <!-- Tab 2: Target Watchlist & Live Herd Management Console -->
+    <!-- Tab: Target Watchlist & Live Herd Management Console -->
     <section id="tab-targetWatchlist" class="tab-pane">
       <div class="dual-pane-grid">
         <div class="card pane-form">
@@ -972,10 +1043,10 @@
           <div class="advisory-callout" style="margin-top: 18px;">
             <h4>Herd Management Rules:</h4>
             <ul>
-              <li><strong>Asymmetry = Low Fitness (&lt;50%):</strong> Cull immediately to clear corrupted genetics[cite: 10, 21].</li>
-              <li><strong>Symmetry = High Fitness (&ge;80%):</strong> 5-Star breeder. Protect rack until late mature stage[cite: 10, 13].</li>
-              <li><strong>1-Star Mature:</strong> End-of-cycle cull before despawn[cite: 10, 13].</li>
-              <li><strong>Rate:</strong> 3 in-game days equals 1 year of age[cite: 13].</li>
+              <li><strong>Asymmetry = Low Fitness (&lt;50%):</strong> Cull immediately to clear corrupted genetics.</li>
+              <li><strong>Symmetry = High Fitness (&ge;80%):</strong> 5-Star breeder. Protect rack until late mature stage.</li>
+              <li><strong>1-Star Mature:</strong> End-of-cycle cull before despawn.</li>
+              <li><strong>Rate:</strong> 3 in-game days equals 1 year of age.</li>
             </ul>
           </div>
         </div>
@@ -990,7 +1061,7 @@
       </div>
     </section>
 
-    <!-- Tab 3: Need Zone Clusters (~50yd) -->
+    <!-- Tab: Need Zone Clusters (~50yd) -->
     <section id="tab-needZoneClusters" class="tab-pane">
       <div class="card">
         <div class="card-header">
@@ -1002,81 +1073,81 @@
       </div>
     </section>
 
-    <!-- Tab 4: Life Cycles & Mortality -->
+    <!-- Tab: Life Cycles & Mortality -->
     <section id="tab-lifeCycles" class="tab-pane">
       <div class="card">
         <div class="card-header">
           <h3>Species Lifespans, Stage Brackets &amp; Despawn Schedules</h3>
           <span id="lifecycleCount" class="badge">Loading Lifecycles...</span>
         </div>
-        <p class="section-desc">1 in-game year equals exactly 3 in-game days[cite: 13]. Animals despawn of old age if unharvested upon reaching max lifespan[cite: 13].</p>
+        <p class="section-desc">1 in-game year equals exactly 3 in-game days. Animals despawn of old age if unharvested upon reaching max lifespan.</p>
         <div id="lifecyclesGrid" class="cards-grid"></div>
       </div>
     </section>
 
-    <!-- Tab 5: Dog Companion Profile with Steppers -->
+    <!-- Tab: Dog Companion Profile with Steppers -->
     <section id="tab-dogProfile" class="tab-pane">
       <div class="card">
         <div class="card-header">
           <h3>Hunting Dog Telemetry &amp; Skill Progression</h3>
-          <span class="badge">Max Level Cap: 6[cite: 9]</span>
+          <span class="badge">Max Level Cap: 6</span>
         </div>
         <div class="dog-profile-summary" id="dogSummaryCard"></div>
         <div id="dogSkillsGrid" class="cards-grid" style="margin-top: 20px;"></div>
       </div>
     </section>
 
-    <!-- Tab 6: Challenges & Perks Trees -->
+    <!-- Tab: Challenges & Perks Trees -->
     <section id="tab-challenges" class="tab-pane">
       <div class="card">
         <div class="card-header">
           <h3>Hunter Challenges &amp; Perk Mastery Trees</h3>
-          <span class="badge">100 Challenges Across 5 Trees[cite: 8]</span>
+          <span class="badge">100 Challenges Across 5 Trees</span>
         </div>
         <div id="challengeTreesGrid" class="cards-grid"></div>
       </div>
     </section>
 
-    <!-- Tab 7: Missions & Story -->
+    <!-- Tab: Missions & Story -->
     <section id="tab-missions" class="tab-pane">
       <div class="card">
         <div class="card-header">
-          <h3>Warden &amp; Lodge Story Missions (New Laurentia)[cite: 14]</h3>
+          <h3>Warden &amp; Lodge Story Missions (New Laurentia)</h3>
           <span id="missionsCount" class="badge">Loading Missions...</span>
         </div>
         <div id="missionsGrid" class="cards-grid"></div>
       </div>
     </section>
 
-    <!-- Tab 8: Infrastructure & Habitat Tasks -->
+    <!-- Tab: Infrastructure & Habitat Tasks -->
     <section id="tab-infrastructure" class="tab-pane">
       <div class="card">
         <div class="card-header">
           <h3>Habitat Enhancements, Feeders &amp; Bridge Tasks</h3>
-          <span id="infrastructureCount" class="badge">32 Enhancements[cite: 12]</span>
+          <span id="infrastructureCount" class="badge">32 Enhancements</span>
         </div>
         <div class="advisory-callout" id="infraNotesBox"></div>
         <div id="infrastructureGrid" class="cards-grid" style="margin-top: 16px;"></div>
       </div>
     </section>
 
-    <!-- Tab 9: Corridors & Trails -->
+    <!-- Tab: Corridors & Trails -->
     <section id="tab-trails" class="tab-pane">
       <div class="card">
         <div class="card-header">
           <h3>Seasonal Grazing Corridors &amp; Trail Navigation</h3>
-          <span class="badge">V-Split Cloven Hoof Tracking Rule[cite: 17]</span>
+          <span class="badge">V-Split Cloven Hoof Tracking Rule</span>
         </div>
         <div id="trailsGrid" class="cards-grid"></div>
       </div>
     </section>
 
-    <!-- Tab 10: Species Encyclopedia -->
+    <!-- Tab: Species Encyclopedia -->
     <section id="tab-speciesCatalog" class="tab-pane">
       <div class="card">
         <div class="card-header">
           <h3>Reserve Species Catalog, Tiers &amp; Defense Sidearms</h3>
-          <span id="speciesCatalogCount" class="badge">15 Reserve Species[cite: 15]</span>
+          <span id="speciesCatalogCount" class="badge">15 Reserve Species</span>
         </div>
         <div id="speciesCatalogGrid" class="cards-grid"></div>
       </div>
@@ -1084,6 +1155,7 @@
 
   </main>
 
+  <!-- Login Modal -->
   <div class="modal-overlay hidden" id="authModal">
     <div class="modal-card">
       <div class="modal-header">
@@ -1096,11 +1168,12 @@
     </div>
   </div>
 
+  <!-- Persistent 24-Hour Footer -->
   <footer class="site-footer">
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Way of the Hunter 2 Companion &bull; Tactical Operations Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 17:42 EDT</span> | Version: 4.3.0</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-08 00:08 EDT</span> | Version: 5.9.0</p>
       </div>
       <div class="footer-col text-right">
         <span id="firebaseStatusBadge" class="status-pill status-connecting">RTDB: Connecting...</span>
