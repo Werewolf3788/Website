@@ -1,5 +1,5 @@
-<!-- Line 1: Hunter Identity, Platform Credentials & Master User Settings -->
-<!-- [Smart Cache-Buster Time: 2026-10-07 20:06 EDT | Firebase Sync Target: /utm_links | Version: 4.7.1] -->
+<!-- Line 1: Hunter Identity, Platform Credentials & Master User Settings Engine -->
+<!-- [Smart Cache-Buster Time: 2026-10-08 04:26 EDT | Firebase Sync Target: /utm_links | Version: 4.8.0] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,18 +7,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hunter Profile & Settings</title>
 
-  <!-- Favicons Dynamically Rebound from RTDB /utm_links via tag === "settings" -->
+  <!-- Section: Dynamic Branding & Tab Favicon (Relative Protocol Binding) -->
   <link id="dynamicFavicon" rel="icon" type="image/png" href="//werewolf3788.github.io/Website/assets/logo.jpg">
   <link id="dynamicAppleIcon" rel="apple-touch-icon" href="//werewolf3788.github.io/Website/assets/logo.jpg">
 
-  <!-- Firebase Core SDKs (Compat v10.13.0) -->
+  <!-- Section: Firebase Core SDKs (Compat v10.13.0) -->
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
   <style>
-    /* Section: CSS Variables & Responsive Tokens (Lines 20-56) */
+    /* Section: Design System Tokens & Responsive Custom Properties (Lines 21-65) */
     :root {
       --bg-primary: #07090e;
       --bg-secondary: #0f141d;
@@ -52,7 +52,7 @@
       overflow-x: hidden;
     }
 
-    /* Section: Desktop Edge-to-Edge Sticky Navbar (Lines 57-124) */
+    /* Section: Edge-to-Edge Sticky Desktop Header (Lines 52-120) */
     .site-header {
       background: var(--bg-secondary);
       border-bottom: 1px solid var(--border-color);
@@ -142,7 +142,7 @@
     .header-avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent-blue); background: var(--bg-secondary); }
     .header-user-tag { font-size: 0.85rem; font-weight: 600; color: #fff; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    /* Section: Responsive Container & Cards (Lines 125-225) */
+    /* Section: Workspace Container & Cards (Lines 121-225) */
     .settings-container {
       width: 95vw;
       max-width: 1800px;
@@ -177,7 +177,7 @@
 
     .platform-scope-row {
       display: grid;
-      grid-template-columns: 160px 1fr 140px;
+      grid-template-columns: 180px 1fr 140px;
       gap: 12px;
       align-items: center;
       padding: 12px 0;
@@ -254,6 +254,11 @@
       font-size: 0.75rem;
       font-weight: 600;
     }
+    .badge-pack-core {
+      background: rgba(245, 166, 35, 0.2);
+      color: var(--accent-gold);
+      border: 1px solid rgba(245, 166, 35, 0.4);
+    }
 
     .user-links-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
     .user-link-item {
@@ -306,7 +311,7 @@
       margin-top: 8px;
     }
 
-    /* Section: WhatsApp Floating Messenger & Footer (Lines 226-270) */
+    /* Section: Floating Support Widget & Persistent Footer (Lines 226-285) */
     .floating-whatsapp-widget {
       position: fixed;
       bottom: 24px;
@@ -386,7 +391,7 @@
     .hidden { display: none !important; }
     .menu-toggle { display: none; }
 
-    /* Section: Multi-Device Responsive System (Desktop 1280px+ / Tablet 768px-1024px / Mobile <768px) */
+    /* Section: Multi-Device Responsive System (Desktop / Tablet / Mobile) */
     @media (max-width: 1024px) {
       .menu-toggle { display: block; font-size: 1.5rem; background: transparent; border: none; color: #fff; cursor: pointer; min-height: var(--min-touch-target); min-width: var(--min-touch-target); }
       .site-nav { display: none; width: 100%; margin: 0; }
@@ -415,10 +420,10 @@
 </head>
 <body>
 
-  <!-- Sticky Full-Width Header -->
+  <!-- Sticky Full-Width Header (Internal Links Open In Same Tab) -->
   <header class="site-header">
     <div class="header-container">
-      <a href="../games/woth2/index.html" class="brand-area">
+      <a href="../games/woth2/index.html" class="brand-area" target="_self">
         <img id="navSettingsLogo" src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" class="brand-logo">
         <span class="brand-title">SETTINGS HUB</span>
       </a>
@@ -470,7 +475,10 @@
         <div class="profile-card-header">
           <img id="avatarPreview" src="https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png" alt="" class="avatar-preview-lg">
           <div>
-            <h2 id="displayGamerTag">Hunter</h2>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <h2 id="displayGamerTag">Hunter</h2>
+              <span id="corePackBadge" class="badge-tag badge-pack-core hidden">Core 4 Pack Anchor</span>
+            </div>
             <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
               Friend Code: 
               <strong id="friendCodeDisplay" style="color: var(--accent-gold); letter-spacing: 0.5px;">Loading...</strong>
@@ -541,7 +549,7 @@
           </div>
           <div>
             <div class="sensitive-input-wrapper">
-              <input type="password" id="psnAccountIdInput" placeholder="e.g. 583920194829104820">
+              <input type="password" id="psnAccountIdInput" placeholder="e.g. 4087137467908566201">
               <button type="button" id="toggleAccountIdVisibilityBtn" class="btn btn-secondary btn-sm" style="white-space: nowrap;">
                 👁 Show (60s)
               </button>
@@ -571,7 +579,9 @@
             <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 4px;">
               Retrieve your active session token from: 
               <a href="https://ca.account.sony.com/api/v1/ssocookie" target="_blank" rel="noopener" style="color:var(--accent-blue); text-decoration:underline;">ca.account.sony.com/api/v1/ssocookie &nearr;</a>.
-              Paste the entire raw output; we will extract the 64-character token automatically.
+              <span id="npssoPackNotice" style="display:block; margin-top:3px; color:var(--text-muted);">
+                *Core Pack (WildHorse_Spirit &amp; OneLIVIDMAN) powers squad telemetry. All other hunters require their own personal token to activate live stats.
+              </span>
             </div>
             <div id="npssoValidationMsg" style="font-size: 0.74rem; margin-top: 4px; font-weight: 600;"></div>
           </div>
@@ -700,7 +710,7 @@
             </div>
           </div>
 
-          <!-- Explanatory Disconnection Protocol -->
+          <!-- Explanatory Disconnection Protocol (Strict External Link Handling) -->
           <div class="admin-info-callout">
             <strong>Disconnecting Your Google Account:</strong>
             <p style="margin-top: 4px;">
@@ -727,7 +737,7 @@
           </p>
 
           <div style="display: flex; flex-direction: column; gap: 10px;">
-            <a href="mailto:tryouts-96-billet@icloud.com?subject=Hunter%20Account%20Support%20Request" class="btn btn-secondary full-width">
+            <a href="mailto:tryouts-96-billet@icloud.com?subject=Hunter%20Account%20Support%20Request" class="btn btn-secondary full-width" target="_self">
               <span>✉ Email Administrator</span>
               <span style="font-size: 0.78rem; color: var(--text-muted);">(tryouts-96-billet@icloud.com)</span>
             </a>
@@ -780,7 +790,7 @@
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Werewolf Project | User Identity Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 20:06 EDT</span> | Version: 4.7.1</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-08 04:26 EDT</span> | Version: 4.8.0</p>
       </div>
       <div class="footer-col text-right">
         <span id="accountStatusPill" class="status-pill status-connecting">RTDB: Connecting...</span>
@@ -1063,14 +1073,18 @@
           if (bucket.type === "bare_link") {
             const item = bucket.data;
             const imgTag = item.image ? `<img src="${item.image}" alt="" class="nav-thumb">` : '';
-            li.innerHTML = `<a href="${item.url}" class="nav-pill">${imgTag}<span>${item.title}</span></a>`;
+            const isExternal = item.url.startsWith("http://") || item.url.startsWith("https://") || item.url.startsWith("//");
+            const targetAttr = isExternal ? 'target="_blank" rel="noopener"' : 'target="_self"';
+            li.innerHTML = `<a href="${item.url}" class="nav-pill" ${targetAttr}>${imgTag}<span>${item.title}</span></a>`;
           } else {
             const grp = bucket.data;
             const folderImg = grp.folderImage ? `<img src="${grp.folderImage}" alt="" class="nav-thumb">` : '';
             let dropdownHtml = `<div class="dropdown-menu">`;
             grp.items.forEach(child => {
               const childImg = child.image ? `<img src="${child.image}" alt="" class="nav-thumb">` : '';
-              dropdownHtml += `<a href="${child.url}" class="dropdown-item">${childImg}<span>${child.title}</span></a>`;
+              const isChildExternal = child.url.startsWith("http://") || child.url.startsWith("https://") || child.url.startsWith("//");
+              const childTarget = isChildExternal ? 'target="_blank" rel="noopener"' : 'target="_self"';
+              dropdownHtml += `<a href="${child.url}" class="dropdown-item" ${childTarget}>${childImg}<span>${child.title}</span></a>`;
             });
             dropdownHtml += `</div>`;
             li.innerHTML = `<button class="dropdown-trigger">${folderImg}<span>${grp.name} ▾</span></button>${dropdownHtml}`;
@@ -1165,8 +1179,13 @@
       function loadRTDBUserProfile(emailKey, friendCode) {
         const userRef = rtdb.ref(`/users/${emailKey}`);
         userRef.on("value", async (snapshot) => {
-          const data = snapshot.val() || {};
+          // Write-Protection Gate: Verify snapshot exists before overwriting state
+          if (!snapshot.exists()) {
+            console.warn(`[RTDB GATE] Profile node /users/${emailKey} is offline or null.`);
+            return;
+          }
 
+          const data = snapshot.val() || {};
           const gamerTag = data.username || "Hunter";
           const avatarSource = data.avatar_source || "google";
           let avatarUrl = data.avatar_url || DEFAULT_USER_AVATAR;
@@ -1177,6 +1196,15 @@
           document.getElementById("displayGamerTag").textContent = gamerTag;
           document.getElementById("headerUserTag").textContent = gamerTag;
 
+          // Core Pack Badge Detection (WildHorse_Spirit or OneLIVIDMAN)
+          const psnTag = (data.psn_username || gamerTag).toLowerCase().replace(/[^a-z0-9_]/g, '');
+          const isCorePackMember = psnTag === "wildhorse_spirit" || psnTag === "onelividman" || psnTag.includes("werewolf") || psnTag.includes("ray");
+          const badgeEl = document.getElementById("corePackBadge");
+          if (badgeEl) {
+            if (isCorePackMember) badgeEl.classList.remove("hidden");
+            else badgeEl.classList.add("hidden");
+          }
+
           toggleCustomAvatarField(avatarSource);
 
           if (avatarSource === "google" && currentUser) {
@@ -1186,15 +1214,25 @@
           document.getElementById("avatarPreview").src = avatarUrl;
           document.getElementById("headerUserAvatar").src = avatarUrl;
 
-          // Populate Gaming Handles & Sensitive Inputs
+          // Populate Gaming Handles & Visibility Scopes
           document.getElementById("psnUsernameInput").value = data.psn_username || "";
           document.getElementById("psnUsernameScope").value = data.psn_username_scope || "public";
           document.getElementById("psnAccountIdInput").value = data.psn_account_id || "";
-          document.getElementById("psnNpssoInput").value = data.psn_npsso || "";
 
-          if (data.psn_npsso && data.psn_npsso.length === 64) {
-            npssoMsg.textContent = "✔ 64-Character NPSSO Key Stored";
+          // Populate NPSSO from Private Vault or Fallback Node
+          const privateSecretSnap = await rtdb.ref(`/user_secrets/${emailKey}/psn_npsso`).once("value").catch(() => null);
+          const retrievedToken = (privateSecretSnap && privateSecretSnap.exists()) ? privateSecretSnap.val() : (data.psn_npsso || "");
+          
+          document.getElementById("psnNpssoInput").value = retrievedToken;
+
+          if (retrievedToken && retrievedToken.length === 64) {
+            npssoMsg.textContent = "✔ 64-Character NPSSO Key Stored (Ready for Sync)";
             npssoMsg.style.color = "var(--success)";
+          } else if (retrievedToken && retrievedToken.length > 0) {
+            npssoMsg.textContent = "Token stored (Partial or non-standard format)";
+            npssoMsg.style.color = "var(--text-muted)";
+          } else {
+            npssoMsg.textContent = "";
           }
 
           document.getElementById("steamIdInput").value = data.steam_id || "";
@@ -1300,23 +1338,27 @@
 
         const friendCode = currentUser.uid.substring(0, 8).toUpperCase();
 
-        await rtdb.ref(`/users/${emailKey}`).update({
-          username: newTag,
-          avatar_source: avatarSource,
-          avatar_url: avatarUrl || DEFAULT_USER_AVATAR,
-          updated_at: new Date().toISOString()
-        });
+        try {
+          await rtdb.ref(`/users/${emailKey}`).update({
+            username: newTag,
+            avatar_source: avatarSource,
+            avatar_url: avatarUrl || DEFAULT_USER_AVATAR,
+            updated_at: new Date().toISOString()
+          });
 
-        await rtdb.ref(`/friend_codes/${friendCode}`).update({
-          username: newTag,
-          avatar_url: avatarUrl || DEFAULT_USER_AVATAR
-        });
+          await rtdb.ref(`/friend_codes/${friendCode}`).update({
+            username: newTag,
+            avatar_url: avatarUrl || DEFAULT_USER_AVATAR
+          });
 
-        await db.collection("users").doc(primaryEmail).set({
-          username: newTag,
-          avatar_url: avatarUrl || DEFAULT_USER_AVATAR,
-          updated_at: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
+          await db.collection("users").doc(primaryEmail).set({
+            username: newTag,
+            avatar_url: avatarUrl || DEFAULT_USER_AVATAR,
+            updated_at: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+        } catch (saveErr) {
+          console.warn("[SAVE ERROR] Profile details failed:", saveErr);
+        }
       });
 
       // Silent Save: Gaming Handles, Sanitized NPSSO & Visibility Scopes
@@ -1329,12 +1371,11 @@
         const rawNpsso = document.getElementById("psnNpssoInput").value;
         const sanitizedResult = sanitizeNpssoInput(rawNpsso);
 
-        const payload = {
+        const publicPayload = {
           psn_username: document.getElementById("psnUsernameInput").value.trim(),
           psn_username_scope: document.getElementById("psnUsernameScope").value,
           psn_account_id: document.getElementById("psnAccountIdInput").value.trim(),
           psn_account_id_scope: "private",
-          psn_npsso: sanitizedResult.token,
           psn_npsso_scope: "private",
           psn_npsso_valid: sanitizedResult.isValid,
           steam_id: document.getElementById("steamIdInput").value.trim(),
@@ -1346,13 +1387,25 @@
           last_profile_sync: new Date().toISOString()
         };
 
-        await rtdb.ref(`/users/${emailKey}`).update(payload);
+        try {
+          // 1. Save public gaming handles and scopes
+          await rtdb.ref(`/users/${emailKey}`).update(publicPayload);
 
-        await db.collection("users").doc(primaryEmail).set({
-          gaming_platforms: payload
-        }, { merge: true });
+          // 2. Isolate the sensitive NPSSO cookie into the protected vault node
+          await rtdb.ref(`/user_secrets/${emailKey}`).set({
+            psn_npsso: sanitizedResult.token,
+            updated_at: new Date().toISOString()
+          });
 
-        if (twitchUser) checkTwitchLiveGame(twitchUser);
+          // 3. Mirror handles to Firestore document
+          await db.collection("users").doc(primaryEmail).set({
+            gaming_platforms: publicPayload
+          }, { merge: true });
+
+          if (twitchUser) checkTwitchLiveGame(twitchUser);
+        } catch (platformErr) {
+          console.warn("[SAVE ERROR] Gaming profiles failed:", platformErr);
+        }
       });
 
       // Section 9: Personal Links Management (Capped at 5 Links) (Lines 1226-1300)
@@ -1369,9 +1422,13 @@
         const emailKey = getEmailKey(getResolvedPrimaryEmail(currentUser));
         const linkId = "link_" + Date.now();
 
-        await rtdb.ref(`/users/${emailKey}/links/${linkId}`).set({ title, url });
-        document.getElementById("linkTitleInput").value = "";
-        document.getElementById("linkUrlInput").value = "";
+        try {
+          await rtdb.ref(`/users/${emailKey}/links/${linkId}`).set({ title, url });
+          document.getElementById("linkTitleInput").value = "";
+          document.getElementById("linkUrlInput").value = "";
+        } catch (linkErr) {
+          console.warn("[SAVE ERROR] Custom link addition failed:", linkErr);
+        }
       });
 
       function renderUserLinks(linksObj) {
@@ -1412,10 +1469,14 @@
         entries.slice(0, 5).forEach(([id, item]) => {
           const div = document.createElement("div");
           div.className = "user-link-item";
+          const isLinkExternal = item.url.startsWith("http://") || item.url.startsWith("https://") || item.url.startsWith("//");
+          const targetAttr = isLinkExternal ? 'target="_blank" rel="noopener"' : 'target="_self"';
           div.innerHTML = `
             <div style="overflow: hidden; text-overflow: ellipsis; padding-right: 8px;">
               <strong>${item.title}</strong>
-              <div style="font-size: 0.76rem; color: var(--accent-cyan); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.url}</div>
+              <div style="font-size: 0.76rem; color: var(--accent-cyan); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                <a href="${item.url}" ${targetAttr} style="color:inherit; text-decoration:none;">${item.url}</a>
+              </div>
             </div>
             <button class="btn btn-danger btn-sm" onclick="window.removeUserLink('${id}')">Remove</button>
           `;
@@ -1426,7 +1487,11 @@
       window.removeUserLink = async (id) => {
         if (!currentUser) return;
         const emailKey = getEmailKey(getResolvedPrimaryEmail(currentUser));
-        await rtdb.ref(`/users/${emailKey}/links/${id}`).remove();
+        try {
+          await rtdb.ref(`/users/${emailKey}/links/${id}`).remove();
+        } catch (remErr) {
+          console.warn("[REMOVE ERROR] Custom link deletion failed:", remErr);
+        }
       };
 
       // Section 10: Companions Roster & Dual Linking (Lines 1301-1385)
@@ -1502,14 +1567,18 @@
         const primaryEmail = getResolvedPrimaryEmail(currentUser);
         const emailKey = getEmailKey(primaryEmail);
 
-        await rtdb.ref(`/users/${emailKey}/friends/${code}`).remove();
-        await db.collection("users").doc(primaryEmail).collection("friends").doc(code).delete();
+        try {
+          await rtdb.ref(`/users/${emailKey}/friends/${code}`).remove();
+          await db.collection("users").doc(primaryEmail).collection("friends").doc(code).delete();
+        } catch (compErr) {
+          console.warn("[REMOVE ERROR] Companion removal failed:", compErr);
+        }
       };
 
       document.getElementById("disconnectGoogleBtn").addEventListener("click", () => {
         const confirmDisconnect = window.confirm("Are you sure you want to open the Google Security console to disconnect this app authorization?");
         if (!confirmDisconnect) return;
-        window.open("https://myaccount.google.com/linkedapps?continue=https%3A%2F%2Fmyaccount.google.com%2Fsecurity", "_blank");
+        window.open("https://myaccount.google.com/linkedapps?continue=https%3A%2F%2Fmyaccount.google.com%2Fsecurity", "_blank", "noopener");
       });
 
       document.getElementById("sendPasswordResetBtn").addEventListener("click", () => {
@@ -1518,7 +1587,9 @@
         const confirmReset = window.confirm(`Send password reset instructions to ${email}?`);
         if (!confirmReset) return;
 
-        auth.sendPasswordResetEmail(email).catch(() => {});
+        auth.sendPasswordResetEmail(email).catch((e) => {
+          console.warn("[AUTH RESET ERROR]:", e.message);
+        });
       });
 
       document.getElementById("deleteAccountBtn").addEventListener("click", async () => {
@@ -1532,6 +1603,7 @@
           const friendCode = currentUser.uid.substring(0, 8).toUpperCase();
 
           await rtdb.ref(`/users/${emailKey}`).remove();
+          await rtdb.ref(`/user_secrets/${emailKey}`).remove();
           await rtdb.ref(`/friend_codes/${friendCode}`).remove();
           await db.collection("users").doc(primaryEmail).delete();
 
@@ -1577,7 +1649,7 @@
         }
       });
 
-      // Anonymous WhatsApp Messenger (Number Concealed)
+      // Anonymous WhatsApp Messenger (Number Concealed & Joined via Relative Protocol)
       const toggleWhatsappBtn = document.getElementById("toggleWhatsappBtn");
       const openWhatsAppModalBtn = document.getElementById("openWhatsAppModalBtn");
       const whatsappChatBox = document.getElementById("whatsappChatBox");
@@ -1601,7 +1673,7 @@
         const destination = [p1, p2, p3, p4].join("");
 
         const encodedMsg = encodeURIComponent(`[Hunter Support Inbound]: ${msg}`);
-        window.open(`https://api.whatsapp.com/send?phone=${destination}&text=${encodedMsg}`, "_blank");
+        window.open(`https://api.whatsapp.com/send?phone=${destination}&text=${encodedMsg}`, "_blank", "noopener");
         document.getElementById("whatsappMessageInput").value = "";
         closeChat();
       });
