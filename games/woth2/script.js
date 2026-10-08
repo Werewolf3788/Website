@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-07 20:30 EDT | Firebase Sync Target: /utm_links | Version: 4.8.0]
+// [Smart Cache-Buster Time: 2026-10-07 20:52 EDT | Firebase Sync Target: /utm_links | Version: 5.0.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
@@ -20,7 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const rtdb = firebase.database();
   const db = firebase.firestore();
 
-  // Helper: Enforce universal email root mapping across RTDB & Firestore
   function getResolvedPrimaryEmail(user) {
     if (!user) return "";
     const google = user.providerData && user.providerData.find(p => p && p.providerId === "google.com");
@@ -54,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
     db: {},
     currentDay: 1,
     currentTime: "08:30",
+    currentWeather: "Clear / Morning Breeze",
     hunterName: "Ryder Holloway",
     hunterLevel: 2,
     hunterCredits: 318,
@@ -66,10 +66,12 @@ document.addEventListener("DOMContentLoaded", () => {
     currentUser: null,
     currentEmail: "",
     currentEmailKey: "",
+    currentPlatform: "playstation",
     watchlist: [],
     psnAccountId: "",
     psnOnlineId: "",
     trophies: [],
+    friendsRoster: [],
 
     async init() {
       this.loadSavedState();
@@ -111,6 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadSavedState() {
       const savedDay = localStorage.getItem("woth2_day");
       const savedTime = localStorage.getItem("woth2_time");
+      const savedWeather = localStorage.getItem("woth2_weather");
       const savedWatch = localStorage.getItem("woth2_watchlist");
       const savedName = localStorage.getItem("woth2_name");
       const savedLevel = localStorage.getItem("woth2_level");
@@ -123,6 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (savedDay) this.currentDay = parseInt(savedDay, 10);
       if (savedTime) this.currentTime = savedTime;
+      if (savedWeather) this.currentWeather = savedWeather;
       if (savedName) this.hunterName = savedName;
       if (savedLevel) this.hunterLevel = parseInt(savedLevel, 10);
       if (savedCredits) this.hunterCredits = parseInt(savedCredits, 10);
@@ -141,6 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.safeSetValue("hunterNameInput", this.hunterName);
       this.safeSetValue("hunterLevelInput", this.hunterLevel);
       this.safeSetValue("hunterCreditsInput", this.hunterCredits);
+      this.safeSetValue("weatherConditionInput", this.currentWeather);
       this.updateDogInputDisplay();
     },
 
@@ -158,18 +163,25 @@ document.addEventListener("DOMContentLoaded", () => {
       this.safeSetValue("dogCompanionInput", `${this.dogCompanionName} (Lv. ${this.dogBondingLevel})`);
     },
 
-    // Session persistence across localStorage and Firestore users/{email}
-    saveSession() {
+    // Silent in-game background sync to Firestore: users/{email}/platform/{platform}/game/woth2
+    async silentSaveGameTelemetry() {
       const nameEl = document.getElementById("hunterNameInput");
       const lvlEl = document.getElementById("hunterLevelInput");
       const crdEl = document.getElementById("hunterCreditsInput");
+      const dayEl = document.getElementById("currentDayInput");
+      const timeEl = document.getElementById("currentTimeInput");
+      const weatherEl = document.getElementById("weatherConditionInput");
 
       if (nameEl) this.hunterName = nameEl.value.trim() || "Hunter";
       if (lvlEl) this.hunterLevel = parseInt(lvlEl.value, 10) || 1;
       if (crdEl) this.hunterCredits = parseInt(crdEl.value, 10) || 0;
+      if (dayEl) this.currentDay = parseInt(dayEl.value, 10) || 1;
+      if (timeEl) this.currentTime = timeEl.value || "08:30";
+      if (weatherEl) this.currentWeather = weatherEl.value || "Clear";
 
       localStorage.setItem("woth2_day", this.currentDay);
       localStorage.setItem("woth2_time", this.currentTime);
+      localStorage.setItem("woth2_weather", this.currentWeather);
       localStorage.setItem("woth2_name", this.hunterName);
       localStorage.setItem("woth2_level", this.hunterLevel);
       localStorage.setItem("woth2_credits", this.hunterCredits);
@@ -180,25 +192,41 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("woth2_dog_search", this.dogSearchQuarteringLevel);
       localStorage.setItem("woth2_watchlist", JSON.stringify(this.watchlist));
 
+      // Silent write to Firestore subcollection: users/{email}/platform/{platform}/game/woth2
       if (this.currentUser && this.currentEmail) {
-        db.collection("users").doc(this.currentEmail).set({
-          companion_day: this.currentDay,
-          companion_time: this.currentTime,
-          hunter_name: this.hunterName,
-          hunter_level: this.hunterLevel,
-          hunter_credits: this.hunterCredits,
-          dog_stats: {
-            bonding: this.dogBondingLevel,
-            following: this.dogFollowingCommandsLevel,
-            blood: this.dogBloodTrackingLevel,
-            search: this.dogSearchQuarteringLevel
-          },
-          watchlist: this.watchlist,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true }).catch(e => console.warn("Cloud save warning:", e));
-      }
+        try {
+          const gameDocRef = db.collection("users")
+            .doc(this.currentEmail)
+            .collection("platform")
+            .doc(this.currentPlatform)
+            .collection("game")
+            .doc("woth2");
 
-      alert("Telemetry, dog progress, and watchlist synced successfully!");
+          await gameDocRef.set({
+            hunter_name: this.hunterName,
+            hunter_level: this.hunterLevel,
+            hunter_credits: this.hunterCredits,
+            companion_day: this.currentDay,
+            companion_time: this.currentTime,
+            weather: this.currentWeather,
+            dog_stats: {
+              name: this.dogCompanionName,
+              breed: this.dogBreed,
+              bonding: this.dogBondingLevel,
+              following: this.dogFollowingCommandsLevel,
+              blood: this.dogBloodTrackingLevel,
+              search: this.dogSearchQuarteringLevel
+            },
+            harvest_count: (this.db.gameData && this.db.gameData.harvest_records) ? this.db.gameData.harvest_records.length : 0,
+            watchlist: this.watchlist,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+
+        } catch (e) {
+          // Fire alert strictly on network or permission failure
+          alert("⚠️ Telemetry Sync Failed: " + e.message);
+        }
+      }
     },
 
     initRTDB() {
@@ -283,7 +311,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    // Renders primary horizontal menu, filtering out Settings and Privacy from top bar
     renderNav(items) {
       const navList = document.getElementById("navList");
       if (!navList) return;
@@ -293,14 +320,21 @@ document.addEventListener("DOMContentLoaded", () => {
       const folderGroups = {};
 
       items.forEach(item => {
+        const cleanGroup = (item.group || "").toLowerCase();
+        const cleanTag = (item.tag || "").toLowerCase();
         const cleanTitle = (item.title || "").toLowerCase();
         const cleanUrl = (item.url || "").toLowerCase();
-        // Hide Settings and Privacy Policy from top bar; accessed via Profile Avatar Menu
-        if (cleanTitle.includes("setting") || cleanUrl.includes("setting") || cleanTitle.includes("privacy") || cleanUrl.includes("privacy")) {
+
+        // 1. Exclude Settings & Privacy Policy from main nav (assigned to user avatar dropdown)
+        if (cleanGroup === "settings" || cleanTag === "settings" || cleanTitle.includes("setting") || cleanUrl.includes("setting") ||
+            cleanGroup === "privacy" || cleanTag === "privacy" || cleanTitle.includes("privacy") || cleanUrl.includes("privacy")) {
           return;
         }
 
-        if (!item.group) {
+        // 2. Prevent "Standalone" from becoming a folder
+        const isStandalone = !item.group || cleanGroup === "standalone";
+
+        if (isStandalone) {
           standaloneLinks.push(item);
         } else {
           if (!folderGroups[item.group]) {
@@ -372,7 +406,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Authentication State & Interactive Avatar Profile Dropdown
+    // Identity Authentication & Subcollection Game State Hook
     initAuth() {
       auth.onAuthStateChanged(async user => {
         const modalBtn = document.getElementById("authModalBtn");
@@ -388,7 +422,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (modalBtn) modalBtn.classList.add("hidden");
           if (profileBadge) profileBadge.classList.remove("hidden");
 
-          // 1. RTDB Live Identity Hook (/users/{emailKey})
+          // 1. Hook into RTDB /users/{emailKey} for identity & friends roster
           rtdb.ref(`/users/${this.currentEmailKey}`).on("value", snapshot => {
             const rtdbProfile = snapshot.val() || {};
             const gamerTag = rtdbProfile.username || user.displayName || this.hunterName;
@@ -401,19 +435,31 @@ document.addEventListener("DOMContentLoaded", () => {
             if (nameEl) nameEl.textContent = gamerTag;
             if (avatarEl) avatarEl.src = avatarUrl;
 
-            // PSN Telemetry Hooks
             this.psnAccountId = rtdbProfile.psn_account_id || "";
             this.psnOnlineId = rtdbProfile.psn_username || "";
+            this.currentPlatform = rtdbProfile.primary_platform || (this.psnAccountId ? "playstation" : "pc");
+
             if (this.psnAccountId) {
               this.syncPlayStationTrophies(this.psnAccountId);
             }
+
+            // Load Friends Roster for telemetry comparison
+            this.friendsRoster = rtdbProfile.friends ? Object.values(rtdbProfile.friends) : [];
+            this.loadFriendsComparisonTelemetry();
           });
 
-          // 2. Firestore Game Telemetry Hook (users/{currentEmail})
+          // 2. Hook into Firestore game state: users/{email}/platform/{platform}/game/woth2
           try {
-            const doc = await db.collection("users").doc(this.currentEmail).get();
-            if (doc.exists) {
-              const data = doc.data();
+            const gameSnap = await db.collection("users")
+              .doc(this.currentEmail)
+              .collection("platform")
+              .doc(this.currentPlatform)
+              .collection("game")
+              .doc("woth2")
+              .get();
+
+            if (gameSnap.exists) {
+              const data = gameSnap.data();
               if (data.hunter_name) {
                 this.hunterName = data.hunter_name;
                 this.safeSetValue("hunterNameInput", this.hunterName);
@@ -426,6 +472,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 this.hunterCredits = data.hunter_credits;
                 this.safeSetValue("hunterCreditsInput", this.hunterCredits);
               }
+              if (data.companion_day) {
+                this.currentDay = data.companion_day;
+                this.safeSetValue("currentDayInput", this.currentDay);
+              }
+              if (data.companion_time) {
+                this.currentTime = data.companion_time;
+                this.safeSetValue("currentTimeInput", this.currentTime);
+              }
+              if (data.weather) {
+                this.currentWeather = data.weather;
+                this.safeSetValue("weatherConditionInput", this.currentWeather);
+              }
               if (data.dog_stats) {
                 this.dogBondingLevel = data.dog_stats.bonding ?? this.dogBondingLevel;
                 this.dogFollowingCommandsLevel = data.dog_stats.following ?? this.dogFollowingCommandsLevel;
@@ -434,17 +492,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 this.updateDogInputDisplay();
                 this.renderDogProfile();
               }
-              if (data.companion_day) {
-                this.currentDay = data.companion_day;
-                this.safeSetValue("currentDayInput", this.currentDay);
-              }
               if (data.watchlist && Array.isArray(data.watchlist)) {
                 this.watchlist = data.watchlist;
                 this.renderWatchlist();
               }
             }
           } catch (e) {
-            console.warn("Firestore data load warning:", e);
+            console.warn("Subcollection read warning:", e);
           }
 
           this.renderProfileDropdown(true);
@@ -471,7 +525,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    // Interactive Profile Avatar Dropdown Menu (Replaces Settings & Privacy on Nav)
     renderProfileDropdown(isAuthenticated) {
       let menu = document.getElementById("userProfileDropdownMenu");
       const profileBadge = document.getElementById("userProfile");
@@ -497,7 +550,6 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         document.body.appendChild(menu);
 
-        // Click Avatar Toggle
         profileBadge.style.cursor = "pointer";
         profileBadge.addEventListener("click", (e) => {
           e.stopPropagation();
@@ -535,11 +587,106 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    // PlayStation Trophy Telemetry Sync Engine (PSN Account ID Gated)
+    // Companion Telemetry Comparison Engine (PlayStation users only compare PSN progress)
+    async loadFriendsComparisonTelemetry() {
+      const container = document.getElementById("friendsComparisonContainer");
+      if (!container) return;
+
+      if (!this.friendsRoster.length) {
+        container.innerHTML = `<p style="font-size:0.82rem; color:var(--text-muted); padding:12px;">No companions linked yet. Share your 8-character Friend Code in Settings to compare telemetry.</p>`;
+        return;
+      }
+
+      container.innerHTML = `<div style="font-size:0.8rem; color:var(--text-muted); padding:10px;">Loading live companion telemetry...</div>`;
+
+      const platformFilter = this.currentPlatform === "playstation" ? "playstation" : "all";
+      const comparisonCards = [];
+
+      for (const friend of this.friendsRoster) {
+        const friendEmail = (friend.target_email || "").toLowerCase();
+        if (!friendEmail) continue;
+
+        try {
+          // Query friend's subcollection: users/{friendEmail}/platform/playstation/game/woth2
+          const targetPlatform = (platformFilter === "playstation") ? "playstation" : (friend.platform || "playstation");
+          const snap = await db.collection("users")
+            .doc(friendEmail)
+            .collection("platform")
+            .doc(targetPlatform)
+            .collection("game")
+            .doc("woth2")
+            .get();
+
+          if (snap.exists) {
+            const data = snap.data();
+            comparisonCards.push({
+              username: friend.username || "Companion",
+              avatar: friend.avatar_url || DEFAULT_USER_AVATAR,
+              platform: targetPlatform,
+              level: data.hunter_level || 1,
+              credits: data.hunter_credits || 0,
+              day: data.companion_day || 1,
+              time: data.companion_time || "08:00",
+              weather: data.weather || "Clear",
+              harvestCount: data.harvest_count || 0,
+              watchlistCount: (data.watchlist && data.watchlist.length) ? data.watchlist.length : 0,
+              dogStats: data.dog_stats || null
+            });
+          }
+        } catch (e) {
+          console.warn("Companion fetch warning:", e);
+        }
+      }
+
+      this.renderFriendsComparison(comparisonCards);
+    },
+
+    renderFriendsComparison(cards) {
+      const container = document.getElementById("friendsComparisonContainer");
+      if (!container) return;
+      container.innerHTML = "";
+
+      if (!cards.length) {
+        container.innerHTML = `<p style="font-size:0.82rem; color:var(--text-muted); padding:12px;">No active ${this.currentPlatform === 'playstation' ? 'PlayStation ' : ''}companion telemetry found.</p>`;
+        return;
+      }
+
+      cards.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "telemetry-card";
+        div.style.borderLeft = "3px solid #00d2d3";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <img src="${c.avatar}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid #00d2d3;">
+              <strong style="color:#fff; font-size:0.95rem;">${c.username}</strong>
+            </div>
+            <span class="badge" style="background:#28374d; color:#00d2d3;">${c.platform.toUpperCase()}</span>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:0.78rem; color:var(--text-muted);">
+            <div>Level: <strong style="color:#fff;">Lv. ${c.level}</strong></div>
+            <div>Credits: <strong style="color:var(--accent-amber);">$${c.credits}</strong></div>
+            <div>Time / Day: <strong style="color:#fff;">Day ${c.day} (${c.time})</strong></div>
+            <div>Weather: <strong style="color:#ffe099;">${c.weather}</strong></div>
+            <div>Harvests: <strong style="color:#2ecc71;">${c.harvestCount} Animals</strong></div>
+            <div>Watchlist: <strong style="color:#f5a623;">${c.watchlistCount} Targets</strong></div>
+          </div>
+
+          ${c.dogStats ? `
+            <div style="font-size:0.75rem; background:rgba(0,0,0,0.25); padding:6px; border-radius:4px; margin-top:8px;">
+              🐕 <strong>${c.dogStats.name}</strong> (${c.dogStats.breed}) &bull; Bonding Lv.${c.dogStats.bonding}
+            </div>
+          ` : ''}
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    // PlayStation Trophy Telemetry Sync Engine
     syncPlayStationTrophies(accountId) {
       if (!accountId) return;
 
-      // Listen to RTDB Trophy Worker Feed or Firestore Trophy Collection
       rtdb.ref(`/psn/trophies/woth2/${accountId}`).on("value", snapshot => {
         const raw = snapshot.val();
         if (raw && Array.isArray(raw.trophies)) {
@@ -547,7 +694,6 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (raw && typeof raw === "object") {
           this.trophies = Object.values(raw);
         } else {
-          // Standard WOTH2 PSN Trophy Archetype Roster fallback
           this.trophies = this.getDefaultWoth2TrophyList();
         }
         this.renderTrophies();
@@ -557,10 +703,10 @@ document.addEventListener("DOMContentLoaded", () => {
     getDefaultWoth2TrophyList() {
       return [
         { id: "trophy_plat", title: "Master of Nez Perce", desc: "Unlock all trophies in Way of the Hunter 2.", grade: "Platinum", earned: false },
-        { id: "trophy_1", title: "Five-Star Legend", desc: "Harvest a 5-Star Mature trophy animal with 95%+ fitness.", grade: "Gold", earned: true, earnedDate: "2026-10-04" },
+        { id: "trophy_1", title: "Five-Star Legend", desc: "Harvest a 5-Star Mature trophy animal with 95%+ fitness.", grade: "Gold", earned: true, earnedDateTime: "2026-10-04T18:22:10Z" },
         { id: "trophy_2", title: "Bloodhound Dedication", desc: "Reach Level 6 Blood Tracking with Bacon.", grade: "Silver", earned: false },
-        { id: "trophy_3", title: "Tactical Cull", desc: "Harvest 10 low-fitness genetic cull animals to protect the herd.", grade: "Bronze", earned: true, earnedDate: "2026-10-06" },
-        { id: "trophy_4", title: "Long-Range Marksman", desc: "Harvest an animal from a distance of over 350 yards.", grade: "Silver", earned: true, earnedDate: "2026-10-02" },
+        { id: "trophy_3", title: "Tactical Cull", desc: "Harvest 10 low-fitness genetic cull animals to protect the herd.", grade: "Bronze", earned: true, earnedDateTime: "2026-10-06T14:15:00Z" },
+        { id: "trophy_4", title: "Long-Range Marksman", desc: "Harvest an animal from a distance of over 350 yards.", grade: "Silver", earned: true, earnedDateTime: "2026-10-02T11:42:00Z" },
         { id: "trophy_5", title: "Reserve Explorer", desc: "Discover all primary camps and need zones in Jackalope Cordillera.", grade: "Bronze", earned: false }
       ];
     },
@@ -569,14 +715,49 @@ document.addEventListener("DOMContentLoaded", () => {
       const container = document.getElementById("psnTrophiesContainer");
       if (!container) return;
 
-      const earnedCount = this.trophies.filter(t => t.earned).length;
+      const total = this.trophies.length;
+      const earnedList = this.trophies.filter(t => t.earned);
+      const earnedCount = earnedList.length;
+      const progressPercent = total > 0 ? Math.round((earnedCount / total) * 100) : 0;
+
+      let firstTrophyText = "No trophies unlocked yet";
+      if (earnedList.length > 0) {
+        const sortedEarned = [...earnedList].sort((a, b) => {
+          const dateA = new Date(a.earnedDateTime || a.earnedDate || 0);
+          const dateB = new Date(b.earnedDateTime || b.earnedDate || 0);
+          return dateA - dateB;
+        });
+        const firstTrophy = sortedEarned[0];
+        const firstDate = new Date(firstTrophy.earnedDateTime || firstTrophy.earnedDate);
+        const dateFormatted = !isNaN(firstDate.getTime()) 
+          ? firstDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
+          : (firstTrophy.earnedDate || "Recorded");
+        firstTrophyText = `🏆 First Unlocked: <strong>${firstTrophy.title}</strong> (${dateFormatted})`;
+      }
+
       container.innerHTML = `
-        <div style="grid-column: 1/-1; display:flex; justify-content:space-between; align-items:center; background:#151c27; padding:12px 16px; border-radius:8px; border:1px solid #273447; margin-bottom:12px;">
-          <div>
-            <strong style="color:#fff; font-size:1rem;">PlayStation Sync &bull; ${this.psnOnlineId || 'Connected PSN'}</strong>
-            <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">Account ID: [${this.psnAccountId.substring(0, 4)}••••] (Active Telemetry)</div>
+        <div style="grid-column: 1/-1; background:#151c27; padding:14px 18px; border-radius:8px; border:1px solid #273447; margin-bottom:12px; display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div>
+              <strong style="color:#fff; font-size:1.05rem;">PlayStation Sync &bull; ${this.psnOnlineId || 'Connected PSN'}</strong>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
+                PSN Account ID: [${this.psnAccountId ? this.psnAccountId.substring(0, 4) + '••••' : 'Active'}]
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <span class="badge" style="background:#28374d; color:var(--accent-gold); font-size:0.85rem;">
+                ${earnedCount} / ${total} Trophies (${progressPercent}%)
+              </span>
+            </div>
           </div>
-          <span class="badge" style="background:#28374d; color:var(--accent-gold); font-size:0.85rem;">${earnedCount} / ${this.trophies.length} Trophies</span>
+
+          <div style="width:100%; height:8px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden;">
+            <div style="width:${progressPercent}%; height:100%; background:linear-gradient(90deg, #0088ff, #2ecc71); border-radius:4px; transition: width 0.4s ease;"></div>
+          </div>
+
+          <div style="font-size:0.78rem; color:#ffe0b3; display:flex; align-items:center; gap:6px;">
+            ${firstTrophyText}
+          </div>
         </div>
       `;
 
@@ -584,6 +765,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const div = document.createElement("div");
         div.className = "telemetry-card";
         const gradeColor = t.grade === "Platinum" ? "#00d2d3" : (t.grade === "Gold" ? "#f5a623" : (t.grade === "Silver" ? "#bdc3c7" : "#cd7f32"));
+
+        let formattedTimestamp = "";
+        if (t.earned && (t.earnedDateTime || t.earnedDate)) {
+          const d = new Date(t.earnedDateTime || t.earnedDate);
+          formattedTimestamp = !isNaN(d.getTime())
+            ? d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
+            : t.earnedDate;
+        }
+
         div.innerHTML = `
           <div>
             <div class="card-top-row">
@@ -592,9 +782,13 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
             <p style="font-size:0.8rem; color:var(--text-muted); margin-top:6px;">${t.desc}</p>
           </div>
-          <div class="card-footer-row" style="margin-top:10px;">
-            <span>Status: <strong style="color:${t.earned ? 'var(--success)' : 'var(--text-muted)'};">${t.earned ? '✔ Earned' : '🔒 Locked'}</strong></span>
-            ${t.earnedDate ? `<span style="font-size:0.75rem; color:var(--text-muted);">${t.earnedDate}</span>` : ''}
+          <div class="card-footer-row" style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.05); padding-top:8px;">
+            <div>
+              <span style="font-size:0.8rem; font-weight:600; color:${t.earned ? 'var(--success)' : 'var(--text-muted)'};">
+                ${t.earned ? '✔ Earned' : '🔒 Locked'}
+              </span>
+              ${t.earned && formattedTimestamp ? `<div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">Unlocked: ${formattedTimestamp}</div>` : ''}
+            </div>
           </div>
         `;
         container.appendChild(div);
@@ -776,7 +970,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       this.resetWatchlistForm();
       this.renderWatchlist();
-      this.saveSession();
+      this.silentSaveGameTelemetry();
     },
 
     resetWatchlistForm() {
@@ -816,7 +1010,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!confirm("Harvested or remove this target from the watchlist?")) return;
       this.watchlist = this.watchlist.filter(w => w.id !== id);
       this.renderWatchlist();
-      this.saveSession();
+      this.silentSaveGameTelemetry();
     },
 
     renderWatchlist() {
@@ -955,7 +1149,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       this.db.gameData.harvest_records.unshift(newRecord);
       this.renderHarvestHistory();
-      alert("Harvest inspection record logged successfully!");
+      this.silentSaveGameTelemetry();
     },
 
     renderDogProfile() {
@@ -1032,7 +1226,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       this.updateDogInputDisplay();
       this.renderDogProfile();
-      this.saveSession();
+      this.silentSaveGameTelemetry();
     },
 
     renderNeedZones() {
@@ -1231,6 +1425,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
+    // In-game Input Listeners: Silent Blur & Enter Auto-Sync Engine
     bindUI() {
       document.querySelectorAll(".ribbon-btn").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -1239,6 +1434,27 @@ document.addEventListener("DOMContentLoaded", () => {
           btn.classList.add("active");
           const target = document.getElementById(`tab-${btn.dataset.tab}`);
           if (target) target.classList.add("active");
+        });
+      });
+
+      // Hook in-game inputs to auto-sync on Blur (unfocus) or Enter key
+      const autoSyncInputs = [
+        "hunterNameInput", "hunterLevelInput", "hunterCreditsInput",
+        "currentDayInput", "currentTimeInput", "weatherConditionInput"
+      ];
+
+      autoSyncInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        // Auto-commit on exiting the field
+        el.addEventListener("blur", () => this.silentSaveGameTelemetry());
+
+        // Auto-commit immediately when pressing Enter
+        el.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            el.blur();
+          }
         });
       });
 
@@ -1256,20 +1472,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
-      const dayInput = document.getElementById("currentDayInput");
-      if (dayInput) {
-        dayInput.addEventListener("change", e => {
-          this.currentDay = parseInt(e.target.value, 10) || 1;
-          this.renderWatchlist();
-        });
-      }
-
       const advDayBtn = document.getElementById("advanceDayBtn");
       if (advDayBtn) {
         advDayBtn.addEventListener("click", () => {
           this.currentDay++;
           this.safeSetValue("currentDayInput", this.currentDay);
           this.renderWatchlist();
+          this.silentSaveGameTelemetry();
         });
       }
 
@@ -1288,11 +1497,9 @@ document.addEventListener("DOMContentLoaded", () => {
           this.currentTime = timeStr;
           timeInput.value = timeStr;
           this.renderWatchlist();
+          this.silentSaveGameTelemetry();
         });
       }
-
-      const syncBtn = document.getElementById("saveSessionBtn");
-      if (syncBtn) syncBtn.addEventListener("click", () => this.saveSession());
 
       const watchSpecies = document.getElementById("watchSpeciesSelect");
       if (watchSpecies) watchSpecies.addEventListener("change", () => this.updateWatchlistMaxAge());
