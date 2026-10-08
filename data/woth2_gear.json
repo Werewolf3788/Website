@@ -1,0 +1,262 @@
+{
+  "catalog_metadata": {
+    "game": "Way of the Hunter 2",
+    "version": "0.4.0",
+    "last_updated": "2026-10-08",
+    "image_base_path": "//images.ctfassets.net/woth2/"
+  },
+  "weapons": {
+    "primacy_classic_hunter_mk2": {
+      "id": "wep_rifle_primacy_mk2",
+      "name": "Primacy Classic Hunter MK II",
+      "category": "Rifles",
+      "tier": 5,
+      "caliber": ".30-06 Springfield",
+      "action": "Bolt Action",
+      "magazine_capacity": 4,
+      "effective_range_m": 350,
+      "weight_kg": 3.6,
+      "price": "$5,400",
+      "description": "A refined bolt-action hunting rifle built with premium walnut finish and exceptional ballistic consistency across medium to long ranges.",
+      "image": "//images.ctfassets.net/woth2/weapons/primacy_classic_hunter_mk2.webp",
+      "thumbnail": "//images.ctfassets.net/woth2/weapons/thumbs/primacy_classic_hunter_mk2_thumb.webp",
+      "icon": "//images.ctfassets.net/woth2/weapons/icons/primacy_classic_hunter_mk2_icon.webp"
+    },
+    "merkel_45e": {
+      "id": "wep_sg_merkel_45e",
+      "name": "Merkel SxS Shotgun 45E",
+      "category": "Shotguns",
+      "tier": 2,
+      "caliber": "12 Gauge",
+      "action": "Side-by-Side Break Action",
+      "magazine_capacity": 2,
+      "effective_range_m": 45,
+      "weight_kg": 3.1,
+      "price": "$3,200",
+      "description": "Classic German side-by-side break-action shotgun with finely engraved receiver, engineered for upland birds, waterfowl, and small game.",
+      "image": "//images.ctfassets.net/woth2/weapons/merkel_45e.webp",
+      "thumbnail": "//images.ctfassets.net/woth2/weapons/thumbs/merkel_45e_thumb.webp",
+      "icon": "//images.ctfassets.net/woth2/weapons/icons/merkel_45e_icon.webp"
+    },
+    "primacy_hunter": {
+      "id": "wep_sg_primacy_hunter",
+      "name": "Primacy Hunter Shotgun",
+      "category": "Shotguns",
+      "tier": 2,
+      "caliber": "12 Gauge",
+      "action": "Over/Under Break Action",
+      "magazine_capacity": 2,
+      "effective_range_m": 50,
+      "weight_kg": 3.3,
+      "price": "$3,650",
+      "description": "Ergonomic over-and-under double barrel shotgun designed for fast target acquisition on fast-flying game birds.",
+      "image": "//images.ctfassets.net/woth2/weapons/primacy_hunter.webp",
+      "thumbnail": "//images.ctfassets.net/woth2/weapons/thumbs/primacy_hunter_thumb.webp",
+      "icon": "//images.ctfassets.net/woth2/weapons/icons/primacy_hunter_icon.webp"
+    }
+  },
+  "optics": {
+    "hh_watcher_8x42": {
+      "id": "opt_bino_hh_watcher",
+      "name": "H&H Watcher 8x42",
+      "category": "Binoculars",
+      "magnification": "8x",
+      "objective_lens_mm": 42,
+      "fov_m": 125,
+      "night_vision": false,
+      "weight_kg": 0.75,
+      "price": "$850",
+      "description": "High-clarity roof prism binoculars offering bright, razor-sharp scouting vision in daytime and low-light dawn/dusk conditions.",
+      "image": "//images.ctfassets.net/woth2/optics/hh_watcher_8x42.webp",
+      "thumbnail": "//images.ctfassets.net/woth2/optics/thumbs/hh_watcher_8x42_thumb.webp",
+      "icon": "//images.ctfassets.net/woth2/optics/icons/hh_watcher_8x42_icon.webp"
+    },
+    "overgaard_night_stalker": {
+      "id": "opt_scope_overgaard_night_stalker",
+      "name": "Overgaard Night Stalker Thermal Scope",
+      "category": "Riflescopes",
+      "magnification": "3-12x",
+      "thermal_sensor": "640x512",
+      "night_vision": true,
+      "dlc_source": "Night Hunting Pack",
+      "weight_kg": 0.95,
+      "price": "$4,200",
+      "description": "Advanced thermal imaging riflescope allowing hunters to spot heat signatures in pitch-black night conditions and dense brush.",
+      "image": "//images.ctfassets.net/woth2/optics/overgaard_night_stalker.webp",
+      "thumbnail": "//images.ctfassets.net/woth2/optics/thumbs/overgaard_night_stalker_thumb.webp",
+      "icon": "//images.ctfassets.net/woth2/optics/icons/overgaard_night_stalker_icon.webp"
+    },
+    "overgaard_night_vision_binoculars": {
+      "id": "opt_bino_overgaard_nv",
+      "name": "Overgaard Night Vision Binoculars",
+      "category": "Binoculars",
+      "magnification": "7x",
+      "night_vision": true,
+      "dlc_source": "Night Hunting Pack",
+      "weight_kg": 0.88,
+      "price": "$2,800",
+      "description": "Dual-tube digital night vision binoculars featuring active infrared illumination for nighttime scouting and herd evaluation.",
+      "image": "//images.ctfassets.net/woth2/optics/overgaard_nv_bino.webp",
+      "thumbnail": "//images.ctfassets.net/woth2/optics/thumbs/overgaard_nv_bino_thumb.webp",
+      "icon": "//images.ctfassets.net/woth2/optics/icons/overgaard_nv_bino_icon.webp"
+    }
+  },
+  "decoys": {
+    "wildheart_mallard_decoy": {
+      "id": "decoy_wildheart_mallard",
+      "name": "WildHeart Floating Mallard Decoy Set",
+      "category": "Decoys",
+      "target_species": "Mallard Duck",
+      "quantity": 6,
+      "attraction_radius_m": 150,
+      "price": "$450",
+      "description": "Realistic hand-painted floating duck decoys with weighted keels for stable positioning on open lakes, rivers, and ponds.",
+      "image": "//images.ctfassets.net/woth2/gear/wildheart_mallard_decoy.webp",
+      "thumbnail": "//images.ctfassets.net/woth2/gear/thumbs/wildheart_mallard_decoy_thumb.webp",
+      "icon": "//images.ctfassets.net/woth2/gear/icons/wildheart_mallard_decoy_icon.webp"
+    },
+    "wildheart_turkey_decoy": {
+      "id": "decoy_wildheart_turkey",
+      "name": "WildHeart Upright Hen Turkey Decoy",
+      "category": "Decoys",
+      "target_species": "Wild Turkey",
+      "quantity": 1,
+      "attraction_radius_m": 120,
+      "price": "$320",
+      "description": "Lifelike upright hen posture decoy designed to draw territorial toms into range within woodland clearings and field edges.",
+      "image": "//images.ctfassets.net/woth2/gear/wildheart_turkey_decoy.webp",
+      "thumbnail": "//images.ctfassets.net/woth2/gear/thumbs/wildheart_turkey_decoy_thumb.webp",
+      "icon": "//images.ctfassets.net/woth2/gear/icons/wildheart_turkey_decoy_icon.webp"
+    }
+  },
+  "calls_and_scents": {
+    "wildheart_turkey_box_call": {
+      "id": "call_wildheart_turkey_box",
+      "name": "WildHeart Hardwood Turkey Box Call",
+      "category": "Animal Calls",
+      "target_species": "Wild Turkey",
+      "effective_range_m": 250,
+      "sound_type": "Yelps, Clucks, and Cuts",
+      "price": "$180",
+      "description": "Custom cherry and walnut box call producing realistic hen sounds with long-range projection through dense canopy.",
+      "image": "//images.ctfassets.net/woth2/gear/wildheart_turkey_call.webp",
+      "thumbnail": "//images.ctfassets.net/woth2/gear/thumbs/wildheart_turkey_call_thumb.webp",
+      "icon": "//images.ctfassets.net/woth2/gear/icons/wildheart_turkey_call_icon.webp"
+    },
+    "whitetail_doe_estrus_scent": {
+      "id": "scent_whitetail_estrus",
+      "name": "WildHeart Whitetail Doe Estrus Scent",
+      "category": "Scents & Lures",
+      "target_species": "Whitetail Deer",
+      "duration_minutes": 20,
+      "dispersion_radius_m": 90,
+      "price": "$95",
+      "description": "Natural aerosol attractant scent that masks hunter odor and lures rutting mature bucks directly downwind.",
+      "image": "//images.ctfassets.net/woth2/gear/whitetail_estrus_scent.webp",
+      "thumbnail": "//images.ctfassets.net/woth2/gear/thumbs/whitetail_estrus_scent_thumb.webp",
+      "icon": "//images.ctfassets.net/woth2/gear/icons/whitetail_estrus_scent_icon.webp"
+    }
+  },
+  "field_equipment": {
+    "wildheart_ground_blind": {
+      "id": "equip_blind_wildheart_ground",
+      "name": "WildHeart Pop-Up Ground Blind",
+      "category": "Portable Blinds",
+      "capacity": 2,
+      "camo_pattern": "Woodland Edge",
+      "scent_reduction_percent": 65,
+      "setup_time_sec": 5,
+      "weight_kg": 5.2,
+      "price": "$1,100",
+      "description": "Weather-resistant pop-up ground blind offering 360-degree silent-slide shoot-through mesh windows and concealment.",
+      "image": "//images.ctfassets.net/woth2/gear/wildheart_ground_blind.webp",
+      "thumbnail": "//images.ctfassets.net/woth2/gear/thumbs/wildheart_ground_blind_thumb.webp",
+      "icon": "//images.ctfassets.net/woth2/gear/icons/wildheart_ground_blind_icon.webp"
+    },
+    "primacy_shotgun_choke": {
+      "id": "att_choke_primacy_lr",
+      "name": "Primacy Long Range Shotgun Choke",
+      "category": "Attachments",
+      "compatible_weapons": ["wep_sg_merkel_45e", "wep_sg_primacy_hunter"],
+      "effect": "Constricts pellet spread for tighter patterns at extended distances.",
+      "price": "$220",
+      "description": "Precision stainless steel choke tube that tightens pellet dispersion for ethical waterfowl and turkey harvests.",
+      "image": "//images.ctfassets.net/woth2/attachments/primacy_choke.webp",
+      "thumbnail": "//images.ctfassets.net/woth2/attachments/thumbs/primacy_choke_thumb.webp",
+      "icon": "//images.ctfassets.net/woth2/attachments/icons/primacy_choke_icon.webp"
+    }
+  },
+  "ammunition": {
+    "ammo_30_06_springfield_sp": {
+      "id": "ammo_3006_sp",
+      "name": ".30-06 Springfield Soft Point",
+      "caliber": ".30-06 Springfield",
+      "bullet_weight_grains": 180,
+      "muzzle_velocity_mps": 820,
+      "kinetic_energy_joules": 3950,
+      "box_count": 20,
+      "price": "$110",
+      "description": "Heavy hunting load providing controlled expansion and deep penetration for large game like elk, moose, and bear.",
+      "image": "//images.ctfassets.net/woth2/ammo/3006_sp.webp",
+      "thumbnail": "//images.ctfassets.net/woth2/ammo/thumbs/3006_sp_thumb.webp",
+      "icon": "//images.ctfassets.net/woth2/ammo/icons/3006_sp_icon.webp"
+    },
+    "ammo_12g_buckshot_00": {
+      "id": "ammo_12g_00buck",
+      "name": "12 Gauge 00 Buckshot",
+      "caliber": "12 Gauge",
+      "pellet_count": 9,
+      "muzzle_velocity_mps": 400,
+      "box_count": 25,
+      "price": "$85",
+      "description": "Devastating close-range shotshell load optimized for predators, wild boar, and thick brush tracking.",
+      "image": "//images.ctfassets.net/woth2/ammo/12g_00buck.webp",
+      "thumbnail": "//images.ctfassets.net/woth2/ammo/thumbs/12g_00buck_thumb.webp",
+      "icon": "//images.ctfassets.net/woth2/ammo/icons/12g_00buck_icon.webp"
+    }
+  },
+  "dlcs": {
+    "night_hunting_pack": {
+      "id": "dlc_night_hunting",
+      "name": "Night Hunting Pack",
+      "price": "$4.99",
+      "included_items": [
+        "opt_scope_overgaard_night_stalker",
+        "opt_bino_overgaard_nv"
+      ],
+      "description": "Unlock nighttime thermal scopes and night vision binoculars to take your hunting adventures into the dark hours.",
+      "image": "//images.ctfassets.net/woth2/dlcs/night_hunting_pack.webp",
+      "thumbnail": "//images.ctfassets.net/woth2/dlcs/thumbs/night_hunting_pack_thumb.webp",
+      "icon": "//images.ctfassets.net/woth2/dlcs/icons/night_hunting_pack_icon.webp"
+    },
+    "lodge_decoration_pack": {
+      "id": "dlc_lodge_decoration",
+      "name": "Lodge Decoration Pack",
+      "price": "$1.99",
+      "included_items": [
+        "Carved Wooden Wall Accents",
+        "Antique Gun Racks",
+        "Braided Hearth Rugs"
+      ],
+      "description": "Customize your Hearth & Hunt master lodge with premium wood finishes, rustic furniture, and historic gun mountings.",
+      "image": "//images.ctfassets.net/woth2/dlcs/lodge_decoration_pack.webp",
+      "thumbnail": "//images.ctfassets.net/woth2/dlcs/thumbs/lodge_decoration_pack_thumb.webp",
+      "icon": "//images.ctfassets.net/woth2/dlcs/icons/lodge_decoration_pack_icon.webp"
+    },
+    "season_pass": {
+      "id": "dlc_season_pass",
+      "name": "Way of the Hunter 2 - Season Pass",
+      "price": "$34.99",
+      "included_items": [
+        "Night Hunting Pack",
+        "Lodge Decoration Pack",
+        "Upcoming Reserve Expansion 1",
+        "Upcoming Reserve Expansion 2"
+      ],
+      "description": "Complete bundle granting immediate access to all current add-on packs and upcoming reserve expansions.",
+      "image": "//images.ctfassets.net/woth2/dlcs/season_pass.webp",
+      "thumbnail": "//images.ctfassets.net/woth2/dlcs/thumbs/season_pass_thumb.webp",
+      "icon": "//images.ctfassets.net/woth2/dlcs/icons/season_pass_icon.webp"
+    }
+  }
+}
