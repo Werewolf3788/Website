@@ -1,8 +1,9 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-07 20:57 EDT | Firebase Sync Target: /utm_links | Version: 5.1.0]
+// [Smart Cache-Buster Time: 2026-10-07 22:45 EDT | Firebase Sync Target: /utm_links | Version: 5.5.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
+  const DEFAULT_GAME_POSTER = "https://image.api.playstation.com/vulcan/ap/rnd/202206/0713/bU0e3xUa8F8ZqQvF8n0Lz.png";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -34,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const CompanionApp = {
+    titleId: "NPWR52231_00",
     files: {
       challenges: "woth2_challenges.json",
       dogSkills: "woth2_dog_skills.json",
@@ -66,11 +68,14 @@ document.addEventListener("DOMContentLoaded", () => {
     currentUser: null,
     currentEmail: "",
     currentEmailKey: "",
-    currentPlatform: "playstation",
+    currentPlatform: "ps", // Supported: "ps", "xbox", "steam", "microsoft"
     watchlist: [],
     psnAccountId: "",
     psnOnlineId: "",
-    trophies: [],
+    masterTrophies: [],
+    userTrophyProgress: {}, // Map of trophyId -> { earned, timestamp, currentValue, targetValue, manual }
+    trophyGroups: [],
+    gameMetadata: {},
     friendsRoster: [],
 
     async init() {
@@ -78,6 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.bindUI();
       this.initAuth();
       this.initRTDB();
+      this.initMasterGameData();
       await this.loadAllJSONs();
       this.initDynamicFeatures();
     },
@@ -114,6 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const savedDay = localStorage.getItem("woth2_day");
       const savedTime = localStorage.getItem("woth2_time");
       const savedWeather = localStorage.getItem("woth2_weather");
+      const savedPlatform = localStorage.getItem("woth2_platform");
       const savedWatch = localStorage.getItem("woth2_watchlist");
       const savedName = localStorage.getItem("woth2_name");
       const savedLevel = localStorage.getItem("woth2_level");
@@ -123,10 +130,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const savedFollowing = localStorage.getItem("woth2_dog_following");
       const savedBlood = localStorage.getItem("woth2_dog_blood");
       const savedSearch = localStorage.getItem("woth2_dog_search");
+      const savedTrophyProgress = localStorage.getItem("woth2_manual_trophies");
 
       if (savedDay) this.currentDay = parseInt(savedDay, 10);
       if (savedTime) this.currentTime = savedTime;
       if (savedWeather) this.currentWeather = savedWeather;
+      if (savedPlatform) this.currentPlatform = savedPlatform;
       if (savedName) this.hunterName = savedName;
       if (savedLevel) this.hunterLevel = parseInt(savedLevel, 10);
       if (savedCredits) this.hunterCredits = parseInt(savedCredits, 10);
@@ -140,12 +149,17 @@ document.addEventListener("DOMContentLoaded", () => {
         try { this.watchlist = JSON.parse(savedWatch); } catch (e) { this.watchlist = []; }
       }
 
+      if (savedTrophyProgress) {
+        try { this.userTrophyProgress = JSON.parse(savedTrophyProgress); } catch (e) { this.userTrophyProgress = {}; }
+      }
+
       this.safeSetValue("currentDayInput", this.currentDay);
       this.safeSetValue("currentTimeInput", this.currentTime);
       this.safeSetValue("hunterNameInput", this.hunterName);
       this.safeSetValue("hunterLevelInput", this.hunterLevel);
       this.safeSetValue("hunterCreditsInput", this.hunterCredits);
       this.safeSetValue("weatherConditionInput", this.currentWeather);
+      this.safeSetValue("platformSelect", this.currentPlatform);
       this.updateDogInputDisplay();
     },
 
@@ -163,7 +177,56 @@ document.addEventListener("DOMContentLoaded", () => {
       this.safeSetValue("dogCompanionInput", `${this.dogCompanionName} (Lv. ${this.dogBondingLevel})`);
     },
 
-    // Silent background auto-sync to Firestore: users/{email}/platform/{platform}/game/woth2
+    // 1. Master Game Encyclopedia Listener: /psn/games/NPWR52231_00
+    initMasterGameData() {
+      rtdb.ref(`/psn/games/${this.titleId}`).on("value", snapshot => {
+        const game = snapshot.val();
+        if (!game) return;
+        this.gameMetadata = game;
+
+        // Dynamic Favicon, Apple Icon, and Header Art Binding
+        const posterUrl = game.posterArt || DEFAULT_GAME_POSTER;
+        const favicon = document.getElementById("dynamicFavicon");
+        const appleIcon = document.getElementById("dynamicAppleIcon");
+        const brandLogo = document.getElementById("navBrandLogo");
+        if (favicon) favicon.href = posterUrl;
+        if (appleIcon) appleIcon.href = posterUrl;
+        if (brandLogo) brandLogo.src = posterUrl;
+
+        // Parse DLC / Trophy Groups
+        if (game.groups) {
+          this.trophyGroups = Array.isArray(game.groups) ? game.groups : Object.values(game.groups);
+        }
+
+        // Parse Master Trophies
+        let rawTrophies = [];
+        if (game.rawSonyMetadata && game.rawSonyMetadata.trophies) {
+          rawTrophies = Array.isArray(game.rawSonyMetadata.trophies)
+            ? game.rawSonyMetadata.trophies
+            : Object.values(game.rawSonyMetadata.trophies);
+        }
+
+        if (rawTrophies.length > 0) {
+          this.masterTrophies = rawTrophies.map((t, idx) => {
+            let grade = t.trophyType || "Bronze";
+            grade = grade.charAt(0).toUpperCase() + grade.slice(1).toLowerCase();
+            return {
+              trophyId: t.trophyId !== undefined ? String(t.trophyId) : String(idx),
+              title: t.trophyName || `Trophy #${idx + 1}`,
+              desc: t.trophyDetail || "Way of the Hunter 2 milestone.",
+              icon: t.trophyIconUrl || posterUrl,
+              grade: grade,
+              groupId: t.trophyGroupId || "default",
+              hidden: Boolean(t.trophyHidden)
+            };
+          });
+        }
+
+        this.renderTrophies();
+      });
+    },
+
+    // 2. Silent background auto-sync to Firestore: users/{email}/platform/{platform}/game/woth2
     async silentSaveGameTelemetry() {
       const nameEl = document.getElementById("hunterNameInput");
       const lvlEl = document.getElementById("hunterLevelInput");
@@ -171,6 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const dayEl = document.getElementById("currentDayInput");
       const timeEl = document.getElementById("currentTimeInput");
       const weatherEl = document.getElementById("weatherConditionInput");
+      const platEl = document.getElementById("platformSelect");
 
       if (nameEl) this.hunterName = nameEl.value.trim() || "Hunter";
       if (lvlEl) this.hunterLevel = parseInt(lvlEl.value, 10) || 1;
@@ -178,10 +242,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (dayEl) this.currentDay = parseInt(dayEl.value, 10) || 1;
       if (timeEl) this.currentTime = timeEl.value || "08:30";
       if (weatherEl) this.currentWeather = weatherEl.value || "Clear";
+      if (platEl) this.currentPlatform = platEl.value || this.currentPlatform;
 
       localStorage.setItem("woth2_day", this.currentDay);
       localStorage.setItem("woth2_time", this.currentTime);
       localStorage.setItem("woth2_weather", this.currentWeather);
+      localStorage.setItem("woth2_platform", this.currentPlatform);
       localStorage.setItem("woth2_name", this.hunterName);
       localStorage.setItem("woth2_level", this.hunterLevel);
       localStorage.setItem("woth2_credits", this.hunterCredits);
@@ -191,6 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("woth2_dog_blood", this.dogBloodTrackingLevel);
       localStorage.setItem("woth2_dog_search", this.dogSearchQuarteringLevel);
       localStorage.setItem("woth2_watchlist", JSON.stringify(this.watchlist));
+      localStorage.setItem("woth2_manual_trophies", JSON.stringify(this.userTrophyProgress));
 
       if (this.currentUser && this.currentEmail) {
         try {
@@ -201,9 +268,9 @@ document.addEventListener("DOMContentLoaded", () => {
             .collection("game")
             .doc("woth2");
 
-          const earnedList = this.trophies.filter(t => t.earned);
-          const totalTrophies = this.trophies.length;
-          const trophyPct = totalTrophies > 0 ? Math.round((earnedList.length / totalTrophies) * 100) : 0;
+          const earnedCount = Object.values(this.userTrophyProgress).filter(t => t.earned).length;
+          const totalTrophies = this.masterTrophies.length || 6;
+          const trophyPct = totalTrophies > 0 ? Math.round((earnedCount / totalTrophies) * 100) : 0;
 
           await gameDocRef.set({
             hunter_name: this.hunterName,
@@ -212,7 +279,8 @@ document.addEventListener("DOMContentLoaded", () => {
             companion_day: this.currentDay,
             companion_time: this.currentTime,
             weather: this.currentWeather,
-            trophies_earned: earnedList.length,
+            platform: this.currentPlatform,
+            trophies_earned: earnedCount,
             trophies_total: totalTrophies,
             trophies_percent: trophyPct,
             dog_stats: {
@@ -229,11 +297,13 @@ document.addEventListener("DOMContentLoaded", () => {
           }, { merge: true });
 
         } catch (e) {
+          // Strictly display alerts upon write failure
           alert("⚠️ Telemetry Sync Failed: " + e.message);
         }
       }
     },
 
+    // 3. Navbar Architecture: Dynamic Firebase /utm_links Engine
     initRTDB() {
       rtdb.ref("/utm_links").on("value", snapshot => {
         const raw = snapshot.val();
@@ -261,7 +331,6 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
 
-        this.syncWoth2Favicon(items, raw);
         this.renderNav(items);
       });
     },
@@ -278,44 +347,6 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     },
 
-    syncWoth2Favicon(items, raw) {
-      let woth2Img = "";
-      let woth2Stamp = "";
-
-      const taggedEntry = items.find(i => i.tag && i.tag.toLowerCase() === "woth2");
-
-      if (taggedEntry) {
-        woth2Img = taggedEntry.image;
-        woth2Stamp = taggedEntry.updatedAt;
-      } else if (raw.WOTH2 && raw.WOTH2[0] && raw.WOTH2[0].image) {
-        woth2Img = raw.WOTH2[0].image;
-        woth2Stamp = raw.WOTH2[0].updatedAt;
-      } else {
-        const titleMatch = items.find(i => {
-          const t = i.title.toLowerCase();
-          return t.includes("woth2") || t.includes("way of the hunter");
-        });
-        if (titleMatch) {
-          woth2Img = titleMatch.image;
-          woth2Stamp = titleMatch.updatedAt;
-        }
-      }
-
-      if (woth2Img) {
-        const favicon = document.getElementById("dynamicFavicon");
-        const appleIcon = document.getElementById("dynamicAppleIcon");
-        const brandLogo = document.getElementById("navBrandLogo");
-
-        if (favicon) favicon.href = woth2Img;
-        if (appleIcon) appleIcon.href = woth2Img;
-        if (brandLogo) brandLogo.src = woth2Img;
-      }
-
-      if (woth2Stamp) {
-        this.safeSetText("nyBuildTimestamp", woth2Stamp);
-      }
-    },
-
     renderNav(items) {
       const navList = document.getElementById("navList");
       if (!navList) return;
@@ -330,13 +361,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const cleanTitle = (item.title || "").toLowerCase();
         const cleanUrl = (item.url || "").toLowerCase();
 
-        // Exclude Settings and Privacy from top bar
+        // Exclude Settings and Privacy from top bar (routed to profile menu)
         if (cleanGroup === "settings" || cleanTag === "settings" || cleanTitle.includes("setting") || cleanUrl.includes("setting") ||
             cleanGroup === "privacy" || cleanTag === "privacy" || cleanTitle.includes("privacy") || cleanUrl.includes("privacy")) {
           return;
         }
 
-        // Prevent accidental "Standalone" dropdown folders
+        // Safeguard: Prevent accidental "Standalone" folder creation
         const isStandalone = !item.group || cleanGroup === "standalone";
 
         if (isStandalone) {
@@ -411,6 +442,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
+    // 4. User Identity & Multi-Platform Telemetry Binding
     initAuth() {
       auth.onAuthStateChanged(async user => {
         const modalBtn = document.getElementById("authModalBtn");
@@ -426,7 +458,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (modalBtn) modalBtn.classList.add("hidden");
           if (profileBadge) profileBadge.classList.remove("hidden");
 
-          // 1. RTDB Live Identity Hook (/users/{emailKey})
+          // RTDB Identity Hook (/users/{emailKey})
           rtdb.ref(`/users/${this.currentEmailKey}`).on("value", snapshot => {
             const rtdbProfile = snapshot.val() || {};
             const gamerTag = rtdbProfile.username || user.displayName || this.hunterName;
@@ -441,11 +473,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
             this.psnAccountId = rtdbProfile.psn_account_id || "";
             this.psnOnlineId = rtdbProfile.psn_username || "";
-            this.currentPlatform = rtdbProfile.primary_platform || (this.psnAccountId ? "playstation" : "pc");
 
-            // Full PlayStation Trophy Telemetry Sync
-            if (this.psnAccountId) {
-              this.syncPlayStationTrophies(this.psnAccountId);
+            // User primary platform or detection
+            if (rtdbProfile.primary_platform) {
+              this.currentPlatform = rtdbProfile.primary_platform.toLowerCase();
+              this.safeSetValue("platformSelect", this.currentPlatform);
+            }
+
+            // Sync PSN Telemetry if connected
+            if (this.psnOnlineId || this.psnAccountId) {
+              this.syncPlayStationTrophies(this.psnOnlineId, this.psnAccountId);
             }
 
             // Real-time friend telemetry tracking
@@ -453,7 +490,7 @@ document.addEventListener("DOMContentLoaded", () => {
             this.loadFriendsComparisonTelemetry();
           });
 
-          // 2. Firestore Subcollection Hook: users/{email}/platform/{platform}/game/woth2
+          // Firestore Subcollection Hook: users/{email}/platform/{platform}/game/woth2
           try {
             const gameSnap = await db.collection("users")
               .doc(this.currentEmail)
@@ -503,7 +540,7 @@ document.addEventListener("DOMContentLoaded", () => {
               }
             }
           } catch (e) {
-            console.warn("Subcollection read warning:", e);
+            console.warn("Firestore subcollection read warning:", e);
           }
 
           this.renderProfileDropdown(true);
@@ -592,7 +629,211 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    // Companion Telemetry Comparison (PlayStation users compare progress & trophies)
+    // 5. PlayStation Live Trophy Telemetry Sync Engine
+    syncPlayStationTrophies(psnOnlineId, accountId) {
+      const targetGamerTag = (psnOnlineId || "").trim();
+      let trophyRef = null;
+
+      if (targetGamerTag) {
+        trophyRef = rtdb.ref(`/psn/gamertags/${targetGamerTag}/liveTrophyProgress/${this.titleId}`);
+      } else if (accountId) {
+        trophyRef = rtdb.ref(`/psn/trophies/woth2/${accountId}`);
+      }
+
+      if (!trophyRef) return;
+
+      trophyRef.on("value", async snapshot => {
+        const raw = snapshot.val();
+        let parsedList = [];
+
+        if (raw) {
+          if (raw.trophies) {
+            parsedList = Array.isArray(raw.trophies) ? raw.trophies : Object.values(raw.trophies);
+          } else if (Array.isArray(raw)) {
+            parsedList = raw;
+          } else if (typeof raw === "object") {
+            parsedList = Object.values(raw);
+          }
+        }
+
+        if (parsedList.length > 0) {
+          parsedList.forEach((t, idx) => {
+            const id = t.trophyId !== undefined ? String(t.trophyId) : String(idx);
+            const isEarned = Boolean(t.earned || t.unlocked || t.timestamp || t.earnedDateTime);
+            const dateStr = t.timestamp || t.earnedDateTime || (isEarned ? (t.updatedAt || new Date().toISOString()) : null);
+
+            this.userTrophyProgress[id] = {
+              earned: isEarned,
+              timestamp: dateStr,
+              currentValue: t.currentValue !== undefined ? Number(t.currentValue) : null,
+              targetValue: t.targetValue !== undefined ? Number(t.targetValue) : null,
+              manual: false
+            };
+          });
+
+          this.renderTrophies();
+          await this.silentSaveGameTelemetry();
+        }
+      });
+    },
+
+    // Manual Click-To-Toggle for non-PSN / manual players
+    toggleManualTrophy(trophyId) {
+      if (this.currentPlatform === "ps" && (this.psnOnlineId || this.psnAccountId)) {
+        return; // Auto-sync locks manual clicking on verified PlayStation accounts
+      }
+
+      const id = String(trophyId);
+      const current = this.userTrophyProgress[id] || { earned: false };
+
+      if (current.earned) {
+        // Toggle OFF (accidental click reversal)
+        this.userTrophyProgress[id] = {
+          earned: false,
+          timestamp: null,
+          currentValue: null,
+          targetValue: null,
+          manual: true
+        };
+      } else {
+        // Toggle ON
+        this.userTrophyProgress[id] = {
+          earned: true,
+          timestamp: new Date().toISOString(),
+          currentValue: null,
+          targetValue: null,
+          manual: true
+        };
+      }
+
+      this.renderTrophies();
+      this.silentSaveGameTelemetry();
+    },
+
+    // 6. Unified Trophy & Achievement Renderer (Supports PS, Xbox, Steam, Microsoft)
+    renderTrophies() {
+      const container = document.getElementById("psnTrophiesContainer");
+      if (!container) return;
+
+      const total = this.masterTrophies.length || 6;
+      const progressEntries = Object.values(this.userTrophyProgress);
+      const earnedList = progressEntries.filter(t => t.earned);
+      const earnedCount = earnedList.length;
+      const progressPercent = total > 0 ? Math.round((earnedCount / total) * 100) : 0;
+
+      // Calculate earliest trophy unlocked milestone
+      let firstTrophyText = "No trophies or achievements recorded yet";
+      if (earnedList.length > 0) {
+        const sortedEarned = [...earnedList].sort((a, b) => new Date(a.timestamp || 0) - new Date(b.timestamp || 0));
+        const first = sortedEarned[0];
+        const firstMaster = this.masterTrophies.find(m => m.trophyId === Object.keys(this.userTrophyProgress).find(k => this.userTrophyProgress[k] === first));
+        const firstTitle = firstMaster ? firstMaster.title : "Milestone Complete";
+        const firstDate = new Date(first.timestamp);
+        const dateFormatted = !isNaN(firstDate.getTime())
+          ? firstDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
+          : "Recorded";
+        firstTrophyText = `🏆 First Unlocked: <strong>${firstTitle}</strong> (${dateFormatted})`;
+      }
+
+      const isLivePS = this.currentPlatform === "ps" && (this.psnOnlineId || this.psnAccountId);
+      const platformName = this.currentPlatform.toUpperCase();
+
+      container.innerHTML = `
+        <div style="grid-column: 1/-1; background:#151c27; padding:14px 18px; border-radius:8px; border:1px solid #273447; margin-bottom:12px; display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div>
+              <strong style="color:#fff; font-size:1.05rem;">
+                ${isLivePS ? `PlayStation Sync &bull; ${this.psnOnlineId}` : `${platformName} Achievement Tracker`}
+              </strong>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
+                ${isLivePS ? `Tracking Live via NPWR52231_00` : `Click any trophy card below to mark/unmark completion`}
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <span class="badge" style="background:#28374d; color:var(--accent-gold); font-size:0.85rem;">
+                ${earnedCount} / ${total} Unlocked (${progressPercent}%)
+              </span>
+            </div>
+          </div>
+
+          <div style="width:100%; height:8px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden;">
+            <div style="width:${progressPercent}%; height:100%; background:linear-gradient(90deg, #0088ff, #2ecc71); border-radius:4px; transition: width 0.4s ease;"></div>
+          </div>
+
+          <div style="font-size:0.78rem; color:#ffe0b3; display:flex; align-items:center; gap:6px;">
+            ${firstTrophyText}
+          </div>
+        </div>
+      `;
+
+      // Render Every Trophy from Master Catalog with Progressive State
+      this.masterTrophies.forEach(t => {
+        const userState = this.userTrophyProgress[t.trophyId] || { earned: false };
+        const isEarned = userState.earned;
+        const div = document.createElement("div");
+        div.className = `telemetry-card ${isEarned ? 'trophy-card-earned' : ''}`;
+        div.style.cursor = isLivePS ? "default" : "pointer";
+
+        if (!isLivePS) {
+          div.onclick = () => window.CompanionApp.toggleManualTrophy(t.trophyId);
+        }
+
+        const gradeColor = t.grade === "Platinum" ? "#00d2d3" : (t.grade === "Gold" ? "#f5a623" : (t.grade === "Silver" ? "#bdc3c7" : "#cd7f32"));
+
+        let formattedTimestamp = "";
+        if (isEarned && userState.timestamp) {
+          const d = new Date(userState.timestamp);
+          formattedTimestamp = !isNaN(d.getTime())
+            ? d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
+            : "Recorded";
+        }
+
+        // Milestone Progress bar (X / X)
+        let milestoneHtml = "";
+        if (userState.targetValue && userState.targetValue > 0) {
+          const cur = userState.currentValue || 0;
+          const tar = userState.targetValue;
+          const milePct = Math.min(100, Math.round((cur / tar) * 100));
+          milestoneHtml = `
+            <div style="margin-top:6px;">
+              <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-muted); margin-bottom:2px;">
+                <span>Milestone Progress</span>
+                <strong style="color:#fff;">${cur} / ${tar} (${milePct}%)</strong>
+              </div>
+              <div style="width:100%; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden;">
+                <div style="width:${milePct}%; height:100%; background:var(--accent-gold);"></div>
+              </div>
+            </div>
+          `;
+        }
+
+        div.innerHTML = `
+          <div style="display:flex; gap:12px; align-items:flex-start;">
+            <img src="${t.icon}" alt="" style="width:48px; height:48px; border-radius:6px; object-fit:cover; border:1px solid rgba(255,255,255,0.1); flex-shrink:0;">
+            <div style="flex-grow:1;">
+              <div class="card-top-row">
+                <span class="animal-title">${t.title}</span>
+                <span class="badge" style="border-color:${gradeColor}; color:${gradeColor};">${t.grade}</span>
+              </div>
+              <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">${t.desc}</p>
+              ${milestoneHtml}
+            </div>
+          </div>
+          <div class="card-footer-row" style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.05); padding-top:8px;">
+            <div>
+              <span style="font-size:0.8rem; font-weight:600; color:${isEarned ? 'var(--success)' : 'var(--text-muted)'};">
+                ${isEarned ? (userState.manual ? '✔ Earned (Manual)' : '✔ Earned') : '🔒 Locked'}
+              </span>
+              ${isEarned && formattedTimestamp ? `<div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">Unlocked: ${formattedTimestamp}</div>` : ''}
+            </div>
+            ${!isLivePS ? `<span style="font-size:0.7rem; color:var(--text-muted);">Click to toggle</span>` : ''}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    // 7. Companion Telemetry Comparison (Cross-Platform Roster)
     async loadFriendsComparisonTelemetry() {
       const container = document.getElementById("friendsComparisonContainer");
       if (!container) return;
@@ -603,8 +844,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       container.innerHTML = `<div style="font-size:0.8rem; color:var(--text-muted); padding:10px;">Loading live companion telemetry...</div>`;
-
-      const platformFilter = this.currentPlatform === "playstation" ? "playstation" : "all";
       const comparisonCards = [];
 
       for (const friend of this.friendsRoster) {
@@ -612,7 +851,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!friendEmail) continue;
 
         try {
-          const targetPlatform = (platformFilter === "playstation") ? "playstation" : (friend.platform || "playstation");
+          const targetPlatform = (friend.platform || this.currentPlatform || "ps").toLowerCase();
           const snap = await db.collection("users")
             .doc(friendEmail)
             .collection("platform")
@@ -626,7 +865,7 @@ document.addEventListener("DOMContentLoaded", () => {
             comparisonCards.push({
               username: friend.username || "Companion",
               avatar: friend.avatar_url || DEFAULT_USER_AVATAR,
-              platform: targetPlatform,
+              platform: (data.platform || targetPlatform).toUpperCase(),
               level: data.hunter_level || 1,
               credits: data.hunter_credits || 0,
               day: data.companion_day || 1,
@@ -654,7 +893,7 @@ document.addEventListener("DOMContentLoaded", () => {
       container.innerHTML = "";
 
       if (!cards.length) {
-        container.innerHTML = `<p style="font-size:0.82rem; color:var(--text-muted); padding:12px;">No active ${this.currentPlatform === 'playstation' ? 'PlayStation ' : ''}companion telemetry found.</p>`;
+        container.innerHTML = `<p style="font-size:0.82rem; color:var(--text-muted); padding:12px;">No active companion telemetry recorded yet.</p>`;
         return;
       }
 
@@ -668,7 +907,7 @@ document.addEventListener("DOMContentLoaded", () => {
               <img src="${c.avatar}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid #00d2d3;">
               <strong style="color:#fff; font-size:0.95rem;">${c.username}</strong>
             </div>
-            <span class="badge" style="background:#28374d; color:#00d2d3;">${c.platform.toUpperCase()}</span>
+            <span class="badge" style="background:#28374d; color:#00d2d3;">${c.platform}</span>
           </div>
 
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:0.78rem; color:var(--text-muted);">
@@ -679,7 +918,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <div>Harvests: <strong style="color:#2ecc71;">${c.harvestCount} Animals</strong></div>
             <div>Watchlist: <strong style="color:#f5a623;">${c.watchlistCount} Targets</strong></div>
             <div style="grid-column: 1/-1; margin-top:2px;">
-              PSN Trophies: <strong style="color:var(--accent-gold);">${c.trophiesEarned} / ${c.trophiesTotal} (${c.trophiesPct}%)</strong>
+              Achievements: <strong style="color:var(--accent-gold);">${c.trophiesEarned} / ${c.trophiesTotal} (${c.trophiesPct}%)</strong>
             </div>
           </div>
 
@@ -693,126 +932,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Full PlayStation Trophy Telemetry Sync Engine (Past & Present)
-    syncPlayStationTrophies(accountId) {
-      if (!accountId) return;
-
-      rtdb.ref(`/psn/trophies/woth2/${accountId}`).on("value", async snapshot => {
-        const raw = snapshot.val();
-        let fetchedList = [];
-
-        if (raw && Array.isArray(raw.trophies)) {
-          fetchedList = raw.trophies;
-        } else if (raw && typeof raw === "object") {
-          fetchedList = Object.values(raw);
-        } else {
-          fetchedList = this.getDefaultWoth2TrophyList();
-        }
-
-        this.trophies = fetchedList;
-        this.renderTrophies();
-
-        // Immediately sync cumulative trophy stats to Firestore for companion sharing
-        await this.silentSaveGameTelemetry();
-      });
-    },
-
-    getDefaultWoth2TrophyList() {
-      return [
-        { id: "trophy_plat", title: "Master of Nez Perce", desc: "Unlock all trophies in Way of the Hunter 2.", grade: "Platinum", earned: false },
-        { id: "trophy_1", title: "Five-Star Legend", desc: "Harvest a 5-Star Mature trophy animal with 95%+ fitness.", grade: "Gold", earned: true, earnedDateTime: "2024-08-14T21:04:12Z" },
-        { id: "trophy_2", title: "Bloodhound Dedication", desc: "Reach Level 6 Blood Tracking with Bacon.", grade: "Silver", earned: false },
-        { id: "trophy_3", title: "Tactical Cull", desc: "Harvest 10 low-fitness genetic cull animals to protect the herd.", grade: "Bronze", earned: true, earnedDateTime: "2024-09-02T16:30:00Z" },
-        { id: "trophy_4", title: "Long-Range Marksman", desc: "Harvest an animal from a distance of over 350 yards.", grade: "Silver", earned: true, earnedDateTime: "2024-08-10T14:12:00Z" },
-        { id: "trophy_5", title: "Reserve Explorer", desc: "Discover all primary camps and need zones in Jackalope Cordillera.", grade: "Bronze", earned: false }
-      ];
-    },
-
-    renderTrophies() {
-      const container = document.getElementById("psnTrophiesContainer");
-      if (!container) return;
-
-      const total = this.trophies.length;
-      const earnedList = this.trophies.filter(t => t.earned);
-      const earnedCount = earnedList.length;
-      const progressPercent = total > 0 ? Math.round((earnedCount / total) * 100) : 0;
-
-      // Calculate the true earliest trophy earned across past and present sessions
-      let firstTrophyText = "No trophies unlocked yet";
-      if (earnedList.length > 0) {
-        const sortedEarned = [...earnedList].sort((a, b) => {
-          const dateA = new Date(a.earnedDateTime || a.earnedDate || 0);
-          const dateB = new Date(b.earnedDateTime || b.earnedDate || 0);
-          return dateA - dateB;
-        });
-        const firstTrophy = sortedEarned[0];
-        const firstDate = new Date(firstTrophy.earnedDateTime || firstTrophy.earnedDate);
-        const dateFormatted = !isNaN(firstDate.getTime()) 
-          ? firstDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
-          : (firstTrophy.earnedDate || "Recorded");
-        firstTrophyText = `🏆 First Unlocked: <strong>${firstTrophy.title}</strong> (${dateFormatted})`;
-      }
-
-      container.innerHTML = `
-        <div style="grid-column: 1/-1; background:#151c27; padding:14px 18px; border-radius:8px; border:1px solid #273447; margin-bottom:12px; display:flex; flex-direction:column; gap:10px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-            <div>
-              <strong style="color:#fff; font-size:1.05rem;">PlayStation Sync &bull; ${this.psnOnlineId || 'Connected PSN'}</strong>
-              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
-                PSN Account ID: [${this.psnAccountId ? this.psnAccountId.substring(0, 4) + '••••' : 'Active'}]
-              </div>
-            </div>
-            <div style="text-align:right;">
-              <span class="badge" style="background:#28374d; color:var(--accent-gold); font-size:0.85rem;">
-                ${earnedCount} / ${total} Trophies (${progressPercent}%)
-              </span>
-            </div>
-          </div>
-
-          <div style="width:100%; height:8px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden;">
-            <div style="width:${progressPercent}%; height:100%; background:linear-gradient(90deg, #0088ff, #2ecc71); border-radius:4px; transition: width 0.4s ease;"></div>
-          </div>
-
-          <div style="font-size:0.78rem; color:#ffe0b3; display:flex; align-items:center; gap:6px;">
-            ${firstTrophyText}
-          </div>
-        </div>
-      `;
-
-      this.trophies.forEach(t => {
-        const div = document.createElement("div");
-        div.className = "telemetry-card";
-        const gradeColor = t.grade === "Platinum" ? "#00d2d3" : (t.grade === "Gold" ? "#f5a623" : (t.grade === "Silver" ? "#bdc3c7" : "#cd7f32"));
-
-        let formattedTimestamp = "";
-        if (t.earned && (t.earnedDateTime || t.earnedDate)) {
-          const d = new Date(t.earnedDateTime || t.earnedDate);
-          formattedTimestamp = !isNaN(d.getTime())
-            ? d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
-            : t.earnedDate;
-        }
-
-        div.innerHTML = `
-          <div>
-            <div class="card-top-row">
-              <span class="animal-title">${t.title}</span>
-              <span class="badge" style="border-color:${gradeColor}; color:${gradeColor};">${t.grade}</span>
-            </div>
-            <p style="font-size:0.8rem; color:var(--text-muted); margin-top:6px;">${t.desc}</p>
-          </div>
-          <div class="card-footer-row" style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.05); padding-top:8px;">
-            <div>
-              <span style="font-size:0.8rem; font-weight:600; color:${t.earned ? 'var(--success)' : 'var(--text-muted)'};">
-                ${t.earned ? '✔ Earned' : '🔒 Locked'}
-              </span>
-              ${t.earned && formattedTimestamp ? `<div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">Unlocked: ${formattedTimestamp}</div>` : ''}
-            </div>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    },
-
+    // 8. Core Features & JSON Integrations
     initDynamicFeatures() {
       this.populateRegions();
       this.filterSpeciesByRegion("harvestLocationSelect", "harvestSpeciesSelect");
@@ -1443,6 +1563,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
+    // 9. Input Listeners: Silent Blur & Enter Auto-Sync Engine
     bindUI() {
       document.querySelectorAll(".ribbon-btn").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -1454,7 +1575,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
 
-      // Blur and Enter Silent Auto-Sync on all in-game inputs
+      // Platform Selector Listener
+      const platSelect = document.getElementById("platformSelect");
+      if (platSelect) {
+        platSelect.addEventListener("change", (e) => {
+          this.currentPlatform = e.target.value;
+          this.renderTrophies();
+          this.silentSaveGameTelemetry();
+        });
+      }
+
+      // Silent Auto-Sync on Blur and Enter
       const autoSyncInputs = [
         "hunterNameInput", "hunterLevelInput", "hunterCreditsInput",
         "currentDayInput", "currentTimeInput", "weatherConditionInput"
