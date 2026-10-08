@@ -2,14 +2,17 @@
  * File: psn.js
  * Location: /Playstation/psn.js
  * Description: Master PSN Telemetry & Deep Catalog Ingestion Engine:
- *              1. Master Catalog under /psn/games/{commId} merges NPWR primary
- *                 and CUSA/PPSA secondary data with full trophies & DLCs.
- *              2. User Progress isolated strictly to /psn/gamertags/{onlineId}.
- *              3. Single root commId for rapid external site dev lookups.
- *              4. Hardware presence, devices, PS5 (x/x) objectives & entitlements.
+ * 1. Master Catalog under /psn/games/{commId} merges NPWR primary
+ * and CUSA/PPSA secondary data with full trophies & DLCs.
+ * 2. PlayStation Store Concept & Product ingestion engine:
+ * - Resolves conceptId (e.g. concept/10008946 for Way of the Hunter)
+ * - Ingests pricing, publisher, genres, ratings, screenshots, and editions.
+ * 3. User Progress isolated strictly to /psn/gamertags/{onlineId}.
+ * 4. Single root commId for rapid external site dev lookups.
+ * 5. Hardware presence, devices, PS5 (x/x) objectives & entitlements.
  * Analytics Tagging: G-CTYHDF4MSD (Deployable via GTM).
- * Version: 62.0.0 - Unified NPWR/CUSA Master Catalog & Deep Telemetry
- * Date & Time Stamp: 2026-10-08 06:12:00 EDT (America/New_York)
+ * Version: 63.0.0 - Unified NPWR/CUSA Master Catalog & Deep Store Concept Telemetry
+ * Date & Time Stamp: 2026-10-08 12:35:00 EDT (America/New_York)
  * ============================================================================ */
 
 const fs = require("fs");
@@ -195,6 +198,133 @@ async function deleteNodeFromFirebase(endpointPath) {
         console.log(`[CLEANUP] Purged node from Firebase: /psn/${endpointPath}`);
     } catch (err) {
         console.warn(`[CLEANUP WARN] Failed to delete /psn/${endpointPath}: ${err.message}`);
+    }
+}
+
+// ----------------------------------------------------------------------------
+// [SECTION: PLAYSTATION STORE CONCEPT & PRODUCT INGESTION ENGINE]
+// ----------------------------------------------------------------------------
+function extractConceptIdFromText(text = "") {
+    if (!text || typeof text !== "string") return null;
+    const match = text.match(/concept\/(\d+)/i);
+    return match ? match[1] : null;
+}
+
+async function queryStoreConceptData(conceptId) {
+    if (!conceptId) return null;
+    try {
+        const storeUrl = `https://store.playstation.com/en-us/concept/${conceptId}`;
+        const response = await resilientFetch(storeUrl, {
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "Accept-Language": "en-US,en;q=0.9"
+            }
+        });
+
+        if (!response || !response.ok) return null;
+        const html = await response.text();
+
+        let nextData = null;
+        const nextDataMatch = html.match(/<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/);
+        if (nextDataMatch && nextDataMatch[1]) {
+            try {
+                nextData = JSON.parse(nextDataMatch[1]);
+            } catch (err) {}
+        }
+
+        let storeMeta = {
+            conceptId: String(conceptId),
+            storeUrl: `//store.playstation.com/en-us/concept/${conceptId}`,
+            publisher: null,
+            releaseDate: null,
+            genres: [],
+            price: "Store Listing",
+            discountedPrice: null,
+            isFree: false,
+            rating: null,
+            ratingDescriptors: [],
+            screenshots: [],
+            editions: [],
+            longDescription: null,
+            fetchedAt: new Date().toISOString()
+        };
+
+        if (nextData && nextData.props && nextData.props.pageProps) {
+            const pageProps = nextData.props.pageProps;
+            const conceptData = pageProps.concept || pageProps.product || {};
+
+            storeMeta.publisher = conceptData.publisherName || conceptData.publisher || null;
+            storeMeta.releaseDate = conceptData.releaseDate || null;
+            storeMeta.genres = Array.isArray(conceptData.genres) ? conceptData.genres : [];
+            storeMeta.rating = conceptData.contentRating?.name || null;
+            storeMeta.ratingDescriptors = conceptData.contentRating?.descriptors || [];
+
+            if (conceptData.media && Array.isArray(conceptData.media)) {
+                storeMeta.screenshots = conceptData.media
+                    .filter(m => m.type === "IMAGE")
+                    .map(m => resolveGamePosterArt([m.url]))
+                    .filter(Boolean);
+            }
+
+            if (conceptData.defaultProduct) {
+                const prod = conceptData.defaultProduct;
+                storeMeta.price = prod.price?.displayPrice || storeMeta.price;
+                storeMeta.discountedPrice = prod.price?.discountedPrice || null;
+                storeMeta.isFree = !!prod.price?.isFree;
+            }
+
+            if (conceptData.products && Array.isArray(conceptData.products)) {
+                storeMeta.editions = conceptData.products.map(p => ({
+                    productId: p.id,
+                    name: p.name,
+                    price: p.price?.displayPrice || "Store Listing",
+                    isFree: !!p.price?.isFree,
+                    platforms: p.platforms || []
+                }));
+            }
+
+            storeMeta.longDescription = conceptData.longDescription || conceptData.description || null;
+            return storeMeta;
+        }
+
+        const titleMatch = html.match(/<meta property="og:title" content="(.*?)"/);
+        const descMatch = html.match(/<meta property="og:description" content="(.*?)"/);
+        const imageMatch = html.match(/<meta property="og:image" content="(.*?)"/);
+
+        storeMeta.longDescription = descMatch ? descMatch[1] : null;
+        if (imageMatch) storeMeta.screenshots.push(resolveGamePosterArt([imageMatch[1]]));
+
+        return storeMeta;
+    } catch (err) {
+        console.warn(`[STORE FETCH WARN] Concept ${conceptId} lookup failed: ${err.message}`);
+        return null;
+    }
+}
+
+async function searchStoreConceptByName(gameName) {
+    if (!gameName || gameName === "Dashboard") return null;
+    try {
+        const cleanQuery = encodeURIComponent(gameName.replace(/®|™/g, "").trim());
+        const searchApiUrl = `https://web.np.playstation.com/api/graphql/v1/op?operationName=getSearchResults&variables=%7B%22searchTerm%22%3A%22${cleanQuery}%22%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%22d77d9a513cbdba90e2908f4c17c4613271789721d15c7e0d37e6f3b7d7b0b63e%22%7D%7D`;
+        
+        const res = await resilientFetch(searchApiUrl, {
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "x-psn-app-ver": "latest"
+            }
+        });
+
+        if (!res || !res.ok) return null;
+        const data = await res.json();
+        const searchResults = data?.data?.universalSearch?.results || [];
+
+        for (const item of searchResults) {
+            const conceptId = item.id || extractConceptIdFromText(item.url);
+            if (conceptId) return String(conceptId);
+        }
+        return null;
+    } catch (e) {
+        return null;
     }
 }
 
@@ -696,7 +826,7 @@ async function enrichDLCGroups(canonicalCommId, mappedGroups, userPurchasedTitle
 // ----------------------------------------------------------------------------
 // [SECTION: UNIFIED MASTER GAME INGESTION (/psn/games/{commId})]
 // ----------------------------------------------------------------------------
-async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, iconArt, definedTrophies, globalGames, userPurchasedTitles = [], cloudDlcCatalog = {}, subTitleId = null) {
+async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, iconArt, definedTrophies, globalGames, userPurchasedTitles = [], cloudDlcCatalog = {}, subTitleId = null, initialConceptId = null) {
     if (!commId || commId === "Dashboard" || !auth) return null;
 
     const canonicalCommId = String(commId).trim().toUpperCase();
@@ -785,14 +915,32 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
         const resolvedDescription = previousRecord.description || 
             `Official PlayStation title: ${resolvedName}. Features: ${capabilities.multiplayerType}. Mode: ${capabilities.onlineMode}. Cross-platform play: ${capabilities.isCrossPlatform ? 'Supported' : 'PlayStation Network'}.`;
 
-        // Unified CUSA / PPSA resolution
         const resolvedCusaId = subTitleId || previousRecord.cusaId || previousRecord.titleId || null;
+
+        // PlayStation Store Concept & Metadata Resolution
+        let resolvedConceptId = initialConceptId || 
+                                previousRecord.conceptId || 
+                                extractConceptIdFromText(posterArt) || 
+                                extractConceptIdFromText(iconArt) || 
+                                null;
+
+        if (!resolvedConceptId && resolvedName && resolvedName !== "PlayStation Game") {
+            resolvedConceptId = await searchStoreConceptByName(resolvedName);
+        }
+
+        let storeListing = previousRecord.storeListing || null;
+        if (resolvedConceptId && (!storeListing || !storeListing.fetchedAt)) {
+            console.log(`[STORE INGESTION] Pulling PlayStation Store metadata for concept ${resolvedConceptId} (${resolvedName})...`);
+            storeListing = await queryStoreConceptData(resolvedConceptId);
+        }
 
         const masterGameData = {
             commId: canonicalCommId,
             npCommunicationId: canonicalCommId,
             cusaId: resolvedCusaId,
             titleId: resolvedCusaId,
+            conceptId: resolvedConceptId,
+            storeListing: storeListing,
             name: resolvedName,
             description: resolvedDescription,
             platform: platform || previousRecord.platform || "PS5",
@@ -1160,6 +1308,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                 platform: normalizePlatform(g),
                 art: gameArt,
                 posterArt: gameArt,
+                conceptId: g.conceptId || extractConceptIdFromText(g.conceptIconUrl) || null,
                 playCount: g.playCount || 1,
                 playDuration: g.playDuration || null,
                 nativePlaytimeSeconds: parsedSeconds,
@@ -1204,6 +1353,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             existing.art = fallbackArt;
             existing.posterArt = fallbackArt;
             existing.trophyTitleIconUrl = fallbackArt;
+            existing.conceptId = existing.conceptId || t.conceptId || extractConceptIdFromText(t.conceptIconUrl) || null;
             existing.platform = normalizePlatform(t);
             existing.progress = t.progress || 0;
             existing.definedTrophies = t.definedTrophies || {};
@@ -1314,7 +1464,8 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                     globalGames,
                     purchasedGames,
                     cloudDlcCatalog,
-                    g.titleId || g.npTitleId
+                    g.titleId || g.npTitleId,
+                    g.conceptId
                 );
             }
         }
@@ -1379,13 +1530,15 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 
                     activeHunt = { 
                         npCommunicationId: persistentRootCommId, 
-                        commId: persistentRootCommId,
-                        titleId: isDashboard ? null : activeTitleId,
-                        cusaId: isDashboard ? null : activeTitleId,
+                        commId: persistentRootCommId, 
+                        conceptId: globalGames[persistentRootCommId]?.conceptId || matchedGame.conceptId || null,
+                        storeListing: globalGames[persistentRootCommId]?.storeListing || null,
+                        titleId: isDashboard ? null : activeTitleId, 
+                        cusaId: isDashboard ? null : activeTitleId, 
                         title: matchedGame.name || resolvedTitle, 
                         platform: hwContext.activeHardware, 
-                        gameBuildVersion: hwContext.gameBuildVersion,
-                        isStreamingRemotePlay: hwContext.isStreamingRemotePlay,
+                        gameBuildVersion: hwContext.gameBuildVersion, 
+                        isStreamingRemotePlay: hwContext.isStreamingRemotePlay, 
                         art: resolvedPoster, 
                         hoursPlayed: safePlaytimeFormatted, 
                         hoursFormatted: safePlaytimeFormatted, 
@@ -1425,6 +1578,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             currentGame: resolvedTitle,                          // Readable Title (e.g. "Way of the Hunter 2")
             commId: persistentRootCommId,                         // SINGLE commId for external site lookups
             currentGameId: isDashboard ? null : activeTitleId,    // Product SKU (PPSA/CUSA) or null when on Dashboard
+            conceptId: globalGames[persistentRootCommId]?.conceptId || matchedGame.conceptId || null,
             currentGameArt: resolvedPoster,
             currentGameHours: safePlaytimeFormatted,
             currentGameNumericHours: safeNumericHours,
@@ -1440,6 +1594,8 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             onlineId: canonicalOnlineId, 
             accountId: resolvedTargetId,
             commId: persistentRootCommId,                         // Single clean root commId
+            conceptId: globalGames[persistentRootCommId]?.conceptId || matchedGame.conceptId || null,
+            storeListing: globalGames[persistentRootCommId]?.storeListing || null,
             npssoValid: true,
             npssoStatus: "ACTIVE",
             handshakeText: `${canonicalOnlineId.toUpperCase()} HANDSHAKE: FIREBASE LIVE`,
@@ -1507,6 +1663,7 @@ function buildSquadIntelligence(allGamertagsData) {
         isOnline: !!p.online,
         currentGame: p.currentGame || "Dashboard",
         commId: p.commId || null,
+        conceptId: p.conceptId || null,
         currentGameId: p.currentGameId || null,
         platform: p.platform || "PS5",
         gameBuildVersion: p.gameBuildVersion || "PS5 Native Game",
@@ -1548,7 +1705,7 @@ function buildSquadIntelligence(allGamertagsData) {
 // ----------------------------------------------------------------------------
 async function executeSyncPass() {
     try {
-        console.log(`[INIT] Starting Full PSN Engine v62.0.0 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
+        console.log(`[INIT] Starting Full PSN Engine v63.0.0 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
 
         await loadPersistentTokens();
 
@@ -1592,7 +1749,7 @@ async function executeSyncPass() {
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport, 
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
-            engineVersion: "62.0.0", 
+            engineVersion: "63.0.0", 
             analyticsTag: GA4_MEASUREMENT_ID, 
             codeTimestamp: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }) + " EDT"
         };
@@ -1710,7 +1867,7 @@ async function executeSyncPass() {
         diagnosticReport.lastCheck = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
         await syncNodeToFirebase("authDiagnostics", diagnosticReport);
 
-        console.log(`[SUCCESS] Full PSN Engine v62.0.0 completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
+        console.log(`[SUCCESS] Full PSN Engine v63.0.0 completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Synchronization cycle failed: ${criticalError.message}`);
     }
