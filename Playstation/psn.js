@@ -8,12 +8,13 @@
  *              4. Real-time Hardware, Remote Play & Build Version Detection.
  *              5. Lifetime Playtime Anchor (never wipes to 0 on Dashboard).
  *              6. Dynamic token pulling from RTDB (/users & /user_secrets).
+ *              7. Null-Safe Object Handling for all Catalogs & Defined Trophies.
  * Analytics Tagging: G-CTYHDF4MSD (Deployable via GTM).
- * Version: 60.9.0 - Universal Root commId & Bulletproof Catalog Restoration
- * Date & Time Stamp: 2026-10-08 05:37:00 EDT (America/New_York)
+ * Version: 60.9.3 - Universal Root commId & Null-Safe Catalog Engine
+ * Date & Time Stamp: 2026-10-08 05:47:00 EDT (America/New_York)
  * ============================================================================ */
 
-// Line 18: Core dependencies and official PSN API SDK imports
+// Line 19: Core dependencies and official PSN API SDK imports
 const fs = require("fs");
 const path = require("path");
 const http = require("http");
@@ -44,13 +45,13 @@ const {
     makeUniversalSearch
 } = psnApi;
 
-// Line 48: Base endpoints and local cache path
+// Line 49: Base endpoints and local cache path
 const FIREBASE_BASE_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn";
 const RTDB_ROOT_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
 const GA4_MEASUREMENT_ID = "G-CTYHDF4MSD";
 const LOCAL_TOKENS_PATH = path.join(__dirname, ".psn_tokens.json");
 
-// Line 55: Core 4 Gamertag mappings
+// Line 56: Core 4 Gamertag mappings
 const SQUAD_GAMERTAGS = {
     wildhorse_spirit: "WildHorse_Spirit",
     ray: "OneLIVIDMAN",
@@ -58,7 +59,7 @@ const SQUAD_GAMERTAGS = {
     marc: "DesdemonaTiger"
 };
 
-// Line 63: Permanent Squad PSN Account IDs
+// Line 64: Permanent Squad PSN Account IDs
 const ACCOUNT_IDS = {
     wildhorse_spirit: "4087137467908566201",
     ray: "2732733730346312494",
@@ -66,7 +67,7 @@ const ACCOUNT_IDS = {
     marc: "6551906246515882523"
 };
 
-// Line 71: Core 4 Pack Definitions
+// Line 72: Core 4 Pack Definitions
 const CORE_PACK = [
     { key: "wildhorse_spirit", tag: "WildHorse_Spirit", id: ACCOUNT_IDS.wildhorse_spirit },
     { key: "ray", tag: "OneLIVIDMAN", id: ACCOUNT_IDS.ray },
@@ -74,7 +75,7 @@ const CORE_PACK = [
     { key: "marc", tag: "DesdemonaTiger", id: ACCOUNT_IDS.marc }
 ];
 
-// Line 79: Initial friend seeds to guarantee bootstrap coverage
+// Line 80: Initial friend seeds to guarantee bootstrap coverage
 const SEED_TARGET_ACCOUNT_IDS = [
     "4087137467908566201", // WildHorse_Spirit
     "2732733730346312494", // OneLIVIDMAN (Ray)
@@ -89,7 +90,7 @@ const SEED_TARGET_ACCOUNT_IDS = [
     "1749160004083248186"
 ];
 
-// Line 94: Affiliate tracking
+// Line 95: Affiliate tracking
 const AMAZON_TAG = "moviesanywhere02-20";
 
 let tokenStore = { ray: {}, wildhorse_spirit: {} };
@@ -629,10 +630,15 @@ async function resolveMasterSession(wildHorseNpsso, rayNpsso) {
 // [SECTION: DLC & ADD-ON EXTRACTION WITH STORE CATALOG FALLBACK]
 // ----------------------------------------------------------------------------
 async function enrichDLCGroups(canonicalCommId, mappedGroups, userPurchasedTitles = [], cloudDlcCatalog = {}) {
-    return mappedGroups.map(grp => {
+    const safePurchased = Array.isArray(userPurchasedTitles) ? userPurchasedTitles : [];
+    const safeCatalog = (cloudDlcCatalog && typeof cloudDlcCatalog === "object") ? cloudDlcCatalog : {};
+    const safeGroups = Array.isArray(mappedGroups) ? mappedGroups : [];
+
+    return safeGroups.map(grp => {
         const groupNameLower = (grp.name || "").toLowerCase().trim();
         
-        const matchedCloudPack = Object.values(cloudDlcCatalog).find(pack => {
+        const matchedCloudPack = Object.values(safeCatalog).find(pack => {
+            if (!pack || typeof pack !== "object") return false;
             const packNameLower = (pack.pack_name || pack.name || "").toLowerCase().trim();
             return packNameLower.includes(groupNameLower) || groupNameLower.includes(packNameLower);
         }) || {};
@@ -644,9 +650,9 @@ async function enrichDLCGroups(canonicalCommId, mappedGroups, userPurchasedTitle
             matchedCloudPack.thumbnail
         ]);
 
-        const isUserOwned = userPurchasedTitles.some(p => (p.name || "").toLowerCase().includes(groupNameLower)) ||
+        const isUserOwned = safePurchased.some(p => (p && p.name && p.name.toLowerCase().includes(groupNameLower))) ||
                             matchedCloudPack.price === "Free" ||
-                            (grp.definedTrophies && Object.values(grp.definedTrophies).some(count => count > 0));
+                            (grp.definedTrophies && typeof grp.definedTrophies === "object" && Object.values(grp.definedTrophies).some(count => count > 0));
 
         return {
             groupId: grp.trophyGroupId,
@@ -747,6 +753,12 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
             return acc;
         }, { bronze: 0, silver: 0, gold: 0, platinum: 0 });
 
+        // Safe null-checked evaluation for definedTrophies
+        const hasDefinedTrophies = definedTrophies && typeof definedTrophies === "object" && Object.keys(definedTrophies).length > 0;
+        const resolvedDefinedTrophies = hasDefinedTrophies 
+            ? definedTrophies 
+            : (previousRecord.definedTrophies || gradeCounts);
+
         const skeletonData = {
             commId: canonicalCommId,
             npCommunicationId: canonicalCommId,
@@ -755,7 +767,7 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
             npServiceName: opt.npServiceName,
             posterArt: safePoster,
             trophyTitleIconUrl: iconArt || previousRecord.trophyTitleIconUrl || safePoster,
-            definedTrophies: (definedTrophies && Object.keys(definedTrophies).length > 0) ? definedTrophies : (previousRecord.definedTrophies || gradeCounts),
+            definedTrophies: resolvedDefinedTrophies,
             totalTrophies: mappedTrophies.length || previousRecord.totalTrophies || 0,
             trophies: mappedTrophies,
             groups: rawGroups,
@@ -1508,7 +1520,7 @@ function buildSquadIntelligence(allGamertagsData) {
 // ----------------------------------------------------------------------------
 async function executeSyncPass() {
     try {
-        console.log(`[INIT] Starting Pure PSN Engine v60.9.0 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
+        console.log(`[INIT] Starting Pure PSN Engine v60.9.3 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
 
         await loadPersistentTokens();
 
@@ -1555,7 +1567,7 @@ async function executeSyncPass() {
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport, 
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
-            engineVersion: "60.9.0", 
+            engineVersion: "60.9.3", 
             analyticsTag: GA4_MEASUREMENT_ID, 
             codeTimestamp: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }) + " EDT"
         };
@@ -1678,13 +1690,13 @@ async function executeSyncPass() {
         diagnosticReport.lastCheck = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
         await syncNodeToFirebase("authDiagnostics", diagnosticReport);
 
-        console.log(`[SUCCESS] PSN Engine v60.9.0 completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
+        console.log(`[SUCCESS] PSN Engine v60.9.3 completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Synchronization cycle failed: ${criticalError.message}`);
     }
 }
 
-// Line 1140: Clean exit for GitHub Actions workflow runner
+// Line 1150: Clean exit for GitHub Actions workflow runner
 (async () => {
     await executeSyncPass();
     process.exit(0);
