@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-07 22:50 EDT | Firebase Sync Target: /utm_links | Version: 5.6.0]
+// [Smart Cache-Buster Time: 2026-10-07 22:56 EDT | Firebase Sync Target: /utm_links | Version: 5.7.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
@@ -237,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // 2. Silent Background Telemetry Sync: Saves locally & syncs to Firestore if authenticated
+    // 2. Silent Background Telemetry Sync: Writes directly to users/{emailKey}/platform/{platform}/progress/woth2
     async silentSaveGameTelemetry() {
       const nameEl = document.getElementById("hunterNameInput");
       const lvlEl = document.getElementById("hunterLevelInput");
@@ -270,15 +270,17 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("woth2_watchlist", JSON.stringify(this.watchlist));
       localStorage.setItem("woth2_manual_trophies", JSON.stringify(this.userTrophyProgress));
 
-      // Guard: strictly execute Firestore subcollection writes if user session is active
       const activeUser = auth.currentUser;
-      if (activeUser && this.currentEmail) {
+      const targetUserKey = this.currentEmailKey || (this.currentEmail ? getEmailKey(this.currentEmail) : "");
+
+      // Execute write using matching Firestore rules target: users/{emailKey}/platform/{platform}/progress/woth2
+      if (activeUser && targetUserKey) {
         try {
           const gameDocRef = db.collection("users")
-            .doc(this.currentEmail)
+            .doc(targetUserKey)
             .collection("platform")
             .doc(this.currentPlatform)
-            .collection("game")
+            .collection("progress")
             .doc("woth2");
 
           const earnedCount = Object.values(this.userTrophyProgress).filter(t => t.earned).length;
@@ -310,7 +312,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }, { merge: true });
 
         } catch (e) {
-          // Strictly display alerts upon write failure
+          // Alert strictly upon write failure
           alert("⚠️ Telemetry Sync Failed: " + e.message);
         }
       }
@@ -409,7 +411,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const cleanTitle = (item.title || "").toLowerCase();
         const cleanUrl = (item.url || "").toLowerCase();
 
-        // Exclude Settings and Privacy from top bar
+        // Exclude Settings and Privacy from top bar (routed to profile menu)
         if (cleanGroup === "settings" || cleanTag === "settings" || cleanTitle.includes("setting") || cleanUrl.includes("setting") ||
             cleanGroup === "privacy" || cleanTag === "privacy" || cleanTitle.includes("privacy") || cleanUrl.includes("privacy")) {
           return;
@@ -538,13 +540,13 @@ document.addEventListener("DOMContentLoaded", () => {
             this.loadFriendsComparisonTelemetry();
           });
 
-          // Firestore Subcollection Hook: users/{email}/platform/{platform}/game/woth2
+          // Firestore Progress Hook: users/{emailKey}/platform/{platform}/progress/woth2
           try {
             const gameSnap = await db.collection("users")
-              .doc(this.currentEmail)
+              .doc(this.currentEmailKey)
               .collection("platform")
               .doc(this.currentPlatform)
-              .collection("game")
+              .collection("progress")
               .doc("woth2")
               .get();
 
@@ -588,7 +590,7 @@ document.addEventListener("DOMContentLoaded", () => {
               }
             }
           } catch (e) {
-            console.warn("Firestore subcollection read warning:", e);
+            console.warn("Firestore progress read warning:", e);
           }
 
           this.renderProfileDropdown(true);
@@ -881,7 +883,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // 7. Companion Telemetry Comparison (Cross-Platform Roster)
+    // 7. Companion Telemetry Comparison (Cross-Platform Roster using emailKey)
     async loadFriendsComparisonTelemetry() {
       const container = document.getElementById("friendsComparisonContainer");
       if (!container) return;
@@ -897,14 +899,15 @@ document.addEventListener("DOMContentLoaded", () => {
       for (const friend of this.friendsRoster) {
         const friendEmail = (friend.target_email || "").toLowerCase();
         if (!friendEmail) continue;
+        const friendKey = getEmailKey(friendEmail);
 
         try {
           const targetPlatform = (friend.platform || this.currentPlatform || "ps").toLowerCase();
           const snap = await db.collection("users")
-            .doc(friendEmail)
+            .doc(friendKey)
             .collection("platform")
             .doc(targetPlatform)
-            .collection("game")
+            .collection("progress")
             .doc("woth2")
             .get();
 
