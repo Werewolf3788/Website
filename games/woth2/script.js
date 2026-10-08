@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-07 22:56 EDT | Firebase Sync Target: /utm_links | Version: 5.7.0]
+// [Smart Cache-Buster Time: 2026-10-07 23:59 EDT | Firebase Sync Target: /utm_links | Version: 5.8.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
@@ -75,6 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
     masterTrophies: [],
     userTrophyProgress: {}, // trophyId -> { earned, timestamp, currentValue, targetValue, manual }
     trophyGroups: [],
+    selectedTrophyGroup: "all",
     gameMetadata: {},
     friendsRoster: [],
     hasLoadedPrimaryPoster: false,
@@ -86,6 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.initMasterGameData();
       this.initRTDB();
       await this.loadAllJSONs();
+      this.integrateJSONTrophies();
       this.initDynamicFeatures();
     },
 
@@ -115,6 +117,32 @@ document.addEventListener("DOMContentLoaded", () => {
       keys.forEach((k, idx) => {
         this.db[k] = results[idx] || {};
       });
+    },
+
+    // Hybrid Matcher: Integrates pre-earned milestones from local game data JSON
+    integrateJSONTrophies() {
+      if (this.db.gameData && this.db.gameData.trophies) {
+        const jsonTrophies = Array.isArray(this.db.gameData.trophies)
+          ? this.db.gameData.trophies
+          : Object.values(this.db.gameData.trophies);
+
+        jsonTrophies.forEach((t, idx) => {
+          const id = t.trophyId !== undefined ? String(t.trophyId) : String(idx);
+          if (t.earned || t.unlocked) {
+            if (!this.userTrophyProgress[id] || !this.userTrophyProgress[id].earned) {
+              this.userTrophyProgress[id] = {
+                earned: true,
+                timestamp: t.timestamp || t.date || new Date().toISOString(),
+                currentValue: t.currentValue || null,
+                targetValue: t.targetValue || null,
+                manual: false,
+                source: "json"
+              };
+            }
+          }
+        });
+      }
+      this.renderTrophies();
     },
 
     loadSavedState() {
@@ -227,7 +255,7 @@ document.addEventListener("DOMContentLoaded", () => {
               desc: t.trophyDetail || "Way of the Hunter 2 milestone.",
               icon: t.trophyIconUrl || game.posterArt || DEFAULT_GAME_POSTER,
               grade: grade,
-              groupId: t.trophyGroupId || "default",
+              groupId: t.trophyGroupId !== undefined ? String(t.trophyGroupId) : "default",
               hidden: Boolean(t.trophyHidden)
             };
           });
@@ -273,7 +301,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const activeUser = auth.currentUser;
       const targetUserKey = this.currentEmailKey || (this.currentEmail ? getEmailKey(this.currentEmail) : "");
 
-      // Execute write using matching Firestore rules target: users/{emailKey}/platform/{platform}/progress/woth2
       if (activeUser && targetUserKey) {
         try {
           const gameDocRef = db.collection("users")
@@ -312,7 +339,6 @@ document.addEventListener("DOMContentLoaded", () => {
           }, { merge: true });
 
         } catch (e) {
-          // Alert strictly upon write failure
           alert("⚠️ Telemetry Sync Failed: " + e.message);
         }
       }
@@ -346,7 +372,6 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
 
-        // Backup Favicon / Branding Cascade
         this.syncWoth2FaviconFallback(items, raw);
         this.renderNav(items);
       });
@@ -387,7 +412,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // Only apply backup visual asset if primary PlayStation poster art has not loaded
       if (!this.hasLoadedPrimaryPoster && backupImg) {
         this.applyBrandArt(backupImg);
       }
@@ -411,13 +435,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const cleanTitle = (item.title || "").toLowerCase();
         const cleanUrl = (item.url || "").toLowerCase();
 
-        // Exclude Settings and Privacy from top bar (routed to profile menu)
         if (cleanGroup === "settings" || cleanTag === "settings" || cleanTitle.includes("setting") || cleanUrl.includes("setting") ||
             cleanGroup === "privacy" || cleanTag === "privacy" || cleanTitle.includes("privacy") || cleanUrl.includes("privacy")) {
           return;
         }
 
-        // Prevent accidental "Standalone" folder creation
         const isStandalone = !item.group || cleanGroup === "standalone";
 
         if (isStandalone) {
@@ -524,18 +546,15 @@ document.addEventListener("DOMContentLoaded", () => {
             this.psnAccountId = rtdbProfile.psn_account_id || "";
             this.psnOnlineId = rtdbProfile.psn_username || "";
 
-            // User primary platform or detection
             if (rtdbProfile.primary_platform) {
               this.currentPlatform = rtdbProfile.primary_platform.toLowerCase();
               this.safeSetValue("platformSelect", this.currentPlatform);
             }
 
-            // Sync PSN Telemetry if connected
             if (this.psnOnlineId || this.psnAccountId) {
               this.syncPlayStationTrophies(this.psnOnlineId, this.psnAccountId);
             }
 
-            // Real-time friend telemetry tracking
             this.friendsRoster = rtdbProfile.friends ? Object.values(rtdbProfile.friends) : [];
             this.loadFriendsComparisonTelemetry();
           });
@@ -712,12 +731,16 @@ document.addEventListener("DOMContentLoaded", () => {
             const isEarned = Boolean(t.earned || t.unlocked || t.timestamp || t.earnedDateTime);
             const dateStr = t.timestamp || t.earnedDateTime || (isEarned ? (t.updatedAt || new Date().toISOString()) : null);
 
+            // Merge with existing progress so local or JSON completions are preserved
+            const existing = this.userTrophyProgress[id] || {};
+
             this.userTrophyProgress[id] = {
-              earned: isEarned,
-              timestamp: dateStr,
-              currentValue: t.currentValue !== undefined ? Number(t.currentValue) : null,
-              targetValue: t.targetValue !== undefined ? Number(t.targetValue) : null,
-              manual: false
+              earned: isEarned || existing.earned || false,
+              timestamp: dateStr || existing.timestamp || null,
+              currentValue: t.currentValue !== undefined ? Number(t.currentValue) : existing.currentValue,
+              targetValue: t.targetValue !== undefined ? Number(t.targetValue) : existing.targetValue,
+              manual: false,
+              source: isEarned ? "psn" : existing.source
             };
           });
 
@@ -743,7 +766,8 @@ document.addEventListener("DOMContentLoaded", () => {
           timestamp: null,
           currentValue: null,
           targetValue: null,
-          manual: true
+          manual: true,
+          source: "manual"
         };
       } else {
         // Toggle ON
@@ -752,7 +776,8 @@ document.addEventListener("DOMContentLoaded", () => {
           timestamp: new Date().toISOString(),
           currentValue: null,
           targetValue: null,
-          manual: true
+          manual: true,
+          source: "manual"
         };
       }
 
@@ -760,9 +785,10 @@ document.addEventListener("DOMContentLoaded", () => {
       this.silentSaveGameTelemetry();
     },
 
-    // 6. Unified Trophy & Achievement Renderer (Supports PS, Xbox, Steam, Microsoft)
+    // 6. Dedicated Trophy & Achievement Chamber Renderer (Master List, Groups, Hybrid Done-Checking)
     renderTrophies() {
-      const container = document.getElementById("psnTrophiesContainer");
+      // Primary targets: checks for dedicated chamber container or sidebar container
+      const container = document.getElementById("trophyChamberGrid") || document.getElementById("psnTrophiesContainer");
       if (!container) return;
 
       const total = this.masterTrophies.length || 6;
@@ -772,11 +798,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const progressPercent = total > 0 ? Math.round((earnedCount / total) * 100) : 0;
 
       // Calculate earliest trophy unlocked milestone
-      let firstTrophyText = "No trophies or achievements recorded yet";
+      let firstTrophyText = "No milestones earned yet across platforms";
       if (earnedList.length > 0) {
         const sortedEarned = [...earnedList].sort((a, b) => new Date(a.timestamp || 0) - new Date(b.timestamp || 0));
         const first = sortedEarned[0];
-        const firstMaster = this.masterTrophies.find(m => m.trophyId === Object.keys(this.userTrophyProgress).find(k => this.userTrophyProgress[k] === first));
+        const firstId = Object.keys(this.userTrophyProgress).find(k => this.userTrophyProgress[k] === first);
+        const firstMaster = this.masterTrophies.find(m => m.trophyId === firstId);
         const firstTitle = firstMaster ? firstMaster.title : "Milestone Complete";
         const firstDate = new Date(first.timestamp);
         const dateFormatted = !isNaN(firstDate.getTime())
@@ -788,41 +815,70 @@ document.addEventListener("DOMContentLoaded", () => {
       const isLivePS = this.currentPlatform === "ps" && (this.psnOnlineId || this.psnAccountId);
       const platformName = this.currentPlatform.toUpperCase();
 
+      // Filter tabs for Base Game vs DLC Expansions
+      let groupTabsHtml = "";
+      if (this.trophyGroups && this.trophyGroups.length > 0) {
+        groupTabsHtml = `
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+            <button class="trophy-group-pill ${this.selectedTrophyGroup === 'all' ? 'active' : ''}" onclick="window.CompanionApp.filterTrophyGroup('all')">All Trophies (${total})</button>
+            <button class="trophy-group-pill ${this.selectedTrophyGroup === 'default' ? 'active' : ''}" onclick="window.CompanionApp.filterTrophyGroup('default')">Base Game</button>
+            ${this.trophyGroups.filter(g => g.trophyGroupId !== "default" && g.trophyGroupId !== 0).map(g => `
+              <button class="trophy-group-pill ${this.selectedTrophyGroup === String(g.trophyGroupId) ? 'active' : ''}" onclick="window.CompanionApp.filterTrophyGroup('${g.trophyGroupId}')">
+                ${g.trophyGroupName || g.name || `Expansion ${g.trophyGroupId}`}
+              </button>
+            `).join("")}
+          </div>
+        `;
+      }
+
       container.innerHTML = `
-        <div style="grid-column: 1/-1; background:#151c27; padding:14px 18px; border-radius:8px; border:1px solid #273447; margin-bottom:12px; display:flex; flex-direction:column; gap:10px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div style="grid-column: 1/-1; background:#151c27; padding:16px 20px; border-radius:10px; border:1px solid #273447; margin-bottom:14px; display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
             <div>
-              <strong style="color:#fff; font-size:1.05rem;">
-                ${isLivePS ? `PlayStation Sync &bull; ${this.psnOnlineId}` : `${platformName} Achievement Tracker`}
+              <strong style="color:#fff; font-size:1.15rem;">
+                ${isLivePS ? `🎮 PlayStation Live Sync &bull; ${this.psnOnlineId}` : `🎯 ${platformName} Achievement Chamber`}
               </strong>
-              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
-                ${isLivePS ? `Tracking Live via NPWR52231_00` : `Click any trophy card below to mark/unmark completion`}
+              <div style="font-size:0.8rem; color:var(--text-muted); margin-top:3px;">
+                ${isLivePS ? `Real-time synchronization active via NPWR52231_00` : `Interactive tracking mode: Click any trophy card to mark or unmark`}
               </div>
             </div>
             <div style="text-align:right;">
-              <span class="badge" style="background:#28374d; color:var(--accent-gold); font-size:0.85rem;">
+              <span class="badge" style="background:#28374d; color:var(--accent-gold); font-size:0.9rem; padding:6px 12px;">
                 ${earnedCount} / ${total} Unlocked (${progressPercent}%)
               </span>
             </div>
           </div>
 
-          <div style="width:100%; height:8px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden;">
-            <div style="width:${progressPercent}%; height:100%; background:linear-gradient(90deg, #0088ff, #2ecc71); border-radius:4px; transition: width 0.4s ease;"></div>
+          <div style="width:100%; height:10px; background:rgba(255,255,255,0.06); border-radius:5px; overflow:hidden;">
+            <div style="width:${progressPercent}%; height:100%; background:linear-gradient(90deg, #0088ff, #2ecc71); border-radius:5px; transition: width 0.4s ease;"></div>
           </div>
 
-          <div style="font-size:0.78rem; color:#ffe0b3; display:flex; align-items:center; gap:6px;">
-            ${firstTrophyText}
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div style="font-size:0.8rem; color:#ffe0b3;">
+              ${firstTrophyText}
+            </div>
+            ${groupTabsHtml}
           </div>
         </div>
       `;
 
-      // Render Every Trophy from Master Catalog with Progressive State
-      this.masterTrophies.forEach(t => {
+      // Filtered Master Trophies
+      const displayTrophies = this.masterTrophies.filter(t => {
+        if (this.selectedTrophyGroup === "all") return true;
+        if (this.selectedTrophyGroup === "default") return t.groupId === "default" || t.groupId === "0" || !t.groupId;
+        return String(t.groupId) === String(this.selectedTrophyGroup);
+      });
+
+      displayTrophies.forEach(t => {
         const userState = this.userTrophyProgress[t.trophyId] || { earned: false };
-        const isEarned = userState.earned;
+        const isEarned = Boolean(userState.earned);
         const div = document.createElement("div");
         div.className = `telemetry-card ${isEarned ? 'trophy-card-earned' : ''}`;
-        div.style.cursor = isLivePS ? "default" : "pointer";
+        div.style.cssText = `
+          cursor: ${isLivePS ? "default" : "pointer"};
+          border-left: 4px solid ${isEarned ? 'var(--success)' : '#273447'};
+          transition: transform 0.2s ease, border-color 0.2s ease;
+        `;
 
         if (!isLivePS) {
           div.onclick = () => window.CompanionApp.toggleManualTrophy(t.trophyId);
@@ -845,42 +901,57 @@ document.addEventListener("DOMContentLoaded", () => {
           const tar = userState.targetValue;
           const milePct = Math.min(100, Math.round((cur / tar) * 100));
           milestoneHtml = `
-            <div style="margin-top:6px;">
-              <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-muted); margin-bottom:2px;">
-                <span>Milestone Progress</span>
+            <div style="margin-top:8px;">
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-bottom:3px;">
+                <span>Milestone Step</span>
                 <strong style="color:#fff;">${cur} / ${tar} (${milePct}%)</strong>
               </div>
-              <div style="width:100%; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden;">
+              <div style="width:100%; height:5px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden;">
                 <div style="width:${milePct}%; height:100%; background:var(--accent-gold);"></div>
               </div>
             </div>
           `;
         }
 
+        // Status Tag
+        let statusBadge = `<span style="font-size:0.8rem; font-weight:600; color:var(--text-muted);">🔒 Locked</span>`;
+        if (isEarned) {
+          if (userState.source === "psn") {
+            statusBadge = `<span style="font-size:0.8rem; font-weight:700; color:var(--success);">✔ Earned (PSN Sync)</span>`;
+          } else if (userState.source === "json") {
+            statusBadge = `<span style="font-size:0.8rem; font-weight:700; color:var(--success);">✔ Earned (Game Data)</span>`;
+          } else {
+            statusBadge = `<span style="font-size:0.8rem; font-weight:700; color:var(--success);">✔ Earned (Manual)</span>`;
+          }
+        }
+
         div.innerHTML = `
-          <div style="display:flex; gap:12px; align-items:flex-start;">
-            <img src="${t.icon}" alt="" style="width:48px; height:48px; border-radius:6px; object-fit:cover; border:1px solid rgba(255,255,255,0.1); flex-shrink:0;">
+          <div style="display:flex; gap:14px; align-items:flex-start;">
+            <img src="${t.icon}" alt="" style="width:54px; height:54px; border-radius:8px; object-fit:cover; border:1px solid rgba(255,255,255,0.12); flex-shrink:0;">
             <div style="flex-grow:1;">
               <div class="card-top-row">
-                <span class="animal-title">${t.title}</span>
-                <span class="badge" style="border-color:${gradeColor}; color:${gradeColor};">${t.grade}</span>
+                <span class="animal-title" style="font-size:1rem;">${t.title}</span>
+                <span class="badge" style="border-color:${gradeColor}; color:${gradeColor}; font-weight:700;">${t.grade}</span>
               </div>
-              <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">${t.desc}</p>
+              <p style="font-size:0.82rem; color:#cfd9e8; margin-top:5px; line-height:1.4;">${t.desc}</p>
               ${milestoneHtml}
             </div>
           </div>
-          <div class="card-footer-row" style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.05); padding-top:8px;">
+          <div class="card-footer-row" style="margin-top:12px; border-top:1px solid rgba(255,255,255,0.06); padding-top:10px;">
             <div>
-              <span style="font-size:0.8rem; font-weight:600; color:${isEarned ? 'var(--success)' : 'var(--text-muted)'};">
-                ${isEarned ? (userState.manual ? '✔ Earned (Manual)' : '✔ Earned') : '🔒 Locked'}
-              </span>
+              ${statusBadge}
               ${isEarned && formattedTimestamp ? `<div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">Unlocked: ${formattedTimestamp}</div>` : ''}
             </div>
-            ${!isLivePS ? `<span style="font-size:0.7rem; color:var(--text-muted);">Click to toggle</span>` : ''}
+            ${!isLivePS ? `<span style="font-size:0.72rem; color:var(--accent-amber);">Click to toggle</span>` : ''}
           </div>
         `;
         container.appendChild(div);
       });
+    },
+
+    filterTrophyGroup(groupId) {
+      this.selectedTrophyGroup = groupId;
+      this.renderTrophies();
     },
 
     // 7. Companion Telemetry Comparison (Cross-Platform Roster using emailKey)
@@ -1626,7 +1697,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
 
-      // Platform Selector Listener
       const platSelect = document.getElementById("platformSelect");
       if (platSelect) {
         platSelect.addEventListener("change", (e) => {
@@ -1636,7 +1706,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
-      // Silent Auto-Sync on Blur and Enter
       const autoSyncInputs = [
         "hunterNameInput", "hunterLevelInput", "hunterCreditsInput",
         "currentDayInput", "currentTimeInput", "weatherConditionInput"
