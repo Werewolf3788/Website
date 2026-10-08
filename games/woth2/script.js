@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-08 00:06 EDT | Firebase Sync Target: /utm_links | Version: 5.9.0]
+// [Smart Cache-Buster Time: 2026-10-08 00:20 EDT | Firebase Sync Target: /utm_links | Version: 6.0.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
@@ -68,12 +68,12 @@ document.addEventListener("DOMContentLoaded", () => {
     currentUser: null,
     currentEmail: "",
     currentEmailKey: "",
-    currentPlatform: "ps", // "ps", "xbox", "steam", "microsoft"
+    currentPlatform: "ps",
     watchlist: [],
     psnAccountId: "",
     psnOnlineId: "",
     masterTrophies: [],
-    userTrophyProgress: {}, // trophyId -> { earned, timestamp, currentValue, targetValue, manual, source }
+    userTrophyProgress: {},
     trophyGroups: [],
     selectedTrophyGroup: "all",
     gameMetadata: {},
@@ -119,7 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Hybrid Matcher: Integrates pre-earned milestones from local game data JSON
     integrateJSONTrophies() {
       if (this.db.gameData && this.db.gameData.trophies) {
         const jsonTrophies = Array.isArray(this.db.gameData.trophies)
@@ -133,8 +132,8 @@ document.addEventListener("DOMContentLoaded", () => {
               this.userTrophyProgress[id] = {
                 earned: true,
                 timestamp: t.timestamp || t.date || new Date().toISOString(),
-                currentValue: t.currentValue || null,
-                targetValue: t.targetValue || null,
+                currentValue: t.currentValue !== undefined ? Number(t.currentValue) : null,
+                targetValue: t.targetValue !== undefined ? Number(t.targetValue) : null,
                 manual: false,
                 source: "json"
               };
@@ -218,7 +217,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (brandLogo) brandLogo.src = cleanUrl;
     },
 
-    // 1. Master Game Catalog Listener: /psn/games/NPWR52231_00
     initMasterGameData() {
       rtdb.ref(`/psn/games/${this.titleId}`).on("value", snapshot => {
         const game = snapshot.val();
@@ -261,7 +259,22 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // 2. Silent Telemetry Sync: Writes user data & FULL trophy checklist map to Firestore
+    getSanitizedTrophiesForFirestore() {
+      const cleanMap = {};
+      Object.entries(this.userTrophyProgress).forEach(([id, t]) => {
+        if (!t) return;
+        cleanMap[id] = {
+          earned: Boolean(t.earned),
+          timestamp: t.timestamp ? String(t.timestamp) : null,
+          currentValue: (t.currentValue !== undefined && t.currentValue !== null) ? Number(t.currentValue) : null,
+          targetValue: (t.targetValue !== undefined && t.targetValue !== null) ? Number(t.targetValue) : null,
+          manual: Boolean(t.manual),
+          source: t.source ? String(t.source) : "manual"
+        };
+      });
+      return cleanMap;
+    },
+
     async silentSaveGameTelemetry() {
       const nameEl = document.getElementById("hunterNameInput");
       const lvlEl = document.getElementById("hunterLevelInput");
@@ -297,7 +310,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const activeUser = auth.currentUser;
       const targetUserKey = this.currentEmailKey || (this.currentEmail ? getEmailKey(this.currentEmail) : "");
 
-      // Execute write to Firestore progress subcollection
       if (activeUser && targetUserKey) {
         try {
           const gameDocRef = db.collection("users")
@@ -307,7 +319,8 @@ document.addEventListener("DOMContentLoaded", () => {
             .collection("progress")
             .doc("woth2");
 
-          const earnedCount = Object.values(this.userTrophyProgress).filter(t => t.earned).length;
+          const cleanTrophies = this.getSanitizedTrophiesForFirestore();
+          const earnedCount = Object.values(cleanTrophies).filter(t => t.earned).length;
           const totalTrophies = this.masterTrophies.length || 6;
           const trophyPct = totalTrophies > 0 ? Math.round((earnedCount / totalTrophies) * 100) : 0;
 
@@ -324,7 +337,7 @@ document.addEventListener("DOMContentLoaded", () => {
             trophies_earned: earnedCount,
             trophies_total: totalTrophies,
             trophies_percent: trophyPct,
-            trophies: this.userTrophyProgress, // Stores the complete trophy map inside Firestore
+            trophies: cleanTrophies,
             dog_stats: {
               name: this.dogCompanionName,
               breed: this.dogBreed,
@@ -344,7 +357,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    // 3. Dynamic Navbar Architecture & Brand Fallback
     initRTDB() {
       rtdb.ref("/utm_links").on("value", snapshot => {
         const raw = snapshot.val();
@@ -514,7 +526,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // 4. User Identity & Firestore Progress Restore Engine
     initAuth() {
       auth.onAuthStateChanged(async user => {
         const modalBtn = document.getElementById("authModalBtn");
@@ -530,7 +541,6 @@ document.addEventListener("DOMContentLoaded", () => {
           if (modalBtn) modalBtn.classList.add("hidden");
           if (profileBadge) profileBadge.classList.remove("hidden");
 
-          // RTDB Identity Hook (/users/{emailKey})
           rtdb.ref(`/users/${this.currentEmailKey}`).on("value", snapshot => {
             const rtdbProfile = snapshot.val() || {};
             const gamerTag = rtdbProfile.username || user.displayName || this.hunterName;
@@ -559,7 +569,6 @@ document.addEventListener("DOMContentLoaded", () => {
             this.loadFriendsComparisonTelemetry();
           });
 
-          // Firestore Progress Hook: users/{emailKey}/platform/{platform}/progress/woth2
           try {
             const gameSnap = await db.collection("users")
               .doc(this.currentEmailKey)
@@ -608,15 +617,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 this.renderWatchlist();
               }
 
-              // RESTORE TROPHIES FROM FIRESTORE
               if (data.trophies && typeof data.trophies === "object") {
                 Object.entries(data.trophies).forEach(([id, t]) => {
                   if (t.earned) {
                     this.userTrophyProgress[id] = {
                       earned: true,
                       timestamp: t.timestamp || null,
-                      currentValue: t.currentValue || null,
-                      targetValue: t.targetValue || null,
+                      currentValue: t.currentValue !== undefined ? t.currentValue : null,
+                      targetValue: t.targetValue !== undefined ? t.targetValue : null,
                       manual: Boolean(t.manual),
                       source: t.source || "firestore"
                     };
@@ -715,7 +723,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    // 5. PlayStation Live Trophy Telemetry Sync Engine
     syncPlayStationTrophies(psnOnlineId, accountId) {
       const targetGamerTag = (psnOnlineId || "").trim();
       let trophyRef = null;
@@ -753,10 +760,10 @@ document.addEventListener("DOMContentLoaded", () => {
             this.userTrophyProgress[id] = {
               earned: isEarned || existing.earned || false,
               timestamp: dateStr || existing.timestamp || null,
-              currentValue: t.currentValue !== undefined ? Number(t.currentValue) : existing.currentValue,
-              targetValue: t.targetValue !== undefined ? Number(t.targetValue) : existing.targetValue,
+              currentValue: t.currentValue !== undefined ? Number(t.currentValue) : (existing.currentValue !== undefined ? existing.currentValue : null),
+              targetValue: t.targetValue !== undefined ? Number(t.targetValue) : (existing.targetValue !== undefined ? existing.targetValue : null),
               manual: false,
-              source: isEarned ? "psn" : existing.source
+              source: isEarned ? "psn" : (existing.source || "psn")
             };
           });
 
@@ -766,10 +773,9 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Manual Click-To-Toggle for non-PSN / manual players
     toggleManualTrophy(trophyId) {
       if (this.currentPlatform === "ps" && (this.psnOnlineId || this.psnAccountId)) {
-        return; // Auto-sync locks manual clicking on verified PlayStation accounts
+        return;
       }
 
       const id = String(trophyId);
@@ -799,7 +805,6 @@ document.addEventListener("DOMContentLoaded", () => {
       this.silentSaveGameTelemetry();
     },
 
-    // 6. Dedicated Trophy & Achievement Chamber Renderer
     renderTrophies() {
       const container = document.getElementById("trophyChamberGrid") || document.getElementById("psnTrophiesContainer");
       if (!container) return;
@@ -964,7 +969,6 @@ document.addEventListener("DOMContentLoaded", () => {
       this.renderTrophies();
     },
 
-    // 7. Companion Telemetry Comparison (Cross-Platform Roster using emailKey)
     async loadFriendsComparisonTelemetry() {
       const container = document.getElementById("friendsComparisonContainer");
       if (!container) return;
@@ -1064,7 +1068,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // 8. Dynamic Features & Static JSON Integrations
     initDynamicFeatures() {
       this.populateRegions();
       this.filterSpeciesByRegion("harvestLocationSelect", "harvestSpeciesSelect");
@@ -1695,15 +1698,41 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // 9. Input Listeners: Silent Blur & Enter Auto-Sync Engine
+    // Tactical Sandwich Routing Engine
     bindUI() {
-      document.querySelectorAll(".ribbon-btn").forEach(btn => {
+      const sandwichBtn = document.getElementById("moduleSandwichBtn");
+      const dropdownMenu = document.getElementById("moduleDropdownMenu");
+      const activeLabel = document.getElementById("activeModuleLabel");
+
+      if (sandwichBtn && dropdownMenu) {
+        sandwichBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          dropdownMenu.classList.toggle("hidden");
+        });
+
+        document.addEventListener("click", () => {
+          if (!dropdownMenu.classList.contains("hidden")) {
+            dropdownMenu.classList.add("hidden");
+          }
+        });
+      }
+
+      document.querySelectorAll(".module-item-btn").forEach(btn => {
         btn.addEventListener("click", () => {
-          document.querySelectorAll(".ribbon-btn").forEach(b => b.classList.remove("active"));
+          document.querySelectorAll(".module-item-btn").forEach(b => b.classList.remove("active"));
           document.querySelectorAll(".tab-pane").forEach(p => p.classList.remove("active"));
+          
           btn.classList.add("active");
-          const target = document.getElementById(`tab-${btn.dataset.tab}`);
-          if (target) target.classList.add("active");
+          const targetTab = btn.dataset.tab;
+          const targetPane = document.getElementById(`tab-${targetTab}`);
+          if (targetPane) targetPane.classList.add("active");
+
+          if (activeLabel) {
+            const firstSpan = btn.querySelector("span");
+            if (firstSpan) activeLabel.textContent = firstSpan.textContent;
+          }
+
+          if (dropdownMenu) dropdownMenu.classList.add("hidden");
         });
       });
 
