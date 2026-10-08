@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-07 22:45 EDT | Firebase Sync Target: /utm_links | Version: 5.5.0]
+// [Smart Cache-Buster Time: 2026-10-07 22:50 EDT | Firebase Sync Target: /utm_links | Version: 5.6.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
@@ -73,17 +73,18 @@ document.addEventListener("DOMContentLoaded", () => {
     psnAccountId: "",
     psnOnlineId: "",
     masterTrophies: [],
-    userTrophyProgress: {}, // Map of trophyId -> { earned, timestamp, currentValue, targetValue, manual }
+    userTrophyProgress: {}, // trophyId -> { earned, timestamp, currentValue, targetValue, manual }
     trophyGroups: [],
     gameMetadata: {},
     friendsRoster: [],
+    hasLoadedPrimaryPoster: false,
 
     async init() {
       this.loadSavedState();
       this.bindUI();
       this.initAuth();
-      this.initRTDB();
       this.initMasterGameData();
+      this.initRTDB();
       await this.loadAllJSONs();
       this.initDynamicFeatures();
     },
@@ -177,23 +178,33 @@ document.addEventListener("DOMContentLoaded", () => {
       this.safeSetValue("dogCompanionInput", `${this.dogCompanionName} (Lv. ${this.dogBondingLevel})`);
     },
 
-    // 1. Master Game Encyclopedia Listener: /psn/games/NPWR52231_00
+    // Central Brand Visual Engine: Sets Favicon, Apple Touch Icon, and Nav Brand Logo
+    applyBrandArt(imgUrl) {
+      if (!imgUrl || typeof imgUrl !== "string") return;
+      const cleanUrl = imgUrl.trim();
+      const favicon = document.getElementById("dynamicFavicon");
+      const appleIcon = document.getElementById("dynamicAppleIcon");
+      const brandLogo = document.getElementById("navBrandLogo");
+
+      if (favicon) favicon.href = cleanUrl;
+      if (appleIcon) appleIcon.href = cleanUrl;
+      if (brandLogo) brandLogo.src = cleanUrl;
+    },
+
+    // 1. Primary Game Encyclopedia & Poster Art Listener: /psn/games/NPWR52231_00
     initMasterGameData() {
       rtdb.ref(`/psn/games/${this.titleId}`).on("value", snapshot => {
         const game = snapshot.val();
         if (!game) return;
         this.gameMetadata = game;
 
-        // Dynamic Favicon, Apple Icon, and Header Art Binding
-        const posterUrl = game.posterArt || DEFAULT_GAME_POSTER;
-        const favicon = document.getElementById("dynamicFavicon");
-        const appleIcon = document.getElementById("dynamicAppleIcon");
-        const brandLogo = document.getElementById("navBrandLogo");
-        if (favicon) favicon.href = posterUrl;
-        if (appleIcon) appleIcon.href = posterUrl;
-        if (brandLogo) brandLogo.src = posterUrl;
+        // Primary Visual Asset: PlayStation Game Poster Art
+        if (game.posterArt && typeof game.posterArt === "string" && game.posterArt.trim() !== "") {
+          this.applyBrandArt(game.posterArt);
+          this.hasLoadedPrimaryPoster = true;
+        }
 
-        // Parse DLC / Trophy Groups
+        // Parse DLC / Expansion Groups
         if (game.groups) {
           this.trophyGroups = Array.isArray(game.groups) ? game.groups : Object.values(game.groups);
         }
@@ -214,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
               trophyId: t.trophyId !== undefined ? String(t.trophyId) : String(idx),
               title: t.trophyName || `Trophy #${idx + 1}`,
               desc: t.trophyDetail || "Way of the Hunter 2 milestone.",
-              icon: t.trophyIconUrl || posterUrl,
+              icon: t.trophyIconUrl || game.posterArt || DEFAULT_GAME_POSTER,
               grade: grade,
               groupId: t.trophyGroupId || "default",
               hidden: Boolean(t.trophyHidden)
@@ -226,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // 2. Silent background auto-sync to Firestore: users/{email}/platform/{platform}/game/woth2
+    // 2. Silent Background Telemetry Sync: Saves locally & syncs to Firestore if authenticated
     async silentSaveGameTelemetry() {
       const nameEl = document.getElementById("hunterNameInput");
       const lvlEl = document.getElementById("hunterLevelInput");
@@ -259,7 +270,9 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("woth2_watchlist", JSON.stringify(this.watchlist));
       localStorage.setItem("woth2_manual_trophies", JSON.stringify(this.userTrophyProgress));
 
-      if (this.currentUser && this.currentEmail) {
+      // Guard: strictly execute Firestore subcollection writes if user session is active
+      const activeUser = auth.currentUser;
+      if (activeUser && this.currentEmail) {
         try {
           const gameDocRef = db.collection("users")
             .doc(this.currentEmail)
@@ -303,7 +316,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    // 3. Navbar Architecture: Dynamic Firebase /utm_links Engine
+    // 3. Navbar Architecture & Secondary Fallback Asset Engine
     initRTDB() {
       rtdb.ref("/utm_links").on("value", snapshot => {
         const raw = snapshot.val();
@@ -331,6 +344,8 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
 
+        // Backup Favicon / Branding Cascade
+        this.syncWoth2FaviconFallback(items, raw);
         this.renderNav(items);
       });
     },
@@ -347,6 +362,39 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     },
 
+    syncWoth2FaviconFallback(items, raw) {
+      let backupImg = "";
+      let woth2Stamp = "";
+
+      const taggedEntry = items.find(i => i.tag && i.tag.toLowerCase() === "woth2");
+
+      if (taggedEntry) {
+        backupImg = taggedEntry.image;
+        woth2Stamp = taggedEntry.updatedAt;
+      } else if (raw.WOTH2 && raw.WOTH2[0] && raw.WOTH2[0].image) {
+        backupImg = raw.WOTH2[0].image;
+        woth2Stamp = raw.WOTH2[0].updatedAt;
+      } else {
+        const titleMatch = items.find(i => {
+          const t = i.title.toLowerCase();
+          return t.includes("woth2") || t.includes("way of the hunter");
+        });
+        if (titleMatch) {
+          backupImg = titleMatch.image;
+          woth2Stamp = titleMatch.updatedAt;
+        }
+      }
+
+      // Only apply backup visual asset if primary PlayStation poster art has not loaded
+      if (!this.hasLoadedPrimaryPoster && backupImg) {
+        this.applyBrandArt(backupImg);
+      }
+
+      if (woth2Stamp) {
+        this.safeSetText("nyBuildTimestamp", woth2Stamp);
+      }
+    },
+
     renderNav(items) {
       const navList = document.getElementById("navList");
       if (!navList) return;
@@ -361,13 +409,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const cleanTitle = (item.title || "").toLowerCase();
         const cleanUrl = (item.url || "").toLowerCase();
 
-        // Exclude Settings and Privacy from top bar (routed to profile menu)
+        // Exclude Settings and Privacy from top bar
         if (cleanGroup === "settings" || cleanTag === "settings" || cleanTitle.includes("setting") || cleanUrl.includes("setting") ||
             cleanGroup === "privacy" || cleanTag === "privacy" || cleanTitle.includes("privacy") || cleanUrl.includes("privacy")) {
           return;
         }
 
-        // Safeguard: Prevent accidental "Standalone" folder creation
+        // Prevent accidental "Standalone" folder creation
         const isStandalone = !item.group || cleanGroup === "standalone";
 
         if (isStandalone) {
@@ -932,7 +980,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // 8. Core Features & JSON Integrations
+    // 8. Dynamic Features & Static JSON Integrations
     initDynamicFeatures() {
       this.populateRegions();
       this.filterSpeciesByRegion("harvestLocationSelect", "harvestSpeciesSelect");
