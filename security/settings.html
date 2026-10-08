@@ -1,5 +1,5 @@
-<!-- Line 1: Hunter Identity & Master User Settings - Single File Architecture -->
-<!-- [Smart Cache-Buster Time: 2026-10-07 19:48 EDT | Firebase Sync Target: /utm_links | Version: 4.6.2] -->
+<!-- Line 1: Hunter Identity, Platform Credentials & Master User Settings -->
+<!-- [Smart Cache-Buster Time: 2026-10-07 20:06 EDT | Firebase Sync Target: /utm_links | Version: 4.7.1] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hunter Profile & Settings</title>
 
-  <!-- Dynamic Favicons Bound from RTDB /utm_links via tag === "settings" -->
+  <!-- Favicons Dynamically Rebound from RTDB /utm_links via tag === "settings" -->
   <link id="dynamicFavicon" rel="icon" type="image/png" href="//werewolf3788.github.io/Website/assets/logo.jpg">
   <link id="dynamicAppleIcon" rel="apple-touch-icon" href="//werewolf3788.github.io/Website/assets/logo.jpg">
 
@@ -18,7 +18,7 @@
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
   <style>
-    /* Section 1: Color Design Tokens & Tactical Card Highlights (Lines 20-55) */
+    /* Section: CSS Variables & Responsive Tokens (Lines 20-56) */
     :root {
       --bg-primary: #07090e;
       --bg-secondary: #0f141d;
@@ -36,6 +36,7 @@
       --success: #2ecc71;
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      --min-touch-target: 44px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -51,7 +52,7 @@
       overflow-x: hidden;
     }
 
-    /* Section 2: Header, Navbar & Profile Toolbar (Lines 56-125) */
+    /* Section: Desktop Edge-to-Edge Sticky Navbar (Lines 57-124) */
     .site-header {
       background: var(--bg-secondary);
       border-bottom: 1px solid var(--border-color);
@@ -85,7 +86,7 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 7px 14px;
+      padding: 8px 14px;
       color: var(--text-main);
       text-decoration: none;
       font-size: 0.88rem;
@@ -95,10 +96,11 @@
       border: 1px solid var(--border-color);
       cursor: pointer;
       white-space: nowrap;
+      min-height: var(--min-touch-target);
       transition: var(--transition);
     }
     .nav-pill:hover, .dropdown-trigger:hover { background: var(--bg-hover); color: var(--accent-blue); border-color: var(--accent-blue); }
-    .nav-thumb { width: 20px; height: 20px; border-radius: 4px; object-fit: cover; }
+    .nav-thumb { width: 22px; height: 22px; border-radius: 4px; object-fit: cover; }
 
     .dropdown-menu {
       position: absolute;
@@ -125,21 +127,22 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 8px 12px;
+      padding: 10px 12px;
       color: var(--text-main);
       text-decoration: none;
       border-radius: 6px;
       font-size: 0.85rem;
+      min-height: var(--min-touch-target);
       transition: var(--transition);
     }
     .dropdown-item:hover { background: var(--bg-hover); color: var(--accent-gold); }
 
     .auth-toolbar { display: flex; align-items: center; gap: 14px; flex-shrink: 0; margin-left: auto; }
-    .user-profile-badge { display: flex; align-items: center; gap: 10px; background: var(--bg-surface); padding: 4px 10px 4px 6px; border-radius: 30px; border: 1px solid var(--border-color); }
-    .header-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent-blue); background: var(--bg-secondary); }
+    .user-profile-badge { display: flex; align-items: center; gap: 10px; background: var(--bg-surface); padding: 4px 10px 4px 6px; border-radius: 30px; border: 1px solid var(--border-color); min-height: var(--min-touch-target); }
+    .header-avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent-blue); background: var(--bg-secondary); }
     .header-user-tag { font-size: 0.85rem; font-weight: 600; color: #fff; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    /* Section 3: Workspace Layout & Custom Color-Coded Cards (Lines 126-210) */
+    /* Section: Responsive Container & Cards (Lines 125-225) */
     .settings-container {
       width: 95vw;
       max-width: 1800px;
@@ -154,7 +157,7 @@
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: 10px;
-      padding: clamp(18px, 2vw, 26px);
+      padding: clamp(16px, 2vw, 26px);
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
       position: relative;
     }
@@ -168,7 +171,7 @@
     .card-danger { border-top: 3px solid var(--danger); background: rgba(231, 76, 60, 0.03); }
 
     .profile-card-header { display: flex; align-items: center; gap: 18px; margin-bottom: 20px; }
-    .avatar-preview-lg { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent-blue); object-fit: cover; background: var(--bg-surface); }
+    .avatar-preview-lg { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent-blue); object-fit: cover; background: var(--bg-surface); flex-shrink: 0; }
 
     .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; }
 
@@ -183,6 +186,14 @@
     .platform-scope-row:last-child { border-bottom: none; }
     .platform-scope-label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
 
+    .sensitive-input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+    }
+    .sensitive-input-wrapper input { flex: 1; }
+
     .control-group { display: flex; flex-direction: column; gap: 6px; }
     .control-group label { font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
 
@@ -194,8 +205,10 @@
       border-radius: 6px;
       font-size: 0.95rem;
       outline: none;
+      min-height: var(--min-touch-target);
       transition: var(--transition);
       font-family: inherit;
+      width: 100%;
     }
     input:focus, select:focus, textarea:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 2px rgba(0, 136, 255, 0.2); }
 
@@ -208,6 +221,7 @@
       border: 1px solid var(--border-color);
       border-radius: 6px;
       margin-bottom: 12px;
+      min-height: var(--min-touch-target);
     }
     .provider-status { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
 
@@ -228,6 +242,7 @@
       background: var(--bg-surface);
       border-radius: 6px;
       border: 1px solid var(--border-color);
+      min-height: var(--min-touch-target);
     }
 
     .badge-tag {
@@ -250,10 +265,11 @@
       border: 1px solid var(--border-color);
       border-radius: 6px;
       font-size: 0.85rem;
+      min-height: var(--min-touch-target);
     }
 
     .btn {
-      padding: 8px 16px;
+      padding: 10px 16px;
       border-radius: 6px;
       font-weight: 600;
       font-size: 0.9rem;
@@ -265,8 +281,10 @@
       justify-content: center;
       gap: 8px;
       text-decoration: none;
+      min-height: var(--min-touch-target);
+      min-width: var(--min-touch-target);
     }
-    .btn-sm { padding: 4px 10px; font-size: 0.8rem; }
+    .btn-sm { padding: 6px 12px; font-size: 0.82rem; min-height: var(--min-touch-target); }
     .btn-primary { background: var(--accent-blue); color: #fff; }
     .btn-primary:hover { background: #0070d2; }
     .btn-secondary { background: var(--bg-surface); color: var(--text-main); border-color: var(--border-color); }
@@ -288,7 +306,7 @@
       margin-top: 8px;
     }
 
-    /* Section 4: WhatsApp Floating Messenger & Footer (Lines 211-265) */
+    /* Section: WhatsApp Floating Messenger & Footer (Lines 226-270) */
     .floating-whatsapp-widget {
       position: fixed;
       bottom: 24px;
@@ -314,6 +332,8 @@
       font-size: 1.8rem;
       color: #fff;
       transition: var(--transition);
+      min-height: var(--min-touch-target);
+      min-width: var(--min-touch-target);
     }
     .whatsapp-trigger-btn:hover { transform: scale(1.08); }
 
@@ -336,6 +356,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      min-height: var(--min-touch-target);
     }
     .whatsapp-box-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
 
@@ -354,6 +375,8 @@
       align-items: center;
       font-size: 0.82rem;
       color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .status-pill { padding: 4px 10px; border-radius: 12px; font-size: 0.76rem; font-weight: 600; }
@@ -363,19 +386,36 @@
     .hidden { display: none !important; }
     .menu-toggle { display: none; }
 
+    /* Section: Multi-Device Responsive System (Desktop 1280px+ / Tablet 768px-1024px / Mobile <768px) */
     @media (max-width: 1024px) {
-      .menu-toggle { display: block; font-size: 1.5rem; background: transparent; border: none; color: #fff; cursor: pointer; }
+      .menu-toggle { display: block; font-size: 1.5rem; background: transparent; border: none; color: #fff; cursor: pointer; min-height: var(--min-touch-target); min-width: var(--min-touch-target); }
       .site-nav { display: none; width: 100%; margin: 0; }
-      .site-nav.open { display: block; position: absolute; top: 68px; left: 0; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); padding: 12px 20px; }
+      .site-nav.open { display: block; position: absolute; top: 68px; left: 0; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); padding: 12px 20px; width: 100vw; }
       .nav-list { flex-direction: column; align-items: stretch; }
-      .dropdown-menu { position: static; box-shadow: none; border-left: 2px solid var(--accent-blue); }
-      .platform-scope-row { grid-template-columns: 1fr; gap: 6px; }
+      .dropdown-menu { position: static; box-shadow: none; border-left: 2px solid var(--accent-blue); opacity: 1; pointer-events: auto; transform: none; display: flex; }
+      .platform-scope-row { grid-template-columns: 1fr; gap: 8px; }
+      .settings-container { width: 90vw; }
+    }
+
+    @media (max-width: 768px) {
+      .settings-container {
+        width: 85vw !important;
+        margin: 16px auto;
+        gap: 16px;
+      }
+      .card { padding: 14px 16px; }
+      .profile-card-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .settings-grid { grid-template-columns: 1fr; }
+      .sensitive-input-wrapper { flex-direction: column; align-items: stretch; }
+      .floating-whatsapp-widget { bottom: 16px; right: 16px; }
+      .whatsapp-chat-box { width: calc(85vw - 32px); }
+      .link-input-row { flex-direction: column; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Line 270: Sticky Full-Width Header -->
+  <!-- Sticky Full-Width Header -->
   <header class="site-header">
     <div class="header-container">
       <a href="../games/woth2/index.html" class="brand-area">
@@ -400,7 +440,7 @@
     </div>
   </header>
 
-  <!-- Line 298: Master Settings Workspace -->
+  <!-- Master Settings Workspace -->
   <main class="settings-container">
     
     <!-- Guest Notification -->
@@ -422,7 +462,7 @@
       </div>
     </section>
 
-    <!-- Line 322: Authenticated Settings Engine -->
+    <!-- Authenticated Settings Engine -->
     <div id="authenticatedSection" class="hidden" style="display: flex; flex-direction: column; gap: 24px;">
       
       <!-- Card 1: Profile & Identity (Electric Blue) -->
@@ -431,13 +471,13 @@
           <img id="avatarPreview" src="https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png" alt="" class="avatar-preview-lg">
           <div>
             <h2 id="displayGamerTag">Hunter</h2>
-            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; gap: 8px;">
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
               Friend Code: 
               <strong id="friendCodeDisplay" style="color: var(--accent-gold); letter-spacing: 0.5px;">Loading...</strong>
-              <button id="copyFriendCodeBtn" class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 0.74rem;">📋 Copy</button>
+              <button id="copyFriendCodeBtn" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.74rem;">📋 Copy</button>
               <span id="copyFeedback" style="font-size: 0.74rem; color: var(--success); font-weight: 600;"></span>
             </div>
-            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">
               Root Keys: <code id="primaryEmailDisplay">user@email.com</code>
             </p>
           </div>
@@ -476,13 +516,13 @@
           <div>
             <h3>Connected Gaming Platforms &amp; Visibility</h3>
             <p style="font-size: 0.82rem; color: var(--text-muted);">
-              Set handles and choose visibility (Public, Friends Only, or No One) to configure profile view:
+              Set handles and privacy scopes. Sensitive credentials auto-mask after 60 seconds:
             </p>
           </div>
           <button id="saveGamingProfilesBtn" class="btn btn-primary btn-sm">Save Gaming Profiles</button>
         </div>
 
-        <!-- PlayStation Network -->
+        <!-- PlayStation Network Online ID -->
         <div class="platform-scope-row">
           <span class="platform-scope-label">PSN Online ID</span>
           <input type="text" id="psnUsernameInput" placeholder="e.g. wildhorse_spirit">
@@ -493,19 +533,47 @@
           </select>
         </div>
 
-        <!-- PlayStation Account ID Number -->
+        <!-- Sensitive PSN Account ID # (With 60s Reveal Timer) -->
         <div class="platform-scope-row">
           <div>
             <span class="platform-scope-label">PSN Account ID #</span>
-            <div style="font-size: 0.72rem; color: var(--accent-gold);">Private (Telemetry Unlock)</div>
+            <div style="font-size: 0.72rem; color: var(--accent-gold);">Private &bull; Sensitive</div>
           </div>
           <div>
-            <input type="text" id="psnAccountIdInput" placeholder="e.g. 583920194829104820">
+            <div class="sensitive-input-wrapper">
+              <input type="password" id="psnAccountIdInput" placeholder="e.g. 583920194829104820">
+              <button type="button" id="toggleAccountIdVisibilityBtn" class="btn btn-secondary btn-sm" style="white-space: nowrap;">
+                👁 Show (60s)
+              </button>
+            </div>
             <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 4px;">
               Don't know your ID? Look it up at 
               <a href="https://psn.flipscreen.games" target="_blank" rel="noopener" style="color:var(--accent-blue); text-decoration:underline;">psn.flipscreen.games &nearr;</a>.
               Without this ID, trophies and live playing status won't sync, but friends can still view your username.
             </div>
+          </div>
+          <input type="text" value="No One (Locked)" disabled style="opacity: 0.6; cursor: not-allowed;">
+        </div>
+
+        <!-- Sensitive PSN NPSSO Cookie (With Auto-Sanitizer & 60s Reveal Timer) -->
+        <div class="platform-scope-row">
+          <div>
+            <span class="platform-scope-label">PSN NPSSO Cookie</span>
+            <div id="npssoStatusTag" style="font-size: 0.72rem; color: var(--accent-gold);">Private &bull; Session Auth</div>
+          </div>
+          <div>
+            <div class="sensitive-input-wrapper">
+              <input type="password" id="psnNpssoInput" placeholder="Paste raw Sony JSON or 64-character token...">
+              <button type="button" id="toggleNpssoVisibilityBtn" class="btn btn-secondary btn-sm" style="white-space: nowrap;">
+                👁 Show (60s)
+              </button>
+            </div>
+            <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 4px;">
+              Retrieve your active session token from: 
+              <a href="https://ca.account.sony.com/api/v1/ssocookie" target="_blank" rel="noopener" style="color:var(--accent-blue); text-decoration:underline;">ca.account.sony.com/api/v1/ssocookie &nearr;</a>.
+              Paste the entire raw output; we will extract the 64-character token automatically.
+            </div>
+            <div id="npssoValidationMsg" style="font-size: 0.74rem; margin-top: 4px; font-weight: 600;"></div>
           </div>
           <input type="text" value="No One (Locked)" disabled style="opacity: 0.6; cursor: not-allowed;">
         </div>
@@ -552,20 +620,26 @@
         </div>
       </section>
 
-      <!-- Connected Links & Companions Roster Grid -->
+      <!-- Connected Links (Max 5) & Companions Roster Grid -->
       <div class="settings-grid">
         
-        <!-- Card 3: Personal Links (Tactical Cyan) -->
+        <!-- Card 3: Personal Links Capped at 5 (Tactical Cyan) -->
         <section class="card card-links">
-          <h3>Your Connected Links</h3>
-          <p style="font-size: 0.82rem; color: var(--text-muted); margin: 6px 0 12px;">
-            Add personal links to display on your profile (stored in settings only):
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
+            <h3>Your Connected Links</h3>
+            <span id="linksCounterPill" class="badge-tag" style="background: rgba(0, 210, 211, 0.15); color: var(--accent-cyan);">0 / 5 Used</span>
+          </div>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
+            Add up to 5 custom links to show on your profile card (stored in user settings):
           </p>
 
-          <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+          <div class="link-input-row" style="display: flex; gap: 8px; margin-bottom: 8px;">
             <input type="text" id="linkTitleInput" placeholder="Title (e.g. YouTube)" style="flex: 1;">
             <input type="url" id="linkUrlInput" placeholder="https://..." style="flex: 2;">
             <button id="addUserLinkBtn" class="btn btn-primary btn-sm">Add</button>
+          </div>
+          <div id="linksLimitWarning" style="font-size: 0.75rem; color: var(--accent-gold); margin-bottom: 8px;" class="hidden">
+            Maximum of 5 links reached. Remove an existing link to add another.
           </div>
 
           <div class="user-links-list" id="userLinksContainer">
@@ -607,8 +681,8 @@
           <!-- Email Update -->
           <div style="margin-bottom: 16px; padding: 12px; background: var(--bg-surface); border-radius: 6px; border: 1px solid var(--border-color);">
             <label style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Update Primary Email Address</label>
-            <div style="display: flex; gap: 8px; margin-top: 6px;">
-              <input type="email" id="changeEmailInput" placeholder="new-email@example.com" style="flex: 1;">
+            <div style="display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap;">
+              <input type="email" id="changeEmailInput" placeholder="new-email@example.com" style="flex: 1; min-width: 200px;">
               <button id="updateEmailBtn" class="btn btn-secondary btn-sm">Change Email</button>
             </div>
           </div>
@@ -680,7 +754,7 @@
     </div>
   </main>
 
-  <!-- Line 562: Anonymous Floating WhatsApp Messaging Widget -->
+  <!-- Anonymous Floating WhatsApp Messaging Widget -->
   <div class="floating-whatsapp-widget" id="whatsappFloatingWidget">
     <div class="whatsapp-chat-box hidden" id="whatsappChatBox">
       <div class="whatsapp-box-header">
@@ -701,12 +775,12 @@
     <button class="whatsapp-trigger-btn" id="toggleWhatsappBtn" title="Direct WhatsApp Support">💬</button>
   </div>
 
-  <!-- Line 587: Persistent 24-hr Timestamp Footer -->
+  <!-- Persistent 24-hr Timestamp Footer -->
   <footer class="site-footer">
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Werewolf Project | User Identity Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 19:48 EDT</span> | Version: 4.6.2</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-07 20:06 EDT</span> | Version: 4.7.1</p>
       </div>
       <div class="footer-col text-right">
         <span id="accountStatusPill" class="status-pill status-connecting">RTDB: Connecting...</span>
@@ -714,9 +788,9 @@
     </div>
   </footer>
 
-  <!-- Line 600: Complete Embedded JavaScript Engine -->
+  <!-- Complete Embedded JavaScript Engine -->
   <script>
-    // Section 1: Core Initialization and Global Listeners (Lines 602-646)
+    // Section 1: Core Initialization and Global Listeners (Lines 605-650)
     document.addEventListener("DOMContentLoaded", () => {
       const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
 
@@ -737,9 +811,10 @@
       const db = firebase.firestore();
 
       let currentUser = null;
+      let accountIdTimer = null;
+      let npssoTimer = null;
 
-      // Section 2: Email Key Resolution (Lines 647-676)
-      // Resolves primary email: Google Account email takes precedence, falling back to registered email
+      // Section 2: Email Key Resolution (Lines 651-680)
       function getResolvedPrimaryEmail(user) {
         if (!user) return "";
         const googleProvider = user.providerData.find(p => p && p.providerId === "google.com");
@@ -756,13 +831,121 @@
         return "hunter@guest.local";
       }
 
-      // Safely converts email to RTDB path key
       function getEmailKey(email) {
         if (!email) return "unknown_user";
         return email.toLowerCase().replace(/@/g, "_at_").replace(/\./g, "_");
       }
 
-      // Section 3: Navbar Sorting Engine & Favicon Synchronization (Lines 677-801)
+      // Section 3: NPSSO Token Auto-Sanitizer & Parser (Lines 681-725)
+      function sanitizeNpssoInput(rawInput) {
+        if (!rawInput) return { token: "", isValid: false, isExpired: false };
+        const cleaned = rawInput.trim();
+
+        // Detect expired session error payload
+        if (cleaned.includes("invalid_grant") || cleaned.includes("Invalid login")) {
+          return { token: "", isValid: false, isExpired: true };
+        }
+
+        // 1. Try parsing JSON format: {"npsso":"...","expires_in":...}
+        try {
+          const parsed = JSON.parse(cleaned);
+          if (parsed && parsed.npsso) {
+            return { token: parsed.npsso.trim(), isValid: true, isExpired: false };
+          }
+        } catch (e) {}
+
+        // 2. Regex fallback for partial copies: "npsso": "TOKEN"
+        const regexMatch = cleaned.match(/"npsso"\s*:\s*"([a-zA-Z0-9_-]+)"/);
+        if (regexMatch && regexMatch[1]) {
+          return { token: regexMatch[1].trim(), isValid: true, isExpired: false };
+        }
+
+        // 3. User pasted the bare 64-character token directly
+        if (/^[a-zA-Z0-9_-]{64}$/.test(cleaned)) {
+          return { token: cleaned, isValid: true, isExpired: false };
+        }
+
+        return { token: cleaned, isValid: cleaned.length > 20, isExpired: false };
+      }
+
+      // Real-time listener on NPSSO input field to sanitize immediately
+      const npssoInput = document.getElementById("psnNpssoInput");
+      const npssoMsg = document.getElementById("npssoValidationMsg");
+      if (npssoInput) {
+        npssoInput.addEventListener("input", (e) => {
+          const res = sanitizeNpssoInput(e.target.value);
+          if (res.isExpired) {
+            npssoMsg.textContent = "⚠️ Session Expired: Please re-login to PlayStation in your browser, visit the link, and paste your refreshed code.";
+            npssoMsg.style.color = "var(--accent-gold)";
+          } else if (res.isValid && res.token.length === 64) {
+            // Automatically clean out the JSON formatting
+            if (e.target.value !== res.token) {
+              e.target.value = res.token;
+            }
+            npssoMsg.textContent = "✔ 64-Character NPSSO Key Verified (Valid Session)";
+            npssoMsg.style.color = "var(--success)";
+          } else if (e.target.value.length > 0) {
+            npssoMsg.textContent = "Checking token format...";
+            npssoMsg.style.color = "var(--text-muted)";
+          } else {
+            npssoMsg.textContent = "";
+          }
+        });
+      }
+
+      // Section 4: 60-Second Auto-Hide Timers for Sensitive Fields (Lines 726-785)
+      function setupSensitiveFieldToggle(btnId, inputId, timerVarRef, setTimerFn) {
+        const btn = document.getElementById(btnId);
+        const input = document.getElementById(inputId);
+        if (!btn || !input) return;
+
+        btn.addEventListener("click", () => {
+          if (input.type === "password") {
+            input.type = "text";
+            let timeLeft = 60;
+            btn.textContent = `🔒 Hide (${timeLeft}s)`;
+            btn.classList.add("btn-danger");
+            btn.classList.remove("btn-secondary");
+
+            clearInterval(timerVarRef);
+            const timer = setInterval(() => {
+              timeLeft -= 1;
+              if (timeLeft <= 0) {
+                clearInterval(timer);
+                input.type = "password";
+                btn.textContent = "👁 Show (60s)";
+                btn.classList.remove("btn-danger");
+                btn.classList.add("btn-secondary");
+              } else {
+                btn.textContent = `🔒 Hide (${timeLeft}s)`;
+              }
+            }, 1000);
+            setTimerFn(timer);
+          } else {
+            clearInterval(timerVarRef);
+            input.type = "password";
+            btn.textContent = "👁 Show (60s)";
+            btn.classList.remove("btn-danger");
+            btn.classList.add("btn-secondary");
+          }
+        });
+      }
+
+      setupSensitiveFieldToggle(
+        "toggleAccountIdVisibilityBtn",
+        "psnAccountIdInput",
+        accountIdTimer,
+        (t) => { accountIdTimer = t; }
+      );
+
+      setupSensitiveFieldToggle(
+        "toggleNpssoVisibilityBtn",
+        "psnNpssoInput",
+        npssoTimer,
+        (t) => { npssoTimer = t; }
+      );
+
+      // Section 5: Navbar Sorting Engine & Favicon Synchronization (Lines 786-905)
       function initRTDBMenu() {
         const utmRef = rtdb.ref("/utm_links");
         utmRef.on("value", (snapshot) => {
@@ -896,7 +1079,7 @@
         });
       }
 
-      // Section 4: Auth State Observer & Dual Provisioning Engine (Lines 802-896)
+      // Section 6: Auth State Observer & Dual Provisioning Engine (Lines 906-995)
       auth.onAuthStateChanged(async (user) => {
         const guestPrompt = document.getElementById("guestSignInPrompt");
         const authSection = document.getElementById("authenticatedSection");
@@ -978,7 +1161,7 @@
         }
       }
 
-      // Section 5: Profile Sync & DecAPI Twitch Avatar Handlers (Lines 897-1011)
+      // Section 7: Profile Sync & DecAPI Twitch Avatar Handlers (Lines 996-1100)
       function loadRTDBUserProfile(emailKey, friendCode) {
         const userRef = rtdb.ref(`/users/${emailKey}`);
         userRef.on("value", async (snapshot) => {
@@ -1003,10 +1186,16 @@
           document.getElementById("avatarPreview").src = avatarUrl;
           document.getElementById("headerUserAvatar").src = avatarUrl;
 
-          // Populate Gaming Handles & Scopes
+          // Populate Gaming Handles & Sensitive Inputs
           document.getElementById("psnUsernameInput").value = data.psn_username || "";
           document.getElementById("psnUsernameScope").value = data.psn_username_scope || "public";
           document.getElementById("psnAccountIdInput").value = data.psn_account_id || "";
+          document.getElementById("psnNpssoInput").value = data.psn_npsso || "";
+
+          if (data.psn_npsso && data.psn_npsso.length === 64) {
+            npssoMsg.textContent = "✔ 64-Character NPSSO Key Stored";
+            npssoMsg.style.color = "var(--success)";
+          }
 
           document.getElementById("steamIdInput").value = data.steam_id || "";
           document.getElementById("steamIdScope").value = data.steam_id_scope || "public";
@@ -1055,8 +1244,7 @@
         }
       }
 
-      // Section 6: Silent Save Operations (Lines 1012-1131)
-      // One-Click Friend Code Clipboard Copy
+      // Section 8: Silent Save Operations (Lines 1101-1225)
       document.getElementById("copyFriendCodeBtn").addEventListener("click", () => {
         const code = document.getElementById("friendCodeDisplay").textContent.trim();
         if (!code || code === "Loading...") return;
@@ -1112,7 +1300,6 @@
 
         const friendCode = currentUser.uid.substring(0, 8).toUpperCase();
 
-        // Silent RTDB sync
         await rtdb.ref(`/users/${emailKey}`).update({
           username: newTag,
           avatar_source: avatarSource,
@@ -1125,7 +1312,6 @@
           avatar_url: avatarUrl || DEFAULT_USER_AVATAR
         });
 
-        // Silent Firestore sync
         await db.collection("users").doc(primaryEmail).set({
           username: newTag,
           avatar_url: avatarUrl || DEFAULT_USER_AVATAR,
@@ -1133,18 +1319,24 @@
         }, { merge: true });
       });
 
-      // Silent Save: Gaming Handles & Visibility Scopes
+      // Silent Save: Gaming Handles, Sanitized NPSSO & Visibility Scopes
       document.getElementById("saveGamingProfilesBtn").addEventListener("click", async () => {
         if (!currentUser) return;
         const primaryEmail = getResolvedPrimaryEmail(currentUser);
         const emailKey = getEmailKey(primaryEmail);
         const twitchUser = document.getElementById("twitchUsernameInput").value.trim();
 
+        const rawNpsso = document.getElementById("psnNpssoInput").value;
+        const sanitizedResult = sanitizeNpssoInput(rawNpsso);
+
         const payload = {
           psn_username: document.getElementById("psnUsernameInput").value.trim(),
           psn_username_scope: document.getElementById("psnUsernameScope").value,
           psn_account_id: document.getElementById("psnAccountIdInput").value.trim(),
           psn_account_id_scope: "private",
+          psn_npsso: sanitizedResult.token,
+          psn_npsso_scope: "private",
+          psn_npsso_valid: sanitizedResult.isValid,
           steam_id: document.getElementById("steamIdInput").value.trim(),
           steam_id_scope: document.getElementById("steamIdScope").value,
           xbox_gamertag: document.getElementById("xboxGamertagInput").value.trim(),
@@ -1163,9 +1355,13 @@
         if (twitchUser) checkTwitchLiveGame(twitchUser);
       });
 
-      // Section 7: Personal Links Management (Lines 1132-1186)
+      // Section 9: Personal Links Management (Capped at 5 Links) (Lines 1226-1300)
+      let currentLinksCount = 0;
+
       document.getElementById("addUserLinkBtn").addEventListener("click", async () => {
         if (!currentUser) return;
+        if (currentLinksCount >= 5) return;
+
         const title = document.getElementById("linkTitleInput").value.trim();
         const url = document.getElementById("linkUrlInput").value.trim();
         if (!title || !url) return;
@@ -1180,22 +1376,46 @@
 
       function renderUserLinks(linksObj) {
         const container = document.getElementById("userLinksContainer");
+        const counterPill = document.getElementById("linksCounterPill");
+        const limitWarning = document.getElementById("linksLimitWarning");
+        const addBtn = document.getElementById("addUserLinkBtn");
+        const titleInput = document.getElementById("linkTitleInput");
+        const urlInput = document.getElementById("linkUrlInput");
+
         if (!container) return;
         container.innerHTML = "";
 
         const entries = Object.entries(linksObj);
+        currentLinksCount = entries.length;
+
+        if (counterPill) {
+          counterPill.textContent = `${currentLinksCount} / 5 Used`;
+        }
+
+        if (currentLinksCount >= 5) {
+          if (limitWarning) limitWarning.classList.remove("hidden");
+          if (addBtn) addBtn.disabled = true;
+          if (titleInput) titleInput.disabled = true;
+          if (urlInput) urlInput.disabled = true;
+        } else {
+          if (limitWarning) limitWarning.classList.add("hidden");
+          if (addBtn) addBtn.disabled = false;
+          if (titleInput) titleInput.disabled = false;
+          if (urlInput) urlInput.disabled = false;
+        }
+
         if (entries.length === 0) {
           container.innerHTML = '<p style="font-size: 0.8rem; color: var(--text-muted);">No personal links added yet.</p>';
           return;
         }
 
-        entries.forEach(([id, item]) => {
+        entries.slice(0, 5).forEach(([id, item]) => {
           const div = document.createElement("div");
           div.className = "user-link-item";
           div.innerHTML = `
-            <div>
+            <div style="overflow: hidden; text-overflow: ellipsis; padding-right: 8px;">
               <strong>${item.title}</strong>
-              <div style="font-size: 0.76rem; color: var(--accent-cyan);">${item.url}</div>
+              <div style="font-size: 0.76rem; color: var(--accent-cyan); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.url}</div>
             </div>
             <button class="btn btn-danger btn-sm" onclick="window.removeUserLink('${id}')">Remove</button>
           `;
@@ -1209,7 +1429,7 @@
         await rtdb.ref(`/users/${emailKey}/links/${id}`).remove();
       };
 
-      // Section 8: Companions Roster & Dual Linking (Lines 1187-1271)
+      // Section 10: Companions Roster & Dual Linking (Lines 1301-1385)
       document.getElementById("addFriendBtn").addEventListener("click", async () => {
         if (!currentUser) return;
         const code = document.getElementById("friendCodeInput").value.trim().toUpperCase();
@@ -1225,7 +1445,6 @@
 
           const friend = snap.val();
 
-          // Write friend reference to RTDB
           await rtdb.ref(`/users/${emailKey}/friends/${code}`).set({
             friend_code: code,
             username: friend.username || "Companion",
@@ -1234,7 +1453,6 @@
             linked_at: new Date().toISOString()
           });
 
-          // Write friend reference to Firestore
           await db.collection("users").doc(primaryEmail).collection("friends").doc(code).set({
             friend_code: code,
             target_email: friend.email,
@@ -1262,9 +1480,9 @@
           const div = document.createElement("div");
           div.className = "friend-item";
           div.innerHTML = `
-            <div style="display:flex; align-items:center; gap:10px;">
-              <img src="${friend.avatar_url || DEFAULT_USER_AVATAR}" class="nav-thumb" style="border-radius:50%; width:30px; height:30px;" onerror="this.src='${DEFAULT_USER_AVATAR}'">
-              <div>
+            <div style="display:flex; align-items:center; gap:10px; overflow: hidden;">
+              <img src="${friend.avatar_url || DEFAULT_USER_AVATAR}" class="nav-thumb" style="border-radius:50%; width:30px; height:30px; flex-shrink: 0;" onerror="this.src='${DEFAULT_USER_AVATAR}'">
+              <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                 <strong>${friend.username}</strong>
                 <div style="font-size: 0.74rem; color: var(--text-muted);">Code: ${code}</div>
               </div>
@@ -1275,8 +1493,7 @@
         });
       }
 
-      // Section 9: The 4 Protected Actions with Yes/No Confirmation Dialogs (Lines 1272-1346)
-      // Protected Action 1: Remove Companion
+      // Section 11: The 4 Protected Actions with Yes/No Confirmation Dialogs (Lines 1386-1460)
       window.removeCompanion = async (code) => {
         if (!currentUser) return;
         const confirmRemove = window.confirm("Are you sure you want to remove this companion from your roster?");
@@ -1289,14 +1506,12 @@
         await db.collection("users").doc(primaryEmail).collection("friends").doc(code).delete();
       };
 
-      // Protected Action 2: Disconnect Google Account
       document.getElementById("disconnectGoogleBtn").addEventListener("click", () => {
         const confirmDisconnect = window.confirm("Are you sure you want to open the Google Security console to disconnect this app authorization?");
         if (!confirmDisconnect) return;
         window.open("https://myaccount.google.com/linkedapps?continue=https%3A%2F%2Fmyaccount.google.com%2Fsecurity", "_blank");
       });
 
-      // Protected Action 3: Password Reset
       document.getElementById("sendPasswordResetBtn").addEventListener("click", () => {
         if (!currentUser) return;
         const email = getResolvedPrimaryEmail(currentUser);
@@ -1306,7 +1521,6 @@
         auth.sendPasswordResetEmail(email).catch(() => {});
       });
 
-      // Protected Action 4: Delete Account
       document.getElementById("deleteAccountBtn").addEventListener("click", async () => {
         if (!currentUser) return;
         const confirmDelete = window.confirm("Are you sure you want to permanently erase your hunter profile, friend code, and gaming records? This cannot be undone.");
@@ -1325,11 +1539,11 @@
           localStorage.clear();
           window.location.reload();
         } catch (e) {
-          alert("Account Deletion Error (re-login may be required): " + e.message);
+          alert("Account Deletion Error: " + e.message);
         }
       });
 
-      // Section 10: Provider Identification & Account Handlers (Lines 1347-1431)
+      // Section 12: Provider Identification & Account Handlers (Lines 1461-1550)
       function renderProvidersUI(user) {
         const providers = user.providerData.map(p => p.providerId);
         const googleText = document.getElementById("googleStatusText");
@@ -1363,7 +1577,7 @@
         }
       });
 
-      // Anonymous WhatsApp Messenger (Phone Number Concealed)
+      // Anonymous WhatsApp Messenger (Number Concealed)
       const toggleWhatsappBtn = document.getElementById("toggleWhatsappBtn");
       const openWhatsAppModalBtn = document.getElementById("openWhatsAppModalBtn");
       const whatsappChatBox = document.getElementById("whatsappChatBox");
@@ -1392,7 +1606,7 @@
         closeChat();
       });
 
-      // Basic Auth Triggers
+      // Basic Auth Listeners
       document.getElementById("inlineGoogleBtn").addEventListener("click", () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()));
       document.getElementById("authModalBtn").addEventListener("click", () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()));
       document.getElementById("quickLoginBtn").addEventListener("click", () => {
