@@ -10,6 +10,7 @@
  * - Itemized DLC groups & edition tiers (e.g., Heirloom Pack EP4389-PPSA17911_00-WOTH2PREORDERDLC).
  * 2. User Overlays isolated strictly to /psn/gamertags/{onlineId}:
  * - Root commId acts as foreign key pointer directly to /psn/games/{commId}.
+ * - Bulletproof root poster art binding: art, posterArt, image, currentGameArt.
  * - liveTrophyProgress contains earned flags, EDT timestamps, and (x/x) sub-progress.
  * 3. Hot-standby failover across WildHorse_Spirit and Ray.
  * 4. Online-Only Optimization & Checkpoint Session Tracker:
@@ -18,11 +19,11 @@
  * - 15-minute incremental checkpoint syncing with manualBaselineHours integration.
  * - Multi-tier progressive duration formatting (mins -> hours -> days -> weeks -> months -> years).
  * Analytics Tagging: G-CTYHDF4MSD (Deployable via GTM).
- * Version: 66.0.0 - Incremental Checkpoint Tracker & Online-Only Guard
- * Date & Time Stamp: 2026-10-08 22:08:00 EDT (America/New_York)
+ * Version: 66.1.0 - Bulletproof Root Poster Artwork & Zero Dropped Lines
+ * Date & Time Stamp: 2026-10-09 16:55:00 EDT (America/New_York)
  * ============================================================================ */
 
-// [SECTION 1: IMPORTS & CORE CONFIGURATION] Line 25
+// [SECTION 1: IMPORTS & CORE CONFIGURATION] Line 27
 const fs = require("fs");
 const path = require("path");
 const http = require("http");
@@ -223,7 +224,7 @@ function parseStoreHtmlFeatures(html) {
     const accessibility = {};
     let currentCategory = "General";
 
-    // 1. Platform, Network, and Controller Badges
+    // Platform, Network, and Controller Badges
     const badgeRegex = /<li[^>]*data-qa="gameInfo#releaseInformation#gameBadges#item[^>]*>([\s\S]*?)<\/li>/gi;
     let badgeMatch;
     while ((badgeMatch = badgeRegex.exec(html)) !== null) {
@@ -251,7 +252,7 @@ function parseStoreHtmlFeatures(html) {
         if (html.includes(b) && !badges.includes(b)) badges.push(b);
     });
 
-    // 2. Structured Accessibility Suite
+    // Structured Accessibility Suite
     const accessMatch = html.match(/Accessibility Features([\s\S]*?)(?:Game and Legal Info|<footer)/i);
     if (accessMatch && accessMatch[1]) {
         const rawAccess = accessMatch[1];
@@ -471,8 +472,8 @@ function formatDuration(totalSeconds) {
     const SECONDS_IN_HOUR = 3600;
     const SECONDS_IN_DAY = 86400;
     const SECONDS_IN_WEEK = 604800;
-    const SECONDS_IN_MONTH = 2592000; // 30 days
-    const SECONDS_IN_YEAR = 31536000;  // 365 days
+    const SECONDS_IN_MONTH = 2592000;
+    const SECONDS_IN_YEAR = 31536000;
 
     if (totalSeconds >= SECONDS_IN_YEAR) {
         const years = Math.floor(totalSeconds / SECONDS_IN_YEAR);
@@ -736,7 +737,6 @@ function updateGameSessionTracking(existingUserData, activeCommId, activeTitle, 
                 current.lastSyncedTime = now;
                 console.log(`[SESSION RESUMED] Resumed tracking for ${activeTitle} (${primaryKey}).`);
             } else {
-                // Bank incremental delta since last 15-minute sync
                 const lastCheckpoint = current.lastSyncedTime || current.sessionStartTime || now;
                 const deltaSeconds = Math.max(0, Math.floor((now - lastCheckpoint) / 1000));
                 
@@ -1380,6 +1380,10 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                     online: false,
                     currentGame: "Dashboard",
                     currentGameId: null,
+                    art: existingData?.art || existingData?.posterArt || existingData?.currentGameArt || null,
+                    posterArt: existingData?.posterArt || existingData?.art || existingData?.currentGameArt || null,
+                    image: existingData?.image || existingData?.art || existingData?.posterArt || null,
+                    currentGameArt: existingData?.currentGameArt || existingData?.art || null,
                     playSessions: playSessions,
                     lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
                 };
@@ -1655,6 +1659,22 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             existingData?.currentGameArt
         ]);
 
+        // BULLETPROOF MULTI-TIER POSTER RESOLVER (NEVER BLANK OR OVERWRITTEN)
+        const safeFinalPoster = resolveGamePosterArt([
+            resolvedPoster,
+            matchedGame.art,
+            matchedGame.posterArt,
+            matchedGame.trophyTitleIconUrl,
+            allRecentGames[0]?.art,
+            allRecentGames[0]?.posterArt,
+            allRecentGames[0]?.trophyTitleIconUrl,
+            globalGames[persistentRootCommId]?.posterArt,
+            existingData?.art,
+            existingData?.posterArt,
+            existingData?.currentGameArt,
+            existingData?.activeHunt?.art
+        ]);
+
         const persistentLifetimeFormatted = matchedGame.nativePlaytimeFormatted || 
                                            existingData?.currentGameHours || 
                                            existingData?.activeHunt?.hoursFormatted || 
@@ -1715,7 +1735,9 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                         platform: hwContext.activeHardware, 
                         gameBuildVersion: hwContext.gameBuildVersion, 
                         isStreamingRemotePlay: hwContext.isStreamingRemotePlay, 
-                        art: resolvedPoster, 
+                        art: safeFinalPoster, 
+                        posterArt: safeFinalPoster,
+                        image: safeFinalPoster,
                         hoursPlayed: safePlaytimeFormatted, 
                         hoursFormatted: safePlaytimeFormatted, 
                         numericHours: safeNumericHours, 
@@ -1751,11 +1773,14 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         // Core presence: single commId foreign key pointer, clean SKU & human-readable title
         const presence = {
             online: isPlayerOnline,
-            currentGame: resolvedTitle,                         // Human Readable Title
-            commId: persistentRootCommId,                         // SINGLE commId key pointer to /psn/games/{commId}
-            currentGameId: isDashboard ? null : activeTitleId,    // Product SKU (PPSA/CUSA) or null when on Dashboard
+            currentGame: resolvedTitle,
+            commId: persistentRootCommId,
+            currentGameId: isDashboard ? null : activeTitleId,
             conceptId: globalGames[persistentRootCommId]?.conceptId || matchedGame.conceptId || null,
-            currentGameArt: resolvedPoster,
+            currentGameArt: safeFinalPoster,
+            art: safeFinalPoster,
+            posterArt: safeFinalPoster,
+            image: safeFinalPoster,
             currentGameHours: safePlaytimeFormatted,
             currentGameNumericHours: safeNumericHours,
             amazonAffiliateUrl: generateAffiliateUrl(resolvedTitle),
@@ -1769,8 +1794,12 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         return {
             onlineId: canonicalOnlineId, 
             accountId: resolvedTargetId,
-            commId: persistentRootCommId,                         // SINGLE root commId foreign key pointer
+            commId: persistentRootCommId,
             conceptId: globalGames[persistentRootCommId]?.conceptId || matchedGame.conceptId || null,
+            art: safeFinalPoster,
+            posterArt: safeFinalPoster,
+            image: safeFinalPoster,
+            currentGameArt: safeFinalPoster,
             storeListing: globalGames[persistentRootCommId]?.storeListing || null,
             storeBadges: globalGames[persistentRootCommId]?.storeBadges || [],
             accessibilityFeatures: globalGames[persistentRootCommId]?.accessibilityFeatures || {},
@@ -1843,6 +1872,9 @@ function buildSquadIntelligence(allGamertagsData) {
         commId: p.commId || null,
         conceptId: p.conceptId || null,
         currentGameId: p.currentGameId || null,
+        art: p.art || p.posterArt || p.currentGameArt || null,
+        posterArt: p.posterArt || p.art || p.currentGameArt || null,
+        image: p.image || p.art || p.posterArt || null,
         platform: p.platform || "PS5",
         gameBuildVersion: p.gameBuildVersion || "PS5 Native Game",
         isStreamingRemotePlay: !!p.isStreamingRemotePlay
@@ -1883,7 +1915,7 @@ function buildSquadIntelligence(allGamertagsData) {
 // ----------------------------------------------------------------------------
 async function executeSyncPass() {
     try {
-        console.log(`[INIT] Starting Full PSN Engine v66.0.0 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
+        console.log(`[INIT] Starting Full PSN Engine v66.1.0 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
 
         await loadPersistentTokens();
 
@@ -1927,7 +1959,7 @@ async function executeSyncPass() {
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport, 
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
-            engineVersion: "66.0.0", 
+            engineVersion: "66.1.0", 
             analyticsTag: GA4_MEASUREMENT_ID, 
             codeTimestamp: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }) + " EDT"
         };
@@ -2055,13 +2087,13 @@ async function executeSyncPass() {
         diagnosticReport.lastCheck = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
         await syncNodeToFirebase("authDiagnostics", diagnosticReport);
 
-        console.log(`[SUCCESS] Full PSN Engine v66.0.0 completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
+        console.log(`[SUCCESS] Full PSN Engine v66.1.0 completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Synchronization cycle failed: ${criticalError.message}`);
     }
 }
 
-// [SECTION 17: RUNNER INVOCATION] Line 2026
+// [SECTION 17: RUNNER INVOCATION] Line 2045
 (async () => {
     await executeSyncPass();
     process.exit(0);
