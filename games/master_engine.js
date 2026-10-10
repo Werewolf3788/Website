@@ -1,5 +1,5 @@
 // Line 1: Unified Multi-Game Tactical Command Deck Engine
-// [Smart Cache-Buster Time: 2026-10-10 05:00 EDT | Firebase Sync Target: /utm_links | Version: 9.3.0]
+// [Smart Cache-Buster Time: 2026-10-10 06:52 EDT | Firebase Sync Target: /utm_links | Version: 10.0.0]
 
 /* === SECTION 1: Modular Firebase Imports === */
 import { initializeApp, getApps } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -26,7 +26,7 @@ const db = getFirestore(app);
 const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
 const GITHUB_SE5_IMG_BASE = "//raw.githubusercontent.com/Werewolf3788/Website/main/games/Sniper-Elite/5/images/";
 
-/* === SECTION 2: Game Registry (Direct JSON in Root) === */
+/* === SECTION 2: Game Registry === */
 const GAME_REGISTRY = {
   se5: {
     title: "Sniper Elite 5",
@@ -156,6 +156,7 @@ const masterEngine = {
   async init() {
     this.bindUI();
     this.initAuth();
+    this.initRTDBNav();
     this.initAllPillPosters();
     await this.loadUsersCatalog();
     await this.switchGame(this.activeGameKey, false);
@@ -163,25 +164,26 @@ const masterEngine = {
     setInterval(() => this.updateClock(), 1000);
   },
 
-  // Direct Flat/Root-Relative Fetch Engine
+  // Dedicated Path Resolver prioritizing /data/
   async fetchJSON(fileName) {
+    const clean = String(fileName).trim().replace(/^(\.\.\/|\.\/|\/)+/, '').replace(/^data\//, '');
     const paths = [
-      "./" + fileName,
-      fileName,
-      "/" + fileName,
-      "./data/" + fileName,
-      "/data/" + fileName,
-      "https://raw.githubusercontent.com/Werewolf3788/Website/main/" + fileName,
-      "https://raw.githubusercontent.com/Werewolf3788/Website/main/data/" + fileName
+      `/data/${clean}`,
+      `../data/${clean}`,
+      `${window.location.origin}/data/${clean}`,
+      `https://raw.githubusercontent.com/Werewolf3788/Website/main/data/${clean}`
     ];
 
     for (let i = 0; i < paths.length; i++) {
+      const url = paths[i] + "?v=" + Date.now();
       try {
-        const res = await fetch(paths[i] + "?v=" + Date.now());
-        if (res.ok) return await res.json();
+        const res = await fetch(url);
+        if (res.ok) {
+          return await res.json();
+        }
       } catch (e) {}
     }
-    console.warn(`[JSON Resolver] Could not load ${fileName}. Verify file location.`);
+    console.error(`[CRITICAL JSON ERROR] Could not find ${clean} at /data/${clean}`);
     return null;
   },
 
@@ -222,6 +224,138 @@ const masterEngine = {
         }
       }
     }
+  },
+
+  // Programmatic RTDB Navbar (/utm_links)
+  initRTDBNav() {
+    onValue(rtdbRef(rtdb, "/utm_links"), snapshot => {
+      const raw = snapshot.val();
+      if (!raw) return;
+
+      const items = [];
+      Object.entries(raw).forEach(([parentKey, val]) => {
+        if (Array.isArray(val)) {
+          val.forEach((entry, idx) => {
+            if (entry) items.push(this.normalizeNavItem(entry, `${parentKey}_${idx}`));
+          });
+        } else if (typeof val === "object" && val !== null) {
+          if (val.url || val.title) {
+            items.push(this.normalizeNavItem(val, parentKey));
+          } else {
+            Object.entries(val).forEach(([childKey, childVal]) => {
+              if (typeof childVal === "object" && childVal !== null) {
+                items.push(this.normalizeNavItem(childVal, `${parentKey}_${childKey}`));
+              }
+            });
+          }
+        }
+      });
+      this.renderNav(items);
+    });
+  },
+
+  normalizeNavItem(item, fallbackKey) {
+    return {
+      title: item.title || fallbackKey,
+      url: item.url || "#",
+      image: (item.image && typeof item.image === "string") ? item.image.trim() : "",
+      group: (item.group && typeof item.group === "string") ? item.group.trim() : "",
+      tag: (item.tag && typeof item.tag === "string") ? item.tag.trim() : "",
+      rowNumber: (item.rowNumber !== undefined && item.rowNumber !== null) ? Number(item.rowNumber) : 9999
+    };
+  },
+
+  renderNav(items) {
+    const navList = document.getElementById("navList");
+    if (!navList) return;
+    navList.innerHTML = "";
+
+    const standaloneLinks = [];
+    const folderGroups = {};
+
+    items.forEach(item => {
+      const cleanGroup = (item.group || "").toLowerCase();
+      const cleanTag = (item.tag || "").toLowerCase();
+      const cleanTitle = (item.title || "").toLowerCase();
+      const cleanUrl = (item.url || "").toLowerCase();
+
+      if (cleanGroup === "settings" || cleanTag === "settings" || cleanTitle.includes("setting") || cleanUrl.includes("setting") ||
+          cleanGroup === "privacy" || cleanTag === "privacy" || cleanTitle.includes("privacy") || cleanUrl.includes("privacy")) {
+        return;
+      }
+
+      const isStandalone = !item.group || cleanGroup === "standalone" || cleanGroup === "none";
+
+      if (isStandalone) {
+        standaloneLinks.push(item);
+      } else {
+        if (!folderGroups[item.group]) {
+          folderGroups[item.group] = {
+            name: item.group,
+            items: [],
+            minRow: item.rowNumber,
+            folderImage: item.image
+          };
+        }
+        folderGroups[item.group].items.push(item);
+        if (item.rowNumber < folderGroups[item.group].minRow) {
+          folderGroups[item.group].minRow = item.rowNumber;
+          if (item.image) folderGroups[item.group].folderImage = item.image;
+        }
+      }
+    });
+
+    const topLevelBuckets = [];
+    standaloneLinks.forEach(link => {
+      topLevelBuckets.push({ type: "bare_link", rank: link.rowNumber, data: link });
+    });
+
+    Object.values(folderGroups).forEach(grp => {
+      grp.items.sort((a, b) => a.rowNumber - b.rowNumber);
+      topLevelBuckets.push({ type: "folder", rank: grp.minRow, data: grp });
+    });
+
+    topLevelBuckets.sort((a, b) => a.rank - b.rank);
+
+    topLevelBuckets.forEach(bucket => {
+      const li = document.createElement("li");
+      li.className = "nav-item";
+
+      if (bucket.type === "bare_link") {
+        const item = bucket.data;
+        const imgTag = item.image ? `<img src="${item.image}" alt="" class="nav-thumb">` : '';
+        li.innerHTML = `
+          <a href="${item.url}" class="nav-pill">
+            ${imgTag}
+            <span>${item.title}</span>
+          </a>
+        `;
+      } else {
+        const grp = bucket.data;
+        const folderImg = grp.folderImage ? `<img src="${grp.folderImage}" alt="" class="nav-thumb">` : '';
+
+        let dropdownHtml = `<div class="dropdown-menu">`;
+        grp.items.forEach(child => {
+          const childImg = child.image ? `<img src="${child.image}" alt="" class="nav-thumb">` : '';
+          dropdownHtml += `
+            <a href="${child.url}" class="dropdown-item">
+              ${childImg}
+              <span>${child.title}</span>
+            </a>
+          `;
+        });
+        dropdownHtml += `</div>`;
+
+        li.innerHTML = `
+          <button type="button" class="dropdown-trigger">
+            ${folderImg}
+            <span>${grp.name} &#9662;</span>
+          </button>
+          ${dropdownHtml}
+        `;
+      }
+      navList.appendChild(li);
+    });
   },
 
   // Stream RTDB Poster Art directly to both pill thumbnails and active favicon
@@ -274,7 +408,7 @@ const masterEngine = {
     if (titleEl) titleEl.textContent = config.title.toUpperCase();
     if (footerPsnEl) footerPsnEl.textContent = `PSN ID: ${config.npCommunicationId}`;
 
-    // 4. Load or Retrieve Cached Game Catalog
+    // 4. Load or Retrieve Cached Game Catalog from /data/
     if (!this.catalogs[gameKey]) {
       const raw = await this.fetchJSON(config.dataFile);
       this.catalogs[gameKey] = Array.isArray(raw) ? raw : (raw?.intel || raw?.trophies || Object.values(raw || {}));
@@ -567,7 +701,6 @@ const masterEngine = {
 
     const config = GAME_REGISTRY[this.activeGameKey];
 
-    // Status Deck Card
     const headerDiv = document.createElement("div");
     headerDiv.style.cssText = "background:var(--card-bg); padding:16px 20px; border-radius:10px; border:1px solid var(--card-border); margin-bottom:14px; display:flex; flex-direction:column; gap:12px;";
     headerDiv.innerHTML = `
