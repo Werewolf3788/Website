@@ -1,11 +1,11 @@
 // Line 1: Unified Multi-Game Tactical Command Deck Engine
-// [Smart Cache-Buster Time: 2026-10-10 07:22 EDT | Firebase Sync Target: /utm_links | Version: 10.4.0]
+// [Smart Cache-Buster Time: 2026-10-10 07:30 EDT | Firebase Sync Target: /utm_links | Version: 10.5.0]
 
 /* === SECTION 1: Modular Firebase Imports === */
 import { initializeApp, getApps } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from '//www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot, serverTimestamp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import { getDatabase, ref as rtdbRef, onValue, off } from '//www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+import { getDatabase, ref as rtdbRef, onValue, off, get } from '//www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -81,7 +81,6 @@ function getEmailKey(email) {
   return String(email).trim().toLowerCase().replace(/@/g, '_at_').replace(/\./g, '_');
 }
 
-// Normalizer standardizing PlayStation explicitly to 'ps'
 function normalizePlatform(inputPlatform) {
   if (!inputPlatform) return 'ps';
   const clean = String(inputPlatform).toLowerCase().trim();
@@ -147,14 +146,17 @@ const masterEngine = {
     steam: { earned: 0, total: 0, percent: 0 }
   },
 
+  // Friends & Squad Telemetry
   teamLiveTelemetry: {},
-  friendsRoster: [],
+  directFriendsList: [],
+  friendUnsubscribers: [],
   activeLeafletMaps: {},
   markerLayers: {},
 
   firestoreProgressUnsub: null,
   firestoreRankUnsub: null,
   rtdbPsnTrophyRef: null,
+  rtdbFriendsRef: null,
 
   async init() {
     this.bindUI();
@@ -482,13 +484,13 @@ const masterEngine = {
       cotwContainer.classList.toggle("hidden", !config.hasRanks);
     }
 
-    // 6. Populate Missions/Reserves in Dropdown
+    // 6. Populate Missions/Reserves/Arc Stories in Dropdown
     this.populateMissionSelector();
 
     // 7. Rebind Scoped Database Listeners & PSN Trophy Stream
     this.userProgressMap = {};
     this.listenToOwnFirestoreProgress();
-    this.listenToSharedSquadTelemetry();
+    this.listenToDirectFriendsRoster(); // Strict 1-to-1 direct friends only
     this.loadAllPlatformTrophyProgress();
     this.listenToPsnTrophyStream(config.npCommunicationId);
 
@@ -501,11 +503,13 @@ const masterEngine = {
     this.render();
   },
 
+  // Populates COTW Arcs & Standard Missions into Context Selector
   populateMissionSelector() {
     const select = document.getElementById("mission-focus-select");
     if (!select) return;
 
-    const cats = [...new Set(this.masterCatalog.map(i => i.cat || "General"))];
+    // Supports distinct Arc stories (e.g. "Layton Lake Arc", "Hirschfelden Arc") or mission categories
+    const cats = [...new Set(this.masterCatalog.map(i => i.arc || i.cat || "General"))];
     this.activeMission = cats[0] || "";
     select.innerHTML = "";
 
@@ -658,16 +662,18 @@ const masterEngine = {
     this.silentSaveGameTelemetry();
   },
 
-  // Uncapped Direct Input for High-Count Objectives and Record Long Shots
+  // Conditioned strictly for Long Shots or stats over 10 (target >= 10)
   promptEditCount(id) {
     const item = this.masterCatalog.find(i => i.id === id);
     if (!item) return;
 
-    const current = this.userProgressMap[id] || { collected: false, count: 0 };
     const target = item.target || item.goal || 1;
+    // Strict Guard: Only active for objectives with a milestone of 10 or greater
+    if (target < 10) return;
 
+    const current = this.userProgressMap[id] || { collected: false, count: 0 };
     const inputVal = window.prompt(
-      `Set record stat for: "${item.name}"\nRequirement: ${target} (Input can go over for bragging rights!)`,
+      `Set long shot / high milestone for: "${item.name}"\nGoal Requirement: ${target} (Can exceed for personal record bragging rights!)`,
       current.count !== undefined ? current.count : 0
     );
 
@@ -679,7 +685,6 @@ const masterEngine = {
       return;
     }
 
-    // No upper cap: allows unlimited record counts
     const nextCount = Math.max(0, parsedNum);
     this.userProgressMap[id] = {
       collected: nextCount >= target,
@@ -727,39 +732,89 @@ const masterEngine = {
     });
   },
 
-  listenToSharedSquadTelemetry() {
-    const container = document.getElementById("friendsComparisonContainer");
-    if (!this.friendsRoster.length) {
-      if (container) container.innerHTML = `<p style="font-size:0.8rem; color:var(--text-muted); padding:10px;">No companion operatives linked. Share friend codes in Settings to stream live intel.</p>`;
+  /* === STRICT 1-TO-1 DIRECT FRIENDS ENGINE === */
+  // Reads only direct friends from /users/${currentEmailKey}/friends
+  // Prevents viewing friends-of-a-friend
+  listenToDirectFriendsRoster() {
+    if (this.rtdbFriendsRef) { off(this.rtdbFriendsRef); this.rtdbFriendsRef = null; }
+    this.friendUnsubscribers.forEach(unsub => unsub());
+    this.friendUnsubscribers = [];
+    this.teamLiveTelemetry = {};
+
+    if (!this.currentEmailKey) {
+      this.renderSquadComparisonDeck();
       return;
     }
 
-    const config = GAME_REGISTRY[this.activeGameKey];
+    // Step 1: Listen to current authenticated user's explicit friends list
+    const myFriendsPath = `/users/${this.currentEmailKey}/friends`;
+    this.rtdbFriendsRef = rtdbRef(rtdb, myFriendsPath);
 
-    this.friendsRoster.forEach(friend => {
-      const rawEmail = friend.target_email || friend.email || "";
-      const friendKey = rawEmail ? getEmailKey(rawEmail) : (friend.userKey || friend.username || "");
-      if (!friendKey) return;
+    onValue(this.rtdbFriendsRef, async snapshot => {
+      this.friendUnsubscribers.forEach(unsub => unsub());
+      this.friendUnsubscribers = [];
+      this.teamLiveTelemetry = {};
 
-      const targetPlat = normalizePlatform(friend.platform || this.currentPlatform);
-      const friendDocRef = doc(db, "users", friendKey, "platform", targetPlat, "progress", config.docId);
-
-      onSnapshot(friendDocRef, snap => {
-        if (!snap.exists()) return;
-        const data = snap.data();
-        const opName = friend.username || "Operative";
-
-        this.teamLiveTelemetry[opName] = {
-          username: opName,
-          avatar: friend.avatar_url || DEFAULT_USER_AVATAR,
-          platform: targetPlat.toUpperCase(),
-          collectibles: data.collectibles || data.progress || {},
-          trophiesEarned: data.trophies_earned || 0,
-          trophiesTotal: data.trophies_total || this.masterCatalog.length
-        };
-        this.render();
+      if (!snapshot.exists()) {
         this.renderSquadComparisonDeck();
+        return;
+      }
+
+      const friendsNode = snapshot.val();
+      const directFriends = Object.values(friendsNode).filter(f => f && f.friend_code);
+
+      // Step 2: Query all registered users once to resolve friend_code -> userKey
+      const allUsersSnap = await get(rtdbRef(rtdb, "/users"));
+      const allUsersData = allUsersSnap.exists() ? allUsersSnap.val() : {};
+
+      const codeToUserMap = {};
+      Object.entries(allUsersData).forEach(([uKey, uData]) => {
+        if (uData && uData.friend_code) {
+          codeToUserMap[uData.friend_code.trim()] = uKey;
+        }
       });
+
+      const config = GAME_REGISTRY[this.activeGameKey];
+
+      // Step 3: Stream progress STRICTLY for direct friends (no friends of friends)
+      directFriends.forEach(friend => {
+        const friendCode = (friend.friend_code || "").trim();
+        const targetUserKey = codeToUserMap[friendCode] || friendCode;
+        if (!targetUserKey || targetUserKey === this.currentEmailKey) return;
+
+        const friendPlatform = normalizePlatform(friend.primary_platform || "ps");
+        const friendDocRef = doc(db, "users", targetUserKey, "platform", friendPlatform, "progress", config.docId);
+
+        const unsub = onSnapshot(friendDocRef, snap => {
+          const opName = friend.username || "Squad Operative";
+          if (snap.exists()) {
+            const data = snap.data();
+            this.teamLiveTelemetry[targetUserKey] = {
+              username: opName,
+              avatar: friend.avatar_url || DEFAULT_USER_AVATAR,
+              platform: friendPlatform.toUpperCase(),
+              collectibles: data.collectibles || data.progress || {},
+              trophiesEarned: data.trophies_earned || 0,
+              trophiesTotal: data.trophies_total || this.masterCatalog.length
+            };
+          } else {
+            this.teamLiveTelemetry[targetUserKey] = {
+              username: opName,
+              avatar: friend.avatar_url || DEFAULT_USER_AVATAR,
+              platform: friendPlatform.toUpperCase(),
+              collectibles: {},
+              trophiesEarned: 0,
+              trophiesTotal: this.masterCatalog.length
+            };
+          }
+          this.render();
+          this.renderSquadComparisonDeck();
+        }, err => console.warn(`Progress sync skipped for friend ${friendCode}:`, err));
+
+        this.friendUnsubscribers.push(unsub);
+      });
+
+      this.renderSquadComparisonDeck();
     });
   },
 
@@ -769,7 +824,15 @@ const masterEngine = {
     container.innerHTML = "";
 
     const ops = Object.values(this.teamLiveTelemetry);
-    if (!ops.length) return;
+    if (!ops.length) {
+      container.innerHTML = `<p style="font-size:0.8rem; color:var(--text-muted); padding:10px;">No direct companions found in your friends list. Link friends via Friend Code in your account to stream live comparative stats.</p>`;
+      return;
+    }
+
+    const title = document.createElement("div");
+    title.style.cssText = "font-size:12px; font-weight:800; color:var(--user-theme-accent); text-transform:uppercase; margin-bottom:8px;";
+    title.textContent = "👥 SQUAD LIVE COMPARATIVE TELEMETRY (DIRECT FRIENDS ONLY)";
+    container.appendChild(title);
 
     ops.forEach(op => {
       const div = document.createElement("div");
@@ -853,9 +916,10 @@ const masterEngine = {
     `;
     container.appendChild(headerDiv);
 
-    const cats = [...new Set(this.masterCatalog.map(i => i.cat || "General"))];
+    // Categories group by Arc in COTW or by standard category
+    const cats = [...new Set(this.masterCatalog.map(i => i.arc || i.cat || "General"))];
     cats.forEach(cat => {
-      const rawItems = this.masterCatalog.filter(i => (i.cat || "General") === cat);
+      const rawItems = this.masterCatalog.filter(i => (i.arc || i.cat || "General") === cat);
       const count = rawItems.filter(i => this.userProgressMap[i.id]?.collected).length;
       const sid = cat.replace(/[^a-zA-Z0-9]/gi, "");
       const isActiveFocus = (cat === this.activeMission);
@@ -888,14 +952,16 @@ const masterEngine = {
       const grid = section.querySelector(".item-grid");
       rawItems.forEach(item => {
         const uState = this.userProgressMap[item.id] || { collected: false, count: 0 };
-        const isNumeric = (item.target !== undefined && item.target > 1) || (item.goal !== undefined && item.goal > 1);
         const target = item.target || item.goal || 1;
+        const isNumeric = (item.target !== undefined && item.target > 1) || (item.goal !== undefined && item.goal > 1);
+        const isLongShotMilestone = target >= 10;
         const currentCount = uState.count || 0;
         const isOverRecord = isNumeric && currentCount > target;
 
         const card = document.createElement("div");
         card.className = `item-card ${uState.collected ? 'completed' : ''}`;
 
+        // Squad badges from direct friends only
         let squadBadgesHtml = '';
         Object.values(this.teamLiveTelemetry).forEach(op => {
           const opMatch = op.collectibles?.[item.id];
@@ -913,7 +979,6 @@ const masterEngine = {
           }
         }
 
-        // Bragging-rights record badge when surpassing requirements
         let recordBadgeHtml = '';
         if (isOverRecord) {
           recordBadgeHtml = `<span style="font-size:10px; font-weight:900; background:linear-gradient(90deg, #ff8800, #ff0055); color:#fff; padding:2px 6px; border-radius:3px; margin-left:6px; box-shadow:0 0 6px rgba(255,0,85,0.6);">🔥 RECORD: +${currentCount - target}</span>`;
@@ -921,11 +986,15 @@ const masterEngine = {
 
         let actionControlsHtml = '';
         if (isNumeric) {
+          // If milestone is 10 or greater, allow direct input click
+          const pillClickHandler = isLongShotMilestone ? `onclick="window.masterEngine.promptEditCount('${item.id}')"` : '';
+          const pillTitle = isLongShotMilestone ? 'title="Click to type exact distance/kill record"' : '';
+
           actionControlsHtml = `
             <div class="stepper-action-row">
               <button class="step-btn" title="Subtract 1" onclick="window.masterEngine.stepItemCount('${item.id}', -1)">−</button>
-              <div class="clickable-num-pill" style="${isOverRecord ? 'border-color: #ff0055; color: #ff5577; font-weight: 900;' : ''}" title="Click to type exact record number (no upper limit)" onclick="window.masterEngine.promptEditCount('${item.id}')">
-                ✏️ ${currentCount} / ${target}${isOverRecord ? ' (EXCEEDED)' : ''}
+              <div class="clickable-num-pill" style="${isOverRecord ? 'border-color: #ff0055; color: #ff5577; font-weight: 900;' : ''}" ${pillTitle} ${pillClickHandler}>
+                ${isLongShotMilestone ? '✏️ ' : ''}${currentCount} / ${target}${isOverRecord ? ' (RECORD)' : ''}
               </div>
               <button class="step-btn" title="Add 1" onclick="window.masterEngine.stepItemCount('${item.id}', 1)">+</button>
             </div>
@@ -992,7 +1061,7 @@ const masterEngine = {
 
     this.activeLeafletMaps[sid] = map;
 
-    const sectionItems = this.masterCatalog.filter(i => (i.cat || "General") === catName && i.x !== undefined && i.y !== undefined);
+    const sectionItems = this.masterCatalog.filter(i => (i.arc || i.cat || "General") === catName && i.x !== undefined && i.y !== undefined);
     sectionItems.forEach(item => {
       const pinIcon = L.divIcon({
         className: 'custom-map-pin',
@@ -1037,7 +1106,7 @@ const masterEngine = {
 
         this.applyUserThemeAndIdentity();
         this.listenToOwnFirestoreProgress();
-        this.listenToSharedSquadTelemetry();
+        this.listenToDirectFriendsRoster();
         this.loadAllPlatformTrophyProgress();
 
         const config = GAME_REGISTRY[this.activeGameKey];
@@ -1075,7 +1144,7 @@ const masterEngine = {
     if (missionSelect) {
       missionSelect.addEventListener("change", e => {
         this.activeMission = e.target.value;
-        const cats = [...new Set(this.masterCatalog.map(i => i.cat || "General"))];
+        const cats = [...new Set(this.masterCatalog.map(i => i.arc || i.cat || "General"))];
         cats.forEach(c => {
           const sid = c.replace(/[^a-zA-Z0-9]/gi, "");
           this.collapsedSections[sid] = (c !== this.activeMission);
