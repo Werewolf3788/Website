@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * Project: Unified Multi-Game Tactical Command Deck (SE5 | Resistance | COTW)
- * File: index.html
- * Build Version: v9.4.0-FULL-DECK
- * Deployment Timestamp: 2026-10-10 05:12:00 EDT (America/New_York)
+ * File: master.html
+ * Build Version: v9.5.0-FULL-DECK
+ * Deployment Timestamp: 2026-10-10 05:16:00 EDT (America/New_York)
  * Analytics Tag: G-CTYHDF4MSD
- * Script Target: games/master_engine.js
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -13,7 +12,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <title>Tactical Command Deck — Initializing...</title>
 
-  <!-- Dynamic Game Favicon & Touch Icon (Synchronized directly to active pill posterArt) -->
+  <!-- Dynamic Game Favicon & Touch Icon -->
   <link rel="icon" id="dynamicFavicon" type="image/png" href="//werewolf3788.github.io/Website/favicon.ico">
   <link rel="apple-touch-icon" id="dynamicAppleIcon" href="//werewolf3788.github.io/Website/favicon.png">
 
@@ -64,15 +63,95 @@
     .outlined-text { text-shadow: 1px 1px 2px #000, -1px -1px 2px #000; }
     .hidden { display: none !important; }
 
-    /* Top Global Header */
+    /* Top Dynamic /utm_links Global Nav Bar */
+    #nav-bar-container {
+      background: #090c12;
+      border-bottom: 1px solid var(--card-border);
+      padding: 6px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 2000;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .nav-item { position: relative; }
+
+    .nav-pill, .dropdown-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #141822;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      min-height: 36px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-pill:hover, .dropdown-trigger:hover {
+      background: #1e2433;
+      border-color: var(--user-theme-accent);
+      color: #fff;
+    }
+
+    .nav-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 3px;
+      object-fit: cover;
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #121622;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      min-width: 200px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+      z-index: 2100;
+      padding: 6px;
+      margin-top: 4px;
+    }
+
+    .nav-item:hover .dropdown-menu { display: flex; flex-direction: column; gap: 4px; }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #c9d1d9;
+      padding: 8px 12px;
+      font-size: 13px;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+
+    .dropdown-item:hover {
+      background: var(--card-surface);
+      color: var(--user-theme-accent);
+    }
+
+    /* Sub Header */
     header.master-header {
       background: rgba(10, 13, 18, 0.96);
       border-bottom: 2px solid var(--user-theme-accent);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(10px);
       padding: 10px 18px;
     }
 
@@ -469,7 +548,12 @@
 </head>
 <body>
 
-  <!-- Top Global Header -->
+  <!-- Top Dynamic /utm_links Global Nav Bar -->
+  <nav id="nav-bar-container">
+    <ul id="navList" class="nav-list"></ul>
+  </nav>
+
+  <!-- Sub Header -->
   <header class="master-header">
     <div class="header-top">
       <div class="brand-title-wrap">
@@ -490,7 +574,7 @@
     </div>
   </header>
 
-  <!-- Master Game Hub Selector Pills (Dynamic RTDB Posters) -->
+  <!-- Master Game Hub Selector Pills -->
   <section class="game-hub-container">
     <div class="game-hub-pill-bar">
       <button class="game-pill active" id="pill-se5" onclick="window.masterEngine.switchGame('se5')">
@@ -526,7 +610,7 @@
     </div>
   </section>
 
-  <!-- COTW Career Animal Ranks Frame (Dynamically toggled & isolated) -->
+  <!-- COTW Career Animal Ranks Frame -->
   <section id="cotwRanksContainer" class="cotw-ranks-strip hidden">
     <div class="rank-grid">
       <div class="rank-badge">
@@ -607,13 +691,37 @@
   <!-- Persistent 24-Hour New York Verification Footer -->
   <footer class="persistent-footer">
     <div>
-      <span style="background:#111; border:1px solid #333; padding:2px 8px; border-radius:4px; color:#fff; font-weight:bold;">v9.4.0</span>
+      <span style="background:#111; border:1px solid #333; padding:2px 8px; border-radius:4px; color:#fff; font-weight:bold;">v9.5.0</span>
       <span id="footerPsnId" style="margin-left:8px; color:var(--user-theme-accent); font-weight:bold;">PSN ID: NPWR21465_00</span>
     </div>
     <div id="ny-timestamp" class="outlined-text">New York Time (24h): --:--:--</div>
   </footer>
 
-  <!-- Master Tactical Companion Engine Script Routed to games/master_engine.js -->
-  <script type="module" src="games/master_engine.js?v=20261010_0512"></script>
+  <!-- Domain-Aware Link Routing Enforcement -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const enforceDomainRouting = () => {
+        document.querySelectorAll('a[href]').forEach(link => {
+          const href = link.getAttribute('href');
+          if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+          try {
+            const parsed = new URL(href, window.location.href);
+            if (parsed.origin === window.location.origin) {
+              link.removeAttribute('target');
+              link.removeAttribute('rel');
+            } else {
+              link.setAttribute('target', '_blank');
+              link.setAttribute('rel', 'noopener noreferrer');
+            }
+          } catch (e) {}
+        });
+      };
+      enforceDomainRouting();
+      new MutationObserver(() => enforceDomainRouting()).observe(document.body, { childList: true, subtree: true });
+    });
+  </script>
+
+  <!-- Master Tactical Companion Engine Script: direct sibling in same folder -->
+  <script type="module" src="./master_engine.js?v=20261010_0516"></script>
 </body>
 </html>
