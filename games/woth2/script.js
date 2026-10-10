@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-08 00:35 EDT | Firebase Sync Target: /utm_links | Version: 6.0.1]
+// [Smart Cache-Buster Time: 2026-10-10 02:43 EDT | Firebase Sync Target: /utm_links | Version: 6.1.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const CompanionApp = {
     titleId: "NPWR52231_00",
     files: {
+      users: "users.json",
       challenges: "woth2_challenges.json",
       dogSkills: "woth2_dog_skills.json",
       gameData: "woth2_game_data.json",
@@ -74,6 +75,11 @@ document.addEventListener("DOMContentLoaded", () => {
     psnOnlineId: "",
     masterTrophies: [],
     userTrophyProgress: {},
+    crossPlatformTelemetry: {
+      ps: { earned: 0, total: 0, percent: 0 },
+      pc: { earned: 0, total: 0, percent: 0 },
+      xbox: { earned: 0, total: 0, percent: 0 }
+    },
     trophyGroups: [],
     selectedTrophyGroup: "all",
     gameMetadata: {},
@@ -87,6 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.initMasterGameData();
       this.initRTDB();
       await this.loadAllJSONs();
+      this.applyUserThemeAndIdentity();
       this.integrateJSONTrophies();
       this.initDynamicFeatures();
     },
@@ -119,6 +126,52 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
+    applyUserThemeAndIdentity() {
+      if (!this.db.users) return;
+      const userList = Array.isArray(this.db.users)
+        ? this.db.users
+        : (this.db.users.users || Object.values(this.db.users));
+
+      if (!Array.isArray(userList)) return;
+
+      const activeEmail = (this.currentEmail || "").toLowerCase().trim();
+      const activePSN = (this.psnAccountId || "").trim();
+      const activeOnlineId = (this.psnOnlineId || "").toLowerCase().trim();
+
+      const matchedUser = userList.find(u => {
+        const uEmail = (u.email || "").toLowerCase().trim();
+        const uPsnId = String(u.psn_id || "").trim();
+        const uOnline = (u.psn_name || "").toLowerCase().trim();
+        return (activeEmail && uEmail === activeEmail) ||
+               (activePSN && uPsnId === activePSN) ||
+               (activeOnlineId && uOnline === activeOnlineId);
+      });
+
+      if (matchedUser) {
+        if (!this.psnAccountId && matchedUser.psn_id) {
+          this.psnAccountId = String(matchedUser.psn_id);
+        }
+        if (!this.psnOnlineId && matchedUser.psn_name) {
+          this.psnOnlineId = matchedUser.psn_name;
+        }
+
+        if (matchedUser.theme) {
+          const root = document.documentElement;
+          if (matchedUser.theme.primary_color) {
+            root.style.setProperty("--theme-primary", matchedUser.theme.primary_color);
+            root.style.setProperty("--accent-primary", matchedUser.theme.primary_color);
+          }
+          if (matchedUser.theme.accent_color) {
+            root.style.setProperty("--theme-accent", matchedUser.theme.accent_color);
+            root.style.setProperty("--accent-gold", matchedUser.theme.accent_color);
+          }
+          if (matchedUser.theme.surface_color) {
+            root.style.setProperty("--theme-surface", matchedUser.theme.surface_color);
+          }
+        }
+      }
+    },
+
     integrateJSONTrophies() {
       if (this.db.gameData && this.db.gameData.trophies) {
         const jsonTrophies = Array.isArray(this.db.gameData.trophies)
@@ -141,6 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
       }
+      this.recalculateCrossTrophyTelemetry();
       this.renderTrophies();
     },
 
@@ -255,6 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         }
 
+        this.recalculateCrossTrophyTelemetry();
         this.renderTrophies();
       });
     },
@@ -273,6 +328,59 @@ document.addEventListener("DOMContentLoaded", () => {
         };
       });
       return cleanMap;
+    },
+
+    async loadAllPlatformTrophyProgress() {
+      const targetUserKey = this.currentEmailKey || (this.currentEmail ? getEmailKey(this.currentEmail) : "");
+      if (!targetUserKey) return;
+
+      const platforms = ["ps", "pc", "xbox"];
+      const total = this.masterTrophies.length || 6;
+
+      for (const p of platforms) {
+        try {
+          const snap = await db.collection("users")
+            .doc(targetUserKey)
+            .collection("platform")
+            .doc(p)
+            .collection("progress")
+            .doc("woth2")
+            .get();
+
+          if (snap.exists) {
+            const data = snap.data();
+            const earned = data.trophies_earned || 0;
+            const pct = total > 0 ? Math.round((earned / total) * 100) : 0;
+            this.crossPlatformTelemetry[p] = { earned, total, percent: pct };
+          } else {
+            if (p === this.currentPlatform) {
+              const currentEarned = Object.values(this.userTrophyProgress).filter(t => t.earned).length;
+              const pct = total > 0 ? Math.round((currentEarned / total) * 100) : 0;
+              this.crossPlatformTelemetry[p] = { earned: currentEarned, total, percent: pct };
+            } else {
+              this.crossPlatformTelemetry[p] = { earned: 0, total, percent: 0 };
+            }
+          }
+        } catch (e) {
+          console.warn(`Error loading telemetry for platform ${p}:`, e);
+        }
+      }
+      this.renderTrophies();
+    },
+
+    recalculateCrossTrophyTelemetry() {
+      const total = this.masterTrophies.length || 6;
+      const currentEarned = Object.values(this.userTrophyProgress).filter(t => t.earned).length;
+      const pct = total > 0 ? Math.round((currentEarned / total) * 100) : 0;
+
+      if (!this.crossPlatformTelemetry[this.currentPlatform]) {
+        this.crossPlatformTelemetry[this.currentPlatform] = { earned: 0, total, percent: 0 };
+      }
+      this.crossPlatformTelemetry[this.currentPlatform] = {
+        earned: currentEarned,
+        total: total,
+        percent: pct
+      };
     },
 
     async silentSaveGameTelemetry() {
@@ -306,6 +414,8 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("woth2_dog_search", this.dogSearchQuarteringLevel);
       localStorage.setItem("woth2_watchlist", JSON.stringify(this.watchlist));
       localStorage.setItem("woth2_manual_trophies", JSON.stringify(this.userTrophyProgress));
+
+      this.recalculateCrossTrophyTelemetry();
 
       const activeUser = auth.currentUser;
       const targetUserKey = this.currentEmailKey || (this.currentEmail ? getEmailKey(this.currentEmail) : "");
@@ -541,6 +651,8 @@ document.addEventListener("DOMContentLoaded", () => {
           if (modalBtn) modalBtn.classList.add("hidden");
           if (profileBadge) profileBadge.classList.remove("hidden");
 
+          this.applyUserThemeAndIdentity();
+
           rtdb.ref(`/users/${this.currentEmailKey}`).on("value", snapshot => {
             const rtdbProfile = snapshot.val() || {};
             const gamerTag = rtdbProfile.username || user.displayName || this.hunterName;
@@ -553,8 +665,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (nameEl) nameEl.textContent = gamerTag;
             if (avatarEl) avatarEl.src = avatarUrl;
 
-            this.psnAccountId = rtdbProfile.psn_account_id || "";
-            this.psnOnlineId = rtdbProfile.psn_username || "";
+            this.psnAccountId = rtdbProfile.psn_account_id || this.psnAccountId || "";
+            this.psnOnlineId = rtdbProfile.psn_username || this.psnOnlineId || "";
 
             if (rtdbProfile.primary_platform) {
               this.currentPlatform = rtdbProfile.primary_platform.toLowerCase();
@@ -567,6 +679,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             this.friendsRoster = rtdbProfile.friends ? Object.values(rtdbProfile.friends) : [];
             this.loadFriendsComparisonTelemetry();
+            this.loadAllPlatformTrophyProgress();
           });
 
           try {
@@ -630,6 +743,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     };
                   }
                 });
+                this.recalculateCrossTrophyTelemetry();
                 this.renderTrophies();
               }
             }
@@ -767,6 +881,7 @@ document.addEventListener("DOMContentLoaded", () => {
             };
           });
 
+          this.recalculateCrossTrophyTelemetry();
           this.renderTrophies();
           await this.silentSaveGameTelemetry();
         }
@@ -801,6 +916,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
       }
 
+      this.recalculateCrossTrophyTelemetry();
       this.renderTrophies();
       this.silentSaveGameTelemetry();
     },
@@ -832,6 +948,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const isLivePS = this.currentPlatform === "ps" && (this.psnOnlineId || this.psnAccountId);
       const platformName = this.currentPlatform.toUpperCase();
 
+      const psTelemetry = this.crossPlatformTelemetry.ps || { earned: 0, percent: 0 };
+      const pcTelemetry = this.crossPlatformTelemetry.pc || { earned: 0, percent: 0 };
+      const xboxTelemetry = this.crossPlatformTelemetry.xbox || { earned: 0, percent: 0 };
+
       let groupTabsHtml = "";
       if (this.trophyGroups && this.trophyGroups.length > 0) {
         groupTabsHtml = `
@@ -860,13 +980,46 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
             <div style="text-align:right;">
               <span class="badge" style="background:#28374d; color:var(--accent-gold); font-size:0.9rem; padding:6px 12px;">
-                ${earnedCount} / ${total} Unlocked (${progressPercent}%)
+                ${earnedCount} / ${total} Active Session (${progressPercent}%)
               </span>
             </div>
           </div>
 
           <div style="width:100%; height:10px; background:rgba(255,255,255,0.06); border-radius:5px; overflow:hidden;">
             <div style="width:${progressPercent}%; height:100%; background:linear-gradient(90deg, #0088ff, #2ecc71); border-radius:5px; transition: width 0.4s ease;"></div>
+          </div>
+
+          <!-- Cross-Platform Trophy Telemetry Deck -->
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:6px; background:rgba(0,0,0,0.3); padding:10px 12px; border-radius:8px; border:1px solid #1c2738;">
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
+                <span style="color:#00a6ed; font-weight:700;">🎮 PlayStation</span>
+                <strong style="color:#fff;">${psTelemetry.earned}/${total} (${psTelemetry.percent}%)</strong>
+              </div>
+              <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
+                <div style="width:${psTelemetry.percent}%; height:100%; background:#00a6ed;"></div>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
+                <span style="color:#00d2d3; font-weight:700;">🖥️ PC / Steam</span>
+                <strong style="color:#fff;">${pcTelemetry.earned}/${total} (${pcTelemetry.percent}%)</strong>
+              </div>
+              <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
+                <div style="width:${pcTelemetry.percent}%; height:100%; background:#00d2d3;"></div>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
+                <span style="color:#2ecc71; font-weight:700;">❎ Xbox Network</span>
+                <strong style="color:#fff;">${xboxTelemetry.earned}/${total} (${xboxTelemetry.percent}%)</strong>
+              </div>
+              <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
+                <div style="width:${xboxTelemetry.percent}%; height:100%; background:#2ecc71;"></div>
+              </div>
+            </div>
           </div>
 
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
@@ -1413,7 +1566,7 @@ document.addEventListener("DOMContentLoaded", () => {
         trophy_rating_stars: stars,
         sell_price: sellPrice,
         cull_decision: fitness < 50 ? "Cull (Low Fitness)" : "Keeper / Trophy",
-        date: "October 8, 2026",
+        date: "October 10, 2026",
         hunt_rating: "A++"
       };
 
@@ -1743,6 +1896,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (platSelect) {
         platSelect.addEventListener("change", (e) => {
           this.currentPlatform = e.target.value;
+          this.recalculateCrossTrophyTelemetry();
           this.renderTrophies();
           this.silentSaveGameTelemetry();
         });
@@ -1811,7 +1965,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const watchSpecies = document.getElementById("watchSpeciesSelect");
       if (watchSpecies) watchSpecies.addEventListener("change", () => this.updateWatchlistMaxAge());
 
-      // Direct explicit click listeners with preventDefault
       const saveWatchBtn = document.getElementById("saveWatchlistBtn");
       if (saveWatchBtn) {
         saveWatchBtn.addEventListener("click", (e) => {
