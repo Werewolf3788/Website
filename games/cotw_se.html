@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<!-- ============================================================================
+ * Project: Unified Multi-Game Tactical Command Deck (SE5 | Resistance | COTW)
+ * File: index.html
+ * Build Version: v9.3.0-FULL-DECK
+ * Deployment Timestamp: 2026-10-10 04:52:00 EDT (America/New_York)
+ * Analytics Tag: G-CTYHDF4MSD
+ * ============================================================================ -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Tactical Command Deck — Initializing...</title>
+
+  <!-- Dynamic Game Favicon & Touch Icon (Synchronized directly to active pill posterArt) -->
+  <link rel="icon" id="dynamicFavicon" type="image/png" href="//werewolf3788.github.io/Website/favicon.ico">
+  <link rel="apple-touch-icon" id="dynamicAppleIcon" href="//werewolf3788.github.io/Website/favicon.png">
+
+  <!-- Universal Analytics 4 Tag (G-CTYHDF4MSD) -->
+  <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD" onerror="window.gtagBlocked=true;"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CTYHDF4MSD', { 'send_page_view': true, 'cookie_flags': 'SameSite=None;Secure' });
+  </script>
+
+  <!-- Leaflet Custom Tactical Maps Dependency -->
+  <link rel="stylesheet" href="//unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <script src="//unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+  <style>
+    :root {
+      --user-theme-accent: #ff8800;
+      --user-theme-glow: rgba(255, 136, 0, 0.45);
+      --user-theme-border: rgba(255, 136, 0, 0.35);
+      --bg-dark: #07090e;
+      --card-bg: #11151f;
+      --card-surface: #161c28;
+      --card-border: #222b3d;
+      --text-main: #f0f4f8;
+      --text-muted: #8b97a8;
+      --accent-gold: #f5a623;
+      --accent-green: #2ecc71;
+      --accent-blue: #00a6ed;
+      --tap-target-min: 44px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: radial-gradient(circle at top, rgba(22, 28, 40, 0.8) 0%, rgba(7, 9, 14, 1) 100%);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+      padding-bottom: 75px;
+      overflow-x: hidden;
+    }
+
+    .outlined-text { text-shadow: 1px 1px 2px #000, -1px -1px 2px #000; }
+    .hidden { display: none !important; }
+
+    /* Top Global Header */
+    header.master-header {
+      background: rgba(10, 13, 18, 0.96);
+      border-bottom: 2px solid var(--user-theme-accent);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 10px 18px;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .brand-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-poster-thumb {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid var(--user-theme-accent);
+      box-shadow: 0 0 10px var(--user-theme-glow);
+    }
+
+    .brand-title {
+      font-size: 1.2rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    .header-auth-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .auth-btn {
+      background: #0088ff;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 7px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      min-height: var(--tap-target-min);
+    }
+
+    .auth-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card-surface);
+      border: 1px solid var(--user-theme-border);
+      padding: 5px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .auth-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--user-theme-accent);
+    }
+
+    /* Master Game Hub Pills Switcher */
+    .game-hub-container {
+      max-width: 1400px;
+      margin: 16px auto 0 auto;
+      padding: 0 16px;
+    }
+
+    .game-hub-pill-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 14px;
+      background: rgba(17, 21, 31, 0.9);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .game-pill {
+      background: #161c28;
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: var(--tap-target-min);
+      transition: all 0.2s ease;
+    }
+
+    .game-pill:hover {
+      background: #202838;
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .game-pill.active {
+      background: var(--user-theme-accent);
+      color: #000;
+      border-color: #fff;
+      font-weight: 900;
+      box-shadow: 0 0 15px var(--user-theme-glow);
+    }
+
+    .pill-poster-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      display: inline-block;
+      vertical-align: middle;
+      background: #0d1117;
+    }
+
+    .game-pill.active .pill-poster-thumb {
+      border-color: #fff;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+    }
+
+    /* Sub-Header Operative Bar */
+    .deck-sub-bar {
+      max-width: 1400px;
+      margin: 14px auto 0 auto;
+      padding: 0 16px;
+    }
+
+    .deck-sub-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .platform-select-box, .context-select-box {
+      background: #0d1117;
+      color: #fff;
+      border: 1px solid var(--user-theme-border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      outline: none;
+      min-height: var(--tap-target-min);
+    }
+
+    /* COTW Career Animal Rank Strip */
+    .cotw-ranks-strip {
+      max-width: 1400px;
+      margin: 14px auto 0 auto;
+      padding: 0 16px;
+    }
+
+    .rank-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      background: var(--card-bg);
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+    }
+
+    .rank-badge {
+      background: #161c28;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .rank-ctrls { display: flex; align-items: center; gap: 8px; }
+    .rank-ctrls button {
+      background: #0d1117;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .rank-val { font-size: 1.05rem; font-weight: 900; color: var(--user-theme-accent); }
+
+    /* Main Container & Card Layouts */
+    main.deck-main-container {
+      max-width: 1400px;
+      margin: 16px auto;
+      padding: 0 16px;
+    }
+
+    .category-section {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+
+    .category-section.active-focus {
+      border: 2px solid var(--user-theme-accent);
+      box-shadow: 0 0 15px var(--user-theme-glow);
+    }
+
+    .category-header {
+      background: #161c28;
+      padding: 14px 18px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+
+    .section-collapsed .category-content { display: none !important; }
+    .category-content { padding: 16px; }
+
+    .item-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 14px;
+    }
+
+    .item-card {
+      background: #141822;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 200px;
+    }
+
+    .item-card.completed {
+      border-color: var(--accent-green);
+      background: rgba(46, 204, 113, 0.05);
+    }
+
+    .team-badge {
+      font-size: 10px;
+      padding: 3px 6px;
+      border-radius: 3px;
+      background: #1c2230;
+      border: 1px solid #283347;
+      color: #8b97a8;
+      font-weight: bold;
+    }
+
+    .team-badge.is-collected {
+      background: rgba(46, 204, 113, 0.15);
+      border-color: var(--accent-green);
+      color: var(--accent-green);
+    }
+
+    .card-actions-row, .stepper-action-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .confirm-toggle-btn {
+      background: #238636;
+      border: 1px solid rgba(240, 246, 252, 0.1);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .confirm-toggle-btn.completed-state { background: #b91c1c; }
+
+    .step-btn {
+      background: #1c2230;
+      border: 1px solid #283347;
+      color: #fff;
+      width: 38px;
+      height: 34px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .clickable-num-pill {
+      flex: 1;
+      text-align: center;
+      line-height: 32px;
+      background: #0d1117;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--user-theme-accent);
+      cursor: pointer;
+    }
+
+    /* Tactical Map Container */
+    .tactical-map-wrapper {
+      width: 100%;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid var(--user-theme-accent);
+      box-shadow: 0 0 14px var(--user-theme-glow);
+      background: #000;
+    }
+
+    .tactical-map-bar {
+      background: #141822;
+      padding: 8px 14px;
+      font-weight: 800;
+      font-size: 11px;
+      color: var(--user-theme-accent);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .mission-map-frame { width: 100%; height: 440px; background: #000; }
+
+    /* Modals & Persistent Sticky Footer */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 5000;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-card {
+      background: #11151f;
+      border: 1px solid var(--user-theme-border);
+      box-shadow: 0 0 25px var(--user-theme-glow);
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+    }
+
+    footer.persistent-footer {
+      position: fixed;
+      bottom: 0; left: 0;
+      width: 100%;
+      background: rgba(8, 10, 14, 0.98);
+      border-top: 2px solid var(--user-theme-accent);
+      padding: 8px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Global Header -->
+  <header class="master-header">
+    <div class="header-top">
+      <div class="brand-title-wrap">
+        <img id="navBrandLogo" src="//werewolf3788.github.io/Website/favicon.ico" alt="" class="brand-poster-thumb">
+        <div>
+          <div id="deckAppTitle" class="brand-title outlined-text">TACTICAL COMMAND DECK</div>
+          <div id="stat-line" style="font-size:10px; color:#8b97a8; font-family:monospace;">CONNECTING TO CLOUD...</div>
+        </div>
+      </div>
+      <div class="header-auth-controls">
+        <button id="authModalBtn" class="auth-btn outlined-text">🔑 Log In</button>
+        <div id="userProfile" class="auth-badge hidden">
+          <img id="headerUserAvatar" src="" alt="" class="auth-avatar">
+          <span id="userDisplayName" style="color:#fff; font-size:13px; font-weight:800;"></span>
+          <span style="color:var(--user-theme-accent); font-size:10px;">▾</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Master Game Hub Selector Pills (Dynamic RTDB Posters) -->
+  <section class="game-hub-container">
+    <div class="game-hub-pill-bar">
+      <button class="game-pill active" id="pill-se5" onclick="window.masterEngine.switchGame('se5')">
+        <img id="pill-thumb-se5" class="pill-poster-thumb" alt="" src="//werewolf3788.github.io/Website/favicon.ico">
+        <span>Sniper Elite 5</span>
+      </button>
+      <button class="game-pill" id="pill-seresistance" onclick="window.masterEngine.switchGame('seresistance')">
+        <img id="pill-thumb-seresistance" class="pill-poster-thumb" alt="" src="//werewolf3788.github.io/Website/favicon.ico">
+        <span>SE: Resistance</span>
+      </button>
+      <button class="game-pill" id="pill-cotw" onclick="window.masterEngine.switchGame('cotw')">
+        <img id="pill-thumb-cotw" class="pill-poster-thumb" alt="" src="//werewolf3788.github.io/Website/favicon.ico">
+        <span>theHunter: COTW</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Contextual Controls Bar -->
+  <section class="deck-sub-bar">
+    <div class="deck-sub-card">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Ecosystem:</span>
+        <select id="platformSelect" class="platform-select-box">
+          <option value="playstation" selected>🎮 PlayStation (PSN)</option>
+          <option value="xbox">❎ Xbox Network</option>
+          <option value="pc">💻 PC (MS Store)</option>
+          <option value="steam">🚂 Steam Client</option>
+        </select>
+      </div>
+      <div id="missionSelectContainer">
+        <select id="mission-focus-select" class="context-select-box"></select>
+      </div>
+    </div>
+  </section>
+
+  <!-- COTW Career Animal Ranks Frame (Dynamically toggled & isolated) -->
+  <section id="cotwRanksContainer" class="cotw-ranks-strip hidden">
+    <div class="rank-grid">
+      <div class="rank-badge">
+        <span style="font-size:16px;">👑</span>
+        <span style="font-size:10px; font-weight:800;">GREAT ONE</span>
+        <div class="rank-ctrls">
+          <button onclick="window.masterEngine.adjRank('greatone', -1)">-</button>
+          <span id="rank-val-greatone" class="rank-val">0</span>
+          <button onclick="window.masterEngine.adjRank('greatone', 1)">+</button>
+        </div>
+      </div>
+      <div class="rank-badge">
+        <span style="font-size:16px;">💎</span>
+        <span style="font-size:10px; font-weight:800;">DIAMOND</span>
+        <div class="rank-ctrls">
+          <button onclick="window.masterEngine.adjRank('diamond', -1)">-</button>
+          <span id="rank-val-diamond" class="rank-val">0</span>
+          <button onclick="window.masterEngine.adjRank('diamond', 1)">+</button>
+        </div>
+      </div>
+      <div class="rank-badge">
+        <span style="font-size:16px;">🥇</span>
+        <span style="font-size:10px; font-weight:800;">GOLD</span>
+        <div class="rank-ctrls">
+          <button onclick="window.masterEngine.adjRank('gold', -1)">-</button>
+          <span id="rank-val-gold" class="rank-val">0</span>
+          <button onclick="window.masterEngine.adjRank('gold', 1)">+</button>
+        </div>
+      </div>
+      <div class="rank-badge">
+        <span style="font-size:16px;">🥈</span>
+        <span style="font-size:10px; font-weight:800;">SILVER</span>
+        <div class="rank-ctrls">
+          <button onclick="window.masterEngine.adjRank('silver', -1)">-</button>
+          <span id="rank-val-silver" class="rank-val">0</span>
+          <button onclick="window.masterEngine.adjRank('silver', 1)">+</button>
+        </div>
+      </div>
+      <div class="rank-badge">
+        <span style="font-size:16px;">🥉</span>
+        <span style="font-size:10px; font-weight:800;">BRONZE</span>
+        <div class="rank-ctrls">
+          <button onclick="window.masterEngine.adjRank('bronze', -1)">-</button>
+          <span id="rank-val-bronze" class="rank-val">0</span>
+          <button onclick="window.masterEngine.adjRank('bronze', 1)">+</button>
+        </div>
+      </div>
+      <div class="rank-badge">
+        <span style="font-size:16px;">🐇</span>
+        <span style="font-size:10px; font-weight:800;">RARE FUR</span>
+        <div class="rank-ctrls">
+          <button onclick="window.masterEngine.adjRank('Fur', -1)">-</button>
+          <span id="rank-val-Fur" class="rank-val">0</span>
+          <button onclick="window.masterEngine.adjRank('Fur', 1)">+</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Active Game Main Content Container -->
+  <main id="section-container" class="deck-main-container"></main>
+
+  <!-- Squad Telemetry Comparison Container -->
+  <section class="deck-main-container" style="margin-top:0;">
+    <div id="friendsComparisonContainer"></div>
+  </section>
+
+  <!-- Authentication Modal -->
+  <div id="authModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <h3 style="color:#fff; margin-bottom:10px;">OPERATIVE VERIFICATION</h3>
+      <p style="font-size:13px; color:#8b97a8; margin-bottom:20px;">Sign in with Google to synchronize your multi-game progress and view live squad telemetry.</p>
+      <button id="googleSignInBtn" class="auth-btn" style="width:100%; padding:11px; margin-bottom:12px;">Sign In with Google</button>
+      <button id="authModalClose" style="background:transparent; border:none; color:#888; cursor:pointer; font-size:12px; font-weight:bold;">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Persistent 24-Hour New York Verification Footer -->
+  <footer class="persistent-footer">
+    <div>
+      <span style="background:#111; border:1px solid #333; padding:2px 8px; border-radius:4px; color:#fff; font-weight:bold;">v9.3.0</span>
+      <span id="footerPsnId" style="margin-left:8px; color:var(--user-theme-accent); font-weight:bold;">PSN ID: NPWR21465_00</span>
+    </div>
+    <div id="ny-timestamp" class="outlined-text">New York Time (24h): --:--:--</div>
+  </footer>
+
+  <!-- Master Tactical Companion Engine Script -->
+  <script type="module" src="./master_engine.js?v=20261010_0452"></script>
+</body>
+</html>
