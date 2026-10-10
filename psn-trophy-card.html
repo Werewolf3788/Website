@@ -1313,14 +1313,14 @@
   <!-- Section: Persistent Cockpit Footer with New York 24-Hour Stamp (Lines 1014-1025) -->
   <footer class="cockpit-footer">
     <div class="footer-inner">
-      <div>Engine Version: <strong>v56.0.0</strong> | Direct Game Node & Dual-Key Earner Matching</div>
+      <div>Engine Version: <strong>v58.0.0</strong> | Direct LiveTrophyProgress Telemetry Node</div>
       <div>Latest PSN Sync: <span id="footerSyncStamp" class="footer-stamp">Awaiting feed...</span></div>
-      <div>Timestamp: <span id="persistentNyTimestamp" class="footer-stamp">2026-10-09 21:46:00 (EDT)</span></div>
+      <div>Timestamp: <span id="persistentNyTimestamp" class="footer-stamp">2026-10-09 23:01:00 (EDT)</span></div>
     </div>
   </footer>
 
   <!-- ==========================================================================
-       Section: ENGINE SCRIPT: FIREBASE DATA, DYNAMIC MENU & TROPHY ENGINE (Lines 1028-1500)
+       Section: ENGINE SCRIPT: FIREBASE DATA, DYNAMIC MENU & TROPHY ENGINE (Lines 1028-1520)
        ========================================================================== -->
   <script>
     const FIREBASE_BASE_ENDPOINT = "//entertainment-71888-default-rtdb.firebaseio.com";
@@ -1544,10 +1544,10 @@
       }
     }
 
-    // Section: Helper to unpack Firebase trophy arrays, maps, or objects
+    // Helper: Safely unpack trophies from Firebase liveTrophyProgress node
     function extractOperativeTrophyList(source) {
       if (!source) return [];
-      if (Array.isArray(source)) return source;
+      if (Array.isArray(source)) return source.filter(Boolean);
       if (typeof source === "object") {
         return Object.entries(source).map(([k, val]) => {
           if (val && typeof val === "object") {
@@ -1557,6 +1557,15 @@
         });
       }
       return [];
+    }
+
+    // Strict validator for PSN Trophy Unlocks matching the Firebase liveTrophyProgress schema
+    function isTrophyEarnedByOperative(t) {
+      if (!t || typeof t !== "object") return false;
+      if (t.earned === true || t.unlocked === true) return true;
+      if (t.earnedDateTime && typeof t.earnedDateTime === "string" && t.earnedDateTime.trim() !== "") return true;
+      if (t.earnedDate && typeof t.earnedDate === "string" && t.earnedDate.trim() !== "") return true;
+      return false;
     }
 
     // Section: Dynamic Menu Sorting Engine (UTM Links from Firebase)
@@ -1765,7 +1774,7 @@
         const rootTrophies = data.trophies || {};
 
         catalogMasterList = buildConsolidatedCatalog(games, gamertags, rootTrophies);
-        recentTrophiesMasterList = buildRecentTrophiesFeed(games, gamertags, rootTrophies);
+        recentTrophiesMasterList = buildRecentTrophiesFeed(games, gamertags);
 
         renderRecentTrophiesStrip();
         renderCatalog();
@@ -1778,7 +1787,7 @@
       }
     }
 
-    // Section: Consolidated Catalog with Dual-Key Earner Matching & Most-Recent Sort
+    // Section: Consolidated Catalog with liveTrophyProgress Telemetry & Most-Recent Sort
     function buildConsolidatedCatalog(games, gamertags, rootTrophies) {
       const catalogMap = new Map();
 
@@ -1787,8 +1796,6 @@
         const cId = commId.toUpperCase();
         const resolvedName = g.name || "PlayStation Title";
         const capabilities = deriveGameCapabilities(resolvedName, cId, g);
-
-        // Support root /psn/trophies/[commId] or nested trophies
         const masterTrophies = extractOperativeTrophyList(g.trophies || g.trophyList || rootTrophies[commId] || rootTrophies[cId]);
 
         catalogMap.set(cId, {
@@ -1811,6 +1818,7 @@
       Object.entries(gamertags).forEach(([gamerTag, userData]) => {
         const avatar = normalizeAssetUrl(userData.avatar);
         const recentGames = userData.recentGames || [];
+        const liveTrophyProgress = userData.liveTrophyProgress || {};
 
         recentGames.forEach(rg => {
           const cId = (rg.npCommunicationId || "").toUpperCase();
@@ -1839,14 +1847,17 @@
 
           const entry = catalogMap.get(cId);
 
-          // Unpack whatever trophy container format exists for this user
-          const userRawTrophies = rg.earnedTrophies || rg.trophies || rg.userTrophies || (userData.trophies && (userData.trophies[cId] || userData.trophies[rg.npCommunicationId])) || [];
+          // PULL DIRECTLY FROM liveTrophyProgress (e.g. /psn/gamertags/wildhorse_spirit/liveTrophyProgress/NPWR52231_00)
+          const liveNode = liveTrophyProgress[cId] || liveTrophyProgress[rg.npCommunicationId] || {};
+          const userRawTrophies = Object.keys(liveNode).length > 0 
+            ? liveNode 
+            : (rg.earnedTrophies || rg.trophies || rg.userTrophies || []);
+
           const earnedTrophies = extractOperativeTrophyList(userRawTrophies);
           let playerLatest = 0;
 
           earnedTrophies.forEach(t => {
-            const isEarned = (typeof t === "number") || (typeof t === "string") || (t.earned === true) || !!t.earnedDateTime || !!t.earnedDate || (t.unlocked === true);
-            if (isEarned) {
+            if (isTrophyEarnedByOperative(t)) {
               const rawDate = t.earnedDateTime || t.earnedDate;
               if (rawDate) {
                 const parsedTime = new Date(rawDate).getTime();
@@ -1890,30 +1901,54 @@
       });
     }
 
-    // Section: Trophies Aggregator Engine
-    function buildRecentTrophiesFeed(games, gamertags, rootTrophies) {
+    // Section: Trophies Aggregator Engine (LiveTrophyProgress Priority)
+    function buildRecentTrophiesFeed(games, gamertags) {
       const feed = [];
 
       Object.entries(gamertags).forEach(([gamerTag, userData]) => {
         const avatar = normalizeAssetUrl(userData.avatar);
+        const liveTrophyProgress = userData.liveTrophyProgress || {};
         const recentGames = userData.recentGames || [];
 
-        recentGames.forEach(rg => {
-          const gameTitle = rg.name || rg.trophyTitleName || "PlayStation Title";
-          const commId = (rg.npCommunicationId || "").toUpperCase();
-          const userRawTrophies = rg.earnedTrophies || rg.trophies || rg.userTrophies || (userData.trophies && (userData.trophies[commId] || userData.trophies[rg.npCommunicationId])) || [];
-          const earned = extractOperativeTrophyList(userRawTrophies);
+        // Ingest from liveTrophyProgress first
+        Object.entries(liveTrophyProgress).forEach(([commId, trophyGroup]) => {
+          const cId = commId.toUpperCase();
+          const trophiesList = extractOperativeTrophyList(trophyGroup);
 
-          if (earned.length > 0) {
+          trophiesList.forEach(t => {
+            if (isTrophyEarnedByOperative(t)) {
+              const gameTitle = t.gameTitle || (games[cId] && games[cId].name) || "PlayStation Title";
+              feed.push({
+                trophyId: String(t.trophyId !== undefined ? t.trophyId : (t.id || '0')),
+                name: t.title || t.trophyName || t.name || 'Unlocked Trophy',
+                detail: t.detail || t.description || t.trophyDetail || 'Achievement unlocked',
+                iconUrl: normalizeAssetUrl(t.icon || t.trophyIconUrl),
+                type: (t.type || t.trophyType || 'bronze').toLowerCase(),
+                earnedDate: t.earnedDateTime || t.earnedDate || new Date().toISOString(),
+                gamerTag: gamerTag,
+                avatar: avatar,
+                gameTitle: gameTitle,
+                commId: cId
+              });
+            }
+          });
+        });
+
+        // Fallback for games not yet in liveTrophyProgress but tracked under recentGames
+        if (feed.length === 0) {
+          recentGames.forEach(rg => {
+            const gameTitle = rg.name || rg.trophyTitleName || "PlayStation Title";
+            const commId = (rg.npCommunicationId || "").toUpperCase();
+            const earned = extractOperativeTrophyList(rg.earnedTrophies || rg.trophies || []);
+
             earned.forEach(t => {
-              const isEarned = (typeof t === "number") || (typeof t === "string") || (t.earned === true) || !!t.earnedDateTime || !!t.earnedDate || (t.unlocked === true);
-              if (isEarned) {
+              if (isTrophyEarnedByOperative(t)) {
                 feed.push({
-                  trophyId: String(t.trophyId !== undefined ? t.trophyId : (typeof t === "object" ? (t.id || '0') : t)),
-                  name: t.trophyName || t.name || 'Unlocked Trophy',
-                  detail: t.trophyDetail || t.description || 'Achievement unlocked',
-                  iconUrl: normalizeAssetUrl(t.trophyIconUrl || t.icon || rg.trophyTitleIconUrl),
-                  type: (t.trophyType || t.type || 'bronze').toLowerCase(),
+                  trophyId: String(t.trophyId !== undefined ? t.trophyId : (t.id || '0')),
+                  name: t.title || t.trophyName || t.name || 'Unlocked Trophy',
+                  detail: t.detail || t.description || t.trophyDetail || 'Achievement unlocked',
+                  iconUrl: normalizeAssetUrl(t.icon || t.trophyIconUrl || rg.trophyTitleIconUrl),
+                  type: (t.type || t.trophyType || 'bronze').toLowerCase(),
                   earnedDate: t.earnedDateTime || t.earnedDate || new Date().toISOString(),
                   gamerTag: gamerTag,
                   avatar: avatar,
@@ -1922,21 +1957,8 @@
                 });
               }
             });
-          } else if (Number(rg.progress) > 0) {
-            feed.push({
-              trophyId: 'milestone',
-              name: `${rg.progress}% Milestone Reached`,
-              detail: `Active progression in ${gameTitle}`,
-              iconUrl: normalizeAssetUrl(rg.trophyTitleIconUrl || rg.posterArt),
-              type: Number(rg.progress) >= 100 ? 'platinum' : (Number(rg.progress) >= 60 ? 'gold' : 'silver'),
-              earnedDate: rg.lastUpdatedDateTime || new Date().toISOString(),
-              gamerTag: gamerTag,
-              avatar: avatar,
-              gameTitle: gameTitle,
-              commId: commId
-            });
-          }
-        });
+          });
+        }
       });
 
       feed.sort((a, b) => new Date(b.earnedDate) - new Date(a.earnedDate));
@@ -2115,7 +2137,7 @@
       if (modal) modal.classList.add("active");
     }
 
-    // Section: Trophy Breakdown Lightbox with Complete Earner Resolution
+    // Section: Trophy Breakdown Lightbox with LiveTrophyProgress Earner Matrix
     function openTrophyBreakdown(commId, encodedTitle) {
       const modal = document.getElementById("trophyBreakdownModal");
       const titleElem = document.getElementById("trophyModalGameTitle");
@@ -2137,14 +2159,14 @@
       // 1. Seed Master Trophies
       baseTrophies.forEach((t, index) => {
         const id = String(t.trophyId !== undefined ? t.trophyId : (t.id !== undefined ? t.id : index));
-        const cleanName = (t.trophyName || t.name || '').trim();
+        const cleanName = (t.title || t.trophyName || t.name || '').trim();
         
         trophyMap.set(id, {
           id: id,
           name: cleanName || `Trophy #${index + 1}`,
-          detail: t.trophyDetail || t.description || 'Achievement criteria',
-          iconUrl: normalizeAssetUrl(t.trophyIconUrl || t.icon),
-          grade: (t.trophyType || t.type || 'bronze').toLowerCase(),
+          detail: t.detail || t.description || t.trophyDetail || 'Achievement criteria',
+          iconUrl: normalizeAssetUrl(t.icon || t.trophyIconUrl),
+          grade: (t.type || t.trophyType || 'bronze').toLowerCase(),
           earners: []
         });
 
@@ -2153,84 +2175,65 @@
         }
       });
 
-      // 2. Map squad member unlocks across ALL data formats
+      // 2. Map squad member unlocks STRICTLY from liveTrophyProgress / verified trophy array
       if (gameEntry && gameEntry.operatives) {
         gameEntry.operatives.forEach(op => {
-          const is100Percent = op.progress >= 100;
           const userTrophies = extractOperativeTrophyList(op.earnedTrophies);
 
-          // If operative has 100% completion, they earned every trophy
-          if (is100Percent) {
-            trophyMap.forEach(entry => {
-              if (!entry.earners.some(e => e.gamerTag === op.gamerTag)) {
-                entry.earners.push({
-                  gamerTag: op.gamerTag,
-                  avatar: op.avatar,
-                  date: null
-                });
-              }
-            });
-          }
+          userTrophies.forEach(t => {
+            // Strictly check if earned === true or has an earned timestamp
+            if (!isTrophyEarnedByOperative(t)) return;
 
-          // Check individual trophy records
-          userTrophies.forEach((t, opIndex) => {
-            let isUnlocked = false;
-            let rawId = null;
-            let tName = "";
-            let unlockDate = null;
+            const rawId = (t.trophyId !== undefined && t.trophyId !== null) 
+              ? String(t.trophyId) 
+              : ((t.id !== undefined && t.id !== null) ? String(t.id) : '');
+            const tName = (t.title || t.trophyName || t.name || '').trim().toLowerCase();
+            const unlockDate = t.earnedDateTime || t.earnedDate || null;
 
-            if (typeof t === "number" || typeof t === "string") {
-              isUnlocked = true;
-              rawId = String(t);
-            } else if (typeof t === "object" && t !== null) {
-              isUnlocked = (t.earned === true) || !!t.earnedDateTime || !!t.earnedDate || (t.unlocked === true) || (t.progress >= 100);
-              rawId = String(t.trophyId !== undefined ? t.trophyId : (t.id !== undefined ? t.id : ''));
-              tName = (t.trophyName || t.name || '').trim().toLowerCase();
-              unlockDate = t.earnedDateTime || t.earnedDate || null;
-            }
-
-            if (!isUnlocked) return;
-
-            // Match to Master List via ID, Name, or Numeric Index
             let targetId = null;
             if (rawId && trophyMap.has(rawId)) {
               targetId = rawId;
             } else if (tName && nameToIdMap.has(tName)) {
               targetId = nameToIdMap.get(tName);
-            } else if (trophyMap.has(String(opIndex))) {
-              targetId = String(opIndex);
             } else if (rawId) {
               targetId = rawId;
-            } else {
-              targetId = `t_${opIndex}`;
             }
 
-            // Create entry if master list didn't include it
-            if (!trophyMap.has(targetId)) {
+            // Auto-register trophy if master list was empty
+            if (targetId && !trophyMap.has(targetId)) {
               trophyMap.set(targetId, {
                 id: targetId,
-                name: (typeof t === "object" && (t.trophyName || t.name)) ? (t.trophyName || t.name).trim() : `Trophy #${targetId}`,
-                detail: (typeof t === "object" && (t.trophyDetail || t.description)) ? (t.trophyDetail || t.description) : 'Achievement criteria',
-                iconUrl: normalizeAssetUrl(t.trophyIconUrl || t.icon),
-                grade: (t.trophyType || t.type || 'bronze').toLowerCase(),
+                name: (t.title || t.trophyName || t.name || `Trophy #${targetId}`).trim(),
+                detail: t.detail || t.description || t.trophyDetail || 'Achievement criteria',
+                iconUrl: normalizeAssetUrl(t.icon || t.trophyIconUrl),
+                grade: (t.type || t.trophyType || 'bronze').toLowerCase(),
                 earners: []
               });
               if (tName) nameToIdMap.set(tName, targetId);
             }
 
-            const targetEntry = trophyMap.get(targetId);
-            if (!targetEntry.earners.some(e => e.gamerTag === op.gamerTag)) {
-              targetEntry.earners.push({
-                gamerTag: op.gamerTag,
-                avatar: op.avatar,
-                date: unlockDate
-              });
+            if (targetId && trophyMap.has(targetId)) {
+              const targetEntry = trophyMap.get(targetId);
+              if (!targetEntry.earners.some(e => e.gamerTag === op.gamerTag)) {
+                targetEntry.earners.push({
+                  gamerTag: op.gamerTag,
+                  avatar: op.avatar,
+                  date: unlockDate
+                });
+              }
             }
           });
         });
       }
 
-      const trophyList = Array.from(trophyMap.values());
+      // Sort trophies: Platinum first, then Gold, Silver, Bronze, or by trophyId
+      const trophyList = Array.from(trophyMap.values()).sort((a, b) => {
+        const order = { platinum: 1, gold: 2, silver: 3, bronze: 4 };
+        const gradeA = order[a.grade] || 5;
+        const gradeB = order[b.grade] || 5;
+        if (gradeA !== gradeB) return gradeA - gradeB;
+        return Number(a.id) - Number(b.id) || a.name.localeCompare(b.name);
+      });
 
       if (trophyList.length === 0) {
         if (gameEntry && gameEntry.operatives && gameEntry.operatives.length > 0) {
