@@ -1,5 +1,5 @@
 // Line 1: Unified Multi-Game Tactical Command Deck Engine
-// [Smart Cache-Buster Time: 2026-10-10 06:52 EDT | Firebase Sync Target: /utm_links | Version: 10.0.0]
+// [Smart Cache-Buster Time: 2026-10-10 07:22 EDT | Firebase Sync Target: /utm_links | Version: 10.4.0]
 
 /* === SECTION 1: Modular Firebase Imports === */
 import { initializeApp, getApps } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -81,14 +81,15 @@ function getEmailKey(email) {
   return String(email).trim().toLowerCase().replace(/@/g, '_at_').replace(/\./g, '_');
 }
 
+// Normalizer standardizing PlayStation explicitly to 'ps'
 function normalizePlatform(inputPlatform) {
-  if (!inputPlatform) return 'playstation';
+  if (!inputPlatform) return 'ps';
   const clean = String(inputPlatform).toLowerCase().trim();
-  if (clean === 'psn' || clean === 'ps' || clean === 'playstation') return 'playstation';
+  if (clean === 'ps' || clean === 'psn' || clean === 'playstation' || clean === 'ps5' || clean === 'ps4') return 'ps';
   if (clean === 'steam') return 'steam';
   if (clean === 'pc' || clean === 'windows' || clean === 'microsoft' || clean === 'ms') return 'pc';
   if (clean === 'xbox' || clean === 'xb') return 'xbox';
-  return 'playstation';
+  return 'ps';
 }
 
 function updateTabFavicon(url, gameTitle, tabLabel) {
@@ -134,12 +135,13 @@ const masterEngine = {
   usersList: [],
   masterCatalog: [],
   userProgressMap: {},
+  psnTrophyUnlockedMap: {},
   animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, Fur: 0 },
   collapsedSections: {},
   activeMission: "",
 
   crossPlatformTelemetry: {
-    playstation: { earned: 0, total: 0, percent: 0 },
+    ps: { earned: 0, total: 0, percent: 0 },
     xbox: { earned: 0, total: 0, percent: 0 },
     pc: { earned: 0, total: 0, percent: 0 },
     steam: { earned: 0, total: 0, percent: 0 }
@@ -152,6 +154,7 @@ const masterEngine = {
 
   firestoreProgressUnsub: null,
   firestoreRankUnsub: null,
+  rtdbPsnTrophyRef: null,
 
   async init() {
     this.bindUI();
@@ -164,7 +167,6 @@ const masterEngine = {
     setInterval(() => this.updateClock(), 1000);
   },
 
-  // Dedicated Path Resolver prioritizing /data/
   async fetchJSON(fileName) {
     const clean = String(fileName).trim().replace(/^(\.\.\/|\.\/|\/)+/, '').replace(/^data\//, '');
     const paths = [
@@ -226,7 +228,6 @@ const masterEngine = {
     }
   },
 
-  // Programmatic RTDB Navbar (/utm_links)
   initRTDBNav() {
     onValue(rtdbRef(rtdb, "/utm_links"), snapshot => {
       const raw = snapshot.val();
@@ -358,7 +359,6 @@ const masterEngine = {
     });
   },
 
-  // Stream RTDB Poster Art directly to both pill thumbnails and active favicon
   initAllPillPosters() {
     Object.entries(GAME_REGISTRY).forEach(([key, game]) => {
       const posterPath = `/psn/games/${game.npCommunicationId}/posterArt`;
@@ -380,6 +380,67 @@ const masterEngine = {
           }
         }
       });
+    });
+  },
+
+  applyCatalogTrophyDetection() {
+    if (!this.masterCatalog.length) return;
+
+    this.masterCatalog.forEach(item => {
+      const isPreEarnedInJson = Boolean(
+        item.earned === true || 
+        item.completed === true || 
+        item.unlocked === true ||
+        (item.earnedDate !== undefined && item.earnedDate !== null)
+      );
+
+      const trophyId = item.trophyId !== undefined ? item.trophyId : (item.trophy_id !== undefined ? item.trophy_id : item.id);
+      const isPsnUnlocked = Boolean(this.psnTrophyUnlockedMap[trophyId] || this.psnTrophyUnlockedMap[item.id]);
+
+      if (isPreEarnedInJson || isPsnUnlocked) {
+        if (!this.userProgressMap[item.id]) {
+          this.userProgressMap[item.id] = { collected: true, count: item.target || item.goal || 1, psnSynced: isPsnUnlocked };
+        } else if (!this.userProgressMap[item.id].collected) {
+          this.userProgressMap[item.id].collected = true;
+          this.userProgressMap[item.id].count = Math.max(this.userProgressMap[item.id].count || 0, item.target || item.goal || 1);
+          this.userProgressMap[item.id].psnSynced = isPsnUnlocked;
+        }
+      }
+    });
+
+    this.recalculateCrossTrophyTelemetry();
+  },
+
+  listenToPsnTrophyStream(npCommunicationId) {
+    if (this.rtdbPsnTrophyRef) { off(this.rtdbPsnTrophyRef); this.rtdbPsnTrophyRef = null; }
+    if (!npCommunicationId) return;
+
+    const userPath = this.currentEmailKey ? `/psn/users/${this.currentEmailKey}/games/${npCommunicationId}/trophies` : null;
+    const targetPath = userPath || `/psn/games/${npCommunicationId}/trophies`;
+
+    this.rtdbPsnTrophyRef = rtdbRef(rtdb, targetPath);
+    onValue(this.rtdbPsnTrophyRef, snapshot => {
+      if (!snapshot.exists()) return;
+      const data = snapshot.val();
+      this.psnTrophyUnlockedMap = {};
+
+      if (Array.isArray(data)) {
+        data.forEach(t => {
+          if (t && (t.earned === true || t.unlocked === true)) {
+            const tId = t.trophyId !== undefined ? t.trophyId : t.id;
+            this.psnTrophyUnlockedMap[tId] = true;
+          }
+        });
+      } else if (typeof data === "object") {
+        Object.entries(data).forEach(([key, val]) => {
+          if (val === true || (val && (val.earned === true || val.unlocked === true))) {
+            this.psnTrophyUnlockedMap[key] = true;
+          }
+        });
+      }
+
+      this.applyCatalogTrophyDetection();
+      this.render();
     });
   },
 
@@ -424,11 +485,14 @@ const masterEngine = {
     // 6. Populate Missions/Reserves in Dropdown
     this.populateMissionSelector();
 
-    // 7. Rebind Scoped Database Listeners
+    // 7. Rebind Scoped Database Listeners & PSN Trophy Stream
     this.userProgressMap = {};
     this.listenToOwnFirestoreProgress();
     this.listenToSharedSquadTelemetry();
     this.loadAllPlatformTrophyProgress();
+    this.listenToPsnTrophyStream(config.npCommunicationId);
+
+    this.applyCatalogTrophyDetection();
 
     if (config.hasRanks) {
       this.listenToCotwRanks();
@@ -466,7 +530,11 @@ const masterEngine = {
     const docRef = doc(db, "users", this.currentEmailKey, "platform", this.currentPlatform, "progress", config.docId);
 
     this.firestoreProgressUnsub = onSnapshot(docRef, snap => {
-      if (!snap.exists()) return;
+      if (!snap.exists()) {
+        this.applyCatalogTrophyDetection();
+        this.render();
+        return;
+      }
       const data = snap.data();
       const remoteItems = data.collectibles || data.trophies || data.progress || {};
 
@@ -487,12 +555,11 @@ const masterEngine = {
         });
       }
 
-      this.recalculateCrossTrophyTelemetry();
+      this.applyCatalogTrophyDetection();
       this.render();
     }, err => console.warn("Firestore own progress listener error:", err));
   },
 
-  // Dedicated COTW Career Animal Ranks Isolation
   listenToCotwRanks() {
     if (this.firestoreRankUnsub) { this.firestoreRankUnsub(); this.firestoreRankUnsub = null; }
     if (!this.currentEmailKey) return;
@@ -566,7 +633,8 @@ const masterEngine = {
     const nextCollected = !current.collected;
     this.userProgressMap[id] = {
       collected: nextCollected,
-      count: nextCollected ? (item.target || item.goal || 1) : 0
+      count: nextCollected ? (item.target || item.goal || 1) : 0,
+      psnSynced: false
     };
 
     this.render();
@@ -577,12 +645,46 @@ const masterEngine = {
     const item = this.masterCatalog.find(i => i.id === id);
     if (!item) return;
     const current = this.userProgressMap[id] || { collected: false, count: 0 };
-    const nextCount = Math.max(0, (current.count || 0) + delta);
     const target = item.target || item.goal || 1;
+    const nextCount = Math.max(0, (current.count || 0) + delta);
 
     this.userProgressMap[id] = {
       collected: nextCount >= target,
-      count: nextCount
+      count: nextCount,
+      psnSynced: false
+    };
+
+    this.render();
+    this.silentSaveGameTelemetry();
+  },
+
+  // Uncapped Direct Input for High-Count Objectives and Record Long Shots
+  promptEditCount(id) {
+    const item = this.masterCatalog.find(i => i.id === id);
+    if (!item) return;
+
+    const current = this.userProgressMap[id] || { collected: false, count: 0 };
+    const target = item.target || item.goal || 1;
+
+    const inputVal = window.prompt(
+      `Set record stat for: "${item.name}"\nRequirement: ${target} (Input can go over for bragging rights!)`,
+      current.count !== undefined ? current.count : 0
+    );
+
+    if (inputVal === null) return; // User canceled
+
+    const parsedNum = parseInt(inputVal.trim(), 10);
+    if (isNaN(parsedNum)) {
+      window.alert("Please enter a valid numeric value.");
+      return;
+    }
+
+    // No upper cap: allows unlimited record counts
+    const nextCount = Math.max(0, parsedNum);
+    this.userProgressMap[id] = {
+      collected: nextCount >= target,
+      count: nextCount,
+      psnSynced: false
     };
 
     this.render();
@@ -601,7 +703,7 @@ const masterEngine = {
 
   async loadAllPlatformTrophyProgress() {
     if (!this.currentEmailKey) return;
-    const platforms = ["playstation", "xbox", "pc", "steam"];
+    const platforms = ["ps", "xbox", "pc", "steam"];
     const config = GAME_REGISTRY[this.activeGameKey];
     const total = this.masterCatalog.length || 1;
 
@@ -694,7 +796,7 @@ const masterEngine = {
     const earnedCount = Object.values(this.userProgressMap).filter(t => t.collected).length;
     const progressPercent = Math.round((earnedCount / total) * 100);
 
-    const psTel = this.crossPlatformTelemetry.playstation || { earned: 0, percent: 0 };
+    const psTel = this.crossPlatformTelemetry.ps || { earned: 0, percent: 0 };
     const xbTel = this.crossPlatformTelemetry.xbox || { earned: 0, percent: 0 };
     const pcTel = this.crossPlatformTelemetry.pc || { earned: 0, percent: 0 };
     const stTel = this.crossPlatformTelemetry.steam || { earned: 0, percent: 0 };
@@ -721,7 +823,7 @@ const masterEngine = {
       <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:10px; margin-top:4px; background:rgba(0,0,0,0.3); padding:8px 12px; border-radius:6px;">
         <div>
           <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
-            <span style="color:#00a6ed; font-weight:700;">PlayStation</span>
+            <span style="color:#00a6ed; font-weight:700;">PlayStation (PS)</span>
             <strong style="color:#fff;">${psTel.earned}/${total}</strong>
           </div>
           <div style="width:100%; height:3px; background:rgba(255,255,255,0.08); margin-top:2px;"><div style="width:${psTel.percent}%; height:100%; background:#00a6ed;"></div></div>
@@ -787,6 +889,10 @@ const masterEngine = {
       rawItems.forEach(item => {
         const uState = this.userProgressMap[item.id] || { collected: false, count: 0 };
         const isNumeric = (item.target !== undefined && item.target > 1) || (item.goal !== undefined && item.goal > 1);
+        const target = item.target || item.goal || 1;
+        const currentCount = uState.count || 0;
+        const isOverRecord = isNumeric && currentCount > target;
+
         const card = document.createElement("div");
         card.className = `item-card ${uState.collected ? 'completed' : ''}`;
 
@@ -794,24 +900,41 @@ const masterEngine = {
         Object.values(this.teamLiveTelemetry).forEach(op => {
           const opMatch = op.collectibles?.[item.id];
           const opCollected = opMatch ? Boolean(opMatch.collected || opMatch.count > 0) : false;
-          squadBadgesHtml += `<span class="team-badge ${opCollected ? 'is-collected' : ''}">${op.username}</span>`;
+          const opCount = opMatch?.count !== undefined ? ` (${opMatch.count})` : '';
+          squadBadgesHtml += `<span class="team-badge ${opCollected ? 'is-collected' : ''}">${op.username}${opCount}</span>`;
         });
+
+        const isTrophyItem = Boolean(item.trophyId !== undefined || item.trophy_id !== undefined || item.type === "TROPHY" || item.type === "trophy");
+        let trophyBadgeHtml = '';
+        if (isTrophyItem) {
+          trophyBadgeHtml = `<span style="font-size:10px; font-weight:800; background:#f5a623; color:#000; padding:2px 6px; border-radius:3px; margin-left:6px;">🏆 TROPHY</span>`;
+          if (uState.psnSynced) {
+            trophyBadgeHtml += `<span style="font-size:10px; font-weight:800; background:#00a6ed; color:#fff; padding:2px 6px; border-radius:3px; margin-left:4px;">PS SYNCED</span>`;
+          }
+        }
+
+        // Bragging-rights record badge when surpassing requirements
+        let recordBadgeHtml = '';
+        if (isOverRecord) {
+          recordBadgeHtml = `<span style="font-size:10px; font-weight:900; background:linear-gradient(90deg, #ff8800, #ff0055); color:#fff; padding:2px 6px; border-radius:3px; margin-left:6px; box-shadow:0 0 6px rgba(255,0,85,0.6);">🔥 RECORD: +${currentCount - target}</span>`;
+        }
 
         let actionControlsHtml = '';
         if (isNumeric) {
-          const target = item.target || item.goal || 1;
           actionControlsHtml = `
             <div class="stepper-action-row">
-              <button class="step-btn" onclick="window.masterEngine.stepItemCount('${item.id}', -1)">−</button>
-              <div class="clickable-num-pill">${uState.count} / ${target}</div>
-              <button class="step-btn" onclick="window.masterEngine.stepItemCount('${item.id}', 1)">+</button>
+              <button class="step-btn" title="Subtract 1" onclick="window.masterEngine.stepItemCount('${item.id}', -1)">−</button>
+              <div class="clickable-num-pill" style="${isOverRecord ? 'border-color: #ff0055; color: #ff5577; font-weight: 900;' : ''}" title="Click to type exact record number (no upper limit)" onclick="window.masterEngine.promptEditCount('${item.id}')">
+                ✏️ ${currentCount} / ${target}${isOverRecord ? ' (EXCEEDED)' : ''}
+              </div>
+              <button class="step-btn" title="Add 1" onclick="window.masterEngine.stepItemCount('${item.id}', 1)">+</button>
             </div>
           `;
         } else {
           actionControlsHtml = `
             <div class="card-actions-row">
               <button class="confirm-toggle-btn ${uState.collected ? 'completed-state' : ''}" onclick="window.masterEngine.toggleItem('${item.id}')">
-                ${uState.collected ? 'COLLECTED (Undo)' : 'MARK COMPLETED'}
+                ${uState.collected ? 'COMPLETED (Undo)' : 'MARK COMPLETED'}
               </button>
             </div>
           `;
@@ -819,7 +942,11 @@ const masterEngine = {
 
         card.innerHTML = `
           <div>
-            <div style="font-size:10px; font-weight:800; color:var(--user-theme-accent); text-transform:uppercase; margin-bottom:4px;">${item.type || 'OBJECTIVE'}</div>
+            <div style="display:flex; align-items:center; flex-wrap:wrap; gap:4px; margin-bottom:4px;">
+              <span style="font-size:10px; font-weight:800; color:var(--user-theme-accent); text-transform:uppercase;">${item.type || 'OBJECTIVE'}</span>
+              ${trophyBadgeHtml}
+              ${recordBadgeHtml}
+            </div>
             <div style="font-size:14px; font-weight:800; color:#fff; margin-bottom:4px;">${item.name}</div>
             <div style="font-size:12px; color:var(--text-muted); line-height:1.4;">${item.desc || ''}</div>
           </div>
@@ -912,6 +1039,11 @@ const masterEngine = {
         this.listenToOwnFirestoreProgress();
         this.listenToSharedSquadTelemetry();
         this.loadAllPlatformTrophyProgress();
+
+        const config = GAME_REGISTRY[this.activeGameKey];
+        if (config) {
+          this.listenToPsnTrophyStream(config.npCommunicationId);
+        }
 
         if (GAME_REGISTRY[this.activeGameKey].hasRanks) {
           this.listenToCotwRanks();
