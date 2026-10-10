@@ -1,31 +1,352 @@
 {
-  "version": "1.0.0",
-  "total_challenges": 100,
+  "version": "2.2.0",
+  "total_challenges": 30,
+  "total_categories": 5,
   "trees": {
-    "features": {
-      "name": "Features",
-      "total": 24,
-      "description": "Unlocks and mastery for equipment, callers, tripod stands, photo mode, and reserve utilities."
+    "ambusher": {
+      "id": "tree_ambusher",
+      "name": "Ambusher",
+      "total": 6,
+      "description": "Tactical stationary concealment, hunting stand mastery, and caller deception skills.",
+      "perk_unlock": "Scent Mask Mastery & Stand Concealment",
+      "challenges": [
+        {
+          "id": "ambusher_01",
+          "title": "Patient Stand",
+          "tier": 1,
+          "target": 5,
+          "unit": "harvests",
+          "description": "Harvest 5 animals from any ground blind or elevated tree stand.",
+          "reward_xp": 250,
+          "reward_credits": 150
+        },
+        {
+          "id": "ambusher_02",
+          "title": "Call Response",
+          "tier": 1,
+          "target": 10,
+          "unit": "attracted",
+          "description": "Lure 10 animals within 50 yards using predator or ungulate mouth calls.",
+          "reward_xp": 350,
+          "reward_credits": 200
+        },
+        {
+          "id": "ambusher_03",
+          "title": "Downwind Ghost",
+          "tier": 2,
+          "target": 8,
+          "unit": "harvests",
+          "description": "Harvest 8 animals while remaining completely downwind without alerting them.",
+          "reward_xp": 450,
+          "reward_credits": 300
+        },
+        {
+          "id": "ambusher_04",
+          "title": "Decoy Ambush",
+          "tier": 2,
+          "target": 15,
+          "unit": "waterfowl",
+          "description": "Harvest 15 waterfowl or upland birds within active decoy zones.",
+          "reward_xp": 500,
+          "reward_credits": 350
+        },
+        {
+          "id": "ambusher_05",
+          "title": "Close Quarters",
+          "tier": 3,
+          "target": 5,
+          "unit": "harvests",
+          "description": "Harvest 5 Tier 5 or higher big game animals from under 30 yards while concealed.",
+          "reward_xp": 750,
+          "reward_credits": 500
+        },
+        {
+          "id": "ambusher_06",
+          "title": "Master of the Blind",
+          "tier": 3,
+          "target": 20,
+          "unit": "harvests",
+          "description": "Complete 20 clean vital hits without leaving a hunting stand during a single session.",
+          "reward_xp": 1000,
+          "reward_credits": 750
+        }
+      ]
     },
     "naturalist": {
+      "id": "tree_naturalist",
       "name": "Naturalist",
-      "total": 23,
-      "description": "Need zone identification, track analysis, droppings freshness, and spotting genetic fitness potential."
+      "total": 6,
+      "description": "Ecological preservation, need zone mapping, and selective culling stewardship.",
+      "perk_unlock": "Genetic Clarity & Habitat Insight",
+      "challenges": [
+        {
+          "id": "naturalist_01",
+          "title": "Zone Cartographer",
+          "tier": 1,
+          "target": 15,
+          "unit": "zones",
+          "description": "Discover and inspect 15 distinct drinking, feeding, or resting need zones.",
+          "reward_xp": 250,
+          "reward_credits": 150
+        },
+        {
+          "id": "naturalist_02",
+          "title": "Herd Balancer",
+          "tier": 1,
+          "target": 10,
+          "unit": "culls",
+          "description": "Harvest 10 low-fitness adult animals (sub-50% fitness) to improve overall herd health.",
+          "reward_xp": 400,
+          "reward_credits": 250
+        },
+        {
+          "id": "naturalist_03",
+          "title": "Sanctuary Preserver",
+          "tier": 2,
+          "target": 5,
+          "unit": "habitats",
+          "description": "Clear 5 environmental tasks or pollution hazards near primary water sources.",
+          "reward_xp": 500,
+          "reward_credits": 350
+        },
+        {
+          "id": "naturalist_04",
+          "title": "Age Inspection",
+          "tier": 2,
+          "target": 12,
+          "unit": "matures",
+          "description": "Spot and record 12 Mature stage animals across 3 different game reserves.",
+          "reward_xp": 600,
+          "reward_credits": 400
+        },
+        {
+          "id": "naturalist_05",
+          "title": "Selective Harvest",
+          "tier": 3,
+          "target": 8,
+          "unit": "harvests",
+          "description": "Harvest 8 mature animals in their final lifecycle year before natural despawn occurs.",
+          "reward_xp": 800,
+          "reward_credits": 600
+        },
+        {
+          "id": "naturalist_06",
+          "title": "5-Star Breeder Steward",
+          "tier": 3,
+          "target": 5,
+          "unit": "spottings",
+          "description": "Identify and track 5 different 5-star genetic specimens without harvesting them prematurely.",
+          "reward_xp": 1200,
+          "reward_credits": 900
+        }
+      ]
     },
     "scout": {
+      "id": "tree_scout",
       "name": "Scout",
-      "total": 23,
-      "description": "Unlocking viewpoints, trail navigation, hunting stands, and stamina sprint efficiency."
+      "total": 6,
+      "description": "Trail corridor analysis, binocular identification, and waypoint exploration.",
+      "perk_unlock": "Eagle Eye & Trail Echo",
+      "challenges": [
+        {
+          "id": "scout_01",
+          "title": "Visual Survey",
+          "tier": 1,
+          "target": 25,
+          "unit": "spottings",
+          "description": "Spot and identify 25 unique animals through binoculars or rangefinder scopes.",
+          "reward_xp": 250,
+          "reward_credits": 150
+        },
+        {
+          "id": "scout_02",
+          "title": "Migration Pathfinder",
+          "tier": 1,
+          "target": 6,
+          "unit": "corridors",
+          "description": "Discover 6 seasonal migration corridors between summer and winter grazing areas.",
+          "reward_xp": 350,
+          "reward_credits": 200
+        },
+        {
+          "id": "scout_03",
+          "title": "Peak Elevation",
+          "tier": 2,
+          "target": 4,
+          "unit": "viewpoints",
+          "description": "Reach and tag 4 high-elevation scenic overlooks or fire towers.",
+          "reward_xp": 450,
+          "reward_credits": 300
+        },
+        {
+          "id": "scout_04",
+          "title": "Bedding Investigator",
+          "tier": 2,
+          "target": 10,
+          "unit": "resting_zones",
+          "description": "Locate 10 active bed clusters during midday resting schedules.",
+          "reward_xp": 550,
+          "reward_credits": 400
+        },
+        {
+          "id": "scout_05",
+          "title": "Territory Master",
+          "tier": 3,
+          "target": 3,
+          "unit": "reserves",
+          "description": "Uncover 80% or more of all map landmarks across 3 different reserves.",
+          "reward_xp": 850,
+          "reward_credits": 650
+        },
+        {
+          "id": "scout_06",
+          "title": "Silent Surveyor",
+          "tier": 3,
+          "target": 15,
+          "unit": "herds",
+          "description": "Track 15 different herds across 500+ yards without causing a single spook warning.",
+          "reward_xp": 1100,
+          "reward_credits": 800
+        }
+      ]
     },
     "sharpshooter": {
+      "id": "tree_sharpshooter",
       "name": "Sharpshooter",
-      "total": 18,
-      "description": "Long-range heart/lung vitals (150m+), breath control hold duration, recoil reduction, and wingshooting."
+      "total": 6,
+      "description": "Ballistic precision, extreme long-range marksmanship, and ethical vital hits.",
+      "perk_unlock": "Steady Breath & Wind Calculation",
+      "challenges": [
+        {
+          "id": "sharpshooter_01",
+          "title": "Clean Vitals",
+          "tier": 1,
+          "target": 10,
+          "unit": "vital_hits",
+          "description": "Achieve 10 heart or double-lung hits resulting in instantaneous ethical drops.",
+          "reward_xp": 300,
+          "reward_credits": 200
+        },
+        {
+          "id": "sharpshooter_02",
+          "title": "Over The Horizon",
+          "tier": 1,
+          "target": 5,
+          "unit": "long_range",
+          "description": "Harvest 5 animals from a distance greater than 200 yards.",
+          "reward_xp": 450,
+          "reward_credits": 300
+        },
+        {
+          "id": "sharpshooter_03",
+          "title": "Sniper's Nest",
+          "tier": 2,
+          "target": 3,
+          "unit": "extreme_range",
+          "description": "Harvest 3 large game animals from 350+ yards with zero bullet deflection.",
+          "reward_xp": 650,
+          "reward_credits": 450
+        },
+        {
+          "id": "sharpshooter_04",
+          "title": "Energy Transfer",
+          "tier": 2,
+          "target": 8,
+          "unit": "tier_matches",
+          "description": "Harvest 8 animals using the exact recommended kinetic energy caliber rating.",
+          "reward_xp": 700,
+          "reward_credits": 500
+        },
+        {
+          "id": "sharpshooter_05",
+          "title": "Heart Specialist",
+          "tier": 3,
+          "target": 5,
+          "unit": "heart_shots",
+          "description": "Deliver 5 precise direct heart punctures on Tier 4 or higher game.",
+          "reward_xp": 900,
+          "reward_credits": 700
+        },
+        {
+          "id": "sharpshooter_06",
+          "title": "The 500-Yard Milestone",
+          "tier": 3,
+          "target": 1,
+          "unit": "ultra_range",
+          "description": "Harvest any big game animal from 500 yards or beyond with a single round.",
+          "reward_xp": 1500,
+          "reward_credits": 1200
+        }
+      ]
     },
     "stalker": {
+      "id": "tree_stalker",
       "name": "Stalker",
-      "total": 12,
-      "description": "Close-range approach under 50m, downwind masking, noise dampening in brush, and crawling stealth."
+      "total": 6,
+      "description": "Silent movement, low-crouch tracking, and close-quarters ambush approaches.",
+      "perk_unlock": "Silent Brush & Soft Footstep",
+      "challenges": [
+        {
+          "id": "stalker_01",
+          "title": "Footprint Tracker",
+          "tier": 1,
+          "target": 20,
+          "unit": "tracks",
+          "description": "Inspect and follow 20 consecutive fresh animal tracks to their source.",
+          "reward_xp": 250,
+          "reward_credits": 150
+        },
+        {
+          "id": "stalker_02",
+          "title": "Ghost in the Grass",
+          "tier": 1,
+          "target": 500,
+          "unit": "yards",
+          "description": "Travel 500 yards in prone or low-crouch posture without breaking stealth.",
+          "reward_xp": 350,
+          "reward_credits": 200
+        },
+        {
+          "id": "stalker_03",
+          "title": "Point Blank Approach",
+          "tier": 2,
+          "target": 5,
+          "unit": "stalks",
+          "description": "Stalk within 25 yards of an unaware animal in open or semi-open terrain.",
+          "reward_xp": 550,
+          "reward_credits": 350
+        },
+        {
+          "id": "stalker_04",
+          "title": "Blood Trail Hound",
+          "tier": 2,
+          "target": 10,
+          "unit": "retrievals",
+          "description": "Recover 10 wounded animals by tracking blood trails under 30 yards in total length.",
+          "reward_xp": 600,
+          "reward_credits": 400
+        },
+        {
+          "id": "stalker_05",
+          "title": "Apex Stalker",
+          "tier": 3,
+          "target": 4,
+          "unit": "predators",
+          "description": "Stalk and harvest 4 apex predators (Bear, Wolf, or Cougar) from under 40 yards.",
+          "reward_xp": 900,
+          "reward_credits": 650
+        },
+        {
+          "id": "stalker_06",
+          "title": "Shadow of the Wilderness",
+          "tier": 3,
+          "target": 10,
+          "unit": "silent_harvests",
+          "description": "Harvest 10 animals while remaining crouched or prone without ever standing upright.",
+          "reward_xp": 1250,
+          "reward_credits": 950
+        }
+      ]
     }
   }
 }
