@@ -1,20 +1,25 @@
 <!DOCTYPE html>
+<!-- ============================================================================
+ * Project: theHunter: Call of the Wild Master Tactical Companion & Field Ledger
+ * File: index.html
+ * Location: /games/HunterCOTW/index.html
+ * Build Version: v7.2.0-COTW-CLOUD-AUTHORITATIVE
+ * Deployment Timestamp: 2026-10-10 04:35:00 EDT (America/New_York)
+ * PSN Communication ID: NPWR13211_00
+ * Google Analytics Tag: G-CTYHDF4MSD
+ * ============================================================================ -->
 <html lang="en">
 <head>
-    <!-- ==========================================================================
-       Project: theHunter: Call of the Wild Master Tracker
-       File: index.html
-       Location: /games/HunterCOTW/index.html
-       Version: 4.1.0
-       Date/Time Stamp: 2026-10-02 02:26:00 EDT (America/New_York)
-       Description: Master hunter console, responsive drawer navigation,
-                    career rank controls, and field telemetry container.
-       ========================================================================== -->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COTW Master Tracker | Werewolf Project</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="psn-communication-id" content="NPWR13211_00">
+    <title>theHunter: COTW — Master Tactical Companion & Field Ledger</title>
 
-    <!-- Google Tag Manager (Container Tag: G-CTYHDF4MSD) -->
+    <!-- Dynamic Favicon & Apple Touch Icon (Bound to RTDB /psn/games/NPWR13211_00/posterArt) -->
+    <link rel="icon" id="dynamicFavicon" type="image/png" href="//werewolf3788.github.io/Website/favicon.ico">
+    <link rel="apple-touch-icon" id="dynamicAppleIcon" href="//werewolf3788.github.io/Website/favicon.png">
+
+    <!-- Google Tag Manager (G-CTYHDF4MSD) -->
     <script>
       (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
       new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -22,9 +27,8 @@
       '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
       })(window,document,'script','dataLayer','G-CTYHDF4MSD');
     </script>
-    <!-- End Google Tag Manager -->
 
-    <!-- Global Site Tag (gtag.js) - Google Analytics 4 (G-CTYHDF4MSD) -->
+    <!-- Google Analytics 4 (G-CTYHDF4MSD) -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -37,9 +41,702 @@
       });
     </script>
 
-    <!-- Relative Protocol External Stylesheets -->
+    <!-- Relative Protocol External Stylesheet -->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="./style.css?v=4.1.0">
+
+    <!-- Embedded High-Contrast Responsive Skin -->
+    <style>
+        :root {
+            --user-theme-accent: #ff5500;
+            --user-theme-glow: rgba(255, 85, 0, 0.45);
+            --user-theme-border: rgba(255, 85, 0, 0.35);
+            --user-theme-secondary: #0a0a0c;
+            --user-theme-badge-bg: #ff5500;
+            --user-theme-badge-text: #ffffff;
+            --bg-dark: #080c14;
+            --card-bg: rgba(15, 23, 42, 0.92);
+            --card-surface: #0f172a;
+            --card-subtle: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-gold: #f5a623;
+            --tap-target: 48px;
+            --tap-target-min: 44px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at top, rgba(30, 41, 59, 0.7) 0%, rgba(8, 12, 20, 1) 100%);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: 16px 16px 75px 16px;
+            overflow-x: hidden;
+        }
+
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.45), rgba(8, 12, 20, 0.98));
+            z-index: -1;
+            pointer-events: none !important;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hidden { display: none !important; }
+        .outlined-text { text-shadow: 1px 1px 2px #000, -1px -1px 2px #000; }
+
+        h1, h2, h3 {
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 900;
+        }
+        h1 { font-size: clamp(1.4rem, 3.5vw, 1.8rem); }
+        h2 { font-size: clamp(1.1rem, 2.5vw, 1.4rem); }
+        h3 { font-size: 1.1rem; }
+
+        img { max-width: 100%; height: auto; display: inline-block; }
+        img:not(.in-lightbox) { speak: none; }
+
+        /* Dynamic Navigation Header */
+        .nav-wrapper-centered {
+            width: 100%;
+            position: relative;
+            z-index: 1000;
+            margin: 0 auto 20px auto;
+        }
+
+        @media (min-width: 1280px) {
+            .sandwich-btn { display: none !important; }
+            #dynamic-nav-links {
+                display: flex !important;
+                align-items: center;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                gap: 12px;
+                background: rgba(15, 23, 42, 0.85);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                border: 1px solid var(--user-theme-border);
+                border-radius: 12px;
+                padding: 10px 18px;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+            }
+            #dynamic-nav-links a {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--text-main);
+                text-decoration: none;
+                font-weight: 700;
+                font-size: 0.9rem;
+                padding: 8px 14px;
+                border-radius: 8px;
+                min-height: var(--tap-target-min);
+                transition: background 0.2s ease, color 0.2s ease;
+            }
+            #dynamic-nav-links a:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: var(--user-theme-accent);
+            }
+            .nav-icon { width: 24px !important; height: 24px !important; object-fit: contain; }
+            .nav-dropdown { position: relative; display: inline-block; }
+            .nav-dropbtn {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                background: transparent;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                color: var(--text-main);
+                font-weight: 700;
+                font-size: 0.9rem;
+                padding: 8px 14px;
+                border-radius: 8px;
+                cursor: pointer;
+                min-height: var(--tap-target-min);
+            }
+            .nav-dropdown:hover .nav-dropdown-content,
+            .nav-dropdown.active .nav-dropdown-content {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(180px, 1fr));
+                gap: 6px;
+            }
+            .nav-dropdown-content {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                min-width: 380px;
+                background: #0b1120;
+                border: 1px solid var(--user-theme-border);
+                border-radius: 10px;
+                padding: 10px;
+                box-shadow: 0 12px 32px rgba(0, 0, 0, 0.75), 0 0 15px var(--user-theme-glow);
+                z-index: 1001;
+            }
+            .nav-dropdown-content a { padding: 8px 10px; }
+        }
+
+        @media (max-width: 1279px) {
+            .sandwich-btn {
+                width: 100%;
+                min-height: var(--tap-target);
+                background: #0f172a;
+                border: 1px solid var(--user-theme-border);
+                border-radius: 10px;
+                color: #f8fafc;
+                font-size: 1rem;
+                font-weight: 800;
+                cursor: pointer;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            }
+            #dynamic-nav-links {
+                display: none;
+                flex-direction: column;
+                gap: 8px;
+                background: #0b1120;
+                border: 1px solid var(--user-theme-border);
+                border-radius: 10px;
+                padding: 14px;
+                margin-top: 8px;
+            }
+            #dynamic-nav-links.is-open { display: flex; }
+            #dynamic-nav-links a {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                min-height: var(--tap-target);
+                padding: 10px 14px;
+                background: var(--card-surface);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 8px;
+                color: #fff;
+                text-decoration: none;
+                font-weight: 700;
+            }
+            .nav-icon { width: 28px !important; height: 28px !important; object-fit: contain; }
+            .nav-dropdown-content { display: none; flex-direction: column; gap: 6px; padding-left: 10px; margin-top: 6px; }
+            .nav-dropdown.active .nav-dropdown-content { display: flex; }
+        }
+
+        /* Master Console & Auth Header */
+        .console-card {
+            background: var(--card-bg);
+            border: 2px solid var(--user-theme-border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--user-theme-glow);
+            position: relative;
+            z-index: 10;
+        }
+
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+        }
+
+        .console-title-group h1 { color: var(--user-theme-accent); }
+        .hunter-glow { text-shadow: 0 0 15px var(--user-theme-glow); }
+
+        .console-controls {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .auth-btn {
+            background: #0088ff;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: var(--tap-target-min);
+        }
+
+        .auth-btn:hover {
+            background: #0066cc;
+            box-shadow: 0 0 10px rgba(0, 136, 255, 0.5);
+        }
+
+        .auth-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #1e293b;
+            border: 1px solid var(--user-theme-border);
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .auth-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--user-theme-accent);
+        }
+
+        .platform-select, .pin-device-btn, .user-nav-btn {
+            min-height: var(--tap-target-min);
+            background: #0f172a;
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .pin-device-btn.is-pinned {
+            background: var(--user-theme-badge-bg);
+            color: var(--user-theme-badge-text);
+            box-shadow: 0 0 12px var(--user-theme-glow);
+        }
+
+        .rank-header-label {
+            font-size: 0.85rem;
+            font-weight: 900;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .rank-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .rank-badge {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .rank-ctrls { display: flex; align-items: center; gap: 8px; }
+        .rank-ctrls button {
+            background: #0f172a;
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .rank-ctrls .val { font-size: 1.05rem; font-weight: 900; color: var(--user-theme-accent); }
+
+        /* Progress Card & Bars */
+        .progress-box {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 12px;
+            background: #1e293b;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--user-theme-accent), #2ecc71);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        /* Field Grind & Harvest Card */
+        .grind-card-container {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid var(--user-theme-border);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        @media (max-width: 767px) {
+            .grind-card-container {
+                width: 85% !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                padding: 16px !important;
+            }
+        }
+
+        .grind-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 12px;
+        }
+
+        .grind-grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 767px) {
+            .grind-grid-2col { grid-template-columns: 1fr; }
+        }
+
+        .grind-input-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .grind-input, .grind-select {
+            width: 100%;
+            min-height: var(--tap-target-min);
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 8px 12px;
+            outline: none;
+        }
+
+        .session-toggle-btn {
+            min-height: 44px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .session-toggle-btn.is-single {
+            background: #10b981;
+            color: #ffffff;
+            border-color: #059669;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+        }
+
+        .session-toggle-btn.is-multi {
+            background: #6366f1;
+            color: #ffffff;
+            border-color: #4f46e5;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+        }
+
+        .zone-toggle-btn {
+            min-height: var(--tap-target-min);
+            width: 100%;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: #1e293b;
+            color: #94a3b8;
+        }
+
+        .zone-toggle-btn.is-main {
+            background: var(--user-theme-badge-bg);
+            color: var(--user-theme-badge-text);
+            box-shadow: 0 0 10px var(--user-theme-glow);
+        }
+
+        .zone-toggle-btn.is-exterior {
+            background: #eab308;
+            color: #000;
+        }
+
+        .log-harvest-btn {
+            min-height: 52px;
+            width: 100%;
+            background: var(--user-theme-accent);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 4px 15px var(--user-theme-glow);
+            transition: transform 0.15s ease;
+        }
+
+        .cull-chip {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.78rem;
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .cull-chip.active-cull-chip {
+            border-color: var(--user-theme-accent);
+            background: rgba(255, 85, 0, 0.2);
+            box-shadow: 0 0 8px var(--user-theme-glow);
+        }
+
+        .cull-chip-count {
+            background: var(--user-theme-accent);
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.72rem;
+        }
+
+        /* Categories & Trophy Cards */
+        .category-section {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-left: 6px solid var(--user-theme-accent);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .category-header {
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            background: rgba(30, 41, 59, 0.4);
+            min-height: var(--tap-target);
+        }
+
+        .section-content { padding: 16px; }
+        .section-collapsed .section-content { display: none; }
+
+        .trophy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        @media (max-width: 767px) {
+            .trophy-grid { grid-template-columns: 1fr; }
+        }
+
+        .trophy-card {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .trophy-card.completed {
+            border-color: var(--user-theme-accent) !important;
+            box-shadow: 0 0 15px var(--user-theme-glow) !important;
+        }
+
+        .trophy-icon-img {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .trophy-badges-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .trophy-rank {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .rank-platinum { background: #0284c7; color: #fff; }
+        .rank-gold { background: #d97706; color: #fff; }
+        .rank-silver { background: #64748b; color: #fff; }
+        .rank-bronze { background: #b45309; color: #fff; }
+
+        .mode-badge {
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .mode-badge.is-solo { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .mode-badge.is-shared { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+
+        .number-control-group {
+            display: inline-flex;
+            align-items: center;
+            background: #0f172a;
+            border: 1px solid var(--user-theme-border);
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        .number-control-group button {
+            background: #1e293b;
+            color: #f8fafc;
+            border: none;
+            padding: 8px 14px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            min-height: var(--tap-target-min);
+            min-width: 44px;
+        }
+
+        .number-control-group input[type="number"] {
+            flex-grow: 1;
+            width: 60px;
+            background: transparent;
+            border: none;
+            color: var(--user-theme-accent);
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .toggle-btn, .dropdown-trigger {
+            width: 100%;
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            min-height: var(--tap-target-min);
+        }
+
+        .lock-badge {
+            background: var(--user-theme-badge-bg) !important;
+            color: var(--user-theme-badge-text) !important;
+        }
+
+        .dropdown-content { display: none; margin-top: 8px; padding: 8px; background: #020617; border-radius: 8px; }
+        .dropdown-content.show { display: block; }
+        .check-btn { width: 44px; height: 44px; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; cursor: pointer; }
+        .check-btn.is-done { background: #10b981; border-color: #10b981; }
+
+        /* Auth Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-card {
+            background: #0f172a;
+            border: 1px solid var(--user-theme-border);
+            box-shadow: 0 0 25px var(--user-theme-glow);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+        }
+
+        /* Persistent Sticky Footer */
+        footer.tracker-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px 16px;
+            background: rgba(8, 12, 20, 0.98);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-top: 2px solid var(--user-theme-border);
+            z-index: 9999;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #build-meta-footer {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-family: monospace;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+    </style>
 </head>
 <body data-active-user="Werewolf">
     <!-- Google Tag Manager (noscript) -->
@@ -50,9 +747,9 @@
     <div class="background-overlay"></div>
 
     <div class="container tracker-container">
-        <!-- Section 1: Dynamic Top Navigation Bar (Layered at z-index 99999) -->
+        <!-- Section 1: Dynamic Top Navigation Bar -->
         <header class="nav-wrapper-centered" role="banner">
-            <button type="button" id="mobile-sandwich-btn" class="sandwich-btn" onclick="appState.toggleMobileMenu(event)" aria-label="Toggle Navigation Menu">
+            <button type="button" id="mobile-sandwich-btn" class="sandwich-btn" onclick="appState.toggleNavFolder('dynamic-nav-links', event)" aria-label="Toggle Navigation Menu">
                 <span class="sandwich-icon">☰</span>
                 <span class="sandwich-label">Menu</span>
             </button>
@@ -63,43 +760,49 @@
         <section class="console-card profile-header" aria-labelledby="hunter-name">
             <div class="console-header">
                 <div class="console-title-group">
-                    <div class="sub-label">Consolidated RTDB Telemetry</div>
+                    <div class="sub-label" style="font-size:0.75rem; color:#94a3b8; font-weight:800;">Consolidated RTDB & Firestore Telemetry</div>
                     <h1 id="hunter-name" class="hunter-glow">WEREWOLF [PLAYSTATION]</h1>
                 </div>
 
                 <div class="console-controls profile-actions">
+                    <!-- Google Auth Trigger / User Badge -->
+                    <button id="authModalBtn" class="auth-btn outlined-text">🔑 Log In</button>
+                    <div id="userProfile" class="auth-badge hidden">
+                        <img id="headerUserAvatar" src="" alt="" class="auth-avatar">
+                        <span id="userDisplayName" style="color:#fff; font-size:13px; font-weight:800;"></span>
+                        <span style="color:var(--user-theme-accent); font-size:10px;">▾</span>
+                    </div>
+
                     <span class="pin-device-control">
                         <button type="button" id="pin-device-btn" class="pin-device-btn" onclick="appState.togglePinDevice()">
-                            📌 Pin Device to This User
+                            📌 Pin Device
                         </button>
                     </span>
 
                     <!-- Multi-Platform Dropdown Selector -->
-                    <select id="platform-selector" class="platform-select profile-select" onchange="appState.switchPlatform(this.value)" aria-label="Platform Selector">
-                        <option value="playstation" selected>PlayStation</option>
-                        <option value="pc">PC</option>
-                        <option value="xbox">Xbox</option>
-                        <option value="steam">Steam</option>
+                    <select id="platformSelect" class="platform-select profile-select" onchange="appState.switchPlatform(this.value)" aria-label="Platform Selector">
+                        <option value="playstation" selected>🎮 PlayStation (Primary / PSN)</option>
+                        <option value="xbox">❎ Xbox Network (Console)</option>
+                        <option value="pc">💻 PC (Microsoft Store / Game Pass)</option>
+                        <option value="steam">🚂 Steam (PC Client)</option>
                     </select>
 
-                    <!-- Exact 4 Standardized Player Handles -->
+                    <!-- Profile Switcher -->
                     <div class="user-btn-group" role="group" aria-label="Active Profile Selectors">
-                        <button type="button" class="user-nav-btn profile-btn" onclick="appState.switchHunter('Werewolf')">Werewolf</button>
-                        <button type="button" class="user-nav-btn profile-btn" onclick="appState.switchHunter('Raymystyro')">Raymystyro</button>
-                        <button type="button" class="user-nav-btn profile-btn" onclick="appState.switchHunter('Terrdog')">Terrdog</button>
-                        <button type="button" class="user-nav-btn profile-btn" onclick="appState.switchHunter('DesdemonaTiger')">DesdemonaTiger</button>
+                        <button type="button" class="user-nav-btn profile-btn" onclick="appState.switchHunterEmail('raykevin71888@gmail.com')">Werewolf</button>
+                        <button type="button" class="user-nav-btn profile-btn" onclick="appState.switchHunterEmail('cartnalray9@gmail.com')">Raymystyro</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Career Animal Ranks (Seeded Baseline + Auto-Incremented by Harvest Ledger) -->
+            <!-- Career Animal Ranks -->
             <div class="rank-header-label">
                 Career Animal Ranks (In-Game Profile Sync)
             </div>
             <div class="rank-grid" role="region" aria-label="Career Animal Ranks">
                 <div class="rank-badge rank-item">
                     <span class="icon rank-emoji">👑</span>
-                    <span class="title rank-label">G.O.</span>
+                    <span class="title rank-label" style="font-size:0.75rem; font-weight:800;">Great One</span>
                     <div class="rank-ctrls rank-controls">
                         <button type="button" onclick="adjRank('greatone', -1)" aria-label="Decrement Great One">-</button>
                         <span id="rank-val-greatone" class="val">0</span>
@@ -108,18 +811,8 @@
                 </div>
 
                 <div class="rank-badge rank-item">
-                    <span class="icon rank-emoji">🐇</span>
-                    <span class="title rank-label">Albino</span>
-                    <div class="rank-ctrls rank-controls">
-                        <button type="button" onclick="adjRank('albino', -1)" aria-label="Decrement Albino">-</button>
-                        <span id="rank-val-albino" class="val">0</span>
-                        <button type="button" onclick="adjRank('albino', 1)" aria-label="Increment Albino">+</button>
-                    </div>
-                </div>
-
-                <div class="rank-badge rank-item">
                     <span class="icon rank-emoji">💎</span>
-                    <span class="title rank-label">Diamond</span>
+                    <span class="title rank-label" style="font-size:0.75rem; font-weight:800;">Diamond</span>
                     <div class="rank-ctrls rank-controls">
                         <button type="button" onclick="adjRank('diamond', -1)" aria-label="Decrement Diamond">-</button>
                         <span id="rank-val-diamond" class="val">0</span>
@@ -129,7 +822,7 @@
 
                 <div class="rank-badge rank-item">
                     <span class="icon rank-emoji">🥇</span>
-                    <span class="title rank-label">Gold</span>
+                    <span class="title rank-label" style="font-size:0.75rem; font-weight:800;">Gold</span>
                     <div class="rank-ctrls rank-controls">
                         <button type="button" onclick="adjRank('gold', -1)" aria-label="Decrement Gold">-</button>
                         <span id="rank-val-gold" class="val">0</span>
@@ -139,7 +832,7 @@
 
                 <div class="rank-badge rank-item">
                     <span class="icon rank-emoji">🥈</span>
-                    <span class="title rank-label">Silver</span>
+                    <span class="title rank-label" style="font-size:0.75rem; font-weight:800;">Silver</span>
                     <div class="rank-ctrls rank-controls">
                         <button type="button" onclick="adjRank('silver', -1)" aria-label="Decrement Silver">-</button>
                         <span id="rank-val-silver" class="val">0</span>
@@ -149,51 +842,84 @@
 
                 <div class="rank-badge rank-item">
                     <span class="icon rank-emoji">🥉</span>
-                    <span class="title rank-label">Bronze</span>
+                    <span class="title rank-label" style="font-size:0.75rem; font-weight:800;">Bronze</span>
                     <div class="rank-ctrls rank-controls">
                         <button type="button" onclick="adjRank('bronze', -1)" aria-label="Decrement Bronze">-</button>
                         <span id="rank-val-bronze" class="val">0</span>
                         <button type="button" onclick="adjRank('bronze', 1)" aria-label="Increment Bronze">+</button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Master Completion Progress Tracker -->
-            <div class="progress-box main-header">
-                <h2>THEHUNTER: CALL OF THE WILD</h2>
-                <p id="percent-text">Master Completion Progress 0%</p>
-                <div class="progress-track bar-bg">
-                    <div id="overall-bar" class="progress-fill bar-fill"></div>
+                <div class="rank-badge rank-item">
+                    <span class="icon rank-emoji">🐇</span>
+                    <span class="title rank-label" style="font-size:0.75rem; font-weight:800;">Rare Fur</span>
+                    <div class="rank-ctrls rank-controls">
+                        <button type="button" onclick="adjRank('Fur', -1)" aria-label="Decrement Rare Fur">-</button>
+                        <span id="rank-val-Fur" class="val">0</span>
+                        <button type="button" onclick="adjRank('Fur', 1)" aria-label="Increment Rare Fur">+</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Reserve Jump Dropdown (Drives Shared Map & Grind Telemetry) -->
-            <div class="reserve-jump">
-                <select id="reserve-selector" class="reserve-select" aria-label="Select Game Reserve">
-                    <option value="">-- Jump to Reserve --</option>
-                </select>
-            </div>
-
-            <div id="stat-line" role="status" aria-live="polite">
-                Connecting to Database...
+            <div id="stat-line" style="font-size:0.75rem; color:#94a3b8; font-family:monospace; margin-top:14px;" role="status" aria-live="polite">
+                Connecting to Telemetry Database...
             </div>
         </section>
 
-        <!-- Section 3: Dynamic Reserve Containers (Field Telemetry Grind Card + Trophy Grids) -->
+        <!-- Section 3: Dynamic Reserve Containers -->
         <main id="section-container" role="main"></main>
+
+        <!-- Squad Comparison Deck -->
+        <section style="margin-top: 10px; margin-bottom: 25px;">
+            <div id="friendsComparisonContainer"></div>
+        </section>
 
         <!-- Section 4: Persistent Footer -->
         <footer class="tracker-footer" role="contentinfo">
-            <div class="footer-link-group">
-                Support the hunt: <a href="//playstation-be936.web.app/">Werewolf Project Home</a>
-            </div>
             <div id="build-meta-footer">
-                Werewolf Project Engine • v4.1.0 • Build: 2026-10-02 02:26:00 EDT
+                Werewolf Project Engine • v7.2.0 • Build: 2026-10-10 04:35 EDT
+            </div>
+            <div id="nyBuildTimestamp" style="font-size:11px; color:#aaa; font-family:monospace;" class="outlined-text">
+                New York Time (24h): --:--:--
             </div>
         </footer>
     </div>
 
+    <!-- Authentication Modal Dialog -->
+    <div id="authModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h3 style="color:#fff; margin-bottom:10px; text-transform:uppercase; font-size:1.1rem; letter-spacing:1px;">Hunter Verification</h3>
+            <p style="font-size:13px; color:#aaa; margin-bottom:20px; line-height:1.4;">Authenticate with your Google profile to synchronize your trophy milestones, need zones, and live squad harvests.</p>
+            <button id="googleSignInBtn" class="auth-btn" style="width:100%; padding:10px; font-size:13px; margin-bottom:12px;">Sign in with Google</button>
+            <button id="authModalClose" style="background:transparent; border:none; color:#888; cursor:pointer; font-size:12px; font-weight:bold;">Dismiss</button>
+        </div>
+    </div>
+
+    <!-- Link Routing Guard -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const enforceDomainRouting = () => {
+                document.querySelectorAll('a[href]').forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+                    try {
+                        const parsed = new URL(href, window.location.href);
+                        if (parsed.origin === window.location.origin) {
+                            link.removeAttribute('target');
+                            link.removeAttribute('rel');
+                        } else {
+                            link.setAttribute('target', '_blank');
+                            link.setAttribute('rel', 'noopener noreferrer');
+                        }
+                    } catch (e) {}
+                });
+            };
+            enforceDomainRouting();
+            new MutationObserver(() => enforceDomainRouting()).observe(document.body, { childList: true, subtree: true });
+        });
+    </script>
+
     <!-- App Engine Script Connection -->
-    <script type="module" src="./script.js?v=4.1.0"></script>
+    <script type="module" src="./script.js?v=7.2.0"></script>
 </body>
 </html>
