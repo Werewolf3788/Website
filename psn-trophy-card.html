@@ -894,7 +894,7 @@
     }
 
     /* ==========================================================================
-       Section: LIGHTBOX & SQUAD TROPHY BREAKDOWN MODAL (Lines 665-790)
+       Section: LIGHTBOX & SQUAD TROPHY BREAKDOWN MODAL (Lines 665-805)
        ========================================================================== */
     .lightbox-modal {
       display: none;
@@ -966,7 +966,7 @@
     }
 
     .trophy-breakdown-card {
-      max-width: 860px;
+      max-width: 900px;
       width: 100%;
       max-height: 88vh;
       background: var(--bg-surface-elevated);
@@ -1084,7 +1084,14 @@
       flex-direction: column;
       align-items: flex-end;
       gap: 0.4rem;
-      min-width: 160px;
+      min-width: 180px;
+    }
+
+    .earners-chips-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 0.35rem;
     }
 
     .earner-chip {
@@ -1092,8 +1099,8 @@
       align-items: center;
       gap: 0.4rem;
       background: var(--bg-surface);
-      border: 1px solid rgba(0, 242, 254, 0.3);
-      padding: 0.3rem 0.65rem;
+      border: 1px solid rgba(0, 242, 254, 0.4);
+      padding: 0.25rem 0.55rem;
       border-radius: 20px;
       font-size: 0.75rem;
       font-weight: 700;
@@ -1110,9 +1117,10 @@
     }
 
     .earner-date {
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       color: var(--text-muted);
       font-family: monospace;
+      margin-left: 0.15rem;
     }
 
     .locked-badge {
@@ -1124,7 +1132,7 @@
       border: 1px solid var(--border-subtle);
     }
 
-    /* Section: Cockpit Footer & Persistent Stamps (Lines 792-835) */
+    /* Section: Cockpit Footer & Persistent Stamps (Lines 807-845) */
     footer.cockpit-footer {
       margin-top: auto;
       background: var(--bg-surface);
@@ -1192,12 +1200,15 @@
         align-items: flex-start;
         width: 100%;
       }
+      .earners-chips-container {
+        justify-content: flex-start;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Section: Cockpit Header (Lines 875-915) -->
+  <!-- Section: Cockpit Header (Lines 885-925) -->
   <header class="cockpit-header">
     <div class="header-container">
       <div class="brand-section">
@@ -1224,7 +1235,7 @@
     </div>
   </header>
 
-  <!-- Section: Mobile Drawer Navigation (Lines 917-927) -->
+  <!-- Section: Mobile Drawer Navigation (Lines 927-937) -->
   <div class="mobile-drawer" id="mobileNavDrawer" role="dialog" aria-modal="true">
     <div class="mobile-drawer-content">
       <div class="mobile-drawer-header">
@@ -1235,7 +1246,7 @@
     </div>
   </div>
 
-  <!-- Section: Recently Earned Squad Trophies Feed Strip (Lines 929-943) -->
+  <!-- Section: Recently Earned Squad Trophies Feed Strip (Lines 939-953) -->
   <section class="trophy-feed-strip">
     <div class="trophy-feed-header">
       <div class="feed-heading">
@@ -1249,7 +1260,7 @@
     </div>
   </section>
 
-  <!-- Section: Catalog Controls & Search Strip (Lines 945-960) -->
+  <!-- Section: Catalog Controls & Search Strip (Lines 955-970) -->
   <div class="controls-strip">
     <div class="search-wrapper">
       <span class="search-icon">🔍</span>
@@ -1264,14 +1275,14 @@
     </div>
   </div>
 
-  <!-- Section: Catalog Viewport Grid (Lines 962-970) -->
+  <!-- Section: Catalog Viewport Grid (Lines 972-980) -->
   <main class="catalog-viewport">
     <div class="catalog-grid" id="catalogGrid">
       <div class="state-banner">Connecting to Squad Pack Telemetry Node...</div>
     </div>
   </main>
 
-  <!-- Section: Lightbox Poster Image Modal (Lines 972-985) -->
+  <!-- Section: Lightbox Poster Image Modal (Lines 982-995) -->
   <div class="lightbox-modal" id="imageLightbox" role="dialog" aria-modal="true">
     <div class="lightbox-content">
       <button class="lightbox-close-btn" id="lightboxCloseBtn" aria-label="Close Lightbox">&times;</button>
@@ -1283,7 +1294,7 @@
     </div>
   </div>
 
-  <!-- Section: Squad Trophy Breakdown Lightbox Modal (Lines 987-1002) -->
+  <!-- Section: Squad Trophy Breakdown Lightbox Modal (Lines 997-1012) -->
   <div class="lightbox-modal" id="trophyBreakdownModal" role="dialog" aria-modal="true">
     <div class="trophy-breakdown-card">
       <div class="trophy-modal-header">
@@ -1299,17 +1310,17 @@
     </div>
   </div>
 
-  <!-- Section: Persistent Cockpit Footer with New York 24-Hour Stamp (Lines 1004-1015) -->
+  <!-- Section: Persistent Cockpit Footer with New York 24-Hour Stamp (Lines 1014-1025) -->
   <footer class="cockpit-footer">
     <div class="footer-inner">
-      <div>Engine Version: <strong>v55.0.0</strong> | Direct Game Node & Dual-Key Earner Matching</div>
+      <div>Engine Version: <strong>v56.0.0</strong> | Direct Game Node & Dual-Key Earner Matching</div>
       <div>Latest PSN Sync: <span id="footerSyncStamp" class="footer-stamp">Awaiting feed...</span></div>
-      <div>Timestamp: <span id="persistentNyTimestamp" class="footer-stamp">2026-10-09 21:26:00 (EDT)</span></div>
+      <div>Timestamp: <span id="persistentNyTimestamp" class="footer-stamp">2026-10-09 21:46:00 (EDT)</span></div>
     </div>
   </footer>
 
   <!-- ==========================================================================
-       Section: ENGINE SCRIPT: FIREBASE DATA, DYNAMIC MENU & TROPHY ENGINE (Lines 1018-1485)
+       Section: ENGINE SCRIPT: FIREBASE DATA, DYNAMIC MENU & TROPHY ENGINE (Lines 1028-1500)
        ========================================================================== -->
   <script>
     const FIREBASE_BASE_ENDPOINT = "//entertainment-71888-default-rtdb.firebaseio.com";
@@ -1533,6 +1544,21 @@
       }
     }
 
+    // Section: Helper to unpack Firebase trophy arrays, maps, or objects
+    function extractOperativeTrophyList(source) {
+      if (!source) return [];
+      if (Array.isArray(source)) return source;
+      if (typeof source === "object") {
+        return Object.entries(source).map(([k, val]) => {
+          if (val && typeof val === "object") {
+            return { trophyId: val.trophyId !== undefined ? val.trophyId : k, ...val };
+          }
+          return { trophyId: k, earned: !!val };
+        });
+      }
+      return [];
+    }
+
     // Section: Dynamic Menu Sorting Engine (UTM Links from Firebase)
     async function loadUtmMenu() {
       const desktopNav = document.getElementById("desktopNavMenu");
@@ -1736,9 +1762,10 @@
 
         const games = data.games || {};
         const gamertags = data.gamertags || {};
+        const rootTrophies = data.trophies || {};
 
-        catalogMasterList = buildConsolidatedCatalog(games, gamertags);
-        recentTrophiesMasterList = buildRecentTrophiesFeed(games, gamertags);
+        catalogMasterList = buildConsolidatedCatalog(games, gamertags, rootTrophies);
+        recentTrophiesMasterList = buildRecentTrophiesFeed(games, gamertags, rootTrophies);
 
         renderRecentTrophiesStrip();
         renderCatalog();
@@ -1751,8 +1778,8 @@
       }
     }
 
-    // Section: Consolidated Catalog with Squad Most-Recent-Trophy Sorting Engine
-    function buildConsolidatedCatalog(games, gamertags) {
+    // Section: Consolidated Catalog with Dual-Key Earner Matching & Most-Recent Sort
+    function buildConsolidatedCatalog(games, gamertags, rootTrophies) {
       const catalogMap = new Map();
 
       // 1. Ingest Master Games from /psn/games/
@@ -1760,6 +1787,9 @@
         const cId = commId.toUpperCase();
         const resolvedName = g.name || "PlayStation Title";
         const capabilities = deriveGameCapabilities(resolvedName, cId, g);
+
+        // Support root /psn/trophies/[commId] or nested trophies
+        const masterTrophies = extractOperativeTrophyList(g.trophies || g.trophyList || rootTrophies[commId] || rootTrophies[cId]);
 
         catalogMap.set(cId, {
           commId: cId,
@@ -1771,13 +1801,13 @@
           playstationStoreUrl: g.playstationStoreUrl || generateStoreUrl(g.titleId, resolvedName, g.conceptId),
           amazonAffiliateUrl: g.amazonAffiliateUrl || null,
           multiplayerInfo: capabilities,
-          trophies: g.trophies || g.trophyList || [],
+          trophies: masterTrophies,
           operatives: [],
           latestTrophyTimestamp: 0
         });
       });
 
-      // 2. Cross-reference Squad Members who have played & calculate latest unlock timestamps
+      // 2. Cross-reference Squad Members who have played
       Object.entries(gamertags).forEach(([gamerTag, userData]) => {
         const avatar = normalizeAssetUrl(userData.avatar);
         const recentGames = userData.recentGames || [];
@@ -1790,6 +1820,7 @@
 
           if (!catalogMap.has(cId)) {
             const capabilities = deriveGameCapabilities(gameTitle, cId, rg);
+            const masterTrophies = extractOperativeTrophyList(rg.trophies || rootTrophies[cId]);
             catalogMap.set(cId, {
               commId: cId,
               titleId: rg.titleId || rg.npTitleId || null,
@@ -1800,7 +1831,7 @@
               playstationStoreUrl: rg.playstationStoreUrl || generateStoreUrl(rg.titleId || rg.npTitleId, gameTitle),
               amazonAffiliateUrl: null,
               multiplayerInfo: capabilities,
-              trophies: rg.trophies || [],
+              trophies: masterTrophies,
               operatives: [],
               latestTrophyTimestamp: 0
             });
@@ -1808,24 +1839,23 @@
 
           const entry = catalogMap.get(cId);
 
-          // Support all standard earned trophy container keys
-          const earnedTrophies = rg.earnedTrophies || rg.trophies || rg.userTrophies || [];
+          // Unpack whatever trophy container format exists for this user
+          const userRawTrophies = rg.earnedTrophies || rg.trophies || rg.userTrophies || (userData.trophies && (userData.trophies[cId] || userData.trophies[rg.npCommunicationId])) || [];
+          const earnedTrophies = extractOperativeTrophyList(userRawTrophies);
           let playerLatest = 0;
 
-          if (Array.isArray(earnedTrophies)) {
-            earnedTrophies.forEach(t => {
-              const isEarned = (t.earned === true) || !!t.earnedDateTime || !!t.earnedDate || (t.unlocked === true);
-              if (isEarned) {
-                const rawDate = t.earnedDateTime || t.earnedDate;
-                if (rawDate) {
-                  const parsedTime = new Date(rawDate).getTime();
-                  if (!isNaN(parsedTime) && parsedTime > playerLatest) {
-                    playerLatest = parsedTime;
-                  }
+          earnedTrophies.forEach(t => {
+            const isEarned = (typeof t === "number") || (typeof t === "string") || (t.earned === true) || !!t.earnedDateTime || !!t.earnedDate || (t.unlocked === true);
+            if (isEarned) {
+              const rawDate = t.earnedDateTime || t.earnedDate;
+              if (rawDate) {
+                const parsedTime = new Date(rawDate).getTime();
+                if (!isNaN(parsedTime) && parsedTime > playerLatest) {
+                  playerLatest = parsedTime;
                 }
               }
-            });
-          }
+            }
+          });
 
           if (!playerLatest && rg.lastUpdatedDateTime) {
             const parsedUpdate = new Date(rg.lastUpdatedDateTime).getTime();
@@ -1839,7 +1869,7 @@
           entry.operatives.push({
             gamerTag: gamerTag,
             avatar: avatar,
-            progress: rg.progress || 0,
+            progress: Number(rg.progress) || 0,
             completionRatio: rg.completionRatio || `${rg.progress || 0}%`,
             playtimeFormatted: rg.nativePlaytimeFormatted || "Played",
             earnedTrophies: earnedTrophies,
@@ -1848,7 +1878,7 @@
         });
       });
 
-      // 3. Strict Catalog Sort: Games with the most recently earned trophy across any squad player rise to the top
+      // 3. Strict Catalog Sort: Most recently earned trophy sits on top
       return Array.from(catalogMap.values()).sort((a, b) => {
         if (b.latestTrophyTimestamp !== a.latestTrophyTimestamp) {
           return b.latestTrophyTimestamp - a.latestTrophyTimestamp;
@@ -1861,7 +1891,7 @@
     }
 
     // Section: Trophies Aggregator Engine
-    function buildRecentTrophiesFeed(games, gamertags) {
+    function buildRecentTrophiesFeed(games, gamertags, rootTrophies) {
       const feed = [];
 
       Object.entries(gamertags).forEach(([gamerTag, userData]) => {
@@ -1871,14 +1901,15 @@
         recentGames.forEach(rg => {
           const gameTitle = rg.name || rg.trophyTitleName || "PlayStation Title";
           const commId = (rg.npCommunicationId || "").toUpperCase();
-          const earned = rg.earnedTrophies || rg.trophies || rg.userTrophies || [];
+          const userRawTrophies = rg.earnedTrophies || rg.trophies || rg.userTrophies || (userData.trophies && (userData.trophies[commId] || userData.trophies[rg.npCommunicationId])) || [];
+          const earned = extractOperativeTrophyList(userRawTrophies);
 
-          if (Array.isArray(earned) && earned.length > 0) {
+          if (earned.length > 0) {
             earned.forEach(t => {
-              const isEarned = (t.earned === true) || !!t.earnedDateTime || !!t.earnedDate || (t.unlocked === true);
+              const isEarned = (typeof t === "number") || (typeof t === "string") || (t.earned === true) || !!t.earnedDateTime || !!t.earnedDate || (t.unlocked === true);
               if (isEarned) {
                 feed.push({
-                  trophyId: String(t.trophyId !== undefined ? t.trophyId : (t.id || '0')),
+                  trophyId: String(t.trophyId !== undefined ? t.trophyId : (typeof t === "object" ? (t.id || '0') : t)),
                   name: t.trophyName || t.name || 'Unlocked Trophy',
                   detail: t.trophyDetail || t.description || 'Achievement unlocked',
                   iconUrl: normalizeAssetUrl(t.trophyIconUrl || t.icon || rg.trophyTitleIconUrl),
@@ -1891,13 +1922,13 @@
                 });
               }
             });
-          } else if (rg.progress > 0) {
+          } else if (Number(rg.progress) > 0) {
             feed.push({
               trophyId: 'milestone',
               name: `${rg.progress}% Milestone Reached`,
               detail: `Active progression in ${gameTitle}`,
               iconUrl: normalizeAssetUrl(rg.trophyTitleIconUrl || rg.posterArt),
-              type: rg.progress >= 100 ? 'platinum' : (rg.progress >= 60 ? 'gold' : 'silver'),
+              type: Number(rg.progress) >= 100 ? 'platinum' : (Number(rg.progress) >= 60 ? 'gold' : 'silver'),
               earnedDate: rg.lastUpdatedDateTime || new Date().toISOString(),
               gamerTag: gamerTag,
               avatar: avatar,
@@ -2084,7 +2115,7 @@
       if (modal) modal.classList.add("active");
     }
 
-    // Section: Trophy Breakdown Lightbox with Dual-Key (ID + Name) Matching
+    // Section: Trophy Breakdown Lightbox with Complete Earner Resolution
     function openTrophyBreakdown(commId, encodedTitle) {
       const modal = document.getElementById("trophyBreakdownModal");
       const titleElem = document.getElementById("trophyModalGameTitle");
@@ -2103,14 +2134,14 @@
       const trophyMap = new Map();
       const nameToIdMap = new Map();
 
-      // Seed with master trophies
+      // 1. Seed Master Trophies
       baseTrophies.forEach((t, index) => {
         const id = String(t.trophyId !== undefined ? t.trophyId : (t.id !== undefined ? t.id : index));
         const cleanName = (t.trophyName || t.name || '').trim();
         
         trophyMap.set(id, {
           id: id,
-          name: cleanName || 'Trophy',
+          name: cleanName || `Trophy #${index + 1}`,
           detail: t.trophyDetail || t.description || 'Achievement criteria',
           iconUrl: normalizeAssetUrl(t.trophyIconUrl || t.icon),
           grade: (t.trophyType || t.type || 'bronze').toLowerCase(),
@@ -2122,52 +2153,80 @@
         }
       });
 
-      // Match squad member unlocks by ID or Title
+      // 2. Map squad member unlocks across ALL data formats
       if (gameEntry && gameEntry.operatives) {
         gameEntry.operatives.forEach(op => {
-          if (Array.isArray(op.earnedTrophies)) {
-            op.earnedTrophies.forEach((t, opIndex) => {
-              // Check all standard PSN unlock flags
-              const isEarned = (t.earned === true) || !!t.earnedDateTime || !!t.earnedDate || (t.unlocked === true);
-              if (!isEarned) return;
+          const is100Percent = op.progress >= 100;
+          const userTrophies = extractOperativeTrophyList(op.earnedTrophies);
 
-              const rawId = String(t.trophyId !== undefined ? t.trophyId : (t.id !== undefined ? t.id : ''));
-              const tName = (t.trophyName || t.name || '').trim().toLowerCase();
-              
-              let matchedId = null;
-              if (rawId && trophyMap.has(rawId)) {
-                matchedId = rawId;
-              } else if (tName && nameToIdMap.has(tName)) {
-                matchedId = nameToIdMap.get(tName);
-              } else if (rawId) {
-                matchedId = rawId;
-              } else {
-                matchedId = `op_trophy_${opIndex}`;
-              }
-
-              if (!trophyMap.has(matchedId)) {
-                trophyMap.set(matchedId, {
-                  id: matchedId,
-                  name: (t.trophyName || t.name || 'Trophy').trim(),
-                  detail: t.trophyDetail || t.description || 'Achievement criteria',
-                  iconUrl: normalizeAssetUrl(t.trophyIconUrl || t.icon),
-                  grade: (t.trophyType || t.type || 'bronze').toLowerCase(),
-                  earners: []
-                });
-                if (tName) nameToIdMap.set(tName, matchedId);
-              }
-
-              const entry = trophyMap.get(matchedId);
-              const alreadyListed = entry.earners.some(e => e.gamerTag === op.gamerTag);
-              if (!alreadyListed) {
+          // If operative has 100% completion, they earned every trophy
+          if (is100Percent) {
+            trophyMap.forEach(entry => {
+              if (!entry.earners.some(e => e.gamerTag === op.gamerTag)) {
                 entry.earners.push({
                   gamerTag: op.gamerTag,
                   avatar: op.avatar,
-                  date: t.earnedDateTime || t.earnedDate || null
+                  date: null
                 });
               }
             });
           }
+
+          // Check individual trophy records
+          userTrophies.forEach((t, opIndex) => {
+            let isUnlocked = false;
+            let rawId = null;
+            let tName = "";
+            let unlockDate = null;
+
+            if (typeof t === "number" || typeof t === "string") {
+              isUnlocked = true;
+              rawId = String(t);
+            } else if (typeof t === "object" && t !== null) {
+              isUnlocked = (t.earned === true) || !!t.earnedDateTime || !!t.earnedDate || (t.unlocked === true) || (t.progress >= 100);
+              rawId = String(t.trophyId !== undefined ? t.trophyId : (t.id !== undefined ? t.id : ''));
+              tName = (t.trophyName || t.name || '').trim().toLowerCase();
+              unlockDate = t.earnedDateTime || t.earnedDate || null;
+            }
+
+            if (!isUnlocked) return;
+
+            // Match to Master List via ID, Name, or Numeric Index
+            let targetId = null;
+            if (rawId && trophyMap.has(rawId)) {
+              targetId = rawId;
+            } else if (tName && nameToIdMap.has(tName)) {
+              targetId = nameToIdMap.get(tName);
+            } else if (trophyMap.has(String(opIndex))) {
+              targetId = String(opIndex);
+            } else if (rawId) {
+              targetId = rawId;
+            } else {
+              targetId = `t_${opIndex}`;
+            }
+
+            // Create entry if master list didn't include it
+            if (!trophyMap.has(targetId)) {
+              trophyMap.set(targetId, {
+                id: targetId,
+                name: (typeof t === "object" && (t.trophyName || t.name)) ? (t.trophyName || t.name).trim() : `Trophy #${targetId}`,
+                detail: (typeof t === "object" && (t.trophyDetail || t.description)) ? (t.trophyDetail || t.description) : 'Achievement criteria',
+                iconUrl: normalizeAssetUrl(t.trophyIconUrl || t.icon),
+                grade: (t.trophyType || t.type || 'bronze').toLowerCase(),
+                earners: []
+              });
+              if (tName) nameToIdMap.set(tName, targetId);
+            }
+
+            const targetEntry = trophyMap.get(targetId);
+            if (!targetEntry.earners.some(e => e.gamerTag === op.gamerTag)) {
+              targetEntry.earners.push({
+                gamerTag: op.gamerTag,
+                avatar: op.avatar,
+                date: unlockDate
+              });
+            }
+          });
         });
       }
 
@@ -2178,7 +2237,7 @@
           listBody.innerHTML = `
             <div style="padding:1.5rem; text-align:center;">
               <h4 style="color:#fff; margin-bottom:0.75rem;">Squad Operative Completion Records</h4>
-              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">Granular individual trophy IDs have not synced for this title yet. Current squad standings:</p>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">Master trophy definitions are syncing. Current squad standings:</p>
               <div style="display:flex; flex-direction:column; gap:0.75rem;">
                 ${gameEntry.operatives.map(op => `
                   <div class="trophy-item-row" style="justify-content:space-between;">
@@ -2214,13 +2273,17 @@
                 <div class="trophy-description">${escapeHtml(t.detail)}</div>
               </div>
               <div class="trophy-earners-wrap">
-                ${t.earners.length > 0 ? t.earners.map(e => `
-                  <div class="earner-chip">
-                    <img src="${e.avatar || '//placehold.co/18x18/111/fff?text=?'}" alt="">
-                    <span>${escapeHtml(e.gamerTag)}</span>
+                ${t.earners.length > 0 ? `
+                  <div class="earners-chips-container">
+                    ${t.earners.map(e => `
+                      <div class="earner-chip" title="Unlocked by ${escapeHtml(e.gamerTag)}">
+                        <img src="${e.avatar || '//placehold.co/18x18/111/fff?text=?'}" alt="">
+                        <span>${escapeHtml(e.gamerTag)}</span>
+                        ${e.date ? `<span class="earner-date">(${new Date(e.date).toLocaleDateString()})</span>` : ''}
+                      </div>
+                    `).join("")}
                   </div>
-                  ${e.date ? `<span class="earner-date">${new Date(e.date).toLocaleDateString()}</span>` : ''}
-                `).join("") : `<span class="locked-badge">Locked by Squad</span>`}
+                ` : `<span class="locked-badge">Locked by Squad</span>`}
               </div>
             </div>
           `;
