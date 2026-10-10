@@ -4,8 +4,8 @@
  * File: index.html
  * PSN Communication ID: NPWR21465_00
  * Google Analytics Tag: G-CTYHDF4MSD
- * Build Version: v8.3.0-SE5-CLOUD-AUTHORITATIVE
- * Timestamp: 2026-09-23 17:51:00 EDT (America/New_York)
+ * Build Version: v8.8.0-SE5-CLOUD-AUTHORITATIVE
+ * Deployment Timestamp: 2026-10-10 04:15:00 EDT (America/New_York)
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -14,7 +14,7 @@
     <meta name="psn-communication-id" content="NPWR21465_00">
     <title>Sniper Elite 5: Master Log & Progress Tracker</title>
     
-    <!-- Universal Google Analytics 4 Tag (G-CTYHDF4MSD) with Ad-Block Safety -->
+    <!-- Universal Google Analytics 4 Tag (G-CTYHDF4MSD) -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD" onerror="window.gtagBlocked=true;"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -29,7 +29,7 @@
             'stream_id': '13278632388',
             'page_type': 'se5_master_tracker',
             'content_id': 'NPWR21465_00',
-            'layout_version': '8.3.0',
+            'layout_version': '8.8.0',
             'engagement_timezone': 'America/New_York',
             'engagement_timestamp_24h': getNewYork24Time(),
             'send_page_view': true,
@@ -79,6 +79,10 @@
             text-shadow: 1px 1px 2px #000, -1px -1px 2px #000, 1px -1px 2px #000, -1px 1px 2px #000;
         }
 
+        .hidden {
+            display: none !important;
+        }
+
         /* Top Header Bar */
         header {
             background: rgba(10, 11, 14, 0.95);
@@ -96,6 +100,8 @@
             align-items: center;
             padding: 10px 18px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .header-title {
@@ -106,6 +112,49 @@
             text-transform: uppercase;
         }
 
+        .header-auth-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .auth-btn {
+            background: #0088ff;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .auth-btn:hover {
+            background: #0066cc;
+            box-shadow: 0 0 10px rgba(0, 136, 255, 0.5);
+        }
+
+        .auth-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 4px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .auth-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--ser-color);
+        }
+
         .system-status {
             font-size: 0.72rem;
             color: #aaa;
@@ -114,7 +163,7 @@
             letter-spacing: 1px;
         }
 
-        /* CSV Google Sheets Dropdown Menu */
+        /* CSV Navigation Menu */
         #csv-menu-bar {
             display: flex;
             flex-wrap: wrap;
@@ -192,7 +241,7 @@
             font-weight: bold;
         }
 
-        /* Top Operative Terminal */
+        /* Operative Terminal Card */
         .terminal-container {
             max-width: 1400px;
             margin: 18px auto 0 auto;
@@ -235,7 +284,7 @@
             text-transform: uppercase;
         }
 
-        .mission-select-box {
+        .terminal-select {
             background: #0d0f14;
             color: #fff;
             border: 1px solid var(--ser-color);
@@ -249,111 +298,11 @@
             box-shadow: inset 0 0 6px rgba(0,0,0,0.8);
         }
 
-        .operative-buttons-row {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .profile-btn {
-            background: #181a22;
-            color: #ccc;
-            border: 1px solid #333;
-            border-radius: 6px;
-            padding: 6px 14px;
-            font-size: 0.8rem;
-            font-weight: 800;
-            cursor: pointer;
-            min-height: 44px;
-            transition: all 0.2s ease;
-        }
-
-        .profile-btn.active-btn {
-            border-color: var(--ser-color);
-            color: var(--ser-color);
-            box-shadow: 0 0 10px var(--ser-glow);
-            background: #242630;
-        }
-
-        .pin-device-btn {
-            background: rgba(255, 255, 255, 0.06);
-            color: #94a3b8;
-            border: 1px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            padding: 6px 12px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            cursor: pointer;
-            min-height: 44px;
-            transition: all 0.2s ease;
-        }
-
-        .pin-device-btn.is-pinned {
-            background: rgba(255, 136, 0, 0.2);
-            color: #ff8800;
-            border: 1px solid #ff8800;
-            box-shadow: 0 0 10px rgba(255, 136, 0, 0.4);
-        }
-
-        /* Top Intel Registry Box */
-        .intel-container {
-            max-width: 1400px;
-            margin: 14px auto 14px auto;
-            padding: 0 16px;
-        }
-
-        .intel-card {
-            background: rgba(12, 14, 18, 0.90);
-            border: 2px solid var(--ser-color);
-            box-shadow: 0 0 16px var(--ser-glow);
-            border-radius: 12px;
-            padding: 16px 20px;
-            text-align: center;
-            backdrop-filter: blur(6px);
-        }
-
-        .intel-title {
-            font-size: 1.5rem;
-            font-weight: 900;
-            letter-spacing: 2px;
-            color: #fff;
-            text-transform: uppercase;
-            margin-bottom: 2px;
-        }
-
-        .intel-subtitle {
-            font-size: 0.85rem;
-            font-weight: 900;
-            letter-spacing: 1.5px;
-            color: #bbb;
-            margin-bottom: 12px;
-        }
-
-        .progress-bar-container {
-            width: 100%;
-            height: 14px;
-            background: #161820;
-            border-radius: 7px;
-            overflow: hidden;
-            border: 1px solid #333;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            width: 0%;
-            background: var(--ser-color);
-            box-shadow: 0 0 12px var(--ser-glow);
-            transition: width 0.4s ease-in-out;
-        }
-
-        /* Collectibles Container */
+        /* Collectibles & Progress Container */
         #section-container {
             max-width: 1400px;
-            margin: 0 auto;
-            padding: 6px 16px 40px 16px;
+            margin: 14px auto 0 auto;
+            padding: 0 16px 20px 16px;
         }
 
         .category-section {
@@ -396,7 +345,7 @@
             background: rgba(10, 11, 15, 0.90);
         }
 
-        /* Tactical Game Map Frame Container */
+        /* Tactical Game Map Frame */
         .tactical-map-wrapper {
             width: 100%;
             margin-bottom: 18px;
@@ -509,7 +458,7 @@
             margin-bottom: 14px;
         }
 
-        /* Team Intel Multi-Player Row */
+        /* Team Intel Row */
         .team-intel-row {
             display: flex;
             flex-wrap: wrap;
@@ -550,7 +499,7 @@
             font-weight: 900;
         }
 
-        /* Action Buttons */
+        /* Actions Row */
         .card-actions-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -648,6 +597,32 @@
             outline: none;
         }
 
+        /* Auth Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-card {
+            background: #161b22;
+            border: 1px solid var(--border-dim);
+            box-shadow: 0 0 20px var(--ser-glow);
+            border-radius: 10px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
         /* Persistent Verification Footer */
         #se5-sticky-footer {
             position: fixed;
@@ -682,7 +657,15 @@
     <header>
         <div class="header-top">
             <div class="header-title outlined-text">Sniper Elite 5: Master Log [NPWR21465_00]</div>
-            <div id="stat-line" class="system-status">LINKING CLOUD...</div>
+            <div class="header-auth-controls">
+                <button id="authModalBtn" class="auth-btn outlined-text">🔑 Log In</button>
+                <div id="userProfile" class="auth-badge hidden">
+                    <img id="headerUserAvatar" src="" alt="" class="auth-avatar">
+                    <span id="userDisplayName" style="color:#fff; font-size:13px; font-weight:800;"></span>
+                    <span style="color:var(--ser-color); font-size:10px;">▾</span>
+                </div>
+                <div id="stat-line" class="system-status">LINKING CLOUD...</div>
+            </div>
         </div>
         <nav id="csv-menu-bar"></nav>
     </header>
@@ -690,47 +673,56 @@
     <section class="terminal-container">
         <div class="master-terminal-card">
             <div class="terminal-group">
-                <div class="terminal-label">Operative Terminal</div>
+                <div class="terminal-label">Operative Call-Sign</div>
                 <div id="hunter-display" class="operative-name outlined-text">WEREWOLF3788</div>
             </div>
             <div class="terminal-group">
+                <div class="terminal-label">Primary Ecosystem</div>
+                <select id="platformSelect" class="terminal-select outlined-text">
+                    <option value="playstation" selected>🎮 PlayStation (PSN Cloud)</option>
+                    <option value="xbox">❎ Xbox Network (Console)</option>
+                    <option value="pc">💻 PC (Microsoft Store / Game Pass)</option>
+                    <option value="steam">🚂 Steam (PC Client)</option>
+                </select>
+            </div>
+            <div class="terminal-group">
                 <div class="terminal-label">Active Mission Focus</div>
-                <select id="mission-focus-select" class="mission-select-box outlined-text" onchange="window.appState && window.appState.setActiveMission(this.value)"></select>
-            </div>
-            <div class="operative-buttons-row">
-                <button class="profile-btn active-btn" onclick="window.appState && window.appState.switchHunter('Werewolf3788')">Werewolf3788</button>
-                <button class="profile-btn" onclick="window.appState && window.appState.switchHunter('Raymystyro')">Raymystyro</button>
-                <button class="profile-btn" onclick="window.appState && window.appState.switchHunter('Terrdog')">Terrdog</button>
-                <button class="profile-btn" onclick="window.appState && window.appState.switchHunter('Elu Cloud')">Elu Cloud</button>
-                <button id="pin-user-toggle-btn" class="pin-device-btn" onclick="window.appState && window.appState.togglePinActiveUser()">📌 Pin User</button>
+                <select id="mission-focus-select" class="terminal-select outlined-text" onchange="window.CompanionApp && window.CompanionApp.setActiveMission(this.value)"></select>
             </div>
         </div>
     </section>
 
-    <section class="intel-container">
-        <div class="intel-card">
-            <div class="intel-title outlined-text">Intel Registry</div>
-            <div id="percent-text" class="intel-subtitle outlined-text">TOTAL COLLECTION: 0%</div>
-            <div class="progress-bar-container">
-                <div id="overall-bar" class="progress-bar-fill"></div>
-            </div>
-        </div>
-    </section>
-
+    <!-- Main Collectibles Container -->
     <main id="section-container"></main>
 
+    <!-- Squad Comparison Deck -->
+    <section class="terminal-container" style="margin-top: 10px; margin-bottom: 25px;">
+        <div id="friendsComparisonContainer"></div>
+    </section>
+
+    <!-- Authentication Modal Dialog -->
+    <div id="authModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h3 style="color:#fff; margin-bottom:10px; text-transform:uppercase; font-size:1.1rem; letter-spacing:1px;">Operative Verification</h3>
+            <p style="font-size:13px; color:#aaa; margin-bottom:20px; line-height:1.4;">Authenticate with your Google profile to link your PlayStation trophies and stream live squad telemetry.</p>
+            <button id="googleSignInBtn" class="auth-btn" style="width:100%; padding:10px; font-size:13px; margin-bottom:12px;">Sign in with Google</button>
+            <button id="authModalClose" style="background:transparent; border:none; color:#888; cursor:pointer; font-size:12px; font-weight:bold;">Dismiss</button>
+        </div>
+    </div>
+
+    <!-- Persistent Verification Footer -->
     <footer id="se5-sticky-footer">
         <div>
-            <span class="footer-badge">v8.3.0</span>
-            <span style="margin-left:8px; color:var(--ser-color, #ff8800); font-weight:bold;">PSN ID: NPWR21465_00</span>
-            <span style="margin-left:8px; color:#888;">BUILD: 2026-09-23 17:51 EDT</span>
+            <span class="footer-badge">v8.8.0</span>
+            <span style="margin-left:8px; color:var(--ser-color); font-weight:bold;">PSN ID: NPWR21465_00</span>
+            <span id="nyBuildTimestamp" style="margin-left:8px; color:#888;">BUILD: 2026-10-10 04:15 EDT</span>
         </div>
         <div id="ny-timestamp" style="font-size:11px; color:#aaa;" class="outlined-text">
             New York Time (24h): --:--:--
         </div>
     </footer>
 
-    <!-- Domain-Aware Link Routing (Enforces target="_self" on same domain, target="_blank" on external) -->
+    <!-- Domain-Aware Link Routing -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const enforceDomainRouting = () => {
@@ -757,7 +749,7 @@
         });
     </script>
 
-    <!-- Main Tactical Engine Script -->
-    <script type="module" src="tracker.js?v=20260923_1751"></script>
+    <!-- Main Tactical Engine Script (Modular ES Module) -->
+    <script type="module" src="tracker.js?v=20261010_0415"></script>
 </body>
 </html>
