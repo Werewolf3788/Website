@@ -3,12 +3,12 @@
 <head>
   <!-- ============================================================================
    * Project: Sniper Elite Resistance Tactical Master Log & Intel Progress Tracker
-   * File: index.html (Single-File Architecture: HTML / CSS / JS)
+   * File: index.html
    * Project ID: entertainment-71888
-   * Build Version: v1.0.0-SER-CLOUD-AUTHORITATIVE
-   * Deployment Timestamp: 2026-09-23 22:05:00 EDT (America/New_York)
+   * Build Version: v1.1.0-SER-CLOUD-AUTHORITATIVE
+   * Deployment Timestamp: 2026-10-10 03:20:00 EDT (America/New_York)
    * PSN Communication ID: NPWR40813_00
-   * Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-resistance
+   * Firestore Path: users/{emailKey}/platform/{platform}/progress/sniper-elite-resistance
    * RTDB Path: psn/gamertags/{psn_id}/liveTrophyProgress/NPWR40813_00
    * Analytics Tag: G-CTYHDF4MSD
    * ============================================================================ -->
@@ -16,22 +16,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sniper Elite: Resistance — Tactical Intel & Trophy Progress Tracker</title>
 
-  <!-- Google Tag Manager (G-CTYHDF4MSD) -->
+  <!-- Google Analytics 4 -->
   <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
     gtag('js', new Date());
-    gtag('config', 'G-CTYHDF4MSD', {
-      'anonymize_ip': false,
-      'send_page_view': true
-    });
+    gtag('config', 'G-CTYHDF4MSD', { 'anonymize_ip': false, 'send_page_view': true });
   </script>
 
-  <!-- Leaflet CSS for Tactical Map Visualizations -->
+  <!-- Leaflet Map CSS -->
   <link rel="stylesheet" href="//unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-  <!-- === SECTION: Cascading Style Sheets (Lines 42-230) === -->
   <style>
     :root {
       --ser-color: #ff8800;
@@ -42,404 +38,74 @@
       --text-main: #f0f2f5;
       --text-muted: #8b949e;
       --accent-green: #2ecc71;
-      --accent-red: #e74c3c;
+      --accent-gold: #f5a623;
       --header-bg: #0d1117;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.5;
-      padding-bottom: 70px;
-    }
-
-    .outlined-text {
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg-dark); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.5; padding-bottom: 70px; }
+    .outlined-text { text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
+    .hidden { display: none !important; }
 
     /* Top Navigation Sheet Menu */
-    #csv-menu-bar {
-      display: flex;
-      flex-wrap: wrap;
-      background: var(--header-bg);
-      border-bottom: 1px solid var(--card-border);
-      padding: 8px 16px;
-      gap: 10px;
-      align-items: center;
-    }
+    #csv-menu-bar { display: flex; flex-wrap: wrap; background: var(--header-bg); border-bottom: 1px solid var(--card-border); padding: 8px 16px; gap: 10px; align-items: center; }
+    .csv-single-btn, .csv-dropdown-btn { background: #1c2128; color: #c9d1d9; border: 1px solid #30363d; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; transition: all 0.2s ease; }
+    .csv-single-btn:hover, .csv-dropdown-btn:hover { background: #2d333b; border-color: #8b949e; color: #fff; }
+    .csv-dropdown { position: relative; }
+    .csv-dropdown-content { display: none; position: absolute; top: 100%; left: 0; background-color: #1c2128; min-width: 180px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); border: 1px solid #30363d; border-radius: 6px; z-index: 1000; margin-top: 4px; }
+    .csv-dropdown-content.show { display: block; }
+    .csv-dropdown-item { color: #c9d1d9; padding: 8px 14px; text-decoration: none; display: block; font-size: 13px; }
+    .csv-dropdown-item:hover { background: #2d333b; color: #fff; }
 
-    .csv-single-btn, .csv-dropdown-btn {
-      background: #1c2128;
-      color: #c9d1d9;
-      border: 1px solid #30363d;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      transition: all 0.2s ease;
-    }
+    /* App Header */
+    .app-header { background: linear-gradient(180deg, #161b22 0%, #0d1117 100%); border-bottom: 2px solid var(--ser-color); box-shadow: 0 4px 20px var(--ser-glow); padding: 16px 20px; }
+    .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+    .app-title { font-size: 1.4rem; font-weight: 900; letter-spacing: 1px; color: #fff; display: flex; align-items: center; gap: 10px; }
+    
+    .auth-badge { display: flex; align-items: center; gap: 10px; background: #1c2128; border: 1px solid #30363d; padding: 4px 12px; border-radius: 20px; cursor: pointer; }
+    .auth-btn { background: #0088ff; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; }
+    .auth-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
 
-    .csv-single-btn:hover, .csv-dropdown-btn:hover {
-      background: #2d333b;
-      border-color: #8b949e;
-      color: #fff;
-    }
+    .controls-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    .mission-select-box, .platform-select-box { background: #1c2128; border: 1px solid #30363d; color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 14px; font-weight: 600; outline: none; }
 
-    .csv-dropdown {
-      position: relative;
-    }
+    /* Container & Accordion */
+    .container { max-width: 1440px; margin: 20px auto; padding: 0 16px; }
+    .category-section { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; margin-bottom: 16px; overflow: hidden; transition: all 0.2s ease; }
+    .category-section.active-focus { border-color: var(--ser-color); box-shadow: 0 0 12px var(--ser-glow); }
+    .category-header { background: #1c2128; padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+    .section-collapsed .section-content { display: none; }
 
-    .csv-dropdown-content {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      background-color: #1c2128;
-      min-width: 180px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-      border: 1px solid #30363d;
-      border-radius: 6px;
-      z-index: 1000;
-      margin-top: 4px;
-    }
+    .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; padding: 16px; }
+    .item-card { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; }
+    .item-card.completed { border-color: var(--accent-green); background: rgba(46, 204, 113, 0.05); }
+    .item-title { font-size: 14px; font-weight: 700; color: #fff; }
+    .item-desc { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .item-type-badge { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
 
-    .csv-dropdown-content.show {
-      display: block;
-    }
+    .team-intel-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; align-items: center; }
+    .team-intel-label { font-size: 10px; font-weight: 800; color: #6e7681; width: 100%; margin-bottom: 2px; }
+    .team-badge { font-size: 10px; padding: 2px 6px; border-radius: 3px; background: #21262d; border: 1px solid #30363d; color: #8b949e; font-weight: bold; }
+    .team-badge.is-collected { background: rgba(46, 204, 113, 0.15); border-color: var(--accent-green); color: var(--accent-green); }
 
-    .csv-dropdown-item {
-      color: #c9d1d9;
-      padding: 8px 14px;
-      text-decoration: none;
-      display: block;
-      font-size: 13px;
-    }
+    .card-actions-row, .stepper-action-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; gap: 8px; }
+    .confirm-toggle-btn { background: #238636; border: 1px solid rgba(240,246,252,0.1); color: #fff; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 700; cursor: pointer; width: 100%; }
+    .confirm-toggle-btn.completed-state { background: #da3633; }
+    .stepper-action-row { display: flex; width: 100%; }
+    .step-btn { background: #21262d; border: 1px solid #30363d; color: #fff; width: 36px; height: 32px; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; }
+    .clickable-num-pill { flex: 1; text-align: center; line-height: 30px; background: #161b22; border: 1px solid #30363d; border-radius: 4px; font-size: 12px; font-weight: bold; color: var(--ser-color); cursor: pointer; }
+    .manual-inline-num-input { width: 100%; height: 30px; background: #0d1117; border: 1px solid var(--ser-color); color: #fff; text-align: center; border-radius: 4px; font-size: 12px; outline: none; }
 
-    .csv-dropdown-item:hover {
-      background: #2d333b;
-      color: #fff;
-    }
-
-    /* Header & Control Center */
-    .app-header {
-      background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
-      border-bottom: 2px solid var(--ser-color);
-      box-shadow: 0 4px 20px var(--ser-glow);
-      padding: 16px 20px;
-    }
-
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .app-title {
-      font-size: 1.4rem;
-      font-weight: 900;
-      letter-spacing: 1px;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .squad-selector {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .profile-btn {
-      background: #1c2128;
-      color: #8b949e;
-      border: 1px solid #30363d;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .profile-btn.active-btn {
-      background: var(--ser-color);
-      color: #000;
-      border-color: #fff;
-      box-shadow: 0 0 10px var(--ser-glow);
-    }
-
-    .controls-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .mission-select-box {
-      background: #1c2128;
-      border: 1px solid #30363d;
-      color: #fff;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 600;
-      outline: none;
-    }
-
-    /* Overall Progress Bar */
-    .progress-bar-container {
-      margin-top: 14px;
-      background: #21262d;
-      border-radius: 8px;
-      overflow: hidden;
-      height: 20px;
-      border: 1px solid #30363d;
-      position: relative;
-    }
-
-    .progress-bar-fill {
-      background: linear-gradient(90deg, #ff8800, #ffbb00);
-      height: 100%;
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-
-    .progress-text {
-      position: absolute;
-      width: 100%;
-      text-align: center;
-      font-size: 11px;
-      font-weight: 900;
-      line-height: 20px;
-      color: #fff;
-    }
-
-    /* Category Accordions & Cards */
-    .container {
-      max-width: 1440px;
-      margin: 20px auto;
-      padding: 0 16px;
-    }
-
-    .category-section {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      margin-bottom: 16px;
-      overflow: hidden;
-      transition: all 0.2s ease;
-    }
-
-    .category-section.active-focus {
-      border-color: var(--ser-color);
-      box-shadow: 0 0 12px var(--ser-glow);
-    }
-
-    .category-header {
-      background: #1c2128;
-      padding: 12px 16px;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      user-select: none;
-    }
-
-    .section-collapsed .section-content {
-      display: none;
-    }
-
-    .item-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 12px;
-      padding: 16px;
-    }
-
-    .item-card {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 6px;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .item-card.completed {
-      border-color: var(--accent-green);
-      background: rgba(46, 204, 113, 0.05);
-    }
-
-    .item-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    .item-desc {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .item-type-badge {
-      background: #21262d;
-      border: 1px solid #30363d;
-      color: #c9d1d9;
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .team-intel-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      margin-top: 8px;
-      align-items: center;
-    }
-
-    .team-intel-label {
-      font-size: 10px;
-      font-weight: 800;
-      color: #6e7681;
-      width: 100%;
-      margin-bottom: 2px;
-    }
-
-    .team-badge {
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 3px;
-      background: #21262d;
-      border: 1px solid #30363d;
-      color: #8b949e;
-      font-weight: bold;
-    }
-
-    .team-badge.is-collected {
-      background: rgba(46, 204, 113, 0.15);
-      border-color: var(--accent-green);
-      color: var(--accent-green);
-    }
-
-    .card-actions-row, .stepper-action-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 8px;
-      gap: 8px;
-    }
-
-    .confirm-toggle-btn {
-      background: #238636;
-      border: 1px solid rgba(240,246,252,0.1);
-      color: #fff;
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    .confirm-toggle-btn.completed-state {
-      background: #da3633;
-    }
-
-    .stepper-action-row {
-      display: flex;
-      width: 100%;
-    }
-
-    .step-btn {
-      background: #21262d;
-      border: 1px solid #30363d;
-      color: #fff;
-      width: 36px;
-      height: 32px;
-      border-radius: 4px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .clickable-num-pill {
-      flex: 1;
-      text-align: center;
-      line-height: 30px;
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: bold;
-      color: var(--ser-color);
-      cursor: pointer;
-    }
-
-    .manual-inline-num-input {
-      width: 100%;
-      height: 30px;
-      background: #0d1117;
-      border: 1px solid var(--ser-color);
-      color: #fff;
-      text-align: center;
-      border-radius: 4px;
-      font-size: 12px;
-      outline: none;
-    }
-
-    /* Sticky Footer */
-    #ser-sticky-footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #0d1117;
-      border-top: 1px solid var(--card-border);
-      padding: 8px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      z-index: 999;
-      box-shadow: 0 -4px 10px rgba(0,0,0,0.5);
-    }
-
-    .footer-badge {
-      background: var(--ser-color);
-      color: #000;
-      font-weight: 800;
-      padding: 2px 6px;
-      border-radius: 3px;
-    }
+    /* Modals & Sticky Footer */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+    .modal-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 24px; max-width: 380px; width: 90%; text-align: center; }
+    #ser-sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #0d1117; border-top: 1px solid var(--card-border); padding: 8px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; z-index: 999; }
+    .footer-badge { background: var(--ser-color); color: #000; font-weight: 800; padding: 2px 6px; border-radius: 3px; }
   </style>
 </head>
 <body>
 
-  <!-- Top Google Sheets CSV Navigation Engine Container -->
+  <!-- Top Google Sheets CSV Navigation Bar -->
   <div id="csv-menu-bar"></div>
 
   <!-- Header Bar -->
@@ -449,25 +115,27 @@
         <span>🎯 SNIPER ELITE: RESISTANCE</span>
         <span style="font-size: 12px; color: var(--ser-color); font-weight: normal;">TACTICAL INTEL & TROPHY TELEMETRY</span>
       </div>
-      <div class="squad-selector">
-        <button class="profile-btn active-btn outlined-text" onclick="window.appState.switchHunter('Werewolf3788')">Werewolf3788</button>
-        <button class="profile-btn outlined-text" onclick="window.appState.switchHunter('Raymystyro')">Raymystyro</button>
-        <button class="profile-btn outlined-text" onclick="window.appState.switchHunter('Terrdog')">Terrdog</button>
-        <button class="profile-btn outlined-text" onclick="window.appState.switchHunter('Elu Cloud')">Elu Cloud</button>
+      <div>
+        <button id="authModalBtn" class="auth-btn outlined-text">🔑 Log In</button>
+        <div id="userProfile" class="auth-badge hidden">
+          <img id="headerUserAvatar" src="" alt="" class="auth-avatar">
+          <span id="userDisplayName" style="color:#fff; font-size:13px; font-weight:700;"></span>
+          <span style="color:var(--ser-color); font-size:11px;">▾</span>
+        </div>
       </div>
     </div>
     <div class="controls-row">
       <div style="display:flex; align-items:center; gap:10px;">
-        <span style="font-size:12px; font-weight:bold; color:#8b949e;">ACTIVE OPERATIVE: <span id="hunter-display" style="color:var(--ser-color);">WEREWOLF3788</span></span>
-        <button id="pin-user-toggle-btn" class="profile-btn outlined-text" style="font-size:11px; padding:4px 8px;" onclick="window.appState.togglePinActiveUser()">📌 Pin User</button>
+        <span style="font-size:12px; font-weight:bold; color:#8b949e;">PLATFORM:</span>
+        <select id="platformSelect" class="platform-select-box">
+          <option value="playstation" selected>PlayStation (PSN Sync)</option>
+          <option value="pc">PC / Steam</option>
+          <option value="xbox">Xbox Network</option>
+        </select>
       </div>
       <div>
-        <select id="mission-focus-select" class="mission-select-box" onchange="window.appState.setActiveMission(this.value)"></select>
+        <select id="mission-focus-select" class="mission-select-box"></select>
       </div>
-    </div>
-    <div class="progress-bar-container">
-      <div id="overall-bar" class="progress-bar-fill"></div>
-      <div id="percent-text" class="progress-text outlined-text">TOTAL RESISTANCE INTEL: 0%</div>
     </div>
   </header>
 
@@ -475,14 +143,25 @@
   <main class="container">
     <div id="stat-line" style="font-size:11px; color:#6e7681; margin-bottom:12px; font-family:monospace;">INITIALIZING SECURE CLOUD SYNCHRONIZATION...</div>
     <div id="section-container"></div>
+    <div id="friendsComparisonContainer" style="margin-top:20px;"></div>
   </main>
+
+  <!-- Login Modal -->
+  <div id="authModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <h3 style="color:#fff; margin-bottom:12px;">Operative Authentication</h3>
+      <p style="font-size:13px; color:#8b949e; margin-bottom:20px;">Sign in with Google to synchronize your tactical progress across cloud devices and streaming rosters.</p>
+      <button id="googleSignInBtn" class="auth-btn" style="width:100%; padding:10px; margin-bottom:12px;">Sign in with Google</button>
+      <button id="authModalClose" style="background:transparent; border:none; color:#8b949e; cursor:pointer; font-size:12px;">Cancel</button>
+    </div>
+  </div>
 
   <!-- Sticky Footer -->
   <footer id="ser-sticky-footer">
     <div>
-      <span class="footer-badge">v1.0.0-SER</span>
+      <span class="footer-badge">v1.1.0-SER</span>
       <span style="margin-left:8px; color:var(--ser-color); font-weight:bold;">PSN ID: NPWR40813_00</span>
-      <span style="margin-left:8px; color:#888;">BUILD: 2026-09-23 22:05:00 EDT</span>
+      <span style="margin-left:8px; color:#888;">BUILD: 2026-10-10 03:20:00 EDT</span>
     </div>
     <div id="ny-timestamp" style="font-size:11px; color:#aaa;" class="outlined-text">New York Time (24h): --:--:--</div>
   </footer>
@@ -490,12 +169,12 @@
   <!-- Leaflet Map JS Dependency -->
   <script src="//unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <!-- === SECTION: Complete JavaScript Engine (Lines 310-950) === -->
+  <!-- Module Script Engine -->
   <script type="module">
-    import { initializeApp } from '//www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-    import { getAuth, signInAnonymously, onAuthStateChanged } from '//www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-    import { getFirestore, doc, setDoc, onSnapshot } from '//www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
-    import { getDatabase, ref as rtdbRef, onValue } from '//www.gstatic.com/firebasejs/11.6.1/firebase-database.js';
+    import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from '//www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    import { getFirestore, doc, setDoc, onSnapshot } from '//www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+    import { getDatabase, ref as rtdbRef, onValue } from '//www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -509,50 +188,24 @@
     };
 
     const PSN_COMMUNICATION_ID = 'NPWR40813_00';
-    const ALL_OPERATIVES = ['Werewolf3788', 'Raymystyro', 'Terrdog', 'Elu Cloud'];
+    const GAME_DOC_ID = 'sniper-elite-resistance';
 
-    const PSN_ACCOUNT_MAPPINGS = {
-      'WildHorse_Spirit': 'Werewolf3788',
-      'wildhorse_spirit': 'Werewolf3788',
-      'OneLIVIDMAN': 'Raymystyro',
-      'onelividman': 'Raymystyro',
-      'Darkwing69420': 'Terrdog',
-      'darkwing69420': 'Terrdog',
-      'DesdemonaTiger': 'Elu Cloud',
-      'desdemonatiger': 'Elu Cloud'
-    };
+    function getResolvedPrimaryEmail(user) {
+      if (!user) return "";
+      const google = user.providerData && user.providerData.find(p => p && p.providerId === "google.com");
+      if (google && google.email) return google.email.toLowerCase().trim();
+      if (user.email) return user.email.toLowerCase().trim();
+      return "operative@sniper.local";
+    }
 
-    const OPERATIVE_ALIASES = {
-      'Werewolf3788': ['Werewolf3788', 'wildhorse_spirit', 'WildHorse_Spirit'],
-      'Raymystyro': ['Raymystyro', 'OneLIVIDMAN', 'onelividman'],
-      'Terrdog': ['Terrdog', 'Darkwing69420', 'darkwing69420'],
-      'Elu Cloud': ['Elu Cloud', 'DesdemonaTiger', 'desdemonatiger']
-    };
-
-    const userThemes = {
-      'Werewolf3788': { color: '#ff8800', glow: 'rgba(255, 136, 0, 0.6)' },
-      'Raymystyro': { color: '#ff4444', glow: 'rgba(255, 68, 68, 0.6)' },
-      'Terrdog': { color: '#a855f7', glow: 'rgba(168, 85, 247, 0.6)' },
-      'Elu Cloud': { color: '#00ccff', glow: 'rgba(0, 204, 255, 0.6)' }
-    };
-
-    const IN_GAME_TYPE_ORDER = {
-      'Personal Letter': 1,
-      'Classified Doc': 2,
-      'Hidden Item': 3,
-      'Stone Eagle': 4,
-      'Workbench': 5,
-      'Trophy': 6,
-      'Medal': 7
-    };
+    function getEmailKey(email) {
+      if (!email) return "unknown_user";
+      return String(email).trim().toLowerCase().replace(/@/g, '_at_').replace(/\./g, '_');
+    }
 
     function normalizeString(str) {
       if (!str) return "";
-      return String(str)
-        .toLowerCase()
-        .replace(/[’']/g, "'")
-        .replace(/[^a-z0-9]/g, "")
-        .trim();
+      return String(str).toLowerCase().replace(/[’']/g, "'").replace(/[^a-z0-9]/g, "").trim();
     }
 
     const PSN_TROPHY_MAPPINGS_RAW = {
@@ -579,7 +232,6 @@
       "File O' Facts": 'trophy_ser_file_o_facts',
       'Sprung a Leak': 'trophy_ser_sprung_leak',
       'Stopping Traffic': 'trophy_ser_stopping_traffic',
-      'Lost its way Gnome': 'trophy_ser_lost_gnome',
       'Tanks for Nothing!': 'trophy_ser_tanks_for_nothing',
       'Propagandist': 'trophy_ser_propagandist',
       'Propaganda Machine': 'trophy_ser_propaganda_machine',
@@ -614,19 +266,7 @@
       'Fast and Fuhrer-less': 'trophy_ser_dlc1_fast_fuhrerless',
       'He did Nazi-it Coming': 'trophy_ser_dlc1_he_did_nazi_it',
       'In The Dead Of Reich': 'trophy_ser_dlc1_dead_of_reich',
-      'Blockbuster': 'trophy_ser_dlc1_blockbuster',
-      "That's a Wrap!": 'trophy_ser_dlc1_thats_a_wrap',
-      'B-Movie': 'trophy_ser_dlc1_b_movie',
-      'Mein Juewel!': 'trophy_ser_dlc1_mein_juewel',
-      'Mortar Combat': 'trophy_ser_dlc2_mortar_combat',
-      'Nein-a Blume': 'trophy_ser_dlc2_nein_a_blume',
-      "Vercors' Vengeance": 'trophy_ser_dlc2_vercors_vengeance',
-      'Vergeltungswaffe': 'trophy_ser_dlc3_vergeltungswaffe',
-      'Communication Breakdown': 'trophy_ser_dlc3_comm_breakdown',
-      'Jailbreak': 'trophy_ser_dlc3_jailbreak',
-      'Mis-guided-missile': 'trophy_ser_dlc4_misguided_missile',
-      'Lethal Love letter': 'trophy_ser_dlc4_lethal_love_letter',
-      'The Path of Most Resistance': 'trophy_ser_dlc4_path_most_resistance'
+      'Mein Juewel!': 'trophy_ser_dlc1_mein_juewel'
     };
 
     const PSN_TROPHY_MAPPINGS = {};
@@ -646,6 +286,16 @@
       'Medal': `${GITHUB_RAW_BASE}Sniper%20Elite%20Classified%20Documents.JPG`
     };
 
+    const IN_GAME_TYPE_ORDER = {
+      'Personal Letter': 1,
+      'Classified Doc': 2,
+      'Hidden Item': 3,
+      'Stone Eagle': 4,
+      'Workbench': 5,
+      'Trophy': 6,
+      'Medal': 7
+    };
+
     function getTierStatus(percent) {
       if (percent >= 100) return { tier: 'Gold', icon: '🥇', label: 'GOLD TIER', style: 'background: rgba(255, 215, 0, 0.2); color: #ffd700; border: 1px solid #ffd700;' };
       if (percent >= 50) return { tier: 'Silver', icon: '🥈', label: 'SILVER TIER', style: 'background: rgba(192, 192, 192, 0.2); color: #e0e0e0; border: 1px solid #c0c0c0;' };
@@ -653,319 +303,117 @@
       return { tier: 'None', icon: '⚪', label: 'IN PROGRESS', style: 'background: rgba(255, 255, 255, 0.08); color: #aaa; border: 1px solid rgba(255,255,255,0.15);' };
     }
 
-    const resistanceData = [
-      // --- Mission 1: Behind Enemy Lines ---
-      { id: 'ser_m1_wb1', cat: '1: Behind Enemy Lines', name: 'Pistol Workbench', type: 'Workbench', desc: 'Basement of house behind barrier reached after climbing initial wall.' },
-      { id: 'trophy_ser_m1_dam_buster', cat: '1: Behind Enemy Lines', name: 'Dam Buster', type: 'Trophy', desc: 'PSN Trophy: Sabotage the Dam and destroy the AA guns.' },
-
-      // --- Mission 2: Dead Drop ---
-      { id: 'ser_m2_pl1', cat: '2: Dead Drop', name: 'A Lost Soul Trembles', type: 'Personal Letter', desc: 'Inside church first-floor safe (key on table near gramophone or use satchel charge).' },
-      { id: 'ser_m2_pl2', cat: '2: Dead Drop', name: 'Missing You Dearly', type: 'Personal Letter', desc: 'Inside castle smaller courtyard on stone bench.' },
-      { id: 'ser_m2_pl3', cat: '2: Dead Drop', name: 'Surrounded by Idiots', type: 'Personal Letter', desc: 'On library reception desk, north side of map.' },
-      { id: 'ser_m2_pl4', cat: '2: Dead Drop', name: 'A Withering Tree', type: 'Personal Letter', desc: 'On outdoor cafe table in the center of town.' },
-      { id: 'ser_m2_pl5', cat: '2: Dead Drop', name: "A Nephew's Concern", type: 'Personal Letter', desc: 'On public park bench, north side of map.' },
-      { id: 'ser_m2_cd1', cat: '2: Dead Drop', name: 'Findings Report', type: 'Classified Doc', desc: 'Table with military equipment, west sector.' },
-      { id: 'ser_m2_cd2', cat: '2: Dead Drop', name: 'Orders to Follow', type: 'Classified Doc', desc: 'Inside castle room adjacent to courtyard tree.' },
-      { id: 'ser_m2_cd3', cat: '2: Dead Drop', name: 'Use the Library', type: 'Classified Doc', desc: 'Inside house safe, east sector (key upstairs by bed).' },
-      { id: 'ser_m2_cd4', cat: '2: Dead Drop', name: 'Tightening Security', type: 'Classified Doc', desc: 'Table on first floor of cafe (Kill List target building).' },
-      { id: 'ser_m2_cd5', cat: '2: Dead Drop', name: 'Increased Security', type: 'Classified Doc', desc: 'Inside checkpoint tent on wooden table.' },
-      { id: 'ser_m2_hi1', cat: '2: Dead Drop', name: 'La Résistance (Propaganda)', type: 'Hidden Item', desc: 'Back alley wall poster. Unlocks Propaganda Mission: La Résistance.' },
-      { id: 'ser_m2_hi2', cat: '2: Dead Drop', name: 'Police Report: #222', type: 'Hidden Item', desc: 'Library secondary objective file.' },
-      { id: 'ser_m2_hi3', cat: '2: Dead Drop', name: 'Police Report: #223', type: 'Hidden Item', desc: 'Library secondary objective file.' },
-      { id: 'ser_m2_hi4', cat: '2: Dead Drop', name: 'Police Report: #224', type: 'Hidden Item', desc: 'Library secondary objective file.' },
-      { id: 'ser_m2_se1', cat: '2: Dead Drop', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Rooftop of house adjacent to church, west side.' },
-      { id: 'ser_m2_se2', cat: '2: Dead Drop', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Perched on building to the right of library.' },
-      { id: 'ser_m2_se3', cat: '2: Dead Drop', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Castle watchtower battlement roof.' },
-      { id: 'ser_m2_wb1', cat: '2: Dead Drop', name: 'Rifle Workbench', type: 'Workbench', desc: 'First floor reached via rear exterior stairs (lockpick/bolt cutters).' },
-      { id: 'ser_m2_wb2', cat: '2: Dead Drop', name: 'Pistol Workbench', type: 'Workbench', desc: 'Underground tunnel between library and bar.' },
-      { id: 'ser_m2_wb3', cat: '2: Dead Drop', name: 'SMG Workbench', type: 'Workbench', desc: 'Locked doorway between both castle courtyards.' },
-      { id: 'trophy_ser_m2_welcome', cat: '2: Dead Drop', name: 'Welcome to the Resistance', type: 'Trophy', desc: 'PSN Trophy: Find the Mole and uncover the Superweapon plot.' },
-      { id: 'trophy_ser_file_o_facts', cat: '2: Dead Drop', name: "File O' Facts", type: 'Trophy', desc: 'PSN Trophy: Recover evidence implicating Resistance members in Library.' },
-
-      // --- Mission 3: Sonderzüge Sabotage ---
-      { id: 'ser_m3_pl1', cat: '3: Sonderzüge Sabotage', name: 'Be Safe, My Dear', type: 'Personal Letter', desc: 'Ground-floor safe in objective building (key in upstairs room).' },
-      { id: 'ser_m3_pl2', cat: '3: Sonderzüge Sabotage', name: 'We Are Everywhere', type: 'Personal Letter', desc: 'Hotel 2nd floor, window ledge route into locked room.' },
-      { id: 'ser_m3_pl3', cat: '3: Sonderzüge Sabotage', name: 'Cross of Lorraine', type: 'Personal Letter', desc: 'Top floor table inside optional objective house.' },
-      { id: 'ser_m3_pl4', cat: '3: Sonderzüge Sabotage', name: 'Missing Her Birthday', type: 'Personal Letter', desc: 'Waiting bench on first floor inside train station.' },
-      { id: 'ser_m3_pl5', cat: '3: Sonderzüge Sabotage', name: 'The Scars of War', type: 'Personal Letter', desc: 'Garden bench north of train tracks.' },
-      { id: 'ser_m3_cd1', cat: '3: Sonderzüge Sabotage', name: 'Gestapo Briefing', type: 'Classified Doc', desc: 'Main building penthouse desk.' },
-      { id: 'ser_m3_cd2', cat: '3: Sonderzüge Sabotage', name: 'Hotel Refurbishment', type: 'Classified Doc', desc: 'Ground floor reception desk.' },
-      { id: 'ser_m3_cd3', cat: '3: Sonderzüge Sabotage', name: 'Hotel Storage', type: 'Classified Doc', desc: 'Loot crate inside warehouse via exterior ladder.' },
-      { id: 'ser_m3_cd4', cat: '3: Sonderzüge Sabotage', name: 'Rail Network Control', type: 'Classified Doc', desc: 'Docks watchtower upstairs console.' },
-      { id: 'ser_m3_cd5', cat: '3: Sonderzüge Sabotage', name: 'Cargo Details', type: 'Classified Doc', desc: 'Table inside central train depot office.' },
-      { id: 'ser_m3_hi1', cat: '3: Sonderzüge Sabotage', name: 'Resistance Flag', type: 'Hidden Item', desc: 'Ground floor wooden crate inside Cross of Lorraine house.' },
-      { id: 'ser_m3_hi2', cat: '3: Sonderzüge Sabotage', name: 'Gestapo ID Badge', type: 'Hidden Item', desc: 'Crate on western bridge crossing.' },
-      { id: 'ser_m3_hi3', cat: '3: Sonderzüge Sabotage', name: 'Le Sniper (Propaganda)', type: 'Hidden Item', desc: 'Exterior brick wall near optional objective house. Unlocks Le Sniper.' },
-      { id: 'ser_m3_se1', cat: '3: Sonderzüge Sabotage', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Distant bridge abutment outside southwest playable boundary.' },
-      { id: 'ser_m3_se2', cat: '3: Sonderzüge Sabotage', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Perched on ornate train station roof parapet.' },
-      { id: 'ser_m3_se3', cat: '3: Sonderzüge Sabotage', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Northwest corner rooftop chimney.' },
-      { id: 'ser_m3_wb1', cat: '3: Sonderzüge Sabotage', name: 'Pistol Workbench', type: 'Workbench', desc: 'Top floor of building adjacent to station (lockpick interior door).' },
-      { id: 'ser_m3_wb2', cat: '3: Sonderzüge Sabotage', name: 'Rifle Workbench', type: 'Workbench', desc: 'Inside docks freight storage warehouse.' },
-      { id: 'ser_m3_wb3', cat: '3: Sonderzüge Sabotage', name: 'SMG Workbench', type: 'Workbench', desc: 'Alleyway storage shed behind lockpick gate.' },
-      { id: 'trophy_ser_m3_trainwreck', cat: '3: Sonderzüge Sabotage', name: 'Trainwreck', type: 'Trophy', desc: 'PSN Trophy: Raid Hotel Terminus and sabotage the Sonderzüge.' },
-
-      // --- Mission 4: Collision Course ---
-      { id: 'ser_m4_pl1', cat: '4: Collision Course', name: 'A Gift, And A Name', type: 'Personal Letter', desc: 'Pinned to tree right after initial infiltration zipline.' },
-      { id: 'ser_m4_pl2', cat: '4: Collision Course', name: 'I Will Miss You', type: 'Personal Letter', desc: 'Table inside small forestry cabin.' },
-      { id: 'ser_m4_pl3', cat: '4: Collision Course', name: 'What a Discovery!', type: 'Personal Letter', desc: 'Inside locked timber shed.' },
-      { id: 'ser_m4_pl4', cat: '4: Collision Course', name: 'So Boring!', type: 'Personal Letter', desc: 'Crate on flak tower artillery platform.' },
-      { id: 'ser_m4_pl5', cat: '4: Collision Course', name: "I'm so Sorry", type: 'Personal Letter', desc: 'Behind ladder inside bombed out brick building.' },
-      { id: 'ser_m4_cd1', cat: '4: Collision Course', name: 'Transfer Details', type: 'Classified Doc', desc: 'Attic table inside farmhouse.' },
-      { id: 'ser_m4_cd2', cat: '4: Collision Course', name: 'Requisition Orders', type: 'Classified Doc', desc: 'Bunker sub-level equipment case under railing.' },
-      { id: 'ser_m4_cd3', cat: '4: Collision Course', name: 'Findings Report', type: 'Classified Doc', desc: 'Large first floor briefing room desk.' },
-      { id: 'ser_m4_cd4', cat: '4: Collision Course', name: 'Requesting Support', type: 'Classified Doc', desc: 'Table tucked behind first floor staircase.' },
-      { id: 'ser_m4_cd5', cat: '4: Collision Course', name: 'Dam Damage Report', type: 'Classified Doc', desc: 'Control console opposite primary sabotage valve.' },
-      { id: 'ser_m4_hi1', cat: '4: Collision Course', name: 'Wine Bottle', type: 'Hidden Item', desc: 'Tavern bar counter first floor.' },
-      { id: 'ser_m4_hi2', cat: '4: Collision Course', name: 'Gas Mask', type: 'Hidden Item', desc: 'Basement equipment shelf in auxiliary building.' },
-      { id: 'ser_m4_hi3', cat: '4: Collision Course', name: 'Libération (Propaganda)', type: 'Hidden Item', desc: 'Concrete barrier behind bridge tank. Unlocks Libération.' },
-      { id: 'ser_m4_se1', cat: '4: Collision Course', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Steel drainage girders directly beneath dam structure.' },
-      { id: 'ser_m4_se2', cat: '4: Collision Course', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Rock ledge framed between pine trees, northwest corner.' },
-      { id: 'ser_m4_se3', cat: '4: Collision Course', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Eastern radar tower support platform.' },
-      { id: 'ser_m4_wb1', cat: '4: Collision Course', name: 'SMG Workbench', type: 'Workbench', desc: 'Underground bunker accessed through ladder behind main objective.' },
-      { id: 'ser_m4_wb2', cat: '4: Collision Course', name: 'Pistol Workbench', type: 'Workbench', desc: 'Second floor attic accessed via exterior window vines.' },
-      { id: 'ser_m4_wb3', cat: '4: Collision Course', name: 'Rifle Workbench', type: 'Workbench', desc: 'Behind steel security door opposite auxiliary generator.' },
-      { id: 'trophy_ser_m4_bomb_squad', cat: '4: Collision Course', name: 'Bomb Squad', type: 'Trophy', desc: 'PSN Trophy: Ensure Allied secrets remain unknown and confirm Site D.' },
-      { id: 'trophy_ser_sprung_leak', cat: '4: Collision Course', name: 'Sprung a Leak', type: 'Trophy', desc: 'PSN Trophy: Sabotage the Dam pump room in Collision Course.' },
-
-      // --- Mission 5: Devil’s Cauldron ---
-      { id: 'ser_m5_pl1', cat: "5: Devil's Cauldron", name: 'Location Exposed', type: 'Personal Letter', desc: 'Crate southwest river overlook.' },
-      { id: 'ser_m5_pl2', cat: "5: Devil's Cauldron", name: 'A Childish Party!', type: 'Personal Letter', desc: 'Guard station table at factory perimeter.' },
-      { id: 'ser_m5_pl3', cat: "5: Devil's Cauldron", name: 'I Miss You So Much', type: 'Personal Letter', desc: 'Field bench inside timber bunker outpost.' },
-      { id: 'ser_m5_pl4', cat: "5: Devil's Cauldron", name: 'It is all in Ruins', type: 'Personal Letter', desc: 'First floor bedroom beneath nightstand.' },
-      { id: 'ser_m5_pl5', cat: "5: Devil's Cauldron", name: 'Be a Man, Not a Boy!', type: 'Personal Letter', desc: 'Mess hall table inside worker barracks.' },
-      { id: 'ser_m5_cd1', cat: "5: Devil's Cauldron", name: 'Scuttle Order', type: 'Classified Doc', desc: 'Superintendent desk adjacent to chemical tanks.' },
-      { id: 'ser_m5_cd2', cat: "5: Devil's Cauldron", name: "Wilhelm's Folly", type: 'Classified Doc', desc: 'Administration second floor desk.' },
-      { id: 'ser_m5_cd3', cat: "5: Devil's Cauldron", name: 'Classified Cargo', type: 'Classified Doc', desc: 'Loading dock office table.' },
-      { id: 'ser_m5_cd4', cat: "5: Devil's Cauldron", name: 'Intruder Spotted', type: 'Classified Doc', desc: 'Hallway office reached past metal scuttle door.' },
-      { id: 'ser_m5_cd5', cat: "5: Devil's Cauldron", name: 'Scuttle Instructions', type: 'Classified Doc', desc: 'Plant manager safe (loot officer or use satchel charge).' },
-      { id: 'ser_m5_hi1', cat: "5: Devil's Cauldron", name: 'Playing Cards', type: 'Hidden Item', desc: 'Supply crate in exterior patrol camp.' },
-      { id: 'ser_m5_hi2', cat: "5: Devil's Cauldron", name: 'Laboratory ID', type: 'Hidden Item', desc: 'Factory main entrance: first left, then first right lab.' },
-      { id: 'ser_m5_hi3', cat: "5: Devil's Cauldron", name: 'Le Maquis Voit Tout (Propaganda)', type: 'Hidden Item', desc: 'Outer brick shed wall. Unlocks Le Maquis Voit Tout.' },
-      { id: 'ser_m5_se1', cat: "5: Devil's Cauldron", name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Distant lighthouse spire outside northwest ocean boundary.' },
-      { id: 'ser_m5_se2', cat: "5: Devil's Cauldron", name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Industrial gantry crane apex on eastern canal.' },
-      { id: 'ser_m5_se3', cat: "5: Devil's Cauldron", name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Directly above railway tunnel entrance portal.' },
-      { id: 'ser_m5_wb1', cat: "5: Devil's Cauldron", name: 'Rifle Workbench', type: 'Workbench', desc: 'Basement cellar reached via exterior lockpick door.' },
-      { id: 'ser_m5_wb2', cat: "5: Devil's Cauldron", name: 'Pistol Workbench', type: 'Workbench', desc: 'Production floor side room past small scuttle staircase.' },
-      { id: 'ser_m5_wb3', cat: "5: Devil's Cauldron", name: 'SMG Workbench', type: 'Workbench', desc: 'First door on left upon entering railway tunnel.' },
-      { id: 'trophy_ser_m5_industrial_action', cat: "5: Devil's Cauldron", name: 'Industrial Action', type: 'Trophy', desc: 'PSN Trophy: Destroy chemical plant and cease Kleine Blume.' },
-      { id: 'trophy_ser_stopping_traffic', cat: "5: Devil's Cauldron", name: 'Stopping Traffic', type: 'Trophy', desc: 'PSN Trophy: Destroy trucks carrying Kleine Blume ingredients.' },
-
-      // --- Mission 6: Assault on Fort Rouge ---
-      { id: 'ser_m6_pl1', cat: '6: Assault on Fort Rouge', name: 'Just Do Your Job.', type: 'Personal Letter', desc: 'Crate on first floor of collapsed building.' },
-      { id: 'ser_m6_pl2', cat: '6: Assault on Fort Rouge', name: 'I Am Fed Up', type: 'Personal Letter', desc: 'Stone altar table inside village chapel.' },
-      { id: 'ser_m6_pl3', cat: '6: Assault on Fort Rouge', name: 'Something is Strange', type: 'Personal Letter', desc: 'Rubble pile floor inside courtyard ruins.' },
-      { id: 'ser_m6_pl4', cat: '6: Assault on Fort Rouge', name: 'Beautiful Views', type: 'Personal Letter', desc: 'Supply box at highest entrance to bunker tunnels.' },
-      { id: 'ser_m6_pl5', cat: '6: Assault on Fort Rouge', name: 'Fools Everywhere', type: 'Personal Letter', desc: 'Corner park bench in upper village.' },
-      { id: 'ser_m6_cd1', cat: '6: Assault on Fort Rouge', name: 'Roof Weakness Found', type: 'Classified Doc', desc: 'Commandant desk on first floor.' },
-      { id: 'ser_m6_cd2', cat: '6: Assault on Fort Rouge', name: 'Defend our Skies', type: 'Classified Doc', desc: 'Bench inside botanic greenhouse.' },
-      { id: 'ser_m6_cd3', cat: '6: Assault on Fort Rouge', name: 'Ready on your Order', type: 'Classified Doc', desc: 'Gestapo interrogation room table.' },
-      { id: 'ser_m6_cd4', cat: '6: Assault on Fort Rouge', name: 'No Retreat', type: 'Classified Doc', desc: 'Second floor fortress safe (key on yard guard).' },
-      { id: 'ser_m6_cd5', cat: '6: Assault on Fort Rouge', name: "Schoene's Notes", type: 'Classified Doc', desc: 'Underground lab shelf near main objective.' },
-      { id: 'ser_m6_hi1', cat: '6: Assault on Fort Rouge', name: 'TODT Uniform Badge', type: 'Hidden Item', desc: 'Cellar floor accessed via exterior rear ramp.' },
-      { id: 'ser_m6_hi2', cat: '6: Assault on Fort Rouge', name: 'Committee C Map', type: 'Hidden Item', desc: 'Underground command chamber wall chart.' },
-      { id: 'ser_m6_hi3', cat: '6: Assault on Fort Rouge', name: 'Prende Le Maquis (Propaganda)', type: 'Hidden Item', desc: 'Southwest village wall. Unlocks Prende Le Maquis.' },
-      { id: 'ser_m6_se1', cat: '6: Assault on Fort Rouge', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Apex chimney of Kill List target residence.' },
-      { id: 'ser_m6_se2', cat: '6: Assault on Fort Rouge', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Fortress chapel steeple cross peak.' },
-      { id: 'ser_m6_se3', cat: '6: Assault on Fort Rouge', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Outer curtain wall parapet overlooking cliffs.' },
-      { id: 'ser_m6_wb1', cat: '6: Assault on Fort Rouge', name: 'Rifle Workbench', type: 'Workbench', desc: 'Underground bunker room requiring Satchel Charge.' },
-      { id: 'ser_m6_wb2', cat: '6: Assault on Fort Rouge', name: 'SMG Workbench', type: 'Workbench', desc: 'Village cellar down central stone staircase.' },
-      { id: 'ser_m6_wb3', cat: '6: Assault on Fort Rouge', name: 'Pistol Workbench', type: 'Workbench', desc: 'Locked cottage room (lockpick or bolt cutters).' },
-      { id: 'trophy_ser_m6_blast_past', cat: '6: Assault on Fort Rouge', name: 'Blast from the Past', type: 'Trophy', desc: 'PSN Trophy: Infiltrate Fort Rouge and escape before bombing.' },
-
-      // --- Mission 7: Lock, Stock and Barrels ---
-      { id: 'ser_m7_pl1', cat: '7: Lock, Stock and Barrels', name: 'What do they want?', type: 'Personal Letter', desc: 'Dining table right past front entrance door.' },
-      { id: 'ser_m7_pl2', cat: '7: Lock, Stock and Barrels', name: 'Everything is fine!', type: 'Personal Letter', desc: 'Workbench table inside timber barn.' },
-      { id: 'ser_m7_pl3', cat: '7: Lock, Stock and Barrels', name: 'I Feel Uneasy', type: 'Personal Letter', desc: 'Second floor table next to sniper window.' },
-      { id: 'ser_m7_pl4', cat: '7: Lock, Stock and Barrels', name: 'Lying is Necessary', type: 'Personal Letter', desc: 'Armchair in servant quarters.' },
-      { id: 'ser_m7_pl5', cat: '7: Lock, Stock and Barrels', name: 'Do Not Worry, Mother', type: 'Personal Letter', desc: 'Kill List officer bedroom table on first floor.' },
-      { id: 'ser_m7_cd1', cat: '7: Lock, Stock and Barrels', name: 'A Service Hatch', type: 'Classified Doc', desc: 'Ground floor pink hallway corridor office desk.' },
-      { id: 'ser_m7_cd2', cat: '7: Lock, Stock and Barrels', name: 'Control Room Key', type: 'Classified Doc', desc: 'Chateau sub-basement security office.' },
-      { id: 'ser_m7_cd3', cat: '7: Lock, Stock and Barrels', name: 'Rocket Fuse Setup', type: 'Classified Doc', desc: 'Safe inside secondary bunker (key on entrance guard).' },
-      { id: 'ser_m7_cd4', cat: '7: Lock, Stock and Barrels', name: 'Hydraulics Concerns', type: 'Classified Doc', desc: 'Crate inside missile service silo.' },
-      { id: 'ser_m7_cd5', cat: '7: Lock, Stock and Barrels', name: 'Vulnerability Found', type: 'Classified Doc', desc: 'Bunker desk reached immediately after opening blast doors.' },
-      { id: 'ser_m7_hi1', cat: '7: Lock, Stock and Barrels', name: 'Engraved Lighter', type: 'Hidden Item', desc: 'Living room table inside guardhouse.' },
-      { id: 'ser_m7_hi2', cat: '7: Lock, Stock and Barrels', name: 'Golden Pocket Watch', type: 'Hidden Item', desc: 'Desk inside administrative outbuilding.' },
-      { id: 'ser_m7_hi3', cat: '7: Lock, Stock and Barrels', name: 'La Voix Du Maquis (Propaganda)', type: 'Hidden Item', desc: 'Rear cottage brick wall. Unlocks La Voix Du Maquis.' },
-      { id: 'ser_m7_se1', cat: '7: Lock, Stock and Barrels', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Main manor rooftop balustrade peak.' },
-      { id: 'ser_m7_se2', cat: '7: Lock, Stock and Barrels', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Windmill blade housing hub.' },
-      { id: 'ser_m7_se3', cat: '7: Lock, Stock and Barrels', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Chimney crown of cottage at final objective.' },
-      { id: 'ser_m7_wb1', cat: '7: Lock, Stock and Barrels', name: 'Rifle Workbench', type: 'Workbench', desc: 'First floor chamber accessed via exterior trellis climb.' },
-      { id: 'ser_m7_wb2', cat: '7: Lock, Stock and Barrels', name: 'SMG Workbench', type: 'Workbench', desc: 'Loft space reached via interior wooden ladder.' },
-      { id: 'ser_m7_wb3', cat: '7: Lock, Stock and Barrels', name: 'Pistol Workbench', type: 'Workbench', desc: 'Concrete bunker roof above rocket safe room.' },
-      { id: 'trophy_ser_m7_grapes_wrath', cat: '7: Lock, Stock and Barrels', name: 'Grapes of Wrath', type: 'Trophy', desc: 'PSN Trophy: Infiltrate V1 site and destroy Zugwerfer.' },
-
-      // --- Mission 8: End of the Line ---
-      { id: 'ser_m8_pl1', cat: '8: End of the Line', name: 'Victory is Imminent!', type: 'Personal Letter', desc: 'Top floor office desk overlooking tracks.' },
-      { id: 'ser_m8_pl2', cat: '8: End of the Line', name: 'Home Soon, My Love', type: 'Personal Letter', desc: 'Maintenance table at base of coal silo.' },
-      { id: 'ser_m8_pl3', cat: '8: End of the Line', name: "What We've Achieved", type: 'Personal Letter', desc: 'Locked office (key on station guard or satchel charge).' },
-      { id: 'ser_m8_pl4', cat: '8: End of the Line', name: 'Burn After Reading', type: 'Personal Letter', desc: 'Office table adjacent to Kill List depot.' },
-      { id: 'ser_m8_pl5', cat: '8: End of the Line', name: 'I Think This Is It', type: 'Personal Letter', desc: 'Station first floor telegraph room.' },
-      { id: 'ser_m8_cd1', cat: '8: End of the Line', name: 'Zugwerfer Departure', type: 'Classified Doc', desc: 'Station first-floor locked control room.' },
-      { id: 'ser_m8_cd2', cat: '8: End of the Line', name: 'Prepare to Strike!', type: 'Classified Doc', desc: 'Switch room at bottom of initial infiltration ladder.' },
-      { id: 'ser_m8_cd3', cat: '8: End of the Line', name: 'Rusty Turntable', type: 'Classified Doc', desc: 'Locomotive roundhouse supervisor desk.' },
-      { id: 'ser_m8_cd4', cat: '8: End of the Line', name: 'Railyard Management', type: 'Classified Doc', desc: 'Chair next to desk inside railyard silo.' },
-      { id: 'ser_m8_cd5', cat: '8: End of the Line', name: 'Turret Locations', type: 'Classified Doc', desc: 'Warehouse catwalk mezzanine office.' },
-      { id: 'ser_m8_hi1', cat: '8: End of the Line', name: 'AA Repair Manual', type: 'Hidden Item', desc: 'Foundry floor inside grain elevator silo.' },
-      { id: 'ser_m8_hi2', cat: '8: End of the Line', name: 'New Tank Blueprints', type: 'Hidden Item', desc: 'Corner freight crate on station ground floor.' },
-      { id: 'ser_m8_hi3', cat: '8: End of the Line', name: 'Pour Une France Libre (Propaganda)', type: 'Hidden Item', desc: 'First floor exterior wall. Unlocks Pour Une France Libre.' },
-      { id: 'ser_m8_se1', cat: '8: End of the Line', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Upper right spire of central station clockhouse.' },
-      { id: 'ser_m8_se2', cat: '8: End of the Line', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Northwest corner roof peak of starting cottage.' },
-      { id: 'ser_m8_se3', cat: '8: End of the Line', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Eastern rail signal tower cupola.' },
-      { id: 'ser_m8_wb1', cat: '8: End of the Line', name: 'Pistol Workbench', type: 'Workbench', desc: 'First floor reached by exterior window scramble.' },
-      { id: 'ser_m8_wb2', cat: '8: End of the Line', name: 'Rifle Workbench', type: 'Workbench', desc: 'Station first-floor locked control room.' },
-      { id: 'ser_m8_wb3', cat: '8: End of the Line', name: 'SMG Workbench', type: 'Workbench', desc: 'Catwalk room right next to Turret Locations doc.' },
-      { id: 'trophy_ser_m8_whatever_takes', cat: '8: End of the Line', name: 'Whatever it Takes', type: 'Trophy', desc: 'PSN Trophy: Stop Zugwerfers obliterating D-Day landings.' },
-      { id: 'trophy_ser_tanks_for_nothing', cat: '8: End of the Line', name: 'Tanks for Nothing!', type: 'Trophy', desc: 'PSN Trophy: Destroy the Panzer Tank in End of the Line.' },
-
-      // --- Mission 9: All or Nothing ---
-      { id: 'trophy_ser_mastermind', cat: '9: All or Nothing', name: 'Mastermind', type: 'Trophy', desc: 'PSN Trophy: Headshot Kruger in campaign climax.' },
-      { id: 'trophy_ser_vive_resistance', cat: '9: All or Nothing', name: 'Vive La Résistance', type: 'Trophy', desc: 'PSN Trophy: Complete the campaign.' },
-      { id: 'trophy_ser_creme_de_la_creme', cat: '9: All or Nothing', name: 'Crème de la Crème', type: 'Trophy', desc: 'PSN Trophy: Complete campaign on Authentic difficulty.' },
-
-      // --- Mission 10: Lights, Camera, ACHTUNG! (DLC) ---
-      { id: 'ser_m10_pl1', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'All Due Disrespect', type: 'Personal Letter', desc: 'Film studio set table near Hitler location.' },
-      { id: 'ser_m10_pl2', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: "I'm Contagious", type: 'Personal Letter', desc: 'Supply crate directly behind active movie set.' },
-      { id: 'ser_m10_pl3', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'Thank You!', type: 'Personal Letter', desc: 'First floor studio office table.' },
-      { id: 'ser_m10_pl4', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'Be More Organised', type: 'Personal Letter', desc: 'Crew rest bench behind camera rig.' },
-      { id: 'ser_m10_pl5', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: "Our VIP's Demands", type: 'Personal Letter', desc: 'Desk inside private director trailer.' },
-      { id: 'ser_m10_cd1', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'Food to Die for!', type: 'Classified Doc', desc: 'Chair tucked beneath catering trailer table.' },
-      { id: 'ser_m10_cd2', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'Set Inspections', type: 'Classified Doc', desc: 'Safe on raised gantry (key on turret guard).' },
-      { id: 'ser_m10_cd3', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'I found a Vulnerability!', type: 'Classified Doc', desc: 'Church nave altar table.' },
-      { id: 'ser_m10_cd4', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'Morning Collection', type: 'Classified Doc', desc: 'Station safe (key on platform officer).' },
-      { id: 'ser_m10_cd5', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'Silence Has a Price', type: 'Classified Doc', desc: 'Studio security office desk.' },
-      { id: 'ser_m10_hi1', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'Cooking with Hitler', type: 'Hidden Item', desc: 'Behind stacked props behind soundstage.' },
-      { id: 'ser_m10_hi2', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'The Big Win', type: 'Hidden Item', desc: 'Upstairs production office table.' },
-      { id: 'ser_m10_hi3', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: "Hitler's Day Off", type: 'Hidden Item', desc: 'Crates stacked outside train terminal.' },
-      { id: 'ser_m10_hi4', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'Un De Trop (Propaganda)', type: 'Hidden Item', desc: 'Exterior soundstage wall. Unlocks DLC Propaganda Mission.' },
-      { id: 'ser_m10_se1', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Northeast studio roof pinnacle.' },
-      { id: 'ser_m10_se2', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Church roof corner battlement.' },
-      { id: 'ser_m10_se3', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'High prop shelf inside main warehouse.' },
-      { id: 'ser_m10_wb1', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'First floor warehouse gate (lockpick or bolt cutters).' },
-      { id: 'ser_m10_wb2', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'First floor residential house locked room.' },
-      { id: 'ser_m10_wb3', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Loft platform up exterior service ladder.' },
-      { id: 'trophy_ser_dlc1_take5', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'Take 5, and... ACHTUNG!', type: 'Trophy', desc: 'DLC Trophy: Kill Hitler 5 times.', target: 5 },
-      { id: 'trophy_ser_dlc1_fast_fuhrerless', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'Fast and Fuhrer-less', type: 'Trophy', desc: 'DLC Trophy: Kill only Hitler and exfiltrate.' },
-      { id: 'trophy_ser_dlc1_he_did_nazi_it', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'He did Nazi-it Coming', type: 'Trophy', desc: 'DLC Trophy: Kill Hitler at 250m or more.', target: 250, isLongShot: true },
-      { id: 'trophy_ser_dlc1_dead_of_reich', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'In The Dead Of Reich', type: 'Trophy', desc: 'DLC Trophy: Kill Hitler without being detected.' },
-      { id: 'trophy_ser_dlc1_mein_juewel', cat: '10: Lights, Camera, ACHTUNG! (DLC)', name: 'Mein Juewel!', type: 'Trophy', desc: 'DLC Trophy: Kill Hitler with a testicle shot.' },
-
-      // --- Category 11: Resistance Career & Tactical Trophies ---
-      { id: 'trophy_ser_plat', cat: '11: Resistance Career & Tactical Trophies', name: 'Sniper Elite', type: 'Trophy', desc: 'PSN Platinum: Obtain all base game trophies.' },
-      { id: 'trophy_ser_pen_pal', cat: '11: Resistance Career & Tactical Trophies', name: 'Pen Pal', type: 'Trophy', desc: 'Collect all 35 Personal Letters across campaign.', target: 35 },
-      { id: 'trophy_ser_top_secret', cat: '11: Resistance Career & Tactical Trophies', name: 'Top Secret', type: 'Trophy', desc: 'Collect all 35 Classified Documents across campaign.', target: 35 },
-      { id: 'trophy_ser_treasure_hunter', cat: '11: Resistance Career & Tactical Trophies', name: 'Treasure Hunter', type: 'Trophy', desc: 'Collect all 22 Hidden Items across campaign.', target: 22 },
-      { id: 'trophy_ser_spread_wings', cat: '11: Resistance Career & Tactical Trophies', name: 'Spread Your Wings', type: 'Trophy', desc: 'Destroy all 21 Dead-eye Targets (Stone Eagles).', target: 21 },
-      { id: 'trophy_ser_innovator', cat: '11: Resistance Career & Tactical Trophies', name: 'Innovator', type: 'Trophy', desc: 'Interact with 21 Workbenches.', target: 21 },
-      { id: 'trophy_ser_climbing_ranks', cat: '11: Resistance Career & Tactical Trophies', name: 'Climbing the Ranks', type: 'Trophy', desc: 'Reach military rank 40.', target: 40 },
-      { id: 'trophy_ser_full_english', cat: '11: Resistance Career & Tactical Trophies', name: 'Full English', type: 'Trophy', desc: 'Complete 11 Optional objectives.', target: 11 },
-      { id: 'trophy_ser_just_a_scratch', cat: '11: Resistance Career & Tactical Trophies', name: 'Just a Scratch', type: 'Trophy', desc: 'Complete any mission (excl. M1/M9) without healing.' },
-      { id: 'trophy_ser_open_surgery', cat: '11: Resistance Career & Tactical Trophies', name: 'Open Surgery', type: 'Trophy', desc: 'Hit every Organ at least once with a Rifle.' },
-      { id: 'trophy_ser_tactician', cat: '11: Resistance Career & Tactical Trophies', name: 'Tactician', type: 'Trophy', desc: 'Make a Tank shoot and destroy another vehicle.' },
-      { id: 'trophy_ser_propagandist', cat: '11: Resistance Career & Tactical Trophies', name: 'Propagandist', type: 'Trophy', desc: 'Complete all Propaganda missions with a 3 Star Rating.' },
-      { id: 'trophy_ser_propaganda_machine', cat: '11: Resistance Career & Tactical Trophies', name: 'Propaganda Machine', type: 'Trophy', desc: 'Complete all Propaganda missions 3-Star on Authentic.' },
-
-      // --- Category 12: Weapon Mastery & Combat Milestones ---
-      { id: 'trophy_ser_master_rifles', cat: '12: Weapon Mastery & Combat Milestones', name: 'Revered with Rifles', type: 'Trophy', desc: 'Obtain Seven Rifle-related Mastery Medals.', target: 7 },
-      { id: 'trophy_ser_master_second', cat: '12: Weapon Mastery & Combat Milestones', name: 'Secondary Supremacy', type: 'Trophy', desc: 'Obtain Eight Secondary-related Mastery Medals.', target: 8 },
-      { id: 'trophy_ser_master_pistols', cat: '12: Weapon Mastery & Combat Milestones', name: 'Pistol Perfectionist', type: 'Trophy', desc: 'Obtain Six Pistol-related Mastery Medals.', target: 6 },
-      { id: 'trophy_ser_master_at_arms', cat: '12: Weapon Mastery & Combat Milestones', name: 'Master-at-arms', type: 'Trophy', desc: 'Become the Master of each Weapon category.', target: 3 },
-      { id: 'trophy_ser_sharpshooter', cat: '12: Weapon Mastery & Combat Milestones', name: 'Sharpshooter', type: 'Trophy', desc: 'Kill 350 enemies with a Rifle.', target: 350 },
-      { id: 'trophy_ser_skirmisher', cat: '12: Weapon Mastery & Combat Milestones', name: 'Skirmisher', type: 'Trophy', desc: 'Kill 300 enemies with a Secondary Weapon.', target: 300 },
-      { id: 'trophy_ser_gunslinger', cat: '12: Weapon Mastery & Combat Milestones', name: 'Gunslinger', type: 'Trophy', desc: 'Kill 150 enemies with a Pistol.', target: 150 },
-      { id: 'trophy_ser_going_distance', cat: '12: Weapon Mastery & Combat Milestones', name: 'Going The Distance', type: 'Trophy', desc: 'Total kill distance of 100,000 meters.', target: 100000 },
-      { id: 'trophy_ser_eyes_on_prize', cat: '12: Weapon Mastery & Combat Milestones', name: 'Eyes on the Prize', type: 'Trophy', desc: 'Kill 150 enemies with any weapon in Iron Sights.', target: 150 },
-      { id: 'trophy_ser_scoping_mechanism', cat: '12: Weapon Mastery & Combat Milestones', name: 'Scoping Mechanism', type: 'Trophy', desc: 'Kill 150 enemies with a Rifle in Iron Sights.', target: 150 },
-      { id: 'trophy_ser_blaze_gory', cat: '12: Weapon Mastery & Combat Milestones', name: 'Blaze of Gory', type: 'Trophy', desc: 'Kill 50 enemies with Traps.', target: 50 },
-      { id: 'trophy_ser_set_to_blow', cat: '12: Weapon Mastery & Combat Milestones', name: 'Set to Blow', type: 'Trophy', desc: 'Kill 20 soldiers using Booby traps.', target: 20 },
-      { id: 'trophy_ser_big_guns', cat: '12: Weapon Mastery & Combat Milestones', name: 'The Big Guns', type: 'Trophy', desc: 'Kill 50 soldiers with Heavy weapons.', target: 50 },
-      { id: 'trophy_ser_finders_keepers', cat: '12: Weapon Mastery & Combat Milestones', name: 'Finders Keepers', type: 'Trophy', desc: 'Kill 50 enemies with Found Weapons.', target: 50 },
-      { id: 'trophy_ser_jack_of_all_trades', cat: '12: Weapon Mastery & Combat Milestones', name: 'Jack of All Trades', type: 'Trophy', desc: 'Get a kill with 20 different Weapons.', target: 20 },
-      { id: 'trophy_ser_le_fantome', cat: '12: Weapon Mastery & Combat Milestones', name: 'Le Fantome', type: 'Trophy', desc: 'Achieve 250 Ghost Kills.', target: 250 },
-      { id: 'trophy_ser_silent_deadly', cat: '12: Weapon Mastery & Combat Milestones', name: 'Silent but Deadly', type: 'Trophy', desc: 'Kill 50 enemies during a Sound Mask.', target: 50 },
-      { id: 'trophy_ser_knives_pro', cat: '12: Weapon Mastery & Combat Milestones', name: 'Knives for a Pro', type: 'Trophy', desc: 'Perform 100 lethal Takedowns.', target: 100 },
-      { id: 'trophy_ser_always_greener', cat: '12: Weapon Mastery & Combat Milestones', name: 'Always Greener', type: 'Trophy', desc: 'While in Tall Grass, kill 50 Soldiers.', target: 50 },
-      { id: 'trophy_ser_das_nuts', cat: '12: Weapon Mastery & Combat Milestones', name: 'Das Nuts!', type: 'Trophy', desc: 'Rifle testicle shot from 100 meters or more.' },
-      { id: 'trophy_ser_three_birds', cat: '12: Weapon Mastery & Combat Milestones', name: 'Three Birds One Stone', type: 'Trophy', desc: 'Kill 3 on-foot soldiers with one Grenade.' },
-
-      // --- Category 13: Multiplayer, Survival & Axis Invasion ---
-      { id: 'trophy_ser_hostile_takeover', cat: '13: Multiplayer, Survival & Axis Invasion', name: 'Hostile Takeover', type: 'Trophy', desc: 'Win one Axis Invasion as an Invader.' },
-      { id: 'trophy_ser_hold_the_line', cat: '13: Multiplayer, Survival & Axis Invasion', name: 'Hold the Line', type: 'Trophy', desc: 'Defeat an invading Sniper Jager.' },
-      { id: 'trophy_ser_brothers_in_arms', cat: '13: Multiplayer, Survival & Axis Invasion', name: 'Brothers in Arms', type: 'Trophy', desc: 'Play one team-based PVP match.' },
-      { id: 'trophy_ser_survivalist', cat: '13: Multiplayer, Survival & Axis Invasion', name: 'Survivalist', type: 'Trophy', desc: 'Complete an entire Survival mission.' }
-    ];
-
-    function extractItemsFromPayload(payload) {
-      if (!payload) return [];
-      if (Array.isArray(payload)) return payload;
-      if (typeof payload === 'object') {
-        const list = [];
-        Object.entries(payload).forEach(([k, v]) => {
-          if (v === true) {
-            list.push({ id: k, collected: true, count: 1 });
-          } else if (v && typeof v === 'object') {
-            list.push({
-              id: v.id || k,
-              collected: !!(v.collected || v.completed || v.done || (v.count && Number(v.count) > 0)),
-              count: v.count !== undefined ? Number(v.count) : 0
-            });
-          }
-        });
-        return list;
-      }
-      return [];
-    }
-
     const appState = {
-      activeGamertag: localStorage.getItem('ser_pinned_user') || 'Werewolf3788',
-      platform: 'playstation',
-      activeMission: '1: Behind Enemy Lines',
-      hunterData: [],
-      teamProgress: {},
-      collapsedSections: {},
-      db: null,
-      rtdb: null,
-      auth: null,
-      user: null,
-      unsubListeners: [],
-
-      togglePinActiveUser: function() {
-        const pinned = localStorage.getItem('ser_pinned_user');
-        if (pinned === this.activeGamertag) {
-          localStorage.removeItem('ser_pinned_user');
-        } else {
-          localStorage.setItem('ser_pinned_user', this.activeGamertag);
-        }
-        this.updatePinButtonUI();
+      files: {
+        gameData: "seresistance.json",
+        users: "users.json"
       },
 
-      updatePinButtonUI: function() {
-        const btn = document.getElementById('pin-user-toggle-btn');
-        if (!btn) return;
-        const isPinned = localStorage.getItem('ser_pinned_user') === this.activeGamertag;
-        btn.classList.toggle('is-pinned', isPinned);
-        btn.innerText = isPinned ? `📌 Pinned: ${this.activeGamertag}` : '📌 Pin User';
+      currentUser: null,
+      currentEmail: localStorage.getItem('ser_current_email') || 'raykevin71888@gmail.com',
+      currentEmailKey: getEmailKey(localStorage.getItem('ser_current_email') || 'raykevin71888@gmail.com'),
+      currentPlatform: localStorage.getItem('ser_platform') || 'playstation',
+      psnAccountId: "",
+      psnOnlineId: "",
+      activeMission: '1: Behind Enemy Lines',
+
+      masterCatalog: [],
+      usersCatalog: [],
+      userProgressMap: {},
+      teamLiveTelemetry: {},
+      collapsedSections: {},
+      crossPlatformTelemetry: {
+        playstation: { earned: 0, total: 0, percent: 0 },
+        pc: { earned: 0, total: 0, percent: 0 },
+        xbox: { earned: 0, total: 0, percent: 0 }
+      },
+      friendsRoster: [],
+
+      auth: null,
+      db: null,
+      rtdb: null,
+
+      async fetchJSON(fileName) {
+        const paths = [
+          "../../data/" + fileName,
+          "../data/" + fileName,
+          "./data/" + fileName,
+          "data/" + fileName,
+          "./" + fileName,
+          "/Website/data/" + fileName,
+          "//werewolf3788.github.io/Website/data/" + fileName
+        ];
+
+        for (let i = 0; i < paths.length; i++) {
+          try {
+            const res = await fetch(paths[i] + "?v=" + Date.now());
+            if (res.ok) return await res.json();
+          } catch (e) {}
+        }
+        return null;
+      },
+
+      async loadAllJSONs() {
+        const gameData = await this.fetchJSON(this.files.gameData);
+        this.masterCatalog = Array.isArray(gameData) ? gameData : [];
+
+        const usersData = await this.fetchJSON(this.files.users);
+        if (usersData) {
+          this.usersCatalog = Array.isArray(usersData) ? usersData : (usersData.users || Object.values(usersData));
+        }
+
+        const cats = [...new Set(this.masterCatalog.map(i => i.cat))];
+        cats.forEach(cat => {
+          const sid = cat.replace(/[^a-z0-9]/gi, '');
+          if (this.collapsedSections[sid] === undefined) {
+            this.collapsedSections[sid] = (cat !== this.activeMission);
+          }
+        });
+      },
+
+      applyUserThemeAndIdentity() {
+        if (!this.usersCatalog || !this.usersCatalog.length) return;
+
+        const activeEmail = (this.currentEmail || "").toLowerCase().trim();
+        const activePSN = (this.psnAccountId || "").trim();
+        const activeOnlineId = (this.psnOnlineId || "").toLowerCase().trim();
+
+        const matchedUser = this.usersCatalog.find(u => {
+          const uEmail = (u.email || "").toLowerCase().trim();
+          const uPsnId = String(u.psn_id || "").trim();
+          const uOnline = (u.psn_name || "").toLowerCase().trim();
+          return (activeEmail && uEmail === activeEmail) ||
+                 (activePSN && uPsnId === activePSN) ||
+                 (activeOnlineId && uOnline === activeOnlineId);
+        });
+
+        if (matchedUser) {
+          if (!this.psnAccountId && matchedUser.psn_id) this.psnAccountId = String(matchedUser.psn_id);
+          if (!this.psnOnlineId && matchedUser.psn_name) this.psnOnlineId = matchedUser.psn_name;
+
+          if (matchedUser.theme) {
+            const root = document.documentElement;
+            if (matchedUser.theme.primary_color) {
+              root.style.setProperty("--theme-primary", matchedUser.theme.primary_color);
+              root.style.setProperty("--ser-color", matchedUser.theme.primary_color);
+            }
+            if (matchedUser.theme.accent_color) {
+              root.style.setProperty("--theme-accent", matchedUser.theme.accent_color);
+              root.style.setProperty("--ser-glow", matchedUser.theme.accent_color);
+            }
+          }
+        }
       },
 
       init: async function() {
-        this.hunterData = resistanceData.map(item => ({
-          ...item,
-          collected: false,
-          count: 0
-        }));
-
-        ALL_OPERATIVES.forEach(op => {
-          this.teamProgress[op] = [];
-        });
-
-        const cats = [...new Set(this.hunterData.map(i => i.cat))];
-        cats.forEach(cat => {
-          const sid = cat.replace(/[^a-z0-9]/gi, '');
-          this.collapsedSections[sid] = (cat !== this.activeMission);
-        });
-
+        await this.loadAllJSONs();
         this.populateMissionSelector();
-        this.updatePinButtonUI();
-        this.render();
+        this.bindUI();
+
+        const savedProgress = localStorage.getItem("ser_local_progress");
+        if (savedProgress) {
+          try { this.userProgressMap = JSON.parse(savedProgress); } catch (e) { this.userProgressMap = {}; }
+        }
 
         try {
           const app = initializeApp(firebaseConfig);
@@ -973,17 +421,51 @@
           this.db = getFirestore(app);
           this.rtdb = getDatabase(app);
 
-          signInAnonymously(this.auth).catch(err => console.warn("Auth Notice:", err.message));
+          onAuthStateChanged(this.auth, (user) => {
+            const modalBtn = document.getElementById("authModalBtn");
+            const profileBadge = document.getElementById("userProfile");
+            const nameEl = document.getElementById("userDisplayName");
+            const avatarEl = document.getElementById("headerUserAvatar");
 
-          onAuthStateChanged(this.auth, async (u) => {
-            this.user = u;
-            const statEl = document.getElementById('stat-line');
-            if (u) {
-              if (statEl) statEl.innerText = `SESSION: ${u.uid.substring(0, 8)} | CONNECTED TO RESISTANCE CLOUD (NPWR40813_00)`;
-              this.attachAllTeamListeners();
-              this.attachPsnRtdbListeners();
+            if (user) {
+              this.currentUser = user;
+              this.currentEmail = getResolvedPrimaryEmail(user);
+              this.currentEmailKey = getEmailKey(this.currentEmail);
+
+              localStorage.setItem("ser_current_email", this.currentEmail);
+
+              if (modalBtn) modalBtn.classList.add("hidden");
+              if (profileBadge) profileBadge.classList.remove("hidden");
+
+              this.applyUserThemeAndIdentity();
+
+              rtdbRef(this.rtdb, `users/${this.currentEmailKey}`).onValue = (snapshot) => {
+                const rtdbProfile = snapshot.val() || {};
+                const opTag = rtdbProfile.username || user.displayName || "Karl Fairburne";
+                let avatarUrl = rtdbProfile.avatar_url || user.photoURL || DEFAULT_USER_AVATAR;
+
+                if (nameEl) nameEl.textContent = opTag;
+                if (avatarEl) avatarEl.src = avatarUrl;
+
+                this.psnAccountId = rtdbProfile.psn_account_id || this.psnAccountId || "";
+                this.psnOnlineId = rtdbProfile.psn_username || this.psnOnlineId || "";
+
+                if (this.psnOnlineId || this.psnAccountId) {
+                  this.syncPlayStationTrophies(this.psnOnlineId, this.psnAccountId);
+                }
+
+                this.friendsRoster = rtdbProfile.friends ? Object.values(rtdbProfile.friends) : [];
+                this.listenToSharedSquadTelemetry();
+                this.loadAllPlatformTrophyProgress();
+              };
+
+              this.listenToOwnFirestoreProgress();
+              this.renderProfileDropdown(true);
             } else {
-              if (statEl) statEl.innerText = `CONNECTING AUTHORITATIVE CLOUD...`;
+              this.currentUser = null;
+              if (modalBtn) modalBtn.classList.remove("hidden");
+              if (profileBadge) profileBadge.classList.add("hidden");
+              this.renderProfileDropdown(false);
             }
           });
         } catch (e) {
@@ -991,176 +473,185 @@
         }
       },
 
-      attachAllTeamListeners: function() {
-        this.unsubListeners.forEach(u => u());
-        this.unsubListeners = [];
+      listenToOwnFirestoreProgress() {
+        if (!this.currentEmailKey) return;
+        const docRef = doc(this.db, 'users', this.currentEmailKey, 'platform', this.currentPlatform, 'progress', GAME_DOC_ID);
+        onSnapshot(docRef, snap => {
+          if (!snap.exists()) return;
+          const data = snap.data();
+          if (data.activeMission) this.activeMission = data.activeMission;
 
-        ALL_OPERATIVES.forEach(op => {
-          const aliases = OPERATIVE_ALIASES[op] || [op];
-          aliases.forEach(alias => {
-            const path = `users/${alias}/platform/${this.platform}/progress/sniper-elite-resistance`;
-            const docRef = doc(this.db, path);
-
-            const unsub = onSnapshot(docRef, (snap) => {
-              if (snap.exists()) {
-                const docData = snap.data();
-                const rawProgress = docData.progress || docData.collectibles || docData;
-                const remoteSaved = extractItemsFromPayload(rawProgress);
-
-                if (remoteSaved.length > 0) {
-                  const currentList = this.teamProgress[op] || [];
-                  remoteSaved.forEach(item => {
-                    const idx = currentList.findIndex(e => e.id === item.id);
-                    if (idx >= 0) {
-                      currentList[idx] = { ...currentList[idx], ...item };
-                    } else {
-                      currentList.push(item);
-                    }
-                  });
-                  this.teamProgress[op] = currentList;
-
-                  if (op === this.activeGamertag) {
-                    if (docData.activeMission && docData.activeMission !== this.activeMission) {
-                      this.activeMission = docData.activeMission;
-                    }
-
-                    this.hunterData = resistanceData.map(item => {
-                      const status = currentList.find(s => s.id === item.id);
-                      const isDone = status ? !!(status.collected || status.completed || status.done || (status.count !== undefined && Number(status.count) > 0)) : false;
-                      return {
-                        ...item,
-                        collected: isDone,
-                        count: status && status.count !== undefined ? Number(status.count) : (isDone ? (item.target || 1) : 0)
-                      };
-                    });
-                  }
-                }
+          const remoteItems = data.collectibles || data.progress || {};
+          if (typeof remoteItems === 'object') {
+            Object.entries(remoteItems).forEach(([id, entry]) => {
+              if (entry && typeof entry === 'object') {
+                this.userProgressMap[id] = {
+                  collected: Boolean(entry.collected || entry.completed || entry.done),
+                  count: entry.count !== undefined ? Number(entry.count) : (entry.collected ? 1 : 0)
+                };
+              } else if (entry === true) {
+                this.userProgressMap[id] = { collected: true, count: 1 };
               }
-              this.render();
-            }, (err) => {
-              console.warn(`Firestore snapshot error for ${alias}:`, err.message);
             });
-
-            this.unsubListeners.push(unsub);
-          });
-        });
-      },
-
-      attachPsnRtdbListeners: function() {
-        if (!this.rtdb) return;
-
-        Object.entries(PSN_ACCOUNT_MAPPINGS).forEach(([psnTag, operativeName]) => {
-          const liveTrophyPath = `psn/gamertags/${psnTag}/liveTrophyProgress/${PSN_COMMUNICATION_ID}`;
-          const trophyRef = rtdbRef(this.rtdb, liveTrophyPath);
-
-          onValue(trophyRef, (snapshot) => {
-            if (!snapshot.exists()) return;
-            this.processPsnTrophies(operativeName, snapshot.val());
-          }, (error) => {
-            console.warn(`RTDB telemetry error for ${psnTag}:`, error.message);
-          });
-        });
-      },
-
-      processPsnTrophies: function(operativeName, trophyPayload) {
-        if (!trophyPayload) return;
-
-        let opSaved = this.teamProgress[operativeName] || [];
-        const trophyList = Array.isArray(trophyPayload)
-          ? trophyPayload
-          : (trophyPayload.trophies || Object.values(trophyPayload));
-
-        trophyList.forEach(t => {
-          if (!t) return;
-          const trophyTitle = t.trophyName || t.name || t.title;
-          const normalizedTitle = normalizeString(trophyTitle);
-          const matchedTrackerId = PSN_TROPHY_MAPPINGS[normalizedTitle] || (t.trophyId !== undefined ? PSN_TROPHY_MAPPINGS[String(t.trophyId)] : null);
-
-          if (matchedTrackerId) {
-            let existing = opSaved.find(s => s.id === matchedTrackerId);
-            const itemDef = resistanceData.find(d => d.id === matchedTrackerId);
-            const targetValue = (itemDef && itemDef.target) ? itemDef.target : 1;
-
-            const psnProgressVal = t.currentValue !== undefined
-              ? parseInt(t.currentValue, 10)
-              : (t.trophyProgress !== undefined
-                  ? parseInt(t.trophyProgress, 10)
-                  : (t.progress !== undefined ? parseInt(t.progress, 10) : 0));
-
-            const isEarned = (t.earned === true || t.earned === 1 || t.unlocked === true || (targetValue > 1 && psnProgressVal >= targetValue));
-
-            if (existing) {
-              if (psnProgressVal > (existing.count || 0)) existing.count = psnProgressVal;
-              if (isEarned) existing.collected = true;
-            } else {
-              opSaved.push({
-                id: matchedTrackerId,
-                collected: isEarned || (psnProgressVal >= targetValue),
-                count: isEarned ? targetValue : psnProgressVal
-              });
-            }
           }
+          this.recalculateCrossTrophyTelemetry();
+          this.render();
         });
+      },
 
-        this.teamProgress[operativeName] = opSaved;
+      listenToSharedSquadTelemetry() {
+        this.friendsRoster.forEach(friend => {
+          const friendEmail = (friend.target_email || "").toLowerCase();
+          if (!friendEmail) return;
+          const friendKey = getEmailKey(friendEmail);
+          const targetPlat = (friend.platform || this.currentPlatform || "playstation").toLowerCase();
 
-        if (this.activeGamertag === operativeName) {
-          this.hunterData = resistanceData.map(item => {
-            const status = opSaved.find(s => s.id === item.id);
-            const isDone = status ? !!(status.collected || status.completed || status.done || (status.count !== undefined && Number(status.count) > 0)) : false;
-            return {
-              ...item,
-              collected: isDone,
-              count: status && status.count !== undefined ? Number(status.count) : (isDone ? (item.target || 1) : 0)
+          const docRef = doc(this.db, 'users', friendKey, 'platform', targetPlat, 'progress', GAME_DOC_ID);
+          onSnapshot(docRef, snap => {
+            if (!snap.exists()) return;
+            const data = snap.data();
+            const opName = friend.username || "Operative";
+            this.teamLiveTelemetry[opName] = {
+              username: opName,
+              collectibles: data.collectibles || data.progress || {},
+              trophiesEarned: data.trophies_earned || 0,
+              trophiesTotal: data.trophies_total || this.masterCatalog.length
             };
+            this.render();
           });
+        });
+      },
+
+      syncPlayStationTrophies(psnOnlineId, accountId) {
+        const targetGamerTag = (psnOnlineId || "").trim();
+        let trophyRef = null;
+
+        if (targetGamerTag) {
+          trophyRef = rtdbRef(this.rtdb, `psn/gamertags/${targetGamerTag}/liveTrophyProgress/${PSN_COMMUNICATION_ID}`);
+        } else if (accountId) {
+          trophyRef = rtdbRef(this.rtdb, `psn/trophies/sniper-elite-resistance/${accountId}`);
         }
 
-        this.render();
+        if (!trophyRef) return;
+
+        onValue(trophyRef, snapshot => {
+          if (!snapshot.exists()) return;
+          const raw = snapshot.val();
+          const parsedList = Array.isArray(raw) ? raw : (raw.trophies ? Object.values(raw.trophies) : Object.values(raw));
+
+          parsedList.forEach((t, idx) => {
+            const rawTitle = t.trophyName || t.name || t.title;
+            const normalized = normalizeString(rawTitle);
+            const trackerId = PSN_TROPHY_MAPPINGS[normalized] || (t.trophyId !== undefined ? PSN_TROPHY_MAPPINGS[String(t.trophyId)] : null);
+
+            if (trackerId) {
+              const itemDef = this.masterCatalog.find(d => d.id === trackerId);
+              const targetVal = (itemDef && itemDef.target) ? itemDef.target : 1;
+              const currentVal = t.currentValue !== undefined ? Number(t.currentValue) : (t.progress !== undefined ? Number(t.progress) : 0);
+              const isEarned = Boolean(t.earned || t.unlocked || (targetVal > 1 && currentVal >= targetVal));
+
+              this.userProgressMap[trackerId] = {
+                collected: isEarned,
+                count: isEarned ? targetVal : currentVal
+              };
+            }
+          });
+
+          this.recalculateCrossTrophyTelemetry();
+          this.render();
+          this.silentSaveGameTelemetry();
+        });
       },
 
-      switchHunter: function(gamertag) {
-        this.activeGamertag = gamertag;
-        const displayEl = document.getElementById('hunter-display');
-        if (displayEl) displayEl.innerText = gamertag.toUpperCase();
+      async silentSaveGameTelemetry() {
+        localStorage.setItem("ser_platform", this.currentPlatform);
+        localStorage.setItem("ser_local_progress", JSON.stringify(this.userProgressMap));
 
-        const theme = userThemes[gamertag] || userThemes['Werewolf3788'];
-        document.documentElement.style.setProperty('--ser-color', theme.color);
-        document.documentElement.style.setProperty('--ser-glow', theme.glow);
+        if (!this.currentUser || !this.currentEmailKey) return;
 
-        document.querySelectorAll('.profile-btn').forEach(b => {
-          b.classList.toggle('active-btn', b.innerText.trim().toLowerCase() === gamertag.toLowerCase());
-        });
+        try {
+          const docRef = doc(this.db, 'users', this.currentEmailKey, 'platform', this.currentPlatform, 'progress', GAME_DOC_ID);
+          const totalItems = this.masterCatalog.length || 1;
+          const collectedCount = Object.values(this.userProgressMap).filter(t => t.collected).length;
 
-        this.updatePinButtonUI();
-
-        const currentSaved = this.teamProgress[gamertag] || [];
-        this.hunterData = resistanceData.map(item => {
-          const status = currentSaved.find(s => s.id === item.id);
-          const isDone = status ? !!(status.collected || status.completed || status.done || (status.count !== undefined && Number(status.count) > 0)) : false;
-          return {
-            ...item,
-            collected: isDone,
-            count: status && status.count !== undefined ? Number(status.count) : (isDone ? (item.target || 1) : 0)
-          };
-        });
-
-        this.render();
+          await setDoc(docRef, {
+            activeMission: this.activeMission,
+            platform: this.currentPlatform,
+            trophies_earned: collectedCount,
+            trophies_total: totalItems,
+            trophies_percent: Math.round((collectedCount / totalItems) * 100),
+            collectibles: this.userProgressMap,
+            lastUpdate: Date.now()
+          }, { merge: true });
+        } catch (e) {
+          console.warn("Silent save failed:", e.message);
+        }
       },
 
-      stepItemCount: function(id, delta) {
-        const item = this.hunterData.find(i => i.id === id);
+      async loadAllPlatformTrophyProgress() {
+        if (!this.currentEmailKey) return;
+        const platforms = ["playstation", "pc", "xbox"];
+        const total = this.masterCatalog.length || 1;
+
+        for (const p of platforms) {
+          try {
+            const snapDoc = doc(this.db, 'users', this.currentEmailKey, 'platform', p, 'progress', GAME_DOC_ID);
+            onSnapshot(snapDoc, s => {
+              if (s.exists()) {
+                const data = s.data();
+                const earned = data.trophies_earned || 0;
+                this.crossPlatformTelemetry[p] = { earned, total, percent: Math.round((earned / total) * 100) };
+              } else if (p === this.currentPlatform) {
+                const earned = Object.values(this.userProgressMap).filter(t => t.collected).length;
+                this.crossPlatformTelemetry[p] = { earned, total, percent: Math.round((earned / total) * 100) };
+              }
+              this.render();
+            });
+          } catch (e) {}
+        }
+      },
+
+      recalculateCrossTrophyTelemetry() {
+        const total = this.masterCatalog.length || 1;
+        const currentEarned = Object.values(this.userProgressMap).filter(t => t.collected).length;
+        this.crossPlatformTelemetry[this.currentPlatform] = {
+          earned: currentEarned,
+          total: total,
+          percent: Math.round((currentEarned / total) * 100)
+        };
+      },
+
+      toggleItem(id) {
+        const item = this.masterCatalog.find(i => i.id === id);
         if (!item) return;
-        const currentVal = item.count || 0;
-        const stepSize = item.isLongShot ? 5 : 1;
-        const nextVal = Math.max(0, currentVal + (delta * stepSize));
-        this.setManualItemCount(id, nextVal);
+
+        const current = this.userProgressMap[id] || { collected: false, count: 0 };
+        const nextDone = !current.collected;
+        this.userProgressMap[id] = {
+          collected: nextDone,
+          count: nextDone ? (item.target || 1) : 0
+        };
+
+        this.render();
+        this.silentSaveGameTelemetry();
       },
 
-      openDirectNumberEditor: function(id, currentVal, maxVal, isUncapped = false) {
+      stepItemCount(id, delta) {
+        const item = this.masterCatalog.find(i => i.id === id);
+        if (!item) return;
+        const current = this.userProgressMap[id] || { collected: false, count: 0 };
+        const stepSize = item.isLongShot ? 5 : 1;
+        const nextCount = Math.max(0, (current.count || 0) + (delta * stepSize));
+        const isCollected = item.target ? (nextCount >= item.target) : (nextCount > 0);
+
+        this.userProgressMap[id] = { collected: isCollected, count: nextCount };
+        this.render();
+        this.silentSaveGameTelemetry();
+      },
+
+      openDirectNumberEditor(id, currentVal, maxVal, isUncapped = false) {
         const container = document.getElementById(`val-box-${id}`);
         if (!container) return;
-
         const maxAttr = (isUncapped || !maxVal) ? '' : `max="${maxVal}"`;
         container.innerHTML = `<input type="number" id="input-edit-${id}" class="manual-inline-num-input" value="${currentVal}" min="0" ${maxAttr}>`;
 
@@ -1172,63 +663,25 @@
         const commitVal = () => {
           const rawVal = parseInt(inputEl.value, 10);
           const finalVal = isNaN(rawVal) || rawVal < 0 ? 0 : rawVal;
-          this.setManualItemCount(id, finalVal);
+          const item = this.masterCatalog.find(i => i.id === id);
+          const isCollected = (item && item.target) ? (finalVal >= item.target) : (finalVal > 0);
+
+          this.userProgressMap[id] = { collected: isCollected, count: finalVal };
+          this.render();
+          this.silentSaveGameTelemetry();
         };
 
         inputEl.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') inputEl.blur();
           else if (e.key === 'Escape') this.render();
         });
-
         inputEl.addEventListener('blur', commitVal, { once: true });
       },
 
-      setManualItemCount: function(id, newCount) {
-        const item = this.hunterData.find(i => i.id === id);
-        if (!item) return;
-
-        item.count = newCount;
-        item.collected = item.target ? (item.count >= item.target) : (item.count > 0);
-
-        const opSaved = this.teamProgress[this.activeGamertag] || [];
-        const existing = opSaved.find(s => s.id === id);
-        if (existing) {
-          existing.count = item.count;
-          existing.collected = item.collected;
-        } else {
-          opSaved.push({ id: item.id, count: item.count, collected: item.collected });
-        }
-        this.teamProgress[this.activeGamertag] = opSaved;
-
-        this.render();
-        this.sync();
-      },
-
-      toggleItem: async function(id) {
-        const item = this.hunterData.find(i => i.id === id);
-        if (!item) return;
-
-        item.collected = !item.collected;
-        item.count = item.collected ? (item.target || 1) : 0;
-
-        const opSaved = this.teamProgress[this.activeGamertag] || [];
-        const existing = opSaved.find(s => s.id === id);
-        if (existing) {
-          existing.collected = item.collected;
-          existing.count = item.count;
-        } else {
-          opSaved.push({ id: item.id, collected: item.collected, count: item.count });
-        }
-        this.teamProgress[this.activeGamertag] = opSaved;
-
-        this.render();
-        this.sync();
-      },
-
-      populateMissionSelector: function() {
+      populateMissionSelector() {
         const select = document.getElementById('mission-focus-select');
         if (!select) return;
-        const cats = [...new Set(this.hunterData.map(i => i.cat))];
+        const cats = [...new Set(this.masterCatalog.map(i => i.cat))];
         select.innerHTML = '';
         cats.forEach(cat => {
           const opt = document.createElement('option');
@@ -1239,38 +692,175 @@
         });
       },
 
-      setActiveMission: function(catName) {
+      setActiveMission(catName) {
         this.activeMission = catName;
-        const cats = [...new Set(this.hunterData.map(i => i.cat))];
-
+        const cats = [...new Set(this.masterCatalog.map(i => i.cat))];
         cats.forEach(c => {
           const sid = c.replace(/[^a-z0-9]/gi, '');
           this.collapsedSections[sid] = (c !== catName);
         });
-
-        const select = document.getElementById('mission-focus-select');
-        if (select) select.value = catName;
-
         this.render();
-        this.sync();
+        this.silentSaveGameTelemetry();
       },
 
-      toggleSection: function(id) {
-        this.collapsedSections[id] = !this.collapsedSections[id];
+      toggleSection(sid) {
+        this.collapsedSections[sid] = !this.collapsedSections[sid];
         this.render();
       },
 
-      render: function() {
+      bindUI() {
+        const platSelect = document.getElementById("platformSelect");
+        if (platSelect) {
+          platSelect.value = this.currentPlatform;
+          platSelect.addEventListener("change", (e) => {
+            this.currentPlatform = e.target.value;
+            this.recalculateCrossTrophyTelemetry();
+            this.render();
+            this.silentSaveGameTelemetry();
+          });
+        }
+
+        const missionSelect = document.getElementById("mission-focus-select");
+        if (missionSelect) {
+          missionSelect.addEventListener("change", (e) => {
+            this.setActiveMission(e.target.value);
+          });
+        }
+
+        const googleBtn = document.getElementById("googleSignInBtn");
+        if (googleBtn) {
+          googleBtn.addEventListener("click", () => {
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(this.auth, provider).then(() => {
+              const modal = document.getElementById("authModal");
+              if (modal) modal.classList.add("hidden");
+            }).catch(e => alert("Sign In Error: " + e.message));
+          });
+        }
+
+        const modal = document.getElementById("authModal");
+        const authBtn = document.getElementById("authModalBtn");
+        const authClose = document.getElementById("authModalClose");
+
+        if (authBtn && modal) authBtn.addEventListener("click", () => modal.classList.remove("hidden"));
+        if (authClose && modal) authClose.addEventListener("click", () => modal.classList.add("hidden"));
+      },
+
+      renderProfileDropdown(isAuthenticated) {
+        let menu = document.getElementById("userProfileDropdownMenu");
+        const profileBadge = document.getElementById("userProfile");
+
+        if (!menu && profileBadge) {
+          menu = document.createElement("div");
+          menu.id = "userProfileDropdownMenu";
+          menu.className = "profile-dropdown-menu hidden";
+          menu.style.cssText = "position:absolute; top:60px; right:20px; background:#151c27; border:1px solid #273447; border-radius:8px; padding:8px; box-shadow:0 10px 30px rgba(0,0,0,0.8); z-index:1005; display:flex; flex-direction:column; gap:6px; min-width:180px;";
+          document.body.appendChild(menu);
+
+          profileBadge.addEventListener("click", (e) => {
+            e.stopPropagation();
+            menu.classList.toggle("hidden");
+          });
+
+          document.addEventListener("click", () => {
+            if (!menu.classList.contains("hidden")) menu.classList.add("hidden");
+          });
+        }
+
+        if (!menu) return;
+
+        if (isAuthenticated) {
+          menu.innerHTML = `
+            <a href="../../security/settings.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px;">⚙️ Settings Hub</a>
+            <a href="../../security/privacy.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px;">🔒 Privacy Policy</a>
+            <div style="height:1px; background:#273447; margin:2px 0;"></div>
+            <button id="menuLogoutBtn" style="background:transparent; border:none; color:#e74c3c; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; font-weight:600;">🚪 Log Out</button>
+          `;
+          const logoutBtn = document.getElementById("menuLogoutBtn");
+          if (logoutBtn) logoutBtn.addEventListener("click", () => signOut(this.auth).then(() => window.location.reload()));
+        } else {
+          menu.innerHTML = `
+            <button id="menuLoginBtn" style="background:transparent; border:none; color:#0088ff; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; font-weight:600;">🔑 Log In</button>
+          `;
+          const loginBtn = document.getElementById("menuLoginBtn");
+          if (loginBtn) {
+            loginBtn.addEventListener("click", () => {
+              const modal = document.getElementById("authModal");
+              if (modal) modal.classList.remove("hidden");
+            });
+          }
+        }
+      },
+
+      render() {
         const container = document.getElementById('section-container');
         if (!container) return;
 
         container.innerHTML = '';
-        const cats = [...new Set(this.hunterData.map(i => i.cat))];
+        const cats = [...new Set(this.masterCatalog.map(i => i.cat))];
         let totalFound = 0;
 
+        // Cross-Platform Telemetry Header Deck
+        const total = this.masterCatalog.length || 1;
+        const earnedCount = Object.values(this.userProgressMap).filter(t => t.collected).length;
+        const progressPercent = Math.round((earnedCount / total) * 100);
+
+        const psTel = this.crossPlatformTelemetry.playstation || { earned: 0, percent: 0 };
+        const pcTel = this.crossPlatformTelemetry.pc || { earned: 0, percent: 0 };
+        const xboxTel = this.crossPlatformTelemetry.xbox || { earned: 0, percent: 0 };
+
+        const headerDeck = document.createElement("div");
+        headerDeck.style.cssText = "background:#151c27; border:1px solid #273447; border-radius:10px; padding:16px 20px; margin-bottom:14px; display:flex; flex-direction:column; gap:10px;";
+        headerDeck.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div>
+              <strong style="color:#fff; font-size:1.1rem;">🎯 Resistance Multi-Platform Intel Stream</strong>
+              <div style="font-size:0.8rem; color:#8b949e; margin-top:2px;">User Key: ${this.currentEmailKey}</div>
+            </div>
+            <span class="badge" style="background:#28374d; color:var(--accent-gold); padding:6px 12px; border-radius:4px; font-size:0.9rem; font-weight:700;">
+              ${earnedCount} / ${total} Recovered (${progressPercent}%)
+            </span>
+          </div>
+
+          <div style="width:100%; height:10px; background:rgba(255,255,255,0.06); border-radius:5px; overflow:hidden;">
+            <div style="width:${progressPercent}%; height:100%; background:linear-gradient(90deg, #ff8800, #2ecc71); border-radius:5px; transition: width 0.4s ease;"></div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:4px; background:rgba(0,0,0,0.3); padding:10px 12px; border-radius:8px; border:1px solid #1c2738;">
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:3px;">
+                <span style="color:#00a6ed; font-weight:700;">🎮 PlayStation</span>
+                <strong style="color:#fff;">${psTel.earned}/${total} (${psTel.percent}%)</strong>
+              </div>
+              <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
+                <div style="width:${psTel.percent}%; height:100%; background:#00a6ed;"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:3px;">
+                <span style="color:#00d2d3; font-weight:700;">🖥️ PC / Steam</span>
+                <strong style="color:#fff;">${pcTel.earned}/${total} (${pcTel.percent}%)</strong>
+              </div>
+              <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
+                <div style="width:${pcTel.percent}%; height:100%; background:#00d2d3;"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:3px;">
+                <span style="color:#2ecc71; font-weight:700;">❎ Xbox Network</span>
+                <strong style="color:#fff;">${xboxTel.earned}/${total} (${xboxTel.percent}%)</strong>
+              </div>
+              <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
+                <div style="width:${xboxTel.percent}%; height:100%; background:#2ecc71;"></div>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(headerDeck);
+
         cats.forEach(cat => {
-          const rawItems = this.hunterData.filter(i => i.cat === cat);
-          const count = rawItems.filter(i => i.collected).length;
+          const rawItems = this.masterCatalog.filter(i => i.cat === cat);
+          const count = rawItems.filter(i => this.userProgressMap[i.id] && this.userProgressMap[i.id].collected).length;
           totalFound += count;
 
           const items = [...rawItems].sort((a, b) => {
@@ -1306,30 +896,29 @@
 
           const grid = section.querySelector('.item-grid');
           items.forEach(item => {
+            const uState = this.userProgressMap[item.id] || { collected: false, count: 0 };
             const isNumeric = (item.target !== undefined && item.target > 1);
             const isLongShot = !!item.isLongShot;
             const card = document.createElement('div');
-            card.className = `item-card ${item.collected ? 'completed' : ''}`;
+            card.className = `item-card ${uState.collected ? 'completed' : ''}`;
 
             const iconUrl = GAME_TYPE_ICONS[item.type] || GAME_TYPE_ICONS['Personal Letter'];
 
-            let teamBadgesHtml = '';
-            ALL_OPERATIVES.forEach(op => {
-              const opProgress = this.teamProgress[op] || [];
-              const opStatus = opProgress.find(s => s.id === item.id);
-              const isCollected = opStatus ? !!(opStatus.collected || opStatus.completed || opStatus.done || (opStatus.count && Number(opStatus.count) > 0)) : false;
-              const opCount = opStatus && opStatus.count !== undefined ? Number(opStatus.count) : (isCollected ? '✓' : 0);
+            let squadBadgesHtml = '';
+            Object.values(this.teamLiveTelemetry).forEach(op => {
+              const opEntry = (op.collectibles && op.collectibles[item.id]) ? op.collectibles[item.id] : null;
+              const opCollected = opEntry ? Boolean(opEntry.collected || (opEntry.count && Number(opEntry.count) > 0)) : false;
+              const opCount = opEntry && opEntry.count !== undefined ? Number(opEntry.count) : (opCollected ? '✓' : 0);
+              let displayBadgeText = op.username.toUpperCase();
+              if (isLongShot) displayBadgeText = `${op.username.toUpperCase()} (${opCount}m)`;
+              else if (isNumeric) displayBadgeText = `${op.username.toUpperCase()} (${opCount})`;
 
-              let displayBadgeText = op.toUpperCase();
-              if (isLongShot) displayBadgeText = `${op.toUpperCase()} (${opCount}m)`;
-              else if (isNumeric) displayBadgeText = `${op.toUpperCase()} (${opCount})`;
-
-              teamBadgesHtml += `<span class="team-badge ${isCollected ? 'is-collected' : ''}">${displayBadgeText}</span>`;
+              squadBadgesHtml += `<span class="team-badge ${opCollected ? 'is-collected' : ''}">${displayBadgeText}</span>`;
             });
 
             let actionControlsHtml = '';
             if (isNumeric) {
-              const countVal = item.count || 0;
+              const countVal = uState.count || 0;
               const targetVal = item.target || 1;
               actionControlsHtml = `
                 <div class="stepper-action-row">
@@ -1343,8 +932,8 @@
             } else {
               actionControlsHtml = `
                 <div class="card-actions-row">
-                  <button class="confirm-toggle-btn outlined-text ${item.collected ? 'completed-state' : ''}" onclick="window.appState.toggleItem('${item.id}')">
-                    ${item.collected ? 'COLLECTED (Undo)' : 'MARK FOUND'}
+                  <button class="confirm-toggle-btn outlined-text ${uState.collected ? 'completed-state' : ''}" onclick="window.appState.toggleItem('${item.id}')">
+                    ${uState.collected ? 'COLLECTED (Undo)' : 'MARK FOUND'}
                   </button>
                 </div>
               `;
@@ -1360,10 +949,12 @@
                 <div class="item-desc outlined-text">${item.desc}</div>
               </div>
               <div>
-                <div class="team-intel-row">
-                  <span class="team-intel-label">SQUAD PROGRESS:</span>
-                  ${teamBadgesHtml}
-                </div>
+                ${squadBadgesHtml ? `
+                  <div class="team-intel-row">
+                    <span class="team-intel-label">SQUAD PROGRESS:</span>
+                    ${squadBadgesHtml}
+                  </div>
+                ` : ''}
                 ${actionControlsHtml}
               </div>
             `;
@@ -1373,35 +964,8 @@
           container.appendChild(section);
         });
 
-        const percent = Math.round((totalFound / (this.hunterData.length || 1)) * 100) || 0;
-        const overallTier = getTierStatus(percent);
-        const bar = document.getElementById('overall-bar');
-        const pct = document.getElementById('percent-text');
-        if (bar) bar.style.width = `${percent}%`;
-        if (pct) pct.innerText = `TOTAL RESISTANCE INTEL: ${percent}% (${this.activeGamertag}) • [${overallTier.icon} ${overallTier.label}]`;
-      },
-
-      sync: async function() {
-        if (!this.db) return;
-
-        const progress = this.hunterData.map(i => ({
-          id: i.id,
-          collected: !!i.collected,
-          count: i.count || 0
-        }));
-
-        try {
-          const docRef = doc(this.db, 'users', this.activeGamertag, 'platform', this.platform, 'progress', 'sniper-elite-resistance');
-          await setDoc(docRef, {
-            activeMission: this.activeMission,
-            gameId: "sniper-elite-resistance",
-            lastUpdate: Date.now(),
-            platform: this.platform,
-            progress: progress
-          }, { merge: true });
-        } catch (err) {
-          console.warn("Firestore Save Notice:", err.message);
-        }
+        const statEl = document.getElementById('stat-line');
+        if (statEl) statEl.innerText = `ONLINE: Scoped to /users/${this.currentEmailKey}/platform/${this.currentPlatform}/progress/${GAME_DOC_ID}`;
       }
     };
 
@@ -1500,15 +1064,8 @@
       }
     });
 
-    /* 24-Hour New York Time Clock Binding */
     function updateNewYorkClock() {
-      const options = {
-        timeZone: 'America/New_York',
-        hour12: false,
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      };
+      const options = { timeZone: 'America/New_York', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' };
       const clockEl = document.getElementById('ny-timestamp');
       if (clockEl) {
         const timeStr = new Intl.DateTimeFormat('en-US', options).format(new Date());
