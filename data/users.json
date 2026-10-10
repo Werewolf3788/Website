@@ -1,0 +1,34 @@
+{
+  "users": [
+    {
+      "id": "user_werewolf",
+      "display_name": "Werewolf",
+      "psn_name": "wildhorse_spirit",
+      "psn_id": "4087137467908566201",
+      "email": "raykevin71888@gmail.com",
+      "theme": {
+        "theme_name": "Camo",
+        "primary_color": "#4B5320",
+        "accent_color": "#8B7355",
+        "surface_color": "#2E3B23",
+        "mode": "dark"
+      },
+      "verified": true
+    },
+    {
+      "id": "user_ray",
+      "display_name": "Raymystyro",
+      "psn_name": "OneLIVIDMAN",
+      "psn_id": "2732733730346312494",
+      "email": "cartnalray9@gmail.com",
+      "theme": {
+        "theme_name": "Water & Black",
+        "primary_color": "#00A6ED",
+        "accent_color": "#0D0D0D",
+        "surface_color": "#00344D",
+        "mode": "dark"
+      },
+      "verified": true
+    }
+  ]
+}
