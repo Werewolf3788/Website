@@ -6,9 +6,10 @@
  *              2. Google Authentication, session management, and profile dropdown modal.
  *              3. Scoped Firestore hierarchy: users/{emailKey}/platform/{platform}/progress/COTW
  *              4. Live RTDB need zones, grind tracking, and NPWR13211_00 PlayStation sync.
- *              5. Zero dropped lines: full reserve schedules, coordinates, and culls preserved.
- * Build Version: 7.0.0 - Unified Auth, Dynamic Users & Multi-Platform Engine
- * [Smart Cache-Buster Time: 2026-10-10 03:14 EDT | Firebase Sync Target: /utm_links | Version: 7.0.0]
+ *              5. Real-time dynamic game posterArt favicon and branding engine.
+ *              6. Zero dropped lines: full reserve schedules, coordinates, and culls preserved.
+ * Build Version: 7.3.0 - Dynamic Poster Favicon & 4-Platform Cloud Engine
+ * [Smart Cache-Buster Time: 2026-10-10 04:40 EDT | Firebase Sync Target: /utm_links | Version: 7.3.0]
  * ============================================================================ */
 
 // Line 16: Google Tag Manager & Google Analytics 4 Deployment (G-CTYHDF4MSD)
@@ -27,15 +28,15 @@ gtag('config', 'G-CTYHDF4MSD', {
     'cookie_flags': 'SameSite=None;Secure'
 });
 
-// Line 33: Relative Protocol SDK Imports
-import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+// Line 33: Relative Protocol Modular SDK Imports
+import { initializeApp, getApps } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from '//www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot, serverTimestamp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 import { getDatabase, ref as rtdbRef, onValue, get, set, update, push, off } from '//www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from '//www.gstatic.com/firebasejs/10.8.0/firebase-storage.js';
 
-const BUILD_VERSION = "7.0.0";
-const CODE_BUILD_DATE = "2026-10-10 03:14:00 EDT";
+const BUILD_VERSION = "7.3.0";
+const CODE_BUILD_DATE = "2026-10-10 04:40:00 EDT";
 const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
 
 const firebaseConfig = {
@@ -69,10 +70,13 @@ const normalizePlatform = (inputPlatform) => {
     if (!inputPlatform) return 'playstation';
     const clean = String(inputPlatform).toLowerCase().trim();
     if (clean === 'psn' || clean === 'ps' || clean === 'playstation') return 'playstation';
-    return clean;
+    if (clean === 'steam') return 'steam';
+    if (clean === 'pc' || clean === 'windows' || clean === 'microsoft' || clean === 'ms') return 'pc';
+    if (clean === 'xbox' || clean === 'xb') return 'xbox';
+    return 'playstation';
 };
 
-// Application State with Full Multi-Path JSON & Dynamic User Synchronization
+// Application State with Full Multi-Path JSON, Dynamic Favicon & Multi-Platform Sync
 const appState = {
     files: {
         cotw: "cotw.json",
@@ -90,6 +94,7 @@ const appState = {
     zoneType: 'main',
     sessionMode: 'single',
     selectedImageFile: null,
+    hasLoadedPrimaryPoster: false,
 
     masterCatalog: null,
     usersCatalog: [],
@@ -100,8 +105,9 @@ const appState = {
     teamLiveTelemetry: {},
     crossPlatformTelemetry: {
         playstation: { earned: 0, total: 0, percent: 0 },
+        xbox: { earned: 0, total: 0, percent: 0 },
         pc: { earned: 0, total: 0, percent: 0 },
-        xbox: { earned: 0, total: 0, percent: 0 }
+        steam: { earned: 0, total: 0, percent: 0 }
     },
 
     auth: null,
@@ -113,6 +119,7 @@ const appState = {
     masterUnsub: null,
     legacyUnsub: null,
     rtdbTrophyRef: null,
+    rtdbPosterRef: null,
     rtdbLedgerRef: null,
     rtdbReserveCullRef: null,
 
@@ -186,17 +193,79 @@ const appState = {
                 const root = document.documentElement;
                 if (matchedUser.theme.primary_color) {
                     root.style.setProperty("--theme-primary", matchedUser.theme.primary_color);
-                    root.style.setProperty("--accent-primary", matchedUser.theme.primary_color);
+                    root.style.setProperty("--user-theme-accent", matchedUser.theme.primary_color);
+                    root.style.setProperty("--user-theme-badge-bg", matchedUser.theme.primary_color);
                 }
                 if (matchedUser.theme.accent_color) {
                     root.style.setProperty("--theme-accent", matchedUser.theme.accent_color);
-                    root.style.setProperty("--accent-gold", matchedUser.theme.accent_color);
+                    root.style.setProperty("--user-theme-glow", `rgba(${this.hexToRgb(matchedUser.theme.accent_color)}, 0.45)`);
+                    root.style.setProperty("--user-theme-border", `rgba(${this.hexToRgb(matchedUser.theme.accent_color)}, 0.35)`);
                 }
                 if (matchedUser.theme.surface_color) {
                     root.style.setProperty("--theme-surface", matchedUser.theme.surface_color);
+                    root.style.setProperty("--card-surface", matchedUser.theme.surface_color);
                 }
             }
         }
+    },
+
+    hexToRgb(hex) {
+        const clean = hex.replace('#', '');
+        const bigint = parseInt(clean, 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+        return `${r}, ${g}, ${b}`;
+    },
+
+    applyBrandArt(imgUrl) {
+        if (!imgUrl || typeof imgUrl !== "string") return;
+        const cleanUrl = imgUrl.trim();
+
+        let favicon = document.getElementById("dynamicFavicon");
+        let appleIcon = document.getElementById("dynamicAppleIcon");
+        const brandLogo = document.getElementById("navBrandLogo");
+
+        if (!favicon) {
+            favicon = document.createElement("link");
+            favicon.id = "dynamicFavicon";
+            favicon.rel = "icon";
+            favicon.type = "image/png";
+            document.head.appendChild(favicon);
+        }
+
+        if (!appleIcon) {
+            appleIcon = document.createElement("link");
+            appleIcon.id = "dynamicAppleIcon";
+            appleIcon.rel = "apple-touch-icon";
+            document.head.appendChild(appleIcon);
+        }
+
+        favicon.href = cleanUrl;
+        appleIcon.href = cleanUrl;
+        if (brandLogo) brandLogo.src = cleanUrl;
+        this.hasLoadedPrimaryPoster = true;
+    },
+
+    bindPosterArtWatcher() {
+        if (!this.rtdb) return;
+        this.rtdbPosterRef = rtdbRef(this.rtdb, `/psn/games/${NPWR_ID}`);
+
+        onValue(this.rtdbPosterRef, (snapshot) => {
+            if (!snapshot.exists()) return;
+            const gameData = snapshot.val();
+            let poster = "";
+
+            if (typeof gameData === "string") {
+                poster = gameData;
+            } else if (gameData && gameData.posterArt) {
+                poster = gameData.posterArt;
+            }
+
+            if (poster) {
+                this.applyBrandArt(poster);
+            }
+        });
     },
 
     getFreshTrophyTemplate: function() {
@@ -807,7 +876,7 @@ const appState = {
                 if (Array.isArray(node)) {
                     if (!groups[key]) groups[key] = [];
                     node.forEach((arrItem, idx) => {
-                        const parsed = parseItem(arrItem, `${key}_${idx}`);
+                        const parsed = parseItem(arrItem, `${key}_${idx}`));
                         if (parsed) groups[key].push(parsed);
                     });
                 } else if (typeof node === 'object') {
@@ -828,6 +897,11 @@ const appState = {
                     }
                 }
             });
+
+            // Fallback: If no primary game posterArt has loaded yet, bind brand art from navigation
+            if (!this.hasLoadedPrimaryPoster && rawData.COTW && rawData.COTW[0] && rawData.COTW[0].image) {
+                this.applyBrandArt(rawData.COTW[0].image);
+            }
 
             let navHTML = '';
             standalone.forEach(item => {
@@ -884,12 +958,13 @@ const appState = {
         this.bindUI();
 
         try {
-            const app = initializeApp(firebaseConfig, 'COTW-Dual-Engine');
+            const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
             this.auth = getAuth(app);
             this.db = getFirestore(app);
             this.rtdb = getDatabase(app);
             this.storage = getStorage(app);
 
+            this.bindPosterArtWatcher();
             this.loadNavigationFromRTDB();
 
             onAuthStateChanged(this.auth, (user) => {
@@ -908,7 +983,7 @@ const appState = {
 
                     this.applyUserThemeAndIdentity();
 
-                    rtdbRef(this.rtdb, `users/${this.activeSanitizedKey}`).onValue = (snapshot) => {
+                    onValue(rtdbRef(this.rtdb, `users/${this.activeSanitizedKey}`), (snapshot) => {
                         const rtdbProfile = snapshot.val() || {};
                         const hunterTag = rtdbProfile.username || user.displayName || "Hunter";
                         let avatarUrl = rtdbProfile.avatar_url || user.photoURL || DEFAULT_USER_AVATAR;
@@ -931,7 +1006,7 @@ const appState = {
                         this.friendsRoster = rtdbProfile.friends ? Object.values(rtdbProfile.friends) : [];
                         this.listenToSharedSquadTelemetry();
                         this.loadAllPlatformTrophyProgress();
-                    };
+                    });
 
                     this.setStatus(`✓ Connected [${this.activeHunterEmail}]`, "#10b981");
                     this.loadHunterByEmail(this.activeHunterEmail, this.activePlatform);
@@ -1134,16 +1209,17 @@ const appState = {
         }
 
         this.friendsRoster.forEach(friend => {
-            const friendEmail = (friend.target_email || "").toLowerCase();
-            if (!friendEmail) return;
-            const friendKey = getEmailKey(friendEmail);
-            const targetPlat = normalizePlatform(friend.platform || this.activePlatform);
+            const rawEmail = friend.target_email || friend.email || "";
+            const friendKey = rawEmail ? getEmailKey(rawEmail) : (friend.userKey || friend.username || "");
+            if (!friendKey) return;
 
+            const targetPlat = normalizePlatform(friend.platform || this.activePlatform);
             const friendDoc = doc(this.db, 'users', friendKey, 'platform', targetPlat, 'progress', GAME_ID);
+
             onSnapshot(friendDoc, snap => {
                 if (!snap.exists()) return;
                 const data = snap.data();
-                const opName = friend.username || "Companion";
+                const opName = friend.username || friend.displayName || "Companion";
                 const totalTrophies = this.hunterData.length || 1;
                 const earnedCount = (data.trophies || []).filter(t => t.current >= t.goal).length;
 
@@ -1193,30 +1269,29 @@ const appState = {
 
     async loadAllPlatformTrophyProgress() {
         if (!this.activeSanitizedKey) return;
-        const platforms = ["playstation", "pc", "xbox"];
+        const platforms = ["playstation", "xbox", "pc", "steam"];
         const total = this.hunterData.length || 1;
 
-        for (const p of platforms) {
+        platforms.forEach(p => {
             try {
                 const snapDoc = doc(this.db, 'users', this.activeSanitizedKey, 'platform', p, 'progress', GAME_ID);
-                const snap = await get(snapDoc);
-                if (snap.exists()) {
-                    const data = snap.data();
-                    const earned = (data.trophies || []).filter(t => t.current >= t.goal).length;
-                    this.crossPlatformTelemetry[p] = { earned, total, percent: Math.round((earned / total) * 100) };
-                } else {
-                    if (p === this.activePlatform) {
+                onSnapshot(snapDoc, s => {
+                    if (s.exists()) {
+                        const data = s.data();
+                        const earned = (data.trophies || []).filter(t => t.current >= t.goal).length;
+                        this.crossPlatformTelemetry[p] = { earned, total, percent: Math.round((earned / total) * 100) };
+                    } else if (p === this.activePlatform) {
                         const earned = this.hunterData.filter(t => t.current >= t.goal).length;
                         this.crossPlatformTelemetry[p] = { earned, total, percent: Math.round((earned / total) * 100) };
                     } else {
                         this.crossPlatformTelemetry[p] = { earned: 0, total, percent: 0 };
                     }
-                }
+                    this.render();
+                });
             } catch (e) {
                 console.warn(`Error loading ${p} telemetry:`, e);
             }
-        }
-        this.render();
+        });
     },
 
     recalculateCrossTrophyTelemetry() {
@@ -1260,14 +1335,15 @@ const appState = {
 
         container.innerHTML = '';
 
-        // Cross-Platform Telemetry Header Deck
+        // Cross-Platform Telemetry Header Deck (4 Platforms)
         const total = this.hunterData.length || 1;
         const earnedCount = this.hunterData.filter(t => t.current >= t.goal).length;
         const progressPercent = Math.round((earnedCount / total) * 100);
 
         const psTel = this.crossPlatformTelemetry.playstation || { earned: 0, percent: 0 };
+        const xbTel = this.crossPlatformTelemetry.xbox || { earned: 0, percent: 0 };
         const pcTel = this.crossPlatformTelemetry.pc || { earned: 0, percent: 0 };
-        const xboxTel = this.crossPlatformTelemetry.xbox || { earned: 0, percent: 0 };
+        const stTel = this.crossPlatformTelemetry.steam || { earned: 0, percent: 0 };
 
         const headerDeck = document.createElement("div");
         headerDeck.style.cssText = "grid-column: 1/-1; background:#151c27; padding:16px 20px; border-radius:10px; border:1px solid #273447; margin-bottom:14px; display:flex; flex-direction:column; gap:12px;";
@@ -1290,9 +1366,9 @@ const appState = {
                 <div style="width:${progressPercent}%; height:100%; background:linear-gradient(90deg, #0088ff, #2ecc71); border-radius:5px; transition: width 0.4s ease;"></div>
             </div>
 
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:4px; background:rgba(0,0,0,0.3); padding:10px 12px; border-radius:8px; border:1px solid #1c2738;">
-                <div style="display:flex; flex-direction:column; gap:4px;">
-                    <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin-top:4px; background:rgba(0,0,0,0.3); padding:10px 12px; border-radius:8px; border:1px solid #1c2738;">
+                <div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:3px;">
                         <span style="color:#00a6ed; font-weight:700;">🎮 PlayStation</span>
                         <strong style="color:#fff;">${psTel.earned}/${total} (${psTel.percent}%)</strong>
                     </div>
@@ -1301,23 +1377,33 @@ const appState = {
                     </div>
                 </div>
 
-                <div style="display:flex; flex-direction:column; gap:4px;">
-                    <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
-                        <span style="color:#00d2d3; font-weight:700;">🖥️ PC / Steam</span>
-                        <strong style="color:#fff;">${pcTel.earned}/${total} (${pcTel.percent}%)</strong>
+                <div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:3px;">
+                        <span style="color:#2ecc71; font-weight:700;">❎ Xbox</span>
+                        <strong style="color:#fff;">${xbTel.earned}/${total} (${xbTel.percent}%)</strong>
                     </div>
                     <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
-                        <div style="width:${pcTel.percent}%; height:100%; background:#00d2d3;"></div>
+                        <div style="width:${xbTel.percent}%; height:100%; background:#2ecc71;"></div>
                     </div>
                 </div>
 
-                <div style="display:flex; flex-direction:column; gap:4px;">
-                    <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
-                        <span style="color:#2ecc71; font-weight:700;">❎ Xbox Network</span>
-                        <strong style="color:#fff;">${xboxTel.earned}/${total} (${xboxTel.percent}%)</strong>
+                <div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:3px;">
+                        <span style="color:#f5a623; font-weight:700;">💻 PC (MS Store)</span>
+                        <strong style="color:#fff;">${pcTel.earned}/${total} (${pcTel.percent}%)</strong>
                     </div>
                     <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
-                        <div style="width:${xboxTel.percent}%; height:100%; background:#2ecc71;"></div>
+                        <div style="width:${pcTel.percent}%; height:100%; background:#f5a623;"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:3px;">
+                        <span style="color:#00d2d3; font-weight:700;">🚂 Steam</span>
+                        <strong style="color:#fff;">${stTel.earned}/${total} (${stTel.percent}%)</strong>
+                    </div>
+                    <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
+                        <div style="width:${stTel.percent}%; height:100%; background:#00d2d3;"></div>
                     </div>
                 </div>
             </div>
