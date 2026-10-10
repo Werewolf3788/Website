@@ -969,7 +969,7 @@
     }
 
     .trophy-breakdown-card {
-      max-width: 820px;
+      max-width: 840px;
       width: 100%;
       max-height: 88vh;
       background: var(--bg-surface-elevated);
@@ -1087,7 +1087,7 @@
       flex-direction: column;
       align-items: flex-end;
       gap: 0.35rem;
-      min-width: 130px;
+      min-width: 140px;
     }
 
     .earner-chip {
@@ -1294,14 +1294,14 @@
   <!-- Section: Persistent Cockpit Footer with New York 24-Hour Stamp (Lines 1004-1015) -->
   <footer class="cockpit-footer">
     <div class="footer-inner">
-      <div>Engine Version: <strong>v53.0.0</strong> | Direct Game Node & Trophy-Priority Sorting</div>
+      <div>Engine Version: <strong>v54.0.0</strong> | Direct Game Node & Trophy Earner Matrix</div>
       <div>Latest PSN Sync: <span id="footerSyncStamp" class="footer-stamp">Awaiting feed...</span></div>
-      <div>Timestamp: <span id="persistentNyTimestamp" class="footer-stamp">2026-10-09 21:05:00 (EDT)</span></div>
+      <div>Timestamp: <span id="persistentNyTimestamp" class="footer-stamp">2026-10-09 21:11:00 (EDT)</span></div>
     </div>
   </footer>
 
   <!-- ==========================================================================
-       Section: ENGINE SCRIPT: FIREBASE DATA, DYNAMIC MENU & TROPHY ENGINE (Lines 1018-1460)
+       Section: ENGINE SCRIPT: FIREBASE DATA, DYNAMIC MENU & TROPHY ENGINE (Lines 1018-1470)
        ========================================================================== -->
   <script>
     const FIREBASE_BASE_ENDPOINT = "//entertainment-71888-default-rtdb.firebaseio.com";
@@ -1765,7 +1765,7 @@
           multiplayerInfo: capabilities,
           trophies: g.trophies || g.trophyList || [],
           operatives: [],
-          latestTrophyTimestamp: 0 // Most recent trophy timestamp across all squad players
+          latestTrophyTimestamp: 0
         });
       });
 
@@ -1800,7 +1800,6 @@
 
           const entry = catalogMap.get(cId);
 
-          // Calculate this operative's newest trophy unlock timestamp for this game
           const earnedTrophies = rg.earnedTrophies || rg.trophies || [];
           let playerLatest = 0;
 
@@ -1816,13 +1815,11 @@
             });
           }
 
-          // Fallback to recent game activity date if individual trophy dates aren't nested
           if (!playerLatest && rg.lastUpdatedDateTime) {
             const parsedUpdate = new Date(rg.lastUpdatedDateTime).getTime();
             if (!isNaN(parsedUpdate)) playerLatest = parsedUpdate;
           }
 
-          // If this operative unlocked a trophy more recently, update the whole game's timestamp
           if (playerLatest > entry.latestTrophyTimestamp) {
             entry.latestTrophyTimestamp = playerLatest;
           }
@@ -1841,15 +1838,12 @@
 
       // 3. Strict Catalog Sort: Games with the most recently earned trophy across any squad player rise to the top
       return Array.from(catalogMap.values()).sort((a, b) => {
-        // Condition A: If one game has a more recent earned trophy timestamp, it ranks first
         if (b.latestTrophyTimestamp !== a.latestTrophyTimestamp) {
           return b.latestTrophyTimestamp - a.latestTrophyTimestamp;
         }
-        // Condition B: Operative count (more squad members logged)
         if (b.operatives.length !== a.operatives.length) {
           return b.operatives.length - a.operatives.length;
         }
-        // Condition C: Alphabetical fallback
         return a.name.localeCompare(b.name);
       });
     }
@@ -1979,7 +1973,6 @@
         const posterUrl = item.posterArt || "//placehold.co/600x340/151b26/ffffff?text=PlayStation";
         const mp = item.multiplayerInfo || {};
 
-        // Sort operatives inside card: individual who earned a trophy most recently sits highest
         const sortedOperatives = [...item.operatives].sort((a, b) => (b.lastEarnedTimestamp || 0) - (a.lastEarnedTimestamp || 0) || (b.progress - a.progress));
 
         let operativesMarkup = `<div class="squad-presence-box"><div class="squad-box-header"><span>Squad Records</span><span>${item.operatives.length} Logged</span></div>`;
@@ -2096,6 +2089,7 @@
 
       const trophyMap = new Map();
 
+      // Seed with base master trophies if available
       baseTrophies.forEach(t => {
         const id = String(t.trophyId !== undefined ? t.trophyId : (t.id || '0'));
         trophyMap.set(id, {
@@ -2108,6 +2102,7 @@
         });
       });
 
+      // Map squad members who unlocked each trophy
       if (gameEntry && gameEntry.operatives) {
         gameEntry.operatives.forEach(op => {
           if (Array.isArray(op.earnedTrophies)) {
