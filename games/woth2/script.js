@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-10 02:43 EDT | Firebase Sync Target: /utm_links | Version: 6.1.0]
+// [Smart Cache-Buster Time: 2026-10-10 06:16 EDT | Firebase Sync Target: /utm_links | Version: 6.2.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
@@ -85,6 +85,15 @@ document.addEventListener("DOMContentLoaded", () => {
     gameMetadata: {},
     friendsRoster: [],
     hasLoadedPrimaryPoster: false,
+
+    // Line 72: Default lodge catalog fallback items for requisitions
+    lodgeCatalog: [
+      { id: "gear_scope_overgaard", name: "Overgaard 3-9x40 Hunting Scope", category: "Optics", cost: 725, requiredLevel: 3, description: "Precision hunting optic with clear multi-coated glass and balanced zoom." },
+      { id: "gear_rifle_steyr_308", name: "Steyr Monobloc .308 Win", category: "Firearms", cost: 2400, requiredLevel: 4, description: "Top-tier bolt-action rifle designed for medium-to-large game with supreme accuracy." },
+      { id: "gear_caller_predator", name: "Predator Mouth Call", category: "Callers", cost: 350, requiredLevel: 1, description: "Simulates injured rabbit distress sounds to draw in wolves, bears, and foxes." },
+      { id: "gear_rangefinder_bushnell", name: "Bushnell Laser Rangefinder 1200", category: "Optics", cost: 890, requiredLevel: 2, description: "Accurate distance measurement up to 1200 yards with instantaneous ballistic readouts." },
+      { id: "gear_shotgun_12g", name: "MorningStar Over-and-Under 12G", category: "Firearms", cost: 1350, requiredLevel: 2, description: "Versatile twin-barrel shotgun tailored for high-speed waterfowl and upland game." }
+    ],
 
     async init() {
       this.loadSavedState();
@@ -416,6 +425,7 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("woth2_manual_trophies", JSON.stringify(this.userTrophyProgress));
 
       this.recalculateCrossTrophyTelemetry();
+      this.renderLodgeForecaster();
 
       const activeUser = auth.currentUser;
       const targetUserKey = this.currentEmailKey || (this.currentEmail ? getEmailKey(this.currentEmail) : "");
@@ -1236,7 +1246,82 @@ document.addEventListener("DOMContentLoaded", () => {
       this.renderInfrastructure();
       this.renderTrails();
       this.renderSpeciesCatalog();
+      this.renderLodgeForecaster();
       this.updateDynamicHarvestSchema();
+    },
+
+    // Line 730: Lodge Requisition Forecaster Engine (Credits Math & Level Delta Gate)
+    renderLodgeForecaster() {
+      const container = document.getElementById("lodgeForecasterContainer") || document.getElementById("lodgeRequisitionGrid");
+      if (!container) return;
+
+      const items = (this.db.gameData && this.db.gameData.lodge_store) ? this.db.gameData.lodge_store : this.lodgeCatalog;
+      container.innerHTML = "";
+
+      items.forEach(item => {
+        const canAfford = this.hunterCredits >= item.cost;
+        const balanceAfter = this.hunterCredits - item.cost;
+        const isLevelUnlocked = this.hunterLevel >= item.requiredLevel;
+        const levelsToGo = Math.max(0, item.requiredLevel - this.hunterLevel);
+
+        let balanceBadgeClass = canAfford ? "banner-breeder" : "banner-cull";
+        let balanceBadgeText = canAfford
+          ? `Balance After Purchase: $${balanceAfter} credits ($${this.hunterCredits} - $${item.cost})`
+          : `Deficit: Need $${Math.abs(balanceAfter)} more credits (Have $${this.hunterCredits} / Need $${item.cost})`;
+
+        let levelBadgeText = isLevelUnlocked
+          ? `✅ Requisition Clearance: Unlocked (Required Lv. ${item.requiredLevel})`
+          : `🔒 Locked: Requires Hunter Level ${item.requiredLevel} (${levelsToGo} ${levelsToGo === 1 ? 'level' : 'levels'} to go)`;
+
+        const card = document.createElement("div");
+        card.className = "telemetry-card";
+        card.style.borderLeft = isLevelUnlocked ? (canAfford ? "4px solid var(--success)" : "4px solid var(--accent-amber)") : "4px solid #e74c3c";
+        card.innerHTML = `
+          <div>
+            <div class="card-top-row">
+              <span class="animal-title">${item.name}</span>
+              <span class="badge" style="background:#28374d; color:var(--accent-gold); font-weight:700;">$${item.cost}</span>
+            </div>
+            <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
+              Category: <strong>${item.category}</strong> &bull; Requisition Gate: <strong>Level ${item.requiredLevel}</strong>
+            </div>
+            <p style="font-size:0.8rem; color:#cfd9e8; margin-top:5px; line-height:1.35;">${item.description}</p>
+            <div class="action-banner ${balanceBadgeClass}" style="margin-top:8px;">
+              ${balanceBadgeText}
+            </div>
+            <div style="font-size:0.75rem; color:${isLevelUnlocked ? 'var(--success)' : '#ff9999'}; margin-top:4px; font-weight:600;">
+              ${levelBadgeText}
+            </div>
+          </div>
+          <div class="card-footer-row" style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px;">
+            <span style="font-size:0.75rem; color:var(--text-muted);">Current: <strong>$${this.hunterCredits}</strong> | Lv. <strong>${this.hunterLevel}</strong></span>
+            <button type="button" class="btn-link" style="color:${(canAfford && isLevelUnlocked) ? 'var(--accent-gold)' : 'var(--text-muted)'}; font-weight:700; cursor:${(canAfford && isLevelUnlocked) ? 'pointer' : 'not-allowed'};" 
+              onclick="window.CompanionApp.purchaseLodgeItem('${item.id}', ${item.cost}, ${item.requiredLevel})">
+              ${(canAfford && isLevelUnlocked) ? "Acquire" : "Unavailable"}
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    },
+
+    // Line 780: Interactive Purchase Action with Automatic Ledger Deductions
+    purchaseLodgeItem(itemId, cost, requiredLevel) {
+      if (this.hunterLevel < requiredLevel) {
+        alert(`🔒 Requisition locked. You need ${requiredLevel - this.hunterLevel} more level(s) to unlock this item.`);
+        return;
+      }
+      if (this.hunterCredits < cost) {
+        alert(`⚠️ Insufficient credits. You need $${cost - this.hunterCredits} more credits to complete this purchase.`);
+        return;
+      }
+
+      this.hunterCredits -= cost;
+      this.safeSetValue("hunterCreditsInput", this.hunterCredits);
+      localStorage.setItem("woth2_credits", this.hunterCredits);
+      this.renderLodgeForecaster();
+      this.silentSaveGameTelemetry();
+      alert(`✅ Requisition approved! Purchased item for $${cost}. Remaining balance: $${this.hunterCredits} credits.`);
     },
 
     populateRegions() {
@@ -1333,12 +1418,12 @@ document.addEventListener("DOMContentLoaded", () => {
           { id: "points_left", label: "Points Left", unit: "count", ph: "9" },
           { id: "points_right", label: "Points Right", unit: "count", ph: "8" }
         ];
-      } else if (selectedSpecies.includes("turkey") || selectedSpecies.includes("mallard") || selectedSpecies.includes("ptarmigan") || selectedSpecies.includes("hare")) {
+      } else if (selectedSpecies.includes("turkey") || selectedSpecies.includes("mallard") || selectedSpecies.includes("ptarmigan") || selectedSpecies.includes("hare") || selectedSpecies.includes("ostrich")) {
         category = "Body Weight & Plumage";
         fields = [
           { id: "body_weight", label: "Total Body Weight", unit: "lbs", ph: "18.5" },
-          { id: "beard_len", label: "Beard Length", unit: "in", ph: "10.5" },
-          { id: "spur_len", label: "Spur Length", unit: "in", ph: "1.25" }
+          { id: "beard_len", label: "Beard / Quill Length", unit: "in", ph: "10.5" },
+          { id: "spur_len", label: "Spur / Talon Length", unit: "in", ph: "1.25" }
         ];
       }
 
@@ -1439,6 +1524,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.silentSaveGameTelemetry();
     },
 
+    // Line 990: Watchlist Mathematics Engine (Biological Aging & Despawn Timers)
     renderWatchlist() {
       const container = document.getElementById("watchlistContainer");
       if (!container) return;
@@ -1455,19 +1541,24 @@ document.addEventListener("DOMContentLoaded", () => {
         const elapsedDays = Math.max(0, this.currentDay - (item.sightedDay || 1));
         const effectiveAge = (item.sightedAge || item.age) + Math.floor(elapsedDays / 3);
         const daysLeft = Math.max(0, (item.maxAge - effectiveAge) * 3);
+        const daysIntoCurrentYear = elapsedDays % 3;
+        const daysUntilNextYear = 3 - daysIntoCurrentYear;
+        const matureThresholdAge = Math.max(1, item.maxAge - 3);
+        const yearsToMature = Math.max(0, matureThresholdAge - effectiveAge);
+        const daysToMature = yearsToMature * 3;
 
         let actionClass = "banner-balanced";
         let actionText = "⚖️ BALANCED: Stable genetics. Monitor.";
 
         if (item.fitness < 50.0) {
           actionClass = "banner-cull";
-          actionText = `🚨 CULL: Low Fitness (${item.fitness}%). Asymmetry degrades herd.`;
+          actionText = `🚨 CULL: Low Fitness (${item.fitness}%). Despawn deadline in ${daysLeft} days.`;
         } else if (item.fitness >= 80.0 && effectiveAge < item.maxAge) {
           actionClass = "banner-breeder";
-          actionText = `⭐ 5-STAR BREEDER (${item.fitness}%): Allow rack to mature.`;
+          actionText = `⭐ 5-STAR BREEDER (${item.fitness}%): In Prime trophy rack. ${daysLeft} days before natural despawn.`;
         } else if (item.stars === 1 && effectiveAge >= (item.maxAge - 2)) {
           actionClass = "banner-cull";
-          actionText = "⚠️ CULL MATURE: 1-Star rack at end of lifecycle.";
+          actionText = `⚠️ CULL MATURE: 1-Star rack at end of cycle. Natural despawn in ${daysLeft} days.`;
         }
 
         const div = document.createElement("div");
@@ -1485,12 +1576,17 @@ document.addEventListener("DOMContentLoaded", () => {
               Zone: <strong>${item.landmark || 'Waterway'}</strong>
             </div>
             <div style="font-size:0.76rem; color:var(--text-muted); margin-top:2px;">
-              Age: <strong>${effectiveAge}/${item.maxAge} yrs</strong> (${daysLeft}d left) &bull; Fit: <strong>${item.fitness}%</strong>
+              Age: <strong>${effectiveAge}/${item.maxAge} yrs</strong> (Aging in ${daysUntilNextYear}d) &bull; Fit: <strong>${item.fitness}%</strong>
+            </div>
+            <!-- Dynamic Lifecycle Math Readout Deck -->
+            <div style="font-size:0.73rem; background:rgba(0,0,0,0.3); border:1px solid #1c2738; padding:5px 8px; border-radius:4px; margin-top:5px; color:#d2dae4;">
+              ⏳ Despawn Clock: <strong style="color:${daysLeft <= 6 ? '#ff7675' : '#55efc4'}">${daysLeft} in-game days left</strong>
+              ${effectiveAge < matureThresholdAge ? ` &bull; Mature Prime: <strong style="color:var(--accent-gold);">in ${daysToMature} days (${yearsToMature} yrs)</strong>` : ' &bull; <strong style="color:#f5a623;">Peak Trophy Phase</strong>'}
             </div>
             <div class="action-banner ${actionClass}">${actionText}</div>
           </div>
           <div class="card-footer-row">
-            <span>Day: <strong>${item.sightedDay || 1}</strong> &rarr; <strong>${this.currentDay}</strong></span>
+            <span>Sighted Day <strong>${item.sightedDay || 1}</strong> &rarr; Current Day <strong>${this.currentDay}</strong></span>
             <div class="card-actions">
               <button type="button" class="btn-link btn-link-edit" onclick="window.CompanionApp.editWatchlistEntry('${item.id}')">Edit</button>
               <button type="button" class="btn-link btn-link-delete" onclick="window.CompanionApp.deleteWatchlistEntry('${item.id}')">Harvest</button>
@@ -1910,6 +2006,16 @@ document.addEventListener("DOMContentLoaded", () => {
       autoSyncInputs.forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
+
+        el.addEventListener("input", () => {
+          if (id === "hunterCreditsInput" || id === "hunterLevelInput") {
+            const lvlEl = document.getElementById("hunterLevelInput");
+            const crdEl = document.getElementById("hunterCreditsInput");
+            if (lvlEl) this.hunterLevel = parseInt(lvlEl.value, 10) || 1;
+            if (crdEl) this.hunterCredits = parseInt(crdEl.value, 10) || 0;
+            this.renderLodgeForecaster();
+          }
+        });
 
         el.addEventListener("blur", () => this.silentSaveGameTelemetry());
         el.addEventListener("keydown", (e) => {
