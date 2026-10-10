@@ -1,14 +1,14 @@
 /* ============================================================================
  * File: script.js
  * Location: //playstation-be938.web.app/games/HunterCOTW/script.js
- * Description: theHunter: Call of the Wild Master Tracker Dual-Engine:
- *              1. Dynamic Master Catalog fetched from GitHub /data/cotw.json.
- *              2. Scoped Firestore and RTDB paths using sanitized email 
- *                 (e.g., raykevin71888_at_gmail_com).
- *              3. Full images support for reserves, animals, and weapons.
- *              4. Zero dropped lines: all anchors, schedules & telemetry preserved.
- * Build Version: 6.9.0 - Sanitized Email Firestore Engine & Dynamic Catalog
- * Date & Time Stamp: 2026-10-08 16:00:00 EDT (America/New_York)
+ * Description: theHunter: Call of the Wild Master Tactical Companion & Telemetry Engine:
+ *              1. Dynamic catalogs fetched from /data/cotw.json and /data/users.json.
+ *              2. Google Authentication, session management, and profile dropdown modal.
+ *              3. Scoped Firestore hierarchy: users/{emailKey}/platform/{platform}/progress/COTW
+ *              4. Live RTDB need zones, grind tracking, and NPWR13211_00 PlayStation sync.
+ *              5. Zero dropped lines: full reserve schedules, coordinates, and culls preserved.
+ * Build Version: 7.0.0 - Unified Auth, Dynamic Users & Multi-Platform Engine
+ * [Smart Cache-Buster Time: 2026-10-10 03:14 EDT | Firebase Sync Target: /utm_links | Version: 7.0.0]
  * ============================================================================ */
 
 // Line 16: Google Tag Manager & Google Analytics 4 Deployment (G-CTYHDF4MSD)
@@ -29,14 +29,14 @@ gtag('config', 'G-CTYHDF4MSD', {
 
 // Line 33: Relative Protocol SDK Imports
 import { initializeApp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import { getAuth, signInAnonymously, onAuthStateChanged } from '//www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-import { getFirestore, doc, setDoc, onSnapshot } from '//www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from '//www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+import { getFirestore, doc, setDoc, onSnapshot, serverTimestamp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 import { getDatabase, ref as rtdbRef, onValue, get, set, update, push, off } from '//www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from '//www.gstatic.com/firebasejs/10.8.0/firebase-storage.js';
 
-const BUILD_VERSION = "6.9.0";
-const CODE_BUILD_DATE = "2026-10-08 16:00:00 EDT";
-const REMOTE_JSON_URL = "//raw.githubusercontent.com/Werewolf3788/Website/main/data/cotw.json";
+const BUILD_VERSION = "7.0.0";
+const CODE_BUILD_DATE = "2026-10-10 03:14:00 EDT";
+const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -52,9 +52,16 @@ const firebaseConfig = {
 const GAME_ID = 'COTW';
 const NPWR_ID = 'NPWR13211_00';
 
-// Sanitize user email to Firestore/RTDB compliant key format
-function sanitizeEmail(email) {
-    if (!email) return 'anonymous_user';
+function getResolvedPrimaryEmail(user) {
+    if (!user) return "";
+    const google = user.providerData && user.providerData.find(p => p && p.providerId === "google.com");
+    if (google && google.email) return google.email.toLowerCase().trim();
+    if (user.email) return user.email.toLowerCase().trim();
+    return "hunter@guest.local";
+}
+
+function getEmailKey(email) {
+    if (!email) return "unknown_user";
     return String(email).trim().toLowerCase().replace(/@/g, '_at_').replace(/\./g, '_');
 }
 
@@ -65,23 +72,38 @@ const normalizePlatform = (inputPlatform) => {
     return clean;
 };
 
-// Application State with Full GitHub JSON & Sanitized Email Firestore Sync
+// Application State with Full Multi-Path JSON & Dynamic User Synchronization
 const appState = {
+    files: {
+        cotw: "cotw.json",
+        users: "users.json"
+    },
+
+    currentUser: null,
     activeHunterEmail: localStorage.getItem('active_hunter_email') || 'raykevin71888@gmail.com',
-    activeSanitizedKey: sanitizeEmail(localStorage.getItem('active_hunter_email') || 'raykevin71888@gmail.com'),
+    activeSanitizedKey: getEmailKey(localStorage.getItem('active_hunter_email') || 'raykevin71888@gmail.com'),
     activePlatform: normalizePlatform(localStorage.getItem('active_gaming_platform')),
+    psnAccountId: "",
+    psnOnlineId: "",
     activeReserve: 'Layton Lake',
     activeSpecies: 'Black Bear (Class 7)',
     zoneType: 'main',
     sessionMode: 'single',
     selectedImageFile: null,
-    
-    // Dynamically loaded from cotw.json
+
     masterCatalog: null,
+    usersCatalog: [],
     hunterData: [],
     animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, Fur: 0 },
     activeReserveCullCounts: {},
-    
+    friendsRoster: [],
+    teamLiveTelemetry: {},
+    crossPlatformTelemetry: {
+        playstation: { earned: 0, total: 0, percent: 0 },
+        pc: { earned: 0, total: 0, percent: 0 },
+        xbox: { earned: 0, total: 0, percent: 0 }
+    },
+
     auth: null,
     db: null,
     rtdb: null,
@@ -97,36 +119,84 @@ const appState = {
     knownWeaponsList: [],
     knownOrgansList: [],
 
-    // Ingest Master JSON from GitHub
-    loadMasterJson: async function() {
-        try {
-            console.log(`[JSON SYNC] Pulling master catalog from ${REMOTE_JSON_URL}...`);
-            const res = await fetch(REMOTE_JSON_URL);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            this.masterCatalog = data;
+    async fetchJSON(fileName) {
+        const paths = [
+            "../../data/" + fileName,
+            "../data/" + fileName,
+            "./data/" + fileName,
+            "data/" + fileName,
+            "./" + fileName,
+            "/Website/data/" + fileName,
+            "//werewolf3788.github.io/Website/data/" + fileName
+        ];
+
+        for (let i = 0; i < paths.length; i++) {
             try {
-                localStorage.setItem('cached_cotw_json', JSON.stringify(data));
+                const res = await fetch(paths[i] + "?v=" + Date.now());
+                if (res.ok) return await res.json();
             } catch (e) {}
-            console.log("[JSON SUCCESS] COTW catalog loaded into memory.");
-        } catch (err) {
-            console.warn("[JSON WARN] Remote catalog unavailable, checking localStorage fallback:", err.message);
+        }
+        return null;
+    },
+
+    async loadAllJSONs() {
+        const cotwData = await this.fetchJSON(this.files.cotw);
+        if (cotwData) {
+            this.masterCatalog = cotwData;
+            try { localStorage.setItem('cached_cotw_json', JSON.stringify(cotwData)); } catch (e) {}
+        } else {
             const cached = localStorage.getItem('cached_cotw_json');
-            if (cached) {
-                this.masterCatalog = JSON.parse(cached);
-            } else {
-                console.error("[JSON FATAL] No cache available. Using emergency defaults.");
-                this.masterCatalog = { reserves: {}, equipment: { weapons: [], hitOrgans: [] }, trophies: [] };
-            }
+            this.masterCatalog = cached ? JSON.parse(cached) : { reserves: {}, equipment: { weapons: [], hitOrgans: [] }, trophies: [] };
         }
 
-        // Initialize weapons and organs lists
+        const usersData = await this.fetchJSON(this.files.users);
+        if (usersData) {
+            this.usersCatalog = Array.isArray(usersData) ? usersData : (usersData.users || Object.values(usersData));
+        }
+
         const eq = this.masterCatalog.equipment || {};
         this.knownWeaponsList = (eq.weapons || []).map(w => typeof w === 'string' ? w : w.name);
         this.knownOrgansList = eq.hitOrgans || [
             'Both Lungs (Double Lung)', 'Heart', 'Brain / Skull',
             'Left Lung', 'Right Lung', 'Neck / Spine', 'Liver / Stomach'
         ];
+    },
+
+    applyUserThemeAndIdentity() {
+        if (!this.usersCatalog || !this.usersCatalog.length) return;
+
+        const activeEmail = (this.activeHunterEmail || "").toLowerCase().trim();
+        const activePSN = (this.psnAccountId || "").trim();
+        const activeOnlineId = (this.psnOnlineId || "").toLowerCase().trim();
+
+        const matchedUser = this.usersCatalog.find(u => {
+            const uEmail = (u.email || "").toLowerCase().trim();
+            const uPsnId = String(u.psn_id || "").trim();
+            const uOnline = (u.psn_name || "").toLowerCase().trim();
+            return (activeEmail && uEmail === activeEmail) ||
+                   (activePSN && uPsnId === activePSN) ||
+                   (activeOnlineId && uOnline === activeOnlineId);
+        });
+
+        if (matchedUser) {
+            if (!this.psnAccountId && matchedUser.psn_id) this.psnAccountId = String(matchedUser.psn_id);
+            if (!this.psnOnlineId && matchedUser.psn_name) this.psnOnlineId = matchedUser.psn_name;
+
+            if (matchedUser.theme) {
+                const root = document.documentElement;
+                if (matchedUser.theme.primary_color) {
+                    root.style.setProperty("--theme-primary", matchedUser.theme.primary_color);
+                    root.style.setProperty("--accent-primary", matchedUser.theme.primary_color);
+                }
+                if (matchedUser.theme.accent_color) {
+                    root.style.setProperty("--theme-accent", matchedUser.theme.accent_color);
+                    root.style.setProperty("--accent-gold", matchedUser.theme.accent_color);
+                }
+                if (matchedUser.theme.surface_color) {
+                    root.style.setProperty("--theme-surface", matchedUser.theme.surface_color);
+                }
+            }
+        }
     },
 
     getFreshTrophyTemplate: function() {
@@ -194,7 +264,7 @@ const appState = {
         const file = event.target.files[0];
         const preview = document.getElementById('screenshot-preview');
         const previewContainer = document.getElementById('screenshot-preview-container');
-        
+
         if (file) {
             this.selectedImageFile = file;
             const reader = new FileReader();
@@ -241,7 +311,7 @@ const appState = {
 
         const resObj = this.masterCatalog?.reserves?.[this.activeReserve];
         let animals = [];
-        
+
         if (resObj && Array.isArray(resObj.animals)) {
             animals = resObj.animals.map(a => typeof a === 'string' ? a : `${a.name} (Class ${a.class})`);
         } else {
@@ -307,7 +377,6 @@ const appState = {
         }
     },
 
-    // Pin Need Zone scoped by sanitized email key
     pinNeedZone: async function() {
         if (!this.rtdb || !this.auth.currentUser) {
             this.setStatus("❌ Database not connected. Please reload.", "#ef4444");
@@ -425,7 +494,6 @@ const appState = {
 
         let totalMapHarvests = 0;
         let activeSpeciesKills = 0;
-        const cleanActiveKey = this.activeSpecies.replace(/[^a-zA-Z0-9]/g, '_');
 
         let chipsHTML = animals.map(anim => {
             const animKey = anim.replace(/[^a-zA-Z0-9]/g, '_');
@@ -515,7 +583,6 @@ const appState = {
         });
     },
 
-    // Log Harvest directly under sanitized email tree
     logHarvest: async function() {
         if (!this.rtdb || !this.auth.currentUser) {
             this.setStatus("❌ Database not connected. Please reload.", "#ef4444");
@@ -590,12 +657,10 @@ const appState = {
         };
 
         try {
-            // STEP 1: Direct RTDB Push
             const harvestsRef = rtdbRef(this.rtdb, `users/${this.activeSanitizedKey}/grind_tracker/${cleanMap}/${cleanSpecies}/harvests`);
             const newHarvestRecord = await push(harvestsRef, harvestPayload);
             const recordKey = newHarvestRecord.key;
 
-            // STEP 2: Clear Form
             const savedImageFile = this.selectedImageFile;
             if (weightInput) weightInput.value = '';
             if (distInput) distInput.value = '';
@@ -607,7 +672,6 @@ const appState = {
 
             this.setStatus(`✓ Logged ${this.activeSpecies} (${weight}kg) [${this.activeReserve}]`, "#10b981");
 
-            // STEP 3: Auto-Trophy Milestone Checks
             let trophyStateChanged = false;
             if (distance >= 50) { const t = this.hunterData.find(x => x.id === 'novice_m'); if (t && t.current < t.goal) { t.current = t.goal; trophyStateChanged = true; } }
             if (distance >= 100) { const t = this.hunterData.find(x => x.id === 'skilled_m'); if (t && t.current < t.goal) { t.current = t.goal; trophyStateChanged = true; } }
@@ -632,7 +696,6 @@ const appState = {
 
             if (trophyStateChanged) this.sync(true);
 
-            // STEP 4: Async Storage Photo Upload
             if (savedImageFile && this.storage && recordKey) {
                 (async () => {
                     try {
@@ -644,7 +707,6 @@ const appState = {
                         await update(rtdbRef(this.rtdb, `users/${this.activeSanitizedKey}/grind_tracker/${cleanMap}/${cleanSpecies}/harvests/${recordKey}`), {
                             imageUrl: downloadUrl
                         });
-                        console.log(`[Storage Success] Image linked to RTDB record: ${recordKey}`);
                     } catch (storageErr) {
                         console.warn("[Storage Warning] Upload failed:", storageErr.message);
                     }
@@ -658,7 +720,8 @@ const appState = {
 
     bindRTDBTrophyWatcher: function() {
         if (!this.rtdb) return;
-        const trophyPath = `psn/gamertags/wildhorse_spirit/liveTrophyProgress/${NPWR_ID}`;
+        const targetGamerTag = this.psnOnlineId || 'wildhorse_spirit';
+        const trophyPath = `psn/gamertags/${targetGamerTag}/liveTrophyProgress/${NPWR_ID}`;
         this.rtdbTrophyRef = rtdbRef(this.rtdb, trophyPath);
 
         onValue(this.rtdbTrophyRef, (snapshot) => {
@@ -696,6 +759,7 @@ const appState = {
             });
 
             if (stateMutated) {
+                this.recalculateCrossTrophyTelemetry();
                 this.render();
             }
         });
@@ -710,9 +774,7 @@ const appState = {
             let rawData = null;
             if (snapshot.exists()) {
                 rawData = snapshot.val();
-                try {
-                    localStorage.setItem('cached_utm_links', JSON.stringify(rawData));
-                } catch (e) {}
+                try { localStorage.setItem('cached_utm_links', JSON.stringify(rawData)); } catch (e) {}
             } else {
                 const cached = localStorage.getItem('cached_utm_links');
                 if (cached) rawData = JSON.parse(cached);
@@ -815,10 +877,11 @@ const appState = {
 
     init: async function() {
         this.cleanupOrphanedElements();
-        await this.loadMasterJson();
+        await this.loadAllJSONs();
         this.hunterData = this.getFreshTrophyTemplate();
         this.renderBuildMetadata();
         this.updatePinButtonUI();
+        this.bindUI();
 
         try {
             const app = initializeApp(firebaseConfig, 'COTW-Dual-Engine');
@@ -829,20 +892,151 @@ const appState = {
 
             this.loadNavigationFromRTDB();
 
-            await signInAnonymously(this.auth);
-
             onAuthStateChanged(this.auth, (user) => {
+                const modalBtn = document.getElementById("authModalBtn");
+                const profileBadge = document.getElementById("userProfile");
+                const nameEl = document.getElementById("userDisplayName");
+                const avatarEl = document.getElementById("headerUserAvatar");
+
                 if (user) {
+                    this.currentUser = user;
+                    this.activeHunterEmail = getResolvedPrimaryEmail(user);
+                    this.activeSanitizedKey = getEmailKey(this.activeHunterEmail);
+
+                    if (modalBtn) modalBtn.classList.add("hidden");
+                    if (profileBadge) profileBadge.classList.remove("hidden");
+
+                    this.applyUserThemeAndIdentity();
+
+                    rtdbRef(this.rtdb, `users/${this.activeSanitizedKey}`).onValue = (snapshot) => {
+                        const rtdbProfile = snapshot.val() || {};
+                        const hunterTag = rtdbProfile.username || user.displayName || "Hunter";
+                        let avatarUrl = rtdbProfile.avatar_url || user.photoURL || DEFAULT_USER_AVATAR;
+
+                        if (rtdbProfile.avatar_source === "google") {
+                            avatarUrl = user.photoURL || DEFAULT_USER_AVATAR;
+                        }
+
+                        if (nameEl) nameEl.textContent = hunterTag;
+                        if (avatarEl) avatarEl.src = avatarUrl;
+
+                        this.psnAccountId = rtdbProfile.psn_account_id || this.psnAccountId || "";
+                        this.psnOnlineId = rtdbProfile.psn_username || this.psnOnlineId || "";
+
+                        if (rtdbProfile.primary_platform) {
+                            this.activePlatform = normalizePlatform(rtdbProfile.primary_platform);
+                            this.safeSetValue("platformSelect", this.activePlatform);
+                        }
+
+                        this.friendsRoster = rtdbProfile.friends ? Object.values(rtdbProfile.friends) : [];
+                        this.listenToSharedSquadTelemetry();
+                        this.loadAllPlatformTrophyProgress();
+                    };
+
                     this.setStatus(`✓ Connected [${this.activeHunterEmail}]`, "#10b981");
                     this.loadHunterByEmail(this.activeHunterEmail, this.activePlatform);
+                    this.renderProfileDropdown(true);
                 } else {
-                    this.setStatus("❌ Auth Failed", "#ef4444");
+                    this.currentUser = null;
+                    if (modalBtn) modalBtn.classList.remove("hidden");
+                    if (profileBadge) profileBadge.classList.add("hidden");
+                    this.renderProfileDropdown(false);
+                    this.setStatus("🔑 Ready for Authentication", "#94a3b8");
                 }
             });
         } catch (err) {
             console.error("Init Error:", err);
             this.setStatus(`❌ Connection Error: ${err.message}`, "#ef4444");
             this.render();
+        }
+    },
+
+    bindUI() {
+        const googleBtn = document.getElementById("googleSignInBtn");
+        if (googleBtn) {
+            googleBtn.addEventListener("click", () => {
+                const provider = new GoogleAuthProvider();
+                signInWithPopup(this.auth, provider).then(() => {
+                    const modal = document.getElementById("authModal");
+                    if (modal) modal.classList.add("hidden");
+                }).catch(e => alert("Sign In Error: " + e.message));
+            });
+        }
+
+        const modal = document.getElementById("authModal");
+        const authBtn = document.getElementById("authModalBtn");
+        const authClose = document.getElementById("authModalClose");
+
+        if (authBtn && modal) authBtn.addEventListener("click", () => modal.classList.remove("hidden"));
+        if (authClose && modal) authClose.addEventListener("click", () => modal.classList.add("hidden"));
+
+        const platSelect = document.getElementById("platformSelect");
+        if (platSelect) {
+            platSelect.addEventListener("change", (e) => {
+                this.switchPlatform(e.target.value);
+            });
+        }
+    },
+
+    renderProfileDropdown(isAuthenticated) {
+        let menu = document.getElementById("userProfileDropdownMenu");
+        const profileBadge = document.getElementById("userProfile");
+
+        if (!menu && profileBadge) {
+            menu = document.createElement("div");
+            menu.id = "userProfileDropdownMenu";
+            menu.className = "profile-dropdown-menu hidden";
+            menu.style.cssText = `
+                position: absolute;
+                top: 60px;
+                right: 20px;
+                background: #151c27;
+                border: 1px solid #273447;
+                border-radius: 8px;
+                padding: 8px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+                z-index: 1005;
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                min-width: 180px;
+            `;
+            document.body.appendChild(menu);
+
+            profileBadge.style.cursor = "pointer";
+            profileBadge.addEventListener("click", (e) => {
+                e.stopPropagation();
+                menu.classList.toggle("hidden");
+            });
+
+            document.addEventListener("click", () => {
+                if (!menu.classList.contains("hidden")) menu.classList.add("hidden");
+            });
+        }
+
+        if (!menu) return;
+
+        if (isAuthenticated) {
+            menu.innerHTML = `
+                <a href="../../security/settings.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;">⚙️ Settings Hub</a>
+                <a href="../../security/privacy.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;">🔒 Privacy Policy</a>
+                <div style="height:1px; background:#273447; margin:2px 0;"></div>
+                <button id="menuLogoutBtn" style="background:transparent; border:none; color:#e74c3c; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; display:flex; align-items:center; gap:8px; font-weight:600;">🚪 Log Out</button>
+            `;
+            const logoutBtn = document.getElementById("menuLogoutBtn");
+            if (logoutBtn) logoutBtn.addEventListener("click", () => signOut(this.auth).then(() => window.location.reload()));
+        } else {
+            menu.innerHTML = `
+                <button id="menuLoginBtn" style="background:transparent; border:none; color:#0088ff; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; font-weight:600;">🔑 Log In</button>
+                <a href="../../security/privacy.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px;">🔒 Privacy Policy</a>
+            `;
+            const loginBtn = document.getElementById("menuLoginBtn");
+            if (loginBtn) {
+                loginBtn.addEventListener("click", () => {
+                    const modal = document.getElementById("authModal");
+                    if (modal) modal.classList.remove("hidden");
+                });
+            }
         }
     },
 
@@ -859,7 +1053,6 @@ const appState = {
         }
     },
 
-    // Load user telemetry scoped to sanitized email in Firestore
     loadHunterByEmail: function(userEmail, platform) {
         if (!this.auth || !this.auth.currentUser) return;
         if (this.masterUnsub) { this.masterUnsub(); this.masterUnsub = null; }
@@ -868,7 +1061,7 @@ const appState = {
         if (this.rtdbReserveCullRef) { off(this.rtdbReserveCullRef); this.rtdbReserveCullRef = null; }
 
         this.activeHunterEmail = userEmail || 'raykevin71888@gmail.com';
-        this.activeSanitizedKey = sanitizeEmail(this.activeHunterEmail);
+        this.activeSanitizedKey = getEmailKey(this.activeHunterEmail);
         this.activePlatform = normalizePlatform(platform);
         this.hunterData = this.getFreshTrophyTemplate();
         this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, Fur: 0 };
@@ -887,7 +1080,7 @@ const appState = {
         this.bindGrindTelemetry();
         this.bindReserveCullWatcher();
 
-        // FIRESTORE SYNC: Scoped to /users/{sanitizedEmail}/platform/{platform}/progress/COTW
+        // FIRESTORE PROGRESS LISTENER
         const docRef = doc(this.db, 'users', this.activeSanitizedKey, 'platform', this.activePlatform, 'progress', GAME_ID);
         this.masterUnsub = onSnapshot(docRef, (snap) => {
             const freshList = this.getFreshTrophyTemplate();
@@ -909,12 +1102,13 @@ const appState = {
                     return dt;
                 });
             }
+            this.recalculateCrossTrophyTelemetry();
             this.render();
         });
 
         this.bindRTDBTrophyWatcher();
 
-        // FIRESTORE RANKS: Scoped to /users/{sanitizedEmail}/platform/{platform}/progress/COTW_Ranks
+        // FIRESTORE RANKS LISTENER
         const rankRef = doc(this.db, 'users', this.activeSanitizedKey, 'platform', this.activePlatform, 'progress', `${GAME_ID}_Ranks`);
         this.legacyUnsub = onSnapshot(rankRef, (snap) => {
             if (snap.exists()) {
@@ -930,6 +1124,111 @@ const appState = {
             }
             this.updateRankUI();
         });
+    },
+
+    listenToSharedSquadTelemetry() {
+        const container = document.getElementById("friendsComparisonContainer");
+        if (!this.friendsRoster.length) {
+            if (container) container.innerHTML = `<p style="font-size:0.82rem; color:var(--text-muted); padding:12px;">No squad companions linked. Share friend codes in Settings to view shared telemetry.</p>`;
+            return;
+        }
+
+        this.friendsRoster.forEach(friend => {
+            const friendEmail = (friend.target_email || "").toLowerCase();
+            if (!friendEmail) return;
+            const friendKey = getEmailKey(friendEmail);
+            const targetPlat = normalizePlatform(friend.platform || this.activePlatform);
+
+            const friendDoc = doc(this.db, 'users', friendKey, 'platform', targetPlat, 'progress', GAME_ID);
+            onSnapshot(friendDoc, snap => {
+                if (!snap.exists()) return;
+                const data = snap.data();
+                const opName = friend.username || "Companion";
+                const totalTrophies = this.hunterData.length || 1;
+                const earnedCount = (data.trophies || []).filter(t => t.current >= t.goal).length;
+
+                this.teamLiveTelemetry[opName] = {
+                    username: opName,
+                    avatar: friend.avatar_url || DEFAULT_USER_AVATAR,
+                    platform: targetPlat.toUpperCase(),
+                    trophiesEarned: earnedCount,
+                    trophiesTotal: totalTrophies,
+                    percent: Math.round((earnedCount / totalTrophies) * 100)
+                };
+                this.renderSquadComparisonDeck();
+            });
+        });
+    },
+
+    renderSquadComparisonDeck() {
+        const container = document.getElementById("friendsComparisonContainer");
+        if (!container) return;
+        container.innerHTML = "";
+
+        const ops = Object.values(this.teamLiveTelemetry);
+        if (!ops.length) {
+            container.innerHTML = `<p style="font-size:0.82rem; color:var(--text-muted); padding:12px;">No companion telemetry live yet.</p>`;
+            return;
+        }
+
+        ops.forEach(op => {
+            const div = document.createElement("div");
+            div.className = "telemetry-card";
+            div.style.cssText = "background:#151c27; border:1px solid #273447; border-left:3px solid #00d2d3; padding:12px; border-radius:8px; margin-bottom:8px;";
+            div.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <img src="${op.avatar}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid #00d2d3;">
+                        <strong style="color:#fff; font-size:0.95rem;">${op.username}</strong>
+                    </div>
+                    <span class="badge" style="background:#28374d; color:#00d2d3; padding:4px 8px; border-radius:4px; font-size:0.75rem;">${op.platform}</span>
+                </div>
+                <div style="font-size:0.78rem; color:#94a3b8;">
+                    Milestones Complete: <strong style="color:var(--accent-gold);">${op.trophiesEarned} / ${op.trophiesTotal} (${op.percent}%)</strong>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    },
+
+    async loadAllPlatformTrophyProgress() {
+        if (!this.activeSanitizedKey) return;
+        const platforms = ["playstation", "pc", "xbox"];
+        const total = this.hunterData.length || 1;
+
+        for (const p of platforms) {
+            try {
+                const snapDoc = doc(this.db, 'users', this.activeSanitizedKey, 'platform', p, 'progress', GAME_ID);
+                const snap = await get(snapDoc);
+                if (snap.exists()) {
+                    const data = snap.data();
+                    const earned = (data.trophies || []).filter(t => t.current >= t.goal).length;
+                    this.crossPlatformTelemetry[p] = { earned, total, percent: Math.round((earned / total) * 100) };
+                } else {
+                    if (p === this.activePlatform) {
+                        const earned = this.hunterData.filter(t => t.current >= t.goal).length;
+                        this.crossPlatformTelemetry[p] = { earned, total, percent: Math.round((earned / total) * 100) };
+                    } else {
+                        this.crossPlatformTelemetry[p] = { earned: 0, total, percent: 0 };
+                    }
+                }
+            } catch (e) {
+                console.warn(`Error loading ${p} telemetry:`, e);
+            }
+        }
+        this.render();
+    },
+
+    recalculateCrossTrophyTelemetry() {
+        const total = this.hunterData.length || 1;
+        const earned = this.hunterData.filter(t => t.current >= t.goal).length;
+        const pct = Math.round((earned / total) * 100);
+
+        this.crossPlatformTelemetry[this.activePlatform] = {
+            earned: earned,
+            total: total,
+            percent: pct
+        };
     },
 
     togglePinDevice: function() {
@@ -960,6 +1259,71 @@ const appState = {
         if (!container) return;
 
         container.innerHTML = '';
+
+        // Cross-Platform Telemetry Header Deck
+        const total = this.hunterData.length || 1;
+        const earnedCount = this.hunterData.filter(t => t.current >= t.goal).length;
+        const progressPercent = Math.round((earnedCount / total) * 100);
+
+        const psTel = this.crossPlatformTelemetry.playstation || { earned: 0, percent: 0 };
+        const pcTel = this.crossPlatformTelemetry.pc || { earned: 0, percent: 0 };
+        const xboxTel = this.crossPlatformTelemetry.xbox || { earned: 0, percent: 0 };
+
+        const headerDeck = document.createElement("div");
+        headerDeck.style.cssText = "grid-column: 1/-1; background:#151c27; padding:16px 20px; border-radius:10px; border:1px solid #273447; margin-bottom:14px; display:flex; flex-direction:column; gap:12px;";
+        headerDeck.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div>
+                    <strong style="color:#fff; font-size:1.15rem;">🎯 COTW Cross-Platform Milestone Telemetry</strong>
+                    <div style="font-size:0.8rem; color:#94a3b8; margin-top:3px;">
+                        Active Sync: <strong>${this.activeHunterEmail}</strong> &bull; Platform: <strong>${this.activePlatform.toUpperCase()}</strong>
+                    </div>
+                </div>
+                <div>
+                    <span class="badge" style="background:#28374d; color:var(--accent-gold); font-size:0.9rem; padding:6px 12px; border-radius:4px;">
+                        ${earnedCount} / ${total} Complete (${progressPercent}%)
+                    </span>
+                </div>
+            </div>
+
+            <div style="width:100%; height:10px; background:rgba(255,255,255,0.06); border-radius:5px; overflow:hidden;">
+                <div style="width:${progressPercent}%; height:100%; background:linear-gradient(90deg, #0088ff, #2ecc71); border-radius:5px; transition: width 0.4s ease;"></div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:4px; background:rgba(0,0,0,0.3); padding:10px 12px; border-radius:8px; border:1px solid #1c2738;">
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                    <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
+                        <span style="color:#00a6ed; font-weight:700;">🎮 PlayStation</span>
+                        <strong style="color:#fff;">${psTel.earned}/${total} (${psTel.percent}%)</strong>
+                    </div>
+                    <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
+                        <div style="width:${psTel.percent}%; height:100%; background:#00a6ed;"></div>
+                    </div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                    <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
+                        <span style="color:#00d2d3; font-weight:700;">🖥️ PC / Steam</span>
+                        <strong style="color:#fff;">${pcTel.earned}/${total} (${pcTel.percent}%)</strong>
+                    </div>
+                    <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
+                        <div style="width:${pcTel.percent}%; height:100%; background:#00d2d3;"></div>
+                    </div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                    <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
+                        <span style="color:#2ecc71; font-weight:700;">❎ Xbox Network</span>
+                        <strong style="color:#fff;">${xboxTel.earned}/${total} (${xboxTel.percent}%)</strong>
+                    </div>
+                    <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
+                        <div style="width:${xboxTel.percent}%; height:100%; background:#2ecc71;"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.appendChild(headerDeck);
+
         this.renderGrindTelemetryCard(container);
 
         const cats = [...new Set(this.hunterData.map(t => t.cat))];
@@ -1252,7 +1616,7 @@ const appState = {
     setVal: function(id, rawVal) { const t = this.hunterData.find(x => x.id === id); if (t) { const n = parseInt(rawVal, 10); t.current = isNaN(n) ? 0 : Math.min(t.goal, Math.max(0, n)); this.sync(); } },
     tog: function(id) { const t = this.hunterData.find(x => x.id === id); if (t) { t.current = t.current === 0 ? 1 : 0; this.sync(); } },
     check: function(id, idx) { const t = this.hunterData.find(x => x.id === id); if (t && t.subItems[idx]) { t.subItems[idx].done = !t.subItems[idx].done; this.sync(); } },
-    
+
     adjRank: async function(tier, val) {
         this.animalRankData[tier] = Math.max(0, (this.animalRankData[tier] || 0) + val);
         this.updateRankUI();
@@ -1273,7 +1637,13 @@ const appState = {
     toggleSection: function(id) { this.collapsedSections[id] = !this.collapsedSections[id]; this.render(); },
     toggleDrop: function(id) { const el = document.getElementById('drop-' + id); if (el) { el.classList.toggle('show'); this.openDropdowns[id] = el.classList.contains('show'); } },
 
+    safeSetValue: function(id, val) {
+        const el = document.getElementById(id);
+        if (el) el.value = val;
+    },
+
     sync: async function(silent = false) {
+        this.recalculateCrossTrophyTelemetry();
         this.render();
         this.updateRankUI();
         if (!this.db || !this.auth?.currentUser) return;
