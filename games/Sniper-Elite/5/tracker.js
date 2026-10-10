@@ -1,5 +1,11 @@
 // Line 1: Sniper Elite 5 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-10 03:05 EDT | Firebase Sync Target: /utm_links | Version: 8.7.0]
+// [Smart Cache-Buster Time: 2026-10-10 04:10 EDT | Firebase Sync Target: /utm_links | Version: 8.8.0]
+
+/* === SECTION 1: Modular Firebase Imports === */
+import { initializeApp, getApps } from '//www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from '//www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+import { getFirestore, doc, setDoc, onSnapshot, serverTimestamp } from '//www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getDatabase, ref as rtdbRef, onValue } from '//www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
@@ -17,10 +23,11 @@ document.addEventListener("DOMContentLoaded", () => {
     measurementId: "G-CTYHDF4MSD"
   };
 
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const rtdb = firebase.database();
-  const db = firebase.firestore();
+  // Modular App & Database Initializations
+  const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
+  const auth = getAuth(app);
+  const rtdb = getDatabase(app);
+  const db = getFirestore(app);
 
   function getResolvedPrimaryEmail(user) {
     if (!user) return "";
@@ -33,6 +40,16 @@ document.addEventListener("DOMContentLoaded", () => {
   function getEmailKey(email) {
     if (!email) return "unknown_user";
     return email.toLowerCase().replace(/@/g, "_at_").replace(/\./g, "_");
+  }
+
+  function normalizePlatform(inputPlatform) {
+    if (!inputPlatform) return 'playstation';
+    const clean = String(inputPlatform).toLowerCase().trim();
+    if (clean === 'psn' || clean === 'ps' || clean === 'playstation') return 'playstation';
+    if (clean === 'steam') return 'steam';
+    if (clean === 'pc' || clean === 'windows' || clean === 'microsoft' || clean === 'ms') return 'pc';
+    if (clean === 'xbox' || clean === 'xb') return 'xbox';
+    return 'playstation';
   }
 
   function normalizeString(str) {
@@ -140,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
     'Siegebreaker': 'med_siegebreaker',
     'Ghost of Falaise': 'med_ghostoffalaise',
     'Operation Overlord': 'med_opoverlord',
-    'If You Go Down to the Woods Today': 'med_m13_woods',
+    'If You Go Down To The Woods Today': 'med_m13_woods',
     'Fight Another Day': 'med_m13_fightanother',
     'Stroll in the Woods': 'med_m13_stroll',
     'Shipbreaker': 'med_m14_shipbreaker',
@@ -199,7 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentUser: null,
     currentEmail: "",
     currentEmailKey: "",
-    currentPlatform: "ps",
+    currentPlatform: normalizePlatform(localStorage.getItem("se5_platform")),
     psnAccountId: "",
     psnOnlineId: "",
     masterIntelCatalog: [],
@@ -207,9 +224,10 @@ document.addEventListener("DOMContentLoaded", () => {
     teamLiveTelemetry: {},
     collapsedSections: {},
     crossPlatformTelemetry: {
-      ps: { earned: 0, total: 0, percent: 0 },
+      playstation: { earned: 0, total: 0, percent: 0 },
+      xbox: { earned: 0, total: 0, percent: 0 },
       pc: { earned: 0, total: 0, percent: 0 },
-      xbox: { earned: 0, total: 0, percent: 0 }
+      steam: { earned: 0, total: 0, percent: 0 }
     },
     friendsRoster: [],
     activeLeafletMaps: {},
@@ -329,7 +347,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const savedMission = localStorage.getItem("se5_active_mission");
       const savedProgress = localStorage.getItem("se5_local_progress");
 
-      if (savedPlatform) this.currentPlatform = savedPlatform;
+      if (savedPlatform) this.currentPlatform = normalizePlatform(savedPlatform);
       if (savedMission) this.activeMission = savedMission;
 
       if (savedProgress) {
@@ -350,7 +368,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     initRTDB() {
-      rtdb.ref("/utm_links").on("value", snapshot => {
+      onValue(rtdbRef(rtdb, "/utm_links"), snapshot => {
         const raw = snapshot.val();
         this.safeSetText("firebaseStatusBadge", "RTDB: Live Connected");
         const badge = document.getElementById("firebaseStatusBadge");
@@ -486,7 +504,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     initAuth() {
-      auth.onAuthStateChanged(async user => {
+      onAuthStateChanged(auth, async user => {
         const modalBtn = document.getElementById("authModalBtn");
         const profileBadge = document.getElementById("userProfile");
         const nameEl = document.getElementById("userDisplayName");
@@ -502,7 +520,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           this.applyUserThemeAndIdentity();
 
-          rtdb.ref(`/users/${this.currentEmailKey}`).on("value", snapshot => {
+          onValue(rtdbRef(rtdb, `/users/${this.currentEmailKey}`), snapshot => {
             const rtdbProfile = snapshot.val() || {};
             const operativeTag = rtdbProfile.username || user.displayName || "Karl Fairburne";
             let avatarUrl = rtdbProfile.avatar_url || user.photoURL || DEFAULT_USER_AVATAR;
@@ -518,7 +536,7 @@ document.addEventListener("DOMContentLoaded", () => {
             this.psnOnlineId = rtdbProfile.psn_username || this.psnOnlineId || "";
 
             if (rtdbProfile.primary_platform) {
-              this.currentPlatform = rtdbProfile.primary_platform.toLowerCase();
+              this.currentPlatform = normalizePlatform(rtdbProfile.primary_platform);
               this.safeSetValue("platformSelect", this.currentPlatform);
             }
 
@@ -547,8 +565,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const googleBtn = document.getElementById("googleSignInBtn");
       if (googleBtn) {
         googleBtn.addEventListener("click", () => {
-          const provider = new firebase.auth.GoogleAuthProvider();
-          auth.signInWithPopup(provider).then(() => {
+          const provider = new GoogleAuthProvider();
+          signInWithPopup(auth, provider).then(() => {
             const modal = document.getElementById("authModal");
             if (modal) modal.classList.add("hidden");
           }).catch(e => alert("Sign In Error: " + e.message));
@@ -558,15 +576,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     listenToOwnFirestoreProgress() {
       if (!this.currentEmailKey) return;
-      const docRef = db.collection("users")
-        .doc(this.currentEmailKey)
-        .collection("platform")
-        .doc(this.currentPlatform)
-        .collection("progress")
-        .doc(this.gameDocId);
+      const docRef = doc(db, "users", this.currentEmailKey, "platform", this.currentPlatform, "progress", this.gameDocId);
 
-      docRef.onSnapshot(snap => {
-        if (!snap.exists) return;
+      onSnapshot(docRef, snap => {
+        if (!snap.exists()) return;
         const data = snap.data();
         if (data.activeMission) this.activeMission = data.activeMission;
         if (data.rank) this.operativeRank = data.rank;
@@ -601,50 +614,46 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       this.friendsRoster.forEach(friend => {
-        const friendEmail = (friend.target_email || "").toLowerCase();
-        if (!friendEmail) return;
-        const friendKey = getEmailKey(friendEmail);
-        const targetPlat = (friend.platform || this.currentPlatform || "ps").toLowerCase();
+        const rawEmail = friend.target_email || friend.email || "";
+        const friendKey = rawEmail ? getEmailKey(rawEmail) : (friend.userKey || friend.username || "");
+        if (!friendKey) return;
 
-        db.collection("users")
-          .doc(friendKey)
-          .collection("platform")
-          .doc(targetPlat)
-          .collection("progress")
-          .doc(this.gameDocId)
-          .onSnapshot(snap => {
-            if (!snap.exists) return;
-            const data = snap.data();
-            const opName = friend.username || "Operative";
-            this.teamLiveTelemetry[opName] = {
-              username: opName,
-              avatar: friend.avatar_url || DEFAULT_USER_AVATAR,
-              platform: targetPlat.toUpperCase(),
-              collectibles: data.collectibles || data.progress || {},
-              trophiesEarned: data.trophies_earned || 0,
-              trophiesTotal: data.trophies_total || this.masterIntelCatalog.length,
-              rank: data.rank || 1,
-              score: data.score || 0
-            };
-            this.render();
-            this.renderSquadComparisonDeck();
-          }, err => console.warn("Squad live telemetry listener error:", err));
+        const targetPlat = normalizePlatform(friend.platform || this.currentPlatform);
+        const friendDocRef = doc(db, "users", friendKey, "platform", targetPlat, "progress", this.gameDocId);
+
+        onSnapshot(friendDocRef, snap => {
+          if (!snap.exists()) return;
+          const data = snap.data();
+          const opName = friend.username || friend.displayName || "Operative";
+          this.teamLiveTelemetry[opName] = {
+            username: opName,
+            avatar: friend.avatar_url || DEFAULT_USER_AVATAR,
+            platform: targetPlat.toUpperCase(),
+            collectibles: data.collectibles || data.progress || {},
+            trophiesEarned: data.trophies_earned || 0,
+            trophiesTotal: data.trophies_total || this.masterIntelCatalog.length,
+            rank: data.rank || 1,
+            score: data.score || 0
+          };
+          this.render();
+          this.renderSquadComparisonDeck();
+        }, err => console.warn("Squad live telemetry listener error:", err));
       });
     },
 
     syncPlayStationTrophies(psnOnlineId, accountId) {
       const targetGamerTag = (psnOnlineId || "").trim();
-      let trophyRef = null;
+      let liveRef = null;
 
       if (targetGamerTag) {
-        trophyRef = rtdb.ref(`/psn/gamertags/${targetGamerTag}/liveTrophyProgress/${this.titleId}`);
+        liveRef = rtdbRef(rtdb, `/psn/gamertags/${targetGamerTag}/liveTrophyProgress/${this.titleId}`);
       } else if (accountId) {
-        trophyRef = rtdb.ref(`/psn/trophies/sniper-elite-5/${accountId}`);
+        liveRef = rtdbRef(rtdb, `/psn/trophies/sniper-elite-5/${accountId}`);
       }
 
-      if (!trophyRef) return;
+      if (!liveRef) return;
 
-      trophyRef.on("value", async snapshot => {
+      onValue(liveRef, async snapshot => {
         const raw = snapshot.val();
         let parsedList = [];
 
@@ -698,18 +707,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (activeUser && targetUserKey) {
         try {
-          const gameDocRef = db.collection("users")
-            .doc(targetUserKey)
-            .collection("platform")
-            .doc(this.currentPlatform)
-            .collection("progress")
-            .doc(this.gameDocId);
-
+          const gameDocRef = doc(db, "users", targetUserKey, "platform", this.currentPlatform, "progress", this.gameDocId);
           const totalItems = this.masterIntelCatalog.length || 1;
           const collectedCount = Object.values(this.userProgressMap).filter(t => t.collected).length;
           const pct = Math.round((collectedCount / totalItems) * 100);
 
-          await gameDocRef.set({
+          await setDoc(gameDocRef, {
             gameId: this.gameDocId,
             activeMission: this.activeMission,
             platform: this.currentPlatform,
@@ -721,7 +724,7 @@ document.addEventListener("DOMContentLoaded", () => {
             trophies_total: totalItems,
             trophies_percent: pct,
             collectibles: this.userProgressMap,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            updatedAt: serverTimestamp()
           }, { merge: true });
 
         } catch (e) {
@@ -734,37 +737,32 @@ document.addEventListener("DOMContentLoaded", () => {
       const targetUserKey = this.currentEmailKey || (this.currentEmail ? getEmailKey(this.currentEmail) : "");
       if (!targetUserKey) return;
 
-      const platforms = ["ps", "pc", "xbox"];
+      const platforms = ["playstation", "xbox", "pc", "steam"];
       const total = this.masterIntelCatalog.length || 1;
 
-      for (const p of platforms) {
+      platforms.forEach(p => {
         try {
-          const snap = await db.collection("users")
-            .doc(targetUserKey)
-            .collection("platform")
-            .doc(p)
-            .collection("progress")
-            .doc(this.gameDocId)
-            .get();
-
-          if (snap.exists) {
-            const data = snap.data();
-            const earned = data.trophies_earned || 0;
-            const pct = Math.round((earned / total) * 100);
-            this.crossPlatformTelemetry[p] = { earned, total, percent: pct };
-          } else {
-            if (p === this.currentPlatform) {
-              const currentEarned = Object.values(this.userProgressMap).filter(t => t.collected).length;
-              this.crossPlatformTelemetry[p] = { earned: currentEarned, total, percent: Math.round((currentEarned / total) * 100) };
+          const platformDocRef = doc(db, "users", targetUserKey, "platform", p, "progress", this.gameDocId);
+          onSnapshot(platformDocRef, snap => {
+            if (snap.exists()) {
+              const data = snap.data();
+              const earned = data.trophies_earned || 0;
+              const pct = Math.round((earned / total) * 100);
+              this.crossPlatformTelemetry[p] = { earned, total, percent: pct };
             } else {
-              this.crossPlatformTelemetry[p] = { earned: 0, total, percent: 0 };
+              if (p === this.currentPlatform) {
+                const currentEarned = Object.values(this.userProgressMap).filter(t => t.collected).length;
+                this.crossPlatformTelemetry[p] = { earned: currentEarned, total, percent: Math.round((currentEarned / total) * 100) };
+              } else {
+                this.crossPlatformTelemetry[p] = { earned: 0, total, percent: 0 };
+              }
             }
-          }
+            this.render();
+          });
         } catch (e) {
           console.warn(`Error loading telemetry for platform ${p}:`, e);
         }
-      }
-      this.render();
+      });
     },
 
     recalculateCrossTrophyTelemetry() {
@@ -891,7 +889,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const platSelect = document.getElementById("platformSelect");
       if (platSelect) {
         platSelect.addEventListener("change", (e) => {
-          this.currentPlatform = e.target.value;
+          this.currentPlatform = normalizePlatform(e.target.value);
           this.recalculateCrossTrophyTelemetry();
           this.render();
           this.silentSaveGameTelemetry();
@@ -917,12 +915,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const earnedCount = earnedList.length;
       const progressPercent = Math.round((earnedCount / total) * 100);
 
-      const isLivePS = this.currentPlatform === "ps" && (this.psnOnlineId || this.psnAccountId);
+      const isLivePS = this.currentPlatform === "playstation" && (this.psnOnlineId || this.psnAccountId);
       const platformName = this.currentPlatform.toUpperCase();
 
-      const psTel = this.crossPlatformTelemetry.ps || { earned: 0, percent: 0 };
+      const psTel = this.crossPlatformTelemetry.playstation || { earned: 0, percent: 0 };
+      const xbTel = this.crossPlatformTelemetry.xbox || { earned: 0, percent: 0 };
       const pcTel = this.crossPlatformTelemetry.pc || { earned: 0, percent: 0 };
-      const xboxTel = this.crossPlatformTelemetry.xbox || { earned: 0, percent: 0 };
+      const stTel = this.crossPlatformTelemetry.steam || { earned: 0, percent: 0 };
 
       const headerDiv = document.createElement("div");
       headerDiv.style.cssText = "grid-column: 1/-1; background:#151c27; padding:16px 20px; border-radius:10px; border:1px solid #273447; margin-bottom:14px; display:flex; flex-direction:column; gap:12px;";
@@ -947,9 +946,10 @@ document.addEventListener("DOMContentLoaded", () => {
           <div style="width:${progressPercent}%; height:100%; background:linear-gradient(90deg, #0088ff, #2ecc71); border-radius:5px; transition: width 0.4s ease;"></div>
         </div>
 
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:6px; background:rgba(0,0,0,0.3); padding:10px 12px; border-radius:8px; border:1px solid #1c2738;">
-          <div style="display:flex; flex-direction:column; gap:4px;">
-            <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
+        <!-- 4-Platform Real-Time Standing -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin-top:6px; background:rgba(0,0,0,0.3); padding:10px 12px; border-radius:8px; border:1px solid #1c2738;">
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:3px;">
               <span style="color:#00a6ed; font-weight:700;">🎮 PlayStation</span>
               <strong style="color:#fff;">${psTel.earned}/${total} (${psTel.percent}%)</strong>
             </div>
@@ -958,23 +958,33 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
           </div>
 
-          <div style="display:flex; flex-direction:column; gap:4px;">
-            <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
-              <span style="color:#00d2d3; font-weight:700;">🖥️ PC / Steam</span>
-              <strong style="color:#fff;">${pcTel.earned}/${total} (${pcTel.percent}%)</strong>
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:3px;">
+              <span style="color:#2ecc71; font-weight:700;">❎ Xbox</span>
+              <strong style="color:#fff;">${xbTel.earned}/${total} (${xbTel.percent}%)</strong>
             </div>
             <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
-              <div style="width:${pcTel.percent}%; height:100%; background:#00d2d3;"></div>
+              <div style="width:${xbTel.percent}%; height:100%; background:#2ecc71;"></div>
             </div>
           </div>
 
-          <div style="display:flex; flex-direction:column; gap:4px;">
-            <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
-              <span style="color:#2ecc71; font-weight:700;">❎ Xbox Network</span>
-              <strong style="color:#fff;">${xboxTel.earned}/${total} (${xboxTel.percent}%)</strong>
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:3px;">
+              <span style="color:#f5a623; font-weight:700;">💻 PC (MS Store)</span>
+              <strong style="color:#fff;">${pcTel.earned}/${total} (${pcTel.percent}%)</strong>
             </div>
             <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
-              <div style="width:${xboxTel.percent}%; height:100%; background:#2ecc71;"></div>
+              <div style="width:${pcTel.percent}%; height:100%; background:#f5a623;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:3px;">
+              <span style="color:#00d2d3; font-weight:700;">🚂 Steam</span>
+              <strong style="color:#fff;">${stTel.earned}/${total} (${stTel.percent}%)</strong>
+            </div>
+            <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
+              <div style="width:${stTel.percent}%; height:100%; background:#00d2d3;"></div>
             </div>
           </div>
         </div>
@@ -1285,7 +1295,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <button id="menuLogoutBtn" style="background:transparent; border:none; color:#e74c3c; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; display:flex; align-items:center; gap:8px; font-weight:600;">🚪 Log Out</button>
         `;
         const logoutBtn = document.getElementById("menuLogoutBtn");
-        if (logoutBtn) logoutBtn.addEventListener("click", () => auth.signOut().then(() => window.location.reload()));
+        if (logoutBtn) logoutBtn.addEventListener("click", () => signOut(auth).then(() => window.location.reload()));
       } else {
         menu.innerHTML = `
           <button id="menuLoginBtn" style="background:transparent; border:none; color:#0088ff; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; font-weight:600;">🔑 Log In</button>
