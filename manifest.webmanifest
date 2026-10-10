@@ -1,0 +1,57 @@
+{
+  "name": "Werewolf Master Hub",
+  "short_name": "Werewolf Hub",
+  "description": "Tactical Companion, Cinema Library & Gaming Engines",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b0f19",
+  "theme_color": "#151c27",
+  "icons": [
+    {
+      "src": "//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Way of the Hunter 2",
+      "short_name": "WOTH2",
+      "description": "Open Tactical Companion & Telemetry",
+      "url": "./woth2.html",
+      "icons": [
+        {
+          "src": "//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Cinema Library",
+      "short_name": "Movies",
+      "description": "Open Movie & TV Library Tracker",
+      "url": "./Movies.html",
+      "icons": [
+        {
+          "src": "//raw.githubusercontent.com/Werewolf3788/Website/refs/heads/main/Images/werewolf_movie_anywhere.jpg",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
