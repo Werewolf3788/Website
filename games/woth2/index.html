@@ -1,24 +1,20 @@
 <!-- Line 1: Way of the Hunter 2 - Master Tactical Companion -->
-<!-- [Smart Cache-Buster Time: 2026-10-12 06:06 EDT | Firebase Sync Target: /utm_links | Version: 7.5.3] -->
+<!-- [Smart Cache-Buster Time: 2026-10-08 00:50 EDT | Firebase Sync Target: /utm_links | Version: 6.0.2] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Section 1: Meta Configuration (Lines 6-12) -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PlayStation Hub | Way of the Hunter 2 Companion</title>
 
-  <!-- Section 2: Branding & Favicon Assets (Lines 14-17) -->
   <link id="dynamicFavicon" rel="icon" type="image/jpeg" href="//werewolf3788.github.io/Website/assets/logo.jpg">
   <link id="dynamicAppleIcon" rel="apple-touch-icon" href="//werewolf3788.github.io/Website/assets/logo.jpg">
 
-  <!-- Section 3: Firebase SDK Dependencies (Lines 19-24) -->
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
-  <!-- Section 4: Complete Styling & Responsive Design System (Lines 26-410) -->
   <style>
     :root {
       --bg-primary: #07090d;
@@ -40,17 +36,7 @@
       --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    * { 
-      box-sizing: border-box; 
-      margin: 0; 
-      padding: 0; 
-    }
-
-    html, body {
-      width: 100%;
-      max-width: 100%;
-      overflow-x: hidden;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: var(--font-family);
@@ -61,53 +47,39 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      overflow-x: hidden;
     }
 
-    /* Section: Top Sticky Header */
     .site-header {
       background: var(--bg-secondary);
       border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
       z-index: 1000;
-      width: 100%;
+      width: 100vw;
     }
 
     .header-container {
       width: 100%;
-      max-width: 100%;
-      padding: 0 clamp(12px, 2vw, 24px);
+      padding: 0 clamp(16px, 2vw, 36px);
       display: flex;
       align-items: center;
       justify-content: space-between;
       height: 64px;
-      gap: 12px;
+      gap: 16px;
     }
 
-    .brand-area { 
-      display: flex; 
-      align-items: center; 
-      gap: 10px; 
-      flex-shrink: 0; 
-    }
+    .brand-area { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
     .back-link {
       color: var(--text-muted);
       text-decoration: none;
       font-size: 1.3rem;
-      padding: 6px 10px;
+      padding: 4px 8px;
       border-radius: 4px;
-      min-width: 44px;
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
       transition: var(--transition);
     }
-    .back-link:hover { 
-      color: var(--accent-amber); 
-      background: var(--bg-surface); 
-    }
+    .back-link:hover { color: var(--accent-amber); background: var(--bg-surface); }
 
     .brand-logo {
       width: 36px;
@@ -119,41 +91,22 @@
     }
 
     .brand-title {
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: 700;
       color: #fff;
       letter-spacing: 0.5px;
       white-space: nowrap;
     }
 
-    /* Fixed inline containment: Prevents wrapping over subsequent bars */
-    .site-nav { 
-      display: flex; 
-      align-items: center; 
-      flex: 1; 
-      margin: 0 12px; 
-      overflow: hidden;
-    }
-    .nav-list { 
-      display: flex; 
-      list-style: none; 
-      gap: 8px; 
-      align-items: center; 
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    .nav-item { 
-      position: relative; 
-      flex-shrink: 0;
-    }
+    .site-nav { display: flex; align-items: center; flex: 1; margin: 0 16px; }
+    .nav-list { display: flex; list-style: none; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .nav-item { position: relative; }
 
     .nav-pill, .dropdown-trigger {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       padding: 6px 12px;
-      min-height: 44px;
       color: var(--text-main);
       text-decoration: none;
       font-size: 0.85rem;
@@ -171,12 +124,7 @@
       border-color: var(--accent-amber);
     }
 
-    .nav-thumb { 
-      width: 18px; 
-      height: 18px; 
-      border-radius: 3px; 
-      object-fit: cover; 
-    }
+    .nav-thumb { width: 18px; height: 18px; border-radius: 3px; object-fit: cover; }
 
     .dropdown-menu {
       position: absolute;
@@ -197,54 +145,39 @@
       gap: 4px;
       z-index: 1001;
     }
-    .nav-item:hover .dropdown-menu,
-    .nav-item.is-open .dropdown-menu { 
-      opacity: 1; 
-      pointer-events: auto; 
-      transform: translateY(0); 
-    }
+    .nav-item:hover .dropdown-menu { opacity: 1; pointer-events: auto; transform: translateY(0); }
 
     .dropdown-item {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 10px;
-      min-height: 44px;
+      padding: 6px 10px;
       color: var(--text-main);
       text-decoration: none;
       border-radius: 4px;
       font-size: 0.82rem;
       transition: var(--transition);
     }
-    .dropdown-item:hover { 
-      background: var(--bg-hover); 
-      color: var(--accent-amber); 
-    }
+    .dropdown-item:hover { background: var(--bg-hover); color: var(--accent-amber); }
 
     .auth-toolbar {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       flex-shrink: 0;
       margin-left: auto;
     }
 
-    .database-indicator { 
-      font-size: 0.76rem; 
-      color: var(--text-muted); 
-    }
-    .database-indicator strong { 
-      color: var(--accent-amber); 
-    }
+    .database-indicator { font-size: 0.76rem; color: var(--text-muted); }
+    .database-indicator strong { color: var(--accent-amber); }
 
     .user-profile-badge {
       display: flex;
       align-items: center;
       gap: 8px;
       background: var(--bg-surface);
-      padding: 4px 10px 4px 6px;
-      min-height: 44px;
-      border-radius: 22px;
+      padding: 3px 8px 3px 4px;
+      border-radius: 20px;
       border: 1px solid var(--border-color);
       cursor: pointer;
     }
@@ -257,12 +190,10 @@
       border: 1px solid var(--accent-amber);
     }
 
-    /* Section: Operations Bar */
     .operations-bar {
       background: #0a0d14;
       border-bottom: 1px solid var(--border-color);
-      padding: 8px clamp(12px, 2vw, 24px);
-      width: 100%;
+      padding: 8px clamp(16px, 2vw, 36px);
     }
 
     .operations-container {
@@ -277,27 +208,20 @@
       display: flex;
       gap: 8px;
       align-items: center;
-      overflow-x: auto;
-      max-width: 100%;
-      padding-bottom: 4px;
-      -webkit-overflow-scrolling: touch;
+      flex-wrap: wrap;
     }
 
     .stat-pill {
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       border-radius: 4px;
-      padding: 6px 10px;
-      min-height: 44px;
+      padding: 4px 8px;
       font-size: 0.82rem;
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      flex-shrink: 0;
     }
-    .stat-label { 
-      color: var(--text-muted); 
-    }
+    .stat-label { color: var(--text-muted); }
 
     .stat-pill input {
       background: transparent;
@@ -306,36 +230,26 @@
       color: var(--accent-amber);
       font-weight: 700;
       font-size: 0.82rem;
-      padding: 2px 3px;
+      padding: 1px 3px;
       outline: none;
     }
     .stat-pill input.stat-input-short { width: 50px; }
     .stat-pill input.stat-input-med { width: 90px; }
     .stat-pill input.stat-input-long { width: 140px; }
 
-    .platform-select-pill, .reserve-select-pill {
+    .platform-select-pill {
       background: var(--bg-surface);
       border: 1px solid var(--accent-blue);
       border-radius: 4px;
-      padding: 4px 8px;
-      min-height: 36px;
+      padding: 2px 6px;
       color: #fff;
       font-size: 0.78rem;
       font-weight: 700;
       outline: none;
       cursor: pointer;
     }
-    .reserve-select-pill {
-      border-color: var(--accent-amber);
-      color: var(--accent-gold);
-    }
 
-    .clock-sync-strip { 
-      display: flex; 
-      gap: 10px; 
-      align-items: center; 
-      flex-wrap: wrap; 
-    }
+    .clock-sync-strip { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
     .day-controller, .time-controller {
       display: flex;
@@ -353,17 +267,14 @@
       padding: 4px 6px;
       font-size: 0.82rem;
       width: 55px;
-      min-height: 44px;
     }
     .time-controller input { width: 95px; }
 
-    /* Section: Weather Radar Strip */
     .weather-bar {
       background: #07090d;
       border-bottom: 1px solid var(--border-color);
-      padding: 6px clamp(12px, 2vw, 24px);
+      padding: 6px clamp(16px, 2vw, 36px);
       font-size: 0.78rem;
-      width: 100%;
     }
 
     .weather-container {
@@ -374,60 +285,35 @@
       gap: 12px;
     }
 
-    .weather-forecast { 
-      display: flex; 
-      gap: 8px; 
-      align-items: center; 
-      overflow-x: auto; 
-      max-width: 100%;
-      padding-bottom: 2px;
-      -webkit-overflow-scrolling: touch;
-    }
-    .forecast-label { 
-      color: var(--accent-amber); 
-      font-weight: 700; 
-      text-transform: uppercase; 
-      flex-shrink: 0;
-    }
+    .weather-forecast { display: flex; gap: 8px; align-items: center; overflow-x: auto; }
+    .forecast-label { color: var(--accent-amber); font-weight: 700; text-transform: uppercase; }
 
     .weather-slot {
       background: rgba(255, 255, 255, 0.03);
-      padding: 4px 8px;
+      padding: 2px 8px;
       border-radius: 3px;
       border: 1px solid rgba(255, 255, 255, 0.06);
       color: var(--text-main);
       white-space: nowrap;
-      flex-shrink: 0;
     }
 
-    .weather-forecast-control { 
-      display: flex; 
-      align-items: center; 
-      gap: 8px; 
-      color: var(--text-muted); 
-      flex-wrap: wrap;
-    }
+    .weather-forecast-control { display: flex; align-items: center; gap: 8px; color: var(--text-muted); }
     .weather-forecast-control select {
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       color: #fff;
-      padding: 4px 8px;
+      padding: 3px 8px;
       border-radius: 4px;
       font-size: 0.78rem;
-      min-height: 44px;
     }
-    .weather-delay-tag { 
-      color: var(--accent-amber); 
-      font-size: 0.72rem; 
-    }
+    .weather-delay-tag { color: var(--accent-amber); font-size: 0.72rem; }
 
-    /* Section: Tactical Sandwich Bar & Modules */
+    /* Tactical Sandwich Control Header */
     .tactical-sandwich-bar {
       background: var(--bg-secondary);
       border-bottom: 2px solid var(--border-color);
-      padding: 8px clamp(12px, 2vw, 24px);
+      padding: 8px clamp(16px, 2vw, 36px);
       position: relative;
-      width: 100%;
     }
 
     .sandwich-bar-container {
@@ -445,7 +331,6 @@
       border: 1px solid var(--border-color);
       color: var(--text-main);
       padding: 8px 16px;
-      min-height: 44px;
       border-radius: 6px;
       font-size: 0.9rem;
       font-weight: 600;
@@ -463,9 +348,8 @@
     .module-dropdown-menu {
       position: absolute;
       top: 100%;
-      left: clamp(12px, 2vw, 24px);
-      right: auto;
-      width: min(calc(100vw - 24px), 380px);
+      left: clamp(16px, 2vw, 36px);
+      width: min(92vw, 380px);
       background: #111722;
       border: 1px solid var(--border-color);
       border-radius: 8px;
@@ -487,7 +371,6 @@
       border: 1px solid transparent;
       color: var(--text-main);
       padding: 9px 12px;
-      min-height: 44px;
       font-size: 0.85rem;
       border-radius: 5px;
       cursor: pointer;
@@ -507,21 +390,10 @@
       font-weight: 700;
     }
 
-    /* Section: Layout Grid & Card Containers */
-    .squad-pill-bar {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding: 10px 0 14px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      margin-bottom: 14px;
-      -webkit-overflow-scrolling: touch;
-    }
-
     .main-container {
       flex: 1;
       width: 100%;
-      padding: 16px clamp(12px, 2vw, 24px);
+      padding: 20px clamp(16px, 2vw, 36px);
     }
 
     .tab-pane { display: none; }
@@ -529,8 +401,8 @@
 
     .dual-pane-grid {
       display: grid;
-      grid-template-columns: minmax(360px, 480px) 1fr;
-      gap: 20px;
+      grid-template-columns: minmax(420px, 500px) 1fr;
+      gap: 24px;
       align-items: start;
     }
 
@@ -538,9 +410,8 @@
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 16px;
+      padding: 18px;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-      width: 100%;
     }
 
     .card-header {
@@ -550,13 +421,8 @@
       padding-bottom: 12px;
       border-bottom: 1px solid var(--border-color);
       margin-bottom: 14px;
-      gap: 8px;
     }
-    .card-header h3 { 
-      font-size: 1rem; 
-      font-weight: 700; 
-      color: #fff; 
-    }
+    .card-header h3 { font-size: 1rem; font-weight: 700; color: #fff; }
 
     .badge {
       background: rgba(245, 166, 35, 0.12);
@@ -566,7 +432,6 @@
       border-radius: 12px;
       font-size: 0.74rem;
       font-weight: 700;
-      white-space: nowrap;
     }
 
     .form-section-title {
@@ -613,7 +478,6 @@
       border: 1px solid var(--border-color);
       color: var(--text-main);
       padding: 8px 10px;
-      min-height: 44px;
       border-radius: 5px;
       font-size: 0.85rem;
       outline: none;
@@ -638,7 +502,7 @@
 
     .history-cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 14px;
       max-height: calc(100vh - 280px);
       overflow-y: auto;
@@ -718,12 +582,7 @@
       border: none;
       font-size: 0.74rem;
       cursor: pointer;
-      padding: 6px;
-      min-width: 44px;
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      padding: 2px 4px;
       border-radius: 3px;
       transition: var(--transition);
     }
@@ -754,20 +613,17 @@
       border: 1px solid var(--border-color);
       color: var(--accent-amber);
       font-weight: 700;
-      width: 44px;
-      height: 44px;
+      width: 28px;
+      height: 28px;
       border-radius: 4px;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
       transition: var(--transition);
     }
     .stepper-btn:hover { background: var(--accent-amber); color: #000; }
 
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
       gap: 16px;
       margin-top: 14px;
     }
@@ -786,11 +642,7 @@
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       color: var(--text-muted);
-      padding: 6px 12px;
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      padding: 4px 10px;
       border-radius: 20px;
       font-size: 0.78rem;
       font-weight: 600;
@@ -815,7 +667,6 @@
 
     .btn {
       padding: 8px 14px;
-      min-height: 44px;
       border-radius: 5px;
       font-weight: 600;
       font-size: 0.85rem;
@@ -826,11 +677,7 @@
       align-items: center;
       justify-content: center;
     }
-    .btn-sm { 
-      padding: 6px 10px; 
-      font-size: 0.78rem; 
-      min-height: 44px;
-    }
+    .btn-sm { padding: 4px 8px; font-size: 0.78rem; }
     .btn-primary { background: var(--accent-amber); color: #000; }
     .btn-primary:hover { background: #e09418; }
     .btn-secondary { background: var(--bg-surface); color: var(--text-main); border-color: var(--border-color); }
@@ -852,7 +699,7 @@
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       width: 90%;
-      max-width: 400px;
+      max-width: 380px;
       border-radius: 8px;
       padding: 20px;
     }
@@ -870,160 +717,58 @@
       font-size: 1.4rem;
       color: var(--text-muted);
       cursor: pointer;
-      width: 44px;
-      height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .site-footer {
       background: var(--bg-secondary);
       border-top: 1px solid var(--border-color);
-      padding: 14px clamp(12px, 2vw, 24px);
+      padding: 14px clamp(16px, 2vw, 36px);
       margin-top: auto;
       font-size: 0.78rem;
       color: var(--text-muted);
-      width: 100%;
     }
 
-    .footer-container { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      flex-wrap: wrap;
-      gap: 12px;
-    }
+    .footer-container { display: flex; justify-content: space-between; align-items: center; }
 
-    .status-pill { padding: 4px 10px; border-radius: 10px; font-size: 0.72rem; font-weight: 600; }
+    .status-pill { padding: 3px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 600; }
     .status-connecting { background: rgba(245, 166, 35, 0.15); color: var(--accent-amber); }
     .status-connected { background: rgba(46, 204, 113, 0.15); color: var(--success); }
 
+    /* Absolute Click-Through Protection when Hidden */
     .hidden { 
       display: none !important; 
       pointer-events: none !important; 
     }
-    .menu-toggle { 
-      display: none; 
-      width: 44px;
-      height: 44px;
-      align-items: center;
-      justify-content: center;
-    }
+    .menu-toggle { display: none; }
 
-    /* Section: Responsive Engine Breakpoints */
-    @media (max-width: 1280px) {
+    @media (max-width: 1180px) {
       .dual-pane-grid { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 1024px) {
-      .database-indicator { display: none; }
-      .site-nav { margin: 0 6px; }
-      .nav-pill, .dropdown-trigger { padding: 6px 8px; font-size: 0.8rem; }
-    }
-
-    @media (max-width: 768px) {
-      .header-container { padding: 0 12px; }
-      .brand-title { display: none; }
-      
-      .menu-toggle { 
-        display: inline-flex; 
-        font-size: 1.4rem; 
-        background: transparent; 
-        border: none; 
-        color: #fff; 
-        cursor: pointer;
-        order: 1;
-      }
-      
-      .brand-area { order: 2; }
-      .auth-toolbar { order: 3; gap: 8px; }
-      
-      .auth-toolbar .btn-sm span.btn-label-text { display: none; }
-
-      .site-nav { 
-        display: none; 
-        width: 100%; 
-        margin: 0; 
-      }
-      
-      .site-nav.open { 
-        display: block; 
-        position: absolute; 
-        top: 64px; 
-        left: 0; 
-        width: 100%;
-        background: var(--bg-secondary); 
-        border-bottom: 2px solid var(--border-color); 
-        padding: 12px 16px; 
-        box-shadow: 0 16px 40px rgba(0,0,0,0.9);
-      }
-      
-      .nav-list { 
-        flex-direction: column; 
-        align-items: stretch; 
-        gap: 8px;
-        overflow-x: visible;
-        flex-wrap: wrap;
-      }
-      
-      .nav-item { width: 100%; }
-      .nav-pill, .dropdown-trigger { width: 100%; justify-content: space-between; }
-      
-      .dropdown-menu { 
-        position: static; 
-        width: 100%;
-        box-shadow: none; 
-        border-left: 2px solid var(--accent-amber); 
-        padding-left: 10px; 
-        margin-top: 4px;
-        opacity: 1;
-        pointer-events: auto;
-        transform: none;
-        display: none;
-      }
-      
-      .nav-item.is-open .dropdown-menu {
-        display: flex;
-      }
-
-      .form-grid-2, .form-grid-3 {
-        grid-template-columns: 1fr;
-      }
-
-      .module-dropdown-menu {
-        width: calc(100vw - 24px);
-        left: 12px;
-      }
+      .menu-toggle { display: block; font-size: 1.4rem; background: transparent; border: none; color: #fff; cursor: pointer; }
+      .site-nav { display: none; width: 100%; margin: 0; }
+      .site-nav.open { display: block; position: absolute; top: 64px; left: 0; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); padding: 12px 20px; }
+      .nav-list { flex-direction: column; align-items: stretch; }
+      .dropdown-menu { position: static; box-shadow: none; border-left: 2px solid var(--accent-amber); padding-left: 10px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Master Sticky Header -->
+  <!-- Top Master Header -->
   <header class="site-header">
     <div class="header-container">
-      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">&#9776;</button>
-
       <div class="brand-area">
         <a href="../../security/settings.html" class="back-link" title="Return to Settings Hub">&larr;</a>
         <img id="navBrandLogo" src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" class="brand-logo" onerror="this.src='//werewolf3788.github.io/Website/assets/logo.jpg'">
         <span class="brand-title">WOTH2 TACTICAL COMPANION</span>
       </div>
 
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">&#9776;</button>
+
       <nav class="site-nav" id="dynamicNav">
         <ul class="nav-list" id="navList"></ul>
       </nav>
 
       <div class="auth-toolbar">
-        <a href="https://streamelements.com/werewolf3788/tip" 
-           target="_blank" 
-           rel="noopener noreferrer" 
-           class="btn btn-sm" 
-           style="background: linear-gradient(135deg, #f5a623, #ff7700); color: #000; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">
-          ☕ <span class="btn-label-text">Support Dev</span>
-        </a>
-
         <span class="database-indicator">Database: <strong>entertainment-71888</strong></span>
         <button id="authModalBtn" class="btn btn-primary btn-sm">Sign In / Account</button>
         <div id="userProfile" class="user-profile-badge hidden">
@@ -1035,21 +780,10 @@
     </div>
   </header>
 
-  <!-- Operations Bar with Platform Key & Reserve Selector -->
+  <!-- Operations Bar with Platform Key Selector -->
   <section class="operations-bar">
     <div class="operations-container">
       <div class="hunter-stats-strip">
-        <div class="stat-pill">
-          <span class="stat-label">Reserve:</span>
-          <select id="currentReserveSelect" class="reserve-select-pill">
-            <option value="Kilimaya Reserve">Kilimaya Reserve</option>
-            <option value="Hearth & Hunt Estate">Hearth & Hunt Estate</option>
-            <option value="New Laurentia">New Laurentia</option>
-            <option value="Nez Perce Valley">Nez Perce Valley</option>
-            <option value="Tikamoon Plains">Tikamoon Plains</option>
-            <option value="Transylvania">Transylvania</option>
-          </select>
-        </div>
         <div class="stat-pill">
           <span class="stat-label">Platform:</span>
           <select id="platformSelect" class="platform-select-pill">
@@ -1065,11 +799,11 @@
         </div>
         <div class="stat-pill">
           <span class="stat-label">Level:</span>
-          <input type="number" id="hunterLevelInput" class="stat-input-short" value="14" min="1" max="100" title="Click to edit Level">
+          <input type="number" id="hunterLevelInput" class="stat-input-short" value="2" min="1" max="100" title="Click to edit Level">
         </div>
         <div class="stat-pill">
           <span class="stat-label">Credits:</span>
-          $<input type="number" id="hunterCreditsInput" class="stat-input-med" value="2845" min="0" title="Click to edit Credits">
+          $<input type="number" id="hunterCreditsInput" class="stat-input-med" value="318" min="0" title="Click to edit Credits">
         </div>
         <div class="stat-pill">
           <span class="stat-label">Dog:</span>
@@ -1080,37 +814,37 @@
       <div class="clock-sync-strip">
         <div class="day-controller">
           <label for="currentDayInput">Day:</label>
-          <input type="number" id="currentDayInput" value="2" min="1" step="1">
+          <input type="number" id="currentDayInput" value="1" min="1" step="1">
           <button id="advanceDayBtn" class="btn btn-secondary btn-sm" title="Advance +1 Day (Aging trigger at Day 3)">&plus;1 Day (Rest)</button>
         </div>
         <div class="time-controller">
           <label for="currentTimeInput">Time:</label>
-          <input type="time" id="currentTimeInput" value="13:14">
+          <input type="time" id="currentTimeInput" value="08:30">
           <button id="advanceTwoHoursBtn" class="btn btn-secondary btn-sm">&plus;2 Hrs</button>
         </div>
-        <input type="hidden" id="weatherConditionInput" value="Partly cloudy">
+        <input type="hidden" id="weatherConditionInput" value="Clear / Morning Breeze">
       </div>
     </div>
   </section>
 
-  <!-- Live Weather Radar Strip -->
+  <!-- Live Weather Radar -->
   <section class="weather-bar">
     <div class="weather-container">
       <div class="weather-forecast">
         <span class="forecast-label">Forecast:</span>
-        <span class="weather-slot" id="weatherNow">+0h: Partly cloudy</span>
-        <span class="weather-slot" id="weatherPlus2">+2h: Partly cloudy</span>
-        <span class="weather-slot" id="weatherPlus4">+4h: Clear</span>
-        <span class="weather-slot" id="weatherPlus6">+6h: Clear</span>
-        <span class="weather-slot" id="weatherPlus8">+8h: Clear</span>
-        <span class="weather-slot" id="weatherPlus10">+10h: Clear</span>
-        <span class="weather-slot" id="weatherPlus12">+12h: Clear</span>
+        <span class="weather-slot" id="weatherNow">+0h: Clear 7&deg;C</span>
+        <span class="weather-slot" id="weatherPlus2">+2h: Partly Cloudy</span>
+        <span class="weather-slot" id="weatherPlus4">+4h: Partly Cloudy</span>
+        <span class="weather-slot" id="weatherPlus6">+6h: Light Snow</span>
+        <span class="weather-slot" id="weatherPlus8">+8h: Light Snow</span>
+        <span class="weather-slot" id="weatherPlus10">+10h: Overcast</span>
+        <span class="weather-slot" id="weatherPlus12">+12h: Light Fog</span>
       </div>
       <div class="weather-forecast-control">
         <label for="longTermForecastSelect">Forecast Pattern:</label>
         <select id="longTermForecastSelect">
           <option value="standard">Standard Conditions (Balanced)</option>
-          <option value="rainfall">Increased Rainfall (Wet)</option>
+          <option value="snow">Increased Snowfall (Colder)</option>
         </select>
         <span class="weather-delay-tag">Activates in 48 In-Game Hours</span>
       </div>
@@ -1126,10 +860,10 @@
         <span style="font-size:0.75rem; color:var(--text-muted);">&#9662;</span>
       </button>
 
-      <span class="badge" style="background:#151c27; color:var(--accent-teal);">14 Tactical Views</span>
+      <span class="badge" style="background:#151c27; color:var(--accent-teal);">12 Tactical Views</span>
     </div>
 
-    <!-- Dropdown Module Items -->
+    <!-- Sandwich Dropdown Menu -->
     <div id="moduleDropdownMenu" class="module-dropdown-menu hidden">
       <button class="module-item-btn active" data-tab="trophies">
         <span>🏆 Trophies &amp; Achievements</span>
@@ -1159,24 +893,16 @@
         <span>🐕 Dog Companion Profile</span>
         <span style="font-size:0.75rem; color:var(--text-muted);">Bacon</span>
       </button>
-      <button class="module-item-btn" data-tab="hunterSkills">
-        <span>🏹 Hunter Perks &amp; Skills</span>
-        <span style="font-size:0.75rem; color:var(--text-muted);">Perk Nodes</span>
-      </button>
       <button class="module-item-btn" data-tab="challenges">
-        <span>🏅 Challenges &amp; Mastery Trees</span>
-        <span style="font-size:0.75rem; color:var(--text-muted);">5 Mastery Trees</span>
-      </button>
-      <button class="module-item-btn" data-tab="lodgeStore">
-        <span>🏪 Requisition &amp; Taxidermy</span>
-        <span style="font-size:0.75rem; color:var(--accent-gold);">Economy</span>
+        <span>🏅 Challenges &amp; Perks</span>
+        <span style="font-size:0.75rem; color:var(--text-muted);">100 Trees</span>
       </button>
       <button class="module-item-btn" data-tab="missions">
         <span>📜 Missions &amp; Story</span>
-        <span style="font-size:0.75rem; color:var(--text-muted);">Assignments</span>
+        <span style="font-size:0.75rem; color:var(--text-muted);">Warden</span>
       </button>
       <button class="module-item-btn" data-tab="infrastructure">
-        <span>🏗️ Infrastructure &amp; Remediation</span>
+        <span>🏗️ Infrastructure &amp; Tasks</span>
         <span style="font-size:0.75rem; color:var(--text-muted);">Enhancements</span>
       </button>
       <button class="module-item-btn" data-tab="trails">
@@ -1185,7 +911,7 @@
       </button>
       <button class="module-item-btn" data-tab="speciesCatalog">
         <span>📖 Species Encyclopedia</span>
-        <span style="font-size:0.75rem; color:var(--text-muted);">Reserve Animals</span>
+        <span style="font-size:0.75rem; color:var(--text-muted);">15 Animals</span>
       </button>
     </div>
   </nav>
@@ -1200,8 +926,6 @@
           <h3>Trophy &amp; Achievement Telemetry Engine</h3>
           <span class="badge">Master Node: NPWR52231_00</span>
         </div>
-        
-        <div id="squadPillsContainer" class="squad-pill-bar"></div>
         <div id="trophyChamberGrid" class="cards-grid"></div>
         <div id="psnTrophiesContainer" style="display:none;"></div>
       </div>
@@ -1215,7 +939,7 @@
           <span class="badge">Live Squad Sync</span>
         </div>
         <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">
-          Compare real-time hunter levels, in-game timestamps, credits balance, 5-star kills, and trophy milestones across linked squad friend codes.
+          Compare real-time hunter levels, in-game timestamps, harvests, watchdog genetics, and trophy percentages across PlayStation, Xbox, Steam, and Microsoft PC companions.
         </p>
         <div id="friendsComparisonContainer" class="cards-grid"></div>
       </div>
@@ -1245,33 +969,33 @@
             <div class="form-grid-3">
               <div class="input-group">
                 <label for="harvestFirearm">Firearm</label>
-                <input type="text" id="harvestFirearm" value="Primacy Superior 7700 (MDT Oryx Chassis)">
+                <input type="text" id="harvestFirearm" value="Primacy Classic Hunter MK II">
               </div>
               <div class="input-group">
                 <label for="harvestCaliber">Caliber</label>
-                <input type="text" id="harvestCaliber" value=".270 Winchester">
+                <input type="text" id="harvestCaliber" value=".308 Winchester">
               </div>
               <div class="input-group">
                 <label for="harvestAmmo">Ammo Type</label>
-                <input type="text" id="harvestAmmo" value="Soft point">
+                <input type="text" id="harvestAmmo" value="Polymer-tipped hollow point">
               </div>
             </div>
 
             <div class="form-grid-2">
               <div class="input-group">
                 <label for="harvestShotDist">Shot Distance (Yds)</label>
-                <input type="number" id="harvestShotDist" value="63">
+                <input type="number" id="harvestShotDist" value="125">
               </div>
               <div class="input-group">
                 <label for="harvestTrackDist">Tracking Distance (Yds)</label>
-                <input type="number" id="harvestTrackDist" value="29">
+                <input type="number" id="harvestTrackDist" value="45">
               </div>
             </div>
 
             <div class="form-grid-2">
               <div class="input-group">
                 <label for="harvestOrgans">Organs Hit</label>
-                <input type="text" id="harvestOrgans" placeholder="e.g. Heart 49%, Left Lung 100%, Right Lung 100%">
+                <input type="text" id="harvestOrgans" placeholder="e.g. Left Lung, Liver">
               </div>
               <div class="input-group">
                 <label for="harvestDetected">Hunter Detected</label>
@@ -1286,15 +1010,15 @@
             <div class="form-grid-3">
               <div class="input-group">
                 <label for="harvestRawWeight">Raw Weight (lbs)</label>
-                <input type="number" id="harvestRawWeight" step="0.1" value="571.9">
+                <input type="number" id="harvestRawWeight" step="0.1" value="231.5">
               </div>
               <div class="input-group">
                 <label for="harvestWaste">Dressing Waste (lbs)</label>
-                <input type="number" id="harvestWaste" step="0.1" value="228.8">
+                <input type="number" id="harvestWaste" step="0.1" value="75.0">
               </div>
               <div class="input-group">
                 <label for="harvestDressedWeight">Dressed Weight (lbs)</label>
-                <input type="number" id="harvestDressedWeight" step="0.1" value="304.2">
+                <input type="number" id="harvestDressedWeight" step="0.1" value="156.5">
               </div>
             </div>
 
@@ -1305,37 +1029,37 @@
               </div>
               <div class="input-group">
                 <label for="harvestShotDegradation">Shot Degradation</label>
-                <input type="text" id="harvestShotDegradation" value="38.9 lbs">
+                <input type="text" id="harvestShotDegradation" value="0.0 lbs">
               </div>
               <div class="input-group">
                 <label for="harvestSellPrice">Sell Price ($)</label>
-                <input type="number" id="harvestSellPrice" value="455">
+                <input type="number" id="harvestSellPrice" value="210">
               </div>
             </div>
 
-            <div class="form-section-title">3. Trophy Score &amp; Dynamic Scoring Fields</div>
+            <div class="form-section-title">3. Trophy Score &amp; Organ Measurements</div>
             <div class="form-grid-3">
               <div class="input-group">
                 <label for="harvestSex">Sex &amp; Stage</label>
                 <select id="harvestSex">
-                  <option value="Male Mature">Male Mature</option>
                   <option value="Male Adult">Male Adult</option>
+                  <option value="Male Mature">Male Mature</option>
                   <option value="Female Adult">Female Adult</option>
                   <option value="Male Young">Male Young</option>
                 </select>
               </div>
               <div class="input-group">
                 <label for="harvestFitness">Genetic Fitness %</label>
-                <input type="number" id="harvestFitness" step="0.1" value="93.5">
+                <input type="number" id="harvestFitness" step="0.1" value="65.4">
               </div>
               <div class="input-group">
                 <label for="harvestRatingStars">Trophy Rating</label>
                 <select id="harvestRatingStars">
-                  <option value="5">5 Stars</option>
-                  <option value="4">4 Stars</option>
-                  <option value="3">3 Stars</option>
-                  <option value="2">2 Stars</option>
                   <option value="1">1 Star</option>
+                  <option value="2">2 Stars</option>
+                  <option value="3">3 Stars</option>
+                  <option value="4">4 Stars</option>
+                  <option value="5">5 Stars</option>
                 </select>
               </div>
             </div>
@@ -1369,7 +1093,7 @@
 
             <div class="input-group">
               <label for="watchIdentifier">Target Identifier / Tag Name</label>
-              <input type="text" id="watchIdentifier" placeholder="e.g. 5-Star South Ridge Lion" required>
+              <input type="text" id="watchIdentifier" placeholder="e.g. Asymmetrical Left Brow Bull" required>
             </div>
 
             <div class="form-grid-2">
@@ -1386,31 +1110,31 @@
             <div class="form-grid-2">
               <div class="input-group">
                 <label for="watchLandmark">Need Zone Landmark</label>
-                <input type="text" id="watchLandmark" placeholder="e.g. Popobawa Vlei Eastern Ridge" required>
+                <input type="text" id="watchLandmark" placeholder="e.g. Shingle Riverbank Waterway" required>
               </div>
               <div class="input-group">
                 <label for="watchFitness">Observed Fitness %</label>
-                <input type="number" id="watchFitness" step="0.1" placeholder="e.g. 93.5 or 48.2" required>
+                <input type="number" id="watchFitness" step="0.1" placeholder="e.g. 43.4 or 88.5" required>
               </div>
             </div>
 
             <div class="form-grid-3">
               <div class="input-group">
                 <label for="watchAge">Current Age (Yrs)</label>
-                <input type="number" id="watchAge" value="15" min="1" max="25" required>
+                <input type="number" id="watchAge" value="8" min="1" max="25" required>
               </div>
               <div class="input-group">
                 <label for="watchMaxAge">Lifespan Cap (Yrs)</label>
-                <input type="number" id="watchMaxAge" value="16" readonly>
+                <input type="number" id="watchMaxAge" value="12" readonly>
               </div>
               <div class="input-group">
                 <label for="watchStars">Observed Stars</label>
                 <select id="watchStars">
-                  <option value="5">5 Stars</option>
-                  <option value="4">4 Stars</option>
-                  <option value="3">3 Stars</option>
-                  <option value="2">2 Stars</option>
                   <option value="1">1 Star</option>
+                  <option value="2">2 Stars</option>
+                  <option value="3">3 Stars</option>
+                  <option value="4">4 Stars</option>
+                  <option value="5">5 Stars</option>
                 </select>
               </div>
             </div>
@@ -1422,12 +1146,12 @@
           </form>
 
           <div class="advisory-callout" style="margin-top: 18px;">
-            <h4>Reserve-Scoped Aging Rules:</h4>
+            <h4>Herd Management Rules:</h4>
             <ul>
-              <li><strong>Map-Scoped Days:</strong> Targets age only when you spend days inside their specific active reserve.</li>
-              <li><strong>Asymmetry = Low Fitness (&lt;50%):</strong> Cull immediately to clear corrupted genetics from the pool.</li>
-              <li><strong>Symmetry = High Fitness (&ge;80%):</strong> 5-Star breeder. Let mature until final year for peak rack.</li>
-              <li><strong>Rate:</strong> 3 in-game days equals 1 full biological growth year.</li>
+              <li><strong>Asymmetry = Low Fitness (&lt;50%):</strong> Cull immediately to clear corrupted genetics.</li>
+              <li><strong>Symmetry = High Fitness (&ge;80%):</strong> 5-Star breeder. Protect rack until late mature stage.</li>
+              <li><strong>1-Star Mature:</strong> End-of-cycle cull before despawn.</li>
+              <li><strong>Rate:</strong> 3 in-game days equals 1 year of age.</li>
             </ul>
           </div>
         </div>
@@ -1449,7 +1173,7 @@
           <h3>Corridor Need Zone Clusters (&sim;50-Yard Radius)</h3>
           <span id="needZoneCount" class="badge">Loading Clusters...</span>
         </div>
-        <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">Interacting with any individual watering, feeding, or resting point in a 50-yd cluster unlocks all linked corridor markers for that herd.</p>
+        <p class="section-desc">Interacting with any individual watering, feeding, or resting point in a 50-yd cluster unlocks all linked corridor markers.</p>
         <div id="needZoneClustersGrid" class="cards-grid"></div>
       </div>
     </section>
@@ -1461,7 +1185,7 @@
           <h3>Species Lifespans, Stage Brackets &amp; Despawn Schedules</h3>
           <span id="lifecycleCount" class="badge">Loading Lifecycles...</span>
         </div>
-        <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">1 in-game year equals exactly 3 in-game days. Animals despawn of old age if unharvested upon reaching their maximum lifespan limit.</p>
+        <p class="section-desc">1 in-game year equals exactly 3 in-game days. Animals despawn of old age if unharvested upon reaching max lifespan.</p>
         <div id="lifecyclesGrid" class="cards-grid"></div>
       </div>
     </section>
@@ -1478,39 +1202,14 @@
       </div>
     </section>
 
-    <!-- Tab: Hunter Skills & Perks -->
-    <section id="tab-hunterSkills" class="tab-pane">
-      <div class="card">
-        <div class="card-header">
-          <h3>Hunter Perks &amp; Skill Nodes</h3>
-          <span class="badge">Interactive Ability Tree</span>
-        </div>
-        <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">Click any perk card below to learn or unlearn hunter abilities as you spend level progression skill points.</p>
-        <div id="hunterSkillsGrid" class="cards-grid"></div>
-      </div>
-    </section>
-
-    <!-- Tab: Challenges & Mastery Trees -->
+    <!-- Tab: Challenges & Perks Trees -->
     <section id="tab-challenges" class="tab-pane">
       <div class="card">
         <div class="card-header">
           <h3>Hunter Challenges &amp; Perk Mastery Trees</h3>
-          <span class="badge">Ambusher &bull; Naturalist &bull; Scout &bull; Sharpshooter &bull; Stalker</span>
+          <span class="badge">100 Challenges Across 5 Trees</span>
         </div>
-        <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">Use the stepper buttons (&minus; / &plus;) to log your progress toward milestone tier goals.</p>
         <div id="challengeTreesGrid" class="cards-grid"></div>
-      </div>
-    </section>
-
-    <!-- Tab: Lodge Store Requisition & Taxidermy Chamber -->
-    <section id="tab-lodgeStore" class="tab-pane">
-      <div class="card">
-        <div class="card-header">
-          <h3>Lodge Requisition Store &amp; Diorama Taxidermy</h3>
-          <span class="badge">Credit Economy Engine</span>
-        </div>
-        <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">Acquire firearms, callers, and optics or commission custom multi-mount taxidermy dioramas using your live credit balance.</p>
-        <div id="lodgeForecasterContainer" class="cards-grid"></div>
       </div>
     </section>
 
@@ -1518,21 +1217,20 @@
     <section id="tab-missions" class="tab-pane">
       <div class="card">
         <div class="card-header">
-          <h3>Warden &amp; Lodge Story Assignments</h3>
+          <h3>Warden &amp; Lodge Story Missions (New Laurentia)</h3>
           <span id="missionsCount" class="badge">Loading Missions...</span>
         </div>
         <div id="missionsGrid" class="cards-grid"></div>
       </div>
     </section>
 
-    <!-- Tab: Infrastructure & Habitat Remediation Tasks -->
+    <!-- Tab: Infrastructure & Habitat Tasks -->
     <section id="tab-infrastructure" class="tab-pane">
       <div class="card">
         <div class="card-header">
-          <h3>Habitat Enhancements &amp; Environmental Hazards</h3>
-          <span id="infrastructureCount" class="badge">Loading Enhancements...</span>
+          <h3>Habitat Enhancements, Feeders &amp; Bridge Tasks</h3>
+          <span id="infrastructureCount" class="badge">32 Enhancements</span>
         </div>
-        <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">Remediate dry lakes and environmental hazards to lift regional fitness penalties on surrounding animal herds.</p>
         <div class="advisory-callout" id="infraNotesBox"></div>
         <div id="infrastructureGrid" class="cards-grid" style="margin-top: 16px;"></div>
       </div>
@@ -1554,7 +1252,7 @@
       <div class="card">
         <div class="card-header">
           <h3>Reserve Species Catalog, Tiers &amp; Defense Sidearms</h3>
-          <span id="speciesCatalogCount" class="badge">Loading Roster...</span>
+          <span id="speciesCatalogCount" class="badge">15 Reserve Species</span>
         </div>
         <div id="speciesCatalogGrid" class="cards-grid"></div>
       </div>
@@ -1562,7 +1260,7 @@
 
   </main>
 
-  <!-- Complete Authentication Modal with Email/Password & Google OAuth -->
+  <!-- Login Modal -->
   <div class="modal-overlay hidden" id="authModal">
     <div class="modal-card">
       <div class="modal-header">
@@ -1570,29 +1268,7 @@
         <button class="modal-close" id="authModalClose" aria-label="Close Modal">&times;</button>
       </div>
       <div class="modal-body">
-        <form id="emailAuthForm" onsubmit="return false;" style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
-          <div class="input-group">
-            <label for="authEmailInput">Email Address</label>
-            <input type="email" id="authEmailInput" placeholder="hunter@example.com" required autocomplete="email">
-          </div>
-          <div class="input-group">
-            <label for="authPasswordInput">Password</label>
-            <input type="password" id="authPasswordInput" placeholder="••••••••" required autocomplete="current-password">
-          </div>
-          <div style="display:flex; gap:8px; margin-top:4px;">
-            <button type="submit" id="emailSignInBtn" class="btn btn-primary full-width">Sign In</button>
-            <button type="button" id="emailSignUpBtn" class="btn btn-secondary full-width">Create Account</button>
-          </div>
-        </form>
-
-        <div style="display:flex; align-items:center; gap:8px; margin:10px 0; color:var(--text-muted); font-size:0.75rem;">
-          <hr style="flex:1; border:none; border-top:1px solid var(--border-color);">
-          <span>OR</span>
-          <hr style="flex:1; border:none; border-top:1px solid var(--border-color);">
-        </div>
-
-        <button id="googleSignInBtn" class="btn btn-google full-width" type="button">Sign In with Google</button>
-        <p id="authErrorMsg" style="color:var(--danger); font-size:0.78rem; margin-top:10px; display:none;"></p>
+        <button id="googleSignInBtn" class="btn btn-google full-width">Sign In with Google</button>
       </div>
     </div>
   </div>
@@ -1602,7 +1278,7 @@
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Way of the Hunter 2 Companion &bull; Tactical Operations Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-12 06:06 EDT</span> | Version: 7.5.3</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-08 00:50 EDT</span> | Version: 6.0.2</p>
       </div>
       <div class="footer-col text-right">
         <span id="firebaseStatusBadge" class="status-pill status-connecting">RTDB: Connecting...</span>
@@ -1610,39 +1286,6 @@
     </div>
   </footer>
 
-  <!-- Scripts & Responsive Drawer Controller -->
   <script src="./script.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const menuToggle = document.getElementById('menuToggle');
-      const siteNav = document.getElementById('dynamicNav');
-
-      if (menuToggle && siteNav) {
-        menuToggle.addEventListener('click', (e) => {
-          e.stopPropagation();
-          siteNav.classList.toggle('open');
-        });
-      }
-
-      document.addEventListener('click', (e) => {
-        if (siteNav && siteNav.classList.contains('open') && !siteNav.contains(e.target) && e.target !== menuToggle) {
-          siteNav.classList.remove('open');
-        }
-      });
-
-      document.addEventListener('click', (e) => {
-        const trigger = e.target.closest('.dropdown-trigger');
-        if (trigger) {
-          e.preventDefault();
-          const parentItem = trigger.closest('.nav-item');
-          if (parentItem) {
-            parentItem.classList.toggle('is-open');
-          }
-        } else {
-          document.querySelectorAll('.nav-item.is-open').forEach(el => el.classList.remove('is-open'));
-        }
-      });
-    });
-  </script>
 </body>
 </html>
