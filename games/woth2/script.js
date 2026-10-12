@@ -1,10 +1,12 @@
 // Section 1: System Constants & Cache Busters (Lines 1-28)
-const BUILD_TIMESTAMP = '2026-10-12 05:41 EDT';
-const APP_VERSION = '7.5.0';
+const BUILD_TIMESTAMP = '2026-10-12 05:49 EDT';
+const APP_VERSION = '7.5.1';
 const FIREBASE_SYNC_TARGET = '/utm_links';
 const CACHE_NAME = 'woth2-tactical-cache-' + BUILD_TIMESTAMP;
 
-// Section 2: Firebase Fallback Configuration (Lines 30-58)
+// Section 2: Firebase Client Initialization (Lines 30-60)
+// To connect directly to your live Google authentication and RTDB, 
+// populate apiKey with your web application key from the Firebase Console.
 const firebaseConfig = {
   apiKey: "AIzaSyDummyKeyForFallbackConfigWOTH2",
   authDomain: "entertainment-71888.firebaseapp.com",
@@ -26,7 +28,7 @@ if (!firebase.apps.length) {
 const rtdb = firebase.database ? firebase.database() : null;
 const auth = firebase.auth ? firebase.auth() : null;
 
-// Section 3: Master Tactical State Store (Lines 60-115)
+// Section 3: Master Tactical State Store (Lines 62-115)
 const AppState = {
   currentReserve: "New Laurentia",
   currentPlatform: "ps",
@@ -59,7 +61,7 @@ const AppState = {
   currentUser: null
 };
 
-// Section 4: Static Fallback Seed Datasets (Lines 117-270)
+// Section 4: Seed Datasets (Lines 117-270)
 const defaultSpeciesData = [
   { id: "mallard", name: "Mallard", tier: 1, trophy_type: "Weight", regions: ["Lake Sasquatch", "Mishipeshu Swamp", "Slalakum Shore", "Thunderbird Muskeg", "Wetiko Foothills"], aggression_level: "Passive", defensive_sidearm: "None needed" },
   { id: "snowshoe_hare", name: "Snowshoe hare", tier: 1, trophy_type: "Weight", regions: ["Jackalope Cordillera", "Lake Sasquatch"], aggression_level: "Passive", defensive_sidearm: "None needed" },
@@ -131,7 +133,7 @@ const defaultTrophies = [
   { id: "trophy_05", title: "Old Bones", description: "Track down and cull an animal within 1 in-game year of its maximum lifespan.", earned: true, group: "Management", icon: "⏳" }
 ];
 
-// Section 5: DOM Initialization & Startup Sequence (Lines 272-355)
+// Section 5: Startup Sequence (Lines 272-355)
 document.addEventListener('DOMContentLoaded', () => {
   initDateStamp();
   bindOperationsBarInputs();
@@ -172,7 +174,6 @@ function initDynamicNavbar() {
     return;
   }
 
-  // Bind Dynamic Settings Logo from Firebase
   try {
     rtdb.ref('/utm_links/Settings/0/image').on('value', (snap) => {
       const imgVal = snap.val();
@@ -195,7 +196,6 @@ function initDynamicNavbar() {
     console.warn("Logo binding error:", err);
   }
 
-  // Bind Dynamic Menu from Firebase
   try {
     rtdb.ref(FIREBASE_SYNC_TARGET).on('value', (snapshot) => {
       if (statusBadge) {
@@ -204,7 +204,6 @@ function initDynamicNavbar() {
       }
 
       const data = snapshot.val();
-      // Write-Protection Gate: Never overwrite valid state with empty/null snapshots
       if (!data || typeof data !== 'object' || Object.keys(data).length === 0) {
         console.warn("Firebase snapshot empty or null. Preserving local fallback state.");
         const localCachedNav = localStorage.getItem('cached_utm_links');
@@ -238,7 +237,7 @@ function initDynamicNavbar() {
   }
 }
 
-// Section 8: Navbar Programmatic Sorting & DOM Construction (Lines 472-560)
+// Section 8: Dynamic Navbar Rendering Engine (Lines 472-560)
 function renderParsedNavbar(data, container) {
   if (!container) return;
   container.innerHTML = '';
@@ -411,7 +410,7 @@ function switchModuleTab(tabId) {
   }
 }
 
-// Section 10: Operations Bar State Binding (Lines 622-710)
+// Section 10: Operations Bar Binding (Lines 622-710)
 function bindOperationsBarInputs() {
   const reserveSelect = document.getElementById('currentReserveSelect');
   const platformSelect = document.getElementById('platformSelect');
@@ -534,7 +533,7 @@ function advanceInGameHours(deltaHours) {
   updateWeatherForecastDisplay();
 }
 
-// Section 11: Weather Controller & Radar Simulation (Lines 712-760)
+// Section 11: Weather Simulation Controls (Lines 712-760)
 function bindWeatherControls() {
   const patternSelect = document.getElementById('longTermForecastSelect');
   if (patternSelect) {
@@ -577,7 +576,6 @@ function renderSquadRoster() {
     ? AppState.dataSets.squadRoster
     : defaultSquadRoster;
 
-  // Render Live Squad Quick-Status Pill Bar
   if (pillsContainer) {
     pillsContainer.innerHTML = squadList.map(member => {
       const isFriendTrophyActive = Boolean(
@@ -596,14 +594,12 @@ function renderSquadRoster() {
     }).join('');
   }
 
-  // Render Full Companion Telemetry Cards
   if (container) {
     container.innerHTML = squadList.map(member => renderFriendCard(member)).join('');
   }
 }
 
 function renderFriendCard(friendData) {
-  // Explicitly check for verified Friends trophy state
   const isFriendTrophyUnlocked = Boolean(
     friendData.trophies?.friends === true ||
     friendData.friends_trophy === true ||
@@ -628,7 +624,6 @@ function renderFriendCard(friendData) {
         }
       </div>
 
-      <!-- Visible Trophy Achievement Banner -->
       <div class="action-banner ${isFriendTrophyUnlocked ? 'banner-balanced' : 'banner-cull'}">
         <strong>Trophy Status:</strong> ${isFriendTrophyUnlocked ? '🏆 "Together in the Wild" Unlocked' : '🔒 Not Yet Earned'}
       </div>
@@ -677,7 +672,7 @@ function renderTrophyChamber() {
   }).join('');
 }
 
-// Section 14: Species Encyclopedia & Reserve Filter (Lines 922-1010)
+// Section 14: Species Encyclopedia & Filter (Lines 922-1010)
 function filterSpeciesByCurrentReserve() {
   const locationSelect = document.getElementById('harvestLocationSelect');
   const speciesSelect = document.getElementById('harvestSpeciesSelect');
@@ -690,7 +685,7 @@ function filterSpeciesByCurrentReserve() {
 
   const reserveSpecies = speciesList.filter(s => {
     if (!s.regions || s.regions.length === 0) return true;
-    return true; // Keep active species aligned to current master database
+    return true;
   });
 
   if (speciesSelect) {
@@ -705,7 +700,6 @@ function filterSpeciesByCurrentReserve() {
     `).join('');
   }
 
-  // Populate Sectors
   const defaultRegions = [
     "Lake Sasquatch",
     "Jackalope Cordillera",
@@ -758,7 +752,7 @@ function renderSpeciesCatalog() {
   }).join('');
 }
 
-// Section 15: Watchlist Management & Biological Aging Engine (Lines 1012-1110)
+// Section 15: Watchlist Actions & Biological Aging Engine (Lines 1012-1110)
 function bindWatchlistActions() {
   const saveBtn = document.getElementById('saveWatchlistBtn');
   const cancelBtn = document.getElementById('cancelEditWatchlistBtn');
@@ -842,7 +836,6 @@ function resetWatchlistForm() {
 }
 
 function triggerReserveAgingCheck() {
-  // 3 in-game days equals 1 biological year
   AppState.watchlist.forEach(target => {
     if (target.reserve === AppState.currentReserve) {
       const daysTracked = AppState.time.day - (target.trackedSinceDay || AppState.time.day);
@@ -928,7 +921,7 @@ window.deleteWatchlistItem = function(id) {
   renderWatchlist();
 };
 
-// Section 16: Harvest Inspection Submission Engine (Lines 1112-1190)
+// Section 16: Harvest Inspection Form (Lines 1112-1190)
 function bindHarvestInspectionForm() {
   const submitBtn = document.getElementById('submitHarvestRecordBtn');
   if (!submitBtn) return;
@@ -1007,7 +1000,7 @@ window.deleteHarvestLogItem = function(id) {
   renderHarvestHistory();
 };
 
-// Section 17: Dog Companion & Perk Mastery Steppers (Lines 1192-1265)
+// Section 17: Dog Companion Progression (Lines 1192-1265)
 function renderDogProfile() {
   const summaryEl = document.getElementById('dogSummaryCard');
   const skillsGrid = document.getElementById('dogSkillsGrid');
@@ -1050,7 +1043,7 @@ window.stepDogSkill = function(idx, delta) {
   alert(`Skill rank updated!`);
 };
 
-// Section 18: Missions, Infrastructure & Story Loaders (Lines 1267-1355)
+// Section 18: Missions & Infrastructure Renderers (Lines 1267-1355)
 function renderMissionsModule() {
   const grid = document.getElementById('missionsGrid');
   const countBadge = document.getElementById('missionsCount');
@@ -1114,7 +1107,7 @@ function renderInfrastructureModule() {
   `).join('');
 }
 
-// Section 19: Local Persistence & Batch Renders (Lines 1357-1430)
+// Section 19: Local Storage Persistence (Lines 1357-1430)
 function saveLocalState() {
   try {
     localStorage.setItem('woth2_companion_state', JSON.stringify({
@@ -1161,26 +1154,50 @@ function renderAllModules() {
   bindHarvestInspectionForm();
 }
 
-// Section 20: Google Authentication & Account Binding (Lines 1432-1485)
+// Section 20: Google & Email Authentication Controller (Lines 1432-1540)
 function initAuthentication() {
   const modal = document.getElementById('authModal');
   const openBtn = document.getElementById('authModalBtn');
   const closeBtn = document.getElementById('authModalClose');
   const googleBtn = document.getElementById('googleSignInBtn');
+  const emailForm = document.getElementById('emailAuthForm');
+  const emailSignUpBtn = document.getElementById('emailSignUpBtn');
+  const authErrorMsg = document.getElementById('authErrorMsg');
   const userProfile = document.getElementById('userProfile');
   const displayName = document.getElementById('userDisplayName');
   const avatar = document.getElementById('headerUserAvatar');
   const logoutBtn = document.getElementById('logoutBtn');
 
+  const showError = (msg) => {
+    if (authErrorMsg) {
+      authErrorMsg.textContent = msg;
+      authErrorMsg.style.display = 'block';
+    }
+  };
+
+  const clearError = () => {
+    if (authErrorMsg) {
+      authErrorMsg.textContent = '';
+      authErrorMsg.style.display = 'none';
+    }
+  };
+
   if (openBtn && modal) {
-    openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+    openBtn.addEventListener('click', () => {
+      clearError();
+      modal.classList.remove('hidden');
+    });
   }
+
   if (closeBtn && modal) {
-    closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    closeBtn.addEventListener('click', () => {
+      modal.classList.add('hidden');
+      clearError();
+    });
   }
 
   if (auth) {
-    auth.onAuthStateChanged(user => {
+    auth.onAuthStateChanged((user) => {
       AppState.currentUser = user;
       if (user) {
         if (openBtn) openBtn.classList.add('hidden');
@@ -1196,19 +1213,69 @@ function initAuthentication() {
       }
     });
 
+    if (emailForm) {
+      emailForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        clearError();
+        const email = document.getElementById('authEmailInput').value.trim();
+        const pass = document.getElementById('authPasswordInput').value;
+
+        auth.signInWithEmailAndPassword(email, pass)
+          .then(() => {
+            if (modal) modal.classList.add('hidden');
+          })
+          .catch((err) => {
+            console.error("Email auth error:", err);
+            showError(err.message);
+          });
+      });
+    }
+
+    if (emailSignUpBtn) {
+      emailSignUpBtn.addEventListener('click', () => {
+        clearError();
+        const email = document.getElementById('authEmailInput').value.trim();
+        const pass = document.getElementById('authPasswordInput').value;
+
+        if (!email || !pass) {
+          showError("Enter both an email and password to create an account.");
+          return;
+        }
+
+        auth.createUserWithEmailAndPassword(email, pass)
+          .then(() => {
+            if (modal) modal.classList.add('hidden');
+          })
+          .catch((err) => {
+            console.error("Registration error:", err);
+            showError(err.message);
+          });
+      });
+    }
+
     if (googleBtn) {
       googleBtn.addEventListener('click', () => {
+        clearError();
         const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).catch(err => {
-          console.warn("Sign-in warning:", err);
-          alert("Sign-in mode bypassed. Using active guest profile.");
-          if (modal) modal.classList.add('hidden');
-        });
+        auth.signInWithPopup(provider)
+          .then(() => {
+            if (modal) modal.classList.add('hidden');
+          })
+          .catch((err) => {
+            console.error("Google sign-in error:", err);
+            if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
+              auth.signInWithRedirect(provider);
+            } else {
+              showError(err.message);
+            }
+          });
       });
     }
 
     if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => auth.signOut());
+      logoutBtn.addEventListener('click', () => {
+        auth.signOut().catch(err => console.error("Sign-out error:", err));
+      });
     }
   }
 }
