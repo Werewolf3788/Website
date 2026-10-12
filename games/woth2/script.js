@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-12 00:54 EDT | Firebase Sync Target: /utm_links | Version: 7.2.0]
+// [Smart Cache-Buster Time: 2026-10-12 01:36 EDT | Firebase Sync Target: /utm_links | Version: 7.3.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
@@ -56,18 +56,18 @@ document.addEventListener("DOMContentLoaded", () => {
     db: {},
     activeReserve: "Kilimaya Reserve",
     reserveClocks: {
-      "Kilimaya Reserve": { day: 1, time: "07:20", weather: "Clear" },
+      "Kilimaya Reserve": { day: 2, time: "09:50", weather: "Clear" },
       "Nez Perce Valley": { day: 1, time: "08:30", weather: "Clear / Morning Breeze" },
       "Tikamoon Plains": { day: 1, time: "06:00", weather: "Clear" },
       "Transylvania": { day: 1, time: "07:00", weather: "Partly Cloudy" }
     },
     
-    currentDay: 1,
-    currentTime: "07:20",
+    currentDay: 2,
+    currentTime: "09:50",
     currentWeather: "Clear",
     hunterName: "Ryder Holloway",
-    hunterLevel: 13,
-    hunterCredits: 1646,
+    hunterLevel: 14,
+    hunterCredits: 2845,
     fiveStarKills: 1,
     dogCompanionName: "Bacon",
     dogBreed: "American Foxhound",
@@ -82,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
     watchlist: [],
     psnAccountId: "",
     psnOnlineId: "",
+    userFriendCode: "",
     masterTrophies: [],
     userTrophyProgress: {},
     userChallengeProgress: {},
@@ -149,6 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
+    // Global Financial Transaction Engine
     processTransaction(amount, type, description) {
       const numericAmount = Number(amount) || 0;
       if (type === "expense" && this.hunterCredits < numericAmount) {
@@ -252,7 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try { this.reserveClocks = JSON.parse(savedClocks); } catch (e) {}
       }
 
-      const activeClock = this.reserveClocks[this.activeReserve] || { day: 1, time: "07:20", weather: "Clear" };
+      const activeClock = this.reserveClocks[this.activeReserve] || { day: 2, time: "09:50", weather: "Clear" };
       this.currentDay = activeClock.day;
       this.currentTime = activeClock.time;
       this.currentWeather = activeClock.weather;
@@ -485,7 +487,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (lvlEl) this.hunterLevel = parseInt(lvlEl.value, 10) || 1;
       if (crdEl) this.hunterCredits = parseInt(crdEl.value, 10) || 0;
       if (dayEl) this.currentDay = parseInt(dayEl.value, 10) || 1;
-      if (timeEl) this.currentTime = timeEl.value || "07:20";
+      if (timeEl) this.currentTime = timeEl.value || "09:50";
       if (weatherEl) this.currentWeather = weatherEl.value || "Clear";
       if (platEl) this.currentPlatform = platEl.value || this.currentPlatform;
 
@@ -540,6 +542,7 @@ document.addEventListener("DOMContentLoaded", () => {
             hunter_level: this.hunterLevel,
             hunter_credits: this.hunterCredits,
             five_star_kills: this.fiveStarKills,
+            friend_code: this.userFriendCode || null,
             active_reserve: this.activeReserve,
             reserve_clocks: this.reserveClocks,
             companion_day: this.currentDay,
@@ -774,17 +777,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
             this.psnAccountId = rtdbProfile.psn_account_id || this.psnAccountId || "";
             this.psnOnlineId = rtdbProfile.psn_username || this.psnOnlineId || "";
+            this.userFriendCode = rtdbProfile.friend_code || this.userFriendCode || "";
 
             if (rtdbProfile.primary_platform) {
               this.currentPlatform = rtdbProfile.primary_platform.toLowerCase();
               this.safeSetValue("platformSelect", this.currentPlatform);
             }
 
-            if (this.psnOnlineId || this.psnAccountId) {
+            const isLivePS = this.currentPlatform === "ps" && Boolean(this.psnOnlineId || this.psnAccountId);
+            if (isLivePS) {
               this.syncPlayStationTrophies(this.psnOnlineId, this.psnAccountId);
             }
 
-            this.friendsRoster = rtdbProfile.friends ? Object.values(rtdbProfile.friends) : [];
+            const rawFriends = rtdbProfile.friends || {};
+            this.friendsRoster = Object.entries(rawFriends).map(([code, fData]) => {
+              return {
+                friend_code: code,
+                username: fData.username || "Companion",
+                avatar_url: fData.avatar_url || DEFAULT_USER_AVATAR,
+                primary_platform: fData.primary_platform || "ps",
+                target_email: fData.email || fData.target_email || "",
+                linked_at: fData.linked_at || ""
+              };
+            });
+
             this.loadFriendsComparisonTelemetry();
             this.loadAllPlatformTrophyProgress();
           });
@@ -808,7 +824,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 this.hunterLevel = data.hunter_level;
                 this.safeSetValue("hunterLevelInput", this.hunterLevel);
               }
-              if (data.hunter_credits) {
+              if (data.hunter_credits !== undefined) {
                 this.hunterCredits = data.hunter_credits;
                 this.safeSetValue("hunterCreditsInput", this.hunterCredits);
               }
@@ -1018,7 +1034,8 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     toggleManualTrophy(trophyId) {
-      if (this.currentPlatform === "ps" && (this.psnOnlineId || this.psnAccountId)) {
+      const isLivePSAutomated = (this.currentPlatform === "ps") && Boolean(this.psnAccountId || this.psnOnlineId);
+      if (isLivePSAutomated) {
         return;
       }
 
@@ -1054,7 +1071,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const container = document.getElementById("trophyChamberGrid") || document.getElementById("psnTrophiesContainer");
       if (!container) return;
 
-      const total = this.masterTrophies.length || 6;
+      const total = this.masterTrophies.length || 21;
       const progressEntries = Object.values(this.userTrophyProgress);
       const earnedList = progressEntries.filter(t => t.earned);
       const earnedCount = earnedList.length;
@@ -1074,7 +1091,7 @@ document.addEventListener("DOMContentLoaded", () => {
         firstTrophyText = `🏆 First Unlocked: <strong>${firstTitle}</strong> (${dateFormatted})`;
       }
 
-      const isLivePS = this.currentPlatform === "ps" && (this.psnOnlineId || this.psnAccountId);
+      const isLivePSAutomated = (this.currentPlatform === "ps") && Boolean(this.psnAccountId || this.psnOnlineId);
       const platformName = this.currentPlatform.toUpperCase();
 
       const psTelemetry = this.crossPlatformTelemetry.ps || { earned: 0, percent: 0 };
@@ -1101,10 +1118,10 @@ document.addEventListener("DOMContentLoaded", () => {
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
             <div>
               <strong style="color:#fff; font-size:1.15rem;">
-                ${isLivePS ? `🎮 PlayStation Live Sync &bull; ${this.psnOnlineId}` : `🎯 ${platformName} Achievement Chamber`}
+                ${isLivePSAutomated ? `🎮 PlayStation Live Sync &bull; ${this.psnOnlineId || 'Connected'}` : `🎯 ${platformName} Trophy Engine (${isLivePSAutomated ? 'Auto Sync' : 'Interactive Manual Mode'})`}
               </strong>
               <div style="font-size:0.8rem; color:var(--text-muted); margin-top:3px;">
-                ${isLivePS ? `Real-time synchronization active via NPWR52231_00` : `Interactive tracking mode: Click any trophy card to mark or unmark`}
+                ${isLivePSAutomated ? `Real-time synchronization active via NPWR52231_00` : `Click any trophy card below to manually toggle progress`}
               </div>
             </div>
             <div style="text-align:right;">
@@ -1172,12 +1189,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const div = document.createElement("div");
         div.className = `telemetry-card ${isEarned ? 'trophy-card-earned' : ''}`;
         div.style.cssText = `
-          cursor: ${isLivePS ? "default" : "pointer"};
+          cursor: ${isLivePSAutomated ? "default" : "pointer"};
           border-left: 4px solid ${isEarned ? 'var(--success)' : '#273447'};
           transition: transform 0.2s ease, border-color 0.2s ease;
         `;
 
-        if (!isLivePS) {
+        if (!isLivePSAutomated) {
           div.onclick = () => window.CompanionApp.toggleManualTrophy(t.trophyId);
         }
 
@@ -1209,6 +1226,7 @@ document.addEventListener("DOMContentLoaded", () => {
           `;
         }
 
+        // Live Squad Badges for this Specific Trophy (Direct from /friends Code Lookup)
         let squadBadgesHtml = "";
         const ops = Object.values(this.teamLiveTelemetry);
         if (ops.length > 0) {
@@ -1218,7 +1236,7 @@ document.addEventListener("DOMContentLoaded", () => {
             badges += `
               <span style="font-size:10px; font-weight:700; background:${hasEarned ? 'rgba(46, 204, 113, 0.2)' : 'rgba(255,255,255,0.06)'}; border:1px solid ${hasEarned ? '#2ecc71' : '#33445b'}; color:${hasEarned ? '#2ecc71' : '#7b8c9e'}; padding:2px 6px; border-radius:3px; display:inline-flex; align-items:center; gap:4px;">
                 <img src="${op.avatar}" style="width:12px; height:12px; border-radius:50%;">
-                ${op.username}: ${hasEarned ? '✓' : '✗'}
+                ${op.friendCode || op.username}: ${hasEarned ? '✔' : '🔒'}
               </span>
             `;
           });
@@ -1260,7 +1278,7 @@ document.addEventListener("DOMContentLoaded", () => {
               ${statusBadge}
               ${isEarned && formattedTimestamp ? `<div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">Unlocked: ${formattedTimestamp}</div>` : ''}
             </div>
-            ${!isLivePS ? `<span style="font-size:0.72rem; color:var(--accent-amber);">Click to toggle</span>` : ''}
+            ${!isLivePSAutomated ? `<span style="font-size:0.72rem; color:var(--accent-amber);">Click to toggle</span>` : ''}
           </div>
         `;
         container.appendChild(div);
@@ -1281,16 +1299,15 @@ document.addEventListener("DOMContentLoaded", () => {
       this.teamLiveTelemetry = {};
 
       if (!this.friendsRoster.length) {
-        container.innerHTML = `<p style="font-size:0.82rem; color:var(--text-muted); padding:12px;">No companions linked yet. Share your 8-character Friend Code in Settings to stream live comparative telemetry.</p>`;
+        container.innerHTML = `<p style="font-size:0.82rem; color:var(--text-muted); padding:12px;">No companions linked yet. Link friend codes in Settings to stream live comparative telemetry.</p>`;
         this.renderSquadStatusPills();
         return;
       }
 
       for (const friend of this.friendsRoster) {
         const friendEmail = (friend.target_email || "").toLowerCase();
-        if (!friendEmail) continue;
-        const friendKey = getEmailKey(friendEmail);
-        const targetPlatform = (friend.platform || this.currentPlatform || "ps").toLowerCase();
+        const friendKey = friendEmail ? getEmailKey(friendEmail) : friend.friend_code;
+        const targetPlatform = (friend.primary_platform || "ps").toLowerCase();
 
         const unsub = db.collection("users")
           .doc(friendKey)
@@ -1302,7 +1319,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (snap.exists) {
               const data = snap.data();
               this.teamLiveTelemetry[friendKey] = {
-                username: friend.username || "Companion",
+                friendCode: friend.friend_code,
+                username: friend.username || data.hunter_name || "Companion",
                 avatar: friend.avatar_url || DEFAULT_USER_AVATAR,
                 platform: (data.platform || targetPlatform).toUpperCase(),
                 level: data.hunter_level || 1,
@@ -1329,7 +1347,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    // Horizontal Quick-Status Pill Bar
     renderSquadStatusPills() {
       const container = document.getElementById("squadPillsContainer");
       if (!container) return;
@@ -1363,6 +1380,7 @@ document.addEventListener("DOMContentLoaded", () => {
         pill.innerHTML = `
           <img src="${op.avatar}" style="width:20px; height:20px; border-radius:50%; object-fit:cover; border:1px solid #00d2d3;">
           <strong style="color:#fff;">${op.username}</strong>
+          <span style="color:#7b8c9e; font-size:10px;">(${op.friendCode})</span>
           <span style="color:var(--text-muted);">&bull;</span>
           <span style="color:#00a6ed; font-weight:700;">Lv.${op.level}</span>
           <span style="color:var(--text-muted);">&bull;</span>
@@ -1393,7 +1411,10 @@ document.addEventListener("DOMContentLoaded", () => {
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <div style="display:flex; align-items:center; gap:8px;">
               <img src="${c.avatar}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid #00d2d3;">
-              <strong style="color:#fff; font-size:0.95rem;">${c.username}</strong>
+              <div>
+                <strong style="color:#fff; font-size:0.95rem;">${c.username}</strong>
+                <span style="font-size:10px; color:#7b8c9e; margin-left:4px;">[${c.friendCode}]</span>
+              </div>
             </div>
             <span class="badge" style="background:#28374d; color:#00d2d3;">${c.platform}</span>
           </div>
