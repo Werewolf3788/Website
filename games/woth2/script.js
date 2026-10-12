@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-12 03:22 EDT | Firebase Sync Target: /utm_links | Version: 7.9.0]
+// [Smart Cache-Buster Time: 2026-10-12 03:54 EDT | Firebase Sync Target: /utm_links | Version: 8.2.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
@@ -56,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     db: {},
+    settingsMenuItems: [],
     activeReserve: "Kilimaya Reserve",
     reserveClocks: {
       "Kilimaya Reserve": { day: 2, time: "13:14", weather: "Partly cloudy" },
@@ -65,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "Tikamoon Plains": { day: 1, time: "06:00", weather: "Clear" },
       "Transylvania": { day: 1, time: "07:00", weather: "Partly Cloudy" }
     },
-    
+
     currentDay: 2,
     currentTime: "13:14",
     currentWeather: "Partly cloudy",
@@ -90,6 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
     masterTrophies: [],
     userTrophyProgress: {},
     userChallengeProgress: {},
+    completedMissions: {},
     unlockedSkills: {},
     restoredHazards: {},
     orderedMounts: {},
@@ -170,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       this.safeSetValue("hunterCreditsInput", this.hunterCredits);
       localStorage.setItem("woth2_credits", this.hunterCredits);
-      
+
       this.renderLodgeForecaster();
       this.renderInfrastructure();
       this.silentSaveGameTelemetry();
@@ -247,6 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       this.recalculateCrossTrophyTelemetry();
       this.renderTrophies();
+      this.checkMissionTrophyBridges();
     },
 
     loadSavedState() {
@@ -276,6 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const savedSearch = localStorage.getItem("woth2_dog_search");
       const savedTrophyProgress = localStorage.getItem("woth2_manual_trophies");
       const savedChallenges = localStorage.getItem("woth2_challenges_progress");
+      const savedMissions = localStorage.getItem("woth2_completed_missions");
       const savedSkills = localStorage.getItem("woth2_unlocked_skills");
       const savedHazards = localStorage.getItem("woth2_restored_hazards");
 
@@ -298,6 +302,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (savedChallenges) {
         try { this.userChallengeProgress = JSON.parse(savedChallenges); } catch (e) { this.userChallengeProgress = {}; }
+      }
+      if (savedMissions) {
+        try { this.completedMissions = JSON.parse(savedMissions); } catch (e) { this.completedMissions = {}; }
       }
       if (savedSkills) {
         try { this.unlockedSkills = JSON.parse(savedSkills); } catch (e) { this.unlockedSkills = {}; }
@@ -350,7 +357,10 @@ document.addEventListener("DOMContentLoaded", () => {
       this.safeSetValue("weatherConditionInput", this.currentWeather);
 
       this.populateRegions();
+      this.populateLandmarkDropdown();
       this.renderWatchlist();
+      this.renderNeedZones();
+      this.renderInfrastructure();
       this.silentSaveGameTelemetry();
     },
 
@@ -406,6 +416,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         this.recalculateCrossTrophyTelemetry();
         this.renderTrophies();
+        this.checkMissionTrophyBridges();
       });
     },
 
@@ -518,11 +529,13 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("woth2_watchlist", JSON.stringify(this.watchlist));
       localStorage.setItem("woth2_manual_trophies", JSON.stringify(this.userTrophyProgress));
       localStorage.setItem("woth2_challenges_progress", JSON.stringify(this.userChallengeProgress));
+      localStorage.setItem("woth2_completed_missions", JSON.stringify(this.completedMissions));
       localStorage.setItem("woth2_unlocked_skills", JSON.stringify(this.unlockedSkills));
       localStorage.setItem("woth2_restored_hazards", JSON.stringify(this.restoredHazards));
 
       this.recalculateCrossTrophyTelemetry();
       this.renderLodgeForecaster();
+      this.renderInfrastructure();
 
       const activeUser = auth.currentUser;
       const targetUserKey = this.currentEmailKey || (this.currentEmail ? getEmailKey(this.currentEmail) : "");
@@ -560,6 +573,7 @@ document.addEventListener("DOMContentLoaded", () => {
             trophies_percent: trophyPct,
             trophies: cleanTrophies,
             challenges: this.userChallengeProgress,
+            completed_missions: this.completedMissions,
             skills: this.unlockedSkills,
             restored_hazards: this.restoredHazards,
             dog_stats: {
@@ -590,26 +604,49 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!raw) return;
 
         const items = [];
+        const settingsRaw = [];
+
         Object.entries(raw).forEach(([parentKey, val]) => {
           if (Array.isArray(val)) {
             val.forEach((entry, idx) => {
-              if (entry) items.push(this.normalizeItem(entry, `${parentKey}_${idx}`));
+              if (entry) {
+                const normalized = this.normalizeItem(entry, `${parentKey}_${idx}`);
+                if (parentKey.toLowerCase() === "settings" || (normalized.group && normalized.group.toLowerCase() === "settings")) {
+                  settingsRaw.push(normalized);
+                } else {
+                  items.push(normalized);
+                }
+              }
             });
           } else if (typeof val === "object" && val !== null) {
             if (val.url || val.title) {
-              items.push(this.normalizeItem(val, parentKey));
+              const normalized = this.normalizeItem(val, parentKey);
+              if (parentKey.toLowerCase() === "settings" || (normalized.group && normalized.group.toLowerCase() === "settings")) {
+                settingsRaw.push(normalized);
+              } else {
+                items.push(normalized);
+              }
             } else {
               Object.entries(val).forEach(([childKey, childVal]) => {
                 if (typeof childVal === "object" && childVal !== null) {
-                  items.push(this.normalizeItem(childVal, `${parentKey}_${childKey}`));
+                  const normalized = this.normalizeItem(childVal, `${parentKey}_${childKey}`);
+                  if (parentKey.toLowerCase() === "settings" || (normalized.group && normalized.group.toLowerCase() === "settings")) {
+                    settingsRaw.push(normalized);
+                  } else {
+                    items.push(normalized);
+                  }
                 }
               });
             }
           }
         });
 
+        settingsRaw.sort((a, b) => a.rowNumber - b.rowNumber);
+        this.settingsMenuItems = settingsRaw;
+
         this.syncWoth2FaviconFallback(items, raw);
         this.renderNav(items);
+        this.renderProfileDropdown(Boolean(this.currentUser));
       });
     },
 
@@ -771,7 +808,7 @@ document.addEventListener("DOMContentLoaded", () => {
           display: flex;
           flex-direction: column;
           gap: 6px;
-          min-width: 190px;
+          min-width: 210px;
         `;
         document.body.appendChild(menu);
 
@@ -782,29 +819,48 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
-      if (isAuthenticated) {
-        menu.innerHTML = `
-          <a href="../../security/settings.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;">⚙️ Settings Hub</a>
-          <a href="../../security/privacy.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;">🔒 Privacy Policy</a>
-          <div style="height:1px; background:#273447; margin:2px 0;"></div>
-          <button id="menuLogoutBtn" style="background:transparent; border:none; color:#e74c3c; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; display:flex; align-items:center; gap:8px; font-weight:600;">🚪 Log Out</button>
-        `;
-        const logoutBtn = document.getElementById("menuLogoutBtn");
-        if (logoutBtn) logoutBtn.addEventListener("click", () => auth.signOut().then(() => window.location.reload()));
+      menu.innerHTML = "";
+
+      if (this.settingsMenuItems && this.settingsMenuItems.length > 0) {
+        this.settingsMenuItems.forEach(item => {
+          const imgTag = item.image ? `<img src="${item.image}" alt="" style="width:16px; height:16px; border-radius:3px; object-fit:cover;">` : '';
+          const a = document.createElement("a");
+          a.href = item.url;
+          a.style.cssText = "color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;";
+          a.innerHTML = `${imgTag} <span>${item.title}</span>`;
+          a.onmouseover = () => a.style.background = "#1e2838";
+          a.onmouseout = () => a.style.background = "transparent";
+          menu.appendChild(a);
+        });
       } else {
-        menu.innerHTML = `
-          <button id="menuLoginBtn" style="background:transparent; border:none; color:#0088ff; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; font-weight:600; display:flex; align-items:center; gap:8px;">🔑 Sign In / Account</button>
+        menu.innerHTML += `
           <a href="../../security/settings.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;">⚙️ Settings Hub</a>
           <a href="../../security/privacy.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;">🔒 Privacy Policy</a>
         `;
-        const loginBtn = document.getElementById("menuLoginBtn");
-        if (loginBtn) {
-          loginBtn.addEventListener("click", () => {
-            menu.classList.add("hidden");
-            const modal = document.getElementById("authModal");
-            if (modal) modal.classList.remove("hidden");
-          });
-        }
+      }
+
+      const divider = document.createElement("div");
+      divider.style.cssText = "height:1px; background:#273447; margin:4px 0;";
+      menu.appendChild(divider);
+
+      if (isAuthenticated) {
+        const logoutBtn = document.createElement("button");
+        logoutBtn.id = "menuLogoutBtn";
+        logoutBtn.style.cssText = "background:transparent; border:none; color:#e74c3c; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; display:flex; align-items:center; gap:8px; font-weight:600; width:100%;";
+        logoutBtn.innerHTML = "🚪 Log Out";
+        logoutBtn.onclick = () => auth.signOut().then(() => window.location.reload());
+        menu.appendChild(logoutBtn);
+      } else {
+        const loginBtn = document.createElement("button");
+        loginBtn.id = "menuLoginBtn";
+        loginBtn.style.cssText = "background:transparent; border:none; color:#0088ff; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; font-weight:600; display:flex; align-items:center; gap:8px; width:100%;";
+        loginBtn.innerHTML = "🔑 Sign In / Account";
+        loginBtn.onclick = () => {
+          menu.classList.add("hidden");
+          const modal = document.getElementById("authModal");
+          if (modal) modal.classList.remove("hidden");
+        };
+        menu.appendChild(loginBtn);
       }
 
       if (profileBadge) {
@@ -924,6 +980,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 this.userChallengeProgress = data.challenges;
                 this.renderChallenges();
               }
+              if (data.completed_missions) {
+                this.completedMissions = data.completed_missions;
+                this.renderMissions();
+              }
               if (data.skills) {
                 this.unlockedSkills = data.skills;
                 this.renderSkills();
@@ -960,6 +1020,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
                 this.recalculateCrossTrophyTelemetry();
                 this.renderTrophies();
+                this.checkMissionTrophyBridges();
               }
             }
           } catch (e) {
@@ -1037,6 +1098,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           this.recalculateCrossTrophyTelemetry();
           this.renderTrophies();
+          this.checkMissionTrophyBridges();
           await this.silentSaveGameTelemetry();
         }
       });
@@ -1073,6 +1135,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       this.recalculateCrossTrophyTelemetry();
       this.renderTrophies();
+      this.checkMissionTrophyBridges();
       this.silentSaveGameTelemetry();
     },
 
@@ -1161,7 +1224,6 @@ document.addEventListener("DOMContentLoaded", () => {
             <div style="width:${progressPercent}%; height:100%; background:linear-gradient(90deg, #0088ff, #2ecc71); border-radius:5px; transition: width 0.4s ease;"></div>
           </div>
 
-          <!-- Cross-Platform Trophy Telemetry Deck -->
           <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:6px; background:rgba(0,0,0,0.3); padding:10px 12px; border-radius:8px; border:1px solid #1c2738;">
             <div style="display:flex; flex-direction:column; gap:4px;">
               <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
@@ -1252,7 +1314,6 @@ document.addEventListener("DOMContentLoaded", () => {
           `;
         }
 
-        // Live Squad Badges for this Specific Trophy (STRICT: Only render if companion has earned === true)
         let squadBadgesHtml = "";
         const ops = Object.values(this.teamLiveTelemetry);
         if (ops.length > 0) {
@@ -1260,10 +1321,11 @@ document.addEventListener("DOMContentLoaded", () => {
           ops.forEach(op => {
             const hasEarned = this.isTrophyEarnedByCompanion(op, t.trophyId);
             if (hasEarned) {
+              const displayName = op.username || op.friendCode || "Friend";
               badges += `
                 <span style="font-size:10px; font-weight:700; background:rgba(46, 204, 113, 0.2); border:1px solid #2ecc71; color:#2ecc71; padding:2px 6px; border-radius:3px; display:inline-flex; align-items:center; gap:4px;">
                   <img src="${op.avatar}" style="width:12px; height:12px; border-radius:50%; object-fit:cover;">
-                  ${op.friendCode || op.username}: ✔
+                  ${displayName}: ✔
                 </span>
               `;
             }
@@ -1356,6 +1418,16 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!targetKey) targetKey = friendCode;
         const targetPlatform = (friend.primary_platform || "ps").toLowerCase();
 
+        rtdb.ref(`/users/${targetKey}/username`).on("value", uSnap => {
+          const liveName = uSnap.val();
+          if (liveName && this.teamLiveTelemetry[targetKey]) {
+            this.teamLiveTelemetry[targetKey].username = liveName;
+            this.renderFriendsComparison();
+            this.renderSquadStatusPills();
+            this.renderTrophies();
+          }
+        });
+
         const unsub = db.collection("users")
           .doc(targetKey)
           .collection("platform")
@@ -1385,7 +1457,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 dogStats: data.dog_stats || null
               };
 
-              // Hook into companion's live RTDB trophy feed using psn_trophy_schema structure
               const companionPsn = data.psn_online_id || friend.username;
               if (companionPsn && targetPlatform === "ps") {
                 rtdb.ref(`/psn/gamertags/${companionPsn}/liveTrophyProgress/${this.titleId}`).on("value", psSnap => {
@@ -1472,10 +1543,10 @@ document.addEventListener("DOMContentLoaded", () => {
           cursor: pointer;
           transition: transform 0.2s ease, border-color 0.2s ease;
         `;
+        const displayName = op.username || op.friendCode || "Squad Mate";
         pill.innerHTML = `
           <img src="${op.avatar}" style="width:20px; height:20px; border-radius:50%; object-fit:cover; border:1px solid #00d2d3;">
-          <strong style="color:#fff;">${op.username}</strong>
-          <span style="color:#7b8c9e; font-size:10px;">(${op.friendCode})</span>
+          <strong style="color:#fff;">${displayName}</strong>
           <span style="color:var(--text-muted);">&bull;</span>
           <span style="color:#00a6ed; font-weight:700;">Lv.${op.level}</span>
           <span style="color:var(--text-muted);">&bull;</span>
@@ -1502,12 +1573,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const div = document.createElement("div");
         div.className = "telemetry-card";
         div.style.borderLeft = "3px solid #00d2d3";
+        const displayName = c.username || c.friendCode || "Companion";
         div.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <div style="display:flex; align-items:center; gap:8px;">
               <img src="${c.avatar}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid #00d2d3;">
               <div>
-                <strong style="color:#fff; font-size:0.95rem;">${c.username}</strong>
+                <strong style="color:#fff; font-size:0.95rem;">${displayName}</strong>
                 <span style="font-size:10px; color:#7b8c9e; margin-left:4px;">[${c.friendCode}]</span>
               </div>
             </div>
@@ -1539,6 +1611,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initDynamicFeatures() {
       this.populateRegions();
+      this.populateLandmarkDropdown();
       this.filterSpeciesByRegion("harvestLocationSelect", "harvestSpeciesSelect");
       this.filterSpeciesByRegion("watchRegionSelect", "watchSpeciesSelect");
 
@@ -1601,7 +1674,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
           <div class="card-footer-row" style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px;">
             <span style="font-size:0.75rem; color:var(--text-muted);">Current: <strong>$${this.hunterCredits}</strong> | Lv. <strong>${this.hunterLevel}</strong></span>
-            <button type="button" class="btn-link" style="color:${(canAfford && isLevelUnlocked) ? 'var(--accent-gold)' : 'var(--text-muted)'}; font-weight:700; cursor:${(canAfford && isLevelUnlocked) ? 'pointer' : 'not-allowed'};" 
+            <button type="button" class="btn-link" style="color:${(canAfford && isLevelUnlocked) ? 'var(--accent-gold)' : 'var(--text-muted)'}; font-weight:700; cursor:${(canAfford && isLevelUnlocked) ? 'pointer' : 'not-allowed'};"
               onclick="window.CompanionApp.purchaseLodgeItem('${item.id}', ${item.cost}, ${item.requiredLevel})">
               ${(canAfford && isLevelUnlocked) ? "Acquire" : "Unavailable"}
             </button>
@@ -1616,7 +1689,7 @@ document.addEventListener("DOMContentLoaded", () => {
         alert(`🔒 Requisition locked. You need ${requiredLevel - this.hunterLevel} more level(s) to unlock this item.`);
         return;
       }
-      
+
       const success = this.processTransaction(cost, "expense", "Lodge Requisition");
       if (success) {
         alert(`✅ Requisition approved! Purchased item for $${cost}. Remaining balance: $${this.hunterCredits} credits.`);
@@ -1647,6 +1720,65 @@ document.addEventListener("DOMContentLoaded", () => {
           watchRegionSelect.appendChild(opt2);
         }
       });
+    },
+
+    populateLandmarkDropdown() {
+      const watchRegionSelect = document.getElementById("watchRegionSelect");
+      const landmarkContainer = document.getElementById("watchLandmarkContainer");
+      const legacyInput = document.getElementById("watchLandmark");
+      if (!watchRegionSelect) return;
+
+      const activeRegion = watchRegionSelect.value;
+      const clusters = (this.db.needZones && this.db.needZones.clusters) ? this.db.needZones.clusters : [];
+
+      const mappedLandmarks = new Set();
+      clusters.forEach(c => {
+        const matchesReserve = !c.reserve || c.reserve === this.activeReserve;
+        const matchesRegion = !c.region || c.region === activeRegion;
+        if (matchesReserve && matchesRegion && Array.isArray(c.zones)) {
+          c.zones.forEach(z => {
+            if (z.landmark) mappedLandmarks.add(z.landmark);
+          });
+        }
+      });
+
+      let select = document.getElementById("watchLandmarkSelect");
+      if (!select) {
+        select = document.createElement("select");
+        select.id = "watchLandmarkSelect";
+        select.style.marginBottom = "6px";
+        if (legacyInput && legacyInput.parentNode) {
+          legacyInput.parentNode.insertBefore(select, legacyInput);
+          legacyInput.placeholder = "Or type custom landmark here...";
+        }
+      }
+
+      select.innerHTML = '<option value="">-- Select Mapped Need Zone Landmark --</option>';
+      mappedLandmarks.forEach(lm => {
+        const opt = document.createElement("option");
+        opt.value = lm;
+        opt.textContent = lm;
+        select.appendChild(opt);
+      });
+
+      const customOpt = document.createElement("option");
+      customOpt.value = "__custom__";
+      customOpt.textContent = "+ Enter Custom Landmark from Map...";
+      select.appendChild(customOpt);
+
+      select.onchange = () => {
+        if (select.value === "__custom__") {
+          if (legacyInput) {
+            legacyInput.classList.remove("hidden");
+            legacyInput.focus();
+          }
+        } else {
+          if (legacyInput) {
+            legacyInput.value = select.value;
+            if (select.value) legacyInput.classList.add("hidden");
+          }
+        }
+      };
     },
 
     filterSpeciesByRegion(regionSelectId, speciesSelectId) {
@@ -1686,40 +1818,68 @@ document.addEventListener("DOMContentLoaded", () => {
       const speciesEl = document.getElementById("harvestSpeciesSelect");
       if (!container || !speciesEl || !speciesEl.value) return;
 
-      const selectedSpecies = speciesEl.value.toLowerCase();
-      let category = "Antlers";
-      let fields = [
-        { id: "main_beam", label: "Main Beam", unit: "in", ph: "24.5" },
-        { id: "inside_spread", label: "Inside Spread", unit: "in", ph: "18.2" },
-        { id: "points_count", label: "Total Points", unit: "count", ph: "10" }
-      ];
+      const speciesName = speciesEl.value;
+      const allSpecies = (this.db.species && this.db.species.species) ? this.db.species.species : [];
+      const specData = allSpecies.find(s => s.name.toLowerCase() === speciesName.toLowerCase()) || {};
+      const schemas = (this.db.harvestSchemas && this.db.harvestSchemas.schemas) ? this.db.harvestSchemas.schemas : {};
 
-      if (selectedSpecies.includes("warthog") || selectedSpecies.includes("boar") || selectedSpecies.includes("pig")) {
+      let category = "Weight Specimen";
+      let fields = [{ id: "body_weight", label: "Body Weight", unit: "lbs", ph: "4.5" }];
+      let defaultWeight = 4.5;
+      let defaultWaste = 1.2;
+      let defaultDressed = 3.3;
+
+      const lowName = speciesName.toLowerCase();
+      if (lowName.includes("hare") || lowName.includes("rabbit") || lowName.includes("duck") || lowName.includes("pheasant") || lowName.includes("grouse")) {
+        category = "Small Game (Weight Only)";
+        defaultWeight = 4.2;
+        defaultWaste = 1.1;
+        defaultDressed = 3.1;
+        fields = [{ id: "body_weight", label: "Specimen Weight", unit: "lbs", ph: "4.2" }];
+      } else if (lowName.includes("warthog") || lowName.includes("boar") || lowName.includes("pig")) {
         category = "Suid Tusks";
+        defaultWeight = 195.0;
+        defaultWaste = 68.0;
+        defaultDressed = 127.0;
         fields = [
           { id: "main_beam_tusks", label: "Length of main beam", unit: "in", ph: "26" },
           { id: "circ_at_base", label: "Circumference at base", unit: "in", ph: "4" }
         ];
-      } else if (selectedSpecies.includes("lion") || selectedSpecies.includes("bear") || selectedSpecies.includes("wolf") || selectedSpecies.includes("badger") || selectedSpecies.includes("wolverine")) {
+      } else if (lowName.includes("lion") || lowName.includes("bear") || lowName.includes("wolf") || lowName.includes("badger") || lowName.includes("cougar")) {
         category = "Predator Skull";
+        defaultWeight = lowName.includes("bear") ? 640.0 : (lowName.includes("lion") ? 420.0 : 95.0);
+        defaultWaste = defaultWeight * 0.35;
+        defaultDressed = defaultWeight * 0.65;
         fields = [
           { id: "skull_length", label: "Skull length", unit: "in", ph: "15" },
           { id: "skull_width", label: "Skull width", unit: "in", ph: "10" },
-          { id: "body_weight", label: "Body Weight", unit: "lbs", ph: "571.9" }
+          { id: "body_weight", label: "Body Weight", unit: "lbs", ph: String(defaultWeight) }
         ];
-      } else if (selectedSpecies.includes("sheep") || selectedSpecies.includes("kudu") || selectedSpecies.includes("buffalo") || selectedSpecies.includes("wildebeest")) {
+      } else if (lowName.includes("elk") || lowName.includes("deer") || lowName.includes("moose") || lowName.includes("caribou")) {
+        category = "Antlers";
+        defaultWeight = lowName.includes("moose") ? 980.0 : (lowName.includes("elk") ? 680.0 : 180.0);
+        defaultWaste = defaultWeight * 0.4;
+        defaultDressed = defaultWeight * 0.6;
+        fields = [
+          { id: "main_beam", label: "Main Beam", unit: "in", ph: "38.5" },
+          { id: "inside_spread", label: "Inside Spread", unit: "in", ph: "28.0" },
+          { id: "points_count", label: "Total Points", unit: "count", ph: "12" }
+        ];
+      } else if (lowName.includes("sheep") || lowName.includes("bison") || lowName.includes("buffalo") || lowName.includes("kudu") || lowName.includes("wildebeest")) {
         category = "Horns (Bovidae)";
+        defaultWeight = lowName.includes("bison") ? 1450.0 : (lowName.includes("buffalo") ? 1320.0 : 480.0);
+        defaultWaste = defaultWeight * 0.42;
+        defaultDressed = defaultWeight * 0.58;
         fields = [
-          { id: "horn_length", label: "Horn Length", unit: "in", ph: "36.8" },
-          { id: "base_circ", label: "Base Circumference", unit: "in", ph: "14.2" },
-          { id: "curl_spread", label: "Tip Spread", unit: "in", ph: "22.0" }
-        ];
-      } else if (selectedSpecies.includes("zebra") || selectedSpecies.includes("hare") || selectedSpecies.includes("ostrich") || selectedSpecies.includes("duck")) {
-        category = "Weight Specimen";
-        fields = [
-          { id: "body_weight", label: "Total Body Weight", unit: "lbs", ph: "881.8" }
+          { id: "horn_length", label: "Horn Length", unit: "in", ph: "34.5" },
+          { id: "base_circ", label: "Base Circumference", unit: "in", ph: "15.0" },
+          { id: "tip_spread", label: "Tip Spread", unit: "in", ph: "24.0" }
         ];
       }
+
+      this.safeSetValue("harvestRawWeight", defaultWeight.toFixed(1));
+      this.safeSetValue("harvestWaste", defaultWaste.toFixed(1));
+      this.safeSetValue("harvestDressedWeight", defaultDressed.toFixed(1));
 
       container.innerHTML = `<span style="grid-column: 1/-1; font-size: 0.76rem; color: var(--accent-amber); font-weight: 700;">Active Harvest Scoring: ${category}</span>`;
 
@@ -1737,12 +1897,18 @@ document.addEventListener("DOMContentLoaded", () => {
     updateWatchlistMaxAge() {
       const speciesEl = document.getElementById("watchSpeciesSelect");
       const maxAgeEl = document.getElementById("watchMaxAge");
+      const ageEl = document.getElementById("watchAge");
       if (!speciesEl || !maxAgeEl || !speciesEl.value) return;
 
       const selectedSpecies = speciesEl.value;
       const lifecycles = (this.db.lifecycles && this.db.lifecycles.species_lifecycles) ? this.db.lifecycles.species_lifecycles : [];
       const match = lifecycles.find(l => l.species.toLowerCase() === selectedSpecies.toLowerCase());
-      maxAgeEl.value = match ? match.max_age_years : 15;
+
+      const maxAge = match ? match.max_age_years : 15;
+      maxAgeEl.value = maxAge;
+      if (ageEl && (parseInt(ageEl.value, 10) >= maxAge || !ageEl.value)) {
+        ageEl.value = Math.max(1, Math.floor(maxAge * 0.75));
+      }
     },
 
     saveWatchlistEntry() {
@@ -1750,14 +1916,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const tag = document.getElementById("watchIdentifier") ? document.getElementById("watchIdentifier").value.trim() : "";
       const species = document.getElementById("watchSpeciesSelect") ? document.getElementById("watchSpeciesSelect").value : "";
       const region = document.getElementById("watchRegionSelect") ? document.getElementById("watchRegionSelect").value : "";
-      const landmark = document.getElementById("watchLandmark") ? document.getElementById("watchLandmark").value.trim() : "";
+      const selectLandmark = document.getElementById("watchLandmarkSelect") ? document.getElementById("watchLandmarkSelect").value : "";
+      const manualLandmark = document.getElementById("watchLandmark") ? document.getElementById("watchLandmark").value.trim() : "";
+      const landmark = (selectLandmark && selectLandmark !== "__custom__") ? selectLandmark : manualLandmark;
+
       const fitness = document.getElementById("watchFitness") ? parseFloat(document.getElementById("watchFitness").value) : NaN;
       const age = document.getElementById("watchAge") ? parseInt(document.getElementById("watchAge").value, 10) : NaN;
       const maxAge = document.getElementById("watchMaxAge") ? parseInt(document.getElementById("watchMaxAge").value, 10) : 15;
       const stars = document.getElementById("watchStars") ? parseInt(document.getElementById("watchStars").value, 10) : 1;
 
       if (!tag || isNaN(fitness) || isNaN(age) || !landmark) {
-        return alert("Please enter the animal identifier, fitness %, age, and need zone landmark.");
+        return alert("Please enter the animal identifier, fitness %, age, and select or type a need zone landmark.");
       }
 
       const activeClock = this.reserveClocks[this.activeReserve] || { day: this.currentDay };
@@ -1786,6 +1955,8 @@ document.addEventListener("DOMContentLoaded", () => {
       this.safeSetValue("watchFitness", "");
       this.safeSetValue("watchAge", "12");
       this.safeSetValue("watchLandmark", "");
+      const selectLandmark = document.getElementById("watchLandmarkSelect");
+      if (selectLandmark) selectLandmark.value = "";
       this.safeSetText("watchlistFormHeader", "Add Live Animal to Watchlist");
       this.safeSetText("saveWatchlistBtn", "Add to Watchlist");
       const cancelBtn = document.getElementById("cancelEditWatchlistBtn");
@@ -1799,9 +1970,26 @@ document.addEventListener("DOMContentLoaded", () => {
       this.safeSetValue("editWatchlistId", item.id);
       this.safeSetValue("watchIdentifier", item.tag);
       this.safeSetValue("watchRegionSelect", item.region || "Kaggen Karoo");
+      this.populateLandmarkDropdown();
       this.filterSpeciesByRegion("watchRegionSelect", "watchSpeciesSelect");
       this.safeSetValue("watchSpeciesSelect", item.species);
-      this.safeSetValue("watchLandmark", item.landmark || "");
+
+      const selectLandmark = document.getElementById("watchLandmarkSelect");
+      const manualInput = document.getElementById("watchLandmark");
+      if (selectLandmark) {
+        selectLandmark.value = item.landmark || "";
+        if (!selectLandmark.value && item.landmark) {
+          selectLandmark.value = "__custom__";
+          if (manualInput) {
+            manualInput.classList.remove("hidden");
+            manualInput.value = item.landmark;
+          }
+        } else if (manualInput) {
+          manualInput.value = item.landmark;
+          manualInput.classList.add("hidden");
+        }
+      }
+
       this.safeSetValue("watchFitness", item.fitness);
       this.safeSetValue("watchAge", item.age);
       this.safeSetValue("watchMaxAge", item.maxAge);
@@ -1970,7 +2158,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!this.db.gameData.harvest_records) this.db.gameData.harvest_records = [];
 
       this.db.gameData.harvest_records.unshift(newRecord);
-      
+
       this.processTransaction(sellPrice, "income", `Harvest Sale: ${species}`);
       this.renderHarvestHistory();
       alert(`✅ Harvest logged! Added $${sellPrice} credits to wallet.`);
@@ -2077,43 +2265,104 @@ document.addEventListener("DOMContentLoaded", () => {
       tasks.forEach(t => {
         const isRestored = Boolean(this.restoredHazards[t.id]);
         const canAfford = this.hunterCredits >= t.cost;
+        const balanceAfter = this.hunterCredits - t.cost;
+        const deficit = t.cost - this.hunterCredits;
+
+        let bannerClass = isRestored ? "banner-balanced" : (canAfford ? "banner-breeder" : "banner-cull");
+        let bannerText = isRestored
+          ? "✅ HABITAT REMEDIATED: Regional animal fitness penalty lifted."
+          : (canAfford
+              ? `Balance After Remediation: $${balanceAfter} credits ($${this.hunterCredits} - $${t.cost})`
+              : `Deficit: Need $${deficit} more credits (Have $${this.hunterCredits} / Need $${t.cost})`);
+
         const div = document.createElement("div");
-        div.className = "info-box";
+        div.className = "telemetry-card";
         div.style.borderLeft = isRestored ? "4px solid #2ecc71" : (canAfford ? "4px solid var(--accent-gold)" : "4px solid #e74c3c");
 
         div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="color:#fff;">${t.type}: ${t.name || t.location}</strong>
-            <span class="badge" style="background:#28374d; color:var(--accent-gold);">$${t.cost}</span>
+          <div>
+            <div class="card-top-row">
+              <span class="animal-title">${t.type || 'Enhancement'}: ${t.name || t.location}</span>
+              <span class="badge" style="background:#28374d; color:var(--accent-gold); font-weight:700;">$${t.cost}</span>
+            </div>
+            <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
+              Region: <strong>${t.location}</strong> &bull; Priority: <strong>${t.impact || 'High'}</strong>
+            </div>
+            <p style="font-size:0.8rem; color:#cfd9e8; margin-top:5px; line-height:1.35;">${t.description || 'Remediate dry lakes and hazards to lift breeding penalties.'}</p>
+            <div class="action-banner ${bannerClass}" style="margin-top:8px;">
+              ${bannerText}
+            </div>
           </div>
-          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">
-            Region: <strong>${t.location}</strong> &bull; Impact: <strong>${t.impact || 'High'}</strong>
-          </div>
-          <p style="font-size:0.78rem; color:#cfd9e8; margin-top:4px;">${t.description || 'Remediate habitat to lift animal fitness penalties.'}</p>
-          <div class="card-footer-row" style="margin-top:8px; border-top:1px solid rgba(255,255,255,0.06); padding-top:6px;">
-            <span style="font-size:0.75rem; color:${isRestored ? '#2ecc71' : 'var(--text-muted)'}; font-weight:700;">
-              ${isRestored ? '✅ HABITAT REMEDIATED' : `Cleanup Cost: $${t.cost}`}
-            </span>
+          <div class="card-footer-row" style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px;">
+            <span style="font-size:0.75rem; color:var(--text-muted);">Current: <strong>$${this.hunterCredits}</strong> credits</span>
             ${!isRestored ? `
               <button type="button" class="btn-link" style="color:${canAfford ? 'var(--accent-gold)' : 'var(--text-muted)'}; font-weight:700; cursor:${canAfford ? 'pointer' : 'not-allowed'};"
-                onclick="window.CompanionApp.remediateHabitat('${t.id}',${t.cost})">
-                ${canAfford ? 'Fund Cleanup' : 'Need Credits'}
+                onclick="window.CompanionApp.remediateHabitat('${t.id}', ${t.cost}, '${t.name || t.location}')">
+                ${canAfford ? 'Fund & Remediate' : 'Need Credits'}
               </button>
-            ` : ''}
+            ` : `
+              <span style="font-size:0.75rem; color:#2ecc71; font-weight:700;">Restored</span>
+            `}
           </div>
         `;
         container.appendChild(div);
       });
     },
 
-    remediateHabitat(hazardId, cost) {
-      const success = this.processTransaction(cost, "expense", `Habitat Remediation: ${hazardId}`);
+    remediateHabitat(hazardId, cost, label) {
+      const success = this.processTransaction(cost, "expense", `Habitat Remediation: ${label}`);
       if (success) {
         this.restoredHazards[hazardId] = true;
         localStorage.setItem("woth2_restored_hazards", JSON.stringify(this.restoredHazards));
         this.renderInfrastructure();
-        alert(`✅ Habitat restored! Penalties lifted. Remaining balance: $${this.hunterCredits} credits.`);
+        alert(`✅ Habitat restored! Penalties lifted on ${label}. Remaining balance: $${this.hunterCredits} credits.`);
       }
+    },
+
+    checkMissionTrophyBridges() {
+      const list = (this.db.missions && this.db.missions.missions) ? this.db.missions.missions : [];
+      let updated = false;
+
+      list.forEach(m => {
+        if (m.trophyBridgeId && !this.completedMissions[m.id]) {
+          const tState = this.userTrophyProgress[String(m.trophyBridgeId)];
+          if (tState && tState.earned) {
+            this.completedMissions[m.id] = {
+              completed: true,
+              autoCompleted: true,
+              date: tState.timestamp || new Date().toISOString()
+            };
+            updated = true;
+          }
+        }
+      });
+
+      if (updated) {
+        localStorage.setItem("woth2_completed_missions", JSON.stringify(this.completedMissions));
+        this.renderMissions();
+      }
+    },
+
+    toggleMissionComplete(missionId, moneyReward, xpReward, missionName) {
+      const mId = String(missionId);
+      const isDone = Boolean(this.completedMissions[mId] && this.completedMissions[mId].completed);
+
+      if (isDone) {
+        delete this.completedMissions[mId];
+      } else {
+        this.completedMissions[mId] = {
+          completed: true,
+          autoCompleted: false,
+          date: new Date().toISOString()
+        };
+        if (moneyReward > 0) {
+          this.processTransaction(moneyReward, "income", `Mission Complete: ${missionName}`);
+        }
+      }
+
+      localStorage.setItem("woth2_completed_missions", JSON.stringify(this.completedMissions));
+      this.renderMissions();
+      this.silentSaveGameTelemetry();
     },
 
     renderMissions() {
@@ -2125,19 +2374,36 @@ document.addEventListener("DOMContentLoaded", () => {
       container.innerHTML = "";
 
       list.forEach(m => {
+        const mState = this.completedMissions[m.id] || {};
+        const isDone = Boolean(mState.completed);
         const div = document.createElement("div");
-        div.className = "info-box";
+        div.className = "telemetry-card";
+        div.style.borderLeft = isDone ? "4px solid #2ecc71" : "4px solid var(--accent-amber)";
+
         div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="color:#fff;">${m.name}</strong>
-            <span class="badge">${m.source || 'Story'}</span>
+          <div>
+            <div class="card-top-row">
+              <span class="animal-title">${m.name}</span>
+              <span class="badge" style="background:${isDone ? '#2ecc71' : '#28374d'}; color:${isDone ? '#000' : 'var(--accent-gold)'}; font-weight:700;">
+                ${isDone ? 'COMPLETED' : (m.source || 'Story Assignment')}
+              </span>
+            </div>
+            <p style="font-size:0.8rem; color:#cfd9e8; margin-top:5px; line-height:1.35;">${m.description || ''}</p>
+            <ul style="font-size:0.78rem; color:var(--text-muted); padding-left:18px; margin-top:6px; line-height:1.35;">
+              ${m.objectives ? m.objectives.map(o => `<li>${o}</li>`).join("") : ''}
+            </ul>
+            <div style="font-size:0.78rem; color:var(--accent-amber); margin-top:8px;">
+              Rewards: <strong>${m.money ? `$${m.money} Credits` : 'None'}</strong> ${m.xp ? `&bull; <strong>${m.xp} XP</strong>` : ''}
+            </div>
           </div>
-          <p style="font-size:0.8rem; color:#cfd9e8; margin-top:4px;">${m.description || ''}</p>
-          <ul style="font-size:0.78rem; color:var(--text-muted); padding-left:18px; margin-top:6px;">
-            ${m.objectives ? m.objectives.map(o => `<li>${o}</li>`).join("") : ''}
-          </ul>
-          <div style="font-size:0.78rem; color:var(--accent-amber); margin-top:6px;">
-            Reward: ${m.money ? `$${m.money}` : 'XP'} ${m.xp ? `&bull; ${m.xp} XP` : ''}
+          <div class="card-footer-row" style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px;">
+            <span style="font-size:0.75rem; color:${isDone ? '#2ecc71' : 'var(--text-muted)'}; font-weight:600;">
+              ${isDone ? (mState.autoCompleted ? '✔ Auto-Completed via Game Trophy' : '✔ Completed') : 'Pending Objectives'}
+            </span>
+            <button type="button" class="btn-link" style="color:${isDone ? '#e74c3c' : 'var(--accent-gold)'}; font-weight:700;"
+              onclick="window.CompanionApp.toggleMissionComplete('${m.id}', ${m.money || 0}, ${m.xp || 0}, '${m.name}')">
+              ${isDone ? 'Mark Incomplete' : 'Mark Completed'}
+            </button>
           </div>
         `;
         container.appendChild(div);
@@ -2149,10 +2415,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!container) return;
       const clusters = (this.db.needZones && this.db.needZones.clusters) ? this.db.needZones.clusters : [];
 
-      this.safeSetText("needZoneCount", `${clusters.length} Tactical Clusters`);
-      container.innerHTML = "";
-
       const activeClusters = clusters.filter(c => !c.reserve || c.reserve === this.activeReserve);
+      this.safeSetText("needZoneCount", `${activeClusters.length} Tactical Clusters`);
+      container.innerHTML = "";
 
       activeClusters.forEach(c => {
         const div = document.createElement("div");
@@ -2170,11 +2435,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         div.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong>${c.species}</strong>
+            <strong style="color:#fff;">${c.species}</strong>
             <span class="badge">${c.region}</span>
           </div>
-          <p style="font-size:0.78rem; color:var(--text-muted);">${c.cluster_notes || ''}</p>
-          <div style="margin-top:4px;">${zonesHtml}</div>
+          <p style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">${c.cluster_notes || ''}</p>
+          <div style="margin-top:6px;">${zonesHtml}</div>
         `;
         container.appendChild(div);
       });
@@ -2371,7 +2636,7 @@ document.addEventListener("DOMContentLoaded", () => {
           e.stopPropagation();
           document.querySelectorAll(".module-item-btn").forEach(b => b.classList.remove("active"));
           document.querySelectorAll(".tab-pane").forEach(p => p.classList.remove("active"));
-          
+
           btn.classList.add("active");
           const targetTab = btn.dataset.tab;
           const targetPane = document.getElementById(`tab-${targetTab}`);
@@ -2412,6 +2677,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (lvlEl) this.hunterLevel = parseInt(lvlEl.value, 10) || 1;
             if (crdEl) this.hunterCredits = parseInt(crdEl.value, 10) || 0;
             this.renderLodgeForecaster();
+            this.renderInfrastructure();
           }
         });
 
@@ -2433,6 +2699,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const watchRegSelect = document.getElementById("watchRegionSelect");
       if (watchRegSelect) {
         watchRegSelect.addEventListener("change", () => {
+          this.populateLandmarkDropdown();
           this.filterSpeciesByRegion("watchRegionSelect", "watchSpeciesSelect");
         });
       }
