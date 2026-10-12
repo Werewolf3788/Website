@@ -1,0 +1,50 @@
+{
+  "catalog_metadata": {
+    "game": "Way of the Hunter 2",
+    "version": "2.2.0",
+    "image_base_path": "//images.ctfassets.net/woth2/"
+  },
+  "challenges": {
+    "total_challenges": 30,
+    "trees": {
+      "ambusher": { "name": "Ambusher", "challenges": [] },
+      "naturalist": { "name": "Naturalist", "challenges": [] },
+      "scout": { "name": "Scout", "challenges": [] },
+      "sharpshooter": { "name": "Sharpshooter", "challenges": [] },
+      "stalker": { "name": "Stalker", "challenges": [] }
+    }
+  },
+  "dog_skill_definitions": {
+    "max_level_cap": 6,
+    "skills": {
+      "bonding_level": { "name": "Bonding Level" },
+      "following_commands": { "name": "Following Commands", "max": 6 },
+      "blood_tracking": { "name": "Blood Tracking", "max": 6 },
+      "search_and_quartering": { "name": "Search and Quartering", "max": 6 }
+    }
+  },
+  "missions": [
+    {
+      "name": "For the Hearth",
+      "source": "Angel",
+      "objectives": ["Harvest a male Mule deer near your Lodge. Choose to taxidermy it when harvesting."]
+    }
+  ],
+  "scoring_templates": {
+    "cervid_antler": { "category": "Antlered Big Game", "fields": [] },
+    "palmate_moose": { "category": "Palmate Antlers", "fields": [] },
+    "predator_skull": { "category": "Carnivore Skull", "fields": [] }
+  },
+  "species_scoring_mapping": {
+    "Rocky Mountain mule deer": "cervid_antler",
+    "Grizzly bear": "predator_skull"
+  },
+  "gear": {
+    "firearms": {},
+    "optics": {},
+    "ammunition": {},
+    "decoys": {},
+    "calls_and_scents": {},
+    "field_equipment": {}
+  }
+}
