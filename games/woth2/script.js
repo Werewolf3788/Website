@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-12 01:36 EDT | Firebase Sync Target: /utm_links | Version: 7.3.0]
+// [Smart Cache-Buster Time: 2026-10-12 02:37 EDT | Firebase Sync Target: /utm_links | Version: 7.5.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
@@ -56,15 +56,17 @@ document.addEventListener("DOMContentLoaded", () => {
     db: {},
     activeReserve: "Kilimaya Reserve",
     reserveClocks: {
-      "Kilimaya Reserve": { day: 2, time: "09:50", weather: "Clear" },
+      "Kilimaya Reserve": { day: 2, time: "13:14", weather: "Partly cloudy" },
+      "Hearth & Hunt Estate": { day: 1, time: "11:37", weather: "Partly cloudy" },
+      "New Laurentia": { day: 1, time: "15:42", weather: "Light fog" },
       "Nez Perce Valley": { day: 1, time: "08:30", weather: "Clear / Morning Breeze" },
       "Tikamoon Plains": { day: 1, time: "06:00", weather: "Clear" },
       "Transylvania": { day: 1, time: "07:00", weather: "Partly Cloudy" }
     },
     
     currentDay: 2,
-    currentTime: "09:50",
-    currentWeather: "Clear",
+    currentTime: "13:14",
+    currentWeather: "Partly cloudy",
     hunterName: "Ryder Holloway",
     hunterLevel: 14,
     hunterCredits: 2845,
@@ -150,7 +152,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Global Financial Transaction Engine
     processTransaction(amount, type, description) {
       const numericAmount = Number(amount) || 0;
       if (type === "expense" && this.hunterCredits < numericAmount) {
@@ -254,7 +255,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try { this.reserveClocks = JSON.parse(savedClocks); } catch (e) {}
       }
 
-      const activeClock = this.reserveClocks[this.activeReserve] || { day: 2, time: "09:50", weather: "Clear" };
+      const activeClock = this.reserveClocks[this.activeReserve] || { day: 2, time: "13:14", weather: "Partly cloudy" };
       this.currentDay = activeClock.day;
       this.currentTime = activeClock.time;
       this.currentWeather = activeClock.weather;
@@ -487,8 +488,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (lvlEl) this.hunterLevel = parseInt(lvlEl.value, 10) || 1;
       if (crdEl) this.hunterCredits = parseInt(crdEl.value, 10) || 0;
       if (dayEl) this.currentDay = parseInt(dayEl.value, 10) || 1;
-      if (timeEl) this.currentTime = timeEl.value || "09:50";
-      if (weatherEl) this.currentWeather = weatherEl.value || "Clear";
+      if (timeEl) this.currentTime = timeEl.value || "13:14";
+      if (weatherEl) this.currentWeather = weatherEl.value || "Partly cloudy";
       if (platEl) this.currentPlatform = platEl.value || this.currentPlatform;
 
       this.reserveClocks[this.activeReserve] = {
@@ -792,10 +793,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const rawFriends = rtdbProfile.friends || {};
             this.friendsRoster = Object.entries(rawFriends).map(([code, fData]) => {
               return {
-                friend_code: code,
+                friend_code: fData.friend_code || code,
                 username: fData.username || "Companion",
                 avatar_url: fData.avatar_url || DEFAULT_USER_AVATAR,
-                primary_platform: fData.primary_platform || "ps",
+                primary_platform: (fData.primary_platform || "ps").toLowerCase(),
                 target_email: fData.email || fData.target_email || "",
                 linked_at: fData.linked_at || ""
               };
@@ -1226,7 +1227,7 @@ document.addEventListener("DOMContentLoaded", () => {
           `;
         }
 
-        // Live Squad Badges for this Specific Trophy (Direct from /friends Code Lookup)
+        // Live Squad Badges for this Specific Trophy (Direct from RTDB /friends Code Lookup)
         let squadBadgesHtml = "";
         const ops = Object.values(this.teamLiveTelemetry);
         if (ops.length > 0) {
@@ -1235,7 +1236,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const hasEarned = op.trophies && op.trophies[t.trophyId] && op.trophies[t.trophyId].earned;
             badges += `
               <span style="font-size:10px; font-weight:700; background:${hasEarned ? 'rgba(46, 204, 113, 0.2)' : 'rgba(255,255,255,0.06)'}; border:1px solid ${hasEarned ? '#2ecc71' : '#33445b'}; color:${hasEarned ? '#2ecc71' : '#7b8c9e'}; padding:2px 6px; border-radius:3px; display:inline-flex; align-items:center; gap:4px;">
-                <img src="${op.avatar}" style="width:12px; height:12px; border-radius:50%;">
+                <img src="${op.avatar}" style="width:12px; height:12px; border-radius:50%; object-fit:cover;">
                 ${op.friendCode || op.username}: ${hasEarned ? '✔' : '🔒'}
               </span>
             `;
@@ -1290,6 +1291,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.renderTrophies();
     },
 
+    // Resolves both target_email keys and RTDB direct user profiles by friend_code
     async loadFriendsComparisonTelemetry() {
       const container = document.getElementById("friendsComparisonContainer");
       if (!container) return;
@@ -1305,12 +1307,29 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       for (const friend of this.friendsRoster) {
-        const friendEmail = (friend.target_email || "").toLowerCase();
-        const friendKey = friendEmail ? getEmailKey(friendEmail) : friend.friend_code;
+        const friendCode = friend.friend_code;
+        let targetKey = "";
+
+        if (friend.target_email) {
+          targetKey = getEmailKey(friend.target_email);
+        } else {
+          // Dynamic lookup: scan RTDB /users for matching friend_code
+          try {
+            const usersSnap = await rtdb.ref("/users").orderByChild("friend_code").equalTo(friendCode).once("value");
+            const matchedObj = usersSnap.val();
+            if (matchedObj) {
+              targetKey = Object.keys(matchedObj)[0];
+            }
+          } catch (e) {
+            console.warn("RTDB friend code query fallback:", e);
+          }
+        }
+
+        if (!targetKey) targetKey = friendCode;
         const targetPlatform = (friend.primary_platform || "ps").toLowerCase();
 
         const unsub = db.collection("users")
-          .doc(friendKey)
+          .doc(targetKey)
           .collection("platform")
           .doc(targetPlatform)
           .collection("progress")
@@ -1318,7 +1337,7 @@ document.addEventListener("DOMContentLoaded", () => {
           .onSnapshot(snap => {
             if (snap.exists) {
               const data = snap.data();
-              this.teamLiveTelemetry[friendKey] = {
+              this.teamLiveTelemetry[targetKey] = {
                 friendCode: friend.friend_code,
                 username: friend.username || data.hunter_name || "Companion",
                 avatar: friend.avatar_url || DEFAULT_USER_AVATAR,
@@ -1336,6 +1355,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 harvestCount: data.harvest_count || 0,
                 watchlistCount: (data.watchlist && data.watchlist.length) ? data.watchlist.length : 0,
                 dogStats: data.dog_stats || null
+              };
+            } else {
+              // Graceful display fallback if companion has not pushed progress doc yet
+              this.teamLiveTelemetry[targetKey] = {
+                friendCode: friend.friend_code,
+                username: friend.username || "Companion",
+                avatar: friend.avatar_url || DEFAULT_USER_AVATAR,
+                platform: targetPlatform.toUpperCase(),
+                level: 1,
+                credits: 0,
+                fiveStarKills: 0,
+                day: 1,
+                time: "07:00",
+                weather: "Clear",
+                trophiesEarned: 0,
+                trophiesTotal: this.masterTrophies.length,
+                trophiesPct: 0,
+                trophies: {},
+                harvestCount: 0,
+                watchlistCount: 0,
+                dogStats: null
               };
             }
             this.renderFriendsComparison();
