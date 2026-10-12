@@ -1,18 +1,17 @@
 // Section 1: System Constants & Cache Busters (Lines 1-28)
-const BUILD_TIMESTAMP = '2026-10-12 05:49 EDT';
-const APP_VERSION = '7.5.1';
+const BUILD_TIMESTAMP = '2026-10-12 06:01 EDT';
+const APP_VERSION = '7.5.2';
 const FIREBASE_SYNC_TARGET = '/utm_links';
 const CACHE_NAME = 'woth2-tactical-cache-' + BUILD_TIMESTAMP;
 
-// Section 2: Firebase Client Initialization (Lines 30-60)
-// To connect directly to your live Google authentication and RTDB, 
-// populate apiKey with your web application key from the Firebase Console.
+// Section 2: Firebase Client Initialization (Lines 30-58)
+// Configured to match your active host origin (playstation-be936)
 const firebaseConfig = {
   apiKey: "AIzaSyDummyKeyForFallbackConfigWOTH2",
-  authDomain: "entertainment-71888.firebaseapp.com",
+  authDomain: "playstation-be936.firebaseapp.com",
   databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
-  projectId: "entertainment-71888",
-  storageBucket: "entertainment-71888.appspot.com",
+  projectId: "playstation-be936",
+  storageBucket: "playstation-be936.appspot.com",
   messagingSenderId: "1234567890",
   appId: "1:1234567890:web:abcdef123456"
 };
@@ -28,7 +27,7 @@ if (!firebase.apps.length) {
 const rtdb = firebase.database ? firebase.database() : null;
 const auth = firebase.auth ? firebase.auth() : null;
 
-// Section 3: Master Tactical State Store (Lines 62-115)
+// Section 3: Master Tactical State Store (Lines 60-115)
 const AppState = {
   currentReserve: "New Laurentia",
   currentPlatform: "ps",
@@ -133,7 +132,7 @@ const defaultTrophies = [
   { id: "trophy_05", title: "Old Bones", description: "Track down and cull an animal within 1 in-game year of its maximum lifespan.", earned: true, group: "Management", icon: "⏳" }
 ];
 
-// Section 5: Startup Sequence (Lines 272-355)
+// Section 5: DOM Startup (Lines 272-355)
 document.addEventListener('DOMContentLoaded', () => {
   initDateStamp();
   bindOperationsBarInputs();
@@ -174,6 +173,7 @@ function initDynamicNavbar() {
     return;
   }
 
+  // Fetch brand logo
   try {
     rtdb.ref('/utm_links/Settings/0/image').on('value', (snap) => {
       const imgVal = snap.val();
@@ -196,6 +196,7 @@ function initDynamicNavbar() {
     console.warn("Logo binding error:", err);
   }
 
+  // Fetch navbar items
   try {
     rtdb.ref(FIREBASE_SYNC_TARGET).on('value', (snapshot) => {
       if (statusBadge) {
@@ -205,7 +206,7 @@ function initDynamicNavbar() {
 
       const data = snapshot.val();
       if (!data || typeof data !== 'object' || Object.keys(data).length === 0) {
-        console.warn("Firebase snapshot empty or null. Preserving local fallback state.");
+        console.warn("Firebase snapshot empty. Preserving local fallback state.");
         const localCachedNav = localStorage.getItem('cached_utm_links');
         if (localCachedNav) {
           try { renderParsedNavbar(JSON.parse(localCachedNav), navList); return; } catch(e){}
@@ -237,7 +238,7 @@ function initDynamicNavbar() {
   }
 }
 
-// Section 8: Dynamic Navbar Rendering Engine (Lines 472-560)
+// Section 8: Navbar Programmatic Sorting & DOM Construction (Lines 472-560)
 function renderParsedNavbar(data, container) {
   if (!container) return;
   container.innerHTML = '';
@@ -336,12 +337,6 @@ function renderFallbackNavbar(container) {
         <span>Hub Home</span>
       </a>
     </li>
-    <li class="nav-item">
-      <a href="https://streamelements.com/werewolf3788/tip" class="nav-pill" target="_blank" rel="noopener noreferrer">
-        <img src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" class="nav-thumb">
-        <span>Developer Support</span>
-      </a>
-    </li>
   `;
 }
 
@@ -410,7 +405,7 @@ function switchModuleTab(tabId) {
   }
 }
 
-// Section 10: Operations Bar Binding (Lines 622-710)
+// Section 10: Operations Bar State Binding (Lines 622-710)
 function bindOperationsBarInputs() {
   const reserveSelect = document.getElementById('currentReserveSelect');
   const platformSelect = document.getElementById('platformSelect');
@@ -683,19 +678,14 @@ function filterSpeciesByCurrentReserve() {
     ? AppState.dataSets.species
     : defaultSpeciesData;
 
-  const reserveSpecies = speciesList.filter(s => {
-    if (!s.regions || s.regions.length === 0) return true;
-    return true;
-  });
-
   if (speciesSelect) {
-    speciesSelect.innerHTML = reserveSpecies.map(s => `
+    speciesSelect.innerHTML = speciesList.map(s => `
       <option value="${s.id}">${s.name} (Tier ${s.tier})</option>
     `).join('');
   }
 
   if (watchSpeciesSelect) {
-    watchSpeciesSelect.innerHTML = reserveSpecies.map(s => `
+    watchSpeciesSelect.innerHTML = speciesList.map(s => `
       <option value="${s.id}" data-max-age="${s.tier >= 7 ? 18 : 12}">${s.name}</option>
     `).join('');
   }
@@ -752,7 +742,7 @@ function renderSpeciesCatalog() {
   }).join('');
 }
 
-// Section 15: Watchlist Actions & Biological Aging Engine (Lines 1012-1110)
+// Section 15: Watchlist Management & Biological Aging Engine (Lines 1012-1110)
 function bindWatchlistActions() {
   const saveBtn = document.getElementById('saveWatchlistBtn');
   const cancelBtn = document.getElementById('cancelEditWatchlistBtn');
@@ -1154,7 +1144,7 @@ function renderAllModules() {
   bindHarvestInspectionForm();
 }
 
-// Section 20: Google & Email Authentication Controller (Lines 1432-1540)
+// Section 20: Google & Email Authentication Controller (Lines 1432-1545)
 function initAuthentication() {
   const modal = document.getElementById('authModal');
   const openBtn = document.getElementById('authModalBtn');
