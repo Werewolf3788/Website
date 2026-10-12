@@ -1,235 +1,519 @@
 {
+  "version": "1.0.0",
   "reserve": "New Laurentia",
   "total_missions": 33,
   "missions": [
     {
+      "id": "mission_for_the_hearth",
       "name": "For the Hearth",
+      "category": "Story",
       "source": "Angel",
-      "objectives": ["Harvest a male Mule deer near your Lodge. Choose to taxidermy it when harvesting."],
+      "giver": "Angel",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a male Mule deer near your Lodge. Choose to taxidermy it when harvesting."
+      ],
+      "target_species": "Rocky Mountain mule deer",
+      "gender_requirement": "Male",
       "money": null,
       "xp": null
     },
     {
+      "id": "mission_for_the_hunt",
       "name": "For the Hunt",
+      "category": "Story",
       "source": "Angel",
-      "objectives": ["Place a male Mule deer in a diorama with a mid-sized herbivore in your lodge.", "Take a look at your surroundings at a Map board in the Lodge."],
+      "giver": "Angel",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Place a male Mule deer in a diorama with a mid-sized herbivore in your lodge.",
+        "Take a look at your surroundings at a Map board in the Lodge."
+      ],
+      "target_species": "Rocky Mountain mule deer",
+      "gender_requirement": "Male",
       "money": null,
       "xp": null
     },
     {
+      "id": "mission_angel_on_your_shoulder",
       "name": "Angel on your shoulder",
+      "category": "Story",
       "source": "Angel",
-      "objectives": ["Check out the Hearth & Hunt files on the locals."],
+      "giver": "Angel",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Check out the Hearth & Hunt files on the locals."
+      ],
       "money": 600,
       "xp": 15
     },
     {
+      "id": "mission_fox_fires",
       "name": "Fox Fires",
+      "category": "Character Story",
       "source": "Mikael",
-      "objectives": ["Analyze any Dall sheep feeding or resting zones. The areas where to find them are highlighted on the Hunting map.", "Harvest a Dall sheep."],
+      "giver": "Mikael",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Analyze any Dall sheep feeding or resting zones. The areas where to find them are highlighted on the Hunting map.",
+        "Harvest a Dall sheep."
+      ],
+      "target_species": "Dall sheep",
       "money": 1050,
       "xp": 40
     },
     {
+      "id": "mission_loudest_deer",
       "name": "Loudest deer",
+      "category": "Character Story",
       "source": "Mikael",
-      "objectives": ["Harvest a male Rocky Mountain elk. Its Fitness must be 70% or higher."],
+      "giver": "Mikael",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a male Rocky Mountain elk. Its Fitness must be 70% or higher."
+      ],
+      "target_species": "Rocky Mountain elk",
+      "gender_requirement": "Male",
+      "min_fitness": 70.0,
       "money": 1050,
       "xp": 40
     },
     {
+      "id": "mission_pack_dynamics",
       "name": "Pack Dynamics",
+      "category": "Character Story",
       "source": "Mikael",
-      "objectives": ["Animals possess intelligence that often surprises people. The older and fitter an animal is, the better it conceals itself. Calling becomes essential."],
+      "giver": "Mikael",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Animals possess intelligence that often surprises people. The older and fitter an animal is, the better it conceals itself. Calling becomes essential."
+      ],
       "money": 1050,
       "xp": 40
     },
     {
+      "id": "mission_one_shot_no_waste",
       "name": "One shot, no waste",
+      "category": "Character Story",
       "source": "Mikael",
-      "objectives": ["Save up money and buy a better rifle for larger animals so meat is not damaged by improper ammunition."],
+      "giver": "Mikael",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Save up money and buy a better rifle for larger animals so meat is not damaged by improper ammunition."
+      ],
       "money": 1050,
       "xp": 40
     },
     {
+      "id": "mission_heterochromia_iridum",
       "name": "Heterochromia Iridum",
+      "category": "Character Story",
       "source": "Juniper",
-      "objectives": ["Harvest a male White-tailed deer with your Dog companion active at the time of the shot.", "Have your Dog companion successfully find and follow the blood trail of any shot White-tailed deer."],
+      "giver": "Juniper",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a male White-tailed deer with your Dog companion active at the time of the shot.",
+        "Have your Dog companion successfully find and follow the blood trail of any shot White-tailed deer."
+      ],
+      "target_species": "Northwestern white-tailed deer",
+      "gender_requirement": "Male",
+      "dog_required": true,
       "money": 600,
       "xp": 15
     },
     {
+      "id": "mission_who_let_the_bloodhounds_out",
       "name": "Who let the bloodhounds out?",
+      "category": "Character Story",
       "source": "Juniper",
-      "objectives": ["Shoot and harvest an Elk between 00:00-05:00 with your Dog companion active at the time of the shot."],
+      "giver": "Juniper",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Shoot and harvest an Elk between 00:00-05:00 with your Dog companion active at the time of the shot."
+      ],
+      "target_species": "Rocky Mountain elk",
+      "time_window": "00:00-05:00",
+      "dog_required": true,
       "money": 1050,
       "xp": 40
     },
     {
+      "id": "mission_friendly_competition",
       "name": "Friendly competition",
+      "category": "Character Story",
       "source": "Juniper",
-      "objectives": ["Shoot and harvest 3 Wolverines."],
+      "giver": "Juniper",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Shoot and harvest 3 Wolverines."
+      ],
+      "target_species": "American wolverine",
+      "target_count": 3,
       "money": 600,
       "xp": 15
     },
     {
+      "id": "mission_parasomnias",
       "name": "Parasomnias",
+      "category": "Character Story",
       "source": "Juniper",
-      "objectives": ["Locate and harvest the lone Dall sheep."],
+      "giver": "Juniper",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Locate and harvest the lone Dall sheep."
+      ],
+      "target_species": "Dall sheep",
       "money": 1050,
       "xp": 40
     },
     {
+      "id": "mission_pieris_marginalis",
       "name": "Pieris Marginalis",
+      "category": "Character Story",
       "source": "Regina",
-      "objectives": ["Find invasive plant species in the location highlighted on your Map and remove them.", "Create a butterfly garden."],
+      "giver": "Regina Harper",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Find invasive plant species in the location highlighted on your Map and remove them.",
+        "Create a butterfly garden."
+      ],
       "money": 1050,
       "xp": 40
     },
     {
+      "id": "mission_cercyonis_pegala",
       "name": "Cercyonis Pegala",
+      "category": "Character Story",
       "source": "Regina",
-      "objectives": ["Harvest 3 White-tailed deer with their Fitness at 60% or lower."],
+      "giver": "Regina Harper",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest 3 White-tailed deer with their Fitness at 60% or lower."
+      ],
+      "target_species": "Northwestern white-tailed deer",
+      "target_count": 3,
+      "max_fitness": 60.0,
       "money": 1050,
       "xp": 40
     },
     {
+      "id": "mission_eynnis_lucilius",
       "name": "Eynnis lucilius",
+      "category": "Character Story",
       "source": "Regina",
-      "objectives": ["Harvest the sick moose in the highlighted area on the hunting map. (0/3)"],
+      "giver": "Regina Harper",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest the sick moose in the highlighted area on the hunting map. (0/3)"
+      ],
+      "target_species": "Western moose",
+      "target_count": 3,
       "money": 1050,
       "xp": 40
     },
     {
+      "id": "mission_speiredonia_mutabilis",
       "name": "Speiredonia mutabilis",
+      "category": "Character Story",
       "source": "Regina",
-      "objectives": ["Get to the area of the last known sighting of the moose with bloodied antlers."],
+      "giver": "Regina Harper",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Get to the area of the last known sighting of the moose with bloodied antlers."
+      ],
+      "target_species": "Western moose",
       "money": 600,
       "xp": 15
     },
     {
+      "id": "mission_tyria_jacobaeae",
       "name": "Tyria Jacobaeae",
+      "category": "Character Story",
       "source": "automatic after Speiredonia mutabilis",
-      "objectives": ["Enter the swamps and get ready for the moose with bloodied antlers.", "Option 1: Shoot and harvest the moose with bloodied antlers. Option 2: Leave the highlighted zone and let the moose live.", "Talk to Regina. Talk to Patrick."],
+      "giver": "Regina Harper & Patrick Harper",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Enter the swamps and get ready for the moose with bloodied antlers.",
+        "Option 1: Shoot and harvest the moose with bloodied antlers. Option 2: Leave the highlighted zone and let the moose live.",
+        "Talk to Regina. Talk to Patrick."
+      ],
+      "target_species": "Western moose",
       "money": null,
       "xp": null
     },
     {
+      "id": "mission_crystal_clarity",
       "name": "Crystal clarity",
+      "category": "Character Story",
       "source": "Patrick",
-      "objectives": ["Harvest an animal using a bow sight.", "Harvest an animal using a crossbow sight.", "Harvest an animal with a bolt-action rifle without using a scope."],
+      "giver": "Patrick Harper",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest an animal using a bow sight.",
+        "Harvest an animal using a crossbow sight.",
+        "Harvest an animal with a bolt-action rifle without using a scope."
+      ],
       "money": 1800,
       "xp": 100
     },
     {
+      "id": "mission_talk_turkey_to_me",
       "name": "Talk turkey to me",
+      "category": "Character Story",
       "source": "Patrick",
-      "objectives": ["Call 3 Wild turkeys to a distance of 100 m or less from you."],
+      "giver": "Patrick Harper",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Call 3 Wild turkeys to a distance of 100 m or less from you."
+      ],
+      "target_species": "Eastern wild turkey",
+      "target_count": 3,
+      "distance_max_m": 100,
       "money": 1800,
       "xp": 100
     },
     {
+      "id": "mission_hunting_solo",
       "name": "Hunting Solo",
+      "category": "Campsite Objective",
       "source": "Campsite, northern Thunderbird Muskeg",
-      "objectives": ["Harvest 5 Mallards without using your Dog companion. Each bird must weigh 1.3 kg or more."],
+      "location": "northern Thunderbird Muskeg",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest 5 Mallards without using your Dog companion. Each bird must weigh 1.3 kg or more."
+      ],
+      "target_species": "Mallard",
+      "target_count": 5,
+      "dog_forbidden": true,
+      "min_weight_kg": 1.3,
       "money": 1800,
       "xp": 100
     },
     {
+      "id": "mission_wattle_bearers",
       "name": "Wattle Bearers",
+      "category": "Campsite Objective",
       "source": "Campsite, northeastern Slalakum Shore",
-      "objectives": ["Harvest 2 female Wild turkeys with Fitness 60% or lower.", "Harvest 2 male Wild turkeys with Fitness 60% or lower."],
+      "location": "northeastern Slalakum Shore",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest 2 female Wild turkeys with Fitness 60% or lower.",
+        "Harvest 2 male Wild turkeys with Fitness 60% or lower."
+      ],
+      "target_species": "Eastern wild turkey",
+      "target_count": 4,
+      "max_fitness": 60.0,
       "money": 800,
       "xp": 15
     },
     {
+      "id": "mission_cycle_of_life",
       "name": "Cycle of Life",
+      "category": "Campsite Objective",
       "source": "Campsite, central Slalakum Shore",
-      "objectives": ["Harvest 3 Snowshoe hares. Each animal must weigh 1.3 kg or more."],
+      "location": "central Slalakum Shore",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest 3 Snowshoe hares. Each animal must weigh 1.3 kg or more."
+      ],
+      "target_species": "Snowshoe hare",
+      "target_count": 3,
+      "min_weight_kg": 1.3,
       "money": 800,
       "xp": 15
     },
     {
+      "id": "mission_iconic_pairing",
       "name": "Iconic pairing",
+      "category": "Campsite Objective",
       "source": "Campsite, central Slalakum Shore",
-      "objectives": ["Create a taxidermy diorama with a Grizzly bear and a Wood Bison."],
+      "location": "central Slalakum Shore",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Create a taxidermy diorama with a Grizzly bear and a Wood Bison."
+      ],
+      "target_species": ["Grizzly bear", "Wood bison"],
       "money": 1200,
       "xp": 40
     },
     {
+      "id": "mission_weather_extremes",
       "name": "Weather Extremes",
+      "category": "Campsite Objective",
       "source": "Campsite, east of Jackalope Cordillera",
-      "objectives": ["Harvest a Dall sheep. Shoot it only once from 400 m or more with the Primacy Vision Unity scope attached."],
+      "location": "east of Jackalope Cordillera",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a Dall sheep. Shoot it only once from 400 m or more with the Primacy Vision Unity scope attached."
+      ],
+      "target_species": "Dall sheep",
+      "distance_min_m": 400,
+      "required_gear": "Primacy Vision Unity scope",
+      "max_shots": 1,
       "money": 1800,
       "xp": 100
     },
     {
+      "id": "mission_fifteen_stars",
       "name": "Fifteen stars",
+      "category": "Campsite Objective",
       "source": "Campsite, Kermode Plateau west",
-      "objectives": ["Harvest 3 Elk with their Trophy ratings at 5 stars."],
+      "location": "Kermode Plateau west",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest 3 Elk with their Trophy ratings at 5 stars."
+      ],
+      "target_species": "Rocky Mountain elk",
+      "target_count": 3,
+      "trophy_rating_target": "5-star",
       "money": 2100,
       "xp": 250
     },
     {
+      "id": "mission_bison_bank",
       "name": "Bison Bank",
+      "category": "Campsite Objective",
       "source": "Campsite, Kermode Plateau center east",
-      "objectives": ["Harvest a male Bison with its Fitness at 40% or higher."],
+      "location": "Kermode Plateau center east",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a male Bison with its Fitness at 40% or higher."
+      ],
+      "target_species": "Wood bison",
+      "gender_requirement": "Male",
+      "min_fitness": 40.0,
       "money": 300,
-      "xp": 5
+      "xp": 100
     },
     {
+      "id": "mission_lure_in",
       "name": "Lure in",
+      "category": "Campsite Objective",
       "source": "Campsite, Kermode Plateau far east",
-      "objectives": ["Harvest a male Grizzly bear using a luring scent."],
+      "location": "Kermode Plateau far east",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a male Grizzly bear using a luring scent."
+      ],
+      "target_species": "Grizzly bear",
+      "gender_requirement": "Male",
+      "scent_required": true,
       "money": 1200,
       "xp": 40
     },
     {
+      "id": "mission_zip_up",
       "name": "Zip up",
+      "category": "Campsite Objective",
       "source": "Campsite, Wetiko Foothills northwest",
-      "objectives": ["Harvest a Mule deer. Shoot it between 00:00-03:00 with a night vision scope attached."],
+      "location": "Wetiko Foothills northwest",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a Mule deer. Shoot it between 00:00-03:00 with a night vision scope attached."
+      ],
+      "target_species": "Rocky Mountain mule deer",
+      "time_window": "00:00-03:00",
+      "night_vision_required": true,
       "money": 1200,
       "xp": 40
     },
     {
+      "id": "mission_superhero_of_the_wilderness",
       "name": "Superhero of the wilderness",
+      "category": "Campsite Objective",
       "source": "Campsite, Lake Sasquatch east",
-      "objectives": ["Harvest a Wolverine using a tripod stand."],
+      "location": "Lake Sasquatch east",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a Wolverine using a tripod stand."
+      ],
+      "target_species": "American wolverine",
+      "stand_required": "Tripod stand",
       "money": 300,
       "xp": 5
     },
     {
+      "id": "mission_quail_country",
       "name": "Quail country",
+      "category": "Campsite Objective",
       "source": "Campsite, Slalakum Shore south",
-      "objectives": ["Harvest a male White-tailed ptarmigan with Fitness 60% or higher.", "Harvest a female White-tailed ptarmigan with Fitness 60% or higher."],
+      "location": "Slalakum Shore south",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a male White-tailed ptarmigan with Fitness 60% or higher.",
+        "Harvest a female White-tailed ptarmigan with Fitness 60% or higher."
+      ],
+      "target_species": "White-tailed ptarmigan",
+      "min_fitness": 60.0,
       "money": 1200,
       "xp": 40
     },
     {
+      "id": "mission_which_one_has_a_white_butt",
       "name": "Which one has a white butt?",
+      "category": "Campsite Objective",
       "source": "Campsite, Kermode Plateau center",
-      "objectives": ["Harvest a White-tailed deer with a 5-star Trophy rating.", "Harvest a Mule deer with a 5-star Trophy rating."],
+      "location": "Kermode Plateau center",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a White-tailed deer with a 5-star Trophy rating.",
+        "Harvest a Mule deer with a 5-star Trophy rating."
+      ],
+      "target_species": [
+        "Northwestern white-tailed deer",
+        "Rocky Mountain mule deer"
+      ],
+      "trophy_rating_target": "5-star",
       "money": 2100,
       "xp": 250
     },
     {
+      "id": "mission_super_pigs",
       "name": "Super pigs",
+      "category": "Campsite Objective",
       "source": "Campsite, Kermode Plateau southeast",
-      "objectives": ["Call a Wild boar with Fitness 80% or more. Make sure it reacts and wait until it is 100 m away or closer."],
+      "location": "Kermode Plateau southeast",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Call a Wild boar with Fitness 80% or more. Make sure it reacts and wait until it is 100 m away or closer."
+      ],
+      "target_species": "Central European boar",
+      "min_fitness": 80.0,
+      "distance_max_m": 100,
       "money": 1800,
       "xp": 100
     },
     {
+      "id": "mission_moosenews",
       "name": "MooseNews",
+      "category": "Campsite Objective",
       "source": "Campsite, Thunderbird Muskeg southeast",
-      "objectives": ["Harvest a Moose. Shoot it only once using the .338 Lapua Magnum caliber."],
+      "location": "Thunderbird Muskeg southeast",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a Moose. Shoot it only once using the .338 Lapua Magnum caliber."
+      ],
+      "target_species": "Western moose",
+      "required_caliber": ".338 Lapua Magnum",
+      "max_shots": 1,
       "money": 800,
       "xp": 15
     },
     {
+      "id": "mission_artificial_route",
       "name": "Artificial route",
+      "category": "Campsite Objective",
       "source": "Campsite, Slalakum Shore center east",
-      "objectives": ["Harvest a Pronghorn with Fitness 70% or higher. Shoot it only once to the heart from 200 m or more."],
+      "location": "Slalakum Shore center east",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a Pronghorn with Fitness 70% or higher. Shoot it only once to the heart from 200 m or more."
+      ],
+      "target_species": "Rocky Mountain pronghorn",
+      "min_fitness": 70.0,
+      "distance_min_m": 200,
+      "target_organ": "Heart",
+      "max_shots": 1,
       "money": 1800,
       "xp": 100
     }
