@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UniversalFirebaseUserArchitecture",
+  "description": "Standardized identity, friend roster, and multi-platform telemetry pipeline for all apps.",
+  
+  "identity_resolution": {
+    "auth_source": "Firebase Authentication (Google / Email)",
+    "email_sanitization_rule": "email.toLowerCase().trim().replace(/@/g, '_at_').replace(/\\./g, '_')",
+    "example_raw_email": "user.name@example.com",
+    "example_sanitized_key": "user_name_at_example_com"
+  },
+
+  "firebase_realtime_database": {
+    "root_endpoint": "https://<PROJECT_ID>-default-rtdb.firebaseio.com",
+    "schema_paths": {
+      "/users/{sanitized_email_key}": {
+        "description": "Master user identity and friend link index.",
+        "fields": {
+          "friend_code": "String (Unique 8-character code, e.g., 'GQGI0SWY')",
+          "username": "String (Display gamertag)",
+          "avatar_url": "String (URL to avatar)",
+          "avatar_source": "String ('google' | 'custom')",
+          "primary_platform": "String ('ps' | 'pc' | 'xbox' | 'steam' | 'microsoft')",
+          "psn_account_id": "String (Numeric Sony account ID or null)",
+          "psn_username": "String (PSN Online ID or null)",
+          "steam_id": "String (Steam ID or null)",
+          "twitch_username": "String (Twitch handle or null)",
+          "last_profile_sync": "Timestamp / Number",
+          "updated_at": "Timestamp / Number"
+        },
+        "children": {
+          "/friends/{FRIEND_CODE}": {
+            "description": "Roster of linked friends indexed by their unique friend code.",
+            "fields": {
+              "friend_code": "String (Matches child key)",
+              "username": "String (Friend display name)",
+              "avatar_url": "String (Friend avatar URL)",
+              "primary_platform": "String (Friend's default platform)",
+              "email": "String (Raw email or sanitized email key for Firestore document lookup)",
+              "linked_at": "String / Timestamp"
+            }
+          }
+        }
+      },
+
+      "/psn/gamertags/{psn_online_id}/liveTrophyProgress/{title_id}": {
+        "description": "Automated Sony PlayStation API/webhook payload store for games running live PSN sync.",
+        "fields": {
+          "trophies": "Array or Map of Sony trophy objects with trophyId and earned boolean",
+          "updatedAt": "String / Timestamp"
+        }
+      }
+    }
+  },
+
+  "cloud_firestore": {
+    "root_endpoint": "Cloud Firestore / (default)",
+    "hierarchy_rule": "users/{sanitized_email_key}/platform/{platform_id}/progress/{game_slug}",
+    "supported_platforms": ["ps", "pc", "xbox", "steam", "microsoft"],
+    "schema_paths": {
+      "users/{sanitized_email_key}": {
+        "description": "User root document",
+        "subcollections": {
+          "platform": {
+            "document_id": "{platform_id} (e.g., 'ps', 'pc', 'xbox', 'steam', 'microsoft')",
+            "subcollections": {
+              "progress": {
+                "document_id": "{game_slug} (e.g., 'woth2', 'COTW', 'sniper-elite-5', 'sniper-elite-resistance')",
+                "fields": {
+                  "hunter_name": "String",
+                  "hunter_level": "Number",
+                  "hunter_credits": "Number",
+                  "platform": "String (Matches platform document ID)",
+                  "friend_code": "String (Self friend code)",
+                  "psn_online_id": "String (Optional)",
+                  "psn_account_id": "String (Optional)",
+                  "trophies_earned": "Number",
+                  "trophies_total": "Number",
+                  "trophies_percent": "Number",
+                  "trophies": {
+                    "type": "Map<trophy_id_string, TrophyProgressObject>",
+                    "item_structure": {
+                      "earned": "Boolean (Strict true/false check)",
+                      "source": "String ('psn' | 'manual' | 'game_data')",
+                      "manual": "Boolean",
+                      "timestamp": "String | Number | null",
+                      "currentValue": "Number | null",
+                      "targetValue": "Number | null"
+                    }
+                  },
+                  "game_custom_arrays": {
+                    "watchlist": "Array of target maps",
+                    "dog_stats": "Map of companion attributes",
+                    "challenges": "Map of challenge step counts"
+                  },
+                  "updatedAt": "FieldValue.serverTimestamp()"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "runtime_execution_workflow": {
+    "1_authentication": "Listen to auth state -> Get active user's email -> Convert to sanitized_email_key.",
+    "2_rtdb_profile_read": "Read /users/{sanitized_email_key} to populate own friend_code, gamertag, avatar, and linked friend codes under /friends.",
+    "3_firestore_self_read": "Read users/{sanitized_email_key}/platform/{platform}/progress/{game_id} to load personal saved milestones, currency, inventory, and stats.",
+    "4_squad_telemetry_resolution": [
+      "Loop through /friends entries in RTDB.",
+      "Identify each friend's email key and primary_platform.",
+      "Open an active onSnapshot listener on users/{friend_email_key}/platform/{friend_platform}/progress/{game_id}.",
+      "If friend has an active psn_online_id and uses 'ps', also open listener to RTDB /psn/gamertags/{friend_psn}/liveTrophyProgress/{title_id}.",
+      "Populate squad telemetry bar and trophy completion badges using strict 'earned === true' checks."
+    ]
+  }
+}
