@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-12 02:37 EDT | Firebase Sync Target: /utm_links | Version: 7.5.0]
+// [Smart Cache-Buster Time: 2026-10-12 03:04 EDT | Firebase Sync Target: /utm_links | Version: 7.7.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     titleId: "NPWR52231_00",
     files: {
       users: "users.json",
+      userArchitecture: "firebase_user_architecture.json",
       challenges: "woth2_challenges.json",
       dogSkills: "woth2_dog_skills.json",
       gameData: "woth2_game_data.json",
@@ -427,7 +428,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!targetUserKey) return;
 
       const platforms = ["ps", "pc", "xbox"];
-      const total = this.masterTrophies.length || 6;
+      const total = this.masterTrophies.length || 21;
 
       for (const p of platforms) {
         try {
@@ -461,7 +462,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     recalculateCrossTrophyTelemetry() {
-      const total = this.masterTrophies.length || 6;
+      const total = this.masterTrophies.length || 21;
       const currentEarned = Object.values(this.userTrophyProgress).filter(t => t.earned).length;
       const pct = total > 0 ? Math.round((currentEarned / total) * 100) : 0;
 
@@ -535,7 +536,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           const cleanTrophies = this.getSanitizedTrophiesForFirestore();
           const earnedCount = Object.values(cleanTrophies).filter(t => t.earned).length;
-          const totalTrophies = this.masterTrophies.length || 6;
+          const totalTrophies = this.masterTrophies.length || 21;
           const trophyPct = totalTrophies > 0 ? Math.round((earnedCount / totalTrophies) * 100) : 0;
 
           await gameDocRef.set({
@@ -1018,7 +1019,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const existing = this.userTrophyProgress[id] || {};
 
             this.userTrophyProgress[id] = {
-              earned: isEarned || existing.earned || false,
+              earned: isEarned || false,
               timestamp: dateStr || existing.timestamp || null,
               currentValue: t.currentValue !== undefined ? Number(t.currentValue) : (existing.currentValue !== undefined ? existing.currentValue : null),
               targetValue: t.targetValue !== undefined ? Number(t.targetValue) : (existing.targetValue !== undefined ? existing.targetValue : null),
@@ -1066,6 +1067,24 @@ document.addEventListener("DOMContentLoaded", () => {
       this.recalculateCrossTrophyTelemetry();
       this.renderTrophies();
       this.silentSaveGameTelemetry();
+    },
+
+    isTrophyEarnedByCompanion(companionTelemetry, trophyId) {
+      if (!companionTelemetry || !companionTelemetry.trophies) return false;
+      const tMap = companionTelemetry.trophies;
+
+      const direct = tMap[String(trophyId)];
+      if (direct && Boolean(direct.earned) === true) return true;
+
+      const numDirect = tMap[Number(trophyId)];
+      if (numDirect && Boolean(numDirect.earned) === true) return true;
+
+      if (Array.isArray(tMap)) {
+        const found = tMap.find(item => item && (String(item.trophyId) === String(trophyId) || item.id === trophyId));
+        if (found && Boolean(found.earned) === true) return true;
+      }
+
+      return false;
     },
 
     renderTrophies() {
@@ -1227,25 +1246,28 @@ document.addEventListener("DOMContentLoaded", () => {
           `;
         }
 
-        // Live Squad Badges for this Specific Trophy (Direct from RTDB /friends Code Lookup)
         let squadBadgesHtml = "";
         const ops = Object.values(this.teamLiveTelemetry);
         if (ops.length > 0) {
           let badges = "";
           ops.forEach(op => {
-            const hasEarned = op.trophies && op.trophies[t.trophyId] && op.trophies[t.trophyId].earned;
+            const hasEarned = this.isTrophyEarnedByCompanion(op, t.trophyId);
+            
             badges += `
-              <span style="font-size:10px; font-weight:700; background:${hasEarned ? 'rgba(46, 204, 113, 0.2)' : 'rgba(255,255,255,0.06)'}; border:1px solid ${hasEarned ? '#2ecc71' : '#33445b'}; color:${hasEarned ? '#2ecc71' : '#7b8c9e'}; padding:2px 6px; border-radius:3px; display:inline-flex; align-items:center; gap:4px;">
+              <span style="font-size:10px; font-weight:700; background:${hasEarned ? 'rgba(46, 204, 113, 0.2)' : 'rgba(255,255,255,0.04)'}; border:1px solid ${hasEarned ? '#2ecc71' : '#273447'}; color:${hasEarned ? '#2ecc71' : '#6b7b8f'}; padding:2px 6px; border-radius:3px; display:inline-flex; align-items:center; gap:4px;">
                 <img src="${op.avatar}" style="width:12px; height:12px; border-radius:50%; object-fit:cover;">
                 ${op.friendCode || op.username}: ${hasEarned ? '✔' : '🔒'}
               </span>
             `;
           });
-          squadBadgesHtml = `
-            <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; padding-top:6px; border-top:1px dashed rgba(255,255,255,0.08);">
-              ${badges}
-            </div>
-          `;
+
+          if (badges) {
+            squadBadgesHtml = `
+              <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; padding-top:6px; border-top:1px dashed rgba(255,255,255,0.08);">
+                ${badges}
+              </div>
+            `;
+          }
         }
 
         let statusBadge = `<span style="font-size:0.8rem; font-weight:600; color:var(--text-muted);">🔒 Locked</span>`;
@@ -1291,7 +1313,6 @@ document.addEventListener("DOMContentLoaded", () => {
       this.renderTrophies();
     },
 
-    // Resolves both target_email keys and RTDB direct user profiles by friend_code
     async loadFriendsComparisonTelemetry() {
       const container = document.getElementById("friendsComparisonContainer");
       if (!container) return;
@@ -1313,7 +1334,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (friend.target_email) {
           targetKey = getEmailKey(friend.target_email);
         } else {
-          // Dynamic lookup: scan RTDB /users for matching friend_code
           try {
             const usersSnap = await rtdb.ref("/users").orderByChild("friend_code").equalTo(friendCode).once("value");
             const matchedObj = usersSnap.val();
@@ -1356,8 +1376,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 watchlistCount: (data.watchlist && data.watchlist.length) ? data.watchlist.length : 0,
                 dogStats: data.dog_stats || null
               };
+
+              const companionPsn = data.psn_online_id || friend.username;
+              if (companionPsn && targetPlatform === "ps") {
+                rtdb.ref(`/psn/gamertags/${companionPsn}/liveTrophyProgress/${this.titleId}`).on("value", psSnap => {
+                  const psVal = psSnap.val();
+                  if (psVal && psVal.trophies) {
+                    const rawList = Array.isArray(psVal.trophies) ? psVal.trophies : Object.values(psVal.trophies);
+                    const parsedMap = {};
+                    rawList.forEach((t, idx) => {
+                      const tId = t.trophyId !== undefined ? String(t.trophyId) : String(idx);
+                      parsedMap[tId] = { earned: Boolean(t.earned || t.unlocked) };
+                    });
+                    if (this.teamLiveTelemetry[targetKey]) {
+                      this.teamLiveTelemetry[targetKey].trophies = parsedMap;
+                      this.renderTrophies();
+                    }
+                  }
+                });
+              }
+
             } else {
-              // Graceful display fallback if companion has not pushed progress doc yet
               this.teamLiveTelemetry[targetKey] = {
                 friendCode: friend.friend_code,
                 username: friend.username || "Companion",
