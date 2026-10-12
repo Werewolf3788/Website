@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-12 03:04 EDT | Firebase Sync Target: /utm_links | Version: 7.7.0]
+// [Smart Cache-Buster Time: 2026-10-12 03:22 EDT | Firebase Sync Target: /utm_links | Version: 7.9.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     files: {
       users: "users.json",
       userArchitecture: "firebase_user_architecture.json",
+      psnTrophySchema: "psn_trophy_schema.json",
       challenges: "woth2_challenges.json",
       dogSkills: "woth2_dog_skills.json",
       gameData: "woth2_game_data.json",
@@ -116,6 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async init() {
       this.loadSavedState();
       this.bindUI();
+      this.renderProfileDropdown(false);
       this.initAuth();
       this.initMasterGameData();
       this.initRTDB();
@@ -388,16 +390,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (rawTrophies.length > 0) {
           this.masterTrophies = rawTrophies.map((t, idx) => {
-            let grade = t.trophyType || "Bronze";
+            let grade = t.trophyType || t.type || "Bronze";
             grade = grade.charAt(0).toUpperCase() + grade.slice(1).toLowerCase();
             return {
               trophyId: t.trophyId !== undefined ? String(t.trophyId) : String(idx),
-              title: t.trophyName || `Trophy #${idx + 1}`,
-              desc: t.trophyDetail || "Way of the Hunter 2 milestone.",
-              icon: t.trophyIconUrl || game.posterArt || DEFAULT_GAME_POSTER,
+              title: t.trophyName || t.title || t.name || `Trophy #${idx + 1}`,
+              desc: t.trophyDetail || t.detail || t.description || "Way of the Hunter 2 milestone.",
+              icon: t.trophyIconUrl || t.icon || game.posterArt || DEFAULT_GAME_POSTER,
               grade: grade,
               groupId: t.trophyGroupId !== undefined ? String(t.trophyGroupId) : "default",
-              hidden: Boolean(t.trophyHidden)
+              hidden: Boolean(t.trophyHidden ?? t.hidden)
             };
           });
         }
@@ -748,6 +750,72 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
+    renderProfileDropdown(isAuthenticated) {
+      let menu = document.getElementById("userProfileDropdownMenu");
+      const profileBadge = document.getElementById("userProfile");
+
+      if (!menu) {
+        menu = document.createElement("div");
+        menu.id = "userProfileDropdownMenu";
+        menu.className = "profile-dropdown-menu hidden";
+        menu.style.cssText = `
+          position: fixed;
+          top: 64px;
+          right: 20px;
+          background: #151c27;
+          border: 1px solid #273447;
+          border-radius: 8px;
+          padding: 8px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+          z-index: 2005;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          min-width: 190px;
+        `;
+        document.body.appendChild(menu);
+
+        document.addEventListener("click", (e) => {
+          if (!menu.contains(e.target) && !e.target.closest("#userProfile") && !e.target.closest("#authModalBtn")) {
+            menu.classList.add("hidden");
+          }
+        });
+      }
+
+      if (isAuthenticated) {
+        menu.innerHTML = `
+          <a href="../../security/settings.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;">⚙️ Settings Hub</a>
+          <a href="../../security/privacy.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;">🔒 Privacy Policy</a>
+          <div style="height:1px; background:#273447; margin:2px 0;"></div>
+          <button id="menuLogoutBtn" style="background:transparent; border:none; color:#e74c3c; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; display:flex; align-items:center; gap:8px; font-weight:600;">🚪 Log Out</button>
+        `;
+        const logoutBtn = document.getElementById("menuLogoutBtn");
+        if (logoutBtn) logoutBtn.addEventListener("click", () => auth.signOut().then(() => window.location.reload()));
+      } else {
+        menu.innerHTML = `
+          <button id="menuLoginBtn" style="background:transparent; border:none; color:#0088ff; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; font-weight:600; display:flex; align-items:center; gap:8px;">🔑 Sign In / Account</button>
+          <a href="../../security/settings.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;">⚙️ Settings Hub</a>
+          <a href="../../security/privacy.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;">🔒 Privacy Policy</a>
+        `;
+        const loginBtn = document.getElementById("menuLoginBtn");
+        if (loginBtn) {
+          loginBtn.addEventListener("click", () => {
+            menu.classList.add("hidden");
+            const modal = document.getElementById("authModal");
+            if (modal) modal.classList.remove("hidden");
+          });
+        }
+      }
+
+      if (profileBadge) {
+        profileBadge.style.cursor = "pointer";
+        profileBadge.onclick = (e) => {
+          e.stopPropagation();
+          menu.classList.toggle("hidden");
+        };
+      }
+    },
+
     initAuth() {
       auth.onAuthStateChanged(async user => {
         const modalBtn = document.getElementById("authModalBtn");
@@ -879,12 +947,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
               if (data.trophies && typeof data.trophies === "object") {
                 Object.entries(data.trophies).forEach(([id, t]) => {
-                  if (t.earned) {
+                  if (t.earned === true || t.earned === "true") {
                     this.userTrophyProgress[id] = {
                       earned: true,
                       timestamp: t.timestamp || null,
-                      currentValue: t.currentValue !== undefined ? t.currentValue : null,
-                      targetValue: t.targetValue !== undefined ? t.targetValue : null,
+                      currentValue: (t.currentValue !== undefined && t.currentValue !== null) ? Number(t.currentValue) : null,
+                      targetValue: (t.targetValue !== undefined && t.targetValue !== null) ? Number(t.targetValue) : null,
                       manual: Boolean(t.manual),
                       source: t.source || "firestore"
                     };
@@ -922,68 +990,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    renderProfileDropdown(isAuthenticated) {
-      let menu = document.getElementById("userProfileDropdownMenu");
-      const profileBadge = document.getElementById("userProfile");
-
-      if (!menu && profileBadge) {
-        menu = document.createElement("div");
-        menu.id = "userProfileDropdownMenu";
-        menu.className = "profile-dropdown-menu hidden";
-        menu.style.cssText = `
-          position: absolute;
-          top: 60px;
-          right: 20px;
-          background: #151c27;
-          border: 1px solid #273447;
-          border-radius: 8px;
-          padding: 8px;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-          z-index: 1005;
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          min-width: 180px;
-        `;
-        document.body.appendChild(menu);
-
-        profileBadge.style.cursor = "pointer";
-        profileBadge.addEventListener("click", (e) => {
-          e.stopPropagation();
-          menu.classList.toggle("hidden");
-        });
-
-        document.addEventListener("click", () => {
-          if (!menu.classList.contains("hidden")) menu.classList.add("hidden");
-        });
-      }
-
-      if (!menu) return;
-
-      if (isAuthenticated) {
-        menu.innerHTML = `
-          <a href="../../security/settings.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;">⚙️ Settings Hub</a>
-          <a href="../../security/privacy.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;">🔒 Privacy Policy</a>
-          <div style="height:1px; background:#273447; margin:2px 0;"></div>
-          <button id="menuLogoutBtn" style="background:transparent; border:none; color:#e74c3c; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; display:flex; align-items:center; gap:8px; font-weight:600;">🚪 Log Out</button>
-        `;
-        const logoutBtn = document.getElementById("menuLogoutBtn");
-        if (logoutBtn) logoutBtn.addEventListener("click", () => auth.signOut().then(() => window.location.reload()));
-      } else {
-        menu.innerHTML = `
-          <button id="menuLoginBtn" style="background:transparent; border:none; color:#0088ff; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; font-weight:600;">🔑 Log In</button>
-          <a href="../../security/privacy.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px;">🔒 Privacy Policy</a>
-        `;
-        const loginBtn = document.getElementById("menuLoginBtn");
-        if (loginBtn) {
-          loginBtn.addEventListener("click", () => {
-            const modal = document.getElementById("authModal");
-            if (modal) modal.classList.remove("hidden");
-          });
-        }
-      }
-    },
-
     syncPlayStationTrophies(psnOnlineId, accountId) {
       const targetGamerTag = (psnOnlineId || "").trim();
       let trophyRef = null;
@@ -1012,8 +1018,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (parsedList.length > 0) {
           parsedList.forEach((t, idx) => {
+            if (!t) return;
             const id = t.trophyId !== undefined ? String(t.trophyId) : String(idx);
-            const isEarned = Boolean(t.earned || t.unlocked || t.timestamp || t.earnedDateTime);
+            const isEarned = (t.earned === true || t.earned === "true" || Boolean(t.unlocked));
             const dateStr = t.timestamp || t.earnedDateTime || (isEarned ? (t.updatedAt || new Date().toISOString()) : null);
 
             const existing = this.userTrophyProgress[id] || {};
@@ -1021,8 +1028,8 @@ document.addEventListener("DOMContentLoaded", () => {
             this.userTrophyProgress[id] = {
               earned: isEarned || false,
               timestamp: dateStr || existing.timestamp || null,
-              currentValue: t.currentValue !== undefined ? Number(t.currentValue) : (existing.currentValue !== undefined ? existing.currentValue : null),
-              targetValue: t.targetValue !== undefined ? Number(t.targetValue) : (existing.targetValue !== undefined ? existing.targetValue : null),
+              currentValue: (t.trophyProgress !== undefined && t.trophyProgress !== null) ? Number(t.trophyProgress) : (t.currentValue !== undefined ? Number(t.currentValue) : null),
+              targetValue: (t.trophyProgressTargetValue !== undefined && t.trophyProgressTargetValue !== null) ? Number(t.trophyProgressTargetValue) : (t.targetValue !== undefined ? Number(t.targetValue) : null),
               manual: false,
               source: isEarned ? "psn" : (existing.source || "psn")
             };
@@ -1073,15 +1080,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!companionTelemetry || !companionTelemetry.trophies) return false;
       const tMap = companionTelemetry.trophies;
 
-      const direct = tMap[String(trophyId)];
-      if (direct && Boolean(direct.earned) === true) return true;
-
-      const numDirect = tMap[Number(trophyId)];
-      if (numDirect && Boolean(numDirect.earned) === true) return true;
+      const direct = tMap[String(trophyId)] ?? tMap[Number(trophyId)];
+      if (direct) {
+        return direct.earned === true || direct.earned === "true";
+      }
 
       if (Array.isArray(tMap)) {
         const found = tMap.find(item => item && (String(item.trophyId) === String(trophyId) || item.id === trophyId));
-        if (found && Boolean(found.earned) === true) return true;
+        return found ? (found.earned === true || found.earned === "true") : false;
       }
 
       return false;
@@ -1222,7 +1228,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let formattedTimestamp = "";
         if (isEarned && userState.timestamp) {
-          const d = new Date(userState.timestamp);
+          const d = new Date(isNaN(Number(userState.timestamp)) ? userState.timestamp : Number(userState.timestamp));
           formattedTimestamp = !isNaN(d.getTime())
             ? d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
             : "Recorded";
@@ -1246,19 +1252,21 @@ document.addEventListener("DOMContentLoaded", () => {
           `;
         }
 
+        // Live Squad Badges for this Specific Trophy (STRICT: Only render if companion has earned === true)
         let squadBadgesHtml = "";
         const ops = Object.values(this.teamLiveTelemetry);
         if (ops.length > 0) {
           let badges = "";
           ops.forEach(op => {
             const hasEarned = this.isTrophyEarnedByCompanion(op, t.trophyId);
-            
-            badges += `
-              <span style="font-size:10px; font-weight:700; background:${hasEarned ? 'rgba(46, 204, 113, 0.2)' : 'rgba(255,255,255,0.04)'}; border:1px solid ${hasEarned ? '#2ecc71' : '#273447'}; color:${hasEarned ? '#2ecc71' : '#6b7b8f'}; padding:2px 6px; border-radius:3px; display:inline-flex; align-items:center; gap:4px;">
-                <img src="${op.avatar}" style="width:12px; height:12px; border-radius:50%; object-fit:cover;">
-                ${op.friendCode || op.username}: ${hasEarned ? '✔' : '🔒'}
-              </span>
-            `;
+            if (hasEarned) {
+              badges += `
+                <span style="font-size:10px; font-weight:700; background:rgba(46, 204, 113, 0.2); border:1px solid #2ecc71; color:#2ecc71; padding:2px 6px; border-radius:3px; display:inline-flex; align-items:center; gap:4px;">
+                  <img src="${op.avatar}" style="width:12px; height:12px; border-radius:50%; object-fit:cover;">
+                  ${op.friendCode || op.username}: ✔
+                </span>
+              `;
+            }
           });
 
           if (badges) {
@@ -1377,16 +1385,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 dogStats: data.dog_stats || null
               };
 
+              // Hook into companion's live RTDB trophy feed using psn_trophy_schema structure
               const companionPsn = data.psn_online_id || friend.username;
               if (companionPsn && targetPlatform === "ps") {
                 rtdb.ref(`/psn/gamertags/${companionPsn}/liveTrophyProgress/${this.titleId}`).on("value", psSnap => {
                   const psVal = psSnap.val();
-                  if (psVal && psVal.trophies) {
-                    const rawList = Array.isArray(psVal.trophies) ? psVal.trophies : Object.values(psVal.trophies);
+                  if (psVal) {
+                    const rawList = Array.isArray(psVal) ? psVal : (psVal.trophies ? (Array.isArray(psVal.trophies) ? psVal.trophies : Object.values(psVal.trophies)) : Object.values(psVal));
                     const parsedMap = {};
                     rawList.forEach((t, idx) => {
+                      if (!t) return;
                       const tId = t.trophyId !== undefined ? String(t.trophyId) : String(idx);
-                      parsedMap[tId] = { earned: Boolean(t.earned || t.unlocked) };
+                      const isEarned = (t.earned === true || t.earned === "true" || Boolean(t.unlocked));
+                      parsedMap[tId] = {
+                        earned: isEarned,
+                        timestamp: t.timestamp || t.earnedDateTime || null,
+                        trophyProgress: t.trophyProgress !== undefined ? Number(t.trophyProgress) : null,
+                        targetValue: t.trophyProgressTargetValue !== undefined ? Number(t.trophyProgressTargetValue) : null
+                      };
                     });
                     if (this.teamLiveTelemetry[targetKey]) {
                       this.teamLiveTelemetry[targetKey].trophies = parsedMap;
