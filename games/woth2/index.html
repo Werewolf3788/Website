@@ -1,5 +1,5 @@
 <!-- Line 1: Way of the Hunter 2 - Master Tactical Companion -->
-<!-- [Smart Cache-Buster Time: 2026-10-12 05:49 EDT | Firebase Sync Target: /utm_links | Version: 7.5.1] -->
+<!-- [Smart Cache-Buster Time: 2026-10-12 06:06 EDT | Firebase Sync Target: /utm_links | Version: 7.5.3] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +18,7 @@
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
-  <!-- Section 4: Complete Styling & Responsive Design System (Lines 26-395) -->
+  <!-- Section 4: Complete Styling & Responsive Design System (Lines 26-410) -->
   <style>
     :root {
       --bg-primary: #07090d;
@@ -126,21 +126,26 @@
       white-space: nowrap;
     }
 
+    /* Fixed inline containment: Prevents wrapping over subsequent bars */
     .site-nav { 
       display: flex; 
       align-items: center; 
       flex: 1; 
       margin: 0 12px; 
+      overflow: hidden;
     }
     .nav-list { 
       display: flex; 
       list-style: none; 
       gap: 8px; 
       align-items: center; 
-      flex-wrap: wrap; 
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
     .nav-item { 
       position: relative; 
+      flex-shrink: 0;
     }
 
     .nav-pill, .dropdown-trigger {
@@ -958,6 +963,8 @@
         flex-direction: column; 
         align-items: stretch; 
         gap: 8px;
+        overflow-x: visible;
+        flex-wrap: wrap;
       }
       
       .nav-item { width: 100%; }
@@ -1595,7 +1602,7 @@
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Way of the Hunter 2 Companion &bull; Tactical Operations Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-12 05:49 EDT</span> | Version: 7.5.1</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-12 06:06 EDT</span> | Version: 7.5.3</p>
       </div>
       <div class="footer-col text-right">
         <span id="firebaseStatusBadge" class="status-pill status-connecting">RTDB: Connecting...</span>
