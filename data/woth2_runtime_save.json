@@ -1,0 +1,24 @@
+{
+  "system": {
+    "version": "v1.1.0.212672",
+    "map": "New Laurentia",
+    "difficulty": "Normal"
+  },
+  "player": {
+    "name": "Ryder Holloway",
+    "title": "Not a Hunter Yet",
+    "level": 2,
+    "xp": 60,
+    "credits": 318
+  },
+  "companion_dog": {
+    "name": "Bacon",
+    "breed": "American Foxhound",
+    "bonding_level": 3,
+    "skills": {
+      "blood_tracking": { "level": 3, "xp": 330, "xp_max": 400 }
+    }
+  },
+  "controller_bindings": [],
+  "harvest_records": []
+}
