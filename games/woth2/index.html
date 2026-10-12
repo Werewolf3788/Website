@@ -1,24 +1,24 @@
 <!-- Line 1: Way of the Hunter 2 - Master Tactical Companion -->
-<!-- [Smart Cache-Buster Time: 2026-10-12 05:27 EDT | Firebase Sync Target: /utm_links | Version: 7.5.0] -->
+<!-- [Smart Cache-Buster Time: 2026-10-12 05:49 EDT | Firebase Sync Target: /utm_links | Version: 7.5.1] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Section: Meta & Core Settings (Lines 6-12) -->
+  <!-- Section 1: Meta Configuration (Lines 6-12) -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PlayStation Hub | Way of the Hunter 2 Companion</title>
 
-  <!-- Section: Dynamic Tab & App Icons (Lines 14-17) -->
+  <!-- Section 2: Branding & Favicon Assets (Lines 14-17) -->
   <link id="dynamicFavicon" rel="icon" type="image/jpeg" href="//werewolf3788.github.io/Website/assets/logo.jpg">
   <link id="dynamicAppleIcon" rel="apple-touch-icon" href="//werewolf3788.github.io/Website/assets/logo.jpg">
 
-  <!-- Section: Firebase SDK Dependencies (Lines 19-24) -->
+  <!-- Section 3: Firebase SDK Dependencies (Lines 19-24) -->
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
-  <!-- Section: Responsive Design System Stylesheet (Lines 26-385) -->
+  <!-- Section 4: Complete Styling & Responsive Design System (Lines 26-395) -->
   <style>
     :root {
       --bg-primary: #07090d;
@@ -63,7 +63,7 @@
       flex-direction: column;
     }
 
-    /* Section: Site Header & Universal Navigation (Lines 70-170) */
+    /* Section: Top Sticky Header */
     .site-header {
       background: var(--bg-secondary);
       border-bottom: 1px solid var(--border-color);
@@ -252,7 +252,7 @@
       border: 1px solid var(--accent-amber);
     }
 
-    /* Section: Operations Bar & Horizontal Strips (Lines 172-240) */
+    /* Section: Operations Bar */
     .operations-bar {
       background: #0a0d14;
       border-bottom: 1px solid var(--border-color);
@@ -352,7 +352,7 @@
     }
     .time-controller input { width: 95px; }
 
-    /* Section: Weather Strip (Lines 242-280) */
+    /* Section: Weather Radar Strip */
     .weather-bar {
       background: #07090d;
       border-bottom: 1px solid var(--border-color);
@@ -416,7 +416,7 @@
       font-size: 0.72rem; 
     }
 
-    /* Section: Tactical Sandwich Bar & Menus (Lines 282-350) */
+    /* Section: Tactical Sandwich Bar & Modules */
     .tactical-sandwich-bar {
       background: var(--bg-secondary);
       border-bottom: 2px solid var(--border-color);
@@ -502,7 +502,7 @@
       font-weight: 700;
     }
 
-    /* Section: Layout Grid & Card Containers (Lines 352-450) */
+    /* Section: Layout Grid & Card Containers */
     .squad-pill-bar {
       display: flex;
       gap: 8px;
@@ -847,7 +847,7 @@
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       width: 90%;
-      max-width: 380px;
+      max-width: 400px;
       border-radius: 8px;
       padding: 20px;
     }
@@ -906,8 +906,7 @@
       justify-content: center;
     }
 
-    /* Section: Responsive Breakpoints Engine (Lines 520-580) */
-    /* Tablet Breakpoint (768px - 1024px / up to 1366px) */
+    /* Section: Responsive Engine Breakpoints */
     @media (max-width: 1280px) {
       .dual-pane-grid { grid-template-columns: 1fr; }
     }
@@ -918,7 +917,6 @@
       .nav-pill, .dropdown-trigger { padding: 6px 8px; font-size: 0.8rem; }
     }
 
-    /* Mobile Breakpoint (<768px) */
     @media (max-width: 768px) {
       .header-container { padding: 0 12px; }
       .brand-title { display: none; }
@@ -995,7 +993,7 @@
 </head>
 <body>
 
-  <!-- Section: Top Master Header (Lines 590-640) -->
+  <!-- Master Sticky Header -->
   <header class="site-header">
     <div class="header-container">
       <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">&#9776;</button>
@@ -1030,7 +1028,7 @@
     </div>
   </header>
 
-  <!-- Section: Operations Bar with Platform Key & Reserve Selector (Lines 642-705) -->
+  <!-- Operations Bar with Platform Key & Reserve Selector -->
   <section class="operations-bar">
     <div class="operations-container">
       <div class="hunter-stats-strip">
@@ -1088,7 +1086,7 @@
     </div>
   </section>
 
-  <!-- Section: Live Weather Radar Strip (Lines 707-740) -->
+  <!-- Live Weather Radar Strip -->
   <section class="weather-bar">
     <div class="weather-container">
       <div class="weather-forecast">
@@ -1112,7 +1110,7 @@
     </div>
   </section>
 
-  <!-- Section: Tactical Sandwich Bar (Lines 742-805) -->
+  <!-- Tactical Sandwich Navigation Bar -->
   <nav class="tactical-sandwich-bar">
     <div class="sandwich-bar-container">
       <button id="moduleSandwichBtn" class="sandwich-toggle-btn" aria-label="Toggle tactical views menu">
@@ -1185,7 +1183,7 @@
     </div>
   </nav>
 
-  <!-- Section: Master Workspace Panes (Lines 807-1010) -->
+  <!-- Master Workspace -->
   <main class="main-container">
 
     <!-- Tab: Dedicated Trophies & Achievements Chamber -->
@@ -1557,7 +1555,7 @@
 
   </main>
 
-  <!-- Section: Login Authentication Modal (Lines 1012-1025) -->
+  <!-- Complete Authentication Modal with Email/Password & Google OAuth -->
   <div class="modal-overlay hidden" id="authModal">
     <div class="modal-card">
       <div class="modal-header">
@@ -1565,17 +1563,39 @@
         <button class="modal-close" id="authModalClose" aria-label="Close Modal">&times;</button>
       </div>
       <div class="modal-body">
-        <button id="googleSignInBtn" class="btn btn-google full-width">Sign In with Google</button>
+        <form id="emailAuthForm" onsubmit="return false;" style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
+          <div class="input-group">
+            <label for="authEmailInput">Email Address</label>
+            <input type="email" id="authEmailInput" placeholder="hunter@example.com" required autocomplete="email">
+          </div>
+          <div class="input-group">
+            <label for="authPasswordInput">Password</label>
+            <input type="password" id="authPasswordInput" placeholder="••••••••" required autocomplete="current-password">
+          </div>
+          <div style="display:flex; gap:8px; margin-top:4px;">
+            <button type="submit" id="emailSignInBtn" class="btn btn-primary full-width">Sign In</button>
+            <button type="button" id="emailSignUpBtn" class="btn btn-secondary full-width">Create Account</button>
+          </div>
+        </form>
+
+        <div style="display:flex; align-items:center; gap:8px; margin:10px 0; color:var(--text-muted); font-size:0.75rem;">
+          <hr style="flex:1; border:none; border-top:1px solid var(--border-color);">
+          <span>OR</span>
+          <hr style="flex:1; border:none; border-top:1px solid var(--border-color);">
+        </div>
+
+        <button id="googleSignInBtn" class="btn btn-google full-width" type="button">Sign In with Google</button>
+        <p id="authErrorMsg" style="color:var(--danger); font-size:0.78rem; margin-top:10px; display:none;"></p>
       </div>
     </div>
   </div>
 
-  <!-- Section: Persistent 24-Hour Footer (Lines 1027-1045) -->
+  <!-- Persistent 24-Hour Footer -->
   <footer class="site-footer">
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Way of the Hunter 2 Companion &bull; Tactical Operations Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-12 05:27 EDT</span> | Version: 7.5.0</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-12 05:49 EDT</span> | Version: 7.5.1</p>
       </div>
       <div class="footer-col text-right">
         <span id="firebaseStatusBadge" class="status-pill status-connecting">RTDB: Connecting...</span>
@@ -1583,10 +1603,9 @@
     </div>
   </footer>
 
-  <!-- Section: Scripts & Companion Controller (Lines 1047-1085) -->
+  <!-- Scripts & Responsive Drawer Controller -->
   <script src="./script.js"></script>
   <script>
-    // Section: Touch-Friendly Responsive Header Controller (Lines 1050-1080)
     document.addEventListener('DOMContentLoaded', () => {
       const menuToggle = document.getElementById('menuToggle');
       const siteNav = document.getElementById('dynamicNav');
@@ -1598,14 +1617,12 @@
         });
       }
 
-      // Close mobile drawer on outside click
       document.addEventListener('click', (e) => {
         if (siteNav && siteNav.classList.contains('open') && !siteNav.contains(e.target) && e.target !== menuToggle) {
           siteNav.classList.remove('open');
         }
       });
 
-      // Delegation to support tap-to-toggle dropdowns on touch screens
       document.addEventListener('click', (e) => {
         const trigger = e.target.closest('.dropdown-trigger');
         if (trigger) {
