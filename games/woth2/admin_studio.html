@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WOTH2 Tactical Data Studio</title>
+  <title>WOTH2 Tactical Master Data Studio</title>
   <style>
     :root {
       --bg: #07090d;
@@ -14,52 +14,69 @@
       --text: #f0f4f8;
       --muted: #8b9bb4;
       --success: #2ecc71;
+      --danger: #e74c3c;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background: var(--bg); color: var(--text); padding: 24px; }
-    .studio-shell { max-width: 900px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+    .studio-shell { max-width: 1000px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
     h1 { font-size: 1.3rem; color: var(--accent); margin-bottom: 6px; }
     p { font-size: 0.85rem; color: var(--muted); margin-bottom: 20px; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
     .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
-    label { font-size: 0.75rem; text-transform: uppercase; color: var(--muted); font-weight: 700; }
-    input, select, textarea { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 8px 10px; border-radius: 4px; font-size: 0.85rem; outline: none; }
+    label { font-size: 0.75rem; text-transform: uppercase; color: var(--muted); font-weight: 700; letter-spacing: 0.5px; }
+    input, select, textarea { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 8px 10px; border-radius: 4px; font-size: 0.85rem; outline: none; width: 100%; transition: border-color 0.2s; }
     input:focus, select:focus, textarea:focus { border-color: var(--accent); }
-    .dynamic-box { background: rgba(0,0,0,0.3); border: 1px dashed var(--border); border-radius: 6px; padding: 14px; margin: 16px 0; }
-    .btn-row { display: flex; gap: 10px; margin-top: 14px; }
+    .dynamic-box { background: rgba(0,0,0,0.3); border: 1px dashed var(--border); border-radius: 6px; padding: 16px; margin: 16px 0; max-height: 60vh; overflow-y: auto; }
+    .fields-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+    .btn-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
     .btn { padding: 9px 16px; border-radius: 4px; font-weight: 700; font-size: 0.85rem; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 6px; }
     .btn-primary { background: var(--accent); color: #000; }
+    .btn-primary:hover { background: #e09418; }
     .btn-secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: #1c2738; }
     .status-banner { font-size: 0.8rem; padding: 8px 12px; border-radius: 4px; background: rgba(46, 204, 113, 0.15); border: 1px solid var(--success); color: var(--success); margin-top: 14px; display: none; }
   </style>
 </head>
 <body>
 
 <div class="studio-shell">
-  <h1>WOTH2 Schema Studio &amp; Dataset Builder</h1>
-  <p>Select a JSON dataset to configure attributes or add unlisted entities without retyping raw JSON.</p>
+  <h1>WOTH2 Tactical Master Data Studio</h1>
+  <p>Manage, add, and append entries across all 19 official WOTH2 game datasets without writing raw JSON code.</p>
 
   <div class="grid-2">
     <div class="form-group">
-      <label for="datasetSelect">1. Target JSON File</label>
+      <label for="datasetSelect">1. Target Dataset (19 Available)</label>
       <select id="datasetSelect">
-        <option value="harvest">woth2_harvest_schemas.json</option>
-        <option value="need_zones">woth2_need_zones.json</option>
-        <option value="species">woth2_species.json</option>
-        <option value="infrastructure">woth2_infrastructure.json</option>
-        <option value="missions">woth2_missions.json</option>
+        <option value="woth2_challenges.json">woth2_challenges.json</option>
+        <option value="woth2_dog_skills.json">woth2_dog_skills.json</option>
+        <option value="woth2_game_data.json">woth2_game_data.json</option>
+        <option value="woth2_gear.json">woth2_gear.json</option>
+        <option value="woth2_harvest_schemas.json" selected>woth2_harvest_schemas.json</option>
+        <option value="woth2_infrastructure.json">woth2_infrastructure.json</option>
+        <option value="woth2_lifecycles.json">woth2_lifecycles.json</option>
+        <option value="woth2_missions.json">woth2_missions.json</option>
+        <option value="woth2_need_zones.json">woth2_need_zones.json</option>
+        <option value="woth2_news_update.json">woth2_news_update.json</option>
+        <option value="woth2_progression_gear.json">woth2_progression_gear.json</option>
+        <option value="woth2_regions.json">woth2_regions.json</option>
+        <option value="woth2_reserves.json">woth2_reserves.json</option>
+        <option value="woth2_runtime_save.json">woth2_runtime_save.json</option>
+        <option value="woth2_schema-update.json">woth2_schema-update.json</option>
+        <option value="woth2_species.json">woth2_species.json</option>
+        <option value="woth2_stewardship.json">woth2_stewardship.json</option>
+        <option value="woth2_trails.json">woth2_trails.json</option>
+        <option value="woth2_world_wildlife.json">woth2_world_wildlife.json</option>
       </select>
     </div>
 
     <div class="form-group">
-      <label for="entitySelect">2. Target Entity / Entry</label>
+      <label for="entitySelect">2. Target Entry / Record</label>
       <select id="entitySelect"></select>
     </div>
   </div>
 
   <div id="dynamicFormContainer" class="dynamic-box">
-    <!-- Populated dynamically based on the dataset selected -->
+    <!-- Dynamic inputs generated based on schema definition -->
   </div>
 
   <div class="btn-row">
@@ -72,198 +89,218 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
-  const masterSpeciesList = [
-    "Snowshoe Hare", "Mountain Goat", "Bighorn Sheep", "Dall Sheep",
-    "Rocky Mountain Mule Deer", "Whitetail Deer", "Rocky Mountain Elk",
-    "Western Moose", "Pronghorn", "Wild Boar", "Warthog",
-    "Northwestern Wolf", "Grizzly Bear", "Black Bear", "Cougar", "Southern Lion"
-  ];
-
-  // In-memory working state
-  let workingData = {
-    harvest: {},
-    need_zones: { clusters: [] },
-    species: { species: [] },
-    infrastructure: { tasks: [] },
-    missions: { missions: [] }
-  };
-
-  // Attempt to preload current JSON files if present
-  async function loadInitial(file, key) {
-    try {
-      const res = await fetch(`../../data/${file}?v=${Date.now()}`);
-      if (res.ok) workingData[key] = await res.json();
-    } catch (e) {
-      console.warn(`Local ${file} not found; starting with blank template.`);
-    }
-  }
-
-  await Promise.all([
-    loadInitial("woth2_harvest_schemas.json", "harvest"),
-    loadInitial("woth2_need_zones.json", "need_zones"),
-    loadInitial("woth2_species.json", "species"),
-    loadInitial("woth2_infrastructure.json", "infrastructure"),
-    loadInitial("woth2_missions.json", "missions")
-  ]);
-
   const datasetSelect = document.getElementById("datasetSelect");
   const entitySelect = document.getElementById("entitySelect");
   const container = document.getElementById("dynamicFormContainer");
   const statusAlert = document.getElementById("statusAlert");
 
-  function refreshEntities() {
-    const ds = datasetSelect.value;
+  const memoryStore = {};
+
+  async function loadFile(fileName) {
+    if (memoryStore[fileName]) return memoryStore[fileName];
+    const paths = [
+      `../../data/${fileName}`,
+      `../data/${fileName}`,
+      `./data/${fileName}`,
+      `/Website/data/${fileName}`,
+      `//werewolf3788.github.io/Website/data/${fileName}`
+    ];
+    for (const p of paths) {
+      try {
+        const res = await fetch(`${p}?v=${Date.now()}`);
+        if (res.ok) {
+          memoryStore[fileName] = await res.json();
+          return memoryStore[fileName];
+        }
+      } catch (e) {}
+    }
+    memoryStore[fileName] = {};
+    return memoryStore[fileName];
+  }
+
+  function getArrayKey(data) {
+    if (!data || typeof data !== "object") return null;
+    const candidates = [
+      "species", "schemas", "tasks", "missions", "clusters", "regions", 
+      "reserves", "species_lifecycles", "seasonal_corridors", "gear", "trees", 
+      "skills", "updates", "items", "entries"
+    ];
+    for (const k of candidates) {
+      if (Array.isArray(data[k])) return k;
+    }
+    for (const [k, v] of Object.entries(data)) {
+      if (Array.isArray(v)) return k;
+    }
+    return null;
+  }
+
+  async function refreshEntities() {
+    const file = datasetSelect.value;
+    const data = await loadFile(file);
     entitySelect.innerHTML = "";
 
-    if (ds === "harvest") {
-      masterSpeciesList.forEach(sp => {
-        const opt = document.createElement("option");
-        opt.value = sp;
-        const exists = Boolean(workingData.harvest[sp]);
-        opt.textContent = `${sp} ${exists ? "✔ (Configured)" : "➕ (New)"}`;
-        entitySelect.appendChild(opt);
-      });
-    } else if (ds === "need_zones") {
-      const clusters = workingData.need_zones.clusters || [];
-      clusters.forEach((c, idx) => {
+    const arrayKey = getArrayKey(data);
+
+    if (arrayKey && Array.isArray(data[arrayKey])) {
+      const arr = data[arrayKey];
+      arr.forEach((item, idx) => {
         const opt = document.createElement("option");
         opt.value = idx;
-        opt.textContent = `${c.species} - ${c.region} (${c.zones ? c.zones.length : 0} zones)`;
+        const title = item.name || item.species || item.title || item.type || item.location || item.id || `Item #${idx + 1}`;
+        opt.textContent = `${title}`;
         entitySelect.appendChild(opt);
       });
       const newOpt = document.createElement("option");
       newOpt.value = "__new__";
-      newOpt.textContent = "➕ Add New Need Zone Cluster...";
+      newOpt.textContent = `➕ Add New Record to [${arrayKey}]...`;
+      entitySelect.appendChild(newOpt);
+    } else if (typeof data === "object" && data !== null) {
+      Object.keys(data).forEach(k => {
+        const opt = document.createElement("option");
+        opt.value = k;
+        opt.textContent = `${k}`;
+        entitySelect.appendChild(opt);
+      });
+      const newOpt = document.createElement("option");
+      newOpt.value = "__new__";
+      newOpt.textContent = "➕ Add New Key...";
       entitySelect.appendChild(newOpt);
     }
+
     renderFields();
   }
 
   function renderFields() {
-    const ds = datasetSelect.value;
-    const selected = entitySelect.value;
+    const file = datasetSelect.value;
+    const data = memoryStore[file] || {};
+    const sel = entitySelect.value;
     container.innerHTML = "";
 
-    if (ds === "harvest") {
-      const current = workingData.harvest[selected] || {};
-      container.innerHTML = `
-        <h4 style="color:var(--accent); font-size:0.9rem; margin-bottom:12px;">Harvest Configuration: ${selected}</h4>
-        <div class="grid-3">
-          <div class="form-group">
-            <label>Scoring Metric Type</label>
-            <select id="field_type">
-              <option value="Weight Specimen" ${current.type === "Weight Specimen" ? "selected" : ""}>Weight Specimen</option>
-              <option value="Antlers" ${current.type === "Antlers" ? "selected" : ""}>Antlers (Spread &amp; Points)</option>
-              <option value="Horns (Bovidae)" ${current.type === "Horns (Bovidae)" ? "selected" : ""}>Horns (Curl &amp; Length)</option>
-              <option value="Suid Tusks" ${current.type === "Suid Tusks" ? "selected" : ""}>Suid Tusks</option>
-              <option value="Predator Skull" ${current.type === "Predator Skull" ? "selected" : ""}>Predator Skull</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Average Weight (lbs)</label>
-            <input type="number" step="0.1" id="field_avg_weight" value="${current.avg_weight || 4.2}">
-          </div>
-          <div class="form-group">
-            <label>Dressed Ratio (%)</label>
-            <input type="number" step="0.01" id="field_dressed_ratio" value="${current.dressed_ratio || 0.65}">
-          </div>
-        </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Image / Badge URL</label>
-            <input type="text" id="field_image_url" placeholder="//werewolf3788.github.io/Website/assets/..." value="${current.image || ""}">
-          </div>
-          <div class="form-group">
-            <label>Primary Organ Hit Targets</label>
-            <input type="text" id="field_organs" placeholder="e.g. Heart, Both Lungs" value="${current.organs || ""}">
-          </div>
-        </div>
-      `;
-    } else if (ds === "need_zones") {
-      const isNew = selected === "__new__";
-      const current = (!isNew && workingData.need_zones.clusters[selected]) ? workingData.need_zones.clusters[selected] : {};
-      container.innerHTML = `
-        <h4 style="color:var(--accent); font-size:0.9rem; margin-bottom:12px;">${isNew ? "New Need Zone Cluster" : "Edit Need Zone Cluster"}</h4>
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Species</label>
-            <input type="text" id="nz_species" value="${current.species || ""}" placeholder="e.g. Western Moose">
-          </div>
-          <div class="form-group">
-            <label>Region / Sector</label>
-            <input type="text" id="nz_region" value="${current.region || ""}" placeholder="e.g. Mishipeshu Swamp">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Landmark Name</label>
-          <input type="text" id="nz_landmark" value="${(current.zones && current.zones[0]) ? current.zones[0].landmark : ""}" placeholder="e.g. Popobawa Vlei Eastern Ridge">
-        </div>
-        <div class="form-group">
-          <label>Notes / Visual Landmark Context</label>
-          <textarea id="nz_notes" rows="2" placeholder="e.g. Sighted 50yds north of tree stand near river curve.">${current.cluster_notes || ""}</textarea>
+    const arrayKey = getArrayKey(data);
+    let targetObj = {};
+    const isNew = sel === "__new__";
+
+    if (arrayKey && Array.isArray(data[arrayKey])) {
+      if (!isNew && data[arrayKey][sel]) {
+        targetObj = data[arrayKey][sel];
+      } else if (isNew && data[arrayKey].length > 0) {
+        // Clone prototype fields with empty values
+        Object.keys(data[arrayKey][0]).forEach(k => targetObj[k] = "");
+      }
+    } else {
+      if (!isNew && data[sel]) {
+        targetObj = data[sel];
+      }
+    }
+
+    const title = isNew ? "Add New Record" : (targetObj.name || targetObj.species || targetObj.title || sel);
+    let html = `<h4 style="color:var(--accent); font-size:0.95rem; margin-bottom:14px;">Configuring: ${title}</h4><div class="fields-grid">`;
+
+    if (isNew && !arrayKey) {
+      html += `
+        <div class="form-group" style="grid-column: 1/-1;">
+          <label>New Object Key Name</label>
+          <input type="text" id="prop___key_name" placeholder="e.g. snowshoe_hare">
         </div>
       `;
     }
+
+    if (typeof targetObj === "object" && targetObj !== null && Object.keys(targetObj).length > 0) {
+      Object.entries(targetObj).forEach(([k, v]) => {
+        const valStr = typeof v === "object" ? JSON.stringify(v) : (v !== undefined && v !== null ? v : "");
+        const isLong = typeof v === "object" || (typeof v === "string" && v.length > 50);
+
+        html += `
+          <div class="form-group" style="${isLong ? 'grid-column: 1/-1;' : ''}">
+            <label>${k}</label>
+            ${isLong
+              ? `<textarea id="prop_${k}" rows="2">${valStr}</textarea>`
+              : `<input type="text" id="prop_${k}" value="${valStr}">`
+            }
+          </div>
+        `;
+      });
+    } else {
+      html += `
+        <div class="form-group" style="grid-column: 1/-1;">
+          <label>Entry Payload (JSON / String)</label>
+          <textarea id="prop___raw_value" rows="6" placeholder='{\n  "name": "New Entry",\n  "value": 100\n}'></textarea>
+        </div>
+      `;
+    }
+
+    html += `</div>`;
+    container.innerHTML = html;
   }
 
   datasetSelect.addEventListener("change", refreshEntities);
   entitySelect.addEventListener("change", renderFields);
 
   document.getElementById("appendBtn").addEventListener("click", () => {
-    const ds = datasetSelect.value;
-    const selected = entitySelect.value;
+    const file = datasetSelect.value;
+    const data = memoryStore[file] || {};
+    const sel = entitySelect.value;
+    const arrayKey = getArrayKey(data);
+    const isNew = sel === "__new__";
 
-    if (ds === "harvest") {
-      workingData.harvest[selected] = {
-        species: selected,
-        type: document.getElementById("field_type").value,
-        avg_weight: parseFloat(document.getElementById("field_avg_weight").value) || 0,
-        dressed_ratio: parseFloat(document.getElementById("field_dressed_ratio").value) || 0.65,
-        image: document.getElementById("field_image_url").value.trim(),
-        organs: document.getElementById("field_organs").value.trim(),
-        updatedAt: new Date().toISOString()
-      };
-    } else if (ds === "need_zones") {
-      const newCluster = {
-        species: document.getElementById("nz_species").value.trim(),
-        region: document.getElementById("nz_region").value.trim(),
-        cluster_notes: document.getElementById("nz_notes").value.trim(),
-        zones: [
-          {
-            type: "Drinking / Feeding",
-            schedule: "09:00 - 13:00",
-            landmark: document.getElementById("nz_landmark").value.trim(),
-            proximity_to_center_yds: 0
-          }
-        ]
-      };
-      if (selected === "__new__") {
-        workingData.need_zones.clusters.push(newCluster);
+    const updated = {};
+    document.querySelectorAll('[id^="prop_"]').forEach(el => {
+      const field = el.id.replace("prop_", "");
+      if (field === "__key_name" || field === "__raw_value") return;
+
+      let val = el.value.trim();
+      if (!isNaN(val) && val !== "") {
+        val = Number(val);
+      } else if (val.toLowerCase() === "true") {
+        val = true;
+      } else if (val.toLowerCase() === "false") {
+        val = false;
+      } else if (val.startsWith("{") || val.startsWith("[")) {
+        try { val = JSON.parse(val); } catch (e) {}
+      }
+      updated[field] = val;
+    });
+
+    const rawEl = document.getElementById("prop___raw_value");
+    if (rawEl && rawEl.value.trim()) {
+      try {
+        Object.assign(updated, JSON.parse(rawEl.value.trim()));
+      } catch (e) {
+        alert("Invalid JSON format in custom payload box.");
+        return;
+      }
+    }
+
+    if (arrayKey && Array.isArray(data[arrayKey])) {
+      if (isNew) {
+        data[arrayKey].push(updated);
       } else {
-        workingData.need_zones.clusters[selected] = newCluster;
+        data[arrayKey][sel] = Object.assign(data[arrayKey][sel], updated);
+      }
+    } else {
+      if (isNew) {
+        const keyName = document.getElementById("prop___key_name").value.trim();
+        if (!keyName) return alert("Please specify an object key name.");
+        data[keyName] = updated;
+      } else {
+        data[sel] = Object.assign(data[sel] || {}, updated);
       }
     }
 
     statusAlert.style.display = "block";
-    statusAlert.textContent = `✔ Successfully appended and updated ${selected} in working memory!`;
+    statusAlert.textContent = `✔ Successfully updated record inside ${file}!`;
     setTimeout(() => { statusAlert.style.display = "none"; }, 3500);
+
     refreshEntities();
   });
 
   document.getElementById("downloadJsonBtn").addEventListener("click", () => {
-    const ds = datasetSelect.value;
-    const fileMap = {
-      harvest: "woth2_harvest_schemas.json",
-      need_zones: "woth2_need_zones.json",
-      species: "woth2_species.json",
-      infrastructure: "woth2_infrastructure.json",
-      missions: "woth2_missions.json"
-    };
-    const fileName = fileMap[ds];
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(workingData[ds], null, 2));
+    const file = datasetSelect.value;
+    const data = memoryStore[file] || {};
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
     const dlAnchor = document.createElement("a");
     dlAnchor.setAttribute("href", dataStr);
-    dlAnchor.setAttribute("download", fileName);
+    dlAnchor.setAttribute("download", file);
     document.body.appendChild(dlAnchor);
     dlAnchor.click();
     dlAnchor.remove();
