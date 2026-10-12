@@ -37,6 +37,19 @@
         { "id": "tip_to_tip", "label": "Tip-to-Tip Spread", "unit": "in", "placeholder": "22.0" }
       ]
     },
+    "suid_tusks": {
+      "category": "Suid Tusks",
+      "fields": [
+        { "id": "main_beam_tusks", "label": "Length of Main Beam", "unit": "in", "placeholder": "26.0" },
+        { "id": "circ_at_base", "label": "Circumference at Base", "unit": "in", "placeholder": "4.0" }
+      ]
+    },
+    "weight_specimen": {
+      "category": "Small Game Weight",
+      "fields": [
+        { "id": "body_weight", "label": "Body Weight", "unit": "lbs", "placeholder": "4.2" }
+      ]
+    },
     "avian_game": {
       "category": "Birds & Waterfowl",
       "fields": [
@@ -54,9 +67,17 @@
     "Grizzly bear": "predator_skull",
     "Northwestern wolf": "predator_skull",
     "American wolverine": "predator_skull",
+    "Black bear": "predator_skull",
+    "Cougar": "predator_skull",
+    "Southern lion": "predator_skull",
     "Dall sheep": "horned_bovid",
+    "Bighorn sheep": "horned_bovid",
+    "Mountain goat": "horned_bovid",
     "Wood bison": "horned_bovid",
     "Rocky Mountain pronghorn": "horned_bovid",
+    "Wild boar": "suid_tusks",
+    "Warthog": "suid_tusks",
+    "Snowshoe hare": "weight_specimen",
     "Eastern wild turkey": "avian_game",
     "Mallard": "avian_game",
     "White-tailed ptarmigan": "avian_game"
