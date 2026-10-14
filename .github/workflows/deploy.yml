@@ -1,11 +1,11 @@
 # ==============================================================================
-# GitHub Actions Workflow: Auto-Deploy to Firebase Hosting
+# GitHub Actions Workflow: Dual-Deploy to Firebase Hosting & GitHub Pages
 # Project: playstation-be936
 # Target Secret: GCP_SA_KEY_WEBSITE
-# Timestamp: 2026-09-23 11:45:00 EDT (New York)
+# Timestamp: 2026-10-14 16:31:00 EDT (New York)
 # ==============================================================================
 
-name: Deploy to Google Cloud & Firebase
+name: Deploy to Google Cloud, Firebase & GitHub Pages
 
 on:
   push:
@@ -13,9 +13,20 @@ on:
       - main
   workflow_dispatch:
 
+# Permissions required to publish artifacts to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment to GitHub Pages to prevent conflicts
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false
+
 jobs:
   build_and_deploy:
-    name: Build, Package and Deploy
+    name: Build, Package and Dual Deploy
     runs-on: ubuntu-latest
 
     steps:
@@ -36,3 +47,19 @@ jobs:
           args: deploy --only hosting --project playstation-be936
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_WEBSITE }}
+
+      # Step 4: Configure GitHub Pages runtime environment
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      # Step 5: Package static assets/overlays for GitHub Pages
+      # (Change path from '.' to a specific folder like './overlays' if needed)
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      # Step 6: Deploy static artifact to GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
