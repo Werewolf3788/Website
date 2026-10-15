@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <!-- 
-      VERSION TIMESTAMP: 2026-10-14 17:01:00 EDT
-      CRITICAL: Direct GitHack PNG wing URLs and live Twitch avatar syncing via DecAPI.
+      VERSION TIMESTAMP: 2026-07-14 10:00:00 CT
+      CRITICAL: Restored updateGameArt with pre-flight fetch redirect validation to eliminate gray 404 boxes.
     -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phoenix Darkfire - Elite Protocol</title>
     <!-- Animate.css with smart cache-buster to prevent stale imports -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css?v=20261014"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css?v=20260714"/>
     
     <style>
         :root {
@@ -67,48 +67,37 @@
             width: 100%; 
             background: var(--banner-gradient); 
             position: relative; 
-            overflow: visible; 
+            overflow: hidden; 
             border-bottom: 0.4vh solid var(--border-color); 
             z-index: 10;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            padding: 0 4vw;
-            box-sizing: border-box;
         }
         
         .top-banner::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 255, 0, 0.04));
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
             background-size: 100% 2px, 3px 100%;
             pointer-events: none;
             opacity: 0.4;
         }
 
         .wing-text {
+            position: absolute; 
+            top: 50%; 
+            transform: translateY(-50%); 
             font-size: 3.5vh; 
             color: var(--accent-glow);
             text-transform: uppercase; 
             text-shadow: 0 0 15px var(--primary-glow), 0 0 30px var(--primary-glow); 
             letter-spacing: 0.5vw; 
             z-index: 11;
-            display: flex;
-            align-items: center;
-            gap: 1.2vw;
         }
-
-        .wing-img {
-            height: 9.5vh;
-            width: auto;
-            max-width: 120px;
-            object-fit: contain;
-            filter: drop-shadow(0 0 12px var(--accent-glow));
-            pointer-events: none;
-            user-select: none;
-            display: inline-block;
-        }
+        .left-wing { left: 10vw; } 
+        .right-wing { right: 10vw; }
 
         .middle-section { 
             flex: 1; 
@@ -117,17 +106,17 @@
             z-index: 5;
         }
 
-        #phoenix-beast { 
+        #phoenix-beast {
             position: absolute; 
             width: 30vw; 
             max-width: 600px; 
             aspect-ratio: 1/1; 
             top: 50%; 
             left: -100vw; 
-            z-index: 150; 
-            transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1), left 1.2s cubic-bezier(0.19, 1, 0.22, 1), filter 0.8s ease; 
+            z-index: 150;
+            transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1), left 1.2s cubic-bezier(0.19, 1, 0.22, 1), filter 0.8s ease;
             filter: var(--phoenix-filter) drop-shadow(0 0 5vw var(--primary-glow)); 
-            opacity: 0; 
+            opacity: 0;
         }
         #phoenix-img { width: 100%; height: 100%; object-fit: contain; }
 
@@ -141,262 +130,263 @@
             z-index: 200; 
             width: 90vw; 
         }
-        .name-banner { 
+        .name-banner {
             font-size: 8vw; 
             font-weight: 900; 
-            text-transform: uppercase; 
-            background: linear-gradient(to bottom, var(--text-gradient-start) 0%, var(--text-gradient-mid) 50%, var(--text-gradient-end) 100%); 
+            text-transform: uppercase;
+            background: linear-gradient(to bottom, var(--text-gradient-start) 0%, var(--text-gradient-mid) 50%, var(--text-gradient-end) 100%);
             -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-            filter: drop-shadow(0 0 2vw var(--primary-glow)); 
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 2vw var(--primary-glow));
         }
 
         /* STREAM PANELS */
-        .bottom-left-container { 
-            position: absolute; 
-            bottom: 3vh; 
-            left: 3vw; 
-            z-index: 60; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: flex-start; 
-            gap: 1.5vh; 
-            animation: slideInLeft 1s cubic-bezier(0.16, 1, 0.3, 1); 
+        .bottom-left-container {
+            position: absolute;
+            bottom: 3vh;
+            left: 3vw;
+            z-index: 60;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1.5vh;
+            animation: slideInLeft 1s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .qr-wrapper { 
-            background: rgba(0, 0, 0, 0.7); 
-            padding: 1vh; 
-            border-radius: 1.2vh; 
-            border: 1px solid var(--wrapper-border); 
-            backdrop-filter: blur(8px); 
-            box-shadow: 0 0 20px var(--wrapper-shadow); 
+        .qr-wrapper {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 1vh;
+            border-radius: 1.2vh;
+            border: 1px solid var(--wrapper-border);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 0 20px var(--wrapper-shadow);
         }
 
-        #support-qr { 
-            width: 12vh; 
-            height: 12vh; 
-            display: block; 
-            border-radius: 0.5vh; 
-            background: #fff; 
-            padding: 2px; 
+        #support-qr {
+            width: 12vh;
+            height: 12vh;
+            display: block;
+            border-radius: 0.5vh;
+            background: #fff;
+            padding: 2px;
         }
 
-        .bottom-ticker-container { 
-            position: absolute; 
-            bottom: 3.5vh; 
+        .bottom-ticker-container {
+            position: absolute;
+            bottom: 3.5vh;
             left: 18vw; 
-            right: 42vw; 
-            height: 4vh; 
-            background: rgba(0, 0, 0, 0.5); 
-            border-top: 1px solid var(--wrapper-border); 
-            border-bottom: 1px solid var(--wrapper-border); 
-            backdrop-filter: blur(8px); 
-            overflow: hidden; 
-            display: flex; 
-            align-items: center; 
-            z-index: 55; 
-            border-radius: 0.5vh; 
+            right: 42vw;
+            height: 4vh;
+            background: rgba(0, 0, 0, 0.5);
+            border-top: 1px solid var(--wrapper-border);
+            border-bottom: 1px solid var(--wrapper-border);
+            backdrop-filter: blur(8px);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            z-index: 55;
+            border-radius: 0.5vh;
         }
 
-        .ticker-text { 
-            white-space: nowrap; 
-            display: inline-block; 
-            animation: ticker-scroll 35s linear infinite; 
-            color: var(--accent-glow); 
-            font-size: 1.5vh; 
-            text-transform: uppercase; 
-            letter-spacing: 0.1vw; 
-            text-shadow: 0 0 10px var(--primary-glow); 
+        .ticker-text {
+            white-space: nowrap;
+            display: inline-block;
+            animation: ticker-scroll 35s linear infinite;
+            color: var(--accent-glow);
+            font-size: 1.5vh;
+            text-transform: uppercase;
+            letter-spacing: 0.1vw;
+            text-shadow: 0 0 10px var(--primary-glow);
             padding-left: 100%; 
         }
 
-        @keyframes ticker-scroll { 
-            0% { transform: translateX(0); } 
-            100% { transform: translateX(-100%); } 
+        @keyframes ticker-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
         }
 
-        .bottom-right-container { 
-            position: absolute; 
-            bottom: 3vh; 
-            right: 3vw; 
-            z-index: 60; 
-            display: flex; 
+        .bottom-right-container {
+            position: absolute;
+            bottom: 3vh;
+            right: 3vw;
+            z-index: 60;
+            display: flex;
             flex-direction: row; 
-            align-items: flex-end; 
-            gap: 1.5vw; 
-            animation: slideInRight 1s cubic-bezier(0.16, 1, 0.3, 1); 
+            align-items: flex-end;
+            gap: 1.5vw;
+            animation: slideInRight 1s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .game-title-wrapper { 
-            max-width: 25vw; 
+        .game-title-wrapper {
+            max-width: 25vw;
             padding-bottom: 0.5vh; 
-            text-align: right; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: flex-end; 
-            gap: 1.5vh; 
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 1.5vh;
         }
 
-        .current-game-title { 
-            font-size: 2.2vh; 
-            color: #fff; 
-            text-transform: uppercase; 
-            text-shadow: 0 0 15px var(--accent-glow); 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            font-weight: 900; 
-            animation: textPulse 2s infinite alternate; 
+        .current-game-title {
+            font-size: 2.2vh;
+            color: #fff;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px var(--accent-glow);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 900;
+            animation: textPulse 2s infinite alternate;
         }
 
-        .game-thumbnail-container { 
-            width: 10.5vh; 
-            height: 14vh; 
-            border-radius: 0.8vh; 
-            overflow: hidden; 
-            border: 2px solid var(--wrapper-border); 
-            box-shadow: 0 0 15px var(--wrapper-shadow); 
-            background-color: rgba(0, 12, 26, 0.95); 
+        .game-thumbnail-container {
+            width: 10.5vh;
+            height: 14vh;
+            border-radius: 0.8vh;
+            overflow: hidden;
+            border: 2px solid var(--wrapper-border);
+            box-shadow: 0 0 15px var(--wrapper-shadow);
+            background-color: rgba(0, 12, 26, 0.95);
             display: none; 
         }
 
-        #game-art-img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            display: block; 
+        #game-art-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
-        .identity-column { 
-            display: flex; 
-            flex-direction: column; 
+        .identity-column {
+            display: flex;
+            flex-direction: column;
             align-items: center; 
-            gap: 0.8vh; 
+            gap: 0.8vh;
         }
 
-        .stats-stack { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 0.5vh; 
-            align-items: center; 
+        .stats-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5vh;
+            align-items: center;
         }
 
-        .stat-label { 
-            font-size: 1.1vh; 
-            color: var(--accent-color); 
-            padding: 4px 10px; 
-            border: 1px solid var(--stat-label-border); 
-            background: rgba(0, 0, 0, 0.7); 
-            border-radius: 4px; 
-            text-transform: uppercase; 
-            letter-spacing: 0.1vw; 
-            font-weight: bold; 
-            display: flex; 
-            align-items: center; 
-            gap: 4px; 
-            white-space: nowrap; 
-            box-shadow: 0 0 8px var(--wrapper-shadow); 
+        .stat-label {
+            font-size: 1.1vh;
+            color: var(--accent-color);
+            padding: 4px 10px;
+            border: 1px solid var(--stat-label-border);
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.1vw;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            box-shadow: 0 0 8px var(--wrapper-shadow);
         }
 
         .stat-label span { color: #fff; }
 
-        .profile-pic-wrapper { 
-            position: relative; 
-            width: 10vh; 
-            height: 10vh; 
-            border-radius: 50%; 
-            padding: 0.4vh; 
-            background: linear-gradient(45deg, var(--border-color), var(--accent-color)); 
-            box-shadow: 0 0 20px var(--primary-glow); 
+        .profile-pic-wrapper {
+            position: relative;
+            width: 10vh;
+            height: 10vh;
+            border-radius: 50%;
+            padding: 0.4vh;
+            background: linear-gradient(45deg, var(--border-color), var(--accent-color));
+            box-shadow: 0 0 20px var(--primary-glow);
         }
 
-        #twitch-profile-img { 
-            width: 100%; 
-            height: 100%; 
-            border-radius: 50%; 
-            object-fit: cover; 
-            border: 0.2vh solid #000; 
-            display: block;
+        #twitch-profile-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 0.2vh solid #000;
         }
 
-        .live-friends-panel { 
-            position: absolute; 
+        .live-friends-panel {
+            position: absolute;
             right: 0.5vw; 
-            top: 45%; 
-            transform: translateY(-50%); 
-            z-index: 65; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 0.8vh; 
-            pointer-events: none; 
+            top: 45%;
+            transform: translateY(-50%);
+            z-index: 65;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8vh;
+            pointer-events: none;
         }
 
-        .friend-card { 
-            display: flex; 
-            align-items: center; 
-            background: rgba(0, 0, 0, 0.85); 
-            border: 1px solid var(--wrapper-border); 
+        .friend-card {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid var(--wrapper-border);
             border-right: 0.4vh solid var(--friend-border-right); 
-            border-radius: 0.4vh; 
-            padding: 0.5vh 0.6vw; 
-            box-shadow: 0 0 10px var(--wrapper-shadow); 
-            animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
-            min-width: 10vw; 
-            max-width: 12vw; 
+            border-radius: 0.4vh;
+            padding: 0.5vh 0.6vw;
+            box-shadow: 0 0 10px var(--wrapper-shadow);
+            animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            min-width: 10vw;
+            max-width: 12vw;
         }
 
-        .friend-info { 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            width: 100%; 
+        .friend-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
         }
 
-        .friend-name { 
-            font-size: 1.05vh; 
-            color: #fff; 
-            text-transform: uppercase; 
-            font-weight: 900; 
-            text-shadow: 0 0 5px var(--accent-glow); 
-            letter-spacing: 0.05vw; 
-            display: flex; 
-            align-items: center; 
+        .friend-name {
+            font-size: 1.05vh;
+            color: #fff;
+            text-transform: uppercase;
+            font-weight: 900;
+            text-shadow: 0 0 5px var(--accent-glow);
+            letter-spacing: 0.05vw;
+            display: flex;
+            align-items: center;
         }
 
-        .live-dot { 
-            display: inline-block; 
-            width: 0.6vh; 
-            height: 0.6vh; 
-            background-color: var(--accent-glow); 
-            border-radius: 50%; 
-            margin-right: 0.4vw; 
-            box-shadow: 0 0 5px var(--accent-glow); 
-            animation: pulse-dot 1.5s infinite alternate; 
+        .live-dot {
+            display: inline-block;
+            width: 0.6vh;
+            height: 0.6vh;
+            background-color: var(--accent-glow);
+            border-radius: 50%;
+            margin-right: 0.4vw;
+            box-shadow: 0 0 5px var(--accent-glow);
+            animation: pulse-dot 1.5s infinite alternate;
         }
 
-        .friend-game { 
-            font-size: 0.85vh; 
-            color: var(--accent-color); 
-            font-weight: bold; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            text-transform: uppercase; 
-            margin-top: 0.1vh; 
-            padding-left: 0.2vw; 
+        .friend-game {
+            font-size: 0.85vh;
+            color: var(--accent-color);
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-transform: uppercase;
+            margin-top: 0.1vh;
+            padding-left: 0.2vw;
         }
 
         /* OVERRIDES & SPECIFIC THEME RULES */
+        
+        /* 1. SONIC BLUE & GOLD THEME */
         .theme-sonic {
             --primary-glow: #004999;
-            --accent-glow: #FFD700;
-            --border-color: #004999;
-            --accent-color: #FFD700;
+            --accent-glow: #FFD700; /* Gold Ring Glow */
+            --border-color: #004999; /* Sonic Blue */
+            --accent-color: #FFD700; /* Gold Highlight */
             --banner-bg-mid: #001f40;
-            --text-gradient-start: #00d4ff;
-            --text-gradient-mid: #004999;
-            --text-gradient-end: #FFD700;
+            --text-gradient-start: #00d4ff; /* Speed Cyan */
+            --text-gradient-mid: #004999;   /* Sonic Blue */
+            --text-gradient-end: #FFD700;   /* Golden Ring */
             --wrapper-border: rgba(0, 212, 255, 0.5);
             --wrapper-shadow: rgba(0, 73, 153, 0.4);
             --friend-border-right: #FFD700;
@@ -404,6 +394,7 @@
             --phoenix-filter: grayscale(100%) brightness(1.1) sepia(1) hue-rotate(195deg) saturate(25);
         }
 
+        /* 2. KIMCHI: A STARS IN THE TRASH STORY */
         .theme-kimchi {
             --primary-glow: #F8E69E;
             --accent-glow: #ffffff;
@@ -420,6 +411,7 @@
             --phoenix-filter: grayscale(100%) brightness(1.2) sepia(1) hue-rotate(15deg) saturate(12);
         }
 
+        /* 3. PAPA'S PIZZERIA DELUXE / FOOD THEMES (MULTI-COLOR) */
         .theme-food {
             --primary-glow: #8F1A00;
             --accent-glow: #FCDD39;
@@ -437,6 +429,7 @@
             --phoenix-filter: grayscale(0%) brightness(1) sepia(0) saturate(1);
         }
 
+        /* 4. DON'T STARVE TOGETHER THEME */
         .theme-dontstarve {
             --primary-glow: #333E5C;
             --accent-glow: #7c8ba1;
@@ -453,6 +446,7 @@
             --phoenix-filter: grayscale(80%) brightness(0.6) sepia(0.3) hue-rotate(210deg) saturate(5);
         }
 
+        /* 5. OCCULT / HORROR GAMES (BLOOD RED) */
         .theme-horror {
             --primary-glow: #8B0000;
             --accent-glow: #ff1a1a;
@@ -469,6 +463,7 @@
             --phoenix-filter: grayscale(100%) brightness(0.5) sepia(1) hue-rotate(350deg) saturate(35);
         }
 
+        /* 6. REBUILD 3: GANGS OF DEADSVILLE THEME */
         .theme-rebuild3 {
             --primary-glow: #ff0000;
             --accent-glow: #ff3333;
@@ -503,7 +498,7 @@
             user-select: none;
             opacity: 0.98;
             transition: all 0.4s ease;
-            display: none;
+            display: none; /* Hidden by default */
         }
 
         #simulator-panel.collapsed {
@@ -708,23 +703,13 @@
 
     <div class="overlay-wrapper" id="master-theme-container">
         <header class="top-banner">
-            <div class="wing-text left-wing">
-                <img class="wing-img" 
-                     src="//raw.githack.com/Werewolf3788/Website/main/Images/left_wing.png" 
-                     alt="Left Wing">
-                <span>Phoenix</span>
-            </div>
-            <div class="wing-text right-wing">
-                <span>Darkfire</span>
-                <img class="wing-img" 
-                     src="//raw.githack.com/Werewolf3788/Website/main/Images/right_wing.png" 
-                     alt="Right Wing">
-            </div>
+            <div class="wing-text left-wing">Phoenix</div>
+            <div class="wing-text right-wing">Darkfire</div>
         </header>
 
         <div class="middle-section">
             <div id="phoenix-beast">
-                <img id="phoenix-img" src="//raw.githack.com/KFruti88/Phoenix-Darkfire/main/Banner.png" alt="Phoenix Banner">
+                <img id="phoenix-img" src="https://raw.githack.com/KFruti88/Phoenix-Darkfire/main/Banner.png" alt="Phoenix Banner">
             </div>
             <div id="alert-box">
                 <div class="name-banner" id="follower-name">New Recruit!</div>
@@ -764,7 +749,7 @@
                 </div>
 
                 <div class="profile-pic-wrapper" style="cursor: pointer;" ondblclick="toggleControlPanelViaAvatar()">
-                    <img id="twitch-profile-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Phoenix">
+                    <img id="twitch-profile-img" src="https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-70x70.png" alt="Phoenix">
                 </div>
             </div>
         </div>
@@ -786,11 +771,12 @@
         const tickerElement = document.getElementById('ticker-text-element');
 
         // CRITICAL DEFAULTS:
-        let DEBUG_MODE = false;
+        let DEBUG_MODE = false; // Turned off by default so production Twitch data loads instantly!
         let ACTIVE_THEME = "default";
         let isAlertActive = false;
         let isBirthdayToday = false;
 
+        // Active state trackers for friend list checks
         let simulatedFriends = {
             "coralpoppa": true,
             "graphixworkx": true,
@@ -822,6 +808,7 @@
             "rebuild 3: gangs of deadsville": "1657273395"
         };
 
+        // --- STREAM COLLAPSIBLE SYSTEM CONTROLLER ---
         function toggleSimulator() {
             const panel = document.getElementById('simulator-panel');
             const btn = document.getElementById('sim-toggle-btn');
@@ -844,11 +831,11 @@
             const panel = document.getElementById('simulator-panel');
             if (panel.style.display === 'none' || panel.style.display === '') {
                 panel.style.display = 'block';
-                DEBUG_MODE = true;
+                DEBUG_MODE = true; // Turn on debugging temporarily so simulator actions work!
                 fetchFriendsStatus();
             } else {
                 panel.style.display = 'none';
-                DEBUG_MODE = false;
+                DEBUG_MODE = false; // Return back to actual stream stats
                 fetchFriendsStatus();
             }
         }
@@ -857,32 +844,39 @@
             if (!gameName) return "default";
             const cleanName = gameName.trim().toLowerCase();
 
+            // Ignore system fallback states
             if (cleanName === "offline" || cleanName === "stream offline" || cleanName === "scanning...") {
                 return "default";
             }
 
+            // 1. Rebuild 3 Theme Selection
             if (cleanName.includes("rebuild 3") || cleanName.includes("rebuild3") || cleanName.includes("deadsville")) {
                 return "rebuild3";
             }
 
+            // 2. Sonic Games Theme Selection
             const sonicKeywords = ["sonic", "shadow the hedgehog", "tails", "knuckles", "amy rose", "dr. eggman", "green hill", "sonic the hedgehog"];
             if (sonicKeywords.some(keyword => cleanName.includes(keyword))) {
                 return "sonic";
             }
 
+            // 3. Kimchi: A Stars in the Trash Story
             if (cleanName.includes("kimchi") || cleanName.includes("stars in the trash")) {
                 return "kimchi";
             }
 
+            // 4. Don't Starve Together
             if (cleanName.includes("don't starve") || cleanName.includes("dont starve")) {
                 return "dontstarve";
             }
 
+            // 5. Food & Cooking Games Theme
             const foodKeywords = ["pizzeria", "pizza", "cooking", "chef", "restaurant", "burger", "diner", "overcooked", "bakery", "food", "kitchen", "recipe", "sushi", "boba", "baking"];
             if (foodKeywords.some(keyword => cleanName.includes(keyword))) {
                 return "food";
             }
 
+            // 6. Horror Games Theme Selection
             const horrorKeywords = [
                 "occult", "resident evil", "silent hill", "outlast", "phasmophobia", "lethal company", 
                 "dead by daylight", "dbd", "horror", "scary", "amnesia", "fnaf", "five nights at", 
@@ -912,10 +906,14 @@
             }
 
             const cleanQuery = gameName.trim().toLowerCase();
+            
+            // Auto detect theme from game name and apply it
             const detectedTheme = detectThemeFromGame(gameName);
             applyLayoutTheme(detectedTheme);
 
             let matchedID = GAME_ID_MAP[cleanQuery];
+            
+            // Try fuzzy match if no direct key exists
             if (!matchedID) {
                 for (const key in GAME_ID_MAP) {
                     if (cleanQuery.includes(key) || key.includes(cleanQuery)) {
@@ -929,8 +927,10 @@
                 ? `https://static-cdn.jtvnw.net/ttv-boxart/${matchedID}-285x380.jpg`
                 : `https://static-cdn.jtvnw.net/ttv-boxart/${encodeURIComponent(gameName)}-285x380.jpg`;
 
+            // Pre-flight validation to catch the 404 gray box placeholder redirect from Twitch CDN
             fetch(testUrl, { method: 'HEAD' })
                 .then(response => {
+                    // If response is valid and does not redirect to the Twitch generic 404 image
                     if (response.ok && !response.url.includes("404_boxart")) {
                         gameArtImg.src = testUrl;
                         gameThumbnailContainer.style.display = 'block';
@@ -939,6 +939,7 @@
                     }
                 })
                 .catch(() => {
+                    // Fallback directly to image element if CORS limits HEAD check
                     gameArtImg.src = testUrl;
                     gameArtImg.onload = function() {
                         if (gameArtImg.src.includes("404_boxart") || gameArtImg.naturalWidth < 10) {
@@ -953,10 +954,12 @@
                 });
         }
 
+        // Strict validation helper that filters out offline states, Cloudflare pages, or API errors
         function isUptimeIndicatingLive(uptimeText, username) {
             const text = uptimeText.toLowerCase().trim();
             if (!text) return false;
 
+            // Instantly exclude standard offline/not found/error headers
             if (text.includes("offline") || 
                 text.includes("not live") || 
                 text.includes("not found") || 
@@ -970,9 +973,14 @@
                 return false;
             }
 
+            // Remove the friend's username from check to prevent digits matching name numbers
             const cleanText = text.replace(username.toLowerCase(), "").trim();
+
+            // A live uptime duration from Twitch DecAPI must contain duration units
             const durationKeywords = ["second", "minute", "hour", "day", "sec", "min", "hr"];
-            return durationKeywords.some(keyword => cleanText.includes(keyword));
+            const hasDurationKeyword = durationKeywords.some(keyword => cleanText.includes(keyword));
+
+            return hasDurationKeyword;
         }
 
         async function fetchFriendsStatus() {
@@ -986,6 +994,7 @@
             friendsPanel.innerHTML = ""; 
 
             if (DEBUG_MODE) {
+                // Mock live triggers strictly mapping separate games for each friend
                 const mockGames = {
                     "coralpoppa": "Minecraft",
                     "graphixworkx": "Art",
@@ -1001,6 +1010,7 @@
                 return;
             }
 
+            // Real Production API calls via DecAPI
             for (const friend of friendsList) {
                 try {
                     const usernameLower = friend.username.toLowerCase();
@@ -1008,10 +1018,13 @@
                     
                     if (uptimeRes.ok) {
                         const uptimeText = (await uptimeRes.text()).trim();
+                        
+                        // Apply robust live status algorithm
                         const isLive = isUptimeIndicatingLive(uptimeText, friend.username);
 
                         if (isLive) {
                             let game = "Just Chatting";
+                            // Query the friend's specific live game category directly
                             const gameRes = await fetch(`https://decapi.me/twitch/game/${usernameLower}?v=${Date.now()}`);
                             if (gameRes.ok) {
                                 const fetchedGame = (await gameRes.text()).trim();
@@ -1058,15 +1071,15 @@
 
         function checkBirthdays() {
             const today = new Date();
-            const month = today.getMonth(); 
+            const month = today.getMonth(); // 0 = Jan, 5 = June, 6 = July
             const date = today.getDate();
             
             let bdayMsg = "";
             
-            if (month === 5 && date === 6) { 
+            if (month === 5 && date === 6) { // June 6
                 bdayMsg = "🔥👑 TODAY IS A SPECIAL PROTOCOL! HAPPY BIRTHDAY PHOENIXDARKFIRE! 👑🔥 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
                 isBirthdayToday = true;
-            } else if (month === 6 && date === 18) { 
+            } else if (month === 6 && date === 18) { // July 18
                 bdayMsg = "✨🎂 HAPPY BIRTHDAY WEREWOLF3788! SENDING MASSIVE LOVE TO THE WEREWOLF PACK! 🎉🍰🎁 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
                 isBirthdayToday = true;
             }
@@ -1088,6 +1101,7 @@
         }
 
         function spawnScurryingMouse() {
+            // Only trigger mouse if current game is "Mouse: P.I. For Hire"
             const currentGame = gameTitleField.innerText.trim().toLowerCase();
             const isMouseGame = currentGame.includes("mouse: p.i.") || 
                                 currentGame.includes("mouse: pi") || 
@@ -1103,7 +1117,7 @@
             const mouse = document.createElement('div');
             mouse.innerHTML = '🐁';
             mouse.style.position = 'absolute';
-            mouse.style.bottom = '7.1vh'; 
+            mouse.style.bottom = '7.1vh'; // Perfectly sitting on top of the footer ticker border
             mouse.style.left = '-50px';
             mouse.style.fontSize = '2.2vh';
             mouse.style.zIndex = '58';
@@ -1112,6 +1126,7 @@
             container.appendChild(mouse);
 
             let pos = -50;
+            // Mice are fast! Scurry speed range
             const speed = Math.random() * 2 + 3.2; 
             let step = 0;
 
@@ -1120,9 +1135,10 @@
                 step++;
                 mouse.style.left = pos + 'px';
                 
+                // Bob up and down and rotate slightly to simulate scampering mouse running
                 const bob = Math.sin(step * 0.4) * 3;
                 const tilt = Math.cos(step * 0.4) * 4;
-                mouse.style.transform = `translateY(${bob}px) rotate(${tilt}deg) scaleX(-1)`;
+                mouse.style.transform = `translateY(${bob}px) rotate(${tilt}deg) scaleX(-1)`; // scaleX(-1) keeps mouse facing forward (rightward)
 
                 if (pos < window.innerWidth + 50) {
                     requestAnimationFrame(s_animate);
@@ -1134,30 +1150,17 @@
         }
 
         function startMouseSchedule() {
+            // Check for mouse activity every 15-25 seconds
             setTimeout(function loop() {
                 spawnScurryingMouse();
                 setTimeout(loop, Math.random() * 10000 + 15000);
             }, 6000);
         }
 
-        /* SECTION: Live Twitch Profile Picture Fetcher via DecAPI */
-        async function fetchTwitchAvatar() {
-            try {
-                const avatarRes = await fetch(`https://decapi.me/twitch/avatar/phoenix_darkfire?v=${Date.now()}`);
-                if (avatarRes.ok) {
-                    const avatarUrl = (await avatarRes.text()).trim();
-                    if (avatarUrl && avatarUrl.startsWith("http") && !avatarUrl.toLowerCase().includes("not found")) {
-                        profileImg.src = avatarUrl;
-                    }
-                }
-            } catch (e) {
-                console.error("Error fetching live Twitch avatar:", e);
-            }
-        }
-
         async function fetchTwitchData() {
             const timestamp = Date.now();
             
+            // Follower count stays active 24/7
             try {
                 const followRes = await fetch(`https://decapi.me/twitch/followcount/phoenix_darkfire?v=${timestamp}`);
                 if (followRes.ok) {
@@ -1171,7 +1174,7 @@
                 console.error("Error getting follower counts:", e);
             }
 
-            if (DEBUG_MODE) return; 
+            if (DEBUG_MODE) return; // Allow control panel overrides inside developer browser test
             
             try {
                 const gameRes = await fetch(`https://decapi.me/twitch/game/phoenix_darkfire?v=${timestamp}`);
@@ -1191,19 +1194,20 @@
         }
 
         function startEngine() {
+            // Initialize live layout configurations
             updateGameArt("The Murder of Sonic the Hedgehog");
             gameTitleField.innerText = "THE MURDER OF SONIC THE HEDGEHOG";
             
             checkBirthdays();
             fetchTwitchData();
             fetchFriendsStatus();
-            fetchTwitchAvatar();
             startMouseSchedule();
             
             setInterval(fetchTwitchData, 30000); 
             setInterval(fetchFriendsStatus, 30000);
-            setInterval(fetchTwitchAvatar, 60000);
             
+            profileImg.src = `https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-70x70.png?v=${Date.now()}`;
+
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('controls') || urlParams.has('debug')) {
                 document.getElementById('simulator-panel').style.display = 'block';
@@ -1213,6 +1217,7 @@
         }
 
         window.onload = function () {
+            // Start the engine loop on window load.
             startEngine();
         }
 
@@ -1268,9 +1273,9 @@
                 osc1.connect(gain1);
                 gain1.connect(audioCtx.destination);
                 osc1.type = 'sine';
-                osc1.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
-                osc1.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.15); 
-                osc1.frequency.exponentialRampToValueAtTime(2093.00, audioCtx.currentTime + 0.35); 
+                osc1.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                osc1.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.15); // C6
+                osc1.frequency.exponentialRampToValueAtTime(2093.00, audioCtx.currentTime + 0.35); // C7
                 gain1.gain.setValueAtTime(0.12, audioCtx.currentTime);
                 gain1.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
                 
@@ -1318,7 +1323,6 @@
             
             fetchTwitchData();
             fetchFriendsStatus();
-            fetchTwitchAvatar();
         }
 
         window.addEventListener('message', function(event) {
