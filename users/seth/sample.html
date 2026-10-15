@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <!-- 
-      VERSION TIMESTAMP: 2026-10-14 17:01:00 EDT
-      CRITICAL: Direct GitHack PNG wing URLs and live Twitch avatar syncing via DecAPI.
+      VERSION TIMESTAMP: 2026-10-14 22:59:00 EDT
+      CRITICAL: Enforced explicit HTTPS on all CDN assets to prevent file:/// C: drive local resolution.
     -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phoenix Darkfire - Elite Protocol</title>
@@ -317,7 +317,7 @@
             border-radius: 50%; 
             object-fit: cover; 
             border: 0.2vh solid #000; 
-            display: block;
+            display: block; 
         }
 
         .live-friends-panel { 
@@ -487,145 +487,136 @@
 
         /* INTERACTIVE CONTROL PANEL */
         #simulator-panel {
-            position: fixed;
-            top: 14vh;
-            left: 3vw;
-            width: 290px;
-            background: rgba(0, 0, 0, 0.9);
-            border: 1.5px solid var(--border-color);
-            border-radius: 12px;
-            padding: 15px;
-            z-index: 1000;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7), 0 0 15px var(--wrapper-shadow);
-            backdrop-filter: blur(10px);
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-size: 13px;
-            user-select: none;
-            opacity: 0.98;
-            transition: all 0.4s ease;
-            display: none;
+            position: fixed; 
+            top: 14vh; 
+            left: 3vw; 
+            width: 290px; 
+            background: rgba(0, 0, 0, 0.9); 
+            border: 1.5px solid var(--border-color); 
+            border-radius: 12px; 
+            padding: 15px; 
+            z-index: 1000; 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7), 0 0 15px var(--wrapper-shadow); 
+            backdrop-filter: blur(10px); 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            font-size: 13px; 
+            user-select: none; 
+            opacity: 0.98; 
+            transition: all 0.4s ease; 
+            display: none; 
         }
 
         #simulator-panel.collapsed {
-            width: 45px;
-            height: 45px;
-            padding: 0;
-            overflow: hidden;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            width: 45px; 
+            height: 45px; 
+            padding: 0; 
+            overflow: hidden; 
+            border-radius: 50%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
         }
 
         .sim-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 8px;
-            font-weight: bold;
-            color: var(--accent-glow);
-            text-shadow: 0 0 5px var(--primary-glow);
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 12px; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+            padding-bottom: 8px; 
+            font-weight: bold; 
+            color: var(--accent-glow); 
+            text-shadow: 0 0 5px var(--primary-glow); 
         }
 
         .sim-toggle-btn {
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-            padding: 2px 8px;
-            border-radius: 4px;
+            background: none; 
+            border: none; 
+            color: #fff; 
+            font-size: 16px; 
+            cursor: pointer; 
+            padding: 2px 8px; 
+            border-radius: 4px; 
         }
 
-        .sim-toggle-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .sim-body-content {
-            display: block;
-        }
+        .sim-toggle-btn:hover { background: rgba(255, 255, 255, 0.1); }
+        .sim-body-content { display: block; }
 
         .sim-section {
-            margin-bottom: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 8px;
+            margin-bottom: 12px; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+            padding-bottom: 8px; 
         }
 
         .sim-label {
-            display: block;
-            margin-bottom: 4px;
-            font-size: 10px;
-            text-transform: uppercase;
-            color: #aaa;
-            letter-spacing: 0.5px;
+            display: block; 
+            margin-bottom: 4px; 
+            font-size: 10px; 
+            text-transform: uppercase; 
+            color: #aaa; 
+            letter-spacing: 0.5px; 
         }
 
         .sim-select, .sim-input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            outline: none;
-            box-sizing: border-box;
+            width: 100%; 
+            background: rgba(255, 255, 255, 0.1); 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            color: #fff; 
+            padding: 6px 10px; 
+            border-radius: 6px; 
+            font-size: 12px; 
+            outline: none; 
+            box-sizing: border-box; 
         }
 
-        .sim-select:focus, .sim-input:focus {
-            border-color: var(--accent-glow);
-        }
+        .sim-select:focus, .sim-input:focus { border-color: var(--accent-glow); }
 
         .sim-btn {
-            background: linear-gradient(135deg, var(--border-color), var(--accent-color));
-            border: none;
-            color: #fff;
-            font-weight: bold;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 8px;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            background: linear-gradient(135deg, var(--border-color), var(--accent-color)); 
+            border: none; 
+            color: #fff; 
+            font-weight: bold; 
+            padding: 8px 12px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            width: 100%; 
+            margin-top: 8px; 
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5); 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
         }
 
-        .sim-btn:hover {
-            filter: brightness(1.1);
-        }
+        .sim-btn:hover { filter: brightness(1.1); }
 
         .sim-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 6px;
-            margin-top: 5px;
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 6px; 
+            margin-top: 5px; 
         }
 
         .sim-mini-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1.5px solid rgba(255, 255, 255, 0.15);
-            border-radius: 6px;
-            color: #ddd;
-            padding: 4px;
-            font-size: 10px;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.08); 
+            border: 1.5px solid rgba(255, 255, 255, 0.15); 
+            border-radius: 6px; 
+            color: #ddd; 
+            padding: 4px; 
+            font-size: 10px; 
+            cursor: pointer; 
+            text-align: center; 
+            transition: all 0.2s ease; 
         }
 
         .sim-mini-btn.active {
-            background: rgba(0, 212, 255, 0.2);
-            border-color: var(--accent-glow);
-            color: #fff;
-            box-shadow: 0 0 5px var(--accent-glow);
+            background: rgba(0, 212, 255, 0.2); 
+            border-color: var(--accent-glow); 
+            color: #fff; 
+            box-shadow: 0 0 5px var(--accent-glow); 
         }
 
         .sim-mini-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: var(--accent-glow);
-            color: #fff;
+            background: rgba(255, 255, 255, 0.2); 
+            border-color: var(--accent-glow); 
+            color: #fff; 
         }
 
         /* KEYFRAME ANIMATIONS */
@@ -709,22 +700,25 @@
     <div class="overlay-wrapper" id="master-theme-container">
         <header class="top-banner">
             <div class="wing-text left-wing">
+                <!-- Direct HTTPS path to eliminate C: drive fallback -->
                 <img class="wing-img" 
-                     src="//raw.githack.com/Werewolf3788/Website/main/Images/left_wing.png" 
+                     src="https://raw.githack.com/Werewolf3788/Website/main/Images/left_wing.png?v=20261014" 
                      alt="Left Wing">
                 <span>Phoenix</span>
             </div>
             <div class="wing-text right-wing">
                 <span>Darkfire</span>
+                <!-- Direct HTTPS path to eliminate C: drive fallback -->
                 <img class="wing-img" 
-                     src="//raw.githack.com/Werewolf3788/Website/main/Images/right_wing.png" 
+                     src="https://raw.githack.com/Werewolf3788/Website/main/Images/right_wing.png?v=20261014" 
                      alt="Right Wing">
             </div>
         </header>
 
         <div class="middle-section">
             <div id="phoenix-beast">
-                <img id="phoenix-img" src="//raw.githack.com/KFruti88/Phoenix-Darkfire/main/Banner.png" alt="Phoenix Banner">
+                <!-- Direct HTTPS path to eliminate C: drive fallback -->
+                <img id="phoenix-img" src="https://raw.githack.com/KFruti88/Phoenix-Darkfire/main/Banner.png?v=20261014" alt="Phoenix Banner">
             </div>
             <div id="alert-box">
                 <div class="name-banner" id="follower-name">New Recruit!</div>
@@ -764,7 +758,10 @@
                 </div>
 
                 <div class="profile-pic-wrapper" style="cursor: pointer;" ondblclick="toggleControlPanelViaAvatar()">
-                    <img id="twitch-profile-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Phoenix">
+                    <!-- Direct Static CDN fallback so avatar never loads blank -->
+                    <img id="twitch-profile-img" 
+                         src="https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-70x70.png" 
+                         alt="Phoenix">
                 </div>
             </div>
         </div>
@@ -1092,7 +1089,7 @@
             const isMouseGame = currentGame.includes("mouse: p.i.") || 
                                 currentGame.includes("mouse: pi") || 
                                 currentGame.includes("mouse p.i") || 
-                                currentGame.includes("mouse pi") ||
+                                currentGame.includes("mouse pi") || 
                                 currentGame.includes("mouse");
             
             if (!isMouseGame) return;
