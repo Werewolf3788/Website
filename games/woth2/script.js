@@ -1,12 +1,10 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-16 02:50 EDT | Firebase Sync Target: /utm_links | Version: 6.3.1]
+// [Smart Cache-Buster Time: 2026-10-16 03:25 EDT | Firebase Sync Target: /utm_links | Version: 6.4.1]
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Line 5: Master asset fallbacks and relative bindings (Restored to local verified assets)
   const DEFAULT_USER_AVATAR = "//werewolf3788.github.io/Website/assets/logo.jpg";
   const DEFAULT_GAME_POSTER = "//werewolf3788.github.io/Website/assets/logo.jpg";
 
-  // Line 10: Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -18,13 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
     measurementId: "G-JDNSLD3GFE"
   };
 
-  // Line 23: Initialize Firebase subsystems
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const rtdb = firebase.database();
   const db = firebase.firestore();
 
-  // Line 29: Email resolution helper
   function getResolvedPrimaryEmail(user) {
     if (!user) return "";
     const google = user.providerData && user.providerData.find(p => p && p.providerId === "google.com");
@@ -33,13 +29,11 @@ document.addEventListener("DOMContentLoaded", () => {
     return "hunter@guest.local";
   }
 
-  // Line 38: Database key sanitizer
   function getEmailKey(email) {
     if (!email) return "unknown_user";
     return email.toLowerCase().replace(/@/g, "_at_").replace(/\./g, "_");
   }
 
-  // Line 44: Master Application Engine Object
   const CompanionApp = {
     titleId: "NPWR52231_00",
     files: {
@@ -58,11 +52,9 @@ document.addEventListener("DOMContentLoaded", () => {
       regions: "woth2_regions.json",
       reserves: "woth2_reserves.json",
       runtimeSave: "woth2_runtime_save.json",
-      schemaUpdate: "woth2_schema-update.json",
       species: "woth2_species.json",
       stewardship: "woth2_stewardship.json",
-      trails: "woth2_trails.json",
-      worldWildlife: "woth2_world_wildlife.json"
+      trails: "woth2_trails.json"
     },
 
     db: {},
@@ -94,21 +86,10 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     trophyGroups: [],
     selectedTrophyGroup: "all",
-    gameMetadata: {},
+    selectedGearCategory: "all",
     friendsRoster: [],
-    friendsProgressCache: {},
-    hasLoadedPrimaryPoster: false,
+    completedMissions: {},
 
-    // Line 99: Default lodge catalog fallback items for requisitions
-    lodgeCatalog: [
-      { id: "gear_scope_overgaard", name: "Overgaard 3-9x40 Hunting Scope", category: "Optics", cost: 725, requiredLevel: 3, description: "Precision hunting optic with clear multi-coated glass and balanced zoom." },
-      { id: "gear_rifle_steyr_308", name: "Steyr Monobloc .308 Win", category: "Firearms", cost: 2400, requiredLevel: 4, description: "Top-tier bolt-action rifle designed for medium-to-large game with supreme accuracy." },
-      { id: "gear_caller_predator", name: "Predator Mouth Call", category: "Callers", cost: 350, requiredLevel: 1, description: "Simulates injured rabbit distress sounds to draw in wolves, bears, and foxes." },
-      { id: "gear_rangefinder_bushnell", name: "Bushnell Laser Rangefinder 1200", category: "Optics", cost: 890, requiredLevel: 2, description: "Accurate distance measurement up to 1200 yards with instantaneous ballistic readouts." },
-      { id: "gear_shotgun_12g", name: "MorningStar Over-and-Under 12G", category: "Firearms", cost: 1350, requiredLevel: 2, description: "Versatile twin-barrel shotgun tailored for high-speed waterfowl and upland game." }
-    ],
-
-    // Line 108: Main initialization workflow
     async init() {
       this.loadSavedState();
       this.bindUI();
@@ -121,7 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
       this.initDynamicFeatures();
     },
 
-    // Line 121: Resilient relative protocol fetch engine
     async fetchJSON(fileName) {
       const paths = [
         "../../data/" + fileName,
@@ -130,77 +110,40 @@ document.addEventListener("DOMContentLoaded", () => {
         "/Website/data/" + fileName,
         "//werewolf3788.github.io/Website/data/" + fileName
       ];
-
       for (let i = 0; i < paths.length; i++) {
         try {
           const res = await fetch(paths[i] + "?v=" + Date.now());
           if (res.ok) return await res.json();
-        } catch (e) {
-          // Line 136: Continue checking candidate relative locations
-        }
+        } catch (e) {}
       }
       return null;
     },
 
-    // Line 141: Bulk JSON loader
     async loadAllJSONs() {
       const keys = Object.keys(this.files);
       const promises = keys.map(k => this.fetchJSON(this.files[k]));
       const results = await Promise.all(promises);
-
       keys.forEach((k, idx) => {
         this.db[k] = results[idx] || {};
       });
     },
 
-    // Line 152: Apply identity themes and styling
     applyUserThemeAndIdentity() {
       if (!this.db.users) return;
       const userList = Array.isArray(this.db.users)
         ? this.db.users
         : (this.db.users.users || Object.values(this.db.users));
-
       if (!Array.isArray(userList)) return;
 
       const activeEmail = (this.currentEmail || "").toLowerCase().trim();
-      const activePSN = (this.psnAccountId || "").trim();
-      const activeOnlineId = (this.psnOnlineId || "").toLowerCase().trim();
-
-      const matchedUser = userList.find(u => {
-        const uEmail = (u.email || "").toLowerCase().trim();
-        const uPsnId = String(u.psn_id || "").trim();
-        const uOnline = (u.psn_name || "").toLowerCase().trim();
-        return (activeEmail && uEmail === activeEmail) ||
-               (activePSN && uPsnId === activePSN) ||
-               (activeOnlineId && uOnline === activeOnlineId);
-      });
-
-      if (matchedUser) {
-        if (!this.psnAccountId && matchedUser.psn_id) {
-          this.psnAccountId = String(matchedUser.psn_id);
-        }
-        if (!this.psnOnlineId && matchedUser.psn_name) {
-          this.psnOnlineId = matchedUser.psn_name;
-        }
-
-        if (matchedUser.theme) {
-          const root = document.documentElement;
-          if (matchedUser.theme.primary_color) {
-            root.style.setProperty("--theme-primary", matchedUser.theme.primary_color);
-            root.style.setProperty("--accent-primary", matchedUser.theme.primary_color);
-          }
-          if (matchedUser.theme.accent_color) {
-            root.style.setProperty("--theme-accent", matchedUser.theme.accent_color);
-            root.style.setProperty("--accent-gold", matchedUser.theme.accent_color);
-          }
-          if (matchedUser.theme.surface_color) {
-            root.style.setProperty("--theme-surface", matchedUser.theme.surface_color);
-          }
-        }
+      const matchedUser = userList.find(u => (u.email || "").toLowerCase().trim() === activeEmail);
+      if (matchedUser && matchedUser.theme) {
+        const root = document.documentElement;
+        if (matchedUser.theme.primary_color) root.style.setProperty("--theme-primary", matchedUser.theme.primary_color);
+        if (matchedUser.theme.accent_color) root.style.setProperty("--theme-accent", matchedUser.theme.accent_color);
       }
     },
 
-    // Line 197: Merge trophy progress from static JSON
     integrateJSONTrophies() {
       if (this.db.gameData && this.db.gameData.trophies) {
         const jsonTrophies = Array.isArray(this.db.gameData.trophies)
@@ -213,9 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!this.userTrophyProgress[id] || !this.userTrophyProgress[id].earned) {
               this.userTrophyProgress[id] = {
                 earned: true,
-                timestamp: t.timestamp || t.date || new Date().toISOString(),
-                currentValue: t.currentValue !== undefined ? Number(t.currentValue) : null,
-                targetValue: t.targetValue !== undefined ? Number(t.targetValue) : null,
+                timestamp: t.timestamp || new Date().toISOString(),
                 manual: false,
                 source: "json"
               };
@@ -227,287 +168,69 @@ document.addEventListener("DOMContentLoaded", () => {
       this.renderTrophies();
     },
 
-    // Line 224: Local storage hydration
     loadSavedState() {
       const savedDay = localStorage.getItem("woth2_day");
       const savedTime = localStorage.getItem("woth2_time");
-      const savedWeather = localStorage.getItem("woth2_weather");
-      const savedPlatform = localStorage.getItem("woth2_platform");
-      const savedWatch = localStorage.getItem("woth2_watchlist");
-      const savedName = localStorage.getItem("woth2_name");
-      const savedLevel = localStorage.getItem("woth2_level");
       const savedCredits = localStorage.getItem("woth2_credits");
-
-      const savedBonding = localStorage.getItem("woth2_dog_bonding");
-      const savedFollowing = localStorage.getItem("woth2_dog_following");
-      const savedBlood = localStorage.getItem("woth2_dog_blood");
-      const savedSearch = localStorage.getItem("woth2_dog_search");
-      const savedTrophyProgress = localStorage.getItem("woth2_manual_trophies");
+      const savedLevel = localStorage.getItem("woth2_level");
+      const savedWatch = localStorage.getItem("woth2_watchlist");
+      const savedCompletedMissions = localStorage.getItem("woth2_completed_missions");
 
       if (savedDay) this.currentDay = parseInt(savedDay, 10);
       if (savedTime) this.currentTime = savedTime;
-      if (savedWeather) this.currentWeather = savedWeather;
-      if (savedPlatform) this.currentPlatform = savedPlatform;
-      if (savedName) this.hunterName = savedName;
-      if (savedLevel) this.hunterLevel = parseInt(savedLevel, 10);
       if (savedCredits) this.hunterCredits = parseInt(savedCredits, 10);
-
-      if (savedBonding) this.dogBondingLevel = parseInt(savedBonding, 10);
-      if (savedFollowing) this.dogFollowingCommandsLevel = parseInt(savedFollowing, 10);
-      if (savedBlood) this.dogBloodTrackingLevel = parseInt(savedBlood, 10);
-      if (savedSearch) this.dogSearchQuarteringLevel = parseInt(savedSearch, 10);
-
+      if (savedLevel) this.hunterLevel = parseInt(savedLevel, 10);
       if (savedWatch) {
         try { this.watchlist = JSON.parse(savedWatch); } catch (e) { this.watchlist = []; }
       }
-
-      if (savedTrophyProgress) {
-        try { this.userTrophyProgress = JSON.parse(savedTrophyProgress); } catch (e) { this.userTrophyProgress = {}; }
+      if (savedCompletedMissions) {
+        try { this.completedMissions = JSON.parse(savedCompletedMissions); } catch (e) { this.completedMissions = {}; }
       }
 
       this.safeSetValue("currentDayInput", this.currentDay);
       this.safeSetValue("currentTimeInput", this.currentTime);
-      this.safeSetValue("hunterNameInput", this.hunterName);
-      this.safeSetValue("hunterLevelInput", this.hunterLevel);
       this.safeSetValue("hunterCreditsInput", this.hunterCredits);
-      this.safeSetValue("weatherConditionInput", this.currentWeather);
-      this.safeSetValue("platformSelect", this.currentPlatform);
+      this.safeSetValue("hunterLevelInput", this.hunterLevel);
       this.updateDogInputDisplay();
     },
 
-    // Line 271: Safe DOM value set
     safeSetValue(id, val) {
       const el = document.getElementById(id);
       if (el) el.value = val;
     },
 
-    // Line 277: Safe DOM text set
     safeSetText(id, text) {
       const el = document.getElementById(id);
       if (el) el.textContent = text;
     },
 
-    // Line 283: Update dog status presentation
     updateDogInputDisplay() {
       this.safeSetValue("dogCompanionInput", `${this.dogCompanionName} (Lv. ${this.dogBondingLevel})`);
     },
 
-    // Line 288: Dynamically bind brand artwork
-    applyBrandArt(imgUrl) {
-      if (!imgUrl || typeof imgUrl !== "string") return;
-      const cleanUrl = imgUrl.trim();
-      const favicon = document.getElementById("dynamicFavicon");
-      const appleIcon = document.getElementById("dynamicAppleIcon");
-      const brandLogo = document.getElementById("navBrandLogo");
-
-      if (favicon) favicon.href = cleanUrl;
-      if (appleIcon) appleIcon.href = cleanUrl;
-      if (brandLogo) brandLogo.src = cleanUrl;
-    },
-
-    // Line 300: Master PlayStation Game Data synchronization
     initMasterGameData() {
       rtdb.ref(`/psn/games/${this.titleId}`).on("value", snapshot => {
         const game = snapshot.val();
         if (!game) return;
-        this.gameMetadata = game;
-
-        if (game.posterArt && typeof game.posterArt === "string" && game.posterArt.trim() !== "") {
-          this.applyBrandArt(game.posterArt);
-          this.hasLoadedPrimaryPoster = true;
-        }
-
-        if (game.groups) {
-          this.trophyGroups = Array.isArray(game.groups) ? game.groups : Object.values(game.groups);
-        }
-
         let rawTrophies = [];
         if (game.rawSonyMetadata && game.rawSonyMetadata.trophies) {
-          rawTrophies = Array.isArray(game.rawSonyMetadata.trophies)
-            ? game.rawSonyMetadata.trophies
-            : Object.values(game.rawSonyMetadata.trophies);
+          rawTrophies = Array.isArray(game.rawSonyMetadata.trophies) ? game.rawSonyMetadata.trophies : Object.values(game.rawSonyMetadata.trophies);
         }
-
         if (rawTrophies.length > 0) {
-          this.masterTrophies = rawTrophies.map((t, idx) => {
-            let grade = t.trophyType || "Bronze";
-            grade = grade.charAt(0).toUpperCase() + grade.slice(1).toLowerCase();
-            return {
-              trophyId: t.trophyId !== undefined ? String(t.trophyId) : String(idx),
-              title: t.trophyName || `Trophy #${idx + 1}`,
-              desc: t.trophyDetail || "Way of the Hunter 2 milestone.",
-              icon: t.trophyIconUrl || game.posterArt || DEFAULT_GAME_POSTER,
-              grade: grade,
-              groupId: t.trophyGroupId !== undefined ? String(t.trophyGroupId) : "default",
-              hidden: Boolean(t.trophyHidden)
-            };
-          });
+          this.masterTrophies = rawTrophies.map((t, idx) => ({
+            trophyId: t.trophyId !== undefined ? String(t.trophyId) : String(idx),
+            title: t.trophyName || `Trophy #${idx + 1}`,
+            desc: t.trophyDetail || "Way of the Hunter 2 milestone.",
+            icon: t.trophyIconUrl || DEFAULT_GAME_POSTER,
+            grade: t.trophyType || "Bronze",
+            groupId: t.trophyGroupId !== undefined ? String(t.trophyGroupId) : "default"
+          }));
         }
-
         this.recalculateCrossTrophyTelemetry();
         this.renderTrophies();
       });
     },
 
-    // Line 344: Firestore sanitize mapper
-    getSanitizedTrophiesForFirestore() {
-      const cleanMap = {};
-      Object.entries(this.userTrophyProgress).forEach(([id, t]) => {
-        if (!t) return;
-        cleanMap[id] = {
-          earned: Boolean(t.earned),
-          timestamp: t.timestamp ? String(t.timestamp) : null,
-          currentValue: (t.currentValue !== undefined && t.currentValue !== null) ? Number(t.currentValue) : null,
-          targetValue: (t.targetValue !== undefined && t.targetValue !== null) ? Number(t.targetValue) : null,
-          manual: Boolean(t.manual),
-          source: t.source ? String(t.source) : "manual"
-        };
-      });
-      return cleanMap;
-    },
-
-    // Line 361: Cross platform trophy progress reader
-    async loadAllPlatformTrophyProgress() {
-      const targetUserKey = this.currentEmailKey || (this.currentEmail ? getEmailKey(this.currentEmail) : "");
-      if (!targetUserKey) return;
-
-      const platforms = ["ps", "pc", "xbox"];
-      const total = this.masterTrophies.length || 6;
-
-      for (const p of platforms) {
-        try {
-          const snap = await db.collection("users")
-            .doc(targetUserKey)
-            .collection("platform")
-            .doc(p)
-            .collection("progress")
-            .doc("woth2")
-            .get();
-
-          if (snap.exists) {
-            const data = snap.data();
-            const earned = data.trophies_earned || 0;
-            const pct = total > 0 ? Math.round((earned / total) * 100) : 0;
-            this.crossPlatformTelemetry[p] = { earned, total, percent: pct };
-          } else {
-            if (p === this.currentPlatform) {
-              const currentEarned = Object.values(this.userTrophyProgress).filter(t => t.earned).length;
-              const pct = total > 0 ? Math.round((currentEarned / total) * 100) : 0;
-              this.crossPlatformTelemetry[p] = { earned: currentEarned, total, percent: pct };
-            } else {
-              this.crossPlatformTelemetry[p] = { earned: 0, total, percent: 0 };
-            }
-          }
-        } catch (e) {
-          console.warn(`Error loading telemetry for platform ${p}:`, e);
-        }
-      }
-      this.renderTrophies();
-    },
-
-    // Line 400: Recalculate achievement metrics
-    recalculateCrossTrophyTelemetry() {
-      const total = this.masterTrophies.length || 6;
-      const currentEarned = Object.values(this.userTrophyProgress).filter(t => t.earned).length;
-      const pct = total > 0 ? Math.round((currentEarned / total) * 100) : 0;
-
-      if (!this.crossPlatformTelemetry[this.currentPlatform]) {
-        this.crossPlatformTelemetry[this.currentPlatform] = { earned: 0, total, percent: 0 };
-      }
-      this.crossPlatformTelemetry[this.currentPlatform] = {
-        earned: currentEarned,
-        total: total,
-        percent: pct
-      };
-    },
-
-    // Line 416: Silent telemetry persistence
-    async silentSaveGameTelemetry() {
-      const nameEl = document.getElementById("hunterNameInput");
-      const lvlEl = document.getElementById("hunterLevelInput");
-      const crdEl = document.getElementById("hunterCreditsInput");
-      const dayEl = document.getElementById("currentDayInput");
-      const timeEl = document.getElementById("currentTimeInput");
-      const weatherEl = document.getElementById("weatherConditionInput");
-      const platEl = document.getElementById("platformSelect");
-
-      if (nameEl) this.hunterName = nameEl.value.trim() || "Hunter";
-      if (lvlEl) this.hunterLevel = parseInt(lvlEl.value, 10) || 1;
-      if (crdEl) this.hunterCredits = parseInt(crdEl.value, 10) || 0;
-      if (dayEl) this.currentDay = parseInt(dayEl.value, 10) || 1;
-      if (timeEl) this.currentTime = timeEl.value || "08:30";
-      if (weatherEl) this.currentWeather = weatherEl.value || "Clear";
-      if (platEl) this.currentPlatform = platEl.value || this.currentPlatform;
-
-      localStorage.setItem("woth2_day", this.currentDay);
-      localStorage.setItem("woth2_time", this.currentTime);
-      localStorage.setItem("woth2_weather", this.currentWeather);
-      localStorage.setItem("woth2_platform", this.currentPlatform);
-      localStorage.setItem("woth2_name", this.hunterName);
-      localStorage.setItem("woth2_level", this.hunterLevel);
-      localStorage.setItem("woth2_credits", this.hunterCredits);
-
-      localStorage.setItem("woth2_dog_bonding", this.dogBondingLevel);
-      localStorage.setItem("woth2_dog_following", this.dogFollowingCommandsLevel);
-      localStorage.setItem("woth2_dog_blood", this.dogBloodTrackingLevel);
-      localStorage.setItem("woth2_dog_search", this.dogSearchQuarteringLevel);
-      localStorage.setItem("woth2_watchlist", JSON.stringify(this.watchlist));
-      localStorage.setItem("woth2_manual_trophies", JSON.stringify(this.userTrophyProgress));
-
-      this.recalculateCrossTrophyTelemetry();
-      this.renderLodgeForecaster();
-
-      const activeUser = auth.currentUser;
-      const targetUserKey = this.currentEmailKey || (this.currentEmail ? getEmailKey(this.currentEmail) : "");
-
-      if (activeUser && targetUserKey) {
-        try {
-          const gameDocRef = db.collection("users")
-            .doc(targetUserKey)
-            .collection("platform")
-            .doc(this.currentPlatform)
-            .collection("progress")
-            .doc("woth2");
-
-          const cleanTrophies = this.getSanitizedTrophiesForFirestore();
-          const earnedCount = Object.values(cleanTrophies).filter(t => t.earned).length;
-          const totalTrophies = this.masterTrophies.length || 6;
-          const trophyPct = totalTrophies > 0 ? Math.round((earnedCount / totalTrophies) * 100) : 0;
-
-          await gameDocRef.set({
-            hunter_name: this.hunterName,
-            hunter_level: this.hunterLevel,
-            hunter_credits: this.hunterCredits,
-            companion_day: this.currentDay,
-            companion_time: this.currentTime,
-            weather: this.currentWeather,
-            platform: this.currentPlatform,
-            psn_online_id: this.psnOnlineId || null,
-            psn_account_id: this.psnAccountId || null,
-            trophies_earned: earnedCount,
-            trophies_total: totalTrophies,
-            trophies_percent: trophyPct,
-            trophies: cleanTrophies,
-            dog_stats: {
-              name: this.dogCompanionName,
-              breed: this.dogBreed,
-              bonding: this.dogBondingLevel,
-              following: this.dogFollowingCommandsLevel,
-              blood: this.dogBloodTrackingLevel,
-              search: this.dogSearchQuarteringLevel
-            },
-            harvest_count: (this.db.gameData && this.db.gameData.harvest_records) ? this.db.gameData.harvest_records.length : 0,
-            watchlist: this.watchlist,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-          }, { merge: true });
-
-        } catch (e) {
-          alert("⚠️ Telemetry Sync Failed: " + e.message);
-        }
-      }
-    },
-
-    // Line 503: Firebase Realtime Database and Navbar engine
     initRTDB() {
       rtdb.ref("/utm_links").on("value", snapshot => {
         const raw = snapshot.val();
@@ -523,164 +246,35 @@ document.addEventListener("DOMContentLoaded", () => {
               if (entry) items.push(this.normalizeItem(entry, `${parentKey}_${idx}`));
             });
           } else if (typeof val === "object" && val !== null) {
-            if (val.url || val.title) {
-              items.push(this.normalizeItem(val, parentKey));
-            } else {
-              Object.entries(val).forEach(([childKey, childVal]) => {
-                if (typeof childVal === "object" && childVal !== null) {
-                  items.push(this.normalizeItem(childVal, `${parentKey}_${childKey}`));
-                }
-              });
-            }
+            items.push(this.normalizeItem(val, parentKey));
           }
         });
-
-        this.syncWoth2FaviconFallback(items, raw);
         this.renderNav(items);
       });
     },
 
-    // Line 537: Navbar item normalization
     normalizeItem(item, fallbackKey) {
       return {
         title: item.title || fallbackKey,
         url: item.url || "#",
-        image: (item.image && typeof item.image === "string") ? item.image.trim() : "",
-        group: (item.group && typeof item.group === "string") ? item.group.trim() : "",
-        tag: (item.tag && typeof item.tag === "string") ? item.tag.trim() : "",
-        rowNumber: (item.rowNumber !== undefined && item.rowNumber !== null) ? Number(item.rowNumber) : 9999,
-        updatedAt: item.updatedAt || ""
+        image: item.image || "",
+        group: item.group || "",
+        rowNumber: Number(item.rowNumber || 9999)
       };
     },
 
-    // Line 550: Favicon and Build Timestamp Fallback
-    syncWoth2FaviconFallback(items, raw) {
-      let backupImg = "";
-      let woth2Stamp = "";
-
-      const taggedEntry = items.find(i => i.tag && i.tag.toLowerCase() === "woth2");
-
-      if (taggedEntry) {
-        backupImg = taggedEntry.image;
-        woth2Stamp = taggedEntry.updatedAt;
-      } else if (raw.WOTH2 && raw.WOTH2[0] && raw.WOTH2[0].image) {
-        backupImg = raw.WOTH2[0].image;
-        woth2Stamp = raw.WOTH2[0].updatedAt;
-      } else {
-        const titleMatch = items.find(i => {
-          const t = i.title.toLowerCase();
-          return t.includes("woth2") || t.includes("way of the hunter");
-        });
-        if (titleMatch) {
-          backupImg = titleMatch.image;
-          woth2Stamp = titleMatch.updatedAt;
-        }
-      }
-
-      if (!this.hasLoadedPrimaryPoster && backupImg) {
-        this.applyBrandArt(backupImg);
-      }
-
-      if (woth2Stamp) {
-        this.safeSetText("nyBuildTimestamp", woth2Stamp);
-      }
-    },
-
-    // Line 582: Top navigation bar programmatic renderer
     renderNav(items) {
       const navList = document.getElementById("navList");
       if (!navList) return;
       navList.innerHTML = "";
-
-      const standaloneLinks = [];
-      const folderGroups = {};
-
-      items.forEach(item => {
-        const cleanGroup = (item.group || "").toLowerCase();
-        const cleanTag = (item.tag || "").toLowerCase();
-        const cleanTitle = (item.title || "").toLowerCase();
-        const cleanUrl = (item.url || "").toLowerCase();
-
-        if (cleanGroup === "settings" || cleanTag === "settings" || cleanTitle.includes("setting") || cleanUrl.includes("setting") ||
-            cleanGroup === "privacy" || cleanTag === "privacy" || cleanTitle.includes("privacy") || cleanUrl.includes("privacy")) {
-          return;
-        }
-
-        const isStandalone = !item.group || cleanGroup === "standalone";
-
-        if (isStandalone) {
-          standaloneLinks.push(item);
-        } else {
-          if (!folderGroups[item.group]) {
-            folderGroups[item.group] = {
-              name: item.group,
-              items: [],
-              minRow: item.rowNumber,
-              folderImage: item.image
-            };
-          }
-          folderGroups[item.group].items.push(item);
-          if (item.rowNumber < folderGroups[item.group].minRow) {
-            folderGroups[item.group].minRow = item.rowNumber;
-            if (item.image) folderGroups[item.group].folderImage = item.image;
-          }
-        }
-      });
-
-      const topLevelBuckets = [];
-      standaloneLinks.forEach(link => {
-        topLevelBuckets.push({ type: "bare_link", rank: link.rowNumber, data: link });
-      });
-
-      Object.values(folderGroups).forEach(grp => {
-        grp.items.sort((a, b) => a.rowNumber - b.rowNumber);
-        topLevelBuckets.push({ type: "folder", rank: grp.minRow, data: grp });
-      });
-
-      topLevelBuckets.sort((a, b) => a.rank - b.rank);
-
-      topLevelBuckets.forEach(bucket => {
+      items.sort((a, b) => a.rowNumber - b.rowNumber).slice(0, 10).forEach(item => {
         const li = document.createElement("li");
         li.className = "nav-item";
-
-        if (bucket.type === "bare_link") {
-          const item = bucket.data;
-          const imgTag = item.image ? `<img src="${item.image}" alt="" class="nav-thumb">` : '';
-          li.innerHTML = `
-            <a href="${item.url}" class="nav-pill">
-              ${imgTag}
-              <span>${item.title}</span>
-            </a>
-          `;
-        } else {
-          const grp = bucket.data;
-          const folderImg = grp.folderImage ? `<img src="${grp.folderImage}" alt="" class="nav-thumb">` : '';
-
-          let dropdownHtml = `<div class="dropdown-menu">`;
-          grp.items.forEach(child => {
-            const childImg = child.image ? `<img src="${child.image}" alt="" class="nav-thumb">` : '';
-            dropdownHtml += `
-              <a href="${child.url}" class="dropdown-item">
-                ${childImg}
-                <span>${child.title}</span>
-              </a>
-            `;
-          });
-          dropdownHtml += `</div>`;
-
-          li.innerHTML = `
-            <button class="dropdown-trigger">
-              ${folderImg}
-              <span>${grp.name} &#9662;</span>
-            </button>
-            ${dropdownHtml}
-          `;
-        }
+        li.innerHTML = `<a href="${item.url}" class="nav-pill"><span>${item.title}</span></a>`;
         navList.appendChild(li);
       });
     },
 
-    // Line 672: Authentication and Profile Synchronization Engine
     initAuth() {
       auth.onAuthStateChanged(async user => {
         const modalBtn = document.getElementById("authModalBtn");
@@ -695,118 +289,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
           if (modalBtn) modalBtn.classList.add("hidden");
           if (profileBadge) profileBadge.classList.remove("hidden");
+          if (nameEl) nameEl.textContent = user.displayName || this.hunterName;
+          if (avatarEl) avatarEl.src = user.photoURL || DEFAULT_USER_AVATAR;
 
-          this.applyUserThemeAndIdentity();
-
-          rtdb.ref(`/users/${this.currentEmailKey}`).on("value", snapshot => {
-            const rtdbProfile = snapshot.val() || {};
-            const gamerTag = rtdbProfile.username || user.displayName || this.hunterName;
-            let avatarUrl = rtdbProfile.avatar_url || user.photoURL || DEFAULT_USER_AVATAR;
-
-            if (rtdbProfile.avatar_source === "google") {
-              avatarUrl = user.photoURL || DEFAULT_USER_AVATAR;
-            }
-
-            if (nameEl) nameEl.textContent = gamerTag;
-            if (avatarEl) avatarEl.src = avatarUrl;
-
-            this.psnAccountId = rtdbProfile.psn_account_id || this.psnAccountId || "";
-            this.psnOnlineId = rtdbProfile.psn_username || this.psnOnlineId || "";
-
-            if (rtdbProfile.primary_platform) {
-              this.currentPlatform = rtdbProfile.primary_platform.toLowerCase();
-              this.safeSetValue("platformSelect", this.currentPlatform);
-            }
-
-            if (this.psnOnlineId || this.psnAccountId) {
-              this.syncPlayStationTrophies(this.psnOnlineId, this.psnAccountId);
-            }
-
-            // Line 713: Hydrate friend roster with default entries
-            const loadedFriends = rtdbProfile.friends ? Object.entries(rtdbProfile.friends).map(([fKey, fVal]) => ({ ...fVal, key: fKey })) : [];
-            this.syncFriendsRosterList(loadedFriends);
-            this.loadFriendsComparisonTelemetry();
-            this.loadAllPlatformTrophyProgress();
+          // Listen strictly to your RTDB friends node
+          rtdb.ref(`/users/${this.currentEmailKey}/friends`).on("value", snapshot => {
+            const rawFriends = snapshot.val() || {};
+            this.friendsRoster = Object.entries(rawFriends).map(([codeKey, friendData]) => {
+              const code = (typeof friendData === "object" && friendData !== null && friendData.friend_code)
+                ? friendData.friend_code
+                : codeKey;
+              return { code: String(code).toUpperCase() };
+            });
+            this.loadRealFriendsTelemetry();
           });
-
-          try {
-            const gameSnap = await db.collection("users")
-              .doc(this.currentEmailKey)
-              .collection("platform")
-              .doc(this.currentPlatform)
-              .collection("progress")
-              .doc("woth2")
-              .get();
-
-            if (gameSnap.exists) {
-              const data = gameSnap.data();
-              if (data.hunter_name) {
-                this.hunterName = data.hunter_name;
-                this.safeSetValue("hunterNameInput", this.hunterName);
-              }
-              if (data.hunter_level) {
-                this.hunterLevel = data.hunter_level;
-                this.safeSetValue("hunterLevelInput", this.hunterLevel);
-              }
-              if (data.hunter_credits) {
-                this.hunterCredits = data.hunter_credits;
-                this.safeSetValue("hunterCreditsInput", this.hunterCredits);
-              }
-              if (data.companion_day) {
-                this.currentDay = data.companion_day;
-                this.safeSetValue("currentDayInput", this.currentDay);
-              }
-              if (data.companion_time) {
-                this.currentTime = data.companion_time;
-                this.safeSetValue("currentTimeInput", this.currentTime);
-              }
-              if (data.weather) {
-                this.currentWeather = data.weather;
-                this.safeSetValue("weatherConditionInput", this.currentWeather);
-              }
-              if (data.dog_stats) {
-                this.dogBondingLevel = data.dog_stats.bonding ?? this.dogBondingLevel;
-                this.dogFollowingCommandsLevel = data.dog_stats.following ?? this.dogFollowingCommandsLevel;
-                this.dogBloodTrackingLevel = data.dog_stats.blood ?? this.dogBloodTrackingLevel;
-                this.dogSearchQuarteringLevel = data.dog_stats.search ?? this.dogSearchQuarteringLevel;
-                this.updateDogInputDisplay();
-                this.renderDogProfile();
-              }
-              if (data.watchlist && Array.isArray(data.watchlist)) {
-                this.watchlist = data.watchlist;
-                this.renderWatchlist();
-              }
-
-              if (data.trophies && typeof data.trophies === "object") {
-                Object.entries(data.trophies).forEach(([id, t]) => {
-                  if (t.earned) {
-                    this.userTrophyProgress[id] = {
-                      earned: true,
-                      timestamp: t.timestamp || null,
-                      currentValue: t.currentValue !== undefined ? t.currentValue : null,
-                      targetValue: t.targetValue !== undefined ? t.targetValue : null,
-                      manual: Boolean(t.manual),
-                      source: t.source || "firestore"
-                    };
-                  }
-                });
-                this.recalculateCrossTrophyTelemetry();
-                this.renderTrophies();
-              }
-            }
-          } catch (e) {
-            console.warn("Firestore progress read warning:", e);
-          }
-
-          this.renderProfileDropdown(true);
-
         } else {
           this.currentUser = null;
           this.currentEmail = "";
           this.currentEmailKey = "";
           if (modalBtn) modalBtn.classList.remove("hidden");
           if (profileBadge) profileBadge.classList.add("hidden");
-          this.renderProfileDropdown(false);
+          this.friendsRoster = [];
+          this.renderRealFriends([]);
         }
       });
 
@@ -822,471 +326,120 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    // Line 810: Sync friends list with fallback profiles
-    syncFriendsRosterList(loadedFriends) {
-      const defaults = [
-        { key: "raymystyro", username: "Raymystyro", target_email: "raymystyro@guest.local", platform: "ps", avatar_url: DEFAULT_USER_AVATAR },
-        { key: "terrdog", username: "Terrdog", target_email: "terrdog@guest.local", platform: "ps", avatar_url: DEFAULT_USER_AVATAR },
-        { key: "companion_scout", username: "Outpost Companion", target_email: "scout@guest.local", platform: "pc", avatar_url: DEFAULT_USER_AVATAR }
-      ];
+    // Link a real registered friend by their 8-character code
+    async addFriendByCode() {
+      const codeInput = document.getElementById("friendCodeInput");
+      if (!codeInput || !codeInput.value.trim()) return alert("Please enter an 8-character Friend Code.");
+      const code = codeInput.value.trim().toUpperCase();
 
-      const merged = [...loadedFriends];
-      defaults.forEach(def => {
-        const exists = merged.find(f => (f.username && f.username.toLowerCase() === def.username.toLowerCase()) || f.key === def.key);
-        if (!exists) {
-          merged.push(def);
-        }
-      });
+      if (!this.currentEmailKey) return alert("Please log in to link companion friends.");
 
-      this.friendsRoster = merged;
-    },
+      try {
+        const usersSnap = await rtdb.ref("/users").once("value");
+        const allUsers = usersSnap.val() || {};
 
-    // Line 830: Render Top Profile Dropdown Menu
-    renderProfileDropdown(isAuthenticated) {
-      let menu = document.getElementById("userProfileDropdownMenu");
-      const profileBadge = document.getElementById("userProfile");
+        let foundKey = null;
+        let foundData = null;
 
-      if (!menu && profileBadge) {
-        menu = document.createElement("div");
-        menu.id = "userProfileDropdownMenu";
-        menu.className = "profile-dropdown-menu hidden";
-        menu.style.cssText = `
-          position: absolute;
-          top: 60px;
-          right: 20px;
-          background: #151c27;
-          border: 1px solid #273447;
-          border-radius: 8px;
-          padding: 8px;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-          z-index: 1005;
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          min-width: 180px;
-        `;
-        document.body.appendChild(menu);
-
-        profileBadge.style.cursor = "pointer";
-        profileBadge.addEventListener("click", (e) => {
-          e.stopPropagation();
-          menu.classList.toggle("hidden");
-        });
-
-        document.addEventListener("click", () => {
-          if (!menu.classList.contains("hidden")) menu.classList.add("hidden");
-        });
-      }
-
-      if (!menu) return;
-
-      if (isAuthenticated) {
-        menu.innerHTML = `
-          <a href="../../security/settings.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;">⚙️ Settings Hub</a>
-          <a href="../../security/privacy.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;">🔒 Privacy Policy</a>
-          <div style="height:1px; background:#273447; margin:2px 0;"></div>
-          <button id="menuLogoutBtn" style="background:transparent; border:none; color:#e74c3c; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; display:flex; align-items:center; gap:8px; font-weight:600;">🚪 Log Out</button>
-        `;
-        const logoutBtn = document.getElementById("menuLogoutBtn");
-        if (logoutBtn) logoutBtn.addEventListener("click", () => auth.signOut().then(() => window.location.reload()));
-      } else {
-        menu.innerHTML = `
-          <button id="menuLoginBtn" style="background:transparent; border:none; color:#0088ff; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; font-weight:600;">🔑 Log In</button>
-          <a href="../../security/privacy.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px;">🔒 Privacy Policy</a>
-        `;
-        const loginBtn = document.getElementById("menuLoginBtn");
-        if (loginBtn) {
-          loginBtn.addEventListener("click", () => {
-            const modal = document.getElementById("authModal");
-            if (modal) modal.classList.remove("hidden");
-          });
-        }
-      }
-    },
-
-    // Line 888: PlayStation Trophy Sync Engine
-    syncPlayStationTrophies(psnOnlineId, accountId) {
-      const targetGamerTag = (psnOnlineId || "").trim();
-      let trophyRef = null;
-
-      if (targetGamerTag) {
-        trophyRef = rtdb.ref(`/psn/gamertags/${targetGamerTag}/liveTrophyProgress/${this.titleId}`);
-      } else if (accountId) {
-        trophyRef = rtdb.ref(`/psn/trophies/woth2/${accountId}`);
-      }
-
-      if (!trophyRef) return;
-
-      trophyRef.on("value", async snapshot => {
-        const raw = snapshot.val();
-        let parsedList = [];
-
-        if (raw) {
-          if (raw.trophies) {
-            parsedList = Array.isArray(raw.trophies) ? raw.trophies : Object.values(raw.trophies);
-          } else if (Array.isArray(raw)) {
-            parsedList = raw;
-          } else if (typeof raw === "object") {
-            parsedList = Object.values(raw);
+        Object.entries(allUsers).forEach(([userKey, userData]) => {
+          if (userData && userData.friend_code && userData.friend_code.toUpperCase() === code) {
+            foundKey = userKey;
+            foundData = userData;
           }
+        });
+
+        if (!foundKey) {
+          return alert(`⚠️ No registered hunter found with friend code: ${code}`);
         }
 
-        if (parsedList.length > 0) {
-          parsedList.forEach((t, idx) => {
-            const id = t.trophyId !== undefined ? String(t.trophyId) : String(idx);
-            const isEarned = Boolean(t.earned || t.unlocked || t.timestamp || t.earnedDateTime);
-            const dateStr = t.timestamp || t.earnedDateTime || (isEarned ? (t.updatedAt || new Date().toISOString()) : null);
+        // Save to current user's friends list in RTDB under the friend code
+        await rtdb.ref(`/users/${this.currentEmailKey}/friends/${code}`).set({
+          friend_code: code,
+          user_key: foundKey,
+          username: foundData.username || foundData.hunter_name || "Companion Hunter",
+          linkedAt: new Date().toISOString()
+        });
 
-            const existing = this.userTrophyProgress[id] || {};
-
-            this.userTrophyProgress[id] = {
-              earned: isEarned || existing.earned || false,
-              timestamp: dateStr || existing.timestamp || null,
-              currentValue: t.currentValue !== undefined ? Number(t.currentValue) : (existing.currentValue !== undefined ? existing.currentValue : null),
-              targetValue: t.targetValue !== undefined ? Number(t.targetValue) : (existing.targetValue !== undefined ? existing.targetValue : null),
-              manual: false,
-              source: isEarned ? "psn" : (existing.source || "psn")
-            };
-          });
-
-          this.recalculateCrossTrophyTelemetry();
-          this.renderTrophies();
-          await this.silentSaveGameTelemetry();
-        }
-      });
+        codeInput.value = "";
+        alert(`✅ Linked companion ${foundData.username || code}!`);
+      } catch (err) {
+        alert("Error linking friend: " + err.message);
+      }
     },
 
-    // Line 941: Manual Trophy Toggle handler
-    toggleManualTrophy(trophyId) {
-      if (this.currentPlatform === "ps" && (this.psnOnlineId || this.psnAccountId)) {
+    // Read friend code -> find owner's sanitized email in RTDB -> read live Firestore doc
+    async loadRealFriendsTelemetry() {
+      if (!this.friendsRoster.length) {
+        this.renderRealFriends([]);
         return;
       }
 
-      const id = String(trophyId);
-      const current = this.userTrophyProgress[id] || { earned: false };
+      const cards = [];
 
-      if (current.earned) {
-        this.userTrophyProgress[id] = {
-          earned: false,
-          timestamp: null,
-          currentValue: null,
-          targetValue: null,
-          manual: true,
-          source: "manual"
-        };
-      } else {
-        this.userTrophyProgress[id] = {
-          earned: true,
-          timestamp: new Date().toISOString(),
-          currentValue: null,
-          targetValue: null,
-          manual: true,
-          source: "manual"
-        };
-      }
+      try {
+        const usersSnap = await rtdb.ref("/users").once("value");
+        const allUsers = usersSnap.val() || {};
 
-      this.recalculateCrossTrophyTelemetry();
-      this.renderTrophies();
-      this.silentSaveGameTelemetry();
-    },
+        for (const f of this.friendsRoster) {
+          const code = f.code;
+          let matchedEmailKey = null;
+          let rtdbUser = null;
 
-    // Line 976: Render Achievements Chamber with Friend Progress Indicators
-    renderTrophies() {
-      const container = document.getElementById("trophyChamberGrid") || document.getElementById("psnTrophiesContainer");
-      if (!container) return;
-
-      const total = this.masterTrophies.length || 6;
-      const progressEntries = Object.values(this.userTrophyProgress);
-      const earnedList = progressEntries.filter(t => t.earned);
-      const earnedCount = earnedList.length;
-      const progressPercent = total > 0 ? Math.round((earnedCount / total) * 100) : 0;
-
-      let firstTrophyText = "No milestones earned yet across platforms";
-      if (earnedList.length > 0) {
-        const sortedEarned = [...earnedList].sort((a, b) => new Date(a.timestamp || 0) - new Date(b.timestamp || 0));
-        const first = sortedEarned[0];
-        const firstId = Object.keys(this.userTrophyProgress).find(k => this.userTrophyProgress[k] === first);
-        const firstMaster = this.masterTrophies.find(m => m.trophyId === firstId);
-        const firstTitle = firstMaster ? firstMaster.title : "Milestone Complete";
-        const firstDate = new Date(first.timestamp);
-        const dateFormatted = !isNaN(firstDate.getTime())
-          ? firstDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
-          : "Recorded";
-        firstTrophyText = `🏆 First Unlocked: <strong>${firstTitle}</strong> (${dateFormatted})`;
-      }
-
-      const isLivePS = this.currentPlatform === "ps" && (this.psnOnlineId || this.psnAccountId);
-      const platformName = this.currentPlatform.toUpperCase();
-
-      const psTelemetry = this.crossPlatformTelemetry.ps || { earned: 0, percent: 0 };
-      const pcTelemetry = this.crossPlatformTelemetry.pc || { earned: 0, percent: 0 };
-      const xboxTelemetry = this.crossPlatformTelemetry.xbox || { earned: 0, percent: 0 };
-
-      let groupTabsHtml = "";
-      if (this.trophyGroups && this.trophyGroups.length > 0) {
-        groupTabsHtml = `
-          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
-            <button class="trophy-group-pill ${this.selectedTrophyGroup === 'all' ? 'active' : ''}" onclick="window.CompanionApp.filterTrophyGroup('all')">All Trophies (${total})</button>
-            <button class="trophy-group-pill ${this.selectedTrophyGroup === 'default' ? 'active' : ''}" onclick="window.CompanionApp.filterTrophyGroup('default')">Base Game</button>
-            ${this.trophyGroups.filter(g => g.trophyGroupId !== "default" && g.trophyGroupId !== 0).map(g => `
-              <button class="trophy-group-pill ${this.selectedTrophyGroup === String(g.trophyGroupId) ? 'active' : ''}" onclick="window.CompanionApp.filterTrophyGroup('${g.trophyGroupId}')">
-                ${g.trophyGroupName || g.name || `Expansion ${g.trophyGroupId}`}
-              </button>
-            `).join("")}
-          </div>
-        `;
-      }
-
-      container.innerHTML = `
-        <div style="grid-column: 1/-1; background:#151c27; padding:16px 20px; border-radius:10px; border:1px solid #273447; margin-bottom:14px; display:flex; flex-direction:column; gap:12px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-            <div>
-              <strong style="color:#fff; font-size:1.15rem;">
-                ${isLivePS ? `🎮 PlayStation Live Sync &bull; ${this.psnOnlineId}` : `🎯 ${platformName} Achievement Chamber`}
-              </strong>
-              <div style="font-size:0.8rem; color:var(--text-muted); margin-top:3px;">
-                ${isLivePS ? `Real-time synchronization active via NPWR52231_00` : `Interactive tracking mode: Click any trophy card to mark or unmark`}
-              </div>
-            </div>
-            <div style="text-align:right;">
-              <span class="badge" style="background:#28374d; color:var(--accent-gold); font-size:0.9rem; padding:6px 12px;">
-                ${earnedCount} / ${total} Active Session (${progressPercent}%)
-              </span>
-            </div>
-          </div>
-
-          <div style="width:100%; height:10px; background:rgba(255,255,255,0.06); border-radius:5px; overflow:hidden;">
-            <div style="width:${progressPercent}%; height:100%; background:linear-gradient(90deg, #0088ff, #2ecc71); border-radius:5px; transition: width 0.4s ease;"></div>
-          </div>
-
-          <!-- Cross-Platform Trophy Telemetry Deck -->
-          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:6px; background:rgba(0,0,0,0.3); padding:10px 12px; border-radius:8px; border:1px solid #1c2738;">
-            <div style="display:flex; flex-direction:column; gap:4px;">
-              <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
-                <span style="color:#00a6ed; font-weight:700;">🎮 PlayStation</span>
-                <strong style="color:#fff;">${psTelemetry.earned}/${total} (${psTelemetry.percent}%)</strong>
-              </div>
-              <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
-                <div style="width:${psTelemetry.percent}%; height:100%; background:#00a6ed;"></div>
-              </div>
-            </div>
-
-            <div style="display:flex; flex-direction:column; gap:4px;">
-              <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
-                <span style="color:#00d2d3; font-weight:700;">🖥️ PC / Steam</span>
-                <strong style="color:#fff;">${pcTelemetry.earned}/${total} (${pcTelemetry.percent}%)</strong>
-              </div>
-              <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
-                <div style="width:${pcTelemetry.percent}%; height:100%; background:#00d2d3;"></div>
-              </div>
-            </div>
-
-            <div style="display:flex; flex-direction:column; gap:4px;">
-              <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
-                <span style="color:#2ecc71; font-weight:700;">❎ Xbox Network</span>
-                <strong style="color:#fff;">${xboxTelemetry.earned}/${total} (${xboxTelemetry.percent}%)</strong>
-              </div>
-              <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
-                <div style="width:${xboxTelemetry.percent}%; height:100%; background:#2ecc71;"></div>
-              </div>
-            </div>
-          </div>
-
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-            <div style="font-size:0.8rem; color:#ffe0b3;">
-              ${firstTrophyText}
-            </div>
-            ${groupTabsHtml}
-          </div>
-        </div>
-      `;
-
-      const displayTrophies = this.masterTrophies.filter(t => {
-        if (this.selectedTrophyGroup === "all") return true;
-        if (this.selectedTrophyGroup === "default") return t.groupId === "default" || t.groupId === "0" || !t.groupId;
-        return String(t.groupId) === String(this.selectedTrophyGroup);
-      });
-
-      displayTrophies.forEach(t => {
-        const userState = this.userTrophyProgress[t.trophyId] || { earned: false };
-        const isEarned = Boolean(userState.earned);
-        const div = document.createElement("div");
-        div.className = `telemetry-card ${isEarned ? 'trophy-card-earned' : ''}`;
-        div.style.cssText = `
-          cursor: ${isLivePS ? "default" : "pointer"};
-          border-left: 4px solid ${isEarned ? 'var(--success)' : '#273447'};
-          transition: transform 0.2s ease, border-color 0.2s ease;
-        `;
-
-        if (!isLivePS) {
-          div.onclick = () => window.CompanionApp.toggleManualTrophy(t.trophyId);
-        }
-
-        const gradeColor = t.grade === "Platinum" ? "#00d2d3" : (t.grade === "Gold" ? "#f5a623" : (t.grade === "Silver" ? "#bdc3c7" : "#cd7f32"));
-
-        let formattedTimestamp = "";
-        if (isEarned && userState.timestamp) {
-          const d = new Date(userState.timestamp);
-          formattedTimestamp = !isNaN(d.getTime())
-            ? d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
-            : "Recorded";
-        }
-
-        let milestoneHtml = "";
-        if (userState.targetValue && userState.targetValue > 0) {
-          const cur = userState.currentValue || 0;
-          const tar = userState.targetValue;
-          const milePct = Math.min(100, Math.round((cur / tar) * 100));
-          milestoneHtml = `
-            <div style="margin-top:8px;">
-              <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-bottom:3px;">
-                <span>Milestone Step</span>
-                <strong style="color:#fff;">${cur} / ${tar} (${milePct}%)</strong>
-              </div>
-              <div style="width:100%; height:5px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden;">
-                <div style="width:${milePct}%; height:100%; background:var(--accent-gold);"></div>
-              </div>
-            </div>
-          `;
-        }
-
-        let statusBadge = `<span style="font-size:0.8rem; font-weight:600; color:var(--text-muted);">🔒 Locked</span>`;
-        if (isEarned) {
-          if (userState.source === "psn") {
-            statusBadge = `<span style="font-size:0.8rem; font-weight:700; color:var(--success);">✔ Earned (PSN Sync)</span>`;
-          } else if (userState.source === "json") {
-            statusBadge = `<span style="font-size:0.8rem; font-weight:700; color:var(--success);">✔ Earned (Game Data)</span>`;
-          } else if (userState.source === "firestore") {
-            statusBadge = `<span style="font-size:0.8rem; font-weight:700; color:var(--success);">✔ Earned (Synced)</span>`;
-          } else {
-            statusBadge = `<span style="font-size:0.8rem; font-weight:700; color:var(--success);">✔ Earned (Manual)</span>`;
-          }
-        }
-
-        // Line 1163: Friends Trophy Progress Tagging Strip
-        let friendPillsHtml = "";
-        const friendKeys = Object.keys(this.friendsProgressCache);
-        if (friendKeys.length > 0) {
-          const unlockedFriends = [];
-          friendKeys.forEach(fKey => {
-            const fData = this.friendsProgressCache[fKey];
-            if (fData && fData.trophies && fData.trophies[t.trophyId] && fData.trophies[t.trophyId].earned) {
-              unlockedFriends.push(fData.username || fKey);
+          Object.entries(allUsers).forEach(([emailKey, userData]) => {
+            if (userData && userData.friend_code && userData.friend_code.toUpperCase() === code) {
+              matchedEmailKey = emailKey;
+              rtdbUser = userData;
             }
           });
 
-          if (unlockedFriends.length > 0) {
-            friendPillsHtml = `
-              <div style="margin-top:8px; display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-                <span style="font-size:0.72rem; color:var(--accent-gold); font-weight:600;">Earned by Companions:</span>
-                ${unlockedFriends.map(fName => `<span class="badge" style="font-size:0.7rem; background:#1c2738; color:#00d2d3; padding:2px 6px;">${fName}</span>`).join("")}
-              </div>
-            `;
+          if (!matchedEmailKey) continue;
+
+          const targetPlatform = (rtdbUser.primary_platform || "ps").toLowerCase();
+
+          try {
+            const snap = await db.collection("users")
+              .doc(matchedEmailKey)
+              .collection("platform")
+              .doc(targetPlatform)
+              .collection("progress")
+              .doc("woth2")
+              .get();
+
+            let tele = {};
+            if (snap.exists) tele = snap.data();
+
+            cards.push({
+              code: code,
+              username: tele.hunter_name || rtdbUser.username || "Companion Hunter",
+              emailKey: matchedEmailKey,
+              platform: (tele.platform || targetPlatform).toUpperCase(),
+              level: tele.hunter_level || 1,
+              credits: tele.hunter_credits || 0,
+              day: tele.companion_day || 1,
+              time: tele.companion_time || "08:00",
+              weather: tele.weather || "Clear",
+              harvests: tele.harvest_count || 0,
+              trophiesEarned: tele.trophies_earned || 0,
+              trophiesTotal: tele.trophies_total || 6
+            });
+          } catch (e) {
+            console.warn("Companion Firestore progress fetch error:", e);
           }
         }
-
-        div.innerHTML = `
-          <div style="display:flex; gap:14px; align-items:flex-start;">
-            <img src="${t.icon}" alt="" style="width:54px; height:54px; border-radius:8px; object-fit:cover; border:1px solid rgba(255,255,255,0.12); flex-shrink:0;" onerror="this.src='${DEFAULT_GAME_POSTER}'">
-            <div style="flex-grow:1;">
-              <div class="card-top-row">
-                <span class="animal-title" style="font-size:1rem;">${t.title}</span>
-                <span class="badge" style="border-color:${gradeColor}; color:${gradeColor}; font-weight:700;">${t.grade}</span>
-              </div>
-              <p style="font-size:0.82rem; color:#cfd9e8; margin-top:5px; line-height:1.4;">${t.desc}</p>
-              ${milestoneHtml}
-              ${friendPillsHtml}
-            </div>
-          </div>
-          <div class="card-footer-row" style="margin-top:12px; border-top:1px solid rgba(255,255,255,0.06); padding-top:10px;">
-            <div>
-              ${statusBadge}
-              ${isEarned && formattedTimestamp ? `<div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">Unlocked: ${formattedTimestamp}</div>` : ''}
-            </div>
-            ${!isLivePS ? `<span style="font-size:0.72rem; color:var(--accent-amber);">Click to toggle</span>` : ''}
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    },
-
-    // Line 1210: Trophy filter by group tab
-    filterTrophyGroup(groupId) {
-      this.selectedTrophyGroup = groupId;
-      this.renderTrophies();
-    },
-
-    // Line 1216: Load friends companion progress and comparison telemetry
-    async loadFriendsComparisonTelemetry() {
-      const container = document.getElementById("friendsComparisonContainer");
-      if (!container) return;
-
-      if (!this.friendsRoster.length) {
-        container.innerHTML = `<p style="font-size:0.82rem; color:var(--text-muted); padding:12px;">No companions linked yet. Share your 8-character Friend Code in Settings to compare telemetry.</p>`;
-        return;
+      } catch (e) {
+        console.warn("RTDB user lookup error:", e);
       }
 
-      container.innerHTML = `<div style="font-size:0.8rem; color:var(--text-muted); padding:10px;">Loading live companion telemetry...</div>`;
-      const comparisonCards = [];
-
-      for (const friend of this.friendsRoster) {
-        const friendEmail = (friend.target_email || "").toLowerCase();
-        const friendKey = friend.key || getEmailKey(friendEmail);
-
-        try {
-          const targetPlatform = (friend.platform || this.currentPlatform || "ps").toLowerCase();
-          const snap = await db.collection("users")
-            .doc(friendKey)
-            .collection("platform")
-            .doc(targetPlatform)
-            .collection("progress")
-            .doc("woth2")
-            .get();
-
-          let friendData = {};
-          if (snap.exists) {
-            friendData = snap.data();
-          }
-
-          this.friendsProgressCache[friendKey] = {
-            username: friend.username || "Companion",
-            trophies: friendData.trophies || {}
-          };
-
-          comparisonCards.push({
-            key: friendKey,
-            username: friend.username || "Companion",
-            avatar: friend.avatar_url || DEFAULT_USER_AVATAR,
-            platform: (friendData.platform || targetPlatform).toUpperCase(),
-            level: friendData.hunter_level || 1,
-            credits: friendData.hunter_credits || 0,
-            day: friendData.companion_day || 1,
-            time: friendData.companion_time || "08:00",
-            weather: friendData.weather || "Clear",
-            trophiesEarned: friendData.trophies_earned || 0,
-            trophiesTotal: friendData.trophies_total || 6,
-            trophiesPct: friendData.trophies_percent || 0,
-            harvestCount: friendData.harvest_count || 0,
-            watchlistCount: (friendData.watchlist && friendData.watchlist.length) ? friendData.watchlist.length : 0,
-            dogStats: friendData.dog_stats || null
-          });
-        } catch (e) {
-          console.warn("Companion fetch warning:", e);
-        }
-      }
-
-      this.renderFriendsComparison(comparisonCards);
-      this.renderTrophies();
+      this.renderRealFriends(cards);
     },
 
-    // Line 1279: Render Friends comparison cards with custom avatar URLs and local file upload
-    renderFriendsComparison(cards) {
+    renderRealFriends(cards) {
       const container = document.getElementById("friendsComparisonContainer");
       if (!container) return;
       container.innerHTML = "";
 
       if (!cards.length) {
-        container.innerHTML = `<p style="font-size:0.82rem; color:var(--text-muted); padding:12px;">No active companion telemetry recorded yet.</p>`;
+        container.innerHTML = `<p style="font-size:0.85rem; color:var(--text-muted); padding:12px; grid-column:1/-1;">No companion friends linked yet. Link their 8-character code above to view their live telemetry.</p>`;
         return;
       }
 
@@ -1295,573 +448,221 @@ document.addEventListener("DOMContentLoaded", () => {
         div.className = "telemetry-card";
         div.style.borderLeft = "3px solid #00d2d3";
         div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <img id="friendAvatarImg_${c.key}" src="${c.avatar}" style="width:34px; height:34px; border-radius:50%; object-fit:cover; border:1px solid #00d2d3;" onerror="this.src='${DEFAULT_USER_AVATAR}'">
-              <div>
-                <strong style="color:#fff; font-size:0.95rem;">${c.username}</strong>
-                <div style="font-size:0.7rem; color:var(--text-muted);">Companion Node</div>
-              </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong style="color:#fff; font-size:1rem;">${c.username}</strong>
+              <div style="font-size:0.72rem; color:var(--accent-teal);">Code: <strong>${c.code}</strong> &bull; Node: ${c.emailKey}</div>
             </div>
-            <span class="badge" style="background:#28374d; color:#00d2d3;">${c.platform}</span>
+            <span class="badge" style="color:#00d2d3;">${c.platform}</span>
           </div>
-
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:0.78rem; color:var(--text-muted);">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:0.78rem; color:var(--text-muted); margin-top:8px;">
             <div>Level: <strong style="color:#fff;">Lv. ${c.level}</strong></div>
-            <div>Credits: <strong style="color:var(--accent-amber);">$${c.credits}</strong></div>
+            <div>Credits: <strong style="color:var(--accent-amber);">$${c.credits.toLocaleString()}</strong></div>
             <div>Time / Day: <strong style="color:#fff;">Day ${c.day} (${c.time})</strong></div>
             <div>Weather: <strong style="color:#ffe099;">${c.weather}</strong></div>
-            <div>Harvests: <strong style="color:#2ecc71;">${c.harvestCount} Animals</strong></div>
-            <div>Watchlist: <strong style="color:#f5a623;">${c.watchlistCount} Targets</strong></div>
-            <div style="grid-column: 1/-1; margin-top:2px;">
-              Achievements: <strong style="color:var(--accent-gold);">${c.trophiesEarned} / ${c.trophiesTotal} (${c.trophiesPct}%)</strong>
-            </div>
-          </div>
-
-          ${c.dogStats ? `
-            <div style="font-size:0.75rem; background:rgba(0,0,0,0.25); padding:6px; border-radius:4px; margin-top:8px;">
-              🐕 <strong>${c.dogStats.name}</strong> (${c.dogStats.breed}) &bull; Bonding Lv.${c.dogStats.bonding}
-            </div>
-          ` : ''}
-
-          <!-- Friend Image Customization Controls -->
-          <div style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px; display:flex; flex-direction:column; gap:6px;">
-            <div style="display:flex; gap:6px;">
-              <input type="text" id="avatarUrlInput_${c.key}" placeholder="Paste Image URL" style="flex-grow:1; font-size:0.72rem; padding:4px 6px; background:#0b1118; border:1px solid #273447; border-radius:4px; color:#fff;">
-              <button type="button" class="btn-link" style="font-size:0.72rem; background:#1c2738; padding:4px 8px; border-radius:4px; color:#00d2d3;" onclick="window.CompanionApp.saveFriendAvatarUrl('${c.key}')">Set URL</button>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <label for="avatarFileInput_${c.key}" style="font-size:0.72rem; color:var(--text-muted); cursor:pointer;">📁 Upload Avatar Image</label>
-              <input type="file" id="avatarFileInput_${c.key}" accept="image/*" style="display:none;" onchange="window.CompanionApp.handleFriendAvatarUpload('${c.key}', event)">
-            </div>
+            <div>Harvests: <strong style="color:#2ecc71;">${c.harvests} Animals</strong></div>
+            <div>Trophies: <strong style="color:var(--accent-gold);">${c.trophiesEarned} / ${c.trophiesTotal}</strong></div>
           </div>
         `;
         container.appendChild(div);
       });
     },
 
-    // Line 1338: Save custom avatar URL for friend to Firebase RTDB and update roster
-    async saveFriendAvatarUrl(friendKey) {
-      const input = document.getElementById(`avatarUrlInput_${friendKey}`);
-      if (!input || !input.value.trim()) return;
-
-      const newUrl = input.value.trim();
-      const friend = this.friendsRoster.find(f => f.key === friendKey);
-      if (friend) friend.avatar_url = newUrl;
-
-      const imgEl = document.getElementById(`friendAvatarImg_${friendKey}`);
-      if (imgEl) imgEl.src = newUrl;
-
-      if (this.currentEmailKey) {
-        try {
-          await rtdb.ref(`/users/${this.currentEmailKey}/friends/${friendKey}/avatar_url`).set(newUrl);
-        } catch (e) {
-          console.warn("RTDB friend avatar update warning:", e);
-        }
-      }
-      alert(`✅ Companion avatar updated!`);
+    cleanPrice(val) {
+      if (val === undefined || val === null) return 0;
+      if (typeof val === "number") return val;
+      const stripped = String(val).replace(/[^0-9.]/g, "");
+      return parseFloat(stripped) || 0;
     },
 
-    // Line 1361: Local file reader upload for friend avatars
-    handleFriendAvatarUpload(friendKey, event) {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const base64Data = e.target.result;
-        const friend = this.friendsRoster.find(f => f.key === friendKey);
-        if (friend) friend.avatar_url = base64Data;
-
-        const imgEl = document.getElementById(`friendAvatarImg_${friendKey}`);
-        if (imgEl) imgEl.src = base64Data;
-
-        if (this.currentEmailKey) {
-          try {
-            await rtdb.ref(`/users/${this.currentEmailKey}/friends/${friendKey}/avatar_url`).set(base64Data);
-          } catch (err) {
-            console.warn("RTDB friend file upload warning:", err);
-          }
-        }
-        alert(`✅ Companion image uploaded and saved!`);
-      };
-      reader.readAsDataURL(file);
-    },
-
-    // Line 1387: Master Dynamic Features Ingestion
-    initDynamicFeatures() {
-      this.populateRegions();
-      this.filterSpeciesByRegion("harvestLocationSelect", "harvestSpeciesSelect");
-      this.filterSpeciesByRegion("watchRegionSelect", "watchSpeciesSelect");
-
-      this.renderHarvestHistory();
-      this.renderWatchlist();
-      this.renderNeedZones();
-      this.renderLifeCycles();
-      this.renderDogProfile();
-      this.renderChallenges();
-      this.renderMissions();
-      this.renderInfrastructure();
-      this.renderTrails();
-      this.renderSpeciesCatalog();
-      this.renderLodgeForecaster();
-      this.updateDynamicHarvestSchema();
-    },
-
-    // Line 1407: Lodge Requisition Forecaster Engine (Resilient Array Normalizer)
-    renderLodgeForecaster() {
-      const container = document.getElementById("lodgeForecasterContainer") || document.getElementById("lodgeRequisitionGrid");
+    // Flatten woth2_gear.json dictionary into the Arsenal Catalog
+    renderGearCatalog() {
+      const container = document.getElementById("gearCatalogContainer");
       if (!container) return;
 
-      // Line 1412: Extract and normalize items from any object/array shape safely
-      const extractCatalogList = (source) => {
-        if (!source) return null;
-        if (Array.isArray(source)) return source;
-        if (Array.isArray(source.gear)) return source.gear;
-        if (Array.isArray(source.items)) return source.items;
-        if (Array.isArray(source.lodge_store)) return source.lodge_store;
-        if (typeof source === "object") {
-          // If object has nested category arrays or dictionary entries, flatten them
-          const flattened = [];
-          Object.values(source).forEach(val => {
-            if (Array.isArray(val)) {
-              flattened.push(...val);
-            } else if (val && typeof val === "object" && (val.cost !== undefined || val.price !== undefined || val.name || val.title)) {
-              flattened.push(val);
-            }
+      const rawGear = this.db.gear || {};
+      const items = [];
+
+      Object.entries(rawGear).forEach(([categoryKey, categoryBag]) => {
+        if (categoryKey === "catalog_metadata" || typeof categoryBag !== "object" || categoryBag === null) return;
+
+        Object.entries(categoryBag).forEach(([itemKey, item]) => {
+          if (!item || typeof item !== "object") return;
+          items.push({
+            id: item.id || itemKey,
+            name: item.name || item.title || itemKey,
+            category: item.category || categoryKey,
+            subgroup: categoryKey,
+            price: this.cleanPrice(item.price || item.cost),
+            tier: item.tier || (item.tier_min ? `${item.tier_min}-${item.tier_max}` : 1),
+            caliber: item.caliber || item.arrow || "",
+            image: item.image || item.thumbnail || DEFAULT_GAME_POSTER,
+            description: item.description || "Field tactical gear item."
           });
-          if (flattened.length > 0) return flattened;
-        }
-        return null;
-      };
+        });
+      });
 
-      const catalogItems = extractCatalogList(this.db.progressionGear) ||
-                           extractCatalogList(this.db.gear) ||
-                           extractCatalogList(this.db.gameData ? this.db.gameData.lodge_store : null) ||
-                           this.lodgeCatalog;
-
+      this.safeSetText("gearCatalogCount", `${items.length} Field Items`);
       container.innerHTML = "";
 
-      catalogItems.forEach(rawItem => {
-        if (!rawItem || typeof rawItem !== "object") return;
+      const filtered = items.filter(i => {
+        if (this.selectedGearCategory === "all") return true;
+        return i.subgroup === this.selectedGearCategory;
+      });
 
-        const item = {
-          id: rawItem.id || `item_${Math.random().toString(36).substring(2, 9)}`,
-          name: rawItem.name || rawItem.title || "Lodge Gear",
-          category: rawItem.category || "Equipment",
-          cost: Number(rawItem.cost || rawItem.price || 0),
-          requiredLevel: Number(rawItem.requiredLevel || rawItem.required_level || rawItem.level || 1),
-          description: rawItem.description || rawItem.desc || "Field gear requisition."
-        };
-
-        const canAfford = this.hunterCredits >= item.cost;
-        const balanceAfter = this.hunterCredits - item.cost;
-        const deficit = item.cost - this.hunterCredits;
-        const creditProgressPct = item.cost > 0 ? Math.min(100, Math.round((this.hunterCredits / item.cost) * 100)) : 100;
-
-        const isLevelUnlocked = this.hunterLevel >= item.requiredLevel;
-        const levelsRemaining = Math.max(0, item.requiredLevel - this.hunterLevel);
-
-        let balanceBadgeClass = canAfford ? "banner-breeder" : "banner-cull";
-        let balanceBadgeText = canAfford
-          ? `Balance Remaining After Purchase: $${balanceAfter} credits ($${this.hunterCredits} - $${item.cost})`
-          : `Deficit: Need $${deficit} more credits (Have $${this.hunterCredits} / Need $${item.cost})`;
-
-        let levelBadgeText = isLevelUnlocked
-          ? `✅ Requisition Clearance: Unlocked (Required Lv. ${item.requiredLevel})`
-          : `🔒 Locked: Requires Hunter Level ${item.requiredLevel} (${levelsRemaining} ${levelsRemaining === 1 ? 'level' : 'levels'} remaining)`;
+      filtered.forEach(item => {
+        const canAfford = this.hunterCredits >= item.price;
+        const diff = item.price - this.hunterCredits;
 
         const card = document.createElement("div");
         card.className = "telemetry-card";
-        card.style.borderLeft = isLevelUnlocked ? (canAfford ? "4px solid var(--success)" : "4px solid var(--accent-amber)") : "4px solid #e74c3c";
+        card.style.borderLeft = canAfford ? "3px solid var(--success)" : "3px solid var(--accent-amber)";
         card.innerHTML = `
-          <div>
-            <div class="card-top-row">
-              <span class="animal-title">${item.name}</span>
-              <span class="badge" style="background:#28374d; color:var(--accent-gold); font-weight:700;">$${item.cost}</span>
-            </div>
-            <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
-              Category: <strong>${item.category}</strong> &bull; Gate: <strong>Level ${item.requiredLevel}</strong>
-            </div>
-            <p style="font-size:0.8rem; color:#cfd9e8; margin-top:5px; line-height:1.35;">${item.description}</p>
-            
-            <!-- Credit Calculation Deck -->
-            <div class="action-banner ${balanceBadgeClass}" style="margin-top:8px;">
-              ${balanceBadgeText}
-            </div>
-
-            <!-- Credit Progress Bar to Next Purchase -->
-            <div style="margin-top:6px;">
-              <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-muted); margin-bottom:2px;">
-                <span>Credit Funding</span>
-                <strong style="color:#fff;">${creditProgressPct}%</strong>
+          <div style="display:flex; gap:12px; align-items:flex-start;">
+            <img src="${item.image}" alt="" style="width:60px; height:60px; border-radius:6px; object-fit:cover; border:1px solid var(--border-color);" onerror="this.src='${DEFAULT_GAME_POSTER}'">
+            <div style="flex-grow:1;">
+              <div class="card-top-row">
+                <span class="animal-title">${item.name}</span>
+                <span class="badge" style="color:var(--accent-gold);">$${item.price.toLocaleString()}</span>
               </div>
-              <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
-                <div style="width:${creditProgressPct}%; height:100%; background:${canAfford ? 'var(--success)' : 'var(--accent-amber)'};"></div>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+                Category: <strong>${item.category}</strong> ${item.caliber ? `&bull; Caliber: <strong>${item.caliber}</strong>` : ''}
+              </div>
+              <p style="font-size:0.78rem; color:#cfd9e8; margin-top:6px; line-height:1.35;">${item.description}</p>
+              <div class="action-banner ${canAfford ? 'banner-breeder' : 'banner-cull'}" style="margin-top:6px;">
+                ${canAfford ? `Balance after: $${(this.hunterCredits - item.price).toLocaleString()}` : `Deficit: Need $${diff.toLocaleString()} more credits`}
               </div>
             </div>
-
-            <!-- Level Countdown Indicator -->
-            <div style="font-size:0.75rem; color:${isLevelUnlocked ? 'var(--success)' : '#ff9999'}; margin-top:6px; font-weight:600;">
-              ${levelBadgeText}
-            </div>
-          </div>
-          <div class="card-footer-row" style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px;">
-            <span style="font-size:0.75rem; color:var(--text-muted);">Current: <strong>$${this.hunterCredits}</strong> | Lv. <strong>${this.hunterLevel}</strong></span>
-            <button type="button" class="btn-link" style="color:${(canAfford && isLevelUnlocked) ? 'var(--accent-gold)' : 'var(--text-muted)'}; font-weight:700; cursor:${(canAfford && isLevelUnlocked) ? 'pointer' : 'not-allowed'};" 
-              onclick="window.CompanionApp.purchaseLodgeItem('${item.id}', ${item.cost}, ${item.requiredLevel})">
-              ${(canAfford && isLevelUnlocked) ? "Acquire" : "Unavailable"}
-            </button>
           </div>
         `;
         container.appendChild(card);
       });
     },
 
-    // Line 1515: Purchase action with automatic deductions
-    purchaseLodgeItem(itemId, cost, requiredLevel) {
-      if (this.hunterLevel < requiredLevel) {
-        alert(`🔒 Requisition locked. You need ${requiredLevel - this.hunterLevel} more level(s) to unlock this item.`);
-        return;
-      }
-      if (this.hunterCredits < cost) {
-        alert(`⚠️ Insufficient credits. You need $${cost - this.hunterCredits} more credits to complete this purchase.`);
-        return;
-      }
-
-      this.hunterCredits -= cost;
-      this.safeSetValue("hunterCreditsInput", this.hunterCredits);
-      localStorage.setItem("woth2_credits", this.hunterCredits);
-      this.renderLodgeForecaster();
-      this.silentSaveGameTelemetry();
-      alert(`✅ Requisition approved! Purchased item for $${cost}. Remaining balance: $${this.hunterCredits} credits.`);
+    filterGearCategory(cat) {
+      this.selectedGearCategory = cat;
+      const pills = document.querySelectorAll("#gearFilterPills .trophy-group-pill");
+      pills.forEach(p => p.classList.remove("active"));
+      if (window.event && window.event.target) window.event.target.classList.add("active");
+      this.renderGearCatalog();
     },
 
-    // Line 1534: Populate region select controls
-    populateRegions() {
-      const regions = (this.db.regions && this.db.regions.regions) ? this.db.regions.regions : [];
-      const locationSelect = document.getElementById("harvestLocationSelect");
-      const watchRegionSelect = document.getElementById("watchRegionSelect");
-
-      if (locationSelect) locationSelect.innerHTML = "";
-      if (watchRegionSelect) watchRegionSelect.innerHTML = "";
-
-      regions.forEach(r => {
-        if (locationSelect) {
-          const opt1 = document.createElement("option");
-          opt1.value = r.name;
-          opt1.textContent = r.name;
-          locationSelect.appendChild(opt1);
-        }
-        if (watchRegionSelect) {
-          const opt2 = document.createElement("option");
-          opt2.value = r.name;
-          opt2.textContent = r.name;
-          watchRegionSelect.appendChild(opt2);
-        }
-      });
-    },
-
-    // Line 1559: Regional species filtering engine
-    filterSpeciesByRegion(regionSelectId, speciesSelectId) {
-      const regionEl = document.getElementById(regionSelectId);
-      const speciesEl = document.getElementById(speciesSelectId);
-      if (!regionEl || !speciesEl) return;
-
-      const selectedRegion = regionEl.value;
-      const allSpecies = (this.db.species && this.db.species.species) ? this.db.species.species : [];
-
-      speciesEl.innerHTML = "";
-
-      const filtered = allSpecies.filter(s => {
-        if (!s.regions || !Array.isArray(s.regions)) return true;
-        return s.regions.includes(selectedRegion);
-      });
-
-      filtered.forEach(s => {
-        const opt = document.createElement("option");
-        opt.value = s.name;
-        opt.textContent = `${s.name} (Tier ${s.tier})`;
-        speciesEl.appendChild(opt);
-      });
-
-      if (speciesSelectId === "watchSpeciesSelect") {
-        this.updateWatchlistMaxAge();
-      } else if (speciesSelectId === "harvestSpeciesSelect") {
-        this.updateDynamicHarvestSchema();
-      }
-    },
-
-    // Line 1590: Dynamic trophy harvesting schema forms
-    updateDynamicHarvestSchema() {
-      const container = document.getElementById("dynamicSchemaFieldsContainer");
-      const speciesEl = document.getElementById("harvestSpeciesSelect");
-      if (!container || !speciesEl || !speciesEl.value) return;
-
-      const selectedSpecies = speciesEl.value.toLowerCase();
-      let category = "Antlers";
-      let fields = [
-        { id: "main_beam", label: "Main Beam", unit: "in", ph: "24.5" },
-        { id: "inside_spread", label: "Inside Spread", unit: "in", ph: "18.2" },
-        { id: "points_count", label: "Total Points", unit: "count", ph: "10" }
-      ];
-
-      if (selectedSpecies.includes("bear") || selectedSpecies.includes("wolf") || selectedSpecies.includes("badger") || selectedSpecies.includes("wolverine")) {
-        category = "Skull & Weight (Predator)";
-        fields = [
-          { id: "skull_length", label: "Skull Length", unit: "in", ph: "15.4" },
-          { id: "skull_width", label: "Skull Width", unit: "in", ph: "10.2" },
-          { id: "body_weight", label: "Body Weight", unit: "lbs", ph: "379.7" }
-        ];
-      } else if (selectedSpecies.includes("boar") || selectedSpecies.includes("pig")) {
-        category = "Tusks & Skull";
-        fields = [
-          { id: "tusk_length", label: "Lower Tusk Length", unit: "in", ph: "7.8" },
-          { id: "tusk_thickness", label: "Tusk Circumference", unit: "in", ph: "3.2" }
-        ];
-      } else if (selectedSpecies.includes("sheep") || selectedSpecies.includes("goat") || selectedSpecies.includes("bison") || selectedSpecies.includes("pronghorn")) {
-        category = "Horns (Bovidae)";
-        fields = [
-          { id: "horn_length", label: "Horn Length", unit: "in", ph: "36.8" },
-          { id: "base_circ", label: "Base Circumference", unit: "in", ph: "14.2" },
-          { id: "curl_spread", label: "Tip Spread", unit: "in", ph: "22.0" }
-        ];
-      } else if (selectedSpecies.includes("moose")) {
-        category = "Palmate Antlers";
-        fields = [
-          { id: "palm_len", label: "Palm Length", unit: "in", ph: "32.0" },
-          { id: "palm_width", label: "Palm Width", unit: "in", ph: "12.5" },
-          { id: "points_left", label: "Points Left", unit: "count", ph: "9" },
-          { id: "points_right", label: "Points Right", unit: "count", ph: "8" }
-        ];
-      } else if (selectedSpecies.includes("turkey") || selectedSpecies.includes("mallard") || selectedSpecies.includes("ptarmigan") || selectedSpecies.includes("hare") || selectedSpecies.includes("ostrich")) {
-        category = "Body Weight & Plumage";
-        fields = [
-          { id: "body_weight", label: "Total Body Weight", unit: "lbs", ph: "18.5" },
-          { id: "beard_len", label: "Beard / Quill Length", unit: "in", ph: "10.5" },
-          { id: "spur_len", label: "Spur / Talon Length", unit: "in", ph: "1.25" }
-        ];
-      }
-
-      container.innerHTML = `<span style="grid-column: 1/-1; font-size: 0.76rem; color: var(--accent-amber); font-weight: 700;">Trophy Type: ${category}</span>`;
-
-      fields.forEach(f => {
-        const div = document.createElement("div");
-        div.className = "input-group";
-        div.innerHTML = `
-          <label for="schema_${f.id}">${f.label} (${f.unit})</label>
-          <input type="text" id="schema_${f.id}" placeholder="${f.ph}">
-        `;
-        container.appendChild(div);
-      });
-    },
-
-    // Line 1655: Max age calculation for watchlist
-    updateWatchlistMaxAge() {
-      const speciesEl = document.getElementById("watchSpeciesSelect");
-      const maxAgeEl = document.getElementById("watchMaxAge");
-      if (!speciesEl || !maxAgeEl || !speciesEl.value) return;
-
-      const selectedSpecies = speciesEl.value;
-      const lifecycles = (this.db.lifecycles && this.db.lifecycles.species_lifecycles) ? this.db.lifecycles.species_lifecycles : [];
-      const match = lifecycles.find(l => l.species.toLowerCase() === selectedSpecies.toLowerCase());
-      maxAgeEl.value = match ? match.max_age_years : 12;
-    },
-
-    // Line 1666: Save spotted watchlist target
-    saveWatchlistEntry() {
-      const editId = document.getElementById("editWatchlistId") ? document.getElementById("editWatchlistId").value : "";
-      const tag = document.getElementById("watchIdentifier") ? document.getElementById("watchIdentifier").value.trim() : "";
-      const species = document.getElementById("watchSpeciesSelect") ? document.getElementById("watchSpeciesSelect").value : "";
-      const region = document.getElementById("watchRegionSelect") ? document.getElementById("watchRegionSelect").value : "";
-      const landmark = document.getElementById("watchLandmark") ? document.getElementById("watchLandmark").value.trim() : "";
-      const fitness = document.getElementById("watchFitness") ? parseFloat(document.getElementById("watchFitness").value) : NaN;
-      const age = document.getElementById("watchAge") ? parseInt(document.getElementById("watchAge").value, 10) : NaN;
-      const maxAge = document.getElementById("watchMaxAge") ? parseInt(document.getElementById("watchMaxAge").value, 10) : 12;
-      const stars = document.getElementById("watchStars") ? parseInt(document.getElementById("watchStars").value, 10) : 1;
-
-      if (!tag || isNaN(fitness) || isNaN(age) || !landmark) {
-        return alert("Please enter the animal identifier, fitness %, age, and need zone landmark.");
-      }
-
-      if (editId) {
-        const idx = this.watchlist.findIndex(w => w.id === editId);
-        if (idx !== -1) {
-          this.watchlist[idx] = { ...this.watchlist[idx], tag, species, region, landmark, fitness, age, maxAge, stars };
-        }
-      } else {
-        const newEntry = {
-          id: "target_" + Date.now(),
-          tag, species, region, landmark, fitness, sightedAge: age, age, maxAge, stars, sightedDay: this.currentDay
-        };
-        this.watchlist.unshift(newEntry);
-      }
-
-      this.resetWatchlistForm();
-      this.renderWatchlist();
-      this.silentSaveGameTelemetry();
-    },
-
-    // Line 1702: Reset watchlist input form
-    resetWatchlistForm() {
-      this.safeSetValue("editWatchlistId", "");
-      this.safeSetValue("watchIdentifier", "");
-      this.safeSetValue("watchFitness", "");
-      this.safeSetValue("watchAge", "8");
-      this.safeSetValue("watchLandmark", "");
-      this.safeSetText("watchlistFormHeader", "Add Live Animal to Watchlist");
-      this.safeSetText("saveWatchlistBtn", "Add to Watchlist");
-      const cancelBtn = document.getElementById("cancelEditWatchlistBtn");
-      if (cancelBtn) cancelBtn.classList.add("hidden");
-    },
-
-    // Line 1715: Edit existing animal target
-    editWatchlistEntry(id) {
-      const item = this.watchlist.find(w => w.id === id);
-      if (!item) return;
-
-      this.safeSetValue("editWatchlistId", item.id);
-      this.safeSetValue("watchIdentifier", item.tag);
-      this.safeSetValue("watchRegionSelect", item.region || "Jackalope Cordillera");
-      this.filterSpeciesByRegion("watchRegionSelect", "watchSpeciesSelect");
-      this.safeSetValue("watchSpeciesSelect", item.species);
-      this.safeSetValue("watchLandmark", item.landmark || "");
-      this.safeSetValue("watchFitness", item.fitness);
-      this.safeSetValue("watchAge", item.age);
-      this.safeSetValue("watchMaxAge", item.maxAge);
-      this.safeSetValue("watchStars", item.stars);
-
-      this.safeSetText("watchlistFormHeader", "Edit Watchlist Target");
-      this.safeSetText("saveWatchlistBtn", "Update Target");
-      const cancelBtn = document.getElementById("cancelEditWatchlistBtn");
-      if (cancelBtn) cancelBtn.classList.remove("hidden");
-    },
-
-    // Line 1737: Remove animal from active watchlist
-    deleteWatchlistEntry(id) {
-      if (!confirm("Harvested or remove this target from the watchlist?")) return;
-      this.watchlist = this.watchlist.filter(w => w.id !== id);
-      this.renderWatchlist();
-      this.silentSaveGameTelemetry();
-    },
-
-    // Line 1745: Watchlist Mathematics Engine (Biological Aging & Despawn Timers)
-    renderWatchlist() {
-      const container = document.getElementById("watchlistContainer");
+    // Render Challenge Trees from woth2_challenges.json
+    renderChallenges() {
+      const container = document.getElementById("challengeTreesGrid");
       if (!container) return;
 
-      this.safeSetText("watchlistCount", `${this.watchlist.length} Tracked Animals`);
+      const raw = this.db.challenges || {};
+      const trees = raw.trees || (raw.challenges ? raw.challenges.trees : {});
+
+      container.innerHTML = "";
+      let challengeCount = 0;
+
+      Object.entries(trees).forEach(([key, tree]) => {
+        const treeChallenges = tree.challenges || [];
+        challengeCount += treeChallenges.length;
+
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#fff; font-size:1.05rem;">${tree.name || key} Mastery</strong>
+            <span class="badge">${treeChallenges.length || tree.total || 0} Challenges</span>
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin:4px 0 8px;">${tree.description || "Master field skills in this tactical discipline."}</p>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            ${treeChallenges.map(c => `
+              <div style="background:rgba(0,0,0,0.25); padding:6px 8px; border-radius:4px; font-size:0.78rem; border-left:2px solid var(--accent-amber);">
+                <strong style="color:var(--text-main);">${c.title || c.name || "Challenge Task"}</strong>
+                <div style="color:var(--text-muted); font-size:0.74rem;">${c.description || c.objective || ""}</div>
+              </div>
+            `).join("")}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+
+      this.safeSetText("challengesCount", `${challengeCount} Total Challenges`);
+    },
+
+    // Interactive Mission Engine
+    renderMissions() {
+      const container = document.getElementById("missionsGrid");
+      if (!container) return;
+
+      const rawMissions = (this.db.missions && this.db.missions.missions) ? this.db.missions.missions : [];
+      this.safeSetText("missionsCount", `${rawMissions.length} Missions`);
       container.innerHTML = "";
 
-      if (this.watchlist.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem; padding:12px; grid-column:1/-1;">No animals currently on the watchlist. Add spotted animals on the left.</p>';
-        return;
+      rawMissions.forEach((m, idx) => {
+        const missionId = `mission_${idx}`;
+        const isCompleted = Boolean(this.completedMissions[missionId]);
+
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.style.borderLeft = isCompleted ? "3px solid var(--success)" : "3px solid var(--border-color)";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:${isCompleted ? 'var(--success)' : '#fff'}; text-decoration:${isCompleted ? 'line-through' : 'none'};">${m.name}</strong>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.76rem; color:var(--text-muted);">
+              <input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="window.CompanionApp.toggleMissionComplete('${missionId}')"> Completed
+            </label>
+          </div>
+          <div style="font-size:0.76rem; color:var(--accent-amber); margin-top:2px;">Source: ${m.source || "Warden"}</div>
+          <ul style="font-size:0.8rem; color:var(--text-muted); padding-left:18px; margin-top:6px;">
+            ${(m.objectives || []).map(o => `<li style="text-decoration:${isCompleted ? 'line-through' : 'none'};">${o}</li>`).join("")}
+          </ul>
+          <div style="font-size:0.78rem; color:var(--accent-gold); margin-top:6px;">
+            Reward: ${m.money ? `$${m.money}` : 'XP'} ${m.xp ? `&bull; ${m.xp} XP` : ''}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    toggleMissionComplete(missionId) {
+      this.completedMissions[missionId] = !this.completedMissions[missionId];
+      localStorage.setItem("woth2_completed_missions", JSON.stringify(this.completedMissions));
+      this.renderMissions();
+    },
+
+    // Infrastructure Tasks with Real Credit Balances
+    renderInfrastructure() {
+      const container = document.getElementById("infrastructureGrid");
+      if (!container) return;
+
+      const infra = this.db.infrastructure || {};
+      const tasks = infra.tasks || [];
+      this.safeSetText("infrastructureCount", `${tasks.length} Enhancements`);
+
+      const notesBox = document.getElementById("infraNotesBox");
+      if (notesBox) {
+        notesBox.innerHTML = `<strong>Warden Protocol:</strong> ${infra.mechanic_notes || "Feeders and pollution removal impact genetic ceilings."}`;
       }
 
-      this.watchlist.forEach(item => {
-        const elapsedDays = Math.max(0, this.currentDay - (item.sightedDay || 1));
-        const effectiveAge = (item.sightedAge || item.age) + Math.floor(elapsedDays / 3);
-        const daysLeft = Math.max(0, (item.maxAge - effectiveAge) * 3);
-        const daysIntoCurrentYear = elapsedDays % 3;
-        const daysUntilNextYear = 3 - daysIntoCurrentYear;
-        const matureThresholdAge = Math.max(1, item.maxAge - 3);
-        const yearsToMature = Math.max(0, matureThresholdAge - effectiveAge);
-        const daysToMature = yearsToMature * 3;
-
-        let actionClass = "banner-balanced";
-        let actionText = "⚖️ BALANCED: Stable genetics. Monitor.";
-
-        if (item.fitness < 50.0) {
-          actionClass = "banner-cull";
-          actionText = `🚨 CULL: Low Fitness (${item.fitness}%). Despawn deadline in ${daysLeft} days.`;
-        } else if (item.fitness >= 80.0 && effectiveAge < item.maxAge) {
-          actionClass = "banner-breeder";
-          actionText = `⭐ 5-STAR BREEDER (${item.fitness}%): In Prime trophy rack. ${daysLeft} days before natural despawn.`;
-        } else if (item.stars === 1 && effectiveAge >= (item.maxAge - 2)) {
-          actionClass = "banner-cull";
-          actionText = `⚠️ CULL MATURE: 1-Star rack at end of cycle. Natural despawn in ${daysLeft} days.`;
-        }
-
-        const div = document.createElement("div");
-        div.className = "telemetry-card";
-        div.innerHTML = `
-          <div>
-            <div class="card-top-row">
-              <span class="animal-title">${item.tag}</span>
-              <span class="badge" style="background:#28374d; border-color:#486082;">${item.stars}&#9733;</span>
-            </div>
-            <div style="font-size:0.76rem; color:var(--text-muted); margin-top:2px;">
-              <strong>${item.species}</strong> &bull; ${item.region || 'Region'}
-            </div>
-            <div style="font-size:0.75rem; color:#ffe099; margin-top:2px;">
-              Zone: <strong>${item.landmark || 'Waterway'}</strong>
-            </div>
-            <div style="font-size:0.76rem; color:var(--text-muted); margin-top:2px;">
-              Age: <strong>${effectiveAge}/${item.maxAge} yrs</strong> (Aging in ${daysUntilNextYear}d) &bull; Fit: <strong>${item.fitness}%</strong>
-            </div>
-            <!-- Dynamic Lifecycle Math Readout Deck -->
-            <div style="font-size:0.73rem; background:rgba(0,0,0,0.3); border:1px solid #1c2738; padding:5px 8px; border-radius:4px; margin-top:5px; color:#d2dae4;">
-              ⏳ Despawn Clock: <strong style="color:${daysLeft <= 6 ? '#ff7675' : '#55efc4'}">${daysLeft} in-game days left</strong>
-              ${effectiveAge < matureThresholdAge ? ` &bull; Mature Prime: <strong style="color:var(--accent-gold);">in ${daysToMature} days (${yearsToMature} yrs)</strong>` : ' &bull; <strong style="color:#f5a623;">Peak Trophy Phase</strong>'}
-            </div>
-            <div class="action-banner ${actionClass}">${actionText}</div>
-          </div>
-          <div class="card-footer-row">
-            <span>Sighted Day <strong>${item.sightedDay || 1}</strong> &rarr; Current Day <strong>${this.currentDay}</strong></span>
-            <div class="card-actions">
-              <button type="button" class="btn-link btn-link-edit" onclick="window.CompanionApp.editWatchlistEntry('${item.id}')">Edit</button>
-              <button type="button" class="btn-link btn-link-delete" onclick="window.CompanionApp.deleteWatchlistEntry('${item.id}')">Harvest</button>
-            </div>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    },
-
-    // Line 1820: Harvest History presentation
-    renderHarvestHistory() {
-      const container = document.getElementById("harvestHistoryContainer");
-      if (!container) return;
-      const records = (this.db.gameData && this.db.gameData.harvest_records) ? this.db.gameData.harvest_records : [];
-
-      this.safeSetText("harvestRecordCount", `${records.length} Harvest Records`);
       container.innerHTML = "";
+      tasks.forEach(t => {
+        const cost = Number(t.cost || 0);
+        const canAfford = this.hunterCredits >= cost;
+        const deficit = cost - this.hunterCredits;
 
-      records.forEach(r => {
         const div = document.createElement("div");
-        div.className = "telemetry-card";
+        div.className = "info-box";
+        div.style.borderLeft = canAfford ? "3px solid var(--success)" : "3px solid var(--danger)";
         div.innerHTML = `
-          <div>
-            <div class="card-top-row">
-              <span class="animal-title">${r.species}</span>
-              <span class="badge">${r.trophy_rating_stars}&#9733; Trophy</span>
-            </div>
-            <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
-              Tier: <strong>${r.animal_tier}</strong> &bull; Location: <strong>${r.location || 'New Laurentia'}</strong>
-            </div>
-            <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
-              Firearm: <strong>${r.firearm} (${r.caliber})</strong>
-            </div>
-            <div style="font-size:0.76rem; color:var(--text-muted); margin-top:2px;">
-              Shot: <strong>${r.shot_distance_yds} yds</strong> &bull; Tracking: <strong>${r.tracking_distance_yds || 0} yds</strong>
-            </div>
-            <div style="font-size:0.76rem; color:var(--text-muted); margin-top:2px;">
-              Fitness: <strong>${r.fitness_percentage}%</strong> &bull; Age: <strong>${r.age_years || 'Adult'} Yrs</strong> &bull; Sell: <strong>$${r.sell_price || 149}</strong>
-            </div>
-            <div class="action-banner ${r.fitness_percentage < 50 ? 'banner-cull' : 'banner-breeder'}" style="margin-top:6px;">
-              ${r.cull_decision || 'Keeper Specimen'}
-            </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#fff;">${t.type}</strong>
+            <span class="badge" style="color:var(--accent-gold);">$${cost.toLocaleString()}</span>
           </div>
-          <div class="card-footer-row">
-            <span>Date: <strong>${r.date || 'Active Session'}</strong></span>
-            <span style="color:var(--accent-amber); font-weight:700;">Rank: ${r.hunt_rating || 'S++'}</span>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Location: <strong>${t.location}</strong></div>
+          <div class="action-banner ${canAfford ? 'banner-breeder' : 'banner-cull'}" style="margin-top:6px;">
+            ${canAfford ? `✅ Fully Funded (Balance after: $${(this.hunterCredits - cost).toLocaleString()})` : `🔒 Insufficient Funds (Need $${deficit.toLocaleString()} more)`}
           </div>
         `;
         container.appendChild(div);
       });
     },
 
-    // Line 1866: Submit new harvest inspection
     submitHarvestInspection() {
       const species = document.getElementById("harvestSpeciesSelect") ? document.getElementById("harvestSpeciesSelect").value : "Elk";
       const location = document.getElementById("harvestLocationSelect") ? document.getElementById("harvestLocationSelect").value : "New Laurentia";
@@ -1871,11 +672,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const trackDist = document.getElementById("harvestTrackDist") ? document.getElementById("harvestTrackDist").value : 20;
       const fitness = document.getElementById("harvestFitness") ? (parseFloat(document.getElementById("harvestFitness").value) || 60) : 60;
       const stars = document.getElementById("harvestRatingStars") ? parseInt(document.getElementById("harvestRatingStars").value, 10) : 1;
-      const sellPrice = document.getElementById("harvestSellPrice") ? document.getElementById("harvestSellPrice").value : 200;
+      const photoUrl = document.getElementById("harvestPhotoUrlInput") ? document.getElementById("harvestPhotoUrlInput").value.trim() : "";
 
       const newRecord = {
         species,
-        animal_tier: 5,
         location,
         firearm,
         caliber,
@@ -1883,10 +683,8 @@ document.addEventListener("DOMContentLoaded", () => {
         tracking_distance_yds: trackDist,
         fitness_percentage: fitness,
         trophy_rating_stars: stars,
-        sell_price: sellPrice,
-        cull_decision: fitness < 50 ? "Cull (Low Fitness)" : "Keeper / Trophy",
-        date: "October 16, 2026",
-        hunt_rating: "A++"
+        photo_url: photoUrl || DEFAULT_GAME_POSTER,
+        date: "October 16, 2026"
       };
 
       if (!this.db.gameData) this.db.gameData = {};
@@ -1894,293 +692,108 @@ document.addEventListener("DOMContentLoaded", () => {
 
       this.db.gameData.harvest_records.unshift(newRecord);
       this.renderHarvestHistory();
-      this.silentSaveGameTelemetry();
-      alert("✅ Harvest logged successfully!");
+      alert("✅ Harvest logged with inspection photo!");
     },
 
-    // Line 1905: Render Dog companion stats
-    renderDogProfile() {
-      const summaryContainer = document.getElementById("dogSummaryCard");
-      const skillsContainer = document.getElementById("dogSkillsGrid");
-      if (!summaryContainer || !skillsContainer) return;
+    renderHarvestHistory() {
+      const container = document.getElementById("harvestHistoryContainer");
+      if (!container) return;
+      const records = (this.db.gameData && this.db.gameData.harvest_records) ? this.db.gameData.harvest_records : [];
 
-      summaryContainer.innerHTML = `
-        <div class="telemetry-card" style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <h4 style="color:#fff; font-size:1.1rem;">${this.dogCompanionName} (${this.dogBreed})</h4>
-            <div style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">
-              Primary Specialization: <strong>Blood Tracking</strong> &bull; Total Obedience Score: <strong>Level ${this.dogBondingLevel}</strong>
+      this.safeSetText("harvestRecordCount", `${records.length} Records`);
+      container.innerHTML = "";
+
+      records.forEach(r => {
+        const div = document.createElement("div");
+        div.className = "telemetry-card";
+        div.innerHTML = `
+          <div style="display:flex; gap:10px; align-items:flex-start;">
+            <img src="${r.photo_url || DEFAULT_GAME_POSTER}" alt="" style="width:55px; height:55px; border-radius:6px; object-fit:cover; border:1px solid var(--border-color);">
+            <div style="flex-grow:1;">
+              <div class="card-top-row">
+                <span class="animal-title">${r.species}</span>
+                <span class="badge">${r.trophy_rating_stars}&#9733; Trophy</span>
+              </div>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+                ${r.location} &bull; ${r.firearm} (${r.caliber})
+              </div>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+                Shot: <strong>${r.shot_distance_yds} yds</strong> &bull; Fitness: <strong>${r.fitness_percentage}%</strong>
+              </div>
             </div>
           </div>
-          <div class="stepper-controls">
-            <span style="font-size:0.8rem; color:var(--text-muted);">Bonding:</span>
-            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('bonding', -1)">&minus;</button>
-            <strong style="color:var(--accent-amber); font-size:0.95rem;">${this.dogBondingLevel} / 6</strong>
-            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('bonding', 1)">&plus;</button>
-          </div>
-        </div>
-      `;
-
-      skillsContainer.innerHTML = `
-        <div class="dog-stepper-row">
-          <div>
-            <strong style="color:var(--accent-amber);">Following Commands</strong>
-            <p style="font-size:0.78rem; color:var(--text-muted);">Controls response speed to Heel, Sit, Stay. Stops brush rustling.</p>
-          </div>
-          <div class="stepper-controls">
-            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('following', -1)">&minus;</button>
-            <strong style="color:#fff; font-size:0.95rem;">${this.dogFollowingCommandsLevel} / 6</strong>
-            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('following', 1)">&plus;</button>
-          </div>
-        </div>
-
-        <div class="dog-stepper-row">
-          <div>
-            <strong style="color:var(--accent-amber);">Blood Tracking</strong>
-            <p style="font-size:0.78rem; color:var(--text-muted);">Follows faint blood tracks over water and rain to stop meat degradation.</p>
-          </div>
-          <div class="stepper-controls">
-            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('blood', -1)">&minus;</button>
-            <strong style="color:#fff; font-size:0.95rem;">${this.dogBloodTrackingLevel} / 6</strong>
-            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('blood', 1)">&plus;</button>
-          </div>
-        </div>
-
-        <div class="dog-stepper-row">
-          <div>
-            <strong style="color:var(--accent-amber);">Search &amp; Quartering</strong>
-            <p style="font-size:0.78rem; color:var(--text-muted);">Weaves ahead in zig-zag patterns to flush birds and retrieve small game.</p>
-          </div>
-          <div class="stepper-controls">
-            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('search', -1)">&minus;</button>
-            <strong style="color:#fff; font-size:0.95rem;">${this.dogSearchQuarteringLevel} / 6</strong>
-            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('search', 1)">&plus;</button>
-          </div>
-        </div>
-      `;
+        `;
+        container.appendChild(div);
+      });
     },
 
-    // Line 1973: Stepper dog stat adjuster
-    adjustDogStat(statName, delta) {
-      if (statName === "bonding") {
-        this.dogBondingLevel = Math.max(1, Math.min(6, this.dogBondingLevel + delta));
-      } else if (statName === "following") {
-        this.dogFollowingCommandsLevel = Math.max(0, Math.min(6, this.dogFollowingCommandsLevel + delta));
-      } else if (statName === "blood") {
-        this.dogBloodTrackingLevel = Math.max(0, Math.min(6, this.dogBloodTrackingLevel + delta));
-      } else if (statName === "search") {
-        this.dogSearchQuarteringLevel = Math.max(0, Math.min(6, this.dogSearchQuarteringLevel + delta));
-      }
-
-      this.updateDogInputDisplay();
-      this.renderDogProfile();
-      this.silentSaveGameTelemetry();
+    recalculateCrossTrophyTelemetry() {
+      const total = this.masterTrophies.length || 6;
+      const currentEarned = Object.values(this.userTrophyProgress).filter(t => t.earned).length;
+      const pct = total > 0 ? Math.round((currentEarned / total) * 100) : 0;
+      this.crossPlatformTelemetry[this.currentPlatform] = { earned: currentEarned, total, percent: pct };
     },
 
-    // Line 1990: Need Zone Clusters presenter
-    renderNeedZones() {
-      const container = document.getElementById("needZoneClustersGrid");
+    renderTrophies() {
+      const container = document.getElementById("trophyChamberGrid") || document.getElementById("psnTrophiesContainer");
       if (!container) return;
-      const clusters = (this.db.needZones && this.db.needZones.clusters) ? this.db.needZones.clusters : [];
 
-      this.safeSetText("needZoneCount", `${clusters.length} Tactical Clusters`);
       container.innerHTML = "";
-
-      clusters.forEach(c => {
+      this.masterTrophies.forEach(t => {
+        const earned = this.userTrophyProgress[t.trophyId] && this.userTrophyProgress[t.trophyId].earned;
         const div = document.createElement("div");
-        div.className = "info-box";
-        let zonesHtml = "";
-        if (c.zones && Array.isArray(c.zones)) {
-          c.zones.forEach(z => {
-            zonesHtml += `
-              <div style="font-size:0.8rem; background:rgba(0,0,0,0.2); padding:6px; border-radius:4px; margin-top:4px;">
-                <strong>${z.type} (${z.schedule}):</strong> ${z.landmark} (+${z.proximity_to_center_yds} yds)
+        div.className = `telemetry-card ${earned ? 'trophy-card-earned' : ''}`;
+        div.innerHTML = `
+          <div style="display:flex; gap:12px; align-items:flex-start;">
+            <img src="${t.icon}" alt="" style="width:48px; height:48px; border-radius:6px; object-fit:cover;">
+            <div>
+              <div class="card-top-row">
+                <span class="animal-title">${t.title}</span>
+                <span class="badge">${t.grade}</span>
               </div>
-            `;
-          });
-        }
-
-        div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong>${c.species}</strong>
-            <span class="badge">${c.region}</span>
-          </div>
-          <p style="font-size:0.78rem; color:var(--text-muted);">${c.cluster_notes || ''}</p>
-          <div style="margin-top:4px;">${zonesHtml}</div>
-        `;
-        container.appendChild(div);
-      });
-    },
-
-    // Line 2028: Species lifecycles presentation
-    renderLifeCycles() {
-      const container = document.getElementById("lifecyclesGrid");
-      if (!container) return;
-      const list = (this.db.lifecycles && this.db.lifecycles.species_lifecycles) ? this.db.lifecycles.species_lifecycles : [];
-
-      this.safeSetText("lifecycleCount", `${list.length} Species Cycles`);
-      container.innerHTML = "";
-
-      list.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "info-box";
-        div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="color:#fff;">${item.species}</strong>
-            <span class="badge">${item.max_age_years} Yrs (${item.total_lifespan_days} Days)</span>
-          </div>
-          <div class="advisory-callout" style="margin-top:6px;">
-            <strong>Cull Advisory:</strong> ${item.cull_advisory}
-          </div>
-          <div style="font-size:0.78rem; color:#ff9999; margin-top:4px;">
-            <strong>Despawn Rule:</strong> ${item.mortality_warning}
+              <p style="font-size:0.78rem; color:#cfd9e8; margin-top:4px;">${t.desc}</p>
+            </div>
           </div>
         `;
         container.appendChild(div);
       });
     },
 
-    // Line 2056: Challenge trees presenter
-    renderChallenges() {
-      const container = document.getElementById("challengeTreesGrid");
-      if (!container) return;
-      const trees = (this.db.challenges && this.db.challenges.trees) ? this.db.challenges.trees : {};
+    initDynamicFeatures() {
+      this.populateRegions();
+      this.filterSpeciesByRegion("harvestLocationSelect", "harvestSpeciesSelect");
+      this.filterSpeciesByRegion("watchRegionSelect", "watchSpeciesSelect");
+      this.renderGearCatalog();
+      this.renderHarvestHistory();
+      this.renderChallenges();
+      this.renderMissions();
+      this.renderInfrastructure();
+    },
 
-      container.innerHTML = "";
-      Object.entries(trees).forEach(([k, t]) => {
-        const div = document.createElement("div");
-        div.className = "info-box";
-        div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="color:#fff;">${t.name} Mastery</strong>
-            <span class="badge">${t.total} Challenges</span>
-          </div>
-          <p style="font-size:0.82rem; color:var(--text-muted); margin-top:6px;">${t.description}</p>
-        `;
-        container.appendChild(div);
+    populateRegions() {
+      const regions = (this.db.regions && this.db.regions.regions) ? this.db.regions.regions : [];
+      const locSelect = document.getElementById("harvestLocationSelect");
+      const watchSelect = document.getElementById("watchRegionSelect");
+      if (locSelect) locSelect.innerHTML = "";
+      if (watchSelect) watchSelect.innerHTML = "";
+
+      regions.forEach(r => {
+        if (locSelect) locSelect.innerHTML += `<option value="${r.name}">${r.name}</option>`;
+        if (watchSelect) watchSelect.innerHTML += `<option value="${r.name}">${r.name}</option>`;
       });
     },
 
-    // Line 2077: Missions presenter
-    renderMissions() {
-      const container = document.getElementById("missionsGrid");
-      if (!container) return;
-      const list = (this.db.missions && this.db.missions.missions) ? this.db.missions.missions : [];
-
-      this.safeSetText("missionsCount", `${list.length} Missions`);
-      container.innerHTML = "";
-
-      list.forEach(m => {
-        const div = document.createElement("div");
-        div.className = "info-box";
-        div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="color:#fff;">${m.name}</strong>
-            <span class="badge">${m.source}</span>
-          </div>
-          <ul style="font-size:0.8rem; color:var(--text-muted); padding-left:18px; margin-top:6px;">
-            ${m.objectives.map(o => `<li>${o}</li>`).join("")}
-          </ul>
-          <div style="font-size:0.78rem; color:var(--accent-amber); margin-top:6px;">
-            Reward: ${m.money ? `$${m.money}` : 'XP'} ${m.xp ? `&bull; ${m.xp} XP` : ''}
-          </div>
-        `;
-        container.appendChild(div);
+    filterSpeciesByRegion(regId, specId) {
+      const reg = document.getElementById(regId);
+      const spec = document.getElementById(specId);
+      if (!reg || !spec) return;
+      const allSpecies = (this.db.species && this.db.species.species) ? this.db.species.species : [];
+      spec.innerHTML = "";
+      allSpecies.filter(s => !s.regions || s.regions.includes(reg.value)).forEach(s => {
+        spec.innerHTML += `<option value="${s.name}">${s.name}</option>`;
       });
     },
 
-    // Line 2106: Infrastructure presenter
-    renderInfrastructure() {
-      const container = document.getElementById("infrastructureGrid");
-      if (!container) return;
-      const infra = this.db.infrastructure || {};
-      const tasks = infra.tasks || [];
-
-      this.safeSetText("infrastructureCount", `${tasks.length} Enhancements`);
-      const notesBox = document.getElementById("infraNotesBox");
-      if (notesBox) {
-        notesBox.innerHTML = `<strong>Warden Protocol:</strong> ${infra.mechanic_notes || "Feeders and pollution removal impact genetic ceilings."}`;
-      }
-
-      container.innerHTML = "";
-      tasks.forEach(t => {
-        const div = document.createElement("div");
-        div.className = "info-box";
-        div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="color:#fff;">${t.type}</strong>
-            <span class="badge">$${t.cost}</span>
-          </div>
-          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">
-            Location: <strong>${t.location}</strong>
-          </div>
-          <div style="font-size:0.76rem; color:var(--accent-amber); margin-top:4px;">
-            Affected: ${t.affected_species && t.affected_species.length ? t.affected_species.join(", ") : "Regional Infrastructure"}
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    },
-
-    // Line 2141: Wildlife migration corridors
-    renderTrails() {
-      const container = document.getElementById("trailsGrid");
-      if (!container) return;
-      const list = (this.db.trails && this.db.trails.seasonal_corridors) ? this.db.trails.seasonal_corridors : [];
-
-      container.innerHTML = "";
-      list.forEach(t => {
-        const div = document.createElement("div");
-        div.className = "info-box";
-        div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="color:#fff;">${t.species}</strong>
-            <span class="badge">${t.region}</span>
-          </div>
-          <div style="font-size:0.8rem; margin-top:6px;">
-            <strong>Summer:</strong> <span style="color:var(--text-muted);">${t.summer_trail}</span>
-          </div>
-          <div style="font-size:0.8rem; margin-top:4px;">
-            <strong>Winter:</strong> <span style="color:var(--text-muted);">${t.winter_trail}</span>
-          </div>
-          <div style="font-size:0.78rem; color:var(--accent-amber); margin-top:6px;">
-            <strong>Grazing:</strong> ${t.grazing_area}
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    },
-
-    // Line 2172: Species catalog presenter
-    renderSpeciesCatalog() {
-      const container = document.getElementById("speciesCatalogGrid");
-      if (!container) return;
-      const list = (this.db.species && this.db.species.species) ? this.db.species.species : [];
-
-      this.safeSetText("speciesCatalogCount", `${list.length} Reserve Species`);
-      container.innerHTML = "";
-
-      list.forEach(s => {
-        const div = document.createElement("div");
-        div.className = "info-box";
-        div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="color:#fff;">${s.name}</strong>
-            <span class="badge">Tier ${s.tier}</span>
-          </div>
-          <div style="font-size:0.78rem; color:var(--text-muted); font-style:italic;">${s.scientific_name}</div>
-          <div style="font-size:0.8rem; margin-top:6px;">
-            <strong>Aggression:</strong> <span style="color:#ff9999;">${s.aggression_level}</span>
-          </div>
-          <div style="font-size:0.8rem; margin-top:2px;">
-            <strong>Defense Sidearm:</strong> <span style="color:var(--accent-amber);">${s.defensive_sidearm}</span>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    },
-
-    // Line 2203: UI Event and Click Handlers
     bindUI() {
       const sandwichBtn = document.getElementById("moduleSandwichBtn");
       const dropdownMenu = document.getElementById("moduleDropdownMenu");
@@ -2191,162 +804,57 @@ document.addEventListener("DOMContentLoaded", () => {
           e.stopPropagation();
           dropdownMenu.classList.toggle("hidden");
         });
-
-        document.addEventListener("click", (e) => {
-          if (!dropdownMenu.classList.contains("hidden")) {
-            if (!dropdownMenu.contains(e.target) && e.target !== sandwichBtn) {
-              dropdownMenu.classList.add("hidden");
-            }
-          }
+        document.addEventListener("click", () => {
+          if (!dropdownMenu.classList.contains("hidden")) dropdownMenu.classList.add("hidden");
         });
       }
 
       document.querySelectorAll(".module-item-btn").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-          e.stopPropagation();
+        btn.addEventListener("click", () => {
           document.querySelectorAll(".module-item-btn").forEach(b => b.classList.remove("active"));
           document.querySelectorAll(".tab-pane").forEach(p => p.classList.remove("active"));
-          
           btn.classList.add("active");
-          const targetTab = btn.dataset.tab;
-          const targetPane = document.getElementById(`tab-${targetTab}`);
-          if (targetPane) targetPane.classList.add("active");
-
-          if (activeLabel) {
-            const firstSpan = btn.querySelector("span");
-            if (firstSpan) activeLabel.textContent = firstSpan.textContent;
-          }
-
+          const target = document.getElementById(`tab-${btn.dataset.tab}`);
+          if (target) target.classList.add("active");
+          if (activeLabel) activeLabel.textContent = btn.querySelector("span").textContent;
           if (dropdownMenu) dropdownMenu.classList.add("hidden");
         });
       });
 
-      const platSelect = document.getElementById("platformSelect");
-      if (platSelect) {
-        platSelect.addEventListener("change", (e) => {
-          this.currentPlatform = e.target.value;
-          this.recalculateCrossTrophyTelemetry();
-          this.renderTrophies();
-          this.silentSaveGameTelemetry();
+      const photoUrl = document.getElementById("harvestPhotoUrlInput");
+      const photoFile = document.getElementById("harvestPhotoFileInput");
+      const photoPrev = document.getElementById("harvestPhotoPreview");
+      const photoName = document.getElementById("harvestPhotoFileName");
+
+      if (photoUrl && photoPrev) {
+        photoUrl.addEventListener("input", () => {
+          if (photoUrl.value.trim()) photoPrev.src = photoUrl.value.trim();
+        });
+      }
+      if (photoFile && photoPrev) {
+        photoFile.addEventListener("change", (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            photoPrev.src = evt.target.result;
+            if (photoName) photoName.textContent = file.name;
+          };
+          reader.readAsDataURL(file);
         });
       }
 
-      const autoSyncInputs = [
-        "hunterNameInput", "hunterLevelInput", "hunterCreditsInput",
-        "currentDayInput", "currentTimeInput", "weatherConditionInput"
-      ];
+      const harvestSubmit = document.getElementById("submitHarvestRecordBtn");
+      if (harvestSubmit) harvestSubmit.addEventListener("click", () => this.submitHarvestInspection());
 
-      autoSyncInputs.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-
-        el.addEventListener("input", () => {
-          if (id === "hunterCreditsInput" || id === "hunterLevelInput") {
-            const lvlEl = document.getElementById("hunterLevelInput");
-            const crdEl = document.getElementById("hunterCreditsInput");
-            if (lvlEl) this.hunterLevel = parseInt(lvlEl.value, 10) || 1;
-            if (crdEl) this.hunterCredits = parseInt(crdEl.value, 10) || 0;
-            this.renderLodgeForecaster();
-          }
-        });
-
-        el.addEventListener("blur", () => this.silentSaveGameTelemetry());
-        el.addEventListener("keydown", (e) => {
-          if (e.key === "Enter") {
-            el.blur();
-          }
-        });
-      });
-
-      const locSelect = document.getElementById("harvestLocationSelect");
-      if (locSelect) {
-        locSelect.addEventListener("change", () => {
-          this.filterSpeciesByRegion("harvestLocationSelect", "harvestSpeciesSelect");
-        });
-      }
-
-      const watchRegSelect = document.getElementById("watchRegionSelect");
-      if (watchRegSelect) {
-        watchRegSelect.addEventListener("change", () => {
-          this.filterSpeciesByRegion("watchRegionSelect", "watchSpeciesSelect");
-        });
-      }
-
-      const advDayBtn = document.getElementById("advanceDayBtn");
-      if (advDayBtn) {
-        advDayBtn.addEventListener("click", () => {
-          this.currentDay++;
-          this.safeSetValue("currentDayInput", this.currentDay);
-          this.renderWatchlist();
-          this.silentSaveGameTelemetry();
-        });
-      }
-
-      const advTwoHrsBtn = document.getElementById("advanceTwoHoursBtn");
-      if (advTwoHrsBtn) {
-        advTwoHrsBtn.addEventListener("click", () => {
-          const timeInput = document.getElementById("currentTimeInput");
-          if (!timeInput) return;
-          let [hours, mins] = timeInput.value.split(":").map(Number);
-          hours = (hours + 2) % 24;
-          if (hours === 0 || hours === 1) {
-            this.currentDay++;
-            this.safeSetValue("currentDayInput", this.currentDay);
-          }
-          const timeStr = `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
-          this.currentTime = timeStr;
-          timeInput.value = timeStr;
-          this.renderWatchlist();
-          this.silentSaveGameTelemetry();
-        });
-      }
-
-      const watchSpecies = document.getElementById("watchSpeciesSelect");
-      if (watchSpecies) watchSpecies.addEventListener("change", () => this.updateWatchlistMaxAge());
-
-      const saveWatchBtn = document.getElementById("saveWatchlistBtn");
-      if (saveWatchBtn) {
-        saveWatchBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          this.saveWatchlistEntry();
-        });
-      }
-
-      const cancelWatchBtn = document.getElementById("cancelEditWatchlistBtn");
-      if (cancelWatchBtn) {
-        cancelWatchBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          this.resetWatchlistForm();
-        });
-      }
-
-      const harvestSpecies = document.getElementById("harvestSpeciesSelect");
-      if (harvestSpecies) harvestSpecies.addEventListener("change", () => this.updateDynamicHarvestSchema());
-
-      const submitHarvestBtn = document.getElementById("submitHarvestRecordBtn");
-      if (submitHarvestBtn) {
-        submitHarvestBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          this.submitHarvestInspection();
-        });
-      }
-
-      const modal = document.getElementById("authModal");
+      const authModal = document.getElementById("authModal");
       const authBtn = document.getElementById("authModalBtn");
       const authClose = document.getElementById("authModalClose");
-
-      if (authBtn && modal) authBtn.addEventListener("click", () => modal.classList.remove("hidden"));
-      if (authClose && modal) authClose.addEventListener("click", () => modal.classList.add("hidden"));
-
-      const menuBtn = document.getElementById("menuToggle");
-      const nav = document.getElementById("dynamicNav");
-      if (menuBtn && nav) {
-        menuBtn.addEventListener("click", () => nav.classList.toggle("open"));
-      }
+      if (authBtn && authModal) authBtn.addEventListener("click", () => authModal.classList.remove("hidden"));
+      if (authClose && authModal) authClose.addEventListener("click", () => authModal.classList.add("hidden"));
     }
   };
 
-  // Line 2366: Expose engine to global scope and trigger boot sequence
   window.CompanionApp = CompanionApp;
   CompanionApp.init();
 });
