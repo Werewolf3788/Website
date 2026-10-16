@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-16 03:52 EDT | Firebase Sync Target: /utm_links | Version: 6.5.0]
+// [Smart Cache-Buster Time: 2026-10-16 04:00 EDT | Firebase Sync Target: /utm_links | Version: 6.6.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "//werewolf3788.github.io/Website/assets/logo.jpg";
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const CompanionApp = {
     titleId: "NPWR52231_00",
     files: {
-      users: "../users.json",
+      users: "users.json",
       challenges: "challenges.json",
       dogSkills: "dog_skills.json",
       gameData: "game_data.json",
@@ -52,7 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
       regions: "regions.json",
       reserves: "reserves.json",
       runtimeSave: "runtime_save.json",
-      schemaUpdate: "schema-update.json",
       species: "species.json",
       stewardship: "stewardship.json",
       trails: "trails.json",
@@ -93,7 +92,6 @@ document.addEventListener("DOMContentLoaded", () => {
     completedMissions: {},
 
     async init() {
-      this.loadSavedState();
       this.bindUI();
       this.initAuth();
       this.initMasterGameData();
@@ -105,19 +103,12 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     async fetchJSON(fileName) {
-      const paths = [
-        "../../data/woth2/" + fileName,
-        "../data/woth2/" + fileName,
-        "./data/woth2/" + fileName,
-        "/Website/data/woth2/" + fileName,
-        "/data/woth2/" + fileName,
-        "./" + fileName
-      ];
-      for (let i = 0; i < paths.length; i++) {
-        try {
-          const res = await fetch(paths[i] + "?v=" + Date.now());
-          if (res.ok) return await res.json();
-        } catch (e) {}
+      const targetUrl = `https://raw.githubusercontent.com/Werewolf3788/Website/main/data/woth2/${fileName}?v=${Date.now()}`;
+      try {
+        const res = await fetch(targetUrl);
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn(`[WOTH2 Data] Raw fetch failed for ${fileName}:`, e);
       }
       return null;
     },
@@ -171,29 +162,44 @@ document.addEventListener("DOMContentLoaded", () => {
       this.renderTrophies();
     },
 
-    loadSavedState() {
-      const savedDay = localStorage.getItem("woth2_day");
-      const savedTime = localStorage.getItem("woth2_time");
-      const savedCredits = localStorage.getItem("woth2_credits");
-      const savedLevel = localStorage.getItem("woth2_level");
-      const savedWatch = localStorage.getItem("woth2_watchlist");
-      const savedCompletedMissions = localStorage.getItem("woth2_completed_missions");
+    loadGuestState() {
+      const savedDay = localStorage.getItem("woth2_guest_day");
+      const savedTime = localStorage.getItem("woth2_guest_time");
+      const savedCredits = localStorage.getItem("woth2_guest_credits");
+      const savedLevel = localStorage.getItem("woth2_guest_level");
+      const savedName = localStorage.getItem("woth2_guest_name");
+      const savedPlatform = localStorage.getItem("woth2_guest_platform");
+      const savedWatch = localStorage.getItem("woth2_guest_watchlist");
+      const savedMissions = localStorage.getItem("woth2_guest_missions");
+      const savedTrophies = localStorage.getItem("woth2_guest_trophies");
 
       if (savedDay) this.currentDay = parseInt(savedDay, 10);
       if (savedTime) this.currentTime = savedTime;
       if (savedCredits) this.hunterCredits = parseInt(savedCredits, 10);
       if (savedLevel) this.hunterLevel = parseInt(savedLevel, 10);
+      if (savedName) this.hunterName = savedName;
+      if (savedPlatform) this.currentPlatform = savedPlatform;
+
       if (savedWatch) {
         try { this.watchlist = JSON.parse(savedWatch); } catch (e) { this.watchlist = []; }
       }
-      if (savedCompletedMissions) {
-        try { this.completedMissions = JSON.parse(savedCompletedMissions); } catch (e) { this.completedMissions = {}; }
+      if (savedMissions) {
+        try { this.completedMissions = JSON.parse(savedMissions); } catch (e) { this.completedMissions = {}; }
+      }
+      if (savedTrophies) {
+        try { this.userTrophyProgress = JSON.parse(savedTrophies); } catch (e) { this.userTrophyProgress = {}; }
       }
 
+      this.updateInputFields();
+    },
+
+    updateInputFields() {
       this.safeSetValue("currentDayInput", this.currentDay);
       this.safeSetValue("currentTimeInput", this.currentTime);
       this.safeSetValue("hunterCreditsInput", this.hunterCredits);
       this.safeSetValue("hunterLevelInput", this.hunterLevel);
+      this.safeSetValue("hunterNameInput", this.hunterName);
+      this.safeSetValue("platformSelect", this.currentPlatform);
       this.updateDogInputDisplay();
     },
 
@@ -295,6 +301,8 @@ document.addEventListener("DOMContentLoaded", () => {
           if (nameEl) nameEl.textContent = user.displayName || this.hunterName;
           if (avatarEl) avatarEl.src = user.photoURL || DEFAULT_USER_AVATAR;
 
+          await this.loadFirebaseProgress();
+
           rtdb.ref(`/users/${this.currentEmailKey}/friends`).on("value", snapshot => {
             const rawFriends = snapshot.val() || {};
             this.friendsRoster = Object.entries(rawFriends).map(([codeKey, friendData]) => {
@@ -313,6 +321,8 @@ document.addEventListener("DOMContentLoaded", () => {
           if (profileBadge) profileBadge.classList.add("hidden");
           this.friendsRoster = [];
           this.renderRealFriends([]);
+          this.loadGuestState();
+          this.initDynamicFeatures();
         }
       });
 
@@ -326,6 +336,105 @@ document.addEventListener("DOMContentLoaded", () => {
           }).catch(e => alert("Sign In Error: " + e.message));
         });
       }
+    },
+
+    async loadFirebaseProgress() {
+      if (!this.currentEmailKey) return;
+
+      try {
+        const docRef = db.collection("users")
+          .doc(this.currentEmailKey)
+          .collection("platform")
+          .doc(this.currentPlatform)
+          .collection("progress")
+          .doc("woth2");
+
+        const snap = await docRef.get();
+        if (snap.exists) {
+          const data = snap.data();
+          if (data.hunter_name) this.hunterName = data.hunter_name;
+          if (data.hunter_level) this.hunterLevel = Number(data.hunter_level);
+          if (data.hunter_credits !== undefined) this.hunterCredits = Number(data.hunter_credits);
+          if (data.companion_day) this.currentDay = Number(data.companion_day);
+          if (data.companion_time) this.currentTime = data.companion_time;
+          if (data.weather) this.currentWeather = data.weather;
+          if (data.watchlist && Array.isArray(data.watchlist)) this.watchlist = data.watchlist;
+          if (data.completed_missions) this.completedMissions = data.completed_missions;
+          if (data.trophies) this.userTrophyProgress = data.trophies;
+
+          if (data.dog_stats) {
+            this.dogCompanionName = data.dog_stats.name || this.dogCompanionName;
+            this.dogBreed = data.dog_stats.breed || this.dogBreed;
+            this.dogBondingLevel = data.dog_stats.bonding ?? this.dogBondingLevel;
+            this.dogFollowingCommandsLevel = data.dog_stats.following ?? this.dogFollowingCommandsLevel;
+            this.dogBloodTrackingLevel = data.dog_stats.blood ?? this.dogBloodTrackingLevel;
+            this.dogSearchQuarteringLevel = data.dog_stats.search ?? this.dogSearchQuarteringLevel;
+          }
+        }
+      } catch (e) {
+        console.warn("Firestore user sync error:", e);
+      }
+
+      this.updateInputFields();
+      this.recalculateCrossTrophyTelemetry();
+      this.initDynamicFeatures();
+    },
+
+    async saveState() {
+      const earnedCount = Object.values(this.userTrophyProgress).filter(t => t.earned).length;
+      const totalTrophies = this.masterTrophies.length || 6;
+      const trophyPct = totalTrophies > 0 ? Math.round((earnedCount / totalTrophies) * 100) : 0;
+
+      if (this.currentUser && this.currentEmailKey) {
+        try {
+          const docRef = db.collection("users")
+            .doc(this.currentEmailKey)
+            .collection("platform")
+            .doc(this.currentPlatform)
+            .collection("progress")
+            .doc("woth2");
+
+          await docRef.set({
+            hunter_name: this.hunterName,
+            hunter_level: this.hunterLevel,
+            hunter_credits: this.hunterCredits,
+            companion_day: this.currentDay,
+            companion_time: this.currentTime,
+            weather: this.currentWeather,
+            platform: this.currentPlatform,
+            trophies_earned: earnedCount,
+            trophies_total: totalTrophies,
+            trophies_percent: trophyPct,
+            trophies: this.userTrophyProgress,
+            completed_missions: this.completedMissions,
+            watchlist: this.watchlist,
+            harvest_count: (this.db.gameData && this.db.gameData.harvest_records) ? this.db.gameData.harvest_records.length : 0,
+            dog_stats: {
+              name: this.dogCompanionName,
+              breed: this.dogBreed,
+              bonding: this.dogBondingLevel,
+              following: this.dogFollowingCommandsLevel,
+              blood: this.dogBloodTrackingLevel,
+              search: this.dogSearchQuarteringLevel
+            },
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+        } catch (e) {
+          console.error("Firebase state save error:", e);
+        }
+      } else {
+        localStorage.setItem("woth2_guest_day", this.currentDay);
+        localStorage.setItem("woth2_guest_time", this.currentTime);
+        localStorage.setItem("woth2_guest_credits", this.hunterCredits);
+        localStorage.setItem("woth2_guest_level", this.hunterLevel);
+        localStorage.setItem("woth2_guest_name", this.hunterName);
+        localStorage.setItem("woth2_guest_platform", this.currentPlatform);
+        localStorage.setItem("woth2_guest_watchlist", JSON.stringify(this.watchlist));
+        localStorage.setItem("woth2_guest_missions", JSON.stringify(this.completedMissions));
+        localStorage.setItem("woth2_guest_trophies", JSON.stringify(this.userTrophyProgress));
+      }
+
+      this.recalculateCrossTrophyTelemetry();
     },
 
     async addFriendByCode() {
@@ -618,7 +727,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     toggleMissionComplete(missionId) {
       this.completedMissions[missionId] = !this.completedMissions[missionId];
-      localStorage.setItem("woth2_completed_missions", JSON.stringify(this.completedMissions));
+      this.saveState();
       this.renderMissions();
     },
 
@@ -816,6 +925,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (statName === "blood") this.dogBloodTrackingLevel = Math.max(0, Math.min(6, this.dogBloodTrackingLevel + delta));
       this.updateDogInputDisplay();
       this.renderDogProfile();
+      this.saveState();
     },
 
     submitHarvestInspection() {
@@ -847,6 +957,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       this.db.gameData.harvest_records.unshift(newRecord);
       this.renderHarvestHistory();
+      this.saveState();
       alert("✅ Harvest logged with inspection photo!");
     },
 
@@ -981,26 +1092,61 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
 
-      const photoUrl = document.getElementById("harvestPhotoUrlInput");
-      const photoFile = document.getElementById("harvestPhotoFileInput");
-      const photoPrev = document.getElementById("harvestPhotoPreview");
-      const photoName = document.getElementById("harvestPhotoFileName");
+      const autoSyncInputs = [
+        "hunterNameInput", "hunterLevelInput", "hunterCreditsInput",
+        "currentDayInput", "currentTimeInput"
+      ];
 
-      if (photoUrl && photoPrev) {
-        photoUrl.addEventListener("input", () => {
-          if (photoUrl.value.trim()) photoPrev.src = photoUrl.value.trim();
+      autoSyncInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        el.addEventListener("change", () => {
+          if (id === "hunterNameInput") this.hunterName = el.value.trim();
+          if (id === "hunterLevelInput") this.hunterLevel = parseInt(el.value, 10) || 1;
+          if (id === "hunterCreditsInput") this.hunterCredits = parseInt(el.value, 10) || 0;
+          if (id === "currentDayInput") this.currentDay = parseInt(el.value, 10) || 1;
+          if (id === "currentTimeInput") this.currentTime = el.value;
+          this.saveState();
+        });
+      });
+
+      const platSelect = document.getElementById("platformSelect");
+      if (platSelect) {
+        platSelect.addEventListener("change", (e) => {
+          this.currentPlatform = e.target.value;
+          if (this.currentUser) {
+            this.loadFirebaseProgress();
+          } else {
+            this.saveState();
+          }
         });
       }
-      if (photoFile && photoPrev) {
-        photoFile.addEventListener("change", (e) => {
-          const file = e.target.files && e.target.files[0];
-          if (!file) return;
-          const reader = new FileReader();
-          reader.onload = (evt) => {
-            photoPrev.src = evt.target.result;
-            if (photoName) photoName.textContent = file.name;
-          };
-          reader.readAsDataURL(file);
+
+      const advDayBtn = document.getElementById("advanceDayBtn");
+      if (advDayBtn) {
+        advDayBtn.addEventListener("click", () => {
+          this.currentDay++;
+          this.safeSetValue("currentDayInput", this.currentDay);
+          this.saveState();
+        });
+      }
+
+      const advTwoHrsBtn = document.getElementById("advanceTwoHoursBtn");
+      if (advTwoHrsBtn) {
+        advTwoHrsBtn.addEventListener("click", () => {
+          const timeInput = document.getElementById("currentTimeInput");
+          if (!timeInput) return;
+          let [hours, mins] = timeInput.value.split(":").map(Number);
+          hours = (hours + 2) % 24;
+          if (hours === 0 || hours === 1) {
+            this.currentDay++;
+            this.safeSetValue("currentDayInput", this.currentDay);
+          }
+          const timeStr = `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
+          this.currentTime = timeStr;
+          timeInput.value = timeStr;
+          this.saveState();
         });
       }
 
