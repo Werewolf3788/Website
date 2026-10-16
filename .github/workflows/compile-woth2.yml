@@ -1,0 +1,36 @@
+name: Compile WotH2 Game Data
+
+on:
+  push:
+    branches:
+      - main # Change to master if your repo uses master
+    paths:
+      - 'data/woth2/**'
+      - '!data/woth2/game_data.json'
+      - '!data/woth2/scripts/**' # Prevents edits to the script itself from triggering an infinite loop
+
+permissions:
+  contents: write
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run Merge Script
+        run: node data/woth2/scripts/compile-woth2.js
+
+      - name: Commit and Push Updated game_data.json
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/woth2/game_data.json
+          git diff --staged --quiet || (git commit -m "Auto-compile game_data.json [skip ci]" && git push)
