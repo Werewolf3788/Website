@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-16 04:30 EDT | Firebase Sync Target: /utm_links | Version: 7.0.0]
+// [Smart Cache-Buster Time: 2026-10-16 04:35 EDT | Firebase Sync Target: /utm_links | Version: 7.1.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "//werewolf3788.github.io/Website/assets/logo.jpg";
@@ -436,7 +436,7 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("woth2_completed_missions", JSON.stringify(this.completedMissions));
 
       this.recalculateCrossTrophyTelemetry();
-      this.renderLodgeForecaster();
+      this.renderGearCatalog();
       this.renderInfrastructure();
 
       const activeUser = auth.currentUser;
@@ -1157,6 +1157,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.renderTrophies();
     },
 
+    // Category Filter Handler for Arsenal
     filterGearCategory(cat) {
       this.selectedGearCategory = cat;
       const pills = document.querySelectorAll("#gearFilterPills .trophy-group-pill");
@@ -1164,7 +1165,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (window.event && window.event.target) {
         window.event.target.classList.add("active");
       }
-      this.renderLodgeForecaster();
+      this.renderGearCatalog();
     },
 
     async addFriendByCode() {
@@ -1313,137 +1314,67 @@ document.addEventListener("DOMContentLoaded", () => {
       return parseFloat(stripped) || 0;
     },
 
-    renderLodgeForecaster() {
-      const container = document.getElementById("gearCatalogContainer") || document.getElementById("lodgeForecasterContainer") || document.getElementById("lodgeRequisitionGrid");
+    renderGearCatalog() {
+      const container = document.getElementById("gearCatalogContainer");
       if (!container) return;
 
-      const flattenCatalog = (source) => {
-        if (!source || typeof source !== "object") return [];
-        if (Array.isArray(source)) return source;
+      const rawGear = this.db.gear || {};
+      const items = [];
 
-        const results = [];
-        const inspectNode = (node, defaultCategory = "Equipment", parentKey = "") => {
-          if (!node || typeof node !== "object") return;
+      Object.entries(rawGear).forEach(([categoryKey, categoryBag]) => {
+        if (categoryKey === "catalog_metadata" || typeof categoryBag !== "object" || categoryBag === null) return;
 
-          if (node.name || node.title || node.id) {
-            results.push({
-              id: node.id || `item_${Math.random().toString(36).substring(2, 9)}`,
-              name: node.name || node.title || "Gear Item",
-              category: node.category || defaultCategory,
-              subgroup: parentKey || defaultCategory.toLowerCase(),
-              cost: this.cleanPrice(node.price || node.cost),
-              requiredLevel: Number(node.tier || node.requiredLevel || node.required_level || node.level || 1),
-              description: node.description || node.desc || "Tactical field gear."
-            });
-            return;
-          }
-
-          Object.entries(node).forEach(([catKey, catVal]) => {
-            if (catKey === "catalog_metadata" || catKey === "dog_skill_definitions" || catKey === "scoring_templates" || catKey === "species_scoring_mapping") return;
-            if (Array.isArray(catVal)) {
-              catVal.forEach(item => inspectNode(item, catKey, catKey));
-            } else if (catVal && typeof catVal === "object") {
-              Object.entries(catVal).forEach(([itemKey, itemVal]) => {
-                if (itemVal && typeof itemVal === "object") inspectNode(itemVal, catKey, catKey);
-              });
-            }
+        Object.entries(categoryBag).forEach(([itemKey, item]) => {
+          if (!item || typeof item !== "object") return;
+          items.push({
+            id: item.id || itemKey,
+            name: item.name || item.title || itemKey,
+            category: item.category || categoryKey,
+            subgroup: categoryKey,
+            price: this.cleanPrice(item.price || item.cost),
+            tier: item.tier || (item.tier_min ? `${item.tier_min}-${item.tier_max}` : 1),
+            caliber: item.caliber || item.arrow || "",
+            image: item.image || item.thumbnail || DEFAULT_GAME_POSTER,
+            description: item.description || "Field tactical gear item."
           });
-        };
+        });
+      });
 
-        inspectNode(source);
-        return results;
-      };
-
-      let catalogItems = [];
-      if (this.db.gear && Object.keys(this.db.gear).length > 0) {
-        catalogItems = flattenCatalog(this.db.gear);
-      } else if (this.db.progressionGear && Object.keys(this.db.progressionGear).length > 0) {
-        catalogItems = flattenCatalog(this.db.progressionGear);
-      } else if (this.db.gameData && this.db.gameData.lodge_store) {
-        catalogItems = flattenCatalog(this.db.gameData.lodge_store);
-      }
-
-      if (!catalogItems || catalogItems.length === 0) {
-        catalogItems = this.lodgeCatalog;
-      }
-
-      const countBadge = document.getElementById("gearCatalogCount");
-      if (countBadge) countBadge.textContent = `${catalogItems.length} Field Items`;
-
+      this.safeSetText("gearCatalogCount", `${items.length} Field Items`);
       container.innerHTML = "";
 
-      const filtered = catalogItems.filter(item => {
+      const filtered = items.filter(i => {
         if (!this.selectedGearCategory || this.selectedGearCategory === "all") return true;
-        const sub = (item.subgroup || "").toLowerCase();
-        const cat = (item.category || "").toLowerCase();
-        const target = this.selectedGearCategory.toLowerCase();
-        return sub.includes(target) || cat.includes(target);
+        return i.subgroup === this.selectedGearCategory;
       });
 
       filtered.forEach(item => {
-        const canAfford = this.hunterCredits >= item.cost;
-        const balanceAfter = this.hunterCredits - item.cost;
-        const deficit = item.cost - this.hunterCredits;
-        const isLevelUnlocked = this.hunterLevel >= item.requiredLevel;
-        const levelsToGo = Math.max(0, item.requiredLevel - this.hunterLevel);
-
-        let balanceBadgeClass = canAfford ? "banner-breeder" : "banner-cull";
-        let balanceBadgeText = canAfford
-          ? `Balance After Purchase: $${balanceAfter.toLocaleString()} credits ($${this.hunterCredits.toLocaleString()} - $${item.cost.toLocaleString()})`
-          : `Deficit: Need $${deficit.toLocaleString()} more credits (Have $${this.hunterCredits.toLocaleString()} / Need $${item.cost.toLocaleString()})`;
-
-        let levelBadgeText = isLevelUnlocked
-          ? `✅ Requisition Clearance: Unlocked (Required Lv. ${item.requiredLevel})`
-          : `🔒 Locked: Requires Hunter Level ${item.requiredLevel} (${levelsToGo} ${levelsToGo === 1 ? 'level' : 'levels'} to go)`;
+        const canAfford = this.hunterCredits >= item.price;
+        const diff = item.price - this.hunterCredits;
 
         const card = document.createElement("div");
         card.className = "telemetry-card";
-        card.style.borderLeft = isLevelUnlocked ? (canAfford ? "4px solid var(--success)" : "4px solid var(--accent-amber)") : "4px solid #e74c3c";
+        card.style.borderLeft = canAfford ? "3px solid var(--success)" : "3px solid var(--accent-amber)";
         card.innerHTML = `
-          <div>
-            <div class="card-top-row">
-              <span class="animal-title">${item.name}</span>
-              <span class="badge" style="background:#28374d; color:var(--accent-gold); font-weight:700;">$${item.cost.toLocaleString()}</span>
+          <div style="display:flex; gap:12px; align-items:flex-start;">
+            <img src="${item.image}" alt="" style="width:60px; height:60px; border-radius:6px; object-fit:cover; border:1px solid var(--border-color);" onerror="this.src='${DEFAULT_GAME_POSTER}'">
+            <div style="flex-grow:1;">
+              <div class="card-top-row">
+                <span class="animal-title">${item.name}</span>
+                <span class="badge" style="color:var(--accent-gold);">$${item.price.toLocaleString()}</span>
+              </div>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+                Category: <strong>${item.category}</strong> ${item.caliber ? `&bull; Caliber: <strong>${item.caliber}</strong>` : ''}
+              </div>
+              <p style="font-size:0.78rem; color:#cfd9e8; margin-top:6px; line-height:1.35;">${item.description}</p>
+              <div class="action-banner ${canAfford ? 'banner-breeder' : 'banner-cull'}" style="margin-top:6px;">
+                ${canAfford ? `Balance after: $${(this.hunterCredits - item.price).toLocaleString()}` : `Deficit: Need $${diff.toLocaleString()} more credits`}
+              </div>
             </div>
-            <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
-              Category: <strong>${item.category}</strong> &bull; Gate: <strong>Level ${item.requiredLevel}</strong>
-            </div>
-            <p style="font-size:0.8rem; color:#cfd9e8; margin-top:5px; line-height:1.35;">${item.description}</p>
-            <div class="action-banner ${balanceBadgeClass}" style="margin-top:8px;">
-              ${balanceBadgeText}
-            </div>
-            <div style="font-size:0.75rem; color:${isLevelUnlocked ? 'var(--success)' : '#ff9999'}; margin-top:4px; font-weight:600;">
-              ${levelBadgeText}
-            </div>
-          </div>
-          <div class="card-footer-row" style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px;">
-            <span style="font-size:0.75rem; color:var(--text-muted);">Current: <strong>$${this.hunterCredits.toLocaleString()}</strong> | Lv. <strong>${this.hunterLevel}</strong></span>
-            <button type="button" class="btn-link" style="color:${(canAfford && isLevelUnlocked) ? 'var(--accent-gold)' : 'var(--text-muted)'}; font-weight:700; cursor:${(canAfford && isLevelUnlocked) ? 'pointer' : 'not-allowed'};" 
-              onclick="window.CompanionApp.purchaseLodgeItem('${item.id}', ${item.cost}, ${item.requiredLevel})">
-              ${(canAfford && isLevelUnlocked) ? "Acquire" : "Unavailable"}
-            </button>
           </div>
         `;
         container.appendChild(card);
       });
-    },
-
-    purchaseLodgeItem(itemId, cost, requiredLevel) {
-      if (this.hunterLevel < requiredLevel) {
-        alert(`🔒 Requisition locked. You need ${requiredLevel - this.hunterLevel} more level(s) to unlock this item.`);
-        return;
-      }
-      if (this.hunterCredits < cost) {
-        alert(`⚠️ Insufficient credits. You need $${(cost - this.hunterCredits).toLocaleString()} more credits to complete this purchase.`);
-        return;
-      }
-
-      this.hunterCredits -= cost;
-      this.safeSetValue("hunterCreditsInput", this.hunterCredits);
-      localStorage.setItem("woth2_credits", this.hunterCredits);
-      this.renderLodgeForecaster();
-      this.silentSaveGameTelemetry();
-      alert(`✅ Requisition approved! Purchased item for $${cost.toLocaleString()}. Remaining balance: $${this.hunterCredits.toLocaleString()} credits.`);
     },
 
     populateRegions() {
@@ -1726,7 +1657,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const trackDist = document.getElementById("harvestTrackDist") ? document.getElementById("harvestTrackDist").value : 20;
       const fitness = document.getElementById("harvestFitness") ? (parseFloat(document.getElementById("harvestFitness").value) || 60) : 60;
       const stars = document.getElementById("harvestRatingStars") ? parseInt(document.getElementById("harvestRatingStars").value, 10) : 1;
-      const sellPrice = document.getElementById("harvestSellPrice") ? document.getElementById("harvestSellPrice").value : 200;
       const photoUrl = document.getElementById("harvestPhotoUrlInput") ? document.getElementById("harvestPhotoUrlInput").value.trim() : "";
 
       const newRecord = {
@@ -1739,7 +1669,6 @@ document.addEventListener("DOMContentLoaded", () => {
         tracking_distance_yds: trackDist,
         fitness_percentage: fitness,
         trophy_rating_stars: stars,
-        sell_price: sellPrice,
         photo_url: photoUrl || DEFAULT_GAME_POSTER,
         cull_decision: fitness < 50 ? "Cull (Low Fitness)" : "Keeper / Trophy",
         date: "October 16, 2026",
@@ -1783,7 +1712,7 @@ document.addEventListener("DOMContentLoaded", () => {
               Shot: <strong>${r.shot_distance_yds} yds</strong> &bull; Tracking: <strong>${r.tracking_distance_yds || 0} yds</strong>
             </div>
             <div style="font-size:0.76rem; color:var(--text-muted); margin-top:2px;">
-              Fitness: <strong>${r.fitness_percentage}%</strong> &bull; Age: <strong>${r.age_years || 'Adult'} Yrs</strong> &bull; Sell: <strong>$${r.sell_price || 149}</strong>
+              Fitness: <strong>${r.fitness_percentage}%</strong> &bull; Age: <strong>${r.age_years || 'Adult'} Yrs</strong>
             </div>
             <div class="action-banner ${r.fitness_percentage < 50 ? 'banner-cull' : 'banner-breeder'}" style="margin-top:6px;">
               ${r.cull_decision || 'Keeper Specimen'}
@@ -1942,8 +1871,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const trees = (this.db.challenges && this.db.challenges.trees) ? this.db.challenges.trees : {};
 
       container.innerHTML = "";
+      let challengeCount = 0;
+
       Object.entries(trees).forEach(([k, t]) => {
         const treeChallenges = t.challenges || [];
+        challengeCount += treeChallenges.length;
+
         const div = document.createElement("div");
         div.className = "info-box";
         div.innerHTML = `
@@ -1963,6 +1896,8 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         container.appendChild(div);
       });
+
+      this.safeSetText("challengesCount", `${challengeCount} Total Challenges`);
     },
 
     renderMissions() {
@@ -2117,7 +2052,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.renderInfrastructure();
       this.renderTrails();
       this.renderSpeciesCatalog();
-      this.renderLodgeForecaster();
+      this.renderGearCatalog();
       this.updateDynamicHarvestSchema();
     },
 
@@ -2186,7 +2121,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const crdEl = document.getElementById("hunterCreditsInput");
             if (lvlEl) this.hunterLevel = parseInt(lvlEl.value, 10) || 1;
             if (crdEl) this.hunterCredits = parseInt(crdEl.value, 10) || 0;
-            this.renderLodgeForecaster();
+            this.renderGearCatalog();
             this.renderInfrastructure();
           }
         });
@@ -2269,6 +2204,15 @@ document.addEventListener("DOMContentLoaded", () => {
         submitHarvestBtn.addEventListener("click", (e) => {
           e.preventDefault();
           this.submitHarvestInspection();
+        });
+      }
+
+      const photoUrlInput = document.getElementById("harvestPhotoUrlInput");
+      const photoPreview = document.getElementById("harvestPhotoPreview");
+      if (photoUrlInput && photoPreview) {
+        photoUrlInput.addEventListener("input", () => {
+          const url = photoUrlInput.value.trim();
+          photoPreview.src = url || DEFAULT_GAME_POSTER;
         });
       }
 
