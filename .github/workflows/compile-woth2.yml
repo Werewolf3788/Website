@@ -3,11 +3,11 @@ name: Compile WotH2 Game Data
 on:
   push:
     branches:
-      - main # Change to master if your repo uses master
+      - main # Change to master if your repo's default branch is master
     paths:
       - 'data/woth2/**'
       - '!data/woth2/game_data.json'
-      - '!data/woth2/scripts/**' # Prevents edits to the script itself from triggering an infinite loop
+      - '!data/woth2/scripts/**'
 
 permissions:
   contents: write
