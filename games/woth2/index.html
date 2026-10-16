@@ -1,5 +1,5 @@
 <!-- Line 1: Way of the Hunter 2 - Master Tactical Companion -->
-<!-- [Smart Cache-Buster Time: 2026-10-16 03:25 EDT | Firebase Sync Target: /utm_links | Version: 6.4.1] -->
+<!-- [Smart Cache-Buster Time: 2026-10-16 04:35 EDT | Firebase Sync Target: /utm_links | Version: 7.1.0] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -679,15 +679,6 @@
       cursor: pointer;
     }
 
-    .image-preview-thumb {
-      width: 64px;
-      height: 64px;
-      border-radius: 6px;
-      object-fit: cover;
-      border: 1px solid var(--border-color);
-      background: var(--bg-surface);
-    }
-
     .site-footer {
       background: var(--bg-secondary);
       border-top: 1px solid var(--border-color);
@@ -992,14 +983,9 @@
 
             <div class="form-section-title">3. Harvest Field Photo / Inspection Snapshot</div>
             <div style="background:rgba(0,0,0,0.25); border:1px dashed var(--border-color); border-radius:6px; padding:12px; margin-top:8px; display:flex; gap:12px; align-items:center;">
-              <img id="harvestPhotoPreview" src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" class="image-preview-thumb">
-              <div style="flex-grow:1; display:flex; flex-direction:column; gap:6px;">
+              <img id="harvestPhotoPreview" src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" style="width:64px; height:64px; border-radius:6px; object-fit:cover; border:1px solid var(--border-color);">
+              <div style="flex-grow:1;">
                 <input type="text" id="harvestPhotoUrlInput" placeholder="Paste Animal Photo URL (//... or https://)" style="font-size:0.8rem;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <label for="harvestPhotoFileInput" class="btn btn-secondary btn-sm" style="cursor:pointer;">📁 Choose Local File</label>
-                  <input type="file" id="harvestPhotoFileInput" accept="image/*" style="display:none;">
-                  <span id="harvestPhotoFileName" style="font-size:0.74rem; color:var(--text-muted);">No file chosen</span>
-                </div>
               </div>
             </div>
 
@@ -1198,7 +1184,7 @@
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Way of the Hunter 2 Companion &bull; Tactical Operations Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-16 03:25 EDT</span> | Version: 6.4.1</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-16 04:35 EDT</span> | Version: 7.1.0</p>
       </div>
       <div class="footer-col text-right">
         <span id="firebaseStatusBadge" class="status-pill status-connecting">RTDB: Connecting...</span>
