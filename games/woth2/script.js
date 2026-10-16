@@ -1,9 +1,9 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-16 04:55 EDT | Firebase Sync Target: /utm_links | Version: 7.3.0]
+// [Smart Cache-Buster Time: 2026-10-16 18:07 EDT | Firebase Sync Target: /utm_links | Version: 6.2.0]
 
 document.addEventListener("DOMContentLoaded", () => {
-  const DEFAULT_USER_AVATAR = "//werewolf3788.github.io/Website/assets/logo.jpg";
-  const DEFAULT_GAME_POSTER = "//werewolf3788.github.io/Website/assets/logo.jpg";
+  const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
+  const DEFAULT_GAME_POSTER = "https://image.api.playstation.com/vulcan/ap/rnd/202206/0713/bU0e3xUa8F8ZqQvF8n0Lz.png";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -37,23 +37,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const CompanionApp = {
     titleId: "NPWR52231_00",
     files: {
-      users: "users",
-      challenges: "challenges.json",
-      dogSkills: "dog_skills.json",
-      gameData: "game_data.json",
-      gear: "gear.json",
-      progressionGear: "progression_gear.json",
-      harvestSchemas: "harvest_schemas.json",
-      infrastructure: "infrastructure.json",
-      lifecycles: "lifecycles.json",
-      missions: "missions.json",
-      needZones: "need_zones.json",
-      regions: "regions.json",
-      reserves: "reserves.json",
-      species: "species.json",
-      stewardship: "stewardship.json",
-      trails: "trails.json",
-      worldWildlife: "world_wildlife.json"
+      users: "users.json",
+      challenges: "woth2/challenges.json",
+      dogSkills: "woth2/dog_skills.json",
+      gameData: "woth2/game_data.json",
+      gear: "woth2/gear.json",
+      harvestSchemas: "woth2/harvest_schemas.json",
+      infrastructure: "woth2/infrastructure.json",
+      lifecycles: "woth2/lifecycles.json",
+      missions: "woth2/missions.json",
+      needZones: "woth2/need_zones.json",
+      regions: "woth2/regions.json",
+      reserves: "woth2/reserves.json",
+      species: "woth2/species.json",
+      stewardship: "woth2/stewardship.json",
+      trails: "woth2/trails.json"
     },
 
     db: {},
@@ -85,12 +83,11 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     trophyGroups: [],
     selectedTrophyGroup: "all",
-    selectedGearCategory: "all",
     gameMetadata: {},
     friendsRoster: [],
-    completedMissions: {},
     hasLoadedPrimaryPoster: false,
 
+    // Line 72: Default lodge catalog fallback items for requisitions
     lodgeCatalog: [
       { id: "gear_scope_overgaard", name: "Overgaard 3-9x40 Hunting Scope", category: "Optics", cost: 725, requiredLevel: 3, description: "Precision hunting optic with clear multi-coated glass and balanced zoom." },
       { id: "gear_rifle_steyr_308", name: "Steyr Monobloc .308 Win", category: "Firearms", cost: 2400, requiredLevel: 4, description: "Top-tier bolt-action rifle designed for medium-to-large game with supreme accuracy." },
@@ -112,20 +109,32 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     async fetchJSON(fileName) {
-      let url = "";
-      if (fileName === "users" || fileName === "users.json") {
-        url = `https://raw.githubusercontent.com/Werewolf3788/Website/main/data/users.json?v=${Date.now()}`;
-      } else {
-        url = `https://raw.githubusercontent.com/Werewolf3788/Website/main/data/woth2/${fileName}?v=${Date.now()}`;
-      }
+      const bareName = fileName.includes("/") ? fileName.split("/").pop() : fileName;
+      const legacyPrefixedName = "woth2_" + bareName;
 
-      try {
-        const res = await fetch(url);
-        if (res.ok) {
-          return await res.json();
+      const candidates = [
+        fileName,
+        `woth2/${bareName}`,
+        legacyPrefixedName,
+        bareName
+      ];
+
+      const basePrefixes = [
+        "../../data/",
+        "../data/",
+        "./data/",
+        "/Website/data/",
+        "//werewolf3788.github.io/Website/data/"
+      ];
+
+      for (const base of basePrefixes) {
+        for (const cand of candidates) {
+          try {
+            const url = `${base}${cand}?v=${Date.now()}`;
+            const res = await fetch(url);
+            if (res.ok) return await res.json();
+          } catch (e) {}
         }
-      } catch (e) {
-        console.warn(`[WOTH2 Data] Fetch failed for: ${url}`, e);
       }
       return null;
     },
@@ -138,6 +147,13 @@ document.addEventListener("DOMContentLoaded", () => {
       keys.forEach((k, idx) => {
         this.db[k] = results[idx] || {};
       });
+
+      // If gear is missing but gameData has compiled gear categories, mount fallback
+      if (!this.db.gear || Object.keys(this.db.gear).length === 0) {
+        if (this.db.gameData && (this.db.gameData.weapons || this.db.gameData.optics)) {
+          this.db.gear = this.db.gameData;
+        }
+      }
     },
 
     applyUserThemeAndIdentity() {
@@ -227,7 +243,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const savedBlood = localStorage.getItem("woth2_dog_blood");
       const savedSearch = localStorage.getItem("woth2_dog_search");
       const savedTrophyProgress = localStorage.getItem("woth2_manual_trophies");
-      const savedMissions = localStorage.getItem("woth2_completed_missions");
 
       if (savedDay) this.currentDay = parseInt(savedDay, 10);
       if (savedTime) this.currentTime = savedTime;
@@ -248,10 +263,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (savedTrophyProgress) {
         try { this.userTrophyProgress = JSON.parse(savedTrophyProgress); } catch (e) { this.userTrophyProgress = {}; }
-      }
-
-      if (savedMissions) {
-        try { this.completedMissions = JSON.parse(savedMissions); } catch (e) { this.completedMissions = {}; }
       }
 
       this.safeSetValue("currentDayInput", this.currentDay);
@@ -433,11 +444,9 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("woth2_dog_search", this.dogSearchQuarteringLevel);
       localStorage.setItem("woth2_watchlist", JSON.stringify(this.watchlist));
       localStorage.setItem("woth2_manual_trophies", JSON.stringify(this.userTrophyProgress));
-      localStorage.setItem("woth2_completed_missions", JSON.stringify(this.completedMissions));
 
       this.recalculateCrossTrophyTelemetry();
-      this.renderGearCatalog();
-      this.renderInfrastructure();
+      this.renderLodgeForecaster();
 
       const activeUser = auth.currentUser;
       const targetUserKey = this.currentEmailKey || (this.currentEmail ? getEmailKey(this.currentEmail) : "");
@@ -470,7 +479,6 @@ document.addEventListener("DOMContentLoaded", () => {
             trophies_total: totalTrophies,
             trophies_percent: trophyPct,
             trophies: cleanTrophies,
-            completed_missions: this.completedMissions,
             dog_stats: {
               name: this.dogCompanionName,
               breed: this.dogBreed,
@@ -485,7 +493,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }, { merge: true });
 
         } catch (e) {
-          console.warn("Telemetry Sync Warning: " + e.message);
+          alert("⚠️ Telemetry Sync Failed: " + e.message);
         }
       }
     },
@@ -536,13 +544,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     syncWoth2FaviconFallback(items, raw) {
       let backupImg = "";
+      let woth2Stamp = "";
 
       const taggedEntry = items.find(i => i.tag && i.tag.toLowerCase() === "woth2");
 
       if (taggedEntry) {
         backupImg = taggedEntry.image;
+        woth2Stamp = taggedEntry.updatedAt;
       } else if (raw.WOTH2 && raw.WOTH2[0] && raw.WOTH2[0].image) {
         backupImg = raw.WOTH2[0].image;
+        woth2Stamp = raw.WOTH2[0].updatedAt;
       } else {
         const titleMatch = items.find(i => {
           const t = i.title.toLowerCase();
@@ -550,11 +561,16 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         if (titleMatch) {
           backupImg = titleMatch.image;
+          woth2Stamp = titleMatch.updatedAt;
         }
       }
 
       if (!this.hasLoadedPrimaryPoster && backupImg) {
         this.applyBrandArt(backupImg);
+      }
+
+      if (woth2Stamp) {
+        this.safeSetText("nyBuildTimestamp", woth2Stamp);
       }
     },
 
@@ -692,15 +708,8 @@ document.addEventListener("DOMContentLoaded", () => {
               this.syncPlayStationTrophies(this.psnOnlineId, this.psnAccountId);
             }
 
-            const rawFriends = rtdbProfile.friends || {};
-            this.friendsRoster = Object.entries(rawFriends).map(([codeKey, friendData]) => {
-              const code = (typeof friendData === "object" && friendData !== null && friendData.friend_code)
-                ? friendData.friend_code
-                : codeKey;
-              return { code: String(code).toUpperCase() };
-            });
-
-            this.loadRealFriendsTelemetry();
+            this.friendsRoster = rtdbProfile.friends ? Object.values(rtdbProfile.friends) : [];
+            this.loadFriendsComparisonTelemetry();
             this.loadAllPlatformTrophyProgress();
           });
 
@@ -723,7 +732,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 this.hunterLevel = data.hunter_level;
                 this.safeSetValue("hunterLevelInput", this.hunterLevel);
               }
-              if (data.hunter_credits !== undefined) {
+              if (data.hunter_credits) {
                 this.hunterCredits = data.hunter_credits;
                 this.safeSetValue("hunterCreditsInput", this.hunterCredits);
               }
@@ -750,10 +759,6 @@ document.addEventListener("DOMContentLoaded", () => {
               if (data.watchlist && Array.isArray(data.watchlist)) {
                 this.watchlist = data.watchlist;
                 this.renderWatchlist();
-              }
-              if (data.completed_missions) {
-                this.completedMissions = data.completed_missions;
-                this.renderMissions();
               }
 
               if (data.trophies && typeof data.trophies === "object") {
@@ -786,8 +791,6 @@ document.addEventListener("DOMContentLoaded", () => {
           if (modalBtn) modalBtn.classList.remove("hidden");
           if (profileBadge) profileBadge.classList.add("hidden");
           this.renderProfileDropdown(false);
-          this.friendsRoster = [];
-          this.renderRealFriends([]);
         }
       });
 
@@ -1017,6 +1020,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <div style="width:${progressPercent}%; height:100%; background:linear-gradient(90deg, #0088ff, #2ecc71); border-radius:5px; transition: width 0.4s ease;"></div>
           </div>
 
+          <!-- Cross-Platform Trophy Telemetry Deck -->
           <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:6px; background:rgba(0,0,0,0.3); padding:10px 12px; border-radius:8px; border:1px solid #1c2738;">
             <div style="display:flex; flex-direction:column; gap:4px;">
               <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
@@ -1122,7 +1126,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         div.innerHTML = `
           <div style="display:flex; gap:14px; align-items:flex-start;">
-            <img src="${t.icon}" alt="" style="width:54px; height:54px; border-radius:8px; object-fit:cover; border:1px solid rgba(255,255,255,0.12); flex-shrink:0;" onerror="this.src='${DEFAULT_GAME_POSTER}'">
+            <img src="${t.icon}" alt="" style="width:54px; height:54px; border-radius:8px; object-fit:cover; border:1px solid rgba(255,255,255,0.12); flex-shrink:0;">
             <div style="flex-grow:1;">
               <div class="card-top-row">
                 <span class="animal-title" style="font-size:1rem;">${t.title}</span>
@@ -1149,127 +1153,67 @@ document.addEventListener("DOMContentLoaded", () => {
       this.renderTrophies();
     },
 
-    filterGearCategory(cat) {
-      this.selectedGearCategory = cat;
-      const pills = document.querySelectorAll("#gearFilterPills .trophy-group-pill");
-      pills.forEach(p => p.classList.remove("active"));
-      if (window.event && window.event.target) {
-        window.event.target.classList.add("active");
-      }
-      this.renderGearCatalog();
-    },
+    async loadFriendsComparisonTelemetry() {
+      const container = document.getElementById("friendsComparisonContainer");
+      if (!container) return;
 
-    async addFriendByCode() {
-      const codeInput = document.getElementById("friendCodeInput");
-      if (!codeInput || !codeInput.value.trim()) return alert("Please enter an 8-character Friend Code.");
-      const code = codeInput.value.trim().toUpperCase();
-
-      if (!this.currentEmailKey) return alert("Please log in to link companion friends.");
-
-      try {
-        const usersSnap = await rtdb.ref("/users").once("value");
-        const allUsers = usersSnap.val() || {};
-
-        let foundKey = null;
-        let foundData = null;
-
-        Object.entries(allUsers).forEach(([userKey, userData]) => {
-          if (userData && userData.friend_code && userData.friend_code.toUpperCase() === code) {
-            foundKey = userKey;
-            foundData = userData;
-          }
-        });
-
-        if (!foundKey) {
-          return alert(`⚠️ No registered hunter found with friend code: ${code}`);
-        }
-
-        await rtdb.ref(`/users/${this.currentEmailKey}/friends/${code}`).set({
-          friend_code: code,
-          user_key: foundKey,
-          username: foundData.username || foundData.hunter_name || "Companion Hunter",
-          linkedAt: new Date().toISOString()
-        });
-
-        codeInput.value = "";
-        alert(`✅ Linked companion ${foundData.username || code}!`);
-      } catch (err) {
-        alert("Error linking friend: " + err.message);
-      }
-    },
-
-    async loadRealFriendsTelemetry() {
       if (!this.friendsRoster.length) {
-        this.renderRealFriends([]);
+        container.innerHTML = `<p style="font-size:0.82rem; color:var(--text-muted); padding:12px;">No companions linked yet. Share your 8-character Friend Code in Settings to compare telemetry.</p>`;
         return;
       }
 
-      const cards = [];
+      container.innerHTML = `<div style="font-size:0.8rem; color:var(--text-muted); padding:10px;">Loading live companion telemetry...</div>`;
+      const comparisonCards = [];
 
-      try {
-        const usersSnap = await rtdb.ref("/users").once("value");
-        const allUsers = usersSnap.val() || {};
+      for (const friend of this.friendsRoster) {
+        const friendEmail = (friend.target_email || "").toLowerCase();
+        if (!friendEmail) continue;
+        const friendKey = getEmailKey(friendEmail);
 
-        for (const f of this.friendsRoster) {
-          const code = f.code;
-          let matchedEmailKey = null;
-          let rtdbUser = null;
+        try {
+          const targetPlatform = (friend.platform || this.currentPlatform || "ps").toLowerCase();
+          const snap = await db.collection("users")
+            .doc(friendKey)
+            .collection("platform")
+            .doc(targetPlatform)
+            .collection("progress")
+            .doc("woth2")
+            .get();
 
-          Object.entries(allUsers).forEach(([emailKey, userData]) => {
-            if (userData && userData.friend_code && userData.friend_code.toUpperCase() === code) {
-              matchedEmailKey = emailKey;
-              rtdbUser = userData;
-            }
-          });
-
-          if (!matchedEmailKey) continue;
-
-          const targetPlatform = (rtdbUser.primary_platform || "ps").toLowerCase();
-
-          try {
-            const snap = await db.collection("users")
-              .doc(matchedEmailKey)
-              .collection("platform")
-              .doc(targetPlatform)
-              .collection("progress")
-              .doc("woth2")
-              .get();
-
-            let tele = {};
-            if (snap.exists) tele = snap.data();
-
-            cards.push({
-              code: code,
-              username: tele.hunter_name || rtdbUser.username || "Companion Hunter",
-              emailKey: matchedEmailKey,
-              platform: (tele.platform || targetPlatform).toUpperCase(),
-              level: tele.hunter_level || 1,
-              credits: tele.hunter_credits || 0,
-              day: tele.companion_day || 1,
-              time: tele.companion_time || "08:00",
-              weather: tele.weather || "Clear",
-              harvests: tele.harvest_count || 0,
-              trophiesEarned: tele.trophies_earned || 0,
-              trophiesTotal: tele.trophies_total || 6
+          if (snap.exists) {
+            const data = snap.data();
+            comparisonCards.push({
+              username: friend.username || "Companion",
+              avatar: friend.avatar_url || DEFAULT_USER_AVATAR,
+              platform: (data.platform || targetPlatform).toUpperCase(),
+              level: data.hunter_level || 1,
+              credits: data.hunter_credits || 0,
+              day: data.companion_day || 1,
+              time: data.companion_time || "08:00",
+              weather: data.weather || "Clear",
+              trophiesEarned: data.trophies_earned || 0,
+              trophiesTotal: data.trophies_total || 6,
+              trophiesPct: data.trophies_percent || 0,
+              harvestCount: data.harvest_count || 0,
+              watchlistCount: (data.watchlist && data.watchlist.length) ? data.watchlist.length : 0,
+              dogStats: data.dog_stats || null
             });
-          } catch (e) {
-            console.warn("Companion Firestore progress fetch error:", e);
           }
+        } catch (e) {
+          console.warn("Companion fetch warning:", e);
         }
-      } catch (e) {
-        console.warn("RTDB user lookup error:", e);
       }
 
-      this.renderRealFriends(cards);
+      this.renderFriendsComparison(comparisonCards);
     },
 
-    renderRealFriends(cards) {
+    renderFriendsComparison(cards) {
       const container = document.getElementById("friendsComparisonContainer");
       if (!container) return;
       container.innerHTML = "";
 
       if (!cards.length) {
-        container.innerHTML = `<p style="font-size:0.85rem; color:var(--text-muted); padding:12px; grid-column:1/-1;">No companion friends linked yet. Link their 8-character code to view their live telemetry.</p>`;
+        container.innerHTML = `<p style="font-size:0.82rem; color:var(--text-muted); padding:12px;">No active companion telemetry recorded yet.</p>`;
         return;
       }
 
@@ -1278,85 +1222,125 @@ document.addEventListener("DOMContentLoaded", () => {
         div.className = "telemetry-card";
         div.style.borderLeft = "3px solid #00d2d3";
         div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <strong style="color:#fff; font-size:1rem;">${c.username}</strong>
-              <div style="font-size:0.72rem; color:var(--accent-teal);">Code: <strong>${c.code}</strong> &bull; Node: ${c.emailKey}</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <img src="${c.avatar}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid #00d2d3;">
+              <strong style="color:#fff; font-size:0.95rem;">${c.username}</strong>
             </div>
-            <span class="badge" style="color:#00d2d3;">${c.platform}</span>
+            <span class="badge" style="background:#28374d; color:#00d2d3;">${c.platform}</span>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:0.78rem; color:var(--text-muted); margin-top:8px;">
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:0.78rem; color:var(--text-muted);">
             <div>Level: <strong style="color:#fff;">Lv. ${c.level}</strong></div>
-            <div>Credits: <strong style="color:var(--accent-amber);">$${c.credits.toLocaleString()}</strong></div>
+            <div>Credits: <strong style="color:var(--accent-amber);">$${c.credits}</strong></div>
             <div>Time / Day: <strong style="color:#fff;">Day ${c.day} (${c.time})</strong></div>
             <div>Weather: <strong style="color:#ffe099;">${c.weather}</strong></div>
-            <div>Harvests: <strong style="color:#2ecc71;">${c.harvests} Animals</strong></div>
-            <div>Trophies: <strong style="color:var(--accent-gold);">${c.trophiesEarned} / ${c.trophiesTotal}</strong></div>
+            <div>Harvests: <strong style="color:#2ecc71;">${c.harvestCount} Animals</strong></div>
+            <div>Watchlist: <strong style="color:#f5a623;">${c.watchlistCount} Targets</strong></div>
+            <div style="grid-column: 1/-1; margin-top:2px;">
+              Achievements: <strong style="color:var(--accent-gold);">${c.trophiesEarned} / ${c.trophiesTotal} (${c.trophiesPct}%)</strong>
+            </div>
           </div>
+
+          ${c.dogStats ? `
+            <div style="font-size:0.75rem; background:rgba(0,0,0,0.25); padding:6px; border-radius:4px; margin-top:8px;">
+              🐕 <strong>${c.dogStats.name}</strong> (${c.dogStats.breed}) &bull; Bonding Lv.${c.dogStats.bonding}
+            </div>
+          ` : ''}
         `;
         container.appendChild(div);
       });
     },
 
-    cleanPrice(val) {
-      if (val === undefined || val === null) return 0;
-      if (typeof val === "number") return val;
-      const stripped = String(val).replace(/[^0-9.]/g, "");
-      return parseFloat(stripped) || 0;
+    initDynamicFeatures() {
+      this.populateRegions();
+      this.filterSpeciesByRegion("harvestLocationSelect", "harvestSpeciesSelect");
+      this.filterSpeciesByRegion("watchRegionSelect", "watchSpeciesSelect");
+
+      this.renderHarvestHistory();
+      this.renderWatchlist();
+      this.renderNeedZones();
+      this.renderLifeCycles();
+      this.renderDogProfile();
+      this.renderChallenges();
+      this.renderMissions();
+      this.renderInfrastructure();
+      this.renderTrails();
+      this.renderSpeciesCatalog();
+      this.renderLodgeForecaster();
+      this.updateDynamicHarvestSchema();
     },
 
-    renderGearCatalog() {
-      const container = document.getElementById("gearCatalogContainer") || document.getElementById("lodgeForecasterContainer") || document.getElementById("lodgeRequisitionGrid");
-      if (!container) return;
+    // Line 730: Dynamic Gear & Lodge Catalog Parser
+    getParsedLodgeItems() {
+      const gearSource = this.db.gear || this.db.gameData || {};
+      const categories = [
+        "weapons", "optics", "decoys", "calls_and_scents",
+        "field_equipment", "ammunition", "dlcs"
+      ];
 
-      const rawGear = this.db.gear || {};
-      const items = [];
+      const parsedItems = [];
 
-      Object.entries(rawGear).forEach(([categoryKey, categoryBag]) => {
-        if (categoryKey === "catalog_metadata" || typeof categoryBag !== "object" || categoryBag === null) return;
+      categories.forEach(catKey => {
+        if (!gearSource[catKey]) return;
+        const group = gearSource[catKey];
 
-        Object.entries(categoryBag).forEach(([itemKey, item]) => {
+        Object.entries(group).forEach(([itemKey, item]) => {
           if (!item || typeof item !== "object") return;
-          items.push({
-            id: item.id || itemKey,
-            name: item.name || item.title || itemKey,
-            category: item.category || categoryKey,
-            subgroup: categoryKey.toLowerCase(),
-            cost: this.cleanPrice(item.price || item.cost),
-            requiredLevel: Number(item.tier || item.requiredLevel || item.required_level || item.level || 1),
-            caliber: item.caliber || item.arrow || "",
-            image: item.image || item.thumbnail || DEFAULT_GAME_POSTER,
-            description: item.description || "Field tactical gear item."
+
+          let costNumber = 0;
+          if (typeof item.price === "number") {
+            costNumber = item.price;
+          } else if (typeof item.price === "string") {
+            costNumber = parseFloat(item.price.replace(/[^0-9.]/g, "")) || 0;
+          }
+
+          let reqLevel = 1;
+          if (item.tier !== undefined && !isNaN(Number(item.tier))) {
+            reqLevel = Number(item.tier);
+          } else if (item.tier_min !== undefined && !isNaN(Number(item.tier_min))) {
+            reqLevel = Number(item.tier_min);
+          } else if (item.requiredLevel !== undefined) {
+            reqLevel = Number(item.requiredLevel);
+          }
+
+          parsedItems.push({
+            id: item.id || `gear_${catKey}_${itemKey}`,
+            name: item.name || itemKey,
+            category: item.category || catKey.replace(/_/g, " ").toUpperCase(),
+            cost: costNumber,
+            requiredLevel: Math.max(1, reqLevel),
+            description: item.description || "Way of the Hunter 2 gear item.",
+            image: item.image || item.thumbnail || item.icon || "",
+            brand: item.brand || ""
           });
         });
       });
 
-      const catalogItems = items.length > 0 ? items : this.lodgeCatalog;
+      return parsedItems.length > 0 ? parsedItems : this.lodgeCatalog;
+    },
 
-      const countBadge = document.getElementById("gearCatalogCount");
-      if (countBadge) countBadge.textContent = `${catalogItems.length} Field Items`;
+    // Line 785: Lodge Requisition Forecaster Engine (Credits Math & Level Delta Gate)
+    renderLodgeForecaster() {
+      const container = document.getElementById("lodgeForecasterContainer") || document.getElementById("lodgeRequisitionGrid");
+      if (!container) return;
+
+      const items = (this.db.gameData && this.db.gameData.lodge_store) 
+        ? this.db.gameData.lodge_store 
+        : this.getParsedLodgeItems();
 
       container.innerHTML = "";
 
-      const filtered = catalogItems.filter(item => {
-        if (!this.selectedGearCategory || this.selectedGearCategory === "all") return true;
-        const sub = (item.subgroup || "").toLowerCase();
-        const cat = (item.category || "").toLowerCase();
-        const target = this.selectedGearCategory.toLowerCase();
-        return sub.includes(target) || cat.includes(target);
-      });
-
-      filtered.forEach(item => {
+      items.forEach(item => {
         const canAfford = this.hunterCredits >= item.cost;
         const balanceAfter = this.hunterCredits - item.cost;
-        const deficit = item.cost - this.hunterCredits;
         const isLevelUnlocked = this.hunterLevel >= item.requiredLevel;
         const levelsToGo = Math.max(0, item.requiredLevel - this.hunterLevel);
 
         let balanceBadgeClass = canAfford ? "banner-breeder" : "banner-cull";
         let balanceBadgeText = canAfford
-          ? `Balance After Purchase: $${balanceAfter.toLocaleString()} credits ($${this.hunterCredits.toLocaleString()} - $${item.cost.toLocaleString()})`
-          : `Deficit: Need $${deficit.toLocaleString()} more credits (Have $${this.hunterCredits.toLocaleString()} / Need $${item.cost.toLocaleString()})`;
+          ? `Balance After Purchase: $${balanceAfter} credits ($${this.hunterCredits} - $${item.cost})`
+          : `Deficit: Need $${Math.abs(balanceAfter)} more credits (Have $${this.hunterCredits} / Need $${item.cost})`;
 
         let levelBadgeText = isLevelUnlocked
           ? `✅ Requisition Clearance: Unlocked (Required Lv. ${item.requiredLevel})`
@@ -1365,16 +1349,26 @@ document.addEventListener("DOMContentLoaded", () => {
         const card = document.createElement("div");
         card.className = "telemetry-card";
         card.style.borderLeft = isLevelUnlocked ? (canAfford ? "4px solid var(--success)" : "4px solid var(--accent-amber)") : "4px solid #e74c3c";
+        
+        const imgBlock = item.image 
+          ? `<img src="${item.image}" alt="" style="width:52px; height:52px; border-radius:6px; object-fit:contain; background:rgba(0,0,0,0.4); border:1px solid #273447; flex-shrink:0;">`
+          : '';
+
         card.innerHTML = `
           <div>
-            <div class="card-top-row">
-              <span class="animal-title">${item.name}</span>
-              <span class="badge" style="background:#28374d; color:var(--accent-gold); font-weight:700;">$${item.cost.toLocaleString()}</span>
+            <div style="display:flex; gap:12px; align-items:flex-start;">
+              ${imgBlock}
+              <div style="flex-grow:1;">
+                <div class="card-top-row">
+                  <span class="animal-title">${item.name}</span>
+                  <span class="badge" style="background:#28374d; color:var(--accent-gold); font-weight:700;">$${item.cost}</span>
+                </div>
+                <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
+                  Category: <strong>${item.category}</strong> ${item.brand ? `&bull; Brand: <strong>${item.brand}</strong>` : ''} &bull; Requisition Gate: <strong>Level ${item.requiredLevel}</strong>
+                </div>
+              </div>
             </div>
-            <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
-              Category: <strong>${item.category}</strong> ${item.caliber ? `&bull; Caliber: <strong>${item.caliber}</strong>` : ''} &bull; Gate: <strong>Level ${item.requiredLevel}</strong>
-            </div>
-            <p style="font-size:0.8rem; color:#cfd9e8; margin-top:5px; line-height:1.35;">${item.description}</p>
+            <p style="font-size:0.8rem; color:#cfd9e8; margin-top:6px; line-height:1.35;">${item.description}</p>
             <div class="action-banner ${balanceBadgeClass}" style="margin-top:8px;">
               ${balanceBadgeText}
             </div>
@@ -1383,7 +1377,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
           </div>
           <div class="card-footer-row" style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px;">
-            <span style="font-size:0.75rem; color:var(--text-muted);">Current: <strong>$${this.hunterCredits.toLocaleString()}</strong> | Lv. <strong>${this.hunterLevel}</strong></span>
+            <span style="font-size:0.75rem; color:var(--text-muted);">Current: <strong>$${this.hunterCredits}</strong> | Lv. <strong>${this.hunterLevel}</strong></span>
             <button type="button" class="btn-link" style="color:${(canAfford && isLevelUnlocked) ? 'var(--accent-gold)' : 'var(--text-muted)'}; font-weight:700; cursor:${(canAfford && isLevelUnlocked) ? 'pointer' : 'not-allowed'};" 
               onclick="window.CompanionApp.purchaseLodgeItem('${item.id}', ${item.cost}, ${item.requiredLevel})">
               ${(canAfford && isLevelUnlocked) ? "Acquire" : "Unavailable"}
@@ -1394,22 +1388,23 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
+    // Line 860: Interactive Purchase Action with Automatic Ledger Deductions
     purchaseLodgeItem(itemId, cost, requiredLevel) {
       if (this.hunterLevel < requiredLevel) {
         alert(`🔒 Requisition locked. You need ${requiredLevel - this.hunterLevel} more level(s) to unlock this item.`);
         return;
       }
       if (this.hunterCredits < cost) {
-        alert(`⚠️ Insufficient credits. You need $${(cost - this.hunterCredits).toLocaleString()} more credits to complete this purchase.`);
+        alert(`⚠️ Insufficient credits. You need $${cost - this.hunterCredits} more credits to complete this purchase.`);
         return;
       }
 
       this.hunterCredits -= cost;
       this.safeSetValue("hunterCreditsInput", this.hunterCredits);
       localStorage.setItem("woth2_credits", this.hunterCredits);
-      this.renderGearCatalog();
+      this.renderLodgeForecaster();
       this.silentSaveGameTelemetry();
-      alert(`✅ Requisition approved! Purchased item for $${cost.toLocaleString()}. Remaining balance: $${this.hunterCredits.toLocaleString()} credits.`);
+      alert(`✅ Requisition approved! Purchased item for $${cost}. Remaining balance: $${this.hunterCredits} credits.`);
     },
 
     populateRegions() {
@@ -1612,6 +1607,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.silentSaveGameTelemetry();
     },
 
+    // Line 990: Watchlist Mathematics Engine (Biological Aging & Despawn Timers)
     renderWatchlist() {
       const container = document.getElementById("watchlistContainer");
       if (!container) return;
@@ -1665,6 +1661,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <div style="font-size:0.76rem; color:var(--text-muted); margin-top:2px;">
               Age: <strong>${effectiveAge}/${item.maxAge} yrs</strong> (Aging in ${daysUntilNextYear}d) &bull; Fit: <strong>${item.fitness}%</strong>
             </div>
+            <!-- Dynamic Lifecycle Math Readout Deck -->
             <div style="font-size:0.73rem; background:rgba(0,0,0,0.3); border:1px solid #1c2738; padding:5px 8px; border-radius:4px; margin-top:5px; color:#d2dae4;">
               ⏳ Despawn Clock: <strong style="color:${daysLeft <= 6 ? '#ff7675' : '#55efc4'}">${daysLeft} in-game days left</strong>
               ${effectiveAge < matureThresholdAge ? ` &bull; Mature Prime: <strong style="color:var(--accent-gold);">in ${daysToMature} days (${yearsToMature} yrs)</strong>` : ' &bull; <strong style="color:#f5a623;">Peak Trophy Phase</strong>'}
@@ -1681,44 +1678,6 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         container.appendChild(div);
       });
-    },
-
-    submitHarvestInspection() {
-      const species = document.getElementById("harvestSpeciesSelect") ? document.getElementById("harvestSpeciesSelect").value : "Elk";
-      const location = document.getElementById("harvestLocationSelect") ? document.getElementById("harvestLocationSelect").value : "New Laurentia";
-      const firearm = document.getElementById("harvestFirearm") ? document.getElementById("harvestFirearm").value : "Rifle";
-      const caliber = document.getElementById("harvestCaliber") ? document.getElementById("harvestCaliber").value : ".308";
-      const shotDist = document.getElementById("harvestShotDist") ? document.getElementById("harvestShotDist").value : 100;
-      const trackDist = document.getElementById("harvestTrackDist") ? document.getElementById("harvestTrackDist").value : 20;
-      const fitness = document.getElementById("harvestFitness") ? (parseFloat(document.getElementById("harvestFitness").value) || 60) : 60;
-      const stars = document.getElementById("harvestRatingStars") ? parseInt(document.getElementById("harvestRatingStars").value, 10) : 1;
-      const sellPrice = document.getElementById("harvestSellPrice") ? document.getElementById("harvestSellPrice").value : 200;
-      const photoUrl = document.getElementById("harvestPhotoUrlInput") ? document.getElementById("harvestPhotoUrlInput").value.trim() : "";
-
-      const newRecord = {
-        species,
-        animal_tier: 5,
-        location,
-        firearm,
-        caliber,
-        shot_distance_yds: shotDist,
-        tracking_distance_yds: trackDist,
-        fitness_percentage: fitness,
-        trophy_rating_stars: stars,
-        sell_price: sellPrice,
-        photo_url: photoUrl || DEFAULT_GAME_POSTER,
-        cull_decision: fitness < 50 ? "Cull (Low Fitness)" : "Keeper / Trophy",
-        date: "October 16, 2026",
-        hunt_rating: "A++"
-      };
-
-      if (!this.db.gameData) this.db.gameData = {};
-      if (!this.db.gameData.harvest_records) this.db.gameData.harvest_records = [];
-
-      this.db.gameData.harvest_records.unshift(newRecord);
-      this.renderHarvestHistory();
-      this.silentSaveGameTelemetry();
-      alert("✅ Harvest logged successfully!");
     },
 
     renderHarvestHistory() {
@@ -1738,7 +1697,6 @@ document.addEventListener("DOMContentLoaded", () => {
               <span class="animal-title">${r.species}</span>
               <span class="badge">${r.trophy_rating_stars}&#9733; Trophy</span>
             </div>
-            ${r.photo_url ? `<img src="${r.photo_url}" style="width:100%; height:120px; object-fit:cover; border-radius:4px; margin:6px 0; border:1px solid rgba(255,255,255,0.08);" onerror="this.src='${DEFAULT_GAME_POSTER}'">` : ''}
             <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
               Tier: <strong>${r.animal_tier}</strong> &bull; Location: <strong>${r.location || 'New Laurentia'}</strong>
             </div>
@@ -1749,7 +1707,7 @@ document.addEventListener("DOMContentLoaded", () => {
               Shot: <strong>${r.shot_distance_yds} yds</strong> &bull; Tracking: <strong>${r.tracking_distance_yds || 0} yds</strong>
             </div>
             <div style="font-size:0.76rem; color:var(--text-muted); margin-top:2px;">
-              Fitness: <strong>${r.fitness_percentage}%</strong> &bull; Age: <strong>${r.age_years || 'Adult'} Yrs</strong>
+              Fitness: <strong>${r.fitness_percentage}%</strong> &bull; Age: <strong>${r.age_years || 'Adult'} Yrs</strong> &bull; Sell: <strong>$${r.sell_price || 149}</strong>
             </div>
             <div class="action-banner ${r.fitness_percentage < 50 ? 'banner-cull' : 'banner-breeder'}" style="margin-top:6px;">
               ${r.cull_decision || 'Keeper Specimen'}
@@ -1762,6 +1720,42 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         container.appendChild(div);
       });
+    },
+
+    submitHarvestInspection() {
+      const species = document.getElementById("harvestSpeciesSelect") ? document.getElementById("harvestSpeciesSelect").value : "Elk";
+      const location = document.getElementById("harvestLocationSelect") ? document.getElementById("harvestLocationSelect").value : "New Laurentia";
+      const firearm = document.getElementById("harvestFirearm") ? document.getElementById("harvestFirearm").value : "Rifle";
+      const caliber = document.getElementById("harvestCaliber") ? document.getElementById("harvestCaliber").value : ".308";
+      const shotDist = document.getElementById("harvestShotDist") ? document.getElementById("harvestShotDist").value : 100;
+      const trackDist = document.getElementById("harvestTrackDist") ? document.getElementById("harvestTrackDist").value : 20;
+      const fitness = document.getElementById("harvestFitness") ? (parseFloat(document.getElementById("harvestFitness").value) || 60) : 60;
+      const stars = document.getElementById("harvestRatingStars") ? parseInt(document.getElementById("harvestRatingStars").value, 10) : 1;
+      const sellPrice = document.getElementById("harvestSellPrice") ? document.getElementById("harvestSellPrice").value : 200;
+
+      const newRecord = {
+        species,
+        animal_tier: 5,
+        location,
+        firearm,
+        caliber,
+        shot_distance_yds: shotDist,
+        tracking_distance_yds: trackDist,
+        fitness_percentage: fitness,
+        trophy_rating_stars: stars,
+        sell_price: sellPrice,
+        cull_decision: fitness < 50 ? "Cull (Low Fitness)" : "Keeper / Trophy",
+        date: "October 10, 2026",
+        hunt_rating: "A++"
+      };
+
+      if (!this.db.gameData) this.db.gameData = {};
+      if (!this.db.gameData.harvest_records) this.db.gameData.harvest_records = [];
+
+      this.db.gameData.harvest_records.unshift(newRecord);
+      this.renderHarvestHistory();
+      this.silentSaveGameTelemetry();
+      alert("✅ Harvest logged successfully!");
     },
 
     renderDogProfile() {
@@ -1909,23 +1903,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       container.innerHTML = "";
       Object.entries(trees).forEach(([k, t]) => {
-        const treeChallenges = t.challenges || [];
         const div = document.createElement("div");
         div.className = "info-box";
         div.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <strong style="color:#fff;">${t.name} Mastery</strong>
-            <span class="badge">${treeChallenges.length || t.total || 0} Challenges</span>
+            <span class="badge">${t.total} Challenges</span>
           </div>
-          <p style="font-size:0.82rem; color:var(--text-muted); margin:4px 0 8px;">${t.description}</p>
-          <div style="display:flex; flex-direction:column; gap:6px;">
-            ${treeChallenges.map(c => `
-              <div style="background:rgba(0,0,0,0.25); padding:6px 8px; border-radius:4px; font-size:0.78rem; border-left:2px solid var(--accent-amber);">
-                <strong style="color:var(--text-main);">${c.title || c.name || "Challenge Milestone"}</strong>
-                <div style="color:var(--text-muted); font-size:0.74rem;">${c.description || c.objective || ""}</div>
-              </div>
-            `).join("")}
-          </div>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-top:6px;">${t.description}</p>
         `;
         container.appendChild(div);
       });
@@ -1939,23 +1924,16 @@ document.addEventListener("DOMContentLoaded", () => {
       this.safeSetText("missionsCount", `${list.length} Missions`);
       container.innerHTML = "";
 
-      list.forEach((m, idx) => {
-        const missionId = `mission_${idx}`;
-        const isCompleted = Boolean(this.completedMissions[missionId]);
-
+      list.forEach(m => {
         const div = document.createElement("div");
         div.className = "info-box";
-        div.style.borderLeft = isCompleted ? "3px solid var(--success)" : "3px solid var(--border-color)";
         div.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="color:${isCompleted ? 'var(--success)' : '#fff'}; text-decoration:${isCompleted ? 'line-through' : 'none'};">${m.name}</strong>
-            <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.76rem; color:var(--text-muted);">
-              <input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="window.CompanionApp.toggleMissionComplete('${missionId}')"> Completed
-            </label>
+            <strong style="color:#fff;">${m.name}</strong>
+            <span class="badge">${m.source}</span>
           </div>
-          <div style="font-size:0.76rem; color:var(--accent-amber); margin-top:2px;">Source: ${m.source}</div>
           <ul style="font-size:0.8rem; color:var(--text-muted); padding-left:18px; margin-top:6px;">
-            ${m.objectives.map(o => `<li style="text-decoration:${isCompleted ? 'line-through' : 'none'};">${o}</li>`).join("")}
+            ${m.objectives.map(o => `<li>${o}</li>`).join("")}
           </ul>
           <div style="font-size:0.78rem; color:var(--accent-amber); margin-top:6px;">
             Reward: ${m.money ? `$${m.money}` : 'XP'} ${m.xp ? `&bull; ${m.xp} XP` : ''}
@@ -1963,13 +1941,6 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         container.appendChild(div);
       });
-    },
-
-    toggleMissionComplete(missionId) {
-      this.completedMissions[missionId] = !this.completedMissions[missionId];
-      localStorage.setItem("woth2_completed_missions", JSON.stringify(this.completedMissions));
-      this.renderMissions();
-      this.silentSaveGameTelemetry();
     },
 
     renderInfrastructure() {
@@ -1986,26 +1957,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
       container.innerHTML = "";
       tasks.forEach(t => {
-        const cost = Number(t.cost || 0);
-        const canAfford = this.hunterCredits >= cost;
-        const deficit = cost - this.hunterCredits;
-
         const div = document.createElement("div");
         div.className = "info-box";
-        div.style.borderLeft = canAfford ? "3px solid var(--success)" : "3px solid var(--danger)";
         div.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <strong style="color:#fff;">${t.type}</strong>
-            <span class="badge">$${cost.toLocaleString()}</span>
+            <span class="badge">$${t.cost}</span>
           </div>
           <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">
             Location: <strong>${t.location}</strong>
           </div>
           <div style="font-size:0.76rem; color:var(--accent-amber); margin-top:4px;">
             Affected: ${t.affected_species && t.affected_species.length ? t.affected_species.join(", ") : "Regional Infrastructure"}
-          </div>
-          <div class="action-banner ${canAfford ? 'banner-breeder' : 'banner-cull'}" style="margin-top:6px;">
-            ${canAfford ? `✅ Fully Funded (Balance after: $${(this.hunterCredits - cost).toLocaleString()})` : `🔒 Deficit: Need $${deficit.toLocaleString()} more credits`}
           </div>
         `;
         container.appendChild(div);
@@ -2066,25 +2029,6 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         container.appendChild(div);
       });
-    },
-
-    initDynamicFeatures() {
-      this.populateRegions();
-      this.filterSpeciesByRegion("harvestLocationSelect", "harvestSpeciesSelect");
-      this.filterSpeciesByRegion("watchRegionSelect", "watchSpeciesSelect");
-
-      this.renderHarvestHistory();
-      this.renderWatchlist();
-      this.renderNeedZones();
-      this.renderLifeCycles();
-      this.renderDogProfile();
-      this.renderChallenges();
-      this.renderMissions();
-      this.renderInfrastructure();
-      this.renderTrails();
-      this.renderSpeciesCatalog();
-      this.renderGearCatalog();
-      this.updateDynamicHarvestSchema();
     },
 
     bindUI() {
@@ -2152,8 +2096,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const crdEl = document.getElementById("hunterCreditsInput");
             if (lvlEl) this.hunterLevel = parseInt(lvlEl.value, 10) || 1;
             if (crdEl) this.hunterCredits = parseInt(crdEl.value, 10) || 0;
-            this.renderGearCatalog();
-            this.renderInfrastructure();
+            this.renderLodgeForecaster();
           }
         });
 
@@ -2235,15 +2178,6 @@ document.addEventListener("DOMContentLoaded", () => {
         submitHarvestBtn.addEventListener("click", (e) => {
           e.preventDefault();
           this.submitHarvestInspection();
-        });
-      }
-
-      const photoUrlInput = document.getElementById("harvestPhotoUrlInput");
-      const photoPreview = document.getElementById("harvestPhotoPreview");
-      if (photoUrlInput && photoPreview) {
-        photoUrlInput.addEventListener("input", () => {
-          const url = photoUrlInput.value.trim();
-          photoPreview.src = url || DEFAULT_GAME_POSTER;
         });
       }
 
