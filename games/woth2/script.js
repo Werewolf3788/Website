@@ -1,12 +1,12 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-16 02:34 EDT | Firebase Sync Target: /utm_links | Version: 6.3.0]
+// [Smart Cache-Buster Time: 2026-10-16 02:50 EDT | Firebase Sync Target: /utm_links | Version: 6.3.1]
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Line 5: Master asset fallbacks and relative bindings
-  const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
-  const DEFAULT_GAME_POSTER = "https://image.api.playstation.com/vulcan/ap/rnd/202206/0713/bU0e3xUa8F8ZqQvF8n0Lz.png";
+  // Line 5: Master asset fallbacks and relative bindings (Restored to local verified assets)
+  const DEFAULT_USER_AVATAR = "//werewolf3788.github.io/Website/assets/logo.jpg";
+  const DEFAULT_GAME_POSTER = "//werewolf3788.github.io/Website/assets/logo.jpg";
 
-  // Line 9: Firebase configuration
+  // Line 10: Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -18,13 +18,13 @@ document.addEventListener("DOMContentLoaded", () => {
     measurementId: "G-JDNSLD3GFE"
   };
 
-  // Line 22: Initialize Firebase subsystems
+  // Line 23: Initialize Firebase subsystems
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const rtdb = firebase.database();
   const db = firebase.firestore();
 
-  // Line 28: Email resolution helper
+  // Line 29: Email resolution helper
   function getResolvedPrimaryEmail(user) {
     if (!user) return "";
     const google = user.providerData && user.providerData.find(p => p && p.providerId === "google.com");
@@ -33,13 +33,13 @@ document.addEventListener("DOMContentLoaded", () => {
     return "hunter@guest.local";
   }
 
-  // Line 37: Database key sanitizer
+  // Line 38: Database key sanitizer
   function getEmailKey(email) {
     if (!email) return "unknown_user";
     return email.toLowerCase().replace(/@/g, "_at_").replace(/\./g, "_");
   }
 
-  // Line 43: Master Application Engine Object
+  // Line 44: Master Application Engine Object
   const CompanionApp = {
     titleId: "NPWR52231_00",
     files: {
@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
     friendsProgressCache: {},
     hasLoadedPrimaryPoster: false,
 
-    // Line 98: Default lodge catalog fallback items for requisitions
+    // Line 99: Default lodge catalog fallback items for requisitions
     lodgeCatalog: [
       { id: "gear_scope_overgaard", name: "Overgaard 3-9x40 Hunting Scope", category: "Optics", cost: 725, requiredLevel: 3, description: "Precision hunting optic with clear multi-coated glass and balanced zoom." },
       { id: "gear_rifle_steyr_308", name: "Steyr Monobloc .308 Win", category: "Firearms", cost: 2400, requiredLevel: 4, description: "Top-tier bolt-action rifle designed for medium-to-large game with supreme accuracy." },
@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
       { id: "gear_shotgun_12g", name: "MorningStar Over-and-Under 12G", category: "Firearms", cost: 1350, requiredLevel: 2, description: "Versatile twin-barrel shotgun tailored for high-speed waterfowl and upland game." }
     ],
 
-    // Line 107: Main initialization workflow
+    // Line 108: Main initialization workflow
     async init() {
       this.loadSavedState();
       this.bindUI();
@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.initDynamicFeatures();
     },
 
-    // Line 120: Resilient relative protocol fetch engine
+    // Line 121: Resilient relative protocol fetch engine
     async fetchJSON(fileName) {
       const paths = [
         "../../data/" + fileName,
@@ -136,13 +136,13 @@ document.addEventListener("DOMContentLoaded", () => {
           const res = await fetch(paths[i] + "?v=" + Date.now());
           if (res.ok) return await res.json();
         } catch (e) {
-          // Line 135: Continue checking candidate relative locations
+          // Line 136: Continue checking candidate relative locations
         }
       }
       return null;
     },
 
-    // Line 140: Bulk JSON loader
+    // Line 141: Bulk JSON loader
     async loadAllJSONs() {
       const keys = Object.keys(this.files);
       const promises = keys.map(k => this.fetchJSON(this.files[k]));
@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 151: Apply identity themes and styling
+    // Line 152: Apply identity themes and styling
     applyUserThemeAndIdentity() {
       if (!this.db.users) return;
       const userList = Array.isArray(this.db.users)
@@ -200,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    // Line 196: Merge trophy progress from static JSON
+    // Line 197: Merge trophy progress from static JSON
     integrateJSONTrophies() {
       if (this.db.gameData && this.db.gameData.trophies) {
         const jsonTrophies = Array.isArray(this.db.gameData.trophies)
@@ -227,7 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.renderTrophies();
     },
 
-    // Line 223: Local storage hydration
+    // Line 224: Local storage hydration
     loadSavedState() {
       const savedDay = localStorage.getItem("woth2_day");
       const savedTime = localStorage.getItem("woth2_time");
@@ -275,24 +275,24 @@ document.addEventListener("DOMContentLoaded", () => {
       this.updateDogInputDisplay();
     },
 
-    // Line 270: Safe DOM value set
+    // Line 271: Safe DOM value set
     safeSetValue(id, val) {
       const el = document.getElementById(id);
       if (el) el.value = val;
     },
 
-    // Line 276: Safe DOM text set
+    // Line 277: Safe DOM text set
     safeSetText(id, text) {
       const el = document.getElementById(id);
       if (el) el.textContent = text;
     },
 
-    // Line 282: Update dog status presentation
+    // Line 283: Update dog status presentation
     updateDogInputDisplay() {
       this.safeSetValue("dogCompanionInput", `${this.dogCompanionName} (Lv. ${this.dogBondingLevel})`);
     },
 
-    // Line 287: Dynamically bind brand artwork
+    // Line 288: Dynamically bind brand artwork
     applyBrandArt(imgUrl) {
       if (!imgUrl || typeof imgUrl !== "string") return;
       const cleanUrl = imgUrl.trim();
@@ -305,7 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (brandLogo) brandLogo.src = cleanUrl;
     },
 
-    // Line 299: Master PlayStation Game Data synchronization
+    // Line 300: Master PlayStation Game Data synchronization
     initMasterGameData() {
       rtdb.ref(`/psn/games/${this.titleId}`).on("value", snapshot => {
         const game = snapshot.val();
@@ -349,7 +349,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 343: Firestore sanitize mapper
+    // Line 344: Firestore sanitize mapper
     getSanitizedTrophiesForFirestore() {
       const cleanMap = {};
       Object.entries(this.userTrophyProgress).forEach(([id, t]) => {
@@ -366,7 +366,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return cleanMap;
     },
 
-    // Line 360: Cross platform trophy progress reader
+    // Line 361: Cross platform trophy progress reader
     async loadAllPlatformTrophyProgress() {
       const targetUserKey = this.currentEmailKey || (this.currentEmail ? getEmailKey(this.currentEmail) : "");
       if (!targetUserKey) return;
@@ -405,7 +405,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.renderTrophies();
     },
 
-    // Line 399: Recalculate achievement metrics
+    // Line 400: Recalculate achievement metrics
     recalculateCrossTrophyTelemetry() {
       const total = this.masterTrophies.length || 6;
       const currentEarned = Object.values(this.userTrophyProgress).filter(t => t.earned).length;
@@ -421,7 +421,7 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     },
 
-    // Line 415: Silent telemetry persistence
+    // Line 416: Silent telemetry persistence
     async silentSaveGameTelemetry() {
       const nameEl = document.getElementById("hunterNameInput");
       const lvlEl = document.getElementById("hunterLevelInput");
@@ -507,7 +507,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    // Line 502: Firebase Realtime Database and Navbar engine
+    // Line 503: Firebase Realtime Database and Navbar engine
     initRTDB() {
       rtdb.ref("/utm_links").on("value", snapshot => {
         const raw = snapshot.val();
@@ -540,7 +540,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 536: Navbar item normalization
+    // Line 537: Navbar item normalization
     normalizeItem(item, fallbackKey) {
       return {
         title: item.title || fallbackKey,
@@ -553,7 +553,7 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     },
 
-    // Line 549: Favicon and Build Timestamp Fallback
+    // Line 550: Favicon and Build Timestamp Fallback
     syncWoth2FaviconFallback(items, raw) {
       let backupImg = "";
       let woth2Stamp = "";
@@ -586,7 +586,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    // Line 581: Top navigation bar programmatic renderer
+    // Line 582: Top navigation bar programmatic renderer
     renderNav(items) {
       const navList = document.getElementById("navList");
       if (!navList) return;
@@ -680,7 +680,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 671: Authentication and Profile Synchronization Engine
+    // Line 672: Authentication and Profile Synchronization Engine
     initAuth() {
       auth.onAuthStateChanged(async user => {
         const modalBtn = document.getElementById("authModalBtn");
@@ -722,7 +722,7 @@ document.addEventListener("DOMContentLoaded", () => {
               this.syncPlayStationTrophies(this.psnOnlineId, this.psnAccountId);
             }
 
-            // Line 712: Hydrate friend roster with default entries if not yet created
+            // Line 713: Hydrate friend roster with default entries
             const loadedFriends = rtdbProfile.friends ? Object.entries(rtdbProfile.friends).map(([fKey, fVal]) => ({ ...fVal, key: fKey })) : [];
             this.syncFriendsRosterList(loadedFriends);
             this.loadFriendsComparisonTelemetry();
@@ -822,7 +822,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    // Line 809: Ensure friends roster accounts for known friends: Raymystyro, Terrdog, and companion slots
+    // Line 810: Sync friends list with fallback profiles
     syncFriendsRosterList(loadedFriends) {
       const defaults = [
         { key: "raymystyro", username: "Raymystyro", target_email: "raymystyro@guest.local", platform: "ps", avatar_url: DEFAULT_USER_AVATAR },
@@ -841,7 +841,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.friendsRoster = merged;
     },
 
-    // Line 829: Render Top Profile Dropdown Menu
+    // Line 830: Render Top Profile Dropdown Menu
     renderProfileDropdown(isAuthenticated) {
       let menu = document.getElementById("userProfileDropdownMenu");
       const profileBadge = document.getElementById("userProfile");
@@ -904,7 +904,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    // Line 887: PlayStation Trophy Sync Engine
+    // Line 888: PlayStation Trophy Sync Engine
     syncPlayStationTrophies(psnOnlineId, accountId) {
       const targetGamerTag = (psnOnlineId || "").trim();
       let trophyRef = null;
@@ -956,7 +956,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 940: Manual Trophy Toggle handler
+    // Line 941: Manual Trophy Toggle handler
     toggleManualTrophy(trophyId) {
       if (this.currentPlatform === "ps" && (this.psnOnlineId || this.psnAccountId)) {
         return;
@@ -990,7 +990,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.silentSaveGameTelemetry();
     },
 
-    // Line 975: Render Achievements Chamber with Friend Progress Indicators
+    // Line 976: Render Achievements Chamber with Friend Progress Indicators
     renderTrophies() {
       const container = document.getElementById("trophyChamberGrid") || document.getElementById("psnTrophiesContainer");
       if (!container) return;
@@ -1163,7 +1163,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         }
 
-        // Line 1162: Friends Trophy Progress Tagging Strip
+        // Line 1163: Friends Trophy Progress Tagging Strip
         let friendPillsHtml = "";
         const friendKeys = Object.keys(this.friendsProgressCache);
         if (friendKeys.length > 0) {
@@ -1187,7 +1187,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         div.innerHTML = `
           <div style="display:flex; gap:14px; align-items:flex-start;">
-            <img src="${t.icon}" alt="" style="width:54px; height:54px; border-radius:8px; object-fit:cover; border:1px solid rgba(255,255,255,0.12); flex-shrink:0;">
+            <img src="${t.icon}" alt="" style="width:54px; height:54px; border-radius:8px; object-fit:cover; border:1px solid rgba(255,255,255,0.12); flex-shrink:0;" onerror="this.src='${DEFAULT_GAME_POSTER}'">
             <div style="flex-grow:1;">
               <div class="card-top-row">
                 <span class="animal-title" style="font-size:1rem;">${t.title}</span>
@@ -1210,13 +1210,13 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 1208: Trophy filter by group tab
+    // Line 1210: Trophy filter by group tab
     filterTrophyGroup(groupId) {
       this.selectedTrophyGroup = groupId;
       this.renderTrophies();
     },
 
-    // Line 1214: Load friends companion progress and comparison telemetry
+    // Line 1216: Load friends companion progress and comparison telemetry
     async loadFriendsComparisonTelemetry() {
       const container = document.getElementById("friendsComparisonContainer");
       if (!container) return;
@@ -1279,7 +1279,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.renderTrophies();
     },
 
-    // Line 1276: Render Friends comparison cards with custom avatar URLs and local file upload
+    // Line 1279: Render Friends comparison cards with custom avatar URLs and local file upload
     renderFriendsComparison(cards) {
       const container = document.getElementById("friendsComparisonContainer");
       if (!container) return;
@@ -1297,7 +1297,7 @@ document.addEventListener("DOMContentLoaded", () => {
         div.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <div style="display:flex; align-items:center; gap:8px;">
-              <img id="friendAvatarImg_${c.key}" src="${c.avatar}" style="width:34px; height:34px; border-radius:50%; object-fit:cover; border:1px solid #00d2d3;">
+              <img id="friendAvatarImg_${c.key}" src="${c.avatar}" style="width:34px; height:34px; border-radius:50%; object-fit:cover; border:1px solid #00d2d3;" onerror="this.src='${DEFAULT_USER_AVATAR}'">
               <div>
                 <strong style="color:#fff; font-size:0.95rem;">${c.username}</strong>
                 <div style="font-size:0.7rem; color:var(--text-muted);">Companion Node</div>
@@ -1340,7 +1340,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 1334: Save custom avatar URL for friend to Firebase RTDB and update roster
+    // Line 1338: Save custom avatar URL for friend to Firebase RTDB and update roster
     async saveFriendAvatarUrl(friendKey) {
       const input = document.getElementById(`avatarUrlInput_${friendKey}`);
       if (!input || !input.value.trim()) return;
@@ -1362,7 +1362,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert(`✅ Companion avatar updated!`);
     },
 
-    // Line 1357: Local file reader upload for friend avatars
+    // Line 1361: Local file reader upload for friend avatars
     handleFriendAvatarUpload(friendKey, event) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
@@ -1388,7 +1388,7 @@ document.addEventListener("DOMContentLoaded", () => {
       reader.readAsDataURL(file);
     },
 
-    // Line 1383: Master Dynamic Features Ingestion
+    // Line 1387: Master Dynamic Features Ingestion
     initDynamicFeatures() {
       this.populateRegions();
       this.filterSpeciesByRegion("harvestLocationSelect", "harvestSpeciesSelect");
@@ -1408,29 +1408,45 @@ document.addEventListener("DOMContentLoaded", () => {
       this.updateDynamicHarvestSchema();
     },
 
-    // Line 1403: Lodge Requisition Forecaster Engine (Credits Math & Level Delta Gate)
+    // Line 1407: Lodge Requisition Forecaster Engine (Resilient Array Normalizer)
     renderLodgeForecaster() {
       const container = document.getElementById("lodgeForecasterContainer") || document.getElementById("lodgeRequisitionGrid");
       if (!container) return;
 
-      // Line 1408: Dynamically merge gear files woth2_progression_gear.json, woth2_gear.json, gameData, or fallback catalog
-      let catalogItems = [];
+      // Line 1412: Extract and normalize items from any object/array shape safely
+      const extractCatalogList = (source) => {
+        if (!source) return null;
+        if (Array.isArray(source)) return source;
+        if (Array.isArray(source.gear)) return source.gear;
+        if (Array.isArray(source.items)) return source.items;
+        if (Array.isArray(source.lodge_store)) return source.lodge_store;
+        if (typeof source === "object") {
+          // If object has nested category arrays or dictionary entries, flatten them
+          const flattened = [];
+          Object.values(source).forEach(val => {
+            if (Array.isArray(val)) {
+              flattened.push(...val);
+            } else if (val && typeof val === "object" && (val.cost !== undefined || val.price !== undefined || val.name || val.title)) {
+              flattened.push(val);
+            }
+          });
+          if (flattened.length > 0) return flattened;
+        }
+        return null;
+      };
 
-      if (this.db.progressionGear && (Array.isArray(this.db.progressionGear) || this.db.progressionGear.gear)) {
-        catalogItems = Array.isArray(this.db.progressionGear) ? this.db.progressionGear : this.db.progressionGear.gear;
-      } else if (this.db.gear && (Array.isArray(this.db.gear) || this.db.gear.gear)) {
-        catalogItems = Array.isArray(this.db.gear) ? this.db.gear : this.db.gear.gear;
-      } else if (this.db.gameData && this.db.gameData.lodge_store) {
-        catalogItems = this.db.gameData.lodge_store;
-      } else {
-        catalogItems = this.lodgeCatalog;
-      }
+      const catalogItems = extractCatalogList(this.db.progressionGear) ||
+                           extractCatalogList(this.db.gear) ||
+                           extractCatalogList(this.db.gameData ? this.db.gameData.lodge_store : null) ||
+                           this.lodgeCatalog;
 
       container.innerHTML = "";
 
       catalogItems.forEach(rawItem => {
+        if (!rawItem || typeof rawItem !== "object") return;
+
         const item = {
-          id: rawItem.id || `item_${Math.random()}`,
+          id: rawItem.id || `item_${Math.random().toString(36).substring(2, 9)}`,
           name: rawItem.name || rawItem.title || "Lodge Gear",
           category: rawItem.category || "Equipment",
           cost: Number(rawItem.cost || rawItem.price || 0),
@@ -1502,7 +1518,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 1494: Purchase action with automatic deductions
+    // Line 1515: Purchase action with automatic deductions
     purchaseLodgeItem(itemId, cost, requiredLevel) {
       if (this.hunterLevel < requiredLevel) {
         alert(`🔒 Requisition locked. You need ${requiredLevel - this.hunterLevel} more level(s) to unlock this item.`);
@@ -1521,7 +1537,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert(`✅ Requisition approved! Purchased item for $${cost}. Remaining balance: $${this.hunterCredits} credits.`);
     },
 
-    // Line 1513: Populate region select controls
+    // Line 1534: Populate region select controls
     populateRegions() {
       const regions = (this.db.regions && this.db.regions.regions) ? this.db.regions.regions : [];
       const locationSelect = document.getElementById("harvestLocationSelect");
@@ -1546,7 +1562,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 1538: Regional species filtering engine
+    // Line 1559: Regional species filtering engine
     filterSpeciesByRegion(regionSelectId, speciesSelectId) {
       const regionEl = document.getElementById(regionSelectId);
       const speciesEl = document.getElementById(speciesSelectId);
@@ -1576,7 +1592,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    // Line 1569: Dynamic trophy harvesting schema forms
+    // Line 1590: Dynamic trophy harvesting schema forms
     updateDynamicHarvestSchema() {
       const container = document.getElementById("dynamicSchemaFieldsContainer");
       const speciesEl = document.getElementById("harvestSpeciesSelect");
@@ -1640,7 +1656,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 1634: Max age calculation for watchlist
+    // Line 1655: Max age calculation for watchlist
     updateWatchlistMaxAge() {
       const speciesEl = document.getElementById("watchSpeciesSelect");
       const maxAgeEl = document.getElementById("watchMaxAge");
@@ -1652,7 +1668,7 @@ document.addEventListener("DOMContentLoaded", () => {
       maxAgeEl.value = match ? match.max_age_years : 12;
     },
 
-    // Line 1645: Save spotted watchlist target
+    // Line 1666: Save spotted watchlist target
     saveWatchlistEntry() {
       const editId = document.getElementById("editWatchlistId") ? document.getElementById("editWatchlistId").value : "";
       const tag = document.getElementById("watchIdentifier") ? document.getElementById("watchIdentifier").value.trim() : "";
@@ -1686,7 +1702,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.silentSaveGameTelemetry();
     },
 
-    // Line 1681: Reset watchlist input form
+    // Line 1702: Reset watchlist input form
     resetWatchlistForm() {
       this.safeSetValue("editWatchlistId", "");
       this.safeSetValue("watchIdentifier", "");
@@ -1699,7 +1715,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (cancelBtn) cancelBtn.classList.add("hidden");
     },
 
-    // Line 1694: Edit existing animal target
+    // Line 1715: Edit existing animal target
     editWatchlistEntry(id) {
       const item = this.watchlist.find(w => w.id === id);
       if (!item) return;
@@ -1721,7 +1737,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (cancelBtn) cancelBtn.classList.remove("hidden");
     },
 
-    // Line 1716: Remove animal from active watchlist
+    // Line 1737: Remove animal from active watchlist
     deleteWatchlistEntry(id) {
       if (!confirm("Harvested or remove this target from the watchlist?")) return;
       this.watchlist = this.watchlist.filter(w => w.id !== id);
@@ -1729,7 +1745,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.silentSaveGameTelemetry();
     },
 
-    // Line 1724: Watchlist Mathematics Engine (Biological Aging & Despawn Timers)
+    // Line 1745: Watchlist Mathematics Engine (Biological Aging & Despawn Timers)
     renderWatchlist() {
       const container = document.getElementById("watchlistContainer");
       if (!container) return;
@@ -1802,7 +1818,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 1799: Harvest History presentation
+    // Line 1820: Harvest History presentation
     renderHarvestHistory() {
       const container = document.getElementById("harvestHistoryContainer");
       if (!container) return;
@@ -1845,7 +1861,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 1845: Submit new harvest inspection
+    // Line 1866: Submit new harvest inspection
     submitHarvestInspection() {
       const species = document.getElementById("harvestSpeciesSelect") ? document.getElementById("harvestSpeciesSelect").value : "Elk";
       const location = document.getElementById("harvestLocationSelect") ? document.getElementById("harvestLocationSelect").value : "New Laurentia";
@@ -1882,7 +1898,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("✅ Harvest logged successfully!");
     },
 
-    // Line 1884: Render Dog companion stats
+    // Line 1905: Render Dog companion stats
     renderDogProfile() {
       const summaryContainer = document.getElementById("dogSummaryCard");
       const skillsContainer = document.getElementById("dogSkillsGrid");
@@ -1944,7 +1960,7 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
     },
 
-    // Line 1952: Stepper dog stat adjuster
+    // Line 1973: Stepper dog stat adjuster
     adjustDogStat(statName, delta) {
       if (statName === "bonding") {
         this.dogBondingLevel = Math.max(1, Math.min(6, this.dogBondingLevel + delta));
@@ -1961,7 +1977,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.silentSaveGameTelemetry();
     },
 
-    // Line 1969: Need Zone Clusters presenter
+    // Line 1990: Need Zone Clusters presenter
     renderNeedZones() {
       const container = document.getElementById("needZoneClustersGrid");
       if (!container) return;
@@ -1996,7 +2012,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 2007: Species lifecycles presentation
+    // Line 2028: Species lifecycles presentation
     renderLifeCycles() {
       const container = document.getElementById("lifecyclesGrid");
       if (!container) return;
@@ -2024,7 +2040,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 2035: Challenge trees presenter
+    // Line 2056: Challenge trees presenter
     renderChallenges() {
       const container = document.getElementById("challengeTreesGrid");
       if (!container) return;
@@ -2045,7 +2061,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 2056: Missions presenter
+    // Line 2077: Missions presenter
     renderMissions() {
       const container = document.getElementById("missionsGrid");
       if (!container) return;
@@ -2073,7 +2089,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 2085: Infrastructure presenter
+    // Line 2106: Infrastructure presenter
     renderInfrastructure() {
       const container = document.getElementById("infrastructureGrid");
       if (!container) return;
@@ -2106,7 +2122,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 2120: Wildlife migration corridors
+    // Line 2141: Wildlife migration corridors
     renderTrails() {
       const container = document.getElementById("trailsGrid");
       if (!container) return;
@@ -2135,7 +2151,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 2151: Species catalog presenter
+    // Line 2172: Species catalog presenter
     renderSpeciesCatalog() {
       const container = document.getElementById("speciesCatalogGrid");
       if (!container) return;
@@ -2164,7 +2180,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-    // Line 2182: UI Event and Click Handlers
+    // Line 2203: UI Event and Click Handlers
     bindUI() {
       const sandwichBtn = document.getElementById("moduleSandwichBtn");
       const dropdownMenu = document.getElementById("moduleDropdownMenu");
@@ -2330,7 +2346,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // Line 2345: Expose engine to global scope and trigger boot sequence
+  // Line 2366: Expose engine to global scope and trigger boot sequence
   window.CompanionApp = CompanionApp;
   CompanionApp.init();
 });
