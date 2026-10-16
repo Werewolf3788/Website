@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-16 04:47 EDT | Firebase Sync Target: /utm_links | Version: 7.2.0]
+// [Smart Cache-Buster Time: 2026-10-16 04:55 EDT | Firebase Sync Target: /utm_links | Version: 7.3.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "//werewolf3788.github.io/Website/assets/logo.jpg";
@@ -9,110 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
     databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
-    projectId: "entertainment-71888",
-    storageBucket: "entertainment-71888.firebasestorage.app",
-    messagingSenderId: "660524340277",
-    appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
-    measurementId: "G-JDNSLD3GFE"
-  };
-
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const rtdb = firebase.database();
-  const db = firebase.firestore();
-
-  function getResolvedPrimaryEmail(user) {
-    if (!user) return "";
-    const google = user.providerData && user.providerData.find(p => p && p.providerId === "google.com");
-    if (google && google.email) return google.email.toLowerCase().trim();
-    if (user.email) return user.email.toLowerCase().trim();
-    return "hunter@guest.local";
-  }
-
-  function getEmailKey(email) {
-    if (!email) return "unknown_user";
-    return email.toLowerCase().replace(/@/g, "_at_").replace(/\./g, "_");
-  }
-
-  const CompanionApp = {
-    titleId: "NPWR52231_00",
-    files: {
-      users: "users",
-      challenges: "challenges.json",
-      dogSkills: "dog_skills.json",
-      gameData: "game_data.json",
-      gear: "gear.json",
-      progressionGear: "progression_gear.json",
-      harvestSchemas: "harvest_schemas.json",
-      infrastructure: "infrastructure.json",
-      lifecycles: "lifecycles.json",
-      missions: "missions.json",
-      needZones: "need_zones.json",
-      regions: "regions.json",
-      reserves: "reserves.json",
-      species: "species.json",
-      stewardship: "stewardship.json",
-      trails: "trails.json",
-      worldWildlife: "world_wildlife.json"
-    },
-
-    db: {},
-    currentDay: 1,
-    currentTime: "08:30",
-    currentWeather: "Clear / Morning Breeze",
-    hunterName: "Ryder Holloway",
-    hunterLevel: 2,
-    hunterCredits: 318,
-    dogCompanionName: "Bacon",
-    dogBreed: "American Foxhound",
-    dogBondingLevel: 3,
-    dogFollowingCommandsLevel: 0,
-    dogBloodTrackingLevel: 3,
-    dogSearchQuarteringLevel: 0,
-    currentUser: null,
-    currentEmail: "",
-    currentEmailKey: "",
-    currentPlatform: "ps",
-    watchlist: [],
-    psnAccountId: "",
-    psnOnlineId: "",
-    masterTrophies: [],
-    userTrophyProgress: {},
-    crossPlatformTelemetry: {
-      ps: { earned: 0, total: 0, percent: 0 },
-      pc: { earned: 0, total: 0, percent: 0 },
-      xbox: { earned: 0, total: 0, percent: 0 }
-    },
-    trophyGroups: [],
-    selectedTrophyGroup: "all",
-    selectedGearCategory: "all",
-    gameMetadata: {},
-    friendsRoster: [],
-    completedMissions: {},
-    hasLoadedPrimaryPoster: false,
-
-    lodgeCatalog: [
-      { id: "gear_scope_overgaard", name: "Overgaard 3-9x40 Hunting Scope", category: "Optics", cost: 725, requiredLevel: 3, description: "Precision hunting optic with clear multi-coated glass and balanced zoom." },
-      { id: "gear_rifle_steyr_308", name: "Steyr Monobloc .308 Win", category: "Firearms", cost: 2400, requiredLevel: 4, description: "Top-tier bolt-action rifle designed for medium-to-large game with supreme accuracy." },
-      { id: "gear_caller_predator", name: "Predator Mouth Call", category: "Callers", cost: 350, requiredLevel: 1, description: "Simulates injured rabbit distress sounds to draw in wolves, bears, and foxes." },
-      { id: "gear_rangefinder_bushnell", name: "Bushnell Laser Rangefinder 1200", category: "Optics", cost: 890, requiredLevel: 2, description: "Accurate distance measurement upI hear you, and you’re right—running into broken buttons, missing methods, and crashing loops when you just want the app to run is completely frustrating. 
-
-Here is the exact file with the timestamp overwrite completely removed so it locks strictly to your New York EDT format (`2026-10-16 04:35 EDT`), along with all working buttons, methods, and paths.
-
-Replace your **`script.js`** completely with this code:
-
-```javascript
-// Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-16 04:47 EDT | Firebase Sync Target: /utm_links | Version: 7.1.1]
-
-document.addEventListener("DOMContentLoaded", () => {
-  const DEFAULT_USER_AVATAR = "//werewolf3788.github.io/Website/assets/logo.jpg";
-  const DEFAULT_GAME_POSTER = "//werewolf3788.github.io/Website/assets/logo.jpg";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
-    authDomain: "entertainment-71888.firebaseapp.com",
-    databaseURL: "[https://entertainment-71888-default-rtdb.firebaseio.com](https://entertainment-71888-default-rtdb.firebaseio.com)",
     projectId: "entertainment-71888",
     storageBucket: "entertainment-71888.firebasestorage.app",
     messagingSenderId: "660524340277",
@@ -218,9 +114,9 @@ document.addEventListener("DOMContentLoaded", () => {
     async fetchJSON(fileName) {
       let url = "";
       if (fileName === "users" || fileName === "users.json") {
-        url = `[https://raw.githubusercontent.com/Werewolf3788/Website/main/data/users.json?v=$](https://raw.githubusercontent.com/Werewolf3788/Website/main/data/users.json?v=$){Date.now()}`;
+        url = `https://raw.githubusercontent.com/Werewolf3788/Website/main/data/users.json?v=${Date.now()}`;
       } else {
-        url = `[https://raw.githubusercontent.com/Werewolf3788/Website/main/data/woth2/$](https://raw.githubusercontent.com/Werewolf3788/Website/main/data/woth2/$){fileName}?v=${Date.now()}`;
+        url = `https://raw.githubusercontent.com/Werewolf3788/Website/main/data/woth2/${fileName}?v=${Date.now()}`;
       }
 
       try {
@@ -638,7 +534,6 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     },
 
-    // STAMP OVERWRITE PERMANENTLY REMOVED: Locks timestamp strictly to build standard
     syncWoth2FaviconFallback(items, raw) {
       let backupImg = "";
 
@@ -1797,6 +1692,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const trackDist = document.getElementById("harvestTrackDist") ? document.getElementById("harvestTrackDist").value : 20;
       const fitness = document.getElementById("harvestFitness") ? (parseFloat(document.getElementById("harvestFitness").value) || 60) : 60;
       const stars = document.getElementById("harvestRatingStars") ? parseInt(document.getElementById("harvestRatingStars").value, 10) : 1;
+      const sellPrice = document.getElementById("harvestSellPrice") ? document.getElementById("harvestSellPrice").value : 200;
       const photoUrl = document.getElementById("harvestPhotoUrlInput") ? document.getElementById("harvestPhotoUrlInput").value.trim() : "";
 
       const newRecord = {
@@ -1809,6 +1705,7 @@ document.addEventListener("DOMContentLoaded", () => {
         tracking_distance_yds: trackDist,
         fitness_percentage: fitness,
         trophy_rating_stars: stars,
+        sell_price: sellPrice,
         photo_url: photoUrl || DEFAULT_GAME_POSTER,
         cull_decision: fitness < 50 ? "Cull (Low Fitness)" : "Keeper / Trophy",
         date: "October 16, 2026",
