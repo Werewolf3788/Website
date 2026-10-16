@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-16 04:15 EDT | Firebase Sync Target: /utm_links | Version: 6.8.0]
+// [Smart Cache-Buster Time: 2026-10-16 04:23 EDT | Firebase Sync Target: /utm_links | Version: 6.9.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "//werewolf3788.github.io/Website/assets/logo.jpg";
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const CompanionApp = {
     titleId: "NPWR52231_00",
     files: {
-      users: "users.json",
+      users: "users",
       challenges: "challenges.json",
       dogSkills: "dog_skills.json",
       gameData: "game_data.json",
@@ -48,10 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
       lifecycles: "lifecycles.json",
       missions: "missions.json",
       needZones: "need_zones.json",
-      newsUpdate: "news_update.json",
       regions: "regions.json",
       reserves: "reserves.json",
-      runtimeSave: "runtime_save.json",
       species: "species.json",
       stewardship: "stewardship.json",
       trails: "trails.json",
@@ -113,21 +111,20 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     async fetchJSON(fileName) {
-      const paths = [
-        `./data/woth2/${fileName}?v=${Date.now()}`,
-        `../data/woth2/${fileName}?v=${Date.now()}`,
-        `../../data/woth2/${fileName}?v=${Date.now()}`,
-        `https://raw.githubusercontent.com/Werewolf3788/Website/main/data/woth2/${fileName}?v=${Date.now()}`,
-        `https://raw.githubusercontent.com/Werewolf3788/Website/main/data/${fileName}?v=${Date.now()}`
-      ];
+      let url = "";
+      if (fileName === "users" || fileName === "users.json") {
+        url = `https://raw.githubusercontent.com/Werewolf3788/Website/main/data/users.json?v=${Date.now()}`;
+      } else {
+        url = `https://raw.githubusercontent.com/Werewolf3788/Website/main/data/woth2/${fileName}?v=${Date.now()}`;
+      }
 
-      for (let i = 0; i < paths.length; i++) {
-        try {
-          const res = await fetch(paths[i]);
-          if (res.ok) {
-            return await res.json();
-          }
-        } catch (e) {}
+      try {
+        const res = await fetch(url);
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch (e) {
+        console.warn(`[WOTH2 Data] Fetch failed for: ${url}`, e);
       }
       return null;
     },
