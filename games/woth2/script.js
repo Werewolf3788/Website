@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-16 04:23 EDT | Firebase Sync Target: /utm_links | Version: 6.9.0]
+// [Smart Cache-Buster Time: 2026-10-16 04:30 EDT | Firebase Sync Target: /utm_links | Version: 7.0.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "//werewolf3788.github.io/Website/assets/logo.jpg";
@@ -85,6 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     trophyGroups: [],
     selectedTrophyGroup: "all",
+    selectedGearCategory: "all",
     gameMetadata: {},
     friendsRoster: [],
     completedMissions: {},
@@ -1156,6 +1157,16 @@ document.addEventListener("DOMContentLoaded", () => {
       this.renderTrophies();
     },
 
+    filterGearCategory(cat) {
+      this.selectedGearCategory = cat;
+      const pills = document.querySelectorAll("#gearFilterPills .trophy-group-pill");
+      pills.forEach(p => p.classList.remove("active"));
+      if (window.event && window.event.target) {
+        window.event.target.classList.add("active");
+      }
+      this.renderLodgeForecaster();
+    },
+
     async addFriendByCode() {
       const codeInput = document.getElementById("friendCodeInput");
       if (!codeInput || !codeInput.value.trim()) return alert("Please enter an 8-character Friend Code.");
@@ -1303,7 +1314,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     renderLodgeForecaster() {
-      const container = document.getElementById("lodgeForecasterContainer") || document.getElementById("lodgeRequisitionGrid") || document.getElementById("gearCatalogContainer");
+      const container = document.getElementById("gearCatalogContainer") || document.getElementById("lodgeForecasterContainer") || document.getElementById("lodgeRequisitionGrid");
       if (!container) return;
 
       const flattenCatalog = (source) => {
@@ -1311,7 +1322,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (Array.isArray(source)) return source;
 
         const results = [];
-        const inspectNode = (node, defaultCategory = "Equipment") => {
+        const inspectNode = (node, defaultCategory = "Equipment", parentKey = "") => {
           if (!node || typeof node !== "object") return;
 
           if (node.name || node.title || node.id) {
@@ -1319,6 +1330,7 @@ document.addEventListener("DOMContentLoaded", () => {
               id: node.id || `item_${Math.random().toString(36).substring(2, 9)}`,
               name: node.name || node.title || "Gear Item",
               category: node.category || defaultCategory,
+              subgroup: parentKey || defaultCategory.toLowerCase(),
               cost: this.cleanPrice(node.price || node.cost),
               requiredLevel: Number(node.tier || node.requiredLevel || node.required_level || node.level || 1),
               description: node.description || node.desc || "Tactical field gear."
@@ -1329,10 +1341,10 @@ document.addEventListener("DOMContentLoaded", () => {
           Object.entries(node).forEach(([catKey, catVal]) => {
             if (catKey === "catalog_metadata" || catKey === "dog_skill_definitions" || catKey === "scoring_templates" || catKey === "species_scoring_mapping") return;
             if (Array.isArray(catVal)) {
-              catVal.forEach(item => inspectNode(item, catKey));
+              catVal.forEach(item => inspectNode(item, catKey, catKey));
             } else if (catVal && typeof catVal === "object") {
               Object.entries(catVal).forEach(([itemKey, itemVal]) => {
-                if (itemVal && typeof itemVal === "object") inspectNode(itemVal, catKey);
+                if (itemVal && typeof itemVal === "object") inspectNode(itemVal, catKey, catKey);
               });
             }
           });
@@ -1355,9 +1367,20 @@ document.addEventListener("DOMContentLoaded", () => {
         catalogItems = this.lodgeCatalog;
       }
 
+      const countBadge = document.getElementById("gearCatalogCount");
+      if (countBadge) countBadge.textContent = `${catalogItems.length} Field Items`;
+
       container.innerHTML = "";
 
-      catalogItems.forEach(item => {
+      const filtered = catalogItems.filter(item => {
+        if (!this.selectedGearCategory || this.selectedGearCategory === "all") return true;
+        const sub = (item.subgroup || "").toLowerCase();
+        const cat = (item.category || "").toLowerCase();
+        const target = this.selectedGearCategory.toLowerCase();
+        return sub.includes(target) || cat.includes(target);
+      });
+
+      filtered.forEach(item => {
         const canAfford = this.hunterCredits >= item.cost;
         const balanceAfter = this.hunterCredits - item.cost;
         const deficit = item.cost - this.hunterCredits;
@@ -1978,8 +2001,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     toggleMissionComplete(missionId) {
       this.completedMissions[missionId] = !this.completedMissions[missionId];
-      this.silentSaveGameTelemetry();
+      localStorage.setItem("woth2_completed_missions", JSON.stringify(this.completedMissions));
       this.renderMissions();
+      this.silentSaveGameTelemetry();
     },
 
     renderInfrastructure() {
