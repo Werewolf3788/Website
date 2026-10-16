@@ -1,5 +1,5 @@
 <!-- Line 1: Way of the Hunter 2 - Master Tactical Companion -->
-<!-- [Smart Cache-Buster Time: 2026-10-16 02:40 EDT | Firebase Sync Target: /utm_links | Version: 6.3.0] -->
+<!-- [Smart Cache-Buster Time: 2026-10-16 03:20 EDT | Firebase Sync Target: /utm_links | Version: 6.4.0] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,7 +41,6 @@
     body {
       font-family: var(--font-family);
       background-color: var(--bg-primary) !important;
-      background-image: none !important;
       color: var(--text-main);
       line-height: 1.5;
       min-height: 100vh;
@@ -88,7 +87,6 @@
       border: 1px solid var(--border-color);
       object-fit: cover;
       background: var(--bg-surface);
-      cursor: pointer;
     }
 
     .brand-title {
@@ -189,7 +187,6 @@
       border-radius: 50%;
       object-fit: cover;
       border: 1px solid var(--accent-amber);
-      cursor: pointer;
     }
 
     .operations-bar {
@@ -271,44 +268,6 @@
       width: 55px;
     }
     .time-controller input { width: 95px; }
-
-    .weather-bar {
-      background: #07090d;
-      border-bottom: 1px solid var(--border-color);
-      padding: 6px clamp(16px, 2vw, 36px);
-      font-size: 0.78rem;
-    }
-
-    .weather-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .weather-forecast { display: flex; gap: 8px; align-items: center; overflow-x: auto; }
-    .forecast-label { color: var(--accent-amber); font-weight: 700; text-transform: uppercase; }
-
-    .weather-slot {
-      background: rgba(255, 255, 255, 0.03);
-      padding: 2px 8px;
-      border-radius: 3px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      color: var(--text-main);
-      white-space: nowrap;
-    }
-
-    .weather-forecast-control { display: flex; align-items: center; gap: 8px; color: var(--text-muted); }
-    .weather-forecast-control select {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      color: #fff;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-size: 0.78rem;
-    }
-    .weather-delay-tag { color: var(--accent-amber); font-size: 0.72rem; }
 
     /* Tactical Sandwich Control Header */
     .tactical-sandwich-bar {
@@ -701,7 +660,7 @@
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       width: 90%;
-      max-width: 440px;
+      max-width: 420px;
       border-radius: 8px;
       padding: 20px;
     }
@@ -719,18 +678,6 @@
       font-size: 1.4rem;
       color: var(--text-muted);
       cursor: pointer;
-    }
-
-    /* Image Attachment & Media Preview Box */
-    .image-management-box {
-      background: rgba(0, 0, 0, 0.25);
-      border: 1px dashed var(--border-color);
-      border-radius: 6px;
-      padding: 12px;
-      margin-top: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
     }
 
     .image-preview-thumb {
@@ -757,11 +704,7 @@
     .status-connecting { background: rgba(245, 166, 35, 0.15); color: var(--accent-amber); }
     .status-connected { background: rgba(46, 204, 113, 0.15); color: var(--success); }
 
-    /* Absolute Click-Through Protection when Hidden */
-    .hidden { 
-      display: none !important; 
-      pointer-events: none !important; 
-    }
+    .hidden { display: none !important; pointer-events: none !important; }
     .menu-toggle { display: none; }
 
     @media (max-width: 1180px) {
@@ -781,7 +724,7 @@
     <div class="header-container">
       <div class="brand-area">
         <a href="../../security/settings.html" class="back-link" title="Return to Settings Hub">&larr;</a>
-        <img id="navBrandLogo" src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" class="brand-logo" onerror="this.src='//werewolf3788.github.io/Website/assets/logo.jpg'" title="Click to customize Brand Logo">
+        <img id="navBrandLogo" src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" class="brand-logo" onerror="this.src='//werewolf3788.github.io/Website/assets/logo.jpg'">
         <span class="brand-title">WOTH2 TACTICAL COMPANION</span>
       </div>
 
@@ -792,11 +735,10 @@
       </nav>
 
       <div class="auth-toolbar">
-        <button id="openGlobalImageModalBtn" class="btn btn-secondary btn-sm" title="Manage App Branding &amp; Companion Images">🖼️ Visual Assets</button>
         <span class="database-indicator">Database: <strong>entertainment-71888</strong></span>
         <button id="authModalBtn" class="btn btn-primary btn-sm">Sign In / Account</button>
         <div id="userProfile" class="user-profile-badge hidden">
-          <img id="headerUserAvatar" src="https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png" alt="" class="header-avatar" title="Click to change profile avatar">
+          <img id="headerUserAvatar" src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" class="header-avatar">
           <span id="userDisplayName">Ryder Holloway</span>
           <button id="logoutBtn" class="btn btn-secondary btn-sm" style="display:none;">Logout</button>
         </div>
@@ -804,7 +746,7 @@
     </div>
   </header>
 
-  <!-- Operations Bar with Platform Key Selector -->
+  <!-- Operations Bar -->
   <section class="operations-bar">
     <div class="operations-container">
       <div class="hunter-stats-strip">
@@ -819,19 +761,19 @@
         </div>
         <div class="stat-pill">
           <span class="stat-label">Hunter:</span>
-          <input type="text" id="hunterNameInput" class="stat-input-med" value="Ryder Holloway" title="Click to edit Hunter Name">
+          <input type="text" id="hunterNameInput" class="stat-input-med" value="Ryder Holloway">
         </div>
         <div class="stat-pill">
           <span class="stat-label">Level:</span>
-          <input type="number" id="hunterLevelInput" class="stat-input-short" value="2" min="1" max="100" title="Click to edit Level">
+          <input type="number" id="hunterLevelInput" class="stat-input-short" value="2" min="1" max="100">
         </div>
         <div class="stat-pill">
           <span class="stat-label">Credits:</span>
-          $<input type="number" id="hunterCreditsInput" class="stat-input-med" value="318" min="0" title="Click to edit Credits">
+          $<input type="number" id="hunterCreditsInput" class="stat-input-med" value="318" min="0">
         </div>
         <div class="stat-pill">
           <span class="stat-label">Dog:</span>
-          <input type="text" id="dogCompanionInput" class="stat-input-long" value="Bacon (Lv. 3)" title="Click to edit Dog">
+          <input type="text" id="dogCompanionInput" class="stat-input-long" value="Bacon (Lv. 3)">
         </div>
       </div>
 
@@ -839,7 +781,7 @@
         <div class="day-controller">
           <label for="currentDayInput">Day:</label>
           <input type="number" id="currentDayInput" value="1" min="1" step="1">
-          <button id="advanceDayBtn" class="btn btn-secondary btn-sm" title="Advance +1 Day (Aging trigger at Day 3)">&plus;1 Day (Rest)</button>
+          <button id="advanceDayBtn" class="btn btn-secondary btn-sm">&plus;1 Day</button>
         </div>
         <div class="time-controller">
           <label for="currentTimeInput">Time:</label>
@@ -847,30 +789,6 @@
           <button id="advanceTwoHoursBtn" class="btn btn-secondary btn-sm">&plus;2 Hrs</button>
         </div>
         <input type="hidden" id="weatherConditionInput" value="Clear / Morning Breeze">
-      </div>
-    </div>
-  </section>
-
-  <!-- Live Weather Radar -->
-  <section class="weather-bar">
-    <div class="weather-container">
-      <div class="weather-forecast">
-        <span class="forecast-label">Forecast:</span>
-        <span class="weather-slot" id="weatherNow">+0h: Clear 7&deg;C</span>
-        <span class="weather-slot" id="weatherPlus2">+2h: Partly Cloudy</span>
-        <span class="weather-slot" id="weatherPlus4">+4h: Partly Cloudy</span>
-        <span class="weather-slot" id="weatherPlus6">+6h: Light Snow</span>
-        <span class="weather-slot" id="weatherPlus8">+8h: Light Snow</span>
-        <span class="weather-slot" id="weatherPlus10">+10h: Overcast</span>
-        <span class="weather-slot" id="weatherPlus12">+12h: Light Fog</span>
-      </div>
-      <div class="weather-forecast-control">
-        <label for="longTermForecastSelect">Forecast Pattern:</label>
-        <select id="longTermForecastSelect">
-          <option value="standard">Standard Conditions (Balanced)</option>
-          <option value="snow">Increased Snowfall (Colder)</option>
-        </select>
-        <span class="weather-delay-tag">Activates in 48 In-Game Hours</span>
       </div>
     </div>
   </section>
@@ -884,7 +802,7 @@
         <span style="font-size:0.75rem; color:var(--text-muted);">&#9662;</span>
       </button>
 
-      <span class="badge" style="background:#151c27; color:var(--accent-teal);">13 Tactical Views</span>
+      <span class="badge" style="background:#151c27; color:var(--accent-teal);">12 Tactical Views</span>
     </div>
 
     <!-- Sandwich Dropdown Menu -->
@@ -893,13 +811,13 @@
         <span>🏆 Trophies &amp; Achievements</span>
         <span style="font-size:0.75rem; color:var(--accent-gold);">NPWR52231</span>
       </button>
-      <button class="module-item-btn" data-tab="lodgeForecaster">
-        <span>🏪 Lodge Store &amp; Requisitions</span>
-        <span style="font-size:0.75rem; color:var(--accent-amber);">Forecaster</span>
+      <button class="module-item-btn" data-tab="gearCatalog">
+        <span>🔫 Weapons, Optics &amp; Gear</span>
+        <span style="font-size:0.75rem; color:var(--accent-amber);">Arsenal</span>
       </button>
       <button class="module-item-btn" data-tab="companionRoster">
         <span>👥 Companion Roster</span>
-        <span style="font-size:0.75rem; color:var(--accent-teal);">Live Squad</span>
+        <span style="font-size:0.75rem; color:var(--accent-teal);">Squad Sync</span>
       </button>
       <button class="module-item-btn" data-tab="harvestInspection">
         <span>🎯 Harvest Inspection</span>
@@ -923,7 +841,7 @@
       </button>
       <button class="module-item-btn" data-tab="challenges">
         <span>🏅 Challenges &amp; Perks</span>
-        <span style="font-size:0.75rem; color:var(--text-muted);">100 Trees</span>
+        <span style="font-size:0.75rem; color:var(--text-muted);">Trees</span>
       </button>
       <button class="module-item-btn" data-tab="missions">
         <span>📜 Missions &amp; Story</span>
@@ -947,47 +865,59 @@
   <!-- Master Workspace -->
   <main class="main-container">
 
-    <!-- Tab: Dedicated Trophies & Achievements Chamber -->
+    <!-- Tab: Trophies -->
     <section id="tab-trophies" class="tab-pane active">
       <div class="card">
         <div class="card-header">
           <h3>Trophy &amp; Achievement Telemetry Engine</h3>
-          <span class="badge">Master Node: NPWR52231_00</span>
+          <span class="badge">NPWR52231_00</span>
         </div>
         <div id="trophyChamberGrid" class="cards-grid"></div>
         <div id="psnTrophiesContainer" style="display:none;"></div>
       </div>
     </section>
 
-    <!-- Tab: Lodge Store & Requisition Forecaster -->
-    <section id="tab-lodgeForecaster" class="tab-pane">
+    <!-- Tab: Arsenal / Gear Catalog -->
+    <section id="tab-gearCatalog" class="tab-pane">
       <div class="card">
         <div class="card-header">
-          <h3>Lodge Requisitions &amp; Balance Forecaster</h3>
-          <span class="badge">Dynamic Gating Engine</span>
+          <h3>Lodge Arsenal, Weapons &amp; Field Gear</h3>
+          <span id="gearCatalogCount" class="badge">Loading Catalog...</span>
         </div>
-        <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">
-          Calculates remaining credit balance, deficit to purchase, and hunter level clearance countdowns across all catalog gear.
-        </p>
-        <div id="lodgeForecasterContainer" class="cards-grid"></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;" id="gearFilterPills">
+          <button class="trophy-group-pill active" onclick="window.CompanionApp.filterGearCategory('all')">All Gear</button>
+          <button class="trophy-group-pill" onclick="window.CompanionApp.filterGearCategory('weapons')">Weapons</button>
+          <button class="trophy-group-pill" onclick="window.CompanionApp.filterGearCategory('optics')">Optics</button>
+          <button class="trophy-group-pill" onclick="window.CompanionApp.filterGearCategory('decoys')">Decoys</button>
+          <button class="trophy-group-pill" onclick="window.CompanionApp.filterGearCategory('calls_and_scents')">Calls &amp; Scents</button>
+          <button class="trophy-group-pill" onclick="window.CompanionApp.filterGearCategory('field_equipment')">Field Equipment</button>
+          <button class="trophy-group-pill" onclick="window.CompanionApp.filterGearCategory('ammunition')">Ammunition</button>
+          <button class="trophy-group-pill" onclick="window.CompanionApp.filterGearCategory('dlcs')">DLCs &amp; Packs</button>
+        </div>
+        <div id="gearCatalogContainer" class="cards-grid"></div>
       </div>
     </section>
 
-    <!-- Tab: Cross-Platform Companion Roster -->
+    <!-- Tab: Real Companion Roster -->
     <section id="tab-companionRoster" class="tab-pane">
       <div class="card">
         <div class="card-header">
-          <h3>Cross-Platform Companion Telemetry Roster</h3>
-          <span class="badge">Live Squad Sync</span>
+          <h3>Registered Companion Roster</h3>
+          <span class="badge">Real Account Sync</span>
         </div>
-        <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">
-          Compare real-time hunter levels, in-game timestamps, harvests, watchdog genetics, and trophy percentages across companions (Raymystyro, Terrdog, and custom slots). Add custom photos via URL or local file upload on each card below.
-        </p>
+        
+        <!-- Add Friend by Friend Code Form -->
+        <div style="background:rgba(0,0,0,0.25); border:1px solid var(--border-color); border-radius:6px; padding:12px; margin-bottom:16px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <input type="text" id="friendCodeInput" placeholder="Enter Friend Code (e.g. GQGI0SWY)" style="width:260px; text-transform:uppercase;">
+          <button type="button" class="btn btn-primary btn-sm" onclick="window.CompanionApp.addFriendByCode()">Link Companion</button>
+          <span style="font-size:0.76rem; color:var(--text-muted);">Links real friend accounts stored in your database.</span>
+        </div>
+
         <div id="friendsComparisonContainer" class="cards-grid"></div>
       </div>
     </section>
 
-    <!-- Tab: Harvest Inspection Console -->
+    <!-- Tab: Harvest Inspection with Direct Photo Attachments -->
     <section id="tab-harvestInspection" class="tab-pane">
       <div class="dual-pane-grid">
         <div class="card pane-form">
@@ -1003,7 +933,7 @@
                 <select id="harvestLocationSelect"></select>
               </div>
               <div class="input-group">
-                <label for="harvestSpeciesSelect">Species (Filtered by Location)</label>
+                <label for="harvestSpeciesSelect">Species</label>
                 <select id="harvestSpeciesSelect"></select>
               </div>
             </div>
@@ -1034,52 +964,7 @@
               </div>
             </div>
 
-            <div class="form-grid-2">
-              <div class="input-group">
-                <label for="harvestOrgans">Organs Hit</label>
-                <input type="text" id="harvestOrgans" placeholder="e.g. Left Lung, Liver">
-              </div>
-              <div class="input-group">
-                <label for="harvestDetected">Hunter Detected</label>
-                <select id="harvestDetected">
-                  <option value="No">No (Undetected / Calm)</option>
-                  <option value="Yes">Yes (Alerted / Spooked)</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-section-title">2. Weight &amp; Price Breakdown</div>
-            <div class="form-grid-3">
-              <div class="input-group">
-                <label for="harvestRawWeight">Raw Weight (lbs)</label>
-                <input type="number" id="harvestRawWeight" step="0.1" value="231.5">
-              </div>
-              <div class="input-group">
-                <label for="harvestWaste">Dressing Waste (lbs)</label>
-                <input type="number" id="harvestWaste" step="0.1" value="75.0">
-              </div>
-              <div class="input-group">
-                <label for="harvestDressedWeight">Dressed Weight (lbs)</label>
-                <input type="number" id="harvestDressedWeight" step="0.1" value="156.5">
-              </div>
-            </div>
-
-            <div class="form-grid-3">
-              <div class="input-group">
-                <label for="harvestTimeDegradation">Time Degradation</label>
-                <input type="text" id="harvestTimeDegradation" value="0.0 lbs">
-              </div>
-              <div class="input-group">
-                <label for="harvestShotDegradation">Shot Degradation</label>
-                <input type="text" id="harvestShotDegradation" value="0.0 lbs">
-              </div>
-              <div class="input-group">
-                <label for="harvestSellPrice">Sell Price ($)</label>
-                <input type="number" id="harvestSellPrice" value="210">
-              </div>
-            </div>
-
-            <div class="form-section-title">3. Trophy Score &amp; Organ Measurements</div>
+            <div class="form-section-title">2. Trophy &amp; Genetics</div>
             <div class="form-grid-3">
               <div class="input-group">
                 <label for="harvestSex">Sex &amp; Stage</label>
@@ -1087,7 +972,6 @@
                   <option value="Male Adult">Male Adult</option>
                   <option value="Male Mature">Male Mature</option>
                   <option value="Female Adult">Female Adult</option>
-                  <option value="Male Young">Male Young</option>
                 </select>
               </div>
               <div class="input-group">
@@ -1108,18 +992,16 @@
 
             <div id="dynamicSchemaFieldsContainer" class="dynamic-schema-box"></div>
 
-            <!-- Harvest Inspection Photo Capture/Upload Section -->
-            <div class="form-section-title">4. Harvest Field Photo / Inspection Snapshot</div>
-            <div class="image-management-box">
-              <div style="display: flex; gap: 10px; align-items: center;">
-                <img id="harvestPhotoPreview" src="https://image.api.playstation.com/vulcan/ap/rnd/202206/0713/bU0e3xUa8F8ZqQvF8n0Lz.png" alt="Inspection Preview" class="image-preview-thumb">
-                <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 6px;">
-                  <input type="text" id="harvestPhotoUrlInput" placeholder="Paste Field Photo URL (//... or https://)" style="font-size:0.78rem;">
-                  <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <label for="harvestPhotoFileInput" class="btn btn-secondary btn-sm" style="cursor:pointer;">📁 Choose Local Photo</label>
-                    <input type="file" id="harvestPhotoFileInput" accept="image/*" style="display:none;">
-                    <span id="harvestPhotoStatus" style="font-size:0.72rem; color:var(--text-muted);">No local file selected</span>
-                  </div>
+            <!-- Field Photo Attachment Section -->
+            <div class="form-section-title">3. Harvest Field Photo / Inspection Snapshot</div>
+            <div style="background:rgba(0,0,0,0.25); border:1px dashed var(--border-color); border-radius:6px; padding:12px; margin-top:8px; display:flex; gap:12px; align-items:center;">
+              <img id="harvestPhotoPreview" src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" class="image-preview-thumb">
+              <div style="flex-grow:1; display:flex; flex-direction:column; gap:6px;">
+                <input type="text" id="harvestPhotoUrlInput" placeholder="Paste Animal Photo URL (//... or https://)" style="font-size:0.8rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <label for="harvestPhotoFileInput" class="btn btn-secondary btn-sm" style="cursor:pointer;">📁 Choose Local File</label>
+                  <input type="file" id="harvestPhotoFileInput" accept="image/*" style="display:none;">
+                  <span id="harvestPhotoFileName" style="font-size:0.74rem; color:var(--text-muted);">No file chosen</span>
                 </div>
               </div>
             </div>
@@ -1138,7 +1020,7 @@
       </div>
     </section>
 
-    <!-- Tab: Target Watchlist & Live Herd Management Console -->
+    <!-- Tab: Target Watchlist -->
     <section id="tab-targetWatchlist" class="tab-pane">
       <div class="dual-pane-grid">
         <div class="card pane-form">
@@ -1148,23 +1030,20 @@
 
           <form id="watchlistForm" onsubmit="return false;">
             <input type="hidden" id="editWatchlistId" value="">
-
             <div class="input-group">
-              <label for="watchIdentifier">Target Identifier / Tag Name</label>
+              <label for="watchIdentifier">Target Tag Name</label>
               <input type="text" id="watchIdentifier" placeholder="e.g. Asymmetrical Left Brow Bull" required>
             </div>
-
             <div class="form-grid-2">
               <div class="input-group">
                 <label for="watchRegionSelect">Reserve / Region</label>
                 <select id="watchRegionSelect"></select>
               </div>
               <div class="input-group">
-                <label for="watchSpeciesSelect">Species (Filtered by Region)</label>
+                <label for="watchSpeciesSelect">Species</label>
                 <select id="watchSpeciesSelect"></select>
               </div>
             </div>
-
             <div class="form-grid-2">
               <div class="input-group">
                 <label for="watchLandmark">Need Zone Landmark</label>
@@ -1172,17 +1051,16 @@
               </div>
               <div class="input-group">
                 <label for="watchFitness">Observed Fitness %</label>
-                <input type="number" id="watchFitness" step="0.1" placeholder="e.g. 43.4 or 88.5" required>
+                <input type="number" id="watchFitness" step="0.1" placeholder="43.4 or 88.5" required>
               </div>
             </div>
-
             <div class="form-grid-3">
               <div class="input-group">
                 <label for="watchAge">Current Age (Yrs)</label>
                 <input type="number" id="watchAge" value="8" min="1" max="25" required>
               </div>
               <div class="input-group">
-                <label for="watchMaxAge">Lifespan Cap (Yrs)</label>
+                <label for="watchMaxAge">Lifespan Cap</label>
                 <input type="number" id="watchMaxAge" value="12" readonly>
               </div>
               <div class="input-group">
@@ -1197,37 +1075,11 @@
               </div>
             </div>
 
-            <!-- Target Trophy Spotting Image Box -->
-            <div class="form-section-title">Field Spotting Photo / Reference Image</div>
-            <div class="image-management-box">
-              <div style="display: flex; gap: 10px; align-items: center;">
-                <img id="watchPhotoPreview" src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="Target Preview" class="image-preview-thumb">
-                <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 6px;">
-                  <input type="text" id="watchPhotoUrlInput" placeholder="Target Image URL (//... or https://)" style="font-size:0.78rem;">
-                  <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <label for="watchPhotoFileInput" class="btn btn-secondary btn-sm" style="cursor:pointer;">📁 Upload Sighting Image</label>
-                    <input type="file" id="watchPhotoFileInput" accept="image/*" style="display:none;">
-                    <span id="watchPhotoStatus" style="font-size:0.72rem; color:var(--text-muted);">Optional field photo</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <div style="display: flex; gap: 10px; margin-top: 12px;">
               <button type="button" id="saveWatchlistBtn" class="btn btn-primary full-width">Add to Watchlist</button>
               <button type="button" id="cancelEditWatchlistBtn" class="btn btn-secondary hidden">Cancel</button>
             </div>
           </form>
-
-          <div class="advisory-callout" style="margin-top: 18px;">
-            <h4>Herd Management Rules:</h4>
-            <ul>
-              <li><strong>Asymmetry = Low Fitness (&lt;50%):</strong> Cull immediately to clear corrupted genetics.</li>
-              <li><strong>Symmetry = High Fitness (&ge;80%):</strong> 5-Star breeder. Protect rack until late mature stage.</li>
-              <li><strong>1-Star Mature:</strong> End-of-cycle cull before despawn.</li>
-              <li><strong>Rate:</strong> 3 in-game days equals 1 year of age.</li>
-            </ul>
-          </div>
         </div>
 
         <div class="card pane-history">
@@ -1240,141 +1092,96 @@
       </div>
     </section>
 
-    <!-- Tab: Need Zone Clusters (~50yd) -->
+    <!-- Tab: Need Zones -->
     <section id="tab-needZoneClusters" class="tab-pane">
       <div class="card">
         <div class="card-header">
-          <h3>Corridor Need Zone Clusters (&sim;50-Yard Radius)</h3>
+          <h3>Need Zone Clusters (~50yd Radius)</h3>
           <span id="needZoneCount" class="badge">Loading Clusters...</span>
         </div>
-        <p class="section-desc">Interacting with any individual watering, feeding, or resting point in a 50-yd cluster unlocks all linked corridor markers.</p>
         <div id="needZoneClustersGrid" class="cards-grid"></div>
       </div>
     </section>
 
-    <!-- Tab: Life Cycles & Mortality -->
+    <!-- Tab: Life Cycles -->
     <section id="tab-lifeCycles" class="tab-pane">
       <div class="card">
         <div class="card-header">
-          <h3>Species Lifespans, Stage Brackets &amp; Despawn Schedules</h3>
+          <h3>Species Lifespans &amp; Mortality</h3>
           <span id="lifecycleCount" class="badge">Loading Lifecycles...</span>
         </div>
-        <p class="section-desc">1 in-game year equals exactly 3 in-game days. Animals despawn of old age if unharvested upon reaching max lifespan.</p>
         <div id="lifecyclesGrid" class="cards-grid"></div>
       </div>
     </section>
 
-    <!-- Tab: Dog Companion Profile with Steppers -->
+    <!-- Tab: Dog Profile -->
     <section id="tab-dogProfile" class="tab-pane">
       <div class="card">
         <div class="card-header">
-          <h3>Hunting Dog Telemetry &amp; Skill Progression</h3>
-          <span class="badge">Max Level Cap: 6</span>
+          <h3>Hunting Dog Telemetry</h3>
+          <span class="badge">Max Level: 6</span>
         </div>
-        <div class="dog-profile-summary" id="dogSummaryCard"></div>
+        <div id="dogSummaryCard"></div>
         <div id="dogSkillsGrid" class="cards-grid" style="margin-top: 20px;"></div>
       </div>
     </section>
 
-    <!-- Tab: Challenges & Perks Trees -->
+    <!-- Tab: Challenges & Perks (Expanded trees) -->
     <section id="tab-challenges" class="tab-pane">
       <div class="card">
         <div class="card-header">
           <h3>Hunter Challenges &amp; Perk Mastery Trees</h3>
-          <span class="badge">100 Challenges Across 5 Trees</span>
+          <span id="challengesCount" class="badge">Loading Challenges...</span>
         </div>
         <div id="challengeTreesGrid" class="cards-grid"></div>
       </div>
     </section>
 
-    <!-- Tab: Missions & Story -->
+    <!-- Tab: Missions (Interactive Checklists) -->
     <section id="tab-missions" class="tab-pane">
       <div class="card">
         <div class="card-header">
-          <h3>Warden &amp; Lodge Story Missions (New Laurentia)</h3>
+          <h3>Warden &amp; Lodge Missions</h3>
           <span id="missionsCount" class="badge">Loading Missions...</span>
         </div>
         <div id="missionsGrid" class="cards-grid"></div>
       </div>
     </section>
 
-    <!-- Tab: Infrastructure & Habitat Tasks -->
+    <!-- Tab: Infrastructure (Dynamic Credit Math) -->
     <section id="tab-infrastructure" class="tab-pane">
       <div class="card">
         <div class="card-header">
-          <h3>Habitat Enhancements, Feeders &amp; Bridge Tasks</h3>
-          <span id="infrastructureCount" class="badge">32 Enhancements</span>
+          <h3>Habitat Enhancements &amp; Infrastructure Funding</h3>
+          <span id="infrastructureCount" class="badge">Loading Tasks...</span>
         </div>
         <div class="advisory-callout" id="infraNotesBox"></div>
         <div id="infrastructureGrid" class="cards-grid" style="margin-top: 16px;"></div>
       </div>
     </section>
 
-    <!-- Tab: Corridors & Trails -->
+    <!-- Tab: Trails -->
     <section id="tab-trails" class="tab-pane">
       <div class="card">
         <div class="card-header">
-          <h3>Seasonal Grazing Corridors &amp; Trail Navigation</h3>
-          <span class="badge">V-Split Cloven Hoof Tracking Rule</span>
+          <h3>Corridors &amp; Trails</h3>
         </div>
         <div id="trailsGrid" class="cards-grid"></div>
       </div>
     </section>
 
-    <!-- Tab: Species Encyclopedia -->
+    <!-- Tab: Species Catalog -->
     <section id="tab-speciesCatalog" class="tab-pane">
       <div class="card">
         <div class="card-header">
-          <h3>Reserve Species Catalog, Tiers &amp; Defense Sidearms</h3>
-          <span id="speciesCatalogCount" class="badge">15 Reserve Species</span>
+          <h3>Species Encyclopedia</h3>
+          <span id="speciesCatalogCount" class="badge">15 Species</span>
         </div>
         <div id="speciesCatalogGrid" class="cards-grid"></div>
       </div>
     </section>
 
   </main>
-
-  <!-- Global Visual Asset & Image Manager Modal -->
-  <div class="modal-overlay hidden" id="globalImageModal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3>Tactical Visual Assets &amp; Avatar Studio</h3>
-        <button class="modal-close" id="globalImageModalClose" aria-label="Close Modal">&times;</button>
-      </div>
-      <div class="modal-body" style="display:flex; flex-direction:column; gap:12px;">
-        <div class="input-group">
-          <label for="assetTargetSelect">Target Element</label>
-          <select id="assetTargetSelect">
-            <option value="user_avatar">My Hunter Avatar (Header)</option>
-            <option value="brand_logo">Brand Logo &amp; Favicon</option>
-            <option value="friend_raymystyro">Companion: Raymystyro</option>
-            <option value="friend_terrdog">Companion: Terrdog</option>
-            <option value="friend_companion_scout">Companion: Outpost Companion</option>
-          </select>
-        </div>
-
-        <div class="input-group">
-          <label for="assetUrlDirectInput">Image URL Path (//... or https://)</label>
-          <input type="text" id="assetUrlDirectInput" placeholder="//werewolf3788.github.io/Website/assets/logo.jpg">
-        </div>
-
-        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.25); padding:8px; border-radius:6px; border:1px solid var(--border-color);">
-          <label for="assetFileDirectInput" class="btn btn-secondary btn-sm" style="cursor:pointer;">📁 Upload Local File</label>
-          <input type="file" id="assetFileDirectInput" accept="image/*" style="display:none;">
-          <span id="assetFileStatus" style="font-size:0.74rem; color:var(--text-muted);">No file uploaded</span>
-        </div>
-
-        <div style="display:flex; align-items:center; gap:10px; margin-top:4px;">
-          <img id="assetModalPreview" src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" class="image-preview-thumb">
-          <div style="font-size:0.75rem; color:var(--text-muted); line-height:1.3;">
-            Image will be synchronized to Firebase Realtime Database and applied immediately across this session.
-          </div>
-        </div>
-
-        <button type="button" id="applyAssetChangesBtn" class="btn btn-primary full-width" style="margin-top:6px;">Apply &amp; Save Visual Asset</button>
-      </div>
-    </div>
-  </div>
 
   <!-- Login Modal -->
   <div class="modal-overlay hidden" id="authModal">
@@ -1394,7 +1201,7 @@
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Way of the Hunter 2 Companion &bull; Tactical Operations Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-16 02:40 EDT</span> | Version: 6.3.0</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-16 03:20 EDT</span> | Version: 6.4.0</p>
       </div>
       <div class="footer-col text-right">
         <span id="firebaseStatusBadge" class="status-pill status-connecting">RTDB: Connecting...</span>
@@ -1403,118 +1210,5 @@
   </footer>
 
   <script src="./script.js"></script>
-  <script>
-    // Inline Image Upload & URL Live Handler Engine
-    document.addEventListener("DOMContentLoaded", () => {
-      // Setup preview handlers for harvest photo
-      const harvestUrl = document.getElementById("harvestPhotoUrlInput");
-      const harvestFile = document.getElementById("harvestPhotoFileInput");
-      const harvestPrev = document.getElementById("harvestPhotoPreview");
-      const harvestStatus = document.getElementById("harvestPhotoStatus");
-
-      if (harvestUrl && harvestPrev) {
-        harvestUrl.addEventListener("input", () => {
-          if (harvestUrl.value.trim()) harvestPrev.src = harvestUrl.value.trim();
-        });
-      }
-      if (harvestFile && harvestPrev) {
-        harvestFile.addEventListener("change", (e) => {
-          const file = e.target.files && e.target.files[0];
-          if (!file) return;
-          const reader = new FileReader();
-          reader.onload = (evt) => {
-            harvestPrev.src = evt.target.result;
-            if (harvestStatus) harvestStatus.textContent = file.name;
-          };
-          reader.readAsDataURL(file);
-        });
-      }
-
-      // Setup preview handlers for watchlist photo
-      const watchUrl = document.getElementById("watchPhotoUrlInput");
-      const watchFile = document.getElementById("watchPhotoFileInput");
-      const watchPrev = document.getElementById("watchPhotoPreview");
-      const watchStatus = document.getElementById("watchPhotoStatus");
-
-      if (watchUrl && watchPrev) {
-        watchUrl.addEventListener("input", () => {
-          if (watchUrl.value.trim()) watchPrev.src = watchUrl.value.trim();
-        });
-      }
-      if (watchFile && watchPrev) {
-        watchFile.addEventListener("change", (e) => {
-          const file = e.target.files && e.target.files[0];
-          if (!file) return;
-          const reader = new FileReader();
-          reader.onload = (evt) => {
-            watchPrev.src = evt.target.result;
-            if (watchStatus) watchStatus.textContent = file.name;
-          };
-          reader.readAsDataURL(file);
-        });
-      }
-
-      // Global Visual Asset Studio Modal Controls
-      const globalModal = document.getElementById("globalImageModal");
-      const openModalBtn = document.getElementById("openGlobalImageModalBtn");
-      const closeModalBtn = document.getElementById("globalImageModalClose");
-      const targetSelect = document.getElementById("assetTargetSelect");
-      const directUrl = document.getElementById("assetUrlDirectInput");
-      const directFile = document.getElementById("assetFileDirectInput");
-      const modalPrev = document.getElementById("assetModalPreview");
-      const fileStatus = document.getElementById("assetFileStatus");
-      const applyBtn = document.getElementById("applyAssetChangesBtn");
-
-      if (openModalBtn && globalModal) openModalBtn.addEventListener("click", () => globalModal.classList.remove("hidden"));
-      if (closeModalBtn && globalModal) closeModalBtn.addEventListener("click", () => globalModal.classList.add("hidden"));
-
-      if (directUrl && modalPrev) {
-        directUrl.addEventListener("input", () => {
-          if (directUrl.value.trim()) modalPrev.src = directUrl.value.trim();
-        });
-      }
-
-      if (directFile && modalPrev) {
-        directFile.addEventListener("change", (e) => {
-          const file = e.target.files && e.target.files[0];
-          if (!file) return;
-          const reader = new FileReader();
-          reader.onload = (evt) => {
-            modalPrev.src = evt.target.result;
-            if (fileStatus) fileStatus.textContent = file.name;
-          };
-          reader.readAsDataURL(file);
-        });
-      }
-
-      if (applyBtn && window.CompanionApp) {
-        applyBtn.addEventListener("click", () => {
-          const target = targetSelect ? targetSelect.value : "user_avatar";
-          const chosenSrc = modalPrev ? modalPrev.src : "";
-          if (!chosenSrc) return alert("Please specify an image URL or choose a file.");
-
-          if (target === "brand_logo") {
-            window.CompanionApp.applyBrandArt(chosenSrc);
-          } else if (target === "user_avatar") {
-            const avatarEl = document.getElementById("headerUserAvatar");
-            if (avatarEl) avatarEl.src = chosenSrc;
-            if (window.CompanionApp.currentEmailKey) {
-              firebase.database().ref(`/users/${window.CompanionApp.currentEmailKey}/avatar_url`).set(chosenSrc);
-            }
-          } else if (target.startsWith("friend_")) {
-            const fKey = target.replace("friend_", "");
-            const fImg = document.getElementById(`friendAvatarImg_${fKey}`);
-            if (fImg) fImg.src = chosenSrc;
-            if (window.CompanionApp.currentEmailKey) {
-              firebase.database().ref(`/users/${window.CompanionApp.currentEmailKey}/friends/${fKey}/avatar_url`).set(chosenSrc);
-            }
-          }
-
-          if (globalModal) globalModal.classList.add("hidden");
-          alert("✅ Visual asset updated and synced to database!");
-        });
-      }
-    });
-  </script>
 </body>
 </html>
