@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-16 04:00 EDT | Firebase Sync Target: /utm_links | Version: 6.6.0]
+// [Smart Cache-Buster Time: 2026-10-16 04:15 EDT | Firebase Sync Target: /utm_links | Version: 6.8.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "//werewolf3788.github.io/Website/assets/logo.jpg";
@@ -87,11 +87,21 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     trophyGroups: [],
     selectedTrophyGroup: "all",
-    selectedGearCategory: "all",
+    gameMetadata: {},
     friendsRoster: [],
     completedMissions: {},
+    hasLoadedPrimaryPoster: false,
+
+    lodgeCatalog: [
+      { id: "gear_scope_overgaard", name: "Overgaard 3-9x40 Hunting Scope", category: "Optics", cost: 725, requiredLevel: 3, description: "Precision hunting optic with clear multi-coated glass and balanced zoom." },
+      { id: "gear_rifle_steyr_308", name: "Steyr Monobloc .308 Win", category: "Firearms", cost: 2400, requiredLevel: 4, description: "Top-tier bolt-action rifle designed for medium-to-large game with supreme accuracy." },
+      { id: "gear_caller_predator", name: "Predator Mouth Call", category: "Callers", cost: 350, requiredLevel: 1, description: "Simulates injured rabbit distress sounds to draw in wolves, bears, and foxes." },
+      { id: "gear_rangefinder_bushnell", name: "Bushnell Laser Rangefinder 1200", category: "Optics", cost: 890, requiredLevel: 2, description: "Accurate distance measurement up to 1200 yards with instantaneous ballistic readouts." },
+      { id: "gear_shotgun_12g", name: "MorningStar Over-and-Under 12G", category: "Firearms", cost: 1350, requiredLevel: 2, description: "Versatile twin-barrel shotgun tailored for high-speed waterfowl and upland game." }
+    ],
 
     async init() {
+      this.loadSavedState();
       this.bindUI();
       this.initAuth();
       this.initMasterGameData();
@@ -103,12 +113,21 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     async fetchJSON(fileName) {
-      const targetUrl = `https://raw.githubusercontent.com/Werewolf3788/Website/main/data/woth2/${fileName}?v=${Date.now()}`;
-      try {
-        const res = await fetch(targetUrl);
-        if (res.ok) return await res.json();
-      } catch (e) {
-        console.warn(`[WOTH2 Data] Raw fetch failed for ${fileName}:`, e);
+      const paths = [
+        `./data/woth2/${fileName}?v=${Date.now()}`,
+        `../data/woth2/${fileName}?v=${Date.now()}`,
+        `../../data/woth2/${fileName}?v=${Date.now()}`,
+        `https://raw.githubusercontent.com/Werewolf3788/Website/main/data/woth2/${fileName}?v=${Date.now()}`,
+        `https://raw.githubusercontent.com/Werewolf3788/Website/main/data/${fileName}?v=${Date.now()}`
+      ];
+
+      for (let i = 0; i < paths.length; i++) {
+        try {
+          const res = await fetch(paths[i]);
+          if (res.ok) {
+            return await res.json();
+          }
+        } catch (e) {}
       }
       return null;
     },
@@ -117,6 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const keys = Object.keys(this.files);
       const promises = keys.map(k => this.fetchJSON(this.files[k]));
       const results = await Promise.all(promises);
+
       keys.forEach((k, idx) => {
         this.db[k] = results[idx] || {};
       });
@@ -127,14 +147,44 @@ document.addEventListener("DOMContentLoaded", () => {
       const userList = Array.isArray(this.db.users)
         ? this.db.users
         : (this.db.users.users || Object.values(this.db.users));
+
       if (!Array.isArray(userList)) return;
 
       const activeEmail = (this.currentEmail || "").toLowerCase().trim();
-      const matchedUser = userList.find(u => (u.email || "").toLowerCase().trim() === activeEmail);
-      if (matchedUser && matchedUser.theme) {
-        const root = document.documentElement;
-        if (matchedUser.theme.primary_color) root.style.setProperty("--theme-primary", matchedUser.theme.primary_color);
-        if (matchedUser.theme.accent_color) root.style.setProperty("--theme-accent", matchedUser.theme.accent_color);
+      const activePSN = (this.psnAccountId || "").trim();
+      const activeOnlineId = (this.psnOnlineId || "").toLowerCase().trim();
+
+      const matchedUser = userList.find(u => {
+        const uEmail = (u.email || "").toLowerCase().trim();
+        const uPsnId = String(u.psn_id || "").trim();
+        const uOnline = (u.psn_name || "").toLowerCase().trim();
+        return (activeEmail && uEmail === activeEmail) ||
+               (activePSN && uPsnId === activePSN) ||
+               (activeOnlineId && uOnline === activeOnlineId);
+      });
+
+      if (matchedUser) {
+        if (!this.psnAccountId && matchedUser.psn_id) {
+          this.psnAccountId = String(matchedUser.psn_id);
+        }
+        if (!this.psnOnlineId && matchedUser.psn_name) {
+          this.psnOnlineId = matchedUser.psn_name;
+        }
+
+        if (matchedUser.theme) {
+          const root = document.documentElement;
+          if (matchedUser.theme.primary_color) {
+            root.style.setProperty("--theme-primary", matchedUser.theme.primary_color);
+            root.style.setProperty("--accent-primary", matchedUser.theme.primary_color);
+          }
+          if (matchedUser.theme.accent_color) {
+            root.style.setProperty("--theme-accent", matchedUser.theme.accent_color);
+            root.style.setProperty("--accent-gold", matchedUser.theme.accent_color);
+          }
+          if (matchedUser.theme.surface_color) {
+            root.style.setProperty("--theme-surface", matchedUser.theme.surface_color);
+          }
+        }
       }
     },
 
@@ -150,7 +200,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!this.userTrophyProgress[id] || !this.userTrophyProgress[id].earned) {
               this.userTrophyProgress[id] = {
                 earned: true,
-                timestamp: t.timestamp || new Date().toISOString(),
+                timestamp: t.timestamp || t.date || new Date().toISOString(),
+                currentValue: t.currentValue !== undefined ? Number(t.currentValue) : null,
+                targetValue: t.targetValue !== undefined ? Number(t.targetValue) : null,
                 manual: false,
                 source: "json"
               };
@@ -162,43 +214,54 @@ document.addEventListener("DOMContentLoaded", () => {
       this.renderTrophies();
     },
 
-    loadGuestState() {
-      const savedDay = localStorage.getItem("woth2_guest_day");
-      const savedTime = localStorage.getItem("woth2_guest_time");
-      const savedCredits = localStorage.getItem("woth2_guest_credits");
-      const savedLevel = localStorage.getItem("woth2_guest_level");
-      const savedName = localStorage.getItem("woth2_guest_name");
-      const savedPlatform = localStorage.getItem("woth2_guest_platform");
-      const savedWatch = localStorage.getItem("woth2_guest_watchlist");
-      const savedMissions = localStorage.getItem("woth2_guest_missions");
-      const savedTrophies = localStorage.getItem("woth2_guest_trophies");
+    loadSavedState() {
+      const savedDay = localStorage.getItem("woth2_day");
+      const savedTime = localStorage.getItem("woth2_time");
+      const savedWeather = localStorage.getItem("woth2_weather");
+      const savedPlatform = localStorage.getItem("woth2_platform");
+      const savedWatch = localStorage.getItem("woth2_watchlist");
+      const savedName = localStorage.getItem("woth2_name");
+      const savedLevel = localStorage.getItem("woth2_level");
+      const savedCredits = localStorage.getItem("woth2_credits");
+
+      const savedBonding = localStorage.getItem("woth2_dog_bonding");
+      const savedFollowing = localStorage.getItem("woth2_dog_following");
+      const savedBlood = localStorage.getItem("woth2_dog_blood");
+      const savedSearch = localStorage.getItem("woth2_dog_search");
+      const savedTrophyProgress = localStorage.getItem("woth2_manual_trophies");
+      const savedMissions = localStorage.getItem("woth2_completed_missions");
 
       if (savedDay) this.currentDay = parseInt(savedDay, 10);
       if (savedTime) this.currentTime = savedTime;
-      if (savedCredits) this.hunterCredits = parseInt(savedCredits, 10);
-      if (savedLevel) this.hunterLevel = parseInt(savedLevel, 10);
-      if (savedName) this.hunterName = savedName;
+      if (savedWeather) this.currentWeather = savedWeather;
       if (savedPlatform) this.currentPlatform = savedPlatform;
+      if (savedName) this.hunterName = savedName;
+      if (savedLevel) this.hunterLevel = parseInt(savedLevel, 10);
+      if (savedCredits) this.hunterCredits = parseInt(savedCredits, 10);
+
+      if (savedBonding) this.dogBondingLevel = parseInt(savedBonding, 10);
+      if (savedFollowing) this.dogFollowingCommandsLevel = parseInt(savedFollowing, 10);
+      if (savedBlood) this.dogBloodTrackingLevel = parseInt(savedBlood, 10);
+      if (savedSearch) this.dogSearchQuarteringLevel = parseInt(savedSearch, 10);
 
       if (savedWatch) {
         try { this.watchlist = JSON.parse(savedWatch); } catch (e) { this.watchlist = []; }
       }
+
+      if (savedTrophyProgress) {
+        try { this.userTrophyProgress = JSON.parse(savedTrophyProgress); } catch (e) { this.userTrophyProgress = {}; }
+      }
+
       if (savedMissions) {
         try { this.completedMissions = JSON.parse(savedMissions); } catch (e) { this.completedMissions = {}; }
       }
-      if (savedTrophies) {
-        try { this.userTrophyProgress = JSON.parse(savedTrophies); } catch (e) { this.userTrophyProgress = {}; }
-      }
 
-      this.updateInputFields();
-    },
-
-    updateInputFields() {
       this.safeSetValue("currentDayInput", this.currentDay);
       this.safeSetValue("currentTimeInput", this.currentTime);
-      this.safeSetValue("hunterCreditsInput", this.hunterCredits);
-      this.safeSetValue("hunterLevelInput", this.hunterLevel);
       this.safeSetValue("hunterNameInput", this.hunterName);
+      this.safeSetValue("hunterLevelInput", this.hunterLevel);
+      this.safeSetValue("hunterCreditsInput", this.hunterCredits);
+      this.safeSetValue("weatherConditionInput", this.currentWeather);
       this.safeSetValue("platformSelect", this.currentPlatform);
       this.updateDogInputDisplay();
     },
@@ -217,27 +280,216 @@ document.addEventListener("DOMContentLoaded", () => {
       this.safeSetValue("dogCompanionInput", `${this.dogCompanionName} (Lv. ${this.dogBondingLevel})`);
     },
 
+    applyBrandArt(imgUrl) {
+      if (!imgUrl || typeof imgUrl !== "string") return;
+      const cleanUrl = imgUrl.trim();
+      const favicon = document.getElementById("dynamicFavicon");
+      const appleIcon = document.getElementById("dynamicAppleIcon");
+      const brandLogo = document.getElementById("navBrandLogo");
+
+      if (favicon) favicon.href = cleanUrl;
+      if (appleIcon) appleIcon.href = cleanUrl;
+      if (brandLogo) brandLogo.src = cleanUrl;
+    },
+
     initMasterGameData() {
       rtdb.ref(`/psn/games/${this.titleId}`).on("value", snapshot => {
         const game = snapshot.val();
         if (!game) return;
+        this.gameMetadata = game;
+
+        if (game.posterArt && typeof game.posterArt === "string" && game.posterArt.trim() !== "") {
+          this.applyBrandArt(game.posterArt);
+          this.hasLoadedPrimaryPoster = true;
+        }
+
+        if (game.groups) {
+          this.trophyGroups = Array.isArray(game.groups) ? game.groups : Object.values(game.groups);
+        }
+
         let rawTrophies = [];
         if (game.rawSonyMetadata && game.rawSonyMetadata.trophies) {
-          rawTrophies = Array.isArray(game.rawSonyMetadata.trophies) ? game.rawSonyMetadata.trophies : Object.values(game.rawSonyMetadata.trophies);
+          rawTrophies = Array.isArray(game.rawSonyMetadata.trophies)
+            ? game.rawSonyMetadata.trophies
+            : Object.values(game.rawSonyMetadata.trophies);
         }
+
         if (rawTrophies.length > 0) {
-          this.masterTrophies = rawTrophies.map((t, idx) => ({
-            trophyId: t.trophyId !== undefined ? String(t.trophyId) : String(idx),
-            title: t.trophyName || `Trophy #${idx + 1}`,
-            desc: t.trophyDetail || "Way of the Hunter 2 milestone.",
-            icon: t.trophyIconUrl || DEFAULT_GAME_POSTER,
-            grade: t.trophyType || "Bronze",
-            groupId: t.trophyGroupId !== undefined ? String(t.trophyGroupId) : "default"
-          }));
+          this.masterTrophies = rawTrophies.map((t, idx) => {
+            let grade = t.trophyType || "Bronze";
+            grade = grade.charAt(0).toUpperCase() + grade.slice(1).toLowerCase();
+            return {
+              trophyId: t.trophyId !== undefined ? String(t.trophyId) : String(idx),
+              title: t.trophyName || `Trophy #${idx + 1}`,
+              desc: t.trophyDetail || "Way of the Hunter 2 milestone.",
+              icon: t.trophyIconUrl || game.posterArt || DEFAULT_GAME_POSTER,
+              grade: grade,
+              groupId: t.trophyGroupId !== undefined ? String(t.trophyGroupId) : "default",
+              hidden: Boolean(t.trophyHidden)
+            };
+          });
         }
+
         this.recalculateCrossTrophyTelemetry();
         this.renderTrophies();
       });
+    },
+
+    getSanitizedTrophiesForFirestore() {
+      const cleanMap = {};
+      Object.entries(this.userTrophyProgress).forEach(([id, t]) => {
+        if (!t) return;
+        cleanMap[id] = {
+          earned: Boolean(t.earned),
+          timestamp: t.timestamp ? String(t.timestamp) : null,
+          currentValue: (t.currentValue !== undefined && t.currentValue !== null) ? Number(t.currentValue) : null,
+          targetValue: (t.targetValue !== undefined && t.targetValue !== null) ? Number(t.targetValue) : null,
+          manual: Boolean(t.manual),
+          source: t.source ? String(t.source) : "manual"
+        };
+      });
+      return cleanMap;
+    },
+
+    async loadAllPlatformTrophyProgress() {
+      const targetUserKey = this.currentEmailKey || (this.currentEmail ? getEmailKey(this.currentEmail) : "");
+      if (!targetUserKey) return;
+
+      const platforms = ["ps", "pc", "xbox"];
+      const total = this.masterTrophies.length || 6;
+
+      for (const p of platforms) {
+        try {
+          const snap = await db.collection("users")
+            .doc(targetUserKey)
+            .collection("platform")
+            .doc(p)
+            .collection("progress")
+            .doc("woth2")
+            .get();
+
+          if (snap.exists) {
+            const data = snap.data();
+            const earned = data.trophies_earned || 0;
+            const pct = total > 0 ? Math.round((earned / total) * 100) : 0;
+            this.crossPlatformTelemetry[p] = { earned, total, percent: pct };
+          } else {
+            if (p === this.currentPlatform) {
+              const currentEarned = Object.values(this.userTrophyProgress).filter(t => t.earned).length;
+              const pct = total > 0 ? Math.round((currentEarned / total) * 100) : 0;
+              this.crossPlatformTelemetry[p] = { earned: currentEarned, total, percent: pct };
+            } else {
+              this.crossPlatformTelemetry[p] = { earned: 0, total, percent: 0 };
+            }
+          }
+        } catch (e) {
+          console.warn(`Error loading telemetry for platform ${p}:`, e);
+        }
+      }
+      this.renderTrophies();
+    },
+
+    recalculateCrossTrophyTelemetry() {
+      const total = this.masterTrophies.length || 6;
+      const currentEarned = Object.values(this.userTrophyProgress).filter(t => t.earned).length;
+      const pct = total > 0 ? Math.round((currentEarned / total) * 100) : 0;
+
+      if (!this.crossPlatformTelemetry[this.currentPlatform]) {
+        this.crossPlatformTelemetry[this.currentPlatform] = { earned: 0, total, percent: 0 };
+      }
+      this.crossPlatformTelemetry[this.currentPlatform] = {
+        earned: currentEarned,
+        total: total,
+        percent: pct
+      };
+    },
+
+    async silentSaveGameTelemetry() {
+      const nameEl = document.getElementById("hunterNameInput");
+      const lvlEl = document.getElementById("hunterLevelInput");
+      const crdEl = document.getElementById("hunterCreditsInput");
+      const dayEl = document.getElementById("currentDayInput");
+      const timeEl = document.getElementById("currentTimeInput");
+      const weatherEl = document.getElementById("weatherConditionInput");
+      const platEl = document.getElementById("platformSelect");
+
+      if (nameEl) this.hunterName = nameEl.value.trim() || "Hunter";
+      if (lvlEl) this.hunterLevel = parseInt(lvlEl.value, 10) || 1;
+      if (crdEl) this.hunterCredits = parseInt(crdEl.value, 10) || 0;
+      if (dayEl) this.currentDay = parseInt(dayEl.value, 10) || 1;
+      if (timeEl) this.currentTime = timeEl.value || "08:30";
+      if (weatherEl) this.currentWeather = weatherEl.value || "Clear";
+      if (platEl) this.currentPlatform = platEl.value || this.currentPlatform;
+
+      localStorage.setItem("woth2_day", this.currentDay);
+      localStorage.setItem("woth2_time", this.currentTime);
+      localStorage.setItem("woth2_weather", this.currentWeather);
+      localStorage.setItem("woth2_platform", this.currentPlatform);
+      localStorage.setItem("woth2_name", this.hunterName);
+      localStorage.setItem("woth2_level", this.hunterLevel);
+      localStorage.setItem("woth2_credits", this.hunterCredits);
+
+      localStorage.setItem("woth2_dog_bonding", this.dogBondingLevel);
+      localStorage.setItem("woth2_dog_following", this.dogFollowingCommandsLevel);
+      localStorage.setItem("woth2_dog_blood", this.dogBloodTrackingLevel);
+      localStorage.setItem("woth2_dog_search", this.dogSearchQuarteringLevel);
+      localStorage.setItem("woth2_watchlist", JSON.stringify(this.watchlist));
+      localStorage.setItem("woth2_manual_trophies", JSON.stringify(this.userTrophyProgress));
+      localStorage.setItem("woth2_completed_missions", JSON.stringify(this.completedMissions));
+
+      this.recalculateCrossTrophyTelemetry();
+      this.renderLodgeForecaster();
+      this.renderInfrastructure();
+
+      const activeUser = auth.currentUser;
+      const targetUserKey = this.currentEmailKey || (this.currentEmail ? getEmailKey(this.currentEmail) : "");
+
+      if (activeUser && targetUserKey) {
+        try {
+          const gameDocRef = db.collection("users")
+            .doc(targetUserKey)
+            .collection("platform")
+            .doc(this.currentPlatform)
+            .collection("progress")
+            .doc("woth2");
+
+          const cleanTrophies = this.getSanitizedTrophiesForFirestore();
+          const earnedCount = Object.values(cleanTrophies).filter(t => t.earned).length;
+          const totalTrophies = this.masterTrophies.length || 6;
+          const trophyPct = totalTrophies > 0 ? Math.round((earnedCount / totalTrophies) * 100) : 0;
+
+          await gameDocRef.set({
+            hunter_name: this.hunterName,
+            hunter_level: this.hunterLevel,
+            hunter_credits: this.hunterCredits,
+            companion_day: this.currentDay,
+            companion_time: this.currentTime,
+            weather: this.currentWeather,
+            platform: this.currentPlatform,
+            psn_online_id: this.psnOnlineId || null,
+            psn_account_id: this.psnAccountId || null,
+            trophies_earned: earnedCount,
+            trophies_total: totalTrophies,
+            trophies_percent: trophyPct,
+            trophies: cleanTrophies,
+            completed_missions: this.completedMissions,
+            dog_stats: {
+              name: this.dogCompanionName,
+              breed: this.dogBreed,
+              bonding: this.dogBondingLevel,
+              following: this.dogFollowingCommandsLevel,
+              blood: this.dogBloodTrackingLevel,
+              search: this.dogSearchQuarteringLevel
+            },
+            harvest_count: (this.db.gameData && this.db.gameData.harvest_records) ? this.db.gameData.harvest_records.length : 0,
+            watchlist: this.watchlist,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+
+        } catch (e) {
+          console.warn("Telemetry Sync Warning: " + e.message);
+        }
+      }
     },
 
     initRTDB() {
@@ -255,9 +507,19 @@ document.addEventListener("DOMContentLoaded", () => {
               if (entry) items.push(this.normalizeItem(entry, `${parentKey}_${idx}`));
             });
           } else if (typeof val === "object" && val !== null) {
-            items.push(this.normalizeItem(val, parentKey));
+            if (val.url || val.title) {
+              items.push(this.normalizeItem(val, parentKey));
+            } else {
+              Object.entries(val).forEach(([childKey, childVal]) => {
+                if (typeof childVal === "object" && childVal !== null) {
+                  items.push(this.normalizeItem(childVal, `${parentKey}_${childKey}`));
+                }
+              });
+            }
           }
         });
+
+        this.syncWoth2FaviconFallback(items, raw);
         this.renderNav(items);
       });
     },
@@ -266,20 +528,135 @@ document.addEventListener("DOMContentLoaded", () => {
       return {
         title: item.title || fallbackKey,
         url: item.url || "#",
-        image: item.image || "",
-        group: item.group || "",
-        rowNumber: Number(item.rowNumber || 9999)
+        image: (item.image && typeof item.image === "string") ? item.image.trim() : "",
+        group: (item.group && typeof item.group === "string") ? item.group.trim() : "",
+        tag: (item.tag && typeof item.tag === "string") ? item.tag.trim() : "",
+        rowNumber: (item.rowNumber !== undefined && item.rowNumber !== null) ? Number(item.rowNumber) : 9999,
+        updatedAt: item.updatedAt || ""
       };
+    },
+
+    syncWoth2FaviconFallback(items, raw) {
+      let backupImg = "";
+      let woth2Stamp = "";
+
+      const taggedEntry = items.find(i => i.tag && i.tag.toLowerCase() === "woth2");
+
+      if (taggedEntry) {
+        backupImg = taggedEntry.image;
+        woth2Stamp = taggedEntry.updatedAt;
+      } else if (raw.WOTH2 && raw.WOTH2[0] && raw.WOTH2[0].image) {
+        backupImg = raw.WOTH2[0].image;
+        woth2Stamp = raw.WOTH2[0].updatedAt;
+      } else {
+        const titleMatch = items.find(i => {
+          const t = i.title.toLowerCase();
+          return t.includes("woth2") || t.includes("way of the hunter");
+        });
+        if (titleMatch) {
+          backupImg = titleMatch.image;
+          woth2Stamp = titleMatch.updatedAt;
+        }
+      }
+
+      if (!this.hasLoadedPrimaryPoster && backupImg) {
+        this.applyBrandArt(backupImg);
+      }
+
+      if (woth2Stamp) {
+        this.safeSetText("nyBuildTimestamp", woth2Stamp);
+      }
     },
 
     renderNav(items) {
       const navList = document.getElementById("navList");
       if (!navList) return;
       navList.innerHTML = "";
-      items.sort((a, b) => a.rowNumber - b.rowNumber).slice(0, 10).forEach(item => {
+
+      const standaloneLinks = [];
+      const folderGroups = {};
+
+      items.forEach(item => {
+        const cleanGroup = (item.group || "").toLowerCase();
+        const cleanTag = (item.tag || "").toLowerCase();
+        const cleanTitle = (item.title || "").toLowerCase();
+        const cleanUrl = (item.url || "").toLowerCase();
+
+        if (cleanGroup === "settings" || cleanTag === "settings" || cleanTitle.includes("setting") || cleanUrl.includes("setting") ||
+            cleanGroup === "privacy" || cleanTag === "privacy" || cleanTitle.includes("privacy") || cleanUrl.includes("privacy")) {
+          return;
+        }
+
+        const isStandalone = !item.group || cleanGroup === "standalone";
+
+        if (isStandalone) {
+          standaloneLinks.push(item);
+        } else {
+          if (!folderGroups[item.group]) {
+            folderGroups[item.group] = {
+              name: item.group,
+              items: [],
+              minRow: item.rowNumber,
+              folderImage: item.image
+            };
+          }
+          folderGroups[item.group].items.push(item);
+          if (item.rowNumber < folderGroups[item.group].minRow) {
+            folderGroups[item.group].minRow = item.rowNumber;
+            if (item.image) folderGroups[item.group].folderImage = item.image;
+          }
+        }
+      });
+
+      const topLevelBuckets = [];
+      standaloneLinks.forEach(link => {
+        topLevelBuckets.push({ type: "bare_link", rank: link.rowNumber, data: link });
+      });
+
+      Object.values(folderGroups).forEach(grp => {
+        grp.items.sort((a, b) => a.rowNumber - b.rowNumber);
+        topLevelBuckets.push({ type: "folder", rank: grp.minRow, data: grp });
+      });
+
+      topLevelBuckets.sort((a, b) => a.rank - b.rank);
+
+      topLevelBuckets.forEach(bucket => {
         const li = document.createElement("li");
         li.className = "nav-item";
-        li.innerHTML = `<a href="${item.url}" class="nav-pill"><span>${item.title}</span></a>`;
+
+        if (bucket.type === "bare_link") {
+          const item = bucket.data;
+          const imgTag = item.image ? `<img src="${item.image}" alt="" class="nav-thumb">` : '';
+          li.innerHTML = `
+            <a href="${item.url}" class="nav-pill">
+              ${imgTag}
+              <span>${item.title}</span>
+            </a>
+          `;
+        } else {
+          const grp = bucket.data;
+          const folderImg = grp.folderImage ? `<img src="${grp.folderImage}" alt="" class="nav-thumb">` : '';
+
+          let dropdownHtml = `<div class="dropdown-menu">`;
+          grp.items.forEach(child => {
+            const childImg = child.image ? `<img src="${child.image}" alt="" class="nav-thumb">` : '';
+            dropdownHtml += `
+              <a href="${child.url}" class="dropdown-item">
+                ${childImg}
+                <span>${child.title}</span>
+              </a>
+            `;
+          });
+          dropdownHtml += `</div>`;
+
+          li.innerHTML = `
+            <button class="dropdown-trigger">
+              ${folderImg}
+              <span>${grp.name} &#9662;</span>
+            </button>
+            ${dropdownHtml}
+          `;
+        }
         navList.appendChild(li);
       });
     },
@@ -298,31 +675,129 @@ document.addEventListener("DOMContentLoaded", () => {
 
           if (modalBtn) modalBtn.classList.add("hidden");
           if (profileBadge) profileBadge.classList.remove("hidden");
-          if (nameEl) nameEl.textContent = user.displayName || this.hunterName;
-          if (avatarEl) avatarEl.src = user.photoURL || DEFAULT_USER_AVATAR;
 
-          await this.loadFirebaseProgress();
+          this.applyUserThemeAndIdentity();
 
-          rtdb.ref(`/users/${this.currentEmailKey}/friends`).on("value", snapshot => {
-            const rawFriends = snapshot.val() || {};
+          rtdb.ref(`/users/${this.currentEmailKey}`).on("value", snapshot => {
+            const rtdbProfile = snapshot.val() || {};
+            const gamerTag = rtdbProfile.username || user.displayName || this.hunterName;
+            let avatarUrl = rtdbProfile.avatar_url || user.photoURL || DEFAULT_USER_AVATAR;
+
+            if (rtdbProfile.avatar_source === "google") {
+              avatarUrl = user.photoURL || DEFAULT_USER_AVATAR;
+            }
+
+            if (nameEl) nameEl.textContent = gamerTag;
+            if (avatarEl) avatarEl.src = avatarUrl;
+
+            this.psnAccountId = rtdbProfile.psn_account_id || this.psnAccountId || "";
+            this.psnOnlineId = rtdbProfile.psn_username || this.psnOnlineId || "";
+
+            if (rtdbProfile.primary_platform) {
+              this.currentPlatform = rtdbProfile.primary_platform.toLowerCase();
+              this.safeSetValue("platformSelect", this.currentPlatform);
+            }
+
+            if (this.psnOnlineId || this.psnAccountId) {
+              this.syncPlayStationTrophies(this.psnOnlineId, this.psnAccountId);
+            }
+
+            const rawFriends = rtdbProfile.friends || {};
             this.friendsRoster = Object.entries(rawFriends).map(([codeKey, friendData]) => {
               const code = (typeof friendData === "object" && friendData !== null && friendData.friend_code)
                 ? friendData.friend_code
                 : codeKey;
               return { code: String(code).toUpperCase() };
             });
+
             this.loadRealFriendsTelemetry();
+            this.loadAllPlatformTrophyProgress();
           });
+
+          try {
+            const gameSnap = await db.collection("users")
+              .doc(this.currentEmailKey)
+              .collection("platform")
+              .doc(this.currentPlatform)
+              .collection("progress")
+              .doc("woth2")
+              .get();
+
+            if (gameSnap.exists) {
+              const data = gameSnap.data();
+              if (data.hunter_name) {
+                this.hunterName = data.hunter_name;
+                this.safeSetValue("hunterNameInput", this.hunterName);
+              }
+              if (data.hunter_level) {
+                this.hunterLevel = data.hunter_level;
+                this.safeSetValue("hunterLevelInput", this.hunterLevel);
+              }
+              if (data.hunter_credits !== undefined) {
+                this.hunterCredits = data.hunter_credits;
+                this.safeSetValue("hunterCreditsInput", this.hunterCredits);
+              }
+              if (data.companion_day) {
+                this.currentDay = data.companion_day;
+                this.safeSetValue("currentDayInput", this.currentDay);
+              }
+              if (data.companion_time) {
+                this.currentTime = data.companion_time;
+                this.safeSetValue("currentTimeInput", this.currentTime);
+              }
+              if (data.weather) {
+                this.currentWeather = data.weather;
+                this.safeSetValue("weatherConditionInput", this.currentWeather);
+              }
+              if (data.dog_stats) {
+                this.dogBondingLevel = data.dog_stats.bonding ?? this.dogBondingLevel;
+                this.dogFollowingCommandsLevel = data.dog_stats.following ?? this.dogFollowingCommandsLevel;
+                this.dogBloodTrackingLevel = data.dog_stats.blood ?? this.dogBloodTrackingLevel;
+                this.dogSearchQuarteringLevel = data.dog_stats.search ?? this.dogSearchQuarteringLevel;
+                this.updateDogInputDisplay();
+                this.renderDogProfile();
+              }
+              if (data.watchlist && Array.isArray(data.watchlist)) {
+                this.watchlist = data.watchlist;
+                this.renderWatchlist();
+              }
+              if (data.completed_missions) {
+                this.completedMissions = data.completed_missions;
+                this.renderMissions();
+              }
+
+              if (data.trophies && typeof data.trophies === "object") {
+                Object.entries(data.trophies).forEach(([id, t]) => {
+                  if (t.earned) {
+                    this.userTrophyProgress[id] = {
+                      earned: true,
+                      timestamp: t.timestamp || null,
+                      currentValue: t.currentValue !== undefined ? t.currentValue : null,
+                      targetValue: t.targetValue !== undefined ? t.targetValue : null,
+                      manual: Boolean(t.manual),
+                      source: t.source || "firestore"
+                    };
+                  }
+                });
+                this.recalculateCrossTrophyTelemetry();
+                this.renderTrophies();
+              }
+            }
+          } catch (e) {
+            console.warn("Firestore progress read warning:", e);
+          }
+
+          this.renderProfileDropdown(true);
+
         } else {
           this.currentUser = null;
           this.currentEmail = "";
           this.currentEmailKey = "";
           if (modalBtn) modalBtn.classList.remove("hidden");
           if (profileBadge) profileBadge.classList.add("hidden");
+          this.renderProfileDropdown(false);
           this.friendsRoster = [];
           this.renderRealFriends([]);
-          this.loadGuestState();
-          this.initDynamicFeatures();
         }
       });
 
@@ -338,103 +813,350 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    async loadFirebaseProgress() {
-      if (!this.currentEmailKey) return;
+    renderProfileDropdown(isAuthenticated) {
+      let menu = document.getElementById("userProfileDropdownMenu");
+      const profileBadge = document.getElementById("userProfile");
 
-      try {
-        const docRef = db.collection("users")
-          .doc(this.currentEmailKey)
-          .collection("platform")
-          .doc(this.currentPlatform)
-          .collection("progress")
-          .doc("woth2");
+      if (!menu && profileBadge) {
+        menu = document.createElement("div");
+        menu.id = "userProfileDropdownMenu";
+        menu.className = "profile-dropdown-menu hidden";
+        menu.style.cssText = `
+          position: absolute;
+          top: 60px;
+          right: 20px;
+          background: #151c27;
+          border: 1px solid #273447;
+          border-radius: 8px;
+          padding: 8px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+          z-index: 1005;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          min-width: 180px;
+        `;
+        document.body.appendChild(menu);
 
-        const snap = await docRef.get();
-        if (snap.exists) {
-          const data = snap.data();
-          if (data.hunter_name) this.hunterName = data.hunter_name;
-          if (data.hunter_level) this.hunterLevel = Number(data.hunter_level);
-          if (data.hunter_credits !== undefined) this.hunterCredits = Number(data.hunter_credits);
-          if (data.companion_day) this.currentDay = Number(data.companion_day);
-          if (data.companion_time) this.currentTime = data.companion_time;
-          if (data.weather) this.currentWeather = data.weather;
-          if (data.watchlist && Array.isArray(data.watchlist)) this.watchlist = data.watchlist;
-          if (data.completed_missions) this.completedMissions = data.completed_missions;
-          if (data.trophies) this.userTrophyProgress = data.trophies;
+        profileBadge.style.cursor = "pointer";
+        profileBadge.addEventListener("click", (e) => {
+          e.stopPropagation();
+          menu.classList.toggle("hidden");
+        });
 
-          if (data.dog_stats) {
-            this.dogCompanionName = data.dog_stats.name || this.dogCompanionName;
-            this.dogBreed = data.dog_stats.breed || this.dogBreed;
-            this.dogBondingLevel = data.dog_stats.bonding ?? this.dogBondingLevel;
-            this.dogFollowingCommandsLevel = data.dog_stats.following ?? this.dogFollowingCommandsLevel;
-            this.dogBloodTrackingLevel = data.dog_stats.blood ?? this.dogBloodTrackingLevel;
-            this.dogSearchQuarteringLevel = data.dog_stats.search ?? this.dogSearchQuarteringLevel;
-          }
-        }
-      } catch (e) {
-        console.warn("Firestore user sync error:", e);
+        document.addEventListener("click", () => {
+          if (!menu.classList.contains("hidden")) menu.classList.add("hidden");
+        });
       }
 
-      this.updateInputFields();
-      this.recalculateCrossTrophyTelemetry();
-      this.initDynamicFeatures();
+      if (!menu) return;
+
+      if (isAuthenticated) {
+        menu.innerHTML = `
+          <a href="../../security/settings.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;">⚙️ Settings Hub</a>
+          <a href="../../security/privacy.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px; display:flex; align-items:center; gap:8px;">🔒 Privacy Policy</a>
+          <div style="height:1px; background:#273447; margin:2px 0;"></div>
+          <button id="menuLogoutBtn" style="background:transparent; border:none; color:#e74c3c; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; display:flex; align-items:center; gap:8px; font-weight:600;">🚪 Log Out</button>
+        `;
+        const logoutBtn = document.getElementById("menuLogoutBtn");
+        if (logoutBtn) logoutBtn.addEventListener("click", () => auth.signOut().then(() => window.location.reload()));
+      } else {
+        menu.innerHTML = `
+          <button id="menuLoginBtn" style="background:transparent; border:none; color:#0088ff; text-align:left; padding:8px 12px; font-size:0.85rem; cursor:pointer; font-weight:600;">🔑 Log In</button>
+          <a href="../../security/privacy.html" style="color:#f0f4f8; text-decoration:none; padding:8px 12px; font-size:0.85rem; border-radius:6px;">🔒 Privacy Policy</a>
+        `;
+        const loginBtn = document.getElementById("menuLoginBtn");
+        if (loginBtn) {
+          loginBtn.addEventListener("click", () => {
+            const modal = document.getElementById("authModal");
+            if (modal) modal.classList.remove("hidden");
+          });
+        }
+      }
     },
 
-    async saveState() {
-      const earnedCount = Object.values(this.userTrophyProgress).filter(t => t.earned).length;
-      const totalTrophies = this.masterTrophies.length || 6;
-      const trophyPct = totalTrophies > 0 ? Math.round((earnedCount / totalTrophies) * 100) : 0;
+    syncPlayStationTrophies(psnOnlineId, accountId) {
+      const targetGamerTag = (psnOnlineId || "").trim();
+      let trophyRef = null;
 
-      if (this.currentUser && this.currentEmailKey) {
-        try {
-          const docRef = db.collection("users")
-            .doc(this.currentEmailKey)
-            .collection("platform")
-            .doc(this.currentPlatform)
-            .collection("progress")
-            .doc("woth2");
+      if (targetGamerTag) {
+        trophyRef = rtdb.ref(`/psn/gamertags/${targetGamerTag}/liveTrophyProgress/${this.titleId}`);
+      } else if (accountId) {
+        trophyRef = rtdb.ref(`/psn/trophies/woth2/${accountId}`);
+      }
 
-          await docRef.set({
-            hunter_name: this.hunterName,
-            hunter_level: this.hunterLevel,
-            hunter_credits: this.hunterCredits,
-            companion_day: this.currentDay,
-            companion_time: this.currentTime,
-            weather: this.currentWeather,
-            platform: this.currentPlatform,
-            trophies_earned: earnedCount,
-            trophies_total: totalTrophies,
-            trophies_percent: trophyPct,
-            trophies: this.userTrophyProgress,
-            completed_missions: this.completedMissions,
-            watchlist: this.watchlist,
-            harvest_count: (this.db.gameData && this.db.gameData.harvest_records) ? this.db.gameData.harvest_records.length : 0,
-            dog_stats: {
-              name: this.dogCompanionName,
-              breed: this.dogBreed,
-              bonding: this.dogBondingLevel,
-              following: this.dogFollowingCommandsLevel,
-              blood: this.dogBloodTrackingLevel,
-              search: this.dogSearchQuarteringLevel
-            },
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-          }, { merge: true });
-        } catch (e) {
-          console.error("Firebase state save error:", e);
+      if (!trophyRef) return;
+
+      trophyRef.on("value", async snapshot => {
+        const raw = snapshot.val();
+        let parsedList = [];
+
+        if (raw) {
+          if (raw.trophies) {
+            parsedList = Array.isArray(raw.trophies) ? raw.trophies : Object.values(raw.trophies);
+          } else if (Array.isArray(raw)) {
+            parsedList = raw;
+          } else if (typeof raw === "object") {
+            parsedList = Object.values(raw);
+          }
         }
+
+        if (parsedList.length > 0) {
+          parsedList.forEach((t, idx) => {
+            const id = t.trophyId !== undefined ? String(t.trophyId) : String(idx);
+            const isEarned = Boolean(t.earned || t.unlocked || t.timestamp || t.earnedDateTime);
+            const dateStr = t.timestamp || t.earnedDateTime || (isEarned ? (t.updatedAt || new Date().toISOString()) : null);
+
+            const existing = this.userTrophyProgress[id] || {};
+
+            this.userTrophyProgress[id] = {
+              earned: isEarned || existing.earned || false,
+              timestamp: dateStr || existing.timestamp || null,
+              currentValue: t.currentValue !== undefined ? Number(t.currentValue) : (existing.currentValue !== undefined ? existing.currentValue : null),
+              targetValue: t.targetValue !== undefined ? Number(t.targetValue) : (existing.targetValue !== undefined ? existing.targetValue : null),
+              manual: false,
+              source: isEarned ? "psn" : (existing.source || "psn")
+            };
+          });
+
+          this.recalculateCrossTrophyTelemetry();
+          this.renderTrophies();
+          await this.silentSaveGameTelemetry();
+        }
+      });
+    },
+
+    toggleManualTrophy(trophyId) {
+      if (this.currentPlatform === "ps" && (this.psnOnlineId || this.psnAccountId)) {
+        return;
+      }
+
+      const id = String(trophyId);
+      const current = this.userTrophyProgress[id] || { earned: false };
+
+      if (current.earned) {
+        this.userTrophyProgress[id] = {
+          earned: false,
+          timestamp: null,
+          currentValue: null,
+          targetValue: null,
+          manual: true,
+          source: "manual"
+        };
       } else {
-        localStorage.setItem("woth2_guest_day", this.currentDay);
-        localStorage.setItem("woth2_guest_time", this.currentTime);
-        localStorage.setItem("woth2_guest_credits", this.hunterCredits);
-        localStorage.setItem("woth2_guest_level", this.hunterLevel);
-        localStorage.setItem("woth2_guest_name", this.hunterName);
-        localStorage.setItem("woth2_guest_platform", this.currentPlatform);
-        localStorage.setItem("woth2_guest_watchlist", JSON.stringify(this.watchlist));
-        localStorage.setItem("woth2_guest_missions", JSON.stringify(this.completedMissions));
-        localStorage.setItem("woth2_guest_trophies", JSON.stringify(this.userTrophyProgress));
+        this.userTrophyProgress[id] = {
+          earned: true,
+          timestamp: new Date().toISOString(),
+          currentValue: null,
+          targetValue: null,
+          manual: true,
+          source: "manual"
+        };
       }
 
       this.recalculateCrossTrophyTelemetry();
+      this.renderTrophies();
+      this.silentSaveGameTelemetry();
+    },
+
+    renderTrophies() {
+      const container = document.getElementById("trophyChamberGrid") || document.getElementById("psnTrophiesContainer");
+      if (!container) return;
+
+      const total = this.masterTrophies.length || 6;
+      const progressEntries = Object.values(this.userTrophyProgress);
+      const earnedList = progressEntries.filter(t => t.earned);
+      const earnedCount = earnedList.length;
+      const progressPercent = total > 0 ? Math.round((earnedCount / total) * 100) : 0;
+
+      let firstTrophyText = "No milestones earned yet across platforms";
+      if (earnedList.length > 0) {
+        const sortedEarned = [...earnedList].sort((a, b) => new Date(a.timestamp || 0) - new Date(b.timestamp || 0));
+        const first = sortedEarned[0];
+        const firstId = Object.keys(this.userTrophyProgress).find(k => this.userTrophyProgress[k] === first);
+        const firstMaster = this.masterTrophies.find(m => m.trophyId === firstId);
+        const firstTitle = firstMaster ? firstMaster.title : "Milestone Complete";
+        const firstDate = new Date(first.timestamp);
+        const dateFormatted = !isNaN(firstDate.getTime())
+          ? firstDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
+          : "Recorded";
+        firstTrophyText = `🏆 First Unlocked: <strong>${firstTitle}</strong> (${dateFormatted})`;
+      }
+
+      const isLivePS = this.currentPlatform === "ps" && (this.psnOnlineId || this.psnAccountId);
+      const platformName = this.currentPlatform.toUpperCase();
+
+      const psTelemetry = this.crossPlatformTelemetry.ps || { earned: 0, percent: 0 };
+      const pcTelemetry = this.crossPlatformTelemetry.pc || { earned: 0, percent: 0 };
+      const xboxTelemetry = this.crossPlatformTelemetry.xbox || { earned: 0, percent: 0 };
+
+      let groupTabsHtml = "";
+      if (this.trophyGroups && this.trophyGroups.length > 0) {
+        groupTabsHtml = `
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+            <button class="trophy-group-pill ${this.selectedTrophyGroup === 'all' ? 'active' : ''}" onclick="window.CompanionApp.filterTrophyGroup('all')">All Trophies (${total})</button>
+            <button class="trophy-group-pill ${this.selectedTrophyGroup === 'default' ? 'active' : ''}" onclick="window.CompanionApp.filterTrophyGroup('default')">Base Game</button>
+            ${this.trophyGroups.filter(g => g.trophyGroupId !== "default" && g.trophyGroupId !== 0).map(g => `
+              <button class="trophy-group-pill ${this.selectedTrophyGroup === String(g.trophyGroupId) ? 'active' : ''}" onclick="window.CompanionApp.filterTrophyGroup('${g.trophyGroupId}')">
+                ${g.trophyGroupName || g.name || `Expansion ${g.trophyGroupId}`}
+              </button>
+            `).join("")}
+          </div>
+        `;
+      }
+
+      container.innerHTML = `
+        <div style="grid-column: 1/-1; background:#151c27; padding:16px 20px; border-radius:10px; border:1px solid #273447; margin-bottom:14px; display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div>
+              <strong style="color:#fff; font-size:1.15rem;">
+                ${isLivePS ? `🎮 PlayStation Live Sync &bull; ${this.psnOnlineId}` : `🎯 ${platformName} Achievement Chamber`}
+              </strong>
+              <div style="font-size:0.8rem; color:var(--text-muted); margin-top:3px;">
+                ${isLivePS ? `Real-time synchronization active via NPWR52231_00` : `Interactive tracking mode: Click any trophy card to mark or unmark`}
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <span class="badge" style="background:#28374d; color:var(--accent-gold); font-size:0.9rem; padding:6px 12px;">
+                ${earnedCount} / ${total} Active Session (${progressPercent}%)
+              </span>
+            </div>
+          </div>
+
+          <div style="width:100%; height:10px; background:rgba(255,255,255,0.06); border-radius:5px; overflow:hidden;">
+            <div style="width:${progressPercent}%; height:100%; background:linear-gradient(90deg, #0088ff, #2ecc71); border-radius:5px; transition: width 0.4s ease;"></div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:6px; background:rgba(0,0,0,0.3); padding:10px 12px; border-radius:8px; border:1px solid #1c2738;">
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
+                <span style="color:#00a6ed; font-weight:700;">🎮 PlayStation</span>
+                <strong style="color:#fff;">${psTelemetry.earned}/${total} (${psTelemetry.percent}%)</strong>
+              </div>
+              <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
+                <div style="width:${psTelemetry.percent}%; height:100%; background:#00a6ed;"></div>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
+                <span style="color:#00d2d3; font-weight:700;">🖥️ PC / Steam</span>
+                <strong style="color:#fff;">${pcTelemetry.earned}/${total} (${pcTelemetry.percent}%)</strong>
+              </div>
+              <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
+                <div style="width:${pcTelemetry.percent}%; height:100%; background:#00d2d3;"></div>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
+                <span style="color:#2ecc71; font-weight:700;">❎ Xbox Network</span>
+                <strong style="color:#fff;">${xboxTelemetry.earned}/${total} (${xboxTelemetry.percent}%)</strong>
+              </div>
+              <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;">
+                <div style="width:${xboxTelemetry.percent}%; height:100%; background:#2ecc71;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div style="font-size:0.8rem; color:#ffe0b3;">
+              ${firstTrophyText}
+            </div>
+            ${groupTabsHtml}
+          </div>
+        </div>
+      `;
+
+      const displayTrophies = this.masterTrophies.filter(t => {
+        if (this.selectedTrophyGroup === "all") return true;
+        if (this.selectedTrophyGroup === "default") return t.groupId === "default" || t.groupId === "0" || !t.groupId;
+        return String(t.groupId) === String(this.selectedTrophyGroup);
+      });
+
+      displayTrophies.forEach(t => {
+        const userState = this.userTrophyProgress[t.trophyId] || { earned: false };
+        const isEarned = Boolean(userState.earned);
+        const div = document.createElement("div");
+        div.className = `telemetry-card ${isEarned ? 'trophy-card-earned' : ''}`;
+        div.style.cssText = `
+          cursor: ${isLivePS ? "default" : "pointer"};
+          border-left: 4px solid ${isEarned ? 'var(--success)' : '#273447'};
+          transition: transform 0.2s ease, border-color 0.2s ease;
+        `;
+
+        if (!isLivePS) {
+          div.onclick = () => window.CompanionApp.toggleManualTrophy(t.trophyId);
+        }
+
+        const gradeColor = t.grade === "Platinum" ? "#00d2d3" : (t.grade === "Gold" ? "#f5a623" : (t.grade === "Silver" ? "#bdc3c7" : "#cd7f32"));
+
+        let formattedTimestamp = "";
+        if (isEarned && userState.timestamp) {
+          const d = new Date(userState.timestamp);
+          formattedTimestamp = !isNaN(d.getTime())
+            ? d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
+            : "Recorded";
+        }
+
+        let milestoneHtml = "";
+        if (userState.targetValue && userState.targetValue > 0) {
+          const cur = userState.currentValue || 0;
+          const tar = userState.targetValue;
+          const milePct = Math.min(100, Math.round((cur / tar) * 100));
+          milestoneHtml = `
+            <div style="margin-top:8px;">
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-bottom:3px;">
+                <span>Milestone Step</span>
+                <strong style="color:#fff;">${cur} / ${tar} (${milePct}%)</strong>
+              </div>
+              <div style="width:100%; height:5px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden;">
+                <div style="width:${milePct}%; height:100%; background:var(--accent-gold);"></div>
+              </div>
+            </div>
+          `;
+        }
+
+        let statusBadge = `<span style="font-size:0.8rem; font-weight:600; color:var(--text-muted);">🔒 Locked</span>`;
+        if (isEarned) {
+          if (userState.source === "psn") {
+            statusBadge = `<span style="font-size:0.8rem; font-weight:700; color:var(--success);">✔ Earned (PSN Sync)</span>`;
+          } else if (userState.source === "json") {
+            statusBadge = `<span style="font-size:0.8rem; font-weight:700; color:var(--success);">✔ Earned (Game Data)</span>`;
+          } else if (userState.source === "firestore") {
+            statusBadge = `<span style="font-size:0.8rem; font-weight:700; color:var(--success);">✔ Earned (Synced)</span>`;
+          } else {
+            statusBadge = `<span style="font-size:0.8rem; font-weight:700; color:var(--success);">✔ Earned (Manual)</span>`;
+          }
+        }
+
+        div.innerHTML = `
+          <div style="display:flex; gap:14px; align-items:flex-start;">
+            <img src="${t.icon}" alt="" style="width:54px; height:54px; border-radius:8px; object-fit:cover; border:1px solid rgba(255,255,255,0.12); flex-shrink:0;" onerror="this.src='${DEFAULT_GAME_POSTER}'">
+            <div style="flex-grow:1;">
+              <div class="card-top-row">
+                <span class="animal-title" style="font-size:1rem;">${t.title}</span>
+                <span class="badge" style="border-color:${gradeColor}; color:${gradeColor}; font-weight:700;">${t.grade}</span>
+              </div>
+              <p style="font-size:0.82rem; color:#cfd9e8; margin-top:5px; line-height:1.4;">${t.desc}</p>
+              ${milestoneHtml}
+            </div>
+          </div>
+          <div class="card-footer-row" style="margin-top:12px; border-top:1px solid rgba(255,255,255,0.06); padding-top:10px;">
+            <div>
+              ${statusBadge}
+              ${isEarned && formattedTimestamp ? `<div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">Unlocked: ${formattedTimestamp}</div>` : ''}
+            </div>
+            ${!isLivePS ? `<span style="font-size:0.72rem; color:var(--accent-amber);">Click to toggle</span>` : ''}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    filterTrophyGroup(groupId) {
+      this.selectedTrophyGroup = groupId;
+      this.renderTrophies();
     },
 
     async addFriendByCode() {
@@ -547,7 +1269,7 @@ document.addEventListener("DOMContentLoaded", () => {
       container.innerHTML = "";
 
       if (!cards.length) {
-        container.innerHTML = `<p style="font-size:0.85rem; color:var(--text-muted); padding:12px; grid-column:1/-1;">No companion friends linked yet. Link their 8-character code above to view their live telemetry.</p>`;
+        container.innerHTML = `<p style="font-size:0.85rem; color:var(--text-muted); padding:12px; grid-column:1/-1;">No companion friends linked yet. Link their 8-character code to view their live telemetry.</p>`;
         return;
       }
 
@@ -583,103 +1305,637 @@ document.addEventListener("DOMContentLoaded", () => {
       return parseFloat(stripped) || 0;
     },
 
-    renderGearCatalog() {
-      const container = document.getElementById("gearCatalogContainer");
+    renderLodgeForecaster() {
+      const container = document.getElementById("lodgeForecasterContainer") || document.getElementById("lodgeRequisitionGrid") || document.getElementById("gearCatalogContainer");
       if (!container) return;
 
-      const rawGear = this.db.gear || {};
-      const items = [];
+      const flattenCatalog = (source) => {
+        if (!source || typeof source !== "object") return [];
+        if (Array.isArray(source)) return source;
 
-      Object.entries(rawGear).forEach(([categoryKey, categoryBag]) => {
-        if (categoryKey === "catalog_metadata" || typeof categoryBag !== "object" || categoryBag === null) return;
+        const results = [];
+        const inspectNode = (node, defaultCategory = "Equipment") => {
+          if (!node || typeof node !== "object") return;
 
-        Object.entries(categoryBag).forEach(([itemKey, item]) => {
-          if (!item || typeof item !== "object") return;
-          items.push({
-            id: item.id || itemKey,
-            name: item.name || item.title || itemKey,
-            category: item.category || categoryKey,
-            subgroup: categoryKey,
-            price: this.cleanPrice(item.price || item.cost),
-            tier: item.tier || (item.tier_min ? `${item.tier_min}-${item.tier_max}` : 1),
-            caliber: item.caliber || item.arrow || "",
-            image: item.image || item.thumbnail || DEFAULT_GAME_POSTER,
-            description: item.description || "Field tactical gear item."
+          if (node.name || node.title || node.id) {
+            results.push({
+              id: node.id || `item_${Math.random().toString(36).substring(2, 9)}`,
+              name: node.name || node.title || "Gear Item",
+              category: node.category || defaultCategory,
+              cost: this.cleanPrice(node.price || node.cost),
+              requiredLevel: Number(node.tier || node.requiredLevel || node.required_level || node.level || 1),
+              description: node.description || node.desc || "Tactical field gear."
+            });
+            return;
+          }
+
+          Object.entries(node).forEach(([catKey, catVal]) => {
+            if (catKey === "catalog_metadata" || catKey === "dog_skill_definitions" || catKey === "scoring_templates" || catKey === "species_scoring_mapping") return;
+            if (Array.isArray(catVal)) {
+              catVal.forEach(item => inspectNode(item, catKey));
+            } else if (catVal && typeof catVal === "object") {
+              Object.entries(catVal).forEach(([itemKey, itemVal]) => {
+                if (itemVal && typeof itemVal === "object") inspectNode(itemVal, catKey);
+              });
+            }
           });
-        });
-      });
+        };
 
-      this.safeSetText("gearCatalogCount", `${items.length} Field Items`);
+        inspectNode(source);
+        return results;
+      };
+
+      let catalogItems = [];
+      if (this.db.gear && Object.keys(this.db.gear).length > 0) {
+        catalogItems = flattenCatalog(this.db.gear);
+      } else if (this.db.progressionGear && Object.keys(this.db.progressionGear).length > 0) {
+        catalogItems = flattenCatalog(this.db.progressionGear);
+      } else if (this.db.gameData && this.db.gameData.lodge_store) {
+        catalogItems = flattenCatalog(this.db.gameData.lodge_store);
+      }
+
+      if (!catalogItems || catalogItems.length === 0) {
+        catalogItems = this.lodgeCatalog;
+      }
+
       container.innerHTML = "";
 
-      const filtered = items.filter(i => {
-        if (this.selectedGearCategory === "all") return true;
-        return i.subgroup === this.selectedGearCategory;
-      });
+      catalogItems.forEach(item => {
+        const canAfford = this.hunterCredits >= item.cost;
+        const balanceAfter = this.hunterCredits - item.cost;
+        const deficit = item.cost - this.hunterCredits;
+        const isLevelUnlocked = this.hunterLevel >= item.requiredLevel;
+        const levelsToGo = Math.max(0, item.requiredLevel - this.hunterLevel);
 
-      filtered.forEach(item => {
-        const canAfford = this.hunterCredits >= item.price;
-        const diff = item.price - this.hunterCredits;
+        let balanceBadgeClass = canAfford ? "banner-breeder" : "banner-cull";
+        let balanceBadgeText = canAfford
+          ? `Balance After Purchase: $${balanceAfter.toLocaleString()} credits ($${this.hunterCredits.toLocaleString()} - $${item.cost.toLocaleString()})`
+          : `Deficit: Need $${deficit.toLocaleString()} more credits (Have $${this.hunterCredits.toLocaleString()} / Need $${item.cost.toLocaleString()})`;
+
+        let levelBadgeText = isLevelUnlocked
+          ? `✅ Requisition Clearance: Unlocked (Required Lv. ${item.requiredLevel})`
+          : `🔒 Locked: Requires Hunter Level ${item.requiredLevel} (${levelsToGo} ${levelsToGo === 1 ? 'level' : 'levels'} to go)`;
 
         const card = document.createElement("div");
         card.className = "telemetry-card";
-        card.style.borderLeft = canAfford ? "3px solid var(--success)" : "3px solid var(--accent-amber)";
+        card.style.borderLeft = isLevelUnlocked ? (canAfford ? "4px solid var(--success)" : "4px solid var(--accent-amber)") : "4px solid #e74c3c";
         card.innerHTML = `
-          <div style="display:flex; gap:12px; align-items:flex-start;">
-            <img src="${item.image}" alt="" style="width:60px; height:60px; border-radius:6px; object-fit:cover; border:1px solid var(--border-color);" onerror="this.src='${DEFAULT_GAME_POSTER}'">
-            <div style="flex-grow:1;">
-              <div class="card-top-row">
-                <span class="animal-title">${item.name}</span>
-                <span class="badge" style="color:var(--accent-gold);">$${item.price.toLocaleString()}</span>
-              </div>
-              <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
-                Category: <strong>${item.category}</strong> ${item.caliber ? `&bull; Caliber: <strong>${item.caliber}</strong>` : ''}
-              </div>
-              <p style="font-size:0.78rem; color:#cfd9e8; margin-top:6px; line-height:1.35;">${item.description}</p>
-              <div class="action-banner ${canAfford ? 'banner-breeder' : 'banner-cull'}" style="margin-top:6px;">
-                ${canAfford ? `Balance after: $${(this.hunterCredits - item.price).toLocaleString()}` : `Deficit: Need $${diff.toLocaleString()} more credits`}
-              </div>
+          <div>
+            <div class="card-top-row">
+              <span class="animal-title">${item.name}</span>
+              <span class="badge" style="background:#28374d; color:var(--accent-gold); font-weight:700;">$${item.cost.toLocaleString()}</span>
             </div>
+            <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
+              Category: <strong>${item.category}</strong> &bull; Gate: <strong>Level ${item.requiredLevel}</strong>
+            </div>
+            <p style="font-size:0.8rem; color:#cfd9e8; margin-top:5px; line-height:1.35;">${item.description}</p>
+            <div class="action-banner ${balanceBadgeClass}" style="margin-top:8px;">
+              ${balanceBadgeText}
+            </div>
+            <div style="font-size:0.75rem; color:${isLevelUnlocked ? 'var(--success)' : '#ff9999'}; margin-top:4px; font-weight:600;">
+              ${levelBadgeText}
+            </div>
+          </div>
+          <div class="card-footer-row" style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px;">
+            <span style="font-size:0.75rem; color:var(--text-muted);">Current: <strong>$${this.hunterCredits.toLocaleString()}</strong> | Lv. <strong>${this.hunterLevel}</strong></span>
+            <button type="button" class="btn-link" style="color:${(canAfford && isLevelUnlocked) ? 'var(--accent-gold)' : 'var(--text-muted)'}; font-weight:700; cursor:${(canAfford && isLevelUnlocked) ? 'pointer' : 'not-allowed'};" 
+              onclick="window.CompanionApp.purchaseLodgeItem('${item.id}', ${item.cost}, ${item.requiredLevel})">
+              ${(canAfford && isLevelUnlocked) ? "Acquire" : "Unavailable"}
+            </button>
           </div>
         `;
         container.appendChild(card);
       });
     },
 
-    filterGearCategory(cat) {
-      this.selectedGearCategory = cat;
-      const pills = document.querySelectorAll("#gearFilterPills .trophy-group-pill");
-      pills.forEach(p => p.classList.remove("active"));
-      if (window.event && window.event.target) window.event.target.classList.add("active");
-      this.renderGearCatalog();
+    purchaseLodgeItem(itemId, cost, requiredLevel) {
+      if (this.hunterLevel < requiredLevel) {
+        alert(`🔒 Requisition locked. You need ${requiredLevel - this.hunterLevel} more level(s) to unlock this item.`);
+        return;
+      }
+      if (this.hunterCredits < cost) {
+        alert(`⚠️ Insufficient credits. You need $${(cost - this.hunterCredits).toLocaleString()} more credits to complete this purchase.`);
+        return;
+      }
+
+      this.hunterCredits -= cost;
+      this.safeSetValue("hunterCreditsInput", this.hunterCredits);
+      localStorage.setItem("woth2_credits", this.hunterCredits);
+      this.renderLodgeForecaster();
+      this.silentSaveGameTelemetry();
+      alert(`✅ Requisition approved! Purchased item for $${cost.toLocaleString()}. Remaining balance: $${this.hunterCredits.toLocaleString()} credits.`);
+    },
+
+    populateRegions() {
+      const regions = (this.db.regions && this.db.regions.regions) ? this.db.regions.regions : [];
+      const locationSelect = document.getElementById("harvestLocationSelect");
+      const watchRegionSelect = document.getElementById("watchRegionSelect");
+
+      if (locationSelect) locationSelect.innerHTML = "";
+      if (watchRegionSelect) watchRegionSelect.innerHTML = "";
+
+      regions.forEach(r => {
+        if (locationSelect) {
+          const opt1 = document.createElement("option");
+          opt1.value = r.name;
+          opt1.textContent = r.name;
+          locationSelect.appendChild(opt1);
+        }
+        if (watchRegionSelect) {
+          const opt2 = document.createElement("option");
+          opt2.value = r.name;
+          opt2.textContent = r.name;
+          watchRegionSelect.appendChild(opt2);
+        }
+      });
+    },
+
+    filterSpeciesByRegion(regionSelectId, speciesSelectId) {
+      const regionEl = document.getElementById(regionSelectId);
+      const speciesEl = document.getElementById(speciesSelectId);
+      if (!regionEl || !speciesEl) return;
+
+      const selectedRegion = regionEl.value;
+      const allSpecies = (this.db.species && this.db.species.species) ? this.db.species.species : [];
+
+      speciesEl.innerHTML = "";
+
+      const filtered = allSpecies.filter(s => {
+        if (!s.regions || !Array.isArray(s.regions)) return true;
+        return s.regions.includes(selectedRegion);
+      });
+
+      filtered.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s.name;
+        opt.textContent = `${s.name} (Tier ${s.tier})`;
+        speciesEl.appendChild(opt);
+      });
+
+      if (speciesSelectId === "watchSpeciesSelect") {
+        this.updateWatchlistMaxAge();
+      } else if (speciesSelectId === "harvestSpeciesSelect") {
+        this.updateDynamicHarvestSchema();
+      }
+    },
+
+    updateDynamicHarvestSchema() {
+      const container = document.getElementById("dynamicSchemaFieldsContainer");
+      const speciesEl = document.getElementById("harvestSpeciesSelect");
+      if (!container || !speciesEl || !speciesEl.value) return;
+
+      const selectedSpecies = speciesEl.value.toLowerCase();
+      let category = "Antlers";
+      let fields = [
+        { id: "main_beam", label: "Main Beam", unit: "in", ph: "24.5" },
+        { id: "inside_spread", label: "Inside Spread", unit: "in", ph: "18.2" },
+        { id: "points_count", label: "Total Points", unit: "count", ph: "10" }
+      ];
+
+      if (selectedSpecies.includes("bear") || selectedSpecies.includes("wolf") || selectedSpecies.includes("badger") || selectedSpecies.includes("wolverine")) {
+        category = "Skull & Weight (Predator)";
+        fields = [
+          { id: "skull_length", label: "Skull Length", unit: "in", ph: "15.4" },
+          { id: "skull_width", label: "Skull Width", unit: "in", ph: "10.2" },
+          { id: "body_weight", label: "Body Weight", unit: "lbs", ph: "379.7" }
+        ];
+      } else if (selectedSpecies.includes("boar") || selectedSpecies.includes("pig")) {
+        category = "Tusks & Skull";
+        fields = [
+          { id: "tusk_length", label: "Lower Tusk Length", unit: "in", ph: "7.8" },
+          { id: "tusk_thickness", label: "Tusk Circumference", unit: "in", ph: "3.2" }
+        ];
+      } else if (selectedSpecies.includes("sheep") || selectedSpecies.includes("goat") || selectedSpecies.includes("bison") || selectedSpecies.includes("pronghorn")) {
+        category = "Horns (Bovidae)";
+        fields = [
+          { id: "horn_length", label: "Horn Length", unit: "in", ph: "36.8" },
+          { id: "base_circ", label: "Base Circumference", unit: "in", ph: "14.2" },
+          { id: "curl_spread", label: "Tip Spread", unit: "in", ph: "22.0" }
+        ];
+      } else if (selectedSpecies.includes("moose")) {
+        category = "Palmate Antlers";
+        fields = [
+          { id: "palm_len", label: "Palm Length", unit: "in", ph: "32.0" },
+          { id: "palm_width", label: "Palm Width", unit: "in", ph: "12.5" },
+          { id: "points_left", label: "Points Left", unit: "count", ph: "9" },
+          { id: "points_right", label: "Points Right", unit: "count", ph: "8" }
+        ];
+      } else if (selectedSpecies.includes("turkey") || selectedSpecies.includes("mallard") || selectedSpecies.includes("ptarmigan") || selectedSpecies.includes("hare") || selectedSpecies.includes("ostrich")) {
+        category = "Body Weight & Plumage";
+        fields = [
+          { id: "body_weight", label: "Total Body Weight", unit: "lbs", ph: "18.5" },
+          { id: "beard_len", label: "Beard / Quill Length", unit: "in", ph: "10.5" },
+          { id: "spur_len", label: "Spur / Talon Length", unit: "in", ph: "1.25" }
+        ];
+      }
+
+      container.innerHTML = `<span style="grid-column: 1/-1; font-size: 0.76rem; color: var(--accent-amber); font-weight: 700;">Trophy Type: ${category}</span>`;
+
+      fields.forEach(f => {
+        const div = document.createElement("div");
+        div.className = "input-group";
+        div.innerHTML = `
+          <label for="schema_${f.id}">${f.label} (${f.unit})</label>
+          <input type="text" id="schema_${f.id}" placeholder="${f.ph}">
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    updateWatchlistMaxAge() {
+      const speciesEl = document.getElementById("watchSpeciesSelect");
+      const maxAgeEl = document.getElementById("watchMaxAge");
+      if (!speciesEl || !maxAgeEl || !speciesEl.value) return;
+
+      const selectedSpecies = speciesEl.value;
+      const lifecycles = (this.db.lifecycles && this.db.lifecycles.species_lifecycles) ? this.db.lifecycles.species_lifecycles : [];
+      const match = lifecycles.find(l => l.species.toLowerCase() === selectedSpecies.toLowerCase());
+      maxAgeEl.value = match ? match.max_age_years : 12;
+    },
+
+    saveWatchlistEntry() {
+      const editId = document.getElementById("editWatchlistId") ? document.getElementById("editWatchlistId").value : "";
+      const tag = document.getElementById("watchIdentifier") ? document.getElementById("watchIdentifier").value.trim() : "";
+      const species = document.getElementById("watchSpeciesSelect") ? document.getElementById("watchSpeciesSelect").value : "";
+      const region = document.getElementById("watchRegionSelect") ? document.getElementById("watchRegionSelect").value : "";
+      const landmark = document.getElementById("watchLandmark") ? document.getElementById("watchLandmark").value.trim() : "";
+      const fitness = document.getElementById("watchFitness") ? parseFloat(document.getElementById("watchFitness").value) : NaN;
+      const age = document.getElementById("watchAge") ? parseInt(document.getElementById("watchAge").value, 10) : NaN;
+      const maxAge = document.getElementById("watchMaxAge") ? parseInt(document.getElementById("watchMaxAge").value, 10) : 12;
+      const stars = document.getElementById("watchStars") ? parseInt(document.getElementById("watchStars").value, 10) : 1;
+
+      if (!tag || isNaN(fitness) || isNaN(age) || !landmark) {
+        return alert("Please enter the animal identifier, fitness %, age, and need zone landmark.");
+      }
+
+      if (editId) {
+        const idx = this.watchlist.findIndex(w => w.id === editId);
+        if (idx !== -1) {
+          this.watchlist[idx] = { ...this.watchlist[idx], tag, species, region, landmark, fitness, age, maxAge, stars };
+        }
+      } else {
+        const newEntry = {
+          id: "target_" + Date.now(),
+          tag, species, region, landmark, fitness, sightedAge: age, age, maxAge, stars, sightedDay: this.currentDay
+        };
+        this.watchlist.unshift(newEntry);
+      }
+
+      this.resetWatchlistForm();
+      this.renderWatchlist();
+      this.silentSaveGameTelemetry();
+    },
+
+    resetWatchlistForm() {
+      this.safeSetValue("editWatchlistId", "");
+      this.safeSetValue("watchIdentifier", "");
+      this.safeSetValue("watchFitness", "");
+      this.safeSetValue("watchAge", "8");
+      this.safeSetValue("watchLandmark", "");
+      this.safeSetText("watchlistFormHeader", "Add Live Animal to Watchlist");
+      this.safeSetText("saveWatchlistBtn", "Add to Watchlist");
+      const cancelBtn = document.getElementById("cancelEditWatchlistBtn");
+      if (cancelBtn) cancelBtn.classList.add("hidden");
+    },
+
+    editWatchlistEntry(id) {
+      const item = this.watchlist.find(w => w.id === id);
+      if (!item) return;
+
+      this.safeSetValue("editWatchlistId", item.id);
+      this.safeSetValue("watchIdentifier", item.tag);
+      this.safeSetValue("watchRegionSelect", item.region || "Jackalope Cordillera");
+      this.filterSpeciesByRegion("watchRegionSelect", "watchSpeciesSelect");
+      this.safeSetValue("watchSpeciesSelect", item.species);
+      this.safeSetValue("watchLandmark", item.landmark || "");
+      this.safeSetValue("watchFitness", item.fitness);
+      this.safeSetValue("watchAge", item.age);
+      this.safeSetValue("watchMaxAge", item.maxAge);
+      this.safeSetValue("watchStars", item.stars);
+
+      this.safeSetText("watchlistFormHeader", "Edit Watchlist Target");
+      this.safeSetText("saveWatchlistBtn", "Update Target");
+      const cancelBtn = document.getElementById("cancelEditWatchlistBtn");
+      if (cancelBtn) cancelBtn.classList.remove("hidden");
+    },
+
+    deleteWatchlistEntry(id) {
+      if (!confirm("Harvested or remove this target from the watchlist?")) return;
+      this.watchlist = this.watchlist.filter(w => w.id !== id);
+      this.renderWatchlist();
+      this.silentSaveGameTelemetry();
+    },
+
+    renderWatchlist() {
+      const container = document.getElementById("watchlistContainer");
+      if (!container) return;
+
+      this.safeSetText("watchlistCount", `${this.watchlist.length} Tracked Animals`);
+      container.innerHTML = "";
+
+      if (this.watchlist.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem; padding:12px; grid-column:1/-1;">No animals currently on the watchlist. Add spotted animals on the left.</p>';
+        return;
+      }
+
+      this.watchlist.forEach(item => {
+        const elapsedDays = Math.max(0, this.currentDay - (item.sightedDay || 1));
+        const effectiveAge = (item.sightedAge || item.age) + Math.floor(elapsedDays / 3);
+        const daysLeft = Math.max(0, (item.maxAge - effectiveAge) * 3);
+        const daysIntoCurrentYear = elapsedDays % 3;
+        const daysUntilNextYear = 3 - daysIntoCurrentYear;
+        const matureThresholdAge = Math.max(1, item.maxAge - 3);
+        const yearsToMature = Math.max(0, matureThresholdAge - effectiveAge);
+        const daysToMature = yearsToMature * 3;
+
+        let actionClass = "banner-balanced";
+        let actionText = "⚖️ BALANCED: Stable genetics. Monitor.";
+
+        if (item.fitness < 50.0) {
+          actionClass = "banner-cull";
+          actionText = `🚨 CULL: Low Fitness (${item.fitness}%). Despawn deadline in ${daysLeft} days.`;
+        } else if (item.fitness >= 80.0 && effectiveAge < item.maxAge) {
+          actionClass = "banner-breeder";
+          actionText = `⭐ 5-STAR BREEDER (${item.fitness}%): In Prime trophy rack. ${daysLeft} days before natural despawn.`;
+        } else if (item.stars === 1 && effectiveAge >= (item.maxAge - 2)) {
+          actionClass = "banner-cull";
+          actionText = `⚠️ CULL MATURE: 1-Star rack at end of cycle. Natural despawn in ${daysLeft} days.`;
+        }
+
+        const div = document.createElement("div");
+        div.className = "telemetry-card";
+        div.innerHTML = `
+          <div>
+            <div class="card-top-row">
+              <span class="animal-title">${item.tag}</span>
+              <span class="badge" style="background:#28374d; border-color:#486082;">${item.stars}&#9733;</span>
+            </div>
+            <div style="font-size:0.76rem; color:var(--text-muted); margin-top:2px;">
+              <strong>${item.species}</strong> &bull; ${item.region || 'Region'}
+            </div>
+            <div style="font-size:0.75rem; color:#ffe099; margin-top:2px;">
+              Zone: <strong>${item.landmark || 'Waterway'}</strong>
+            </div>
+            <div style="font-size:0.76rem; color:var(--text-muted); margin-top:2px;">
+              Age: <strong>${effectiveAge}/${item.maxAge} yrs</strong> (Aging in ${daysUntilNextYear}d) &bull; Fit: <strong>${item.fitness}%</strong>
+            </div>
+            <div style="font-size:0.73rem; background:rgba(0,0,0,0.3); border:1px solid #1c2738; padding:5px 8px; border-radius:4px; margin-top:5px; color:#d2dae4;">
+              ⏳ Despawn Clock: <strong style="color:${daysLeft <= 6 ? '#ff7675' : '#55efc4'}">${daysLeft} in-game days left</strong>
+              ${effectiveAge < matureThresholdAge ? ` &bull; Mature Prime: <strong style="color:var(--accent-gold);">in ${daysToMature} days (${yearsToMature} yrs)</strong>` : ' &bull; <strong style="color:#f5a623;">Peak Trophy Phase</strong>'}
+            </div>
+            <div class="action-banner ${actionClass}">${actionText}</div>
+          </div>
+          <div class="card-footer-row">
+            <span>Sighted Day <strong>${item.sightedDay || 1}</strong> &rarr; Current Day <strong>${this.currentDay}</strong></span>
+            <div class="card-actions">
+              <button type="button" class="btn-link btn-link-edit" onclick="window.CompanionApp.editWatchlistEntry('${item.id}')">Edit</button>
+              <button type="button" class="btn-link btn-link-delete" onclick="window.CompanionApp.deleteWatchlistEntry('${item.id}')">Harvest</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    submitHarvestInspection() {
+      const species = document.getElementById("harvestSpeciesSelect") ? document.getElementById("harvestSpeciesSelect").value : "Elk";
+      const location = document.getElementById("harvestLocationSelect") ? document.getElementById("harvestLocationSelect").value : "New Laurentia";
+      const firearm = document.getElementById("harvestFirearm") ? document.getElementById("harvestFirearm").value : "Rifle";
+      const caliber = document.getElementById("harvestCaliber") ? document.getElementById("harvestCaliber").value : ".308";
+      const shotDist = document.getElementById("harvestShotDist") ? document.getElementById("harvestShotDist").value : 100;
+      const trackDist = document.getElementById("harvestTrackDist") ? document.getElementById("harvestTrackDist").value : 20;
+      const fitness = document.getElementById("harvestFitness") ? (parseFloat(document.getElementById("harvestFitness").value) || 60) : 60;
+      const stars = document.getElementById("harvestRatingStars") ? parseInt(document.getElementById("harvestRatingStars").value, 10) : 1;
+      const sellPrice = document.getElementById("harvestSellPrice") ? document.getElementById("harvestSellPrice").value : 200;
+      const photoUrl = document.getElementById("harvestPhotoUrlInput") ? document.getElementById("harvestPhotoUrlInput").value.trim() : "";
+
+      const newRecord = {
+        species,
+        animal_tier: 5,
+        location,
+        firearm,
+        caliber,
+        shot_distance_yds: shotDist,
+        tracking_distance_yds: trackDist,
+        fitness_percentage: fitness,
+        trophy_rating_stars: stars,
+        sell_price: sellPrice,
+        photo_url: photoUrl || DEFAULT_GAME_POSTER,
+        cull_decision: fitness < 50 ? "Cull (Low Fitness)" : "Keeper / Trophy",
+        date: "October 16, 2026",
+        hunt_rating: "A++"
+      };
+
+      if (!this.db.gameData) this.db.gameData = {};
+      if (!this.db.gameData.harvest_records) this.db.gameData.harvest_records = [];
+
+      this.db.gameData.harvest_records.unshift(newRecord);
+      this.renderHarvestHistory();
+      this.silentSaveGameTelemetry();
+      alert("✅ Harvest logged successfully!");
+    },
+
+    renderHarvestHistory() {
+      const container = document.getElementById("harvestHistoryContainer");
+      if (!container) return;
+      const records = (this.db.gameData && this.db.gameData.harvest_records) ? this.db.gameData.harvest_records : [];
+
+      this.safeSetText("harvestRecordCount", `${records.length} Harvest Records`);
+      container.innerHTML = "";
+
+      records.forEach(r => {
+        const div = document.createElement("div");
+        div.className = "telemetry-card";
+        div.innerHTML = `
+          <div>
+            <div class="card-top-row">
+              <span class="animal-title">${r.species}</span>
+              <span class="badge">${r.trophy_rating_stars}&#9733; Trophy</span>
+            </div>
+            ${r.photo_url ? `<img src="${r.photo_url}" style="width:100%; height:120px; object-fit:cover; border-radius:4px; margin:6px 0; border:1px solid rgba(255,255,255,0.08);" onerror="this.src='${DEFAULT_GAME_POSTER}'">` : ''}
+            <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
+              Tier: <strong>${r.animal_tier}</strong> &bull; Location: <strong>${r.location || 'New Laurentia'}</strong>
+            </div>
+            <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
+              Firearm: <strong>${r.firearm} (${r.caliber})</strong>
+            </div>
+            <div style="font-size:0.76rem; color:var(--text-muted); margin-top:2px;">
+              Shot: <strong>${r.shot_distance_yds} yds</strong> &bull; Tracking: <strong>${r.tracking_distance_yds || 0} yds</strong>
+            </div>
+            <div style="font-size:0.76rem; color:var(--text-muted); margin-top:2px;">
+              Fitness: <strong>${r.fitness_percentage}%</strong> &bull; Age: <strong>${r.age_years || 'Adult'} Yrs</strong> &bull; Sell: <strong>$${r.sell_price || 149}</strong>
+            </div>
+            <div class="action-banner ${r.fitness_percentage < 50 ? 'banner-cull' : 'banner-breeder'}" style="margin-top:6px;">
+              ${r.cull_decision || 'Keeper Specimen'}
+            </div>
+          </div>
+          <div class="card-footer-row">
+            <span>Date: <strong>${r.date || 'Active Session'}</strong></span>
+            <span style="color:var(--accent-amber); font-weight:700;">Rank: ${r.hunt_rating || 'S++'}</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    renderDogProfile() {
+      const summaryContainer = document.getElementById("dogSummaryCard");
+      const skillsContainer = document.getElementById("dogSkillsGrid");
+      if (!summaryContainer || !skillsContainer) return;
+
+      summaryContainer.innerHTML = `
+        <div class="telemetry-card" style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h4 style="color:#fff; font-size:1.1rem;">${this.dogCompanionName} (${this.dogBreed})</h4>
+            <div style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">
+              Primary Specialization: <strong>Blood Tracking</strong> &bull; Total Obedience Score: <strong>Level ${this.dogBondingLevel}</strong>
+            </div>
+          </div>
+          <div class="stepper-controls">
+            <span style="font-size:0.8rem; color:var(--text-muted);">Bonding:</span>
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('bonding', -1)">&minus;</button>
+            <strong style="color:var(--accent-amber); font-size:0.95rem;">${this.dogBondingLevel} / 6</strong>
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('bonding', 1)">&plus;</button>
+          </div>
+        </div>
+      `;
+
+      skillsContainer.innerHTML = `
+        <div class="dog-stepper-row">
+          <div>
+            <strong style="color:var(--accent-amber);">Following Commands</strong>
+            <p style="font-size:0.78rem; color:var(--text-muted);">Controls response speed to Heel, Sit, Stay. Stops brush rustling.</p>
+          </div>
+          <div class="stepper-controls">
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('following', -1)">&minus;</button>
+            <strong style="color:#fff; font-size:0.95rem;">${this.dogFollowingCommandsLevel} / 6</strong>
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('following', 1)">&plus;</button>
+          </div>
+        </div>
+
+        <div class="dog-stepper-row">
+          <div>
+            <strong style="color:var(--accent-amber);">Blood Tracking</strong>
+            <p style="font-size:0.78rem; color:var(--text-muted);">Follows faint blood tracks over water and rain to stop meat degradation.</p>
+          </div>
+          <div class="stepper-controls">
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('blood', -1)">&minus;</button>
+            <strong style="color:#fff; font-size:0.95rem;">${this.dogBloodTrackingLevel} / 6</strong>
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('blood', 1)">&plus;</button>
+          </div>
+        </div>
+
+        <div class="dog-stepper-row">
+          <div>
+            <strong style="color:var(--accent-amber);">Search &amp; Quartering</strong>
+            <p style="font-size:0.78rem; color:var(--text-muted);">Weaves ahead in zig-zag patterns to flush birds and retrieve small game.</p>
+          </div>
+          <div class="stepper-controls">
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('search', -1)">&minus;</button>
+            <strong style="color:#fff; font-size:0.95rem;">${this.dogSearchQuarteringLevel} / 6</strong>
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('search', 1)">&plus;</button>
+          </div>
+        </div>
+      `;
+    },
+
+    adjustDogStat(statName, delta) {
+      if (statName === "bonding") {
+        this.dogBondingLevel = Math.max(1, Math.min(6, this.dogBondingLevel + delta));
+      } else if (statName === "following") {
+        this.dogFollowingCommandsLevel = Math.max(0, Math.min(6, this.dogFollowingCommandsLevel + delta));
+      } else if (statName === "blood") {
+        this.dogBloodTrackingLevel = Math.max(0, Math.min(6, this.dogBloodTrackingLevel + delta));
+      } else if (statName === "search") {
+        this.dogSearchQuarteringLevel = Math.max(0, Math.min(6, this.dogSearchQuarteringLevel + delta));
+      }
+
+      this.updateDogInputDisplay();
+      this.renderDogProfile();
+      this.silentSaveGameTelemetry();
+    },
+
+    renderNeedZones() {
+      const container = document.getElementById("needZoneClustersGrid");
+      if (!container) return;
+      const clusters = (this.db.needZones && this.db.needZones.clusters) ? this.db.needZones.clusters : [];
+
+      this.safeSetText("needZoneCount", `${clusters.length} Tactical Clusters`);
+      container.innerHTML = "";
+
+      clusters.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        let zonesHtml = "";
+        if (c.zones && Array.isArray(c.zones)) {
+          c.zones.forEach(z => {
+            zonesHtml += `
+              <div style="font-size:0.8rem; background:rgba(0,0,0,0.2); padding:6px; border-radius:4px; margin-top:4px;">
+                <strong>${z.type} (${z.schedule}):</strong> ${z.landmark} (+${z.proximity_to_center_yds} yds)
+              </div>
+            `;
+          });
+        }
+
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>${c.species}</strong>
+            <span class="badge">${c.region}</span>
+          </div>
+          <p style="font-size:0.78rem; color:var(--text-muted);">${c.cluster_notes || ''}</p>
+          <div style="margin-top:4px;">${zonesHtml}</div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    renderLifeCycles() {
+      const container = document.getElementById("lifecyclesGrid");
+      if (!container) return;
+      const list = (this.db.lifecycles && this.db.lifecycles.species_lifecycles) ? this.db.lifecycles.species_lifecycles : [];
+
+      this.safeSetText("lifecycleCount", `${list.length} Species Cycles`);
+      container.innerHTML = "";
+
+      list.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#fff;">${item.species}</strong>
+            <span class="badge">${item.max_age_years} Yrs (${item.total_lifespan_days} Days)</span>
+          </div>
+          <div class="advisory-callout" style="margin-top:6px;">
+            <strong>Cull Advisory:</strong> ${item.cull_advisory}
+          </div>
+          <div style="font-size:0.78rem; color:#ff9999; margin-top:4px;">
+            <strong>Despawn Rule:</strong> ${item.mortality_warning}
+          </div>
+        `;
+        container.appendChild(div);
+      });
     },
 
     renderChallenges() {
       const container = document.getElementById("challengeTreesGrid");
       if (!container) return;
-
-      const raw = this.db.challenges || {};
-      const trees = raw.trees || (raw.challenges ? raw.challenges.trees : {});
+      const trees = (this.db.challenges && this.db.challenges.trees) ? this.db.challenges.trees : {};
 
       container.innerHTML = "";
-      let challengeCount = 0;
-
-      Object.entries(trees).forEach(([key, tree]) => {
-        const treeChallenges = tree.challenges || [];
-        challengeCount += treeChallenges.length;
-
+      Object.entries(trees).forEach(([k, t]) => {
+        const treeChallenges = t.challenges || [];
         const div = document.createElement("div");
         div.className = "info-box";
         div.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="color:#fff; font-size:1.05rem;">${tree.name || key} Mastery</strong>
-            <span class="badge">${treeChallenges.length || tree.total || 0} Challenges</span>
+            <strong style="color:#fff;">${t.name} Mastery</strong>
+            <span class="badge">${treeChallenges.length || t.total || 0} Challenges</span>
           </div>
-          <p style="font-size:0.8rem; color:var(--text-muted); margin:4px 0 8px;">${tree.description || "Master field skills in this tactical discipline."}</p>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin:4px 0 8px;">${t.description}</p>
           <div style="display:flex; flex-direction:column; gap:6px;">
             ${treeChallenges.map(c => `
               <div style="background:rgba(0,0,0,0.25); padding:6px 8px; border-radius:4px; font-size:0.78rem; border-left:2px solid var(--accent-amber);">
-                <strong style="color:var(--text-main);">${c.title || c.name || "Challenge Task"}</strong>
+                <strong style="color:var(--text-main);">${c.title || c.name || "Challenge Milestone"}</strong>
                 <div style="color:var(--text-muted); font-size:0.74rem;">${c.description || c.objective || ""}</div>
               </div>
             `).join("")}
@@ -687,19 +1943,17 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         container.appendChild(div);
       });
-
-      this.safeSetText("challengesCount", `${challengeCount} Total Challenges`);
     },
 
     renderMissions() {
       const container = document.getElementById("missionsGrid");
       if (!container) return;
+      const list = (this.db.missions && this.db.missions.missions) ? this.db.missions.missions : [];
 
-      const rawMissions = (this.db.missions && this.db.missions.missions) ? this.db.missions.missions : [];
-      this.safeSetText("missionsCount", `${rawMissions.length} Missions`);
+      this.safeSetText("missionsCount", `${list.length} Missions`);
       container.innerHTML = "";
 
-      rawMissions.forEach((m, idx) => {
+      list.forEach((m, idx) => {
         const missionId = `mission_${idx}`;
         const isCompleted = Boolean(this.completedMissions[missionId]);
 
@@ -713,11 +1967,11 @@ document.addEventListener("DOMContentLoaded", () => {
               <input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="window.CompanionApp.toggleMissionComplete('${missionId}')"> Completed
             </label>
           </div>
-          <div style="font-size:0.76rem; color:var(--accent-amber); margin-top:2px;">Source: ${m.source || "Warden"}</div>
+          <div style="font-size:0.76rem; color:var(--accent-amber); margin-top:2px;">Source: ${m.source}</div>
           <ul style="font-size:0.8rem; color:var(--text-muted); padding-left:18px; margin-top:6px;">
-            ${(m.objectives || []).map(o => `<li style="text-decoration:${isCompleted ? 'line-through' : 'none'};">${o}</li>`).join("")}
+            ${m.objectives.map(o => `<li style="text-decoration:${isCompleted ? 'line-through' : 'none'};">${o}</li>`).join("")}
           </ul>
-          <div style="font-size:0.78rem; color:var(--accent-gold); margin-top:6px;">
+          <div style="font-size:0.78rem; color:var(--accent-amber); margin-top:6px;">
             Reward: ${m.money ? `$${m.money}` : 'XP'} ${m.xp ? `&bull; ${m.xp} XP` : ''}
           </div>
         `;
@@ -727,18 +1981,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     toggleMissionComplete(missionId) {
       this.completedMissions[missionId] = !this.completedMissions[missionId];
-      this.saveState();
+      this.silentSaveGameTelemetry();
       this.renderMissions();
     },
 
     renderInfrastructure() {
       const container = document.getElementById("infrastructureGrid");
       if (!container) return;
-
       const infra = this.db.infrastructure || {};
       const tasks = infra.tasks || [];
-      this.safeSetText("infrastructureCount", `${tasks.length} Enhancements`);
 
+      this.safeSetText("infrastructureCount", `${tasks.length} Enhancements`);
       const notesBox = document.getElementById("infraNotesBox");
       if (notesBox) {
         notesBox.innerHTML = `<strong>Warden Protocol:</strong> ${infra.mechanic_notes || "Feeders and pollution removal impact genetic ceilings."}`;
@@ -756,66 +2009,16 @@ document.addEventListener("DOMContentLoaded", () => {
         div.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <strong style="color:#fff;">${t.type}</strong>
-            <span class="badge" style="color:var(--accent-gold);">$${cost.toLocaleString()}</span>
+            <span class="badge">$${cost.toLocaleString()}</span>
           </div>
-          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Location: <strong>${t.location}</strong></div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">
+            Location: <strong>${t.location}</strong>
+          </div>
+          <div style="font-size:0.76rem; color:var(--accent-amber); margin-top:4px;">
+            Affected: ${t.affected_species && t.affected_species.length ? t.affected_species.join(", ") : "Regional Infrastructure"}
+          </div>
           <div class="action-banner ${canAfford ? 'banner-breeder' : 'banner-cull'}" style="margin-top:6px;">
-            ${canAfford ? `✅ Fully Funded (Balance after: $${(this.hunterCredits - cost).toLocaleString()})` : `🔒 Insufficient Funds (Need $${deficit.toLocaleString()} more)`}
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    },
-
-    renderNeedZones() {
-      const container = document.getElementById("needZoneClustersGrid");
-      if (!container) return;
-      const clusters = (this.db.needZones && this.db.needZones.clusters) ? this.db.needZones.clusters : [];
-      this.safeSetText("needZoneCount", `${clusters.length} Tactical Clusters`);
-      container.innerHTML = "";
-
-      clusters.forEach(c => {
-        const div = document.createElement("div");
-        div.className = "info-box";
-        let zonesHtml = "";
-        if (c.zones && Array.isArray(c.zones)) {
-          c.zones.forEach(z => {
-            zonesHtml += `
-              <div style="font-size:0.8rem; background:rgba(0,0,0,0.2); padding:6px; border-radius:4px; margin-top:4px;">
-                <strong>${z.type} (${z.schedule}):</strong> ${z.landmark} (+${z.proximity_to_center_yds} yds)
-              </div>
-            `;
-          });
-        }
-        div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong>${c.species}</strong>
-            <span class="badge">${c.region}</span>
-          </div>
-          <p style="font-size:0.78rem; color:var(--text-muted);">${c.cluster_notes || ''}</p>
-          <div style="margin-top:4px;">${zonesHtml}</div>
-        `;
-        container.appendChild(div);
-      });
-    },
-
-    renderLifeCycles() {
-      const container = document.getElementById("lifecyclesGrid");
-      if (!container) return;
-      const list = (this.db.lifecycles && this.db.lifecycles.species_lifecycles) ? this.db.lifecycles.species_lifecycles : [];
-      this.safeSetText("lifecycleCount", `${list.length} Species Cycles`);
-      container.innerHTML = "";
-
-      list.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "info-box";
-        div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="color:#fff;">${item.species}</strong>
-            <span class="badge">${item.max_age_years} Yrs (${item.total_lifespan_days} Days)</span>
-          </div>
-          <div class="advisory-callout" style="margin-top:6px;">
-            <strong>Cull Advisory:</strong> ${item.cull_advisory}
+            ${canAfford ? `✅ Fully Funded (Balance after: $${(this.hunterCredits - cost).toLocaleString()})` : `🔒 Deficit: Need $${deficit.toLocaleString()} more credits`}
           </div>
         `;
         container.appendChild(div);
@@ -826,8 +2029,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const container = document.getElementById("trailsGrid");
       if (!container) return;
       const list = (this.db.trails && this.db.trails.seasonal_corridors) ? this.db.trails.seasonal_corridors : [];
-      container.innerHTML = "";
 
+      container.innerHTML = "";
       list.forEach(t => {
         const div = document.createElement("div");
         div.className = "info-box";
@@ -842,6 +2045,9 @@ document.addEventListener("DOMContentLoaded", () => {
           <div style="font-size:0.8rem; margin-top:4px;">
             <strong>Winter:</strong> <span style="color:var(--text-muted);">${t.winter_trail}</span>
           </div>
+          <div style="font-size:0.78rem; color:var(--accent-amber); margin-top:6px;">
+            <strong>Grazing:</strong> ${t.grazing_area}
+          </div>
         `;
         container.appendChild(div);
       });
@@ -851,6 +2057,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const container = document.getElementById("speciesCatalogGrid");
       if (!container) return;
       const list = (this.db.species && this.db.species.species) ? this.db.species.species : [];
+
       this.safeSetText("speciesCatalogCount", `${list.length} Reserve Species`);
       container.innerHTML = "";
 
@@ -864,161 +2071,10 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
           <div style="font-size:0.78rem; color:var(--text-muted); font-style:italic;">${s.scientific_name}</div>
           <div style="font-size:0.8rem; margin-top:6px;">
+            <strong>Aggression:</strong> <span style="color:#ff9999;">${s.aggression_level}</span>
+          </div>
+          <div style="font-size:0.8rem; margin-top:2px;">
             <strong>Defense Sidearm:</strong> <span style="color:var(--accent-amber);">${s.defensive_sidearm}</span>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    },
-
-    renderDogProfile() {
-      const summaryContainer = document.getElementById("dogSummaryCard");
-      const skillsContainer = document.getElementById("dogSkillsGrid");
-      if (!summaryContainer || !skillsContainer) return;
-
-      summaryContainer.innerHTML = `
-        <div class="telemetry-card" style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <h4 style="color:#fff; font-size:1.1rem;">${this.dogCompanionName} (${this.dogBreed})</h4>
-            <div style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">
-              Primary Specialization: <strong>Blood Tracking</strong> &bull; Obedience Score: <strong>Level ${this.dogBondingLevel}</strong>
-            </div>
-          </div>
-          <div class="stepper-controls">
-            <span style="font-size:0.8rem; color:var(--text-muted);">Bonding:</span>
-            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('bonding', -1)">&minus;</button>
-            <strong style="color:var(--accent-amber); font-size:0.95rem;">${this.dogBondingLevel} / 6</strong>
-            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('bonding', 1)">&plus;</button>
-          </div>
-        </div>
-      `;
-
-      skillsContainer.innerHTML = `
-        <div class="dog-stepper-row">
-          <div>
-            <strong style="color:var(--accent-amber);">Following Commands</strong>
-            <p style="font-size:0.78rem; color:var(--text-muted);">Response speed to Heel, Sit, Stay.</p>
-          </div>
-          <div class="stepper-controls">
-            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('following', -1)">&minus;</button>
-            <strong style="color:#fff; font-size:0.95rem;">${this.dogFollowingCommandsLevel} / 6</strong>
-            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('following', 1)">&plus;</button>
-          </div>
-        </div>
-        <div class="dog-stepper-row">
-          <div>
-            <strong style="color:var(--accent-amber);">Blood Tracking</strong>
-            <p style="font-size:0.78rem; color:var(--text-muted);">Tracks faint blood trails across terrain.</p>
-          </div>
-          <div class="stepper-controls">
-            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('blood', -1)">&minus;</button>
-            <strong style="color:#fff; font-size:0.95rem;">${this.dogBloodTrackingLevel} / 6</strong>
-            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('blood', 1)">&plus;</button>
-          </div>
-        </div>
-      `;
-    },
-
-    adjustDogStat(statName, delta) {
-      if (statName === "bonding") this.dogBondingLevel = Math.max(1, Math.min(6, this.dogBondingLevel + delta));
-      if (statName === "following") this.dogFollowingCommandsLevel = Math.max(0, Math.min(6, this.dogFollowingCommandsLevel + delta));
-      if (statName === "blood") this.dogBloodTrackingLevel = Math.max(0, Math.min(6, this.dogBloodTrackingLevel + delta));
-      this.updateDogInputDisplay();
-      this.renderDogProfile();
-      this.saveState();
-    },
-
-    submitHarvestInspection() {
-      const species = document.getElementById("harvestSpeciesSelect") ? document.getElementById("harvestSpeciesSelect").value : "Elk";
-      const location = document.getElementById("harvestLocationSelect") ? document.getElementById("harvestLocationSelect").value : "New Laurentia";
-      const firearm = document.getElementById("harvestFirearm") ? document.getElementById("harvestFirearm").value : "Rifle";
-      const caliber = document.getElementById("harvestCaliber") ? document.getElementById("harvestCaliber").value : ".308";
-      const shotDist = document.getElementById("harvestShotDist") ? document.getElementById("harvestShotDist").value : 100;
-      const trackDist = document.getElementById("harvestTrackDist") ? document.getElementById("harvestTrackDist").value : 20;
-      const fitness = document.getElementById("harvestFitness") ? (parseFloat(document.getElementById("harvestFitness").value) || 60) : 60;
-      const stars = document.getElementById("harvestRatingStars") ? parseInt(document.getElementById("harvestRatingStars").value, 10) : 1;
-      const photoUrl = document.getElementById("harvestPhotoUrlInput") ? document.getElementById("harvestPhotoUrlInput").value.trim() : "";
-
-      const newRecord = {
-        species,
-        location,
-        firearm,
-        caliber,
-        shot_distance_yds: shotDist,
-        tracking_distance_yds: trackDist,
-        fitness_percentage: fitness,
-        trophy_rating_stars: stars,
-        photo_url: photoUrl || DEFAULT_GAME_POSTER,
-        date: "October 16, 2026"
-      };
-
-      if (!this.db.gameData) this.db.gameData = {};
-      if (!this.db.gameData.harvest_records) this.db.gameData.harvest_records = [];
-
-      this.db.gameData.harvest_records.unshift(newRecord);
-      this.renderHarvestHistory();
-      this.saveState();
-      alert("✅ Harvest logged with inspection photo!");
-    },
-
-    renderHarvestHistory() {
-      const container = document.getElementById("harvestHistoryContainer");
-      if (!container) return;
-      const records = (this.db.gameData && this.db.gameData.harvest_records) ? this.db.gameData.harvest_records : [];
-
-      this.safeSetText("harvestRecordCount", `${records.length} Records`);
-      container.innerHTML = "";
-
-      records.forEach(r => {
-        const div = document.createElement("div");
-        div.className = "telemetry-card";
-        div.innerHTML = `
-          <div style="display:flex; gap:10px; align-items:flex-start;">
-            <img src="${r.photo_url || DEFAULT_GAME_POSTER}" alt="" style="width:55px; height:55px; border-radius:6px; object-fit:cover; border:1px solid var(--border-color);">
-            <div style="flex-grow:1;">
-              <div class="card-top-row">
-                <span class="animal-title">${r.species}</span>
-                <span class="badge">${r.trophy_rating_stars}&#9733; Trophy</span>
-              </div>
-              <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
-                ${r.location} &bull; ${r.firearm} (${r.caliber})
-              </div>
-              <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
-                Shot: <strong>${r.shot_distance_yds} yds</strong> &bull; Fitness: <strong>${r.fitness_percentage}%</strong>
-              </div>
-            </div>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    },
-
-    recalculateCrossTrophyTelemetry() {
-      const total = this.masterTrophies.length || 6;
-      const currentEarned = Object.values(this.userTrophyProgress).filter(t => t.earned).length;
-      const pct = total > 0 ? Math.round((currentEarned / total) * 100) : 0;
-      this.crossPlatformTelemetry[this.currentPlatform] = { earned: currentEarned, total, percent: pct };
-    },
-
-    renderTrophies() {
-      const container = document.getElementById("trophyChamberGrid") || document.getElementById("psnTrophiesContainer");
-      if (!container) return;
-
-      container.innerHTML = "";
-      this.masterTrophies.forEach(t => {
-        const earned = this.userTrophyProgress[t.trophyId] && this.userTrophyProgress[t.trophyId].earned;
-        const div = document.createElement("div");
-        div.className = `telemetry-card ${earned ? 'trophy-card-earned' : ''}`;
-        div.innerHTML = `
-          <div style="display:flex; gap:12px; align-items:flex-start;">
-            <img src="${t.icon}" alt="" style="width:48px; height:48px; border-radius:6px; object-fit:cover;">
-            <div>
-              <div class="card-top-row">
-                <span class="animal-title">${t.title}</span>
-                <span class="badge">${t.grade}</span>
-              </div>
-              <p style="font-size:0.78rem; color:#cfd9e8; margin-top:4px;">${t.desc}</p>
-            </div>
           </div>
         `;
         container.appendChild(div);
@@ -1029,40 +2085,19 @@ document.addEventListener("DOMContentLoaded", () => {
       this.populateRegions();
       this.filterSpeciesByRegion("harvestLocationSelect", "harvestSpeciesSelect");
       this.filterSpeciesByRegion("watchRegionSelect", "watchSpeciesSelect");
-      this.renderGearCatalog();
+
       this.renderHarvestHistory();
-      this.renderChallenges();
-      this.renderMissions();
-      this.renderInfrastructure();
+      this.renderWatchlist();
       this.renderNeedZones();
       this.renderLifeCycles();
       this.renderDogProfile();
+      this.renderChallenges();
+      this.renderMissions();
+      this.renderInfrastructure();
       this.renderTrails();
       this.renderSpeciesCatalog();
-    },
-
-    populateRegions() {
-      const regions = (this.db.regions && this.db.regions.regions) ? this.db.regions.regions : [];
-      const locSelect = document.getElementById("harvestLocationSelect");
-      const watchSelect = document.getElementById("watchRegionSelect");
-      if (locSelect) locSelect.innerHTML = "";
-      if (watchSelect) watchSelect.innerHTML = "";
-
-      regions.forEach(r => {
-        if (locSelect) locSelect.innerHTML += `<option value="${r.name}">${r.name}</option>`;
-        if (watchSelect) watchSelect.innerHTML += `<option value="${r.name}">${r.name}</option>`;
-      });
-    },
-
-    filterSpeciesByRegion(regId, specId) {
-      const reg = document.getElementById(regId);
-      const spec = document.getElementById(specId);
-      if (!reg || !spec) return;
-      const allSpecies = (this.db.species && this.db.species.species) ? this.db.species.species : [];
-      spec.innerHTML = "";
-      allSpecies.filter(s => !s.regions || s.regions.includes(reg.value)).forEach(s => {
-        spec.innerHTML += `<option value="${s.name}">${s.name}</option>`;
-      });
+      this.renderLodgeForecaster();
+      this.updateDynamicHarvestSchema();
     },
 
     bindUI() {
@@ -1075,39 +2110,33 @@ document.addEventListener("DOMContentLoaded", () => {
           e.stopPropagation();
           dropdownMenu.classList.toggle("hidden");
         });
-        document.addEventListener("click", () => {
-          if (!dropdownMenu.classList.contains("hidden")) dropdownMenu.classList.add("hidden");
+
+        document.addEventListener("click", (e) => {
+          if (!dropdownMenu.classList.contains("hidden")) {
+            if (!dropdownMenu.contains(e.target) && e.target !== sandwichBtn) {
+              dropdownMenu.classList.add("hidden");
+            }
+          }
         });
       }
 
       document.querySelectorAll(".module-item-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
           document.querySelectorAll(".module-item-btn").forEach(b => b.classList.remove("active"));
           document.querySelectorAll(".tab-pane").forEach(p => p.classList.remove("active"));
+          
           btn.classList.add("active");
-          const target = document.getElementById(`tab-${btn.dataset.tab}`);
-          if (target) target.classList.add("active");
-          if (activeLabel) activeLabel.textContent = btn.querySelector("span").textContent;
+          const targetTab = btn.dataset.tab;
+          const targetPane = document.getElementById(`tab-${targetTab}`);
+          if (targetPane) targetPane.classList.add("active");
+
+          if (activeLabel) {
+            const firstSpan = btn.querySelector("span");
+            if (firstSpan) activeLabel.textContent = firstSpan.textContent;
+          }
+
           if (dropdownMenu) dropdownMenu.classList.add("hidden");
-        });
-      });
-
-      const autoSyncInputs = [
-        "hunterNameInput", "hunterLevelInput", "hunterCreditsInput",
-        "currentDayInput", "currentTimeInput"
-      ];
-
-      autoSyncInputs.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-
-        el.addEventListener("change", () => {
-          if (id === "hunterNameInput") this.hunterName = el.value.trim();
-          if (id === "hunterLevelInput") this.hunterLevel = parseInt(el.value, 10) || 1;
-          if (id === "hunterCreditsInput") this.hunterCredits = parseInt(el.value, 10) || 0;
-          if (id === "currentDayInput") this.currentDay = parseInt(el.value, 10) || 1;
-          if (id === "currentTimeInput") this.currentTime = el.value;
-          this.saveState();
         });
       });
 
@@ -1115,11 +2144,51 @@ document.addEventListener("DOMContentLoaded", () => {
       if (platSelect) {
         platSelect.addEventListener("change", (e) => {
           this.currentPlatform = e.target.value;
-          if (this.currentUser) {
-            this.loadFirebaseProgress();
-          } else {
-            this.saveState();
+          this.recalculateCrossTrophyTelemetry();
+          this.renderTrophies();
+          this.silentSaveGameTelemetry();
+        });
+      }
+
+      const autoSyncInputs = [
+        "hunterNameInput", "hunterLevelInput", "hunterCreditsInput",
+        "currentDayInput", "currentTimeInput", "weatherConditionInput"
+      ];
+
+      autoSyncInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        el.addEventListener("input", () => {
+          if (id === "hunterCreditsInput" || id === "hunterLevelInput") {
+            const lvlEl = document.getElementById("hunterLevelInput");
+            const crdEl = document.getElementById("hunterCreditsInput");
+            if (lvlEl) this.hunterLevel = parseInt(lvlEl.value, 10) || 1;
+            if (crdEl) this.hunterCredits = parseInt(crdEl.value, 10) || 0;
+            this.renderLodgeForecaster();
+            this.renderInfrastructure();
           }
+        });
+
+        el.addEventListener("blur", () => this.silentSaveGameTelemetry());
+        el.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            el.blur();
+          }
+        });
+      });
+
+      const locSelect = document.getElementById("harvestLocationSelect");
+      if (locSelect) {
+        locSelect.addEventListener("change", () => {
+          this.filterSpeciesByRegion("harvestLocationSelect", "harvestSpeciesSelect");
+        });
+      }
+
+      const watchRegSelect = document.getElementById("watchRegionSelect");
+      if (watchRegSelect) {
+        watchRegSelect.addEventListener("change", () => {
+          this.filterSpeciesByRegion("watchRegionSelect", "watchSpeciesSelect");
         });
       }
 
@@ -1128,7 +2197,8 @@ document.addEventListener("DOMContentLoaded", () => {
         advDayBtn.addEventListener("click", () => {
           this.currentDay++;
           this.safeSetValue("currentDayInput", this.currentDay);
-          this.saveState();
+          this.renderWatchlist();
+          this.silentSaveGameTelemetry();
         });
       }
 
@@ -1146,18 +2216,53 @@ document.addEventListener("DOMContentLoaded", () => {
           const timeStr = `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
           this.currentTime = timeStr;
           timeInput.value = timeStr;
-          this.saveState();
+          this.renderWatchlist();
+          this.silentSaveGameTelemetry();
         });
       }
 
-      const harvestSubmit = document.getElementById("submitHarvestRecordBtn");
-      if (harvestSubmit) harvestSubmit.addEventListener("click", () => this.submitHarvestInspection());
+      const watchSpecies = document.getElementById("watchSpeciesSelect");
+      if (watchSpecies) watchSpecies.addEventListener("change", () => this.updateWatchlistMaxAge());
 
-      const authModal = document.getElementById("authModal");
+      const saveWatchBtn = document.getElementById("saveWatchlistBtn");
+      if (saveWatchBtn) {
+        saveWatchBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          this.saveWatchlistEntry();
+        });
+      }
+
+      const cancelWatchBtn = document.getElementById("cancelEditWatchlistBtn");
+      if (cancelWatchBtn) {
+        cancelWatchBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          this.resetWatchlistForm();
+        });
+      }
+
+      const harvestSpecies = document.getElementById("harvestSpeciesSelect");
+      if (harvestSpecies) harvestSpecies.addEventListener("change", () => this.updateDynamicHarvestSchema());
+
+      const submitHarvestBtn = document.getElementById("submitHarvestRecordBtn");
+      if (submitHarvestBtn) {
+        submitHarvestBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          this.submitHarvestInspection();
+        });
+      }
+
+      const modal = document.getElementById("authModal");
       const authBtn = document.getElementById("authModalBtn");
       const authClose = document.getElementById("authModalClose");
-      if (authBtn && authModal) authBtn.addEventListener("click", () => authModal.classList.remove("hidden"));
-      if (authClose && authModal) authClose.addEventListener("click", () => authModal.classList.add("hidden"));
+
+      if (authBtn && modal) authBtn.addEventListener("click", () => modal.classList.remove("hidden"));
+      if (authClose && modal) authClose.addEventListener("click", () => modal.classList.add("hidden"));
+
+      const menuBtn = document.getElementById("menuToggle");
+      const nav = document.getElementById("dynamicNav");
+      if (menuBtn && nav) {
+        menuBtn.addEventListener("click", () => nav.classList.toggle("open"));
+      }
     }
   };
 
