@@ -1,13 +1,13 @@
-// scripts/compile-woth2.js
+// data/woth2/scripts/compile-woth2.js
 const fs = require('fs');
 const path = require('path');
 
-// Target directory containing your modular files
-const targetDir = path.join(__dirname, '../data/woth2');
+// When the script is in data/woth2/scripts, '..' points directly to data/woth2
+const targetDir = path.join(__dirname, '..');
 const outputFile = path.join(targetDir, 'game_data.json');
 
-// Files to exclude from merging into game_data.json
-const ignoreFiles = ['game_data.json'];
+// Exclude output file and scripts directory
+const ignoreFiles = ['game_data.json', 'scripts'];
 
 const mergedData = {};
 
@@ -19,12 +19,11 @@ try {
     const filePath = path.join(targetDir, file);
     const content = fs.readFileSync(filePath, 'utf8').trim();
 
-    if (!content) return; // Skip empty files
+    if (!content) return;
 
     const parsed = JSON.parse(content);
     const key = path.basename(file, '.json');
 
-    // Mounts data under the filename key (e.g. data.gear, data.species, data.dog_skills)
     mergedData[key] = parsed;
   });
 
