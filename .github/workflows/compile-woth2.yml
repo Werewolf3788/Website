@@ -1,36 +1,89 @@
-name: Compile WotH2 Game Data
+name: Build, Package, and Deploy
 
 on:
   push:
     branches:
-      - main # Change to master if your repo's default branch is master
-    paths:
-      - 'data/woth2/**'
-      - '!data/woth2/game_data.json'
-      - '!data/woth2/scripts/**'
+      - main # Change to master if your default branch is master
 
 permissions:
-  contents: write
+  contents: write # Allows committing the compiled JSON back to the repository
+  pages: write    # Required for GitHub Pages deployment
+  id-token: write # Required for GitHub Pages OIDC authentication & Google auth
+
+concurrency:
+  group: "pages-and-deploy"
+  cancel-in-progress: false
 
 jobs:
-  merge:
+  # =========================================================================
+  # JOB 1: Compile Modular JSON Files & Deploy to Firebase
+  # =========================================================================
+  build-and-firebase:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Run Merge Script
-        run: node data/woth2/scripts/compile-woth2.js
+      # Step 1: Execute the compile script to merge gear, species, etc. into game_data.json
+      - name: Compile WotH2 JSON Data
+        run: |
+          if [ -f "data/woth2/scripts/compile-woth2.js" ]; then
+            node data/woth2/scripts/compile-woth2.js
+          elif [ -f "scripts/compile-woth2.js" ]; then
+            node scripts/compile-woth2.js
+          else
+            echo "Compiler script not found, proceeding with existing files."
+          fi
 
-      - name: Commit and Push Updated game_data.json
+      # Step 2: Commit compiled game_data.json back to repo (only if changes exist)
+      - name: Commit Compiled JSON
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/woth2/game_data.json
-          git diff --staged --quiet || (git commit -m "Auto-compile game_data.json [skip ci]" && git push)
+          git add data/woth2/game_data.json || true
+          if ! git diff --staged --quiet; then
+            git commit -m "Auto-compile game_data.json [skip ci]"
+            git push
+          else
+            echo "No JSON changes detected; skipping commit."
+          fi
+
+      # Step 3: Deploy to Firebase Hosting
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ENTERTAINMENT_71888 || secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: live
+          projectId: entertainment-71888
+        continue-on-error: true # Ensures GitHub Pages still runs if Firebase secrets are not configured
+
+      # Step 4: Configure & Package artifact for GitHub Pages
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.' # Serves root directory
+
+  # =========================================================================
+  # JOB 2: Deploy to GitHub Pages (Fixes status 400 Missing Environment)
+  # =========================================================================
+  deploy-github-pages:
+    needs: build-and-firebase
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
