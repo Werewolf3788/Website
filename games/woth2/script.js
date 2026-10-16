@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-16 03:35 EDT | Firebase Sync Target: /utm_links | Version: 6.4.2]
+// [Smart Cache-Buster Time: 2026-10-16 03:52 EDT | Firebase Sync Target: /utm_links | Version: 6.5.0]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "//werewolf3788.github.io/Website/assets/logo.jpg";
@@ -37,24 +37,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const CompanionApp = {
     titleId: "NPWR52231_00",
     files: {
-      users: "users.json",
-      challenges: "woth2_challenges.json",
-      dogSkills: "woth2_dog_skills.json",
-      gameData: "woth2_game_data.json",
-      gear: "woth2_gear.json",
-      progressionGear: "woth2_progression_gear.json",
-      harvestSchemas: "woth2_harvest_schemas.json",
-      infrastructure: "woth2_infrastructure.json",
-      lifecycles: "woth2_lifecycles.json",
-      missions: "woth2_missions.json",
-      needZones: "woth2_need_zones.json",
-      newsUpdate: "woth2_news_update.json",
-      regions: "woth2_regions.json",
-      reserves: "woth2_reserves.json",
-      runtimeSave: "woth2_runtime_save.json",
-      species: "woth2_species.json",
-      stewardship: "woth2_stewardship.json",
-      trails: "woth2_trails.json"
+      users: "../users.json",
+      challenges: "challenges.json",
+      dogSkills: "dog_skills.json",
+      gameData: "game_data.json",
+      gear: "gear.json",
+      progressionGear: "progression_gear.json",
+      harvestSchemas: "harvest_schemas.json",
+      infrastructure: "infrastructure.json",
+      lifecycles: "lifecycles.json",
+      missions: "missions.json",
+      needZones: "need_zones.json",
+      newsUpdate: "news_update.json",
+      regions: "regions.json",
+      reserves: "reserves.json",
+      runtimeSave: "runtime_save.json",
+      schemaUpdate: "schema-update.json",
+      species: "species.json",
+      stewardship: "stewardship.json",
+      trails: "trails.json",
+      worldWildlife: "world_wildlife.json"
     },
 
     db: {},
@@ -103,20 +105,18 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     async fetchJSON(fileName) {
-      // Prioritize relative local project paths first to eliminate CORB issues
       const paths = [
-        "./data/" + fileName,
-        "../data/" + fileName,
-        "../../data/" + fileName,
-        "/data/" + fileName,
-        "/Website/data/" + fileName
+        "../../data/woth2/" + fileName,
+        "../data/woth2/" + fileName,
+        "./data/woth2/" + fileName,
+        "/Website/data/woth2/" + fileName,
+        "/data/woth2/" + fileName,
+        "./" + fileName
       ];
       for (let i = 0; i < paths.length; i++) {
         try {
           const res = await fetch(paths[i] + "?v=" + Date.now());
-          if (res.ok) {
-            return await res.json();
-          }
+          if (res.ok) return await res.json();
         } catch (e) {}
       }
       return null;
@@ -295,7 +295,6 @@ document.addEventListener("DOMContentLoaded", () => {
           if (nameEl) nameEl.textContent = user.displayName || this.hunterName;
           if (avatarEl) avatarEl.src = user.photoURL || DEFAULT_USER_AVATAR;
 
-          // Listen directly to current user's friends list
           rtdb.ref(`/users/${this.currentEmailKey}/friends`).on("value", snapshot => {
             const rawFriends = snapshot.val() || {};
             this.friendsRoster = Object.entries(rawFriends).map(([codeKey, friendData]) => {
