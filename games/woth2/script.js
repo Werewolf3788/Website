@@ -1,5 +1,5 @@
 // Line 1: Way of the Hunter 2 - Master Tactical Companion Engine
-// [Smart Cache-Buster Time: 2026-10-16 03:25 EDT | Firebase Sync Target: /utm_links | Version: 6.4.1]
+// [Smart Cache-Buster Time: 2026-10-16 03:35 EDT | Firebase Sync Target: /utm_links | Version: 6.4.2]
 
 document.addEventListener("DOMContentLoaded", () => {
   const DEFAULT_USER_AVATAR = "//werewolf3788.github.io/Website/assets/logo.jpg";
@@ -103,17 +103,20 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     async fetchJSON(fileName) {
+      // Prioritize relative local project paths first to eliminate CORB issues
       const paths = [
-        "../../data/" + fileName,
-        "../data/" + fileName,
         "./data/" + fileName,
-        "/Website/data/" + fileName,
-        "//werewolf3788.github.io/Website/data/" + fileName
+        "../data/" + fileName,
+        "../../data/" + fileName,
+        "/data/" + fileName,
+        "/Website/data/" + fileName
       ];
       for (let i = 0; i < paths.length; i++) {
         try {
           const res = await fetch(paths[i] + "?v=" + Date.now());
-          if (res.ok) return await res.json();
+          if (res.ok) {
+            return await res.json();
+          }
         } catch (e) {}
       }
       return null;
@@ -292,7 +295,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (nameEl) nameEl.textContent = user.displayName || this.hunterName;
           if (avatarEl) avatarEl.src = user.photoURL || DEFAULT_USER_AVATAR;
 
-          // Listen strictly to your RTDB friends node
+          // Listen directly to current user's friends list
           rtdb.ref(`/users/${this.currentEmailKey}/friends`).on("value", snapshot => {
             const rawFriends = snapshot.val() || {};
             this.friendsRoster = Object.entries(rawFriends).map(([codeKey, friendData]) => {
@@ -326,7 +329,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    // Link a real registered friend by their 8-character code
     async addFriendByCode() {
       const codeInput = document.getElementById("friendCodeInput");
       if (!codeInput || !codeInput.value.trim()) return alert("Please enter an 8-character Friend Code.");
@@ -352,7 +354,6 @@ document.addEventListener("DOMContentLoaded", () => {
           return alert(`⚠️ No registered hunter found with friend code: ${code}`);
         }
 
-        // Save to current user's friends list in RTDB under the friend code
         await rtdb.ref(`/users/${this.currentEmailKey}/friends/${code}`).set({
           friend_code: code,
           user_key: foundKey,
@@ -367,7 +368,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     },
 
-    // Read friend code -> find owner's sanitized email in RTDB -> read live Firestore doc
     async loadRealFriendsTelemetry() {
       if (!this.friendsRoster.length) {
         this.renderRealFriends([]);
@@ -475,7 +475,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return parseFloat(stripped) || 0;
     },
 
-    // Flatten woth2_gear.json dictionary into the Arsenal Catalog
     renderGearCatalog() {
       const container = document.getElementById("gearCatalogContainer");
       if (!container) return;
@@ -547,7 +546,6 @@ document.addEventListener("DOMContentLoaded", () => {
       this.renderGearCatalog();
     },
 
-    // Render Challenge Trees from woth2_challenges.json
     renderChallenges() {
       const container = document.getElementById("challengeTreesGrid");
       if (!container) return;
@@ -585,7 +583,6 @@ document.addEventListener("DOMContentLoaded", () => {
       this.safeSetText("challengesCount", `${challengeCount} Total Challenges`);
     },
 
-    // Interactive Mission Engine
     renderMissions() {
       const container = document.getElementById("missionsGrid");
       if (!container) return;
@@ -626,7 +623,6 @@ document.addEventListener("DOMContentLoaded", () => {
       this.renderMissions();
     },
 
-    // Infrastructure Tasks with Real Credit Balances
     renderInfrastructure() {
       const container = document.getElementById("infrastructureGrid");
       if (!container) return;
@@ -661,6 +657,166 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         container.appendChild(div);
       });
+    },
+
+    renderNeedZones() {
+      const container = document.getElementById("needZoneClustersGrid");
+      if (!container) return;
+      const clusters = (this.db.needZones && this.db.needZones.clusters) ? this.db.needZones.clusters : [];
+      this.safeSetText("needZoneCount", `${clusters.length} Tactical Clusters`);
+      container.innerHTML = "";
+
+      clusters.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        let zonesHtml = "";
+        if (c.zones && Array.isArray(c.zones)) {
+          c.zones.forEach(z => {
+            zonesHtml += `
+              <div style="font-size:0.8rem; background:rgba(0,0,0,0.2); padding:6px; border-radius:4px; margin-top:4px;">
+                <strong>${z.type} (${z.schedule}):</strong> ${z.landmark} (+${z.proximity_to_center_yds} yds)
+              </div>
+            `;
+          });
+        }
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>${c.species}</strong>
+            <span class="badge">${c.region}</span>
+          </div>
+          <p style="font-size:0.78rem; color:var(--text-muted);">${c.cluster_notes || ''}</p>
+          <div style="margin-top:4px;">${zonesHtml}</div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    renderLifeCycles() {
+      const container = document.getElementById("lifecyclesGrid");
+      if (!container) return;
+      const list = (this.db.lifecycles && this.db.lifecycles.species_lifecycles) ? this.db.lifecycles.species_lifecycles : [];
+      this.safeSetText("lifecycleCount", `${list.length} Species Cycles`);
+      container.innerHTML = "";
+
+      list.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#fff;">${item.species}</strong>
+            <span class="badge">${item.max_age_years} Yrs (${item.total_lifespan_days} Days)</span>
+          </div>
+          <div class="advisory-callout" style="margin-top:6px;">
+            <strong>Cull Advisory:</strong> ${item.cull_advisory}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    renderTrails() {
+      const container = document.getElementById("trailsGrid");
+      if (!container) return;
+      const list = (this.db.trails && this.db.trails.seasonal_corridors) ? this.db.trails.seasonal_corridors : [];
+      container.innerHTML = "";
+
+      list.forEach(t => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#fff;">${t.species}</strong>
+            <span class="badge">${t.region}</span>
+          </div>
+          <div style="font-size:0.8rem; margin-top:6px;">
+            <strong>Summer:</strong> <span style="color:var(--text-muted);">${t.summer_trail}</span>
+          </div>
+          <div style="font-size:0.8rem; margin-top:4px;">
+            <strong>Winter:</strong> <span style="color:var(--text-muted);">${t.winter_trail}</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    renderSpeciesCatalog() {
+      const container = document.getElementById("speciesCatalogGrid");
+      if (!container) return;
+      const list = (this.db.species && this.db.species.species) ? this.db.species.species : [];
+      this.safeSetText("speciesCatalogCount", `${list.length} Reserve Species`);
+      container.innerHTML = "";
+
+      list.forEach(s => {
+        const div = document.createElement("div");
+        div.className = "info-box";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#fff;">${s.name}</strong>
+            <span class="badge">Tier ${s.tier}</span>
+          </div>
+          <div style="font-size:0.78rem; color:var(--text-muted); font-style:italic;">${s.scientific_name}</div>
+          <div style="font-size:0.8rem; margin-top:6px;">
+            <strong>Defense Sidearm:</strong> <span style="color:var(--accent-amber);">${s.defensive_sidearm}</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    },
+
+    renderDogProfile() {
+      const summaryContainer = document.getElementById("dogSummaryCard");
+      const skillsContainer = document.getElementById("dogSkillsGrid");
+      if (!summaryContainer || !skillsContainer) return;
+
+      summaryContainer.innerHTML = `
+        <div class="telemetry-card" style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h4 style="color:#fff; font-size:1.1rem;">${this.dogCompanionName} (${this.dogBreed})</h4>
+            <div style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">
+              Primary Specialization: <strong>Blood Tracking</strong> &bull; Obedience Score: <strong>Level ${this.dogBondingLevel}</strong>
+            </div>
+          </div>
+          <div class="stepper-controls">
+            <span style="font-size:0.8rem; color:var(--text-muted);">Bonding:</span>
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('bonding', -1)">&minus;</button>
+            <strong style="color:var(--accent-amber); font-size:0.95rem;">${this.dogBondingLevel} / 6</strong>
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('bonding', 1)">&plus;</button>
+          </div>
+        </div>
+      `;
+
+      skillsContainer.innerHTML = `
+        <div class="dog-stepper-row">
+          <div>
+            <strong style="color:var(--accent-amber);">Following Commands</strong>
+            <p style="font-size:0.78rem; color:var(--text-muted);">Response speed to Heel, Sit, Stay.</p>
+          </div>
+          <div class="stepper-controls">
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('following', -1)">&minus;</button>
+            <strong style="color:#fff; font-size:0.95rem;">${this.dogFollowingCommandsLevel} / 6</strong>
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('following', 1)">&plus;</button>
+          </div>
+        </div>
+        <div class="dog-stepper-row">
+          <div>
+            <strong style="color:var(--accent-amber);">Blood Tracking</strong>
+            <p style="font-size:0.78rem; color:var(--text-muted);">Tracks faint blood trails across terrain.</p>
+          </div>
+          <div class="stepper-controls">
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('blood', -1)">&minus;</button>
+            <strong style="color:#fff; font-size:0.95rem;">${this.dogBloodTrackingLevel} / 6</strong>
+            <button type="button" class="stepper-btn" onclick="window.CompanionApp.adjustDogStat('blood', 1)">&plus;</button>
+          </div>
+        </div>
+      `;
+    },
+
+    adjustDogStat(statName, delta) {
+      if (statName === "bonding") this.dogBondingLevel = Math.max(1, Math.min(6, this.dogBondingLevel + delta));
+      if (statName === "following") this.dogFollowingCommandsLevel = Math.max(0, Math.min(6, this.dogFollowingCommandsLevel + delta));
+      if (statName === "blood") this.dogBloodTrackingLevel = Math.max(0, Math.min(6, this.dogBloodTrackingLevel + delta));
+      this.updateDogInputDisplay();
+      this.renderDogProfile();
     },
 
     submitHarvestInspection() {
@@ -768,6 +924,11 @@ document.addEventListener("DOMContentLoaded", () => {
       this.renderChallenges();
       this.renderMissions();
       this.renderInfrastructure();
+      this.renderNeedZones();
+      this.renderLifeCycles();
+      this.renderDogProfile();
+      this.renderTrails();
+      this.renderSpeciesCatalog();
     },
 
     populateRegions() {
