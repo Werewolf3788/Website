@@ -1,22 +1,26 @@
 <!-- Line 1: Document Type Declaration -->
 <!DOCTYPE html>
 <!-- ============================================================================
- * Dashboard: WildHorse_Spirit / Werewolf3788 Master Command Telemetry & Tactical Hub
+ * Dashboard: WildHorse_Spirit / Werewolf3788 Master Tactical Hub
  * File: /Playstation/dashboards/wildhorse_spirit.html
- * Engine: Complete Client-Side Firebase RTDB & Firestore Real-Time Dashboard
+ * Engine: Client-Side Firebase RTDB Dedicated PSN & DecAPI Live Telemetry Dashboard
  * Description: 
  *   1. Direct Active Hunt Binding: Root /psn/gamertags/WildHorse_Spirit properties:
  *      - currentCommunicationId, currentGame, currentGameArt
  *      - currentGameHours, currentGameNumericHours
  *      - earliestTrophyDate, lastUpdated, trophySummary
  *   2. Full PSN Multi-Path Reader: Pulls from /psn/gamertags, /psn/users, and /psn.json.
- *   3. Sniper Elite 5 Service Record: Longshots, All 47 Ribbons, Tactics/Masteries.
- *   4. COTW Trophy Lodge: Multi-hunter comparison with squad crowns.
- *   5. Squad Campaigns: Cloud Firestore &ge;1% campaigns with verified poster graphics.
- *   6. FS25 Farm 1 (farm_1) Telemetry: Live agronomy, crop stage, and fleet equipment.
- *   7. Smart Domain Routing: Same domain stays in current tab; external opens new tab.
+ *   3. Complete DecAPI Twitch Telemetry:
+ *      - Channel Profile Avatar (//decapi.me/twitch/avatar/werewolf3788)
+ *      - Active Stream Game Category & Verified Box Art (//decapi.me/twitch/game/werewolf3788)
+ *      - Live Stream Uptime Duration (//decapi.me/twitch/uptime/werewolf3788)
+ *      - Live Concurrent Viewers (//decapi.me/twitch/viewercount/werewolf3788)
+ *      - Total Follower Count (//decapi.me/twitch/followcount/werewolf3788)
+ *   4. PS5/PS4 Trophy Journey Checklist: Live objective progress, subprogress, squad presence.
+ *   5. Dynamic UTM Navbar: /utm_links sorting with thumbnail support.
+ *   6. Smart Domain Routing: Same domain stays in current tab; external opens new tab.
  * Analytics: G-CTYHDF4MSD (New York 24h Time)
- * Date & Time Stamp: 2026-09-29 23:05:00 EDT (America/New_York)
+ * Date & Time Stamp: 2026-10-17 14:35:00 EDT (America/New_York)
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -41,7 +45,7 @@
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '46.0.0',
+            'layout_version': '47.3.0',
             'gamertag': 'WildHorse_Spirit',
             'user_handle': 'Werewolf3788',
             'engagement_timezone': 'America/New_York',
@@ -80,12 +84,12 @@
             --accent-orange: #ff5f1f;
             --accent-orange-dim: #9e3a12;
             --accent-green: #10b981;
-            --accent-farm: #84cc16;
             --accent-blue: #38bdf8;
             --danger-red: #ef4444;
             --warning-yellow: #f59e0b;
             --amazon-orange: #ff9900;
             --ps-blue: #00439c;
+            --twitch-purple: #9146ff;
         }
 
         body {
@@ -228,11 +232,6 @@
             box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 95, 31, 0.2);
         }
 
-        .card-theme-wolf { border-top: 4px solid #ff5f1f !important; }
-        .card-theme-se5 { border-top: 4px solid #38bdf8 !important; }
-        .card-theme-cotw { border-top: 4px solid #10b981 !important; }
-        .card-theme-fs25 { border-top: 4px solid #84cc16 !important; }
-
         .header-stat-card {
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             min-height: 170px; text-align: center; position: relative;
@@ -309,22 +308,6 @@
         .prog-stage-3 { background: linear-gradient(90deg, #f59e0b, #84cc16); box-shadow: 0 0 10px rgba(132, 204, 22, 0.5); }
         .prog-stage-4 { background: linear-gradient(90deg, #10b981, #059669); box-shadow: 0 0 10px rgba(16, 185, 129, 0.6); }
 
-        .rank-glow-1st {
-            border: 2px solid #10b981 !important; box-shadow: 0 0 18px rgba(16, 185, 129, 0.7) !important;
-            color: #34d399 !important; background: rgba(16, 185, 129, 0.15) !important;
-        }
-        .rank-glow-2nd {
-            border: 2px solid #f59e0b !important; box-shadow: 0 0 18px rgba(245, 158, 11, 0.7) !important;
-            color: #fbbf24 !important; background: rgba(245, 158, 11, 0.15) !important;
-        }
-        .rank-glow-3rd {
-            border: 2px solid #ef4444 !important; box-shadow: 0 0 18px rgba(239, 68, 68, 0.7) !important;
-            color: #f87171 !important; background: rgba(239, 68, 68, 0.15) !important;
-        }
-        .rank-glow-none {
-            border: 1px solid rgba(255, 255, 255, 0.1) !important; color: #94a3b8 !important; background: rgba(255, 255, 255, 0.04) !important;
-        }
-
         .game-thumb {
             position: relative; aspect-ratio: 2/3; overflow: hidden; border-radius: 1.25rem;
             background: #1a1a22; border: 1px solid rgba(255,255,255,0.08); cursor: pointer;
@@ -400,26 +383,10 @@
 
         .live-badge {
             position: absolute; top: 12px; right: 12px; background: #ff5f1f; color: black;
-            padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 900;
-            text-transform: uppercase; animation: pulseLive 2s infinite;
+            padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 900;
+            text-transform: uppercase; animation: pulseLive 2s infinite; z-index: 10;
         }
         @keyframes pulseLive { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
-        .fs25-badge {
-            background: rgba(132, 204, 22, 0.15); color: #bef264; border: 1px solid rgba(132, 204, 22, 0.3);
-            border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 800; text-transform: uppercase;
-        }
-
-        .service-badge {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 80px;
-        }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -431,7 +398,7 @@
         <span class="kf-k">K</span><span class="kf-f">F</span>
     </div>
 
-    <!-- TOP HEADER MENU -->
+    <!-- TOP HEADER MENU (DYNAMIC UTM LINKS) -->
     <nav class="nav-bar">
         <div class="viewport-85-wrap nav-container">
             <a href="//werewolf3788.github.io/Website/" class="text-white font-black text-lg flex items-center gap-2 min-h-[48px]">
@@ -448,6 +415,7 @@
         </div>
     </nav>
 
+    <!-- HEALTH & SYNC STATUS MONITOR -->
     <div id="health-monitor">
         <div id="health-dot" class="status-dot-pulse bg-gray-500"></div>
         <div class="flex flex-col">
@@ -456,6 +424,7 @@
         </div>
     </div>
 
+    <!-- NPSSO EXPIRATION NOTIFICATION BANNER -->
     <div class="viewport-85-wrap mt-4 hidden" id="system-alerts-container">
         <div class="bg-red-500/10 border-2 border-red-500 p-4 rounded-2xl flex items-center gap-4">
             <i class="fas fa-triangle-exclamation text-red-500 text-2xl"></i>
@@ -479,28 +448,51 @@
             <div class="text-xs sm:text-sm font-black text-gray-400 uppercase tracking-[0.4em] mb-8">Official Pack Leader Telemetry Hub</div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-center mobile-stack-single">
-                <a id="twitch-card" href="//www.twitch.tv/werewolf3788" target="_blank" rel="noopener noreferrer" class="glass-card header-stat-card p-5 border-b-4 border-purple-500 hover:scale-[1.02] transition-transform min-h-[160px] relative">
+                
+                <!-- COMPLETE DECAPI TWITCH TELEMETRY CARD -->
+                <a id="twitch-card" href="//www.twitch.tv/werewolf3788" target="_blank" rel="noopener noreferrer" class="glass-card header-stat-card p-4 border-b-4 border-purple-500 hover:scale-[1.02] transition-all min-h-[170px] relative overflow-hidden group">
                     <div id="live-indicator" class="live-badge hidden">Live Now</div>
-                    <div class="text-xs text-purple-400 font-black mb-1 uppercase tracking-widest">Twitch Feed</div>
-                    <div id="follower-count" class="text-3xl font-black text-gray-400 font-mono">--</div>
-                    <div id="twitch-status-msg" class="text-xs text-gray-300 font-bold uppercase mt-2 italic truncate w-full px-2">"--"</div>
-                    <div id="twitch-age" class="text-xs text-gray-400 font-black uppercase mt-1">Age: --</div>
+                    
+                    <div class="flex items-center gap-2 mb-2 w-full justify-center">
+                        <img id="twitch-avatar-img" src="//via.placeholder.com/32x32/1e1e24/9146ff?text=T" class="w-7 h-7 rounded-full border-2 border-purple-400 object-cover shadow" alt="Twitch Avatar">
+                        <div class="text-xs text-purple-400 font-black uppercase tracking-widest flex items-center gap-1.5">
+                            <i class="fab fa-twitch text-sm"></i> @werewolf3788
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-center gap-3 w-full my-auto">
+                        <img id="twitch-boxart-img" src="" class="w-12 h-16 rounded-md object-cover border border-purple-500/30 shadow hidden" alt="Game Art" onerror="handleTwitchBoxArtError(this)">
+                        
+                        <div class="flex flex-col items-start min-w-0 flex-1 text-left">
+                            <div class="text-2xl font-black text-white font-mono leading-none" id="follower-count">--</div>
+                            <div class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Followers</div>
+                            <div id="twitch-viewers-count" class="text-[11px] font-mono font-bold text-purple-300 uppercase mt-1 hidden">
+                                <i class="fas fa-eye text-[9px] mr-1"></i> <span id="twitch-viewers-val">0</span> viewers
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="twitch-status-msg" class="text-xs text-gray-200 font-black uppercase mt-1.5 truncate w-full px-1">Offline</div>
+                    
+                    <div id="twitch-uptime-container" class="w-full text-center mt-1 hidden">
+                        <span id="twitch-uptime-val" class="text-[11px] font-mono font-black text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-500/40 uppercase">Streaming: --</span>
+                    </div>
                 </a>
 
-                <div class="glass-card header-stat-card p-5 border-b-4 border-[#ff5f1f] min-h-[160px]">
+                <div class="glass-card header-stat-card p-5 border-b-4 border-[#ff5f1f] min-h-[170px]">
                     <div class="text-xs text-orange-400 font-black mb-1 uppercase tracking-widest">PSN Library</div>
                     <div id="games-played-count" class="text-3xl font-black text-white font-mono">--</div>
                     <div class="text-xs text-gray-300 font-bold uppercase mt-2">Total Games Played</div>
                 </div>
 
-                <div class="glass-card header-stat-card p-5 border-b-4 border-[#9e3a12] min-h-[160px]">
+                <div class="glass-card header-stat-card p-5 border-b-4 border-[#9e3a12] min-h-[170px]">
                     <div class="text-xs text-orange-400 font-black mb-1 uppercase tracking-widest">PSN Level</div>
                     <div id="psn-level-label" class="text-3xl font-black text-white font-mono">--</div>
                     <div id="psn-region" class="text-xs text-gray-300 font-bold uppercase mt-2">Region: US</div>
                     <div id="psn-account-age" class="text-xs text-gray-400 font-black uppercase mt-1">Age: --</div>
                 </div>
 
-                <div id="trophy-card" class="glass-card header-stat-card p-5 border-b-4 border-yellow-500 min-h-[160px]">
+                <div id="trophy-card" class="glass-card header-stat-card p-5 border-b-4 border-yellow-500 min-h-[170px]">
                     <div class="text-xs text-yellow-500 font-black mb-1 uppercase tracking-widest">Total Trophies</div>
                     <div id="trophy-total" class="text-3xl lg:text-4xl font-black text-white mb-2 font-mono">--</div>
                     <div class="grid grid-cols-4 gap-1 pt-2 border-t border-white/5 w-full">
@@ -511,7 +503,7 @@
                     </div>
                 </div>
 
-                <div class="glass-card header-stat-card p-5 border-b-4 border-green-500 col-span-1 sm:col-span-2 lg:col-span-1 min-h-[160px]">
+                <div class="glass-card header-stat-card p-5 border-b-4 border-green-500 col-span-1 sm:col-span-2 lg:col-span-1 min-h-[170px]">
                     <div id="online-status-label" class="text-base font-black text-white uppercase">Connecting</div>
                     <div id="current-game-sub" class="text-xs text-green-400 font-black uppercase mt-1 truncate max-w-[200px]">---</div>
                     <div id="current-activity" class="text-xs text-gray-300 font-bold uppercase mt-2">Activity: --</div>
@@ -524,17 +516,9 @@
     <!-- MAIN OPERATIONS HUB -->
     <main class="viewport-85-wrap pb-28 flex flex-col gap-10">
 
-        <!-- ACTIVE HUNT & PROFILE INTEL -->
+        <!-- ACTIVE HUNT & RECENT PSN HUNTS -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mobile-stack-single" id="active-hunt-section">
             <div class="flex flex-col gap-6">
-                <section class="glass-card p-6">
-                    <div class="flex justify-between items-start mb-2">
-                        <h2 class="text-lg">Profile Intel</h2>
-                        <i class="fab fa-playstation text-orange-500 text-xl"></i>
-                    </div>
-                    <p id="profile-bio" class="text-gray-300 text-sm leading-relaxed">Official Pack Leader Profile</p>
-                </section>
-
                 <section id="last-played-hero" class="glass-card overflow-hidden">
                     <div class="p-6 pb-3 flex justify-between items-center">
                         <h2 class="text-orange-500 text-lg flex items-center gap-2"><i class="fas fa-crosshairs"></i> Active Hunt</h2>
@@ -614,212 +598,11 @@
                     <section id="ps-plus-card" class="glass-card p-5 border-t-4 border-orange-500 text-center flex flex-col justify-between">
                         <h3 class="text-orange-400 text-xs font-black flex items-center justify-center gap-1.5"><i class="fab fa-playstation"></i> PS Plus Active</h3>
                         <a href="//www.playstation.com/en-us/ps-plus/" target="_blank" rel="noopener noreferrer" class="py-2 inline-block">
-                            <img src="//assetsdelivery.eldorado.gg/v7/_offers-v2_/2e84e915-faa9-4670-b6a1-2406ea1f3a64_Offer_20241113013824_723432Large.png?w=255" alt="" class="w-20 h-20 object-contain mx-auto p-1.5 rounded-xl bg-black/40 border border-white/10 hover:border-orange-400 transition-all">
+                            <img src="//assetsdelivery.eldorado.gg/v7/_offers-v2_/2e84e915-faa9-4670-b6a1-2406ea1f3a64_Offer_20241113013824_723432Large.png?w=255" alt="PS Plus Badge" class="w-20 h-20 object-contain mx-auto p-1.5 rounded-xl bg-black/40 border border-white/10 hover:border-orange-400 transition-all">
                         </a>
                         <span class="text-xs font-black text-gray-400 uppercase">Premium Cloud Sync</span>
                     </section>
                 </div>
-            </div>
-        </div>
-
-        <!-- DUAL TELEMETRY ROW -->
-        <div class="w-full flex flex-col gap-6" id="dual-telemetry-row">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-2">
-                <div>
-                    <h2 class="text-2xl font-black uppercase text-white flex items-center gap-2.5">
-                        <i class="fas fa-layer-group text-orange-400"></i> Active Operations &amp; Server Telemetry
-                    </h2>
-                    <p class="text-xs text-gray-400 font-bold uppercase">Dedicated Real-Time Feeds for WildHorse_Spirit / Werewolf3788</p>
-                </div>
-                <div class="flex items-center gap-2 flex-wrap">
-                    <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-lime-950 text-lime-400 border border-lime-500/40">FS25 Farm 1 Focused</span>
-                    <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-orange-950 text-orange-400 border border-orange-500/40">Squad Roster Active</span>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mobile-stack-single" id="operations-matrix-grid">
-                
-                <!-- CARD A: FS25 FARM 1 -->
-                <section id="fs25-telemetry-section" class="glass-card card-theme-fs25 p-6 sm:p-7 flex flex-col justify-between space-y-6">
-                    <div class="space-y-5">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
-                            <div>
-                                <div class="flex items-center gap-2.5">
-                                    <i class="fas fa-tractor text-lime-400 text-2xl"></i>
-                                    <h3 class="text-xl font-black uppercase text-lime-400">FS25 Telemetry &amp; Farm 1 Fleet</h3>
-                                </div>
-                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Live Server Node: fs25-a3563 / Target: farms/farm_1</p>
-                            </div>
-                            <div id="fs25-status-pill" class="fs25-badge flex items-center gap-1.5 self-start sm:self-auto">
-                                <span class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span>
-                                <span id="fs25-status-text">Farm 1 Synchronized</span>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                            <div class="bg-black/40 p-3 rounded-xl border border-white/5">
-                                <div class="text-xs font-black text-gray-400 uppercase">Farm Designation</div>
-                                <div id="fs25-farm-name" class="text-xs sm:text-sm font-black text-white mt-1 truncate">Werewolf Farm (Farm 1)</div>
-                            </div>
-                            <div class="bg-black/40 p-3 rounded-xl border border-white/5">
-                                <div class="text-xs font-black text-gray-400 uppercase">Operating Capital</div>
-                                <div id="fs25-money" class="text-xs sm:text-sm font-black text-lime-400 font-mono mt-1 truncate">$0</div>
-                            </div>
-                            <div class="bg-black/40 p-3 rounded-xl border border-white/5">
-                                <div class="text-xs font-black text-gray-400 uppercase">Farmland Parcels</div>
-                                <div id="fs25-fields-count" class="text-xs sm:text-sm font-black text-white font-mono mt-1">0</div>
-                            </div>
-                            <div class="bg-black/40 p-3 rounded-xl border border-white/5">
-                                <div class="text-xs font-black text-gray-400 uppercase">Fleet Machinery</div>
-                                <div id="fs25-vehicles-count" class="text-xs sm:text-sm font-black text-white font-mono mt-1">0</div>
-                            </div>
-                        </div>
-
-                        <div class="space-y-2.5">
-                            <div class="flex justify-between items-center">
-                                <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-2">
-                                    <i class="fas fa-truck-monster text-lime-400"></i> Farm 1 Active Implements &amp; Heavy Machinery
-                                </h4>
-                                <span id="fs25-fleet-subtitle" class="text-xs font-black text-lime-400 uppercase font-mono">0 Units</span>
-                            </div>
-                            <div id="fs25-fleet-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[360px] overflow-y-auto no-scrollbar pr-1">
-                                <div class="p-6 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Ingesting Farm 1 Fleet...</div>
-                            </div>
-                        </div>
-
-                        <div class="space-y-2.5 pt-2 border-t border-white/5">
-                            <div class="flex justify-between items-center">
-                                <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-2">
-                                    <i class="fas fa-seedling text-lime-400"></i> Farm 1 Crops, Agronomy &amp; Field Boundaries
-                                </h4>
-                                <span id="fs25-fields-subtitle" class="text-xs font-black text-lime-400 uppercase font-mono">0 Parcels</span>
-                            </div>
-                            <div id="fs25-fields-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[260px] overflow-y-auto no-scrollbar pr-1">
-                                <div class="p-4 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Loading Agronomy Data...</div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- CARD B: SNIPER ELITE 5 COMPREHENSIVE SERVICE RECORD -->
-                <section id="firestore-progress-section" class="glass-card card-theme-se5 p-6 sm:p-7 flex flex-col justify-between space-y-6">
-                    <div class="space-y-5">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
-                            <div>
-                                <div class="flex items-center gap-2.5">
-                                    <i class="fas fa-crosshairs text-sky-400 text-2xl"></i>
-                                    <h3 class="text-xl font-black uppercase text-sky-400">Sniper Elite 5 Intelligence Matrix</h3>
-                                </div>
-                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Tactical Longshots, All 47 Ribbons &amp; Masteries</p>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="px-2.5 py-1 rounded-full text-xs font-black uppercase bg-emerald-950 text-emerald-400 border border-emerald-500/40 animate-pulse">
-                                    Verified Squad Intel
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="bg-black/50 p-4 rounded-xl border border-white/5 space-y-2.5">
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs font-black text-sky-400 uppercase">Werewolf3788 Campaign Completion</span>
-                                <span id="se5-total-pct" class="text-sm font-black text-white font-mono">0% (0/0)</span>
-                            </div>
-                            <div class="progress-bar-container"><div id="se5-progress-fill" class="progress-bar-fill prog-stage-1" style="width: 0%"></div></div>
-                            <div class="flex flex-col sm:flex-row justify-between sm:items-center text-xs font-black text-gray-400 uppercase pt-1 gap-1">
-                                <span>Target Feats: <strong class="text-white">Longshots &bull; Ribbons &bull; Masteries</strong></span>
-                                <span>Squad: <strong class="text-sky-400">wildhorse_spirit, OneLIVIDMAN, Darkwing69420, Elu Cloud</strong></span>
-                            </div>
-                        </div>
-
-                        <!-- TACTICAL LONGSHOTS LEADERBOARD -->
-                        <div class="space-y-2.5">
-                            <div class="flex justify-between items-center">
-                                <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                                    <i class="fas fa-medal text-yellow-400"></i> Tactical Long Shot Range Comparison
-                                </h4>
-                                <span class="text-xs font-black text-emerald-400 uppercase font-mono">1st 🟢 | 2nd 🟡 | 3rd 🔴</span>
-                            </div>
-                            <div id="se5-longshot-cards-container" class="flex flex-col gap-2.5 max-h-[300px] overflow-y-auto no-scrollbar pr-1">
-                                <div class="p-6 text-center text-gray-500 font-bold uppercase text-xs">Syncing Sniper Elite 5 Longshots...</div>
-                            </div>
-                        </div>
-
-                        <!-- ALL 47 COMBAT RIBBONS -->
-                        <div class="space-y-2.5 pt-2 border-t border-white/5">
-                            <div class="flex justify-between items-center">
-                                <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                                    <i class="fas fa-ribbon text-pink-400"></i> All Combat Ribbons (47 Total)
-                                </h4>
-                                <span id="se5-ribbons-count" class="text-xs font-mono text-sky-400 font-black">0 Ribbons</span>
-                            </div>
-                            <div id="se5-ribbons-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[260px] overflow-y-auto no-scrollbar pr-1">
-                                <div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">Ingesting Ribbons...</div>
-                            </div>
-                        </div>
-
-                        <!-- WEAPON MASTERY & TACTICS MEDALS -->
-                        <div class="space-y-2.5 pt-2 border-t border-white/5">
-                            <div class="flex justify-between items-center">
-                                <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                                    <i class="fas fa-shield-halved text-cyan-400"></i> Weapon Mastery &amp; Tactics Medals
-                                </h4>
-                                <span id="se5-medals-count" class="text-xs font-mono text-cyan-400 font-black">0 Masteries</span>
-                            </div>
-                            <div id="se5-mastery-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[260px] overflow-y-auto no-scrollbar pr-1">
-                                <div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">Ingesting Medals &amp; Weapon Masteries...</div>
-                            </div>
-                        </div>
-
-                    </div>
-                </section>
-
-                <!-- CARD C: COTW EXPANDED TROPHY LODGE (MULTI-HUNTER COMPARATIVE GRID) -->
-                <section id="cotw-full-card" class="glass-card card-theme-cotw p-6 sm:p-7 flex flex-col justify-between space-y-5">
-                    <div class="space-y-4">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
-                            <div>
-                                <div class="flex items-center gap-2.5">
-                                    <i class="fas fa-paw text-emerald-400 text-2xl"></i>
-                                    <h3 class="text-xl font-black uppercase text-emerald-400">COTW Trophy Lodge &amp; Harvests</h3>
-                                </div>
-                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">theHunter: Call of the Wild / Comparative Harvest Records</p>
-                            </div>
-                            <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-emerald-950 text-emerald-400 border border-emerald-500/40">
-                                👑 = Squad Leader
-                            </span>
-                        </div>
-
-                        <!-- Comparative Animal Ranks Container across all active operatives -->
-                        <div id="cotw-squad-lodge-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[460px] overflow-y-auto no-scrollbar pr-1">
-                            <div class="p-6 text-center text-gray-500 font-bold uppercase text-xs col-span-full">Loading COTW Squad Harvest Records...</div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- CARD D: SQUAD CAMPAIGNS & LIVE OBJECTIVES (DYNAMIC CLOUD FIRESTORE) -->
-                <section id="additional-games-section" class="glass-card card-theme-wolf p-6 sm:p-7 flex flex-col justify-between space-y-5">
-                    <div class="space-y-4">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-4">
-                            <div>
-                                <div class="flex items-center gap-2.5">
-                                    <i class="fas fa-users-viewfinder text-orange-400 text-2xl"></i>
-                                    <h3 class="text-xl font-black uppercase text-orange-400">Squad Campaigns &amp; Live Objectives</h3>
-                                </div>
-                                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">
-                                    Cloud Firestore Progress (&ge; 1% Progress Only)
-                                </p>
-                            </div>
-                            <span class="px-3 py-1.5 rounded-full text-xs font-black uppercase bg-orange-950 text-orange-400 border border-orange-500/40 font-mono">
-                                Live Firestore Sync
-                            </span>
-                        </div>
-
-                        <div id="firestore-squad-games-grid" class="flex flex-col gap-3.5 max-h-[500px] overflow-y-auto no-scrollbar pr-1">
-                            <div class="p-8 text-center text-gray-500 font-bold uppercase text-xs">Querying Firestore for active squad games...</div>
-                        </div>
-                    </div>
-                </section>
-
             </div>
         </div>
 
@@ -848,10 +631,10 @@
                     &copy; 2026 Werewolf Project. Built by Werewolf3788 &amp; Friends.
                 </p>
                 <div id="build-meta-footer" style="color: #94a3b8; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
-                    Werewolf Command Engine &bull; v46.0.0 &bull; Build: 2026-09-29 23:05:00 EDT
+                    Werewolf Command Engine &bull; v47.3.0 &bull; Build: 2026-10-17 14:35:00 EDT
                 </div>
                 <div class="text-center mt-2 text-xs font-black text-gray-500 uppercase tracking-[0.2em]">
-                    Primary RTDB: <span class="text-orange-400">/psn/gamertags/WildHorse_Spirit.json</span> | FS25 RTDB: <span class="text-lime-400">fs25-a3563 (farm_1)</span> | Synced: <span id="sync-time" class="text-gray-300">--</span>
+                    Primary RTDB: <span class="text-orange-400">/psn/gamertags/WildHorse_Spirit.json</span> | Skeleton: <span class="text-orange-400">/psn/games.json</span> | Synced: <span id="sync-time" class="text-gray-300">--</span>
                 </div>
             </div>
         </footer>
@@ -869,579 +652,28 @@
         </div>
     </div>
 
-    <!-- FIRESTORE TELEMETRY & SE5 FILTER MODULE -->
-    <script type="module">
-        // Line 571: Firestore Module & Cross-Hunter Real-Time Subscriptions
-        import { initializeApp } from "//www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, doc, collection, getDocs, onSnapshot } from "//www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
-            authDomain: "entertainment-71888.firebaseapp.com",
-            databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
-            projectId: "entertainment-71888",
-            storageBucket: "entertainment-71888.firebasestorage.app",
-            messagingSenderId: "660524340277",
-            appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
-            measurementId: "G-CTYHDF4MSD"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        const TARGET_USERS = ['Werewolf3788', 'Raymystyro', 'Terrdog', 'Elu Cloud'];
-        const USER_ALIASES = {
-            'Werewolf3788': ['Werewolf3788', 'WildHorse_Spirit'],
-            'Raymystyro': ['OneLIVIDMAN', 'Raymystyro', 'Ray'],
-            'Terrdog': ['Terrdog', 'Darkwing69420', 'terrdog420'],
-            'Elu Cloud': ['Elu Cloud', 'DesdemonaTiger']
-        };
-
-        const USER_THEMES = {
-            'Werewolf3788': { name: 'Werewolf3788', color: '#ff5500', glow: 'rgba(255,85,0,0.4)' },
-            'Raymystyro': { name: 'Raymystyro', color: '#2563eb', glow: 'rgba(37,99,235,0.4)' },
-            'Terrdog': { name: 'Terrdog', color: '#a855f7', glow: 'rgba(168,85,247,0.4)' },
-            'Elu Cloud': { name: 'Elu Cloud', color: '#10b981', glow: 'rgba(16,185,129,0.4)' }
-        };
-
-        const proxyImg = (url) => `//images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}`;
-
-        const GAME_POSTERS = {
-            'COTW': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg'),
-            'HUNTERCOTW': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg'),
-            'THEHUNTER': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg'),
-            'SNIPER-ELITE-5': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg'),
-            'SNIPERELITE5': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg'),
-            'FS25': proxyImg('cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg'),
-            'DEFAULT': '//images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80'
-        };
-
-        const CLEAN_GAME_TITLES = {
-            'COTW': 'THEHUNTER: CALL OF THE WILD',
-            'HUNTERCOTW': 'THEHUNTER: CALL OF THE WILD',
-            'THEHUNTER': 'THEHUNTER: CALL OF THE WILD',
-            'SNIPER-ELITE-5': 'SNIPER ELITE 5',
-            'SNIPERELITE5': 'SNIPER ELITE 5',
-            'FS25': 'FARMING SIMULATOR 25'
-        };
-
-        const LONG_SHOT_ITEMS = [
-            { id: 'med_ls_m1', mission: 'Mission 1', name: 'Colline-Sur-Mer', req: 450 },
-            { id: 'med_ls_m1_auth', mission: 'Mission 1 (Auth)', name: 'Colline-Sur-Mer Auth', req: 250 },
-            { id: 'med_ls_m2', mission: 'Mission 2', name: 'Château de Berengar', req: 375 },
-            { id: 'med_ls_m2_auth', mission: 'Mission 2 (Auth)', name: 'Château de Berengar Auth', req: 250 },
-            { id: 'med_ls_m3', mission: 'Mission 3', name: 'Beaumont-Saint-Denis', req: 675 },
-            { id: 'med_ls_m3_auth', mission: 'Mission 3 (Auth)', name: 'Beaumont Auth', req: 325 },
-            { id: 'med_ls_m4', mission: 'Mission 4', name: 'War Factory', req: 200 },
-            { id: 'med_ls_m4_auth', mission: 'Mission 4 (Auth)', name: 'War Factory Auth', req: 200 },
-            { id: 'med_ls_m5', mission: 'Mission 5', name: 'Festung Guernsey', req: 400 },
-            { id: 'med_ls_m5_auth', mission: 'Mission 5 (Auth)', name: 'Guernsey Auth', req: 400 },
-            { id: 'med_ls_m6', mission: 'Mission 6', name: 'Desponts-Sur-Douve', req: 400 },
-            { id: 'med_ls_m6_auth', mission: 'Mission 6 (Auth)', name: 'Desponts Auth', req: 400 },
-            { id: 'med_ls_m7', mission: 'Mission 7', name: 'Secret Weapons', req: 350 },
-            { id: 'med_ls_m7_auth', mission: 'Mission 7 (Auth)', name: 'Secret Weapons Auth', req: 200 },
-            { id: 'med_ls_m8', mission: 'Mission 8', name: 'St. Nazaire', req: 200 },
-            { id: 'med_ls_m8_auth', mission: 'Mission 8 (Auth)', name: 'St. Nazaire Auth', req: 200 },
-            { id: 'med_ls_m9', mission: 'Mission 9', name: 'Loose Ends', req: 500 },
-            { id: 'med_ls_m9_auth', mission: 'Mission 9 (Auth)', name: 'Loose Ends Auth', req: 200 },
-            { id: 'med_cantoutrun', mission: 'Mission 9', name: 'Möller Kill (Can\'t Outrun)', req: 600 },
-            { id: 'med_wm_fuhrerlong', mission: 'DLC 10', name: 'Wolf Mountain (Hitler)', req: 412 },
-            { id: 'med_wm_fromfuhrer', mission: 'DLC 10', name: 'Wolf Mountain 300m+', req: 300 },
-            { id: 'med_fuhrerlongshot', mission: 'DLC 10 (Auth)', name: 'Wolf Mountain Authentic', req: 257 },
-            { id: 'med_m11longshot', mission: 'DLC 11', name: 'Landing Force', req: 350 },
-            { id: 'med_m11authlongshot', mission: 'DLC 11 (Auth)', name: 'Landing Force Auth', req: 250 },
-            { id: 'med_m12authlongshot', mission: 'DLC 12 (Auth)', name: 'Conqueror Auth', req: 260 },
-            { id: 'med_m13_longshot', mission: 'DLC 13', name: 'Rough Landing', req: 240 },
-            { id: 'med_m13_authlong', mission: 'DLC 13 (Auth)', name: 'Rough Landing Auth', req: 250 }
-        ];
-
-        window.getChromaStageClass = function(pct) {
-            if (pct <= 25) return 'prog-stage-1';
-            if (pct <= 50) return 'prog-stage-2';
-            if (pct <= 75) return 'prog-stage-3';
-            return 'prog-stage-4';
-        };
-
-        function isMissionCollectable(itemId, category) {
-            const id = (itemId || '').toLowerCase();
-            const cat = (category || '').toLowerCase();
-            const matchM = id.match(/^m(\d+)_/);
-            if (matchM) {
-                const num = parseInt(matchM[1], 10);
-                if (num >= 1 && num <= 14) return true;
-            }
-            if (cat.includes('the atlantic wall') || cat.includes('occupied residence') || cat.includes('spy academy') ||
-                cat.includes('war factory') || cat.includes('festung guernsey') || cat.includes('libération') ||
-                cat.includes('secret weapons') || cat.includes('rubble and ruin') || cat.includes('loose ends') ||
-                cat.includes('wolf mountain') || cat.includes('landing force') || cat.includes('conqueror') ||
-                cat.includes('rough landing') || cat.includes('kraken awakes')) {
-                if (!id.includes('longshot') && !id.includes('_ls_') && !id.includes('fuhrerlong')) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        const teamSE5Progress = {};
-
-        function initSE5Listeners() {
-            TARGET_USERS.forEach(user => {
-                const aliases = USER_ALIASES[user] || [user];
-                aliases.forEach(alias => {
-                    try {
-                        const docRef = doc(db, `users/${alias}/platform/playstation/progress/sniper-elite-5`);
-                        onSnapshot(docRef, (snap) => {
-                            if (snap.exists()) {
-                                teamSE5Progress[user] = snap.data();
-                                renderSE5ServiceRecord();
-                            }
-                        }, () => {});
-                    } catch (e) {}
-                });
-            });
-        }
-
-        function renderSE5ServiceRecord() {
-            try {
-                const wolfData = teamSE5Progress['Werewolf3788'] || {};
-                const rayData = teamSE5Progress['Raymystyro'] || {};
-
-                const wolfItems = Array.isArray(wolfData.progress) ? wolfData.progress : [];
-                const rayItems = Array.isArray(rayData.progress) ? rayData.progress : [];
-
-                // 1. Long Shots
-                const lsContainer = document.getElementById('se5-longshot-cards-container');
-                if (lsContainer) {
-                    let lsHtml = '';
-                    LONG_SHOT_ITEMS.forEach(item => {
-                        const wolfMatch = wolfItems.find(p => p && p.id === item.id);
-                        const wolfDist = wolfMatch && wolfMatch.count !== undefined ? Number(wolfMatch.count) : (wolfMatch && wolfMatch.collected ? item.req : 0);
-
-                        if (wolfDist <= 0) return;
-
-                        const rayMatch = rayItems.find(p => p && p.id === item.id);
-                        const rayDist = rayMatch && rayMatch.count !== undefined ? Number(rayMatch.count) : (rayMatch && rayMatch.collected ? item.req : 0);
-
-                        const scores = [{ op: 'WildHorse_Spirit', dist: wolfDist, isPrimary: true }];
-                        if (rayDist > 0) {
-                            scores.push({ op: 'OneLIVIDMAN', dist: rayDist, isPrimary: false });
-                        }
-
-                        scores.sort((a, b) => b.dist - a.dist);
-
-                        lsHtml += `
-                            <div class="bg-black/40 p-3 rounded-xl border border-white/5 flex flex-col justify-between space-y-2">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <div class="text-[11px] font-black text-orange-400 uppercase tracking-wider">${item.mission}</div>
-                                        <div class="text-xs font-black text-white uppercase">${item.name}</div>
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="text-[11px] font-black text-gray-400 uppercase">Target: ${item.req}m</div>
-                                    </div>
-                                </div>
-
-                                <div class="grid grid-cols-1 ${scores.length > 1 ? 'sm:grid-cols-2' : ''} gap-2 pt-1">
-                                    ${scores.map((s, idx) => {
-                                        const isFurthest = idx === 0 && scores.length > 1;
-                                        const glowClass = idx === 0 ? 'rank-glow-1st' : 'rank-glow-2nd';
-                                        return `
-                                            <div class="p-2 rounded-lg flex items-center justify-between text-xs font-black uppercase ${glowClass}">
-                                                <div class="flex items-center gap-1.5 truncate">
-                                                    ${isFurthest ? '<span>👑</span>' : ''}
-                                                    <span>${s.op}</span>
-                                                </div>
-                                                <span class="font-mono text-white text-xs">${s.dist}m</span>
-                                            </div>
-                                        `;
-                                    }).join('')}
-                                </div>
-                            </div>
-                        `;
-                    });
-                    lsContainer.innerHTML = lsHtml || `<div class="p-4 text-center text-gray-500 font-bold uppercase text-xs">No Longshots recorded yet by Werewolf3788.</div>`;
-                }
-
-                // 2. Ribbons
-                const ribbonsContainer = document.getElementById('se5-ribbons-container');
-                const ribbonsCountEl = document.getElementById('se5-ribbons-count');
-                if (ribbonsContainer) {
-                    const ribbonsList = wolfItems.filter(i => {
-                        if (!i) return false;
-                        const id = (i.id || '').toLowerCase();
-                        const cat = (i.category || i.cat || '').toLowerCase();
-                        return cat.includes('ribbon') || id.startsWith('rib_') || id.startsWith('ribbon_');
-                    });
-
-                    if (ribbonsCountEl) ribbonsCountEl.innerText = `${ribbonsList.length} Ribbons`;
-
-                    if (ribbonsList.length > 0) {
-                        ribbonsContainer.innerHTML = ribbonsList.map(r => {
-                            const wolfMultiplier = Number(r.count || r.multiplier || (r.collected ? 1 : 0));
-                            if (wolfMultiplier <= 0) return '';
-
-                            const rayMatch = rayItems.find(wi => wi && wi.id === r.id);
-                            const rayMultiplier = rayMatch ? Number(rayMatch.count || rayMatch.multiplier || (rayMatch.collected ? 1 : 0)) : 0;
-                            const rayHasIt = rayMultiplier > 0;
-
-                            return `
-                                <div class="service-badge hover:border-orange-500/40 transition-colors">
-                                    <div class="flex justify-between items-start gap-2">
-                                        <span class="text-xs font-black text-white uppercase truncate">${r.name || r.id}</span>
-                                        <span class="text-xs font-black font-mono text-orange-400 bg-orange-950/80 px-2 py-0.5 rounded border border-orange-500/40">
-                                            x${wolfMultiplier}
-                                        </span>
-                                    </div>
-                                    <div class="text-[11px] text-gray-400 mt-1 line-clamp-2">${r.description || r.desc || r.detail || 'Combat Ribbon Earned'}</div>
-                                    ${rayHasIt ? `
-                                        <div class="pt-2 border-t border-white/5 mt-2 flex justify-between items-center text-[11px] font-black uppercase">
-                                            <span class="text-gray-400">OneLIVIDMAN:</span>
-                                            <span class="text-emerald-400 font-mono">x${rayMultiplier}</span>
-                                        </div>
-                                    ` : ''}
-                                </div>
-                            `;
-                        }).join('');
-                    } else {
-                        ribbonsContainer.innerHTML = `<div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">No ribbons unlocked yet by Werewolf3788.</div>`;
-                    }
-                }
-
-                // 3. Medals / Masteries
-                const masteryContainer = document.getElementById('se5-mastery-container');
-                const medalsCountEl = document.getElementById('se5-medals-count');
-                if (masteryContainer) {
-                    const medalsList = wolfItems.filter(i => {
-                        if (!i) return false;
-                        const id = (i.id || '').toLowerCase();
-                        const cat = (i.category || i.cat || '').toLowerCase();
-                        const isLongshot = id.includes('longshot') || id.includes('_ls_');
-                        const isRibbon = cat.includes('ribbon') || id.startsWith('rib_');
-                        
-                        if (isMissionCollectable(i.id, i.category || i.cat)) return false;
-                        return !isLongshot && !isRibbon && (i.collected || i.completed || (i.count && i.count > 0));
-                    });
-
-                    if (medalsCountEl) medalsCountEl.innerText = `${medalsList.length} Tactics / Medals`;
-
-                    if (medalsList.length > 0) {
-                        masteryContainer.innerHTML = medalsList.map(m => {
-                            const rayMatch = rayItems.find(wi => wi && wi.id === m.id);
-                            const rayHasIt = rayMatch && (rayMatch.collected || rayMatch.completed || (rayMatch.count && rayMatch.count > 0));
-                            const rayDisplay = rayMatch?.count !== undefined ? rayMatch.count : (rayHasIt ? 'Done' : null);
-                            const currentVal = m.count !== undefined ? m.count : (m.collected ? 'Mastered' : 'Earned');
-
-                            return `
-                                <div class="service-badge hover:border-cyan-500/40 transition-colors">
-                                    <div class="flex justify-between items-start gap-2">
-                                        <span class="text-xs font-black text-white uppercase truncate">${m.name || m.id}</span>
-                                        <span class="text-xs font-black font-mono text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-500/40">
-                                            ${currentVal}
-                                        </span>
-                                    </div>
-                                    <div class="text-[11px] text-gray-400 mt-1 line-clamp-2">${m.description || m.desc || m.detail || 'Tactical Objective Completed'}</div>
-                                    ${rayHasIt ? `
-                                        <div class="pt-2 border-t border-white/5 mt-2 flex justify-between items-center text-[11px] font-black uppercase">
-                                            <span class="text-gray-400">OneLIVIDMAN:</span>
-                                            <span class="text-emerald-400 font-mono">${rayDisplay}</span>
-                                        </div>
-                                    ` : ''}
-                                </div>
-                            `;
-                        }).join('');
-                    } else {
-                        masteryContainer.innerHTML = `<div class="p-4 text-center text-gray-500 font-bold uppercase text-xs col-span-full">No mastery medals earned yet by Werewolf3788.</div>`;
-                    }
-                }
-
-                // 4. Progress Ratio Bar
-                const cleanWolfItems = wolfItems.filter(i => i && !isMissionCollectable(i.id, i.category || i.cat));
-                const completedCount = cleanWolfItems.filter(i => i && (i.collected || i.completed || (i.count && i.count > 0))).length;
-                const totalCount = cleanWolfItems.length || 150;
-                const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
-
-                const pctEl = document.getElementById('se5-total-pct');
-                const fillEl = document.getElementById('se5-progress-fill');
-                if (pctEl) pctEl.innerText = `${pct}% (${completedCount}/${totalCount})`;
-                if (fillEl) {
-                    fillEl.style.width = `${pct}%`;
-                    fillEl.className = `progress-bar-fill ${window.getChromaStageClass(pct)}`;
-                }
-            } catch (err) {
-                console.warn("[SE5 RENDER NOTICE]:", err.message);
-            }
-        }
-
-        function calculateGameProgress(docData) {
-            if (!docData) return 0;
-            if (typeof docData.percentage === 'number') return Math.round(docData.percentage);
-            if (typeof docData.overall === 'number') return Math.round(docData.overall);
-            if (typeof docData.completion === 'number') return Math.round(docData.completion);
-            if (typeof docData.totalCollection === 'number') return Math.round(docData.totalCollection);
-            if (typeof docData.progress === 'number') {
-                return docData.progress <= 1 && docData.progress > 0 ? Math.round(docData.progress * 100) : Math.round(docData.progress);
-            }
-            if (Array.isArray(docData.trophies) && docData.trophies.length > 0) {
-                let current = 0;
-                let goal = 0;
-                docData.trophies.forEach(t => {
-                    const g = Number(t.goal) || 1;
-                    goal += g;
-                    if (t.current >= g || t.completed === true || t.done === true) {
-                        current += g;
-                    } else {
-                        current += Number(t.current) || 0;
-                    }
-                });
-                return goal > 0 ? Math.round((current / goal) * 100) : 0;
-            }
-            if (Array.isArray(docData.progress) && docData.progress.length > 0) {
-                const total = docData.progress.length;
-                const found = docData.progress.filter(i => i && (i.collected || i.done || i.completed || (i.count && i.count > 0))).length;
-                return total > 0 ? Math.round((found / total) * 100) : 0;
-            }
-            return 0;
-        }
-
-        async function loadAllFirestoreSquadGames() {
-            const container = document.getElementById('firestore-squad-games-grid');
-            if (!container) return;
-
-            const gamesMap = {};
-
-            for (const user of TARGET_USERS) {
-                const aliases = USER_ALIASES[user] || [user];
-                for (const alias of aliases) {
-                    try {
-                        const colRef = collection(db, "users", alias, "platform", "playstation", "progress");
-                        const snap = await getDocs(colRef);
-
-                        snap.forEach(docSnap => {
-                            const gameId = docSnap.id;
-                            if (gameId.endsWith("_Ranks")) return;
-
-                            const data = docSnap.data();
-                            const pct = calculateGameProgress(data);
-
-                            if (pct >= 1) {
-                                const normKey = gameId.toUpperCase().replace(/[^A-Z0-9]/g, '');
-                                const cleanTitle = CLEAN_GAME_TITLES[normKey] || CLEAN_GAME_TITLES[gameId] || gameId.replace(/-/g, ' ').replace(/_/g, ' ').toUpperCase();
-
-                                if (!gamesMap[gameId]) {
-                                    gamesMap[gameId] = { id: gameId, title: cleanTitle, players: {} };
-                                }
-                                if (!gamesMap[gameId].players[user] || gamesMap[gameId].players[user] < pct) {
-                                    gamesMap[gameId].players[user] = pct;
-                                }
-                            }
-                        });
-                    } catch (e) {}
-                }
-            }
-
-            const gamesList = Object.values(gamesMap);
-            if (gamesList.length === 0) {
-                container.innerHTML = `<div class="p-8 text-center text-gray-500 font-bold uppercase text-xs col-span-full">No active squad games found with &ge; 1% progress.</div>`;
-                return;
-            }
-
-            let html = "";
-            gamesList.forEach(g => {
-                const activePlayers = Object.entries(g.players)
-                    .map(([uname, pct]) => ({ uname, pct }))
-                    .sort((a, b) => b.pct - a.pct);
-
-                if (activePlayers.length === 0) return;
-
-                const posterKey = g.id.toUpperCase().replace(/[^A-Z0-9]/g, '');
-                const posterUrl = GAME_POSTERS[posterKey] || GAME_POSTERS[g.id] || GAME_POSTERS['DEFAULT'];
-
-                let targetLink = "//werewolf3788.github.io/Website/";
-                if (g.id.toLowerCase().includes('cotw')) targetLink = "//werewolf3788.github.io/Website/games/HunterCOTW/cotw.html";
-                if (g.id.toLowerCase().includes('sniper')) targetLink = "//werewolf3788.github.io/Website/games/Sniper-Elite/5/index.html";
-
-                const isSameDomain = (url) => {
-                    try {
-                        const parsed = new URL(url, window.location.href);
-                        return parsed.origin === window.location.origin;
-                    } catch (e) { return true; }
-                };
-
-                const targetAttr = isSameDomain(targetLink) ? 'target="_self"' : 'target="_blank" rel="noopener noreferrer"';
-
-                html += `
-                    <div class="bg-black/50 p-4 rounded-xl border border-white/10 flex flex-col justify-between space-y-3">
-                        <div class="space-y-2.5">
-                            <div class="flex items-center gap-3">
-                                <img src="${posterUrl}" referrerpolicy="no-referrer" class="w-16 h-16 object-cover rounded-lg border border-white/10 flex-shrink-0" onerror="this.src='${GAME_POSTERS['DEFAULT']}'">
-                                <div class="min-w-0 flex-1">
-                                    <h4 class="text-sm font-black text-white uppercase truncate">${g.title}</h4>
-                                    <div class="text-[11px] font-bold text-orange-400 font-mono">${activePlayers.length} Active Hunter(s) &ge; 1%</div>
-                                </div>
-                            </div>
-
-                            <div class="space-y-2 pt-2 border-t border-white/5">
-                                ${activePlayers.map((p, idx) => {
-                                    const theme = USER_THEMES[p.uname] || { color: '#ff5500' };
-                                    const isLead = idx === 0 && activePlayers.length > 1;
-                                    return `
-                                        <div class="bg-black/60 p-2.5 rounded-lg border border-white/5 space-y-1">
-                                            <div class="flex justify-between items-center text-xs font-black uppercase">
-                                                <span style="color:${theme.color};">${isLead ? '👑 ' : ''}${p.uname}</span>
-                                                <span class="text-white font-mono">${p.pct}%</span>
-                                            </div>
-                                            <div class="progress-bar-container" style="height:8px;">
-                                                <div class="progress-bar-fill" style="width:${p.pct}%; background-color:${theme.color};"></div>
-                                            </div>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
-
-                        <a href="${targetLink}" ${targetAttr} class="text-orange-400 hover:text-orange-300 font-bold text-xs flex items-center justify-between border-t border-white/5 pt-2.5">
-                            <span>Launch Tracker</span>
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
-        }
-
-        const squadCotwRanks = {};
-
-        function listenToSquadCotwRanks() {
-            TARGET_USERS.forEach(user => {
-                const aliases = USER_ALIASES[user] || [user];
-                aliases.forEach(alias => {
-                    try {
-                        const rankDoc = doc(db, "users", alias, "platform", "playstation", "progress", "COTW_Ranks");
-                        onSnapshot(rankDoc, (snap) => {
-                            if (snap.exists()) {
-                                squadCotwRanks[user] = snap.data();
-                                renderCotwSquadLodge();
-                            }
-                        }, () => {});
-                    } catch (e) {}
-                });
-            });
-        }
-
-        function renderCotwSquadLodge() {
-            const container = document.getElementById('cotw-squad-lodge-container');
-            if (!container) return;
-
-            const TIERS = [
-                { key: 'greatone', label: 'Great One', icon: '👑' },
-                { key: 'albino', label: 'Rare Fur', icon: '🐇' },
-                { key: 'diamond', label: 'Diamond', icon: '💎' },
-                { key: 'gold', label: 'Gold', icon: '🥇' },
-                { key: 'silver', label: 'Silver', icon: '🥈' },
-                { key: 'bronze', label: 'Bronze', icon: '🥉' }
-            ];
-
-            const activeHunters = Object.keys(squadCotwRanks).filter(u => {
-                const data = squadCotwRanks[u] || {};
-                const total = Object.values(data).reduce((acc, val) => acc + (Number(val) || 0), 0);
-                return total > 0;
-            });
-
-            if (activeHunters.length === 0) {
-                container.innerHTML = `<div class="p-6 text-center text-gray-500 font-bold uppercase text-xs col-span-full">No active hunter has logged animal ranks in Firestore.</div>`;
-                return;
-            }
-
-            const leaders = {};
-            TIERS.forEach(t => {
-                let max = 0;
-                let leader = null;
-                activeHunters.forEach(u => {
-                    const count = Number(squadCotwRanks[u]?.[t.key] || squadCotwRanks[u]?.[t.key.toLowerCase()] || 0);
-                    if (count > max) {
-                        max = count;
-                        leader = u;
-                    }
-                });
-                if (max > 0) leaders[t.key] = { leader, max };
-            });
-
-            let html = "";
-            activeHunters.forEach(user => {
-                const uData = squadCotwRanks[user] || {};
-                const theme = USER_THEMES[user] || { color: '#ffffff' };
-
-                html += `
-                    <div class="bg-black/50 p-4 rounded-xl border border-white/10 space-y-2.5">
-                        <div class="flex justify-between items-center border-b border-white/5 pb-2">
-                            <span class="text-sm font-black uppercase" style="color:${theme.color};">${user}</span>
-                            <span class="text-[10px] font-mono text-gray-400 uppercase">Trophy Lodge</span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 text-xs">
-                            ${TIERS.map(t => {
-                                const count = Number(uData[t.key] || uData[t.key.toLowerCase()] || 0);
-                                const isLead = leaders[t.key] && leaders[t.key].leader === user && count > 0;
-                                return `
-                                    <div class="bg-black/60 p-2 rounded-lg border ${isLead ? 'rank-glow-1st' : 'border-white/5'} flex justify-between items-center">
-                                        <span class="text-gray-300 font-bold flex items-center gap-1">
-                                            <span>${t.icon}</span> ${t.label}
-                                        </span>
-                                        <span class="font-mono font-black text-white ${isLead ? 'text-emerald-400' : ''}">
-                                            ${isLead ? '👑 ' : ''}${count}
-                                        </span>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initSE5Listeners();
-            listenToSquadCotwRanks();
-            loadAllFirestoreSquadGames();
-            setInterval(loadAllFirestoreSquadGames, 45000);
-        });
-    </script>
-
     <!-- REALTIME DATABASE RESILIENT MULTI-PATH LOADER -->
     <script>
-        // Line 895: Direct RTDB Node Binding & Telemetry Sync
+        // Section: Direct RTDB Node Binding & Telemetry Sync
+        // Line 571: Primary PSN RTDB Endpoints
         const WILDHORSE_RTDB_URL = "//entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/WildHorse_Spirit.json";
         const ROOT_PSN_RTDB_URL = "//entertainment-71888-default-rtdb.firebaseio.com/psn.json";
         const CANONICAL_GAMES_URL = "//entertainment-71888-default-rtdb.firebaseio.com/psn/games.json";
         const UTM_LINKS_RTDB_URL = "//entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
         const PSN_GAMERTAGS_URL = "//entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags.json";
-        
-        const FS25_PRIMARY_URL = "https://fs25-a3563-default-rtdb.firebaseio.com/fs25.json";
-        const FS25_FALLBACK_URL = "//entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
 
         let currentTrophyData = [];
         let lastEarnedTrophyData = null;
         let globalSquadData = {}; 
         let globalGamertagsData = {};
         let canonicalGamesSkeleton = {};
-        let activeLiveInterval = null;
 
+        // Line 587: Helper Utilities
         function convertFirebaseArray(data) {
             if (!data) return [];
             if (Array.isArray(data)) return data;
             if (typeof data === 'object') return Object.values(data);
             return [];
-        }
-
-        function formatDuration(totalSeconds) {
-            if (!totalSeconds || isNaN(totalSeconds)) return "0 hrs";
-            const sec = Math.max(0, Math.floor(Number(totalSeconds)));
-            const hrs = Math.floor(sec / 3600);
-            const mins = Math.floor((sec % 3600) / 60);
-            if (hrs > 0) return `${hrs}h ${mins}m`;
-            return `${mins}m`;
         }
 
         function formatDisplayTime(timestamp) {
@@ -1510,6 +742,14 @@
                 .replace(/>/g, '&gt;');
         }
 
+        window.getChromaStageClass = function(pct) {
+            if (pct <= 25) return 'prog-stage-1';
+            if (pct <= 50) return 'prog-stage-2';
+            if (pct <= 75) return 'prog-stage-3';
+            return 'prog-stage-4';
+        };
+
+        // Line 667: Canonical Skeleton Matching
         function getSkeletonGameByCommId(commId, fallbackTitle = '') {
             if (!commId && !fallbackTitle) return null;
             const targetComm = (commId || '').trim().toUpperCase();
@@ -1528,6 +768,7 @@
             return null;
         }
 
+        // Line 687: Trophy Tracking Parser
         function extractTrophyTracking(t) {
             if (!t) return null;
 
@@ -1600,6 +841,7 @@
             };
         }
 
+        // Line 755: Skeleton Fetching
         async function fetchCanonicalSkeleton() {
             try {
                 const res = await fetch(`${CANONICAL_GAMES_URL}?t=${Date.now()}`);
@@ -1609,6 +851,7 @@
             }
         }
 
+        // Line 765: UTM Nav Links Ingestion
         async function fetchUtmNavLinks() {
             const container = document.getElementById('dynamic-nav-container');
             if (!container) return;
@@ -1719,130 +962,7 @@
             }
         });
 
-        async function updateFS25Telemetry() {
-            try {
-                let res = await fetch(`${FS25_PRIMARY_URL}?t=${Date.now()}`);
-                if (!res.ok) res = await fetch(`${FS25_FALLBACK_URL}?t=${Date.now()}`);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                if (!data) return;
-
-                const farmData = data.farms?.farm_1 || 
-                                 data.farms?.farm01 || 
-                                 data.farms?.farmId1 || 
-                                 data.farms?.[1] || 
-                                 data.farms?.Werewolf || 
-                                 data.farms?.WildHorse_Spirit || 
-                                 data.farm_1 || 
-                                 data;
-
-                const farmName = farmData.name || farmData.farmName || "Werewolf Farm (Farm 1)";
-                const rawMoney = farmData.finances ? farmData.finances.money : farmData.money;
-                const money = rawMoney !== undefined ? `$${Math.round(Number(rawMoney)).toLocaleString()}` : "$0";
-                
-                const vehicles = convertFirebaseArray(farmData.cards?.fleet || farmData.vehicles || farmData.fleet || farmData.equipment || farmData.machines);
-                const harvesters = convertFirebaseArray(farmData.cards?.harvestersAndCombines);
-                const allUnits = [...vehicles, ...harvesters];
-
-                const fields = convertFirebaseArray(farmData.cards?.farmlandOwned || farmData.fields || farmData.farmlands || farmData.ownedFields);
-                const agronomyFields = convertFirebaseArray(data.fields || data.cards?.fieldsAgronomy || []);
-
-                const fNameEl = document.getElementById('fs25-farm-name');
-                const fMoneyEl = document.getElementById('fs25-money');
-                const fFieldsEl = document.getElementById('fs25-fields-count');
-                const fVehiclesEl = document.getElementById('fs25-vehicles-count');
-                const fFleetSubEl = document.getElementById('fs25-fleet-subtitle');
-                const fFieldsSubEl = document.getElementById('fs25-fields-subtitle');
-
-                if (fNameEl) fNameEl.innerText = farmName;
-                if (fMoneyEl) fMoneyEl.innerText = money;
-                if (fFieldsEl) fFieldsEl.innerText = fields.length;
-                if (fVehiclesEl) fVehiclesEl.innerText = allUnits.length;
-                if (fFleetSubEl) fFleetSubEl.innerText = `${allUnits.length} Total Units Registered`;
-                if (fFieldsSubEl) fFieldsSubEl.innerText = `${fields.length} Parcels Owned`;
-
-                const fleetContainer = document.getElementById('fs25-fleet-container');
-                if (fleetContainer) {
-                    if (allUnits.length > 0) {
-                        fleetContainer.innerHTML = allUnits.map(v => {
-                            const name = v.name || v.brand || v.type || "Machinery";
-                            const img = v.image || null;
-                            const hours = v.operatingHours !== undefined ? `${v.operatingHours} hrs` : "Operational";
-                            const wear = v.wear !== undefined ? `${Math.round(v.wear * 100)}% Wear` : "Clean";
-                            const cardType = v.cardType || "Farm 1 Implement";
-
-                            return `
-                                <div class="bg-black/40 p-3 rounded-xl border border-white/5 flex gap-3 items-center hover:border-lime-500/40 transition-colors">
-                                    ${img ? `<img src="${img}" class="w-12 h-12 rounded-lg object-contain bg-black/60 p-1 border border-white/10" onerror="this.style.display='none'">` : ''}
-                                    <div class="min-w-0 flex-1">
-                                        <div class="text-xs font-black text-lime-400 uppercase tracking-widest">${cardType}</div>
-                                        <div class="text-xs font-black text-white uppercase truncate">${name}</div>
-                                        <div class="flex justify-between items-center text-xs font-bold text-gray-400 pt-1.5 border-t border-white/5 mt-1.5 font-mono">
-                                            <span>${hours}</span>
-                                            <span class="text-lime-400">${wear}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('');
-                    } else {
-                        fleetContainer.innerHTML = `<div class="p-6 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No active machinery registered to Farm 1.</div>`;
-                    }
-                }
-
-                const fieldsContainer = document.getElementById('fs25-fields-container');
-                if (fieldsContainer) {
-                    if (fields.length > 0) {
-                        fieldsContainer.innerHTML = fields.map(f => {
-                            const fId = f.id || f.fieldId || "Plot";
-                            const area = f.areaHa ? `${f.areaHa} ha` : (f.area ? `${f.area}` : null);
-
-                            const agroMatch = agronomyFields.find(af => af && af.fieldId == fId) || {};
-                            const crop = agroMatch.fruitType || f.crop || f.fruitType || "Seeded";
-                            
-                            const growthStage = agroMatch.growthStage || f.growthStage || 0;
-                            let growthStatus = "Growing";
-                            if (growthStage >= 6) growthStatus = "Ready to Harvest";
-                            else if (growthStage === 0) growthStatus = "Seeded / Cultivated";
-                            else if (crop.toLowerCase().includes("harvest")) growthStatus = "Harvested";
-
-                            const fertVal = agroMatch.fertilizedLevel !== undefined ? agroMatch.fertilizedLevel : (f.fertilizedLevel || 0);
-                            let fertText = "Fertilizer: 0%";
-                            if (fertVal === 1) fertText = "Fertilizer: 50%";
-                            else if (fertVal >= 2) fertText = "Fertilizer: 100%";
-
-                            const needsLime = agroMatch.needsLime || f.needsLime || false;
-                            const limeBadge = needsLime 
-                                ? `<span class="text-red-400 font-black">Needs Lime</span>` 
-                                : `<span class="text-emerald-400 font-bold">Lime OK</span>`;
-
-                            return `
-                                <div class="bg-black/50 p-3 rounded-xl border border-white/5 flex flex-col justify-between space-y-2">
-                                    <div class="flex justify-between items-start">
-                                        <div>
-                                            <div class="text-xs font-black text-lime-400 uppercase">Farmland Plot #${fId}</div>
-                                            <div class="text-sm font-black text-white uppercase mt-0.5">${crop}</div>
-                                        </div>
-                                        <span class="text-xs font-mono font-bold ${growthStage >= 6 ? 'text-emerald-400' : 'text-amber-400'}">${growthStatus}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center text-xs font-mono pt-1.5 border-t border-white/5">
-                                        <span class="text-gray-300">${fertText}</span>
-                                        ${limeBadge}
-                                    </div>
-                                    ${area ? `<div class="text-xs text-gray-500 font-mono">Area: ${area}</div>` : ''}
-                                </div>
-                            `;
-                        }).join('');
-                    } else {
-                        fieldsContainer.innerHTML = `<div class="p-4 bg-black/40 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No parcels assigned to Farm 1.</div>`;
-                    }
-                }
-
-            } catch (err) {
-                console.warn("[FS25 CLUSTER] Telemetry standby:", err.message);
-            }
-        }
-
+        // Line 871: Gamertag Sync
         async function syncPSNGamertags() {
             try {
                 const res = await fetch(`${PSN_GAMERTAGS_URL}?t=${Date.now()}`);
@@ -1856,6 +976,7 @@
             }
         }
 
+        // Line 887: Primary Hub State Update
         async function updateHub() {
             try {
                 let user = null;
@@ -1914,9 +1035,6 @@
                 if (plusBadge) plusBadge.style.display = isPlus ? 'block' : 'none';
                 if (plusCard) plusCard.style.display = isPlus ? 'block' : 'none';
 
-                const bioEl = document.getElementById('profile-bio');
-                if (bioEl) bioEl.innerText = user.bio || "Official Pack Leader Profile";
-
                 const lvlEl = document.getElementById('psn-level-label');
                 if (lvlEl) lvlEl.innerText = user.level || (user.trophySummary?.trophyLevel) || "--";
 
@@ -1945,20 +1063,6 @@
                     if (actLabel) actLabel.innerText = "Activity: " + (user.currentGameActivity || (isOnline ? "Active" : "Idle"));
                 }
 
-                // Twitch Feed
-                if (user.twitch) {
-                    const tw = user.twitch;
-                    const followerEl = document.getElementById('follower-count');
-                    const msgEl = document.getElementById('twitch-status-msg');
-                    const twAgeEl = document.getElementById('twitch-age');
-                    const liveBadge = document.getElementById('live-indicator');
-
-                    if (followerEl) followerEl.innerText = (tw.followers !== undefined) ? tw.followers.toLocaleString() : "--";
-                    if (msgEl) msgEl.innerText = tw.isLive ? `Live: ${tw.game || 'Gaming'}` : `"${tw.statusMessage || 'Offline'}"`;
-                    if (twAgeEl) twAgeEl.innerText = tw.age ? `Age: ${tw.age}` : (tw.subCount ? `Subs: ${tw.subCount}` : 'Channel Active');
-                    if (liveBadge) liveBadge.classList.toggle('hidden', !tw.isLive);
-                }
-
                 // DIRECT BINDING: trophySummary
                 const summary = user.trophySummary || {};
                 const tTotal = document.getElementById('trophy-total');
@@ -1974,11 +1078,7 @@
                 if (silverEl) silverEl.innerText = summary.silver !== undefined ? summary.silver : (summary.earnedTrophies?.silver || 0);
                 if (bronzeEl) bronzeEl.innerText = summary.bronze !== undefined ? summary.bronze : (summary.earnedTrophies?.bronze || 0);
 
-                // =========================================================================
                 // DIRECT RTDB ACTIVE HUNT & ACTIVE TROPHY BINDINGS
-                // Root Keys: currentCommunicationId, currentGame, currentGameArt,
-                //            currentGameHours, currentGameNumericHours, earliestTrophyDate
-                // =========================================================================
                 const currentCommId = user.currentCommunicationId || user.activeHunt?.npCommunicationId || user.activeHunt?.commId || '';
                 const activeGameTitle = user.currentGame || user.activeHunt?.title || "Unknown Campaign";
                 const skeletonData = getSkeletonGameByCommId(currentCommId, activeGameTitle);
@@ -2081,9 +1181,7 @@
                     if (firstDateEl) firstDateEl.innerText = "--";
                 }
 
-                // =========================================================================
-                // ACTIVE TROPHIES CHECKLIST & REALTIME NODE RESOLUTION
-                // =========================================================================
+                // Trophy Progress Ingestion
                 const liveProgNode = (currentCommId && user.liveTrophyProgress?.[currentCommId]) 
                     ? user.liveTrophyProgress[currentCommId] 
                     : (user.liveTrophyProgress || {});
@@ -2347,27 +1445,136 @@
             }
         }
 
+        // Line 1245: Robust Twitch Game Box Art Resolver
+        function getTwitchGamePosterUrl(gameTitle, isLive) {
+            if (!gameTitle) return '';
+            const norm = normalizeGameTitle(gameTitle);
+
+            // Verified high-definition box art fallbacks
+            if (norm.includes('farcry5') || norm.includes('farcryv')) {
+                return 'https://cdn.cloudflare.steamstatic.com/steam/apps/552520/header.jpg';
+            }
+            if (norm.includes('cotw') || norm.includes('callofthewild') || norm.includes('thehunter')) {
+                return 'https://cdn.cloudflare.steamstatic.com/steam/apps/518790/header.jpg';
+            }
+            if (norm.includes('fs25') || norm.includes('farmingsimulator25')) {
+                return 'https://cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg';
+            }
+            if (norm.includes('sniperelite5') || norm.includes('sniper5')) {
+                return 'https://cdn.cloudflare.steamstatic.com/steam/apps/1029690/header.jpg';
+            }
+
+            // Live stream snapshot fallback when on-air
+            if (isLive) {
+                return `https://static-cdn.jtvnw.net/previews-ttv/live_user_werewolf3788-320x180.jpg?t=${Date.now()}`;
+            }
+
+            return `https://static-cdn.jtvnw.net/ttv-boxart/${encodeURIComponent(gameTitle)}-144x192.jpg`;
+        }
+
+        function handleTwitchBoxArtError(imgEl) {
+            if (!imgEl) return;
+            const currentSrc = imgEl.src || '';
+            if (!currentSrc.includes('previews-ttv')) {
+                // Secondary fallback to live snapshot before hiding
+                imgEl.src = `https://static-cdn.jtvnw.net/previews-ttv/live_user_werewolf3788-320x180.jpg?t=${Date.now()}`;
+            } else {
+                imgEl.classList.add('hidden');
+            }
+        }
+
+        // Complete DecAPI Live Twitch Telemetry Engine
         async function fetchLiveTwitch() {
             try {
                 const user = "werewolf3788";
-                const [statusRes, gameRes, followRes, titleRes] = await Promise.all([
+                const [uptimeRes, gameRes, followRes, avatarRes, viewersRes] = await Promise.all([
                     fetch(`//decapi.me/twitch/uptime/${user}`).then(r => r.text()).catch(() => "offline"),
                     fetch(`//decapi.me/twitch/game/${user}`).then(r => r.text()).catch(() => ""),
                     fetch(`//decapi.me/twitch/followcount/${user}`).then(r => r.text()).catch(() => "0"),
-                    fetch(`//decapi.me/twitch/title/${user}`).then(r => r.text()).catch(() => "")
+                    fetch(`//decapi.me/twitch/avatar/${user}`).then(r => r.text()).catch(() => ""),
+                    fetch(`//decapi.me/twitch/viewercount/${user}`).then(r => r.text()).catch(() => "0")
                 ]);
 
-                const isLive = !statusRes.toLowerCase().includes("offline") && !statusRes.toLowerCase().includes("error");
-                const followerEl = document.getElementById('follower-count');
-                const msgEl = document.getElementById('twitch-status-msg');
-                const twAgeEl = document.getElementById('twitch-age');
-                const liveBadge = document.getElementById('live-indicator');
+                const cleanUptime = (uptimeRes || "").trim();
+                const cleanGame = (gameRes || "").trim();
+                const cleanAvatar = (avatarRes || "").trim();
+                const cleanViewers = (viewersRes || "").trim();
 
-                if (followerEl && followerEl.innerText === '--') followerEl.innerText = followRes.includes("Error") ? "0" : followRes.trim();
-                if (msgEl && msgEl.innerText === '"--"') msgEl.innerText = isLive ? `Live: ${gameRes.trim()}` : `"${titleRes.trim()}"`;
-                if (twAgeEl) twAgeEl.innerText = 'Channel Active';
-                if (liveBadge) liveBadge.classList.toggle('hidden', !isLive);
-            } catch (e) {}
+                const isOffline = cleanUptime.toLowerCase().includes("offline") || 
+                                  cleanUptime.toLowerCase().includes("error") || 
+                                  cleanGame.toLowerCase().includes("user not found") || 
+                                  cleanGame.toLowerCase().includes("not currently streaming");
+                
+                const isLive = !isOffline && cleanUptime.length > 0;
+
+                // 1. Twitch Profile Image
+                const avatarEl = document.getElementById('twitch-avatar-img');
+                if (avatarEl && cleanAvatar && cleanAvatar.startsWith('http')) {
+                    avatarEl.src = cleanAvatar;
+                }
+
+                // 2. Follower Count
+                const followerEl = document.getElementById('follower-count');
+                if (followerEl) {
+                    followerEl.innerText = followRes.includes("Error") ? "0" : Number(followRes.trim() || 0).toLocaleString();
+                }
+
+                // 3. Status & Category Title
+                const msgEl = document.getElementById('twitch-status-msg');
+                if (msgEl) {
+                    if (isLive && cleanGame) {
+                        msgEl.innerText = cleanGame;
+                    } else if (cleanGame && !cleanGame.toLowerCase().includes("error") && !cleanGame.toLowerCase().includes("not currently")) {
+                        msgEl.innerText = cleanGame;
+                    } else {
+                        msgEl.innerText = "Offline";
+                    }
+                }
+
+                // 4. Game Poster / Box Art
+                const boxArtEl = document.getElementById('twitch-boxart-img');
+                if (boxArtEl) {
+                    const posterUrl = getTwitchGamePosterUrl(cleanGame, isLive);
+                    if (posterUrl) {
+                        boxArtEl.src = posterUrl;
+                        boxArtEl.classList.remove('hidden');
+                    } else {
+                        boxArtEl.classList.add('hidden');
+                    }
+                }
+
+                // 5. Streaming Duration & Uptime Indicator
+                const uptimeContainer = document.getElementById('twitch-uptime-container');
+                const uptimeVal = document.getElementById('twitch-uptime-val');
+                if (uptimeContainer && uptimeVal) {
+                    if (isLive) {
+                        uptimeVal.innerText = `Streaming: ${cleanUptime}`;
+                        uptimeContainer.classList.remove('hidden');
+                    } else {
+                        uptimeContainer.classList.add('hidden');
+                    }
+                }
+
+                // 6. Live Viewers Count Display
+                const viewersContainer = document.getElementById('twitch-viewers-count');
+                const viewersVal = document.getElementById('twitch-viewers-val');
+                if (viewersContainer && viewersVal) {
+                    if (isLive && !cleanViewers.includes("Error")) {
+                        viewersVal.innerText = Number(cleanViewers || 0).toLocaleString();
+                        viewersContainer.classList.remove('hidden');
+                    } else {
+                        viewersContainer.classList.add('hidden');
+                    }
+                }
+
+                // 7. Live Badge Toggle
+                const liveBadge = document.getElementById('live-indicator');
+                if (liveBadge) {
+                    liveBadge.classList.toggle('hidden', !isLive);
+                }
+            } catch (e) {
+                console.warn("[TWITCH DECAPI TELEMETRY NOTICE]:", e.message);
+            }
         }
 
         function toggleNav() {
@@ -2466,13 +1673,11 @@
             fetchCanonicalSkeleton();
             fetchUtmNavLinks();
             updateHub();
-            updateFS25Telemetry();
             fetchLiveTwitch();
             syncPSNGamertags();
 
             setInterval(updateHub, 30000);
-            setInterval(updateFS25Telemetry, 45000);
-            setInterval(fetchLiveTwitch, 60000);
+            setInterval(fetchLiveTwitch, 45000);
             setInterval(fetchUtmNavLinks, 180000);
             setInterval(syncPSNGamertags, 30000);
         });
