@@ -18,12 +18,13 @@
  * - 1-pass fast session wrap closes pending sessions upon detecting offline transition.
  * - 15-minute incremental checkpoint syncing with manualBaselineHours integration.
  * - Multi-tier progressive duration formatting (mins -> hours -> days -> weeks -> months -> years).
+ * - Prioritized getUserPlayedGames call ensuring WildHorse_Spirit obtains full cumulative playtime.
  * Analytics Tagging: G-CTYHDF4MSD (Deployable via GTM).
- * Version: 66.1.0 - Bulletproof Root Poster Artwork & Zero Dropped Lines
- * Date & Time Stamp: 2026-10-09 16:55:00 EDT (America/New_York)
+ * Version: 66.2.0 - Universal Cumulative Playtime Fix & Zero Dropped Lines
+ * Date & Time Stamp: 2026-10-17 15:35:00 EDT (America/New_York)
  * ============================================================================ */
 
-// [SECTION 1: IMPORTS & CORE CONFIGURATION] Line 27
+// [SECTION 1: IMPORTS & CORE CONFIGURATION] Line 28
 const fs = require("fs");
 const path = require("path");
 const http = require("http");
@@ -394,7 +395,7 @@ function parseDetailedHardwareContext(rawPresence, matchedGame = {}) {
     const isStreaming = !!(
         primaryInfo.isInGameStreaming || 
         primaryInfo.streamingType || 
-        rawPresence?.isInGameStreaming ||
+        rawPresence?.isInGameStreaming || 
         primaryInfo.remotePlay || 
         String(primaryInfo.platform).toUpperCase().includes("STREAM")
     );
@@ -1459,16 +1460,19 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             sortedTitles.sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
         } catch (err) {}
 
+        // Line 1466: Robust Cumulative Playtime Resolution (Ensures WildHorse_Spirit gets played games telemetry)
         let telemetryData = [];
         try {
-            if (isSelf) {
-                const history = await getRecentlyPlayedGames(auth, { limit: 100 });
+            const playedRes = await getUserPlayedGames(auth, resolvedTargetId, { limit: 100 }).catch(() => null);
+            telemetryData = playedRes?.titles || [];
+
+            if (telemetryData.length === 0 && isSelf) {
+                const history = await getRecentlyPlayedGames(auth, { limit: 100 }).catch(() => null);
                 telemetryData = history?.data?.recentlyPlayedTitles || history?.recentlyPlayedTitles || [];
-            } else {
-                const playedRes = await getUserPlayedGames(auth, resolvedTargetId, { limit: 100 });
-                telemetryData = playedRes?.titles || [];
             }
-        } catch (e) {}
+        } catch (e) {
+            console.warn(`[TELEMETRY FETCH WARN] Failed to load played games for ${canonicalOnlineId}: ${e.message}`);
+        }
 
         const earliestEntry = sortedTitles.reduce((oldest, current) => {
             const currentDate = new Date(current.lastUpdatedDateTime || current.lastPlayed);
@@ -1915,7 +1919,7 @@ function buildSquadIntelligence(allGamertagsData) {
 // ----------------------------------------------------------------------------
 async function executeSyncPass() {
     try {
-        console.log(`[INIT] Starting Full PSN Engine v66.1.0 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
+        console.log(`[INIT] Starting Full PSN Engine v66.2.0 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
 
         await loadPersistentTokens();
 
@@ -1959,7 +1963,7 @@ async function executeSyncPass() {
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport, 
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
-            engineVersion: "66.1.0", 
+            engineVersion: "66.2.0", 
             analyticsTag: GA4_MEASUREMENT_ID, 
             codeTimestamp: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }) + " EDT"
         };
@@ -2087,7 +2091,7 @@ async function executeSyncPass() {
         diagnosticReport.lastCheck = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
         await syncNodeToFirebase("authDiagnostics", diagnosticReport);
 
-        console.log(`[SUCCESS] Full PSN Engine v66.1.0 completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
+        console.log(`[SUCCESS] Full PSN Engine v66.2.0 completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Synchronization cycle failed: ${criticalError.message}`);
     }
