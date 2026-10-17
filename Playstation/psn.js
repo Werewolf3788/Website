@@ -11,6 +11,7 @@
  * 2. User Overlays isolated strictly to /psn/gamertags/{onlineId}:
  * - Root commId acts as foreign key pointer directly to /psn/games/{commId}.
  * - Bulletproof root poster art binding: art, posterArt, image, currentGameArt.
+ * - Universal nativePlaytimeHours exposed on all user roots and game lists.
  * - liveTrophyProgress filtered strictly to games with trophies earned in 2026 and newer (>= 2026).
  * 3. Session Playtime Accumulator (Start / Sync / End / Resume Engine):
  * - Live checkpoint accumulator banking elapsed seconds between syncs.
@@ -21,11 +22,11 @@
  * - Strict presence gating skips offline players to avoid wasting compute/API quota.
  * - 1-pass fast session wrap closes pending sessions upon detecting offline transition.
  * Analytics Tagging: G-CTYHDF4MSD (Deployable via GTM).
- * Version: 67.1.0 - 2026+ Forward-Compatible Trophy Filter & Zero Dropped Lines
- * Date & Time Stamp: 2026-10-17 16:00:00 EDT (America/New_York)
+ * Version: 67.2.0 - Universal nativePlaytimeHours Across All Users & Zero Dropped Lines
+ * Date & Time Stamp: 2026-10-17 16:10:00 EDT (America/New_York)
  * ============================================================================ */
 
-// [SECTION 1: IMPORTS & CORE CONFIGURATION] Line 32
+// [SECTION 1: IMPORTS & CORE CONFIGURATION] Line 34
 const fs = require("fs");
 const path = require("path");
 const http = require("http");
@@ -110,7 +111,7 @@ let diagnosticReport = {
 };
 
 // ----------------------------------------------------------------------------
-// [SECTION 2: HTTP & HTTPS RESILIENT FETCH LAYER] Line 118
+// [SECTION 2: HTTP & HTTPS RESILIENT FETCH LAYER] Line 120
 // ----------------------------------------------------------------------------
 async function resilientFetch(url, options = {}) {
     const isHttps = url.startsWith("https://");
@@ -165,7 +166,7 @@ async function resilientFetch(url, options = {}) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 3: FIREBASE AUTHENTICATED REST API UTILITIES] Line 174
+// [SECTION 3: FIREBASE AUTHENTICATED REST API UTILITIES] Line 176
 // ----------------------------------------------------------------------------
 function buildRtdbUrl(pathWithLeadingSlash) {
     const secret = process.env.FIREBASE_AUTH_SECRET;
@@ -213,7 +214,7 @@ async function deleteNodeFromFirebase(endpointPath) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 4: STORE CATALOG & ACCESSIBILITY PARSERS] Line 224
+// [SECTION 4: STORE CATALOG & ACCESSIBILITY PARSERS] Line 226
 // ----------------------------------------------------------------------------
 function extractConceptIdFromText(text = "") {
     if (!text || typeof text !== "string") return null;
@@ -377,7 +378,7 @@ async function searchStoreConceptByName(gameName) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 5: HARDWARE, PLATFORM, FILE SIZES & MULTI-TIER TIME FORMATTING] Line 389
+// [SECTION 5: HARDWARE, PLATFORM, FILE SIZES & MULTI-TIER TIME FORMATTING] Line 391
 // ----------------------------------------------------------------------------
 function parseDetailedHardwareContext(rawPresence, matchedGame = {}) {
     const primaryInfo = rawPresence?.primaryPlatformInfo || {};
@@ -498,7 +499,7 @@ function formatDuration(totalSeconds) {
     if (totalSeconds >= SECONDS_IN_DAY) {
         const days = Math.floor(totalSeconds / SECONDS_IN_DAY);
         const remHours = Math.floor((totalSeconds % SECONDS_IN_DAY) / SECONDS_IN_HOUR);
-        const remMinutes = Math.floor((totalSeconds % SECONDS_IN_HOUR) / SECONDS_IN_MIN);
+        const remMinutes = Math.floor((totalSeconds % SECONDS_IN_DAY) / SECONDS_IN_MIN);
         if (remHours > 0) return `${days} ${days > 1 ? "days" : "day"}, ${remHours}h ${remMinutes}m`;
         if (remMinutes > 0) return `${days} ${days > 1 ? "days" : "day"}, ${remMinutes} mins`;
         return `${days} ${days > 1 ? "days" : "day"}`;
@@ -596,7 +597,7 @@ function generateAffiliateUrl(gameName) {
     return `//www.amazon.com/s?k=${cleanName}&tag=${AMAZON_TAG}`;
 }
 
-// 2026 and newer forward-compatible filter
+// 2026 and newer forward-compatible filter (>= 2026)
 function isTrophyEarnedIn2026OrNewer(dateString) {
     if (!dateString) return false;
     const epoch = typeof dateString === "number" ? dateString : new Date(dateString).getTime();
@@ -606,7 +607,7 @@ function isTrophyEarnedIn2026OrNewer(dateString) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 6: CAPABILITY & MULTIPLAYER PARSER WITH STORE BADGES] Line 608
+// [SECTION 6: CAPABILITY & MULTIPLAYER PARSER WITH STORE BADGES] Line 610
 // ----------------------------------------------------------------------------
 function inferGameCapabilitiesFromTrophies(gameName, trophies = [], commId = null, storeBadges = []) {
     const combinedTrophyText = (trophies || []).map(t => `${t.name || ""} ${t.description || ""} ${t.detail || ""}`).join(" ").toLowerCase();
@@ -688,7 +689,7 @@ function inferGameCapabilitiesFromTrophies(gameName, trophies = [], commId = nul
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 7: BULLETPROOF ACCUMULATOR & CHECKPOINT GAME TIMER] Line 715
+// [SECTION 7: BULLETPROOF ACCUMULATOR & CHECKPOINT GAME TIMER] Line 717
 // ----------------------------------------------------------------------------
 function updateGameSessionTracking(existingUserData, activeCommId, activeTitle, isOnline, activeTitleId) {
     const playSessions = existingUserData?.playSessions || {};
@@ -715,6 +716,7 @@ function updateGameSessionTracking(existingUserData, activeCommId, activeTitle, 
             session.lastEndedTime = now;
             session.totalFormatted = formatDuration(session.totalSeconds);
             session.totalHours = Math.round((session.totalSeconds / 3600) * 10) / 10;
+            session.nativePlaytimeHours = session.totalHours;
             
             console.log(`[SESSION ENDED] Banked +${deltaSeconds}s for ${session.title || id}. Lifetime Total: ${session.totalFormatted}`);
         }
@@ -737,7 +739,8 @@ function updateGameSessionTracking(existingUserData, activeCommId, activeTitle, 
                 sessionStartTime: now,
                 lastSyncedTime: now,
                 totalFormatted: formatDuration(initialSeconds),
-                totalHours: manualBaseline
+                totalHours: manualBaseline,
+                nativePlaytimeHours: manualBaseline
             };
             console.log(`[SESSION STARTED] Active tracking started for ${activeTitle} (${sessionKey}). Base: ${manualBaseline}h.`);
         } else {
@@ -754,6 +757,7 @@ function updateGameSessionTracking(existingUserData, activeCommId, activeTitle, 
             current.totalSeconds = Math.round(manualBaseline * 3600) + current.accumulatedSeconds;
             current.totalFormatted = formatDuration(current.totalSeconds);
             current.totalHours = Math.round((current.totalSeconds / 3600) * 10) / 10;
+            current.nativePlaytimeHours = current.totalHours;
             
             console.log(`[SESSION CHECKPOINT] Banked +${deltaSeconds}s for ${activeTitle}. Lifetime Total: ${current.totalFormatted}`);
         }
@@ -771,7 +775,7 @@ function updateGameSessionTracking(existingUserData, activeCommId, activeTitle, 
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 8: TOKEN LIFECYCLE MANAGEMENT & REFRESH LAYER] Line 804
+// [SECTION 8: TOKEN LIFECYCLE MANAGEMENT & REFRESH LAYER] Line 808
 // ----------------------------------------------------------------------------
 async function loadPersistentTokens() {
     try {
@@ -886,7 +890,7 @@ async function getAuthenticated(userKey, npssoInput) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 9: SMART HOT-STANDBY FAILOVER MANAGER FOR CORE PACK] Line 916
+// [SECTION 9: SMART HOT-STANDBY FAILOVER MANAGER FOR CORE PACK] Line 920
 // ----------------------------------------------------------------------------
 async function resolveMasterSession(wildHorseNpsso, rayNpsso) {
     console.log("[FAILOVER MANAGER] Checking squad token health across WildHorse_Spirit & Ray...");
@@ -914,7 +918,7 @@ async function resolveMasterSession(wildHorseNpsso, rayNpsso) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 10: DLC & ADD-ON EXTRACTION WITH STORE CATALOG FALLBACK] Line 943
+// [SECTION 10: DLC & ADD-ON EXTRACTION WITH STORE CATALOG FALLBACK] Line 947
 // ----------------------------------------------------------------------------
 async function enrichDLCGroups(canonicalCommId, mappedGroups, userPurchasedTitles = [], cloudDlcCatalog = {}) {
     const safePurchased = Array.isArray(userPurchasedTitles) ? userPurchasedTitles : [];
@@ -959,7 +963,7 @@ async function enrichDLCGroups(canonicalCommId, mappedGroups, userPurchasedTitle
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 11: UNIFIED MASTER GAME INGESTION (/psn/games/{commId})] Line 988
+// [SECTION 11: UNIFIED MASTER GAME INGESTION (/psn/games/{commId})] Line 992
 // ----------------------------------------------------------------------------
 async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, iconArt, definedTrophies, globalGames, userPurchasedTitles = [], cloudDlcCatalog = {}, subTitleId = null, initialConceptId = null) {
     if (!commId || commId === "Dashboard" || !auth) return null;
@@ -1122,7 +1126,7 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 12: DEEP TROPHY PROGRESS WITH PS5 OBJECTIVE RATIOS (x/x)] Line 1162
+// [SECTION 12: DEEP TROPHY PROGRESS WITH PS5 OBJECTIVE RATIOS (x/x)] Line 1166
 // ----------------------------------------------------------------------------
 async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, platform, globalGames, existingGameProgress = {}) {
     if (!commId || commId === "Dashboard" || !auth) return null;
@@ -1258,7 +1262,7 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 13: SMART ACTIVITY DELTA & PRESENCE EVALUATOR] Line 1298
+// [SECTION 13: SMART ACTIVITY DELTA & PRESENCE EVALUATOR] Line 1302
 // ----------------------------------------------------------------------------
 async function evaluateUserActivityDelta(agentAuth, targetId, knownKey, knownGamerTag, existingData) {
     if (!existingData) {
@@ -1332,7 +1336,7 @@ async function evaluateUserActivityDelta(agentAuth, targetId, knownKey, knownGam
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 14: FULL USER TELEMETRY INGESTION (2026+ FORWARD-COMPATIBLE FILTER)] Line 1369
+// [SECTION 14: FULL USER TELEMETRY INGESTION (UNIVERSAL nativePlaytimeHours)] Line 1373
 // ----------------------------------------------------------------------------
 async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, isManualRun, globalGames, cloudDlcCatalog = {}) {
     let resolvedTargetId = String(targetId || ACCOUNT_IDS[userKey]);
@@ -1384,6 +1388,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                     posterArt: existingData?.posterArt || existingData?.art || existingData?.currentGameArt || null,
                     image: existingData?.image || existingData?.art || existingData?.posterArt || null,
                     currentGameArt: existingData?.currentGameArt || existingData?.art || null,
+                    nativePlaytimeHours: existingData?.nativePlaytimeHours || 0,
                     playSessions: playSessions,
                     lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
                 };
@@ -1493,6 +1498,8 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                 g.trophyTitleIconUrl
             ]);
 
+            const nativeHours = Math.round((parsedSeconds / 3600) * 10) / 10;
+
             const gameRecord = {
                 ...g,
                 npCommunicationId: commId || null,
@@ -1507,7 +1514,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                 playDuration: g.playDuration || null,
                 nativePlaytimeSeconds: parsedSeconds,
                 nativePlaytimeFormatted: formatDuration(parsedSeconds),
-                nativePlaytimeHours: Math.round((parsedSeconds / 3600) * 10) / 10,
+                nativePlaytimeHours: nativeHours,
                 firstPlayedDateTime: g.firstPlayedDateTime || null,
                 lastPlayed: g.lastPlayedDateTime || null,
                 progress: 0,
@@ -1553,6 +1560,12 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             existing.earnedTotal = (t.earnedTrophies?.platinum || 0) + (t.earnedTrophies?.gold || 0) + (t.earnedTrophies?.silver || 0) + (t.earnedTrophies?.bronze || 0);
             existing.definedTotal = (t.definedTrophies?.platinum || 0) + (t.definedTrophies?.gold || 0) + (t.definedTrophies?.silver || 0) + (t.definedTrophies?.bronze || 0);
             existing.completionRatio = existing.definedTotal > 0 ? `${Math.round((existing.earnedTotal / existing.definedTotal) * 100)}%` : "0%";
+
+            if (existing.nativePlaytimeHours === undefined) {
+                existing.nativePlaytimeHours = 0;
+                existing.nativePlaytimeFormatted = "0 hrs";
+                existing.nativePlaytimeSeconds = 0;
+            }
 
             if (commId) mergedGamesMap.set(commId, existing);
             if (titleId) mergedGamesMap.set(titleId, existing);
@@ -1678,10 +1691,9 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                                            existingData?.activeHunt?.hoursFormatted || 
                                            "0 hrs";
 
-        const persistentLifetimeNumeric = matchedGame.nativePlaytimeHours || 
-                                         existingData?.currentGameNumericHours || 
-                                         existingData?.activeHunt?.numericHours || 
-                                         0;
+        const persistentLifetimeNumeric = matchedGame.nativePlaytimeHours !== undefined 
+                                         ? matchedGame.nativePlaytimeHours 
+                                         : (existingData?.currentGameNumericHours || existingData?.activeHunt?.numericHours || 0);
 
         const safePlaytimeFormatted = (currentGameDurationFormatted && currentGameDurationFormatted !== "0 hrs" && currentGameDurationFormatted !== "< 1 min")
             ? currentGameDurationFormatted
@@ -1691,10 +1703,20 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             ? (Math.round((activeSessionSeconds / 3600) * 10) / 10)
             : persistentLifetimeNumeric;
 
+        // Ensure nativePlaytimeHours is explicitly guaranteed across all accounts
+        const userNativePlaytimeHours = matchedGame.nativePlaytimeHours !== undefined 
+            ? matchedGame.nativePlaytimeHours 
+            : (existingData?.nativePlaytimeHours !== undefined ? existingData.nativePlaytimeHours : safeNumericHours);
+
+        const userNativePlaytimeSeconds = matchedGame.nativePlaytimeSeconds !== undefined 
+            ? matchedGame.nativePlaytimeSeconds 
+            : (existingData?.nativePlaytimeSeconds !== undefined ? existingData.nativePlaytimeSeconds : Math.round(userNativePlaytimeHours * 3600));
+
+        const userNativePlaytimeFormatted = matchedGame.nativePlaytimeFormatted || formatDuration(userNativePlaytimeSeconds);
+
         const stats = await getUserTrophyProfileSummary(auth, resolvedTargetId).catch(() => ({}));
         let activeHunt = existingData?.activeHunt || null;
         
-        // Retain existing subtrees so prior 2026+ logs are preserved
         const liveTrophyProgress = { ...(existingData?.liveTrophyProgress || {}) };
         const cumulativeUnlockedTrophies = [];
 
@@ -1702,24 +1724,20 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         const eligible2026PlusGames = allRecentGames.filter(g => {
             if (!g || !g.npCommunicationId || !String(g.npCommunicationId).startsWith("NPWR")) return false;
             
-            // Check last updated timestamp for 2026+ activity
             const lastUpdated = g.lastUpdatedDateTime || g.lastPlayed || g.lastPlayedDateTime;
             if (isTrophyEarnedIn2026OrNewer(lastUpdated)) return true;
 
-            // Also check if user has any earned trophies in 2026+ in existing cache
             const cachedTree = existingData?.liveTrophyProgress?.[g.npCommunicationId];
             if (cachedTree) {
                 const hasEarned2026Plus = Object.values(cachedTree).some(t => t.earned && isTrophyEarnedIn2026OrNewer(t.timestamp || t.earnedDate));
                 if (hasEarned2026Plus) return true;
             }
 
-            // Always allow active hunt if online
             if (g.npCommunicationId === persistentRootCommId && isPlayerOnline && !isDashboard) return true;
 
             return false;
         });
 
-        // Filter out games with no 2026+ activity from liveTrophyProgress
         for (const cachedCommId of Object.keys(liveTrophyProgress)) {
             const isEligible = eligible2026PlusGames.some(g => g.npCommunicationId === cachedCommId);
             if (!isEligible && cachedCommId !== persistentRootCommId) {
@@ -1777,6 +1795,9 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                         hoursPlayed: safePlaytimeFormatted, 
                         hoursFormatted: safePlaytimeFormatted, 
                         numericHours: safeNumericHours, 
+                        nativePlaytimeHours: userNativePlaytimeHours,
+                        nativePlaytimeFormatted: userNativePlaytimeFormatted,
+                        nativePlaytimeSeconds: userNativePlaytimeSeconds,
                         amazonAffiliateUrl: generateAffiliateUrl(matchedGame.name || resolvedTitle), 
                         progress: matchedGame.progress || 0, 
                         firstTrophyTimestamp: earliestActiveTrophyTimestamp,
@@ -1818,6 +1839,9 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             image: safeFinalPoster,
             currentGameHours: safePlaytimeFormatted,
             currentGameNumericHours: safeNumericHours,
+            nativePlaytimeHours: userNativePlaytimeHours,
+            nativePlaytimeFormatted: userNativePlaytimeFormatted,
+            nativePlaytimeSeconds: userNativePlaytimeSeconds,
             amazonAffiliateUrl: generateAffiliateUrl(resolvedTitle),
             platform: hwContext.activeHardware,
             gameBuildVersion: hwContext.gameBuildVersion,
@@ -1856,6 +1880,9 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             friendRequests: friendRequests,
             purchasedGames: purchasedGames,
             ...presence, 
+            nativePlaytimeHours: userNativePlaytimeHours,
+            nativePlaytimeFormatted: userNativePlaytimeFormatted,
+            nativePlaytimeSeconds: userNativePlaytimeSeconds,
             gamesPlayed: totalGamesPlayedCount || existingData?.gamesPlayed || 0,
             psnAccountAge: calculateAgeString(earliestEntry), 
             earliestTrophyDate: earliestEntry,
@@ -1886,7 +1913,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 15: SQUAD LEADERBOARDS & SOCIAL OVERLAP] Line 1772
+// [SECTION 15: SQUAD LEADERBOARDS & SOCIAL OVERLAP] Line 1812
 // ----------------------------------------------------------------------------
 function buildSquadIntelligence(allGamertagsData) {
     const players = Object.values(allGamertagsData || {});
@@ -1912,7 +1939,8 @@ function buildSquadIntelligence(allGamertagsData) {
         image: p.image || p.art || p.posterArt || null,
         platform: p.platform || "PS5",
         gameBuildVersion: p.gameBuildVersion || "PS5 Native Game",
-        isStreamingRemotePlay: !!p.isStreamingRemotePlay
+        isStreamingRemotePlay: !!p.isStreamingRemotePlay,
+        nativePlaytimeHours: p.nativePlaytimeHours || p.currentGameNumericHours || 0
     })).sort((a, b) => (b.level - a.level) || (b.platinum - a.platinum) || (b.totalTrophies - a.totalTrophies));
 
     const squadTotals = leaderboard.reduce((acc, curr) => {
@@ -1946,11 +1974,11 @@ function buildSquadIntelligence(allGamertagsData) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 16: MASTER EXECUTION & GITHUB ACTIONS RUNNER] Line 1827
+// [SECTION 16: MASTER EXECUTION & GITHUB ACTIONS RUNNER] Line 1867
 // ----------------------------------------------------------------------------
 async function executeSyncPass() {
     try {
-        console.log(`[INIT] Starting Full PSN Engine v67.1.0 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
+        console.log(`[INIT] Starting Full PSN Engine v67.2.0 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
 
         await loadPersistentTokens();
 
@@ -1994,7 +2022,7 @@ async function executeSyncPass() {
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport, 
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
-            engineVersion: "67.1.0", 
+            engineVersion: "67.2.0", 
             analyticsTag: GA4_MEASUREMENT_ID, 
             codeTimestamp: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }) + " EDT"
         };
@@ -2121,13 +2149,13 @@ async function executeSyncPass() {
         diagnosticReport.lastCheck = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
         await syncNodeToFirebase("authDiagnostics", diagnosticReport);
 
-        console.log(`[SUCCESS] Full PSN Engine v67.1.0 completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
+        console.log(`[SUCCESS] Full PSN Engine v67.2.0 completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Synchronization cycle failed: ${criticalError.message}`);
     }
 }
 
-// [SECTION 17: RUNNER INVOCATION] Line 2045
+// [SECTION 17: RUNNER INVOCATION] Line 2085
 (async () => {
     await executeSyncPass();
     process.exit(0);
