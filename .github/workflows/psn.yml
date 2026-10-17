@@ -1,21 +1,30 @@
 # ============================================================================
 # File: .github/workflows/psn-sync.yml
 # Project: PSN Live Sync Engine
-# Version: 18.1.0 - Streamlined Push Engine
+# Version: 18.3.0 - 21-Minute Presence-Gated Sync
 # ============================================================================
 
 name: PSN Sync and Deploy
 
 on:
+  workflow_dispatch:
+  schedule:
+    # Runs at :00, :21, and :42 of every hour (~21-minute intervals)
+    - cron: '*/21 * * * *'
   push:
     branches:
       - main
-  workflow_dispatch:
-  schedule:
-    - cron: '*/15 * * * *'
+    paths-ignore:
+      - 'psn.json'
+      - 'Playstation/psn.json'
+      - 'README.md'
 
 permissions:
   contents: write
+
+concurrency:
+  group: psn-sync-runner
+  cancel-in-progress: true
 
 jobs:
   psn-sync-job:
@@ -67,9 +76,9 @@ jobs:
           git add psn.json Playstation/psn.json 2>/dev/null || true
           
           if ! git diff --cached --quiet; then
-            git commit -m "Automated PSN Payload Sync [Chicago Time: $(TZ='America/Chicago' date '+%Y-%m-%d %H:%M:%S')]"
+            git commit -m "Automated PSN Payload Sync [skip ci] [Chicago Time: $(TZ='America/Chicago' date '+%Y-%m-%d %H:%M:%S')]"
             git pull --rebase origin main
             git push origin main
           else
-            echo "No local file changes detected to commit."
+            echo "No local changes detected to commit (User offline or no new trophies)."
           fi
