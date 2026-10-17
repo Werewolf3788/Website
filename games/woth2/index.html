@@ -1,5 +1,5 @@
 <!-- Line 1: Way of the Hunter 2 - Master Tactical Companion -->
-<!-- [Smart Cache-Buster Time: 2026-10-16 04:35 EDT | Firebase Sync Target: /utm_links | Version: 7.1.0] -->
+<!-- [Smart Cache-Buster Time: 2026-10-16 20:16 EDT | Firebase Sync Target: /utm_links | Version: 7.6.0] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,6 +14,7 @@
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
 
   <style>
     :root {
@@ -449,6 +450,11 @@
       box-shadow: 0 0 0 2px rgba(245, 166, 35, 0.2);
     }
 
+    .file-input {
+      padding: 6px;
+      cursor: pointer;
+    }
+
     .dynamic-schema-box {
       background: rgba(0, 0, 0, 0.25);
       border: 1px dashed var(--border-color);
@@ -867,24 +873,27 @@
       </div>
     </section>
 
-    <!-- Tab: Arsenal / Gear Catalog -->
+    <!-- Tab: Arsenal / Gear Catalog & Lodge Forecaster -->
     <section id="tab-gearCatalog" class="tab-pane">
       <div class="card">
         <div class="card-header">
           <h3>Lodge Arsenal, Weapons &amp; Field Gear</h3>
-          <span id="gearCatalogCount" class="badge">Loading Catalog...</span>
+          <span id="gearCatalogCount" class="badge">Lodge Catalog</span>
         </div>
         <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;" id="gearFilterPills">
-          <button class="trophy-group-pill active" onclick="window.CompanionApp.filterGearCategory('all')">All Gear</button>
-          <button class="trophy-group-pill" onclick="window.CompanionApp.filterGearCategory('weapons')">Weapons</button>
-          <button class="trophy-group-pill" onclick="window.CompanionApp.filterGearCategory('optics')">Optics</button>
-          <button class="trophy-group-pill" onclick="window.CompanionApp.filterGearCategory('decoys')">Decoys</button>
-          <button class="trophy-group-pill" onclick="window.CompanionApp.filterGearCategory('calls_and_scents')">Calls &amp; Scents</button>
-          <button class="trophy-group-pill" onclick="window.CompanionApp.filterGearCategory('field_equipment')">Field Equipment</button>
-          <button class="trophy-group-pill" onclick="window.CompanionApp.filterGearCategory('ammunition')">Ammunition</button>
-          <button class="trophy-group-pill" onclick="window.CompanionApp.filterGearCategory('dlcs')">DLCs &amp; Packs</button>
+          <button class="trophy-group-pill category-pill active" data-category="all">All Gear</button>
+          <button class="trophy-group-pill category-pill" data-category="weapons">Weapons</button>
+          <button class="trophy-group-pill category-pill" data-category="optics">Optics</button>
+          <button class="trophy-group-pill category-pill" data-category="decoys">Decoys</button>
+          <button class="trophy-group-pill category-pill" data-category="calls_and_scents">Calls &amp; Scents</button>
+          <button class="trophy-group-pill category-pill" data-category="field_equipment">Field Equipment</button>
+          <button class="trophy-group-pill category-pill" data-category="ammunition">Ammunition</button>
+          <button class="trophy-group-pill category-pill" data-category="dlcs">DLCs &amp; Packs</button>
         </div>
-        <div id="gearCatalogContainer" class="cards-grid"></div>
+        <div id="lodgeArsenalGrid" class="cards-grid"></div>
+        <div id="lodgeForecasterContainer" style="display:none;"></div>
+        <div id="lodgeRequisitionGrid" style="display:none;"></div>
+        <div id="gearCatalogContainer" style="display:none;"></div>
       </div>
     </section>
 
@@ -953,7 +962,7 @@
               </div>
             </div>
 
-            <div class="form-section-title">2. Trophy &amp; Genetics</div>
+            <div class="form-section-title">2. Trophy, Genetics &amp; Sell Valuation</div>
             <div class="form-grid-3">
               <div class="input-group">
                 <label for="harvestSex">Sex &amp; Stage</label>
@@ -979,12 +988,29 @@
               </div>
             </div>
 
+            <div class="form-grid-2">
+              <div class="input-group">
+                <label for="harvestSellPrice">Harvest Sell / Taxidermy Value ($)</label>
+                <input type="number" id="harvestSellPrice" value="200" min="0" placeholder="e.g. 250">
+              </div>
+              <div class="input-group" style="justify-content: flex-end;">
+                <span style="font-size:0.74rem; color:var(--accent-gold); margin-bottom: 6px;">⚡ Auto-adds credit amount directly into Hunter Credits</span>
+              </div>
+            </div>
+
             <div id="dynamicSchemaFieldsContainer" class="dynamic-schema-box"></div>
 
             <div class="form-section-title">3. Harvest Field Photo / Inspection Snapshot</div>
-            <div style="background:rgba(0,0,0,0.25); border:1px dashed var(--border-color); border-radius:6px; padding:12px; margin-top:8px; display:flex; gap:12px; align-items:center;">
-              <img id="harvestPhotoPreview" src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" style="width:64px; height:64px; border-radius:6px; object-fit:cover; border:1px solid var(--border-color);">
-              <div style="flex-grow:1;">
+            <div style="background:rgba(0,0,0,0.25); border:1px dashed var(--border-color); border-radius:6px; padding:12px; margin-top:8px; display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; gap:12px; align-items:center;">
+                <img id="harvestImagePreview" src="" alt="Harvest Preview" style="display:none; width:64px; height:64px; border-radius:6px; object-fit:cover; border:1px solid var(--border-color);">
+                <div style="flex-grow:1;">
+                  <label for="harvestImageInput" style="font-size:0.74rem; color:var(--text-muted); text-transform:uppercase; font-weight:600; display:block; margin-bottom:4px;">Upload Screenshot (iOS / Android / PC)</label>
+                  <input type="file" id="harvestImageInput" accept="image/*" class="file-input">
+                </div>
+              </div>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <span style="font-size:0.74rem; color:var(--text-muted);">OR URL:</span>
                 <input type="text" id="harvestPhotoUrlInput" placeholder="Paste Animal Photo URL (//... or https://)" style="font-size:0.8rem;">
               </div>
             </div>
@@ -1184,7 +1210,7 @@
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Way of the Hunter 2 Companion &bull; Tactical Operations Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-16 04:35 EDT</span> | Version: 7.1.0</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-16 20:16 EDT</span> | Version: 7.6.0</p>
       </div>
       <div class="footer-col text-right">
         <span id="firebaseStatusBadge" class="status-pill status-connecting">RTDB: Connecting...</span>
