@@ -1,29 +1,29 @@
 <!-- Line 1: Document Type Declaration -->
 <!DOCTYPE html>
 <!-- ============================================================================
- * Dashboard: WildHorse_Spirit / Werewolf3788 Master Tactical Hub
- * File: /Playstation/dashboards/wildhorse_spirit.html
+ * Dashboard: wildhorse_spirit Tactical Squad Hub
+ * File: /Playstation/dashboards/werewolf.html
  * Engine: Client-Side Firebase RTDB & Firestore Multi-Platform Hub
  * Description: 
- *   1. DecAPI Resilient Twitch Engine with automatic PSN/RTDB Avatar Failover.
- *   2. CommId Canonical Resolution: Maps /psn/gamertags/wildhorse_spirit/commId 
- *      directly to master skeleton data, ensuring title, poster art, and full trophy
- *      lists are 100% accurate.
- *   3. Squad Journey Log with Live Earner Timestamps: Displays friend progress with 
- *      exact unlock dates and times.
+ *   1. Dedicated Squad Profile for wildhorse_spirit.
+ *   2. CommId Canonical Resolution: Maps /psn/gamertags/wildhorse_spirit/commId directly to 
+ *      master skeleton data, ensuring title, poster art, and full trophy lists are accurate.
+ *   3. Dynamic Mixed Content Sanitizer: Normalizes http:// assets from PlayStation CDN to https://.
  *   4. Full Schema Extraction: Integrates conceptId, cusaId, storeListing, and DLC packs.
+ *   5. Firebase RTDB SSE Realtime Streaming: Low-latency live events with auto fallback to polling.
  * Analytics: G-CTYHDF4MSD (New York 24h Time)
- * Date & Time Stamp: 2026-10-20 02:19:00 EDT (America/New_York)
+ * Date & Time Stamp: 2026-10-20 03:11:00 EDT (America/New_York)
  * ============================================================================ -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WildHorse_Spirit | Tactical Telemetry Hub</title>
+    <title>wildhorse_spirit | Tactical Squad Hub</title>
     
     <!-- GOOGLE ANALYTICS 4 DUAL MEASUREMENT ENGINE -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
+        // Section: Analytics Engine & New York 24h Time Tracker (Lines 24-58)
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
@@ -36,8 +36,8 @@
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '54.0.0',
-            'gamertag': 'WildHorse_Spirit',
+            'layout_version': '58.0.0',
+            'gamertag': 'wildhorse_spirit',
             'user_handle': 'Werewolf3788',
             'engagement_timezone': 'America/New_York',
             'engagement_timestamp_24h': getNY24Time(),
@@ -54,14 +54,19 @@
             if (typeof gtag === 'function') {
                 gtag('event', actionName, {
                     ...eventData,
-                    'user_id': 'WildHorse_Spirit',
+                    'user_id': 'wildhorse_spirit',
                     'timestamp': getNY24Time()
                 });
             }
         }
     </script>
 
-    <!-- UI LIBS, FONTS & ICONS -->
+    <!-- TAILWIND CONFIG & PLAY CDN (Suppresses Production Warning) -->
+    <script>
+        // Suppress Tailwind Play CDN production warning in console
+        window.tailwind = window.tailwind || {};
+        window.tailwind.config = window.tailwind.config || {};
+    </script>
     <script src="//cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -334,13 +339,6 @@
         .store-btn-amazon { background: rgba(255, 153, 0, 0.25); color: #ff9900; border-color: rgba(255, 153, 0, 0.5); }
         .store-btn-amazon:hover { background: #ff9900; color: #000000; }
 
-        .live-badge {
-            position: absolute; top: 12px; right: 12px; background: #ff5f1f; color: black;
-            padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 900;
-            text-transform: uppercase; animation: pulseLive 2s infinite; z-index: 10;
-        }
-        @keyframes pulseLive { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -377,50 +375,20 @@
         </div>
     </div>
 
-    <!-- HEADER STAT CARDS -->
+    <!-- HEADER STAT CARDS (4-Column Layout Optimized for wildhorse_spirit) -->
     <header class="w-full text-center py-8 sm:py-10">
         <div class="viewport-85-wrap">
             <div class="relative inline-block mb-6">
                 <div class="absolute inset-0 bg-[#FF5F1F] blur-[100px] opacity-30 rounded-full"></div>
-                <img id="main-avatar" src="//via.placeholder.com/250x250/1e1e24/FF5F1F?text=WOLF" class="relative w-36 h-36 sm:w-48 sm:h-48 lg:w-56 lg:h-56 rounded-full border-4 border-[#FF5F1F] shadow-2xl mx-auto object-cover cursor-pointer" onclick="openLightboxImage(this.src, 'WildHorse_Spirit Avatar')" onerror="this.src='//via.placeholder.com/250x250/1e1e24/FF5F1F?text=WOLF'">
+                <img id="main-avatar" src="//via.placeholder.com/250x250/1e1e24/FF5F1F?text=SPIRIT" class="relative w-36 h-36 sm:w-48 sm:h-48 lg:w-56 lg:h-56 rounded-full border-4 border-[#FF5F1F] shadow-2xl mx-auto object-cover cursor-pointer" onclick="openLightboxImage(this.src, 'wildhorse_spirit Avatar')" onerror="this.src='//via.placeholder.com/250x250/1e1e24/FF5F1F?text=SPIRIT'">
                 <div id="ps-plus-indicator" class="ps-plus-badge"><i class="fab fa-playstation"></i> PLUS MEMBER</div>
             </div>
             
-            <h1 class="orange-gradient-text mb-2 text-3xl sm:text-5xl lg:text-6xl font-black" id="display-admin-name">WildHorse_Spirit</h1>
-            <div class="text-xs sm:text-sm font-black text-gray-400 uppercase tracking-[0.4em] mb-8">Official Pack Leader Telemetry Hub</div>
+            <h1 class="orange-gradient-text mb-2 text-3xl sm:text-5xl lg:text-6xl font-black" id="display-admin-name">wildhorse_spirit</h1>
+            <div class="text-xs sm:text-sm font-black text-gray-400 uppercase tracking-[0.4em] mb-8">Official Pack Member Telemetry Hub &bull; wildhorse_spirit</div>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-center mobile-stack-single">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center mobile-stack-single">
                 
-                <!-- COMPLETE DECAPI TWITCH TELEMETRY CARD -->
-                <a id="twitch-card" href="//www.twitch.tv/werewolf3788" target="_blank" rel="noopener noreferrer" class="glass-card header-stat-card p-4 border-b-4 border-purple-500 hover:scale-[1.02] transition-all min-h-[170px] relative overflow-hidden group">
-                    <div id="live-indicator" class="live-badge hidden">Live Now</div>
-                    
-                    <div class="flex items-center gap-2 mb-2 w-full justify-center">
-                        <img id="twitch-avatar-img" src="//via.placeholder.com/32x32/1e1e24/9146ff?text=T" class="w-7 h-7 rounded-full border-2 border-purple-400 object-cover shadow" alt="Twitch Avatar" onerror="handleTwitchAvatarError(this)">
-                        <div class="text-xs text-purple-400 font-black uppercase tracking-widest flex items-center gap-1.5">
-                            <i class="fab fa-twitch text-sm"></i> @werewolf3788
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center justify-center gap-3 w-full my-auto">
-                        <img id="twitch-boxart-img" src="" class="w-12 h-16 rounded-md object-cover border border-purple-500/30 shadow hidden" alt="Game Art" onerror="handleTwitchBoxArtError(this)">
-                        
-                        <div class="flex flex-col items-start min-w-0 flex-1 text-left">
-                            <div class="text-2xl font-black text-white font-mono leading-none" id="follower-count">--</div>
-                            <div class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Followers</div>
-                            <div id="twitch-viewers-count" class="text-[11px] font-mono font-bold text-purple-300 uppercase mt-1 hidden">
-                                <i class="fas fa-eye text-[9px] mr-1"></i> <span id="twitch-viewers-val">0</span> viewers
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="twitch-status-msg" class="text-xs text-gray-200 font-black uppercase mt-1.5 truncate w-full px-1">Offline</div>
-                    
-                    <div id="twitch-uptime-container" class="w-full text-center mt-1 hidden">
-                        <span id="twitch-uptime-val" class="text-[11px] font-mono font-black text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-500/40 uppercase">Streaming: --</span>
-                    </div>
-                </a>
-
                 <div class="glass-card header-stat-card p-5 border-b-4 border-[#ff5f1f] min-h-[170px]">
                     <div class="text-xs text-orange-400 font-black mb-1 uppercase tracking-widest">PSN Library</div>
                     <div id="games-played-count" class="text-3xl font-black text-white font-mono">--</div>
@@ -445,12 +413,13 @@
                     </div>
                 </div>
 
-                <div class="glass-card header-stat-card p-5 border-b-4 border-green-500 col-span-1 sm:col-span-2 lg:col-span-1 min-h-[170px]">
+                <div class="glass-card header-stat-card p-5 border-b-4 border-green-500 min-h-[170px]">
                     <div id="online-status-label" class="text-base font-black text-white uppercase">Connecting</div>
                     <div id="current-game-sub" class="text-xs text-green-400 font-black uppercase mt-1 truncate max-w-[200px]">---</div>
                     <div id="current-activity" class="text-xs text-gray-300 font-bold uppercase mt-2">Activity: --</div>
                     <div id="current-platform" class="text-xs text-gray-400 font-black uppercase mt-1">System: PS5</div>
                 </div>
+
             </div>
         </div>
     </header>
@@ -593,7 +562,7 @@
                     &copy; 2026 Werewolf Project. Built by Werewolf3788 &amp; Friends.
                 </p>
                 <div id="build-meta-footer" style="color: #94a3b8; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
-                    Werewolf Command Engine &bull; v54.0.0 &bull; Build: 2026-10-20 02:19:00 EDT
+                    Werewolf Command Engine &bull; v58.0.0 &bull; Build: 2026-10-20 03:11:00 EDT
                 </div>
                 <div class="text-center mt-2 text-xs font-black text-gray-500 uppercase tracking-[0.2em]">
                     Primary RTDB: <span class="text-orange-400">/psn/gamertags/wildhorse_spirit.json</span> | Skeleton: <span class="text-orange-400">/psn/games.json</span> | Synced: <span id="sync-time" class="text-gray-300">--</span>
@@ -616,10 +585,9 @@
 
     <!-- REALTIME DATABASE RESILIENT MULTI-PATH LOADER -->
     <script>
-        // Section: API Endpoints & Dynamic Roots (Lines 380-400)
+        // Section: API Endpoints & Dynamic Roots for wildhorse_spirit (Lines 340-362)
         const RTDB_ROOT = "https://entertainment-71888-default-rtdb.firebaseio.com";
-        const WILDHORSE_RTDB_URL = `${RTDB_ROOT}/psn/gamertags/wildhorse_spirit.json`;
-        const WILDHORSE_ALT_URL = `${RTDB_ROOT}/psn/gamertags/WildHorse_Spirit.json`;
+        const WILDHORSE_PRIMARY_URL = `${RTDB_ROOT}/psn/gamertags/wildhorse_spirit.json`;
         const ROOT_PSN_RTDB_URL = `${RTDB_ROOT}/psn.json`;
         const CANONICAL_GAMES_URL = `${RTDB_ROOT}/psn/games.json`;
         const UTM_LINKS_RTDB_URL = `${RTDB_ROOT}/utm_links.json`;
@@ -636,8 +604,20 @@
         let authorizedFriendsMap = {};
         const skeletonFetchedAt = {};
 
-        // Section: Single-Game Skeleton Cache Loader (Lines 402-425)
-        // Resolves full canonical title, master poster art, DLCs, and trophy definitions
+        // Section: Mixed Content Fixer & Asset Sanitizer
+        function toSecureUrl(url) {
+            if (!url || typeof url !== 'string') return '';
+            const trimmed = url.trim();
+            if (trimmed.startsWith('http://static-resource.np.community.playstation.net/')) {
+                return trimmed.replace('http://static-resource.np.community.playstation.net/', 'https://static-resource.np.community.playstation.net/');
+            }
+            if (trimmed.startsWith('http://')) {
+                return trimmed.replace(/^http:\/\//i, 'https://');
+            }
+            return trimmed;
+        }
+
+        // Section: Single-Game Skeleton Cache Loader (Lines 364-387)
         async function ensureSkeleton(commId, force = false) {
             const id = String(commId || '').trim().toUpperCase();
             if (!id.startsWith('NPWR')) return null;
@@ -658,7 +638,7 @@
             return canonicalGamesSkeleton[id] || null;
         }
 
-        // Section: Serialized Refresh Gate & Stream Handlers (Lines 427-470)
+        // Section: Serialized Refresh Gate & Stream Handlers for wildhorse_spirit (Lines 389-432)
         let hubInFlight = false, hubQueued = false;
         async function refreshHub() {
             if (hubInFlight) { hubQueued = true; return; }
@@ -700,7 +680,7 @@
             });
         }
 
-        // Section: Formatting & Parsing Helpers (Lines 472-566)
+        // Section: Formatting & Parsing Helpers (Lines 434-528)
         function convertFirebaseArray(data) {
             if (!data) return [];
             if (Array.isArray(data)) return data;
@@ -777,7 +757,7 @@
             return 'prog-stage-4';
         };
 
-        // Section: Trophy Matching & Progress Logic (Lines 568-624)
+        // Section: Trophy Matching & Progress Logic (Lines 530-586)
         function getSkeletonGameByCommId(commId, fallbackTitle = '') {
             if (!commId && !fallbackTitle) return null;
             const targetComm = (commId || '').trim().toUpperCase();
@@ -842,7 +822,7 @@
             return { count: count, target: target, pct: pct, fraction: `${count.toLocaleString()}/${target.toLocaleString()}` };
         }
 
-        // Section: Remote Fetchers & Friends (Lines 626-654)
+        // Section: Remote Fetchers & Friends (Lines 588-616)
         async function fetchUserProfileAndFriends() {
             try {
                 const res = await fetch(`${USER_DATA_URL}?t=${Date.now()}`);
@@ -869,7 +849,7 @@
             }
         }
 
-        // Section: UTM Nav Links Generator (Lines 656-750)
+        // Section: UTM Nav Links Generator (Lines 618-712)
         async function fetchUtmNavLinks() {
             const container = document.getElementById('dynamic-nav-container');
             if (!container) return;
@@ -888,8 +868,8 @@
                     if (url && typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('//'))) {
                         leafLinks.push({
                             title: node.title || node.name || "Link",
-                            url: url,
-                            image: node.image || node.thumb || node.thumbnail || node.img || null,
+                            url: toSecureUrl(url),
+                            image: toSecureUrl(node.image || node.thumb || node.thumbnail || node.img || null),
                             group: node.group ? String(node.group).trim() : "Standalone"
                         });
                         return;
@@ -978,7 +958,7 @@
             }
         });
 
-        // Section: Gamertags Sync & Platform Pills (Lines 752-788)
+        // Section: Gamertags Sync & Platform Pills (Lines 714-750)
         async function syncPSNGamertags() {
             try {
                 const res = await fetch(`${PSN_GAMERTAGS_URL}?t=${Date.now()}`);
@@ -1011,21 +991,14 @@
             if (el) el.classList.add('active');
         };
 
-        // Section: Core Telemetry Engine - updateHub (Lines 790-1120)
+        // Section: Core Telemetry Engine - updateHub for wildhorse_spirit (Lines 752-1080)
         async function updateHub() {
             try {
                 let user = null;
                 try {
-                    const directRes = await fetch(`${WILDHORSE_RTDB_URL}?t=${Date.now()}`);
+                    const directRes = await fetch(`${WILDHORSE_PRIMARY_URL}?t=${Date.now()}`);
                     if (directRes.ok) user = await directRes.json();
                 } catch (e) {}
-
-                if (!user) {
-                    try {
-                        const altRes = await fetch(`${WILDHORSE_ALT_URL}?t=${Date.now()}`);
-                        if (altRes.ok) user = await altRes.json();
-                    } catch (e) {}
-                }
 
                 if (!user) {
                     const rootRes = await fetch(`${ROOT_PSN_RTDB_URL}?t=${Date.now()}`);
@@ -1034,9 +1007,8 @@
                         globalSquadData = rootData?.gamertags || {};
                         if (rootData?.games) canonicalGamesSkeleton = rootData.games;
                         user = globalSquadData?.wildhorse_spirit || 
-                               globalSquadData?.WildHorse_Spirit || 
-                               globalSquadData?.werewolf3788 || 
-                               globalSquadData?.Werewolf3788 || null;
+                               globalSquadData?.Wildhorse_Spirit || 
+                               globalSquadData?.wildhorse || null;
                     }
                 }
 
@@ -1053,11 +1025,12 @@
                 if (hVal) hVal.innerText = user.handshakeText || `NPSSO: ${npssoStat.toUpperCase()}`;
 
                 const displayAdmin = document.getElementById('display-admin-name');
-                if (displayAdmin) displayAdmin.innerText = user.onlineId || "WildHorse_Spirit";
+                if (displayAdmin) displayAdmin.innerText = user.onlineId || "wildhorse_spirit";
 
                 const mainAv = document.getElementById('main-avatar');
                 if (mainAv) {
-                    const avatarSrc = user.avatar || user.image || (user.allAvatars && user.allAvatars[0]) || '';
+                    const rawAvatarSrc = user.avatar || user.image || (user.allAvatars && user.allAvatars[0]) || '';
+                    const avatarSrc = toSecureUrl(rawAvatarSrc);
                     if (avatarSrc) mainAv.src = avatarSrc;
                 }
 
@@ -1108,7 +1081,7 @@
                 if (silverEl) silverEl.innerText = summary.silver !== undefined ? summary.silver : (summary.earnedTrophies?.silver || 0);
                 if (bronzeEl) bronzeEl.innerText = summary.bronze !== undefined ? summary.bronze : (summary.earnedTrophies?.bronze || 0);
 
-                // Priority CommID Extraction (Direct /commId -> activeHunt -> currentCommunicationId)
+                // Priority CommID Extraction
                 const recentGames = convertFirebaseArray(user.recentGames);
                 const mostRecentGame = recentGames.length > 0 ? recentGames[0] : null;
                 const ah = user.activeHunt || {};
@@ -1154,9 +1127,10 @@
                     }
                 }
 
-                // Canonical Title & Poster Art Binding
+                // Canonical Title & Poster Art Binding (Secured)
                 const activeGameTitle = skeletonData?.name || skeletonData?.trophyTitleName || ah.title || user.currentGame || mostRecentGame?.name || "Active Hunt";
-                const activeGameArt = skeletonData?.posterArt || ah.art || ah.posterArt || ah.image || user.art || user.currentGameArt || mostRecentGame?.posterArt || '';
+                const rawArt = skeletonData?.posterArt || ah.art || ah.posterArt || ah.image || user.art || user.currentGameArt || mostRecentGame?.posterArt || '';
+                const activeGameArt = toSecureUrl(rawArt);
 
                 const activeTitleEl = document.getElementById('active-game-title');
                 if (activeTitleEl) activeTitleEl.innerText = activeGameTitle;
@@ -1220,9 +1194,10 @@
                     if (rawDlcs.length > 0) {
                         dlcsContainer.innerHTML = rawDlcs.map(d => {
                             const dDef = d.definedTrophies || {};
+                            const securedDlcImg = toSecureUrl(d.image);
                             return `
                                 <div class="bg-black/50 p-2.5 rounded-xl border border-white/5 flex items-center gap-3">
-                                    ${d.image ? `<img src="${d.image}" class="w-10 h-10 rounded-lg object-cover border border-white/10" onerror="this.style.display='none'">` : '<i class="fas fa-box-archive text-orange-400 text-lg"></i>'}
+                                    ${securedDlcImg ? `<img src="${securedDlcImg}" class="w-10 h-10 rounded-lg object-cover border border-white/10" onerror="this.style.display='none'">` : '<i class="fas fa-box-archive text-orange-400 text-lg"></i>'}
                                     <div class="min-w-0 flex-1">
                                         <div class="text-xs font-black uppercase text-white truncate">${d.description || `DLC Pack ${d.groupId || ''}`}</div>
                                         <div class="flex items-center gap-2 mt-0.5 text-[10px] font-mono font-bold text-gray-400">
@@ -1307,7 +1282,7 @@
                         trophyId: Number(k),
                         trophyName: v.trophyName || v.name || `Trophy #${k}`,
                         trophyDetail: v.trophyDetail || v.description || '',
-                        trophyIconUrl: v.trophyIconUrl || v.icon || '',
+                        trophyIconUrl: toSecureUrl(v.trophyIconUrl || v.icon || ''),
                         earned: !!v.earned,
                         earnedDateTime: v.earnedDateTime || v.earnedDate || v.timestamp || null,
                         ...v
@@ -1325,7 +1300,7 @@
                         id: tId,
                         name: st.trophyName || st.name || utMatch.name || liveMatch.trophyName || `Trophy #${tId}`,
                         description: st.trophyDetail || st.description || utMatch.description || liveMatch.trophyDetail || '',
-                        icon: st.trophyIconUrl || st.icon || utMatch.icon || liveMatch.trophyIconUrl || '',
+                        icon: toSecureUrl(st.trophyIconUrl || st.icon || utMatch.icon || liveMatch.trophyIconUrl || ''),
                         earned: isEarned,
                         earnedDateTime: earnedDate,
                         subProgressRatio: liveMatch.subProgressRatio || st.subProgressRatio || null,
@@ -1367,13 +1342,13 @@
                             `;
                         }
 
-                        // SQUAD MEMBERS PROGRESS & EXACT TIMESTAMPS
+                        // SQUAD MEMBERS PROGRESS & EXACT TIMESTAMPS (Excluding wildhorse_spirit self)
                         const squadMatches = [];
                         Object.entries(globalGamertagsData).forEach(([gtag, pObj]) => {
                             const normGKey = gtag.toLowerCase().trim();
-                            if (normGKey === 'wildhorse_spirit' || normGKey === 'werewolf3788') return;
+                            if (normGKey === 'wildhorse_spirit') return;
 
-                            const isAuthorizedFriend = authorizedFriendsMap[normGKey] || ['onelividman', 'darkwing69420', 'desdemonatiger'].includes(normGKey);
+                            const isAuthorizedFriend = authorizedFriendsMap[normGKey] || ['onelividman', 'darkwing69420', 'werewolf3788', 'desdemonatiger'].includes(normGKey);
                             if (!isAuthorizedFriend) return;
 
                             const pLiveNode = pObj.liveTrophyProgress?.[primaryCommId] || {};
@@ -1439,7 +1414,7 @@
                     recentContainer.innerHTML = recentGames.slice(0, 6).map(g => {
                         const skel = getSkeletonGameByCommId(g.npCommunicationId, g.name || g.trophyTitleName);
                         const safeGName = escapeHtmlAttr(g.name || skel?.name || 'Game');
-                        const safeArt = escapeHtmlAttr(g.posterArt || skel?.posterArt || g.art || '');
+                        const safeArt = escapeHtmlAttr(toSecureUrl(g.posterArt || skel?.posterArt || g.art || ''));
                         const commId = g.npCommunicationId || '';
                         return `
                             <div class="game-thumb" onclick="openRecentGameLightbox('${commId}', '${safeGName}')">
@@ -1460,7 +1435,7 @@
                 if (recentTrophies.length > 0) {
                     lastEarnedTrophyData = recentTrophies[0];
                     const iconEl = document.getElementById('last-trophy-icon');
-                    if (iconEl) iconEl.src = lastEarnedTrophyData.icon || "";
+                    if (iconEl) iconEl.src = toSecureUrl(lastEarnedTrophyData.icon || "");
                     const nameEl = document.getElementById('last-trophy-name');
                     if (nameEl) nameEl.innerText = lastEarnedTrophyData.name || "Trophy";
                     const gameEl = document.getElementById('last-trophy-game');
@@ -1478,74 +1453,7 @@
             }
         }
 
-        // Section: DecAPI Twitch Integrations (Lines 1122-1200)
-        function handleTwitchAvatarError(imgEl) {
-            if (!imgEl) return;
-            if (currentLoadedUser && (currentLoadedUser.avatar || currentLoadedUser.image)) {
-                imgEl.src = currentLoadedUser.avatar || currentLoadedUser.image;
-            } else {
-                imgEl.src = '//via.placeholder.com/32x32/1e1e24/9146ff?text=T';
-            }
-        }
-
-        function handleTwitchBoxArtError(imgEl) {
-            if (!imgEl) return;
-            imgEl.classList.add('hidden');
-        }
-
-        async function fetchLiveTwitch() {
-            try {
-                const user = "werewolf3788";
-                const [uptimeRes, gameRes, followRes, avatarRes] = await Promise.all([
-                    fetch(`//decapi.me/twitch/uptime/${user}`).then(r => r.text()).catch(() => "offline"),
-                    fetch(`//decapi.me/twitch/game/${user}`).then(r => r.text()).catch(() => ""),
-                    fetch(`//decapi.me/twitch/followcount/${user}`).then(r => r.text()).catch(() => "0"),
-                    fetch(`//decapi.me/twitch/avatar/${user}`).then(r => {
-                        if (!r.ok) throw new Error("Avatar HTTP 400");
-                        return r.text();
-                    }).catch(() => "")
-                ]);
-
-                const cleanUptime = (uptimeRes || "").trim();
-                const cleanGame = (gameRes || "").trim();
-                const cleanAvatar = (avatarRes || "").trim();
-                const isLive = !cleanUptime.toLowerCase().includes("offline") && !cleanUptime.toLowerCase().includes("error") && cleanUptime.length > 0;
-
-                const avatarEl = document.getElementById('twitch-avatar-img');
-                if (avatarEl) {
-                    if (cleanAvatar && cleanAvatar.startsWith('http')) avatarEl.src = cleanAvatar;
-                    else if (currentLoadedUser?.avatar || currentLoadedUser?.image) avatarEl.src = currentLoadedUser.avatar || currentLoadedUser.image;
-                }
-
-                const followerEl = document.getElementById('follower-count');
-                if (followerEl) {
-                    const rawNumbers = followRes.replace(/[^0-9]/g, '');
-                    followerEl.innerText = rawNumbers ? Number(rawNumbers).toLocaleString() : '0';
-                }
-
-                const msgEl = document.getElementById('twitch-status-msg');
-                if (msgEl) msgEl.innerText = isLive && cleanGame ? cleanGame : "Offline";
-
-                const uptimeContainer = document.getElementById('twitch-uptime-container');
-                const uptimeVal = document.getElementById('twitch-uptime-val');
-                if (uptimeContainer && uptimeVal) {
-                    if (isLive) {
-                        uptimeVal.innerText = `Streaming: ${cleanUptime}`;
-                        uptimeContainer.classList.remove('hidden');
-                    } else {
-                        uptimeContainer.classList.add('hidden');
-                    }
-                }
-
-                const liveBadge = document.getElementById('live-indicator');
-                if (liveBadge) liveBadge.classList.toggle('hidden', !isLive);
-
-            } catch (e) {
-                console.warn("[TWITCH DECAPI NOTICE]:", e.message);
-            }
-        }
-
-        // Section: Lightbox Controllers & Modals (Lines 1202-1306)
+        // Section: Lightbox Controllers & Modals (Lines 1082-1186)
         window.openRecentGameLightbox = async function(commId, gameTitle) {
             const lb = document.getElementById('generic-lightbox');
             if (!lb) return;
@@ -1574,10 +1482,11 @@
                 html += trophies.map(t => {
                     const prog = userProg[t.trophyId] || {};
                     const isEarned = !!prog.earned;
+                    const trophyIcon = toSecureUrl(t.icon || '');
                     return `
                         <div class="py-3 flex items-center justify-between gap-3">
                             <div class="flex items-center gap-3 min-w-0">
-                                <img src="${t.icon || ''}" class="w-10 h-10 rounded-lg object-cover" onerror="this.src='//via.placeholder.com/40x40/202024/FF5F1F?text=🏆'">
+                                <img src="${trophyIcon}" class="w-10 h-10 rounded-lg object-cover" onerror="this.src='//via.placeholder.com/40x40/202024/FF5F1F?text=🏆'">
                                 <div class="min-w-0">
                                     <div class="text-xs font-black uppercase text-white truncate">${t.name}</div>
                                     <div class="text-[11px] text-gray-400 truncate">${t.description || ''}</div>
@@ -1609,7 +1518,7 @@
             const titleEl = document.getElementById('lightbox-title');
             const bodyEl = document.getElementById('lightbox-body');
             if (titleEl) titleEl.innerText = title || "Image";
-            if (bodyEl) bodyEl.innerHTML = `<img src="${url || ''}" class="max-h-[70vh] mx-auto rounded-xl object-contain">`;
+            if (bodyEl) bodyEl.innerHTML = `<img src="${toSecureUrl(url) || ''}" class="max-h-[70vh] mx-auto rounded-xl object-contain">`;
             lb.style.display = 'flex';
         }
 
@@ -1633,7 +1542,7 @@
             if (bodyEl) {
                 bodyEl.innerHTML = `
                     <div class="flex flex-col items-center space-y-4 text-center">
-                        <img src="${t.icon || ''}" class="w-24 h-24 rounded-xl border border-white/10 shadow-xl" onerror="this.src='//via.placeholder.com/64x64/202024/FF5F1F?text=🏆'">
+                        <img src="${toSecureUrl(t.icon) || ''}" class="w-24 h-24 rounded-xl border border-white/10 shadow-xl" onerror="this.src='//via.placeholder.com/64x64/202024/FF5F1F?text=🏆'">
                         <h4 class="text-xl font-black text-white uppercase">${t.name || ''}</h4>
                         <p class="text-gray-300 bg-white/5 p-4 rounded-xl border border-white/5 w-full text-xs">${t.description || 'Objective Achieved.'}</p>
                         ${tracking ? `
@@ -1657,18 +1566,16 @@
             if (lb) lb.style.display = 'none';
         }
 
-        // Section: Lifecycle Initialization (Lines 1308-1324)
+        // Section: Lifecycle Initialization (Lines 1188-1204)
         document.addEventListener('DOMContentLoaded', () => {
             fetchUserProfileAndFriends();
             fetchCanonicalSkeleton();
             fetchUtmNavLinks();
             refreshHub();
-            fetchLiveTwitch();
             syncPSNGamertags();
             startLiveStreams();
 
             setInterval(refreshHub, 30000);
-            setInterval(fetchLiveTwitch, 45000);
             setInterval(fetchUtmNavLinks, 180000);
             setInterval(syncPSNGamertags, 30000);
         });
