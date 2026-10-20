@@ -6,20 +6,19 @@
  * Engine: Client-Side Firebase RTDB & Firestore Multi-Platform Hub
  * Description: 
  *   1. DecAPI Resilient Twitch Engine with automatic PSN/RTDB Avatar Failover.
- *   2. Active Hunt Auto-Hydration: Resolves recentGames[0] when in Dashboard
- *      to ensure total playtime, poster art, and checklist trophies are never blank.
- *   3. Friend-Gated Squad Presence: Pulls authorized friend codes and privacy scopes
- *      from /users/{emailKey}/friends to display mutual progress.
- *   4. Multi-Platform Tab Pills: PSN, Xbox, Steam, PC with Firestore integration.
- *   5. Interactive Recent Games Lightbox: Displays full trophy lists and friend comparisons.
+ *   2. CommId Canonical Resolution: Maps /psn/gamertags/wildhorse_spirit/commId 
+ *      directly to master skeleton data, ensuring title, poster art, and full trophy
+ *      lists are 100% accurate.
+ *   3. Squad Journey Log with Live Earner Timestamps: Displays friend progress with 
+ *      exact unlock dates and times.
+ *   4. Full Schema Extraction: Integrates conceptId, cusaId, storeListing, and DLC packs.
  * Analytics: G-CTYHDF4MSD (New York 24h Time)
- * Date & Time Stamp: 2026-10-17 18:10:00 EDT (America/New_York)
+ * Date & Time Stamp: 2026-10-20 02:19:00 EDT (America/New_York)
  * ============================================================================ -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="900">
     <title>WildHorse_Spirit | Tactical Telemetry Hub</title>
     
     <!-- GOOGLE ANALYTICS 4 DUAL MEASUREMENT ENGINE -->
@@ -37,7 +36,7 @@
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '51.0.0',
+            'layout_version': '54.0.0',
             'gamertag': 'WildHorse_Spirit',
             'user_handle': 'Werewolf3788',
             'engagement_timezone': 'America/New_York',
@@ -221,17 +220,6 @@
         .trophy-icon-sq { width: 56px; height: 56px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); object-fit: cover; }
         .trophy-title-text { font-weight: 800; font-size: 15px; text-transform: uppercase; }
 
-        .recent-earn-yellow-glow {
-            border-color: rgba(245, 158, 11, 0.85) !important;
-            background: rgba(245, 158, 11, 0.08) !important;
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.35) inset, 0 0 15px rgba(245, 158, 11, 0.25) !important;
-            animation: earnPulse24h 2.5s infinite ease-in-out;
-        }
-        @keyframes earnPulse24h {
-            0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.25) inset, 0 0 10px rgba(245, 158, 11, 0.15); }
-            50% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.5) inset, 0 0 20px rgba(245, 158, 11, 0.4); }
-        }
-
         .trophy-badge-earned {
             background-color: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4);
             color: #10b981; border-radius: 4px; padding: 1px 6px; font-size: 11px;
@@ -244,7 +232,7 @@
         }
 
         .squad-member-pill {
-            display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px;
+            display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px;
             border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
         }
         .squad-member-pill.earned { 
@@ -480,7 +468,7 @@
                             <!-- Platform Pills Container -->
                             <div id="active-hunt-platforms" class="flex items-center gap-1.5 flex-wrap"></div>
                         </div>
-                        <div id="hunter-persona-badge" class="px-3 py-1 bg-white/10 text-orange-400 border border-orange-500/40 rounded-full text-xs font-black uppercase tracking-widest hidden"></div>
+                        <div id="active-game-price-tag" class="px-3 py-1 bg-white/10 text-emerald-400 border border-emerald-500/40 rounded-full text-xs font-black uppercase tracking-widest hidden"></div>
                     </div>
                     
                     <div class="relative w-full aspect-video bg-orange-900/10 border-y border-white/5 cursor-pointer" onclick="openLightboxImage(document.getElementById('active-game-art')?.src, document.getElementById('active-game-title')?.innerText)">
@@ -492,6 +480,22 @@
                         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-1">
                             <div id="active-game-title" class="text-2xl font-black text-white uppercase truncate">---</div>
                             <span id="active-game-ratio" class="text-xs font-black text-orange-400 uppercase font-mono">--/-- Objectives</span>
+                        </div>
+
+                        <!-- Technical Identifiers (commId, conceptId, cusaId) -->
+                        <div id="active-game-identifiers" class="flex flex-wrap items-center gap-2 text-[11px] font-mono font-bold text-gray-400">
+                            <span class="bg-black/40 px-2 py-0.5 rounded border border-white/5">CommID: <span id="meta-comm-id" class="text-orange-400">--</span></span>
+                            <span id="meta-concept-wrap" class="bg-black/40 px-2 py-0.5 rounded border border-white/5 hidden">Concept: <span id="meta-concept-id" class="text-blue-400">--</span></span>
+                            <span id="meta-cusa-wrap" class="bg-black/40 px-2 py-0.5 rounded border border-white/5 hidden">CUSA: <span id="meta-cusa-id" class="text-emerald-400">--</span></span>
+                        </div>
+
+                        <!-- Game Synopsis -->
+                        <p id="active-game-desc" class="text-xs text-gray-300 bg-black/30 p-3 rounded-xl border border-white/5 leading-relaxed hidden"></p>
+
+                        <!-- DLC Packs Expansion Drawer -->
+                        <div id="active-game-dlcs" class="space-y-2 hidden">
+                            <span class="text-xs font-black text-gray-400 uppercase tracking-wider block">Add-On DLC Packs</span>
+                            <div id="active-game-dlcs-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
                         </div>
 
                         <div id="active-game-stores-bar" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
@@ -589,10 +593,10 @@
                     &copy; 2026 Werewolf Project. Built by Werewolf3788 &amp; Friends.
                 </p>
                 <div id="build-meta-footer" style="color: #94a3b8; font-size: 0.8rem; font-family: monospace; letter-spacing: 0.05em;">
-                    Werewolf Command Engine &bull; v51.0.0 &bull; Build: 2026-10-17 18:10:00 EDT
+                    Werewolf Command Engine &bull; v54.0.0 &bull; Build: 2026-10-20 02:19:00 EDT
                 </div>
                 <div class="text-center mt-2 text-xs font-black text-gray-500 uppercase tracking-[0.2em]">
-                    Primary RTDB: <span class="text-orange-400">/psn/gamertags/WildHorse_Spirit.json</span> | Skeleton: <span class="text-orange-400">/psn/games.json</span> | Synced: <span id="sync-time" class="text-gray-300">--</span>
+                    Primary RTDB: <span class="text-orange-400">/psn/gamertags/wildhorse_spirit.json</span> | Skeleton: <span class="text-orange-400">/psn/games.json</span> | Synced: <span id="sync-time" class="text-gray-300">--</span>
                 </div>
             </div>
         </footer>
@@ -612,12 +616,15 @@
 
     <!-- REALTIME DATABASE RESILIENT MULTI-PATH LOADER -->
     <script>
-        const WILDHORSE_RTDB_URL = "//entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/WildHorse_Spirit.json";
-        const ROOT_PSN_RTDB_URL = "//entertainment-71888-default-rtdb.firebaseio.com/psn.json";
-        const CANONICAL_GAMES_URL = "//entertainment-71888-default-rtdb.firebaseio.com/psn/games.json";
-        const UTM_LINKS_RTDB_URL = "//entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
-        const PSN_GAMERTAGS_URL = "//entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags.json";
-        const USER_DATA_URL = "//entertainment-71888-default-rtdb.firebaseio.com/users/raykevin71888_at_gmail_com.json";
+        // Section: API Endpoints & Dynamic Roots (Lines 380-400)
+        const RTDB_ROOT = "https://entertainment-71888-default-rtdb.firebaseio.com";
+        const WILDHORSE_RTDB_URL = `${RTDB_ROOT}/psn/gamertags/wildhorse_spirit.json`;
+        const WILDHORSE_ALT_URL = `${RTDB_ROOT}/psn/gamertags/WildHorse_Spirit.json`;
+        const ROOT_PSN_RTDB_URL = `${RTDB_ROOT}/psn.json`;
+        const CANONICAL_GAMES_URL = `${RTDB_ROOT}/psn/games.json`;
+        const UTM_LINKS_RTDB_URL = `${RTDB_ROOT}/utm_links.json`;
+        const PSN_GAMERTAGS_URL = `${RTDB_ROOT}/psn/gamertags.json`;
+        const USER_DATA_URL = `${RTDB_ROOT}/users/raykevin71888_at_gmail_com.json`;
 
         let currentTrophyData = [];
         let lastEarnedTrophyData = null;
@@ -627,7 +634,73 @@
         let currentLoadedUser = null;
         let currentUserProfile = null;
         let authorizedFriendsMap = {};
+        const skeletonFetchedAt = {};
 
+        // Section: Single-Game Skeleton Cache Loader (Lines 402-425)
+        // Resolves full canonical title, master poster art, DLCs, and trophy definitions
+        async function ensureSkeleton(commId, force = false) {
+            const id = String(commId || '').trim().toUpperCase();
+            if (!id.startsWith('NPWR')) return null;
+            const fresh = skeletonFetchedAt[id] && (Date.now() - skeletonFetchedAt[id] < 300000);
+            if (canonicalGamesSkeleton[id] && fresh && !force) return canonicalGamesSkeleton[id];
+            try {
+                const res = await fetch(`${RTDB_ROOT}/psn/games/${id}.json?t=${Date.now()}`);
+                if (res.ok) {
+                    const d = await res.json();
+                    if (d) { 
+                        canonicalGamesSkeleton[id] = d; 
+                        skeletonFetchedAt[id] = Date.now(); 
+                    }
+                }
+            } catch (e) {
+                console.warn(`[SKELETON FETCH FAILURE ${id}]:`, e.message);
+            }
+            return canonicalGamesSkeleton[id] || null;
+        }
+
+        // Section: Serialized Refresh Gate & Stream Handlers (Lines 427-470)
+        let hubInFlight = false, hubQueued = false;
+        async function refreshHub() {
+            if (hubInFlight) { hubQueued = true; return; }
+            hubInFlight = true;
+            try { await updateHub(); } finally {
+                hubInFlight = false;
+                if (hubQueued) { hubQueued = false; refreshHub(); }
+            }
+        }
+
+        let streamTimer = null;
+        function scheduleRefresh() {
+            clearTimeout(streamTimer);
+            streamTimer = setTimeout(() => { refreshHub(); syncPSNGamertags(); }, 400);
+        }
+
+        function setLiveState(isLive) {
+            const lbl = document.getElementById('health-label');
+            if (lbl) lbl.innerText = isLive ? 'PSN Sync \u2022 LIVE STREAM' : 'PSN Sync \u2022 POLLING';
+        }
+
+        function startLiveStreams() {
+            const urls = [
+                `${RTDB_ROOT}/psn/gamertags/wildhorse_spirit/lastUpdated.json`,
+                `${RTDB_ROOT}/psn/gamertags/wildhorse_spirit/commId.json`,
+                `${RTDB_ROOT}/psn/gamertags/wildhorse_spirit/activeHunt.json`,
+                `${RTDB_ROOT}/psn/lastGlobalUpdate.json`
+            ];
+            urls.forEach(url => {
+                try {
+                    const es = new EventSource(url);
+                    let sawSnapshot = false;
+                    const onChange = () => { if (!sawSnapshot) { sawSnapshot = true; return; } scheduleRefresh(); };
+                    es.addEventListener('put', onChange);
+                    es.addEventListener('patch', onChange);
+                    es.onopen = () => setLiveState(true);
+                    es.onerror = () => setLiveState(false);
+                } catch (e) { setLiveState(false); }
+            });
+        }
+
+        // Section: Formatting & Parsing Helpers (Lines 472-566)
         function convertFirebaseArray(data) {
             if (!data) return [];
             if (Array.isArray(data)) return data;
@@ -704,6 +777,7 @@
             return 'prog-stage-4';
         };
 
+        // Section: Trophy Matching & Progress Logic (Lines 568-624)
         function getSkeletonGameByCommId(commId, fallbackTitle = '') {
             if (!commId && !fallbackTitle) return null;
             const targetComm = (commId || '').trim().toUpperCase();
@@ -724,7 +798,7 @@
 
         function extractTrophyTracking(t) {
             if (!t) return null;
-            const isEarned = !!t.earned;
+            const isEarned = !!(t.earned || t.isEarned);
 
             if (t.subProgressRatio && typeof t.subProgressRatio === 'string' && t.subProgressRatio.includes('/')) {
                 const parts = t.subProgressRatio.split('/');
@@ -768,6 +842,7 @@
             return { count: count, target: target, pct: pct, fraction: `${count.toLocaleString()}/${target.toLocaleString()}` };
         }
 
+        // Section: Remote Fetchers & Friends (Lines 626-654)
         async function fetchUserProfileAndFriends() {
             try {
                 const res = await fetch(`${USER_DATA_URL}?t=${Date.now()}`);
@@ -794,6 +869,7 @@
             }
         }
 
+        // Section: UTM Nav Links Generator (Lines 656-750)
         async function fetchUtmNavLinks() {
             const container = document.getElementById('dynamic-nav-container');
             if (!container) return;
@@ -902,6 +978,7 @@
             }
         });
 
+        // Section: Gamertags Sync & Platform Pills (Lines 752-788)
         async function syncPSNGamertags() {
             try {
                 const res = await fetch(`${PSN_GAMERTAGS_URL}?t=${Date.now()}`);
@@ -934,6 +1011,7 @@
             if (el) el.classList.add('active');
         };
 
+        // Section: Core Telemetry Engine - updateHub (Lines 790-1120)
         async function updateHub() {
             try {
                 let user = null;
@@ -943,15 +1021,22 @@
                 } catch (e) {}
 
                 if (!user) {
+                    try {
+                        const altRes = await fetch(`${WILDHORSE_ALT_URL}?t=${Date.now()}`);
+                        if (altRes.ok) user = await altRes.json();
+                    } catch (e) {}
+                }
+
+                if (!user) {
                     const rootRes = await fetch(`${ROOT_PSN_RTDB_URL}?t=${Date.now()}`);
                     if (rootRes.ok) {
                         const rootData = await rootRes.json();
                         globalSquadData = rootData?.gamertags || {};
                         if (rootData?.games) canonicalGamesSkeleton = rootData.games;
-                        user = globalSquadData?.WildHorse_Spirit || 
-                               globalSquadData?.wildhorse_spirit || 
-                               globalSquadData?.Werewolf3788 || 
-                               globalSquadData?.werewolf3788 || null;
+                        user = globalSquadData?.wildhorse_spirit || 
+                               globalSquadData?.WildHorse_Spirit || 
+                               globalSquadData?.werewolf3788 || 
+                               globalSquadData?.Werewolf3788 || null;
                     }
                 }
 
@@ -971,7 +1056,10 @@
                 if (displayAdmin) displayAdmin.innerText = user.onlineId || "WildHorse_Spirit";
 
                 const mainAv = document.getElementById('main-avatar');
-                if (mainAv && user.avatar) mainAv.src = user.avatar;
+                if (mainAv) {
+                    const avatarSrc = user.avatar || user.image || (user.allAvatars && user.allAvatars[0]) || '';
+                    if (avatarSrc) mainAv.src = avatarSrc;
+                }
 
                 const isPlus = !!user.plus;
                 const plusBadge = document.getElementById('ps-plus-indicator');
@@ -1020,27 +1108,58 @@
                 if (silverEl) silverEl.innerText = summary.silver !== undefined ? summary.silver : (summary.earnedTrophies?.silver || 0);
                 if (bronzeEl) bronzeEl.innerText = summary.bronze !== undefined ? summary.bronze : (summary.earnedTrophies?.bronze || 0);
 
-                // =========================================================================
-                // ACTIVE HUNT AUTO-HYDRATION (Resolves recentGames[0] if Dashboard)
-                // =========================================================================
+                // Priority CommID Extraction (Direct /commId -> activeHunt -> currentCommunicationId)
                 const recentGames = convertFirebaseArray(user.recentGames);
                 const mostRecentGame = recentGames.length > 0 ? recentGames[0] : null;
+                const ah = user.activeHunt || {};
 
-                let currentCommId = user.currentCommunicationId || user.activeHunt?.npCommunicationId || user.activeHunt?.commId || '';
-                let activeGameTitle = user.currentGame || user.activeHunt?.title || '';
-
-                if (!activeGameTitle || activeGameTitle.toUpperCase() === 'DASHBOARD' || !currentCommId || !currentCommId.startsWith('NPWR')) {
-                    if (mostRecentGame) {
-                        currentCommId = mostRecentGame.npCommunicationId || mostRecentGame.commId || currentCommId;
-                        activeGameTitle = mostRecentGame.name || mostRecentGame.trophyTitleName || activeGameTitle;
+                let primaryCommId = user.commId || ah.commId || ah.npCommunicationId || user.currentCommunicationId || '';
+                if (!primaryCommId || !primaryCommId.startsWith('NPWR')) {
+                    if (mostRecentGame?.npCommunicationId || mostRecentGame?.commId) {
+                        primaryCommId = mostRecentGame.npCommunicationId || mostRecentGame.commId;
                     }
                 }
 
-                const skeletonData = getSkeletonGameByCommId(currentCommId, activeGameTitle);
-                const activeGameArt = mostRecentGame?.posterArt || user.currentGameArt || skeletonData?.posterArt || user.activeHunt?.art || '';
+                // Lazy-load canonical skeleton for primaryCommId
+                let skeletonData = null;
+                if (primaryCommId && primaryCommId.startsWith('NPWR')) {
+                    skeletonData = await ensureSkeleton(primaryCommId);
+                }
+
+                // Bind Technical Identifiers UI
+                const commMetaEl = document.getElementById('meta-comm-id');
+                if (commMetaEl) commMetaEl.innerText = primaryCommId || 'NPWR--';
+
+                const conceptId = ah.conceptId || user.conceptId || skeletonData?.conceptId || '';
+                const conceptWrap = document.getElementById('meta-concept-wrap');
+                const conceptVal = document.getElementById('meta-concept-id');
+                if (conceptWrap && conceptVal) {
+                    if (conceptId) {
+                        conceptVal.innerText = conceptId;
+                        conceptWrap.classList.remove('hidden');
+                    } else {
+                        conceptWrap.classList.add('hidden');
+                    }
+                }
+
+                const cusaId = ah.cusaId || user.cusaId || skeletonData?.cusaId || '';
+                const cusaWrap = document.getElementById('meta-cusa-wrap');
+                const cusaVal = document.getElementById('meta-cusa-id');
+                if (cusaWrap && cusaVal) {
+                    if (cusaId) {
+                        cusaVal.innerText = cusaId;
+                        cusaWrap.classList.remove('hidden');
+                    } else {
+                        cusaWrap.classList.add('hidden');
+                    }
+                }
+
+                // Canonical Title & Poster Art Binding
+                const activeGameTitle = skeletonData?.name || skeletonData?.trophyTitleName || ah.title || user.currentGame || mostRecentGame?.name || "Active Hunt";
+                const activeGameArt = skeletonData?.posterArt || ah.art || ah.posterArt || ah.image || user.art || user.currentGameArt || mostRecentGame?.posterArt || '';
 
                 const activeTitleEl = document.getElementById('active-game-title');
-                if (activeTitleEl) activeTitleEl.innerText = activeGameTitle || "No Active Hunt";
+                if (activeTitleEl) activeTitleEl.innerText = activeGameTitle;
 
                 const artImg = document.getElementById('active-game-art');
                 const fbBox = document.getElementById('active-game-fallback');
@@ -1055,28 +1174,84 @@
                     }
                 }
 
-                // Store Links
+                // Synopsis Description
+                const descText = ah.description || user.bio || skeletonData?.description || '';
+                const descEl = document.getElementById('active-game-desc');
+                if (descEl) {
+                    if (descText) {
+                        descEl.innerText = descText;
+                        descEl.classList.remove('hidden');
+                    } else {
+                        descEl.classList.add('hidden');
+                    }
+                }
+
+                // Store Listing & Live Pricing
+                const storeObj = ah.storeListing || {};
+                const priceBadge = document.getElementById('active-game-price-tag');
+                if (priceBadge) {
+                    if (storeObj.price || storeObj.isFree !== undefined) {
+                        priceBadge.innerText = storeObj.isFree ? 'FREE TO PLAY' : (storeObj.price || 'IN STORE');
+                        priceBadge.classList.remove('hidden');
+                    } else {
+                        priceBadge.classList.add('hidden');
+                    }
+                }
+
+                // Store Action Buttons
                 const cleanName = encodeURIComponent((activeGameTitle || '').replace(/®|™/g, ''));
+                const psStoreUrl = storeObj.storeUrl || `//store.playstation.com/en-us/search/${cleanName}`;
+                const amazonUrl = ah.amazonAffiliateUrl || user.amazonAffiliateUrl || `//www.amazon.com/s?k=${cleanName}&tag=website3788-20`;
                 const storesBar = document.getElementById('active-game-stores-bar');
                 if (storesBar) {
                     storesBar.innerHTML = `
-                        <a href="//store.playstation.com/en-us/search/${cleanName}" target="_blank" rel="noopener noreferrer" class="store-btn store-btn-ps"><i class="fab fa-playstation"></i><span>PS Store</span></a>
+                        <a href="${psStoreUrl}" target="_blank" rel="noopener noreferrer" class="store-btn store-btn-ps"><i class="fab fa-playstation"></i><span>PS Store</span></a>
                         <a href="//store.steampowered.com/search/?term=${cleanName}" target="_blank" rel="noopener noreferrer" class="store-btn store-btn-pc"><i class="fab fa-steam"></i><span>PC Store</span></a>
                         <a href="//store.steampowered.com/search/?term=${cleanName}" target="_blank" rel="noopener noreferrer" class="store-btn store-btn-steam"><i class="fas fa-desktop"></i><span>Steam</span></a>
-                        <a href="//www.amazon.com/s?k=${cleanName}&tag=website3788-20" target="_blank" rel="noopener noreferrer" class="store-btn store-btn-amazon"><i class="fab fa-amazon"></i><span>Amazon</span></a>
+                        <a href="${amazonUrl}" target="_blank" rel="noopener noreferrer" class="store-btn store-btn-amazon"><i class="fab fa-amazon"></i><span>Amazon</span></a>
                     `;
+                }
+
+                // DLC Packs Expansion Drawer
+                const rawDlcs = convertFirebaseArray(ah.dlcs || skeletonData?.dlcs);
+                const dlcsDrawer = document.getElementById('active-game-dlcs');
+                const dlcsContainer = document.getElementById('active-game-dlcs-container');
+                if (dlcsDrawer && dlcsContainer) {
+                    if (rawDlcs.length > 0) {
+                        dlcsContainer.innerHTML = rawDlcs.map(d => {
+                            const dDef = d.definedTrophies || {};
+                            return `
+                                <div class="bg-black/50 p-2.5 rounded-xl border border-white/5 flex items-center gap-3">
+                                    ${d.image ? `<img src="${d.image}" class="w-10 h-10 rounded-lg object-cover border border-white/10" onerror="this.style.display='none'">` : '<i class="fas fa-box-archive text-orange-400 text-lg"></i>'}
+                                    <div class="min-w-0 flex-1">
+                                        <div class="text-xs font-black uppercase text-white truncate">${d.description || `DLC Pack ${d.groupId || ''}`}</div>
+                                        <div class="flex items-center gap-2 mt-0.5 text-[10px] font-mono font-bold text-gray-400">
+                                            ${dDef.bronze !== undefined ? `<span><i class="fas fa-trophy text-amber-700 mr-0.5"></i>${dDef.bronze}</span>` : ''}
+                                            ${dDef.silver !== undefined ? `<span><i class="fas fa-trophy text-slate-400 mr-0.5"></i>${dDef.silver}</span>` : ''}
+                                            ${dDef.gold !== undefined ? `<span><i class="fas fa-trophy text-amber-400 mr-0.5"></i>${dDef.gold}</span>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                        dlcsDrawer.classList.remove('hidden');
+                    } else {
+                        dlcsDrawer.classList.add('hidden');
+                    }
                 }
 
                 // Progress Bar & Percentage
                 let huntProgressPct = 0;
                 let huntRatioStr = "--/--";
-                if (mostRecentGame?.progress !== undefined) huntProgressPct = Number(mostRecentGame.progress);
-                else if (user.activeHunt?.progress !== undefined) huntProgressPct = Number(user.activeHunt.progress);
+                if (ah.progress !== undefined) huntProgressPct = Number(ah.progress);
+                else if (mostRecentGame?.progress !== undefined) huntProgressPct = Number(mostRecentGame.progress);
 
-                if (mostRecentGame?.earnedTotal !== undefined && mostRecentGame?.definedTotal !== undefined) {
+                if (ah.velocity?.completionStatus) {
+                    huntRatioStr = `${ah.velocity.completionStatus} Objectives`;
+                } else if (ah.velocity?.ratio) {
+                    huntRatioStr = `${ah.velocity.ratio} Objectives`;
+                } else if (mostRecentGame?.earnedTotal !== undefined && mostRecentGame?.definedTotal !== undefined) {
                     huntRatioStr = `${mostRecentGame.earnedTotal}/${mostRecentGame.definedTotal} Objectives`;
-                } else if (user.activeHunt?.velocity?.completionStatus) {
-                    huntRatioStr = `${user.activeHunt.velocity.completionStatus} Objectives`;
                 }
 
                 const pctText = document.getElementById('active-game-progress-text');
@@ -1091,13 +1266,13 @@
                 const ratioEl = document.getElementById('active-game-ratio');
                 if (ratioEl) ratioEl.innerText = huntRatioStr;
 
-                // Playtime (From nativePlaytimeFormatted or session accumulator)
+                // Playtime
                 const hoursEl = document.getElementById('hunt-gameplay-hours');
-                const displayHoursStr = mostRecentGame?.nativePlaytimeFormatted || user.currentGameHours || "0 hrs";
-                if (hoursEl) hoursEl.innerText = displayHoursStr;
+                const displayHoursStr = ah.nativePlaytimeFormatted || ah.hoursFormatted || user.nativePlaytimeFormatted || user.currentGameHours || mostRecentGame?.nativePlaytimeFormatted || "0 hrs logged";
+                if (hoursEl) hoursEl.innerText = displayHoursStr.includes('logged') ? displayHoursStr : `${displayHoursStr} logged`;
 
                 // Campaign Timeline
-                const firstDateRaw = user.earliestTrophyDate || mostRecentGame?.firstPlayedDateTime || null;
+                const firstDateRaw = user.earliestTrophyDate || ah.earliestTrophyDate || mostRecentGame?.firstPlayedDateTime || null;
                 const timelineEl = document.getElementById('hunt-timeline-span');
                 const firstDateEl = document.getElementById('hunt-first-trophy-date');
 
@@ -1109,37 +1284,48 @@
                 }
 
                 // Platform Pills
-                const availablePlatforms = ['PSN'];
-                if (currentUserProfile?.xbox_gamertag) availablePlatforms.push('Xbox');
-                if (currentUserProfile?.steam_id) availablePlatforms.push('Steam');
+                const availablePlatforms = [ah.platform || user.platform || user.displayPlatform || 'PSN'];
+                if (currentUserProfile?.xbox_gamertag && !availablePlatforms.includes('Xbox')) availablePlatforms.push('Xbox');
+                if (currentUserProfile?.steam_id && !availablePlatforms.includes('Steam')) availablePlatforms.push('Steam');
                 renderPlatformPills(availablePlatforms);
 
-                // =========================================================================
-                // ACTIVE TROPHIES CHECKLIST LOG
-                // =========================================================================
-                const liveProgNode = (currentCommId && user.liveTrophyProgress?.[currentCommId]) 
-                    ? user.liveTrophyProgress[currentCommId] 
+                // Section: Trophy Checklist & Squad Presence with Timestamps
+                const liveProgNode = (primaryCommId && user.liveTrophyProgress?.[primaryCommId]) 
+                    ? user.liveTrophyProgress[primaryCommId] 
                     : (user.liveTrophyProgress || {});
 
                 const rawSkelTrophies = skeletonData?.trophies ? convertFirebaseArray(skeletonData.trophies) : [];
-                const rawUserTrophies = user.activeHunt?.userTrophies 
-                    ? convertFirebaseArray(user.activeHunt.userTrophies) 
+                const rawUserTrophies = ah.userTrophies 
+                    ? convertFirebaseArray(ah.userTrophies) 
                     : (mostRecentGame?.trophies ? convertFirebaseArray(mostRecentGame.trophies) : []);
 
-                const sourceTrophies = rawSkelTrophies.length > 0 ? rawSkelTrophies : rawUserTrophies;
+                let sourceTrophies = rawSkelTrophies.length > 0 ? rawSkelTrophies : rawUserTrophies;
+
+                // Fallback: Populate dynamically if skeleton is still propagating
+                if (sourceTrophies.length === 0 && Object.keys(liveProgNode).length > 0) {
+                    sourceTrophies = Object.entries(liveProgNode).map(([k, v]) => ({
+                        trophyId: Number(k),
+                        trophyName: v.trophyName || v.name || `Trophy #${k}`,
+                        trophyDetail: v.trophyDetail || v.description || '',
+                        trophyIconUrl: v.trophyIconUrl || v.icon || '',
+                        earned: !!v.earned,
+                        earnedDateTime: v.earnedDateTime || v.earnedDate || v.timestamp || null,
+                        ...v
+                    }));
+                }
 
                 currentTrophyData = sourceTrophies.map((st, idx) => {
                     const tId = st.trophyId !== undefined ? st.trophyId : (st.id !== undefined ? st.id : idx);
                     const liveMatch = liveProgNode[tId] || liveProgNode[String(tId)] || {};
                     const utMatch = rawUserTrophies.find(ut => (ut.trophyId !== undefined && ut.trophyId === tId)) || {};
                     const isEarned = !!(liveMatch.earned !== undefined ? liveMatch.earned : (st.earned !== undefined ? st.earned : utMatch.earned));
-                    const earnedDate = liveMatch.earnedDate || liveMatch.timestamp || st.earnedDateTime || utMatch.earnedDateTime || null;
+                    const earnedDate = liveMatch.earnedDate || liveMatch.earnedDateTime || liveMatch.timestamp || st.earnedDateTime || utMatch.earnedDateTime || null;
 
                     return {
                         id: tId,
-                        name: st.trophyName || st.name || utMatch.name || `Trophy #${tId}`,
-                        description: st.trophyDetail || st.description || utMatch.description || '',
-                        icon: st.trophyIconUrl || st.icon || utMatch.icon || '',
+                        name: st.trophyName || st.name || utMatch.name || liveMatch.trophyName || `Trophy #${tId}`,
+                        description: st.trophyDetail || st.description || utMatch.description || liveMatch.trophyDetail || '',
+                        icon: st.trophyIconUrl || st.icon || utMatch.icon || liveMatch.trophyIconUrl || '',
                         earned: isEarned,
                         earnedDateTime: earnedDate,
                         subProgressRatio: liveMatch.subProgressRatio || st.subProgressRatio || null,
@@ -1161,13 +1347,12 @@
                     recentHoursEl.innerText = `${getPreciseHoursAgo(latestEarned.earnedDateTime)} (${latestEarned.name})`;
                 }
 
-                // Render Checklist
+                // Render Active Trophy Checklist
                 const checklistContainer = document.getElementById('trophy-checklist-container');
                 if (checklistContainer && currentTrophyData.length > 0) {
                     checklistContainer.innerHTML = currentTrophyData.map((t, idx) => {
                         const isEarned = !!t.earned;
                         const tracking = extractTrophyTracking(t);
-                        const normName = (t.name || '').toLowerCase().trim();
                         const earnedDateRaw = t.earnedDateTime;
                         let dateBadgeHtml = "";
 
@@ -1182,26 +1367,29 @@
                             `;
                         }
 
-                        // FRIEND-GATED SQUAD PRESENCE: Check authorized friends list
+                        // SQUAD MEMBERS PROGRESS & EXACT TIMESTAMPS
                         const squadMatches = [];
                         Object.entries(globalGamertagsData).forEach(([gtag, pObj]) => {
                             const normGKey = gtag.toLowerCase().trim();
                             if (normGKey === 'wildhorse_spirit' || normGKey === 'werewolf3788') return;
 
-                            // Privacy Check: Only show if friend is in authorizedFriendsMap or is a Core Pack member
                             const isAuthorizedFriend = authorizedFriendsMap[normGKey] || ['onelividman', 'darkwing69420', 'desdemonatiger'].includes(normGKey);
                             if (!isAuthorizedFriend) return;
 
-                            const pLiveNode = pObj.liveTrophyProgress?.[currentCommId] || {};
+                            const pLiveNode = pObj.liveTrophyProgress?.[primaryCommId] || {};
                             const pLiveTrophy = pLiveNode[t.id] || pLiveNode[String(t.id)];
 
                             if (pLiveTrophy) {
                                 const tr = extractTrophyTracking(pLiveTrophy);
                                 const pEarned = !!pLiveTrophy.earned;
+                                const pDate = pLiveTrophy.earnedDate || pLiveTrophy.earnedDateTime || pLiveTrophy.timestamp || null;
+                                const pFormattedDate = pDate ? formatDisplayTime(pDate) : '';
+
                                 squadMatches.push({
                                     tag: gtag,
                                     earned: pEarned,
-                                    label: tr ? tr.fraction : (pEarned ? 'DONE' : '0/1')
+                                    label: tr ? tr.fraction : (pEarned ? 'DONE' : '0/1'),
+                                    timestampStr: pFormattedDate
                                 });
                             }
                         });
@@ -1212,9 +1400,9 @@
                                 <div class="flex flex-wrap items-center gap-2 mt-2 pt-1.5 border-t border-white/5">
                                     <span class="text-[11px] font-black uppercase text-gray-400 tracking-wider mr-1">Squad Presence:</span>
                                     ${squadMatches.map(m => `
-                                        <span class="squad-member-pill ${m.earned ? 'earned' : 'locked'}">
+                                        <span class="squad-member-pill ${m.earned ? 'earned' : 'locked'}" title="${m.timestampStr ? `Progress Recorded: ${m.timestampStr}` : 'In Progress'}">
                                             <i class="fas ${m.earned ? 'fa-check-circle text-emerald-400' : 'fa-lock text-gray-400'}"></i>
-                                            <span>${m.tag} (${m.label})</span>
+                                            <span>${m.tag} (${m.label}${m.timestampStr ? ` • ${m.timestampStr}` : ''})</span>
                                         </span>
                                     `).join('')}
                                 </div>
@@ -1245,7 +1433,7 @@
                     }).join('');
                 }
 
-                // RECENT GAMES INTERACTIVE LIGHTBOX CARDS
+                // Recent Games Cards
                 const recentContainer = document.getElementById('recent-games-container');
                 if (recentContainer && recentGames.length > 0) {
                     recentContainer.innerHTML = recentGames.slice(0, 6).map(g => {
@@ -1276,10 +1464,12 @@
                     const nameEl = document.getElementById('last-trophy-name');
                     if (nameEl) nameEl.innerText = lastEarnedTrophyData.name || "Trophy";
                     const gameEl = document.getElementById('last-trophy-game');
-                    if (gameEl) gameEl.innerText = lastEarnedTrophyData.game || "PS5";
-                    const earnedDate = lastEarnedTrophyData.earnedDate || null;
+                    if (gameEl) gameEl.innerText = lastEarnedTrophyData.gameTitle || lastEarnedTrophyData.game || "PS5";
+                    const earnedDate = lastEarnedTrophyData.earnedDate || lastEarnedTrophyData.timestamp || null;
                     const timeEl = document.getElementById('last-trophy-time');
                     if (timeEl) timeEl.innerText = earnedDate ? `Earned: ${formatDisplayTime(earnedDate)}` : "Unlocked";
+                    const hoursAgoEl = document.getElementById('last-trophy-hours-ago');
+                    if (hoursAgoEl) hoursAgoEl.innerText = lastEarnedTrophyData.earnedAge || (earnedDate ? getTimeAgoString(earnedDate) : '');
                     if (recCard) recCard.classList.remove('hidden');
                 }
 
@@ -1288,11 +1478,11 @@
             }
         }
 
-        // Twitch Avatar Fallback
+        // Section: DecAPI Twitch Integrations (Lines 1122-1200)
         function handleTwitchAvatarError(imgEl) {
             if (!imgEl) return;
-            if (currentLoadedUser && currentLoadedUser.avatar) {
-                imgEl.src = currentLoadedUser.avatar;
+            if (currentLoadedUser && (currentLoadedUser.avatar || currentLoadedUser.image)) {
+                imgEl.src = currentLoadedUser.avatar || currentLoadedUser.image;
             } else {
                 imgEl.src = '//via.placeholder.com/32x32/1e1e24/9146ff?text=T';
             }
@@ -1324,7 +1514,7 @@
                 const avatarEl = document.getElementById('twitch-avatar-img');
                 if (avatarEl) {
                     if (cleanAvatar && cleanAvatar.startsWith('http')) avatarEl.src = cleanAvatar;
-                    else if (currentLoadedUser?.avatar) avatarEl.src = currentLoadedUser.avatar;
+                    else if (currentLoadedUser?.avatar || currentLoadedUser?.image) avatarEl.src = currentLoadedUser.avatar || currentLoadedUser.image;
                 }
 
                 const followerEl = document.getElementById('follower-count');
@@ -1355,7 +1545,8 @@
             }
         }
 
-        window.openRecentGameLightbox = function(commId, gameTitle) {
+        // Section: Lightbox Controllers & Modals (Lines 1202-1306)
+        window.openRecentGameLightbox = async function(commId, gameTitle) {
             const lb = document.getElementById('generic-lightbox');
             if (!lb) return;
             const titleEl = document.getElementById('lightbox-title');
@@ -1363,7 +1554,11 @@
             if (titleEl) titleEl.innerText = gameTitle;
 
             const userProg = currentLoadedUser?.liveTrophyProgress?.[commId] || {};
-            const skel = canonicalGamesSkeleton[commId] || {};
+            let skel = canonicalGamesSkeleton[commId];
+            if (!skel && commId) {
+                skel = await ensureSkeleton(commId);
+            }
+            skel = skel || {};
             const trophies = skel.trophies || [];
 
             let html = `
@@ -1419,7 +1614,7 @@
         }
 
         function openRecentTrophyLightbox() {
-            if (lastEarnedTrophyData) openTrophyDetailModal(lastEarnedTrophyData, lastEarnedTrophyData.game);
+            if (lastEarnedTrophyData) openTrophyDetailModal(lastEarnedTrophyData, lastEarnedTrophyData.gameTitle || lastEarnedTrophyData.game);
         }
 
         function openTrophyDetailModal(t, gameTitle) {
@@ -1462,15 +1657,17 @@
             if (lb) lb.style.display = 'none';
         }
 
+        // Section: Lifecycle Initialization (Lines 1308-1324)
         document.addEventListener('DOMContentLoaded', () => {
             fetchUserProfileAndFriends();
             fetchCanonicalSkeleton();
             fetchUtmNavLinks();
-            updateHub();
+            refreshHub();
             fetchLiveTwitch();
             syncPSNGamertags();
+            startLiveStreams();
 
-            setInterval(updateHub, 30000);
+            setInterval(refreshHub, 30000);
             setInterval(fetchLiveTwitch, 45000);
             setInterval(fetchUtmNavLinks, 180000);
             setInterval(syncPSNGamertags, 30000);
