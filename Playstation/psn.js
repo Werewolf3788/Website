@@ -6,22 +6,23 @@
  *      player's psn_username, psn_account_id, psn_npsso (cookie) and twitch handle.
  *      Core pack members and any extra RTDB user are processed through identical logic.
  *   2. Universal NPWR Communication ID Resolution (v50): locks the canonical NPWR commId
- *      for every user, now matching playtime records to trophy records by commId,
+ *      for every user, matching playtime records to trophy records by commId,
  *      titleId, skeleton link, AND normalized title+platform (fixes hours mismatches).
  *   3. Hours Tracker (v68) + Sony native playtime: per-game checkpoint accumulator,
  *      respects manualBaselineHours in RTDB, and never reports less than Sony's value.
  *   4. Master Skeleton /psn/games/{commId}, User Overlays /psn/gamertags/{onlineId}.
  *   5. Universal Multi-Game Trophy Vault with PS5 objective ratios (x/x), 2026+ filter,
  *      plus "squad focus" titles so friends' progress on the game being hunted is kept.
- *   6. Real-Time Active Game Poster Engine + Trophy-Driven Mode Inference + Store parsing.
+ *   6. Real-Time Active Game Poster Engine (live presence art first) + Trophy-Driven
+ *      Mode Inference + Store parsing.
  *   7. Twitch Intelligence (v50) for every user that has a handle (cached per run).
- *   8. Smart Presence Gatekeeper (v50) + per-user Activity Delta (v68).
+ *   8. Smart Presence Gatekeeper (v50) + per-user Activity Delta (v68) + version backfill.
  *   9. Hot-Standby Failover (v50): users without a valid cookie are still synced with the
  *      best available squad session instead of being skipped.
  *  10. Local psn.json mirror (v50) + Firebase REST pipeline + clean process.exit(0).
  * Analytics Tagging: G-CTYHDF4MSD (Deployable via GTM).
- * Version: 69.0.0 - Unified Merge (all v50 + v68 features retained)
- * Date & Time Stamp: 2026-10-17 EDT (America/New_York)
+ * Version: 69.1.0 - Poster fix, playtime overlay fix, played-games logging, backfill
+ * Date & Time Stamp: 2026-10-20 EDT (America/New_York)
  * ============================================================================ */
 
 // [SECTION 1: IMPORTS & CORE CONFIGURATION]
@@ -54,6 +55,10 @@ const {
     getPurchasedGames,
     makeUniversalSearch
 } = psnApi;
+
+// Bump this whenever record shape/logic changes: every stored profile is re-synced once
+// (even offline players) so fixes reach already-stored records.
+const ENGINE_VERSION = "69.1.0";
 
 const FIREBASE_BASE_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn";
 const RTDB_ROOT_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
@@ -899,10 +904,12 @@ function updateGameSessionTracking(existingUserData, activeCommId, activeTitle, 
 
 // Push tracked/manual totals onto the matching recentGames records so
 // recentGames/N/nativePlaytimeFormatted is always the best-known number.
+// Matches sessions keyed by NPWR commId OR by titleId (sessions for games with no NPWR id).
 function applyPlaytimeOverlay(allRecentGames, playSessions) {
     for (const g of allRecentGames) {
-        if (!g || !g.npCommunicationId) continue;
-        const s = playSessions[String(g.npCommunicationId).toUpperCase()];
+        if (!g) continue;
+        const s = playSessions[String(g.npCommunicationId || "").toUpperCase()] ||
+                  playSessions[g.npTitleId || g.titleId];
         if (!s) continue;
         const manual = Number(s.manualBaselineHours || 0) > 0;
         const tracked = Number(s.totalSeconds || 0);
@@ -1429,6 +1436,12 @@ async function evaluateUserActivityDelta(agentAuth, targetId, knownKey, knownGam
         return { hasDelta: true, reason: "INITIAL_CREATION", liveOnline: true };
     }
 
+    // Version backfill: when the engine version changes, every stored profile is re-synced once
+    // (even if offline) so poster/playtime fixes reach already-stored records.
+    if (existingData.engineVersion !== ENGINE_VERSION) {
+        return { hasDelta: true, reason: `BACKFILL (${existingData.engineVersion || "none"} -> ${ENGINE_VERSION})`, liveOnline: true };
+    }
+
     const isOwn = !!agentAuth && agentAuth.userKey === knownKey;
     const presenceTarget = (isOwn || !/^\d+$/.test(String(targetId))) ? "me" : targetId;
 
@@ -1556,6 +1569,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                     nativePlaytimeHours: existingData?.nativePlaytimeHours || 0,
                     playSessions: playSessions,
                     twitch: twitchIntel || existingData?.twitch || null,
+                    engineVersion: ENGINE_VERSION,
                     lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
                 };
 
@@ -1623,6 +1637,8 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 
         // ---- Played-games telemetry (titleId side, holds playDuration) ----
         // Every account reads its own list; own sessions also add recently-played (v50) to fill gaps.
+        // NOTE: Sony's played-games endpoint generally only returns data for the account that owns the
+        // session. If a player is read through a failover session, failures are logged below.
         const teleMap = new Map();
         const addTele = (arr) => (arr || []).forEach(g => {
             if (!g) return;
@@ -1636,9 +1652,14 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         });
 
         try {
+            const playedTarget = isOwnSession ? "me" : resolvedTargetId;
             let pOffset = 0;
             for (let i = 0; i < 5; i++) {
-                const playedRes = await getUserPlayedGames(auth, resolvedTargetId, { limit: 100, offset: pOffset }).catch(() => null);
+                const playedRes = await getUserPlayedGames(auth, playedTarget, { limit: 100, offset: pOffset })
+                    .catch(e => {
+                        console.warn(`[PLAYED GAMES FAIL] ${canonicalOnlineId} (${isOwnSession ? "own session" : "failover session"}): ${e.message}`);
+                        return null;
+                    });
                 const titles = playedRes?.titles || [];
                 addTele(titles);
                 if (titles.length < 100) break;
@@ -1649,11 +1670,15 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         }
         if (isOwnSession) {
             try {
-                const recentRes = await getRecentlyPlayedGames(auth, { limit: 100 }).catch(() => null);
+                const recentRes = await getRecentlyPlayedGames(auth, { limit: 100 }).catch(e => {
+                    console.warn(`[RECENT GAMES FAIL] ${canonicalOnlineId}: ${e.message}`);
+                    return null;
+                });
                 addTele(recentRes?.data?.recentlyPlayedTitles || recentRes?.recentlyPlayedTitles || []);
             } catch (e) {}
         }
         const telemetryData = Array.from(teleMap.values());
+        console.log(`[TELEMETRY] ${canonicalOnlineId}: ${telemetryData.length} played-game records, ${sortedTitles.length} trophy titles.`);
 
         const earliestEntry = sortedTitles.reduce((oldest, current) => {
             const currentDate = new Date(current.lastUpdatedDateTime || current.lastPlayed);
@@ -1871,9 +1896,19 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         const isDashboard = !resolvedTitle || resolvedTitle.toUpperCase() === "DASHBOARD";
         const isActivelyPlaying = isPlayerOnline && hasLiveTitle && !isDashboard;
 
-        const matchedGame = (persistentRootCommId && mergedGamesMap.get(persistentRootCommId)) ||
-                            allRecentGames.find(g => normTitle(g.name) === normTitle(resolvedTitle)) ||
-                            (!isDashboard ? allRecentGames[0] : null) || {};
+        // Live presence art straight from Sony (works even for brand-new games with no trophy set yet)
+        const presenceArt = psnOnline
+            ? resolveGamePosterArt([activeGameInfo.conceptIconUrl, activeGameInfo.npTitleIconUrl])
+            : null;
+
+        // Match the game being played by titleId -> normalized title -> commId.
+        // No blind allRecentGames[0] fallback: that was what pinned the old poster.
+        const liveTitleKey = normTitle(resolvedTitle);
+        const matchedGame =
+            (activeTitleId && mergedGamesMap.get(activeTitleId)) ||
+            allRecentGames.find(g => normTitle(g.name) === liveTitleKey) ||
+            (persistentRootCommId && mergedGamesMap.get(persistentRootCommId)) ||
+            {};
 
         // ---- Hours tracker (checkpoint accumulator seeded by Sony's native playtime) ----
         const { playSessions, currentGameDurationFormatted, activeSessionSeconds } = updateGameSessionTracking(
@@ -1914,18 +1949,21 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 
         const hwContext = parseDetailedHardwareContext(rawP, matchedGame);
 
+        // Poster priority: live presence art -> matched game art -> skeleton -> Twitch art -> stored art.
+        // The generic "most recent game" art is the very last resort.
         const safeFinalPoster = resolveGamePosterArt([
+            isActivelyPlaying ? presenceArt : null,
             matchedGame.posterArt,
             matchedGame.art,
             matchedGame.trophyTitleIconUrl,
             globalGames[persistentRootCommId]?.posterArt,
             twitchLive ? twitchIntel?.gameArt : null,
-            allRecentGames[0]?.posterArt,
-            allRecentGames[0]?.art,
             existingData?.posterArt,
             existingData?.art,
             existingData?.currentGameArt,
-            existingData?.activeHunt?.art
+            existingData?.activeHunt?.art,
+            allRecentGames[0]?.posterArt,
+            allRecentGames[0]?.art
         ]);
 
         const persistentLifetimeFormatted = matchedGame.nativePlaytimeFormatted ||
@@ -2106,6 +2144,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         return {
             onlineId: canonicalOnlineId,
             accountId: /^\d+$/.test(resolvedTargetId) ? resolvedTargetId : (existingData?.accountId || profile?.accountId || resolvedTargetId),
+            engineVersion: ENGINE_VERSION,
             commId: persistentRootCommId,
             conceptId: globalGames[persistentRootCommId]?.conceptId || matchedGame.conceptId || null,
             art: safeFinalPoster,
@@ -2312,7 +2351,7 @@ function findExistingGamertag(gamertagsObj, tag) {
 // ----------------------------------------------------------------------------
 async function executeSyncPass() {
     try {
-        console.log(`[INIT] Starting Unified PSN Engine v69.0.0 at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
+        console.log(`[INIT] Starting Unified PSN Engine v${ENGINE_VERSION} at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
 
         await loadPersistentTokens();
 
@@ -2377,6 +2416,13 @@ async function executeSyncPass() {
 
             const prev = findExistingGamertag(previousGamertags, account.tag);
             if (!prev) needsInitialCreation = true;
+
+            // Version backfill: stored profile was written by an older engine -> force one full pass
+            if (prev && prev.data.engineVersion !== ENGINE_VERSION) {
+                needsInitialCreation = true;
+                console.log(`[GATEKEEPER] ${account.tag} stored at engine ${prev.data.engineVersion || "none"}; backfill required.`);
+            }
+
             const hasOpenSession = Object.values(prev?.data?.playSessions || {}).some(s => s.isActive);
             if (hasOpenSession && !isOnline) {
                 pendingSessionClosing = true;
@@ -2402,7 +2448,7 @@ async function executeSyncPass() {
             mutualSquadFollowers: [],
             authDiagnostics: diagnosticReport,
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }),
-            engineVersion: "69.0.0",
+            engineVersion: ENGINE_VERSION,
             analyticsTag: GA4_MEASUREMENT_ID,
             codeTimestamp: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }) + " EDT"
         };
@@ -2482,7 +2528,7 @@ async function executeSyncPass() {
         finalData.authDiagnostics = diagnosticReport;
         await syncNodeToFirebase("authDiagnostics", diagnosticReport);
 
-        console.log(`[SUCCESS] Unified PSN Engine v69.0.0 completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
+        console.log(`[SUCCESS] Unified PSN Engine v${ENGINE_VERSION} completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Synchronization cycle failed: ${criticalError.message}`);
     }
