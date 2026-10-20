@@ -1,7 +1,10 @@
 # ============================================================================
 # File: .github/workflows/psn-sync.yml
 # Project: PSN Live Sync Engine
-# Version: 18.3.0 - 21-Minute Presence-Gated Sync
+# Version: 18.4.0 - 21-Minute Presence-Gated Sync
+#   - Passes FIREBASE_AUTH_SECRET to the engine
+#   - Passes Darkwing and Marc NPSSO fallbacks
+#   - Queues runs instead of cancelling a sync mid-pass
 # ============================================================================
 
 name: PSN Sync and Deploy
@@ -24,7 +27,9 @@ permissions:
 
 concurrency:
   group: psn-sync-runner
-  cancel-in-progress: true
+  # false = a new run waits for the current one to finish, so the hours tracker
+  # never loses a banked checkpoint or leaves a play session open.
+  cancel-in-progress: false
 
 jobs:
   psn-sync-job:
@@ -58,6 +63,9 @@ jobs:
         env:
           PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
+          PSN_NPSSO_DARKWING: ${{ secrets.PSN_NPSSO_DARKWING }}
+          PSN_NPSSO_MARC: ${{ secrets.PSN_NPSSO_MARC }}
+          FIREBASE_AUTH_SECRET: ${{ secrets.FIREBASE_AUTH_SECRET }}
           GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: |
           if [ -f "Playstation/psn.js" ]; then
