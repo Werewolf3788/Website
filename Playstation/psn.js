@@ -21,7 +21,8 @@
  *      best available squad session instead of being skipped.
  *  10. Local psn.json mirror (v50) + Firebase REST pipeline + clean process.exit(0).
  * Analytics Tagging: G-CTYHDF4MSD (Deployable via GTM).
- * Version: 69.1.0 - Poster fix, playtime overlay fix, played-games logging, backfill
+ * Version: 69.2.0 - CommId-driven active game: name, poster, hours and trophies all come from the
+ *   resolved NPWR commId (presence -> learned titleId link -> trophy titles -> name+platform).
  * Date & Time Stamp: 2026-10-20 EDT (America/New_York)
  * ============================================================================ */
 
@@ -58,7 +59,7 @@ const {
 
 // Bump this whenever record shape/logic changes: every stored profile is re-synced once
 // (even offline players) so fixes reach already-stored records.
-const ENGINE_VERSION = "69.1.0";
+const ENGINE_VERSION = "69.2.0";
 
 const FIREBASE_BASE_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn";
 const RTDB_ROOT_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
@@ -106,6 +107,7 @@ const AMAZON_TAG = "moviesanywhere02-20";
 let tokenStore = { ray: {}, wildhorse_spirit: {} };
 let squadFocusCommIds = new Set(); // commIds any squad member was last hunting (kept for everyone)
 const twitchCache = new Map();
+let titleLinks = {}; // learned titleId (CUSA/PPSA) -> NPWR commId, persisted at /psn/titleLinks
 
 let diagnosticReport = {
     wildhorse_spirit_active: "no",
@@ -539,6 +541,43 @@ function normalizePlatform(game) {
 function normTitle(str) {
     if (!str) return "";
     return String(str).toLowerCase().replace(/®|™/g, "").replace(/[^a-z0-9]/g, "").trim();
+}
+
+// RTDB-safe key (no . # $ [ ] /)
+function sanitizeKey(k) {
+    return String(k || "").replace(/[.#$\[\]\/]/g, "_");
+}
+
+function isNpwrId(v) {
+    const u = v ? String(v).toUpperCase() : "";
+    return u.startsWith("NPWR") && u !== "NPWR_ACTIVE";
+}
+
+// Resolves the title that is running RIGHT NOW to its NPWR trophy commId.
+// Order: presence commId -> learned/known titleId link -> user's trophy titles by name -> squad skeletons by name.
+// Returns { commId, via } or null. Everything else (name, poster, hours, trophies) is then read by commId.
+function resolveCommIdForTitle({ presenceCommId, titleId, title, desiredPlatform, mergedGamesMap, allRecentGames, globalGames, titleIdToComm }) {
+    if (isNpwrId(presenceCommId)) return { commId: String(presenceCommId).toUpperCase(), via: "PRESENCE_COMMID" };
+
+    if (titleId) {
+        const linked = titleIdToComm[sanitizeKey(titleId)] || titleIdToComm[String(titleId)];
+        if (isNpwrId(linked)) return { commId: String(linked).toUpperCase(), via: "TITLE_LINK" };
+        const rec = mergedGamesMap.get(titleId);
+        if (rec && isNpwrId(rec.npCommunicationId)) return { commId: String(rec.npCommunicationId).toUpperCase(), via: "TITLE_ID_RECORD" };
+    }
+
+    const key = normTitle(title);
+    if (key) {
+        const pick = (cands) => cands.find(c => c.platform === desiredPlatform) || cands[0];
+
+        const own = allRecentGames.filter(g => isNpwrId(g.npCommunicationId) && normTitle(g.name || g.trophyTitleName) === key);
+        if (own.length > 0) return { commId: String(pick(own).npCommunicationId).toUpperCase(), via: "NAME_USER_TITLES" };
+
+        const shared = Object.values(globalGames || {}).filter(sk => sk && isNpwrId(sk.commId) && normTitle(sk.name) === key);
+        if (shared.length > 0) return { commId: String(pick(shared).commId).toUpperCase(), via: "NAME_SQUAD_SKELETON" };
+    }
+
+    return null;
 }
 
 function estimateGameFileSize(gameName = "", platform = "PS5") {
@@ -1695,6 +1734,8 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             if (rg && rg.npCommunicationId && (rg.npTitleId || rg.titleId)) titleIdToComm[String(rg.npTitleId || rg.titleId)] = rg.npCommunicationId;
         });
 
+        Object.entries(titleLinks || {}).forEach(([tid, cid]) => { if (isNpwrId(cid)) titleIdToComm[tid] = cid; });
+
         const mergedGamesMap = new Map(); // commId / titleId -> record
         const nameIndex = new Map();      // normalized title + platform -> record
 
@@ -1829,86 +1870,95 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             return dateB - dateA;
         });
 
-        // ---- Active game resolution (v50 universal NPWR resolver + v68 presence) ----
+        // ---- Active game resolution: the NPWR commId is the source of truth ----
+        // Presence only tells us WHICH title is running. It is resolved to a commId first, then the
+        // name, poster, hours and trophies are all read from that commId's records.
         const activeGameInfo = rawP?.gameTitleInfoList?.[0] ||
                                rawP?.primaryPlatformInfo?.gameTitleInfoList?.[0] ||
                                {};
 
-        let activeCommId = activeGameInfo.npCommunicationId || null;
-        let activeTitleId = activeGameInfo.npTitleId || activeGameInfo.titleId || null;
-        let resolvedTitle = (psnOnline ? (activeGameInfo.titleName || activeGameInfo.npTitleName) : null) || null;
+        const presenceCommId = activeGameInfo.npCommunicationId || null;
+        const presenceTitleId = activeGameInfo.npTitleId || activeGameInfo.titleId || null;
+        const presenceTitle = psnOnline ? (activeGameInfo.titleName || activeGameInfo.npTitleName || null) : null;
+        const liveTitle = presenceTitle || ((twitchLive && twitchIntel?.game) ? twitchIntel.game : null);
+        const hasLiveTitle = !!(liveTitle || (psnOnline && (presenceCommId || presenceTitleId)));
 
-        if (!resolvedTitle && twitchLive && twitchIntel?.game) {
-            resolvedTitle = twitchIntel.game;
-        }
+        const buildHint = parseDetailedHardwareContext(rawP, {}).gameBuildVersion || "";
+        const desiredPlatform = buildHint.includes("PS4") ? "PS4"
+            : (buildHint.includes("PS3") ? "PS3" : (buildHint.includes("Vita") ? "PS Vita" : "PS5"));
 
-        const hasLiveTitle = !!(resolvedTitle || (psnOnline && (activeCommId || activeTitleId)));
+        let activeTitleId = presenceTitleId;
+        let resolvedTitle = null;
+        let commKey = null;
+        let commIdSource = "NONE";
 
-        if (!resolvedTitle && activeCommId && mergedGamesMap.has(activeCommId)) {
-            resolvedTitle = mergedGamesMap.get(activeCommId).name;
-        }
-        if (!resolvedTitle && activeTitleId && mergedGamesMap.has(activeTitleId)) {
-            resolvedTitle = mergedGamesMap.get(activeTitleId).name;
-        }
-        if (!resolvedTitle || resolvedTitle === "Dashboard") {
-            if (allRecentGames.length > 0) {
-                // not in a game: dashboards keep showing the most recent hunt (v50 behavior)
-                resolvedTitle = allRecentGames[0].name;
-                activeCommId = activeCommId || allRecentGames[0].npCommunicationId;
-                activeTitleId = activeTitleId || allRecentGames[0].npTitleId;
+        if (hasLiveTitle) {
+            const res = resolveCommIdForTitle({
+                presenceCommId, titleId: presenceTitleId, title: liveTitle, desiredPlatform,
+                mergedGamesMap, allRecentGames, globalGames, titleIdToComm
+            });
+            if (res) {
+                commKey = res.commId;
+                commIdSource = res.via;
+                // remember titleId -> commId so the next run resolves exactly, without name matching
+                if (presenceTitleId && res.via.startsWith("NAME")) {
+                    titleLinks[sanitizeKey(presenceTitleId)] = commKey;
+                }
+            }
+            resolvedTitle = liveTitle;
+            if (!resolvedTitle && commKey && mergedGamesMap.has(commKey)) resolvedTitle = mergedGamesMap.get(commKey).name;
+            if (!resolvedTitle && presenceTitleId && mergedGamesMap.has(presenceTitleId)) resolvedTitle = mergedGamesMap.get(presenceTitleId).name;
+        } else {
+            // Not in a game: dashboards keep showing the most recent hunt, still keyed by its commId
+            const lastHunt = allRecentGames.find(g => isNpwrId(g.npCommunicationId));
+            if (lastHunt) {
+                commKey = String(lastHunt.npCommunicationId).toUpperCase();
+                commIdSource = "LAST_HUNT";
+                activeTitleId = lastHunt.npTitleId || lastHunt.titleId || null;
+                resolvedTitle = lastHunt.name;
             } else {
+                const storedComm = existingData?.currentCommunicationId || existingData?.commId || null;
+                if (isNpwrId(storedComm)) commKey = String(storedComm).toUpperCase();
                 resolvedTitle = existingData?.currentGame || "Dashboard";
             }
         }
 
-        const hwPlatform = parseDetailedHardwareContext(rawP, {}).activeHardware;
-        let canonicalActiveCommId = null;
-        if (activeCommId && String(activeCommId).startsWith("NPWR")) {
-            canonicalActiveCommId = activeCommId;
+        // The commId's own records are authoritative: skeleton (/psn/games/{commId}) and the user's trophy-title record
+        const skeletonForActive = commKey ? (globalGames[commKey] || null) : null;
+        let matchedGame = (commKey && mergedGamesMap.get(commKey)) || {};
+        if (commKey && !matchedGame.npCommunicationId && skeletonForActive) {
+            matchedGame = {
+                name: skeletonForActive.name,
+                platform: skeletonForActive.platform,
+                npCommunicationId: commKey,
+                titleId: skeletonForActive.cusaId || skeletonForActive.titleId || null,
+                npTitleId: skeletonForActive.cusaId || skeletonForActive.titleId || null,
+                conceptId: skeletonForActive.conceptId || null,
+                posterArt: skeletonForActive.posterArt || null,
+                art: skeletonForActive.posterArt || null,
+                trophyTitleIconUrl: skeletonForActive.trophyTitleIconUrl || null,
+                media: skeletonForActive.posterArt ? [skeletonForActive.posterArt] : [],
+                nativePlaytimeSeconds: 0
+            };
         }
-
-        if (!canonicalActiveCommId && activeTitleId && mergedGamesMap.has(activeTitleId)) {
-            const record = mergedGamesMap.get(activeTitleId);
-            if (record?.npCommunicationId && String(record.npCommunicationId).startsWith("NPWR")) {
-                canonicalActiveCommId = record.npCommunicationId;
-            }
+        if (commKey) {
+            const commName = (matchedGame.name && matchedGame.name !== "Unknown Game") ? matchedGame.name : skeletonForActive?.name;
+            if (commName) resolvedTitle = commName; // the game's name comes from its commId, not from presence text
         }
+        if (!resolvedTitle) resolvedTitle = "Dashboard";
 
-        if (!canonicalActiveCommId && resolvedTitle && resolvedTitle !== "Dashboard") {
-            const cleanResolved = normTitle(resolvedTitle);
-            const candidates = allRecentGames.filter(g =>
-                normTitle(g.name || g.trophyTitleName) === cleanResolved &&
-                g.npCommunicationId && String(g.npCommunicationId).startsWith("NPWR"));
-            const best = candidates.find(g => g.platform === hwPlatform) || candidates[0];
-            if (best) canonicalActiveCommId = best.npCommunicationId;
-        }
-
-        const fallbackCommId = allRecentGames.find(g => g.npCommunicationId && String(g.npCommunicationId).startsWith("NPWR"))?.npCommunicationId ||
-                               existingData?.currentCommunicationId ||
-                               existingData?.commId ||
-                               existingData?.activeHunt?.commId ||
-                               "NPWR_ACTIVE";
-
-        const persistentRootCommId = (canonicalActiveCommId && canonicalActiveCommId !== "Dashboard")
-            ? canonicalActiveCommId
-            : fallbackCommId;
+        // null while playing a title that has no trophy set mapped yet (never borrows another game's data)
+        const persistentRootCommId = commKey;
 
         const isDashboard = !resolvedTitle || resolvedTitle.toUpperCase() === "DASHBOARD";
         const isActivelyPlaying = isPlayerOnline && hasLiveTitle && !isDashboard;
 
-        // Live presence art straight from Sony (works even for brand-new games with no trophy set yet)
+        // Live presence art: only used when no commId could be resolved (or as the commId records' last fallback)
         const presenceArt = psnOnline
             ? resolveGamePosterArt([activeGameInfo.conceptIconUrl, activeGameInfo.npTitleIconUrl])
             : null;
 
-        // Match the game being played by titleId -> normalized title -> commId.
-        // No blind allRecentGames[0] fallback: that was what pinned the old poster.
-        const liveTitleKey = normTitle(resolvedTitle);
-        const matchedGame =
-            (activeTitleId && mergedGamesMap.get(activeTitleId)) ||
-            allRecentGames.find(g => normTitle(g.name) === liveTitleKey) ||
-            (persistentRootCommId && mergedGamesMap.get(persistentRootCommId)) ||
-            {};
+        console.log(`[ACTIVE GAME] ${canonicalOnlineId}: "${resolvedTitle}" -> commId ${persistentRootCommId || "UNRESOLVED"} (${commIdSource}), titleId ${activeTitleId || "n/a"}, ${isActivelyPlaying ? "PLAYING" : "idle"}`);
 
         // ---- Hours tracker (checkpoint accumulator seeded by Sony's native playtime) ----
         const { playSessions, currentGameDurationFormatted, activeSessionSeconds } = updateGameSessionTracking(
@@ -1949,31 +1999,35 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 
         const hwContext = parseDetailedHardwareContext(rawP, matchedGame);
 
-        // Poster priority: live presence art -> matched game art -> skeleton -> Twitch art -> stored art.
-        // The generic "most recent game" art is the very last resort.
-        const safeFinalPoster = resolveGamePosterArt([
-            isActivelyPlaying ? presenceArt : null,
-            matchedGame.posterArt,
-            matchedGame.art,
-            matchedGame.trophyTitleIconUrl,
-            globalGames[persistentRootCommId]?.posterArt,
-            twitchLive ? twitchIntel?.gameArt : null,
-            existingData?.posterArt,
-            existingData?.art,
-            existingData?.currentGameArt,
-            existingData?.activeHunt?.art,
-            allRecentGames[0]?.posterArt,
-            allRecentGames[0]?.art
-        ]);
+        // Poster comes from the resolved commId's records. Other games' art is never used for it.
+        let posterCandidates;
+        if (persistentRootCommId) {
+            posterCandidates = [
+                matchedGame.posterArt,
+                matchedGame.art,
+                skeletonForActive?.posterArt,
+                matchedGame.trophyTitleIconUrl,
+                skeletonForActive?.trophyTitleIconUrl,
+                (existingData?.commId === persistentRootCommId) ? existingData?.posterArt : null,
+                presenceArt
+            ];
+        } else if (isActivelyPlaying) {
+            posterCandidates = [presenceArt, twitchLive ? twitchIntel?.gameArt : null];
+        } else {
+            posterCandidates = [existingData?.posterArt, existingData?.art, existingData?.currentGameArt, existingData?.activeHunt?.art];
+        }
+        const safeFinalPoster = resolveGamePosterArt(posterCandidates);
+
+        const storedSame = (persistentRootCommId && existingData?.commId === persistentRootCommId) ? existingData : null;
 
         const persistentLifetimeFormatted = matchedGame.nativePlaytimeFormatted ||
-                                           existingData?.currentGameHours ||
-                                           existingData?.activeHunt?.hoursFormatted ||
+                                           storedSame?.currentGameHours ||
+                                           storedSame?.activeHunt?.hoursFormatted ||
                                            "0 hrs";
 
         const persistentLifetimeNumeric = matchedGame.nativePlaytimeHours !== undefined
                                          ? matchedGame.nativePlaytimeHours
-                                         : (existingData?.currentGameNumericHours || existingData?.activeHunt?.numericHours || 0);
+                                         : (storedSame?.currentGameNumericHours || storedSame?.activeHunt?.numericHours || 0);
 
         const safePlaytimeFormatted = (currentGameDurationFormatted && currentGameDurationFormatted !== "0 hrs" && currentGameDurationFormatted !== "< 1 min")
             ? currentGameDurationFormatted
@@ -1985,11 +2039,11 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 
         const userNativePlaytimeHours = matchedGame.nativePlaytimeHours !== undefined
             ? matchedGame.nativePlaytimeHours
-            : (existingData?.nativePlaytimeHours !== undefined ? existingData.nativePlaytimeHours : safeNumericHours);
+            : (storedSame?.nativePlaytimeHours !== undefined ? storedSame.nativePlaytimeHours : safeNumericHours);
 
         const userNativePlaytimeSeconds = matchedGame.nativePlaytimeSeconds !== undefined
             ? matchedGame.nativePlaytimeSeconds
-            : (existingData?.nativePlaytimeSeconds !== undefined ? existingData.nativePlaytimeSeconds : Math.round(userNativePlaytimeHours * 3600));
+            : (storedSame?.nativePlaytimeSeconds !== undefined ? storedSame.nativePlaytimeSeconds : Math.round(userNativePlaytimeHours * 3600));
 
         const userNativePlaytimeFormatted = matchedGame.nativePlaytimeFormatted || formatPlaytime(userNativePlaytimeSeconds);
 
@@ -2094,6 +2148,29 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                     };
                 }
             }
+        }
+
+        // Playing a title with no mapped trophy set yet: report it honestly instead of keeping another game's hunt
+        if (!persistentRootCommId && isActivelyPlaying) {
+            activeHunt = {
+                npCommunicationId: null,
+                commId: null,
+                unresolvedCommId: true,
+                titleId: activeTitleId,
+                cusaId: activeTitleId,
+                title: resolvedTitle,
+                platform: hwContext.activeHardware,
+                gameBuildVersion: hwContext.gameBuildVersion,
+                isStreamingRemotePlay: hwContext.isStreamingRemotePlay,
+                art: safeFinalPoster,
+                posterArt: safeFinalPoster,
+                image: safeFinalPoster,
+                media: safeFinalPoster ? [safeFinalPoster] : [],
+                hoursPlayed: safePlaytimeFormatted,
+                hoursFormatted: safePlaytimeFormatted,
+                numericHours: safeNumericHours,
+                amazonAffiliateUrl: generateAffiliateUrl(resolvedTitle)
+            };
         }
 
         // Universal Recent Trophy Aggregator
@@ -2362,6 +2439,7 @@ async function executeSyncPass() {
         const previousFirebaseData = await fetchFromFirebase();
         const globalGames = previousFirebaseData.games || {};
         const previousGamertags = previousFirebaseData?.gamertags || {};
+        titleLinks = (previousFirebaseData?.titleLinks && typeof previousFirebaseData.titleLinks === "object") ? previousFirebaseData.titleLinks : {};
 
         // Titles any squad member was last hunting: everyone keeps trophy progress for them
         squadFocusCommIds = new Set();
@@ -2521,6 +2599,7 @@ async function executeSyncPass() {
             await syncNodeToFirebase("leaderboard", finalData.squadLeaderboard);
             await syncNodeToFirebase("squadAnalytics", finalData.squadAnalytics);
             await syncNodeToFirebase("lastGlobalUpdate", finalData.lastGlobalUpdate);
+            await syncNodeToFirebase("titleLinks", titleLinks);
             writeLocalFile(finalData);
         }
 
