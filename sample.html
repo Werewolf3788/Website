@@ -1,5 +1,5 @@
 <!-- Line 1: Hunter Identity, Platform Credentials & Master User Settings Engine -->
-<!-- [Smart Cache-Buster Time: 2026-10-23 00:40 EDT | Firebase Sync Target: /utm_links | Version: 4.9.2] -->
+<!-- [Smart Cache-Buster Time: 2026-10-23 00:46 EDT | Firebase Sync Target: /utm_links | Version: 4.9.3] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -589,31 +589,32 @@
           <input type="text" value="No One (Locked)" disabled style="opacity: 0.6; cursor: not-allowed;">
         </div>
 
-        <!-- Steam Community ID (Dedicated Steam64 ID) -->
+        <!-- Sensitive Steam Community ID # (With 60s Reveal Timer) -->
         <div class="platform-scope-row">
           <div>
             <span class="platform-scope-label">Steam ID (Steam64)</span>
-            <div id="steamStatusTag" style="font-size: 0.72rem; color: var(--accent-cyan);">17-Digit ID</div>
+            <div id="steamStatusTag" style="font-size: 0.72rem; color: var(--accent-gold);">Private &bull; Sensitive</div>
           </div>
           <div>
-            <input type="text" id="steamIdInput" placeholder="e.g. 76561199538340970 or profile link">
+            <div class="sensitive-input-wrapper">
+              <input type="password" id="steamIdInput" placeholder="e.g. 76561199538340970 or profile link">
+              <button type="button" id="toggleSteamIdVisibilityBtn" class="btn btn-secondary btn-sm" style="white-space: nowrap;">
+                👁 Show (60s)
+              </button>
+            </div>
             <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 4px;">
               Your permanent 17-digit Steam64 identifier. Pasting a direct profile URL automatically strips down to this ID.
             </div>
             <div id="steamValidationMsg" style="font-size: 0.74rem; margin-top: 4px; font-weight: 600;"></div>
           </div>
-          <select id="steamIdScope">
-            <option value="public">Public</option>
-            <option value="friends">Friends Only</option>
-            <option value="private">No One</option>
-          </select>
+          <input type="text" value="No One (Locked)" disabled style="opacity: 0.6; cursor: not-allowed;">
         </div>
 
         <!-- Steam Friend Code (Account ID) -->
         <div class="platform-scope-row">
           <div>
             <span class="platform-scope-label">Steam Friend Code</span>
-            <div id="steamFriendCodeStatusTag" style="font-size: 0.72rem; color: var(--accent-gold);">Friend ID #</div>
+            <div id="steamFriendCodeStatusTag" style="font-size: 0.72rem; color: var(--accent-cyan);">Friend ID #</div>
           </div>
           <div>
             <input type="text" id="steamFriendCodeInput" placeholder="e.g. 1578075242">
@@ -820,7 +821,7 @@
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Werewolf Project | User Identity Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-23 00:40 EDT</span> | Version: 4.9.2</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-23 00:46 EDT</span> | Version: 4.9.3</p>
       </div>
       <div class="footer-col text-right">
         <span id="accountStatusPill" class="status-pill status-connecting">RTDB: Connecting...</span>
@@ -830,7 +831,7 @@
 
   <!-- Complete Embedded JavaScript Engine -->
   <script>
-    // Section 1: Core Initialization and Global Listeners (Lines 605-650)
+    // Section 1: Core Initialization and Global Listeners (Lines 605-655)
     document.addEventListener("DOMContentLoaded", () => {
       const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
       const STEAM_BASE_CONSTANT = BigInt("76561197960265728");
@@ -854,8 +855,9 @@
       let currentUser = null;
       let accountIdTimer = null;
       let npssoTimer = null;
+      let steamIdTimer = null;
 
-      // Section 2: Email Key Resolution (Lines 651-680)
+      // Section 2: Email Key Resolution (Lines 656-685)
       function getResolvedPrimaryEmail(user) {
         if (!user) return "";
         const googleProvider = user.providerData.find(p => p && p.providerId === "google.com");
@@ -877,7 +879,7 @@
         return email.toLowerCase().replace(/@/g, "_at_").replace(/\./g, "_");
       }
 
-      // Section 3: Token Auto-Sanitizers & Bidirectional Steam Math Engine (Lines 681-775)
+      // Section 3: Token Auto-Sanitizers & Bidirectional Steam Math Engine (Lines 686-785)
       function sanitizeNpssoInput(rawInput) {
         if (!rawInput) return { token: "", isValid: false, isExpired: false };
         const cleaned = rawInput.trim();
@@ -1054,7 +1056,7 @@
         });
       }
 
-      // Section 4: 60-Second Auto-Hide Timers for Sensitive Fields (Lines 776-835)
+      // Section 4: 60-Second Auto-Hide Timers for Sensitive Fields (Lines 786-855)
       function setupSensitiveFieldToggle(btnId, inputId, timerVarRef, setTimerFn) {
         const btn = document.getElementById(btnId);
         const input = document.getElementById(inputId);
@@ -1106,7 +1108,14 @@
         (t) => { npssoTimer = t; }
       );
 
-      // Section 5: Navbar Sorting Engine & Favicon Synchronization (Lines 836-955)
+      setupSensitiveFieldToggle(
+        "toggleSteamIdVisibilityBtn",
+        "steamIdInput",
+        steamIdTimer,
+        (t) => { steamIdTimer = t; }
+      );
+
+      // Section 5: Navbar Sorting Engine & Favicon Synchronization (Lines 856-975)
       function initRTDBMenu() {
         const utmRef = rtdb.ref("/utm_links");
         utmRef.on("value", (snapshot) => {
@@ -1244,7 +1253,7 @@
         });
       }
 
-      // Section 6: Auth State Observer & Dual Provisioning Engine (Lines 956-1045)
+      // Section 6: Auth State Observer & Dual Provisioning Engine (Lines 976-1065)
       auth.onAuthStateChanged(async (user) => {
         const guestPrompt = document.getElementById("guestSignInPrompt");
         const authSection = document.getElementById("authenticatedSection");
@@ -1323,7 +1332,7 @@
         }
       }
 
-      // Section 7: Profile Sync & DecAPI / Steam Avatar Handlers (Lines 1046-1175)
+      // Section 7: Profile Sync & DecAPI / Steam Avatar Handlers (Lines 1066-1195)
       function loadRTDBUserProfile(emailKey, friendCode) {
         const userRef = rtdb.ref(`/users/${emailKey}`);
         userRef.on("value", async (snapshot) => {
@@ -1362,7 +1371,7 @@
           }
 
           document.getElementById("steamIdInput").value = storedSteamId;
-          document.getElementById("steamIdScope").value = data.steam_id_scope || "public";
+          document.getElementById("steamIdScope").value = "private";
           document.getElementById("steamFriendCodeInput").value = storedFriendCode;
           document.getElementById("steamFriendCodeScope").value = data.steam_friend_code_scope || "public";
 
@@ -1511,7 +1520,7 @@
         }
       }
 
-      // Section 8: Silent Save Operations (Lines 1176-1320)
+      // Section 8: Silent Save Operations (Lines 1196-1340)
       document.getElementById("copyFriendCodeBtn").addEventListener("click", () => {
         const code = document.getElementById("friendCodeDisplay").textContent.trim();
         if (!code || code === "Loading...") return;
@@ -1627,7 +1636,7 @@
           psn_npsso_scope: "private",
           psn_npsso_valid: sanitizedNpsso.isValid,
           steam_id: finalSteamId,
-          steam_id_scope: document.getElementById("steamIdScope").value,
+          steam_id_scope: "private",
           steam_friend_code: finalSteamFriendCode,
           steam_friend_code_scope: document.getElementById("steamFriendCodeScope").value,
           xbox_gamertag: document.getElementById("xboxGamertagInput").value.trim(),
@@ -1657,7 +1666,7 @@
         }
       });
 
-      // Section 9: Personal Links Management (Capped at 5 Links) (Lines 1321-1395)
+      // Section 9: Personal Links Management (Capped at 5 Links) (Lines 1341-1415)
       let currentLinksCount = 0;
 
       document.getElementById("addUserLinkBtn").addEventListener("click", async () => {
@@ -1743,7 +1752,7 @@
         }
       };
 
-      // Section 10: Companions Roster & Dual Linking (Lines 1396-1480)
+      // Section 10: Companions Roster & Dual Linking (Lines 1416-1500)
       document.getElementById("addFriendBtn").addEventListener("click", async () => {
         if (!currentUser) return;
         const code = document.getElementById("friendCodeInput").value.trim().toUpperCase();
@@ -1807,7 +1816,7 @@
         });
       }
 
-      // Section 11: The 4 Protected Actions with Confirmation Dialogs (Lines 1481-1555)
+      // Section 11: The 4 Protected Actions with Confirmation Dialogs (Lines 1501-1575)
       window.removeCompanion = async (code) => {
         if (!currentUser) return;
         const confirmRemove = window.confirm("Are you sure you want to remove this companion from your roster?");
@@ -1864,7 +1873,7 @@
         }
       });
 
-      // Section 12: Provider Identification & Account Handlers (Lines 1556-1645)
+      // Section 12: Provider Identification & Account Handlers (Lines 1576-1665)
       function renderProvidersUI(user) {
         const providers = user.providerData.map(p => p.providerId);
         const googleText = document.getElementById("googleStatusText");
