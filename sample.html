@@ -1,5 +1,5 @@
 <!-- Line 1: Hunter Identity, Platform Credentials & Master User Settings Engine -->
-<!-- [Smart Cache-Buster Time: 2026-10-23 00:24 EDT | Firebase Sync Target: /utm_links | Version: 4.9.0] -->
+<!-- [Smart Cache-Buster Time: 2026-10-23 00:32 EDT | Firebase Sync Target: /utm_links | Version: 4.9.1] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -589,20 +589,40 @@
           <input type="text" value="No One (Locked)" disabled style="opacity: 0.6; cursor: not-allowed;">
         </div>
 
-        <!-- Steam Community ID (With Auto-Sanitizer for Profile Links & Friend Codes) -->
+        <!-- Steam Community ID (Dedicated Steam64 ID) -->
         <div class="platform-scope-row">
           <div>
             <span class="platform-scope-label">Steam ID (Steam64)</span>
-            <div id="steamStatusTag" style="font-size: 0.72rem; color: var(--accent-cyan);">Auto-Resolved</div>
+            <div id="steamStatusTag" style="font-size: 0.72rem; color: var(--accent-cyan);">17-Digit ID</div>
           </div>
           <div>
-            <input type="text" id="steamIdInput" placeholder="Paste URL (e.g. steamcommunity.com/profiles/7656...), Friend Code, or Steam64">
+            <input type="text" id="steamIdInput" placeholder="e.g. 76561199538340970 or profile link">
             <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 4px;">
-              Paste your Steam profile URL, friend code (e.g. 1578075242), or custom vanity link. It will automatically resolve to your 17-digit Steam64 ID.
+              Your permanent 17-digit Steam64 identifier. Pasting a direct profile URL automatically strips down to this ID.
             </div>
             <div id="steamValidationMsg" style="font-size: 0.74rem; margin-top: 4px; font-weight: 600;"></div>
           </div>
           <select id="steamIdScope">
+            <option value="public">Public</option>
+            <option value="friends">Friends Only</option>
+            <option value="private">No One</option>
+          </select>
+        </div>
+
+        <!-- Steam Friend Code (Account ID) -->
+        <div class="platform-scope-row">
+          <div>
+            <span class="platform-scope-label">Steam Friend Code</span>
+            <div id="steamFriendCodeStatusTag" style="font-size: 0.72rem; color: var(--accent-gold);">Friend ID #</div>
+          </div>
+          <div>
+            <input type="text" id="steamFriendCodeInput" placeholder="e.g. 1578075242">
+            <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 4px;">
+              Found in Steam under "Add a Friend". Entering or changing this field automatically syncs and calculates your Steam64 ID.
+            </div>
+            <div id="steamFriendCodeMsg" style="font-size: 0.74rem; margin-top: 4px; font-weight: 600;"></div>
+          </div>
+          <select id="steamFriendCodeScope">
             <option value="public">Public</option>
             <option value="friends">Friends Only</option>
             <option value="private">No One</option>
@@ -800,7 +820,7 @@
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Werewolf Project | User Identity Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-23 00:24 EDT</span> | Version: 4.9.0</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-23 00:32 EDT</span> | Version: 4.9.1</p>
       </div>
       <div class="footer-col text-right">
         <span id="accountStatusPill" class="status-pill status-connecting">RTDB: Connecting...</span>
@@ -813,6 +833,7 @@
     // Section 1: Core Initialization and Global Listeners (Lines 605-650)
     document.addEventListener("DOMContentLoaded", () => {
       const DEFAULT_USER_AVATAR = "https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png";
+      const STEAM_BASE_CONSTANT = BigInt("76561197960265728");
 
       const firebaseConfig = {
         apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -856,7 +877,7 @@
         return email.toLowerCase().replace(/@/g, "_at_").replace(/\./g, "_");
       }
 
-      // Section 3: NPSSO & Steam Token Auto-Sanitizers & Parsers (Lines 681-740)
+      // Section 3: Token Auto-Sanitizers & Bidirectional Steam Math Engine (Lines 681-760)
       function sanitizeNpssoInput(rawInput) {
         if (!rawInput) return { token: "", isValid: false, isExpired: false };
         const cleaned = rawInput.trim();
@@ -884,46 +905,6 @@
         return { token: cleaned, isValid: cleaned.length > 20, isExpired: false };
       }
 
-      // Steam Sanitizer: Cleans profiles, vanity URLs, friend codes, and returns 17-digit Steam64 ID
-      function sanitizeSteamInput(rawInput) {
-        if (!rawInput) return { id: "", isValid: false, type: "empty" };
-        let cleaned = rawInput.trim();
-
-        // 1. Direct 17-digit Steam64 numeric string
-        const directSteam64 = cleaned.match(/\b(7656119[0-9]{10})\b/);
-        if (directSteam64 && directSteam64[1]) {
-          return { id: directSteam64[1], isValid: true, type: "steam64" };
-        }
-
-        // 2. Full URL containing numeric profile: steamcommunity.com/profiles/7656119...
-        const profileUrlMatch = cleaned.match(/steamcommunity\.com\/profiles\/(\d{17})/i);
-        if (profileUrlMatch && profileUrlMatch[1]) {
-          return { id: profileUrlMatch[1], isValid: true, type: "steam64" };
-        }
-
-        // 3. Steam Friend Code / Account ID (8 to 10 digits): 76561197960265728 + AccountId
-        if (/^\d{8,10}$/.test(cleaned)) {
-          try {
-            const base = BigInt("76561197960265728");
-            const converted = (base + BigInt(cleaned)).toString();
-            return { id: converted, isValid: true, type: "friend_code_converted" };
-          } catch (e) {}
-        }
-
-        // 4. Custom Vanity URL: steamcommunity.com/id/customName/
-        const vanityUrlMatch = cleaned.match(/steamcommunity\.com\/id\/([a-zA-Z0-9_-]+)/i);
-        if (vanityUrlMatch && vanityUrlMatch[1]) {
-          return { id: vanityUrlMatch[1], isValid: true, type: "vanity" };
-        }
-
-        // 5. Bare vanity handle (letters/numbers/underscores)
-        if (/^[a-zA-Z0-9_-]{3,32}$/.test(cleaned)) {
-          return { id: cleaned, isValid: true, type: "vanity" };
-        }
-
-        return { id: cleaned, isValid: false, type: "unknown" };
-      }
-
       // Real-time listener on NPSSO input field to sanitize immediately
       const npssoInput = document.getElementById("psnNpssoInput");
       const npssoMsg = document.getElementById("npssoValidationMsg");
@@ -948,35 +929,105 @@
         });
       }
 
-      // Real-time listener on Steam ID input field to sanitize immediately
+      // Bidirectional Math Conversion Functions
+      function steam64ToFriendCode(steam64Str) {
+        try {
+          if (!/^\d{17}$/.test(steam64Str)) return "";
+          const s64 = BigInt(steam64Str);
+          const friendCode = (s64 - STEAM_BASE_CONSTANT).toString();
+          return Number(friendCode) > 0 ? friendCode : "";
+        } catch (e) {
+          return "";
+        }
+      }
+
+      function friendCodeToSteam64(friendCodeStr) {
+        try {
+          if (!/^\d{4,12}$/.test(friendCodeStr)) return "";
+          const fc = BigInt(friendCodeStr);
+          return (STEAM_BASE_CONSTANT + fc).toString();
+        } catch (e) {
+          return "";
+        }
+      }
+
+      // Steam ID Input Sanitizer & Cross-Filler
       const steamInput = document.getElementById("steamIdInput");
       const steamMsg = document.getElementById("steamValidationMsg");
+      const steamFriendInput = document.getElementById("steamFriendCodeInput");
+      const steamFriendMsg = document.getElementById("steamFriendCodeMsg");
+
       if (steamInput) {
         steamInput.addEventListener("input", (e) => {
-          const res = sanitizeSteamInput(e.target.value);
-          if (res.isValid) {
-            if (res.type === "steam64") {
-              if (e.target.value !== res.id) e.target.value = res.id;
-              steamMsg.textContent = `✔ Verified 17-digit Steam64 ID: ${res.id}`;
-              steamMsg.style.color = "var(--success)";
-            } else if (res.type === "friend_code_converted") {
-              if (e.target.value !== res.id) e.target.value = res.id;
-              steamMsg.textContent = `✔ Converted Friend Code to Steam64: ${res.id}`;
-              steamMsg.style.color = "var(--success)";
-            } else if (res.type === "vanity") {
-              steamMsg.textContent = `ℹ Custom Vanity ID detected ("${res.id}"). Will be resolved to Steam64 via Google Apps Script.`;
-              steamMsg.style.color = "var(--accent-cyan)";
-            }
-          } else if (e.target.value.length > 0) {
-            steamMsg.textContent = "Checking Steam profile format...";
-            steamMsg.style.color = "var(--text-muted)";
-          } else {
+          let val = e.target.value.trim();
+          if (!val) {
             steamMsg.textContent = "";
+            return;
+          }
+
+          // Extract 17-digit numeric ID if inside a URL: steamcommunity.com/profiles/7656...
+          const urlMatch = val.match(/steamcommunity\.com\/profiles\/(\d{17})/i);
+          if (urlMatch && urlMatch[1]) {
+            val = urlMatch[1];
+            e.target.value = val;
+          }
+
+          // Direct 17-digit Steam64 verification
+          if (/^\d{17}$/.test(val)) {
+            steamMsg.textContent = `✔ Verified 17-digit Steam64 ID: ${val}`;
+            steamMsg.style.color = "var(--success)";
+
+            // Automatically compute and sync the Friend Code field
+            const calculatedFriendCode = steam64ToFriendCode(val);
+            if (calculatedFriendCode && steamFriendInput) {
+              steamFriendInput.value = calculatedFriendCode;
+              if (steamFriendMsg) {
+                steamFriendMsg.textContent = `✔ Synced Friend Code: ${calculatedFriendCode}`;
+                steamFriendMsg.style.color = "var(--success)";
+              }
+            }
+          } else if (/steamcommunity\.com\/id\/([a-zA-Z0-9_-]+)/i.test(val) || /^[a-zA-Z0-9_-]{3,32}$/.test(val)) {
+            steamMsg.textContent = `ℹ Custom Vanity ID detected ("${val}"). Will be resolved to Steam64 via backend.`;
+            steamMsg.style.color = "var(--accent-cyan)";
+          } else {
+            steamMsg.textContent = "Checking Steam ID format...";
+            steamMsg.style.color = "var(--text-muted)";
           }
         });
       }
 
-      // Section 4: 60-Second Auto-Hide Timers for Sensitive Fields (Lines 741-800)
+      // Steam Friend Code Input Handler & Cross-Filler
+      if (steamFriendInput) {
+        steamFriendInput.addEventListener("input", (e) => {
+          const val = e.target.value.trim();
+          if (!val) {
+            if (steamFriendMsg) steamFriendMsg.textContent = "";
+            return;
+          }
+
+          if (/^\d{4,12}$/.test(val)) {
+            const calculatedSteam64 = friendCodeToSteam64(val);
+            if (calculatedSteam64 && steamInput) {
+              steamInput.value = calculatedSteam64;
+              if (steamMsg) {
+                steamMsg.textContent = `✔ Calculated Steam64 ID: ${calculatedSteam64}`;
+                steamMsg.style.color = "var(--success)";
+              }
+            }
+            if (steamFriendMsg) {
+              steamFriendMsg.textContent = `✔ Valid Friend Code: ${val}`;
+              steamFriendMsg.style.color = "var(--success)";
+            }
+          } else {
+            if (steamFriendMsg) {
+              steamFriendMsg.textContent = "Enter numeric Friend Code (e.g. 1578075242)";
+              steamFriendMsg.style.color = "var(--text-muted)";
+            }
+          }
+        });
+      }
+
+      // Section 4: 60-Second Auto-Hide Timers for Sensitive Fields (Lines 761-820)
       function setupSensitiveFieldToggle(btnId, inputId, timerVarRef, setTimerFn) {
         const btn = document.getElementById(btnId);
         const input = document.getElementById(inputId);
@@ -1028,7 +1079,7 @@
         (t) => { npssoTimer = t; }
       );
 
-      // Section 5: Navbar Sorting Engine & Favicon Synchronization (Lines 801-920)
+      // Section 5: Navbar Sorting Engine & Favicon Synchronization (Lines 821-940)
       function initRTDBMenu() {
         const utmRef = rtdb.ref("/utm_links");
         utmRef.on("value", (snapshot) => {
@@ -1166,7 +1217,7 @@
         });
       }
 
-      // Section 6: Auth State Observer & Dual Provisioning Engine (Lines 921-1010)
+      // Section 6: Auth State Observer & Dual Provisioning Engine (Lines 941-1030)
       auth.onAuthStateChanged(async (user) => {
         const guestPrompt = document.getElementById("guestSignInPrompt");
         const authSection = document.getElementById("authenticatedSection");
@@ -1246,7 +1297,7 @@
         }
       }
 
-      // Section 7: Profile Sync & DecAPI / Steam Avatar Handlers (Lines 1011-1120)
+      // Section 7: Profile Sync & DecAPI / Steam Avatar Handlers (Lines 1031-1145)
       function loadRTDBUserProfile(emailKey, friendCode) {
         const userRef = rtdb.ref(`/users/${emailKey}`);
         userRef.on("value", async (snapshot) => {
@@ -1314,21 +1365,33 @@
             npssoMsg.textContent = "";
           }
 
-          // Populate Steam ID
+          // Populate Steam ID & Steam Friend Code
           const storedSteamId = data.steam_id || "";
+          let storedFriendCode = data.steam_friend_code || "";
+
+          if (storedSteamId && !storedFriendCode) {
+            storedFriendCode = steam64ToFriendCode(storedSteamId);
+          }
+
           document.getElementById("steamIdInput").value = storedSteamId;
           document.getElementById("steamIdScope").value = data.steam_id_scope || "public";
-          if (storedSteamId) {
-            const checkSteam = sanitizeSteamInput(storedSteamId);
-            if (checkSteam.type === "steam64") {
-              steamMsg.textContent = `✔ Verified 17-digit Steam64 ID: ${checkSteam.id}`;
-              steamMsg.style.color = "var(--success)";
-            } else {
-              steamMsg.textContent = `Stored: ${storedSteamId}`;
-              steamMsg.style.color = "var(--accent-cyan)";
-            }
+          document.getElementById("steamFriendCodeInput").value = storedFriendCode;
+          document.getElementById("steamFriendCodeScope").value = data.steam_friend_code_scope || "public";
+
+          if (storedSteamId && /^\d{17}$/.test(storedSteamId)) {
+            steamMsg.textContent = `✔ Verified 17-digit Steam64 ID: ${storedSteamId}`;
+            steamMsg.style.color = "var(--success)";
           } else {
             steamMsg.textContent = "";
+          }
+
+          if (storedFriendCode && /^\d{4,12}$/.test(storedFriendCode)) {
+            if (steamFriendMsg) {
+              steamFriendMsg.textContent = `✔ Active Friend Code: ${storedFriendCode}`;
+              steamFriendMsg.style.color = "var(--success)";
+            }
+          } else {
+            if (steamFriendMsg) steamFriendMsg.textContent = "";
           }
 
           document.getElementById("xboxGamertagInput").value = data.xbox_gamertag || "";
@@ -1375,7 +1438,7 @@
         }
       }
 
-      // Section 8: Silent Save Operations (Lines 1121-1250)
+      // Section 8: Silent Save Operations (Lines 1146-1285)
       document.getElementById("copyFriendCodeBtn").addEventListener("click", () => {
         const code = document.getElementById("friendCodeDisplay").textContent.trim();
         if (!code || code === "Loading...") return;
@@ -1429,10 +1492,9 @@
           }
         } else if (avatarSource === "steam") {
           const rawSteam = document.getElementById("steamIdInput").value.trim();
-          const parsedSteam = sanitizeSteamInput(rawSteam);
-          if (parsedSteam.isValid && parsedSteam.type === "steam64") {
+          if (/^\d{17}$/.test(rawSteam)) {
             try {
-              const steamSnap = await rtdb.ref(`/steam_users/${parsedSteam.id}/profile/avatar`).once("value");
+              const steamSnap = await rtdb.ref(`/steam_users/${rawSteam}/profile/avatar`).once("value");
               if (steamSnap.exists() && steamSnap.val()) {
                 avatarUrl = steamSnap.val();
               }
@@ -1465,7 +1527,7 @@
         }
       });
 
-      // Silent Save: Gaming Handles, Sanitized NPSSO & Sanitized Steam64 ID
+      // Silent Save: Gaming Handles, Sanitized NPSSO & Dual Steam Identifiers
       document.getElementById("saveGamingProfilesBtn").addEventListener("click", async () => {
         if (!currentUser) return;
         const primaryEmail = getResolvedPrimaryEmail(currentUser);
@@ -1475,9 +1537,15 @@
         const rawNpsso = document.getElementById("psnNpssoInput").value;
         const sanitizedNpsso = sanitizeNpssoInput(rawNpsso);
 
-        const rawSteam = document.getElementById("steamIdInput").value;
-        const sanitizedSteam = sanitizeSteamInput(rawSteam);
-        const finalSteamValue = sanitizedSteam.isValid ? sanitizedSteam.id : rawSteam.trim();
+        let finalSteamId = document.getElementById("steamIdInput").value.trim();
+        let finalSteamFriendCode = document.getElementById("steamFriendCodeInput").value.trim();
+
+        // Cross-calculate if one was filled and the other was left empty
+        if (finalSteamId && /^\d{17}$/.test(finalSteamId) && !finalSteamFriendCode) {
+          finalSteamFriendCode = steam64ToFriendCode(finalSteamId);
+        } else if (finalSteamFriendCode && /^\d{4,12}$/.test(finalSteamFriendCode) && !finalSteamId) {
+          finalSteamId = friendCodeToSteam64(finalSteamFriendCode);
+        }
 
         const publicPayload = {
           psn_username: document.getElementById("psnUsernameInput").value.trim(),
@@ -1486,8 +1554,10 @@
           psn_account_id_scope: "private",
           psn_npsso_scope: "private",
           psn_npsso_valid: sanitizedNpsso.isValid,
-          steam_id: finalSteamValue,
+          steam_id: finalSteamId,
           steam_id_scope: document.getElementById("steamIdScope").value,
+          steam_friend_code: finalSteamFriendCode,
+          steam_friend_code_scope: document.getElementById("steamFriendCodeScope").value,
           xbox_gamertag: document.getElementById("xboxGamertagInput").value.trim(),
           xbox_gamertag_scope: document.getElementById("xboxGamertagScope").value,
           twitch_username: twitchUser,
@@ -1516,7 +1586,7 @@
         }
       });
 
-      // Section 9: Personal Links Management (Capped at 5 Links) (Lines 1251-1325)
+      // Section 9: Personal Links Management (Capped at 5 Links) (Lines 1286-1360)
       let currentLinksCount = 0;
 
       document.getElementById("addUserLinkBtn").addEventListener("click", async () => {
@@ -1602,7 +1672,7 @@
         }
       };
 
-      // Section 10: Companions Roster & Dual Linking (Lines 1326-1410)
+      // Section 10: Companions Roster & Dual Linking (Lines 1361-1445)
       document.getElementById("addFriendBtn").addEventListener("click", async () => {
         if (!currentUser) return;
         const code = document.getElementById("friendCodeInput").value.trim().toUpperCase();
@@ -1666,7 +1736,7 @@
         });
       }
 
-      // Section 11: The 4 Protected Actions with Confirmation Dialogs (Lines 1411-1485)
+      // Section 11: The 4 Protected Actions with Confirmation Dialogs (Lines 1446-1520)
       window.removeCompanion = async (code) => {
         if (!currentUser) return;
         const confirmRemove = window.confirm("Are you sure you want to remove this companion from your roster?");
@@ -1723,7 +1793,7 @@
         }
       });
 
-      // Section 12: Provider Identification & Account Handlers (Lines 1486-1575)
+      // Section 12: Provider Identification & Account Handlers (Lines 1521-1610)
       function renderProvidersUI(user) {
         const providers = user.providerData.map(p => p.providerId);
         const googleText = document.getElementById("googleStatusText");
