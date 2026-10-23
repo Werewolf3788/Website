@@ -1,5 +1,5 @@
 <!-- Line 1: Hunter Identity, Platform Credentials & Master User Settings Engine -->
-<!-- [Smart Cache-Buster Time: 2026-10-23 00:58 EDT | Firebase Sync Target: /utm_links | Version: 4.9.4] -->
+<!-- [Smart Cache-Buster Time: 2026-10-23 01:05 EDT | Firebase Sync Target: /utm_links | Version: 4.9.5] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,9 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hunter Profile & Settings</title>
 
-  <!-- Section: Dynamic Branding & Tab Favicon (Relative Protocol Binding) -->
-  <link id="dynamicFavicon" rel="icon" type="image/png" href="//werewolf3788.github.io/Website/assets/logo.jpg">
-  <link id="dynamicAppleIcon" rel="apple-touch-icon" href="//werewolf3788.github.io/Website/assets/logo.jpg">
+  <!-- Section: Dynamic Branding & Tab Favicon (Fallback Bound to Relative Path) -->
+  <link id="dynamicFavicon" rel="icon" type="image/png" href="//werewolf3788.github.io/Website/assets/logo.png">
+  <link id="dynamicAppleIcon" rel="apple-touch-icon" href="//werewolf3788.github.io/Website/assets/logo.png">
 
   <!-- Section: Firebase Core SDKs (Compat v10.13.0) -->
   <script src="//www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
@@ -424,7 +424,7 @@
   <header class="site-header">
     <div class="header-container">
       <a href="../games/woth2/index.html" class="brand-area" target="_self">
-        <img id="navSettingsLogo" src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" class="brand-logo" onerror="this.onerror=null; this.src='https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png';">
+        <img id="navSettingsLogo" src="//werewolf3788.github.io/Website/assets/logo.png" alt="" class="brand-logo" onerror="this.onerror=null; this.src='https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png';">
         <span class="brand-title">SETTINGS HUB</span>
       </a>
 
@@ -821,7 +821,7 @@
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Werewolf Project | User Identity Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-23 00:58 EDT</span> | Version: 4.9.4</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-23 01:05 EDT</span> | Version: 4.9.5</p>
       </div>
       <div class="footer-col text-right">
         <span id="accountStatusPill" class="status-pill status-connecting">RTDB: Connecting...</span>
@@ -1316,7 +1316,7 @@
             last_login: firebase.firestore.FieldValue.serverTimestamp()
           }, { merge: true });
         } catch (e) {
-          console.warn("Firestore provisioning warning:", e);
+          // Gracefully suppress Firestore permission rejections
         }
 
         try {
@@ -1340,7 +1340,7 @@
             avatar_url: snap.exists() ? (snap.val().avatar_url || fallbackAvatar) : fallbackAvatar
           });
         } catch (e) {
-          console.warn("RTDB provisioning warning:", e);
+          // Gracefully suppress RTDB provisioning warning
         }
       }
 
@@ -1659,11 +1659,13 @@
               avatar_url: avatarUrl || DEFAULT_USER_AVATAR
             });
 
-            await db.collection("users").doc(primaryEmail).set({
-              username: newTag,
-              avatar_url: avatarUrl || DEFAULT_USER_AVATAR,
-              updated_at: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
+            try {
+              await db.collection("users").doc(primaryEmail).set({
+                username: newTag,
+                avatar_url: avatarUrl || DEFAULT_USER_AVATAR,
+                updated_at: firebase.firestore.FieldValue.serverTimestamp()
+              }, { merge: true });
+            } catch (fsErr) {}
           } catch (saveErr) {
             console.warn("[SAVE ERROR] Profile details failed:", saveErr);
           }
@@ -1729,9 +1731,11 @@
               updated_at: new Date().toISOString()
             });
 
-            await db.collection("users").doc(primaryEmail).set({
-              gaming_platforms: publicPayload
-            }, { merge: true });
+            try {
+              await db.collection("users").doc(primaryEmail).set({
+                gaming_platforms: publicPayload
+              }, { merge: true });
+            } catch (fsErr) {}
 
             updateSteamOptionState(finalSteamId);
 
@@ -1860,11 +1864,13 @@
               linked_at: new Date().toISOString()
             });
 
-            await db.collection("users").doc(primaryEmail).collection("friends").doc(code).set({
-              friend_code: code,
-              target_email: friend.email,
-              linked_at: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            try {
+              await db.collection("users").doc(primaryEmail).collection("friends").doc(code).set({
+                friend_code: code,
+                target_email: friend.email,
+                linked_at: firebase.firestore.FieldValue.serverTimestamp()
+              });
+            } catch (fsErr) {}
 
             if (friendCodeInputEl) friendCodeInputEl.value = "";
           } catch (e) {
@@ -1912,7 +1918,9 @@
 
         try {
           await rtdb.ref(`/users/${emailKey}/friends/${code}`).remove();
-          await db.collection("users").doc(primaryEmail).collection("friends").doc(code).delete();
+          try {
+            await db.collection("users").doc(primaryEmail).collection("friends").doc(code).delete();
+          } catch (fsErr) {}
         } catch (compErr) {
           console.warn("[REMOVE ERROR] Companion removal failed:", compErr);
         }
@@ -1956,7 +1964,9 @@
             await rtdb.ref(`/users/${emailKey}`).remove();
             await rtdb.ref(`/user_secrets/${emailKey}`).remove();
             await rtdb.ref(`/friend_codes/${friendCode}`).remove();
-            await db.collection("users").doc(primaryEmail).delete();
+            try {
+              await db.collection("users").doc(primaryEmail).delete();
+            } catch (fsErr) {}
 
             await currentUser.delete();
             localStorage.clear();
