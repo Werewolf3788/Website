@@ -1,5 +1,5 @@
 <!-- Line 1: Hunter Identity, Platform Credentials & Master User Settings Engine -->
-<!-- [Smart Cache-Buster Time: 2026-10-23 00:46 EDT | Firebase Sync Target: /utm_links | Version: 4.9.3] -->
+<!-- [Smart Cache-Buster Time: 2026-10-23 00:58 EDT | Firebase Sync Target: /utm_links | Version: 4.9.4] -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -424,7 +424,7 @@
   <header class="site-header">
     <div class="header-container">
       <a href="../games/woth2/index.html" class="brand-area" target="_self">
-        <img id="navSettingsLogo" src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" class="brand-logo">
+        <img id="navSettingsLogo" src="//werewolf3788.github.io/Website/assets/logo.jpg" alt="" class="brand-logo" onerror="this.onerror=null; this.src='https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png';">
         <span class="brand-title">SETTINGS HUB</span>
       </a>
 
@@ -437,7 +437,7 @@
       <div class="auth-toolbar">
         <button id="authModalBtn" class="btn btn-primary btn-sm">Log In</button>
         <div id="userProfileBadge" class="user-profile-badge hidden">
-          <img id="headerUserAvatar" src="https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png" alt="" class="header-avatar">
+          <img id="headerUserAvatar" src="https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png" alt="" class="header-avatar" onerror="this.onerror=null; this.src='https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png';">
           <span id="headerUserTag" class="header-user-tag">Hunter</span>
           <button id="logoutBtn" class="btn btn-secondary btn-sm">Log Out</button>
         </div>
@@ -473,7 +473,7 @@
       <!-- Card 1: Profile & Identity (Electric Blue) -->
       <section class="card card-profile">
         <div class="profile-card-header">
-          <img id="avatarPreview" src="https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png" alt="" class="avatar-preview-lg">
+          <img id="avatarPreview" src="https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png" alt="" class="avatar-preview-lg" onerror="this.onerror=null; this.src='https://digitalhealthskills.com/wp-content/uploads/2022/11/3da39-no-user-image-icon-27.png';">
           <div>
             <div style="display:flex; align-items:center; gap:10px;">
               <h2 id="displayGamerTag">Hunter</h2>
@@ -821,7 +821,7 @@
     <div class="footer-container">
       <div class="footer-col">
         <p>&copy; 2026 Werewolf Project | User Identity Protocol</p>
-        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-23 00:46 EDT</span> | Version: 4.9.3</p>
+        <p class="timestamp-label">Build / Cache Stamp: <span id="nyBuildTimestamp">2026-10-23 00:58 EDT</span> | Version: 4.9.4</p>
       </div>
       <div class="footer-col text-right">
         <span id="accountStatusPill" class="status-pill status-connecting">RTDB: Connecting...</span>
@@ -914,19 +914,25 @@
         npssoInput.addEventListener("input", (e) => {
           const res = sanitizeNpssoInput(e.target.value);
           if (res.isExpired) {
-            npssoMsg.textContent = "⚠️ Session Expired: Please re-login to PlayStation in your browser, visit the link, and paste your refreshed code.";
-            npssoMsg.style.color = "var(--accent-gold)";
+            if (npssoMsg) {
+              npssoMsg.textContent = "⚠️ Session Expired: Please re-login to PlayStation in your browser, visit the link, and paste your refreshed code.";
+              npssoMsg.style.color = "var(--accent-gold)";
+            }
           } else if (res.isValid && res.token.length === 64) {
             if (e.target.value !== res.token) {
               e.target.value = res.token;
             }
-            npssoMsg.textContent = "✔ 64-Character NPSSO Key Verified (Valid Session)";
-            npssoMsg.style.color = "var(--success)";
+            if (npssoMsg) {
+              npssoMsg.textContent = "✔ 64-Character NPSSO Key Verified (Valid Session)";
+              npssoMsg.style.color = "var(--success)";
+            }
           } else if (e.target.value.length > 0) {
-            npssoMsg.textContent = "Checking token format...";
-            npssoMsg.style.color = "var(--text-muted)";
+            if (npssoMsg) {
+              npssoMsg.textContent = "Checking token format...";
+              npssoMsg.style.color = "var(--text-muted)";
+            }
           } else {
-            npssoMsg.textContent = "";
+            if (npssoMsg) npssoMsg.textContent = "";
           }
         });
       }
@@ -987,7 +993,7 @@
         steamInput.addEventListener("input", (e) => {
           let val = e.target.value.trim();
           if (!val) {
-            steamMsg.textContent = "";
+            if (steamMsg) steamMsg.textContent = "";
             updateSteamOptionState("");
             return;
           }
@@ -999,8 +1005,10 @@
           }
 
           if (/^\d{17}$/.test(val)) {
-            steamMsg.textContent = `✔ Verified 17-digit Steam64 ID: ${val}`;
-            steamMsg.style.color = "var(--success)";
+            if (steamMsg) {
+              steamMsg.textContent = `✔ Verified 17-digit Steam64 ID: ${val}`;
+              steamMsg.style.color = "var(--success)";
+            }
             updateSteamOptionState(val);
 
             const calculatedFriendCode = steam64ToFriendCode(val);
@@ -1012,12 +1020,16 @@
               }
             }
           } else if (/steamcommunity\.com\/id\/([a-zA-Z0-9_-]+)/i.test(val) || /^[a-zA-Z0-9_-]{3,32}$/.test(val)) {
-            steamMsg.textContent = `ℹ Custom Vanity ID detected ("${val}"). Will be resolved to Steam64 via backend.`;
-            steamMsg.style.color = "var(--accent-cyan)";
+            if (steamMsg) {
+              steamMsg.textContent = `ℹ Custom Vanity ID detected ("${val}"). Will be resolved to Steam64 via backend.`;
+              steamMsg.style.color = "var(--accent-cyan)";
+            }
             updateSteamOptionState("");
           } else {
-            steamMsg.textContent = "Checking Steam ID format...";
-            steamMsg.style.color = "var(--text-muted)";
+            if (steamMsg) {
+              steamMsg.textContent = "Checking Steam ID format...";
+              steamMsg.style.color = "var(--text-muted)";
+            }
             updateSteamOptionState("");
           }
         });
@@ -1332,7 +1344,7 @@
         }
       }
 
-      // Section 7: Profile Sync & DecAPI / Steam Avatar Handlers (Lines 1066-1195)
+      // Section 7: Profile Sync & DecAPI / Steam Avatar Handlers (Lines 1066-1215)
       function loadRTDBUserProfile(emailKey, friendCode) {
         const userRef = rtdb.ref(`/users/${emailKey}`);
         userRef.on("value", async (snapshot) => {
@@ -1346,10 +1358,17 @@
           const avatarSource = data.avatar_source || "google";
           let avatarUrl = data.avatar_url || DEFAULT_USER_AVATAR;
 
-          document.getElementById("usernameInput").value = gamerTag;
-          document.getElementById("avatarUrlInput").value = (avatarUrl === DEFAULT_USER_AVATAR) ? "" : avatarUrl;
-          document.getElementById("displayGamerTag").textContent = gamerTag;
-          document.getElementById("headerUserTag").textContent = gamerTag;
+          const usernameInputEl = document.getElementById("usernameInput");
+          if (usernameInputEl) usernameInputEl.value = gamerTag;
+
+          const avatarUrlInputEl = document.getElementById("avatarUrlInput");
+          if (avatarUrlInputEl) avatarUrlInputEl.value = (avatarUrl === DEFAULT_USER_AVATAR) ? "" : avatarUrl;
+
+          const displayGamerTagEl = document.getElementById("displayGamerTag");
+          if (displayGamerTagEl) displayGamerTagEl.textContent = gamerTag;
+
+          const headerUserTagEl = document.getElementById("headerUserTag");
+          if (headerUserTagEl) headerUserTagEl.textContent = gamerTag;
 
           // Core Pack Badge Detection (WildHorse_Spirit or OneLIVIDMAN)
           const psnTag = (data.psn_username || gamerTag).toLowerCase().replace(/[^a-z0-9_]/g, '');
@@ -1362,7 +1381,7 @@
 
           toggleCustomAvatarField(avatarSource);
 
-          // Populate Steam ID & Steam Friend Code
+          // Populate Steam ID & Steam Friend Code with Strict DOM Verification
           const storedSteamId = data.steam_id || "";
           let storedFriendCode = data.steam_friend_code || "";
 
@@ -1370,20 +1389,28 @@
             storedFriendCode = steam64ToFriendCode(storedSteamId);
           }
 
-          document.getElementById("steamIdInput").value = storedSteamId;
-          document.getElementById("steamIdScope").value = "private";
-          document.getElementById("steamFriendCodeInput").value = storedFriendCode;
-          document.getElementById("steamFriendCodeScope").value = data.steam_friend_code_scope || "public";
+          const steamIdInputEl = document.getElementById("steamIdInput");
+          if (steamIdInputEl) steamIdInputEl.value = storedSteamId;
+
+          const steamFriendCodeInputEl = document.getElementById("steamFriendCodeInput");
+          if (steamFriendCodeInputEl) steamFriendCodeInputEl.value = storedFriendCode;
+
+          const steamFriendCodeScopeEl = document.getElementById("steamFriendCodeScope");
+          if (steamFriendCodeScopeEl) steamFriendCodeScopeEl.value = data.steam_friend_code_scope || "public";
 
           // Update disabled/faded state of the Steam Avatar option in select
           updateSteamOptionState(storedSteamId);
-          document.getElementById("avatarSourceSelect").value = avatarSource;
+
+          const avatarSourceSelectEl = document.getElementById("avatarSourceSelect");
+          if (avatarSourceSelectEl) avatarSourceSelectEl.value = avatarSource;
 
           if (storedSteamId && /^\d{17}$/.test(storedSteamId)) {
-            steamMsg.textContent = `✔ Verified 17-digit Steam64 ID: ${storedSteamId}`;
-            steamMsg.style.color = "var(--success)";
+            if (steamMsg) {
+              steamMsg.textContent = `✔ Verified 17-digit Steam64 ID: ${storedSteamId}`;
+              steamMsg.style.color = "var(--success)";
+            }
           } else {
-            steamMsg.textContent = "";
+            if (steamMsg) steamMsg.textContent = "";
           }
 
           if (storedFriendCode && /^\d{4,12}$/.test(storedFriendCode)) {
@@ -1409,35 +1436,51 @@
             }
           }
 
-          document.getElementById("avatarPreview").src = avatarUrl;
-          document.getElementById("headerUserAvatar").src = avatarUrl;
+          const avatarPreviewEl = document.getElementById("avatarPreview");
+          if (avatarPreviewEl) avatarPreviewEl.src = avatarUrl;
 
-          // Populate Gaming Handles & Visibility Scopes
-          document.getElementById("psnUsernameInput").value = data.psn_username || "";
-          document.getElementById("psnUsernameScope").value = data.psn_username_scope || "public";
-          document.getElementById("psnAccountIdInput").value = data.psn_account_id || "";
+          const headerUserAvatarEl = document.getElementById("headerUserAvatar");
+          if (headerUserAvatarEl) headerUserAvatarEl.src = avatarUrl;
+
+          // Populate Gaming Handles & Visibility Scopes with Strict DOM Verification
+          const psnUsernameInputEl = document.getElementById("psnUsernameInput");
+          if (psnUsernameInputEl) psnUsernameInputEl.value = data.psn_username || "";
+
+          const psnUsernameScopeEl = document.getElementById("psnUsernameScope");
+          if (psnUsernameScopeEl) psnUsernameScopeEl.value = data.psn_username_scope || "public";
+
+          const psnAccountIdInputEl = document.getElementById("psnAccountIdInput");
+          if (psnAccountIdInputEl) psnAccountIdInputEl.value = data.psn_account_id || "";
 
           // Populate NPSSO from Private Vault or Fallback Node
           const privateSecretSnap = await rtdb.ref(`/user_secrets/${emailKey}/psn_npsso`).once("value").catch(() => null);
           const retrievedToken = (privateSecretSnap && privateSecretSnap.exists()) ? privateSecretSnap.val() : (data.psn_npsso || "");
           
-          document.getElementById("psnNpssoInput").value = retrievedToken;
+          if (npssoInput) npssoInput.value = retrievedToken;
 
-          if (retrievedToken && retrievedToken.length === 64) {
-            npssoMsg.textContent = "✔ 64-Character NPSSO Key Stored (Ready for Sync)";
-            npssoMsg.style.color = "var(--success)";
-          } else if (retrievedToken && retrievedToken.length > 0) {
-            npssoMsg.textContent = "Token stored (Partial or non-standard format)";
-            npssoMsg.style.color = "var(--text-muted)";
-          } else {
-            npssoMsg.textContent = "";
+          if (npssoMsg) {
+            if (retrievedToken && retrievedToken.length === 64) {
+              npssoMsg.textContent = "✔ 64-Character NPSSO Key Stored (Ready for Sync)";
+              npssoMsg.style.color = "var(--success)";
+            } else if (retrievedToken && retrievedToken.length > 0) {
+              npssoMsg.textContent = "Token stored (Partial or non-standard format)";
+              npssoMsg.style.color = "var(--text-muted)";
+            } else {
+              npssoMsg.textContent = "";
+            }
           }
 
-          document.getElementById("xboxGamertagInput").value = data.xbox_gamertag || "";
-          document.getElementById("xboxGamertagScope").value = data.xbox_gamertag_scope || "public";
+          const xboxGamertagInputEl = document.getElementById("xboxGamertagInput");
+          if (xboxGamertagInputEl) xboxGamertagInputEl.value = data.xbox_gamertag || "";
 
-          document.getElementById("twitchUsernameInput").value = data.twitch_username || "";
-          document.getElementById("twitchScope").value = data.twitch_scope || "public";
+          const xboxGamertagScopeEl = document.getElementById("xboxGamertagScope");
+          if (xboxGamertagScopeEl) xboxGamertagScopeEl.value = data.xbox_gamertag_scope || "public";
+
+          const twitchUsernameInputEl = document.getElementById("twitchUsernameInput");
+          if (twitchUsernameInputEl) twitchUsernameInputEl.value = data.twitch_username || "";
+
+          const twitchScopeEl = document.getElementById("twitchScope");
+          if (twitchScopeEl) twitchScopeEl.value = data.twitch_scope || "public";
 
           if (data.twitch_username) {
             checkTwitchLiveGame(data.twitch_username);
@@ -1460,51 +1503,57 @@
       }
 
       // Immediate Live Avatar Swap When Changing Dropdown
-      document.getElementById("avatarSourceSelect").addEventListener("change", async (e) => {
-        const source = e.target.value;
-        toggleCustomAvatarField(source);
+      const avatarSourceSelectEl = document.getElementById("avatarSourceSelect");
+      if (avatarSourceSelectEl) {
+        avatarSourceSelectEl.addEventListener("change", async (e) => {
+          const source = e.target.value;
+          toggleCustomAvatarField(source);
 
-        const avatarPreview = document.getElementById("avatarPreview");
-        const headerAvatar = document.getElementById("headerUserAvatar");
+          const avatarPreview = document.getElementById("avatarPreview");
+          const headerAvatar = document.getElementById("headerUserAvatar");
 
-        if (source === "google" && currentUser) {
-          const gImg = currentUser.photoURL || DEFAULT_USER_AVATAR;
-          if (avatarPreview) avatarPreview.src = gImg;
-          if (headerAvatar) headerAvatar.src = gImg;
-        } else if (source === "twitch") {
-          const twitchUser = document.getElementById("twitchUsernameInput").value.trim();
-          if (twitchUser) {
-            try {
-              const res = await fetch(`https://decapi.me/twitch/avatar/${encodeURIComponent(twitchUser)}`);
-              if (res.ok) {
-                const url = (await res.text()).trim();
-                if (url && url.startsWith("http")) {
-                  if (avatarPreview) avatarPreview.src = url;
-                  if (headerAvatar) headerAvatar.src = url;
+          if (source === "google" && currentUser) {
+            const gImg = currentUser.photoURL || DEFAULT_USER_AVATAR;
+            if (avatarPreview) avatarPreview.src = gImg;
+            if (headerAvatar) headerAvatar.src = gImg;
+          } else if (source === "twitch") {
+            const twitchUserInput = document.getElementById("twitchUsernameInput");
+            const twitchUser = twitchUserInput ? twitchUserInput.value.trim() : "";
+            if (twitchUser) {
+              try {
+                const res = await fetch(`https://decapi.me/twitch/avatar/${encodeURIComponent(twitchUser)}`);
+                if (res.ok) {
+                  const url = (await res.text()).trim();
+                  if (url && url.startsWith("http")) {
+                    if (avatarPreview) avatarPreview.src = url;
+                    if (headerAvatar) headerAvatar.src = url;
+                  }
                 }
-              }
-            } catch (err) {}
+              } catch (err) {}
+            }
+          } else if (source === "steam") {
+            const steamInputEl = document.getElementById("steamIdInput");
+            const currentSteamId = steamInputEl ? steamInputEl.value.trim() : "";
+            if (/^\d{17}$/.test(currentSteamId)) {
+              try {
+                const steamSnap = await rtdb.ref(`/steam_users/${currentSteamId}/profile/avatar`).once("value");
+                if (steamSnap.exists() && steamSnap.val()) {
+                  const steamImg = steamSnap.val();
+                  if (avatarPreview) avatarPreview.src = steamImg;
+                  if (headerAvatar) headerAvatar.src = steamImg;
+                }
+              } catch (err) {}
+            }
+          } else if (source === "custom") {
+            const customUrlInput = document.getElementById("avatarUrlInput");
+            const customUrl = customUrlInput ? customUrlInput.value.trim() : "";
+            if (customUrl) {
+              if (avatarPreview) avatarPreview.src = customUrl;
+              if (headerAvatar) headerAvatar.src = customUrl;
+            }
           }
-        } else if (source === "steam") {
-          const currentSteamId = document.getElementById("steamIdInput").value.trim();
-          if (/^\d{17}$/.test(currentSteamId)) {
-            try {
-              const steamSnap = await rtdb.ref(`/steam_users/${currentSteamId}/profile/avatar`).once("value");
-              if (steamSnap.exists() && steamSnap.val()) {
-                const steamImg = steamSnap.val();
-                if (avatarPreview) avatarPreview.src = steamImg;
-                if (headerAvatar) headerAvatar.src = steamImg;
-              }
-            } catch (err) {}
-          }
-        } else if (source === "custom") {
-          const customUrl = document.getElementById("avatarUrlInput").value.trim();
-          if (customUrl) {
-            if (avatarPreview) avatarPreview.src = customUrl;
-            if (headerAvatar) headerAvatar.src = customUrl;
-          }
-        }
-      });
+        });
+      }
 
       async function checkTwitchLiveGame(twitchUser) {
         const tag = document.getElementById("twitchLiveGameTag");
@@ -1520,174 +1569,206 @@
         }
       }
 
-      // Section 8: Silent Save Operations (Lines 1196-1340)
-      document.getElementById("copyFriendCodeBtn").addEventListener("click", () => {
-        const code = document.getElementById("friendCodeDisplay").textContent.trim();
-        if (!code || code === "Loading...") return;
+      // Section 8: Silent Save Operations (Lines 1216-1365)
+      const copyFriendCodeBtnEl = document.getElementById("copyFriendCodeBtn");
+      if (copyFriendCodeBtnEl) {
+        copyFriendCodeBtnEl.addEventListener("click", () => {
+          const friendCodeDisplayEl = document.getElementById("friendCodeDisplay");
+          const code = friendCodeDisplayEl ? friendCodeDisplayEl.textContent.trim() : "";
+          if (!code || code === "Loading...") return;
 
-        navigator.clipboard.writeText(code).then(() => {
-          const fb = document.getElementById("copyFeedback");
-          if (fb) {
-            fb.textContent = "Copied!";
-            setTimeout(() => { fb.textContent = ""; }, 2000);
-          }
-        }).catch(() => {
-          const temp = document.createElement("input");
-          temp.value = code;
-          document.body.appendChild(temp);
-          temp.select();
-          document.execCommand("copy");
-          document.body.removeChild(temp);
-          const fb = document.getElementById("copyFeedback");
-          if (fb) {
-            fb.textContent = "Copied!";
-            setTimeout(() => { fb.textContent = ""; }, 2000);
-          }
+          navigator.clipboard.writeText(code).then(() => {
+            const fb = document.getElementById("copyFeedback");
+            if (fb) {
+              fb.textContent = "Copied!";
+              setTimeout(() => { fb.textContent = ""; }, 2000);
+            }
+          }).catch(() => {
+            const temp = document.createElement("input");
+            temp.value = code;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand("copy");
+            document.body.removeChild(temp);
+            const fb = document.getElementById("copyFeedback");
+            if (fb) {
+              fb.textContent = "Copied!";
+              setTimeout(() => { fb.textContent = ""; }, 2000);
+            }
+          });
         });
-      });
+      }
 
       // Silent Save: Profile Details & Multi-Platform Avatar Resolution
-      document.getElementById("saveProfileBtn").addEventListener("click", async () => {
-        if (!currentUser) return;
-        const primaryEmail = getResolvedPrimaryEmail(currentUser);
-        const emailKey = getEmailKey(primaryEmail);
-        const newTag = document.getElementById("usernameInput").value.trim() || "Hunter";
-        const avatarSource = document.getElementById("avatarSourceSelect").value;
-        let avatarUrl = document.getElementById("avatarUrlInput").value.trim();
+      const saveProfileBtnEl = document.getElementById("saveProfileBtn");
+      if (saveProfileBtnEl) {
+        saveProfileBtnEl.addEventListener("click", async () => {
+          if (!currentUser) return;
+          const primaryEmail = getResolvedPrimaryEmail(currentUser);
+          const emailKey = getEmailKey(primaryEmail);
+          const usernameInputEl = document.getElementById("usernameInput");
+          const newTag = (usernameInputEl && usernameInputEl.value.trim()) || "Hunter";
+          const avatarSourceSelectEl = document.getElementById("avatarSourceSelect");
+          const avatarSource = (avatarSourceSelectEl && avatarSourceSelectEl.value) || "google";
+          const avatarUrlInputEl = document.getElementById("avatarUrlInput");
+          let avatarUrl = (avatarUrlInputEl && avatarUrlInputEl.value.trim()) || "";
 
-        if (avatarSource === "google") {
-          avatarUrl = currentUser.photoURL || DEFAULT_USER_AVATAR;
-        } else if (avatarSource === "twitch") {
-          const twitchUser = document.getElementById("twitchUsernameInput").value.trim();
-          if (twitchUser) {
-            try {
-              const decRes = await fetch(`https://decapi.me/twitch/avatar/${encodeURIComponent(twitchUser)}`);
-              if (decRes.ok) {
-                const resolvedUrl = (await decRes.text()).trim();
-                if (resolvedUrl && resolvedUrl.startsWith("http")) {
-                  avatarUrl = resolvedUrl;
+          if (avatarSource === "google") {
+            avatarUrl = currentUser.photoURL || DEFAULT_USER_AVATAR;
+          } else if (avatarSource === "twitch") {
+            const twitchUserInput = document.getElementById("twitchUsernameInput");
+            const twitchUser = twitchUserInput ? twitchUserInput.value.trim() : "";
+            if (twitchUser) {
+              try {
+                const decRes = await fetch(`https://decapi.me/twitch/avatar/${encodeURIComponent(twitchUser)}`);
+                if (decRes.ok) {
+                  const resolvedUrl = (await decRes.text()).trim();
+                  if (resolvedUrl && resolvedUrl.startsWith("http")) {
+                    avatarUrl = resolvedUrl;
+                  }
                 }
+              } catch (e) {
+                avatarUrl = DEFAULT_USER_AVATAR;
               }
-            } catch (e) {
-              avatarUrl = DEFAULT_USER_AVATAR;
+            }
+          } else if (avatarSource === "steam") {
+            const steamInputEl = document.getElementById("steamIdInput");
+            const rawSteam = steamInputEl ? steamInputEl.value.trim() : "";
+            if (/^\d{17}$/.test(rawSteam)) {
+              try {
+                const steamSnap = await rtdb.ref(`/steam_users/${rawSteam}/profile/avatar`).once("value");
+                if (steamSnap.exists() && steamSnap.val()) {
+                  avatarUrl = steamSnap.val();
+                }
+              } catch (e) {}
             }
           }
-        } else if (avatarSource === "steam") {
-          const rawSteam = document.getElementById("steamIdInput").value.trim();
-          if (/^\d{17}$/.test(rawSteam)) {
-            try {
-              const steamSnap = await rtdb.ref(`/steam_users/${rawSteam}/profile/avatar`).once("value");
-              if (steamSnap.exists() && steamSnap.val()) {
-                avatarUrl = steamSnap.val();
-              }
-            } catch (e) {}
+
+          const friendCode = currentUser.uid.substring(0, 8).toUpperCase();
+
+          try {
+            await rtdb.ref(`/users/${emailKey}`).update({
+              username: newTag,
+              avatar_source: avatarSource,
+              avatar_url: avatarUrl || DEFAULT_USER_AVATAR,
+              updated_at: new Date().toISOString()
+            });
+
+            await rtdb.ref(`/friend_codes/${friendCode}`).update({
+              username: newTag,
+              avatar_url: avatarUrl || DEFAULT_USER_AVATAR
+            });
+
+            await db.collection("users").doc(primaryEmail).set({
+              username: newTag,
+              avatar_url: avatarUrl || DEFAULT_USER_AVATAR,
+              updated_at: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+          } catch (saveErr) {
+            console.warn("[SAVE ERROR] Profile details failed:", saveErr);
           }
-        }
-
-        const friendCode = currentUser.uid.substring(0, 8).toUpperCase();
-
-        try {
-          await rtdb.ref(`/users/${emailKey}`).update({
-            username: newTag,
-            avatar_source: avatarSource,
-            avatar_url: avatarUrl || DEFAULT_USER_AVATAR,
-            updated_at: new Date().toISOString()
-          });
-
-          await rtdb.ref(`/friend_codes/${friendCode}`).update({
-            username: newTag,
-            avatar_url: avatarUrl || DEFAULT_USER_AVATAR
-          });
-
-          await db.collection("users").doc(primaryEmail).set({
-            username: newTag,
-            avatar_url: avatarUrl || DEFAULT_USER_AVATAR,
-            updated_at: firebase.firestore.FieldValue.serverTimestamp()
-          }, { merge: true });
-        } catch (saveErr) {
-          console.warn("[SAVE ERROR] Profile details failed:", saveErr);
-        }
-      });
+        });
+      }
 
       // Silent Save: Gaming Handles, Sanitized NPSSO & Dual Steam Identifiers
-      document.getElementById("saveGamingProfilesBtn").addEventListener("click", async () => {
-        if (!currentUser) return;
-        const primaryEmail = getResolvedPrimaryEmail(currentUser);
-        const emailKey = getEmailKey(primaryEmail);
-        const twitchUser = document.getElementById("twitchUsernameInput").value.trim();
+      const saveGamingProfilesBtnEl = document.getElementById("saveGamingProfilesBtn");
+      if (saveGamingProfilesBtnEl) {
+        saveGamingProfilesBtnEl.addEventListener("click", async () => {
+          if (!currentUser) return;
+          const primaryEmail = getResolvedPrimaryEmail(currentUser);
+          const emailKey = getEmailKey(primaryEmail);
 
-        const rawNpsso = document.getElementById("psnNpssoInput").value;
-        const sanitizedNpsso = sanitizeNpssoInput(rawNpsso);
+          const twitchUserInput = document.getElementById("twitchUsernameInput");
+          const twitchUser = twitchUserInput ? twitchUserInput.value.trim() : "";
 
-        let finalSteamId = document.getElementById("steamIdInput").value.trim();
-        let finalSteamFriendCode = document.getElementById("steamFriendCodeInput").value.trim();
+          const psnUsernameInputEl = document.getElementById("psnUsernameInput");
+          const psnUsernameScopeEl = document.getElementById("psnUsernameScope");
+          const psnAccountIdInputEl = document.getElementById("psnAccountIdInput");
+          const steamIdInputEl = document.getElementById("steamIdInput");
+          const steamFriendCodeInputEl = document.getElementById("steamFriendCodeInput");
+          const steamFriendCodeScopeEl = document.getElementById("steamFriendCodeScope");
+          const xboxGamertagInputEl = document.getElementById("xboxGamertagInput");
+          const xboxGamertagScopeEl = document.getElementById("xboxGamertagScope");
+          const twitchScopeEl = document.getElementById("twitchScope");
 
-        if (finalSteamId && /^\d{17}$/.test(finalSteamId) && !finalSteamFriendCode) {
-          finalSteamFriendCode = steam64ToFriendCode(finalSteamId);
-        } else if (finalSteamFriendCode && /^\d{4,12}$/.test(finalSteamFriendCode) && !finalSteamId) {
-          finalSteamId = friendCodeToSteam64(finalSteamFriendCode);
-        }
+          const rawNpsso = npssoInput ? npssoInput.value : "";
+          const sanitizedNpsso = sanitizeNpssoInput(rawNpsso);
 
-        const publicPayload = {
-          psn_username: document.getElementById("psnUsernameInput").value.trim(),
-          psn_username_scope: document.getElementById("psnUsernameScope").value,
-          psn_account_id: document.getElementById("psnAccountIdInput").value.trim(),
-          psn_account_id_scope: "private",
-          psn_npsso_scope: "private",
-          psn_npsso_valid: sanitizedNpsso.isValid,
-          steam_id: finalSteamId,
-          steam_id_scope: "private",
-          steam_friend_code: finalSteamFriendCode,
-          steam_friend_code_scope: document.getElementById("steamFriendCodeScope").value,
-          xbox_gamertag: document.getElementById("xboxGamertagInput").value.trim(),
-          xbox_gamertag_scope: document.getElementById("xboxGamertagScope").value,
-          twitch_username: twitchUser,
-          twitch_scope: document.getElementById("twitchScope").value,
-          last_profile_sync: new Date().toISOString()
-        };
+          let finalSteamId = steamIdInputEl ? steamIdInputEl.value.trim() : "";
+          let finalSteamFriendCode = steamFriendCodeInputEl ? steamFriendCodeInputEl.value.trim() : "";
 
-        try {
-          await rtdb.ref(`/users/${emailKey}`).update(publicPayload);
+          if (finalSteamId && /^\d{17}$/.test(finalSteamId) && !finalSteamFriendCode) {
+            finalSteamFriendCode = steam64ToFriendCode(finalSteamId);
+          } else if (finalSteamFriendCode && /^\d{4,12}$/.test(finalSteamFriendCode) && !finalSteamId) {
+            finalSteamId = friendCodeToSteam64(finalSteamFriendCode);
+          }
 
-          await rtdb.ref(`/user_secrets/${emailKey}`).set({
-            psn_npsso: sanitizedNpsso.token,
-            updated_at: new Date().toISOString()
-          });
+          const publicPayload = {
+            psn_username: psnUsernameInputEl ? psnUsernameInputEl.value.trim() : "",
+            psn_username_scope: psnUsernameScopeEl ? psnUsernameScopeEl.value : "public",
+            psn_account_id: psnAccountIdInputEl ? psnAccountIdInputEl.value.trim() : "",
+            psn_account_id_scope: "private",
+            psn_npsso_scope: "private",
+            psn_npsso_valid: sanitizedNpsso.isValid,
+            steam_id: finalSteamId,
+            steam_id_scope: "private",
+            steam_friend_code: finalSteamFriendCode,
+            steam_friend_code_scope: steamFriendCodeScopeEl ? steamFriendCodeScopeEl.value : "public",
+            xbox_gamertag: xboxGamertagInputEl ? xboxGamertagInputEl.value.trim() : "",
+            xbox_gamertag_scope: xboxGamertagScopeEl ? xboxGamertagScopeEl.value : "public",
+            twitch_username: twitchUser,
+            twitch_scope: twitchScopeEl ? twitchScopeEl.value : "public",
+            last_profile_sync: new Date().toISOString()
+          };
 
-          await db.collection("users").doc(primaryEmail).set({
-            gaming_platforms: publicPayload
-          }, { merge: true });
+          try {
+            await rtdb.ref(`/users/${emailKey}`).update(publicPayload);
 
-          updateSteamOptionState(finalSteamId);
+            await rtdb.ref(`/user_secrets/${emailKey}`).set({
+              psn_npsso: sanitizedNpsso.token,
+              updated_at: new Date().toISOString()
+            });
 
-          if (twitchUser) checkTwitchLiveGame(twitchUser);
-        } catch (platformErr) {
-          console.warn("[SAVE ERROR] Gaming profiles failed:", platformErr);
-        }
-      });
+            await db.collection("users").doc(primaryEmail).set({
+              gaming_platforms: publicPayload
+            }, { merge: true });
 
-      // Section 9: Personal Links Management (Capped at 5 Links) (Lines 1341-1415)
+            updateSteamOptionState(finalSteamId);
+
+            if (twitchUser) checkTwitchLiveGame(twitchUser);
+          } catch (platformErr) {
+            console.warn("[SAVE ERROR] Gaming profiles failed:", platformErr);
+          }
+        });
+      }
+
+      // Section 9: Personal Links Management (Capped at 5 Links) (Lines 1366-1440)
       let currentLinksCount = 0;
 
-      document.getElementById("addUserLinkBtn").addEventListener("click", async () => {
-        if (!currentUser) return;
-        if (currentLinksCount >= 5) return;
+      const addUserLinkBtnEl = document.getElementById("addUserLinkBtn");
+      if (addUserLinkBtnEl) {
+        addUserLinkBtnEl.addEventListener("click", async () => {
+          if (!currentUser) return;
+          if (currentLinksCount >= 5) return;
 
-        const title = document.getElementById("linkTitleInput").value.trim();
-        const url = document.getElementById("linkUrlInput").value.trim();
-        if (!title || !url) return;
+          const titleInput = document.getElementById("linkTitleInput");
+          const urlInput = document.getElementById("linkUrlInput");
+          const title = titleInput ? titleInput.value.trim() : "";
+          const url = urlInput ? urlInput.value.trim() : "";
+          if (!title || !url) return;
 
-        const emailKey = getEmailKey(getResolvedPrimaryEmail(currentUser));
-        const linkId = "link_" + Date.now();
+          const emailKey = getEmailKey(getResolvedPrimaryEmail(currentUser));
+          const linkId = "link_" + Date.now();
 
-        try {
-          await rtdb.ref(`/users/${emailKey}/links/${linkId}`).set({ title, url });
-          document.getElementById("linkTitleInput").value = "";
-          document.getElementById("linkUrlInput").value = "";
-        } catch (linkErr) {
-          console.warn("[SAVE ERROR] Custom link addition failed:", linkErr);
-        }
-      });
+          try {
+            await rtdb.ref(`/users/${emailKey}/links/${linkId}`).set({ title, url });
+            if (titleInput) titleInput.value = "";
+            if (urlInput) urlInput.value = "";
+          } catch (linkErr) {
+            console.warn("[SAVE ERROR] Custom link addition failed:", linkErr);
+          }
+        });
+      }
 
       function renderUserLinks(linksObj) {
         const container = document.getElementById("userLinksContainer");
@@ -1752,41 +1833,45 @@
         }
       };
 
-      // Section 10: Companions Roster & Dual Linking (Lines 1416-1500)
-      document.getElementById("addFriendBtn").addEventListener("click", async () => {
-        if (!currentUser) return;
-        const code = document.getElementById("friendCodeInput").value.trim().toUpperCase();
-        if (!code || code.length < 6) return;
-        if (code === currentUser.uid.substring(0, 8).toUpperCase()) return;
+      // Section 10: Companions Roster & Dual Linking (Lines 1441-1525)
+      const addFriendBtnEl = document.getElementById("addFriendBtn");
+      if (addFriendBtnEl) {
+        addFriendBtnEl.addEventListener("click", async () => {
+          if (!currentUser) return;
+          const friendCodeInputEl = document.getElementById("friendCodeInput");
+          const code = friendCodeInputEl ? friendCodeInputEl.value.trim().toUpperCase() : "";
+          if (!code || code.length < 6) return;
+          if (code === currentUser.uid.substring(0, 8).toUpperCase()) return;
 
-        const primaryEmail = getResolvedPrimaryEmail(currentUser);
-        const emailKey = getEmailKey(primaryEmail);
+          const primaryEmail = getResolvedPrimaryEmail(currentUser);
+          const emailKey = getEmailKey(primaryEmail);
 
-        try {
-          const snap = await rtdb.ref(`/friend_codes/${code}`).once("value");
-          if (!snap.exists()) return;
+          try {
+            const snap = await rtdb.ref(`/friend_codes/${code}`).once("value");
+            if (!snap.exists()) return;
 
-          const friend = snap.val();
+            const friend = snap.val();
 
-          await rtdb.ref(`/users/${emailKey}/friends/${code}`).set({
-            friend_code: code,
-            username: friend.username || "Companion",
-            avatar_url: friend.avatar_url || DEFAULT_USER_AVATAR,
-            target_email: friend.email,
-            linked_at: new Date().toISOString()
-          });
+            await rtdb.ref(`/users/${emailKey}/friends/${code}`).set({
+              friend_code: code,
+              username: friend.username || "Companion",
+              avatar_url: friend.avatar_url || DEFAULT_USER_AVATAR,
+              target_email: friend.email,
+              linked_at: new Date().toISOString()
+            });
 
-          await db.collection("users").doc(primaryEmail).collection("friends").doc(code).set({
-            friend_code: code,
-            target_email: friend.email,
-            linked_at: firebase.firestore.FieldValue.serverTimestamp()
-          });
+            await db.collection("users").doc(primaryEmail).collection("friends").doc(code).set({
+              friend_code: code,
+              target_email: friend.email,
+              linked_at: firebase.firestore.FieldValue.serverTimestamp()
+            });
 
-          document.getElementById("friendCodeInput").value = "";
-        } catch (e) {
-          console.warn("Companion addition failed:", e);
-        }
-      });
+            if (friendCodeInputEl) friendCodeInputEl.value = "";
+          } catch (e) {
+            console.warn("Companion addition failed:", e);
+          }
+        });
+      }
 
       function renderFriendsRoster(friendsObj) {
         const container = document.getElementById("friendRosterContainer");
@@ -1804,7 +1889,7 @@
           div.className = "friend-item";
           div.innerHTML = `
             <div style="display:flex; align-items:center; gap:10px; overflow: hidden;">
-              <img src="${friend.avatar_url || DEFAULT_USER_AVATAR}" class="nav-thumb" style="border-radius:50%; width:30px; height:30px; flex-shrink: 0;" onerror="this.src='${DEFAULT_USER_AVATAR}'">
+              <img src="${friend.avatar_url || DEFAULT_USER_AVATAR}" class="nav-thumb" style="border-radius:50%; width:30px; height:30px; flex-shrink: 0;" onerror="this.onerror=null; this.src='${DEFAULT_USER_AVATAR}';">
               <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                 <strong>${friend.username}</strong>
                 <div style="font-size: 0.74rem; color: var(--text-muted);">Code: ${code}</div>
@@ -1816,7 +1901,7 @@
         });
       }
 
-      // Section 11: The 4 Protected Actions with Confirmation Dialogs (Lines 1501-1575)
+      // Section 11: The 4 Protected Actions with Confirmation Dialogs (Lines 1526-1600)
       window.removeCompanion = async (code) => {
         if (!currentUser) return;
         const confirmRemove = window.confirm("Are you sure you want to remove this companion from your roster?");
@@ -1833,47 +1918,56 @@
         }
       };
 
-      document.getElementById("disconnectGoogleBtn").addEventListener("click", () => {
-        const confirmDisconnect = window.confirm("Are you sure you want to open the Google Security console to disconnect this app authorization?");
-        if (!confirmDisconnect) return;
-        window.open("https://myaccount.google.com/linkedapps?continue=https%3A%2F%2Fmyaccount.google.com%2Fsecurity", "_blank", "noopener");
-      });
-
-      document.getElementById("sendPasswordResetBtn").addEventListener("click", () => {
-        if (!currentUser) return;
-        const email = getResolvedPrimaryEmail(currentUser);
-        const confirmReset = window.confirm(`Send password reset instructions to ${email}?`);
-        if (!confirmReset) return;
-
-        auth.sendPasswordResetEmail(email).catch((e) => {
-          console.warn("[AUTH RESET ERROR]:", e.message);
+      const disconnectGoogleBtnEl = document.getElementById("disconnectGoogleBtn");
+      if (disconnectGoogleBtnEl) {
+        disconnectGoogleBtnEl.addEventListener("click", () => {
+          const confirmDisconnect = window.confirm("Are you sure you want to open the Google Security console to disconnect this app authorization?");
+          if (!confirmDisconnect) return;
+          window.open("https://myaccount.google.com/linkedapps?continue=https%3A%2F%2Fmyaccount.google.com%2Fsecurity", "_blank", "noopener");
         });
-      });
+      }
 
-      document.getElementById("deleteAccountBtn").addEventListener("click", async () => {
-        if (!currentUser) return;
-        const confirmDelete = window.confirm("Are you sure you want to permanently erase your hunter profile, friend code, and gaming records? This cannot be undone.");
-        if (!confirmDelete) return;
+      const sendPasswordResetBtnEl = document.getElementById("sendPasswordResetBtn");
+      if (sendPasswordResetBtnEl) {
+        sendPasswordResetBtnEl.addEventListener("click", () => {
+          if (!currentUser) return;
+          const email = getResolvedPrimaryEmail(currentUser);
+          const confirmReset = window.confirm(`Send password reset instructions to ${email}?`);
+          if (!confirmReset) return;
 
-        try {
-          const primaryEmail = getResolvedPrimaryEmail(currentUser);
-          const emailKey = getEmailKey(primaryEmail);
-          const friendCode = currentUser.uid.substring(0, 8).toUpperCase();
+          auth.sendPasswordResetEmail(email).catch((e) => {
+            console.warn("[AUTH RESET ERROR]:", e.message);
+          });
+        });
+      }
 
-          await rtdb.ref(`/users/${emailKey}`).remove();
-          await rtdb.ref(`/user_secrets/${emailKey}`).remove();
-          await rtdb.ref(`/friend_codes/${friendCode}`).remove();
-          await db.collection("users").doc(primaryEmail).delete();
+      const deleteAccountBtnEl = document.getElementById("deleteAccountBtn");
+      if (deleteAccountBtnEl) {
+        deleteAccountBtnEl.addEventListener("click", async () => {
+          if (!currentUser) return;
+          const confirmDelete = window.confirm("Are you sure you want to permanently erase your hunter profile, friend code, and gaming records? This cannot be undone.");
+          if (!confirmDelete) return;
 
-          await currentUser.delete();
-          localStorage.clear();
-          window.location.reload();
-        } catch (e) {
-          alert("Account Deletion Error: " + e.message);
-        }
-      });
+          try {
+            const primaryEmail = getResolvedPrimaryEmail(currentUser);
+            const emailKey = getEmailKey(primaryEmail);
+            const friendCode = currentUser.uid.substring(0, 8).toUpperCase();
 
-      // Section 12: Provider Identification & Account Handlers (Lines 1576-1665)
+            await rtdb.ref(`/users/${emailKey}`).remove();
+            await rtdb.ref(`/user_secrets/${emailKey}`).remove();
+            await rtdb.ref(`/friend_codes/${friendCode}`).remove();
+            await db.collection("users").doc(primaryEmail).delete();
+
+            await currentUser.delete();
+            localStorage.clear();
+            window.location.reload();
+          } catch (e) {
+            alert("Account Deletion Error: " + e.message);
+          }
+        });
+      }
+
+      // Section 12: Provider Identification & Account Handlers (Lines 1601-1695)
       function renderProvidersUI(user) {
         const providers = user.providerData.map(p => p.providerId);
         const googleText = document.getElementById("googleStatusText");
@@ -1881,31 +1975,39 @@
 
         const primaryEmail = getResolvedPrimaryEmail(user);
 
-        if (providers.includes("google.com")) {
-          googleText.textContent = `Connected (${primaryEmail})`;
-        } else {
-          googleText.textContent = "Not Connected";
+        if (googleText) {
+          if (providers.includes("google.com")) {
+            googleText.textContent = `Connected (${primaryEmail})`;
+          } else {
+            googleText.textContent = "Not Connected";
+          }
         }
 
-        if (providers.includes("password")) {
-          passText.textContent = `Active Password Set (${primaryEmail})`;
-        } else {
-          passText.textContent = "Google OAuth Login Active";
+        if (passText) {
+          if (providers.includes("password")) {
+            passText.textContent = `Active Password Set (${primaryEmail})`;
+          } else {
+            passText.textContent = "Google OAuth Login Active";
+          }
         }
       }
 
-      document.getElementById("updateEmailBtn").addEventListener("click", async () => {
-        if (!currentUser) return;
-        const newEmail = document.getElementById("changeEmailInput").value.trim();
-        if (!newEmail || !newEmail.includes("@")) return;
+      const updateEmailBtnEl = document.getElementById("updateEmailBtn");
+      if (updateEmailBtnEl) {
+        updateEmailBtnEl.addEventListener("click", async () => {
+          if (!currentUser) return;
+          const changeEmailInputEl = document.getElementById("changeEmailInput");
+          const newEmail = changeEmailInputEl ? changeEmailInputEl.value.trim() : "";
+          if (!newEmail || !newEmail.includes("@")) return;
 
-        try {
-          await currentUser.updateEmail(newEmail);
-          window.location.reload();
-        } catch (e) {
-          alert("Email Update Failed: " + e.message);
-        }
-      });
+          try {
+            await currentUser.updateEmail(newEmail);
+            window.location.reload();
+          } catch (e) {
+            alert("Email Update Failed: " + e.message);
+          }
+        });
+      }
 
       // Anonymous WhatsApp Messenger (Number Concealed & Joined via Relative Protocol)
       const toggleWhatsappBtn = document.getElementById("toggleWhatsappBtn");
@@ -1913,43 +2015,60 @@
       const whatsappChatBox = document.getElementById("whatsappChatBox");
       const closeWhatsappBoxBtn = document.getElementById("closeWhatsappBoxBtn");
 
-      function openChat() { whatsappChatBox.classList.remove("hidden"); }
-      function closeChat() { whatsappChatBox.classList.add("hidden"); }
+      function openChat() { if (whatsappChatBox) whatsappChatBox.classList.remove("hidden"); }
+      function closeChat() { if (whatsappChatBox) whatsappChatBox.classList.add("hidden"); }
 
-      if (toggleWhatsappBtn) toggleWhatsappBtn.addEventListener("click", () => whatsappChatBox.classList.toggle("hidden"));
+      if (toggleWhatsappBtn) toggleWhatsappBtn.addEventListener("click", () => { if (whatsappChatBox) whatsappChatBox.classList.toggle("hidden"); });
       if (openWhatsAppModalBtn) openWhatsAppModalBtn.addEventListener("click", openChat);
       if (closeWhatsappBoxBtn) closeWhatsappBoxBtn.addEventListener("click", closeChat);
 
-      document.getElementById("sendWhatsappMessageBtn").addEventListener("click", () => {
-        const msg = document.getElementById("whatsappMessageInput").value.trim();
-        if (!msg) return;
+      const sendWhatsappMessageBtnEl = document.getElementById("sendWhatsappMessageBtn");
+      if (sendWhatsappMessageBtnEl) {
+        sendWhatsappMessageBtnEl.addEventListener("click", () => {
+          const inputEl = document.getElementById("whatsappMessageInput");
+          const msg = inputEl ? inputEl.value.trim() : "";
+          if (!msg) return;
 
-        const p1 = "1";
-        const p2 = "618";
-        const p3 = "573";
-        const p4 = "6060";
-        const destination = [p1, p2, p3, p4].join("");
+          const p1 = "1";
+          const p2 = "618";
+          const p3 = "573";
+          const p4 = "6060";
+          const destination = [p1, p2, p3, p4].join("");
 
-        const encodedMsg = encodeURIComponent(`[Hunter Support Inbound]: ${msg}`);
-        window.open(`https://api.whatsapp.com/send?phone=${destination}&text=${encodedMsg}`, "_blank", "noopener");
-        document.getElementById("whatsappMessageInput").value = "";
-        closeChat();
-      });
+          const encodedMsg = encodeURIComponent(`[Hunter Support Inbound]: ${msg}`);
+          window.open(`https://api.whatsapp.com/send?phone=${destination}&text=${encodedMsg}`, "_blank", "noopener");
+          if (inputEl) inputEl.value = "";
+          closeChat();
+        });
+      }
 
-      // Basic Auth Listeners
-      document.getElementById("inlineGoogleBtn").addEventListener("click", () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()));
-      document.getElementById("authModalBtn").addEventListener("click", () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()));
-      document.getElementById("quickLoginBtn").addEventListener("click", () => {
-        const email = document.getElementById("quickEmail").value.trim();
-        const pass = document.getElementById("quickPass").value;
-        if (email && pass) auth.signInWithEmailAndPassword(email, pass);
-      });
-      document.getElementById("quickRegisterBtn").addEventListener("click", () => {
-        const email = document.getElementById("quickEmail").value.trim();
-        const pass = document.getElementById("quickPass").value;
-        if (email && pass) auth.createUserWithEmailAndPassword(email, pass);
-      });
-      document.getElementById("logoutBtn").addEventListener("click", () => auth.signOut().then(() => window.location.reload()));
+      // Basic Auth Listeners with DOM Verification
+      const inlineGoogleBtnEl = document.getElementById("inlineGoogleBtn");
+      if (inlineGoogleBtnEl) inlineGoogleBtnEl.addEventListener("click", () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()));
+
+      const authModalBtnEl = document.getElementById("authModalBtn");
+      if (authModalBtnEl) authModalBtnEl.addEventListener("click", () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()));
+
+      const quickLoginBtnEl = document.getElementById("quickLoginBtn");
+      if (quickLoginBtnEl) {
+        quickLoginBtnEl.addEventListener("click", () => {
+          const email = (document.getElementById("quickEmail") && document.getElementById("quickEmail").value.trim()) || "";
+          const pass = (document.getElementById("quickPass") && document.getElementById("quickPass").value) || "";
+          if (email && pass) auth.signInWithEmailAndPassword(email, pass);
+        });
+      }
+
+      const quickRegisterBtnEl = document.getElementById("quickRegisterBtn");
+      if (quickRegisterBtnEl) {
+        quickRegisterBtnEl.addEventListener("click", () => {
+          const email = (document.getElementById("quickEmail") && document.getElementById("quickEmail").value.trim()) || "";
+          const pass = (document.getElementById("quickPass") && document.getElementById("quickPass").value) || "";
+          if (email && pass) auth.createUserWithEmailAndPassword(email, pass);
+        });
+      }
+
+      const logoutBtnEl = document.getElementById("logoutBtn");
+      if (logoutBtnEl) logoutBtnEl.addEventListener("click", () => auth.signOut().then(() => window.location.reload()));
 
       const menuBtn = document.getElementById("menuToggle");
       const nav = document.getElementById("dynamicNav");
