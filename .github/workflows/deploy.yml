@@ -2,7 +2,8 @@
 # GitHub Actions Workflow: Dual-Deploy to Firebase Hosting & GitHub Pages
 # Project: playstation-be936
 # Target Secret: GCP_SA_KEY_WEBSITE
-# Timestamp: 2026-10-14 16:31:00 EDT (New York)
+# Timestamp: 2026-10-26 18:30:00 EDT (New York)
+# Line 1: Main Trigger and Workflow Settings
 # ==============================================================================
 
 name: Deploy to Google Cloud, Firebase & GitHub Pages
@@ -13,13 +14,13 @@ on:
       - main
   workflow_dispatch:
 
-# Permissions required to publish artifacts to GitHub Pages
+# Permissions required to publish artifacts to GitHub Pages (Line 16)
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow one concurrent deployment to GitHub Pages to prevent conflicts
+# Allow one concurrent deployment to GitHub Pages to prevent conflicts (Line 22)
 concurrency:
   group: 'pages'
   cancel-in-progress: false
@@ -29,18 +30,23 @@ jobs:
     name: Build, Package and Dual Deploy
     runs-on: ubuntu-latest
 
+    # Required GitHub Pages deployment environment definition (Lines 33-36)
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
-      # Step 1: Check out repository files into runner workspace
+      # Step 1: Check out repository files into runner workspace (Line 39)
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up Node.js 20 environment
+      # Step 2: Set up Node.js 20 environment (Line 43)
       - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # Step 3: Deploy to Firebase Hosting using GCP_SA_KEY_WEBSITE secret
+      # Step 3: Deploy to Firebase Hosting using GCP_SA_KEY_WEBSITE secret (Line 49)
       - name: Deploy to Firebase Hosting
         uses: w9jds/firebase-action@master
         with:
@@ -48,18 +54,18 @@ jobs:
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_WEBSITE }}
 
-      # Step 4: Configure GitHub Pages runtime environment
+      # Step 4: Configure GitHub Pages runtime environment (Line 57)
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
 
-      # Step 5: Package static assets/overlays for GitHub Pages
+      # Step 5: Package static assets/overlays for GitHub Pages (Line 61)
       # (Change path from '.' to a specific folder like './overlays' if needed)
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
 
-      # Step 6: Deploy static artifact to GitHub Pages
+      # Step 6: Deploy static artifact to GitHub Pages (Line 68)
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
