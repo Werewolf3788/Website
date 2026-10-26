@@ -34,7 +34,23 @@
  * - Playtime now links to trophy titles by name (played-games and trophy lists use different IDs).
  * - Trophy rarity fix: earnedRate/trophyRare now come from the user-earned endpoint (title endpoint has none).
  * Analytics Tagging: G-CTYHDF4MSD (Deployable via GTM).
- * Version: 66.3.0 - Maximum-Pull Mode, Raw Archive & Diagnostics
+ * 7. Firebase-Driven Accounts (NEW in 66.4.0):
+ * - PSN account ID is read from /users/{emailKey}/psn_account_id (also gaming_platforms.psn_account_id).
+ * - NPSSO is read from /user_secrets/{emailKey}/psn_npsso (also tolerates a pasted {"npsso":"..."} blob).
+ * - Any user who has BOTH is picked up automatically on the next run: onlineId is resolved from the
+ *   account ID, their data is written to /psn/gamertags/{onlineId}, and /users/{emailKey} gets
+ *   psn_online_id, psn_npsso_valid, psn_sync_status and psn_last_synced written back for your site.
+ * - Core squad NPSSOs are matched by account ID (no more loose "ray" substring match).
+ * - Expired NPSSO keeps the player's last record (flagged EXPIRED) instead of purging it.
+ * - Users with their own NPSSO now get the self-only data too (devices, purchases, library, blocked).
+ * 8. Four-Member Hot Standby (NEW in 66.5.0):
+ * - ANY of WildHorse_Spirit, Ray, Darkwing or Marc having a working NPSSO keeps the whole squad updating.
+ * - Priority order: WildHorse_Spirit -> Ray -> Darkwing -> Marc (first healthy cookie is the master).
+ * - A member with their own working cookie is read with it (gets self-only data); others use the master.
+ * - Self-only fields (devices, purchases, blocked, requests, region) are preserved when a member is read
+ *   through someone else's session, instead of being overwritten with empty values.
+ * - Only the 4 core members are ever read with a core cookie; outside users only use their own cookie.
+ * Version: 66.5.0 - Four-Member Hot Standby
  * Date & Time Stamp: 2026-10-26 (America/New_York)
  * ============================================================================ */
 
@@ -71,7 +87,7 @@ const {
 const FIREBASE_BASE_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn";
 const RTDB_ROOT_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
 const GA4_MEASUREMENT_ID = "G-CTYHDF4MSD";
-const ENGINE_VERSION = "66.3.0";
+const ENGINE_VERSION = "66.5.0";
 const LOCAL_TOKENS_PATH = path.join(__dirname, ".psn_tokens.json");
 
 const SQUAD_GAMERTAGS = {
@@ -118,6 +134,10 @@ let diagnosticReport = {
     wildhorse_spirit_status: "UNCHECKED",
     ray_active: "no",
     ray_status: "UNCHECKED",
+    darkwing_active: "no",
+    darkwing_status: "UNCHECKED",
+    marc_active: "no",
+    marc_status: "UNCHECKED",
     active_runner: "UNCHECKED",
     buffer_status: "UNCHECKED",
     lastCheck: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
@@ -287,6 +307,61 @@ async function resolveFriendDirectory(auth, accountIds = []) {
             }
             : { accountId: key, onlineId: null, unresolved: true, resolvedAt: new Date().toISOString() };
         friendsDirectoryDirty = true;
+    }
+}
+
+// ----------------------------------------------------------------------------
+// [SECTION 1C: FIREBASE-DRIVEN PSN CREDENTIALS] NEW in 66.4.0
+// ----------------------------------------------------------------------------
+// Accepts a plain cookie or a pasted {"npsso":"..."} blob; returns "" when it is clearly not an NPSSO.
+function normalizeNpsso(raw) {
+    if (!raw || typeof raw !== "string") return "";
+    let v = raw.trim();
+    const blob = v.match(/"npsso"\s*:\s*"([^"]+)"/i);
+    if (blob) v = blob[1];
+    v = v.replace(/^["'\s]+|["'\s]+$/g, "");
+    return v.length >= 20 ? v : "";
+}
+
+// Reads one site user's PSN credentials from the places your site writes them:
+//   /users/{emailKey}/psn_account_id   (or /users/{emailKey}/gaming_platforms/psn_account_id)
+//   /user_secrets/{emailKey}/psn_npsso (private)
+function readUserPsnCredentials(emailKey, userRecord, secretsRecord) {
+    const u = (userRecord && typeof userRecord === "object") ? userRecord : {};
+    const gaming = (u.gaming_platforms && typeof u.gaming_platforms === "object") ? u.gaming_platforms : {};
+    const secrets = (secretsRecord && typeof secretsRecord === "object") ? secretsRecord : {};
+    const pick = (...vals) => vals.find(v => v !== undefined && v !== null && String(v).trim() !== "");
+
+    const accountIdRaw = pick(u.psn_account_id, gaming.psn_account_id, secrets.psn_account_id);
+    const tagRaw = pick(u.psn_username, gaming.psn_username, u.psn_online_id);
+    const npssoRaw = pick(secrets.psn_npsso, u.psn_npsso, gaming.psn_npsso);
+
+    return {
+        emailKey,
+        accountId: accountIdRaw !== undefined ? String(accountIdRaw).trim() : null,
+        tag: tagRaw !== undefined ? String(tagRaw).trim() : "",
+        npsso: normalizeNpsso(npssoRaw !== undefined ? String(npssoRaw) : "")
+    };
+}
+
+// Writes PSN status fields back onto /users/{emailKey} so your site can show them.
+// Only sends fields that actually changed (and never null, which Firebase would delete).
+async function writeUserPsnStatus(emailKey, fields, currentRecord) {
+    const current = (currentRecord && typeof currentRecord === "object") ? currentRecord : {};
+    const changed = {};
+    for (const [k, v] of Object.entries(fields)) {
+        if (v === undefined || v === null) continue;
+        if (current[k] !== v) changed[k] = v;
+    }
+    if (Object.keys(changed).length === 0) return;
+    try {
+        await resilientFetch(buildRtdbUrl(`/users/${emailKey}`), {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(changed)
+        });
+    } catch (err) {
+        console.warn(`[USER STATUS WARN] Could not write PSN status for ${emailKey}: ${err.message}`);
     }
 }
 
@@ -1090,29 +1165,46 @@ async function getAuthenticated(userKey, npssoInput) {
 // ----------------------------------------------------------------------------
 // [SECTION 9: SMART HOT-STANDBY FAILOVER MANAGER FOR CORE PACK] Line 899
 // ----------------------------------------------------------------------------
-async function resolveMasterSession(wildHorseNpsso, rayNpsso) {
-    console.log("[FAILOVER MANAGER] Checking squad token health across WildHorse_Spirit & Ray...");
+async function resolveMasterSession(coreNpssos = {}) {
+    console.log("[FAILOVER MANAGER] Checking squad token health across WildHorse_Spirit, Ray, Darkwing & Marc...");
 
-    const wolfAuth = await getAuthenticated("wildhorse_spirit", wildHorseNpsso);
-    const rayAuth = await getAuthenticated("ray", rayNpsso);
-
-    let activeMaster = null;
-    let failoverState = "NORMAL";
-
-    if (wolfAuth && wolfAuth.accessToken) {
-        console.log("[FAILOVER MANAGER] Primary token (WildHorse_Spirit) is active.");
-        activeMaster = wolfAuth;
-        failoverState = "PRIMARY_WOLF";
-    } else if (rayAuth && rayAuth.accessToken) {
-        console.warn("[FAILOVER MANAGER] ⚠️ Primary token expired. Failing over to Ray standby token.");
-        activeMaster = rayAuth;
-        failoverState = "FAILOVER_RAY";
-    } else {
-        console.warn("[FAILOVER MANAGER] ⚠️ Both squad tokens offline. Read-only snapshot fallback mode.");
-        failoverState = "SNAPSHOT_FALLBACK";
+    // Check every member that has a cookie or cached tokens (keeps standby refresh tokens alive too)
+    const auths = {};
+    for (const member of CORE_PACK) {
+        auths[member.key] = await getAuthenticated(member.key, coreNpssos[member.key] || "");
     }
 
-    return { masterAuth: activeMaster, wolfAuth, rayAuth, failoverState };
+    const stateLabels = {
+        wildhorse_spirit: { state: "PRIMARY_WOLF", buffer: "PRIMARY HEALTHY (Werewolf Running)" },
+        ray: { state: "FAILOVER_RAY", buffer: "RUNNING ON BACKUP (Ray Active)" },
+        darkwing: { state: "FAILOVER_DARKWING", buffer: "RUNNING ON BACKUP (Darkwing Active)" },
+        marc: { state: "FAILOVER_MARC", buffer: "RUNNING ON BACKUP (Marc Active)" }
+    };
+
+    let activeMaster = null;
+    let failoverState = "SNAPSHOT_FALLBACK";
+    let bufferStatus = "READ-ONLY SNAPSHOT MODE";
+
+    for (const member of CORE_PACK) {
+        const a = auths[member.key];
+        if (a && a.accessToken) {
+            activeMaster = a;
+            failoverState = stateLabels[member.key].state;
+            bufferStatus = stateLabels[member.key].buffer;
+            if (member.key === "wildhorse_spirit") {
+                console.log("[FAILOVER MANAGER] Primary token (WildHorse_Spirit) is active.");
+            } else {
+                console.warn(`[FAILOVER MANAGER] ⚠️ Higher-priority tokens unavailable. Running on ${member.tag}'s token.`);
+            }
+            break;
+        }
+    }
+
+    if (!activeMaster) {
+        console.warn("[FAILOVER MANAGER] ⚠️ All four squad tokens offline. Read-only snapshot fallback mode.");
+    }
+
+    return { masterAuth: activeMaster, auths, failoverState, bufferStatus };
 }
 
 // ----------------------------------------------------------------------------
@@ -1512,7 +1604,8 @@ async function evaluateUserActivityDelta(agentAuth, targetId, knownKey, knownGam
     }
 
     const isSelf = (agentAuth?.userKey === "wildhorse_spirit" && targetId === ACCOUNT_IDS.wildhorse_spirit) ||
-                   (agentAuth?.userKey === "ray" && targetId === ACCOUNT_IDS.ray);
+                   (agentAuth?.userKey === "ray" && targetId === ACCOUNT_IDS.ray) ||
+                   (!!agentAuth?.userKey && agentAuth.userKey === knownKey);
     const targetScope = isSelf ? "me" : targetId;
 
     let liveOnline = false;
@@ -1540,13 +1633,15 @@ async function evaluateUserActivityDelta(agentAuth, targetId, knownKey, knownGam
         return { hasDelta: true, reason: "SESSION_LOGOUT_FINALIZATION", liveOnline: false, liveGameStatus: null };
     }
 
-    // ONE-TIME BACKFILL: records saved before gameStatus existed (or when it was null and Firebase dropped it)
-    if (existingData.gameStatus === undefined) {
-        return { hasDelta: true, statusOnly: true, reason: "GAME_STATUS_FIELD_BACKFILL", liveOnline, liveGameStatus };
-    }
+    // ONE-TIME BACKFILL: records saved before gameStatus existed (or when it was null and Firebase dropped it).
+    // Only used when nothing heavier needs doing, so a real sync is never delayed by it.
+    const needsStatusBackfill = existingData.gameStatus === undefined;
 
     // ONLINE-ONLY GUARD: If user is offline and has no active tracking sessions, SKIP completely
     if (!liveOnline && !storedOnline) {
+        if (needsStatusBackfill) {
+            return { hasDelta: true, statusOnly: true, reason: "GAME_STATUS_FIELD_BACKFILL", liveOnline: false, liveGameStatus: null };
+        }
         return { hasDelta: false, reason: "OFFLINE_SKIPPED", liveOnline: false, liveGameStatus: null };
     }
 
@@ -1592,6 +1687,10 @@ async function evaluateUserActivityDelta(agentAuth, targetId, knownKey, knownGam
         }
     }
 
+    if (needsStatusBackfill) {
+        return { hasDelta: true, statusOnly: true, reason: "GAME_STATUS_FIELD_BACKFILL", liveOnline, liveGameStatus };
+    }
+
     return { hasDelta: false, reason: "UNCHANGED", liveOnline, liveGameStatus };
 }
 
@@ -1623,6 +1722,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 
         const isSelf = (auth.userKey === "wildhorse_spirit" && resolvedTargetId === ACCOUNT_IDS.wildhorse_spirit) ||
                        (auth.userKey === "ray" && resolvedTargetId === ACCOUNT_IDS.ray) ||
+                       (!!auth.userKey && auth.userKey === userKey) ||
                        (resolvedTargetId === "me");
 
         let presenceTarget = isSelf ? "me" : resolvedTargetId;
@@ -2171,17 +2271,17 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             allAvatars: profile?.avatars || existingData?.allAvatars || [],
             bio: profile?.aboutMe || existingData?.bio || "Official Pack Member Profile", 
             plus: !!profile?.isPlus,
-            region: region?.country || "US",
-            language: region?.language || "en",
+            region: isSelf ? (region?.country || existingData?.region || "US") : (existingData?.region || region?.country || "US"),
+            language: isSelf ? (region?.language || existingData?.language || "en") : (existingData?.language || region?.language || "en"),
             rawProfile: profile || existingData?.rawProfile || {},
-            devices: devices,
-            shareableProfile: shareableProfile,
+            devices: devices.length ? devices : (existingData?.devices || []),
+            shareableProfile: shareableProfile || existingData?.shareableProfile || null,
             friendsList: friendsList,
             friendsProfiles: friendsList.map(id => friendsDirectoryCache[String(id)] || { accountId: String(id) }),
-            blockedUsers: blockedUsers,
-            friendRequests: friendRequests,
-            sentFriendRequests: sentFriendRequests,
-            purchasedGames: purchasedGames,
+            blockedUsers: isSelf ? blockedUsers : (existingData?.blockedUsers || []),
+            friendRequests: isSelf ? friendRequests : (existingData?.friendRequests || []),
+            sentFriendRequests: isSelf ? sentFriendRequests : (existingData?.sentFriendRequests || []),
+            purchasedGames: purchasedGames.length ? purchasedGames : (existingData?.purchasedGames || []),
             ...presence, 
             gamesPlayed: totalGamesPlayedCount || existingData?.gamesPlayed || 0,
             psnAccountAge: calculateAgeString(earliestEntry), 
@@ -2292,29 +2392,38 @@ async function executeSyncPass() {
         const globalGames = previousFirebaseData.games || {};
         friendsDirectoryCache = previousFirebaseData.friendsDirectory || {};
 
-        let wolfNpsso = process.env.PSN_NPSSO_WEREWOLF || "";
-        let rayNpsso = process.env.PSN_NPSSO_RAY || "";
+        // ---- CREDENTIALS FROM FIREBASE: /users/{emailKey}/psn_account_id + /user_secrets/{emailKey}/psn_npsso ----
+        if (siteUsersRaw && siteUsersRaw.error) console.warn(`[CREDENTIALS] Could not read /users: ${siteUsersRaw.error}`);
+        if (userSecretsRaw && userSecretsRaw.error) console.warn(`[CREDENTIALS] Could not read /user_secrets: ${userSecretsRaw.error}`);
 
-        if (siteUsersRaw && typeof siteUsersRaw === "object") {
-            Object.entries(siteUsersRaw).forEach(([emailKey, u]) => {
-                const gaming = u.gaming_platforms || u;
-                const tag = (gaming.psn_username || u.username || "").toLowerCase();
-                const secretCookie = userSecretsRaw?.[emailKey]?.psn_npsso || gaming.psn_npsso;
-                
-                if (secretCookie && secretCookie.length >= 20) {
-                    if (tag.includes("wildhorse_spirit") || tag.includes("werewolf")) wolfNpsso = secretCookie;
-                    if (tag.includes("onelividman") || tag.includes("ray")) rayNpsso = secretCookie;
-                }
-            });
+        const credentialList = [];
+        if (siteUsersRaw && typeof siteUsersRaw === "object" && !siteUsersRaw.error) {
+            for (const [emailKey, u] of Object.entries(siteUsersRaw)) {
+                credentialList.push(readUserPsnCredentials(emailKey, u, userSecretsRaw?.[emailKey]));
+            }
         }
 
-        const sessionState = await resolveMasterSession(wolfNpsso, rayNpsso);
-        const { masterAuth, failoverState } = sessionState;
+        // Env vars are only a fallback; a matching Firebase record wins. Match by account ID or exact gamertag.
+        const coreNpssos = {
+            wildhorse_spirit: normalizeNpsso(process.env.PSN_NPSSO_WEREWOLF || ""),
+            ray: normalizeNpsso(process.env.PSN_NPSSO_RAY || ""),
+            darkwing: normalizeNpsso(process.env.PSN_NPSSO_DARKWING || ""),
+            marc: normalizeNpsso(process.env.PSN_NPSSO_MARC || "")
+        };
+        for (const cred of credentialList) {
+            if (!cred.npsso) continue;
+            const t = cred.tag.toLowerCase();
+            for (const member of CORE_PACK) {
+                if (cred.accountId === member.id || t === member.tag.toLowerCase()) coreNpssos[member.key] = cred.npsso;
+            }
+            if (t.includes("werewolf")) coreNpssos.wildhorse_spirit = cred.npsso;
+        }
+
+        const sessionState = await resolveMasterSession(coreNpssos);
+        const { masterAuth, failoverState, auths: coreAuths } = sessionState;
 
         diagnosticReport.active_runner = failoverState;
-        diagnosticReport.buffer_status = failoverState === "FAILOVER_RAY" 
-            ? "RUNNING ON BACKUP (Ray Active)" 
-            : (failoverState === "PRIMARY_WOLF" ? "PRIMARY HEALTHY (Werewolf Running)" : "READ-ONLY SNAPSHOT MODE");
+        diagnosticReport.buffer_status = sessionState.bufferStatus;
 
         let finalData = { 
             gamertags: { ...(previousFirebaseData?.gamertags || {}) }, 
@@ -2337,7 +2446,9 @@ async function executeSyncPass() {
             console.log(`[CORE PACK] Ingesting Core 4 squad members using session: ${masterAuth.userKey}...`);
             for (const member of CORE_PACK) {
                 const existingData = previousFirebaseData?.gamertags?.[member.tag];
-                const deltaCheck = await evaluateUserActivityDelta(masterAuth, member.id, member.key, member.tag, existingData);
+                // A member with their own working cookie is read with it; everyone else is read through the master
+                const memberAuth = (coreAuths[member.key] && coreAuths[member.key].accessToken) ? coreAuths[member.key] : masterAuth;
+                const deltaCheck = await evaluateUserActivityDelta(memberAuth, member.id, member.key, member.tag, existingData);
 
                 // STRICT ONLINE-ONLY GUARD: Skip if offline and no active session closure needed
                 if (!deltaCheck.hasDelta && existingData) {
@@ -2357,7 +2468,7 @@ async function executeSyncPass() {
                 }
 
                 console.log(`[SYNC TRIGGERED] Processing Core member ${member.tag} (${deltaCheck.reason})...`);
-                const data = await getFullUserData(masterAuth, member.tag, member.key, member.id, existingData, true, globalGames, cloudDlcCatalog);
+                const data = await getFullUserData(memberAuth, member.tag, member.key, member.id, existingData, true, globalGames, cloudDlcCatalog);
 
                 if (data && data.onlineId) {
                     activeCanonicalGamertags.add(data.onlineId);
@@ -2373,77 +2484,119 @@ async function executeSyncPass() {
                 }
             }
         } else {
-            console.warn("[CORE PACK HALT] Neither WildHorse_Spirit nor Ray is active. Preserving existing squad records.");
+            console.warn("[CORE PACK HALT] None of the four squad cookies is active. Preserving existing squad records.");
             CORE_PACK.forEach(m => activeCanonicalGamertags.add(m.tag));
         }
 
-        if (siteUsersRaw && typeof siteUsersRaw === "object") {
-            for (const [emailKey, userRecord] of Object.entries(siteUsersRaw)) {
-                const gaming = userRecord.gaming_platforms || userRecord;
-                const tag = (gaming.psn_username || userRecord.username || "").trim();
-                const accountId = gaming.psn_account_id ? String(gaming.psn_account_id).trim() : null;
-                const rawNpsso = userSecretsRaw?.[emailKey]?.psn_npsso || gaming.psn_npsso;
+        // ---- OUTSIDE USERS: anyone with a PSN account ID + NPSSO in Firebase is onboarded automatically ----
+        const knownTagByAccountId = {};
+        Object.entries(previousFirebaseData?.usersByGamerTag || {}).forEach(([knownTag, id]) => {
+            knownTagByAccountId[String(id)] = knownTag;
+        });
+        const processedAccountIds = new Set(CORE_PACK.map(m => m.id));
 
-                const isCore = CORE_PACK.some(m => m.tag.toLowerCase() === tag.toLowerCase() || m.id === accountId);
-                if (isCore) continue;
+        for (const cred of credentialList) {
+            const { emailKey, accountId, npsso: rawNpsso } = cred;
+            const userRecord = siteUsersRaw?.[emailKey];
+            let tag = cred.tag || (accountId && knownTagByAccountId[accountId]) || "";
 
-                if (!rawNpsso || rawNpsso.length < 20) {
-                    console.log(`[OUTSIDE USER - BYPASSED] ${tag || emailKey}: No private NPSSO cookie.`);
+            const isCore = CORE_PACK.some(m => (tag && m.tag.toLowerCase() === tag.toLowerCase()) || (accountId && m.id === accountId));
+            if (isCore) continue;
+
+            // Most site users have no PSN info at all: ignore them quietly
+            if (!accountId && !rawNpsso) continue;
+
+            if (!rawNpsso) {
+                console.log(`[OUTSIDE USER - INCOMPLETE] ${tag || emailKey}: has a PSN account ID but no NPSSO cookie yet.`);
+                await writeUserPsnStatus(emailKey, { psn_sync_status: "MISSING_NPSSO" }, userRecord);
+                continue;
+            }
+            if (!accountId && !tag) {
+                console.log(`[OUTSIDE USER - INCOMPLETE] ${emailKey}: has an NPSSO but no PSN account ID yet.`);
+                await writeUserPsnStatus(emailKey, { psn_sync_status: "MISSING_ACCOUNT_ID" }, userRecord);
+                continue;
+            }
+
+            if (accountId) {
+                if (processedAccountIds.has(accountId)) {
+                    console.log(`[OUTSIDE USER - DUPLICATE] ${tag || emailKey}: account ${accountId} already processed this run.`);
                     continue;
                 }
+                processedAccountIds.add(accountId);
+            }
 
-                console.log(`[OUTSIDE AUTH] Handshaking personal session for ${tag || emailKey}...`);
-                const userAuth = await getAuthenticated(emailKey, rawNpsso);
+            console.log(`[OUTSIDE AUTH] Handshaking personal session for ${tag || emailKey}...`);
+            const userAuth = await getAuthenticated(emailKey, rawNpsso);
 
-                if (!userAuth || !userAuth.accessToken) {
-                    console.warn(`[OUTSIDE AUTH EXPIRED] Cookie invalid for ${tag || emailKey}. Skipping.`);
-                    await resilientFetch(buildRtdbUrl(`/users/${emailKey}/psn_npsso_valid`), {
-                        method: "PUT",
-                        body: JSON.stringify(false)
-                    });
-                    continue;
+            if (!userAuth || !userAuth.accessToken) {
+                console.warn(`[OUTSIDE AUTH EXPIRED] Cookie invalid for ${tag || emailKey}. Keeping last known record.`);
+                // Keep their last known data (flagged) instead of purging it
+                if (tag && previousFirebaseData?.gamertags?.[tag]) {
+                    activeCanonicalGamertags.add(tag);
+                    await syncNodeToFirebase(`gamertags/${tag}/npssoValid`, false);
+                    await syncNodeToFirebase(`gamertags/${tag}/npssoStatus`, "EXPIRED");
                 }
+                await writeUserPsnStatus(emailKey, { psn_npsso_valid: false, psn_sync_status: "EXPIRED_NPSSO" }, userRecord);
+                continue;
+            }
 
-                const existingData = previousFirebaseData?.gamertags?.[tag];
-                const deltaCheck = await evaluateUserActivityDelta(userAuth, accountId || "me", emailKey, tag, existingData);
+            // New user who only supplied accountId + NPSSO: resolve their onlineId from the account ID
+            if (!tag && accountId) {
+                const prof = await callPsn("getProfileFromAccountId(new user)", () => getProfileFromAccountId(userAuth, accountId), null);
+                tag = prof?.onlineId || "";
+                if (tag) console.log(`[ONBOARDING] Resolved account ${accountId} -> ${tag}.`);
+            }
 
-                if (!deltaCheck.hasDelta && existingData) {
-                    console.log(`[SKIP - NO DELTA] Outside user ${tag || emailKey}: ${deltaCheck.reason}.`);
-                    if (existingData.onlineId) activeCanonicalGamertags.add(existingData.onlineId);
-                    continue;
+            const existingData = tag ? previousFirebaseData?.gamertags?.[tag] : undefined;
+            const targetId = accountId || "me";
+            const deltaCheck = await evaluateUserActivityDelta(userAuth, targetId, emailKey, tag, existingData);
+
+            const markSynced = async (onlineId, extra = {}) => {
+                await writeUserPsnStatus(emailKey, {
+                    psn_npsso_valid: true,
+                    psn_online_id: onlineId,
+                    psn_sync_status: "SYNCED",
+                    ...extra
+                }, userRecord);
+            };
+
+            if (!deltaCheck.hasDelta && existingData) {
+                console.log(`[SKIP - NO DELTA] Outside user ${tag || emailKey}: ${deltaCheck.reason}.`);
+                if (existingData.onlineId) {
+                    activeCanonicalGamertags.add(existingData.onlineId);
+                    await markSynced(existingData.onlineId);
                 }
+                continue;
+            }
 
-                // LIGHTWEIGHT PATH: only the rich-presence text changed
-                if (deltaCheck.statusOnly && existingData) {
-                    console.log(`[STATUS ONLY] Outside user ${tag || emailKey}: ${deltaCheck.reason}.`);
-                    const slimId = existingData.onlineId || tag;
-                    const slim = await applyStatusOnlyUpdate(slimId, existingData, deltaCheck.liveGameStatus);
-                    finalData.gamertags[slimId] = slim;
-                    activeCanonicalGamertags.add(slimId);
-                    anyProfileUpdated = true;
-                    continue;
-                }
+            // LIGHTWEIGHT PATH: only the rich-presence text changed
+            if (deltaCheck.statusOnly && existingData) {
+                console.log(`[STATUS ONLY] Outside user ${tag || emailKey}: ${deltaCheck.reason}.`);
+                const slimId = existingData.onlineId || tag;
+                const slim = await applyStatusOnlyUpdate(slimId, existingData, deltaCheck.liveGameStatus);
+                finalData.gamertags[slimId] = slim;
+                activeCanonicalGamertags.add(slimId);
+                anyProfileUpdated = true;
+                await markSynced(slimId);
+                continue;
+            }
 
-                console.log(`[OUTSIDE SYNC] Processing ${tag || emailKey} (${deltaCheck.reason})...`);
-                const data = await getFullUserData(userAuth, tag, emailKey, accountId || "me", existingData, true, globalGames, cloudDlcCatalog);
+            console.log(`[OUTSIDE SYNC] Processing ${tag || emailKey} (${deltaCheck.reason})...`);
+            const data = await getFullUserData(userAuth, tag, emailKey, targetId, existingData, true, globalGames, cloudDlcCatalog);
 
-                if (data && data.onlineId) {
-                    activeCanonicalGamertags.add(data.onlineId);
-                    anyProfileUpdated = true;
-                    data.npssoValid = true;
-                    data.npssoStatus = "ACTIVE";
+            if (data && data.onlineId) {
+                activeCanonicalGamertags.add(data.onlineId);
+                anyProfileUpdated = true;
+                data.npssoValid = true;
+                data.npssoStatus = "ACTIVE";
 
-                    finalData.gamertags[data.onlineId] = data;
-                    finalData.usersByGamerTag[data.onlineId] = String(data.accountId);
+                finalData.gamertags[data.onlineId] = data;
+                finalData.usersByGamerTag[data.onlineId] = String(data.accountId);
 
-                    await syncNodeToFirebase(`gamertags/${data.onlineId}`, data);
-                    await syncNodeToFirebase(`gamertags/${data.onlineId}/npssoValid`, true);
-                    
-                    await resilientFetch(buildRtdbUrl(`/users/${emailKey}/psn_npsso_valid`), {
-                        method: "PUT",
-                        body: JSON.stringify(true)
-                    });
-                }
+                await syncNodeToFirebase(`gamertags/${data.onlineId}`, data);
+                await syncNodeToFirebase(`gamertags/${data.onlineId}/npssoValid`, true);
+
+                await markSynced(data.onlineId, { psn_last_synced: data.lastUpdated });
             }
         }
 
