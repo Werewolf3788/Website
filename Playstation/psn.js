@@ -21,7 +21,8 @@
  * 5. Live Rich Presence Status (NEW in 66.2.0):
  * - gameStatus (e.g., "Exploring Whitetail Mountains") read from basicPresence
  *   gameTitleInfoList[0].gameStatus when the game publishes it.
- * - Stored at /psn/gamertags/{onlineId}/gameStatus (+ gameStatusUpdated).
+ * - Stored at /psn/gamertags/{onlineId}/gameStatus (+ gameStatusUpdated). Empty string "" when none
+ *   (Firebase deletes null values, so "" keeps the key present for your site).
  * - Status-only changes use a LIGHTWEIGHT write path (no full trophy/store ingestion).
  * 6. Maximum-Pull Mode (NEW in 66.3.0):
  * - PULL_CONFIG replaces the old hard caps (20 skeletons / 10 trophy sets / 25 recent trophies / 100 played).
@@ -1539,6 +1540,11 @@ async function evaluateUserActivityDelta(agentAuth, targetId, knownKey, knownGam
         return { hasDelta: true, reason: "SESSION_LOGOUT_FINALIZATION", liveOnline: false, liveGameStatus: null };
     }
 
+    // ONE-TIME BACKFILL: records saved before gameStatus existed (or when it was null and Firebase dropped it)
+    if (existingData.gameStatus === undefined) {
+        return { hasDelta: true, statusOnly: true, reason: "GAME_STATUS_FIELD_BACKFILL", liveOnline, liveGameStatus };
+    }
+
     // ONLINE-ONLY GUARD: If user is offline and has no active tracking sessions, SKIP completely
     if (!liveOnline && !storedOnline) {
         return { hasDelta: false, reason: "OFFLINE_SKIPPED", liveOnline: false, liveGameStatus: null };
@@ -1593,9 +1599,9 @@ async function evaluateUserActivityDelta(agentAuth, targetId, knownKey, knownGam
 // Returns the merged record so the caller can keep finalData in sync.
 async function applyStatusOnlyUpdate(onlineId, existingData, liveGameStatus) {
     const stamp = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
-    await syncNodeToFirebase(`gamertags/${onlineId}/gameStatus`, liveGameStatus || null);
+    await syncNodeToFirebase(`gamertags/${onlineId}/gameStatus`, liveGameStatus || "");
     await syncNodeToFirebase(`gamertags/${onlineId}/gameStatusUpdated`, stamp);
-    return { ...existingData, gameStatus: liveGameStatus || null, gameStatusUpdated: stamp };
+    return { ...existingData, gameStatus: liveGameStatus || "", gameStatusUpdated: stamp };
 }
 
 // ----------------------------------------------------------------------------
@@ -1648,7 +1654,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                     online: false,
                     currentGame: "Dashboard",
                     currentGameId: null,
-                    gameStatus: null,
+                    gameStatus: "",
                     art: existingData?.art || existingData?.posterArt || existingData?.currentGameArt || null,
                     posterArt: existingData?.posterArt || existingData?.art || existingData?.currentGameArt || null,
                     image: existingData?.image || existingData?.art || existingData?.posterArt || null,
@@ -2079,7 +2085,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                         titleId: isDashboard ? null : activeTitleId, 
                         cusaId: isDashboard ? null : activeTitleId, 
                         title: matchedGame.name || resolvedTitle, 
-                        gameStatus: liveGameStatus,
+                        gameStatus: liveGameStatus || "",
                         description: globalGames[persistentRootCommId]?.description || null,
                         storeListing: globalGames[persistentRootCommId]?.storeListing || null,
                         storeBadges: globalGames[persistentRootCommId]?.storeBadges || [],
@@ -2126,7 +2132,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         const presence = {
             online: isPlayerOnline,
             currentGame: resolvedTitle,
-            gameStatus: liveGameStatus,
+            gameStatus: liveGameStatus || "",
             gameStatusUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }),
             commId: persistentRootCommId,
             currentGameId: isDashboard ? null : activeTitleId,
@@ -2226,7 +2232,7 @@ function buildSquadIntelligence(allGamertagsData) {
         gamesPlayed: p.gamesPlayed || 0,
         isOnline: !!p.online,
         currentGame: p.currentGame || "Dashboard",
-        gameStatus: p.gameStatus || null,
+        gameStatus: p.gameStatus || "",
         commId: p.commId || null,
         conceptId: p.conceptId || null,
         currentGameId: p.currentGameId || null,
