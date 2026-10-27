@@ -2,25 +2,12 @@
 // * Project: Far Cry 5 Hope County Resistance Companion & Field Ledger
 // * File: fc5.js
 // * Location: /game/fc5.js
-// * Build Version: v8.7.0-FC5-CLOUD-AUTHORITATIVE
-// * Deployment Timestamp: 2026-10-26 21:31:00 EDT (America/New_York)
+// * Build Version: v9.4.0-FC5-FIRESTORE-COTW-ALIGNED
+// * Deployment Timestamp: 2026-10-27 00:01:00 EDT (America/New_York)
 // ============================================================================
 
-// Section 1: Dual-App Target Bridge Configuration
-// Auth Host: playstation-be936 (Prevents popup auth domain errors)
-const hostConfig = {
-    apiKey: "AIzaSyB3V7SUlOOfZyv3xbMWt_Ok5CuLVNAc3wA",
-    authDomain: "playstation-be936.firebaseapp.com",
-    databaseURL: "https://playstation-be936-default-rtdb.firebaseio.com",
-    projectId: "playstation-be936",
-    storageBucket: "playstation-be936.firebasestorage.app",
-    messagingSenderId: "179234475627",
-    appId: "1:179234475627:web:bb9144ffd347f90c17ab2e",
-    measurementId: "G-VRMHTR4C4Y"
-};
-
-// Target Data Engine: entertainment-71888 (Where your Firestore & RTDB live)
-const dataConfig = {
+// Section 1: Unified Firebase Configuration (entertainment-71888)
+const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
     databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
@@ -31,25 +18,11 @@ const dataConfig = {
     measurementId: "G-JDNSLD3GFE"
 };
 
-// Initialize Primary Auth App
-let authApp;
-if (!firebase.apps.some(a => a.name === '[DEFAULT]')) {
-    authApp = firebase.initializeApp(hostConfig);
-} else {
-    authApp = firebase.app();
-}
-
-// Initialize Target Data App for entertainment-71888
-let dataApp;
-if (!firebase.apps.some(a => a.name === 'dataApp')) {
-    dataApp = firebase.initializeApp(dataConfig, 'dataApp');
-} else {
-    dataApp = firebase.app('dataApp');
-}
-
-const auth = firebase.auth(authApp);
-const rtdb = firebase.database(dataApp);
-const firestore = firebase.firestore(dataApp);
+// Initialize single authoritative Firebase App
+const app = (!firebase.apps || !firebase.apps.length) ? firebase.initializeApp(firebaseConfig) : firebase.app();
+const auth = firebase.auth(app);
+const rtdb = firebase.database(app);
+const firestore = firebase.firestore(app);
 
 try {
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
@@ -57,19 +30,20 @@ try {
     console.warn("[Auth Persistence]:", e);
 }
 
+const CURRENT_GAME_ID = "FarCry5";
 const PSN_FC5_COMM_ID = "NPWR12514_00";
 
 // Section 2: Global State Engine
 window.appState = {
     activeUser: 'Werewolf',
     activeEmail: 'raykevin71888@gmail.com', // Admin Account
-    platform: 'ps',
+    platform: 'ps', // 'ps', 'pc', 'xbox', 'steam'
     currentUser: null,
     gameData: null,
     psnSkeleton: null,
     myFriendCode: null,
     state: {
-        ranks: { rp: 0, outposts: 0, cultProperty: 0, stashes: 0, roster: 0, perks: 0 },
+        ranks: { rp: 0, outposts: 0, cultProperty: 0, stashes: 0, roster: 0, perks: 0, collectibles: 0 },
         checks: {}
     },
 
@@ -79,11 +53,19 @@ window.appState = {
     },
 
     switchPlatform: function(newPlatform) {
-        this.platform = newPlatform;
+        if (!newPlatform) return;
+        this.platform = newPlatform.toLowerCase();
+        
+        const platformSelector = document.getElementById('platformSelector');
+        if (platformSelector && platformSelector.value !== this.platform) {
+            platformSelector.value = this.platform;
+        }
+
         const nameEl = document.getElementById('resistance-name');
         if (nameEl) {
-            nameEl.innerText = `${this.activeUser.toUpperCase()} [${newPlatform.toUpperCase()}]`;
+            nameEl.innerText = `${this.activeUser.toUpperCase()} [${this.platform.toUpperCase()}]`;
         }
+        
         this.loadProgress();
         this.syncFriendsProgress();
     },
@@ -95,27 +77,28 @@ window.appState = {
         let stashesCount = 0;
         let rosterCount = 0;
         let perksCount = 0;
+        let collectiblesCount = 0;
         let calculatedRP = 0;
 
-        // Tally Prepper Stashes
+        // Tally Prepper Stashes (+400 RP each)
         if (this.gameData.prepper_stashes) {
             ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
                 const list = this.gameData.prepper_stashes[reg] || [];
                 list.forEach(s => {
-                    if (this.state.checks[s.id]) {
+                    if (this.state.checks && this.state.checks[s.id]) {
                         stashesCount++;
-                        calculatedRP += 400; // 400 RP per Stash
+                        calculatedRP += 400;
                     }
                 });
             });
         }
 
-        // Tally Roster & Fangs
+        // Tally Roster & Fangs (+600 RP each)
         if (Array.isArray(this.gameData.guns_and_fangs_for_hire)) {
             this.gameData.guns_and_fangs_for_hire.forEach(h => {
-                if (this.state.checks[h.id]) {
+                if (this.state.checks && this.state.checks[h.id]) {
                     rosterCount++;
-                    calculatedRP += 600; // 600 RP per Specialist
+                    calculatedRP += 600;
                 }
             });
         }
@@ -126,30 +109,46 @@ window.appState = {
                 const list = this.gameData.survivalist_magazines[reg] || [];
                 list.forEach((m, idx) => {
                     const mId = `mag_${reg}_${idx}`;
-                    if (this.state.checks[mId]) {
+                    if (this.state.checks && this.state.checks[mId]) {
                         perksCount++;
                     }
                 });
             });
         }
 
-        // Tally Story Missions
+        // Tally Story Missions (+600 RP each)
         if (Array.isArray(this.gameData.walkthrough_missions)) {
             this.gameData.walkthrough_missions.forEach(m => {
-                if (this.state.checks[m.id]) {
+                if (this.state.checks && this.state.checks[m.id]) {
                     calculatedRP += 600;
                 }
             });
         }
 
+        // Tally Collectibles across all 6 quest sets
+        if (this.gameData.collectibles) {
+            for (const cKey in this.gameData.collectibles) {
+                const group = this.gameData.collectibles[cKey];
+                if (group && Array.isArray(group.items)) {
+                    group.items.forEach(cItem => {
+                        if (this.state.checks && this.state.checks[cItem.id]) {
+                            collectiblesCount++;
+                        }
+                    });
+                }
+            }
+        }
+
         this.state.ranks.stashes = stashesCount;
         this.state.ranks.roster = rosterCount;
         this.state.ranks.perks = perksCount;
+        this.state.ranks.collectibles = collectiblesCount;
         this.state.ranks.rp = calculatedRP;
 
         this.updateRankDisplay('stashes', stashesCount);
         this.updateRankDisplay('roster', rosterCount);
         this.updateRankDisplay('perks', perksCount);
+        this.updateRankDisplay('collectibles', collectiblesCount);
         this.updateRankDisplay('rp', calculatedRP);
     },
 
@@ -158,31 +157,34 @@ window.appState = {
         if (el) el.innerText = val || 0;
     },
 
-    // Save Progress (Directly to entertainment-71888 Firestore)
+    // Save Progress: users > {emailKey} > platform > {platform} > progress > FarCry5
     saveProgress: function() {
         this.recalculateMetrics();
-        const key = `fc5_progress_${this.getEmailKey()}_${this.platform}`;
+        const emailKey = this.getEmailKey();
+        const storageKey = `fc5_progress_${emailKey}_${this.platform}`;
 
         try {
-            localStorage.setItem(key, JSON.stringify(this.state));
+            localStorage.setItem(storageKey, JSON.stringify(this.state));
         } catch (e) {
             console.warn("[Storage] Local write failure:", e);
         }
 
-        const emailKey = this.getEmailKey();
-
         if (firestore) {
-            const userDocRef = firestore.collection("users").doc(emailKey).collection("games").doc("FarCry5");
+            const targetDocRef = firestore
+                .collection("users")
+                .doc(emailKey)
+                .collection("platform")
+                .doc(this.platform)
+                .collection("progress")
+                .doc(CURRENT_GAME_ID);
 
-            userDocRef.set({
-                platforms: {
-                    [this.platform]: {
-                        state: this.state,
-                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-                    }
-                }
+            targetDocRef.set({
+                game: "Far Cry 5",
+                platform: this.platform,
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+                state: this.state
             }, { merge: true }).then(() => {
-                this.updateStatus(`[entertainment-71888] Firestore Updated: ${new Date().toLocaleTimeString()}`);
+                this.updateStatus(`[Cloud] Saved to: users/.../platform/${this.platform}/progress/${CURRENT_GAME_ID}`);
             }).catch(err => {
                 console.error("[Firestore Save Error]:", err);
                 this.updateStatus(`Firestore Sync Failed: ${err.message}`);
@@ -192,34 +194,41 @@ window.appState = {
         }
     },
 
-    // Load Progress
+    // Load Progress: users > {emailKey} > platform > {platform} > progress > FarCry5
     loadProgress: function() {
-        const key = `fc5_progress_${this.getEmailKey()}_${this.platform}`;
         const emailKey = this.getEmailKey();
+        const storageKey = `fc5_progress_${emailKey}_${this.platform}`;
 
         if (firestore) {
-            this.updateStatus("Querying entertainment-71888 Cloud Firestore...");
+            this.updateStatus(`Fetching: platform/${this.platform}/progress/${CURRENT_GAME_ID}...`);
 
-            firestore.collection("users").doc(emailKey).collection("games").doc("FarCry5").get()
+            firestore
+                .collection("users")
+                .doc(emailKey)
+                .collection("platform")
+                .doc(this.platform)
+                .collection("progress")
+                .doc(CURRENT_GAME_ID)
+                .get()
                 .then(doc => {
                     if (doc.exists) {
                         const data = doc.data();
-                        if (data?.platforms?.[this.platform]?.state) {
-                            this.state = data.platforms[this.platform].state;
+                        if (data && data.state) {
+                            this.state = data.state;
                             this.applyStateToUI();
-                            this.updateStatus("Synced from entertainment-71888 Cloud Firestore.");
+                            this.updateStatus(`Telemetry loaded [${this.platform.toUpperCase()}]`);
                             return;
                         }
                     }
-                    this.fallbackLocalLoad(key);
+                    this.fallbackLocalLoad(storageKey);
                 }).catch(err => {
                     console.warn("[Firestore Fetch Error]:", err);
-                    this.fallbackLocalLoad(key);
+                    this.fallbackLocalLoad(storageKey);
                 });
             return;
         }
 
-        this.fallbackLocalLoad(key);
+        this.fallbackLocalLoad(storageKey);
     },
 
     fallbackLocalLoad: function(storageKey) {
@@ -228,20 +237,23 @@ window.appState = {
             if (raw) {
                 const parsed = JSON.parse(raw);
                 if (parsed && typeof parsed === 'object') {
-                    this.state = Object.assign({ ranks: {}, checks: {} }, parsed);
+                    this.state = Object.assign({
+                        ranks: { rp: 0, outposts: 0, cultProperty: 0, stashes: 0, roster: 0, perks: 0, collectibles: 0 },
+                        checks: {}
+                    }, parsed);
                     this.applyStateToUI();
-                    this.updateStatus("Operating in LocalStorage mode.");
+                    this.updateStatus(`Operating in LocalStorage mode [${this.platform.toUpperCase()}].`);
                     return;
                 }
             }
         } catch (e) {}
 
         this.state = {
-            ranks: { rp: 0, outposts: 0, cultProperty: 0, stashes: 0, roster: 0, perks: 0 },
+            ranks: { rp: 0, outposts: 0, cultProperty: 0, stashes: 0, roster: 0, perks: 0, collectibles: 0 },
             checks: {}
         };
         this.applyStateToUI();
-        this.updateStatus("Profile ready.");
+        this.updateStatus(`Profile initialized [${this.platform.toUpperCase()}].`);
     },
 
     applyStateToUI: function() {
@@ -300,6 +312,7 @@ window.appState = {
         }
     },
 
+    // Resolves squad members from RTDB and queries Firestore under this.platform
     syncFriendsProgress: async function() {
         const rosterContainer = document.getElementById('friendsRosterContainer');
         if (!rosterContainer) return;
@@ -310,27 +323,39 @@ window.appState = {
             const friendsData = friendsSnap.val();
 
             if (!friendsData || Object.keys(friendsData).length === 0) {
-                rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">No friends linked yet. Share your friend code to link squad members.</div>';
+                rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">No squad members linked yet. Share your friend code to link co-op members.</div>';
                 return;
             }
 
             let cardsHtml = '';
             for (const [fKey, fObj] of Object.entries(friendsData)) {
                 const friendUsername = fObj.username || fKey;
+                const friendTargetKey = fObj.email ? fObj.email.replace(/@/g, '_at_').replace(/\./g, '_') : fKey;
 
                 let friendState = null;
                 if (firestore) {
                     try {
-                        const fDoc = await firestore.collection("users").doc(fKey).collection("games").doc("FarCry5").get();
+                        const fDoc = await firestore
+                            .collection("users")
+                            .doc(friendTargetKey)
+                            .collection("platform")
+                            .doc(this.platform)
+                            .collection("progress")
+                            .doc(CURRENT_GAME_ID)
+                            .get();
+
                         if (fDoc.exists) {
-                            friendState = fDoc.data()?.platforms?.[this.platform]?.state;
+                            friendState = fDoc.data()?.state;
                         }
-                    } catch (err) {}
+                    } catch (err) {
+                        console.warn(`[Friend Query Error]: ${friendTargetKey}`, err);
+                    }
                 }
 
                 const checksCount = friendState?.checks ? Object.values(friendState.checks).filter(Boolean).length : 0;
                 const rpVal = friendState?.ranks?.rp || 0;
                 const stashesVal = friendState?.ranks?.stashes || 0;
+                const colVal = friendState?.ranks?.collectibles || 0;
 
                 cardsHtml += `
                     <div style="background:#1e293b; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px;">
@@ -341,7 +366,7 @@ window.appState = {
                             </span>
                         </div>
                         <div style="font-size:0.75rem; color:#cbd5e1; margin-bottom:4px;">
-                            <strong>RP:</strong> ${rpVal} • <strong>Stashes:</strong> ${stashesVal}
+                            <strong>RP:</strong> ${rpVal} • <strong>Stashes:</strong> ${stashesVal} • <strong>Collectibles:</strong> ${colVal}
                         </div>
                         <div style="font-size:0.75rem; color:#94a3b8;">
                             Total Items Completed: <strong>${checksCount}</strong>
@@ -517,7 +542,7 @@ async function autoCheckUserPsnTrophies() {
     }
 }
 
-// Section 5: Render Far Cry 5 Tactical Accordion Sections (All Collapsed by Default)
+// Section 5: Render Accordion Sections (All Collapsed by Default)
 function renderFarCry5Companion(data) {
     const container = document.getElementById('section-container');
     if (!container || !data) return;
@@ -590,7 +615,7 @@ function renderFarCry5Companion(data) {
         });
     }
 
-    // 5C. Collectibles
+    // 5C. Collectibles (6 Sets)
     if (data.collectibles) {
         for (const cKey in data.collectibles) {
             const group = data.collectibles[cKey];
@@ -654,7 +679,7 @@ function renderFarCry5Companion(data) {
         </section>`;
     }
 
-    // 5E. Trophies & Achievements (Mapped to PSN Official Skeleton)
+    // 5E. Trophies & Achievements
     const trophiesList = (appState.psnSkeleton && appState.psnSkeleton.trophies) ? Object.values(appState.psnSkeleton.trophies) : (data.trophies_and_achievements || []);
 
     if (Array.isArray(trophiesList) && trophiesList.length > 0) {
@@ -707,6 +732,7 @@ function renderFarCry5Companion(data) {
 function toSecureUrl(url) {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
+    if (trimmed.startsWith('/')) return trimmed; // Supports clean relative routes like /fc5
     if (trimmed.startsWith('http://static-resource.np.community.playstation.net/')) {
         return trimmed.replace('http://static-resource.np.community.playstation.net/', 'https://static-resource.np.community.playstation.net/');
     }
@@ -729,6 +755,15 @@ function escapeHtml(str) {
 // Section 7: Primary Lifecycle Gate
 document.addEventListener('DOMContentLoaded', async () => {
     await buildUtmNavigation();
+
+    // Hook platform dropdown listener if present on page
+    const platformSelector = document.getElementById('platformSelector');
+    if (platformSelector) {
+        platformSelector.value = appState.platform;
+        platformSelector.addEventListener('change', (e) => {
+            appState.switchPlatform(e.target.value);
+        });
+    }
 
     const menuBtn = document.getElementById('mobileMenuBtn');
     const navLinks = document.getElementById('dynamicNavLinks');
@@ -764,7 +799,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 appState.activeUser = user.displayName || 'Werewolf';
 
                 const nameEl = document.getElementById('resistance-name');
-                if (nameEl) nameEl.innerText = `${appState.activeUser.toUpperCase()} [FAR CRY 5]`;
+                if (nameEl) nameEl.innerText = `${appState.activeUser.toUpperCase()} [${appState.platform.toUpperCase()}]`;
 
                 if (authBtn) authBtn.classList.add('hidden');
                 const badge = document.getElementById('userProfileBadge');
