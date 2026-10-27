@@ -2,22 +2,34 @@
 // * Project: Universal Multi-Game Resistance Companion & Field Ledger
 // * File: game.js
 // * Location: /game/game.js
-// * Build Version: v10.9.0-UNIVERSAL-FRIEND-PSN-OVERRIDE
-// * Change Log (v10.9.0):
-// *   - Strict sequential lifecycle: JSON -> DOM -> Firestore -> PSN -> Squad Roster.
-// *   - Universal user identity & RTDB profile resolution (supports wildhorse_spirit, OneLIVIDMAN, Darkwing69420, DesdemonaTiger, etc.).
-// *   - Write-protection gate (isCloudLoaded) prevents refresh race condition data loss.
-// *   - Friend-code-keyed persistence (/users/{friend_code}/platform/{platform}/progress/{gameId}).
-// *   - Automatic PSN live trophy tracking for PS players with linked gamertag / accountId.
-// *   - Manual click-to-earn interactive fallback for PC / Xbox / Steam / Unlinked PS users.
-// *   - Progressive counter overrides (PSN progress overrides typed values, e.g. FS25 cotton/bales).
-// *   - Live section header progress chips (earned / total) with dynamic emerald completion styling.
-// *   - Squad co-op earner badges showing friend avatars on completed items.
-// * Deployment Timestamp: 2026-10-27 03:07:00 EDT (America/New_York)
+// * Build Version: v10.8.0-PSN-LINKS-AND-PROGRESS
+// * Change Log (v10.8.0):
+// *   - NEW: every section header shows earned / total (e.g. "3 / 10") and turns green when complete.
+// *   - FIX: PSN trophies were auto-marked BEFORE the cloud ledger loaded, so the cloud's "false" values
+// *     overwrote them. PSN is now applied AFTER the ledger loads, on every refresh, and wins.
+// *   - NEW: players with a PSN ID on PlayStation get trophies auto-marked (blue ring, can't be unchecked).
+// *     Everyone else (Xbox / PC / Steam, or PS without a PSN ID) can tick items by hand.
+// *   - NEW: universal PSN links in the game JSON. Any item may carry "psn_trophy_id" (auto-completes when
+// *     that trophy is earned) and "target" (makes it a counter, e.g. 100 cotton). A counter mirrors the
+// *     trophy's progress from PSN and OVERRIDES the typed number so it stays accurate.
+// *   - NEW: friends' ledgers also use those PSN links, so their avatars appear on PSN-earned items.
+// *   - NEW: game JSON file can be chosen with ?game=slug (defaults to farcry5).
+// * Change Log (v10.7.0):
+// *   - FIX: friends' progress showed 0 because the friend's saved platform (e.g. "playstation")
+// *     was used as the Firestore document key, but progress is stored under "ps". Platform names
+// *     are now normalized, and every candidate platform is tried until a saved ledger is found.
+// *   - NEW: friends' PSN trophies are read straight from /psn/gamertags/{tag}/liveTrophyProgress,
+// *     so they show even if the friend never opened this page.
+// *   - NEW: earner badges are the friend's AVATAR ONLY (name on hover), shown only on items the
+// *     friend has earned. Falls back to a letter circle when an avatar is missing.
+// *   - NEW: friend identity is resolved defensively (friend code, username, avatar, PSN gamertag).
+// *   - NEW: friends list refreshes every 2 minutes while the tab is visible.
+// *   - NEW: game JSON may provide "commId" (or "psn_communication_id") at the top level.
+// * Deployment Timestamp: 2026-10-27 EDT (America/New_York)
 // ============================================================================
 
-// Section 1: Authoritative Firebase Configuration & Initialization
-// Lines 18-42: Bound to entertainment-71888
+// Section 1: Authoritative Firebase Credentials & Services
+// Lines 10-34: Cloud configuration bound to entertainment-71888
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -40,11 +52,12 @@ try {
     console.warn("[Auth Persistence]:", e);
 }
 
-// Global cache for friends' progress to paint item badges on cards
+// Global cache for friends' progress to paint item badges on cards.
+// Keyed by friend code: { username, avatar, platform, data }
 window.squadProgressCache = {};
 
 // Section 2: Universal Global State Engine
-// Lines 47-310: Dynamic game context and friend-code-keyed structures
+// Lines 37-295: Dynamic game context and friend-code-keyed structures
 window.appState = {
     activeUser: 'Guest',
     activeEmail: null,
@@ -366,7 +379,7 @@ window.appState = {
 };
 
 // Section 3: Friend-Code-Keyed Firestore Persistence
-// Lines 313-425: Eliminates email key mismatches by saving to users/{friend_code}
+// Lines 298-410: Eliminates email key mismatches by saving to users/{friend_code}
 window.appState.saveProgress = function() {
     const friendCode = this.myFriendCode;
 
@@ -391,7 +404,7 @@ window.appState.saveProgress = function() {
 
     const payload = this.buildPayload();
     if (firestore) {
-        // Authoritative path: /users/{friend_code}/platform/{platform}/progress/{gameId}
+        // Primary authoritative path: /users/{friend_code}/platform/{platform}/progress/{gameId}
         const docRef = firestore
             .collection("users")
             .doc(friendCode)
@@ -440,6 +453,7 @@ window.appState.loadProgress = async function() {
         this.updateStatus(`Reading cloud ledger for ${this.platform.toUpperCase()}...`);
 
         try {
+            // Check friend_code document path first
             let doc = await firestore
                 .collection("users")
                 .doc(friendCode)
@@ -449,7 +463,7 @@ window.appState.loadProgress = async function() {
                 .doc(this.activeGameId)
                 .get();
 
-            // Backward compatibility fallback for legacy records stored under emailKey
+            // Backward compatibility fallback for legacy data stored under emailKey
             if (!doc.exists && emailKey) {
                 const legacyDoc = await firestore
                     .collection("users")
@@ -514,7 +528,7 @@ window.appState.migrateGuestProgressIfPresent = async function() {
 };
 
 // Section 4: UI Painting & Multi-User Co-Op Card Badging
-// Lines 428-545: Renders active user's checks and friends' AVATAR badges on earned items
+// Lines 413-520: Renders active user's checks and friends' AVATAR badges on earned items
 window.appState.applyStateToUI = function() {
     this.ensureCounterTargets();
     this.recalculateMetrics();
@@ -563,17 +577,17 @@ window.appState.applyStateToUI = function() {
             }
         }
 
-        // PlayStation-verified items receive an authoritative blue ring and lock against manual toggle
+        // PlayStation-verified items get a blue ring and cannot be unchecked by hand
         const locked = psnAuto && !!(ref && ref.psnSynced);
         if (btn) {
             btn.style.boxShadow = locked ? '0 0 0 2px #3b82f6' : '';
             btn.title = locked ? 'Verified by PlayStation Network' : '';
         }
 
-        // Counter cards (collectibles that declare a target, e.g. 100 cotton)
+        // Counter cards (collectibles that have a target, e.g. 100 cotton)
         if (card.getAttribute('data-target')) updateCounterCard(card, ref, locked);
 
-        // Shared squad earner bar (friend avatars only, strictly for items the friend has earned)
+        // Shared squad earner bar (friend avatars only, only for items the friend has earned)
         let squadTagContainer = card.querySelector('.squad-earners-bar');
         if (!squadTagContainer) {
             squadTagContainer = document.createElement('div');
@@ -600,13 +614,13 @@ window.appState.toggleItem = function(itemId, type, group) {
     const wasDone = !!(ref && (ref.collected || ref.unlocked || ref.completed || ref.earned));
     const isCounter = !!(ref && Number(ref.target) > 0);
 
-    // PlayStation is authoritative for anything it has verified
+    // PlayStation is the source of truth for anything it has verified
     if (this.isPsnLocked(ref) && (wasDone || isCounter)) {
         this.updateStatus('Verified by PlayStation Network. This updates automatically.');
         return;
     }
 
-    // Counter cards: check button toggles complete target count
+    // Counter cards: the check button completes (or clears) the whole count
     if (type === 'collectible' && isCounter) {
         ref.count = wasDone ? 0 : Number(ref.target);
         ref.collected = !wasDone;
@@ -658,7 +672,10 @@ window.adjRank = function(rankKey, delta) {
 };
 
 // Section 4C: Universal PSN Links, Counters & Section Progress
-// Lines 550-715: Item progress target resolution and PSN telemetry overrides
+// Game JSON items may declare:
+//   "psn_trophy_id": 12   -> item auto-completes when that PSN trophy is earned
+//   "target": 100         -> item becomes a counter (0..100); with psn_trophy_id the count mirrors PSN progress
+//   "counter": true       -> same as target, but the target is read from the PSN trophy itself
 function resolveItemTarget(item, trophyIdOverride) {
     if (!item || typeof item !== 'object') return 0;
     const explicit = Number(item.target ?? item.count_target ?? item.psn_target ?? 0);
@@ -673,6 +690,7 @@ function resolveItemTarget(item, trophyIdOverride) {
     return 0;
 }
 
+// Builds the list of {type, id, group, trophyId, target} links declared in the game JSON.
 function buildPsnLinks(data) {
     const links = [];
     if (!data || typeof data !== 'object') return links;
@@ -719,6 +737,7 @@ function normalizeLiveTrophy(tObj) {
     };
 }
 
+// Finds (or creates) the ledger entry a link points at. Works on appState and on a friend's ledger copy.
 function ledgerItem(ledger, link) {
     const ensure = (obj, key, fallback) => { if (!obj[key] || typeof obj[key] !== 'object') obj[key] = fallback; return obj[key]; };
     if (link.type === 'collectible') {
@@ -750,7 +769,11 @@ function isLedgerItemDone(item, type) {
     return !!item.collected;
 }
 
-// Applies live PSN trophy metrics over a ledger, forcing authoritative counter values
+// Applies a player's live PSN trophy data to a ledger (appState or a friend's copy).
+// - Earned trophies are marked earned (and flagged psnSynced).
+// - Linked items complete when their trophy is earned.
+// - Linked counters take the PSN progress value, OVERRIDING whatever was typed, so the count stays accurate.
+// Returns true when anything changed.
 function applyPsnLive(ledger, live, gameId, links) {
     if (!ledger || !live || typeof live !== 'object') return false;
     let modified = false;
@@ -812,6 +835,7 @@ window.appState.isPsnLocked = function(ref) {
     return this.hasPsnAuto() && !!ref && ref.psnSynced === true;
 };
 
+// Makes sure every counter item in the JSON has a target and a count in the ledger.
 window.appState.ensureCounterTargets = function() {
     if (!this.gameData || !this.gameData.collectibles) return;
     for (const cKey in this.gameData.collectibles) {
@@ -853,6 +877,7 @@ window.appState.adjCounter = function(group, itemId, delta) {
     this.setCounter(group, itemId, (Number(ref.count) || 0) + delta);
 };
 
+// Pulls this player's live PSN trophies and applies them AFTER the cloud ledger has loaded.
 window.appState.refreshPsnProgress = async function() {
     if (!this.hasPsnAuto() || !this.activePsnCommId) return false;
     const psnKey = await resolvePsnKey(this.myPsnGamertag, this.myPsnAccountId);
@@ -884,6 +909,7 @@ function updateCounterCard(card, ref, locked) {
     card.querySelectorAll('.counter-btn').forEach(b => { b.disabled = !!locked; });
 }
 
+// Fills every "earned / total" chip in the section headers from the cards' completed state.
 function updateSectionProgress() {
     document.querySelectorAll('.category-section').forEach(sec => {
         const chip = sec.querySelector('.section-progress');
@@ -918,7 +944,8 @@ function counterControlsHtml(group, id, target) {
         </div>`;
 }
 
-// Section 4B: Friend Earner Badges
+// Section 4B: Friend Earner Helpers (avatar badges, item matching)
+// Decides whether a friend's saved ledger has earned a given card, and builds the avatar badge.
 function friendHasEarnedItem(sData, id, type, group) {
     if (!sData || typeof sData !== 'object') return false;
 
@@ -942,6 +969,7 @@ function friendHasEarnedItem(sData, id, type, group) {
     return !!(sData.missions?.[id]?.completed);
 }
 
+// Round avatar only. The friend's name is available on hover (title) for accessibility.
 function buildAvatarBadge(entry) {
     const name = (entry && entry.username) ? String(entry.username) : 'Squad Member';
     const wrap = document.createElement('span');
@@ -969,7 +997,7 @@ function buildAvatarBadge(entry) {
 }
 
 // Section 5: Universal Profile & Squad Bridge via Friend Codes
-// Lines 720-890: Synchronizes authorized friends and reads PSN presence
+// Lines 523-640: Queries user RTDB profiles and synchronizes authorized friend ledgers
 window.appState.fetchUserProfile = async function() {
     const emailKey = this.getEmailKey();
     if (!rtdb || !emailKey) return;
@@ -991,6 +1019,8 @@ window.appState.fetchUserProfile = async function() {
     }
 };
 
+// Maps whatever a profile stores ("playstation", "PSN", "PlayStation (PSN)"...) to the key progress is saved under.
+// Unknown values (for example "hunter") return null so they are never used as a Firestore document ID.
 function normalizePlatformKey(raw) {
     const p = String(raw || '').toLowerCase().trim();
     if (!p) return null;
@@ -1008,6 +1038,7 @@ function buildPlatformCandidates(friendPrimaryPlatform, viewerPlatform) {
     return Array.from(new Set(list));
 }
 
+// Tries each candidate platform until the friend has a saved ledger for this game.
 async function fetchFriendProgressDoc(friendCode, platforms) {
     for (const plat of platforms) {
         const doc = await firestore
@@ -1023,6 +1054,7 @@ async function fetchFriendProgressDoc(friendCode, platforms) {
     return null;
 }
 
+// Case-insensitive PSN gamertag lookup against the index the PSN sync writes (/psn/usersByGamerTag).
 window.psnIndexCache = null;
 async function getPsnGamertagIndex() {
     const cached = window.psnIndexCache;
@@ -1052,6 +1084,8 @@ async function resolvePsnKey(tag, accountId) {
     return tag || null;
 }
 
+// Reads a player's live trophy data for the active game straight from the PSN sync.
+// Returns the raw map keyed by trophyId (earned flag + progress counters), or null.
 async function fetchPsnLiveFor(psnKey) {
     if (!rtdb || !psnKey || !appState.activePsnCommId) return null;
     try {
@@ -1059,6 +1093,7 @@ async function fetchPsnLiveFor(psnKey) {
         const live = snap.val();
         if (!live || typeof live !== 'object') return null;
 
+        // RTDB can hand back an array when keys are 0,1,2...; normalise to an object keyed by trophyId
         const out = {};
         Object.entries(live).forEach(([tId, tObj]) => {
             if (tObj && typeof tObj === 'object') out[String(tId)] = tObj;
@@ -1081,6 +1116,8 @@ async function fetchPsnAvatarFor(psnKey) {
     }
 }
 
+// Builds a friend's ledger: their saved progress plus the PSN links (trophies, linked items, counters),
+// then recomputes their headline numbers so the friend card and avatar badges stay accurate.
 function buildFriendLedger(friendData, psnLive) {
     const ledger = Object.assign({}, friendData || {});
     if (!ledger.trophies || typeof ledger.trophies !== 'object') ledger.trophies = {};
@@ -1107,6 +1144,7 @@ function buildFriendLedger(friendData, psnLive) {
     return ledger;
 }
 
+// Works out a friend's code, display name, avatar, PSN gamertag and platform from whatever is stored.
 async function resolveFriendIdentity(fKey, fRaw) {
     const f = (fRaw && typeof fRaw === 'object') ? fRaw : {};
     const keyLooksLikeEmail = typeof fKey === 'string' && fKey.includes('_at_');
@@ -1148,6 +1186,7 @@ window.appState.syncFriendsProgress = async function() {
 
     friendsSyncInFlight = true;
     try {
+        // Query strictly the active user's authorized friends list
         const friendsSnap = await rtdb.ref(`/users/${emailKey}/friends`).once('value');
         const friendsData = friendsSnap.val();
 
@@ -1165,7 +1204,7 @@ window.appState.syncFriendsProgress = async function() {
             const identity = await resolveFriendIdentity(fKey, fRaw);
             const platformCandidates = buildPlatformCandidates(identity.primaryPlatform, this.platform);
 
-            // 1. Friend's cloud ledger
+            // 1. The friend's saved ledger (collectibles, stashes, roster, missions, trophies they ticked)
             let progress = null;
             let readError = null;
             if (firestore && identity.friendCode) {
@@ -1177,13 +1216,14 @@ window.appState.syncFriendsProgress = async function() {
                 }
             }
 
-            // 2. Friend's live PSN progress
+            // 2. Their live PSN trophies, straight from the PSN sync (works even if they never opened this page).
+            //    Only applied when the friend plays this game on PlayStation.
             const usedPlatform = progress ? progress.platform : (platformCandidates[0] || this.platform);
             const psnKey = await resolvePsnKey(identity.psnTag, identity.psnAccountId);
             const psnLive = (psnKey && usedPlatform === 'ps') ? await fetchPsnLiveFor(psnKey) : null;
             const friendData = buildFriendLedger(progress ? progress.data : {}, psnLive);
 
-            // 3. Avatar resolution
+            // 3. Avatar: site profile first, then the PSN avatar
             let avatar = identity.avatar;
             if (!avatar && psnKey) avatar = toSecureUrl(await fetchPsnAvatarFor(psnKey));
 
@@ -1232,6 +1272,7 @@ window.appState.syncFriendsProgress = async function() {
 
         window.squadProgressCache = newCache;
         rosterContainer.innerHTML = cardsHtml;
+        // Paint friend avatars onto the cards they have earned
         this.applyStateToUI();
     } catch (e) {
         console.warn("[Friends Roster Sync Error]:", e);
@@ -1241,7 +1282,7 @@ window.appState.syncFriendsProgress = async function() {
 };
 
 // Section 6: Dynamic Top Navigation Bar (/utm_links)
-// Lines 893-980: Hierarchical menu generation
+// Lines 643-730: Dynamic folder and link hierarchy
 async function buildUtmNavigation() {
     const navContainer = document.getElementById('dynamicNavLinks');
     if (!navContainer || !rtdb) return;
@@ -1336,8 +1377,8 @@ async function buildUtmNavigation() {
     }
 }
 
-// Section 7: PSN Game Skeleton Telemetry
-// Lines 983-1020: Binds game poster and triggers automated trophy sync
+// Section 7: PSN Game Skeleton & Live User Trophy Sync
+// Lines 733-810: Queries user gamertag and matches commId to pull live trophies
 async function syncPsnSkeleton() {
     if (!rtdb || !appState.activePsnCommId) return;
     try {
@@ -1356,17 +1397,20 @@ async function syncPsnSkeleton() {
             if (fav2) fav2.href = posterUrl;
             if (navLogo) navLogo.src = posterUrl;
         }
+
     } catch (e) {
         console.warn("[PSN Skeleton Sync Error]:", e);
     }
 }
 
+// Kept for older callers: PSN trophies are now applied by appState.refreshPsnProgress()
+// (after the cloud ledger loads, so the cloud's saved "false" values can never overwrite PSN).
 async function autoCheckUserPsnTrophies() {
     return appState.refreshPsnProgress();
 }
 
 // Section 8: Render Game Companion Content Cards
-// Lines 1023-1185: Generates accordion categories with shared earner tag containers
+// Lines 813-980: Generates accordion categories with shared earner tag containers
 function renderFarCry5Companion(data) {
     const container = document.getElementById('section-container');
     if (!container || !data) return;
@@ -1560,8 +1604,8 @@ function renderFarCry5Companion(data) {
     container.innerHTML = html;
 }
 
-// Section 9: Sanitization & URL Helpers
-// Lines 1188-1212: Normalization routines
+// Section 9: Helpers
+// Lines 983-1007: Url normalization & character sanitization
 function toSecureUrl(url) {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
@@ -1585,8 +1629,8 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
-// Section 10: Strict Sequential Lifecycle Gate
-// Lines 1215-1310: Manages initialization, auth listeners, and recurring refresh loops
+// Section 10: Strict Sequential Lifecycle
+// Lines 1010-1090: Controlled initialization eliminating premature overwrite race conditions
 document.addEventListener('DOMContentLoaded', async () => {
     await buildUtmNavigation();
 
@@ -1624,11 +1668,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Step 1: Resolve game slug, fetch JSON & bind metadata anchors
+    // Step 1: Fetch game JSON & bind metadata anchors
+    // Which game JSON to load: ?game=slug, or <body data-game="slug">, defaulting to farcry5
     const slugParam = (typeof window !== 'undefined' && window.location) ? new URLSearchParams(window.location.search).get('game') : null;
     const slugAttr = (document.body && document.body.dataset) ? document.body.dataset.game : null;
     const gameSlug = String(slugParam || slugAttr || 'farcry5').toLowerCase().replace(/[^a-z0-9_-]/g, '') || 'farcry5';
-    
     const dataUrls = [
         `./data/${gameSlug}.json`,
         `./${gameSlug}.json`,
@@ -1647,7 +1691,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (json.game) appState.activeGame = json.game;
             if (json.gameId) appState.activeGameId = json.gameId;
             else if (gameSlug !== 'farcry5') appState.activeGameId = gameSlug;
-
+            // The PSN communication ID can be provided as "commId" (preferred) or "psn_communication_id"
             const jsonCommId = json.commId || json.psn_communication_id;
             if (jsonCommId) appState.activePsnCommId = jsonCommId;
             if (json.activeMission) appState.activeMission = json.activeMission;
@@ -1662,7 +1706,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await loadData(0);
 
-    // Step 2: Auth listener (Executes only after DOM cards are fully painted)
+    // Step 2: Auth listener (Triggers only after DOM cards exist)
     if (auth) {
         auth.onAuthStateChanged(async (user) => {
             if (user) {
@@ -1682,7 +1726,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (nameBadge) nameBadge.innerText = appState.activeUser;
                 if (authModal) authModal.classList.add('hidden');
 
-                // 1. Fetch user's own profile (friend_code, psn_username, psn_account_id)
+                // 1. Fetch user's own profile (friend_code and psn_username)
                 await appState.fetchUserProfile();
                 // 2. Load authoritative progress from /users/{friend_code}/
                 await appState.loadProgress();
@@ -1712,7 +1756,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Step 3: Keep the squad view and PSN presence synchronized every 2 minutes
+    // Step 3: Keep the squad view fresh while the tab is open (every 2 minutes, visible tab only)
     setInterval(async () => {
         if (document.visibilityState === 'visible' && appState.currentUser && appState.isCloudLoaded) {
             await appState.refreshPsnProgress();
