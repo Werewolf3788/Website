@@ -2,8 +2,19 @@
 // * Project: Universal Multi-Game Resistance Companion & Field Ledger
 // * File: game.js
 // * Location: /game/game.js
-// * Build Version: v10.6.0-FRIEND-CODE-PERSISTENCE
-// * Deployment Timestamp: 2026-10-27 02:31:00 EDT (America/New_York)
+// * Build Version: v10.7.0-FRIEND-AVATARS
+// * Change Log (v10.7.0):
+// *   - FIX: friends' progress showed 0 because the friend's saved platform (e.g. "playstation")
+// *     was used as the Firestore document key, but progress is stored under "ps". Platform names
+// *     are now normalized, and every candidate platform is tried until a saved ledger is found.
+// *   - NEW: friends' PSN trophies are read straight from /psn/gamertags/{tag}/liveTrophyProgress,
+// *     so they show even if the friend never opened this page.
+// *   - NEW: earner badges are the friend's AVATAR ONLY (name on hover), shown only on items the
+// *     friend has earned. Falls back to a letter circle when an avatar is missing.
+// *   - NEW: friend identity is resolved defensively (friend code, username, avatar, PSN gamertag).
+// *   - NEW: friends list refreshes every 2 minutes while the tab is visible.
+// *   - NEW: game JSON may provide "commId" (or "psn_communication_id") at the top level.
+// * Deployment Timestamp: 2026-10-27 EDT (America/New_York)
 // ============================================================================
 
 // Section 1: Authoritative Firebase Credentials & Services
@@ -30,7 +41,8 @@ try {
     console.warn("[Auth Persistence]:", e);
 }
 
-// Global cache for friends' progress to paint item tags on cards
+// Global cache for friends' progress to paint item badges on cards.
+// Keyed by friend code: { username, avatar, platform, data }
 window.squadProgressCache = {};
 
 // Section 2: Universal Global State Engine
@@ -498,9 +510,11 @@ window.appState.migrateGuestProgressIfPresent = async function() {
 };
 
 // Section 4: UI Painting & Multi-User Co-Op Card Badging
-// Lines 413-520: Renders active user's checks and authorized friends' earner badges
+// Lines 413-520: Renders active user's checks and friends' AVATAR badges on earned items
 window.appState.applyStateToUI = function() {
     this.recalculateMetrics();
+
+    const squadEntries = Object.values(window.squadProgressCache || {});
 
     document.querySelectorAll('.fc5-item-card').forEach(card => {
         const id = card.getAttribute('data-id');
@@ -542,49 +556,23 @@ window.appState.applyStateToUI = function() {
             }
         }
 
-        // Shared squad earner badge bar
+        // Shared squad earner bar (friend avatars only, only for items the friend has earned)
         let squadTagContainer = card.querySelector('.squad-earners-bar');
         if (!squadTagContainer) {
             squadTagContainer = document.createElement('div');
             squadTagContainer.className = 'squad-earners-bar';
-            squadTagContainer.style.cssText = 'display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.08); padding-top:6px;';
             card.appendChild(squadTagContainer);
         }
 
-        let earnersHtml = '';
-        if (window.squadProgressCache && Object.keys(window.squadProgressCache).length > 0) {
-            for (const [friendUsername, sData] of Object.entries(window.squadProgressCache)) {
-                let friendHasItem = false;
+        const earners = squadEntries.filter(entry => friendHasEarnedItem(entry.data, id, type, group));
 
-                if (type === 'stash') {
-                    friendHasItem = !!(sData.stashes?.[id]?.collected);
-                } else if (type === 'roster') {
-                    friendHasItem = !!(sData.roster?.[id]?.unlocked);
-                } else if (type === 'collectible') {
-                    if (group && sData.collectibles?.[group]?.items?.[id]) {
-                        friendHasItem = !!(sData.collectibles[group].items[id].collected);
-                    }
-                } else if (type === 'magazine') {
-                    if (sData.collectibles?.survivalist_magazines?.items?.[id]) {
-                        friendHasItem = !!(sData.collectibles.survivalist_magazines.items[id].collected);
-                    }
-                } else if (type === 'trophy') {
-                    friendHasItem = !!(sData.trophies?.[id]?.earned);
-                } else {
-                    friendHasItem = !!(sData.missions?.[id]?.completed);
-                }
-
-                if (friendHasItem) {
-                    earnersHtml += `
-                        <span style="font-size:0.7rem; font-weight:800; background:rgba(255,85,0,0.18); border:1px solid var(--user-theme-accent); color:#fff; padding:2px 8px; border-radius:12px; display:inline-flex; align-items:center; gap:4px;">
-                            <span style="color:var(--user-theme-accent);">✓</span> ${escapeHtml(friendUsername)}
-                        </span>
-                    `;
-                }
-            }
+        squadTagContainer.innerHTML = '';
+        if (earners.length > 0) {
+            squadTagContainer.style.cssText = 'display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.08); padding-top:6px;';
+            earners.forEach(entry => squadTagContainer.appendChild(buildAvatarBadge(entry)));
+        } else {
+            squadTagContainer.style.cssText = 'display:none;';
         }
-
-        squadTagContainer.innerHTML = earnersHtml;
     });
 };
 
@@ -631,6 +619,58 @@ window.adjRank = function(rankKey, delta) {
     appState.saveProgress();
 };
 
+// Section 4B: Friend Earner Helpers (avatar badges, item matching)
+// Decides whether a friend's saved ledger has earned a given card, and builds the avatar badge.
+function friendHasEarnedItem(sData, id, type, group) {
+    if (!sData || typeof sData !== 'object') return false;
+
+    if (type === 'stash') {
+        return !!(sData.stashes?.[id]?.collected);
+    } else if (type === 'roster') {
+        return !!(sData.roster?.[id]?.unlocked);
+    } else if (type === 'collectible') {
+        if (group && sData.collectibles?.[group]?.items?.[id]) {
+            return !!(sData.collectibles[group].items[id].collected);
+        }
+        return false;
+    } else if (type === 'magazine') {
+        if (sData.collectibles?.survivalist_magazines?.items?.[id]) {
+            return !!(sData.collectibles.survivalist_magazines.items[id].collected);
+        }
+        return false;
+    } else if (type === 'trophy') {
+        return !!(sData.trophies?.[id]?.earned);
+    }
+    return !!(sData.missions?.[id]?.completed);
+}
+
+// Round avatar only. The friend's name is available on hover (title) for accessibility.
+function buildAvatarBadge(entry) {
+    const name = (entry && entry.username) ? String(entry.username) : 'Squad Member';
+    const wrap = document.createElement('span');
+    wrap.className = 'squad-avatar-badge';
+    wrap.title = `${name} has this`;
+    wrap.style.cssText = 'width:26px; height:26px; border-radius:50%; border:2px solid var(--user-theme-accent); overflow:hidden; display:inline-flex; align-items:center; justify-content:center; background:#1e293b; color:#fff; font-size:0.7rem; font-weight:800; flex:0 0 auto;';
+
+    const initial = name.trim().charAt(0).toUpperCase() || '?';
+    const avatarUrl = toSecureUrl(entry && entry.avatar ? entry.avatar : '');
+
+    if (avatarUrl) {
+        const img = document.createElement('img');
+        img.src = avatarUrl;
+        img.alt = name;
+        img.style.cssText = 'width:100%; height:100%; object-fit:cover; display:block;';
+        img.onerror = function() {
+            img.remove();
+            wrap.textContent = initial;
+        };
+        wrap.appendChild(img);
+    } else {
+        wrap.textContent = initial;
+    }
+    return wrap;
+}
+
 // Section 5: Universal Profile & Squad Bridge via Friend Codes
 // Lines 523-640: Queries user RTDB profiles and synchronizes authorized friend ledgers
 window.appState.fetchUserProfile = async function() {
@@ -654,9 +694,164 @@ window.appState.fetchUserProfile = async function() {
     }
 };
 
+// Maps whatever a profile stores ("playstation", "PSN", "PlayStation (PSN)"...) to the key progress is saved under.
+// Unknown values (for example "hunter") return null so they are never used as a Firestore document ID.
+function normalizePlatformKey(raw) {
+    const p = String(raw || '').toLowerCase().trim();
+    if (!p) return null;
+    if (p === 'ps' || p === 'psn' || p === 'ps4' || p === 'ps5' || p.includes('playstation') || p.includes('sony')) return 'ps';
+    if (p.includes('xbox')) return 'xbox';
+    if (p.includes('steam')) return 'steam';
+    if (p === 'pc' || p.includes('windows')) return 'pc';
+    return null;
+}
+
+const PLATFORM_LABELS = { ps: 'PLAYSTATION', xbox: 'XBOX', pc: 'PC', steam: 'STEAM' };
+
+function buildPlatformCandidates(friendPrimaryPlatform, viewerPlatform) {
+    const list = [normalizePlatformKey(friendPrimaryPlatform), viewerPlatform, 'ps', 'pc', 'xbox', 'steam'].filter(Boolean);
+    return Array.from(new Set(list));
+}
+
+// Tries each candidate platform until the friend has a saved ledger for this game.
+async function fetchFriendProgressDoc(friendCode, platforms) {
+    for (const plat of platforms) {
+        const doc = await firestore
+            .collection("users")
+            .doc(friendCode)
+            .collection("platform")
+            .doc(plat)
+            .collection("progress")
+            .doc(appState.activeGameId)
+            .get();
+        if (doc.exists) return { data: doc.data() || {}, platform: plat };
+    }
+    return null;
+}
+
+// Case-insensitive PSN gamertag lookup against the index the PSN sync writes (/psn/usersByGamerTag).
+window.psnIndexCache = null;
+async function getPsnGamertagIndex() {
+    const cached = window.psnIndexCache;
+    if (cached && (Date.now() - cached.at) < 5 * 60 * 1000) return cached.map;
+    const snap = await rtdb.ref('/psn/usersByGamerTag').once('value');
+    const map = snap.val() || {};
+    window.psnIndexCache = { at: Date.now(), map: map };
+    return map;
+}
+
+async function resolvePsnKey(tag, accountId) {
+    if (!rtdb) return tag || null;
+    try {
+        const map = await getPsnGamertagIndex();
+        const keys = Object.keys(map);
+        if (tag && map[tag] !== undefined) return tag;
+        const lower = String(tag || '').toLowerCase();
+        const byName = lower ? keys.find(k => k.toLowerCase() === lower) : null;
+        if (byName) return byName;
+        if (accountId) {
+            const byId = keys.find(k => String(map[k]) === String(accountId));
+            if (byId) return byId;
+        }
+    } catch (e) {
+        console.warn("[PSN Index Lookup Error]:", e);
+    }
+    return tag || null;
+}
+
+// Reads a player's live trophies for the active game straight from the PSN sync.
+// Returns a map keyed exactly like the card IDs: trophy_{gameId}_{trophyId}
+async function fetchPsnTrophiesFor(psnKey) {
+    if (!rtdb || !psnKey || !appState.activePsnCommId) return null;
+    try {
+        const snap = await rtdb.ref(`/psn/gamertags/${psnKey}/liveTrophyProgress/${appState.activePsnCommId}`).once('value');
+        const live = snap.val();
+        if (!live || typeof live !== 'object') return null;
+
+        const out = {};
+        Object.entries(live).forEach(([tId, tObj]) => {
+            if (tObj && (tObj.earned === true || tObj.isEarned === true)) {
+                out[`trophy_${appState.activeGameId}_${tId}`] = {
+                    earned: true,
+                    name: tObj.name || tObj.trophyName || 'Trophy',
+                    rank: (tObj.type || tObj.trophyType || 'Bronze').toUpperCase(),
+                    psnSynced: true
+                };
+            }
+        });
+        return out;
+    } catch (e) {
+        console.warn(`[Friend PSN Trophy Error for ${psnKey}]:`, e);
+        return null;
+    }
+}
+
+async function fetchPsnAvatarFor(psnKey) {
+    if (!rtdb || !psnKey) return '';
+    try {
+        const snap = await rtdb.ref(`/psn/gamertags/${psnKey}/avatar`).once('value');
+        const val = snap.val();
+        return (typeof val === 'string') ? val : '';
+    } catch (e) {
+        return '';
+    }
+}
+
+// Adds PSN-earned trophies to a friend's saved ledger and recomputes their trophy percentage.
+function mergeFriendTrophies(friendData, psnTrophies) {
+    const data = Object.assign({}, friendData || {});
+    const merged = Object.assign({}, data.trophies || {});
+
+    if (psnTrophies) {
+        Object.entries(psnTrophies).forEach(([key, val]) => {
+            if (!merged[key] || !merged[key].earned) {
+                merged[key] = Object.assign({}, merged[key] || {}, val);
+            }
+        });
+    }
+
+    data.trophies = merged;
+    const total = Object.keys(appState.trophies).length || appState.trophies_total || 51;
+    const earned = Object.values(merged).filter(t => t && t.earned).length;
+    const computedPercent = total > 0 ? Math.round((earned / total) * 100) : 0;
+    data.trophies_earned = Math.max(earned, Number(data.trophies_earned) || 0);
+    data.trophies_percent = Math.max(computedPercent, Number(data.trophies_percent) || 0);
+    return data;
+}
+
+// Works out a friend's code, display name, avatar, PSN gamertag and platform from whatever is stored.
+async function resolveFriendIdentity(fKey, fRaw) {
+    const f = (fRaw && typeof fRaw === 'object') ? fRaw : {};
+    const keyLooksLikeEmail = typeof fKey === 'string' && fKey.includes('_at_');
+    const emailKey = f.email_key || f.emailKey || (keyLooksLikeEmail ? fKey : null);
+
+    let profile = {};
+    const missingSomething = !f.friend_code || !f.username || !(f.avatar_url || f.avatar) || !(f.psn_username || f.gamertag);
+    if (emailKey && rtdb && missingSomething) {
+        try {
+            const snap = await rtdb.ref(`/users/${emailKey}`).once('value');
+            profile = snap.val() || {};
+        } catch (e) {
+            profile = {};
+        }
+    }
+
+    return {
+        friendCode: f.friend_code || f.friendCode || profile.friend_code || (keyLooksLikeEmail ? null : fKey),
+        username: f.username || profile.username || profile.display_name || profile.displayName || 'Squad Member',
+        avatar: toSecureUrl(f.avatar_url || f.avatar || profile.avatar_url || profile.photoURL || profile.avatar || ''),
+        psnTag: f.psn_username || f.gamertag || profile.psn_username || profile.gamertag || null,
+        psnAccountId: f.psn_account_id || profile.psn_account_id || null,
+        primaryPlatform: f.primary_platform || profile.primary_platform || null
+    };
+}
+
+let friendsSyncInFlight = false;
+
 window.appState.syncFriendsProgress = async function() {
     const rosterContainer = document.getElementById('friendsRosterContainer');
     if (!rosterContainer) return;
+    if (friendsSyncInFlight) return;
 
     const emailKey = this.getEmailKey();
     if (!emailKey) {
@@ -664,62 +859,77 @@ window.appState.syncFriendsProgress = async function() {
         return;
     }
 
+    friendsSyncInFlight = true;
     try {
         // Query strictly the active user's authorized friends list
         const friendsSnap = await rtdb.ref(`/users/${emailKey}/friends`).once('value');
         const friendsData = friendsSnap.val();
 
         if (!friendsData || Object.keys(friendsData).length === 0) {
+            window.squadProgressCache = {};
             rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">No squad members linked yet. Share your friend code to link co-op members.</div>';
+            this.applyStateToUI();
             return;
         }
 
-        window.squadProgressCache = {};
+        const newCache = {};
         let cardsHtml = '';
 
-        for (const [fKey, fObj] of Object.entries(friendsData)) {
-            // The friend's code is the node key or explicit attribute
-            const friendCode = fObj.friend_code || fKey;
-            const friendUsername = fObj.username || 'Squad Member';
-            const friendAvatar = toSecureUrl(fObj.avatar_url || '');
-            const targetPlatform = (fObj.primary_platform || this.platform).toLowerCase();
+        for (const [fKey, fRaw] of Object.entries(friendsData)) {
+            const identity = await resolveFriendIdentity(fKey, fRaw);
+            const platformCandidates = buildPlatformCandidates(identity.primaryPlatform, this.platform);
 
-            let friendData = null;
-            if (firestore && friendCode) {
+            // 1. The friend's saved ledger (collectibles, stashes, roster, missions, trophies they ticked)
+            let progress = null;
+            let readError = null;
+            if (firestore && identity.friendCode) {
                 try {
-                    // Query directly: /users/{friend_code}/platform/{platform}/progress/{gameId}
-                    const fDoc = await firestore
-                        .collection("users")
-                        .doc(friendCode)
-                        .collection("platform")
-                        .doc(targetPlatform)
-                        .collection("progress")
-                        .doc(this.activeGameId)
-                        .get();
-
-                    if (fDoc.exists) {
-                        friendData = fDoc.data();
-                        // Cache for card-level earner badges
-                        window.squadProgressCache[friendUsername] = friendData;
-                    }
+                    progress = await fetchFriendProgressDoc(identity.friendCode, platformCandidates);
                 } catch (err) {
-                    console.warn(`[Squad Firestore Error for ${friendCode}]:`, err);
+                    readError = err;
+                    console.warn(`[Squad Firestore Error for ${identity.friendCode}]:`, err);
                 }
             }
 
-            const rpVal = friendData?.ranks?.rp || 0;
-            const stashesVal = friendData?.ranks?.stashes || 0;
-            const colVal = friendData?.ranks?.collectibles || 0;
-            const trophyPercent = friendData?.trophies_percent || 0;
+            // 2. Their live PSN trophies, straight from the PSN sync (works even if they never opened this page)
+            const psnKey = await resolvePsnKey(identity.psnTag, identity.psnAccountId);
+            const psnTrophies = psnKey ? await fetchPsnTrophiesFor(psnKey) : null;
+            const friendData = mergeFriendTrophies(progress ? progress.data : {}, psnTrophies);
+            const usedPlatform = progress ? progress.platform : (platformCandidates[0] || this.platform);
+
+            // 3. Avatar: site profile first, then the PSN avatar
+            let avatar = identity.avatar;
+            if (!avatar && psnKey) avatar = toSecureUrl(await fetchPsnAvatarFor(psnKey));
+
+            const cacheKey = identity.friendCode || fKey;
+            newCache[cacheKey] = {
+                username: identity.username,
+                avatar: avatar,
+                platform: usedPlatform,
+                data: friendData
+            };
+
+            const rpVal = friendData.ranks?.rp || 0;
+            const stashesVal = friendData.ranks?.stashes || 0;
+            const colVal = friendData.ranks?.collectibles || 0;
+            const trophyPercent = friendData.trophies_percent || 0;
+            const platformLabel = PLATFORM_LABELS[usedPlatform] || String(usedPlatform).toUpperCase();
+
+            let statusNote = '';
+            if (readError) {
+                statusNote = `<div style="font-size:0.7rem; color:#f87171; margin-top:2px;">Can't read this friend's saved progress (${escapeHtml(readError.code || 'error')}).</div>`;
+            } else if (!progress && !psnTrophies) {
+                statusNote = `<div style="font-size:0.7rem; color:#94a3b8; margin-top:2px;">No saved progress for this game yet.</div>`;
+            }
 
             cardsHtml += `
                 <div style="background:#1e293b; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px; display:flex; gap:12px; align-items:center;">
-                    ${friendAvatar ? `<img src="${friendAvatar}" style="width:44px; height:44px; border-radius:50%; object-fit:cover; border:2px solid var(--user-theme-accent);" onerror="this.style.display='none'">` : ''}
+                    ${avatar ? `<img src="${escapeHtml(avatar)}" style="width:44px; height:44px; border-radius:50%; object-fit:cover; border:2px solid var(--user-theme-accent);" onerror="this.style.display='none'">` : ''}
                     <div style="flex:1;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                            <div style="font-weight:900; color:#fff; font-size:0.95rem;">${escapeHtml(friendUsername)}</div>
+                            <div style="font-weight:900; color:#fff; font-size:0.95rem;">${escapeHtml(identity.username)}</div>
                             <span style="font-size:0.7rem; font-weight:800; background:rgba(255,85,0,0.2); color:var(--user-theme-accent); padding:2px 6px; border-radius:4px; text-transform:uppercase;">
-                                ${escapeHtml(targetPlatform)}
+                                ${escapeHtml(platformLabel)}
                             </span>
                         </div>
                         <div style="font-size:0.75rem; color:#cbd5e1; margin-bottom:2px;">
@@ -728,16 +938,20 @@ window.appState.syncFriendsProgress = async function() {
                         <div style="font-size:0.75rem; color:#94a3b8;">
                             Trophy Progress: <strong style="color:#fff;">${trophyPercent}%</strong>
                         </div>
+                        ${statusNote}
                     </div>
                 </div>
             `;
         }
 
+        window.squadProgressCache = newCache;
         rosterContainer.innerHTML = cardsHtml;
-        // Paint earner tags onto the category cards
+        // Paint friend avatars onto the cards they have earned
         this.applyStateToUI();
     } catch (e) {
         console.warn("[Friends Roster Sync Error]:", e);
+    } finally {
+        friendsSyncInFlight = false;
     }
 };
 
@@ -870,7 +1084,9 @@ async function autoCheckUserPsnTrophies() {
     if (!rtdb || !appState.myPsnGamertag || !appState.activePsnCommId) return;
 
     try {
-        const liveTrophiesSnap = await rtdb.ref(`/psn/gamertags/${appState.myPsnGamertag}/liveTrophyProgress/${appState.activePsnCommId}`).once('value');
+        // Resolve the exact stored gamertag (case-insensitive / by account ID)
+        const psnKey = await resolvePsnKey(appState.myPsnGamertag, appState.myPsnAccountId);
+        const liveTrophiesSnap = await rtdb.ref(`/psn/gamertags/${psnKey}/liveTrophyProgress/${appState.activePsnCommId}`).once('value');
         const liveTrophies = liveTrophiesSnap.val();
 
         if (liveTrophies && typeof liveTrophies === 'object') {
@@ -1173,7 +1389,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             appState.gameData = json;
             if (json.game) appState.activeGame = json.game;
             if (json.gameId) appState.activeGameId = json.gameId;
-            if (json.psn_communication_id) appState.activePsnCommId = json.psn_communication_id;
+            // The PSN communication ID can be provided as "commId" (preferred) or "psn_communication_id"
+            const jsonCommId = json.commId || json.psn_communication_id;
+            if (jsonCommId) appState.activePsnCommId = jsonCommId;
             if (json.activeMission) appState.activeMission = json.activeMission;
 
             await syncPsnSkeleton();
@@ -1216,7 +1434,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await appState.loadProgress();
                 // 4. Migrate any offline guest progress
                 await appState.migrateGuestProgressIfPresent();
-                // 5. Query authorized friends and paint squad badges on cards
+                // 5. Query authorized friends and paint squad avatars on cards
                 await appState.syncFriendsProgress();
             } else {
                 appState.currentUser = null;
@@ -1224,6 +1442,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 appState.activeUser = 'Guest';
                 appState.myFriendCode = null;
                 appState.myPsnGamertag = null;
+                window.squadProgressCache = {};
 
                 const nameEl = document.getElementById('resistance-name');
                 if (nameEl) nameEl.innerText = `GUEST [${appState.platform.toUpperCase()}]`;
@@ -1236,4 +1455,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
+
+    // Step 3: Keep the squad view fresh while the tab is open (every 2 minutes, visible tab only)
+    setInterval(() => {
+        if (document.visibilityState === 'visible' && appState.currentUser && appState.isCloudLoaded) {
+            appState.syncFriendsProgress();
+        }
+    }, 120000);
 });
