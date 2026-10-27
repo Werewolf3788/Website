@@ -1,0 +1,154 @@
+{
+  "$schema_version": "1.0.0",
+  "meta": {
+    "generated_at": "2026-10-27T19:37:00-04:00",
+    "rtdb_project_id": "entertainment-71888",
+    "primary_gamertag": "wildhorse_spirit",
+    "user_key": "raykevin71888_at_gmail_com"
+  },
+  "user": {
+    "username": "raykevin71888",
+    "avatar_source": "psn",
+    "avatar_url": "https://images.playstation.com/...",
+    "friend_code": "GQGI0SWY",
+    "last_profile_sync": 1729000000000,
+    "updated_at": 1729000000000,
+    "platforms": {
+      "psn": {
+        "username": "wildhorse_spirit",
+        "account_id": "1234567890123456789",
+        "npsso_valid": true,
+        "scopes": {
+          "account_id_scope": "public",
+          "username_scope": "public",
+          "npsso_scope": "private"
+        }
+      },
+      "steam": {
+        "steam_id": "76561198000000000",
+        "steam_friend_code": "12345678",
+        "scopes": {
+          "steam_id_scope": "public",
+          "steam_friend_code_scope": "public"
+        }
+      },
+      "xbox": {
+        "gamertag": "wildhorse_spirit",
+        "scopes": {
+          "xbox_gamertag_scope": "public"
+        }
+      },
+      "twitch": {
+        "username": "werewolf3788",
+        "scopes": {
+          "twitch_scope": "public"
+        }
+      }
+    },
+    "friends": [
+      {
+        "friend_code": "GQGI0SWY",
+        "username": "Ray",
+        "primary_platform": "PSN",
+        "avatar_url": "//...",
+        "linked_at": 1728000000000
+      }
+    ]
+  },
+  "psn_presence": {
+    "online": true,
+    "platform": "PS5",
+    "displayPlatform": "PS5",
+    "gameStatus": "In Game",
+    "gameStatusUpdated": 1729000000000,
+    "handshakeState": "ESTABLISHED",
+    "handshakeText": "Online on PS5",
+    "session": {
+      "currentGame": "Far Cry New Dawn",
+      "currentGameArt": "//...",
+      "currentGameHours": "42 hrs",
+      "currentGameNumericHours": 42.5,
+      "currentSessionSeconds": 5400,
+      "sessionStartedAt": "2026-10-27T18:07:00-04:00",
+      "sessionStartedAtMs": 1729000000000
+    },
+    "totals": {
+      "gamesPlayed": 48,
+      "playedHoursWhole": 620,
+      "playedHoursApp": 620.4,
+      "level": 312,
+      "plus": true
+    }
+  },
+  "recent_games": [
+    {
+      "titleId": "CUSA13865_00",
+      "npCommunicationId": "NPWR01323_00",
+      "name": "Far Cry New Dawn",
+      "platform": "PS4",
+      "category": "ps4_game",
+      "imageUrl": "//...",
+      "posterArt": "//...",
+      "progress": 78,
+      "completionRatio": "78%",
+      "playCount": 14,
+      "playDuration": "PT42H30M",
+      "nativePlaytimeHours": 42.5,
+      "nativePlaytimeFormatted": "42h 30m",
+      "definedTotal": 51,
+      "earnedTotal": 40,
+      "firstPlayedDateTime": "2026-10-01T12:00:00Z",
+      "lastPlayedDateTime": "2026-10-27T19:30:00Z"
+    }
+  ],
+  "live_trophy_progress": {
+    "NPWR01323_00": {
+      "trophyId": 0,
+      "name": "Conqueror",
+      "detail": "Earn all Trophies.",
+      "description": "Unlock all trophies in Far Cry New Dawn.",
+      "gameTitle": "Far Cry New Dawn",
+      "rank": "PLATINUM",
+      "type": "platinum",
+      "rarity": 14.2,
+      "rarityTier": "VERY_RARE",
+      "difficultyTier": "Gold",
+      "earned": false,
+      "hidden": false,
+      "icon": "//...",
+      "currentValue": 40,
+      "trophyProgressTargetValue": 51,
+      "timestamp": null
+    }
+  },
+  "most_recent_trophies": [
+    {
+      "trophyId": 12,
+      "commId": "NPWR01323_00",
+      "npCommunicationId": "NPWR01323_00",
+      "name": "Finders Keepers",
+      "gameTitle": "Far Cry New Dawn",
+      "type": "bronze",
+      "rank": "BRONZE",
+      "rarity": 62.4,
+      "icon": "//...",
+      "earnedDate": "2026-10-27T17:45:00-04:00",
+      "timestamp": 1729000000000,
+      "earnedAge": "2 hours ago"
+    }
+  ],
+  "purchased_games": [
+    {
+      "productId": "UP0001-CUSA13865_00-FARCRYNEWDAWN000",
+      "titleId": "CUSA13865_00",
+      "name": "Far Cry New Dawn",
+      "platform": "PS4",
+      "isActive": true,
+      "isDownloadable": true,
+      "isPreOrder": false,
+      "image": {
+        "url": "//..."
+      }
+    }
+  ]
+}
