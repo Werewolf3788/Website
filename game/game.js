@@ -2,23 +2,22 @@
 // * Project: Universal Multi-Game Resistance Companion & Field Ledger
 // * File: game.js
 // * Location: /game/game.js
-// * Build Version: v10.7.0-FRIEND-AVATARS
-// * Change Log (v10.7.0):
-// *   - FIX: friends' progress showed 0 because the friend's saved platform (e.g. "playstation")
-// *     was used as the Firestore document key, but progress is stored under "ps". Platform names
-// *     are now normalized, and every candidate platform is tried until a saved ledger is found.
-// *   - NEW: friends' PSN trophies are read straight from /psn/gamertags/{tag}/liveTrophyProgress,
-// *     so they show even if the friend never opened this page.
-// *   - NEW: earner badges are the friend's AVATAR ONLY (name on hover), shown only on items the
-// *     friend has earned. Falls back to a letter circle when an avatar is missing.
-// *   - NEW: friend identity is resolved defensively (friend code, username, avatar, PSN gamertag).
-// *   - NEW: friends list refreshes every 2 minutes while the tab is visible.
-// *   - NEW: game JSON may provide "commId" (or "psn_communication_id") at the top level.
-// * Deployment Timestamp: 2026-10-27 EDT (America/New_York)
+// * Build Version: v10.9.0-UNIVERSAL-FRIEND-PSN-OVERRIDE
+// * Change Log (v10.9.0):
+// *   - Strict sequential lifecycle: JSON -> DOM -> Firestore -> PSN -> Squad Roster.
+// *   - Universal user identity & RTDB profile resolution (supports wildhorse_spirit, OneLIVIDMAN, Darkwing69420, DesdemonaTiger, etc.).
+// *   - Write-protection gate (isCloudLoaded) prevents refresh race condition data loss.
+// *   - Friend-code-keyed persistence (/users/{friend_code}/platform/{platform}/progress/{gameId}).
+// *   - Automatic PSN live trophy tracking for PS players with linked gamertag / accountId.
+// *   - Manual click-to-earn interactive fallback for PC / Xbox / Steam / Unlinked PS users.
+// *   - Progressive counter overrides (PSN progress overrides typed values, e.g. FS25 cotton/bales).
+// *   - Live section header progress chips (earned / total) with dynamic emerald completion styling.
+// *   - Squad co-op earner badges showing friend avatars on completed items.
+// * Deployment Timestamp: 2026-10-27 03:07:00 EDT (America/New_York)
 // ============================================================================
 
-// Section 1: Authoritative Firebase Credentials & Services
-// Lines 10-34: Cloud configuration bound to entertainment-71888
+// Section 1: Authoritative Firebase Configuration & Initialization
+// Lines 18-42: Bound to entertainment-71888
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -41,12 +40,11 @@ try {
     console.warn("[Auth Persistence]:", e);
 }
 
-// Global cache for friends' progress to paint item badges on cards.
-// Keyed by friend code: { username, avatar, platform, data }
+// Global cache for friends' progress to paint item badges on cards
 window.squadProgressCache = {};
 
 // Section 2: Universal Global State Engine
-// Lines 37-295: Dynamic game context and friend-code-keyed structures
+// Lines 47-310: Dynamic game context and friend-code-keyed structures
 window.appState = {
     activeUser: 'Guest',
     activeEmail: null,
@@ -57,6 +55,8 @@ window.appState = {
     myFriendCode: null,
     myPsnGamertag: null,
     myPsnAccountId: null,
+    psnLinks: [],
+    psnLive: null,
     isCloudLoaded: false, // Critical write-protection gate
     
     // Active game anchors populated dynamically from the JSON
@@ -97,6 +97,7 @@ window.appState = {
         }
         
         await this.loadProgress();
+        await this.refreshPsnProgress();
         if (this.currentUser) {
             await this.syncFriendsProgress();
         }
@@ -104,6 +105,9 @@ window.appState = {
 
     hydrateDefaultSchema: function() {
         if (!this.gameData) return;
+
+        // Universal PSN links declared in the game JSON (psn_trophy_id / target)
+        this.psnLinks = buildPsnLinks(this.gameData);
 
         // 1. Collectibles
         if (this.gameData.collectibles) {
@@ -236,6 +240,7 @@ window.appState = {
             });
         }
 
+        this.ensureCounterTargets();
         this.recalculateMetrics();
     },
 
@@ -361,7 +366,7 @@ window.appState = {
 };
 
 // Section 3: Friend-Code-Keyed Firestore Persistence
-// Lines 298-410: Eliminates email key mismatches by saving to users/{friend_code}
+// Lines 313-425: Eliminates email key mismatches by saving to users/{friend_code}
 window.appState.saveProgress = function() {
     const friendCode = this.myFriendCode;
 
@@ -386,7 +391,7 @@ window.appState.saveProgress = function() {
 
     const payload = this.buildPayload();
     if (firestore) {
-        // Primary authoritative path: /users/{friend_code}/platform/{platform}/progress/{gameId}
+        // Authoritative path: /users/{friend_code}/platform/{platform}/progress/{gameId}
         const docRef = firestore
             .collection("users")
             .doc(friendCode)
@@ -435,7 +440,6 @@ window.appState.loadProgress = async function() {
         this.updateStatus(`Reading cloud ledger for ${this.platform.toUpperCase()}...`);
 
         try {
-            // Check friend_code document path first
             let doc = await firestore
                 .collection("users")
                 .doc(friendCode)
@@ -445,7 +449,7 @@ window.appState.loadProgress = async function() {
                 .doc(this.activeGameId)
                 .get();
 
-            // Backward compatibility fallback for legacy data stored under emailKey
+            // Backward compatibility fallback for legacy records stored under emailKey
             if (!doc.exists && emailKey) {
                 const legacyDoc = await firestore
                     .collection("users")
@@ -510,16 +514,19 @@ window.appState.migrateGuestProgressIfPresent = async function() {
 };
 
 // Section 4: UI Painting & Multi-User Co-Op Card Badging
-// Lines 413-520: Renders active user's checks and friends' AVATAR badges on earned items
+// Lines 428-545: Renders active user's checks and friends' AVATAR badges on earned items
 window.appState.applyStateToUI = function() {
+    this.ensureCounterTargets();
     this.recalculateMetrics();
 
     const squadEntries = Object.values(window.squadProgressCache || {});
+    const psnAuto = this.hasPsnAuto();
 
     document.querySelectorAll('.fc5-item-card').forEach(card => {
         const id = card.getAttribute('data-id');
         const type = card.getAttribute('data-type') || 'mission';
         const group = card.getAttribute('data-group') || null;
+        const ref = this.getItemRef(type, id, group);
         let isDone = false;
 
         // Active logged-in user checkmark state
@@ -556,7 +563,17 @@ window.appState.applyStateToUI = function() {
             }
         }
 
-        // Shared squad earner bar (friend avatars only, only for items the friend has earned)
+        // PlayStation-verified items receive an authoritative blue ring and lock against manual toggle
+        const locked = psnAuto && !!(ref && ref.psnSynced);
+        if (btn) {
+            btn.style.boxShadow = locked ? '0 0 0 2px #3b82f6' : '';
+            btn.title = locked ? 'Verified by PlayStation Network' : '';
+        }
+
+        // Counter cards (collectibles that declare a target, e.g. 100 cotton)
+        if (card.getAttribute('data-target')) updateCounterCard(card, ref, locked);
+
+        // Shared squad earner bar (friend avatars only, strictly for items the friend has earned)
         let squadTagContainer = card.querySelector('.squad-earners-bar');
         if (!squadTagContainer) {
             squadTagContainer = document.createElement('div');
@@ -574,9 +591,30 @@ window.appState.applyStateToUI = function() {
             squadTagContainer.style.cssText = 'display:none;';
         }
     });
+
+    updateSectionProgress();
 };
 
 window.appState.toggleItem = function(itemId, type, group) {
+    const ref = this.getItemRef(type, itemId, group);
+    const wasDone = !!(ref && (ref.collected || ref.unlocked || ref.completed || ref.earned));
+    const isCounter = !!(ref && Number(ref.target) > 0);
+
+    // PlayStation is authoritative for anything it has verified
+    if (this.isPsnLocked(ref) && (wasDone || isCounter)) {
+        this.updateStatus('Verified by PlayStation Network. This updates automatically.');
+        return;
+    }
+
+    // Counter cards: check button toggles complete target count
+    if (type === 'collectible' && isCounter) {
+        ref.count = wasDone ? 0 : Number(ref.target);
+        ref.collected = !wasDone;
+        this.applyStateToUI();
+        this.saveProgress();
+        return;
+    }
+
     if (type === 'stash') {
         if (!this.stashes[itemId]) this.stashes[itemId] = { collected: false, psnSynced: false };
         this.stashes[itemId].collected = !this.stashes[itemId].collected;
@@ -619,8 +657,268 @@ window.adjRank = function(rankKey, delta) {
     appState.saveProgress();
 };
 
-// Section 4B: Friend Earner Helpers (avatar badges, item matching)
-// Decides whether a friend's saved ledger has earned a given card, and builds the avatar badge.
+// Section 4C: Universal PSN Links, Counters & Section Progress
+// Lines 550-715: Item progress target resolution and PSN telemetry overrides
+function resolveItemTarget(item, trophyIdOverride) {
+    if (!item || typeof item !== 'object') return 0;
+    const explicit = Number(item.target ?? item.count_target ?? item.psn_target ?? 0);
+    if (explicit > 0) return explicit;
+    if (item.counter === true) {
+        const tid = trophyIdOverride ?? item.psn_trophy_id ?? item.trophy_id ?? item.psnTrophyId;
+        const trophies = (appState.psnSkeleton && appState.psnSkeleton.trophies) ? Object.values(appState.psnSkeleton.trophies) : [];
+        const match = trophies.find(t => t && String(t.trophyId) === String(tid));
+        const fromSkeleton = Number(match && (match.targetValue ?? match.trophyProgressTargetValue) || 0);
+        if (fromSkeleton > 0) return fromSkeleton;
+    }
+    return 0;
+}
+
+function buildPsnLinks(data) {
+    const links = [];
+    if (!data || typeof data !== 'object') return links;
+
+    const read = (item, type, id, group) => {
+        if (!item || typeof item !== 'object') return;
+        const tid = item.psn_trophy_id ?? item.trophy_id ?? item.psnTrophyId;
+        if (tid === undefined || tid === null || tid === '') return;
+        links.push({ type: type, id: id, group: group || null, trophyId: String(tid), target: resolveItemTarget(item, tid) });
+    };
+
+    if (data.collectibles) {
+        for (const cKey in data.collectibles) {
+            const group = data.collectibles[cKey];
+            if (group && Array.isArray(group.items)) group.items.forEach(it => read(it, 'collectible', it.id, cKey));
+        }
+    }
+    if (data.prepper_stashes) {
+        ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
+            (data.prepper_stashes[reg] || []).forEach(s => read(s, 'stash', s.id));
+        });
+    }
+    if (Array.isArray(data.guns_and_fangs_for_hire)) data.guns_and_fangs_for_hire.forEach(h => read(h, 'roster', h.id));
+    if (Array.isArray(data.walkthrough_missions)) data.walkthrough_missions.forEach(m => read(m, 'mission', m.id));
+    if (data.survivalist_magazines) {
+        ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
+            (data.survivalist_magazines[reg] || []).forEach((m, idx) => read(m, 'magazine', `mag_${reg}_${idx}`));
+        });
+    }
+    return links;
+}
+
+function normalizeLiveTrophy(tObj) {
+    const earned = !!(tObj && (tObj.earned === true || tObj.isEarned === true));
+    const target = Number(tObj && (tObj.targetValue ?? tObj.trophyProgressTargetValue) || 0) || 0;
+    let current = Number(tObj && (tObj.currentValue ?? tObj.trophyProgress ?? 0) || 0) || 0;
+    if (earned && target > 0) current = target;
+    return {
+        earned: earned,
+        current: current,
+        target: target,
+        name: (tObj && (tObj.name || tObj.trophyName)) || 'Trophy',
+        rank: String((tObj && (tObj.type || tObj.trophyType)) || 'Bronze').toUpperCase()
+    };
+}
+
+function ledgerItem(ledger, link) {
+    const ensure = (obj, key, fallback) => { if (!obj[key] || typeof obj[key] !== 'object') obj[key] = fallback; return obj[key]; };
+    if (link.type === 'collectible') {
+        const cols = ensure(ledger, 'collectibles', {});
+        const g = ensure(cols, link.group, { items: {} });
+        const items = ensure(g, 'items', {});
+        return ensure(items, link.id, { collected: false });
+    }
+    if (link.type === 'magazine') {
+        const cols = ensure(ledger, 'collectibles', {});
+        const g = ensure(cols, 'survivalist_magazines', { items: {} });
+        const items = ensure(g, 'items', {});
+        return ensure(items, link.id, { collected: false });
+    }
+    if (link.type === 'stash') return ensure(ensure(ledger, 'stashes', {}), link.id, { collected: false });
+    if (link.type === 'roster') return ensure(ensure(ledger, 'roster', {}), link.id, { unlocked: false });
+    return ensure(ensure(ledger, 'missions', {}), link.id, { completed: false });
+}
+
+function setLedgerItemDone(item, type, done) {
+    if (type === 'roster') item.unlocked = done;
+    else if (type === 'mission') item.completed = done;
+    else item.collected = done;
+}
+
+function isLedgerItemDone(item, type) {
+    if (type === 'roster') return !!item.unlocked;
+    if (type === 'mission') return !!item.completed;
+    return !!item.collected;
+}
+
+// Applies live PSN trophy metrics over a ledger, forcing authoritative counter values
+function applyPsnLive(ledger, live, gameId, links) {
+    if (!ledger || !live || typeof live !== 'object') return false;
+    let modified = false;
+    if (!ledger.trophies || typeof ledger.trophies !== 'object') ledger.trophies = {};
+
+    Object.entries(live).forEach(([tId, raw]) => {
+        const t = normalizeLiveTrophy(raw);
+        if (!t.earned) return;
+        const key = `trophy_${gameId}_${tId}`;
+        const existing = ledger.trophies[key];
+        if (!existing || !existing.earned || !existing.psnSynced) {
+            ledger.trophies[key] = Object.assign({}, existing || {}, { earned: true, name: (existing && existing.name) || t.name, rank: (existing && existing.rank) || t.rank, psnSynced: true });
+            modified = true;
+        }
+    });
+
+    (links || []).forEach(link => {
+        const raw = live[link.trophyId];
+        if (!raw) return;
+        const t = normalizeLiveTrophy(raw);
+        const item = ledgerItem(ledger, link);
+
+        if (link.target > 0) {
+            const value = Math.max(0, Math.min(link.target, t.earned ? link.target : t.current));
+            const done = value >= link.target;
+            if (item.count !== value || item.collected !== done || item.psnSynced !== true || item.target !== link.target) {
+                item.count = value;
+                item.target = link.target;
+                setLedgerItemDone(item, link.type, done);
+                item.psnSynced = true;
+                modified = true;
+            }
+        } else if (t.earned) {
+            if (!isLedgerItemDone(item, link.type) || item.psnSynced !== true) {
+                setLedgerItemDone(item, link.type, true);
+                item.psnSynced = true;
+                modified = true;
+            }
+        }
+    });
+
+    return modified;
+}
+
+window.appState.hasPsnAuto = function() {
+    return this.platform === 'ps' && !!(this.myPsnGamertag || this.myPsnAccountId);
+};
+
+window.appState.getItemRef = function(type, id, group) {
+    if (type === 'stash') return this.stashes[id];
+    if (type === 'roster') return this.roster[id];
+    if (type === 'collectible') return group ? this.collectibles[group]?.items?.[id] : undefined;
+    if (type === 'magazine') return this.collectibles.survivalist_magazines?.items?.[id];
+    if (type === 'trophy') return this.trophies[id];
+    return this.missions[id];
+};
+
+window.appState.isPsnLocked = function(ref) {
+    return this.hasPsnAuto() && !!ref && ref.psnSynced === true;
+};
+
+window.appState.ensureCounterTargets = function() {
+    if (!this.gameData || !this.gameData.collectibles) return;
+    for (const cKey in this.gameData.collectibles) {
+        const group = this.gameData.collectibles[cKey];
+        if (!group || !Array.isArray(group.items)) continue;
+        group.items.forEach(cItem => {
+            const target = resolveItemTarget(cItem);
+            if (target <= 0) return;
+            if (!this.collectibles[cKey]) this.collectibles[cKey] = { collected: false, count: 0, psnSynced: false, total: group.items.length, items: {} };
+            if (!this.collectibles[cKey].items) this.collectibles[cKey].items = {};
+            if (!this.collectibles[cKey].items[cItem.id]) this.collectibles[cKey].items[cItem.id] = { collected: false, name: cItem.name || '', psnSynced: false };
+            const ref = this.collectibles[cKey].items[cItem.id];
+            ref.target = target;
+            if (typeof ref.count !== 'number') ref.count = 0;
+        });
+    }
+};
+
+window.appState.setCounter = function(group, itemId, value) {
+    const ref = this.collectibles[group]?.items?.[itemId];
+    if (!ref) return;
+    if (this.isPsnLocked(ref)) {
+        this.updateStatus('Synced from PlayStation. This count updates automatically.');
+        this.applyStateToUI();
+        return;
+    }
+    const target = Number(ref.target) || 0;
+    let v = Math.floor(Number(value) || 0);
+    v = Math.max(0, target > 0 ? Math.min(target, v) : v);
+    ref.count = v;
+    ref.collected = target > 0 ? v >= target : v > 0;
+    this.applyStateToUI();
+    this.saveProgress();
+};
+
+window.appState.adjCounter = function(group, itemId, delta) {
+    const ref = this.collectibles[group]?.items?.[itemId];
+    if (!ref) return;
+    this.setCounter(group, itemId, (Number(ref.count) || 0) + delta);
+};
+
+window.appState.refreshPsnProgress = async function() {
+    if (!this.hasPsnAuto() || !this.activePsnCommId) return false;
+    const psnKey = await resolvePsnKey(this.myPsnGamertag, this.myPsnAccountId);
+    const live = await fetchPsnLiveFor(psnKey);
+    if (!live) return false;
+
+    this.psnLive = live;
+    const modified = applyPsnLive(this, live, this.activeGameId, this.psnLinks);
+    if (modified) {
+        this.applyStateToUI();
+        if (this.isCloudLoaded) this.saveProgress();
+    }
+    return modified;
+};
+
+function updateCounterCard(card, ref, locked) {
+    const target = Number(card.getAttribute('data-target')) || 0;
+    const count = Math.max(0, Math.min(target, Number(ref && ref.count) || 0));
+    const input = card.querySelector('.counter-input');
+    const fill = card.querySelector('.counter-fill');
+    const label = card.querySelector('.counter-label');
+
+    if (input) {
+        if (typeof document.activeElement === 'undefined' || document.activeElement !== input) input.value = count;
+        input.disabled = !!locked;
+    }
+    if (fill) fill.style.width = `${target > 0 ? Math.round((count / target) * 100) : 0}%`;
+    if (label) label.textContent = locked ? 'Synced from PlayStation' : '';
+    card.querySelectorAll('.counter-btn').forEach(b => { b.disabled = !!locked; });
+}
+
+function updateSectionProgress() {
+    document.querySelectorAll('.category-section').forEach(sec => {
+        const chip = sec.querySelector('.section-progress');
+        if (!chip) return;
+        const cards = Array.from(sec.querySelectorAll('.fc5-item-card'));
+        const total = cards.length;
+        const done = cards.filter(c => c.classList.contains('completed')).length;
+        const complete = total > 0 && done >= total;
+        chip.textContent = `${done} / ${total}`;
+        chip.style.color = complete ? '#34d399' : '#fff';
+        chip.style.borderColor = complete ? '#34d399' : 'var(--user-theme-accent)';
+        chip.style.background = complete ? 'rgba(52,211,153,0.15)' : 'rgba(255,85,0,0.18)';
+    });
+}
+
+function progressChip(total) {
+    return `<span class="section-progress" style="margin-left:10px; font-size:0.8rem; font-weight:800; padding:2px 10px; border-radius:12px; border:1px solid var(--user-theme-accent); background:rgba(255,85,0,0.18); color:#fff; white-space:nowrap; vertical-align:middle;">0 / ${total}</span>`;
+}
+
+function counterControlsHtml(group, id, target) {
+    const btnStyle = 'width:30px; height:30px; border-radius:6px; border:1px solid rgba(255,255,255,0.2); background:#1e293b; color:#fff; font-weight:900; cursor:pointer;';
+    return `
+        <div style="display:flex; align-items:center; gap:8px; margin:6px 0;">
+            <button type="button" class="counter-btn" style="${btnStyle}" onclick="appState.adjCounter('${group}', '${id}', -1)" aria-label="Decrease">−</button>
+            <input type="number" class="counter-input" min="0" max="${target}" value="0" style="width:84px; height:30px; text-align:center; border-radius:6px; border:1px solid rgba(255,255,255,0.2); background:#0f172a; color:#fff; font-weight:800;" onchange="appState.setCounter('${group}', '${id}', this.value)">
+            <span style="color:#94a3b8; font-size:0.85rem; font-weight:700;">/ ${target}</span>
+            <button type="button" class="counter-btn" style="${btnStyle}" onclick="appState.adjCounter('${group}', '${id}', 1)" aria-label="Increase">+</button>
+            <span class="counter-label" style="margin-left:auto; font-size:0.7rem; font-weight:800; color:#60a5fa;"></span>
+        </div>
+        <div style="height:6px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden; margin-bottom:6px;">
+            <div class="counter-fill" style="height:100%; width:0%; background:var(--user-theme-accent);"></div>
+        </div>`;
+}
+
+// Section 4B: Friend Earner Badges
 function friendHasEarnedItem(sData, id, type, group) {
     if (!sData || typeof sData !== 'object') return false;
 
@@ -644,7 +942,6 @@ function friendHasEarnedItem(sData, id, type, group) {
     return !!(sData.missions?.[id]?.completed);
 }
 
-// Round avatar only. The friend's name is available on hover (title) for accessibility.
 function buildAvatarBadge(entry) {
     const name = (entry && entry.username) ? String(entry.username) : 'Squad Member';
     const wrap = document.createElement('span');
@@ -672,7 +969,7 @@ function buildAvatarBadge(entry) {
 }
 
 // Section 5: Universal Profile & Squad Bridge via Friend Codes
-// Lines 523-640: Queries user RTDB profiles and synchronizes authorized friend ledgers
+// Lines 720-890: Synchronizes authorized friends and reads PSN presence
 window.appState.fetchUserProfile = async function() {
     const emailKey = this.getEmailKey();
     if (!rtdb || !emailKey) return;
@@ -694,8 +991,6 @@ window.appState.fetchUserProfile = async function() {
     }
 };
 
-// Maps whatever a profile stores ("playstation", "PSN", "PlayStation (PSN)"...) to the key progress is saved under.
-// Unknown values (for example "hunter") return null so they are never used as a Firestore document ID.
 function normalizePlatformKey(raw) {
     const p = String(raw || '').toLowerCase().trim();
     if (!p) return null;
@@ -713,7 +1008,6 @@ function buildPlatformCandidates(friendPrimaryPlatform, viewerPlatform) {
     return Array.from(new Set(list));
 }
 
-// Tries each candidate platform until the friend has a saved ledger for this game.
 async function fetchFriendProgressDoc(friendCode, platforms) {
     for (const plat of platforms) {
         const doc = await firestore
@@ -729,7 +1023,6 @@ async function fetchFriendProgressDoc(friendCode, platforms) {
     return null;
 }
 
-// Case-insensitive PSN gamertag lookup against the index the PSN sync writes (/psn/usersByGamerTag).
 window.psnIndexCache = null;
 async function getPsnGamertagIndex() {
     const cached = window.psnIndexCache;
@@ -759,9 +1052,7 @@ async function resolvePsnKey(tag, accountId) {
     return tag || null;
 }
 
-// Reads a player's live trophies for the active game straight from the PSN sync.
-// Returns a map keyed exactly like the card IDs: trophy_{gameId}_{trophyId}
-async function fetchPsnTrophiesFor(psnKey) {
+async function fetchPsnLiveFor(psnKey) {
     if (!rtdb || !psnKey || !appState.activePsnCommId) return null;
     try {
         const snap = await rtdb.ref(`/psn/gamertags/${psnKey}/liveTrophyProgress/${appState.activePsnCommId}`).once('value');
@@ -770,18 +1061,11 @@ async function fetchPsnTrophiesFor(psnKey) {
 
         const out = {};
         Object.entries(live).forEach(([tId, tObj]) => {
-            if (tObj && (tObj.earned === true || tObj.isEarned === true)) {
-                out[`trophy_${appState.activeGameId}_${tId}`] = {
-                    earned: true,
-                    name: tObj.name || tObj.trophyName || 'Trophy',
-                    rank: (tObj.type || tObj.trophyType || 'Bronze').toUpperCase(),
-                    psnSynced: true
-                };
-            }
+            if (tObj && typeof tObj === 'object') out[String(tId)] = tObj;
         });
-        return out;
+        return Object.keys(out).length ? out : null;
     } catch (e) {
-        console.warn(`[Friend PSN Trophy Error for ${psnKey}]:`, e);
+        console.warn(`[PSN Live Trophy Error for ${psnKey}]:`, e);
         return null;
     }
 }
@@ -797,29 +1081,32 @@ async function fetchPsnAvatarFor(psnKey) {
     }
 }
 
-// Adds PSN-earned trophies to a friend's saved ledger and recomputes their trophy percentage.
-function mergeFriendTrophies(friendData, psnTrophies) {
-    const data = Object.assign({}, friendData || {});
-    const merged = Object.assign({}, data.trophies || {});
+function buildFriendLedger(friendData, psnLive) {
+    const ledger = Object.assign({}, friendData || {});
+    if (!ledger.trophies || typeof ledger.trophies !== 'object') ledger.trophies = {};
 
-    if (psnTrophies) {
-        Object.entries(psnTrophies).forEach(([key, val]) => {
-            if (!merged[key] || !merged[key].earned) {
-                merged[key] = Object.assign({}, merged[key] || {}, val);
-            }
-        });
+    if (psnLive) {
+        applyPsnLive(ledger, psnLive, appState.activeGameId, appState.psnLinks);
     }
 
-    data.trophies = merged;
     const total = Object.keys(appState.trophies).length || appState.trophies_total || 51;
-    const earned = Object.values(merged).filter(t => t && t.earned).length;
-    const computedPercent = total > 0 ? Math.round((earned / total) * 100) : 0;
-    data.trophies_earned = Math.max(earned, Number(data.trophies_earned) || 0);
-    data.trophies_percent = Math.max(computedPercent, Number(data.trophies_percent) || 0);
-    return data;
+    const earned = Object.values(ledger.trophies).filter(t => t && t.earned).length;
+    ledger.trophies_earned = Math.max(earned, Number(ledger.trophies_earned) || 0);
+    ledger.trophies_percent = Math.max(total > 0 ? Math.round((earned / total) * 100) : 0, Number(ledger.trophies_percent) || 0);
+
+    if (psnLive) {
+        const ranks = Object.assign({}, ledger.ranks || {});
+        let col = 0;
+        Object.values(ledger.collectibles || {}).forEach(g => {
+            Object.values((g && g.items) || {}).forEach(it => { if (it && it.collected) col++; });
+        });
+        ranks.collectibles = Math.max(col, Number(ranks.collectibles) || 0);
+        ranks.stashes = Math.max(Object.values(ledger.stashes || {}).filter(x => x && x.collected).length, Number(ranks.stashes) || 0);
+        ledger.ranks = ranks;
+    }
+    return ledger;
 }
 
-// Works out a friend's code, display name, avatar, PSN gamertag and platform from whatever is stored.
 async function resolveFriendIdentity(fKey, fRaw) {
     const f = (fRaw && typeof fRaw === 'object') ? fRaw : {};
     const keyLooksLikeEmail = typeof fKey === 'string' && fKey.includes('_at_');
@@ -861,7 +1148,6 @@ window.appState.syncFriendsProgress = async function() {
 
     friendsSyncInFlight = true;
     try {
-        // Query strictly the active user's authorized friends list
         const friendsSnap = await rtdb.ref(`/users/${emailKey}/friends`).once('value');
         const friendsData = friendsSnap.val();
 
@@ -879,7 +1165,7 @@ window.appState.syncFriendsProgress = async function() {
             const identity = await resolveFriendIdentity(fKey, fRaw);
             const platformCandidates = buildPlatformCandidates(identity.primaryPlatform, this.platform);
 
-            // 1. The friend's saved ledger (collectibles, stashes, roster, missions, trophies they ticked)
+            // 1. Friend's cloud ledger
             let progress = null;
             let readError = null;
             if (firestore && identity.friendCode) {
@@ -891,13 +1177,13 @@ window.appState.syncFriendsProgress = async function() {
                 }
             }
 
-            // 2. Their live PSN trophies, straight from the PSN sync (works even if they never opened this page)
-            const psnKey = await resolvePsnKey(identity.psnTag, identity.psnAccountId);
-            const psnTrophies = psnKey ? await fetchPsnTrophiesFor(psnKey) : null;
-            const friendData = mergeFriendTrophies(progress ? progress.data : {}, psnTrophies);
+            // 2. Friend's live PSN progress
             const usedPlatform = progress ? progress.platform : (platformCandidates[0] || this.platform);
+            const psnKey = await resolvePsnKey(identity.psnTag, identity.psnAccountId);
+            const psnLive = (psnKey && usedPlatform === 'ps') ? await fetchPsnLiveFor(psnKey) : null;
+            const friendData = buildFriendLedger(progress ? progress.data : {}, psnLive);
 
-            // 3. Avatar: site profile first, then the PSN avatar
+            // 3. Avatar resolution
             let avatar = identity.avatar;
             if (!avatar && psnKey) avatar = toSecureUrl(await fetchPsnAvatarFor(psnKey));
 
@@ -918,7 +1204,7 @@ window.appState.syncFriendsProgress = async function() {
             let statusNote = '';
             if (readError) {
                 statusNote = `<div style="font-size:0.7rem; color:#f87171; margin-top:2px;">Can't read this friend's saved progress (${escapeHtml(readError.code || 'error')}).</div>`;
-            } else if (!progress && !psnTrophies) {
+            } else if (!progress && !psnLive) {
                 statusNote = `<div style="font-size:0.7rem; color:#94a3b8; margin-top:2px;">No saved progress for this game yet.</div>`;
             }
 
@@ -946,7 +1232,6 @@ window.appState.syncFriendsProgress = async function() {
 
         window.squadProgressCache = newCache;
         rosterContainer.innerHTML = cardsHtml;
-        // Paint friend avatars onto the cards they have earned
         this.applyStateToUI();
     } catch (e) {
         console.warn("[Friends Roster Sync Error]:", e);
@@ -956,7 +1241,7 @@ window.appState.syncFriendsProgress = async function() {
 };
 
 // Section 6: Dynamic Top Navigation Bar (/utm_links)
-// Lines 643-730: Dynamic folder and link hierarchy
+// Lines 893-980: Hierarchical menu generation
 async function buildUtmNavigation() {
     const navContainer = document.getElementById('dynamicNavLinks');
     if (!navContainer || !rtdb) return;
@@ -1051,8 +1336,8 @@ async function buildUtmNavigation() {
     }
 }
 
-// Section 7: PSN Game Skeleton & Live User Trophy Sync
-// Lines 733-810: Queries user gamertag and matches commId to pull live trophies
+// Section 7: PSN Game Skeleton Telemetry
+// Lines 983-1020: Binds game poster and triggers automated trophy sync
 async function syncPsnSkeleton() {
     if (!rtdb || !appState.activePsnCommId) return;
     try {
@@ -1071,53 +1356,17 @@ async function syncPsnSkeleton() {
             if (fav2) fav2.href = posterUrl;
             if (navLogo) navLogo.src = posterUrl;
         }
-
-        if (appState.currentUser && appState.platform === 'ps') {
-            await autoCheckUserPsnTrophies();
-        }
     } catch (e) {
         console.warn("[PSN Skeleton Sync Error]:", e);
     }
 }
 
 async function autoCheckUserPsnTrophies() {
-    if (!rtdb || !appState.myPsnGamertag || !appState.activePsnCommId) return;
-
-    try {
-        // Resolve the exact stored gamertag (case-insensitive / by account ID)
-        const psnKey = await resolvePsnKey(appState.myPsnGamertag, appState.myPsnAccountId);
-        const liveTrophiesSnap = await rtdb.ref(`/psn/gamertags/${psnKey}/liveTrophyProgress/${appState.activePsnCommId}`).once('value');
-        const liveTrophies = liveTrophiesSnap.val();
-
-        if (liveTrophies && typeof liveTrophies === 'object') {
-            let stateModified = false;
-            Object.entries(liveTrophies).forEach(([tId, tObj]) => {
-                if (tObj && (tObj.earned === true || tObj.isEarned === true)) {
-                    const cardKey = `trophy_${appState.activeGameId}_${tId}`;
-                    if (!appState.trophies[cardKey] || !appState.trophies[cardKey].earned) {
-                        appState.trophies[cardKey] = {
-                            earned: true,
-                            name: tObj.trophyName || appState.trophies[cardKey]?.name || 'Trophy',
-                            rank: (tObj.trophyType || 'Bronze').toUpperCase(),
-                            psnSynced: true
-                        };
-                        stateModified = true;
-                    }
-                }
-            });
-
-            if (stateModified && appState.isCloudLoaded) {
-                appState.applyStateToUI();
-                appState.saveProgress();
-            }
-        }
-    } catch (e) {
-        console.warn("[Live Trophy Auto-Check Error]:", e);
-    }
+    return appState.refreshPsnProgress();
 }
 
 // Section 8: Render Game Companion Content Cards
-// Lines 813-980: Generates accordion categories with shared earner tag containers
+// Lines 1023-1185: Generates accordion categories with shared earner tag containers
 function renderFarCry5Companion(data) {
     const container = document.getElementById('section-container');
     if (!container || !data) return;
@@ -1129,7 +1378,7 @@ function renderFarCry5Companion(data) {
         html += `
         <section class="category-section section-collapsed" id="cat-walkthroughs">
             <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                <h2>📖 Story Campaign & Boss Encounters (${data.walkthrough_missions.length})</h2>
+                <h2>📖 Story Campaign & Boss Encounters ${progressChip(data.walkthrough_missions.length)}</h2>
                 <span>▾</span>
             </div>
             <div class="section-content">
@@ -1166,7 +1415,7 @@ function renderFarCry5Companion(data) {
                 html += `
                 <section class="category-section section-collapsed" id="cat-stash-${reg.key}">
                     <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                        <h2>📦 Prepper Stashes — ${reg.label} (${list.length})</h2>
+                        <h2>📦 Prepper Stashes — ${reg.label} ${progressChip(list.length)}</h2>
                         <span>▾</span>
                     </div>
                     <div class="section-content">
@@ -1201,13 +1450,15 @@ function renderFarCry5Companion(data) {
                 html += `
                 <section class="category-section section-collapsed" id="cat-col-${cKey}">
                     <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                        <h2>🗂️ Collectibles: ${escapeHtml(groupTitle)} (${group.items.length})</h2>
+                        <h2>🗂️ Collectibles: ${escapeHtml(groupTitle)} ${progressChip(group.items.length)}</h2>
                         <span>▾</span>
                     </div>
                     <div class="section-content">
                         <div class="trophy-grid">
-                            ${group.items.map(item => `
-                                <div class="trophy-card fc5-item-card" data-id="${item.id}" data-type="collectible" data-group="${cKey}">
+                            ${group.items.map(item => {
+                                const counterTarget = resolveItemTarget(item);
+                                return `
+                                <div class="trophy-card fc5-item-card" data-id="${item.id}" data-type="collectible" data-group="${cKey}"${counterTarget > 0 ? ` data-target="${counterTarget}"` : ''}>
                                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                         <div>
                                             <span class="trophy-rank rank-bronze">${escapeHtml(item.region || group.region || 'Hope County')}</span>
@@ -1217,9 +1468,11 @@ function renderFarCry5Companion(data) {
                                         <button type="button" class="check-btn" onclick="appState.toggleItem('${item.id}', 'collectible', '${cKey}')" aria-label="Toggle Collectible"></button>
                                     </div>
                                     <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(item.guide || '')}</p>
+                                    ${counterTarget > 0 ? counterControlsHtml(cKey, item.id, counterTarget) : ''}
                                     <div class="squad-earners-bar"></div>
                                 </div>
-                            `).join('')}
+                            `;
+                            }).join('')}
                         </div>
                     </div>
                 </section>`;
@@ -1232,7 +1485,7 @@ function renderFarCry5Companion(data) {
         html += `
         <section class="category-section section-collapsed" id="cat-roster">
             <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                <h2>🐾 Guns & Fangs for Hire (${data.guns_and_fangs_for_hire.length})</h2>
+                <h2>🐾 Guns & Fangs for Hire ${progressChip(data.guns_and_fangs_for_hire.length)}</h2>
                 <span>▾</span>
             </div>
             <div class="section-content">
@@ -1265,7 +1518,7 @@ function renderFarCry5Companion(data) {
         html += `
         <section class="category-section section-collapsed" id="cat-trophies">
             <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                <h2>🏆 PSN Official Trophies & Achievements (${trophiesList.length})</h2>
+                <h2>🏆 PSN Official Trophies & Achievements ${progressChip(trophiesList.length)}</h2>
                 <span>▾</span>
             </div>
             <div class="section-content">
@@ -1307,8 +1560,8 @@ function renderFarCry5Companion(data) {
     container.innerHTML = html;
 }
 
-// Section 9: Helpers
-// Lines 983-1007: Url normalization & character sanitization
+// Section 9: Sanitization & URL Helpers
+// Lines 1188-1212: Normalization routines
 function toSecureUrl(url) {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
@@ -1332,8 +1585,8 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
-// Section 10: Strict Sequential Lifecycle
-// Lines 1010-1090: Controlled initialization eliminating premature overwrite race conditions
+// Section 10: Strict Sequential Lifecycle Gate
+// Lines 1215-1310: Manages initialization, auth listeners, and recurring refresh loops
 document.addEventListener('DOMContentLoaded', async () => {
     await buildUtmNavigation();
 
@@ -1371,12 +1624,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Step 1: Fetch game JSON & bind metadata anchors
+    // Step 1: Resolve game slug, fetch JSON & bind metadata anchors
+    const slugParam = (typeof window !== 'undefined' && window.location) ? new URLSearchParams(window.location.search).get('game') : null;
+    const slugAttr = (document.body && document.body.dataset) ? document.body.dataset.game : null;
+    const gameSlug = String(slugParam || slugAttr || 'farcry5').toLowerCase().replace(/[^a-z0-9_-]/g, '') || 'farcry5';
+    
     const dataUrls = [
-        './data/farcry5.json',
-        './farcry5.json',
-        '../game/data/farcry5.json',
-        '//raw.githubusercontent.com/Werewolf3788/Website/main/game/data/farcry5.json'
+        `./data/${gameSlug}.json`,
+        `./${gameSlug}.json`,
+        `../game/data/${gameSlug}.json`,
+        `//raw.githubusercontent.com/Werewolf3788/Website/main/game/data/${gameSlug}.json`
     ];
 
     const loadData = async (idx) => {
@@ -1389,7 +1646,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             appState.gameData = json;
             if (json.game) appState.activeGame = json.game;
             if (json.gameId) appState.activeGameId = json.gameId;
-            // The PSN communication ID can be provided as "commId" (preferred) or "psn_communication_id"
+            else if (gameSlug !== 'farcry5') appState.activeGameId = gameSlug;
+
             const jsonCommId = json.commId || json.psn_communication_id;
             if (jsonCommId) appState.activePsnCommId = jsonCommId;
             if (json.activeMission) appState.activeMission = json.activeMission;
@@ -1404,7 +1662,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await loadData(0);
 
-    // Step 2: Auth listener (Triggers only after DOM cards exist)
+    // Step 2: Auth listener (Executes only after DOM cards are fully painted)
     if (auth) {
         auth.onAuthStateChanged(async (user) => {
             if (user) {
@@ -1424,16 +1682,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (nameBadge) nameBadge.innerText = appState.activeUser;
                 if (authModal) authModal.classList.add('hidden');
 
-                // 1. Fetch user's own profile (friend_code and psn_username)
+                // 1. Fetch user's own profile (friend_code, psn_username, psn_account_id)
                 await appState.fetchUserProfile();
-                // 2. Load live PlayStation trophies for this user
-                if (appState.platform === 'ps') {
-                    await autoCheckUserPsnTrophies();
-                }
-                // 3. Load authoritative progress from /users/{friend_code}/
+                // 2. Load authoritative progress from /users/{friend_code}/
                 await appState.loadProgress();
-                // 4. Migrate any offline guest progress
+                // 3. Migrate any offline guest progress
                 await appState.migrateGuestProgressIfPresent();
+                // 4. Apply live PlayStation trophies AFTER the ledger loads (PSN wins, counters stay accurate)
+                await appState.refreshPsnProgress();
                 // 5. Query authorized friends and paint squad avatars on cards
                 await appState.syncFriendsProgress();
             } else {
@@ -1456,9 +1712,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Step 3: Keep the squad view fresh while the tab is open (every 2 minutes, visible tab only)
-    setInterval(() => {
+    // Step 3: Keep the squad view and PSN presence synchronized every 2 minutes
+    setInterval(async () => {
         if (document.visibilityState === 'visible' && appState.currentUser && appState.isCloudLoaded) {
+            await appState.refreshPsnProgress();
             appState.syncFriendsProgress();
         }
     }, 120000);
