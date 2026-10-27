@@ -1,13 +1,12 @@
 // ============================================================================
-// * Project: Far Cry 5 Hope County Resistance Companion & Field Ledger
-// * File: fc5.js
-// * Location: /game/fc5.js
-// * Build Version: v10.0.0-COTW-STRUCTURAL-ALIGNMENT
-// * Deployment Timestamp: 2026-10-27 00:35:00 EDT (America/New_York)
+// * Project: Universal Multi-Game Resistance Companion & Field Ledger
+// * File: game.js
+// * Location: /game/game.js
+// * Build Version: v10.3.0-AUTH-LOCKED-PERSISTENCE
+// * Deployment Timestamp: 2026-10-27 01:45:00 EDT (America/New_York)
 // ============================================================================
 
-// Section 1: Unified Firebase Configuration (entertainment-71888)
-// Lines 9-33: Production credentials and authoritative service bindings
+// Section 1: Authoritative Firebase Credentials & Services
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -33,8 +32,7 @@ try {
 const CURRENT_GAME_ID = "FarCry5";
 const PSN_FC5_COMM_ID = "NPWR12514_00";
 
-// Section 2: Global State Engine & COTW Hydration Core
-// Lines 36-295: Structured entity trees matching COTW directly
+// Section 2: Authoritative State Engine
 window.appState = {
     activeUser: 'Guest',
     activeEmail: null,
@@ -43,9 +41,9 @@ window.appState = {
     gameData: null,
     psnSkeleton: null,
     myFriendCode: null,
-    authInitialized: false,
+    isCloudLoaded: false, // Critical write-protection gate
     
-    // Exact COTW Document Root Schema
+    // Discrete COTW-aligned schema
     activeMission: "Hope County Resistance",
     gameId: CURRENT_GAME_ID,
     trophies_earned: 0,
@@ -63,11 +61,12 @@ window.appState = {
         return this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
     },
 
-    switchPlatform: function(newPlatform) {
+    switchPlatform: async function(newPlatform) {
         if (!newPlatform) return;
         this.platform = newPlatform.toLowerCase();
+        this.isCloudLoaded = false;
         
-        const platformSelector = document.getElementById('platformSelector');
+        const platformSelector = document.getElementById('platformSelect') || document.getElementById('platformSelector');
         if (platformSelector && platformSelector.value !== this.platform) {
             platformSelector.value = this.platform;
         }
@@ -78,17 +77,16 @@ window.appState = {
             nameEl.innerText = `${displayName} [${this.platform.toUpperCase()}]`;
         }
         
-        this.loadProgress();
+        await this.loadProgress();
         if (this.currentUser) {
             this.syncFriendsProgress();
         }
     },
 
-    // Lines 86-178: Hydrate game JSON into COTW Map structures
     hydrateDefaultSchema: function() {
         if (!this.gameData) return;
 
-        // 1. Collectibles (Group maps matching COTW: collected, count, psnSynced, total)
+        // 1. Collectibles
         if (this.gameData.collectibles) {
             for (const cKey in this.gameData.collectibles) {
                 const group = this.gameData.collectibles[cKey];
@@ -121,7 +119,7 @@ window.appState = {
             }
         }
 
-        // Perk Magazines mapped under collectibles tree
+        // Perk Magazines
         if (this.gameData.survivalist_magazines) {
             if (!this.collectibles.survivalist_magazines) {
                 this.collectibles.survivalist_magazines = {
@@ -170,7 +168,7 @@ window.appState = {
             });
         }
 
-        // 3. Roster Map (Guns & Fangs for Hire)
+        // 3. Roster Map
         if (Array.isArray(this.gameData.guns_and_fangs_for_hire)) {
             this.gameData.guns_and_fangs_for_hire.forEach(h => {
                 if (!this.roster[h.id]) {
@@ -199,7 +197,7 @@ window.appState = {
             });
         }
 
-        // 5. Official Trophies Map
+        // 5. Trophies Map
         const trophySource = (this.psnSkeleton && this.psnSkeleton.trophies) 
             ? Object.values(this.psnSkeleton.trophies) 
             : (this.gameData?.trophies_and_achievements || []);
@@ -222,7 +220,6 @@ window.appState = {
         this.recalculateMetrics();
     },
 
-    // Lines 180-230: Metric Tallies
     recalculateMetrics: function() {
         let stashesCount = 0;
         let rosterCount = 0;
@@ -230,7 +227,6 @@ window.appState = {
         let totalCollectiblesCount = 0;
         let calculatedRP = 0;
 
-        // Tally Stashes
         Object.values(this.stashes).forEach(s => {
             if (s && s.collected) {
                 stashesCount++;
@@ -238,7 +234,6 @@ window.appState = {
             }
         });
 
-        // Tally Roster
         Object.values(this.roster).forEach(h => {
             if (h && h.unlocked) {
                 rosterCount++;
@@ -246,14 +241,12 @@ window.appState = {
             }
         });
 
-        // Tally Missions
         Object.values(this.missions).forEach(m => {
             if (m && m.completed) {
                 calculatedRP += 600;
             }
         });
 
-        // Tally Collectibles & Perk Magazines
         if (this.collectibles) {
             for (const cKey in this.collectibles) {
                 const group = this.collectibles[cKey];
@@ -274,7 +267,6 @@ window.appState = {
             }
         }
 
-        // Tally Trophies
         const earnedTrophies = Object.values(this.trophies).filter(t => t && t.earned).length;
         const totalTrophies = Object.keys(this.trophies).length || 51;
         this.trophies_earned = earnedTrophies;
@@ -299,7 +291,6 @@ window.appState = {
         if (el) el.innerText = val || 0;
     },
 
-    // Lines 232-295: Build COTW Payload
     buildPayload: function() {
         this.recalculateMetrics();
         return {
@@ -326,11 +317,12 @@ window.appState = {
         this.trophies_total = payload.trophies_total || 51;
         this.trophies_percent = payload.trophies_percent || 0;
         
-        // Deep merge into hydrated tree to avoid missing schema entries
+        // Deep merge into hydrated tree
         if (payload.collectibles) {
             for (const cKey in payload.collectibles) {
-                if (!this.collectibles[cKey]) this.collectibles[cKey] = payload.collectibles[cKey];
-                else {
+                if (!this.collectibles[cKey]) {
+                    this.collectibles[cKey] = payload.collectibles[cKey];
+                } else {
                     this.collectibles[cKey].collected = !!payload.collectibles[cKey].collected;
                     this.collectibles[cKey].count = payload.collectibles[cKey].count || 0;
                     if (payload.collectibles[cKey].items) {
@@ -349,25 +341,30 @@ window.appState = {
     }
 };
 
-// Section 3: Authoritative Persistence Engine (Guest LocalStorage vs Cloud Firestore)
-// Lines 298-405: Guarantees guest isolation and cross-device sync
+// Section 3: Authoritative Persistence (Protected by isCloudLoaded)
 window.appState.saveProgress = function() {
-    const payload = this.buildPayload();
     const emailKey = this.getEmailKey();
 
-    // 1. Guest Mode: Unauthenticated visitors write strictly to LocalStorage
+    // 1. Guest Mode: Save strictly to device LocalStorage
     if (!emailKey) {
         const guestKey = `fc5_guest_progress_${this.platform}`;
         try {
+            const payload = this.buildPayload();
             localStorage.setItem(guestKey, JSON.stringify(payload));
-            this.updateStatus(`[Guest Mode] Progress cached locally [${this.platform.toUpperCase()}].`);
+            this.updateStatus(`[Guest Mode] Progress retained on this device [${this.platform.toUpperCase()}].`);
         } catch (e) {
             console.warn("[Guest Storage]:", e);
         }
         return;
     }
 
-    // 2. Authenticated Mode: Authoritative write straight to Cloud Firestore
+    // 2. Authenticated Mode: Abort write if cloud data has not finished loading!
+    if (!this.isCloudLoaded) {
+        console.warn("[Write Protected] Save blocked: Waiting for Firestore ledger to complete initial fetch.");
+        return;
+    }
+
+    const payload = this.buildPayload();
     if (firestore) {
         const docRef = firestore
             .collection("users")
@@ -386,13 +383,13 @@ window.appState.saveProgress = function() {
     }
 };
 
-window.appState.loadProgress = function() {
+window.appState.loadProgress = async function() {
     const emailKey = this.getEmailKey();
 
-    // Reset tree to default uncompleted state before overlaying data
+    // Hydrate default structure
     this.hydrateDefaultSchema();
 
-    // 1. Guest Mode: Load from LocalStorage
+    // 1. Guest Mode
     if (!emailKey) {
         const guestKey = `fc5_guest_progress_${this.platform}`;
         try {
@@ -401,46 +398,50 @@ window.appState.loadProgress = function() {
                 const parsed = JSON.parse(raw);
                 this.applyPayload(parsed);
                 this.updateStatus(`[Guest Mode] Restored progress from this device [${this.platform.toUpperCase()}].`);
+                this.isCloudLoaded = true;
                 return;
             }
         } catch (e) {}
 
         this.applyStateToUI();
         this.updateStatus(`[Guest Mode] Clean Ledger [${this.platform.toUpperCase()}].`);
+        this.isCloudLoaded = true;
         return;
     }
 
-    // 2. Authenticated Mode: Load from Cloud Firestore
+    // 2. Authenticated Mode: Return true Promise and wait for completion
     if (firestore) {
         this.updateStatus(`Reading cloud ledger for ${this.platform.toUpperCase()}...`);
 
-        firestore
-            .collection("users")
-            .doc(emailKey)
-            .collection("platform")
-            .doc(this.platform)
-            .collection("progress")
-            .doc(CURRENT_GAME_ID)
-            .get()
-            .then(doc => {
-                if (doc.exists) {
-                    const cloudData = doc.data();
-                    this.applyPayload(cloudData);
-                    this.updateStatus(`[Cloud Restored] Authoritative ledger loaded [${this.platform.toUpperCase()}].`);
-                } else {
-                    // Document does not exist yet: seed initial hydrated COTW structure
-                    this.applyStateToUI();
-                    this.saveProgress();
-                    this.updateStatus(`[Cloud Initialized] Seeded new COTW structure in Firestore.`);
-                }
-            }).catch(err => {
-                console.warn("[Firestore Fetch Error]:", err);
-                this.updateStatus(`Failed to read cloud save: ${err.message}`);
-            });
+        try {
+            const doc = await firestore
+                .collection("users")
+                .doc(emailKey)
+                .collection("platform")
+                .doc(this.platform)
+                .collection("progress")
+                .doc(CURRENT_GAME_ID)
+                .get();
+
+            if (doc.exists) {
+                const cloudData = doc.data();
+                this.applyPayload(cloudData);
+                this.isCloudLoaded = true; // Unlock saving
+                this.updateStatus(`[Cloud Restored] Authoritative ledger loaded [${this.platform.toUpperCase()}].`);
+            } else {
+                this.applyStateToUI();
+                this.isCloudLoaded = true; // Unlock saving
+                this.saveProgress();
+                this.updateStatus(`[Cloud Initialized] Seeded new COTW structure in Firestore.`);
+            }
+        } catch (err) {
+            console.error("[Firestore Fetch Error]:", err);
+            this.isCloudLoaded = true; // Unlock so user can still play
+            this.updateStatus(`Failed to read cloud save: ${err.message}`);
+        }
     }
 };
 
-// Lines 407-440: One-Time Guest Migration on Sign In
 window.appState.migrateGuestProgressIfPresent = async function() {
     const emailKey = this.getEmailKey();
     if (!emailKey) return;
@@ -468,8 +469,7 @@ window.appState.migrateGuestProgressIfPresent = async function() {
     }
 };
 
-// Section 4: UI Painting & Toggle Interactions
-// Lines 443-525: Maps UI checkboxes to nested COTW object maps
+// Section 4: UI Painting & Toggle Handlers
 window.appState.applyStateToUI = function() {
     this.recalculateMetrics();
 
@@ -557,8 +557,7 @@ window.adjRank = function(rankKey, delta) {
     appState.saveProgress();
 };
 
-// Section 5: Squad Co-Op Bridge via RTDB Friend Codes
-// Lines 536-614: Realtime squad sync querying corresponding platform progress
+// Section 5: Squad Co-Op Bridge
 window.appState.fetchUserFriendCode = async function() {
     const emailKey = this.getEmailKey();
     if (!rtdb || !emailKey) return;
@@ -608,9 +607,7 @@ window.appState.syncFriendsProgress = async function() {
                         .doc(CURRENT_GAME_ID)
                         .get();
 
-                    if (fDoc.exists) {
-                        friendData = fDoc.data();
-                    }
+                    if (fDoc.exists) friendData = fDoc.data();
                 } catch (err) {}
             }
 
@@ -644,7 +641,6 @@ window.appState.syncFriendsProgress = async function() {
 };
 
 // Section 6: Dynamic Navbar (/utm_links)
-// Lines 617-688: Top-level menu architecture
 async function buildUtmNavigation() {
     const navContainer = document.getElementById('dynamicNavLinks');
     if (!navContainer || !rtdb) return;
@@ -740,7 +736,6 @@ async function buildUtmNavigation() {
 }
 
 // Section 7: PSN Skeleton & Live Trophy Tracking
-// Lines 691-744: CommID telemetry
 async function syncPsnSkeleton() {
     if (!rtdb) return;
     try {
@@ -796,7 +791,7 @@ async function autoCheckUserPsnTrophies() {
                 }
             });
 
-            if (stateModified) {
+            if (stateModified && appState.isCloudLoaded) {
                 appState.applyStateToUI();
                 appState.saveProgress();
             }
@@ -806,8 +801,7 @@ async function autoCheckUserPsnTrophies() {
     }
 }
 
-// Section 8: Render Far Cry 5 Tactical Accordion Sections
-// Lines 747-920: Populates cards with data-group and data-type binding
+// Section 8: Render Cards
 function renderFarCry5Companion(data) {
     const container = document.getElementById('section-container');
     if (!container || !data) return;
@@ -880,7 +874,7 @@ function renderFarCry5Companion(data) {
         });
     }
 
-    // 8C. Collectibles (6 Sets)
+    // 8C. Collectibles
     if (data.collectibles) {
         for (const cKey in data.collectibles) {
             const group = data.collectibles[cKey];
@@ -990,11 +984,9 @@ function renderFarCry5Companion(data) {
     }
 
     container.innerHTML = html;
-    appState.applyStateToUI();
 }
 
 // Section 9: Helpers
-// Lines 923-946: Sanitization & Relative Protocol Enforcement
 function toSecureUrl(url) {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
@@ -1018,12 +1010,11 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
-// Section 10: Primary Lifecycle Gate
-// Lines 949-1033: Initialization, Auth Listeners, and Data Hydration
+// Section 10: Strict Sequential Lifecycle
 document.addEventListener('DOMContentLoaded', async () => {
     await buildUtmNavigation();
 
-    const platformSelector = document.getElementById('platformSelector');
+    const platformSelector = document.getElementById('platformSelect') || document.getElementById('platformSelector');
     if (platformSelector) {
         platformSelector.value = appState.platform;
         platformSelector.addEventListener('change', (e) => {
@@ -1057,9 +1048,35 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // Step 1: Load JSON and build UI cards FIRST
+    const dataUrls = [
+        './data/farcry5.json',
+        './farcry5.json',
+        '../game/data/farcry5.json',
+        '//raw.githubusercontent.com/Werewolf3788/Website/main/game/data/farcry5.json'
+    ];
+
+    const loadData = async (idx) => {
+        if (idx >= dataUrls.length) return false;
+        try {
+            const res = await fetch(dataUrls[idx]);
+            if (!res.ok) throw new Error();
+            const json = await res.json();
+            appState.gameData = json;
+            await syncPsnSkeleton();
+            renderFarCry5Companion(json);
+            return true;
+        } catch (e) {
+            return await loadData(idx + 1);
+        }
+    };
+
+    // Wait until cards are rendered before touching data
+    await loadData(0);
+
+    // Step 2: Auth Listener (Now guaranteed to run against existing UI cards)
     if (auth) {
         auth.onAuthStateChanged(async (user) => {
-            appState.authInitialized = true;
             if (user) {
                 appState.currentUser = user;
                 appState.activeEmail = user.email;
@@ -1078,7 +1095,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (authModal) authModal.classList.add('hidden');
 
                 await appState.fetchUserFriendCode();
-                await appState.loadProgress();
+                await appState.loadProgress(); // Waits for Firestore .get() to complete
                 await appState.migrateGuestProgressIfPresent();
                 await appState.syncFriendsProgress();
             } else {
@@ -1093,34 +1110,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const badge = document.getElementById('userProfileBadge');
                 if (badge) badge.classList.add('hidden');
 
-                appState.loadProgress();
+                await appState.loadProgress(); // Loads guest LocalStorage
             }
         });
     }
-
-    const dataUrls = [
-        './data/farcry5.json',
-        './farcry5.json',
-        '../game/data/farcry5.json',
-        '//raw.githubusercontent.com/Werewolf3788/Website/main/game/data/farcry5.json'
-    ];
-
-    const loadData = async (idx) => {
-        if (idx >= dataUrls.length) return;
-        try {
-            const res = await fetch(dataUrls[idx]);
-            if (!res.ok) throw new Error();
-            const json = await res.json();
-            appState.gameData = json;
-            await syncPsnSkeleton();
-            renderFarCry5Companion(json);
-            
-            if (appState.authInitialized) {
-                appState.loadProgress();
-            }
-        } catch (e) {
-            loadData(idx + 1);
-        }
-    };
-    loadData(0);
 });
