@@ -2,8 +2,8 @@
 // * Project: Universal Multi-Game Resistance Companion & Field Ledger
 // * File: game.js
 // * Location: /game/game.js
-// * Build Version: v10.3.0-AUTH-LOCKED-PERSISTENCE
-// * Deployment Timestamp: 2026-10-27 01:45:00 EDT (America/New_York)
+// * Build Version: v10.4.0-FRIEND-CODE-RESOLUTION-ENGINE
+// * Deployment Timestamp: 2026-10-27 02:00:00 EDT (America/New_York)
 // ============================================================================
 
 // Section 1: Authoritative Firebase Credentials & Services
@@ -32,6 +32,9 @@ try {
 const CURRENT_GAME_ID = "FarCry5";
 const PSN_FC5_COMM_ID = "NPWR12514_00";
 
+// Cache to prevent repeated friend_code -> userKey lookups
+const friendCodeToEmailKeyCache = {};
+
 // Section 2: Authoritative State Engine
 window.appState = {
     activeUser: 'Guest',
@@ -41,9 +44,9 @@ window.appState = {
     gameData: null,
     psnSkeleton: null,
     myFriendCode: null,
-    isCloudLoaded: false, // Critical write-protection gate
+    isCloudLoaded: false, // Prevents premature empty saves from overwriting Firestore
     
-    // Discrete COTW-aligned schema
+    // COTW Root Schema
     activeMission: "Hope County Resistance",
     gameId: CURRENT_GAME_ID,
     trophies_earned: 0,
@@ -317,7 +320,6 @@ window.appState = {
         this.trophies_total = payload.trophies_total || 51;
         this.trophies_percent = payload.trophies_percent || 0;
         
-        // Deep merge into hydrated tree
         if (payload.collectibles) {
             for (const cKey in payload.collectibles) {
                 if (!this.collectibles[cKey]) {
@@ -386,7 +388,6 @@ window.appState.saveProgress = function() {
 window.appState.loadProgress = async function() {
     const emailKey = this.getEmailKey();
 
-    // Hydrate default structure
     this.hydrateDefaultSchema();
 
     // 1. Guest Mode
@@ -409,7 +410,7 @@ window.appState.loadProgress = async function() {
         return;
     }
 
-    // 2. Authenticated Mode: Return true Promise and wait for completion
+    // 2. Authenticated Mode: Load from Firestore
     if (firestore) {
         this.updateStatus(`Reading cloud ledger for ${this.platform.toUpperCase()}...`);
 
@@ -426,17 +427,17 @@ window.appState.loadProgress = async function() {
             if (doc.exists) {
                 const cloudData = doc.data();
                 this.applyPayload(cloudData);
-                this.isCloudLoaded = true; // Unlock saving
+                this.isCloudLoaded = true;
                 this.updateStatus(`[Cloud Restored] Authoritative ledger loaded [${this.platform.toUpperCase()}].`);
             } else {
                 this.applyStateToUI();
-                this.isCloudLoaded = true; // Unlock saving
+                this.isCloudLoaded = true;
                 this.saveProgress();
                 this.updateStatus(`[Cloud Initialized] Seeded new COTW structure in Firestore.`);
             }
         } catch (err) {
             console.error("[Firestore Fetch Error]:", err);
-            this.isCloudLoaded = true; // Unlock so user can still play
+            this.isCloudLoaded = true;
             this.updateStatus(`Failed to read cloud save: ${err.message}`);
         }
     }
@@ -557,7 +558,7 @@ window.adjRank = function(rankKey, delta) {
     appState.saveProgress();
 };
 
-// Section 5: Squad Co-Op Bridge
+// Section 5: Squad Co-Op Bridge (Resolves friend_code -> Firestore emailKey)
 window.appState.fetchUserFriendCode = async function() {
     const emailKey = this.getEmailKey();
     if (!rtdb || !emailKey) return;
@@ -570,6 +571,26 @@ window.appState.fetchUserFriendCode = async function() {
         console.warn("[Friend Code Fetch]:", e);
     }
 };
+
+// Helper: Resolves a friend's RTDB code (e.g. TLWWTSNU or GQGI0SWY) to their parent Firestore key (e.g. raykevin71888_at_gmail_com)
+async function resolveFriendCodeToUserKey(codeOrKey) {
+    if (!codeOrKey) return null;
+    if (codeOrKey.includes('_at_')) return codeOrKey; // Already an email key
+    if (friendCodeToEmailKeyCache[codeOrKey]) return friendCodeToEmailKeyCache[codeOrKey];
+
+    try {
+        const snap = await rtdb.ref('/users').orderByChild('friend_code').equalTo(codeOrKey).once('value');
+        const val = snap.val();
+        if (val) {
+            const resolvedKey = Object.keys(val)[0];
+            friendCodeToEmailKeyCache[codeOrKey] = resolvedKey;
+            return resolvedKey;
+        }
+    } catch (e) {
+        console.warn("[Friend Resolution Error]:", e);
+    }
+    return codeOrKey;
+}
 
 window.appState.syncFriendsProgress = async function() {
     const rosterContainer = document.getElementById('friendsRosterContainer');
@@ -592,23 +613,32 @@ window.appState.syncFriendsProgress = async function() {
 
         let cardsHtml = '';
         for (const [fKey, fObj] of Object.entries(friendsData)) {
-            const friendUsername = fObj.username || fKey;
-            const friendTargetKey = fObj.email ? fObj.email.replace(/@/g, '_at_').replace(/\./g, '_') : fKey;
+            const friendCode = fObj.friend_code || fKey;
+            const friendUsername = fObj.username || 'Squad Member';
+            const friendAvatar = toSecureUrl(fObj.avatar_url || '');
+            const targetPlatform = (fObj.primary_platform || this.platform).toLowerCase();
+
+            // Resolve friend_code (TLWWTSNU) -> Firestore Key (raykevin71888_at_gmail_com)
+            const targetUserDocKey = await resolveFriendCodeToUserKey(friendCode);
 
             let friendData = null;
-            if (firestore) {
+            if (firestore && targetUserDocKey) {
                 try {
                     const fDoc = await firestore
                         .collection("users")
-                        .doc(friendTargetKey)
+                        .doc(targetUserDocKey)
                         .collection("platform")
-                        .doc(this.platform)
+                        .doc(targetPlatform)
                         .collection("progress")
                         .doc(CURRENT_GAME_ID)
                         .get();
 
-                    if (fDoc.exists) friendData = fDoc.data();
-                } catch (err) {}
+                    if (fDoc.exists) {
+                        friendData = fDoc.data();
+                    }
+                } catch (err) {
+                    console.warn(`[Friend Firestore Error for ${targetUserDocKey}]:`, err);
+                }
             }
 
             const rpVal = friendData?.ranks?.rp || 0;
@@ -617,18 +647,21 @@ window.appState.syncFriendsProgress = async function() {
             const trophyPercent = friendData?.trophies_percent || 0;
 
             cardsHtml += `
-                <div style="background:#1e293b; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <div style="font-weight:900; color:#fff; font-size:0.95rem;">${escapeHtml(friendUsername)}</div>
-                        <span style="font-size:0.7rem; font-weight:800; background:rgba(255,85,0,0.2); color:var(--user-theme-accent); padding:2px 6px; border-radius:4px; text-transform:uppercase;">
-                            ${escapeHtml(this.platform)}
-                        </span>
-                    </div>
-                    <div style="font-size:0.75rem; color:#cbd5e1; margin-bottom:4px;">
-                        <strong>RP:</strong> ${rpVal} • <strong>Stashes:</strong> ${stashesVal} • <strong>Collectibles:</strong> ${colVal}
-                    </div>
-                    <div style="font-size:0.75rem; color:#94a3b8;">
-                        Trophy Progress: <strong>${trophyPercent}%</strong>
+                <div style="background:#1e293b; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px; display:flex; gap:12px; align-items:center;">
+                    ${friendAvatar ? `<img src="${friendAvatar}" style="width:44px; height:44px; border-radius:50%; object-fit:cover; border:2px solid var(--user-theme-accent);" onerror="this.style.display='none'">` : ''}
+                    <div style="flex:1;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <div style="font-weight:900; color:#fff; font-size:0.95rem;">${escapeHtml(friendUsername)}</div>
+                            <span style="font-size:0.7rem; font-weight:800; background:rgba(255,85,0,0.2); color:var(--user-theme-accent); padding:2px 6px; border-radius:4px; text-transform:uppercase;">
+                                ${escapeHtml(targetPlatform)}
+                            </span>
+                        </div>
+                        <div style="font-size:0.75rem; color:#cbd5e1; margin-bottom:2px;">
+                            <strong>RP:</strong> ${rpVal} • <strong>Stashes:</strong> ${stashesVal} • <strong>Collectibles:</strong> ${colVal}
+                        </div>
+                        <div style="font-size:0.75rem; color:#94a3b8;">
+                            Trophy Progress: <strong style="color:#fff;">${trophyPercent}%</strong>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1071,10 +1104,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Wait until cards are rendered before touching data
     await loadData(0);
 
-    // Step 2: Auth Listener (Now guaranteed to run against existing UI cards)
+    // Step 2: Auth Listener
     if (auth) {
         auth.onAuthStateChanged(async (user) => {
             if (user) {
@@ -1095,9 +1127,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (authModal) authModal.classList.add('hidden');
 
                 await appState.fetchUserFriendCode();
-                await appState.loadProgress(); // Waits for Firestore .get() to complete
+                await appState.loadProgress(); // Loads authoritative Firestore save and flips isCloudLoaded = true
                 await appState.migrateGuestProgressIfPresent();
-                await appState.syncFriendsProgress();
+                await appState.syncFriendsProgress(); // Resolves friend codes (TLWWTSNU) to Firestore and paints squad card
             } else {
                 appState.currentUser = null;
                 appState.activeEmail = null;
@@ -1110,7 +1142,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const badge = document.getElementById('userProfileBadge');
                 if (badge) badge.classList.add('hidden');
 
-                await appState.loadProgress(); // Loads guest LocalStorage
+                await appState.loadProgress();
             }
         });
     }
