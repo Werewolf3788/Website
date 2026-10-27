@@ -2,51 +2,45 @@
 // * Project: Far Cry 5 Hope County Resistance Companion & Field Ledger
 // * File: fc5.js
 // * Location: /game/fc5.js
-// * Build Version: v8.3.0-FC5-CLOUD-AUTHORITATIVE
-// * Deployment Timestamp: 2026-10-26 21:12:00 EDT (America/New_York)
+// * Build Version: v8.5.0-FC5-CLOUD-AUTHORITATIVE
+// * Deployment Timestamp: 2026-10-26 21:23:00 EDT (America/New_York)
 // ============================================================================
 
-// Section 1: Endpoints & Firebase Initialization
+// Section 1: Endpoints & Firebase Instances
 const RTDB_ROOT = "https://entertainment-71888-default-rtdb.firebaseio.com";
 const PSN_FC5_COMM_ID = "NPWR12514_00";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDummyKey_LoadedByHost",
-    authDomain: "entertainment-71888.firebaseapp.com",
-    databaseURL: RTDB_ROOT,
-    projectId: "entertainment-71888",
-    storageBucket: "entertainment-71888.appspot.com"
-};
-
-if (!firebase.apps.length) {
+// Ensure auth persistence across sessions
+if (window.firebase && firebase.auth) {
     try {
-        firebase.initializeApp(firebaseConfig);
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     } catch (e) {
-        console.warn("[Firebase Init]:", e);
+        console.warn("[Auth Persistence]:", e);
     }
 }
 
-const rtdb = firebase.database();
-const firestore = firebase.firestore();
-const auth = firebase.auth();
+// Attach to the live Firebase instance loaded via /__/firebase/init.js or root
+const rtdb = (window.firebase && firebase.database) ? firebase.app().database(RTDB_ROOT) : null;
+const firestore = (window.firebase && firebase.firestore) ? firebase.firestore() : null;
+const auth = (window.firebase && firebase.auth) ? firebase.auth() : null;
 
-// Section 2: Global Application State
+// Section 2: Global State Engine
 window.appState = {
     activeUser: 'Werewolf',
-    activeEmail: 'raykevin71888@gmail.com',
+    activeEmail: 'raykevin71888@gmail.com', // Authoritative Default
     platform: 'ps',
     currentUser: null,
     gameData: null,
     psnSkeleton: null,
     myFriendCode: null,
-    authorizedFriends: {},
     state: {
         ranks: { rp: 0, outposts: 0, cultProperty: 0, stashes: 0, roster: 0, perks: 0 },
         checks: {}
     },
 
     getEmailKey: function(email) {
-        return (email || this.activeEmail).replace(/@/g, '_at_').replace(/\./g, '_');
+        const target = email || this.activeEmail || 'raykevin71888@gmail.com';
+        return target.replace(/@/g, '_at_').replace(/\./g, '_');
     },
 
     switchPlatform: function(newPlatform) {
@@ -59,19 +53,7 @@ window.appState = {
         this.syncFriendsProgress();
     },
 
-    switchHunterEmail: function(newEmail) {
-        this.activeEmail = newEmail;
-        this.activeUser = (newEmail.indexOf('raykevin') !== -1) ? 'Werewolf' : 'Raymystyro';
-        document.body.setAttribute('data-active-user', this.activeUser);
-        const nameEl = document.getElementById('resistance-name');
-        if (nameEl) {
-            nameEl.innerText = `${this.activeUser.toUpperCase()} [${this.platform.toUpperCase()}]`;
-        }
-        this.fetchUserFriendCode();
-        this.loadProgress();
-    },
-
-    // Auto-Recalculate Resistance Metrics based on checked items
+    // Recalculate Resistance Metrics based on completed checks
     recalculateMetrics: function() {
         if (!this.gameData) return;
 
@@ -116,7 +98,7 @@ window.appState = {
             });
         }
 
-        // Tally Story Missions
+        // Tally Walkthrough Missions
         if (Array.isArray(this.gameData.walkthrough_missions)) {
             this.gameData.walkthrough_missions.forEach(m => {
                 if (this.state.checks[m.id]) {
@@ -130,7 +112,6 @@ window.appState = {
         this.state.ranks.perks = perksCount;
         this.state.ranks.rp = calculatedRP;
 
-        // Reflect to UI
         this.updateRankDisplay('stashes', stashesCount);
         this.updateRankDisplay('roster', rosterCount);
         this.updateRankDisplay('perks', perksCount);
@@ -145,17 +126,15 @@ window.appState = {
     // Save Progress (Firestore Primary + LocalStorage Mirror)
     saveProgress: function() {
         this.recalculateMetrics();
-        const key = `fc5_progress_${this.activeUser}_${this.platform}`;
+        const key = `fc5_progress_${this.getEmailKey()}_${this.platform}`;
 
-        // Local cache mirror
         try {
             localStorage.setItem(key, JSON.stringify(this.state));
         } catch (e) {
-            console.warn("[LocalStorage Write Error]:", e);
+            console.warn("[Storage] Local write failure:", e);
         }
 
-        // Cloud Firestore Save
-        if (this.currentUser) {
+        if (this.currentUser && firestore) {
             const emailKey = this.getEmailKey(this.currentUser.email);
             const userDocRef = firestore.collection("users").doc(emailKey).collection("games").doc("FarCry5");
 
@@ -179,11 +158,11 @@ window.appState = {
 
     // Load Progress
     loadProgress: function() {
-        const key = `fc5_progress_${this.activeUser}_${this.platform}`;
+        const key = `fc5_progress_${this.getEmailKey()}_${this.platform}`;
 
-        if (this.currentUser) {
+        if (this.currentUser && firestore) {
             const emailKey = this.getEmailKey(this.currentUser.email);
-            this.updateStatus("Querying Cloud Firestore...");
+            this.updateStatus("Fetching Cloud Firestore Telemetry...");
 
             firestore.collection("users").doc(emailKey).collection("games").doc("FarCry5").get()
                 .then(doc => {
@@ -192,13 +171,13 @@ window.appState = {
                         if (data?.platforms?.[this.platform]?.state) {
                             this.state = data.platforms[this.platform].state;
                             this.applyStateToUI();
-                            this.updateStatus("Synced from Cloud Firestore.");
+                            this.updateStatus("Telemetry synchronized from Cloud Firestore.");
                             return;
                         }
                     }
                     this.fallbackLocalLoad(key);
                 }).catch(err => {
-                    console.warn("[Firestore Read Error]:", err);
+                    console.warn("[Firestore Fetch Error]:", err);
                     this.fallbackLocalLoad(key);
                 });
             return;
@@ -226,7 +205,7 @@ window.appState = {
             checks: {}
         };
         this.applyStateToUI();
-        this.updateStatus("Fresh profile ready.");
+        this.updateStatus("Profile active.");
     },
 
     applyStateToUI: function() {
@@ -273,10 +252,11 @@ window.appState = {
 
     // Friend Code & Friends Progress Integration
     fetchUserFriendCode: async function() {
+        if (!rtdb) return;
         const emailKey = this.getEmailKey(this.currentUser?.email || this.activeEmail);
         try {
             const snap = await rtdb.ref(`/users/${emailKey}/friend_code`).once('value');
-            this.myFriendCode = snap.val() || '--';
+            this.myFriendCode = snap.val() || 'TLWWTSNU';
             const display = document.getElementById('myFriendCodeDisplay');
             if (display) display.innerText = this.myFriendCode;
         } catch (e) {
@@ -306,17 +286,16 @@ window.appState = {
             let cardsHtml = '';
             for (const [fKey, fObj] of Object.entries(friendsData)) {
                 const friendUsername = fObj.username || fKey;
-                const friendPlatform = fObj.primary_platform || 'ps';
 
-                // Query Friend's Far Cry 5 Progress in Firestore for the currently viewed platform
                 let friendState = null;
-                try {
-                    // Try email mapping or username reference
-                    const fDoc = await firestore.collection("users").doc(fKey).collection("games").doc("FarCry5").get();
-                    if (fDoc.exists) {
-                        friendState = fDoc.data()?.platforms?.[this.platform]?.state;
-                    }
-                } catch (err) {}
+                if (firestore) {
+                    try {
+                        const fDoc = await firestore.collection("users").doc(fKey).collection("games").doc("FarCry5").get();
+                        if (fDoc.exists) {
+                            friendState = fDoc.data()?.platforms?.[this.platform]?.state;
+                        }
+                    } catch (err) {}
+                }
 
                 const checksCount = friendState?.checks ? Object.values(friendState.checks).filter(Boolean).length : 0;
                 const rpVal = friendState?.ranks?.rp || 0;
@@ -359,7 +338,7 @@ window.adjRank = function(rankKey, delta) {
 // Section 3: Dynamic Top Navigation Bar (Sourced from /utm_links)
 async function buildUtmNavigation() {
     const navContainer = document.getElementById('dynamicNavLinks');
-    if (!navContainer) return;
+    if (!navContainer || !rtdb) return;
 
     try {
         const snap = await rtdb.ref('/utm_links').once('value');
@@ -384,7 +363,6 @@ async function buildUtmNavigation() {
         }
         walk(data);
 
-        // Sorting & Grouping
         const standalone = [];
         const groups = {};
 
@@ -398,7 +376,6 @@ async function buildUtmNavigation() {
             }
         });
 
-        // Compute group weights
         const groupCards = Object.entries(groups).map(([gName, items]) => {
             items.sort((a, b) => a.rowNumber - b.rowNumber);
             return {
@@ -455,6 +432,7 @@ async function buildUtmNavigation() {
 
 // Section 4: PSN Game Skeleton & Live Trophy Tracking
 async function syncPsnSkeleton() {
+    if (!rtdb) return;
     try {
         const snap = await rtdb.ref(`/psn/games/${PSN_FC5_COMM_ID}`).once('value');
         const skeleton = snap.val();
@@ -462,7 +440,6 @@ async function syncPsnSkeleton() {
 
         appState.psnSkeleton = skeleton;
 
-        // Dynamic Poster Art & Favicon
         const posterUrl = toSecureUrl(skeleton.posterArt);
         if (posterUrl) {
             const fav1 = document.getElementById('dynamicFavicon');
@@ -473,7 +450,6 @@ async function syncPsnSkeleton() {
             if (navLogo) navLogo.src = posterUrl;
         }
 
-        // Live User Trophy Match (Auto-Check)
         await autoCheckUserPsnTrophies();
     } catch (e) {
         console.warn("[PSN Skeleton Sync]:", e);
@@ -481,8 +457,8 @@ async function syncPsnSkeleton() {
 }
 
 async function autoCheckUserPsnTrophies() {
-    const userSanitized = appState.activeUser.toLowerCase();
-    const gamertag = (userSanitized === 'werewolf') ? 'wildhorse_spirit' : userSanitized;
+    if (!rtdb) return;
+    const gamertag = 'wildhorse_spirit';
 
     try {
         const liveTrophiesSnap = await rtdb.ref(`/psn/gamertags/${gamertag}/liveTrophyProgress/${PSN_FC5_COMM_ID}`).once('value');
@@ -544,7 +520,7 @@ function renderFarCry5Companion(data) {
         </section>`;
     }
 
-    // 5B. Prepper Stashes (All Collapsed)
+    // 5B. Prepper Stashes
     if (data.prepper_stashes) {
         const regions = [
             { key: 'holland_valley', label: 'Holland Valley (John)' },
@@ -583,7 +559,7 @@ function renderFarCry5Companion(data) {
         });
     }
 
-    // 5C. Collectibles (All Collapsed)
+    // 5C. Collectibles
     if (data.collectibles) {
         for (const cKey in data.collectibles) {
             const group = data.collectibles[cKey];
@@ -617,7 +593,7 @@ function renderFarCry5Companion(data) {
         }
     }
 
-    // 5D. Guns & Fangs for Hire (All Collapsed)
+    // 5D. Guns & Fangs for Hire
     if (Array.isArray(data.guns_and_fangs_for_hire)) {
         html += `
         <section class="category-section section-collapsed" id="cat-roster">
@@ -647,7 +623,7 @@ function renderFarCry5Companion(data) {
         </section>`;
     }
 
-    // 5E. Trophies & Achievements (Mapped to PSN Official Skeleton)
+    // 5E. Trophies & Achievements
     const trophiesList = (appState.psnSkeleton && appState.psnSkeleton.trophies) ? Object.values(appState.psnSkeleton.trophies) : (data.trophies_and_achievements || []);
 
     if (Array.isArray(trophiesList) && trophiesList.length > 0) {
@@ -721,10 +697,8 @@ function escapeHtml(str) {
 
 // Section 7: Primary Lifecycle Gate
 document.addEventListener('DOMContentLoaded', async () => {
-    // 7A. Build Top Navigation
     await buildUtmNavigation();
 
-    // 7B. Mobile Drawer Toggle
     const menuBtn = document.getElementById('mobileMenuBtn');
     const navLinks = document.getElementById('dynamicNavLinks');
     if (menuBtn && navLinks) {
@@ -733,7 +707,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 7C. Auth Modal Setup
     const authBtn = document.getElementById('authModalBtn');
     const authModal = document.getElementById('authModal');
     const authClose = document.getElementById('authModalClose');
@@ -742,37 +715,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (authBtn && authModal) authBtn.addEventListener('click', () => authModal.classList.remove('hidden'));
     if (authClose && authModal) authClose.addEventListener('click', () => authModal.classList.add('hidden'));
 
-    if (googleBtn) {
+    if (googleBtn && auth) {
         googleBtn.addEventListener('click', () => {
             const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).catch(err => alert(`Sign-in error: ${err.message}`));
+            auth.signInWithPopup(provider).catch(err => {
+                console.error("[Auth Popup Error]:", err);
+                alert(`Sign-in error: ${err.message}`);
+            });
         });
     }
 
-    // 7D. Auth State Listener
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            appState.currentUser = user;
-            if (authBtn) authBtn.classList.add('hidden');
-            const badge = document.getElementById('userProfileBadge');
-            const avatar = document.getElementById('headerUserAvatar');
-            const nameEl = document.getElementById('userDisplayName');
-            if (badge) badge.classList.remove('hidden');
-            if (avatar && user.photoURL) avatar.src = user.photoURL;
-            if (nameEl) nameEl.innerText = user.displayName || user.email;
-            if (authModal) authModal.classList.add('hidden');
-        } else {
-            appState.currentUser = null;
-            if (authBtn) authBtn.classList.remove('hidden');
-            const badge = document.getElementById('userProfileBadge');
-            if (badge) badge.classList.add('hidden');
-        }
-        appState.fetchUserFriendCode();
-        appState.loadProgress();
-        appState.syncFriendsProgress();
-    });
+    if (auth) {
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                appState.currentUser = user;
+                appState.activeEmail = user.email;
+                appState.activeUser = user.displayName || 'Werewolf';
 
-    // 7E. Load JSON Game Data & Skeleton
+                const nameEl = document.getElementById('resistance-name');
+                if (nameEl) nameEl.innerText = `${appState.activeUser.toUpperCase()} [FAR CRY 5]`;
+
+                if (authBtn) authBtn.classList.add('hidden');
+                const badge = document.getElementById('userProfileBadge');
+                const avatar = document.getElementById('headerUserAvatar');
+                const nameBadge = document.getElementById('userDisplayName');
+                if (badge) badge.classList.remove('hidden');
+                if (avatar && user.photoURL) avatar.src = user.photoURL;
+                if (nameBadge) nameBadge.innerText = appState.activeUser;
+                if (authModal) authModal.classList.add('hidden');
+            } else {
+                appState.currentUser = null;
+                if (authBtn) authBtn.classList.remove('hidden');
+                const badge = document.getElementById('userProfileBadge');
+                if (badge) badge.classList.add('hidden');
+            }
+            appState.fetchUserFriendCode();
+            appState.loadProgress();
+            appState.syncFriendsProgress();
+        });
+    }
+
     const dataUrls = [
         './data/farcry5.json',
         './farcry5.json',
