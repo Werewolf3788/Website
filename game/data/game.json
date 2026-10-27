@@ -1,0 +1,52 @@
+{
+  "game": "Far Cry 5",
+  "gameId": "FarCry5",
+  "commId": "NPWR12514_00",
+  "lastEarned": "2026-10-27T04:12:00Z",
+  "overallProgress": 42,
+  "metrics": [
+    {
+      "id": "metric_1",
+      "icon": "⚡",
+      "label": "Resistance Pts",
+      "current": 13000,
+      "total": 39000,
+      "step": 100
+    },
+    {
+      "id": "metric_2",
+      "icon": "🏴",
+      "label": "Outposts",
+      "current": 7,
+      "total": 21,
+      "step": 1
+    },
+    {
+      "id": "metric_3",
+      "icon": "🔥",
+      "label": "Cult Property",
+      "current": 14,
+      "total": 48,
+      "step": 1
+    }
+  ],
+  "categories": {
+    "collectibles": {
+      "label": "Collectibles",
+      "icon": "🗂️",
+      "items": [
+        { "id": "col_1", "name": "Baseball Cards", "current": 0, "total": 9 },
+        { "id": "col_2", "name": "Comic Books", "current": 12, "total": 12 }
+      ]
+    },
+    "roster": {
+      "label": "Guns & Fangs for Hire",
+      "icon": "🐾",
+      "items": [
+        { "id": "char_1", "name": "Boomer", "unlocked": true, "type": "Fang" },
+        { "id": "char_2", "name": "Nick Rye", "unlocked": false, "type": "Gun" }
+      ]
+    }
+  },
+  "trophies": []
+}
