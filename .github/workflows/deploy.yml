@@ -1,8 +1,8 @@
 # ==============================================================================
 # GitHub Actions Workflow: Dual-Deploy to Firebase Hosting & GitHub Pages
-# Project: playstation-be936
+# Target Project: entertainment-71888
 # Target Secret: GCP_SA_KEY_WEBSITE
-# Timestamp: 2026-10-26 18:30:00 EDT (New York)
+# Timestamp: 2026-10-26 21:48:00 EDT (New York)
 # Line 1: Main Trigger and Workflow Settings
 # ==============================================================================
 
@@ -46,11 +46,11 @@ jobs:
         with:
           node-version: 20
 
-      # Step 3: Deploy to Firebase Hosting using GCP_SA_KEY_WEBSITE secret (Line 49)
+      # Step 3: Deploy to Firebase Hosting for entertainment-71888 (Line 49)
       - name: Deploy to Firebase Hosting
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only hosting --project playstation-be936
+          args: deploy --only hosting --project entertainment-71888
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_WEBSITE }}
 
@@ -58,8 +58,7 @@ jobs:
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
 
-      # Step 5: Package static assets/overlays for GitHub Pages (Line 61)
-      # (Change path from '.' to a specific folder like './overlays' if needed)
+      # Step 5: Package static assets for GitHub Pages (Line 61)
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
