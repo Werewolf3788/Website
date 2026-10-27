@@ -39567,7 +39567,9 @@
         "statusMessage": "Farcry 5 First time",
         "subCount": "terrdog420 needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "viewers": "0"
-      }
+      },
+      "gameStatus": "",
+      "gameStatusUpdated": "10/27/2026, 14:43:58"
     },
     "DesdemonaTiger": {
       "accountId": "6551906246515882523",
@@ -99570,7 +99572,9 @@
         "trophyLevelBasePoint": 14760,
         "trophyLevelNextPoint": 14850,
         "trophyPoint": 14820
-      }
+      },
+      "gameStatus": "",
+      "gameStatusUpdated": "10/27/2026, 14:43:59"
     },
     "OneLIVIDMAN": {
       "onlineId": "OneLIVIDMAN",
@@ -99735,11 +99739,11 @@
       "blockedUsers": [],
       "friendRequests": [],
       "purchasedGames": [],
-      "online": true,
+      "online": false,
       "onDashboard": false,
-      "currentGame": "Far Cry® 5",
+      "currentGame": "Dashboard",
       "currentCommunicationId": "NPWR12514_00",
-      "currentGameId": "CUSA05904_00",
+      "currentGameId": null,
       "currentGameActivity": "Hunting prairie doggies for a mission",
       "currentGameHours": "29h 1m",
       "currentGameNumericHours": 29,
@@ -99821,20 +99825,20 @@
           "totalSeconds": 13883
         },
         "NPWR12514_00": {
-          "accumulatedSeconds": 25156,
+          "accumulatedSeconds": 157839,
           "commId": "NPWR12514_00",
-          "isActive": true,
-          "lastEndedTime": 1792330501848,
-          "lastSyncedTime": 1792993954733,
+          "isActive": false,
+          "lastEndedTime": 1793126638657,
+          "lastSyncedTime": null,
           "manualBaselineHours": 0,
           "nativeBaselineSeconds": 79359,
           "nativePlaytimeHours": 29,
-          "sessionStartTime": 1792968796619,
+          "sessionStartTime": null,
           "title": "Far Cry® 5",
           "titleId": "CUSA05904_00",
-          "totalFormatted": "29h 1m",
-          "totalHours": 29,
-          "totalSeconds": 104515
+          "totalFormatted": "1 day, 19h 50m",
+          "totalHours": 43.8,
+          "totalSeconds": 157839
         },
         "NPWR13211_00": {
           "commId": "NPWR13211_00",
@@ -146203,7 +146207,11 @@
         }
       ],
       "streamHistory": [],
-      "lastUpdated": "10/26/2026, 01:53:04"
+      "lastUpdated": "10/27/2026, 14:43:58",
+      "gameStatus": "",
+      "sessionStartedAt": "",
+      "sessionStartedAtMs": 0,
+      "currentSessionSeconds": 0
     },
     "wildhorse_spirit": {
       "onlineId": "wildhorse_spirit",
@@ -146353,11 +146361,11 @@
       "blockedUsers": [],
       "friendRequests": [],
       "purchasedGames": [],
-      "online": true,
+      "online": false,
       "onDashboard": false,
-      "currentGame": "Far Cry® 5",
+      "currentGame": "Dashboard",
       "currentCommunicationId": "NPWR12514_00",
-      "currentGameId": "CUSA05904_00",
+      "currentGameId": null,
       "currentGameActivity": "Co-op@raymystyro still doesn't know how controllers work and I still can't aim",
       "currentGameHours": "28h 4m",
       "currentGameNumericHours": 28.1,
@@ -146426,20 +146434,20 @@
           "totalSeconds": 16517
         },
         "NPWR12514_00": {
-          "accumulatedSeconds": 25144,
+          "accumulatedSeconds": 157861,
           "commId": "NPWR12514_00",
-          "isActive": true,
-          "lastEndedTime": 1792330500653,
-          "lastSyncedTime": 1792993920646,
+          "isActive": false,
+          "lastEndedTime": 1793126638194,
+          "lastSyncedTime": null,
           "manualBaselineHours": 0,
           "nativeBaselineSeconds": 75929,
           "nativePlaytimeHours": 28.1,
-          "sessionStartTime": 1792968775108,
+          "sessionStartTime": null,
           "title": "Far Cry® 5",
           "titleId": "CUSA05904_00",
-          "totalFormatted": "28h 4m",
-          "totalHours": 28.1,
-          "totalSeconds": 101073
+          "totalFormatted": "1 day, 19h 51m",
+          "totalHours": 43.9,
+          "totalSeconds": 157861
         },
         "NPWR52231_00": {
           "accumulatedSeconds": 8365,
@@ -186547,7 +186555,11 @@
         "Far Cry 5",
         "Music"
       ],
-      "lastUpdated": "10/26/2026, 01:52:31"
+      "lastUpdated": "10/27/2026, 14:43:58",
+      "gameStatus": "",
+      "sessionStartedAt": "",
+      "sessionStartedAtMs": 0,
+      "currentSessionSeconds": 0
     }
   },
   "usersByGamerTag": {
@@ -373185,12 +373197,12 @@
       "bronze": 657,
       "totalTrophies": 842,
       "gamesPlayed": 73,
-      "isOnline": true,
-      "currentGame": "Far Cry® 5",
+      "isOnline": false,
+      "currentGame": "Dashboard",
       "gameStatus": "",
       "commId": "NPWR12514_00",
       "conceptId": 221692,
-      "currentGameId": "CUSA05904_00",
+      "currentGameId": null,
       "art": "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png",
       "posterArt": "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png",
       "image": "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png",
@@ -373208,12 +373220,12 @@
       "bronze": 668,
       "totalTrophies": 790,
       "gamesPlayed": 144,
-      "isOnline": true,
-      "currentGame": "Far Cry® 5",
+      "isOnline": false,
+      "currentGame": "Dashboard",
       "gameStatus": "",
       "commId": "NPWR12514_00",
       "conceptId": 221692,
-      "currentGameId": "CUSA05904_00",
+      "currentGameId": null,
       "art": "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png",
       "posterArt": "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png",
       "image": "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png",
@@ -373381,24 +373393,24 @@
         }
       }
     },
-    "calculatedAt": "2026-10-27T18:04:54.278Z"
+    "calculatedAt": "2026-10-27T18:43:59.249Z"
   },
   "mutualSquadFollowers": [],
   "friendsDirectory": {},
   "raw": {},
   "authDiagnostics": {
     "wildhorse_spirit_active": "no",
-    "wildhorse_spirit_status": "OFFLINE_GUEST_MODE",
-    "ray_active": "no",
-    "ray_status": "OFFLINE_GUEST_MODE",
+    "wildhorse_spirit_status": "EXPIRED_NPSSO (\n      There was a problem retrieving your PSN access code. Is your NPSSO code valid?\n      To get a new NPSSO code, visit https://ca.account.sony.com/api/v1/ssocookie.\n    )",
+    "ray_active": "yes",
+    "ray_status": "ACTIVE_VIA_NPSSO",
     "darkwing_active": "no",
     "darkwing_status": "OFFLINE_GUEST_MODE",
     "marc_active": "no",
     "marc_status": "OFFLINE_GUEST_MODE",
-    "active_runner": "SNAPSHOT_FALLBACK",
-    "buffer_status": "LOCAL SNAPSHOT MODE (psn.json)",
+    "active_runner": "FAILOVER_RAY",
+    "buffer_status": "RUNNING ON BACKUP (Ray Active)",
     "storage_mode": "LOCAL_JSON (psn.json)",
-    "lastCheck": "10/27/2026, 14:04:54",
+    "lastCheck": "10/27/2026, 14:43:59",
     "exportAudit": {
       "available": [
         "call",
@@ -373439,14 +373451,108 @@
       ]
     },
     "apiStats": {
-      "totalCalls": 0,
+      "totalCalls": 2,
       "failedCalls": 0,
       "errorsByEndpoint": {},
       "missingExports": []
     }
   },
-  "lastGlobalUpdate": "10/27/2026, 14:04:54",
+  "lastGlobalUpdate": "10/27/2026, 14:43:57",
   "engineVersion": "67.0.0 - Local JSON Engine",
   "analyticsTag": "G-CTYHDF4MSD",
-  "codeTimestamp": "10/27/2026, 14:04:54 EDT"
+  "codeTimestamp": "10/27/2026, 14:43:57 EDT",
+  "leaderboard": [
+    {
+      "onlineId": "OneLIVIDMAN",
+      "accountId": "2732733730346312494",
+      "level": 210,
+      "platinum": 6,
+      "gold": 43,
+      "silver": 136,
+      "bronze": 657,
+      "totalTrophies": 842,
+      "gamesPlayed": 73,
+      "isOnline": false,
+      "currentGame": "Dashboard",
+      "gameStatus": "",
+      "commId": "NPWR12514_00",
+      "conceptId": 221692,
+      "currentGameId": null,
+      "art": "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png",
+      "posterArt": "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png",
+      "image": "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png",
+      "platform": "PS5",
+      "gameBuildVersion": "PS4 Back-Compat on PS5",
+      "isStreamingRemotePlay": false
+    },
+    {
+      "onlineId": "wildhorse_spirit",
+      "accountId": "4087137467908566201",
+      "level": 200,
+      "platinum": 1,
+      "gold": 23,
+      "silver": 98,
+      "bronze": 668,
+      "totalTrophies": 790,
+      "gamesPlayed": 144,
+      "isOnline": false,
+      "currentGame": "Dashboard",
+      "gameStatus": "",
+      "commId": "NPWR12514_00",
+      "conceptId": 221692,
+      "currentGameId": null,
+      "art": "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png",
+      "posterArt": "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png",
+      "image": "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png",
+      "platform": "PS5",
+      "gameBuildVersion": "PS4 Back-Compat on PS5",
+      "isStreamingRemotePlay": false
+    },
+    {
+      "onlineId": "DesdemonaTiger",
+      "accountId": "6551906246515882523",
+      "level": 198,
+      "platinum": 1,
+      "gold": 36,
+      "silver": 94,
+      "bronze": 564,
+      "totalTrophies": 695,
+      "gamesPlayed": 160,
+      "isOnline": false,
+      "currentGame": "Ghost of Tsushima",
+      "gameStatus": "",
+      "commId": "NPWR15120_00",
+      "conceptId": null,
+      "currentGameId": null,
+      "art": "//image.api.playstation.com/trophy/np/NPWR15120_00_00736F40BFE5A427C57A238478A141FABB81ABA3C7/F7780A7B9141F2A1D0B68E578787D962D7F69C31.PNG",
+      "posterArt": "//image.api.playstation.com/trophy/np/NPWR15120_00_00736F40BFE5A427C57A238478A141FABB81ABA3C7/F7780A7B9141F2A1D0B68E578787D962D7F69C31.PNG",
+      "image": "//image.api.playstation.com/trophy/np/NPWR15120_00_00736F40BFE5A427C57A238478A141FABB81ABA3C7/F7780A7B9141F2A1D0B68E578787D962D7F69C31.PNG",
+      "platform": "PS4",
+      "gameBuildVersion": "PS4 Native Game",
+      "isStreamingRemotePlay": false
+    },
+    {
+      "onlineId": "Darkwing69420",
+      "accountId": "4398462806362115916",
+      "level": 115,
+      "platinum": 0,
+      "gold": 19,
+      "silver": 68,
+      "bronze": 238,
+      "totalTrophies": 325,
+      "gamesPlayed": 27,
+      "isOnline": false,
+      "currentGame": "Gold Mining Simulator",
+      "gameStatus": "",
+      "commId": null,
+      "conceptId": null,
+      "currentGameId": "CUSA16635_00",
+      "art": "//gs2-sec.ww.prod.dl.playstation.net/gs2-sec/appkgo/prod/CUSA16635_00/3/i_a68f0a93f962fa1620932bd054a1490c40678f723fbbb67c1970edf28ca7bdd4/i/icon0.png",
+      "posterArt": "//gs2-sec.ww.prod.dl.playstation.net/gs2-sec/appkgo/prod/CUSA16635_00/3/i_a68f0a93f962fa1620932bd054a1490c40678f723fbbb67c1970edf28ca7bdd4/i/icon0.png",
+      "image": "//gs2-sec.ww.prod.dl.playstation.net/gs2-sec/appkgo/prod/CUSA16635_00/3/i_a68f0a93f962fa1620932bd054a1490c40678f723fbbb67c1970edf28ca7bdd4/i/icon0.png",
+      "platform": "PS5",
+      "gameBuildVersion": "PS5 Native Game",
+      "isStreamingRemotePlay": false
+    }
+  ]
 }
