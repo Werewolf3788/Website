@@ -1,74 +1,44 @@
 /* ============================================================================
  * File: psn.js
- * Location: /Playstation/psn.js
- * Description: Master PSN Telemetry & Deep Catalog Ingestion Engine:
- * 1. Master Skeleton under /psn/games/{commId} strictly holds universal game facts:
- * - NPWR primary commId, CUSA/PPSA SKU, and conceptId (e.g., 10008946).
- * - Full uncompressed Store storyline, animal/weapon rosters, feature bullets.
- * - Hardware, online, player-count & trigger/vibration store badges.
- * - 7-category accessibility features & master trophies list.
- * - Itemized DLC groups & edition tiers (e.g., Heirloom Pack EP4389-PPSA17911_00-WOTH2PREORDERDLC).
- * 2. User Overlays isolated strictly to /psn/gamertags/{onlineId}:
- * - Root commId acts as foreign key pointer directly to /psn/games/{commId}.
- * - Bulletproof root poster art binding: art, posterArt, image, currentGameArt.
- * - liveTrophyProgress contains earned flags, EDT timestamps, and (x/x) sub-progress.
- * 3. Hot-standby failover across WildHorse_Spirit and Ray.
+ * Location: /psn.js (and /Playstation/psn.js)
+ * Description: Master PSN Telemetry & Deep Catalog Ingestion Engine
+ * 
+ * DECOUPLED FROM FIREBASE -> OUTPUTS DIRECTLY TO psn.json:
+ * 1. Master Skeleton under psnData.games[commId] strictly holds universal game facts:
+ *    - NPWR primary commId, CUSA/PPSA SKU, and conceptId (e.g., 10008946).
+ *    - Full uncompressed Store storyline, animal/weapon rosters, feature bullets.
+ *    - Hardware, online, player-count & trigger/vibration store badges.
+ *    - 7-category accessibility features & master trophies list.
+ *    - Itemized DLC groups & edition tiers.
+ * 2. User Overlays isolated strictly to psnData.gamertags[onlineId]:
+ *    - Root commId acts as foreign key pointer directly to psnData.games[commId].
+ *    - Bulletproof root poster art binding: art, posterArt, image, currentGameArt.
+ *    - liveTrophyProgress contains earned flags, EDT timestamps, and (x/x) sub-progress.
+ * 3. Hot-standby failover across WildHorse_Spirit, Ray, Darkwing, and Marc.
  * 4. Online-Only Optimization & Checkpoint Session Tracker:
- * - Strict presence gating skips offline players to avoid wasting compute/API quota.
- * - 1-pass fast session wrap closes pending sessions upon detecting offline transition.
- * - 15-minute incremental checkpoint syncing with manualBaselineHours integration.
- * - Multi-tier progressive duration formatting (mins -> hours -> days -> weeks -> months -> years).
- * 5. Live Rich Presence Status (NEW in 66.2.0):
- * - gameStatus (e.g., "Exploring Whitetail Mountains") read from basicPresence
- *   gameTitleInfoList[0].gameStatus when the game publishes it.
- * - Stored at /psn/gamertags/{onlineId}/gameStatus (+ gameStatusUpdated). Empty string "" when none
- *   (Firebase deletes null values, so "" keeps the key present for your site).
- * - Status-only changes use a LIGHTWEIGHT write path (no full trophy/store ingestion).
- * 6. Maximum-Pull Mode (NEW in 66.3.0):
- * - PULL_CONFIG replaces the old hard caps (20 skeletons / 10 trophy sets / 25 recent trophies / 100 played).
- * - Full pagination for trophy titles, played games, game library, purchases and friends.
- * - callPsn(): retry/backoff on 429, per-endpoint error log, missing-export detection (no more silent catches).
- * - Export audit: logs every function your installed psn-api exposes, and which ones this script does not use.
- * - Raw archive at /psn/raw/{onlineId}/... keeps the untouched API responses (nothing stripped).
- * - Friend directory (/psn/friendsDirectory) resolves friend accountIds -> onlineId/avatar.
- * - Playtime now links to trophy titles by name (played-games and trophy lists use different IDs).
- * - Trophy rarity fix: earnedRate/trophyRare now come from the user-earned endpoint (title endpoint has none).
- * Analytics Tagging: G-CTYHDF4MSD (Deployable via GTM).
- * 7. Firebase-Driven Accounts (NEW in 66.4.0):
- * - PSN account ID is read from /users/{emailKey}/psn_account_id (also gaming_platforms.psn_account_id).
- * - NPSSO is read from /user_secrets/{emailKey}/psn_npsso (also tolerates a pasted {"npsso":"..."} blob).
- * - Any user who has BOTH is picked up automatically on the next run: onlineId is resolved from the
- *   account ID, their data is written to /psn/gamertags/{onlineId}, and /users/{emailKey} gets
- *   psn_online_id, psn_npsso_valid, psn_sync_status and psn_last_synced written back for your site.
- * - Core squad NPSSOs are matched by account ID (no more loose "ray" substring match).
- * - Expired NPSSO keeps the player's last record (flagged EXPIRED) instead of purging it.
- * - Users with their own NPSSO now get the self-only data too (devices, purchases, library, blocked).
- * 8. Four-Member Hot Standby (NEW in 66.5.0):
- * - ANY of WildHorse_Spirit, Ray, Darkwing or Marc having a working NPSSO keeps the whole squad updating.
- * - Priority order: WildHorse_Spirit -> Ray -> Darkwing -> Marc (first healthy cookie is the master).
- * - A member with their own working cookie is read with it (gets self-only data); others use the master.
- * - Self-only fields (devices, purchases, blocked, requests, region) are preserved when a member is read
- *   through someone else's session, instead of being overwritten with empty values.
- * - Only the 4 core members are ever read with a core cookie; outside users only use their own cookie.
- * 9. Playtime Matches The PS App + Session Timer (NEW in 66.6.0):
- * - Sony's own played-time total (playDuration) is now the displayed hours (PULL_CONFIG.PREFER_SONY_PLAYTIME).
- *   The script's own tracker is only used when Sony has no playtime for the game.
- * - playedHoursApp ("31h") is whole hours rounded DOWN, exactly like the PS app; hoursPlayed keeps the long form.
- * - playtimeSource says where the number came from: "sony", "tracker" or "stored".
- * - sessionStartedAt / sessionStartedAtMs / currentSessionSeconds give your site a live session timer
- *   (start = when the script first saw the game running, so it can lag by one run interval).
- * 10. Incremental Updates (NEW in 66.7.0) - only pull and write what changed:
- * - Slow-changing account data (friends, devices, purchases, blocked, requests, region) is re-pulled every
- *   PULL_CONFIG.HEAVY_REFRESH_MS (6h), not on every sync. In between, the saved values are reused.
- * - Master game skeletons re-pull only when missing or older than SKELETON_STALE_MS (24h); the active game
- *   is still refreshed. Trophy progress re-pulls for the active game and for titles Sony says changed.
- * - Firebase writes send ONLY the changed fields (PATCH) instead of rewriting the whole player record.
- * - The delta check (online/offline, game switch, new trophy, level, status text) is unchanged.
- * Version: 66.7.0 - Incremental Updates
- * Date & Time Stamp: 2026-10-26 (America/New_York)
+ *    - Strict presence gating skips offline players to avoid wasting compute/API quota.
+ *    - 1-pass fast session wrap closes pending sessions upon detecting offline transition.
+ *    - 15-minute incremental checkpoint syncing with manualBaselineHours integration.
+ *    - Multi-tier progressive duration formatting (mins -> hours -> days -> weeks -> months -> years).
+ * 5. Live Rich Presence Status:
+ *    - gameStatus (e.g., "Exploring Whitetail Mountains") read from basicPresence
+ *      gameTitleInfoList[0].gameStatus when the game publishes it.
+ *    - Stored at psnData.gamertags[onlineId].gameStatus (+ gameStatusUpdated).
+ * 6. Maximum-Pull Mode:
+ *    - Full pagination for trophy titles, played games, game library, purchases, and friends.
+ *    - Retry & backoff on 429 rate limit.
+ *    - Raw archive stored cleanly at psnData.raw[onlineId][...].
+ *    - Friend directory (psnData.friendsDirectory) resolves friend accountIds -> onlineId/avatar.
+ *    - Playtime linked to trophy titles by normalized title name.
+ * 7. Local File Storage (NO FIREBASE):
+ *    - Reads existing state from psn.json.
+ *    - Writes all unified telemetry atomically to psn.json (and public/psn.json if present).
+ *    - User accounts & credentials read from users.json, user_secrets.json, or env vars.
+ * 
+ * Version: 67.0.0 - Local psn.json Engine (Firebase Completely Removed)
+ * Date & Time Stamp: 2026-10-27 (America/New_York)
  * ============================================================================ */
 
-// [SECTION 1: IMPORTS & CORE CONFIGURATION] Line 27
 const fs = require("fs");
 const path = require("path");
 const http = require("http");
@@ -98,11 +68,17 @@ const {
     getPurchasedGames
 } = psnApi;
 
-const FIREBASE_BASE_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn";
-const RTDB_ROOT_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
+// ----------------------------------------------------------------------------
+// [FILE & PATH CONFIGURATION - NO FIREBASE]
+// ----------------------------------------------------------------------------
+const PSN_OUTPUT_FILE = process.env.PSN_OUTPUT_FILE || path.resolve(process.cwd(), "psn.json");
+const PUBLIC_PSN_OUTPUT_FILE = path.resolve(process.cwd(), "public", "psn.json");
+const USERS_FILE_PATH = process.env.USERS_FILE || path.resolve(process.cwd(), "users.json");
+const USER_SECRETS_FILE_PATH = process.env.USER_SECRETS_FILE || path.resolve(process.cwd(), "user_secrets.json");
+const LOCAL_TOKENS_PATH = path.resolve(process.cwd(), ".psn_tokens.json");
+
 const GA4_MEASUREMENT_ID = "G-CTYHDF4MSD";
-const ENGINE_VERSION = "66.7.0";
-const LOCAL_TOKENS_PATH = path.join(__dirname, ".psn_tokens.json");
+const ENGINE_VERSION = "67.0.0 - Local JSON Engine";
 
 const SQUAD_GAMERTAGS = {
     wildhorse_spirit: "WildHorse_Spirit",
@@ -125,23 +101,9 @@ const CORE_PACK = [
     { key: "marc", tag: "DesdemonaTiger", id: ACCOUNT_IDS.marc }
 ];
 
-const SEED_TARGET_ACCOUNT_IDS = [
-    "4087137467908566201",
-    "2732733730346312494",
-    "4398462806362115916",
-    "6551906246515882523",
-    "7742137722487951585",
-    "2288010536299512532",
-    "5194904245822471614",
-    "2344801193533413809",
-    "3728215008151724560",
-    "8996572749275973724",
-    "1749160004083248186"
-];
-
 const AMAZON_TAG = "moviesanywhere02-20";
 
-let tokenStore = { ray: {}, wildhorse_spirit: {} };
+let tokenStore = { ray: {}, wildhorse_spirit: {}, darkwing: {}, marc: {} };
 
 let diagnosticReport = {
     wildhorse_spirit_active: "no",
@@ -154,32 +116,30 @@ let diagnosticReport = {
     marc_status: "UNCHECKED",
     active_runner: "UNCHECKED",
     buffer_status: "UNCHECKED",
+    storage_mode: "LOCAL_JSON (psn.json)",
     lastCheck: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
 };
 
-// ----------------------------------------------------------------------------
-// [SECTION 1B: MAXIMUM-PULL CONFIG, SAFE API CALLER & EXPORT AUDIT] NEW in 66.3.0
-// ----------------------------------------------------------------------------
+// Maximum Pull & Ingestion Configuration
 const PULL_CONFIG = {
-    // Infinity = no cap. Previously hard-coded: 20 skeletons / 10 progress sets / 25 recent trophies.
-    SKELETON_REFRESH_RECENT_TITLES: 20,   // recent titles whose master skeleton may be refreshed (only when stale, see SKELETON_STALE_MS)
-    PROGRESS_REFRESH_RECENT_TITLES: 0,    // recent titles ALWAYS re-pulled for progress (0 = only the active game + titles Sony says changed)
-    HEAVY_REFRESH_MS: 6 * 3600 * 1000,    // friends/devices/purchases/blocked/requests/region refresh interval
-    SKELETON_STALE_MS: 24 * 3600 * 1000,  // master game skeleton refresh interval
-    BACKFILL_NEW_TITLES_PER_RUN: 40,      // never-pulled titles fetched per run (set Infinity to pull ALL in one pass)
-    MOST_RECENT_TROPHIES_KEPT: 250,       // was 25
+    SKELETON_REFRESH_RECENT_TITLES: 20,
+    PROGRESS_REFRESH_RECENT_TITLES: 0,
+    HEAVY_REFRESH_MS: 6 * 3600 * 1000,
+    SKELETON_STALE_MS: 24 * 3600 * 1000,
+    BACKFILL_NEW_TITLES_PER_RUN: 40,
+    MOST_RECENT_TROPHIES_KEPT: 250,
     PAGE_SIZE_TITLES: 800,
     PAGE_SIZE_PLAYED: 200,
     PAGE_SIZE_LIBRARY: 100,
     PAGE_SIZE_PURCHASED: 100,
     PAGE_SIZE_FRIENDS: 1000,
-    MAX_PAGES: 50,                        // safety stop for pagination loops
-    FRIEND_LOOKUPS_PER_RUN: 40,           // unknown friend accountIds resolved to profiles per run
+    MAX_PAGES: 50,
+    FRIEND_LOOKUPS_PER_RUN: 40,
     FRIEND_RETRY_UNRESOLVED_MS: 7 * 24 * 3600 * 1000,
-    REQUEST_GAP_MS: 120,                  // small gap between PSN calls (rate-limit friendly)
+    REQUEST_GAP_MS: 120,
     RETRIES: 2,
-    PREFER_SONY_PLAYTIME: true,           // show Sony's played-time total (matches the PS app); false = script tracker first
-    ARCHIVE_RAW: true                     // write untouched API responses to /psn/raw/{onlineId}/...
+    PREFER_SONY_PLAYTIME: true,
+    ARCHIVE_RAW: true
 };
 
 const apiStats = { calls: 0, failures: 0, errorsByLabel: {}, missingExports: [] };
@@ -189,7 +149,121 @@ let friendLookupsThisRun = 0;
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Every PSN call goes through here so failures are visible instead of silently swallowed.
+// ----------------------------------------------------------------------------
+// [SECTION 2: LOCAL JSON PERSISTENCE ENGINE (REPLACES FIREBASE)]
+// ----------------------------------------------------------------------------
+
+function loadPsnDataFromDisk() {
+    // Attempt to load from primary output file first
+    const pathsToTry = [PSN_OUTPUT_FILE, PUBLIC_PSN_OUTPUT_FILE];
+    for (const filePath of pathsToTry) {
+        try {
+            if (fs.existsSync(filePath)) {
+                const raw = fs.readFileSync(filePath, "utf-8");
+                if (raw && raw.trim().length > 0) {
+                    const parsed = JSON.parse(raw);
+                    console.log(`[LOCAL STORAGE] Loaded existing psn.json from: ${filePath}`);
+                    return parsed;
+                }
+            }
+        } catch (err) {
+            console.warn(`[LOCAL STORAGE WARN] Failed to parse ${filePath}: ${err.message}`);
+        }
+    }
+
+    console.log("[LOCAL STORAGE] No existing psn.json found. Initializing blank schema.");
+    return {
+        gamertags: {},
+        usersByGamerTag: {},
+        games: {},
+        squadLeaderboard: [],
+        squadAnalytics: { totals: {}, socialOverlap: {}, calculatedAt: new Date().toISOString() },
+        friendsDirectory: {},
+        raw: {},
+        authDiagnostics: diagnosticReport,
+        lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }),
+        engineVersion: ENGINE_VERSION,
+        analyticsTag: GA4_MEASUREMENT_ID,
+        codeTimestamp: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }) + " EDT"
+    };
+}
+
+let activePsnData = null;
+
+function getPsnData() {
+    if (!activePsnData) {
+        activePsnData = loadPsnDataFromDisk();
+    }
+    return activePsnData;
+}
+
+function savePsnJson(data = activePsnData) {
+    if (!data) return;
+    try {
+        const jsonContent = JSON.stringify(data, null, 2);
+        
+        // Write primary file atomically using temp file rename
+        const tempPath = `${PSN_OUTPUT_FILE}.tmp.${Date.now()}`;
+        fs.writeFileSync(tempPath, jsonContent, "utf-8");
+        fs.renameSync(tempPath, PSN_OUTPUT_FILE);
+        console.log(`[LOCAL STORAGE] Saved psn.json successfully (${Buffer.byteLength(jsonContent)} bytes)`);
+
+        // If public folder exists, also mirror to public/psn.json so frontend UI gets instant updates
+        try {
+            const publicDir = path.dirname(PUBLIC_PSN_OUTPUT_FILE);
+            if (!fs.existsSync(publicDir)) {
+                fs.mkdirSync(publicDir, { recursive: true });
+            }
+            fs.writeFileSync(PUBLIC_PSN_OUTPUT_FILE, jsonContent, "utf-8");
+        } catch (pubErr) {
+            // Ignore mirror errors
+        }
+    } catch (err) {
+        console.error(`[LOCAL STORAGE ERROR] Failed saving psn.json: ${err.message}`);
+    }
+}
+
+// ----------------------------------------------------------------------------
+// [SECTION 3: LOCAL USER & CREDENTIAL STORE (REPLACES FIREBASE /users)]
+// ----------------------------------------------------------------------------
+
+function loadLocalUsersAndSecrets() {
+    let users = {};
+    let secrets = {};
+
+    if (fs.existsSync(USERS_FILE_PATH)) {
+        try {
+            users = JSON.parse(fs.readFileSync(USERS_FILE_PATH, "utf-8"));
+        } catch (e) {}
+    }
+
+    if (fs.existsSync(USER_SECRETS_FILE_PATH)) {
+        try {
+            secrets = JSON.parse(fs.readFileSync(USER_SECRETS_FILE_PATH, "utf-8"));
+        } catch (e) {}
+    }
+
+    return { users, secrets };
+}
+
+function writeLocalUserPsnStatus(emailKey, fields) {
+    try {
+        let users = {};
+        if (fs.existsSync(USERS_FILE_PATH)) {
+            users = JSON.parse(fs.readFileSync(USERS_FILE_PATH, "utf-8"));
+        }
+        if (!users[emailKey]) users[emailKey] = {};
+        Object.assign(users[emailKey], fields);
+        fs.writeFileSync(USERS_FILE_PATH, JSON.stringify(users, null, 2), "utf-8");
+    } catch (e) {
+        console.warn(`[USERS WRITE WARN] Could not write user status for ${emailKey}: ${e.message}`);
+    }
+}
+
+// ----------------------------------------------------------------------------
+// [SECTION 4: PSN API HELPERS & SAFE CALLER]
+// ----------------------------------------------------------------------------
+
 async function callPsn(label, fn, fallback = null) {
     if (typeof fn !== "function") {
         if (!apiStats.missingExports.includes(label)) {
@@ -228,7 +302,6 @@ async function callPsn(label, fn, fallback = null) {
     return fallback;
 }
 
-// Pulls a list out of whichever response shape the installed psn-api returns.
 function pickList(res, paths) {
     for (const p of paths) {
         const val = p.split(".").reduce((o, k) => (o === null || o === undefined ? undefined : o[k]), res);
@@ -237,7 +310,6 @@ function pickList(res, paths) {
     return [];
 }
 
-// Generic paginator. Stops on: empty page, repeated page (API ignored offset), known total reached, or MAX_PAGES.
 async function paginateCollect(label, fetchPage, extractItems, pageSize) {
     const items = [];
     const pagesRaw = [];
@@ -275,8 +347,6 @@ function trophyRarityLabel(n) {
     return TROPHY_RARITY_LABELS[n] || null;
 }
 
-// Logs every function the installed psn-api exposes, which ones this script wants but cannot find,
-// and which available ones this script does not use yet.
 function auditPsnApiExports() {
     const wanted = [
         "exchangeNpssoForCode", "exchangeCodeForAccessToken", "exchangeRefreshTokenForAuthTokens",
@@ -291,16 +361,17 @@ function auditPsnApiExports() {
     const unused = available.filter((k) => !wanted.includes(k));
     console.log(`[EXPORT AUDIT] Installed psn-api exposes ${available.length} functions.`);
     if (missing.length) console.warn(`[EXPORT AUDIT] ⚠️ Wanted but NOT in installed psn-api: ${missing.join(", ")}`);
-    if (unused.length) console.log(`[EXPORT AUDIT] Available but not used by this script: ${unused.join(", ")}`);
     return { available, missing, unused };
 }
 
-async function archiveRaw(onlineId, key, payload) {
+function archiveRaw(onlineId, key, payload) {
     if (!PULL_CONFIG.ARCHIVE_RAW || !onlineId || payload === undefined || payload === null) return;
-    await syncNodeToFirebase(`raw/${onlineId}/${key}`, payload);
+    const psnData = getPsnData();
+    if (!psnData.raw) psnData.raw = {};
+    if (!psnData.raw[onlineId]) psnData.raw[onlineId] = {};
+    psnData.raw[onlineId][key] = payload;
 }
 
-// Resolves friend accountIds -> onlineId/avatar once, cached in /psn/friendsDirectory.
 async function resolveFriendDirectory(auth, accountIds = []) {
     const now = Date.now();
     for (const id of accountIds) {
@@ -327,10 +398,6 @@ async function resolveFriendDirectory(auth, accountIds = []) {
     }
 }
 
-// ----------------------------------------------------------------------------
-// [SECTION 1C: FIREBASE-DRIVEN PSN CREDENTIALS] NEW in 66.4.0
-// ----------------------------------------------------------------------------
-// Accepts a plain cookie or a pasted {"npsso":"..."} blob; returns "" when it is clearly not an NPSSO.
 function normalizeNpsso(raw) {
     if (!raw || typeof raw !== "string") return "";
     let v = raw.trim();
@@ -340,9 +407,6 @@ function normalizeNpsso(raw) {
     return v.length >= 20 ? v : "";
 }
 
-// Reads one site user's PSN credentials from the places your site writes them:
-//   /users/{emailKey}/psn_account_id   (or /users/{emailKey}/gaming_platforms/psn_account_id)
-//   /user_secrets/{emailKey}/psn_npsso (private)
 function readUserPsnCredentials(emailKey, userRecord, secretsRecord) {
     const u = (userRecord && typeof userRecord === "object") ? userRecord : {};
     const gaming = (u.gaming_platforms && typeof u.gaming_platforms === "object") ? u.gaming_platforms : {};
@@ -361,50 +425,6 @@ function readUserPsnCredentials(emailKey, userRecord, secretsRecord) {
     };
 }
 
-// Writes PSN status fields back onto /users/{emailKey} so your site can show them.
-// Only sends fields that actually changed (and never null, which Firebase would delete).
-async function writeUserPsnStatus(emailKey, fields, currentRecord) {
-    const current = (currentRecord && typeof currentRecord === "object") ? currentRecord : {};
-    const changed = {};
-    for (const [k, v] of Object.entries(fields)) {
-        if (v === undefined || v === null) continue;
-        if (current[k] !== v) changed[k] = v;
-    }
-    if (Object.keys(changed).length === 0) return;
-    try {
-        await resilientFetch(buildRtdbUrl(`/users/${emailKey}`), {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(changed)
-        });
-    } catch (err) {
-        console.warn(`[USER STATUS WARN] Could not write PSN status for ${emailKey}: ${err.message}`);
-    }
-}
-
-// ----------------------------------------------------------------------------
-// [SECTION 1D: CHANGED-FIELDS-ONLY FIREBASE WRITES] NEW in 66.7.0
-// ----------------------------------------------------------------------------
-// Mirrors what Firebase actually stores: drops null/undefined, empty arrays and empty objects.
-function normalizeForRtdb(v) {
-    if (v === null || v === undefined) return undefined;
-    if (typeof v === "number" && !Number.isFinite(v)) return undefined;
-    if (Array.isArray(v)) {
-        if (v.length === 0) return undefined;
-        return v.map((x) => { const n = normalizeForRtdb(x); return n === undefined ? null : n; });
-    }
-    if (typeof v === "object") {
-        const out = {};
-        for (const k of Object.keys(v)) {
-            const n = normalizeForRtdb(v[k]);
-            if (n !== undefined) out[k] = n;
-        }
-        return Object.keys(out).length ? out : undefined;
-    }
-    return v;
-}
-
-// Finds a player's saved record by exact tag, then case-insensitive tag, then by account ID.
 function findExistingGamertagRecord(gamertags, tag, accountId) {
     const all = (gamertags && typeof gamertags === "object") ? gamertags : {};
     if (tag && all[tag]) return all[tag];
@@ -416,55 +436,8 @@ function findExistingGamertagRecord(gamertags, tag, accountId) {
     return undefined;
 }
 
-function stableStringify(v) {
-    if (v === undefined) return "\u2205";
-    if (v === null || typeof v !== "object") return JSON.stringify(v);
-    if (Array.isArray(v)) return "[" + v.map(stableStringify).join(",") + "]";
-    return "{" + Object.keys(v).sort().map((k) => JSON.stringify(k) + ":" + stableStringify(v[k])).join(",") + "}";
-}
-
-// Writes only the top-level fields of a player record that actually changed.
-// New players (no previous record) get one full write.
-async function writeGamertagDelta(onlineId, oldRecord, newRecord) {
-    const hasOld = oldRecord && typeof oldRecord === "object" && Object.keys(oldRecord).length > 0;
-    if (!hasOld) {
-        await syncNodeToFirebase(`gamertags/${onlineId}`, newRecord);
-        console.log(`[FIREBASE WRITE] ${onlineId}: new record written (${Object.keys(newRecord).length} fields).`);
-        return;
-    }
-
-    const newPlain = JSON.parse(JSON.stringify(newRecord));   // JSON form: Dates become strings, undefined is dropped
-    const patch = {};
-    const keys = new Set([...Object.keys(oldRecord), ...Object.keys(newPlain)]);
-    for (const k of keys) {
-        const before = stableStringify(normalizeForRtdb(oldRecord[k]));
-        const afterNorm = normalizeForRtdb(newPlain[k]);
-        if (before === stableStringify(afterNorm)) continue;
-        patch[k] = afterNorm === undefined ? null : newPlain[k];   // null deletes a removed field
-    }
-
-    const changedKeys = Object.keys(patch);
-    if (changedKeys.length === 0) {
-        console.log(`[FIREBASE WRITE] ${onlineId}: nothing changed, no write.`);
-        return;
-    }
-
-    try {
-        const res = await resilientFetch(buildRtdbUrl(`/psn/gamertags/${onlineId}`), {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(patch)
-        });
-        if (res && !res.ok) throw new Error(`HTTP ${res.status}`);
-        console.log(`[FIREBASE WRITE] ${onlineId}: updated ${changedKeys.length} changed field(s): ${changedKeys.slice(0, 12).join(", ")}${changedKeys.length > 12 ? ", ..." : ""}`);
-    } catch (err) {
-        console.warn(`[FIREBASE WRITE] ${onlineId}: partial update failed (${err.message}). Falling back to full write.`);
-        await syncNodeToFirebase(`gamertags/${onlineId}`, newRecord);
-    }
-}
-
 // ----------------------------------------------------------------------------
-// [SECTION 2: HTTP & HTTPS RESILIENT FETCH LAYER] Line 116
+// [SECTION 5: HTTP & HTTPS RESILIENT FETCH LAYER]
 // ----------------------------------------------------------------------------
 async function resilientFetch(url, options = {}) {
     const isHttps = url.startsWith("https://");
@@ -519,55 +492,7 @@ async function resilientFetch(url, options = {}) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 3: FIREBASE AUTHENTICATED REST API UTILITIES] Line 172
-// ----------------------------------------------------------------------------
-function buildRtdbUrl(pathWithLeadingSlash) {
-    const secret = process.env.FIREBASE_AUTH_SECRET;
-    const authQuery = secret ? `?auth=${encodeURIComponent(secret)}` : "";
-    return `${RTDB_ROOT_URL}${pathWithLeadingSlash}.json${authQuery}`;
-}
-
-async function fetchFromFirebase(endpointPath = "") {
-    try {
-        const fullUrl = buildRtdbUrl(`/psn${endpointPath ? '/' + endpointPath : ''}`);
-        const response = await resilientFetch(fullUrl);
-        if (!response || !response.ok) return {};
-        const data = await response.json();
-        return data || {};
-    } catch (err) {
-        console.warn(`[FIREBASE READ ERROR] /psn/${endpointPath}: ${err.message}`);
-        return {};
-    }
-}
-
-async function syncNodeToFirebase(endpointPath, payload) {
-    const targetUrl = buildRtdbUrl(`/psn/${endpointPath}`);
-    try {
-        const res = await resilientFetch(targetUrl, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-        if (res && !res.ok) {
-            console.error(`[FIREBASE WRITE ERROR] Failed /psn/${endpointPath}: HTTP ${res.status}`);
-        }
-    } catch (err) {
-        console.error(`[FIREBASE WRITE ERROR] Failed /psn/${endpointPath}: ${err.message}`);
-    }
-}
-
-async function deleteNodeFromFirebase(endpointPath) {
-    const targetUrl = buildRtdbUrl(`/psn/${endpointPath}`);
-    try {
-        await resilientFetch(targetUrl, { method: "DELETE" });
-        console.log(`[CLEANUP] Purged node from Firebase: /psn/${endpointPath}`);
-    } catch (err) {
-        console.warn(`[CLEANUP WARN] Failed to delete /psn/${endpointPath}: ${err.message}`);
-    }
-}
-
-// ----------------------------------------------------------------------------
-// [SECTION 4: DEEP PLAYSTATION STORE INGESTION (CONCEPTS, PRODUCTS & DLC)] Line 222
+// [SECTION 6: PLAYSTATION STORE INGESTION (CONCEPTS, PRODUCTS & BADGES)]
 // ----------------------------------------------------------------------------
 function extractConceptIdFromText(text = "") {
     if (!text || typeof text !== "string") return null;
@@ -580,7 +505,6 @@ function parseStoreHtmlFeatures(html) {
     const accessibility = {};
     let currentCategory = "General";
 
-    // Platform, Network, and Controller Badges
     const badgeRegex = /<li[^>]*data-qa="gameInfo#releaseInformation#gameBadges#item[^>]*>([\s\S]*?)<\/li>/gi;
     let badgeMatch;
     while ((badgeMatch = badgeRegex.exec(html)) !== null) {
@@ -608,7 +532,6 @@ function parseStoreHtmlFeatures(html) {
         if (html.includes(b) && !badges.includes(b)) badges.push(b);
     });
 
-    // Structured Accessibility Suite
     const accessMatch = html.match(/Accessibility Features([\s\S]*?)(?:Game and Legal Info|<footer)/i);
     if (accessMatch && accessMatch[1]) {
         const rawAccess = accessMatch[1];
@@ -733,7 +656,7 @@ async function searchStoreConceptByName(gameName) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 5: HARDWARE, PLATFORM, FILE SIZES & MULTI-TIER TIME FORMATTING] Line 387
+// [SECTION 7: HARDWARE, PLATFORM, FILE SIZES & MULTI-TIER TIME FORMATTING]
 // ----------------------------------------------------------------------------
 function parseDetailedHardwareContext(rawPresence, matchedGame = {}) {
     const primaryInfo = rawPresence?.primaryPlatformInfo || {};
@@ -820,7 +743,6 @@ function estimateDlcFileSize(dlcName = "") {
     return "2.4 GB";
 }
 
-// Progressive Multi-Tier Playtime Formatter: mins -> hours -> days -> weeks -> months -> years
 function formatDuration(totalSeconds) {
     if (!totalSeconds || totalSeconds < 60) return "< 1 min";
 
@@ -953,10 +875,6 @@ function generateAffiliateUrl(gameName) {
     return `//www.amazon.com/s?k=${cleanName}&tag=${AMAZON_TAG}`;
 }
 
-// ----------------------------------------------------------------------------
-// [SECTION 5B: LIVE RICH PRESENCE EXTRACTION (gameStatus)] NEW in 66.2.0
-// ----------------------------------------------------------------------------
-// Normalizes the many shapes getBasicPresence can return into one presence object.
 function normalizeBasicPresence(raw) {
     if (!raw) return null;
     return raw?.basicPresence ||
@@ -965,8 +883,6 @@ function normalizeBasicPresence(raw) {
            raw;
 }
 
-// Pulls the rich-presence text (e.g. "Exploring Whitetail Mountains") if the game publishes it.
-// Returns null when the player is offline, on the dashboard, or the game sends no status.
 function extractGameStatus(basicPresence) {
     if (!basicPresence) return null;
     const info = basicPresence?.gameTitleInfoList?.[0] ||
@@ -979,7 +895,7 @@ function extractGameStatus(basicPresence) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 6: CAPABILITY & MULTIPLAYER PARSER WITH STORE BADGES] Line 608
+// [SECTION 8: CAPABILITY & MULTIPLAYER PARSER WITH STORE BADGES]
 // ----------------------------------------------------------------------------
 function inferGameCapabilitiesFromTrophies(gameName, trophies = [], commId = null, storeBadges = []) {
     const combinedTrophyText = (trophies || []).map(t => `${t.name || ""} ${t.description || ""} ${t.detail || ""}`).join(" ").toLowerCase();
@@ -1061,14 +977,13 @@ function inferGameCapabilitiesFromTrophies(gameName, trophies = [], commId = nul
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 7: INCREMENTAL CHECKPOINT PLAYTIME & SESSION ACCUMULATOR] Line 702
+// [SECTION 9: CHECKPOINT SESSION ACCUMULATOR]
 // ----------------------------------------------------------------------------
 function updateGameSessionTracking(existingUserData, activeCommId, activeTitle, isOnline, activeTitleId) {
     const playSessions = existingUserData?.playSessions || {};
     const now = Date.now();
     const primaryKey = activeCommId || activeTitleId;
 
-    // Checkpoint close & delta finalization for ended/switched sessions
     for (const [id, session] of Object.entries(playSessions)) {
         if (session.isActive && (id !== primaryKey || !isOnline)) {
             const lastCheckpoint = session.lastSyncedTime || session.sessionStartTime || now;
@@ -1090,7 +1005,6 @@ function updateGameSessionTracking(existingUserData, activeCommId, activeTitle, 
         }
     }
 
-    // Active session incremental checkpoint synchronization
     if (isOnline && primaryKey && primaryKey !== "Dashboard") {
         if (!playSessions[primaryKey]) {
             const manualBaselineHours = existingUserData?.manualBaselineHours || 0;
@@ -1146,17 +1060,9 @@ function updateGameSessionTracking(existingUserData, activeCommId, activeTitle, 
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 8: TOKEN LIFECYCLE MANAGEMENT & REFRESH LAYER] Line 787
+// [SECTION 10: TOKEN LIFECYCLE MANAGEMENT (LOCAL DISK)]
 // ----------------------------------------------------------------------------
-async function loadPersistentTokens() {
-    try {
-        const remoteTokens = await fetchFromFirebase("secureTokens");
-        if (remoteTokens && typeof remoteTokens === "object") {
-            tokenStore = { ...tokenStore, ...remoteTokens };
-            console.log("[TOKEN STORAGE] Loaded cached tokens from Firebase.");
-        }
-    } catch (e) {}
-
+function loadPersistentTokens() {
     if (fs.existsSync(LOCAL_TOKENS_PATH)) {
         try {
             const localData = JSON.parse(fs.readFileSync(LOCAL_TOKENS_PATH, "utf-8"));
@@ -1168,13 +1074,9 @@ async function loadPersistentTokens() {
     }
 }
 
-async function savePersistentTokens() {
+function savePersistentTokens() {
     try {
         fs.writeFileSync(LOCAL_TOKENS_PATH, JSON.stringify(tokenStore, null, 2), "utf-8");
-    } catch (e) {}
-
-    try {
-        await syncNodeToFirebase("secureTokens", tokenStore);
     } catch (e) {}
 }
 
@@ -1216,7 +1118,7 @@ async function getAuthenticated(userKey, npssoInput) {
                     refreshToken: refreshed.refreshToken || currentUserTokens.refreshToken, 
                     expiryTime: Math.floor(Date.now() / 1000) + (refreshed.expiresIn || 3600) 
                 };
-                await savePersistentTokens();
+                savePersistentTokens();
                 diagnosticReport[`${userKey}_active`] = "yes";
                 diagnosticReport[`${userKey}_status`] = "ACTIVE_VIA_REFRESH";
                 console.log(`[AUTH SUCCESS] Successfully renewed session for ${userKey}.`);
@@ -1241,7 +1143,7 @@ async function getAuthenticated(userKey, npssoInput) {
                     refreshToken: auth.refreshToken, 
                     expiryTime: Math.floor(Date.now() / 1000) + (auth.expiresIn || 3600) 
                 };
-                await savePersistentTokens();
+                savePersistentTokens();
                 diagnosticReport[`${userKey}_active`] = "yes";
                 diagnosticReport[`${userKey}_status`] = "ACTIVE_VIA_NPSSO";
                 console.log(`[AUTH SUCCESS] Authenticated ${userKey} via NPSSO.`);
@@ -1260,13 +1162,9 @@ async function getAuthenticated(userKey, npssoInput) {
     return null;
 }
 
-// ----------------------------------------------------------------------------
-// [SECTION 9: SMART HOT-STANDBY FAILOVER MANAGER FOR CORE PACK] Line 899
-// ----------------------------------------------------------------------------
 async function resolveMasterSession(coreNpssos = {}) {
     console.log("[FAILOVER MANAGER] Checking squad token health across WildHorse_Spirit, Ray, Darkwing & Marc...");
 
-    // Check every member that has a cookie or cached tokens (keeps standby refresh tokens alive too)
     const auths = {};
     for (const member of CORE_PACK) {
         auths[member.key] = await getAuthenticated(member.key, coreNpssos[member.key] || "");
@@ -1281,7 +1179,7 @@ async function resolveMasterSession(coreNpssos = {}) {
 
     let activeMaster = null;
     let failoverState = "SNAPSHOT_FALLBACK";
-    let bufferStatus = "READ-ONLY SNAPSHOT MODE";
+    let bufferStatus = "LOCAL SNAPSHOT MODE (psn.json)";
 
     for (const member of CORE_PACK) {
         const a = auths[member.key];
@@ -1299,14 +1197,14 @@ async function resolveMasterSession(coreNpssos = {}) {
     }
 
     if (!activeMaster) {
-        console.warn("[FAILOVER MANAGER] ⚠️ All four squad tokens offline. Read-only snapshot fallback mode.");
+        console.warn("[FAILOVER MANAGER] ⚠️ All four squad tokens offline. Local psn.json snapshot mode.");
     }
 
     return { masterAuth: activeMaster, auths, failoverState, bufferStatus };
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 10: DLC & ADD-ON EXTRACTION WITH STORE CATALOG FALLBACK] Line 926
+// [SECTION 11: DLC & ADD-ON EXTRACTION]
 // ----------------------------------------------------------------------------
 async function enrichDLCGroups(canonicalCommId, mappedGroups, userPurchasedTitles = [], cloudDlcCatalog = {}) {
     const safePurchased = Array.isArray(userPurchasedTitles) ? userPurchasedTitles : [];
@@ -1351,7 +1249,7 @@ async function enrichDLCGroups(canonicalCommId, mappedGroups, userPurchasedTitle
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 11: UNIFIED MASTER GAME INGESTION (/psn/games/{commId})] Line 971
+// [SECTION 12: UNIFIED MASTER GAME INGESTION (SAVED DIRECTLY TO psnData.games)]
 // ----------------------------------------------------------------------------
 async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, iconArt, definedTrophies, globalGames, userPurchasedTitles = [], cloudDlcCatalog = {}, subTitleId = null, initialConceptId = null) {
     if (!commId || commId === "Dashboard" || !auth) return null;
@@ -1379,9 +1277,8 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
             }
         }
 
-        // STRICT ZERO-DATA-LOSS WRITE-PROTECTION GATE
         if ((!metaRes || !metaRes.trophies || metaRes.trophies.length === 0) && previousRecord.trophies && previousRecord.trophies.length > 0) {
-            console.warn(`[WRITE-PROTECTION ACTIVE] Sony returned 0 trophies for ${canonicalCommId}. Preserving existing ${previousRecord.trophies.length} trophies in RTDB.`);
+            console.warn(`[WRITE-PROTECTION ACTIVE] Sony returned 0 trophies for ${canonicalCommId}. Preserving existing ${previousRecord.trophies.length} trophies in psn.json.`);
             return previousRecord;
         }
 
@@ -1433,7 +1330,6 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
         const resolvedName = gameName || previousRecord.name || "PlayStation Game";
         const resolvedCusaId = subTitleId || previousRecord.cusaId || previousRecord.titleId || null;
 
-        // Auto Concept Resolution & Multi-Tier Store Fetch
         let resolvedConceptId = initialConceptId || 
                                 previousRecord.conceptId || 
                                 extractConceptIdFromText(posterArt) || 
@@ -1475,7 +1371,6 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
             ? definedTrophies 
             : (previousRecord.definedTrophies || gradeCounts);
 
-        // Store Full Uncompressed Storyline, Animal/Weapon details & Legal info
         const resolvedDescription = storeListing?.longDescription || 
                                     previousRecord.description || 
                                     `Official PlayStation title: ${resolvedName}. Features: ${capabilities.multiplayerType}. Mode: ${capabilities.onlineMode}. Cross-platform play: ${capabilities.isCrossPlatform ? 'Supported' : 'PlayStation Network'}.`;
@@ -1515,7 +1410,6 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
         };
 
         globalGames[canonicalCommId] = masterGameData;
-        await syncNodeToFirebase(`games/${canonicalCommId}`, masterGameData);
         return masterGameData;
     } catch (err) {
         console.warn(`[SKELETON ERROR] Failed to ingest skeleton for ${canonicalCommId}:`, err.message);
@@ -1524,7 +1418,7 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 12: DEEP TROPHY PROGRESS WITH PS5 OBJECTIVE RATIOS (x/x)] Line 1144
+// [SECTION 13: DEEP TROPHY PROGRESS WITH PS5 OBJECTIVE RATIOS (x/x)]
 // ----------------------------------------------------------------------------
 async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, platform, globalGames, existingGameProgress = {}) {
     if (!commId || commId === "Dashboard" || !auth) return null;
@@ -1583,13 +1477,10 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
             }
 
             const tRank = (skelTrophy?.type || s.trophyType || "bronze").toLowerCase();
-
-            // Earn rates only exist on the user-earned endpoint (the title endpoint has none)
             const liveEarnedRate = (s.trophyEarnedRate !== undefined && s.trophyEarnedRate !== null) ? String(s.trophyEarnedRate) : null;
             const liveRareEnum = (s.trophyRare !== undefined && s.trophyRare !== null) ? s.trophyRare : (skelTrophy?.trophyRare ?? null);
             const resolvedEarnedRate = liveEarnedRate || skelTrophy?.earnedRate || "0.0";
 
-            // PURE OVERLAY RECORD: Stored per player, maps directly to master trophy skeleton
             standaloneProgressMap[s.trophyId] = {
                 trophyId: s.trophyId,
                 gameTitle: titleName,
@@ -1644,8 +1535,7 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
             }
         });
 
-        // Back-fill global rarity onto the master skeleton so /psn/games/{commId} carries earn rates too
-        let skeletonPatched = false;
+        // Backfill rarity on master skeleton
         if (Array.isArray(activeSkeleton.trophies)) {
             for (const skelT of activeSkeleton.trophies) {
                 const ov = standaloneProgressMap[skelT.trophyId];
@@ -1655,12 +1545,8 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
                     skelT.trophyRare = ov.trophyRare ?? skelT.trophyRare ?? null;
                     skelT.rarityTier = ov.rarityTier || skelT.rarityTier || null;
                     skelT.difficultyTier = getDifficultyTier(ov.earnedRate);
-                    skeletonPatched = true;
                 }
             }
-        }
-        if (skeletonPatched) {
-            await syncNodeToFirebase(`games/${canonicalCommId}/trophies`, activeSkeleton.trophies);
         }
 
         earnedTrophiesList.sort((a, b) => a.timestamp - b.timestamp);
@@ -1692,11 +1578,8 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 13: SMART ACTIVITY DELTA & PRESENCE EVALUATOR] Line 1284
+// [SECTION 14: SMART ACTIVITY DELTA & PRESENCE EVALUATOR]
 // ----------------------------------------------------------------------------
-// Returns { hasDelta, reason, liveOnline, statusOnly?, liveGameStatus }.
-// statusOnly === true means ONLY the rich-presence text changed, so the caller
-// can use the lightweight write path instead of a full ingestion pass.
 async function evaluateUserActivityDelta(agentAuth, targetId, knownKey, knownGamerTag, existingData) {
     if (!existingData) {
         return { hasDelta: true, reason: "INITIAL_CREATION", liveOnline: true, liveGameStatus: null };
@@ -1727,16 +1610,12 @@ async function evaluateUserActivityDelta(agentAuth, targetId, knownKey, knownGam
     const storedOnline = !!existingData.online;
     const hasActiveSession = Object.values(existingData?.playSessions || {}).some(s => s.isActive);
 
-    // Fast-exit wrap: User went offline while a session was actively tracking
     if (hasActiveSession && !liveOnline) {
         return { hasDelta: true, reason: "SESSION_LOGOUT_FINALIZATION", liveOnline: false, liveGameStatus: null };
     }
 
-    // ONE-TIME BACKFILL: records saved before gameStatus existed (or when it was null and Firebase dropped it).
-    // Only used when nothing heavier needs doing, so a real sync is never delayed by it.
     const needsStatusBackfill = existingData.gameStatus === undefined;
 
-    // ONLINE-ONLY GUARD: If user is offline and has no active tracking sessions, SKIP completely
     if (!liveOnline && !storedOnline) {
         if (needsStatusBackfill) {
             return { hasDelta: true, statusOnly: true, reason: "GAME_STATUS_FIELD_BACKFILL", liveOnline: false, liveGameStatus: null };
@@ -1777,8 +1656,6 @@ async function evaluateUserActivityDelta(agentAuth, targetId, knownKey, knownGam
         } catch (e) {}
     }
 
-    // RICH PRESENCE TEXT CHANGE (checked last so heavier deltas above take priority).
-    // Only the status text changed -> lightweight path, no full ingestion.
     if (liveOnline) {
         const storedStatus = existingData.gameStatus || null;
         if (storedStatus !== liveGameStatus) {
@@ -1793,17 +1670,8 @@ async function evaluateUserActivityDelta(agentAuth, targetId, knownKey, knownGam
     return { hasDelta: false, reason: "UNCHANGED", liveOnline, liveGameStatus };
 }
 
-// Lightweight write path: updates ONLY the rich-presence status fields in Firebase.
-// Returns the merged record so the caller can keep finalData in sync.
-async function applyStatusOnlyUpdate(onlineId, existingData, liveGameStatus) {
-    const stamp = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
-    await syncNodeToFirebase(`gamertags/${onlineId}/gameStatus`, liveGameStatus || "");
-    await syncNodeToFirebase(`gamertags/${onlineId}/gameStatusUpdated`, stamp);
-    return { ...existingData, gameStatus: liveGameStatus || "", gameStatusUpdated: stamp };
-}
-
 // ----------------------------------------------------------------------------
-// [SECTION 14: FULL USER TELEMETRY INGESTION (SINGLE ROOT commId POINTER)] Line 1357
+// [SECTION 15: FULL USER TELEMETRY INGESTION]
 // ----------------------------------------------------------------------------
 async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, isManualRun, globalGames, cloudDlcCatalog = {}) {
     let resolvedTargetId = String(targetId || ACCOUNT_IDS[userKey]);
@@ -1813,10 +1681,9 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
     }
 
     try {
-        const rawArchive = {};   // untouched API responses -> /psn/raw/{onlineId}/...
+        const rawArchive = {};
 
         const profile = await callPsn("getProfileFromAccountId", () => getProfileFromAccountId(auth, resolvedTargetId), null);
-
         const canonicalOnlineId = profile?.onlineId || gamerTag || existingData?.onlineId || resolvedTargetId;
 
         const isSelf = (auth.userKey === "wildhorse_spirit" && resolvedTargetId === ACCOUNT_IDS.wildhorse_spirit) ||
@@ -1841,7 +1708,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 
         const isPlayerOnline = (rawP?.primaryPlatformInfo?.onlineStatus || rawP?.onlineStatus || "offline") !== "offline";
 
-        // FAST 1-PASS SESSION WRAP: If player is offline, close session and exit without burning API calls
         if (!isPlayerOnline && existingData) {
             const hasActive = Object.values(existingData?.playSessions || {}).some(s => s.isActive);
             if (hasActive) {
@@ -1865,12 +1731,10 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                     lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
                 };
                 
-                await writeGamertagDelta(canonicalOnlineId, existingData, closedRecord);
                 return closedRecord;
             }
         }
 
-        // ---- TIERED REFRESH: slow-changing account data is re-pulled on a timer, not on every sync ----
         const heavyAgeMs = Date.now() - (Number(existingData?.heavyPulledAtMs) || 0);
         const doHeavy = !existingData || !existingData.heavyPulledAtMs || heavyAgeMs >= PULL_CONFIG.HEAVY_REFRESH_MS;
 
@@ -1902,7 +1766,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                 if (shareRes) { shareableProfile = shareRes; rawArchive.shareableProfile = shareRes; }
             }
 
-            // Friends (paginated). If the call fails or is hidden, keep the last known list.
             const friendsPull = await paginateCollect(
                 "getUserFriendsAccountIds",
                 (offset, size) => getUserFriendsAccountIds(auth, resolvedTargetId, { limit: size, offset }),
@@ -1925,7 +1788,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                     sentFriendRequests = reqRes?.sentRequests || [];
                 }
 
-                // Purchased games (paginated, self only)
                 const purchasedPull = await paginateCollect(
                     "getPurchasedGames",
                     (offset, size) => getPurchasedGames(auth, { size, start: offset, limit: size, offset, platform: ["PS4", "PS5"] }),
@@ -1941,7 +1803,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             console.log(`[LIGHT SYNC] ${canonicalOnlineId}: reusing saved account data (heavy refresh in ${Math.max(0, Math.round((PULL_CONFIG.HEAVY_REFRESH_MS - heavyAgeMs) / 60000))} min).`);
         }
 
-        // Trophy titles (paginated)
         const titlesPull = await paginateCollect(
             "getUserTitles",
             (offset, size) => getUserTitles(auth, resolvedTargetId, { limit: size, offset }),
@@ -1953,7 +1814,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         sortedTitles.sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
         if (titlesPull.pagesRaw.length) rawArchive.trophyTitles = titlesPull.pagesRaw;
 
-        // Played games (has playDuration) for everyone + game library (self) merged by titleId
         const playedPull = await paginateCollect(
             "getUserPlayedGames",
             (offset, size) => getUserPlayedGames(auth, resolvedTargetId, { limit: size, offset }),
@@ -1980,7 +1840,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             });
         }
 
-        // Kick off friend directory resolution (cached; capped per run)
         await resolveFriendDirectory(auth, friendsList);
 
         const earliestEntry = sortedTitles.reduce((oldest, current) => {
@@ -1990,7 +1849,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 
         const mergedGamesMap = new Map();
 
-        // Ingest native playtime & recently played titles
         telemetryData.forEach(g => {
             const commId = g.npCommunicationId;
             const titleId = g.titleId || g.npTitleId;
@@ -2032,7 +1890,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             if (titleId) mergedGamesMap.set(titleId, gameRecord);
         });
 
-        // Played-games use CUSA/PPSA title IDs while trophy lists use NPWR IDs, so link them by normalized name
         const telemetryByName = new Map();
         telemetryData.forEach(g => {
             const rec = mergedGamesMap.get(g.npCommunicationId) || mergedGamesMap.get(g.titleId || g.npTitleId);
@@ -2040,7 +1897,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             if (rec && key && !telemetryByName.has(key)) telemetryByName.set(key, rec);
         });
 
-        // Ingest trophy titles catalog
         sortedTitles.forEach(t => {
             const commId = t.npCommunicationId;
             const titleId = t.npTitleId;
@@ -2060,7 +1916,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                     playCount: t.playCount || 1,
                     lastPlayed: t.lastUpdatedDateTime || t.lastPlayed || null
                 };
-                // Same game already claimed by another trophy set (e.g. PS4 + PS5 versions): copy playtime & IDs across
                 if (nameMatch) {
                     existing.titleId = existing.titleId || nameMatch.titleId || null;
                     existing.conceptId = nameMatch.conceptId || null;
@@ -2109,7 +1964,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                                rawP?.primaryPlatformInfo?.gameTitleInfoList?.[0] || 
                                {};
         
-        // LIVE RICH PRESENCE TEXT (e.g. "Exploring Whitetail Mountains"); null if offline / not published
         const liveGameStatus = isPlayerOnline ? extractGameStatus(rawP) : null;
 
         let activeCommId = activeGameInfo.npCommunicationId || null;
@@ -2149,7 +2003,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             }
         }
 
-        // Persistent Pointer: Anchor commId for external site lookups
         const fallbackCommId = allRecentGames[0]?.npCommunicationId || 
                                existingData?.commId || 
                                existingData?.activeHunt?.commId || 
@@ -2161,7 +2014,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 
         const isDashboard = !resolvedTitle || resolvedTitle.toUpperCase() === "DASHBOARD";
 
-        // Checkpoint-based incremental playtime tracking
         const { playSessions, currentGameDurationFormatted, activeSessionSeconds } = updateGameSessionTracking(
             existingData,
             persistentRootCommId,
@@ -2170,19 +2022,18 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             activeTitleId
         );
 
-        // Ingest Master Game Skeletons into /psn/games/
+        // Ingest Master Game Skeletons into globalGames
         let skeletonBackfillBudget = PULL_CONFIG.BACKFILL_NEW_TITLES_PER_RUN;
         let skeletonIndex = 0;
         for (const g of allRecentGames) {
             const syncId = g.npCommunicationId;
             if (syncId && String(syncId).startsWith("NPWR")) {
-                // Recent titles always refresh; older titles are backfilled once (budgeted per run) then left alone
                 const isRecent = skeletonIndex++ < PULL_CONFIG.SKELETON_REFRESH_RECENT_TITLES;
                 const knownSkeleton = globalGames[String(syncId).toUpperCase()];
                 const hasSkeleton = !!(knownSkeleton?.trophies?.length);
                 const skeletonAgeMs = knownSkeleton?.lastUpdated ? (Date.now() - Date.parse(knownSkeleton.lastUpdated)) : Infinity;
                 const isActiveTitle = String(syncId).toUpperCase() === String(persistentRootCommId).toUpperCase();
-                if (hasSkeleton && !isActiveTitle && (!isRecent || skeletonAgeMs < PULL_CONFIG.SKELETON_STALE_MS)) continue;   // fresh enough
+                if (hasSkeleton && !isActiveTitle && (!isRecent || skeletonAgeMs < PULL_CONFIG.SKELETON_STALE_MS)) continue;
                 if (!hasSkeleton && !isRecent) {
                     if (skeletonBackfillBudget <= 0) continue;
                     skeletonBackfillBudget--;
@@ -2205,7 +2056,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         }
 
         const matchedGame = (persistentRootCommId && mergedGamesMap.get(persistentRootCommId)) || (resolvedTitle !== "Dashboard" ? allRecentGames[0] : null) || {};
-
         const hwContext = parseDetailedHardwareContext(rawP, matchedGame);
 
         const resolvedPoster = isDashboard ? null : resolveGamePosterArt([
@@ -2216,7 +2066,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             existingData?.currentGameArt
         ]);
 
-        // BULLETPROOF MULTI-TIER POSTER RESOLVER (NEVER BLANK OR OVERWRITTEN)
         const safeFinalPoster = resolveGamePosterArt([
             resolvedPoster,
             matchedGame.art,
@@ -2242,7 +2091,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                                          existingData?.activeHunt?.numericHours || 
                                          0;
 
-        // PLAYTIME SOURCE: Sony's total (what the PS app shows) wins; the script's own tracker is only a fallback.
         const sonySeconds = matchedGame.nativePlaytimeSeconds || 0;
         const useSony = PULL_CONFIG.PREFER_SONY_PLAYTIME && sonySeconds > 0;
         const trackerHasTime = !!(currentGameDurationFormatted && currentGameDurationFormatted !== "0 hrs" && currentGameDurationFormatted !== "< 1 min");
@@ -2257,9 +2105,8 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 
         const playtimeSource = useSony ? "sony" : (trackerHasTime ? "tracker" : "stored");
         const playedHoursWhole = useSony ? Math.floor(sonySeconds / 3600) : Math.floor(Number(safeNumericHours) || 0);
-        const playedHoursApp = `${playedHoursWhole}h`;   // PS app style: whole hours, rounded down
+        const playedHoursApp = `${playedHoursWhole}h`;
 
-        // LIVE SESSION TIMER (start = when this script first saw the game running)
         const activeSession = (!isDashboard && playSessions[persistentRootCommId]?.isActive) ? playSessions[persistentRootCommId] : null;
         const sessionStartMs = activeSession?.sessionStartTime || 0;
         const currentSessionSeconds = sessionStartMs ? Math.max(0, Math.floor((Date.now() - sessionStartMs) / 1000)) : 0;
@@ -2272,7 +2119,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         const trophyTitleSync = { ...(existingData?.trophyTitleSync || {}) };
         const cumulativeUnlockedTrophies = [];
 
-        // Recent titles always refresh. Older titles refresh only when Sony says they changed, or are backfilled (budgeted).
         const titlesToIngestProgress = persistentRootCommId ? [persistentRootCommId] : [];
         let progressBackfillBudget = PULL_CONFIG.BACKFILL_NEW_TITLES_PER_RUN;
         let progressIndex = 0;
@@ -2290,11 +2136,10 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             titlesToIngestProgress.push(id);
         }
 
-        // ---- RAW ARCHIVE: untouched API responses, nothing stripped ----
         if (PULL_CONFIG.ARCHIVE_RAW) {
             const archive = { ...rawArchive, profile: profile, presence: rawP, trophySummary: stats, fetchedAt: new Date().toISOString() };
             for (const [key, value] of Object.entries(archive)) {
-                await archiveRaw(canonicalOnlineId, key, value);
+                archiveRaw(canonicalOnlineId, key, value);
             }
         }
 
@@ -2368,7 +2213,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
             .slice(0, PULL_CONFIG.MOST_RECENT_TROPHIES_KEPT);
 
-        // Core presence: single commId foreign key pointer, clean SKU & human-readable title
         const presence = {
             online: isPlayerOnline,
             currentGame: resolvedTitle,
@@ -2412,7 +2256,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             accessibilityFeatures: globalGames[persistentRootCommId]?.accessibilityFeatures || {},
             npssoValid: true,
             npssoStatus: "ACTIVE",
-            handshakeText: `${canonicalOnlineId.toUpperCase()} HANDSHAKE: FIREBASE LIVE`,
+            handshakeText: `${canonicalOnlineId.toUpperCase()} HANDSHAKE: LOCAL JSON ACTIVE`,
             handshakeState: "LIVE",
             avatar: profile?.avatars?.sort((a, b) => parseInt(b.size) - parseInt(a.size))[0]?.url || profile?.avatars?.[0]?.url || existingData?.avatar || "", 
             allAvatars: profile?.avatars || existingData?.allAvatars || [],
@@ -2462,7 +2306,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 15: SQUAD LEADERBOARDS & SOCIAL OVERLAP] Line 1772
+// [SECTION 16: SQUAD LEADERBOARDS & SOCIAL OVERLAP]
 // ----------------------------------------------------------------------------
 function buildSquadIntelligence(allGamertagsData) {
     const players = Object.values(allGamertagsData || {});
@@ -2523,41 +2367,35 @@ function buildSquadIntelligence(allGamertagsData) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 16: MASTER EXECUTION & GITHUB ACTIONS RUNNER] Line 1827
+// [SECTION 17: MASTER EXECUTION RUNNER (100% LOCAL JSON)]
 // ----------------------------------------------------------------------------
 async function executeSyncPass() {
     try {
-        console.log(`[INIT] Starting Full PSN Engine v${ENGINE_VERSION} at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
+        console.log(`[INIT] Starting PSN Engine v${ENGINE_VERSION} -> writing to psn.json at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
 
-        await loadPersistentTokens();
+        loadPersistentTokens();
         diagnosticReport.exportAudit = auditPsnApiExports();
 
-        const siteUsersRaw = await resilientFetch(buildRtdbUrl("/users")).then(r => r.json()).catch(() => ({}));
-        const userSecretsRaw = await resilientFetch(buildRtdbUrl("/user_secrets")).then(r => r.json()).catch(() => ({}));
-        const cloudDlcCatalog = await resilientFetch(buildRtdbUrl("/woth2_cloud/data/dlcs")).then(r => r.json()).catch(() => ({}));
+        const psnData = getPsnData();
+        const globalGames = psnData.games || {};
+        friendsDirectoryCache = psnData.friendsDirectory || {};
 
-        const previousFirebaseData = await fetchFromFirebase();
-        const globalGames = previousFirebaseData.games || {};
-        friendsDirectoryCache = previousFirebaseData.friendsDirectory || {};
-
-        // ---- CREDENTIALS FROM FIREBASE: /users/{emailKey}/psn_account_id + /user_secrets/{emailKey}/psn_npsso ----
-        if (siteUsersRaw && siteUsersRaw.error) console.warn(`[CREDENTIALS] Could not read /users: ${siteUsersRaw.error}`);
-        if (userSecretsRaw && userSecretsRaw.error) console.warn(`[CREDENTIALS] Could not read /user_secrets: ${userSecretsRaw.error}`);
+        const { users: localUsers, secrets: localSecrets } = loadLocalUsersAndSecrets();
 
         const credentialList = [];
-        if (siteUsersRaw && typeof siteUsersRaw === "object" && !siteUsersRaw.error) {
-            for (const [emailKey, u] of Object.entries(siteUsersRaw)) {
-                credentialList.push(readUserPsnCredentials(emailKey, u, userSecretsRaw?.[emailKey]));
+        if (localUsers && typeof localUsers === "object") {
+            for (const [emailKey, u] of Object.entries(localUsers)) {
+                credentialList.push(readUserPsnCredentials(emailKey, u, localSecrets?.[emailKey]));
             }
         }
 
-        // Env vars are only a fallback; a matching Firebase record wins. Match by account ID or exact gamertag.
         const coreNpssos = {
             wildhorse_spirit: normalizeNpsso(process.env.PSN_NPSSO_WEREWOLF || ""),
             ray: normalizeNpsso(process.env.PSN_NPSSO_RAY || ""),
             darkwing: normalizeNpsso(process.env.PSN_NPSSO_DARKWING || ""),
             marc: normalizeNpsso(process.env.PSN_NPSSO_MARC || "")
         };
+
         for (const cred of credentialList) {
             if (!cred.npsso) continue;
             const t = cred.tag.toLowerCase();
@@ -2574,12 +2412,14 @@ async function executeSyncPass() {
         diagnosticReport.buffer_status = sessionState.bufferStatus;
 
         let finalData = { 
-            gamertags: { ...(previousFirebaseData?.gamertags || {}) }, 
-            usersByGamerTag: { ...(previousFirebaseData?.usersByGamerTag || {}) }, 
+            gamertags: { ...(psnData.gamertags || {}) }, 
+            usersByGamerTag: { ...(psnData.usersByGamerTag || {}) }, 
             games: globalGames, 
             squadLeaderboard: [], 
             squadAnalytics: {}, 
             mutualSquadFollowers: [], 
+            friendsDirectory: friendsDirectoryCache,
+            raw: psnData.raw || {},
             authDiagnostics: diagnosticReport, 
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
             engineVersion: ENGINE_VERSION, 
@@ -2593,12 +2433,10 @@ async function executeSyncPass() {
         if (masterAuth && masterAuth.accessToken) {
             console.log(`[CORE PACK] Ingesting Core 4 squad members using session: ${masterAuth.userKey}...`);
             for (const member of CORE_PACK) {
-                const existingData = findExistingGamertagRecord(previousFirebaseData?.gamertags, member.tag, member.id);
-                // A member with their own working cookie is read with it; everyone else is read through the master
+                const existingData = findExistingGamertagRecord(psnData.gamertags, member.tag, member.id);
                 const memberAuth = (coreAuths[member.key] && coreAuths[member.key].accessToken) ? coreAuths[member.key] : masterAuth;
                 const deltaCheck = await evaluateUserActivityDelta(memberAuth, member.id, member.key, member.tag, existingData);
 
-                // STRICT ONLINE-ONLY GUARD: Skip if offline and no active session closure needed
                 if (!deltaCheck.hasDelta && existingData) {
                     console.log(`[SKIP - NO DELTA] Core member ${member.tag}: ${deltaCheck.reason}.`);
                     activeCanonicalGamertags.add(member.tag);
@@ -2606,18 +2444,21 @@ async function executeSyncPass() {
                     continue;
                 }
 
-                // LIGHTWEIGHT PATH: only the rich-presence text changed
                 if (deltaCheck.statusOnly && existingData) {
                     console.log(`[STATUS ONLY] Core member ${member.tag}: ${deltaCheck.reason}.`);
-                    const slim = await applyStatusOnlyUpdate(existingData.onlineId || member.tag, existingData, deltaCheck.liveGameStatus);
-                    finalData.gamertags[slim.onlineId || member.tag] = slim;
-                    activeCanonicalGamertags.add(slim.onlineId || member.tag);
+                    const tagKey = existingData.onlineId || member.tag;
+                    finalData.gamertags[tagKey] = {
+                        ...existingData,
+                        gameStatus: deltaCheck.liveGameStatus || "",
+                        gameStatusUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
+                    };
+                    activeCanonicalGamertags.add(tagKey);
                     anyProfileUpdated = true;
                     continue;
                 }
 
                 console.log(`[SYNC TRIGGERED] Processing Core member ${member.tag} (${deltaCheck.reason})...`);
-                const data = await getFullUserData(memberAuth, member.tag, member.key, member.id, existingData, true, globalGames, cloudDlcCatalog);
+                const data = await getFullUserData(memberAuth, member.tag, member.key, member.id, existingData, true, globalGames, {});
 
                 if (data && data.onlineId) {
                     activeCanonicalGamertags.add(data.onlineId);
@@ -2627,49 +2468,40 @@ async function executeSyncPass() {
 
                     finalData.gamertags[data.onlineId] = data;
                     finalData.usersByGamerTag[data.onlineId] = String(data.accountId);
-
-                    await writeGamertagDelta(data.onlineId, existingData, data);
+                    console.log(`[LOCAL WRITE] Updated player record for: ${data.onlineId}`);
                 }
             }
         } else {
-            console.warn("[CORE PACK HALT] None of the four squad cookies is active. Preserving existing squad records.");
+            console.warn("[CORE PACK HALT] None of the squad tokens is active. Preserving existing squad records in psn.json.");
             CORE_PACK.forEach(m => activeCanonicalGamertags.add(m.tag));
         }
 
-        // ---- OUTSIDE USERS: anyone with a PSN account ID + NPSSO in Firebase is onboarded automatically ----
+        // Process outside users
         const knownTagByAccountId = {};
-        Object.entries(previousFirebaseData?.usersByGamerTag || {}).forEach(([knownTag, id]) => {
+        Object.entries(psnData.usersByGamerTag || {}).forEach(([knownTag, id]) => {
             knownTagByAccountId[String(id)] = knownTag;
         });
         const processedAccountIds = new Set(CORE_PACK.map(m => m.id));
 
         for (const cred of credentialList) {
             const { emailKey, accountId, npsso: rawNpsso } = cred;
-            const userRecord = siteUsersRaw?.[emailKey];
             let tag = cred.tag || (accountId && knownTagByAccountId[accountId]) || "";
 
             const isCore = CORE_PACK.some(m => (tag && m.tag.toLowerCase() === tag.toLowerCase()) || (accountId && m.id === accountId));
             if (isCore) continue;
-
-            // Most site users have no PSN info at all: ignore them quietly
             if (!accountId && !rawNpsso) continue;
 
             if (!rawNpsso) {
-                console.log(`[OUTSIDE USER - INCOMPLETE] ${tag || emailKey}: has a PSN account ID but no NPSSO cookie yet.`);
-                await writeUserPsnStatus(emailKey, { psn_sync_status: "MISSING_NPSSO" }, userRecord);
+                writeLocalUserPsnStatus(emailKey, { psn_sync_status: "MISSING_NPSSO" });
                 continue;
             }
             if (!accountId && !tag) {
-                console.log(`[OUTSIDE USER - INCOMPLETE] ${emailKey}: has an NPSSO but no PSN account ID yet.`);
-                await writeUserPsnStatus(emailKey, { psn_sync_status: "MISSING_ACCOUNT_ID" }, userRecord);
+                writeLocalUserPsnStatus(emailKey, { psn_sync_status: "MISSING_ACCOUNT_ID" });
                 continue;
             }
 
             if (accountId) {
-                if (processedAccountIds.has(accountId)) {
-                    console.log(`[OUTSIDE USER - DUPLICATE] ${tag || emailKey}: account ${accountId} already processed this run.`);
-                    continue;
-                }
+                if (processedAccountIds.has(accountId)) continue;
                 processedAccountIds.add(accountId);
             }
 
@@ -2678,59 +2510,48 @@ async function executeSyncPass() {
 
             if (!userAuth || !userAuth.accessToken) {
                 console.warn(`[OUTSIDE AUTH EXPIRED] Cookie invalid for ${tag || emailKey}. Keeping last known record.`);
-                // Keep their last known data (flagged) instead of purging it
-                if (tag && previousFirebaseData?.gamertags?.[tag]) {
+                if (tag && psnData.gamertags?.[tag]) {
                     activeCanonicalGamertags.add(tag);
-                    await syncNodeToFirebase(`gamertags/${tag}/npssoValid`, false);
-                    await syncNodeToFirebase(`gamertags/${tag}/npssoStatus`, "EXPIRED");
+                    finalData.gamertags[tag].npssoValid = false;
+                    finalData.gamertags[tag].npssoStatus = "EXPIRED";
                 }
-                await writeUserPsnStatus(emailKey, { psn_npsso_valid: false, psn_sync_status: "EXPIRED_NPSSO" }, userRecord);
+                writeLocalUserPsnStatus(emailKey, { psn_npsso_valid: false, psn_sync_status: "EXPIRED_NPSSO" });
                 continue;
             }
 
-            // New user who only supplied accountId + NPSSO: resolve their onlineId from the account ID
             if (!tag && accountId) {
                 const prof = await callPsn("getProfileFromAccountId(new user)", () => getProfileFromAccountId(userAuth, accountId), null);
                 tag = prof?.onlineId || "";
                 if (tag) console.log(`[ONBOARDING] Resolved account ${accountId} -> ${tag}.`);
             }
 
-            const existingData = findExistingGamertagRecord(previousFirebaseData?.gamertags, tag, accountId);
+            const existingData = findExistingGamertagRecord(psnData.gamertags, tag, accountId);
             const targetId = accountId || "me";
             const deltaCheck = await evaluateUserActivityDelta(userAuth, targetId, emailKey, tag, existingData);
 
-            const markSynced = async (onlineId, extra = {}) => {
-                await writeUserPsnStatus(emailKey, {
-                    psn_npsso_valid: true,
-                    psn_online_id: onlineId,
-                    psn_sync_status: "SYNCED",
-                    ...extra
-                }, userRecord);
-            };
-
             if (!deltaCheck.hasDelta && existingData) {
-                console.log(`[SKIP - NO DELTA] Outside user ${tag || emailKey}: ${deltaCheck.reason}.`);
                 if (existingData.onlineId) {
                     activeCanonicalGamertags.add(existingData.onlineId);
-                    await markSynced(existingData.onlineId);
+                    writeLocalUserPsnStatus(emailKey, { psn_npsso_valid: true, psn_online_id: existingData.onlineId, psn_sync_status: "SYNCED" });
                 }
                 continue;
             }
 
-            // LIGHTWEIGHT PATH: only the rich-presence text changed
             if (deltaCheck.statusOnly && existingData) {
-                console.log(`[STATUS ONLY] Outside user ${tag || emailKey}: ${deltaCheck.reason}.`);
                 const slimId = existingData.onlineId || tag;
-                const slim = await applyStatusOnlyUpdate(slimId, existingData, deltaCheck.liveGameStatus);
-                finalData.gamertags[slimId] = slim;
+                finalData.gamertags[slimId] = {
+                    ...existingData,
+                    gameStatus: deltaCheck.liveGameStatus || "",
+                    gameStatusUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
+                };
                 activeCanonicalGamertags.add(slimId);
                 anyProfileUpdated = true;
-                await markSynced(slimId);
+                writeLocalUserPsnStatus(emailKey, { psn_npsso_valid: true, psn_online_id: slimId, psn_sync_status: "SYNCED" });
                 continue;
             }
 
             console.log(`[OUTSIDE SYNC] Processing ${tag || emailKey} (${deltaCheck.reason})...`);
-            const data = await getFullUserData(userAuth, tag, emailKey, targetId, existingData, true, globalGames, cloudDlcCatalog);
+            const data = await getFullUserData(userAuth, tag, emailKey, targetId, existingData, true, globalGames, {});
 
             if (data && data.onlineId) {
                 activeCanonicalGamertags.add(data.onlineId);
@@ -2741,21 +2562,16 @@ async function executeSyncPass() {
                 finalData.gamertags[data.onlineId] = data;
                 finalData.usersByGamerTag[data.onlineId] = String(data.accountId);
 
-                await writeGamertagDelta(data.onlineId, existingData, data);
-
-                await markSynced(data.onlineId, { psn_last_synced: data.lastUpdated });
+                writeLocalUserPsnStatus(emailKey, {
+                    psn_npsso_valid: true,
+                    psn_online_id: data.onlineId,
+                    psn_sync_status: "SYNCED",
+                    psn_last_synced: data.lastUpdated
+                });
             }
         }
 
-        const existingRemoteKeys = Object.keys(previousFirebaseData?.gamertags || {});
-        for (const oldKey of existingRemoteKeys) {
-            if (!activeCanonicalGamertags.has(oldKey)) {
-                console.log(`[LIFECYCLE PURGE] Purging stale entry '${oldKey}' from Firebase...`);
-                await deleteNodeFromFirebase(`gamertags/${oldKey}`);
-                anyProfileUpdated = true;
-            }
-        }
-
+        // Build squad intel and save everything to psn.json
         const squadIntel = buildSquadIntelligence(finalData.gamertags);
         finalData.squadLeaderboard = squadIntel.leaderboard;
         finalData.squadAnalytics = {
@@ -2764,15 +2580,8 @@ async function executeSyncPass() {
             calculatedAt: new Date().toISOString()
         };
 
-        if (anyProfileUpdated) {
-            await syncNodeToFirebase("usersByGamerTag", finalData.usersByGamerTag);
-            await syncNodeToFirebase("leaderboard", finalData.squadLeaderboard);
-            await syncNodeToFirebase("squadAnalytics", finalData.squadAnalytics);
-            await syncNodeToFirebase("lastGlobalUpdate", finalData.lastGlobalUpdate);
-        }
-
         if (friendsDirectoryDirty) {
-            await syncNodeToFirebase("friendsDirectory", friendsDirectoryCache);
+            finalData.friendsDirectory = friendsDirectoryCache;
         }
 
         diagnosticReport.apiStats = {
@@ -2781,18 +2590,44 @@ async function executeSyncPass() {
             errorsByEndpoint: apiStats.errorsByLabel,
             missingExports: apiStats.missingExports
         };
-        console.log(`[API STATS] ${apiStats.calls} calls, ${apiStats.failures} failed. Missing exports: ${apiStats.missingExports.join(", ") || "none"}.`);
         diagnosticReport.lastCheck = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
-        await syncNodeToFirebase("authDiagnostics", diagnosticReport);
+        finalData.authDiagnostics = diagnosticReport;
 
-        console.log(`[SUCCESS] Full PSN Engine v${ENGINE_VERSION} completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
+        // Persist final data to psn.json!
+        activePsnData = finalData;
+        savePsnJson(finalData);
+
+        console.log(`[SUCCESS] PSN Engine v${ENGINE_VERSION} completed successfully.`);
+        console.log(`[SUCCESS] Target file: ${PSN_OUTPUT_FILE}`);
+        console.log(`[SUCCESS] Total players tracked: ${Object.keys(finalData.gamertags).length}, Total games ingested: ${Object.keys(finalData.games).length}.`);
+        return finalData;
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Synchronization cycle failed: ${criticalError.message}`);
+        throw criticalError;
     }
 }
 
-// [SECTION 17: RUNNER INVOCATION] Line 2045
-(async () => {
-    await executeSyncPass();
-    process.exit(0);
-})();
+// Module exports for server / programmatic use
+module.exports = {
+    executeSyncPass,
+    loadPsnDataFromDisk,
+    savePsnJson,
+    getPsnData,
+    PSN_OUTPUT_FILE,
+    CORE_PACK,
+    ACCOUNT_IDS,
+    SQUAD_GAMERTAGS
+};
+
+// Runner invocation if executed directly via CLI
+if (require.main === module) {
+    (async () => {
+        try {
+            await executeSyncPass();
+            process.exit(0);
+        } catch (e) {
+            console.error("Execution failed:", e);
+            process.exit(1);
+        }
+    })();
+}
