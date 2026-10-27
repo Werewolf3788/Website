@@ -1,0 +1,32 @@
+{
+  "games": [
+    {
+      "id": "farcry5",
+      "name": "Far Cry 5",
+      "icon": "🌲",
+      "commId": "NPWR12514_00",
+      "path": "./data/games/farcry5.json"
+    },
+    {
+      "id": "farcry_new_dawn",
+      "name": "Far Cry New Dawn",
+      "icon": "🌸",
+      "commId": "NPWR15444_00",
+      "path": "./data/games/farcry_new_dawn.json"
+    },
+    {
+      "id": "sniper_elite_5",
+      "name": "Sniper Elite 5",
+      "icon": "🎯",
+      "commId": "NPWR22759_00",
+      "path": "./data/games/sniper_elite_5.json"
+    },
+    {
+      "id": "way_of_the_hunter",
+      "name": "Way of the Hunter",
+      "icon": "🦌",
+      "commId": "NPWR24391_00",
+      "path": "./data/games/way_of_the_hunter.json"
+    }
+  ]
+}
