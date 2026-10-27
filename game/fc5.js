@@ -2,8 +2,8 @@
 // * Project: Far Cry 5 Hope County Resistance Companion & Field Ledger
 // * File: fc5.js
 // * Location: /game/fc5.js
-// * Build Version: v9.4.0-FC5-FIRESTORE-COTW-ALIGNED
-// * Deployment Timestamp: 2026-10-27 00:01:00 EDT (America/New_York)
+// * Build Version: v9.6.0-FC5-AUTH-STORAGE-PARTITIONED
+// * Deployment Timestamp: 2026-10-27 00:26:00 EDT (America/New_York)
 // ============================================================================
 
 // Section 1: Unified Firebase Configuration (entertainment-71888)
@@ -18,7 +18,7 @@ const firebaseConfig = {
     measurementId: "G-JDNSLD3GFE"
 };
 
-// Initialize single authoritative Firebase App
+// Initialize authoritative Firebase instance
 const app = (!firebase.apps || !firebase.apps.length) ? firebase.initializeApp(firebaseConfig) : firebase.app();
 const auth = firebase.auth(app);
 const rtdb = firebase.database(app);
@@ -35,21 +35,27 @@ const PSN_FC5_COMM_ID = "NPWR12514_00";
 
 // Section 2: Global State Engine
 window.appState = {
-    activeUser: 'Werewolf',
-    activeEmail: 'raykevin71888@gmail.com', // Admin Account
+    activeUser: 'Guest',
+    activeEmail: null,
     platform: 'ps', // 'ps', 'pc', 'xbox', 'steam'
     currentUser: null,
     gameData: null,
     psnSkeleton: null,
     myFriendCode: null,
-    state: {
-        ranks: { rp: 0, outposts: 0, cultProperty: 0, stashes: 0, roster: 0, perks: 0, collectibles: 0 },
-        checks: {}
-    },
+    authInitialized: false,
+    
+    // COTW-aligned schema
+    activeMission: "Hope County Resistance",
+    ranks: { rp: 0, outposts: 0, cultProperty: 0, stashes: 0, roster: 0, perks: 0, collectibles: 0 },
+    collectibles: {},
+    stashes: {},
+    roster: {},
+    missions: {},
+    trophies: {},
 
-    getEmailKey: function(email) {
-        const target = email || (this.currentUser ? this.currentUser.email : this.activeEmail);
-        return target.replace(/@/g, '_at_').replace(/\./g, '_');
+    getEmailKey: function() {
+        if (!this.currentUser || !this.currentUser.email) return null;
+        return this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
     },
 
     switchPlatform: function(newPlatform) {
@@ -63,14 +69,16 @@ window.appState = {
 
         const nameEl = document.getElementById('resistance-name');
         if (nameEl) {
-            nameEl.innerText = `${this.activeUser.toUpperCase()} [${this.platform.toUpperCase()}]`;
+            const displayName = this.currentUser ? this.activeUser.toUpperCase() : 'GUEST';
+            nameEl.innerText = `${displayName} [${this.platform.toUpperCase()}]`;
         }
         
         this.loadProgress();
-        this.syncFriendsProgress();
+        if (this.currentUser) {
+            this.syncFriendsProgress();
+        }
     },
 
-    // Recalculate Resistance Metrics based on completed checks
     recalculateMetrics: function() {
         if (!this.gameData) return;
 
@@ -85,7 +93,7 @@ window.appState = {
             ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
                 const list = this.gameData.prepper_stashes[reg] || [];
                 list.forEach(s => {
-                    if (this.state.checks && this.state.checks[s.id]) {
+                    if (this.stashes[s.id] && this.stashes[s.id].collected) {
                         stashesCount++;
                         calculatedRP += 400;
                     }
@@ -96,7 +104,7 @@ window.appState = {
         // Tally Roster & Fangs (+600 RP each)
         if (Array.isArray(this.gameData.guns_and_fangs_for_hire)) {
             this.gameData.guns_and_fangs_for_hire.forEach(h => {
-                if (this.state.checks && this.state.checks[h.id]) {
+                if (this.roster[h.id] && this.roster[h.id].unlocked) {
                     rosterCount++;
                     calculatedRP += 600;
                 }
@@ -109,29 +117,29 @@ window.appState = {
                 const list = this.gameData.survivalist_magazines[reg] || [];
                 list.forEach((m, idx) => {
                     const mId = `mag_${reg}_${idx}`;
-                    if (this.state.checks && this.state.checks[mId]) {
+                    if (this.collectibles[mId] && this.collectibles[mId].collected) {
                         perksCount++;
                     }
                 });
             });
         }
 
-        // Tally Story Missions (+600 RP each)
+        // Tally Walkthrough Missions (+600 RP each)
         if (Array.isArray(this.gameData.walkthrough_missions)) {
             this.gameData.walkthrough_missions.forEach(m => {
-                if (this.state.checks && this.state.checks[m.id]) {
+                if (this.missions[m.id] && this.missions[m.id].completed) {
                     calculatedRP += 600;
                 }
             });
         }
 
-        // Tally Collectibles across all 6 quest sets
+        // Tally Quest Collectibles
         if (this.gameData.collectibles) {
             for (const cKey in this.gameData.collectibles) {
                 const group = this.gameData.collectibles[cKey];
                 if (group && Array.isArray(group.items)) {
                     group.items.forEach(cItem => {
-                        if (this.state.checks && this.state.checks[cItem.id]) {
+                        if (this.collectibles[cItem.id] && this.collectibles[cItem.id].collected) {
                             collectiblesCount++;
                         }
                     });
@@ -139,11 +147,11 @@ window.appState = {
             }
         }
 
-        this.state.ranks.stashes = stashesCount;
-        this.state.ranks.roster = rosterCount;
-        this.state.ranks.perks = perksCount;
-        this.state.ranks.collectibles = collectiblesCount;
-        this.state.ranks.rp = calculatedRP;
+        this.ranks.stashes = stashesCount;
+        this.ranks.roster = rosterCount;
+        this.ranks.perks = perksCount;
+        this.ranks.collectibles = collectiblesCount;
+        this.ranks.rp = calculatedRP;
 
         this.updateRankDisplay('stashes', stashesCount);
         this.updateRankDisplay('roster', rosterCount);
@@ -157,17 +165,52 @@ window.appState = {
         if (el) el.innerText = val || 0;
     },
 
-    // Save Progress: users > {emailKey} > platform > {platform} > progress > FarCry5
+    // Save Progress: Strictly partitioned between Cloud and Guest LocalStorage
     saveProgress: function() {
         this.recalculateMetrics();
         const emailKey = this.getEmailKey();
-        const storageKey = `fc5_progress_${emailKey}_${this.platform}`;
 
-        try {
-            localStorage.setItem(storageKey, JSON.stringify(this.state));
-        } catch (e) {
-            console.warn("[Storage] Local write failure:", e);
+        const earnedTrophiesCount = Object.values(this.trophies).filter(t => t && t.earned).length;
+        const totalTrophiesCount = (this.psnSkeleton && this.psnSkeleton.trophies) 
+            ? Object.keys(this.psnSkeleton.trophies).length 
+            : (this.gameData?.trophies_and_achievements?.length || 51);
+        const percentTrophies = totalTrophiesCount > 0 ? Math.round((earnedTrophiesCount / totalTrophiesCount) * 100) : 0;
+
+        // 1. GUEST MODE (Not signed in): Save exclusively to guest local storage
+        if (!emailKey) {
+            const guestKey = `fc5_guest_progress_${this.platform}`;
+            try {
+                localStorage.setItem(guestKey, JSON.stringify({
+                    ranks: this.ranks,
+                    collectibles: this.collectibles,
+                    stashes: this.stashes,
+                    roster: this.roster,
+                    missions: this.missions,
+                    trophies: this.trophies
+                }));
+                this.updateStatus(`[Guest Mode] Progress retained on this device [${this.platform.toUpperCase()}].`);
+            } catch (e) {
+                console.warn("[Guest Storage Write]:", e);
+            }
+            return;
         }
+
+        // 2. AUTHENTICATED MODE (Signed in): Save directly to Cloud Firestore
+        const payload = {
+            gameId: CURRENT_GAME_ID,
+            platform: this.platform,
+            activeMission: this.activeMission,
+            trophies_earned: earnedTrophiesCount,
+            trophies_total: totalTrophiesCount,
+            trophies_percent: percentTrophies,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            ranks: this.ranks,
+            collectibles: this.collectibles,
+            stashes: this.stashes,
+            roster: this.roster,
+            missions: this.missions,
+            trophies: this.trophies
+        };
 
         if (firestore) {
             const targetDocRef = firestore
@@ -178,29 +221,41 @@ window.appState = {
                 .collection("progress")
                 .doc(CURRENT_GAME_ID);
 
-            targetDocRef.set({
-                game: "Far Cry 5",
-                platform: this.platform,
-                lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-                state: this.state
-            }, { merge: true }).then(() => {
-                this.updateStatus(`[Cloud] Saved to: users/.../platform/${this.platform}/progress/${CURRENT_GAME_ID}`);
+            targetDocRef.set(payload, { merge: true }).then(() => {
+                this.updateStatus(`[Cloud Saved] Synchronized to users/${emailKey}/platform/${this.platform}/progress/${CURRENT_GAME_ID}`);
             }).catch(err => {
                 console.error("[Firestore Save Error]:", err);
-                this.updateStatus(`Firestore Sync Failed: ${err.message}`);
+                this.updateStatus(`Cloud Sync Failed: ${err.message}`);
             });
-        } else {
-            this.updateStatus("Saved locally (Offline Mode).");
         }
     },
 
-    // Load Progress: users > {emailKey} > platform > {platform} > progress > FarCry5
+    // Load Progress: Persistent across refreshes
     loadProgress: function() {
         const emailKey = this.getEmailKey();
-        const storageKey = `fc5_progress_${emailKey}_${this.platform}`;
 
+        // 1. GUEST MODE: Read from persistent guest local storage
+        if (!emailKey) {
+            const guestKey = `fc5_guest_progress_${this.platform}`;
+            try {
+                const raw = localStorage.getItem(guestKey);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    this.applyStatePayload(parsed);
+                    this.updateStatus(`[Guest Mode] Restored progress from this device [${this.platform.toUpperCase()}].`);
+                    return;
+                }
+            } catch (e) {}
+
+            // Clean pristine state if no guest data has been marked yet
+            this.resetToCleanState();
+            this.updateStatus(`[Guest Mode] Ready [${this.platform.toUpperCase()}].`);
+            return;
+        }
+
+        // 2. AUTHENTICATED MODE: Read authoritative state from Cloud Firestore
         if (firestore) {
-            this.updateStatus(`Fetching: platform/${this.platform}/progress/${CURRENT_GAME_ID}...`);
+            this.updateStatus(`Loading cloud save for ${this.platform.toUpperCase()}...`);
 
             firestore
                 .collection("users")
@@ -213,59 +268,98 @@ window.appState = {
                 .then(doc => {
                     if (doc.exists) {
                         const data = doc.data();
-                        if (data && data.state) {
-                            this.state = data.state;
-                            this.applyStateToUI();
-                            this.updateStatus(`Telemetry loaded [${this.platform.toUpperCase()}]`);
-                            return;
-                        }
+                        this.applyStatePayload(data);
+                        this.updateStatus(`[Cloud Restored] Authoritative ledger loaded [${this.platform.toUpperCase()}].`);
+                        return;
                     }
-                    this.fallbackLocalLoad(storageKey);
+                    // If no cloud document exists yet, start clean
+                    this.resetToCleanState();
+                    this.updateStatus(`[Cloud Ready] New cloud ledger initialized for ${this.platform.toUpperCase()}.`);
                 }).catch(err => {
                     console.warn("[Firestore Fetch Error]:", err);
-                    this.fallbackLocalLoad(storageKey);
+                    this.updateStatus(`Failed to read cloud save: ${err.message}`);
                 });
             return;
         }
 
-        this.fallbackLocalLoad(storageKey);
+        this.resetToCleanState();
     },
 
-    fallbackLocalLoad: function(storageKey) {
+    resetToCleanState: function() {
+        this.ranks = { rp: 0, outposts: 0, cultProperty: 0, stashes: 0, roster: 0, perks: 0, collectibles: 0 };
+        this.collectibles = {};
+        this.stashes = {};
+        this.roster = {};
+        this.missions = {};
+        this.trophies = {};
+        this.applyStateToUI();
+    },
+
+    applyStatePayload: function(payload) {
+        if (!payload || typeof payload !== 'object') return;
+        this.ranks = Object.assign({ rp: 0, outposts: 0, cultProperty: 0, stashes: 0, roster: 0, perks: 0, collectibles: 0 }, payload.ranks || {});
+        this.collectibles = payload.collectibles || {};
+        this.stashes = payload.stashes || {};
+        this.roster = payload.roster || {};
+        this.missions = payload.missions || {};
+        this.trophies = payload.trophies || {};
+        this.applyStateToUI();
+    },
+
+    // Migrates local Guest ticks into Firestore upon login
+    migrateGuestProgressIfPresent: async function() {
+        const emailKey = this.getEmailKey();
+        if (!emailKey) return;
+
+        const guestKey = `fc5_guest_progress_${this.platform}`;
+        let guestData = null;
+
         try {
-            const raw = localStorage.getItem(storageKey);
-            if (raw) {
-                const parsed = JSON.parse(raw);
-                if (parsed && typeof parsed === 'object') {
-                    this.state = Object.assign({
-                        ranks: { rp: 0, outposts: 0, cultProperty: 0, stashes: 0, roster: 0, perks: 0, collectibles: 0 },
-                        checks: {}
-                    }, parsed);
-                    this.applyStateToUI();
-                    this.updateStatus(`Operating in LocalStorage mode [${this.platform.toUpperCase()}].`);
-                    return;
-                }
-            }
+            const raw = localStorage.getItem(guestKey);
+            if (raw) guestData = JSON.parse(raw);
         } catch (e) {}
 
-        this.state = {
-            ranks: { rp: 0, outposts: 0, cultProperty: 0, stashes: 0, roster: 0, perks: 0, collectibles: 0 },
-            checks: {}
-        };
-        this.applyStateToUI();
-        this.updateStatus(`Profile initialized [${this.platform.toUpperCase()}].`);
+        if (guestData && (
+            Object.keys(guestData.stashes || {}).length > 0 ||
+            Object.keys(guestData.collectibles || {}).length > 0 ||
+            Object.keys(guestData.missions || {}).length > 0 ||
+            Object.keys(guestData.roster || {}).length > 0 ||
+            Object.keys(guestData.trophies || {}).length > 0
+        )) {
+            this.updateStatus("Importing guest checks to your Cloud Ledger...");
+
+            // Deep merge guest items with any existing cloud state
+            this.collectibles = Object.assign({}, this.collectibles, guestData.collectibles || {});
+            this.stashes = Object.assign({}, this.stashes, guestData.stashes || {});
+            this.roster = Object.assign({}, this.roster, guestData.roster || {});
+            this.missions = Object.assign({}, this.missions, guestData.missions || {});
+            this.trophies = Object.assign({}, this.trophies, guestData.trophies || {});
+
+            this.applyStateToUI();
+            this.saveProgress();
+
+            // Clear guest key now that it is stored in the cloud
+            localStorage.removeItem(guestKey);
+            this.updateStatus("Guest checks successfully synced to your account.");
+        }
     },
 
     applyStateToUI: function() {
-        if (this.state.ranks) {
-            for (const r in this.state.ranks) {
-                this.updateRankDisplay(r, this.state.ranks[r]);
-            }
+        for (const r in this.ranks) {
+            this.updateRankDisplay(r, this.ranks[r]);
         }
 
         document.querySelectorAll('.fc5-item-card').forEach(card => {
             const id = card.getAttribute('data-id');
-            const isDone = !!(this.state.checks && this.state.checks[id]);
+            const type = card.getAttribute('data-type') || 'mission';
+            let isDone = false;
+
+            if (type === 'stash') isDone = !!(this.stashes[id]?.collected);
+            else if (type === 'roster') isDone = !!(this.roster[id]?.unlocked);
+            else if (type === 'collectible' || type === 'magazine') isDone = !!(this.collectibles[id]?.collected);
+            else if (type === 'trophy') isDone = !!(this.trophies[id]?.earned);
+            else isDone = !!(this.missions[id]?.completed);
+
             const btn = card.querySelector('.check-btn');
 
             if (isDone) {
@@ -284,9 +378,24 @@ window.appState = {
         });
     },
 
-    toggleItem: function(itemId) {
-        if (!this.state.checks) this.state.checks = {};
-        this.state.checks[itemId] = !this.state.checks[itemId];
+    toggleItem: function(itemId, type) {
+        if (type === 'stash') {
+            if (!this.stashes[itemId]) this.stashes[itemId] = { collected: false, psnSynced: false };
+            this.stashes[itemId].collected = !this.stashes[itemId].collected;
+        } else if (type === 'roster') {
+            if (!this.roster[itemId]) this.roster[itemId] = { unlocked: false, psnSynced: false };
+            this.roster[itemId].unlocked = !this.roster[itemId].unlocked;
+        } else if (type === 'collectible' || type === 'magazine') {
+            if (!this.collectibles[itemId]) this.collectibles[itemId] = { collected: false, psnSynced: false };
+            this.collectibles[itemId].collected = !this.collectibles[itemId].collected;
+        } else if (type === 'trophy') {
+            if (!this.trophies[itemId]) this.trophies[itemId] = { earned: false, psnSynced: false };
+            this.trophies[itemId].earned = !this.trophies[itemId].earned;
+        } else {
+            if (!this.missions[itemId]) this.missions[itemId] = { completed: false, psnSynced: false };
+            this.missions[itemId].completed = !this.missions[itemId].completed;
+        }
+
         this.applyStateToUI();
         this.saveProgress();
     },
@@ -298,10 +407,9 @@ window.appState = {
         }
     },
 
-    // Friend Code & Friends Progress Integration
     fetchUserFriendCode: async function() {
-        if (!rtdb) return;
         const emailKey = this.getEmailKey();
+        if (!rtdb || !emailKey) return;
         try {
             const snap = await rtdb.ref(`/users/${emailKey}/friend_code`).once('value');
             this.myFriendCode = snap.val() || 'TLWWTSNU';
@@ -312,12 +420,16 @@ window.appState = {
         }
     },
 
-    // Resolves squad members from RTDB and queries Firestore under this.platform
     syncFriendsProgress: async function() {
         const rosterContainer = document.getElementById('friendsRosterContainer');
         if (!rosterContainer) return;
 
         const emailKey = this.getEmailKey();
+        if (!emailKey) {
+            rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">Sign in to view your Squad Co-Op Ledger.</div>';
+            return;
+        }
+
         try {
             const friendsSnap = await rtdb.ref(`/users/${emailKey}/friends`).once('value');
             const friendsData = friendsSnap.val();
@@ -332,7 +444,7 @@ window.appState = {
                 const friendUsername = fObj.username || fKey;
                 const friendTargetKey = fObj.email ? fObj.email.replace(/@/g, '_at_').replace(/\./g, '_') : fKey;
 
-                let friendState = null;
+                let friendData = null;
                 if (firestore) {
                     try {
                         const fDoc = await firestore
@@ -345,17 +457,15 @@ window.appState = {
                             .get();
 
                         if (fDoc.exists) {
-                            friendState = fDoc.data()?.state;
+                            friendData = fDoc.data();
                         }
-                    } catch (err) {
-                        console.warn(`[Friend Query Error]: ${friendTargetKey}`, err);
-                    }
+                    } catch (err) {}
                 }
 
-                const checksCount = friendState?.checks ? Object.values(friendState.checks).filter(Boolean).length : 0;
-                const rpVal = friendState?.ranks?.rp || 0;
-                const stashesVal = friendState?.ranks?.stashes || 0;
-                const colVal = friendState?.ranks?.collectibles || 0;
+                const rpVal = friendData?.ranks?.rp || 0;
+                const stashesVal = friendData?.ranks?.stashes || 0;
+                const colVal = friendData?.ranks?.collectibles || 0;
+                const trophyPercent = friendData?.trophies_percent || 0;
 
                 cardsHtml += `
                     <div style="background:#1e293b; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px;">
@@ -369,7 +479,7 @@ window.appState = {
                             <strong>RP:</strong> ${rpVal} • <strong>Stashes:</strong> ${stashesVal} • <strong>Collectibles:</strong> ${colVal}
                         </div>
                         <div style="font-size:0.75rem; color:#94a3b8;">
-                            Total Items Completed: <strong>${checksCount}</strong>
+                            Trophy Progress: <strong>${trophyPercent}%</strong>
                         </div>
                     </div>
                 `;
@@ -383,10 +493,10 @@ window.appState = {
 };
 
 window.adjRank = function(rankKey, delta) {
-    if (!appState.state.ranks) appState.state.ranks = {};
-    const current = Number(appState.state.ranks[rankKey] || 0);
+    if (!appState.ranks) appState.ranks = {};
+    const current = Number(appState.ranks[rankKey] || 0);
     const nextVal = Math.max(0, current + delta);
-    appState.state.ranks[rankKey] = nextVal;
+    appState.ranks[rankKey] = nextVal;
     appState.updateRankDisplay(rankKey, nextVal);
     appState.saveProgress();
 };
@@ -506,17 +616,23 @@ async function syncPsnSkeleton() {
             if (navLogo) navLogo.src = posterUrl;
         }
 
-        await autoCheckUserPsnTrophies();
+        // Only sync PSN trophies automatically if user is authenticated and is on PS platform
+        if (appState.currentUser && appState.platform === 'ps') {
+            await autoCheckUserPsnTrophies();
+        }
     } catch (e) {
         console.warn("[PSN Skeleton Sync]:", e);
     }
 }
 
 async function autoCheckUserPsnTrophies() {
-    if (!rtdb) return;
-    const gamertag = 'wildhorse_spirit';
+    const emailKey = appState.getEmailKey();
+    if (!rtdb || !emailKey) return;
 
     try {
+        const userProfileSnap = await rtdb.ref(`/users/${emailKey}/psn_username`).once('value');
+        const gamertag = userProfileSnap.val() || 'wildhorse_spirit';
+
         const liveTrophiesSnap = await rtdb.ref(`/psn/gamertags/${gamertag}/liveTrophyProgress/${PSN_FC5_COMM_ID}`).once('value');
         const liveTrophies = liveTrophiesSnap.val();
 
@@ -525,8 +641,8 @@ async function autoCheckUserPsnTrophies() {
             Object.entries(liveTrophies).forEach(([tId, tObj]) => {
                 if (tObj && (tObj.earned === true || tObj.isEarned === true)) {
                     const cardKey = `trophy_fc5_${tId}`;
-                    if (!appState.state.checks[cardKey]) {
-                        appState.state.checks[cardKey] = true;
+                    if (!appState.trophies[cardKey] || !appState.trophies[cardKey].earned) {
+                        appState.trophies[cardKey] = { earned: true, psnSynced: true };
                         stateModified = true;
                     }
                 }
@@ -542,7 +658,7 @@ async function autoCheckUserPsnTrophies() {
     }
 }
 
-// Section 5: Render Accordion Sections (All Collapsed by Default)
+// Section 5: Render Far Cry 5 Tactical Accordion Sections
 function renderFarCry5Companion(data) {
     const container = document.getElementById('section-container');
     if (!container || !data) return;
@@ -560,13 +676,13 @@ function renderFarCry5Companion(data) {
             <div class="section-content">
                 <div class="trophy-grid">
                     ${data.walkthrough_missions.map(item => `
-                        <div class="trophy-card fc5-item-card" data-id="${item.id}">
+                        <div class="trophy-card fc5-item-card" data-id="${item.id}" data-type="mission">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                 <div>
                                     <span class="trophy-rank rank-gold">${escapeHtml(item.region || 'Hope County')}</span>
                                     <h3 style="color:#fff; font-size:1rem; margin-top:4px;">${escapeHtml(item.mission_name)}</h3>
                                 </div>
-                                <button type="button" class="check-btn" onclick="appState.toggleItem('${item.id}')" aria-label="Toggle Mission"></button>
+                                <button type="button" class="check-btn" onclick="appState.toggleItem('${item.id}', 'mission')" aria-label="Toggle Mission"></button>
                             </div>
                             <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(item.guide || '')}</p>
                         </div>
@@ -596,14 +712,14 @@ function renderFarCry5Companion(data) {
                     <div class="section-content">
                         <div class="trophy-grid">
                             ${list.map(s => `
-                                <div class="trophy-card fc5-item-card" data-id="${s.id}">
+                                <div class="trophy-card fc5-item-card" data-id="${s.id}" data-type="stash">
                                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                         <div>
                                             <span class="trophy-rank rank-silver">${escapeHtml(s.required_gear || 'No Gear Required')}</span>
                                             <h3 style="color:#fff; font-size:1rem; margin-top:4px;">${escapeHtml(s.name)}</h3>
                                             <div style="font-size:0.75rem; color:var(--user-theme-accent);">${escapeHtml(s.location || '')}</div>
                                         </div>
-                                        <button type="button" class="check-btn" onclick="appState.toggleItem('${s.id}')" aria-label="Toggle Stash"></button>
+                                        <button type="button" class="check-btn" onclick="appState.toggleItem('${s.id}', 'stash')" aria-label="Toggle Stash"></button>
                                     </div>
                                     <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(s.guide || '')}</p>
                                 </div>
@@ -630,14 +746,14 @@ function renderFarCry5Companion(data) {
                     <div class="section-content">
                         <div class="trophy-grid">
                             ${group.items.map(item => `
-                                <div class="trophy-card fc5-item-card" data-id="${item.id}">
+                                <div class="trophy-card fc5-item-card" data-id="${item.id}" data-type="collectible">
                                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                         <div>
                                             <span class="trophy-rank rank-bronze">${escapeHtml(item.region || group.region || 'Hope County')}</span>
                                             <h3 style="color:#fff; font-size:0.95rem; margin-top:4px;">${escapeHtml(item.name)}</h3>
                                             <div style="font-size:0.75rem; color:#94a3b8;">${escapeHtml(item.location || '')}</div>
                                         </div>
-                                        <button type="button" class="check-btn" onclick="appState.toggleItem('${item.id}')" aria-label="Toggle Collectible"></button>
+                                        <button type="button" class="check-btn" onclick="appState.toggleItem('${item.id}', 'collectible')" aria-label="Toggle Collectible"></button>
                                     </div>
                                     <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(item.guide || '')}</p>
                                 </div>
@@ -660,14 +776,14 @@ function renderFarCry5Companion(data) {
             <div class="section-content">
                 <div class="trophy-grid">
                     ${data.guns_and_fangs_for_hire.map(h => `
-                        <div class="trophy-card fc5-item-card" data-id="${h.id}">
+                        <div class="trophy-card fc5-item-card" data-id="${h.id}" data-type="roster">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                 <div>
                                     <span class="trophy-rank rank-platinum">${escapeHtml(h.type)}</span>
                                     <h3 style="color:#fff; font-size:1.05rem; margin-top:4px;">${escapeHtml(h.name)}</h3>
                                     <div style="font-size:0.8rem; color:var(--user-theme-accent); font-weight:700;">${escapeHtml(h.title)}</div>
                                 </div>
-                                <button type="button" class="check-btn" onclick="appState.toggleItem('${h.id}')" aria-label="Toggle Hire"></button>
+                                <button type="button" class="check-btn" onclick="appState.toggleItem('${h.id}', 'roster')" aria-label="Toggle Hire"></button>
                             </div>
                             <div style="font-size:0.78rem; color:#cbd5e1; margin-bottom:8px;">
                                 <strong>Unlock Mission:</strong> ${escapeHtml(h.unlock_mission)} (${escapeHtml(h.location)})
@@ -705,7 +821,7 @@ function renderFarCry5Companion(data) {
                         else if (tType.includes('SILVER')) badgeClass = 'rank-silver';
 
                         return `
-                        <div class="trophy-card fc5-item-card" data-id="${trophyCardId}">
+                        <div class="trophy-card fc5-item-card" data-id="${trophyCardId}" data-type="trophy">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                 <div style="display:flex; gap:10px; align-items:center;">
                                     ${tIcon ? `<img src="${tIcon}" style="width:40px; height:40px; border-radius:6px; object-fit:cover; border:1px solid rgba(255,255,255,0.2);" onerror="this.style.display='none'">` : ''}
@@ -714,7 +830,7 @@ function renderFarCry5Companion(data) {
                                         <h3 style="color:#fff; font-size:0.95rem; margin-top:2px;">${escapeHtml(tName)}</h3>
                                     </div>
                                 </div>
-                                <button type="button" class="check-btn" onclick="appState.toggleItem('${trophyCardId}')" aria-label="Toggle Trophy"></button>
+                                <button type="button" class="check-btn" onclick="appState.toggleItem('${trophyCardId}', 'trophy')" aria-label="Toggle Trophy"></button>
                             </div>
                             <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(tDesc)}</p>
                         </div>`;
@@ -732,7 +848,7 @@ function renderFarCry5Companion(data) {
 function toSecureUrl(url) {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
-    if (trimmed.startsWith('/')) return trimmed; // Supports clean relative routes like /fc5
+    if (trimmed.startsWith('/')) return trimmed;
     if (trimmed.startsWith('http://static-resource.np.community.playstation.net/')) {
         return trimmed.replace('http://static-resource.np.community.playstation.net/', 'https://static-resource.np.community.playstation.net/');
     }
@@ -756,7 +872,6 @@ function escapeHtml(str) {
 document.addEventListener('DOMContentLoaded', async () => {
     await buildUtmNavigation();
 
-    // Hook platform dropdown listener if present on page
     const platformSelector = document.getElementById('platformSelector');
     if (platformSelector) {
         platformSelector.value = appState.platform;
@@ -792,11 +907,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (auth) {
-        auth.onAuthStateChanged(user => {
+        auth.onAuthStateChanged(async (user) => {
+            appState.authInitialized = true;
             if (user) {
                 appState.currentUser = user;
                 appState.activeEmail = user.email;
-                appState.activeUser = user.displayName || 'Werewolf';
+                appState.activeUser = user.displayName || 'Resistance Member';
 
                 const nameEl = document.getElementById('resistance-name');
                 if (nameEl) nameEl.innerText = `${appState.activeUser.toUpperCase()} [${appState.platform.toUpperCase()}]`;
@@ -809,15 +925,30 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (avatar && user.photoURL) avatar.src = user.photoURL;
                 if (nameBadge) nameBadge.innerText = appState.activeUser;
                 if (authModal) authModal.classList.add('hidden');
+
+                // 1. Fetch friend code
+                await appState.fetchUserFriendCode();
+                // 2. Load authoritative cloud ledger (multi-device)
+                await appState.loadProgress();
+                // 3. Migrate any guest ticks made before signing in
+                await appState.migrateGuestProgressIfPresent();
+                // 4. Load squad co-op roster
+                await appState.syncFriendsProgress();
             } else {
                 appState.currentUser = null;
+                appState.activeEmail = null;
+                appState.activeUser = 'Guest';
+
+                const nameEl = document.getElementById('resistance-name');
+                if (nameEl) nameEl.innerText = `GUEST [${appState.platform.toUpperCase()}]`;
+
                 if (authBtn) authBtn.classList.remove('hidden');
                 const badge = document.getElementById('userProfileBadge');
                 if (badge) badge.classList.add('hidden');
+
+                // Load persistent guest storage
+                appState.loadProgress();
             }
-            appState.fetchUserFriendCode();
-            appState.loadProgress();
-            appState.syncFriendsProgress();
         });
     }
 
@@ -837,7 +968,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             appState.gameData = json;
             await syncPsnSkeleton();
             renderFarCry5Companion(json);
-            appState.loadProgress();
+            
+            // Only trigger fallback load if auth listener has not fired yet
+            if (appState.authInitialized) {
+                appState.loadProgress();
+            }
         } catch (e) {
             loadData(idx + 1);
         }
