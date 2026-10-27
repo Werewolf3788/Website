@@ -1,53 +1,5 @@
-/* ============================================================================
- * File: psn.js
- * Location: /psn.js (and /Playstation/psn.js)
- * Description: Master PSN Telemetry & Deep Catalog Ingestion Engine
- * 
- * DECOUPLED FROM FIREBASE -> OUTPUTS DIRECTLY TO psn.json:
- * 1. Master Skeleton under psnData.games[commId] strictly holds universal game facts:
- *    - NPWR primary commId, CUSA/PPSA SKU, and conceptId (e.g., 10008946).
- *    - Full uncompressed Store storyline, animal/weapon rosters, feature bullets.
- *    - Hardware, online, player-count & trigger/vibration store badges.
- *    - 7-category accessibility features & master trophies list.
- *    - Itemized DLC groups & edition tiers.
- * 2. User Overlays isolated strictly to psnData.gamertags[onlineId]:
- *    - Root commId acts as foreign key pointer directly to psnData.games[commId].
- *    - Bulletproof root poster art binding: art, posterArt, image, currentGameArt.
- *    - liveTrophyProgress contains earned flags, EDT timestamps, and (x/x) sub-progress.
- * 3. Hot-standby failover across WildHorse_Spirit, Ray, Darkwing, and Marc.
- * 4. Online-Only Optimization & Checkpoint Session Tracker:
- *    - Strict presence gating skips offline players to avoid wasting compute/API quota.
- *    - 1-pass fast session wrap closes pending sessions upon detecting offline transition.
- *    - 15-minute incremental checkpoint syncing with manualBaselineHours integration.
- *    - Multi-tier progressive duration formatting (mins -> hours -> days -> weeks -> months -> years).
- * 5. Live Rich Presence Status:
- *    - gameStatus (e.g., "Exploring Whitetail Mountains") read from basicPresence
- *      gameTitleInfoList[0].gameStatus when the game publishes it.
- *    - Stored at psnData.gamertags[onlineId].gameStatus (+ gameStatusUpdated).
- * 6. Maximum-Pull Mode:
- *    - Full pagination for trophy titles, played games, game library, purchases, and friends.
- *    - Retry & backoff on 429 rate limit.
- *    - Raw archive stored cleanly at psnData.raw[onlineId][...].
- *    - Friend directory (psnData.friendsDirectory) resolves friend accountIds -> onlineId/avatar.
- *    - Playtime linked to trophy titles by normalized title name.
- * 7. Local File Storage (NO FIREBASE):
- *    - Reads existing state from psn.json.
- *    - Writes all unified telemetry atomically to psn.json (and public/psn.json if present).
- *    - User accounts & credentials read from users.json, user_secrets.json, or env vars.
- * 
- * Version: 67.0.0 - Local psn.json Engine (Firebase Completely Removed)
- * Date & Time Stamp: 2026-10-27 (America/New_York)
- * ============================================================================ */
-
-import { createRequire } from "module";
-import { fileURLToPath } from "url";
-import path from "path";
-
-const require = createRequire(import.meta.url);
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const fs = require("fs");
+const path = require("path");
 const http = require("http");
 const https = require("https");
 const psnApi = require("psn-api");
@@ -75,17 +27,12 @@ const {
     getPurchasedGames
 } = psnApi;
 
-// ----------------------------------------------------------------------------
-// [FILE & PATH CONFIGURATION - NO FIREBASE]
-// ----------------------------------------------------------------------------
-const PSN_OUTPUT_FILE = process.env.PSN_OUTPUT_FILE || path.resolve(process.cwd(), "psn.json");
-const PUBLIC_PSN_OUTPUT_FILE = path.resolve(process.cwd(), "public", "psn.json");
-const USERS_FILE_PATH = process.env.USERS_FILE || path.resolve(process.cwd(), "users.json");
-const USER_SECRETS_FILE_PATH = process.env.USER_SECRETS_FILE || path.resolve(process.cwd(), "user_secrets.json");
-const LOCAL_TOKENS_PATH = path.resolve(process.cwd(), ".psn_tokens.json");
-
+const FIREBASE_BASE_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn";
+const RTDB_ROOT_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
 const GA4_MEASUREMENT_ID = "G-CTYHDF4MSD";
-const ENGINE_VERSION = "67.0.0 - Local JSON Engine";
+const ENGINE_VERSION = "66.10.0";
+const LOCAL_TOKENS_PATH = path.join(__dirname, ".psn_tokens.json");
+const PSN_JSON_PATH = path.resolve(process.cwd(), "Playstation", "psn.json");
 
 const SQUAD_GAMERTAGS = {
     wildhorse_spirit: "WildHorse_Spirit",
@@ -108,9 +55,80 @@ const CORE_PACK = [
     { key: "marc", tag: "DesdemonaTiger", id: ACCOUNT_IDS.marc }
 ];
 
+const SEED_TARGET_ACCOUNT_IDS = [
+    "4087137467908566201",
+    "2732733730346312494",
+    "4398462806362115916",
+    "6551906246515882523",
+    "7742137722487951585",
+    "2288010536299512532",
+    "5194904245822471614",
+    "2344801193533413809",
+    "3728215008151724560",
+    "8996572749275973724",
+    "1749160004083248186"
+];
+
 const AMAZON_TAG = "moviesanywhere02-20";
 
-let tokenStore = { ray: {}, wildhorse_spirit: {}, darkwing: {}, marc: {} };
+const RTDB_ALLOWED_USER_KEYS = new Set([
+    "accountId",
+    "activeHunt",
+    "allAvatars",
+    "art",
+    "avatar",
+    "bio",
+    "commId",
+    "conceptId",
+    "currentGame",
+    "currentGameArt",
+    "currentGameHours",
+    "currentGameNumericHours",
+    "currentSessionSeconds",
+    "displayPlatform",
+    "earliestTrophyDate",
+    "friendsList",
+    "friendsProfiles",
+    "gameBuildVersion",
+    "gameStatus",
+    "gameStatusUpdated",
+    "gamesPlayed",
+    "handshakeState",
+    "handshakeText",
+    "image",
+    "isStreamingRemotePlay",
+    "language",
+    "lastUpdated",
+    "latestTrophyDate",
+    "level",
+    "liveTrophyProgress",
+    "mostRecentTrophies",
+    "npssoStatus",
+    "npssoValid",
+    "online",
+    "onlineId",
+    "platform",
+    "playedHoursApp",
+    "playedHoursWhole",
+    "playtimeSource",
+    "plus",
+    "posterArt",
+    "psnAccountAge",
+    "purchasedGames",
+    "rawPresence",
+    "rawProfile",
+    "recentGames",
+    "region",
+    "sessionStartedAt",
+    "sessionStartedAtMs",
+    "shareableProfile",
+    "sonyPlayDuration",
+    "storeListing",
+    "trophySummary",
+    "trophyTitleSync"
+]);
+
+let tokenStore = { ray: {}, wildhorse_spirit: {} };
 
 let diagnosticReport = {
     wildhorse_spirit_active: "no",
@@ -123,11 +141,9 @@ let diagnosticReport = {
     marc_status: "UNCHECKED",
     active_runner: "UNCHECKED",
     buffer_status: "UNCHECKED",
-    storage_mode: "LOCAL_JSON (psn.json)",
     lastCheck: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
 };
 
-// Maximum Pull & Ingestion Configuration
 const PULL_CONFIG = {
     SKELETON_REFRESH_RECENT_TITLES: 20,
     PROGRESS_REFRESH_RECENT_TITLES: 0,
@@ -155,152 +171,6 @@ let friendsDirectoryDirty = false;
 let friendLookupsThisRun = 0;
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-// ----------------------------------------------------------------------------
-// [SECTION 2: LOCAL JSON PERSISTENCE ENGINE (REPLACES FIREBASE)]
-// ----------------------------------------------------------------------------
-
-function loadPsnDataFromDisk() {
-    // Attempt to load from primary output file first
-    const pathsToTry = [PSN_OUTPUT_FILE, PUBLIC_PSN_OUTPUT_FILE];
-    for (const filePath of pathsToTry) {
-        try {
-            if (fs.existsSync(filePath)) {
-                const raw = fs.readFileSync(filePath, "utf-8");
-                if (raw && raw.trim().length > 0) {
-                    const parsed = JSON.parse(raw);
-                    console.log(`[LOCAL STORAGE] Loaded existing psn.json from: ${filePath}`);
-                    return parsed;
-                }
-            }
-        } catch (err) {
-            console.warn(`[LOCAL STORAGE WARN] Failed to parse ${filePath}: ${err.message}`);
-        }
-    }
-
-    console.log("[LOCAL STORAGE] No existing psn.json found. Initializing blank schema.");
-    return {
-        gamertags: {},
-        usersByGamerTag: {},
-        games: {},
-        squadLeaderboard: [],
-        squadAnalytics: { totals: {}, socialOverlap: {}, calculatedAt: new Date().toISOString() },
-        friendsDirectory: {},
-        raw: {},
-        authDiagnostics: diagnosticReport,
-        lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }),
-        engineVersion: ENGINE_VERSION,
-        analyticsTag: GA4_MEASUREMENT_ID,
-        codeTimestamp: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }) + " EDT"
-    };
-}
-
-let activePsnData = null;
-
-function getPsnData() {
-    if (!activePsnData) {
-        activePsnData = loadPsnDataFromDisk();
-    }
-    return activePsnData;
-}
-
-function savePsnJson(data = activePsnData) {
-    if (!data) return;
-    try {
-        const jsonContent = JSON.stringify(data, null, 2);
-        
-        // Write primary file atomically using temp file rename
-        const tempPath = `${PSN_OUTPUT_FILE}.tmp.${Date.now()}`;
-        fs.writeFileSync(tempPath, jsonContent, "utf-8");
-        fs.renameSync(tempPath, PSN_OUTPUT_FILE);
-        console.log(`[LOCAL STORAGE] Saved psn.json successfully (${Buffer.byteLength(jsonContent)} bytes)`);
-
-        // If public folder exists, also mirror to public/psn.json so frontend UI gets instant updates
-        try {
-            const publicDir = path.dirname(PUBLIC_PSN_OUTPUT_FILE);
-            if (!fs.existsSync(publicDir)) {
-                fs.mkdirSync(publicDir, { recursive: true });
-            }
-            fs.writeFileSync(PUBLIC_PSN_OUTPUT_FILE, jsonContent, "utf-8");
-        } catch (pubErr) {
-            // Ignore mirror errors
-        }
-    } catch (err) {
-        console.error(`[LOCAL STORAGE ERROR] Failed saving psn.json: ${err.message}`);
-    }
-}
-
-// ----------------------------------------------------------------------------
-// [SECTION 3: RTDB CREDENTIAL SOURCE (DEFAULT) & LOCAL BACKUP]
-// ----------------------------------------------------------------------------
-const RTDB_ROOT_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
-
-function buildRtdbUrl(pathWithLeadingSlash) {
-    const secret = process.env.FIREBASE_AUTH_SECRET;
-    const authQuery = secret ? `?auth=${encodeURIComponent(secret)}` : "";
-    return `${RTDB_ROOT_URL}${pathWithLeadingSlash}.json${authQuery}`;
-}
-
-function loadLocalUsersAndSecrets() {
-    let users = {};
-    let secrets = {};
-
-    if (fs.existsSync(USERS_FILE_PATH)) {
-        try {
-            users = JSON.parse(fs.readFileSync(USERS_FILE_PATH, "utf-8"));
-        } catch (e) {}
-    }
-
-    if (fs.existsSync(USER_SECRETS_FILE_PATH)) {
-        try {
-            secrets = JSON.parse(fs.readFileSync(USER_SECRETS_FILE_PATH, "utf-8"));
-        } catch (e) {}
-    }
-
-    return { users, secrets };
-}
-
-function writeLocalUserPsnStatus(emailKey, fields) {
-    try {
-        let users = {};
-        if (fs.existsSync(USERS_FILE_PATH)) {
-            users = JSON.parse(fs.readFileSync(USERS_FILE_PATH, "utf-8"));
-        }
-        if (!users[emailKey]) users[emailKey] = {};
-        Object.assign(users[emailKey], fields);
-        fs.writeFileSync(USERS_FILE_PATH, JSON.stringify(users, null, 2), "utf-8");
-    } catch (e) {
-        console.warn(`[USERS WRITE WARN] Could not write user status for ${emailKey}: ${e.message}`);
-    }
-}
-
-async function writeUserPsnStatus(emailKey, fields, currentRecord) {
-    const current = (currentRecord && typeof currentRecord === "object") ? currentRecord : {};
-    const changed = {};
-    for (const [k, v] of Object.entries(fields)) {
-        if (v === undefined || v === null) continue;
-        if (current[k] !== v) changed[k] = v;
-    }
-    if (Object.keys(changed).length === 0) return;
-
-    // Write back to RTDB so site remains 100% in sync
-    try {
-        await resilientFetch(buildRtdbUrl(`/users/${emailKey}`), {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(changed)
-        });
-        console.log(`[RTDB STATUS] Synchronized status for ${emailKey} in RTDB.`);
-    } catch (err) {
-        console.warn(`[USER STATUS WARN] Could not write PSN status for ${emailKey} to RTDB: ${err.message}`);
-    }
-
-    writeLocalUserPsnStatus(emailKey, changed);
-}
-
-// ----------------------------------------------------------------------------
-// [SECTION 4: PSN API HELPERS & SAFE CALLER]
-// ----------------------------------------------------------------------------
 
 async function callPsn(label, fn, fallback = null) {
     if (typeof fn !== "function") {
@@ -399,15 +269,13 @@ function auditPsnApiExports() {
     const unused = available.filter((k) => !wanted.includes(k));
     console.log(`[EXPORT AUDIT] Installed psn-api exposes ${available.length} functions.`);
     if (missing.length) console.warn(`[EXPORT AUDIT] ⚠️ Wanted but NOT in installed psn-api: ${missing.join(", ")}`);
+    if (unused.length) console.log(`[EXPORT AUDIT] Available but not used by this script: ${unused.join(", ")}`);
     return { available, missing, unused };
 }
 
-function archiveRaw(onlineId, key, payload) {
+async function archiveRaw(onlineId, key, payload) {
     if (!PULL_CONFIG.ARCHIVE_RAW || !onlineId || payload === undefined || payload === null) return;
-    const psnData = getPsnData();
-    if (!psnData.raw) psnData.raw = {};
-    if (!psnData.raw[onlineId]) psnData.raw[onlineId] = {};
-    psnData.raw[onlineId][key] = payload;
+    await syncNodeToFirebase(`raw/${onlineId}/${key}`, payload);
 }
 
 async function resolveFriendDirectory(auth, accountIds = []) {
@@ -463,6 +331,43 @@ function readUserPsnCredentials(emailKey, userRecord, secretsRecord) {
     };
 }
 
+async function writeUserPsnStatus(emailKey, fields, currentRecord) {
+    const current = (currentRecord && typeof currentRecord === "object") ? currentRecord : {};
+    const changed = {};
+    for (const [k, v] of Object.entries(fields)) {
+        if (v === undefined || v === null) continue;
+        if (current[k] !== v) changed[k] = v;
+    }
+    if (Object.keys(changed).length === 0) return;
+    try {
+        await resilientFetch(buildRtdbUrl(`/users/${emailKey}`), {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(changed)
+        });
+    } catch (err) {
+        console.warn(`[USER STATUS WARN] Could not write PSN status for ${emailKey}: ${err.message}`);
+    }
+}
+
+function normalizeForRtdb(v) {
+    if (v === null || v === undefined) return undefined;
+    if (typeof v === "number" && !Number.isFinite(v)) return undefined;
+    if (Array.isArray(v)) {
+        if (v.length === 0) return undefined;
+        return v.map((x) => { const n = normalizeForRtdb(x); return n === undefined ? null : n; });
+    }
+    if (typeof v === "object") {
+        const out = {};
+        for (const k of Object.keys(v)) {
+            const n = normalizeForRtdb(v[k]);
+            if (n !== undefined) out[k] = n;
+        }
+        return Object.keys(out).length ? out : undefined;
+    }
+    return v;
+}
+
 function findExistingGamertagRecord(gamertags, tag, accountId) {
     const all = (gamertags && typeof gamertags === "object") ? gamertags : {};
     if (tag && all[tag]) return all[tag];
@@ -474,9 +379,65 @@ function findExistingGamertagRecord(gamertags, tag, accountId) {
     return undefined;
 }
 
-// ----------------------------------------------------------------------------
-// [SECTION 5: HTTP & HTTPS RESILIENT FETCH LAYER]
-// ----------------------------------------------------------------------------
+function stableStringify(v) {
+    if (v === undefined) return "\u2205";
+    if (v === null || typeof v !== "object") return JSON.stringify(v);
+    if (Array.isArray(v)) return "[" + v.map(stableStringify).join(",") + "]";
+    return "{" + Object.keys(v).sort().map((k) => JSON.stringify(k) + ":" + stableStringify(v[k])).join(",") + "}";
+}
+
+function filterRecordForFirebase(record) {
+    if (!record || typeof record !== "object") return {};
+    const slim = {};
+    for (const key of Object.keys(record)) {
+        if (RTDB_ALLOWED_USER_KEYS.has(key)) {
+            slim[key] = record[key];
+        }
+    }
+    return slim;
+}
+
+async function writeGamertagDelta(onlineId, oldRecord, newRecord) {
+    const filteredNew = filterRecordForFirebase(newRecord);
+    const filteredOld = filterRecordForFirebase(oldRecord);
+
+    const hasOld = filteredOld && typeof filteredOld === "object" && Object.keys(filteredOld).length > 0;
+    if (!hasOld) {
+        await syncNodeToFirebase(`gamertags/${onlineId}`, filteredNew);
+        console.log(`[FIREBASE WRITE] ${onlineId}: new record written (${Object.keys(filteredNew).length} fields).`);
+        return;
+    }
+
+    const newPlain = JSON.parse(JSON.stringify(filteredNew));
+    const patch = {};
+    const keys = new Set([...Object.keys(filteredOld), ...Object.keys(newPlain)]);
+    for (const k of keys) {
+        const before = stableStringify(normalizeForRtdb(filteredOld[k]));
+        const afterNorm = normalizeForRtdb(newPlain[k]);
+        if (before === stableStringify(afterNorm)) continue;
+        patch[k] = afterNorm === undefined ? null : newPlain[k];
+    }
+
+    const changedKeys = Object.keys(patch);
+    if (changedKeys.length === 0) {
+        console.log(`[FIREBASE WRITE] ${onlineId}: nothing changed, no write.`);
+        return;
+    }
+
+    try {
+        const res = await resilientFetch(buildRtdbUrl(`/psn/gamertags/${onlineId}`), {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(patch)
+        });
+        if (res && !res.ok) throw new Error(`HTTP ${res.status}`);
+        console.log(`[FIREBASE WRITE] ${onlineId}: updated ${changedKeys.length} changed field(s): ${changedKeys.slice(0, 12).join(", ")}${changedKeys.length > 12 ? ", ..." : ""}`);
+    } catch (err) {
+        console.warn(`[FIREBASE WRITE] ${onlineId}: partial update failed (${err.message}). Falling back to full write.`);
+        await syncNodeToFirebase(`gamertags/${onlineId}`, filteredNew);
+    }
+}
+
 async function resilientFetch(url, options = {}) {
     const isHttps = url.startsWith("https://");
     const client = isHttps ? https : http;
@@ -529,9 +490,51 @@ async function resilientFetch(url, options = {}) {
     });
 }
 
-// ----------------------------------------------------------------------------
-// [SECTION 6: PLAYSTATION STORE INGESTION (CONCEPTS, PRODUCTS & BADGES)]
-// ----------------------------------------------------------------------------
+function buildRtdbUrl(pathWithLeadingSlash) {
+    const secret = process.env.FIREBASE_AUTH_SECRET;
+    const authQuery = secret ? `?auth=${encodeURIComponent(secret)}` : "";
+    return `${RTDB_ROOT_URL}${pathWithLeadingSlash}.json${authQuery}`;
+}
+
+async function fetchFromFirebase(endpointPath = "") {
+    try {
+        const fullUrl = buildRtdbUrl(`/psn${endpointPath ? '/' + endpointPath : ''}`);
+        const response = await resilientFetch(fullUrl);
+        if (!response || !response.ok) return {};
+        const data = await response.json();
+        return data || {};
+    } catch (err) {
+        console.warn(`[FIREBASE READ ERROR] /psn/${endpointPath}: ${err.message}`);
+        return {};
+    }
+}
+
+async function syncNodeToFirebase(endpointPath, payload) {
+    const targetUrl = buildRtdbUrl(`/psn/${endpointPath}`);
+    try {
+        const res = await resilientFetch(targetUrl, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        if (res && !res.ok) {
+            console.error(`[FIREBASE WRITE ERROR] Failed /psn/${endpointPath}: HTTP ${res.status}`);
+        }
+    } catch (err) {
+        console.error(`[FIREBASE WRITE ERROR] Failed /psn/${endpointPath}: ${err.message}`);
+    }
+}
+
+async function deleteNodeFromFirebase(endpointPath) {
+    const targetUrl = buildRtdbUrl(`/psn/${endpointPath}`);
+    try {
+        await resilientFetch(targetUrl, { method: "DELETE" });
+        console.log(`[CLEANUP] Purged node from Firebase: /psn/${endpointPath}`);
+    } catch (err) {
+        console.warn(`[CLEANUP WARN] Failed to delete /psn/${endpointPath}: ${err.message}`);
+    }
+}
+
 function extractConceptIdFromText(text = "") {
     if (!text || typeof text !== "string") return null;
     const match = text.match(/concept\/(\d+)/i);
@@ -693,9 +696,6 @@ async function searchStoreConceptByName(gameName) {
     }
 }
 
-// ----------------------------------------------------------------------------
-// [SECTION 7: HARDWARE, PLATFORM, FILE SIZES & MULTI-TIER TIME FORMATTING]
-// ----------------------------------------------------------------------------
 function parseDetailedHardwareContext(rawPresence, matchedGame = {}) {
     const primaryInfo = rawPresence?.primaryPlatformInfo || {};
     const rawPlatform = (primaryInfo.platform || rawPresence?.platform || "").toUpperCase();
@@ -846,14 +846,14 @@ function resolveGamePosterArt(sources = []) {
     for (const src of sources) {
         if (typeof src === "string" && src.trim().length > 0 && !src.includes("undefined") && !src.includes("null")) {
             let cleanUrl = src.trim();
-            if (cleanUrl.startsWith("//")) cleanUrl = "https:" + cleanUrl;
-            if (cleanUrl.startsWith("http://")) cleanUrl = cleanUrl.replace("http://", "https://");
+            if (cleanUrl.startsWith("http://")) cleanUrl = cleanUrl.replace("http://", "//");
+            if (cleanUrl.startsWith("https://")) cleanUrl = cleanUrl.replace("https://", "//");
             return cleanUrl;
         }
         if (src && typeof src === "object" && src.url) {
             let cleanUrl = src.url.trim();
-            if (cleanUrl.startsWith("//")) cleanUrl = "https:" + cleanUrl;
-            if (cleanUrl.startsWith("http://")) cleanUrl = cleanUrl.replace("http://", "https://");
+            if (cleanUrl.startsWith("http://")) cleanUrl = cleanUrl.replace("http://", "//");
+            if (cleanUrl.startsWith("https://")) cleanUrl = cleanUrl.replace("https://", "//");
             return cleanUrl;
         }
     }
@@ -932,9 +932,6 @@ function extractGameStatus(basicPresence) {
     return clean.length > 0 ? clean : null;
 }
 
-// ----------------------------------------------------------------------------
-// [SECTION 8: CAPABILITY & MULTIPLAYER PARSER WITH STORE BADGES]
-// ----------------------------------------------------------------------------
 function inferGameCapabilitiesFromTrophies(gameName, trophies = [], commId = null, storeBadges = []) {
     const combinedTrophyText = (trophies || []).map(t => `${t.name || ""} ${t.description || ""} ${t.detail || ""}`).join(" ").toLowerCase();
     const cleanName = (gameName || "").toLowerCase().trim();
@@ -1014,9 +1011,6 @@ function inferGameCapabilitiesFromTrophies(gameName, trophies = [], commId = nul
     };
 }
 
-// ----------------------------------------------------------------------------
-// [SECTION 9: CHECKPOINT SESSION ACCUMULATOR]
-// ----------------------------------------------------------------------------
 function updateGameSessionTracking(existingUserData, activeCommId, activeTitle, isOnline, activeTitleId) {
     const playSessions = existingUserData?.playSessions || {};
     const now = Date.now();
@@ -1097,10 +1091,15 @@ function updateGameSessionTracking(existingUserData, activeCommId, activeTitle, 
     return { playSessions, currentGameDurationFormatted, activeSessionSeconds };
 }
 
-// ----------------------------------------------------------------------------
-// [SECTION 10: TOKEN LIFECYCLE MANAGEMENT (LOCAL DISK)]
-// ----------------------------------------------------------------------------
-function loadPersistentTokens() {
+async function loadPersistentTokens() {
+    try {
+        const remoteTokens = await fetchFromFirebase("secureTokens");
+        if (remoteTokens && typeof remoteTokens === "object") {
+            tokenStore = { ...tokenStore, ...remoteTokens };
+            console.log("[TOKEN STORAGE] Loaded cached tokens from Firebase.");
+        }
+    } catch (e) {}
+
     if (fs.existsSync(LOCAL_TOKENS_PATH)) {
         try {
             const localData = JSON.parse(fs.readFileSync(LOCAL_TOKENS_PATH, "utf-8"));
@@ -1112,9 +1111,13 @@ function loadPersistentTokens() {
     }
 }
 
-function savePersistentTokens() {
+async function savePersistentTokens() {
     try {
         fs.writeFileSync(LOCAL_TOKENS_PATH, JSON.stringify(tokenStore, null, 2), "utf-8");
+    } catch (e) {}
+
+    try {
+        await syncNodeToFirebase("secureTokens", tokenStore);
     } catch (e) {}
 }
 
@@ -1156,7 +1159,7 @@ async function getAuthenticated(userKey, npssoInput) {
                     refreshToken: refreshed.refreshToken || currentUserTokens.refreshToken, 
                     expiryTime: Math.floor(Date.now() / 1000) + (refreshed.expiresIn || 3600) 
                 };
-                savePersistentTokens();
+                await savePersistentTokens();
                 diagnosticReport[`${userKey}_active`] = "yes";
                 diagnosticReport[`${userKey}_status`] = "ACTIVE_VIA_REFRESH";
                 console.log(`[AUTH SUCCESS] Successfully renewed session for ${userKey}.`);
@@ -1181,7 +1184,7 @@ async function getAuthenticated(userKey, npssoInput) {
                     refreshToken: auth.refreshToken, 
                     expiryTime: Math.floor(Date.now() / 1000) + (auth.expiresIn || 3600) 
                 };
-                savePersistentTokens();
+                await savePersistentTokens();
                 diagnosticReport[`${userKey}_active`] = "yes";
                 diagnosticReport[`${userKey}_status`] = "ACTIVE_VIA_NPSSO";
                 console.log(`[AUTH SUCCESS] Authenticated ${userKey} via NPSSO.`);
@@ -1217,7 +1220,7 @@ async function resolveMasterSession(coreNpssos = {}) {
 
     let activeMaster = null;
     let failoverState = "SNAPSHOT_FALLBACK";
-    let bufferStatus = "LOCAL SNAPSHOT MODE (psn.json)";
+    let bufferStatus = "READ-ONLY SNAPSHOT MODE";
 
     for (const member of CORE_PACK) {
         const a = auths[member.key];
@@ -1235,15 +1238,12 @@ async function resolveMasterSession(coreNpssos = {}) {
     }
 
     if (!activeMaster) {
-        console.warn("[FAILOVER MANAGER] ⚠️ All four squad tokens offline. Local psn.json snapshot mode.");
+        console.warn("[FAILOVER MANAGER] ⚠️ All four squad tokens offline. Read-only snapshot fallback mode.");
     }
 
     return { masterAuth: activeMaster, auths, failoverState, bufferStatus };
 }
 
-// ----------------------------------------------------------------------------
-// [SECTION 11: DLC & ADD-ON EXTRACTION]
-// ----------------------------------------------------------------------------
 async function enrichDLCGroups(canonicalCommId, mappedGroups, userPurchasedTitles = [], cloudDlcCatalog = {}) {
     const safePurchased = Array.isArray(userPurchasedTitles) ? userPurchasedTitles : [];
     const safeCatalog = (cloudDlcCatalog && typeof cloudDlcCatalog === "object") ? cloudDlcCatalog : {};
@@ -1286,9 +1286,6 @@ async function enrichDLCGroups(canonicalCommId, mappedGroups, userPurchasedTitle
     });
 }
 
-// ----------------------------------------------------------------------------
-// [SECTION 12: UNIFIED MASTER GAME INGESTION (SAVED DIRECTLY TO psnData.games)]
-// ----------------------------------------------------------------------------
 async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, iconArt, definedTrophies, globalGames, userPurchasedTitles = [], cloudDlcCatalog = {}, subTitleId = null, initialConceptId = null) {
     if (!commId || commId === "Dashboard" || !auth) return null;
 
@@ -1316,7 +1313,7 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
         }
 
         if ((!metaRes || !metaRes.trophies || metaRes.trophies.length === 0) && previousRecord.trophies && previousRecord.trophies.length > 0) {
-            console.warn(`[WRITE-PROTECTION ACTIVE] Sony returned 0 trophies for ${canonicalCommId}. Preserving existing ${previousRecord.trophies.length} trophies in psn.json.`);
+            console.warn(`[WRITE-PROTECTION ACTIVE] Sony returned 0 trophies for ${canonicalCommId}. Preserving existing ${previousRecord.trophies.length} trophies.`);
             return previousRecord;
         }
 
@@ -1455,9 +1452,6 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
     }
 }
 
-// ----------------------------------------------------------------------------
-// [SECTION 13: DEEP TROPHY PROGRESS WITH PS5 OBJECTIVE RATIOS (x/x)]
-// ----------------------------------------------------------------------------
 async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, platform, globalGames, existingGameProgress = {}) {
     if (!commId || commId === "Dashboard" || !auth) return null;
 
@@ -1573,7 +1567,7 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
             }
         });
 
-        // Backfill rarity on master skeleton
+        let skeletonPatched = false;
         if (Array.isArray(activeSkeleton.trophies)) {
             for (const skelT of activeSkeleton.trophies) {
                 const ov = standaloneProgressMap[skelT.trophyId];
@@ -1583,6 +1577,7 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
                     skelT.trophyRare = ov.trophyRare ?? skelT.trophyRare ?? null;
                     skelT.rarityTier = ov.rarityTier || skelT.rarityTier || null;
                     skelT.difficultyTier = getDifficultyTier(ov.earnedRate);
+                    skeletonPatched = true;
                 }
             }
         }
@@ -1615,9 +1610,6 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
     }
 }
 
-// ----------------------------------------------------------------------------
-// [SECTION 14: SMART ACTIVITY DELTA & PRESENCE EVALUATOR]
-// ----------------------------------------------------------------------------
 async function evaluateUserActivityDelta(agentAuth, targetId, knownKey, knownGamerTag, existingData) {
     if (!existingData) {
         return { hasDelta: true, reason: "INITIAL_CREATION", liveOnline: true, liveGameStatus: null };
@@ -1708,9 +1700,13 @@ async function evaluateUserActivityDelta(agentAuth, targetId, knownKey, knownGam
     return { hasDelta: false, reason: "UNCHANGED", liveOnline, liveGameStatus };
 }
 
-// ----------------------------------------------------------------------------
-// [SECTION 15: FULL USER TELEMETRY INGESTION]
-// ----------------------------------------------------------------------------
+async function applyStatusOnlyUpdate(onlineId, existingData, liveGameStatus) {
+    const stamp = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
+    await syncNodeToFirebase(`gamertags/${onlineId}/gameStatus`, liveGameStatus || "");
+    await syncNodeToFirebase(`gamertags/${onlineId}/gameStatusUpdated`, stamp);
+    return { ...existingData, gameStatus: liveGameStatus || "", gameStatusUpdated: stamp };
+}
+
 async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, isManualRun, globalGames, cloudDlcCatalog = {}) {
     let resolvedTargetId = String(targetId || ACCOUNT_IDS[userKey]);
 
@@ -1769,6 +1765,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                     lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
                 };
                 
+                await writeGamertagDelta(canonicalOnlineId, existingData, closedRecord);
                 return closedRecord;
             }
         }
@@ -2060,7 +2057,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             activeTitleId
         );
 
-        // Ingest Master Game Skeletons into globalGames
         let skeletonBackfillBudget = PULL_CONFIG.BACKFILL_NEW_TITLES_PER_RUN;
         let skeletonIndex = 0;
         for (const g of allRecentGames) {
@@ -2177,7 +2173,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         if (PULL_CONFIG.ARCHIVE_RAW) {
             const archive = { ...rawArchive, profile: profile, presence: rawP, trophySummary: stats, fetchedAt: new Date().toISOString() };
             for (const [key, value] of Object.entries(archive)) {
-                archiveRaw(canonicalOnlineId, key, value);
+                await archiveRaw(canonicalOnlineId, key, value);
             }
         }
 
@@ -2294,7 +2290,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             accessibilityFeatures: globalGames[persistentRootCommId]?.accessibilityFeatures || {},
             npssoValid: true,
             npssoStatus: "ACTIVE",
-            handshakeText: `${canonicalOnlineId.toUpperCase()} HANDSHAKE: LOCAL JSON ACTIVE`,
+            handshakeText: `${canonicalOnlineId.toUpperCase()} HANDSHAKE: FIREBASE LIVE`,
             handshakeState: "LIVE",
             avatar: profile?.avatars?.sort((a, b) => parseInt(b.size) - parseInt(a.size))[0]?.url || profile?.avatars?.[0]?.url || existingData?.avatar || "", 
             allAvatars: profile?.avatars || existingData?.allAvatars || [],
@@ -2343,9 +2339,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
     }
 }
 
-// ----------------------------------------------------------------------------
-// [SECTION 16: SQUAD LEADERBOARDS & SOCIAL OVERLAP]
-// ----------------------------------------------------------------------------
 function buildSquadIntelligence(allGamertagsData) {
     const players = Object.values(allGamertagsData || {});
     if (players.length === 0) return { leaderboard: [], squadTotals: {}, socialOverlap: {} };
@@ -2404,43 +2397,39 @@ function buildSquadIntelligence(allGamertagsData) {
     return { leaderboard, squadTotals, socialOverlap };
 }
 
-// ----------------------------------------------------------------------------
-// [SECTION 17: MASTER EXECUTION RUNNER (100% LOCAL JSON)]
-// ----------------------------------------------------------------------------
 async function executeSyncPass() {
     try {
-        console.log(`[INIT] Starting PSN Engine v${ENGINE_VERSION} -> writing to psn.json at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
+        console.log(`[INIT] Starting Full PSN Engine v${ENGINE_VERSION} at ${new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })} EDT...`);
 
-        loadPersistentTokens();
+        await loadPersistentTokens();
         diagnosticReport.exportAudit = auditPsnApiExports();
 
-        const psnData = getPsnData();
-        const globalGames = psnData.games || {};
-        friendsDirectoryCache = psnData.friendsDirectory || {};
-
-        // ---- CREDENTIALS FROM RTDB (DEFAULT SOURCE): /users/{emailKey} + /user_secrets/{emailKey} ----
-        console.log(`[RTDB CREDENTIALS] Reading users and secrets from ${RTDB_ROOT_URL}...`);
         const siteUsersRaw = await resilientFetch(buildRtdbUrl("/users")).then(r => r.json()).catch(() => ({}));
         const userSecretsRaw = await resilientFetch(buildRtdbUrl("/user_secrets")).then(r => r.json()).catch(() => ({}));
         const cloudDlcCatalog = await resilientFetch(buildRtdbUrl("/woth2_cloud/data/dlcs")).then(r => r.json()).catch(() => ({}));
 
-        if (siteUsersRaw && siteUsersRaw.error) console.warn(`[CREDENTIALS] Could not read RTDB /users: ${siteUsersRaw.error}`);
-        if (userSecretsRaw && userSecretsRaw.error) console.warn(`[CREDENTIALS] Could not read RTDB /user_secrets: ${userSecretsRaw.error}`);
+        const previousFirebaseData = await fetchFromFirebase();
+        
+        let previousDiskData = {};
+        if (fs.existsSync(PSN_JSON_PATH)) {
+            try {
+                previousDiskData = JSON.parse(fs.readFileSync(PSN_JSON_PATH, "utf-8")) || {};
+                console.log(`[LOCAL PSN.JSON] Read existing data from ${PSN_JSON_PATH}.`);
+            } catch (err) {
+                console.warn(`[LOCAL PSN.JSON WARN] Could not parse existing psn.json: ${err.message}`);
+            }
+        }
+
+        const globalGames = { ...(previousDiskData.games || {}), ...(previousFirebaseData.games || {}) };
+        friendsDirectoryCache = previousFirebaseData.friendsDirectory || {};
+
+        if (siteUsersRaw && siteUsersRaw.error) console.warn(`[CREDENTIALS] Could not read /users: ${siteUsersRaw.error}`);
+        if (userSecretsRaw && userSecretsRaw.error) console.warn(`[CREDENTIALS] Could not read /user_secrets: ${userSecretsRaw.error}`);
 
         const credentialList = [];
         if (siteUsersRaw && typeof siteUsersRaw === "object" && !siteUsersRaw.error) {
             for (const [emailKey, u] of Object.entries(siteUsersRaw)) {
                 credentialList.push(readUserPsnCredentials(emailKey, u, userSecretsRaw?.[emailKey]));
-            }
-        }
-
-        // Local users fallback if RTDB is empty or missing specific keys
-        const { users: localUsers, secrets: localSecrets } = loadLocalUsersAndSecrets();
-        if (localUsers && typeof localUsers === "object") {
-            for (const [emailKey, u] of Object.entries(localUsers)) {
-                if (!siteUsersRaw?.[emailKey]) {
-                    credentialList.push(readUserPsnCredentials(emailKey, u, localSecrets?.[emailKey]));
-                }
             }
         }
 
@@ -2450,14 +2439,13 @@ async function executeSyncPass() {
             darkwing: normalizeNpsso(process.env.PSN_NPSSO_DARKWING || ""),
             marc: normalizeNpsso(process.env.PSN_NPSSO_MARC || "")
         };
-
         for (const cred of credentialList) {
             if (!cred.npsso) continue;
             const t = cred.tag.toLowerCase();
             for (const member of CORE_PACK) {
                 if (cred.accountId === member.id || t === member.tag.toLowerCase()) coreNpssos[member.key] = cred.npsso;
             }
-            if (t.includes("werewolf") || cred.emailKey?.includes("raykevin71888")) coreNpssos.wildhorse_spirit = cred.npsso;
+            if (t.includes("werewolf")) coreNpssos.wildhorse_spirit = cred.npsso;
         }
 
         const sessionState = await resolveMasterSession(coreNpssos);
@@ -2467,14 +2455,12 @@ async function executeSyncPass() {
         diagnosticReport.buffer_status = sessionState.bufferStatus;
 
         let finalData = { 
-            gamertags: { ...(psnData.gamertags || {}) }, 
-            usersByGamerTag: { ...(psnData.usersByGamerTag || {}) }, 
+            gamertags: { ...(previousFirebaseData?.gamertags || {}) }, 
+            usersByGamerTag: { ...(previousFirebaseData?.usersByGamerTag || {}) }, 
             games: globalGames, 
             squadLeaderboard: [], 
             squadAnalytics: {}, 
             mutualSquadFollowers: [], 
-            friendsDirectory: friendsDirectoryCache,
-            raw: psnData.raw || {},
             authDiagnostics: diagnosticReport, 
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
             engineVersion: ENGINE_VERSION, 
@@ -2488,7 +2474,7 @@ async function executeSyncPass() {
         if (masterAuth && masterAuth.accessToken) {
             console.log(`[CORE PACK] Ingesting Core 4 squad members using session: ${masterAuth.userKey}...`);
             for (const member of CORE_PACK) {
-                const existingData = findExistingGamertagRecord(psnData.gamertags, member.tag, member.id);
+                const existingData = findExistingGamertagRecord(previousFirebaseData?.gamertags, member.tag, member.id);
                 const memberAuth = (coreAuths[member.key] && coreAuths[member.key].accessToken) ? coreAuths[member.key] : masterAuth;
                 const deltaCheck = await evaluateUserActivityDelta(memberAuth, member.id, member.key, member.tag, existingData);
 
@@ -2501,19 +2487,15 @@ async function executeSyncPass() {
 
                 if (deltaCheck.statusOnly && existingData) {
                     console.log(`[STATUS ONLY] Core member ${member.tag}: ${deltaCheck.reason}.`);
-                    const tagKey = existingData.onlineId || member.tag;
-                    finalData.gamertags[tagKey] = {
-                        ...existingData,
-                        gameStatus: deltaCheck.liveGameStatus || "",
-                        gameStatusUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
-                    };
-                    activeCanonicalGamertags.add(tagKey);
+                    const slim = await applyStatusOnlyUpdate(existingData.onlineId || member.tag, existingData, deltaCheck.liveGameStatus);
+                    finalData.gamertags[slim.onlineId || member.tag] = slim;
+                    activeCanonicalGamertags.add(slim.onlineId || member.tag);
                     anyProfileUpdated = true;
                     continue;
                 }
 
                 console.log(`[SYNC TRIGGERED] Processing Core member ${member.tag} (${deltaCheck.reason})...`);
-                const data = await getFullUserData(memberAuth, member.tag, member.key, member.id, existingData, true, globalGames, {});
+                const data = await getFullUserData(memberAuth, member.tag, member.key, member.id, existingData, true, globalGames, cloudDlcCatalog);
 
                 if (data && data.onlineId) {
                     activeCanonicalGamertags.add(data.onlineId);
@@ -2523,40 +2505,47 @@ async function executeSyncPass() {
 
                     finalData.gamertags[data.onlineId] = data;
                     finalData.usersByGamerTag[data.onlineId] = String(data.accountId);
-                    console.log(`[LOCAL WRITE] Updated player record for: ${data.onlineId}`);
+
+                    await writeGamertagDelta(data.onlineId, existingData, data);
                 }
             }
         } else {
-            console.warn("[CORE PACK HALT] None of the squad tokens is active. Preserving existing squad records in psn.json.");
+            console.warn("[CORE PACK HALT] None of the four squad cookies is active. Preserving existing squad records.");
             CORE_PACK.forEach(m => activeCanonicalGamertags.add(m.tag));
         }
 
-        // Process outside users
         const knownTagByAccountId = {};
-        Object.entries(psnData.usersByGamerTag || {}).forEach(([knownTag, id]) => {
+        Object.entries(previousFirebaseData?.usersByGamerTag || {}).forEach(([knownTag, id]) => {
             knownTagByAccountId[String(id)] = knownTag;
         });
         const processedAccountIds = new Set(CORE_PACK.map(m => m.id));
 
         for (const cred of credentialList) {
             const { emailKey, accountId, npsso: rawNpsso } = cred;
+            const userRecord = siteUsersRaw?.[emailKey];
             let tag = cred.tag || (accountId && knownTagByAccountId[accountId]) || "";
 
             const isCore = CORE_PACK.some(m => (tag && m.tag.toLowerCase() === tag.toLowerCase()) || (accountId && m.id === accountId));
             if (isCore) continue;
+
             if (!accountId && !rawNpsso) continue;
 
             if (!rawNpsso) {
-                writeLocalUserPsnStatus(emailKey, { psn_sync_status: "MISSING_NPSSO" });
+                console.log(`[OUTSIDE USER - INCOMPLETE] ${tag || emailKey}: has a PSN account ID but no NPSSO cookie yet.`);
+                await writeUserPsnStatus(emailKey, { psn_sync_status: "MISSING_NPSSO" }, userRecord);
                 continue;
             }
             if (!accountId && !tag) {
-                writeLocalUserPsnStatus(emailKey, { psn_sync_status: "MISSING_ACCOUNT_ID" });
+                console.log(`[OUTSIDE USER - INCOMPLETE] ${emailKey}: has an NPSSO but no PSN account ID yet.`);
+                await writeUserPsnStatus(emailKey, { psn_sync_status: "MISSING_ACCOUNT_ID" }, userRecord);
                 continue;
             }
 
             if (accountId) {
-                if (processedAccountIds.has(accountId)) continue;
+                if (processedAccountIds.has(accountId)) {
+                    console.log(`[OUTSIDE USER - DUPLICATE] ${tag || emailKey}: account ${accountId} already processed this run.`);
+                    continue;
+                }
                 processedAccountIds.add(accountId);
             }
 
@@ -2565,12 +2554,12 @@ async function executeSyncPass() {
 
             if (!userAuth || !userAuth.accessToken) {
                 console.warn(`[OUTSIDE AUTH EXPIRED] Cookie invalid for ${tag || emailKey}. Keeping last known record.`);
-                if (tag && psnData.gamertags?.[tag]) {
+                if (tag && previousFirebaseData?.gamertags?.[tag]) {
                     activeCanonicalGamertags.add(tag);
-                    finalData.gamertags[tag].npssoValid = false;
-                    finalData.gamertags[tag].npssoStatus = "EXPIRED";
+                    await syncNodeToFirebase(`gamertags/${tag}/npssoValid`, false);
+                    await syncNodeToFirebase(`gamertags/${tag}/npssoStatus`, "EXPIRED");
                 }
-                writeLocalUserPsnStatus(emailKey, { psn_npsso_valid: false, psn_sync_status: "EXPIRED_NPSSO" });
+                await writeUserPsnStatus(emailKey, { psn_npsso_valid: false, psn_sync_status: "EXPIRED_NPSSO" }, userRecord);
                 continue;
             }
 
@@ -2580,33 +2569,41 @@ async function executeSyncPass() {
                 if (tag) console.log(`[ONBOARDING] Resolved account ${accountId} -> ${tag}.`);
             }
 
-            const existingData = findExistingGamertagRecord(psnData.gamertags, tag, accountId);
+            const existingData = findExistingGamertagRecord(previousFirebaseData?.gamertags, tag, accountId);
             const targetId = accountId || "me";
             const deltaCheck = await evaluateUserActivityDelta(userAuth, targetId, emailKey, tag, existingData);
 
+            const markSynced = async (onlineId, extra = {}) => {
+                await writeUserPsnStatus(emailKey, {
+                    psn_npsso_valid: true,
+                    psn_online_id: onlineId,
+                    psn_sync_status: "SYNCED",
+                    ...extra
+                }, userRecord);
+            };
+
             if (!deltaCheck.hasDelta && existingData) {
+                console.log(`[SKIP - NO DELTA] Outside user ${tag || emailKey}: ${deltaCheck.reason}.`);
                 if (existingData.onlineId) {
                     activeCanonicalGamertags.add(existingData.onlineId);
-                    writeLocalUserPsnStatus(emailKey, { psn_npsso_valid: true, psn_online_id: existingData.onlineId, psn_sync_status: "SYNCED" });
+                    await markSynced(existingData.onlineId);
                 }
                 continue;
             }
 
             if (deltaCheck.statusOnly && existingData) {
+                console.log(`[STATUS ONLY] Outside user ${tag || emailKey}: ${deltaCheck.reason}.`);
                 const slimId = existingData.onlineId || tag;
-                finalData.gamertags[slimId] = {
-                    ...existingData,
-                    gameStatus: deltaCheck.liveGameStatus || "",
-                    gameStatusUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
-                };
+                const slim = await applyStatusOnlyUpdate(slimId, existingData, deltaCheck.liveGameStatus);
+                finalData.gamertags[slimId] = slim;
                 activeCanonicalGamertags.add(slimId);
                 anyProfileUpdated = true;
-                writeLocalUserPsnStatus(emailKey, { psn_npsso_valid: true, psn_online_id: slimId, psn_sync_status: "SYNCED" });
+                await markSynced(slimId);
                 continue;
             }
 
             console.log(`[OUTSIDE SYNC] Processing ${tag || emailKey} (${deltaCheck.reason})...`);
-            const data = await getFullUserData(userAuth, tag, emailKey, targetId, existingData, true, globalGames, {});
+            const data = await getFullUserData(userAuth, tag, emailKey, targetId, existingData, true, globalGames, cloudDlcCatalog);
 
             if (data && data.onlineId) {
                 activeCanonicalGamertags.add(data.onlineId);
@@ -2617,86 +2614,18 @@ async function executeSyncPass() {
                 finalData.gamertags[data.onlineId] = data;
                 finalData.usersByGamerTag[data.onlineId] = String(data.accountId);
 
-                writeLocalUserPsnStatus(emailKey, {
-                    psn_npsso_valid: true,
-                    psn_online_id: data.onlineId,
-                    psn_sync_status: "SYNCED",
-                    psn_last_synced: data.lastUpdated
-                });
+                await writeGamertagDelta(data.onlineId, existingData, data);
+                await markSynced(data.onlineId, { psn_last_synced: data.lastUpdated });
             }
         }
 
-        // Build squad intel and save everything to psn.json
-        const squadIntel = buildSquadIntelligence(finalData.gamertags);
-        finalData.squadLeaderboard = squadIntel.leaderboard;
-        finalData.leaderboard = squadIntel.leaderboard;
-        finalData.squadAnalytics = {
-            totals: squadIntel.squadTotals,
-            socialOverlap: squadIntel.socialOverlap,
-            calculatedAt: new Date().toISOString()
-        };
-
-        if (friendsDirectoryDirty) {
-            finalData.friendsDirectory = friendsDirectoryCache;
+        const existingRemoteKeys = Object.keys(previousFirebaseData?.gamertags || {});
+        for (const oldKey of existingRemoteKeys) {
+            if (!activeCanonicalGamertags.has(oldKey)) {
+                console.log(`[LIFECYCLE PURGE] Purging stale entry '${oldKey}' from Firebase...`);
+                await deleteNodeFromFirebase(`gamertags/${oldKey}`);
+                anyProfileUpdated = true;
+            }
         }
 
-        diagnosticReport.apiStats = {
-            totalCalls: apiStats.calls,
-            failedCalls: apiStats.failures,
-            errorsByEndpoint: apiStats.errorsByLabel,
-            missingExports: apiStats.missingExports
-        };
-        diagnosticReport.lastCheck = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
-        finalData.authDiagnostics = diagnosticReport;
-
-        // Persist final data to psn.json!
-        activePsnData = finalData;
-        savePsnJson(finalData);
-
-        console.log(`[SUCCESS] PSN Engine v${ENGINE_VERSION} completed successfully.`);
-        console.log(`[SUCCESS] Target file: ${PSN_OUTPUT_FILE}`);
-        console.log(`[SUCCESS] Total players tracked: ${Object.keys(finalData.gamertags).length}, Total games ingested: ${Object.keys(finalData.games).length}.`);
-        return finalData;
-    } catch (criticalError) {
-        console.error(`[CRITICAL CATCH] Synchronization cycle failed: ${criticalError.message}`);
-        throw criticalError;
-    }
-}
-
-// Module exports for server / programmatic use
-export {
-    executeSyncPass,
-    loadPsnDataFromDisk,
-    savePsnJson,
-    getPsnData,
-    PSN_OUTPUT_FILE,
-    CORE_PACK,
-    ACCOUNT_IDS,
-    SQUAD_GAMERTAGS
-};
-
-export default {
-    executeSyncPass,
-    loadPsnDataFromDisk,
-    savePsnJson,
-    getPsnData,
-    PSN_OUTPUT_FILE,
-    CORE_PACK,
-    ACCOUNT_IDS,
-    SQUAD_GAMERTAGS
-};
-
-// Runner invocation if executed directly via CLI
-const isDirectCli = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(__filename);
-
-if (isDirectCli) {
-    (async () => {
-        try {
-            await executeSyncPass();
-            process.exit(0);
-        } catch (e) {
-            console.error("Execution failed:", e);
-            process.exit(1);
-        }
-    })();
-}
+        const squadIntel
