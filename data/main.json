@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "environment": "production",
+  "registry": {
+    "menu": {
+      "id": "menu_config",
+      "path": "./data/menu.json",
+      "description": "Navigation links, groups, and sorting weights"
+    },
+    "firebase_config": {
+      "id": "firebase_rtdb",
+      "path": "./data/firebase_rtdb.json",
+      "description": "Firebase endpoints and credentials"
+    },
+    "games_catalog": {
+      "id": "games_index",
+      "path": "./game/data/games/index.json",
+      "description": "Master game roster and individual companion ledger paths"
+    },
+    "psn_archive": {
+      "id": "psn_static",
+      "path": "./Playstation/psn.json",
+      "description": "Static deep skeletons, DLC rosters, and historical leaderboards"
+    }
+  }
+}
