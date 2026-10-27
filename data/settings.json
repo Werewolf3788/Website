@@ -1,0 +1,43 @@
+{
+  "meta": {
+    "version": "1.0.4",
+    "affiliateDisclaimer": "As an Amazon Associate and affiliate partner with selected movie and music distributors, we earn from qualifying purchases at no additional cost to you."
+  },
+  "platforms": {
+    "movies": [
+      { "id": "movies_anywhere", "name": "Movies Anywhere" },
+      { "id": "amazon_prime", "name": "Amazon Prime Video" },
+      { "id": "apple_tv", "name": "Apple TV / iTunes" },
+      { "id": "vudu", "name": "Fandango at Home (Vudu)" }
+    ],
+    "music": [
+      { "id": "ditto", "name": "Ditto SmartLink" },
+      { "id": "spotify", "name": "Spotify" },
+      { "id": "apple_music", "name": "Apple Music" },
+      { "id": "youtube_music", "name": "YouTube Music" }
+    ],
+    "games": [
+      { "id": "steam", "name": "Steam" },
+      { "id": "playstation", "name": "PlayStation Network" },
+      { "id": "xbox", "name": "Xbox Live" },
+      { "id": "nintendo", "name": "Nintendo Switch" }
+    ]
+  },
+  "sections": [
+    {
+      "title": "Navigation & Entertainment",
+      "links": [
+        { "label": "Game Tracker", "url": "games.html", "external": false },
+        { "label": "Music Catalog (Ditto)", "url": "music.html", "external": false },
+        { "label": "Movies & Purchase Links", "url": "movies.html", "external": false }
+      ]
+    },
+    {
+      "title": "Community & Support",
+      "links": [
+        { "label": "Official GitHub Repository", "url": "https://github.com/YOUR_USERNAME/stat-watcher", "external": true, "badge": "Source" },
+        { "label": "Report an Issue / Request Content", "url": "https://github.com/YOUR_USERNAME/stat-watcher/issues", "external": true }
+      ]
+    }
+  ]
+}
