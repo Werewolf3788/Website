@@ -2,32 +2,67 @@
 // * Project: Far Cry 5 Hope County Resistance Companion & Field Ledger
 // * File: fc5.js
 // * Location: /game/fc5.js
-// * Build Version: v8.5.0-FC5-CLOUD-AUTHORITATIVE
-// * Deployment Timestamp: 2026-10-26 21:23:00 EDT (America/New_York)
+// * Build Version: v8.7.0-FC5-CLOUD-AUTHORITATIVE
+// * Deployment Timestamp: 2026-10-26 21:31:00 EDT (America/New_York)
 // ============================================================================
 
-// Section 1: Endpoints & Firebase Instances
-const RTDB_ROOT = "https://entertainment-71888-default-rtdb.firebaseio.com";
-const PSN_FC5_COMM_ID = "NPWR12514_00";
+// Section 1: Dual-App Target Bridge Configuration
+// Auth Host: playstation-be936 (Prevents popup auth domain errors)
+const hostConfig = {
+    apiKey: "AIzaSyB3V7SUlOOfZyv3xbMWt_Ok5CuLVNAc3wA",
+    authDomain: "playstation-be936.firebaseapp.com",
+    databaseURL: "https://playstation-be936-default-rtdb.firebaseio.com",
+    projectId: "playstation-be936",
+    storageBucket: "playstation-be936.firebasestorage.app",
+    messagingSenderId: "179234475627",
+    appId: "1:179234475627:web:bb9144ffd347f90c17ab2e",
+    measurementId: "G-VRMHTR4C4Y"
+};
 
-// Ensure auth persistence across sessions
-if (window.firebase && firebase.auth) {
-    try {
-        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-    } catch (e) {
-        console.warn("[Auth Persistence]:", e);
-    }
+// Target Data Engine: entertainment-71888 (Where your Firestore & RTDB live)
+const dataConfig = {
+    apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
+    authDomain: "entertainment-71888.firebaseapp.com",
+    databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
+    projectId: "entertainment-71888",
+    storageBucket: "entertainment-71888.firebasestorage.app",
+    messagingSenderId: "660524340277",
+    appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
+    measurementId: "G-JDNSLD3GFE"
+};
+
+// Initialize Primary Auth App
+let authApp;
+if (!firebase.apps.some(a => a.name === '[DEFAULT]')) {
+    authApp = firebase.initializeApp(hostConfig);
+} else {
+    authApp = firebase.app();
 }
 
-// Attach to the live Firebase instance loaded via /__/firebase/init.js or root
-const rtdb = (window.firebase && firebase.database) ? firebase.app().database(RTDB_ROOT) : null;
-const firestore = (window.firebase && firebase.firestore) ? firebase.firestore() : null;
-const auth = (window.firebase && firebase.auth) ? firebase.auth() : null;
+// Initialize Target Data App for entertainment-71888
+let dataApp;
+if (!firebase.apps.some(a => a.name === 'dataApp')) {
+    dataApp = firebase.initializeApp(dataConfig, 'dataApp');
+} else {
+    dataApp = firebase.app('dataApp');
+}
+
+const auth = firebase.auth(authApp);
+const rtdb = firebase.database(dataApp);
+const firestore = firebase.firestore(dataApp);
+
+try {
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+} catch (e) {
+    console.warn("[Auth Persistence]:", e);
+}
+
+const PSN_FC5_COMM_ID = "NPWR12514_00";
 
 // Section 2: Global State Engine
 window.appState = {
     activeUser: 'Werewolf',
-    activeEmail: 'raykevin71888@gmail.com', // Authoritative Default
+    activeEmail: 'raykevin71888@gmail.com', // Admin Account
     platform: 'ps',
     currentUser: null,
     gameData: null,
@@ -39,7 +74,7 @@ window.appState = {
     },
 
     getEmailKey: function(email) {
-        const target = email || this.activeEmail || 'raykevin71888@gmail.com';
+        const target = email || (this.currentUser ? this.currentUser.email : this.activeEmail);
         return target.replace(/@/g, '_at_').replace(/\./g, '_');
     },
 
@@ -98,7 +133,7 @@ window.appState = {
             });
         }
 
-        // Tally Walkthrough Missions
+        // Tally Story Missions
         if (Array.isArray(this.gameData.walkthrough_missions)) {
             this.gameData.walkthrough_missions.forEach(m => {
                 if (this.state.checks[m.id]) {
@@ -123,7 +158,7 @@ window.appState = {
         if (el) el.innerText = val || 0;
     },
 
-    // Save Progress (Firestore Primary + LocalStorage Mirror)
+    // Save Progress (Directly to entertainment-71888 Firestore)
     saveProgress: function() {
         this.recalculateMetrics();
         const key = `fc5_progress_${this.getEmailKey()}_${this.platform}`;
@@ -134,8 +169,9 @@ window.appState = {
             console.warn("[Storage] Local write failure:", e);
         }
 
-        if (this.currentUser && firestore) {
-            const emailKey = this.getEmailKey(this.currentUser.email);
+        const emailKey = this.getEmailKey();
+
+        if (firestore) {
             const userDocRef = firestore.collection("users").doc(emailKey).collection("games").doc("FarCry5");
 
             userDocRef.set({
@@ -146,10 +182,10 @@ window.appState = {
                     }
                 }
             }, { merge: true }).then(() => {
-                this.updateStatus("Telemetry synced with Cloud Firestore.");
+                this.updateStatus(`[entertainment-71888] Firestore Updated: ${new Date().toLocaleTimeString()}`);
             }).catch(err => {
-                console.warn("[Firestore Save Error]:", err);
-                this.updateStatus("Firestore write failed - cached locally.");
+                console.error("[Firestore Save Error]:", err);
+                this.updateStatus(`Firestore Sync Failed: ${err.message}`);
             });
         } else {
             this.updateStatus("Saved locally (Offline Mode).");
@@ -159,10 +195,10 @@ window.appState = {
     // Load Progress
     loadProgress: function() {
         const key = `fc5_progress_${this.getEmailKey()}_${this.platform}`;
+        const emailKey = this.getEmailKey();
 
-        if (this.currentUser && firestore) {
-            const emailKey = this.getEmailKey(this.currentUser.email);
-            this.updateStatus("Fetching Cloud Firestore Telemetry...");
+        if (firestore) {
+            this.updateStatus("Querying entertainment-71888 Cloud Firestore...");
 
             firestore.collection("users").doc(emailKey).collection("games").doc("FarCry5").get()
                 .then(doc => {
@@ -171,7 +207,7 @@ window.appState = {
                         if (data?.platforms?.[this.platform]?.state) {
                             this.state = data.platforms[this.platform].state;
                             this.applyStateToUI();
-                            this.updateStatus("Telemetry synchronized from Cloud Firestore.");
+                            this.updateStatus("Synced from entertainment-71888 Cloud Firestore.");
                             return;
                         }
                     }
@@ -194,7 +230,7 @@ window.appState = {
                 if (parsed && typeof parsed === 'object') {
                     this.state = Object.assign({ ranks: {}, checks: {} }, parsed);
                     this.applyStateToUI();
-                    this.updateStatus("Operating in Offline / LocalStorage mode.");
+                    this.updateStatus("Operating in LocalStorage mode.");
                     return;
                 }
             }
@@ -205,7 +241,7 @@ window.appState = {
             checks: {}
         };
         this.applyStateToUI();
-        this.updateStatus("Profile active.");
+        this.updateStatus("Profile ready.");
     },
 
     applyStateToUI: function() {
@@ -253,7 +289,7 @@ window.appState = {
     // Friend Code & Friends Progress Integration
     fetchUserFriendCode: async function() {
         if (!rtdb) return;
-        const emailKey = this.getEmailKey(this.currentUser?.email || this.activeEmail);
+        const emailKey = this.getEmailKey();
         try {
             const snap = await rtdb.ref(`/users/${emailKey}/friend_code`).once('value');
             this.myFriendCode = snap.val() || 'TLWWTSNU';
@@ -268,12 +304,7 @@ window.appState = {
         const rosterContainer = document.getElementById('friendsRosterContainer');
         if (!rosterContainer) return;
 
-        if (!this.currentUser) {
-            rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">Log in to view authorized friend progress...</div>';
-            return;
-        }
-
-        const emailKey = this.getEmailKey(this.currentUser.email);
+        const emailKey = this.getEmailKey();
         try {
             const friendsSnap = await rtdb.ref(`/users/${emailKey}/friends`).once('value');
             const friendsData = friendsSnap.val();
@@ -335,7 +366,7 @@ window.adjRank = function(rankKey, delta) {
     appState.saveProgress();
 };
 
-// Section 3: Dynamic Top Navigation Bar (Sourced from /utm_links)
+// Section 3: Dynamic Top Navigation Bar (/utm_links)
 async function buildUtmNavigation() {
     const navContainer = document.getElementById('dynamicNavLinks');
     if (!navContainer || !rtdb) return;
@@ -623,7 +654,7 @@ function renderFarCry5Companion(data) {
         </section>`;
     }
 
-    // 5E. Trophies & Achievements
+    // 5E. Trophies & Achievements (Mapped to PSN Official Skeleton)
     const trophiesList = (appState.psnSkeleton && appState.psnSkeleton.trophies) ? Object.values(appState.psnSkeleton.trophies) : (data.trophies_and_achievements || []);
 
     if (Array.isArray(trophiesList) && trophiesList.length > 0) {
