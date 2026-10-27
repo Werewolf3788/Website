@@ -2,11 +2,12 @@
 // * Project: Far Cry 5 Hope County Resistance Companion & Field Ledger
 // * File: fc5.js
 // * Location: /game/fc5.js
-// * Build Version: v9.6.0-FC5-AUTH-STORAGE-PARTITIONED
-// * Deployment Timestamp: 2026-10-27 00:26:00 EDT (America/New_York)
+// * Build Version: v10.0.0-COTW-STRUCTURAL-ALIGNMENT
+// * Deployment Timestamp: 2026-10-27 00:35:00 EDT (America/New_York)
 // ============================================================================
 
 // Section 1: Unified Firebase Configuration (entertainment-71888)
+// Lines 9-33: Production credentials and authoritative service bindings
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -18,7 +19,6 @@ const firebaseConfig = {
     measurementId: "G-JDNSLD3GFE"
 };
 
-// Initialize authoritative Firebase instance
 const app = (!firebase.apps || !firebase.apps.length) ? firebase.initializeApp(firebaseConfig) : firebase.app();
 const auth = firebase.auth(app);
 const rtdb = firebase.database(app);
@@ -33,7 +33,8 @@ try {
 const CURRENT_GAME_ID = "FarCry5";
 const PSN_FC5_COMM_ID = "NPWR12514_00";
 
-// Section 2: Global State Engine
+// Section 2: Global State Engine & COTW Hydration Core
+// Lines 36-295: Structured entity trees matching COTW directly
 window.appState = {
     activeUser: 'Guest',
     activeEmail: null,
@@ -44,14 +45,18 @@ window.appState = {
     myFriendCode: null,
     authInitialized: false,
     
-    // COTW-aligned schema
+    // Exact COTW Document Root Schema
     activeMission: "Hope County Resistance",
-    ranks: { rp: 0, outposts: 0, cultProperty: 0, stashes: 0, roster: 0, perks: 0, collectibles: 0 },
+    gameId: CURRENT_GAME_ID,
+    trophies_earned: 0,
+    trophies_total: 51,
+    trophies_percent: 0,
     collectibles: {},
     stashes: {},
     roster: {},
     missions: {},
     trophies: {},
+    ranks: { rp: 0, outposts: 0, cultProperty: 0, stashes: 0, roster: 0, perks: 0, collectibles: 0 },
 
     getEmailKey: function() {
         if (!this.currentUser || !this.currentUser.email) return null;
@@ -79,84 +84,213 @@ window.appState = {
         }
     },
 
-    recalculateMetrics: function() {
+    // Lines 86-178: Hydrate game JSON into COTW Map structures
+    hydrateDefaultSchema: function() {
         if (!this.gameData) return;
 
-        let stashesCount = 0;
-        let rosterCount = 0;
-        let perksCount = 0;
-        let collectiblesCount = 0;
-        let calculatedRP = 0;
-
-        // Tally Prepper Stashes (+400 RP each)
-        if (this.gameData.prepper_stashes) {
-            ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
-                const list = this.gameData.prepper_stashes[reg] || [];
-                list.forEach(s => {
-                    if (this.stashes[s.id] && this.stashes[s.id].collected) {
-                        stashesCount++;
-                        calculatedRP += 400;
-                    }
-                });
-            });
-        }
-
-        // Tally Roster & Fangs (+600 RP each)
-        if (Array.isArray(this.gameData.guns_and_fangs_for_hire)) {
-            this.gameData.guns_and_fangs_for_hire.forEach(h => {
-                if (this.roster[h.id] && this.roster[h.id].unlocked) {
-                    rosterCount++;
-                    calculatedRP += 600;
-                }
-            });
-        }
-
-        // Tally Perk Magazines
-        if (this.gameData.survivalist_magazines) {
-            ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
-                const list = this.gameData.survivalist_magazines[reg] || [];
-                list.forEach((m, idx) => {
-                    const mId = `mag_${reg}_${idx}`;
-                    if (this.collectibles[mId] && this.collectibles[mId].collected) {
-                        perksCount++;
-                    }
-                });
-            });
-        }
-
-        // Tally Walkthrough Missions (+600 RP each)
-        if (Array.isArray(this.gameData.walkthrough_missions)) {
-            this.gameData.walkthrough_missions.forEach(m => {
-                if (this.missions[m.id] && this.missions[m.id].completed) {
-                    calculatedRP += 600;
-                }
-            });
-        }
-
-        // Tally Quest Collectibles
+        // 1. Collectibles (Group maps matching COTW: collected, count, psnSynced, total)
         if (this.gameData.collectibles) {
             for (const cKey in this.gameData.collectibles) {
                 const group = this.gameData.collectibles[cKey];
+                const totalItems = (group && Array.isArray(group.items)) ? group.items.length : 0;
+                
+                if (!this.collectibles[cKey]) {
+                    this.collectibles[cKey] = {
+                        collected: false,
+                        count: 0,
+                        psnSynced: false,
+                        total: totalItems,
+                        quest_name: group.quest_name || cKey,
+                        items: {}
+                    };
+                }
+
                 if (group && Array.isArray(group.items)) {
                     group.items.forEach(cItem => {
-                        if (this.collectibles[cItem.id] && this.collectibles[cItem.id].collected) {
-                            collectiblesCount++;
+                        if (!this.collectibles[cKey].items[cItem.id]) {
+                            this.collectibles[cKey].items[cItem.id] = {
+                                collected: false,
+                                name: cItem.name || '',
+                                region: cItem.region || group.region || 'Hope County',
+                                location: cItem.location || '',
+                                psnSynced: false
+                            };
                         }
                     });
                 }
             }
         }
 
+        // Perk Magazines mapped under collectibles tree
+        if (this.gameData.survivalist_magazines) {
+            if (!this.collectibles.survivalist_magazines) {
+                this.collectibles.survivalist_magazines = {
+                    collected: false,
+                    count: 0,
+                    psnSynced: false,
+                    total: 0,
+                    items: {}
+                };
+            }
+            let magTotal = 0;
+            ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
+                const list = this.gameData.survivalist_magazines[reg] || [];
+                magTotal += list.length;
+                list.forEach((m, idx) => {
+                    const mId = `mag_${reg}_${idx}`;
+                    if (!this.collectibles.survivalist_magazines.items[mId]) {
+                        this.collectibles.survivalist_magazines.items[mId] = {
+                            collected: false,
+                            name: m.name || `Perk Magazine ${idx + 1}`,
+                            region: reg,
+                            psnSynced: false
+                        };
+                    }
+                });
+            });
+            this.collectibles.survivalist_magazines.total = magTotal;
+        }
+
+        // 2. Prepper Stashes Map
+        if (this.gameData.prepper_stashes) {
+            ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
+                const list = this.gameData.prepper_stashes[reg] || [];
+                list.forEach(s => {
+                    if (!this.stashes[s.id]) {
+                        this.stashes[s.id] = {
+                            collected: false,
+                            name: s.name || '',
+                            region: reg,
+                            required_gear: s.required_gear || 'None',
+                            location: s.location || '',
+                            psnSynced: false
+                        };
+                    }
+                });
+            });
+        }
+
+        // 3. Roster Map (Guns & Fangs for Hire)
+        if (Array.isArray(this.gameData.guns_and_fangs_for_hire)) {
+            this.gameData.guns_and_fangs_for_hire.forEach(h => {
+                if (!this.roster[h.id]) {
+                    this.roster[h.id] = {
+                        unlocked: false,
+                        name: h.name || '',
+                        type: h.type || 'Specialist',
+                        unlock_mission: h.unlock_mission || '',
+                        psnSynced: false
+                    };
+                }
+            });
+        }
+
+        // 4. Walkthrough Missions Map
+        if (Array.isArray(this.gameData.walkthrough_missions)) {
+            this.gameData.walkthrough_missions.forEach(m => {
+                if (!this.missions[m.id]) {
+                    this.missions[m.id] = {
+                        completed: false,
+                        mission_name: m.mission_name || '',
+                        region: m.region || 'Hope County',
+                        psnSynced: false
+                    };
+                }
+            });
+        }
+
+        // 5. Official Trophies Map
+        const trophySource = (this.psnSkeleton && this.psnSkeleton.trophies) 
+            ? Object.values(this.psnSkeleton.trophies) 
+            : (this.gameData?.trophies_and_achievements || []);
+
+        if (Array.isArray(trophySource)) {
+            trophySource.forEach((t, idx) => {
+                const tId = t.trophyId !== undefined ? t.trophyId : idx;
+                const cardKey = `trophy_fc5_${tId}`;
+                if (!this.trophies[cardKey]) {
+                    this.trophies[cardKey] = {
+                        earned: false,
+                        name: t.name || t.trophyName || 'Trophy',
+                        rank: (t.type || t.rank || 'Bronze').toUpperCase(),
+                        psnSynced: false
+                    };
+                }
+            });
+        }
+
+        this.recalculateMetrics();
+    },
+
+    // Lines 180-230: Metric Tallies
+    recalculateMetrics: function() {
+        let stashesCount = 0;
+        let rosterCount = 0;
+        let perksCount = 0;
+        let totalCollectiblesCount = 0;
+        let calculatedRP = 0;
+
+        // Tally Stashes
+        Object.values(this.stashes).forEach(s => {
+            if (s && s.collected) {
+                stashesCount++;
+                calculatedRP += 400;
+            }
+        });
+
+        // Tally Roster
+        Object.values(this.roster).forEach(h => {
+            if (h && h.unlocked) {
+                rosterCount++;
+                calculatedRP += 600;
+            }
+        });
+
+        // Tally Missions
+        Object.values(this.missions).forEach(m => {
+            if (m && m.completed) {
+                calculatedRP += 600;
+            }
+        });
+
+        // Tally Collectibles & Perk Magazines
+        if (this.collectibles) {
+            for (const cKey in this.collectibles) {
+                const group = this.collectibles[cKey];
+                if (group && group.items) {
+                    let groupCount = 0;
+                    Object.values(group.items).forEach(item => {
+                        if (item && item.collected) {
+                            groupCount++;
+                            totalCollectiblesCount++;
+                        }
+                    });
+                    group.count = groupCount;
+                    group.collected = (group.total > 0 && groupCount >= group.total);
+                }
+            }
+            if (this.collectibles.survivalist_magazines) {
+                perksCount = this.collectibles.survivalist_magazines.count || 0;
+            }
+        }
+
+        // Tally Trophies
+        const earnedTrophies = Object.values(this.trophies).filter(t => t && t.earned).length;
+        const totalTrophies = Object.keys(this.trophies).length || 51;
+        this.trophies_earned = earnedTrophies;
+        this.trophies_total = totalTrophies;
+        this.trophies_percent = totalTrophies > 0 ? Math.round((earnedTrophies / totalTrophies) * 100) : 0;
+
         this.ranks.stashes = stashesCount;
         this.ranks.roster = rosterCount;
         this.ranks.perks = perksCount;
-        this.ranks.collectibles = collectiblesCount;
+        this.ranks.collectibles = totalCollectiblesCount;
         this.ranks.rp = calculatedRP;
 
         this.updateRankDisplay('stashes', stashesCount);
         this.updateRankDisplay('roster', rosterCount);
         this.updateRankDisplay('perks', perksCount);
-        this.updateRankDisplay('collectibles', collectiblesCount);
+        this.updateRankDisplay('collectibles', totalCollectiblesCount);
         this.updateRankDisplay('rp', calculatedRP);
     },
 
@@ -165,44 +299,16 @@ window.appState = {
         if (el) el.innerText = val || 0;
     },
 
-    // Save Progress: Strictly partitioned between Cloud and Guest LocalStorage
-    saveProgress: function() {
+    // Lines 232-295: Build COTW Payload
+    buildPayload: function() {
         this.recalculateMetrics();
-        const emailKey = this.getEmailKey();
-
-        const earnedTrophiesCount = Object.values(this.trophies).filter(t => t && t.earned).length;
-        const totalTrophiesCount = (this.psnSkeleton && this.psnSkeleton.trophies) 
-            ? Object.keys(this.psnSkeleton.trophies).length 
-            : (this.gameData?.trophies_and_achievements?.length || 51);
-        const percentTrophies = totalTrophiesCount > 0 ? Math.round((earnedTrophiesCount / totalTrophiesCount) * 100) : 0;
-
-        // 1. GUEST MODE (Not signed in): Save exclusively to guest local storage
-        if (!emailKey) {
-            const guestKey = `fc5_guest_progress_${this.platform}`;
-            try {
-                localStorage.setItem(guestKey, JSON.stringify({
-                    ranks: this.ranks,
-                    collectibles: this.collectibles,
-                    stashes: this.stashes,
-                    roster: this.roster,
-                    missions: this.missions,
-                    trophies: this.trophies
-                }));
-                this.updateStatus(`[Guest Mode] Progress retained on this device [${this.platform.toUpperCase()}].`);
-            } catch (e) {
-                console.warn("[Guest Storage Write]:", e);
-            }
-            return;
-        }
-
-        // 2. AUTHENTICATED MODE (Signed in): Save directly to Cloud Firestore
-        const payload = {
+        return {
+            activeMission: this.activeMission,
             gameId: CURRENT_GAME_ID,
             platform: this.platform,
-            activeMission: this.activeMission,
-            trophies_earned: earnedTrophiesCount,
-            trophies_total: totalTrophiesCount,
-            trophies_percent: percentTrophies,
+            trophies_earned: this.trophies_earned,
+            trophies_total: this.trophies_total,
+            trophies_percent: this.trophies_percent,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             ranks: this.ranks,
             collectibles: this.collectibles,
@@ -211,284 +317,234 @@ window.appState = {
             missions: this.missions,
             trophies: this.trophies
         };
-
-        if (firestore) {
-            const targetDocRef = firestore
-                .collection("users")
-                .doc(emailKey)
-                .collection("platform")
-                .doc(this.platform)
-                .collection("progress")
-                .doc(CURRENT_GAME_ID);
-
-            targetDocRef.set(payload, { merge: true }).then(() => {
-                this.updateStatus(`[Cloud Saved] Synchronized to users/${emailKey}/platform/${this.platform}/progress/${CURRENT_GAME_ID}`);
-            }).catch(err => {
-                console.error("[Firestore Save Error]:", err);
-                this.updateStatus(`Cloud Sync Failed: ${err.message}`);
-            });
-        }
     },
 
-    // Load Progress: Persistent across refreshes
-    loadProgress: function() {
-        const emailKey = this.getEmailKey();
-
-        // 1. GUEST MODE: Read from persistent guest local storage
-        if (!emailKey) {
-            const guestKey = `fc5_guest_progress_${this.platform}`;
-            try {
-                const raw = localStorage.getItem(guestKey);
-                if (raw) {
-                    const parsed = JSON.parse(raw);
-                    this.applyStatePayload(parsed);
-                    this.updateStatus(`[Guest Mode] Restored progress from this device [${this.platform.toUpperCase()}].`);
-                    return;
-                }
-            } catch (e) {}
-
-            // Clean pristine state if no guest data has been marked yet
-            this.resetToCleanState();
-            this.updateStatus(`[Guest Mode] Ready [${this.platform.toUpperCase()}].`);
-            return;
-        }
-
-        // 2. AUTHENTICATED MODE: Read authoritative state from Cloud Firestore
-        if (firestore) {
-            this.updateStatus(`Loading cloud save for ${this.platform.toUpperCase()}...`);
-
-            firestore
-                .collection("users")
-                .doc(emailKey)
-                .collection("platform")
-                .doc(this.platform)
-                .collection("progress")
-                .doc(CURRENT_GAME_ID)
-                .get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        this.applyStatePayload(data);
-                        this.updateStatus(`[Cloud Restored] Authoritative ledger loaded [${this.platform.toUpperCase()}].`);
-                        return;
-                    }
-                    // If no cloud document exists yet, start clean
-                    this.resetToCleanState();
-                    this.updateStatus(`[Cloud Ready] New cloud ledger initialized for ${this.platform.toUpperCase()}.`);
-                }).catch(err => {
-                    console.warn("[Firestore Fetch Error]:", err);
-                    this.updateStatus(`Failed to read cloud save: ${err.message}`);
-                });
-            return;
-        }
-
-        this.resetToCleanState();
-    },
-
-    resetToCleanState: function() {
-        this.ranks = { rp: 0, outposts: 0, cultProperty: 0, stashes: 0, roster: 0, perks: 0, collectibles: 0 };
-        this.collectibles = {};
-        this.stashes = {};
-        this.roster = {};
-        this.missions = {};
-        this.trophies = {};
-        this.applyStateToUI();
-    },
-
-    applyStatePayload: function(payload) {
+    applyPayload: function(payload) {
         if (!payload || typeof payload !== 'object') return;
-        this.ranks = Object.assign({ rp: 0, outposts: 0, cultProperty: 0, stashes: 0, roster: 0, perks: 0, collectibles: 0 }, payload.ranks || {});
-        this.collectibles = payload.collectibles || {};
-        this.stashes = payload.stashes || {};
-        this.roster = payload.roster || {};
-        this.missions = payload.missions || {};
-        this.trophies = payload.trophies || {};
+        this.activeMission = payload.activeMission || "Hope County Resistance";
+        this.trophies_earned = payload.trophies_earned || 0;
+        this.trophies_total = payload.trophies_total || 51;
+        this.trophies_percent = payload.trophies_percent || 0;
+        
+        // Deep merge into hydrated tree to avoid missing schema entries
+        if (payload.collectibles) {
+            for (const cKey in payload.collectibles) {
+                if (!this.collectibles[cKey]) this.collectibles[cKey] = payload.collectibles[cKey];
+                else {
+                    this.collectibles[cKey].collected = !!payload.collectibles[cKey].collected;
+                    this.collectibles[cKey].count = payload.collectibles[cKey].count || 0;
+                    if (payload.collectibles[cKey].items) {
+                        this.collectibles[cKey].items = Object.assign({}, this.collectibles[cKey].items, payload.collectibles[cKey].items);
+                    }
+                }
+            }
+        }
+        if (payload.stashes) this.stashes = Object.assign({}, this.stashes, payload.stashes);
+        if (payload.roster) this.roster = Object.assign({}, this.roster, payload.roster);
+        if (payload.missions) this.missions = Object.assign({}, this.missions, payload.missions);
+        if (payload.trophies) this.trophies = Object.assign({}, this.trophies, payload.trophies);
+        if (payload.ranks) this.ranks = Object.assign({}, this.ranks, payload.ranks);
+
         this.applyStateToUI();
-    },
+    }
+};
 
-    // Migrates local Guest ticks into Firestore upon login
-    migrateGuestProgressIfPresent: async function() {
-        const emailKey = this.getEmailKey();
-        if (!emailKey) return;
+// Section 3: Authoritative Persistence Engine (Guest LocalStorage vs Cloud Firestore)
+// Lines 298-405: Guarantees guest isolation and cross-device sync
+window.appState.saveProgress = function() {
+    const payload = this.buildPayload();
+    const emailKey = this.getEmailKey();
 
+    // 1. Guest Mode: Unauthenticated visitors write strictly to LocalStorage
+    if (!emailKey) {
         const guestKey = `fc5_guest_progress_${this.platform}`;
-        let guestData = null;
+        try {
+            localStorage.setItem(guestKey, JSON.stringify(payload));
+            this.updateStatus(`[Guest Mode] Progress cached locally [${this.platform.toUpperCase()}].`);
+        } catch (e) {
+            console.warn("[Guest Storage]:", e);
+        }
+        return;
+    }
 
+    // 2. Authenticated Mode: Authoritative write straight to Cloud Firestore
+    if (firestore) {
+        const docRef = firestore
+            .collection("users")
+            .doc(emailKey)
+            .collection("platform")
+            .doc(this.platform)
+            .collection("progress")
+            .doc(CURRENT_GAME_ID);
+
+        docRef.set(payload, { merge: true }).then(() => {
+            this.updateStatus(`[Cloud Saved] users/${emailKey}/platform/${this.platform}/progress/${CURRENT_GAME_ID}`);
+        }).catch(err => {
+            console.error("[Firestore Save Error]:", err);
+            this.updateStatus(`Cloud Sync Failed: ${err.message}`);
+        });
+    }
+};
+
+window.appState.loadProgress = function() {
+    const emailKey = this.getEmailKey();
+
+    // Reset tree to default uncompleted state before overlaying data
+    this.hydrateDefaultSchema();
+
+    // 1. Guest Mode: Load from LocalStorage
+    if (!emailKey) {
+        const guestKey = `fc5_guest_progress_${this.platform}`;
         try {
             const raw = localStorage.getItem(guestKey);
-            if (raw) guestData = JSON.parse(raw);
-        } catch (e) {}
-
-        if (guestData && (
-            Object.keys(guestData.stashes || {}).length > 0 ||
-            Object.keys(guestData.collectibles || {}).length > 0 ||
-            Object.keys(guestData.missions || {}).length > 0 ||
-            Object.keys(guestData.roster || {}).length > 0 ||
-            Object.keys(guestData.trophies || {}).length > 0
-        )) {
-            this.updateStatus("Importing guest checks to your Cloud Ledger...");
-
-            // Deep merge guest items with any existing cloud state
-            this.collectibles = Object.assign({}, this.collectibles, guestData.collectibles || {});
-            this.stashes = Object.assign({}, this.stashes, guestData.stashes || {});
-            this.roster = Object.assign({}, this.roster, guestData.roster || {});
-            this.missions = Object.assign({}, this.missions, guestData.missions || {});
-            this.trophies = Object.assign({}, this.trophies, guestData.trophies || {});
-
-            this.applyStateToUI();
-            this.saveProgress();
-
-            // Clear guest key now that it is stored in the cloud
-            localStorage.removeItem(guestKey);
-            this.updateStatus("Guest checks successfully synced to your account.");
-        }
-    },
-
-    applyStateToUI: function() {
-        for (const r in this.ranks) {
-            this.updateRankDisplay(r, this.ranks[r]);
-        }
-
-        document.querySelectorAll('.fc5-item-card').forEach(card => {
-            const id = card.getAttribute('data-id');
-            const type = card.getAttribute('data-type') || 'mission';
-            let isDone = false;
-
-            if (type === 'stash') isDone = !!(this.stashes[id]?.collected);
-            else if (type === 'roster') isDone = !!(this.roster[id]?.unlocked);
-            else if (type === 'collectible' || type === 'magazine') isDone = !!(this.collectibles[id]?.collected);
-            else if (type === 'trophy') isDone = !!(this.trophies[id]?.earned);
-            else isDone = !!(this.missions[id]?.completed);
-
-            const btn = card.querySelector('.check-btn');
-
-            if (isDone) {
-                card.classList.add('completed');
-                if (btn) {
-                    btn.classList.add('is-done');
-                    btn.innerHTML = '✓';
-                }
-            } else {
-                card.classList.remove('completed');
-                if (btn) {
-                    btn.classList.remove('is-done');
-                    btn.innerHTML = '';
-                }
-            }
-        });
-    },
-
-    toggleItem: function(itemId, type) {
-        if (type === 'stash') {
-            if (!this.stashes[itemId]) this.stashes[itemId] = { collected: false, psnSynced: false };
-            this.stashes[itemId].collected = !this.stashes[itemId].collected;
-        } else if (type === 'roster') {
-            if (!this.roster[itemId]) this.roster[itemId] = { unlocked: false, psnSynced: false };
-            this.roster[itemId].unlocked = !this.roster[itemId].unlocked;
-        } else if (type === 'collectible' || type === 'magazine') {
-            if (!this.collectibles[itemId]) this.collectibles[itemId] = { collected: false, psnSynced: false };
-            this.collectibles[itemId].collected = !this.collectibles[itemId].collected;
-        } else if (type === 'trophy') {
-            if (!this.trophies[itemId]) this.trophies[itemId] = { earned: false, psnSynced: false };
-            this.trophies[itemId].earned = !this.trophies[itemId].earned;
-        } else {
-            if (!this.missions[itemId]) this.missions[itemId] = { completed: false, psnSynced: false };
-            this.missions[itemId].completed = !this.missions[itemId].completed;
-        }
-
-        this.applyStateToUI();
-        this.saveProgress();
-    },
-
-    updateStatus: function(msg) {
-        const statLine = document.getElementById('stat-line');
-        if (statLine) {
-            statLine.innerText = `[${new Date().toLocaleTimeString('en-US', { hour12: false })}] ${msg}`;
-        }
-    },
-
-    fetchUserFriendCode: async function() {
-        const emailKey = this.getEmailKey();
-        if (!rtdb || !emailKey) return;
-        try {
-            const snap = await rtdb.ref(`/users/${emailKey}/friend_code`).once('value');
-            this.myFriendCode = snap.val() || 'TLWWTSNU';
-            const display = document.getElementById('myFriendCodeDisplay');
-            if (display) display.innerText = this.myFriendCode;
-        } catch (e) {
-            console.warn("[Friend Code Fetch]:", e);
-        }
-    },
-
-    syncFriendsProgress: async function() {
-        const rosterContainer = document.getElementById('friendsRosterContainer');
-        if (!rosterContainer) return;
-
-        const emailKey = this.getEmailKey();
-        if (!emailKey) {
-            rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">Sign in to view your Squad Co-Op Ledger.</div>';
-            return;
-        }
-
-        try {
-            const friendsSnap = await rtdb.ref(`/users/${emailKey}/friends`).once('value');
-            const friendsData = friendsSnap.val();
-
-            if (!friendsData || Object.keys(friendsData).length === 0) {
-                rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">No squad members linked yet. Share your friend code to link co-op members.</div>';
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                this.applyPayload(parsed);
+                this.updateStatus(`[Guest Mode] Restored progress from this device [${this.platform.toUpperCase()}].`);
                 return;
             }
+        } catch (e) {}
 
-            let cardsHtml = '';
-            for (const [fKey, fObj] of Object.entries(friendsData)) {
-                const friendUsername = fObj.username || fKey;
-                const friendTargetKey = fObj.email ? fObj.email.replace(/@/g, '_at_').replace(/\./g, '_') : fKey;
+        this.applyStateToUI();
+        this.updateStatus(`[Guest Mode] Clean Ledger [${this.platform.toUpperCase()}].`);
+        return;
+    }
 
-                let friendData = null;
-                if (firestore) {
-                    try {
-                        const fDoc = await firestore
-                            .collection("users")
-                            .doc(friendTargetKey)
-                            .collection("platform")
-                            .doc(this.platform)
-                            .collection("progress")
-                            .doc(CURRENT_GAME_ID)
-                            .get();
+    // 2. Authenticated Mode: Load from Cloud Firestore
+    if (firestore) {
+        this.updateStatus(`Reading cloud ledger for ${this.platform.toUpperCase()}...`);
 
-                        if (fDoc.exists) {
-                            friendData = fDoc.data();
-                        }
-                    } catch (err) {}
+        firestore
+            .collection("users")
+            .doc(emailKey)
+            .collection("platform")
+            .doc(this.platform)
+            .collection("progress")
+            .doc(CURRENT_GAME_ID)
+            .get()
+            .then(doc => {
+                if (doc.exists) {
+                    const cloudData = doc.data();
+                    this.applyPayload(cloudData);
+                    this.updateStatus(`[Cloud Restored] Authoritative ledger loaded [${this.platform.toUpperCase()}].`);
+                } else {
+                    // Document does not exist yet: seed initial hydrated COTW structure
+                    this.applyStateToUI();
+                    this.saveProgress();
+                    this.updateStatus(`[Cloud Initialized] Seeded new COTW structure in Firestore.`);
                 }
+            }).catch(err => {
+                console.warn("[Firestore Fetch Error]:", err);
+                this.updateStatus(`Failed to read cloud save: ${err.message}`);
+            });
+    }
+};
 
-                const rpVal = friendData?.ranks?.rp || 0;
-                const stashesVal = friendData?.ranks?.stashes || 0;
-                const colVal = friendData?.ranks?.collectibles || 0;
-                const trophyPercent = friendData?.trophies_percent || 0;
+// Lines 407-440: One-Time Guest Migration on Sign In
+window.appState.migrateGuestProgressIfPresent = async function() {
+    const emailKey = this.getEmailKey();
+    if (!emailKey) return;
 
-                cardsHtml += `
-                    <div style="background:#1e293b; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <div style="font-weight:900; color:#fff; font-size:0.95rem;">${escapeHtml(friendUsername)}</div>
-                            <span style="font-size:0.7rem; font-weight:800; background:rgba(255,85,0,0.2); color:var(--user-theme-accent); padding:2px 6px; border-radius:4px; text-transform:uppercase;">
-                                ${escapeHtml(this.platform)}
-                            </span>
-                        </div>
-                        <div style="font-size:0.75rem; color:#cbd5e1; margin-bottom:4px;">
-                            <strong>RP:</strong> ${rpVal} • <strong>Stashes:</strong> ${stashesVal} • <strong>Collectibles:</strong> ${colVal}
-                        </div>
-                        <div style="font-size:0.75rem; color:#94a3b8;">
-                            Trophy Progress: <strong>${trophyPercent}%</strong>
-                        </div>
-                    </div>
-                `;
+    const guestKey = `fc5_guest_progress_${this.platform}`;
+    let guestData = null;
+
+    try {
+        const raw = localStorage.getItem(guestKey);
+        if (raw) guestData = JSON.parse(raw);
+    } catch (e) {}
+
+    if (guestData && (
+        (guestData.ranks && guestData.ranks.rp > 0) ||
+        Object.keys(guestData.stashes || {}).length > 0 ||
+        Object.keys(guestData.collectibles || {}).length > 0 ||
+        Object.keys(guestData.missions || {}).length > 0
+    )) {
+        this.updateStatus("Importing guest checks to your Cloud Ledger...");
+        this.applyPayload(guestData);
+        this.saveProgress();
+
+        localStorage.removeItem(guestKey);
+        this.updateStatus("Guest checks successfully synced to your cloud account.");
+    }
+};
+
+// Section 4: UI Painting & Toggle Interactions
+// Lines 443-525: Maps UI checkboxes to nested COTW object maps
+window.appState.applyStateToUI = function() {
+    this.recalculateMetrics();
+
+    document.querySelectorAll('.fc5-item-card').forEach(card => {
+        const id = card.getAttribute('data-id');
+        const type = card.getAttribute('data-type') || 'mission';
+        const group = card.getAttribute('data-group') || null;
+        let isDone = false;
+
+        if (type === 'stash') {
+            isDone = !!(this.stashes[id]?.collected);
+        } else if (type === 'roster') {
+            isDone = !!(this.roster[id]?.unlocked);
+        } else if (type === 'collectible') {
+            if (group && this.collectibles[group]?.items?.[id]) {
+                isDone = !!(this.collectibles[group].items[id].collected);
             }
-
-            rosterContainer.innerHTML = cardsHtml;
-        } catch (e) {
-            console.warn("[Friends Roster Error]:", e);
+        } else if (type === 'magazine') {
+            if (this.collectibles.survivalist_magazines?.items?.[id]) {
+                isDone = !!(this.collectibles.survivalist_magazines.items[id].collected);
+            }
+        } else if (type === 'trophy') {
+            isDone = !!(this.trophies[id]?.earned);
+        } else {
+            isDone = !!(this.missions[id]?.completed);
         }
+
+        const btn = card.querySelector('.check-btn');
+        if (isDone) {
+            card.classList.add('completed');
+            if (btn) {
+                btn.classList.add('is-done');
+                btn.innerHTML = '✓';
+            }
+        } else {
+            card.classList.remove('completed');
+            if (btn) {
+                btn.classList.remove('is-done');
+                btn.innerHTML = '';
+            }
+        }
+    });
+};
+
+window.appState.toggleItem = function(itemId, type, group) {
+    if (type === 'stash') {
+        if (!this.stashes[itemId]) this.stashes[itemId] = { collected: false, psnSynced: false };
+        this.stashes[itemId].collected = !this.stashes[itemId].collected;
+    } else if (type === 'roster') {
+        if (!this.roster[itemId]) this.roster[itemId] = { unlocked: false, psnSynced: false };
+        this.roster[itemId].unlocked = !this.roster[itemId].unlocked;
+    } else if (type === 'collectible') {
+        if (group && this.collectibles[group]?.items?.[itemId]) {
+            this.collectibles[group].items[itemId].collected = !this.collectibles[group].items[itemId].collected;
+        }
+    } else if (type === 'magazine') {
+        if (this.collectibles.survivalist_magazines?.items?.[itemId]) {
+            this.collectibles.survivalist_magazines.items[itemId].collected = !this.collectibles.survivalist_magazines.items[itemId].collected;
+        }
+    } else if (type === 'trophy') {
+        if (!this.trophies[itemId]) this.trophies[itemId] = { earned: false, psnSynced: false };
+        this.trophies[itemId].earned = !this.trophies[itemId].earned;
+    } else {
+        if (!this.missions[itemId]) this.missions[itemId] = { completed: false, psnSynced: false };
+        this.missions[itemId].completed = !this.missions[itemId].completed;
+    }
+
+    this.applyStateToUI();
+    this.saveProgress();
+};
+
+window.appState.updateStatus = function(msg) {
+    const statLine = document.getElementById('stat-line');
+    if (statLine) {
+        statLine.innerText = `[${new Date().toLocaleTimeString('en-US', { hour12: false })}] ${msg}`;
     }
 };
 
@@ -501,7 +557,94 @@ window.adjRank = function(rankKey, delta) {
     appState.saveProgress();
 };
 
-// Section 3: Dynamic Top Navigation Bar (/utm_links)
+// Section 5: Squad Co-Op Bridge via RTDB Friend Codes
+// Lines 536-614: Realtime squad sync querying corresponding platform progress
+window.appState.fetchUserFriendCode = async function() {
+    const emailKey = this.getEmailKey();
+    if (!rtdb || !emailKey) return;
+    try {
+        const snap = await rtdb.ref(`/users/${emailKey}/friend_code`).once('value');
+        this.myFriendCode = snap.val() || 'TLWWTSNU';
+        const display = document.getElementById('myFriendCodeDisplay');
+        if (display) display.innerText = this.myFriendCode;
+    } catch (e) {
+        console.warn("[Friend Code Fetch]:", e);
+    }
+};
+
+window.appState.syncFriendsProgress = async function() {
+    const rosterContainer = document.getElementById('friendsRosterContainer');
+    if (!rosterContainer) return;
+
+    const emailKey = this.getEmailKey();
+    if (!emailKey) {
+        rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">Sign in to view your Squad Co-Op Ledger.</div>';
+        return;
+    }
+
+    try {
+        const friendsSnap = await rtdb.ref(`/users/${emailKey}/friends`).once('value');
+        const friendsData = friendsSnap.val();
+
+        if (!friendsData || Object.keys(friendsData).length === 0) {
+            rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">No squad members linked yet. Share your friend code to link co-op members.</div>';
+            return;
+        }
+
+        let cardsHtml = '';
+        for (const [fKey, fObj] of Object.entries(friendsData)) {
+            const friendUsername = fObj.username || fKey;
+            const friendTargetKey = fObj.email ? fObj.email.replace(/@/g, '_at_').replace(/\./g, '_') : fKey;
+
+            let friendData = null;
+            if (firestore) {
+                try {
+                    const fDoc = await firestore
+                        .collection("users")
+                        .doc(friendTargetKey)
+                        .collection("platform")
+                        .doc(this.platform)
+                        .collection("progress")
+                        .doc(CURRENT_GAME_ID)
+                        .get();
+
+                    if (fDoc.exists) {
+                        friendData = fDoc.data();
+                    }
+                } catch (err) {}
+            }
+
+            const rpVal = friendData?.ranks?.rp || 0;
+            const stashesVal = friendData?.ranks?.stashes || 0;
+            const colVal = friendData?.ranks?.collectibles || 0;
+            const trophyPercent = friendData?.trophies_percent || 0;
+
+            cardsHtml += `
+                <div style="background:#1e293b; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <div style="font-weight:900; color:#fff; font-size:0.95rem;">${escapeHtml(friendUsername)}</div>
+                        <span style="font-size:0.7rem; font-weight:800; background:rgba(255,85,0,0.2); color:var(--user-theme-accent); padding:2px 6px; border-radius:4px; text-transform:uppercase;">
+                            ${escapeHtml(this.platform)}
+                        </span>
+                    </div>
+                    <div style="font-size:0.75rem; color:#cbd5e1; margin-bottom:4px;">
+                        <strong>RP:</strong> ${rpVal} • <strong>Stashes:</strong> ${stashesVal} • <strong>Collectibles:</strong> ${colVal}
+                    </div>
+                    <div style="font-size:0.75rem; color:#94a3b8;">
+                        Trophy Progress: <strong>${trophyPercent}%</strong>
+                    </div>
+                </div>
+            `;
+        }
+
+        rosterContainer.innerHTML = cardsHtml;
+    } catch (e) {
+        console.warn("[Friends Roster Error]:", e);
+    }
+};
+
+// Section 6: Dynamic Navbar (/utm_links)
+// Lines 617-688: Top-level menu architecture
 async function buildUtmNavigation() {
     const navContainer = document.getElementById('dynamicNavLinks');
     if (!navContainer || !rtdb) return;
@@ -596,7 +739,8 @@ async function buildUtmNavigation() {
     }
 }
 
-// Section 4: PSN Game Skeleton & Live Trophy Tracking
+// Section 7: PSN Skeleton & Live Trophy Tracking
+// Lines 691-744: CommID telemetry
 async function syncPsnSkeleton() {
     if (!rtdb) return;
     try {
@@ -616,7 +760,6 @@ async function syncPsnSkeleton() {
             if (navLogo) navLogo.src = posterUrl;
         }
 
-        // Only sync PSN trophies automatically if user is authenticated and is on PS platform
         if (appState.currentUser && appState.platform === 'ps') {
             await autoCheckUserPsnTrophies();
         }
@@ -642,7 +785,12 @@ async function autoCheckUserPsnTrophies() {
                 if (tObj && (tObj.earned === true || tObj.isEarned === true)) {
                     const cardKey = `trophy_fc5_${tId}`;
                     if (!appState.trophies[cardKey] || !appState.trophies[cardKey].earned) {
-                        appState.trophies[cardKey] = { earned: true, psnSynced: true };
+                        appState.trophies[cardKey] = {
+                            earned: true,
+                            name: tObj.trophyName || appState.trophies[cardKey]?.name || 'Trophy',
+                            rank: (tObj.trophyType || 'Bronze').toUpperCase(),
+                            psnSynced: true
+                        };
                         stateModified = true;
                     }
                 }
@@ -658,14 +806,15 @@ async function autoCheckUserPsnTrophies() {
     }
 }
 
-// Section 5: Render Far Cry 5 Tactical Accordion Sections
+// Section 8: Render Far Cry 5 Tactical Accordion Sections
+// Lines 747-920: Populates cards with data-group and data-type binding
 function renderFarCry5Companion(data) {
     const container = document.getElementById('section-container');
     if (!container || !data) return;
 
     let html = '';
 
-    // 5A. Walkthrough Missions
+    // 8A. Walkthrough Missions
     if (Array.isArray(data.walkthrough_missions)) {
         html += `
         <section class="category-section section-collapsed" id="cat-walkthroughs">
@@ -692,7 +841,7 @@ function renderFarCry5Companion(data) {
         </section>`;
     }
 
-    // 5B. Prepper Stashes
+    // 8B. Prepper Stashes
     if (data.prepper_stashes) {
         const regions = [
             { key: 'holland_valley', label: 'Holland Valley (John)' },
@@ -731,7 +880,7 @@ function renderFarCry5Companion(data) {
         });
     }
 
-    // 5C. Collectibles (6 Sets)
+    // 8C. Collectibles (6 Sets)
     if (data.collectibles) {
         for (const cKey in data.collectibles) {
             const group = data.collectibles[cKey];
@@ -746,14 +895,14 @@ function renderFarCry5Companion(data) {
                     <div class="section-content">
                         <div class="trophy-grid">
                             ${group.items.map(item => `
-                                <div class="trophy-card fc5-item-card" data-id="${item.id}" data-type="collectible">
+                                <div class="trophy-card fc5-item-card" data-id="${item.id}" data-type="collectible" data-group="${cKey}">
                                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                         <div>
                                             <span class="trophy-rank rank-bronze">${escapeHtml(item.region || group.region || 'Hope County')}</span>
                                             <h3 style="color:#fff; font-size:0.95rem; margin-top:4px;">${escapeHtml(item.name)}</h3>
                                             <div style="font-size:0.75rem; color:#94a3b8;">${escapeHtml(item.location || '')}</div>
                                         </div>
-                                        <button type="button" class="check-btn" onclick="appState.toggleItem('${item.id}', 'collectible')" aria-label="Toggle Collectible"></button>
+                                        <button type="button" class="check-btn" onclick="appState.toggleItem('${item.id}', 'collectible', '${cKey}')" aria-label="Toggle Collectible"></button>
                                     </div>
                                     <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(item.guide || '')}</p>
                                 </div>
@@ -765,7 +914,7 @@ function renderFarCry5Companion(data) {
         }
     }
 
-    // 5D. Guns & Fangs for Hire
+    // 8D. Guns & Fangs for Hire
     if (Array.isArray(data.guns_and_fangs_for_hire)) {
         html += `
         <section class="category-section section-collapsed" id="cat-roster">
@@ -795,7 +944,7 @@ function renderFarCry5Companion(data) {
         </section>`;
     }
 
-    // 5E. Trophies & Achievements
+    // 8E. Trophies & Achievements
     const trophiesList = (appState.psnSkeleton && appState.psnSkeleton.trophies) ? Object.values(appState.psnSkeleton.trophies) : (data.trophies_and_achievements || []);
 
     if (Array.isArray(trophiesList) && trophiesList.length > 0) {
@@ -844,7 +993,8 @@ function renderFarCry5Companion(data) {
     appState.applyStateToUI();
 }
 
-// Section 6: Helpers
+// Section 9: Helpers
+// Lines 923-946: Sanitization & Relative Protocol Enforcement
 function toSecureUrl(url) {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
@@ -868,7 +1018,8 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
-// Section 7: Primary Lifecycle Gate
+// Section 10: Primary Lifecycle Gate
+// Lines 949-1033: Initialization, Auth Listeners, and Data Hydration
 document.addEventListener('DOMContentLoaded', async () => {
     await buildUtmNavigation();
 
@@ -926,13 +1077,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (nameBadge) nameBadge.innerText = appState.activeUser;
                 if (authModal) authModal.classList.add('hidden');
 
-                // 1. Fetch friend code
                 await appState.fetchUserFriendCode();
-                // 2. Load authoritative cloud ledger (multi-device)
                 await appState.loadProgress();
-                // 3. Migrate any guest ticks made before signing in
                 await appState.migrateGuestProgressIfPresent();
-                // 4. Load squad co-op roster
                 await appState.syncFriendsProgress();
             } else {
                 appState.currentUser = null;
@@ -946,7 +1093,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const badge = document.getElementById('userProfileBadge');
                 if (badge) badge.classList.add('hidden');
 
-                // Load persistent guest storage
                 appState.loadProgress();
             }
         });
@@ -969,7 +1115,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             await syncPsnSkeleton();
             renderFarCry5Companion(json);
             
-            // Only trigger fallback load if auth listener has not fired yet
             if (appState.authInitialized) {
                 appState.loadProgress();
             }
