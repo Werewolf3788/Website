@@ -1,3 +1,11 @@
+/* ============================================================================
+ * File: psn.js
+ * Location: /Playstation/psn.js
+ * Version: 66.11.0
+ * Date & Time Stamp: 2026-10-27 17:48 EDT (America/New_York)
+ * Description: Master PSN Telemetry & Deep Catalog Ingestion Engine
+ * ============================================================================ */
+
 const fs = require("fs");
 const path = require("path");
 const http = require("http");
@@ -30,7 +38,7 @@ const {
 const FIREBASE_BASE_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn";
 const RTDB_ROOT_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
 const GA4_MEASUREMENT_ID = "G-CTYHDF4MSD";
-const ENGINE_VERSION = "66.10.0";
+const ENGINE_VERSION = "66.11.0";
 const LOCAL_TOKENS_PATH = path.join(__dirname, ".psn_tokens.json");
 const PSN_JSON_PATH = path.resolve(process.cwd(), "Playstation", "psn.json");
 
@@ -2628,4 +2636,56 @@ async function executeSyncPass() {
             }
         }
 
-        const squadIntel
+        const squadIntel = buildSquadIntelligence(finalData.gamertags);
+        finalData.squadLeaderboard = squadIntel.leaderboard;
+        finalData.squadAnalytics = {
+            totals: squadIntel.squadTotals,
+            socialOverlap: squadIntel.socialOverlap,
+            calculatedAt: new Date().toISOString()
+        };
+
+        if (friendsDirectoryDirty) {
+            await syncNodeToFirebase("friendsDirectory", friendsDirectoryCache);
+        }
+
+        const psnJsonExport = {
+            engineVersion: ENGINE_VERSION,
+            lastUpdated: finalData.lastGlobalUpdate,
+            analyticsTag: GA4_MEASUREMENT_ID,
+            games: globalGames,
+            leaderboard: finalData.squadLeaderboard,
+            squadAnalytics: finalData.squadAnalytics,
+            friendsDirectory: friendsDirectoryCache
+        };
+
+        try {
+            const jsonDir = path.dirname(PSN_JSON_PATH);
+            if (!fs.existsSync(jsonDir)) {
+                fs.mkdirSync(jsonDir, { recursive: true });
+            }
+            fs.writeFileSync(PSN_JSON_PATH, JSON.stringify(psnJsonExport, null, 2), "utf-8");
+            console.log(`[DISK EXPORT SUCCESS] Wrote master catalog, squad leaderboards, and analytics to ${PSN_JSON_PATH}`);
+        } catch (fileErr) {
+            console.error(`[DISK EXPORT ERROR] Failed to write ${PSN_JSON_PATH}: ${fileErr.message}`);
+        }
+
+        diagnosticReport.apiStats = {
+            totalCalls: apiStats.calls,
+            failedCalls: apiStats.failures,
+            errorsByEndpoint: apiStats.errorsByLabel,
+            missingExports: apiStats.missingExports
+        };
+        console.log(`[API STATS] ${apiStats.calls} calls, ${apiStats.failures} failed. Missing exports: ${apiStats.missingExports.join(", ") || "none"}.`);
+        diagnosticReport.lastCheck = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
+        await syncNodeToFirebase("authDiagnostics", diagnosticReport);
+
+        console.log(`[SUCCESS] Full PSN Engine v${ENGINE_VERSION} completed. Profiles updated: ${anyProfileUpdated ? 'YES' : 'NONE (IDLE)'}.`);
+    } catch (criticalError) {
+        console.error(`[CRITICAL CATCH] Synchronization cycle failed: ${criticalError.message}`);
+    }
+}
+
+(async () => {
+    await executeSyncPass();
+    process.exit(0);
+})();
