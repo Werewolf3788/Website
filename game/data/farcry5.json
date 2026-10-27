@@ -10,7 +10,8 @@
       "quest_giver_location": "Oberlin Picnic Area, Whitetail Mountains",
       "total_count": 9,
       "region": "Whitetail Mountains",
-      "items": [ {
+      "items": [ 
+        {
           "id": "baseball_card_01",
           "name": "Southwest of F.A.N.G Center",
           "location": "House by a small body of water southwest of F.A.N.G Center",
