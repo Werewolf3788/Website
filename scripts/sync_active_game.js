@@ -1,57 +1,52 @@
 // scripts/sync_active_game.js
-// Section 1: Config, Paths & Headers
+// Section 1: Config & Output Paths
 const fs = require('fs');
 const path = require('path');
+const { 
+  exchangeNpssoForAccessCode, 
+  exchangeAccessCodeForAuthTokens, 
+  getUserTitles, 
+  getTitleTrophies 
+} = require('psn-api');
 
 const FIREBASE_DB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
 const TARGET_GAMERTAG = "wildhorse_spirit";
 const OUTPUT_FILE = path.join(__dirname, '../game/data/game.json');
+const PSN_FOLDER_JSON = path.join(__dirname, '../Playstation/psn.json');
 const ARCHIVE_DIR = path.join(__dirname, '../game/data/games');
 
-// Section 2: Main Pipeline Flow
+// Section 2: Main Execution
 async function main() {
   try {
-    // Section 2.1: Fetch credentials stored in Firebase RTDB
-    console.log("[1/6] Fetching credentials from Firebase RTDB...");
-    const credsRes = await fetch(`${FIREBASE_DB_URL}/users/raykevin71888_at_gmail_com.json`);
-    const creds = await credsRes.json();
+    console.log("[1/6] Resolving NPSSO from environment secrets...");
+    const npsso = process.env.PSN_NPSSO_WEREWOLF || process.env.PSN_NPSSO_RAY || process.env.PSN_NPSSO_DARKWING;
 
-    if (!creds || !creds.psn_npsso_scope || !creds.psn_account_id) {
-      throw new Error("Missing psn_npsso_scope or psn_account_id in RTDB.");
+    if (!npsso) {
+      throw new Error("Missing PSN_NPSSO_WEREWOLF secret in GitHub Action runner.");
     }
 
-    // Section 2.2: OAuth exchange for Sony access token
-    console.log("[2/6] Exchanging NPSSO for PlayStation access token...");
-    const token = await getPsnAccessToken(creds.psn_npsso_scope);
+    console.log("[2/6] Exchanging NPSSO via psn-api...");
+    const accessCode = await exchangeNpssoForAccessCode(npsso);
+    const authorization = await exchangeAccessCodeForAuthTokens(accessCode);
 
-    // Section 2.3: Query recent games for wildhorse_spirit
-    console.log(`[3/6] Querying active titles for ${TARGET_GAMERTAG}...`);
-    const titlesUrl = `https://m.np.playstation.com/api/trophy/v1/users/${creds.psn_account_id}/trophyTitles?limit=10`;
-    const titlesRes = await fetch(titlesUrl, {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
-    const titlesData = await titlesRes.json();
+    console.log(`[3/6] Querying active PlayStation titles for ${TARGET_GAMERTAG}...`);
+    const titlesData = await getUserTitles(authorization, "me", { limit: 10 });
     const titles = titlesData.trophyTitles || [];
 
     if (titles.length === 0) {
-      console.log("No trophy titles found on this profile.");
+      console.log("No trophy titles returned from PSN.");
       return;
     }
 
-    // Sort descending by most recent earned timestamp
+    // Sort descending by most recent earned trophy date
     titles.sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
     const activeGame = titles[0];
     const commId = activeGame.npCommunicationId;
     const gameName = activeGame.trophyTitleName;
     console.log(`[4/6] Active title: "${gameName}" (${commId}) | Progress: ${activeGame.progress}%`);
 
-    // Section 2.4: Fetch Sony trophy definitions & player earned statuses
     console.log(`Fetching Sony trophies for ${commId}...`);
-    const trophiesUrl = `https://m.np.playstation.com/api/trophy/v1/npCommunicationIds/${commId}/trophyGroups/all/trophies`;
-    const trophiesRes = await fetch(trophiesUrl, {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
-    const trophiesData = await trophiesRes.json();
+    const trophiesData = await getTitleTrophies(authorization, commId, "all");
     const rawTrophies = trophiesData.trophies || [];
 
     const formattedTrophies = rawTrophies.map(t => ({
@@ -62,11 +57,9 @@ async function main() {
       icon: t.trophyIconUrl || ""
     }));
 
-    // Section 2.5: Auto-scrape guide metrics from free Fandom MediaWiki API
-    console.log(`[5/6] Auto-fetching game guide metrics from Fandom API for "${gameName}"...`);
+    console.log(`[5/6] Auto-fetching game guide metrics for "${gameName}"...`);
     const scrapedGuide = await scrapeFandomWikiGuide(gameName);
 
-    // Section 2.6: Assemble universal schema
     const gameId = gameName.replace(/[^a-zA-Z0-9]/g, "");
     const gamePayload = {
       game: gameName,
@@ -74,22 +67,26 @@ async function main() {
       commId: commId,
       lastUpdated: activeGame.lastUpdatedDateTime,
       overallProgress: activeGame.progress || 0,
-      activeMission: scrapedGuide.activeMission || "Hope County Resistance",
+      activeMission: scrapedGuide.activeMission || "In Progress",
       metrics: scrapedGuide.metrics || [],
       categories: scrapedGuide.categories || {},
       trophies: formattedTrophies
     };
 
-    // Ensure output directories exist
+    console.log("[6/6] Writing data to game/data/game.json and Playstation/psn.json...");
+    
     const outputDir = path.dirname(OUTPUT_FILE);
+    const psnDir = path.dirname(PSN_FOLDER_JSON);
     if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+    if (!fs.existsSync(psnDir)) fs.mkdirSync(psnDir, { recursive: true });
     if (!fs.existsSync(ARCHIVE_DIR)) fs.mkdirSync(ARCHIVE_DIR, { recursive: true });
 
-    // Section 2.7: Write active game.json and archive {commId}.json
-    console.log("[6/6] Writing output files...");
+    // Simultaneous write to both target destinations
     fs.writeFileSync(OUTPUT_FILE, JSON.stringify(gamePayload, null, 2), 'utf8');
+    fs.writeFileSync(PSN_FOLDER_JSON, JSON.stringify(gamePayload, null, 2), 'utf8');
     fs.writeFileSync(path.join(ARCHIVE_DIR, `${commId}.json`), JSON.stringify(gamePayload, null, 2), 'utf8');
-    console.log(`Success: game/data/game.json and game/data/games/${commId}.json updated.`);
+
+    console.log(`Success: game.json and Playstation/psn.json updated.`);
 
     // Sync active commId leaf pointer to Firebase RTDB
     await fetch(`${FIREBASE_DB_URL}/psn/gamertags/${TARGET_GAMERTAG}/commId.json`, {
@@ -114,7 +111,6 @@ async function scrapeFandomWikiGuide(gameTitle) {
 
   const cleanTitle = gameTitle.toLowerCase();
 
-  // Route franchise queries to dedicated public MediaWikis
   let wikiDomain = "";
   if (cleanTitle.includes("far cry")) {
     wikiDomain = "farcry.fandom.com";
@@ -125,7 +121,6 @@ async function scrapeFandomWikiGuide(gameTitle) {
   }
 
   if (!wikiDomain) {
-    console.log(`No specific wiki profile mapped for "${gameTitle}". Initializing universal fallback metrics.`);
     result.metrics = [
       { id: "metric_1", icon: "🏆", label: "Trophy Progress", current: 0, total: 100, step: 1 }
     ];
@@ -143,7 +138,6 @@ async function scrapeFandomWikiGuide(gameTitle) {
         { id: "metric_6", icon: "🗂️", label: "Collectibles", current: 0, total: 58, step: 1 }
       ];
 
-      // Pull Prepper Stashes page sections via free MediaWiki parse API
       const stashApi = `https://${wikiDomain}/api.php?action=parse&page=Prepper_Stashes&prop=sections|text&format=json`;
       const stashRes = await fetch(stashApi);
       const stashData = await stashRes.json();
@@ -178,42 +172,6 @@ async function scrapeFandomWikiGuide(gameTitle) {
   }
 
   return result;
-}
-
-// Section 4: PSN OAuth Authentication Helper
-async function getPsnAccessToken(npsso) {
-  const authUrl = "https://ca.account.sony.com/api/authz/v3/oauth/authorize?" +
-    "access_type=offline&client_id=0951579a-773a-4311-af14-c7309c17e95d&" +
-    "response_type=code&scope=psn:mobile.core&redirect_uri=com.scee.psx.scecompcall://redirect";
-
-  const authRes = await fetch(authUrl, {
-    headers: { "Cookie": `npsso=${npsso}` },
-    redirect: "manual"
-  });
-
-  const location = authRes.headers.get("location");
-  if (!location) throw new Error("Invalid or expired NPSSO token.");
-
-  const authCodeMatch = location.match(/code=([A-Za-z0-9:\?_\-\.\/=]+)/);
-  if (!authCodeMatch) throw new Error("Failed to extract authorization code.");
-  const authCode = authCodeMatch[1];
-
-  const tokenRes = await fetch("https://ca.account.sony.com/api/authz/v3/oauth/token", {
-    method: "POST",
-    headers: {
-      "Authorization": "Basic MDk1MTU3OWEtNzczYS00MzExLWFmMTQtYzczMDljMTdlOTVkOnVOTjFYQHpKakhpM0NmTVk=",
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    body: new URLSearchParams({
-      code: authCode,
-      redirect_uri: "com.scee.psx.scecompcall://redirect",
-      grant_type: "authorization_code",
-      token_format: "jwt"
-    })
-  });
-
-  const tokenData = await tokenRes.json();
-  return tokenData.access_token;
 }
 
 main();
