@@ -57,7 +57,14 @@
  * - playtimeSource says where the number came from: "sony", "tracker" or "stored".
  * - sessionStartedAt / sessionStartedAtMs / currentSessionSeconds give your site a live session timer
  *   (start = when the script first saw the game running, so it can lag by one run interval).
- * Version: 66.6.0 - PS-App-Accurate Playtime & Session Timer
+ * 10. Incremental Updates (NEW in 66.7.0) - only pull and write what changed:
+ * - Slow-changing account data (friends, devices, purchases, blocked, requests, region) is re-pulled every
+ *   PULL_CONFIG.HEAVY_REFRESH_MS (6h), not on every sync. In between, the saved values are reused.
+ * - Master game skeletons re-pull only when missing or older than SKELETON_STALE_MS (24h); the active game
+ *   is still refreshed. Trophy progress re-pulls for the active game and for titles Sony says changed.
+ * - Firebase writes send ONLY the changed fields (PATCH) instead of rewriting the whole player record.
+ * - The delta check (online/offline, game switch, new trophy, level, status text) is unchanged.
+ * Version: 66.7.0 - Incremental Updates
  * Date & Time Stamp: 2026-10-26 (America/New_York)
  * ============================================================================ */
 
@@ -94,7 +101,7 @@ const {
 const FIREBASE_BASE_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn";
 const RTDB_ROOT_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
 const GA4_MEASUREMENT_ID = "G-CTYHDF4MSD";
-const ENGINE_VERSION = "66.6.0";
+const ENGINE_VERSION = "66.7.0";
 const LOCAL_TOKENS_PATH = path.join(__dirname, ".psn_tokens.json");
 
 const SQUAD_GAMERTAGS = {
@@ -155,8 +162,10 @@ let diagnosticReport = {
 // ----------------------------------------------------------------------------
 const PULL_CONFIG = {
     // Infinity = no cap. Previously hard-coded: 20 skeletons / 10 progress sets / 25 recent trophies.
-    SKELETON_REFRESH_RECENT_TITLES: 20,   // always re-pull the master skeleton for this many most-recent titles
-    PROGRESS_REFRESH_RECENT_TITLES: 10,   // always re-pull trophy progress for this many most-recent titles
+    SKELETON_REFRESH_RECENT_TITLES: 20,   // recent titles whose master skeleton may be refreshed (only when stale, see SKELETON_STALE_MS)
+    PROGRESS_REFRESH_RECENT_TITLES: 0,    // recent titles ALWAYS re-pulled for progress (0 = only the active game + titles Sony says changed)
+    HEAVY_REFRESH_MS: 6 * 3600 * 1000,    // friends/devices/purchases/blocked/requests/region refresh interval
+    SKELETON_STALE_MS: 24 * 3600 * 1000,  // master game skeleton refresh interval
     BACKFILL_NEW_TITLES_PER_RUN: 40,      // never-pulled titles fetched per run (set Infinity to pull ALL in one pass)
     MOST_RECENT_TROPHIES_KEPT: 250,       // was 25
     PAGE_SIZE_TITLES: 800,
@@ -370,6 +379,87 @@ async function writeUserPsnStatus(emailKey, fields, currentRecord) {
         });
     } catch (err) {
         console.warn(`[USER STATUS WARN] Could not write PSN status for ${emailKey}: ${err.message}`);
+    }
+}
+
+// ----------------------------------------------------------------------------
+// [SECTION 1D: CHANGED-FIELDS-ONLY FIREBASE WRITES] NEW in 66.7.0
+// ----------------------------------------------------------------------------
+// Mirrors what Firebase actually stores: drops null/undefined, empty arrays and empty objects.
+function normalizeForRtdb(v) {
+    if (v === null || v === undefined) return undefined;
+    if (typeof v === "number" && !Number.isFinite(v)) return undefined;
+    if (Array.isArray(v)) {
+        if (v.length === 0) return undefined;
+        return v.map((x) => { const n = normalizeForRtdb(x); return n === undefined ? null : n; });
+    }
+    if (typeof v === "object") {
+        const out = {};
+        for (const k of Object.keys(v)) {
+            const n = normalizeForRtdb(v[k]);
+            if (n !== undefined) out[k] = n;
+        }
+        return Object.keys(out).length ? out : undefined;
+    }
+    return v;
+}
+
+// Finds a player's saved record by exact tag, then case-insensitive tag, then by account ID.
+function findExistingGamertagRecord(gamertags, tag, accountId) {
+    const all = (gamertags && typeof gamertags === "object") ? gamertags : {};
+    if (tag && all[tag]) return all[tag];
+    const lower = String(tag || "").toLowerCase();
+    for (const [key, rec] of Object.entries(all)) {
+        if (lower && key.toLowerCase() === lower) return rec;
+        if (accountId && rec && String(rec.accountId) === String(accountId)) return rec;
+    }
+    return undefined;
+}
+
+function stableStringify(v) {
+    if (v === undefined) return "\u2205";
+    if (v === null || typeof v !== "object") return JSON.stringify(v);
+    if (Array.isArray(v)) return "[" + v.map(stableStringify).join(",") + "]";
+    return "{" + Object.keys(v).sort().map((k) => JSON.stringify(k) + ":" + stableStringify(v[k])).join(",") + "}";
+}
+
+// Writes only the top-level fields of a player record that actually changed.
+// New players (no previous record) get one full write.
+async function writeGamertagDelta(onlineId, oldRecord, newRecord) {
+    const hasOld = oldRecord && typeof oldRecord === "object" && Object.keys(oldRecord).length > 0;
+    if (!hasOld) {
+        await syncNodeToFirebase(`gamertags/${onlineId}`, newRecord);
+        console.log(`[FIREBASE WRITE] ${onlineId}: new record written (${Object.keys(newRecord).length} fields).`);
+        return;
+    }
+
+    const newPlain = JSON.parse(JSON.stringify(newRecord));   // JSON form: Dates become strings, undefined is dropped
+    const patch = {};
+    const keys = new Set([...Object.keys(oldRecord), ...Object.keys(newPlain)]);
+    for (const k of keys) {
+        const before = stableStringify(normalizeForRtdb(oldRecord[k]));
+        const afterNorm = normalizeForRtdb(newPlain[k]);
+        if (before === stableStringify(afterNorm)) continue;
+        patch[k] = afterNorm === undefined ? null : newPlain[k];   // null deletes a removed field
+    }
+
+    const changedKeys = Object.keys(patch);
+    if (changedKeys.length === 0) {
+        console.log(`[FIREBASE WRITE] ${onlineId}: nothing changed, no write.`);
+        return;
+    }
+
+    try {
+        const res = await resilientFetch(buildRtdbUrl(`/psn/gamertags/${onlineId}`), {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(patch)
+        });
+        if (res && !res.ok) throw new Error(`HTTP ${res.status}`);
+        console.log(`[FIREBASE WRITE] ${onlineId}: updated ${changedKeys.length} changed field(s): ${changedKeys.slice(0, 12).join(", ")}${changedKeys.length > 12 ? ", ..." : ""}`);
+    } catch (err) {
+        console.warn(`[FIREBASE WRITE] ${onlineId}: partial update failed (${err.message}). Falling back to full write.`);
+        await syncNodeToFirebase(`gamertags/${onlineId}`, newRecord);
     }
 }
 
@@ -1356,7 +1446,8 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
 
         let storeListing = previousRecord.storeListing || null;
 
-        if (!storeListing || !storeListing.longDescription) {
+        const storeAgeMs = storeListing?.fetchedAt ? (Date.now() - Date.parse(storeListing.fetchedAt)) : Infinity;
+        if (!storeListing || (!storeListing.longDescription && storeAgeMs > 7 * 24 * 3600 * 1000)) {
             if (resolvedConceptId) {
                 console.log(`[STORE SKELETON INGESTION] Pulling Store via concept/${resolvedConceptId} (${resolvedName})...`);
                 storeListing = await queryStoreMetadata(resolvedConceptId, false);
@@ -1774,67 +1865,80 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                     lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
                 };
                 
-                await syncNodeToFirebase(`gamertags/${canonicalOnlineId}`, closedRecord);
+                await writeGamertagDelta(canonicalOnlineId, existingData, closedRecord);
                 return closedRecord;
             }
         }
 
-        let region = { country: "US", language: "en" };
-        if (isSelf) {
-            const regionRes = await callPsn("getUserRegion", () => getUserRegion(auth, "me"), null);
-            if (regionRes) { region = regionRes; rawArchive.region = regionRes; }
-        }
+        // ---- TIERED REFRESH: slow-changing account data is re-pulled on a timer, not on every sync ----
+        const heavyAgeMs = Date.now() - (Number(existingData?.heavyPulledAtMs) || 0);
+        const doHeavy = !existingData || !existingData.heavyPulledAtMs || heavyAgeMs >= PULL_CONFIG.HEAVY_REFRESH_MS;
 
-        let devices = [];
-        if (isSelf) {
-            const devRes = await callPsn("getAccountDevices", () => getAccountDevices(auth), null);
-            if (devRes) {
-                rawArchive.devices = devRes;
-                devices = devRes?.devices || (Array.isArray(devRes) ? devRes : []);
+        let region = existingData
+            ? { country: existingData.region || "US", language: existingData.language || "en" }
+            : { country: "US", language: "en" };
+        let devices = existingData?.devices || [];
+        let shareableProfile = existingData?.shareableProfile || null;
+        let friendsList = (existingData?.friendsList || []).map(String);
+        let blockedUsers = existingData?.blockedUsers || [];
+        let friendRequests = existingData?.friendRequests || [];
+        let sentFriendRequests = existingData?.sentFriendRequests || [];
+        let purchasedGames = existingData?.purchasedGames || [];
+
+        if (doHeavy) {
+            console.log(`[HEAVY REFRESH] Pulling slow-changing account data for ${canonicalOnlineId}...`);
+
+            if (isSelf) {
+                const regionRes = await callPsn("getUserRegion", () => getUserRegion(auth, "me"), null);
+                if (regionRes) { region = regionRes; rawArchive.region = regionRes; }
+
+                const devRes = await callPsn("getAccountDevices", () => getAccountDevices(auth), null);
+                if (devRes) {
+                    rawArchive.devices = devRes;
+                    devices = devRes?.devices || (Array.isArray(devRes) ? devRes : []);
+                }
+
+                const shareRes = await callPsn("getProfileShareableLink", () => getProfileShareableLink(auth, resolvedTargetId), null);
+                if (shareRes) { shareableProfile = shareRes; rawArchive.shareableProfile = shareRes; }
             }
-        }
 
-        let shareableProfile = null;
-        if (isSelf) {
-            shareableProfile = await callPsn("getProfileShareableLink", () => getProfileShareableLink(auth, resolvedTargetId), null);
-            if (shareableProfile) rawArchive.shareableProfile = shareableProfile;
-        }
-
-        // Friends (paginated)
-        const friendsPull = await paginateCollect(
-            "getUserFriendsAccountIds",
-            (offset, size) => getUserFriendsAccountIds(auth, resolvedTargetId, { limit: size, offset }),
-            (res) => res?.friends || [],
-            PULL_CONFIG.PAGE_SIZE_FRIENDS
-        );
-        const friendsList = Array.from(new Set(friendsPull.items.map(String)));
-        if (friendsPull.pagesRaw.length) rawArchive.friends = friendsPull.pagesRaw;
-
-        let blockedUsers = [];
-        let friendRequests = [];
-        let sentFriendRequests = [];
-        if (isSelf) {
-            const blockedRes = await callPsn("getUserBlockedAccountIds", () => getUserBlockedAccountIds(auth), null);
-            if (blockedRes) { rawArchive.blocked = blockedRes; blockedUsers = blockedRes?.blockedUsers || []; }
-            const reqRes = await callPsn("getUserFriendsRequests", () => getUserFriendsRequests(auth), null);
-            if (reqRes) {
-                rawArchive.friendRequests = reqRes;
-                friendRequests = reqRes?.receivedRequests || [];
-                sentFriendRequests = reqRes?.sentRequests || [];
-            }
-        }
-
-        // Purchased games (paginated, self only)
-        let purchasedGames = [];
-        if (isSelf) {
-            const purchasedPull = await paginateCollect(
-                "getPurchasedGames",
-                (offset, size) => getPurchasedGames(auth, { size, start: offset, limit: size, offset, platform: ["PS4", "PS5"] }),
-                (res) => pickList(res, ["data.purchasedTitlesRetrieve.games", "titles", "games"]),
-                PULL_CONFIG.PAGE_SIZE_PURCHASED
+            // Friends (paginated). If the call fails or is hidden, keep the last known list.
+            const friendsPull = await paginateCollect(
+                "getUserFriendsAccountIds",
+                (offset, size) => getUserFriendsAccountIds(auth, resolvedTargetId, { limit: size, offset }),
+                (res) => res?.friends || [],
+                PULL_CONFIG.PAGE_SIZE_FRIENDS
             );
-            purchasedGames = purchasedPull.items;
-            if (purchasedPull.pagesRaw.length) rawArchive.purchasedGames = purchasedPull.pagesRaw;
+            if (friendsPull.pagesRaw.length) {
+                friendsList = Array.from(new Set(friendsPull.items.map(String)));
+                rawArchive.friends = friendsPull.pagesRaw;
+            }
+
+            if (isSelf) {
+                const blockedRes = await callPsn("getUserBlockedAccountIds", () => getUserBlockedAccountIds(auth), null);
+                if (blockedRes) { rawArchive.blocked = blockedRes; blockedUsers = blockedRes?.blockedUsers || []; }
+
+                const reqRes = await callPsn("getUserFriendsRequests", () => getUserFriendsRequests(auth), null);
+                if (reqRes) {
+                    rawArchive.friendRequests = reqRes;
+                    friendRequests = reqRes?.receivedRequests || [];
+                    sentFriendRequests = reqRes?.sentRequests || [];
+                }
+
+                // Purchased games (paginated, self only)
+                const purchasedPull = await paginateCollect(
+                    "getPurchasedGames",
+                    (offset, size) => getPurchasedGames(auth, { size, start: offset, limit: size, offset, platform: ["PS4", "PS5"] }),
+                    (res) => pickList(res, ["data.purchasedTitlesRetrieve.games", "titles", "games"]),
+                    PULL_CONFIG.PAGE_SIZE_PURCHASED
+                );
+                if (purchasedPull.pagesRaw.length) {
+                    purchasedGames = purchasedPull.items;
+                    rawArchive.purchasedGames = purchasedPull.pagesRaw;
+                }
+            }
+        } else {
+            console.log(`[LIGHT SYNC] ${canonicalOnlineId}: reusing saved account data (heavy refresh in ${Math.max(0, Math.round((PULL_CONFIG.HEAVY_REFRESH_MS - heavyAgeMs) / 60000))} min).`);
         }
 
         // Trophy titles (paginated)
@@ -2074,9 +2178,13 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             if (syncId && String(syncId).startsWith("NPWR")) {
                 // Recent titles always refresh; older titles are backfilled once (budgeted per run) then left alone
                 const isRecent = skeletonIndex++ < PULL_CONFIG.SKELETON_REFRESH_RECENT_TITLES;
-                if (!isRecent) {
-                    const hasSkeleton = !!(globalGames[String(syncId).toUpperCase()]?.trophies?.length);
-                    if (hasSkeleton || skeletonBackfillBudget <= 0) continue;
+                const knownSkeleton = globalGames[String(syncId).toUpperCase()];
+                const hasSkeleton = !!(knownSkeleton?.trophies?.length);
+                const skeletonAgeMs = knownSkeleton?.lastUpdated ? (Date.now() - Date.parse(knownSkeleton.lastUpdated)) : Infinity;
+                const isActiveTitle = String(syncId).toUpperCase() === String(persistentRootCommId).toUpperCase();
+                if (hasSkeleton && !isActiveTitle && (!isRecent || skeletonAgeMs < PULL_CONFIG.SKELETON_STALE_MS)) continue;   // fresh enough
+                if (!hasSkeleton && !isRecent) {
+                    if (skeletonBackfillBudget <= 0) continue;
                     skeletonBackfillBudget--;
                 }
                 await ensureGameSkeleton(
@@ -2325,11 +2433,12 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             gamesPlayed: totalGamesPlayedCount || existingData?.gamesPlayed || 0,
             psnAccountAge: calculateAgeString(earliestEntry), 
             earliestTrophyDate: earliestEntry,
-            latestTrophyDate: unifiedMostRecentTrophies[0]?.timestamp || new Date().getTime(),
+            latestTrophyDate: unifiedMostRecentTrophies[0]?.timestamp || existingData?.latestTrophyDate || new Date().getTime(),
             level: stats?.trophyLevel || existingData?.level || 0, 
             playSessions: playSessions,
             liveTrophyProgress: liveTrophyProgress,
             trophyTitleSync: trophyTitleSync,
+            heavyPulledAtMs: doHeavy ? Date.now() : (existingData?.heavyPulledAtMs || 0),
             trophySummary: { 
                 ...stats,
                 platinum: stats?.earnedTrophies?.platinum ?? existingData?.trophySummary?.platinum ?? 0, 
@@ -2484,7 +2593,7 @@ async function executeSyncPass() {
         if (masterAuth && masterAuth.accessToken) {
             console.log(`[CORE PACK] Ingesting Core 4 squad members using session: ${masterAuth.userKey}...`);
             for (const member of CORE_PACK) {
-                const existingData = previousFirebaseData?.gamertags?.[member.tag];
+                const existingData = findExistingGamertagRecord(previousFirebaseData?.gamertags, member.tag, member.id);
                 // A member with their own working cookie is read with it; everyone else is read through the master
                 const memberAuth = (coreAuths[member.key] && coreAuths[member.key].accessToken) ? coreAuths[member.key] : masterAuth;
                 const deltaCheck = await evaluateUserActivityDelta(memberAuth, member.id, member.key, member.tag, existingData);
@@ -2493,6 +2602,7 @@ async function executeSyncPass() {
                 if (!deltaCheck.hasDelta && existingData) {
                     console.log(`[SKIP - NO DELTA] Core member ${member.tag}: ${deltaCheck.reason}.`);
                     activeCanonicalGamertags.add(member.tag);
+                    if (existingData.onlineId) activeCanonicalGamertags.add(existingData.onlineId);
                     continue;
                 }
 
@@ -2518,8 +2628,7 @@ async function executeSyncPass() {
                     finalData.gamertags[data.onlineId] = data;
                     finalData.usersByGamerTag[data.onlineId] = String(data.accountId);
 
-                    await syncNodeToFirebase(`gamertags/${data.onlineId}`, data);
-                    await syncNodeToFirebase(`gamertags/${data.onlineId}/npssoValid`, true);
+                    await writeGamertagDelta(data.onlineId, existingData, data);
                 }
             }
         } else {
@@ -2586,7 +2695,7 @@ async function executeSyncPass() {
                 if (tag) console.log(`[ONBOARDING] Resolved account ${accountId} -> ${tag}.`);
             }
 
-            const existingData = tag ? previousFirebaseData?.gamertags?.[tag] : undefined;
+            const existingData = findExistingGamertagRecord(previousFirebaseData?.gamertags, tag, accountId);
             const targetId = accountId || "me";
             const deltaCheck = await evaluateUserActivityDelta(userAuth, targetId, emailKey, tag, existingData);
 
@@ -2632,8 +2741,7 @@ async function executeSyncPass() {
                 finalData.gamertags[data.onlineId] = data;
                 finalData.usersByGamerTag[data.onlineId] = String(data.accountId);
 
-                await syncNodeToFirebase(`gamertags/${data.onlineId}`, data);
-                await syncNodeToFirebase(`gamertags/${data.onlineId}/npssoValid`, true);
+                await writeGamertagDelta(data.onlineId, existingData, data);
 
                 await markSynced(data.onlineId, { psn_last_synced: data.lastUpdated });
             }
