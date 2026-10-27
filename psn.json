@@ -373187,19 +373187,16 @@
       "gamesPlayed": 73,
       "isOnline": true,
       "currentGame": "Far Cry® 5",
+      "gameStatus": "",
       "commId": "NPWR12514_00",
       "conceptId": 221692,
       "currentGameId": "CUSA05904_00",
       "art": "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png",
       "posterArt": "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png",
       "image": "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png",
-      "media": [
-        "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png"
-      ],
       "platform": "PS5",
       "gameBuildVersion": "PS4 Back-Compat on PS5",
-      "isStreamingRemotePlay": false,
-      "nativePlaytimeHours": 29
+      "isStreamingRemotePlay": false
     },
     {
       "onlineId": "wildhorse_spirit",
@@ -373213,19 +373210,16 @@
       "gamesPlayed": 144,
       "isOnline": true,
       "currentGame": "Far Cry® 5",
+      "gameStatus": "",
       "commId": "NPWR12514_00",
       "conceptId": 221692,
       "currentGameId": "CUSA05904_00",
       "art": "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png",
       "posterArt": "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png",
       "image": "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png",
-      "media": [
-        "//image.api.playstation.com/vulcan/ap/rnd/202608/0521/15618b4627bb9e14016484379865574b6caf9041544946c8.png"
-      ],
       "platform": "PS5",
       "gameBuildVersion": "PS4 Back-Compat on PS5",
-      "isStreamingRemotePlay": false,
-      "nativePlaytimeHours": 28.1
+      "isStreamingRemotePlay": false
     },
     {
       "onlineId": "DesdemonaTiger",
@@ -373239,19 +373233,16 @@
       "gamesPlayed": 160,
       "isOnline": false,
       "currentGame": "Ghost of Tsushima",
+      "gameStatus": "",
       "commId": "NPWR15120_00",
       "conceptId": null,
       "currentGameId": null,
       "art": "//image.api.playstation.com/trophy/np/NPWR15120_00_00736F40BFE5A427C57A238478A141FABB81ABA3C7/F7780A7B9141F2A1D0B68E578787D962D7F69C31.PNG",
       "posterArt": "//image.api.playstation.com/trophy/np/NPWR15120_00_00736F40BFE5A427C57A238478A141FABB81ABA3C7/F7780A7B9141F2A1D0B68E578787D962D7F69C31.PNG",
       "image": "//image.api.playstation.com/trophy/np/NPWR15120_00_00736F40BFE5A427C57A238478A141FABB81ABA3C7/F7780A7B9141F2A1D0B68E578787D962D7F69C31.PNG",
-      "media": [
-        "//image.api.playstation.com/trophy/np/NPWR15120_00_00736F40BFE5A427C57A238478A141FABB81ABA3C7/F7780A7B9141F2A1D0B68E578787D962D7F69C31.PNG"
-      ],
       "platform": "PS4",
       "gameBuildVersion": "PS4 Native Game",
-      "isStreamingRemotePlay": false,
-      "nativePlaytimeHours": 2.5
+      "isStreamingRemotePlay": false
     },
     {
       "onlineId": "Darkwing69420",
@@ -373265,19 +373256,16 @@
       "gamesPlayed": 27,
       "isOnline": false,
       "currentGame": "Gold Mining Simulator",
+      "gameStatus": "",
       "commId": null,
       "conceptId": null,
       "currentGameId": "CUSA16635_00",
       "art": "//gs2-sec.ww.prod.dl.playstation.net/gs2-sec/appkgo/prod/CUSA16635_00/3/i_a68f0a93f962fa1620932bd054a1490c40678f723fbbb67c1970edf28ca7bdd4/i/icon0.png",
       "posterArt": "//gs2-sec.ww.prod.dl.playstation.net/gs2-sec/appkgo/prod/CUSA16635_00/3/i_a68f0a93f962fa1620932bd054a1490c40678f723fbbb67c1970edf28ca7bdd4/i/icon0.png",
       "image": "//gs2-sec.ww.prod.dl.playstation.net/gs2-sec/appkgo/prod/CUSA16635_00/3/i_a68f0a93f962fa1620932bd054a1490c40678f723fbbb67c1970edf28ca7bdd4/i/icon0.png",
-      "media": [
-        "//gs2-sec.ww.prod.dl.playstation.net/gs2-sec/appkgo/prod/CUSA16635_00/3/i_a68f0a93f962fa1620932bd054a1490c40678f723fbbb67c1970edf28ca7bdd4/i/icon0.png"
-      ],
       "platform": "PS5",
       "gameBuildVersion": "PS5 Native Game",
-      "isStreamingRemotePlay": false,
-      "nativePlaytimeHours": 0
+      "isStreamingRemotePlay": false
     }
   ],
   "squadAnalytics": {
@@ -373393,24 +373381,72 @@
         }
       }
     },
-    "calculatedAt": "2026-10-26T05:53:04.795Z"
+    "calculatedAt": "2026-10-27T18:04:54.278Z"
   },
   "mutualSquadFollowers": [],
+  "friendsDirectory": {},
+  "raw": {},
   "authDiagnostics": {
-    "wildhorse_spirit_active": "yes",
-    "wildhorse_spirit_status": "ACTIVE_VIA_REFRESH",
-    "ray_active": "yes",
-    "ray_status": "ACTIVE_VIA_REFRESH",
-    "active_runner": "PRIMARY_WOLF",
-    "buffer_status": "PRIMARY HEALTHY (Werewolf Running)",
-    "lastCheck": "10/26/2026, 01:51:50",
+    "wildhorse_spirit_active": "no",
+    "wildhorse_spirit_status": "OFFLINE_GUEST_MODE",
+    "ray_active": "no",
+    "ray_status": "OFFLINE_GUEST_MODE",
     "darkwing_active": "no",
     "darkwing_status": "OFFLINE_GUEST_MODE",
     "marc_active": "no",
-    "marc_status": "OFFLINE_GUEST_MODE"
+    "marc_status": "OFFLINE_GUEST_MODE",
+    "active_runner": "SNAPSHOT_FALLBACK",
+    "buffer_status": "LOCAL SNAPSHOT MODE (psn.json)",
+    "storage_mode": "LOCAL_JSON (psn.json)",
+    "lastCheck": "10/27/2026, 14:04:54",
+    "exportAudit": {
+      "available": [
+        "call",
+        "exchangeAccessCodeForAuthTokens",
+        "exchangeCodeForAccessToken",
+        "exchangeNpssoForAccessCode",
+        "exchangeNpssoForCode",
+        "exchangeRefreshTokenForAuthTokens",
+        "getAccountDevices",
+        "getBasicPresence",
+        "getProfileFromAccountId",
+        "getProfileFromUserName",
+        "getProfileShareableLink",
+        "getPurchasedGames",
+        "getRecentlyPlayedGames",
+        "getTitleTrophies",
+        "getTitleTrophyGroups",
+        "getUserBlockedAccountIds",
+        "getUserFriendsAccountIds",
+        "getUserFriendsRequests",
+        "getUserPlayedGames",
+        "getUserRegion",
+        "getUserTitles",
+        "getUserTrophiesEarnedForTitle",
+        "getUserTrophiesForSpecificTitle",
+        "getUserTrophyGroupEarningsForTitle",
+        "getUserTrophyProfileSummary",
+        "makeUniversalSearch"
+      ],
+      "missing": [],
+      "unused": [
+        "call",
+        "exchangeAccessCodeForAuthTokens",
+        "exchangeNpssoForAccessCode",
+        "getProfileFromUserName",
+        "getUserTrophiesForSpecificTitle",
+        "makeUniversalSearch"
+      ]
+    },
+    "apiStats": {
+      "totalCalls": 0,
+      "failedCalls": 0,
+      "errorsByEndpoint": {},
+      "missingExports": []
+    }
   },
-  "lastGlobalUpdate": "10/26/2026, 01:51:58",
-  "engineVersion": "69.2.0",
+  "lastGlobalUpdate": "10/27/2026, 14:04:54",
+  "engineVersion": "67.0.0 - Local JSON Engine",
   "analyticsTag": "G-CTYHDF4MSD",
-  "codeTimestamp": "10/26/2026, 01:51:58 EDT"
+  "codeTimestamp": "10/27/2026, 14:04:54 EDT"
 }
