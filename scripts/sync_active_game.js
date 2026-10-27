@@ -1,11 +1,7 @@
 // scripts/sync_active_game.js
-// Section 1: Modules, Config & Target Output Paths
+// Section 1: Modules, RTDB Endpoints & Output Paths
 const fs = require('fs');
 const path = require('path');
-const { 
-  getUserTitles, 
-  getTitleTrophies 
-} = require('psn-api');
 
 const FIREBASE_DB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
 const TARGET_GAMERTAG = "wildhorse_spirit";
@@ -13,146 +9,36 @@ const OUTPUT_FILE = path.join(__dirname, '../game/data/game.json');
 const PSN_FOLDER_JSON = path.join(__dirname, '../Playstation/psn.json');
 const ARCHIVE_DIR = path.join(__dirname, '../game/data/games');
 
-// Section 2: Main Execution Flow
+// Section 2: Pure RTDB Read & Output Flow
 async function main() {
   try {
-    console.log("[1/6] Resolving PSN authorization from Firebase token cache...");
+    console.log(`[1/3] Reading saved active game data from Firebase RTDB for ${TARGET_GAMERTAG}...`);
     
-    const authSecret = process.env.FIREBASE_AUTH_SECRET;
-    let authorization = null;
+    // Fetch the active commId pointer already saved in RTDB
+    const commIdRes = await fetch(`${FIREBASE_DB_URL}/psn/gamertags/${TARGET_GAMERTAG}/commId.json`);
+    const commId = await commIdRes.json();
 
-    // Line 25: Pull directly from the exact cache Playstation/psn.js maintains
-    const tokenUrl = authSecret 
-      ? `${FIREBASE_DB_URL}/tokens/wildhorse_spirit.json?auth=${authSecret}`
-      : `${FIREBASE_DB_URL}/tokens/wildhorse_spirit.json`;
-
-    const tokenRes = await fetch(tokenUrl);
-    if (!tokenRes.ok) {
-      throw new Error(`Failed to query token cache from Firebase: HTTP ${tokenRes.status}`);
-    }
-
-    const cached = await tokenRes.json();
-    if (!cached) {
-      throw new Error("Token cache is empty at /tokens/wildhorse_spirit");
-    }
-
-    // Support both raw string or { accessToken } / { access_token } schema
-    const tokenString = typeof cached === 'string' 
-      ? cached 
-      : (cached.accessToken || cached.access_token || cached.token);
-
-    if (!tokenString) {
-      throw new Error("Cached token object found but contains no valid accessToken field.");
-    }
-
-    console.log("[TOKEN STORAGE] Successfully loaded active session for wildhorse_spirit.");
-    authorization = { accessToken: tokenString };
-
-    console.log(`[2/6] Querying active PlayStation titles for ${TARGET_GAMERTAG}...`);
-    const titlesData = await getUserTitles(authorization, "me", { limit: 10 });
-    const titles = titlesData.trophyTitles || [];
-
-    if (titles.length === 0) {
-      console.log("No trophy titles returned from PSN.");
+    if (!commId) {
+      console.log(`No active commId found in RTDB for ${TARGET_GAMERTAG}.`);
       return;
     }
 
-    // Sort descending by most recent earned trophy date
-    titles.sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
-    const activeGame = titles[0];
-    const commId = activeGame.npCommunicationId;
-    const gameName = activeGame.trophyTitleName;
-    console.log(`[3/6] Active title: "${gameName}" (${commId}) | Progress: ${activeGame.progress}%`);
+    // Fetch the game's metadata and trophy skeleton already saved under this commId
+    const gameDataRes = await fetch(`${FIREBASE_DB_URL}/psn/games/${commId}.json`);
+    const savedGame = await gameDataRes.json() || {};
 
-    console.log(`[4/6] Fetching Sony trophies for ${commId}...`);
-    const trophiesData = await getTitleTrophies(authorization, commId, "all");
-    const rawTrophies = trophiesData.trophies || [];
-
-    const formattedTrophies = rawTrophies.map(t => ({
-      trophyId: t.trophyId,
-      name: t.trophyName || "",
-      type: t.trophyType ? (t.trophyType.charAt(0).toUpperCase() + t.trophyType.slice(1)) : "Bronze",
-      description: t.trophyDetail || "",
-      icon: t.trophyIconUrl || ""
-    }));
-
-    console.log(`[5/6] Auto-fetching game guide metrics for "${gameName}"...`);
-    const scrapedGuide = await scrapeFandomWikiGuide(gameName);
-
+    const gameName = savedGame.gameTitle || savedGame.name || savedGame.trophyTitleName || "Active Game";
     const gameId = gameName.replace(/[^a-zA-Z0-9]/g, "");
-    const gamePayload = {
-      game: gameName,
-      gameId: gameId,
-      commId: commId,
-      lastUpdated: activeGame.lastUpdatedDateTime,
-      overallProgress: activeGame.progress || 0,
-      activeMission: scrapedGuide.activeMission || "In Progress",
-      metrics: scrapedGuide.metrics || [],
-      categories: scrapedGuide.categories || {},
-      trophies: formattedTrophies
-    };
+    console.log(`[2/3] Found saved active game: "${gameName}" (${commId})`);
 
-    console.log("[6/6] Writing game data to targets...");
-    
-    const outputDir = path.dirname(OUTPUT_FILE);
-    const psnDir = path.dirname(PSN_FOLDER_JSON);
-    if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
-    if (!fs.existsSync(psnDir)) fs.mkdirSync(psnDir, { recursive: true });
-    if (!fs.existsSync(ARCHIVE_DIR)) fs.mkdirSync(ARCHIVE_DIR, { recursive: true });
-
-    // Simultaneous write to game/data/game.json and Playstation/psn.json
-    fs.writeFileSync(OUTPUT_FILE, JSON.stringify(gamePayload, null, 2), 'utf8');
-    fs.writeFileSync(PSN_FOLDER_JSON, JSON.stringify(gamePayload, null, 2), 'utf8');
-    fs.writeFileSync(path.join(ARCHIVE_DIR, `${commId}.json`), JSON.stringify(gamePayload, null, 2), 'utf8');
-
-    console.log(`Success: game.json and Playstation/psn.json updated.`);
-
-    // Update active commId leaf pointer in Firebase RTDB
-    const commIdUrl = authSecret
-      ? `${FIREBASE_DB_URL}/psn/gamertags/${TARGET_GAMERTAG}/commId.json?auth=${authSecret}`
-      : `${FIREBASE_DB_URL}/psn/gamertags/${TARGET_GAMERTAG}/commId.json`;
-
-    await fetch(commIdUrl, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(commId)
-    });
-
-  } catch (err) {
-    console.error("Pipeline failure:", err.message);
-    process.exit(1);
-  }
-}
-
-// Section 3: Free Fandom MediaWiki Scraping Engine
-async function scrapeFandomWikiGuide(gameTitle) {
-  const result = {
-    activeMission: "Active Campaign",
-    metrics: [],
-    categories: {}
-  };
-
-  const cleanTitle = gameTitle.toLowerCase();
-
-  let wikiDomain = "";
-  if (cleanTitle.includes("far cry")) {
-    wikiDomain = "farcry.fandom.com";
-  } else if (cleanTitle.includes("ghost of tsushima")) {
-    wikiDomain = "ghostoftsushima.fandom.com";
-  } else if (cleanTitle.includes("sniper elite")) {
-    wikiDomain = "sniperelite.fandom.com";
-  }
-
-  if (!wikiDomain) {
-    result.metrics = [
-      { id: "metric_1", icon: "🏆", label: "Trophy Progress", current: 0, total: 100, step: 1 }
+    // Build pill metrics based on the game name
+    let metrics = [
+      { id: "metric_1", icon: "🏆", label: "Trophy Progress", current: savedGame.progress || 0, total: 100, step: 1 }
     ];
-    return result;
-  }
 
-  try {
-    if (wikiDomain === "farcry.fandom.com") {
-      result.metrics = [
+    const cleanTitle = gameName.toLowerCase();
+    if (cleanTitle.includes("far cry")) {
+      metrics = [
         { id: "metric_1", icon: "⚡", label: "Resistance Pts", current: 0, total: 39000, step: 100 },
         { id: "metric_2", icon: "🏴", label: "Outposts", current: 0, total: 21, step: 1 },
         { id: "metric_3", icon: "🔥", label: "Cult Property", current: 0, total: 48, step: 1 },
@@ -160,20 +46,8 @@ async function scrapeFandomWikiGuide(gameTitle) {
         { id: "metric_5", icon: "🐾", label: "Guns & Fangs", current: 0, total: 9, step: 1 },
         { id: "metric_6", icon: "🗂️", label: "Collectibles", current: 0, total: 58, step: 1 }
       ];
-
-      const stashApi = `https://${wikiDomain}/api.php?action=parse&page=Prepper_Stashes&prop=sections|text&format=json`;
-      const stashRes = await fetch(stashApi);
-      const stashData = await stashRes.json();
-
-      if (stashData && stashData.parse) {
-        result.categories["prepper_stashes"] = {
-          label: "Prepper Stashes",
-          icon: "📦",
-          count: 27
-        };
-      }
-    } else if (wikiDomain === "ghostoftsushima.fandom.com") {
-      result.metrics = [
+    } else if (cleanTitle.includes("ghost of tsushima")) {
+      metrics = [
         { id: "metric_1", icon: "📜", label: "Records / Scrolls", current: 0, total: 40, step: 1 },
         { id: "metric_2", icon: "🏺", label: "Mongol Artifacts", current: 0, total: 50, step: 1 },
         { id: "metric_3", icon: "🎏", label: "Sashimono Banners", current: 0, total: 80, step: 1 },
@@ -183,18 +57,39 @@ async function scrapeFandomWikiGuide(gameTitle) {
         { id: "metric_7", icon: "🪶", label: "Haikus", current: 0, total: 19, step: 1 },
         { id: "metric_8", icon: "⛩️", label: "Shinto Shrines", current: 0, total: 16, step: 1 }
       ];
-
-      result.categories["vanity_gear"] = {
-        label: "Vanity Gear",
-        icon: "🎭",
-        count: 59
-      };
     }
-  } catch (err) {
-    console.warn(`Wiki scrape note: ${err.message}. Defaulting to structured metric templates.`);
-  }
 
-  return result;
+    // Assemble payload using already-saved RTDB data
+    const gamePayload = {
+      game: gameName,
+      gameId: gameId,
+      commId: commId,
+      lastUpdated: savedGame.lastUpdated || new Date().toISOString(),
+      overallProgress: savedGame.progress || 0,
+      activeMission: savedGame.activeMission || "In Progress",
+      metrics: metrics,
+      categories: savedGame.categories || {},
+      trophies: savedGame.trophies || []
+    };
+
+    console.log("[3/3] Writing payload to game/data/game.json and Playstation/psn.json...");
+    
+    const outputDir = path.dirname(OUTPUT_FILE);
+    const psnDir = path.dirname(PSN_FOLDER_JSON);
+    if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+    if (!fs.existsSync(psnDir)) fs.mkdirSync(psnDir, { recursive: true });
+    if (!fs.existsSync(ARCHIVE_DIR)) fs.mkdirSync(ARCHIVE_DIR, { recursive: true });
+
+    fs.writeFileSync(OUTPUT_FILE, JSON.stringify(gamePayload, null, 2), 'utf8');
+    fs.writeFileSync(PSN_FOLDER_JSON, JSON.stringify(gamePayload, null, 2), 'utf8');
+    fs.writeFileSync(path.join(ARCHIVE_DIR, `${commId}.json`), JSON.stringify(gamePayload, null, 2), 'utf8');
+
+    console.log(`[SUCCESS] Wrote ${gameName} (${commId}) to game.json and psn.json without needing PSN tokens.`);
+
+  } catch (err) {
+    console.error("Reader failure:", err.message);
+    process.exit(1);
+  }
 }
 
 main();
