@@ -50,7 +50,14 @@
  * - Self-only fields (devices, purchases, blocked, requests, region) are preserved when a member is read
  *   through someone else's session, instead of being overwritten with empty values.
  * - Only the 4 core members are ever read with a core cookie; outside users only use their own cookie.
- * Version: 66.5.0 - Four-Member Hot Standby
+ * 9. Playtime Matches The PS App + Session Timer (NEW in 66.6.0):
+ * - Sony's own played-time total (playDuration) is now the displayed hours (PULL_CONFIG.PREFER_SONY_PLAYTIME).
+ *   The script's own tracker is only used when Sony has no playtime for the game.
+ * - playedHoursApp ("31h") is whole hours rounded DOWN, exactly like the PS app; hoursPlayed keeps the long form.
+ * - playtimeSource says where the number came from: "sony", "tracker" or "stored".
+ * - sessionStartedAt / sessionStartedAtMs / currentSessionSeconds give your site a live session timer
+ *   (start = when the script first saw the game running, so it can lag by one run interval).
+ * Version: 66.6.0 - PS-App-Accurate Playtime & Session Timer
  * Date & Time Stamp: 2026-10-26 (America/New_York)
  * ============================================================================ */
 
@@ -87,7 +94,7 @@ const {
 const FIREBASE_BASE_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn";
 const RTDB_ROOT_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
 const GA4_MEASUREMENT_ID = "G-CTYHDF4MSD";
-const ENGINE_VERSION = "66.5.0";
+const ENGINE_VERSION = "66.6.0";
 const LOCAL_TOKENS_PATH = path.join(__dirname, ".psn_tokens.json");
 
 const SQUAD_GAMERTAGS = {
@@ -162,6 +169,7 @@ const PULL_CONFIG = {
     FRIEND_RETRY_UNRESOLVED_MS: 7 * 24 * 3600 * 1000,
     REQUEST_GAP_MS: 120,                  // small gap between PSN calls (rate-limit friendly)
     RETRIES: 2,
+    PREFER_SONY_PLAYTIME: true,           // show Sony's played-time total (matches the PS app); false = script tracker first
     ARCHIVE_RAW: true                     // write untouched API responses to /psn/raw/{onlineId}/...
 };
 
@@ -1755,6 +1763,9 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                     currentGame: "Dashboard",
                     currentGameId: null,
                     gameStatus: "",
+                    sessionStartedAt: "",
+                    sessionStartedAtMs: 0,
+                    currentSessionSeconds: 0,
                     art: existingData?.art || existingData?.posterArt || existingData?.currentGameArt || null,
                     posterArt: existingData?.posterArt || existingData?.art || existingData?.currentGameArt || null,
                     image: existingData?.image || existingData?.art || existingData?.posterArt || null,
@@ -1905,6 +1916,8 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                 nativePlaytimeSeconds: parsedSeconds,
                 nativePlaytimeFormatted: formatDuration(parsedSeconds),
                 nativePlaytimeHours: Math.round((parsedSeconds / 3600) * 10) / 10,
+                nativePlaytimeWholeHours: Math.floor(parsedSeconds / 3600),
+                nativePlaytimeAppStyle: `${Math.floor(parsedSeconds / 3600)}h`,
                 firstPlayedDateTime: g.firstPlayedDateTime || null,
                 lastPlayed: g.lastPlayedDateTime || null,
                 progress: 0,
@@ -1951,6 +1964,8 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                     existing.nativePlaytimeSeconds = nameMatch.nativePlaytimeSeconds || 0;
                     existing.nativePlaytimeFormatted = nameMatch.nativePlaytimeFormatted || "< 1 min";
                     existing.nativePlaytimeHours = nameMatch.nativePlaytimeHours || 0;
+                    existing.nativePlaytimeWholeHours = nameMatch.nativePlaytimeWholeHours || 0;
+                    existing.nativePlaytimeAppStyle = nameMatch.nativePlaytimeAppStyle || "0h";
                     existing.firstPlayedDateTime = nameMatch.firstPlayedDateTime || null;
                     existing.art = nameMatch.art || null;
                 }
@@ -2119,13 +2134,28 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                                          existingData?.activeHunt?.numericHours || 
                                          0;
 
-        const safePlaytimeFormatted = (currentGameDurationFormatted && currentGameDurationFormatted !== "0 hrs" && currentGameDurationFormatted !== "< 1 min")
-            ? currentGameDurationFormatted
-            : persistentLifetimeFormatted;
+        // PLAYTIME SOURCE: Sony's total (what the PS app shows) wins; the script's own tracker is only a fallback.
+        const sonySeconds = matchedGame.nativePlaytimeSeconds || 0;
+        const useSony = PULL_CONFIG.PREFER_SONY_PLAYTIME && sonySeconds > 0;
+        const trackerHasTime = !!(currentGameDurationFormatted && currentGameDurationFormatted !== "0 hrs" && currentGameDurationFormatted !== "< 1 min");
 
-        const safeNumericHours = (activeSessionSeconds > 0)
-            ? (Math.round((activeSessionSeconds / 3600) * 10) / 10)
-            : persistentLifetimeNumeric;
+        const safePlaytimeFormatted = useSony
+            ? (matchedGame.nativePlaytimeFormatted || formatDuration(sonySeconds))
+            : (trackerHasTime ? currentGameDurationFormatted : persistentLifetimeFormatted);
+
+        const safeNumericHours = useSony
+            ? (matchedGame.nativePlaytimeHours || Math.round((sonySeconds / 3600) * 10) / 10)
+            : ((activeSessionSeconds > 0) ? (Math.round((activeSessionSeconds / 3600) * 10) / 10) : persistentLifetimeNumeric);
+
+        const playtimeSource = useSony ? "sony" : (trackerHasTime ? "tracker" : "stored");
+        const playedHoursWhole = useSony ? Math.floor(sonySeconds / 3600) : Math.floor(Number(safeNumericHours) || 0);
+        const playedHoursApp = `${playedHoursWhole}h`;   // PS app style: whole hours, rounded down
+
+        // LIVE SESSION TIMER (start = when this script first saw the game running)
+        const activeSession = (!isDashboard && playSessions[persistentRootCommId]?.isActive) ? playSessions[persistentRootCommId] : null;
+        const sessionStartMs = activeSession?.sessionStartTime || 0;
+        const currentSessionSeconds = sessionStartMs ? Math.max(0, Math.floor((Date.now() - sessionStartMs) / 1000)) : 0;
+        const sessionStartedAt = sessionStartMs ? new Date(sessionStartMs).toISOString() : "";
 
         const stats = await callPsn("getUserTrophyProfileSummary", () => getUserTrophyProfileSummary(auth, resolvedTargetId), {});
         let activeHunt = existingData?.activeHunt || null;
@@ -2199,6 +2229,8 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                         hoursPlayed: safePlaytimeFormatted, 
                         hoursFormatted: safePlaytimeFormatted, 
                         numericHours: safeNumericHours, 
+                        playedHoursApp: playedHoursApp,
+                        playtimeSource: playtimeSource,
                         amazonAffiliateUrl: generateAffiliateUrl(matchedGame.name || resolvedTitle), 
                         progress: matchedGame.progress || 0, 
                         firstTrophyTimestamp: earliestActiveTrophyTimestamp,
@@ -2243,6 +2275,13 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             image: safeFinalPoster,
             currentGameHours: safePlaytimeFormatted,
             currentGameNumericHours: safeNumericHours,
+            playedHoursApp: playedHoursApp,
+            playedHoursWhole: playedHoursWhole,
+            playtimeSource: playtimeSource,
+            sonyPlayDuration: matchedGame.playDuration || "",
+            sessionStartedAt: sessionStartedAt,
+            sessionStartedAtMs: sessionStartMs,
+            currentSessionSeconds: currentSessionSeconds,
             amazonAffiliateUrl: generateAffiliateUrl(resolvedTitle),
             platform: hwContext.activeHardware,
             gameBuildVersion: hwContext.gameBuildVersion,
