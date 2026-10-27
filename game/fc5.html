@@ -3,8 +3,8 @@
  * Project: Far Cry 5 Hope County Resistance Companion & Field Ledger
  * File: index.html
  * Location: /game/index.html
- * Build Version: v8.3.0-FC5-CLOUD-AUTHORITATIVE
- * Deployment Timestamp: 2026-10-26 21:12:00 EDT (America/New_York)
+ * Build Version: v8.5.0-FC5-CLOUD-AUTHORITATIVE
+ * Deployment Timestamp: 2026-10-26 21:23:00 EDT (America/New_York)
  * PSN Communication ID: NPWR12514_00
  * Google Analytics Tag: G-CTYHDF4MSD
  * Script Engine: ./fc5.js
@@ -42,7 +42,7 @@
       });
     </script>
 
-    <!-- Font Awesome & Styles -->
+    <!-- Font Awesome & Master Styles -->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -106,7 +106,7 @@
         h2 { font-size: clamp(1.1rem, 2.5vw, 1.4rem); }
         h3 { font-size: 1.05rem; }
 
-        /* Dynamic Navigation Bar */
+        /* Fixed Dynamic Top Navigation Bar */
         .top-nav-bar {
             position: fixed;
             top: 0; left: 0; width: 100%;
@@ -422,7 +422,7 @@
             display: inline-block;
         }
 
-        /* Footer */
+        /* Persistent Footer */
         footer.tracker-footer {
             position: fixed;
             bottom: 0; left: 0; width: 100%;
@@ -436,10 +436,10 @@
         }
     </style>
 </head>
-<body data-active-user="Werewolf">
+<body>
     <div class="background-overlay"></div>
 
-    <!-- Fixed Header Navigation with Auth Trigger -->
+    <!-- Fixed Header Navigation with Auth Controls -->
     <header class="top-nav-bar">
         <div class="nav-inner">
             <div class="nav-brand-group">
@@ -471,18 +471,13 @@
                     <h1 id="resistance-name" style="color:var(--user-theme-accent);">WEREWOLF [FAR CRY 5]</h1>
                 </div>
 
-                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <div style="display:flex; align-items:center; gap:8px;">
                     <select id="platformSelect" class="nav-btn" style="min-height:38px; background:#0f172a; color:#fff;" onchange="appState.switchPlatform(this.value)">
                         <option value="ps" selected>🎮 PlayStation (PSN NPWR12514_00)</option>
                         <option value="xbox">❎ Xbox Network</option>
                         <option value="pc">💻 PC (Ubisoft Connect)</option>
                         <option value="steam">🚂 Steam Client</option>
                     </select>
-
-                    <div style="display:inline-flex; gap:6px;">
-                        <button type="button" class="nav-btn" onclick="appState.switchHunterEmail('raykevin71888@gmail.com')">Werewolf</button>
-                        <button type="button" class="nav-btn" onclick="appState.switchHunterEmail('cartnalray9@gmail.com')">Raymystyro</button>
-                    </div>
                 </div>
             </div>
 
@@ -580,7 +575,7 @@
         <!-- Persistent Footer with NY Timestamp -->
         <footer class="tracker-footer">
             <div id="build-meta-footer" style="color:#94a3b8; font-size:0.8rem; font-family:monospace;">
-                Werewolf Resistance Engine • v8.3.0 • Build: 2026-10-26 21:12 EDT
+                Werewolf Resistance Engine • v8.5.0 • Build: 2026-10-26 21:23 EDT
             </div>
             <div id="nyBuildTimestamp" style="font-size:11px; color:#aaa; font-family:monospace;" class="outlined-text">
                 New York Time (24h): --:--:--
@@ -638,13 +633,16 @@
         });
     </script>
 
-    <!-- Firebase Compat SDKs -->
+    <!-- Firebase Compat SDKs (Relative Protocol) -->
     <script src="//www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="//www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="//www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script src="//www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
+    <!-- Auto-Initializer for playstation-be936 hosting domain -->
+    <script src="/__/firebase/init.js"></script>
+
     <!-- App Engine Script Connection -->
-    <script type="module" src="./fc5.js?v=8.3.0"></script>
+    <script type="module" src="./fc5.js?v=8.5.0"></script>
 </body>
 </html>
