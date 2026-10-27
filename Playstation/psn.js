@@ -39,8 +39,15 @@
  * Date & Time Stamp: 2026-10-27 (America/New_York)
  * ============================================================================ */
 
+import { createRequire } from "module";
+import { fileURLToPath } from "url";
+import path from "path";
+
+const require = createRequire(import.meta.url);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const fs = require("fs");
-const path = require("path");
 const http = require("http");
 const https = require("https");
 const psnApi = require("psn-api");
@@ -224,8 +231,15 @@ function savePsnJson(data = activePsnData) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION 3: LOCAL USER & CREDENTIAL STORE (REPLACES FIREBASE /users)]
+// [SECTION 3: RTDB CREDENTIAL SOURCE (DEFAULT) & LOCAL BACKUP]
 // ----------------------------------------------------------------------------
+const RTDB_ROOT_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
+
+function buildRtdbUrl(pathWithLeadingSlash) {
+    const secret = process.env.FIREBASE_AUTH_SECRET;
+    const authQuery = secret ? `?auth=${encodeURIComponent(secret)}` : "";
+    return `${RTDB_ROOT_URL}${pathWithLeadingSlash}.json${authQuery}`;
+}
 
 function loadLocalUsersAndSecrets() {
     let users = {};
@@ -258,6 +272,30 @@ function writeLocalUserPsnStatus(emailKey, fields) {
     } catch (e) {
         console.warn(`[USERS WRITE WARN] Could not write user status for ${emailKey}: ${e.message}`);
     }
+}
+
+async function writeUserPsnStatus(emailKey, fields, currentRecord) {
+    const current = (currentRecord && typeof currentRecord === "object") ? currentRecord : {};
+    const changed = {};
+    for (const [k, v] of Object.entries(fields)) {
+        if (v === undefined || v === null) continue;
+        if (current[k] !== v) changed[k] = v;
+    }
+    if (Object.keys(changed).length === 0) return;
+
+    // Write back to RTDB so site remains 100% in sync
+    try {
+        await resilientFetch(buildRtdbUrl(`/users/${emailKey}`), {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(changed)
+        });
+        console.log(`[RTDB STATUS] Synchronized status for ${emailKey} in RTDB.`);
+    } catch (err) {
+        console.warn(`[USER STATUS WARN] Could not write PSN status for ${emailKey} to RTDB: ${err.message}`);
+    }
+
+    writeLocalUserPsnStatus(emailKey, changed);
 }
 
 // ----------------------------------------------------------------------------
@@ -808,14 +846,14 @@ function resolveGamePosterArt(sources = []) {
     for (const src of sources) {
         if (typeof src === "string" && src.trim().length > 0 && !src.includes("undefined") && !src.includes("null")) {
             let cleanUrl = src.trim();
-            if (cleanUrl.startsWith("http://")) cleanUrl = cleanUrl.replace("http://", "//");
-            if (cleanUrl.startsWith("https://")) cleanUrl = cleanUrl.replace("https://", "//");
+            if (cleanUrl.startsWith("//")) cleanUrl = "https:" + cleanUrl;
+            if (cleanUrl.startsWith("http://")) cleanUrl = cleanUrl.replace("http://", "https://");
             return cleanUrl;
         }
         if (src && typeof src === "object" && src.url) {
             let cleanUrl = src.url.trim();
-            if (cleanUrl.startsWith("http://")) cleanUrl = cleanUrl.replace("http://", "//");
-            if (cleanUrl.startsWith("https://")) cleanUrl = cleanUrl.replace("https://", "//");
+            if (cleanUrl.startsWith("//")) cleanUrl = "https:" + cleanUrl;
+            if (cleanUrl.startsWith("http://")) cleanUrl = cleanUrl.replace("http://", "https://");
             return cleanUrl;
         }
     }
@@ -2380,12 +2418,29 @@ async function executeSyncPass() {
         const globalGames = psnData.games || {};
         friendsDirectoryCache = psnData.friendsDirectory || {};
 
-        const { users: localUsers, secrets: localSecrets } = loadLocalUsersAndSecrets();
+        // ---- CREDENTIALS FROM RTDB (DEFAULT SOURCE): /users/{emailKey} + /user_secrets/{emailKey} ----
+        console.log(`[RTDB CREDENTIALS] Reading users and secrets from ${RTDB_ROOT_URL}...`);
+        const siteUsersRaw = await resilientFetch(buildRtdbUrl("/users")).then(r => r.json()).catch(() => ({}));
+        const userSecretsRaw = await resilientFetch(buildRtdbUrl("/user_secrets")).then(r => r.json()).catch(() => ({}));
+        const cloudDlcCatalog = await resilientFetch(buildRtdbUrl("/woth2_cloud/data/dlcs")).then(r => r.json()).catch(() => ({}));
+
+        if (siteUsersRaw && siteUsersRaw.error) console.warn(`[CREDENTIALS] Could not read RTDB /users: ${siteUsersRaw.error}`);
+        if (userSecretsRaw && userSecretsRaw.error) console.warn(`[CREDENTIALS] Could not read RTDB /user_secrets: ${userSecretsRaw.error}`);
 
         const credentialList = [];
+        if (siteUsersRaw && typeof siteUsersRaw === "object" && !siteUsersRaw.error) {
+            for (const [emailKey, u] of Object.entries(siteUsersRaw)) {
+                credentialList.push(readUserPsnCredentials(emailKey, u, userSecretsRaw?.[emailKey]));
+            }
+        }
+
+        // Local users fallback if RTDB is empty or missing specific keys
+        const { users: localUsers, secrets: localSecrets } = loadLocalUsersAndSecrets();
         if (localUsers && typeof localUsers === "object") {
             for (const [emailKey, u] of Object.entries(localUsers)) {
-                credentialList.push(readUserPsnCredentials(emailKey, u, localSecrets?.[emailKey]));
+                if (!siteUsersRaw?.[emailKey]) {
+                    credentialList.push(readUserPsnCredentials(emailKey, u, localSecrets?.[emailKey]));
+                }
             }
         }
 
@@ -2402,7 +2457,7 @@ async function executeSyncPass() {
             for (const member of CORE_PACK) {
                 if (cred.accountId === member.id || t === member.tag.toLowerCase()) coreNpssos[member.key] = cred.npsso;
             }
-            if (t.includes("werewolf")) coreNpssos.wildhorse_spirit = cred.npsso;
+            if (t.includes("werewolf") || cred.emailKey?.includes("raykevin71888")) coreNpssos.wildhorse_spirit = cred.npsso;
         }
 
         const sessionState = await resolveMasterSession(coreNpssos);
@@ -2574,6 +2629,7 @@ async function executeSyncPass() {
         // Build squad intel and save everything to psn.json
         const squadIntel = buildSquadIntelligence(finalData.gamertags);
         finalData.squadLeaderboard = squadIntel.leaderboard;
+        finalData.leaderboard = squadIntel.leaderboard;
         finalData.squadAnalytics = {
             totals: squadIntel.squadTotals,
             socialOverlap: squadIntel.socialOverlap,
@@ -2608,7 +2664,18 @@ async function executeSyncPass() {
 }
 
 // Module exports for server / programmatic use
-module.exports = {
+export {
+    executeSyncPass,
+    loadPsnDataFromDisk,
+    savePsnJson,
+    getPsnData,
+    PSN_OUTPUT_FILE,
+    CORE_PACK,
+    ACCOUNT_IDS,
+    SQUAD_GAMERTAGS
+};
+
+export default {
     executeSyncPass,
     loadPsnDataFromDisk,
     savePsnJson,
@@ -2620,7 +2687,9 @@ module.exports = {
 };
 
 // Runner invocation if executed directly via CLI
-if (require.main === module) {
+const isDirectCli = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(__filename);
+
+if (isDirectCli) {
     (async () => {
         try {
             await executeSyncPass();
