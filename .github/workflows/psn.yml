@@ -1,10 +1,11 @@
 # ============================================================================
 # File: .github/workflows/psn-sync.yml
 # Project: PSN Live Sync Engine
-# Version: 18.4.0 - 21-Minute Presence-Gated Sync
+# Version: 18.5.0 - 21-Minute Presence-Gated Sync + Universal Game Data Sync
 #   - Passes FIREBASE_AUTH_SECRET to the engine
-#   - Passes Darkwing and Marc NPSSO fallbacks
+#   - Passes Werewolf, Ray, Darkwing, and Marc NPSSO fallbacks
 #   - Queues runs instead of cancelling a sync mid-pass
+#   - Syncs PSN presence/hours and game/data/game.json in a single atomic pass
 # ============================================================================
 
 name: PSN Sync and Deploy
@@ -20,6 +21,7 @@ on:
     paths-ignore:
       - 'psn.json'
       - 'Playstation/psn.json'
+      - 'game/data/**'
       - 'README.md'
 
 permissions:
@@ -68,6 +70,7 @@ jobs:
           FIREBASE_AUTH_SECRET: ${{ secrets.FIREBASE_AUTH_SECRET }}
           GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: |
+          # 1. Run primary presence and user account sync
           if [ -f "Playstation/psn.js" ]; then
             node Playstation/psn.js
           elif [ -f "psn.js" ]; then
@@ -76,17 +79,23 @@ jobs:
             node index.js
           fi
 
-      - name: Commit and Push PSN Data
+          # 2. Run active game data and wiki scraper sync
+          if [ -f "scripts/sync_active_game.js" ]; then
+            node scripts/sync_active_game.js
+          fi
+
+      - name: Commit and Push PSN & Game Data
         run: |
           git config --global user.name "Werewolf3788-Bot"
           git config --global user.email "werewolf3788-bot@users.noreply.github.com"
           
-          git add psn.json Playstation/psn.json 2>/dev/null || true
+          # Stage PSN presence outputs and automated game tracker data
+          git add psn.json Playstation/psn.json game/data/game.json game/data/games/ 2>/dev/null || true
           
           if ! git diff --cached --quiet; then
-            git commit -m "Automated PSN Payload Sync [skip ci] [Chicago Time: $(TZ='America/Chicago' date '+%Y-%m-%d %H:%M:%S')]"
+            git commit -m "Automated PSN Payload & Game Sync [skip ci] [Chicago Time: $(TZ='America/Chicago' date '+%Y-%m-%d %H:%M:%S')]"
             git pull --rebase origin main
             git push origin main
           else
-            echo "No local changes detected to commit (User offline or no new trophies)."
+            echo "No local changes detected to commit (User offline or no new trophies/game updates)."
           fi
