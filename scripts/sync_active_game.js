@@ -1,10 +1,8 @@
 // scripts/sync_active_game.js
-// Section 1: Config & Output Paths
+// Section 1: Modules, Config & Target Output Paths
 const fs = require('fs');
 const path = require('path');
 const { 
-  exchangeNpssoForAccessCode, 
-  exchangeAccessCodeForAuthTokens, 
   getUserTitles, 
   getTitleTrophies 
 } = require('psn-api');
@@ -15,21 +13,42 @@ const OUTPUT_FILE = path.join(__dirname, '../game/data/game.json');
 const PSN_FOLDER_JSON = path.join(__dirname, '../Playstation/psn.json');
 const ARCHIVE_DIR = path.join(__dirname, '../game/data/games');
 
-// Section 2: Main Execution
+// Section 2: Main Execution Flow
 async function main() {
   try {
-    console.log("[1/6] Resolving NPSSO from environment secrets...");
-    const npsso = process.env.PSN_NPSSO_WEREWOLF || process.env.PSN_NPSSO_RAY || process.env.PSN_NPSSO_DARKWING;
+    console.log("[1/6] Resolving PSN authorization from Firebase token cache...");
+    
+    const authSecret = process.env.FIREBASE_AUTH_SECRET;
+    let authorization = null;
 
-    if (!npsso) {
-      throw new Error("Missing PSN_NPSSO_WEREWOLF secret in GitHub Action runner.");
+    // Line 25: Pull directly from the exact cache Playstation/psn.js maintains
+    const tokenUrl = authSecret 
+      ? `${FIREBASE_DB_URL}/tokens/wildhorse_spirit.json?auth=${authSecret}`
+      : `${FIREBASE_DB_URL}/tokens/wildhorse_spirit.json`;
+
+    const tokenRes = await fetch(tokenUrl);
+    if (!tokenRes.ok) {
+      throw new Error(`Failed to query token cache from Firebase: HTTP ${tokenRes.status}`);
     }
 
-    console.log("[2/6] Exchanging NPSSO via psn-api...");
-    const accessCode = await exchangeNpssoForAccessCode(npsso);
-    const authorization = await exchangeAccessCodeForAuthTokens(accessCode);
+    const cached = await tokenRes.json();
+    if (!cached) {
+      throw new Error("Token cache is empty at /tokens/wildhorse_spirit");
+    }
 
-    console.log(`[3/6] Querying active PlayStation titles for ${TARGET_GAMERTAG}...`);
+    // Support both raw string or { accessToken } / { access_token } schema
+    const tokenString = typeof cached === 'string' 
+      ? cached 
+      : (cached.accessToken || cached.access_token || cached.token);
+
+    if (!tokenString) {
+      throw new Error("Cached token object found but contains no valid accessToken field.");
+    }
+
+    console.log("[TOKEN STORAGE] Successfully loaded active session for wildhorse_spirit.");
+    authorization = { accessToken: tokenString };
+
+    console.log(`[2/6] Querying active PlayStation titles for ${TARGET_GAMERTAG}...`);
     const titlesData = await getUserTitles(authorization, "me", { limit: 10 });
     const titles = titlesData.trophyTitles || [];
 
@@ -43,9 +62,9 @@ async function main() {
     const activeGame = titles[0];
     const commId = activeGame.npCommunicationId;
     const gameName = activeGame.trophyTitleName;
-    console.log(`[4/6] Active title: "${gameName}" (${commId}) | Progress: ${activeGame.progress}%`);
+    console.log(`[3/6] Active title: "${gameName}" (${commId}) | Progress: ${activeGame.progress}%`);
 
-    console.log(`Fetching Sony trophies for ${commId}...`);
+    console.log(`[4/6] Fetching Sony trophies for ${commId}...`);
     const trophiesData = await getTitleTrophies(authorization, commId, "all");
     const rawTrophies = trophiesData.trophies || [];
 
@@ -73,7 +92,7 @@ async function main() {
       trophies: formattedTrophies
     };
 
-    console.log("[6/6] Writing data to game/data/game.json and Playstation/psn.json...");
+    console.log("[6/6] Writing game data to targets...");
     
     const outputDir = path.dirname(OUTPUT_FILE);
     const psnDir = path.dirname(PSN_FOLDER_JSON);
@@ -81,15 +100,19 @@ async function main() {
     if (!fs.existsSync(psnDir)) fs.mkdirSync(psnDir, { recursive: true });
     if (!fs.existsSync(ARCHIVE_DIR)) fs.mkdirSync(ARCHIVE_DIR, { recursive: true });
 
-    // Simultaneous write to both target destinations
+    // Simultaneous write to game/data/game.json and Playstation/psn.json
     fs.writeFileSync(OUTPUT_FILE, JSON.stringify(gamePayload, null, 2), 'utf8');
     fs.writeFileSync(PSN_FOLDER_JSON, JSON.stringify(gamePayload, null, 2), 'utf8');
     fs.writeFileSync(path.join(ARCHIVE_DIR, `${commId}.json`), JSON.stringify(gamePayload, null, 2), 'utf8');
 
     console.log(`Success: game.json and Playstation/psn.json updated.`);
 
-    // Sync active commId leaf pointer to Firebase RTDB
-    await fetch(`${FIREBASE_DB_URL}/psn/gamertags/${TARGET_GAMERTAG}/commId.json`, {
+    // Update active commId leaf pointer in Firebase RTDB
+    const commIdUrl = authSecret
+      ? `${FIREBASE_DB_URL}/psn/gamertags/${TARGET_GAMERTAG}/commId.json?auth=${authSecret}`
+      : `${FIREBASE_DB_URL}/psn/gamertags/${TARGET_GAMERTAG}/commId.json`;
+
+    await fetch(commIdUrl, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(commId)
