@@ -6,6 +6,14 @@
       "**/.*",
       "**/node_modules/**",
       ".github/**"
+    ],
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "rewrites": [
+      {
+        "source": "/fc5",
+        "destination": "/game/index.html"
+      }
     ]
   }
 }
