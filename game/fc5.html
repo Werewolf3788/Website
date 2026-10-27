@@ -1,22 +1,20 @@
 <!DOCTYPE html>
 <!-- ============================================================================
- * Project: Far Cry 5 Hope County Resistance Companion & Field Ledger
+ * Project: Universal Multi-Game Resistance Companion & Field Ledger
  * File: index.html
  * Location: /game/index.html
- * Build Version: v8.5.0-FC5-CLOUD-AUTHORITATIVE
- * Deployment Timestamp: 2026-10-26 21:23:00 EDT (America/New_York)
- * PSN Communication ID: NPWR12514_00
- * Google Analytics Tag: G-CTYHDF4MSD
+ * Build Version: v10.0.0-UNIVERSAL-PILL-ENGINE
+ * Deployment Timestamp: 2026-10-27 01:05:00 EDT (America/New_York)
+ * Primary Backend: entertainment-71888
  * Script Engine: ./fc5.js
  * ============================================================================ -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <meta name="psn-communication-id" content="NPWR12514_00">
-    <title>Far Cry 5 — Hope County Resistance Companion & Field Ledger</title>
+    <title>Hope County & Resistance Companion Ledger</title>
 
-    <!-- Dynamic Favicon & Apple Touch Icon (Bound to RTDB /psn/games/NPWR12514_00/posterArt) -->
+    <!-- Dynamic Favicon & Apple Touch Icon -->
     <link rel="icon" id="dynamicFavicon" type="image/png" href="//werewolf3788.github.io/Website/favicon.ico">
     <link rel="apple-touch-icon" id="dynamicAppleIcon" href="//werewolf3788.github.io/Website/favicon.png">
 
@@ -233,7 +231,51 @@
             .folder-menu { position: static; box-shadow: none; border-color: rgba(255, 255, 255, 0.1); }
         }
 
-        /* Console & Hero Card */
+        /* Dynamic Game Selector Pill Bar */
+        .game-pills-wrapper {
+            margin-bottom: 16px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 4px;
+        }
+
+        .game-pills-bar {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .game-pill {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 38px;
+        }
+
+        .game-pill:hover {
+            color: #fff;
+            border-color: var(--user-theme-accent);
+            background: rgba(255, 85, 0, 0.15);
+        }
+
+        .game-pill.active {
+            background: var(--user-theme-accent);
+            color: #fff;
+            border-color: var(--user-theme-accent);
+            box-shadow: 0 0 15px var(--user-theme-glow);
+        }
+
+        /* Console & Master Card */
         .console-card {
             background: var(--card-bg);
             border: 2px solid var(--user-theme-border);
@@ -356,13 +398,6 @@
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
         }
 
-        .trophy-badges-row {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 4px;
-        }
-
         .trophy-rank {
             font-size: 0.65rem;
             text-transform: uppercase;
@@ -401,7 +436,6 @@
 
         .auth-avatar { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; }
 
-        /* Friend Code & Roster Deck */
         .friend-deck-card {
             background: #0b1120;
             border: 1px solid var(--user-theme-border);
@@ -422,7 +456,6 @@
             display: inline-block;
         }
 
-        /* Persistent Footer */
         footer.tracker-footer {
             position: fixed;
             bottom: 0; left: 0; width: 100%;
@@ -439,19 +472,17 @@
 <body>
     <div class="background-overlay"></div>
 
-    <!-- Fixed Header Navigation with Auth Controls -->
+    <!-- Header Navigation with Auth Controls -->
     <header class="top-nav-bar">
         <div class="nav-inner">
             <div class="nav-brand-group">
                 <button type="button" id="mobileMenuBtn" class="sandwich-btn" aria-label="Toggle Navigation">☰</button>
                 <img id="navHeaderLogo" src="//werewolf3788.github.io/Website/favicon.png" alt="" class="nav-logo-img">
-                <a href="//werewolf3788.github.io/Website/" style="color:#fff; text-decoration:none; font-weight:900; font-size:1rem; text-transform:uppercase;">Far Cry 5 Hub</a>
+                <a href="//werewolf3788.github.io/Website/" style="color:#fff; text-decoration:none; font-weight:900; font-size:1rem; text-transform:uppercase;">Game Hub</a>
             </div>
 
-            <!-- Dynamic Top Links (Populated from /utm_links) -->
             <nav id="dynamicNavLinks" class="nav-links-desktop"></nav>
 
-            <!-- Header Auth Section -->
             <div class="header-auth-controls">
                 <button id="authModalBtn" class="auth-btn outlined-text">🔑 Log In</button>
                 <div id="userProfileBadge" class="auth-badge hidden">
@@ -463,27 +494,33 @@
     </header>
 
     <div class="container tracker-container">
+
+        <!-- Dynamic Game Pill Bar (Only shows games whose JSON exists) -->
+        <div class="game-pills-wrapper">
+            <div id="gamePillsBar" class="game-pills-bar"></div>
+        </div>
+
         <!-- Master Console & Telemetry Card -->
         <section class="console-card" aria-labelledby="resistance-name">
             <div class="console-header">
                 <div>
-                    <div style="font-size:0.75rem; color:#94a3b8; font-weight:800;">Hope County Telemetry & Resistance Ledger</div>
+                    <div id="gameSubtitle" style="font-size:0.75rem; color:#94a3b8; font-weight:800;">Hope County Telemetry & Resistance Ledger</div>
                     <h1 id="resistance-name" style="color:var(--user-theme-accent);">WEREWOLF [FAR CRY 5]</h1>
                 </div>
 
                 <div style="display:flex; align-items:center; gap:8px;">
                     <select id="platformSelect" class="nav-btn" style="min-height:38px; background:#0f172a; color:#fff;" onchange="appState.switchPlatform(this.value)">
-                        <option value="ps" selected>🎮 PlayStation (PSN NPWR12514_00)</option>
+                        <option value="ps" selected>🎮 PlayStation (PSN)</option>
                         <option value="xbox">❎ Xbox Network</option>
-                        <option value="pc">💻 PC (Ubisoft Connect)</option>
+                        <option value="pc">💻 PC (Ubisoft / Windows)</option>
                         <option value="steam">🚂 Steam Client</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Dynamic Counters (Auto-Increment on Checklist Ticks) -->
+            <!-- Dynamic Tactical Metrics Counters -->
             <div style="font-size:0.8rem; font-weight:900; color:var(--text-muted); text-transform:uppercase; margin-bottom:8px;">
-                Hope County Resistance Metrics (Firebase RTDB, Firestore & Offline LocalStorage)
+                Resistance Metrics (Firebase RTDB, Firestore & Offline LocalStorage)
             </div>
             <div class="rank-grid">
                 <div class="rank-badge">
@@ -545,6 +582,17 @@
                         <button type="button" onclick="adjRank('perks', 1)">+</button>
                     </div>
                 </div>
+
+                <!-- Collectibles Tactical Counter -->
+                <div class="rank-badge">
+                    <span>🗂️</span>
+                    <span style="font-size:0.75rem; font-weight:800;">Collectibles</span>
+                    <div class="rank-ctrls">
+                        <button type="button" onclick="adjRank('collectibles', -1)">-</button>
+                        <span id="rank-val-collectibles" class="val">0</span>
+                        <button type="button" onclick="adjRank('collectibles', 1)">+</button>
+                    </div>
+                </div>
             </div>
 
             <div id="stat-line" style="font-size:0.75rem; color:#94a3b8; font-family:monospace; margin-top:12px;">
@@ -569,13 +617,13 @@
             </div>
         </section>
 
-        <!-- Dynamic Accordion Content Containers (All collapsed by default) -->
+        <!-- Dynamic Accordion Content Containers -->
         <main id="section-container"></main>
 
         <!-- Persistent Footer with NY Timestamp -->
         <footer class="tracker-footer">
             <div id="build-meta-footer" style="color:#94a3b8; font-size:0.8rem; font-family:monospace;">
-                Werewolf Resistance Engine • v8.5.0 • Build: 2026-10-26 21:23 EDT
+                Werewolf Multi-Game Engine • v10.0.0 • Build: 2026-10-27 01:05 EDT
             </div>
             <div id="nyBuildTimestamp" style="font-size:11px; color:#aaa; font-family:monospace;" class="outlined-text">
                 New York Time (24h): --:--:--
@@ -586,8 +634,8 @@
     <!-- Google Auth Modal -->
     <div id="authModal" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; z-index:50000;">
         <div style="background:#0f172a; border:1px solid var(--user-theme-border); border-radius:12px; padding:24px; max-width:380px; width:90%; text-align:center;">
-            <h3 style="color:#fff; margin-bottom:10px;">Resistance Verification</h3>
-            <p style="font-size:13px; color:#aaa; margin-bottom:20px;">Sign in with Google to synchronize Hope County campaign progress, outposts, perks, and squad milestones across all devices.</p>
+            <h3 style="color:#fff; margin-bottom:10px;">Player Verification</h3>
+            <p style="font-size:13px; color:#aaa; margin-bottom:20px;">Sign in with Google to synchronize game progress, metrics, and squad co-op milestones across all devices.</p>
             <button id="googleSignInBtn" class="auth-btn" style="width:100%; font-size:13px; margin-bottom:12px;">Sign in with Google</button>
             <button id="authModalClose" style="background:transparent; border:none; color:#888; cursor:pointer; font-size:12px;">Dismiss</button>
         </div>
@@ -639,10 +687,7 @@
     <script src="//www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script src="//www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-    <!-- Auto-Initializer for playstation-be936 hosting domain -->
-    <script src="/__/firebase/init.js"></script>
-
-    <!-- App Engine Script Connection -->
-    <script type="module" src="./fc5.js?v=8.5.0"></script>
+    <!-- Unified Project Engine -->
+    <script type="module" src="./fc5.js?v=10.0.0"></script>
 </body>
 </html>
