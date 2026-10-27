@@ -49,4 +49,98 @@
     }
   },
   "trophies": []
+}, 
+{
+  "game": "Ghost of Tsushima",
+  "gameId": "GhostOfTsushima",
+  "psn_communication_id": "NPWR20188_00",
+  "activeMission": "The Warrior's Code",
+  "counters": {
+    "records_scrolls": { "icon": "📜", "label": "Records / Scrolls", "current": 0, "total": 40, "step": 1 },
+    "mongol_artifacts": { "icon": "🏺", "label": "Mongol Artifacts", "current": 0, "total": 50, "step": 1 },
+    "sashimono_banners": { "icon": "🎏", "label": "Banners", "current": 0, "total": 80, "step": 1 },
+    "fox_dens_inari": { "icon": "🦊", "label": "Inari Shrines", "current": 0, "total": 49, "step": 1 },
+    "bamboo_strikes": { "icon": "🎋", "label": "Bamboo Strikes", "current": 0, "total": 16, "step": 1 },
+    "hot_springs": { "icon": "♨️", "label": "Hot Springs", "current": 0, "total": 18, "step": 1 },
+    "haiku_headbands": { "icon": "🪶", "label": "Haikus", "current": 0, "total": 19, "step": 1 },
+    "shinto_shrines": { "icon": "⛩️", "label": "Shinto Shrines", "current": 0, "total": 16, "step": 1 },
+    "legend_rank": { "icon": "⚡", "label": "Ghost Legend Level", "current": 1, "total": 10, "step": 1 }
+  },
+  "exploration_and_chests": {
+    "vanity_chests": [
+      { "id": "vanity_01", "name": "Bandit's Kasa Hat", "region": "Izuhara", "location": "Kechi Fishing Village", "guide": "Climb onto the roof of the main two-story pagoda using the exterior rope." },
+      { "id": "vanity_02", "name": "Wanderer's Straw Hat", "region": "Izuhara", "location": "Cloud Pass", "guide": "Found on a grave marker pole beside the abandoned road watchtower." },
+      { "id": "vanity_03", "name": "Tengai Hat", "region": "Toyotama", "location": "Kushi Temple lake", "guide": "Resting on a decorative grave barrel just south of the temple perimeter." }
+    ],
+    "inspirational_scrolls_records": [
+      { "id": "rec_01", "name": "Conversations with the Khan 1", "region": "Izuhara", "location": "Kashine Camp", "guide": "Inside the primary yurt tent on a low table to the right of the fire." },
+      { "id": "rec_02", "name": "To My Brother", "region": "Izuhara", "location": "Komatsu Forge", "guide": "On the upper floor of the primary forge building behind the tool racks." }
+    ]
+  },
+  "skills_and_stances": {
+    "stances": [
+      { "name": "Stone Stance", "counter_type": "Swordsmen", "unlocked": true, "skills": ["Stone: Heavy Attacks", "Stone: Puncture", "Stone: Momentum"] },
+      { "name": "Water Stance", "counter_type": "Shieldmen", "unlocked": false, "skills": ["Water: Flowing Strikes", "Water: Surging Deluge"] },
+      { "name": "Wind Stance", "counter_type": "Spearmen", "unlocked": false, "skills": ["Wind: Typhoon Kick", "Wind: Spear Defense"] },
+      { "name": "Moon Stance", "counter_type": "Brutes", "unlocked": false, "skills": ["Moon: Whirlwind", "Moon: Heavy Cleave"] }
+    ],
+    "ghost_weapons": [
+      { "name": "Kunai", "unlocked": true, "upgrades": ["Extra Blades", "Serrated Edge"] },
+      { "name": "Smoke Bomb", "unlocked": false, "upgrades": ["Blinding Dust", "Healing Incense"] },
+      { "name": "Sticky Bomb", "unlocked": false, "upgrades": ["Blast Radius", "Knockback"] }
+    ]
+  },
+  "multiplayer_legends_mode": {
+    "classes": [
+      {
+        "role": "Samurai",
+        "primary_ability": "Hachiman's Fury",
+        "rank": 20,
+        "recommended_build": "Melee Damage + Blessed Strikes for constant healing on strike.",
+        "skills_perks": [
+          { "slot": 1, "name": "Samurai Unleashed", "description": "Reduces Class Ability cooldown by 15%." },
+          { "slot": 2, "name": "Deep Strikes", "description": "Increases Melee Damage by 10%." },
+          { "slot": 3, "name": "Hachiman's Frenzy", "description": "Adds 2 additional strikes to Ultimate." }
+        ]
+      },
+      {
+        "role": "Hunter",
+        "primary_ability": "Eye of Uchitsune",
+        "rank": 18,
+        "recommended_build": "Ranged Resolve Gain + Hunter Ability Radius (Skipping Stone Bow).",
+        "skills_perks": [
+          { "slot": 1, "name": "Scent of Blood", "description": "Assassinations grant 100% draw and reload speed for 30s." },
+          { "slot": 2, "name": "Status Damage", "description": "Fire and Poison damage increased by 25%." },
+          { "slot": 3, "name": "All-Seeing Eye", "description": "Ultimate targets 5 enemies instead of 3." }
+        ]
+      },
+      {
+        "role": "Ronin",
+        "primary_ability": "Breath of Izanami",
+        "rank": 20,
+        "recommended_build": "Ghost Weapon Damage + Healing Incense (Team Medic / Bomb Pack).",
+        "skills_perks": [
+          { "slot": 1, "name": "Enhanced Ghost Weapons", "description": "Increases Ghost Weapon damage by 50%." },
+          { "slot": 2, "name": "Staggering Imposition", "description": "Increases Stagger damage by 15%." },
+          { "slot": 3, "name": "Soothing Breath", "description": "Ultimate revives and heals all allies over 8s." }
+        ]
+      },
+      {
+        "role": "Assassin",
+        "primary_ability": "Shadow Strike",
+        "rank": 16,
+        "recommended_build": "Stealth Attack Power + Refreshing Vanish (Chain Vanish build).",
+        "skills_perks": [
+          { "slot": 1, "name": "Critical Hit", "description": "Sneak attack damage increased by 30%." },
+          { "slot": 2, "name": "Light Step", "description": "Run completely silently." },
+          { "slot": 3, "name": "Shadow Storm", "description": "Increases Ultimate strikes to 5." }
+        ]
+      }
+    ],
+    "team_coop_raids": [
+      { "chapter": "Chapter 1: The Severed Hearts", "recommended_ki": 105, "key_mechanic": "Attunement shrines (Sun, Moon, Storm) matching colored shields on enemies." },
+      { "chapter": "Chapter 2: The Blood Well", "recommended_ki": 105, "key_mechanic": "Platform synchronization and carrying crystals across corruption pools." },
+      { "chapter": "Chapter 3: The Eye of Iyo", "recommended_ki": 110, "key_mechanic": "1v1 duel arena inside Iyo's mind while 3 team members hold the exterior gates." }
+    ]
+  }
 }
