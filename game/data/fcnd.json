@@ -1,0 +1,235 @@
+{
+  "game_meta": {
+    "title": "Far Cry New Dawn",
+    "developer": "Ubisoft Montreal",
+    "publisher": "Ubisoft",
+    "release_date": "2019-02-15",
+    "setting": "Hope County, Montana (Post-Apocalyptic / 17 Years After FC5)",
+    "sources": [
+      {
+        "id": "fandom_wiki",
+        "title": "Far Cry Fandom Wiki - Far Cry New Dawn",
+        "url": "https://farcry.fandom.com/wiki/Far_Cry_New_Dawn",
+        "type": "wiki"
+      },
+      {
+        "id": "shacknews_guide",
+        "title": "Shacknews - Treasure Hunts & Puzzle Solutions",
+        "url": "https://www.shacknews.com/article/109959/treasure-hunts-and-puzzle-solutions-in-far-cry-new-dawn",
+        "type": "guide"
+      }
+    ]
+  },
+  "treasure_hunts": [
+    {
+      "id": "for-whom-the-bear-tolls",
+      "name": "For Whom the Bear Tolls",
+      "location": "FANG Center (Fowler's Crypt)",
+      "region": "Hope County",
+      "prerequisites": ["None"],
+      "starter_document": "Wade's Journal",
+      "summary": "Shoot the church bell to draw in an infected bear, defeat it to claim Fowler's Crypt Key, and descend into the catacomb bunker.",
+      "solution_steps": [
+        "Head to the church roof at the FANG Center.",
+        "Shoot the bell inside the belfry to lure the hostile bear.",
+        "Eliminate the bear and loot its body for Fowler's Crypt Key.",
+        "Locate the ground opening southwest of the church to enter the crypt."
+      ],
+      "rewards": {
+        "perk_points": 3,
+        "far_cry_credits": 45,
+        "materials": ["Components", "Titanium", "Duct Tape"]
+      },
+      "source_ref": "https://www.shacknews.com/article/109959/treasure-hunts-and-puzzle-solutions-in-far-cry-new-dawn#bear"
+    },
+    {
+      "id": "going-haywire",
+      "name": "Going Haywire",
+      "location": "Parker's Vault",
+      "region": "Chop Shop Area",
+      "prerequisites": ["None"],
+      "starter_document": "Highwaymen Note",
+      "summary": "Navigate an electrified compound by shooting off the building lock from the roof and deactivating the terminal inside.",
+      "solution_steps": [
+        "Climb onto the roof of the main structure.",
+        "Shoot the interior door latch through the opening in the roof.",
+        "Enter through the unlocked door and clear the inner room.",
+        "Flip the breaker switch to kill the live electrical current blocking the bunker hatch."
+      ],
+      "rewards": {
+        "perk_points": 3,
+        "far_cry_credits": 45,
+        "materials": ["Titanium", "Circuit Boards", "Components"]
+      },
+      "source_ref": "https://www.shacknews.com/article/109959/treasure-hunts-and-puzzle-solutions-in-far-cry-new-dawn#haywire"
+    },
+    {
+      "id": "high-art",
+      "name": "High Art",
+      "location": "Atelier Zilon",
+      "region": "Central Hope County",
+      "prerequisites": ["Grapple Perk"],
+      "starter_document": "Highwaymen Note",
+      "summary": "Use the grapple and zipline to breach a high-level art studio barn, adjusting car-hoist hydraulic valves to unblock the bunker.",
+      "solution_steps": [
+        "Grapple to the water tower outside and zipline through the upper barn window.",
+        "Crouch through the storage loft and drop down to the main floor.",
+        "Turn the first hydraulic valve underneath the upper catwalk to elevate the first vehicle.",
+        "Climb back up, leap across the elevated vehicle, and turn the second valve to clear the bunker door."
+      ],
+      "rewards": {
+        "perk_points": 3,
+        "far_cry_credits": 45,
+        "materials": ["Titanium", "Components", "Carbon Fiber"]
+      },
+      "source_ref": "https://www.shacknews.com/article/109959/treasure-hunts-and-puzzle-solutions-in-far-cry-new-dawn#art"
+    },
+    {
+      "id": "riddle-me-fish",
+      "name": "Riddle Me Fish",
+      "location": "Skylar's Riddle",
+      "region": "Broken Forge Area",
+      "prerequisites": ["None"],
+      "starter_document": "Warning Note",
+      "summary": "Observe the singing fish wall mountings in the generator cabin to decipher the order, then match it in the gas-filled basement.",
+      "solution_steps": [
+        "Break the wooden barriers to enter the upper cabin and activate the electrical generator.",
+        "Observe the exact sequence of moving fish trophies (Standard: Green, Orange, Purple, Black, Blue, Yellow / 2-4-6-1-3-5).",
+        "Drop through the shed hatch into the underground chamber.",
+        "Trigger the fish trophies in the matching sequence before poisonous gas causes lethal burn damage."
+      ],
+      "rewards": {
+        "perk_points": 3,
+        "far_cry_credits": 45,
+        "materials": ["Titanium", "Gears", "Components"]
+      },
+      "source_ref": "https://www.shacknews.com/article/109959/treasure-hunts-and-puzzle-solutions-in-far-cry-new-dawn#fish"
+    },
+    {
+      "id": "target-practice",
+      "name": "Target Practice",
+      "location": "Nadine's Junkyard",
+      "region": "Signal Point Area",
+      "prerequisites": ["Firearm with adequate ammo"],
+      "starter_document": "Highwaymen Note",
+      "summary": "Drop into an underground shooting range and trigger targets in sequence to feed mechanical counterweights that open the security gate.",
+      "solution_steps": [
+        "Locate the barricaded hole in the junkyard and drop to the lower level.",
+        "Pull the primary gear release lever to start the track machinery.",
+        "Shoot all kinetic targets as they slide across both left and right tracks.",
+        "Ensure both bucket counterweights drop to release the reinforced vault gate."
+      ],
+      "rewards": {
+        "perk_points": 3,
+        "far_cry_credits": 45,
+        "materials": ["Titanium", "Duct Tape", "Springs"]
+      },
+      "source_ref": "https://www.shacknews.com/article/109959/treasure-hunts-and-puzzle-solutions-in-far-cry-new-dawn#target"
+    },
+    {
+      "id": "rescuers-go-under",
+      "name": "Rescuers Go Under",
+      "location": "Misery Falls",
+      "region": "Near Signal Point",
+      "prerequisites": ["Grapple Perk"],
+      "starter_document": "Rescuer Note",
+      "summary": "Ascend the rockfaces of Misery Falls using the grapple tool, then dive and traverse submerged cavern systems to reach a forgotten survivor cache.",
+      "solution_steps": [
+        "Locate the climb trail starting at the base of the falls using grappling anchor points.",
+        "Dive into the mountain sinkhole pool and swim underwater through the flooded tunnel.",
+        "Grapple swing across the high cavern stalactites to reach the survivor ledge.",
+        "Release the handbrake on the stranded vehicle or climb the ledge to access the cache."
+      ],
+      "rewards": {
+        "perk_points": 3,
+        "far_cry_credits": 45,
+        "materials": ["Titanium", "Carbon Fiber", "Circuit Boards"]
+      },
+      "source_ref": "https://www.shacknews.com/article/109959/treasure-hunts-and-puzzle-solutions-in-far-cry-new-dawn#rescuers"
+    },
+    {
+      "id": "light-em-up",
+      "name": "Light 'Em Up",
+      "location": "Toothchapel Church",
+      "region": "South-Central Hope County",
+      "prerequisites": ["Fire weapon / Molotov / Flamethrower"],
+      "starter_document": "Highwaymen Note",
+      "summary": "Infestations of wolverines have nested inside the church. Burn out the nests to reveal the stash key.",
+      "solution_steps": [
+        "Enter the boarded chapel through the damaged perimeter.",
+        "Locate the wolverine nest high on the church rafters.",
+        "Use fire (Molotov, incendiary ammo, or torch) to destroy the nest.",
+        "Eliminate the agitated wolverine, retrieve the Highwaymen Shed Key, and unlock the yard bunker."
+      ],
+      "rewards": {
+        "perk_points": 3,
+        "far_cry_credits": 45,
+        "materials": ["Titanium", "Components", "Copper"]
+      },
+      "source_ref": "https://farcry.fandom.com/wiki/Light_%27Em_Up"
+    },
+    {
+      "id": "burning-souls",
+      "name": "Burning Souls",
+      "location": "Eden's Pyre",
+      "region": "New Eden Territory",
+      "prerequisites": ["Fire source"],
+      "starter_document": "Villager Note",
+      "summary": "Gather the scattered remains of fallen Edenites onto a ritual pyre and ignite it to release the sealed cavern vault.",
+      "solution_steps": [
+        "Locate the unlit central bonfire pit before the barricaded cave entrance.",
+        "Scour the abandoned settlement to locate all 5 bodies.",
+        "Carry and drop each body into the central bonfire pyre.",
+        "Ignite the pyre using a torch, Molotov, or flaming arrow to trigger the vault door."
+      ],
+      "rewards": {
+        "perk_points": 3,
+        "far_cry_credits": 45,
+        "materials": ["Titanium", "Carbon Fiber", "Black Powder"]
+      },
+      "source_ref": "https://farcry.fandom.com/wiki/Burning_Souls"
+    },
+    {
+      "id": "go-with-the-flow",
+      "name": "Go With the Flow",
+      "location": "Doris's Turn",
+      "region": "River Valley",
+      "prerequisites": ["None"],
+      "starter_document": "Wreck Note",
+      "summary": "Trace a river flume down rapids and across fallen shipping containers to retrieve the lost vault key.",
+      "solution_steps": [
+        "Locate the hillside cave along the river gorge and read the stash note.",
+        "Follow the river current and ziplines downstream toward the falls.",
+        "Locate the key caught in the stranded debris by the water's edge.",
+        "Unlock the sealed drainage container stash on the bank."
+      ],
+      "rewards": {
+        "perk_points": 3,
+        "far_cry_credits": 45,
+        "materials": ["Titanium", "Springs", "Components"]
+      },
+      "source_ref": "https://farcry.fandom.com/wiki/Go_With_the_Flow"
+    },
+    {
+      "id": "the-best-laid-plans",
+      "name": "The Best Laid Plans",
+      "location": "Channelling Substation",
+      "region": "Near Prosperity",
+      "prerequisites": ["Grapple Perk"],
+      "starter_document": "Survivor Note",
+      "summary": "Use grapple chain points and precision platforming across damaged rail bridge wreckage to access a suspended train car.",
+      "solution_steps": [
+        "Read the note at the base of the collapsed railway trestle bridge.",
+        "Grapple upward through the broken bridge trusses.",
+        "Swing and leap across dangling railcars and support beams.",
+        "Reach the final cargo car perched on the bridge edge to collect the prepper stash."
+      ],
+      "rewards": {
+        "perk_points": 3,
+        "far_cry_credits": 45,
+        "materials": ["Titanium", "Circuit Boards", "Duct Tape"]
+      },
+      "source_ref": "https://farcry.fandom.com/wiki/The_Best_Laid_Plans"
+    }
+  ]
+}
