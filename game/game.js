@@ -1,17 +1,13 @@
 // ============================================================================
-// * Project: Universal Multi-Game Resistance Companion & Field Ledger
-// * File: game.js
-// * Location: /game/game.js
-// * Build Version: v10.9.0-DYNAMIC-MANIFEST-CATALOG
-// * Change Log (v10.9.0):
-// *   - FIX: Resolved 'require is not defined' by decoupling backend psn.js from frontend client.
-// *   - NEW: initGameCatalog() dynamically loads index manifest (./data/games/index.json).
-// *   - NEW: renderGamePillsFromManifest() auto-populates #gamePillsBar from verified game items.
-// *   - RETAIN: Full PSN live trophy overrides, friends ledger sync, and Firebase RTDB/Firestore bindings.
-// * Deployment Timestamp: 2026-10-27 19:17:00 EDT (America/New_York)
+// * Project: Far Cry 5 Hope County Resistance Companion & Field Ledger
+// * File: fc5.js
+// * Location: /game/fc5.js
+// * Build Version: v10.0.0-COTW-STRUCTURAL-ALIGNMENT
+// * Deployment Timestamp: 2026-10-27 00:35:00 EDT (America/New_York)
 // ============================================================================
 
-// Section 1: Authoritative Firebase Credentials & Services
+// Section 1: Unified Firebase Configuration (entertainment-71888)
+// Lines 9-33: Production credentials and authoritative service bindings
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -34,10 +30,11 @@ try {
     console.warn("[Auth Persistence]:", e);
 }
 
-// Global cache for friends' progress to paint item badges on cards.
-window.squadProgressCache = {};
+const CURRENT_GAME_ID = "FarCry5";
+const PSN_FC5_COMM_ID = "NPWR12514_00";
 
-// Section 2: Universal Global State Engine
+// Section 2: Global State Engine & COTW Hydration Core
+// Lines 36-295: Structured entity trees matching COTW directly
 window.appState = {
     activeUser: 'Guest',
     activeEmail: null,
@@ -46,17 +43,11 @@ window.appState = {
     gameData: null,
     psnSkeleton: null,
     myFriendCode: null,
-    myPsnGamertag: null,
-    myPsnAccountId: null,
-    psnLinks: [],
-    psnLive: null,
-    isCloudLoaded: false,
+    authInitialized: false,
     
-    activeGame: "Far Cry 5",
-    activeGameId: "FarCry5",
-    activePsnCommId: "NPWR12514_00",
+    // Exact COTW Document Root Schema
     activeMission: "Hope County Resistance",
-
+    gameId: CURRENT_GAME_ID,
     trophies_earned: 0,
     trophies_total: 51,
     trophies_percent: 0,
@@ -72,12 +63,11 @@ window.appState = {
         return this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
     },
 
-    switchPlatform: async function(newPlatform) {
+    switchPlatform: function(newPlatform) {
         if (!newPlatform) return;
         this.platform = newPlatform.toLowerCase();
-        this.isCloudLoaded = false;
         
-        const platformSelector = document.getElementById('platformSelect') || document.getElementById('platformSelector');
+        const platformSelector = document.getElementById('platformSelector');
         if (platformSelector && platformSelector.value !== this.platform) {
             platformSelector.value = this.platform;
         }
@@ -88,18 +78,17 @@ window.appState = {
             nameEl.innerText = `${displayName} [${this.platform.toUpperCase()}]`;
         }
         
-        await this.loadProgress();
-        await this.refreshPsnProgress();
+        this.loadProgress();
         if (this.currentUser) {
-            await this.syncFriendsProgress();
+            this.syncFriendsProgress();
         }
     },
 
+    // Lines 86-178: Hydrate game JSON into COTW Map structures
     hydrateDefaultSchema: function() {
         if (!this.gameData) return;
 
-        this.psnLinks = buildPsnLinks(this.gameData);
-
+        // 1. Collectibles (Group maps matching COTW: collected, count, psnSynced, total)
         if (this.gameData.collectibles) {
             for (const cKey in this.gameData.collectibles) {
                 const group = this.gameData.collectibles[cKey];
@@ -132,6 +121,7 @@ window.appState = {
             }
         }
 
+        // Perk Magazines mapped under collectibles tree
         if (this.gameData.survivalist_magazines) {
             if (!this.collectibles.survivalist_magazines) {
                 this.collectibles.survivalist_magazines = {
@@ -161,6 +151,7 @@ window.appState = {
             this.collectibles.survivalist_magazines.total = magTotal;
         }
 
+        // 2. Prepper Stashes Map
         if (this.gameData.prepper_stashes) {
             ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
                 const list = this.gameData.prepper_stashes[reg] || [];
@@ -179,6 +170,7 @@ window.appState = {
             });
         }
 
+        // 3. Roster Map (Guns & Fangs for Hire)
         if (Array.isArray(this.gameData.guns_and_fangs_for_hire)) {
             this.gameData.guns_and_fangs_for_hire.forEach(h => {
                 if (!this.roster[h.id]) {
@@ -193,6 +185,7 @@ window.appState = {
             });
         }
 
+        // 4. Walkthrough Missions Map
         if (Array.isArray(this.gameData.walkthrough_missions)) {
             this.gameData.walkthrough_missions.forEach(m => {
                 if (!this.missions[m.id]) {
@@ -206,6 +199,7 @@ window.appState = {
             });
         }
 
+        // 5. Official Trophies Map
         const trophySource = (this.psnSkeleton && this.psnSkeleton.trophies) 
             ? Object.values(this.psnSkeleton.trophies) 
             : (this.gameData?.trophies_and_achievements || []);
@@ -213,7 +207,7 @@ window.appState = {
         if (Array.isArray(trophySource)) {
             trophySource.forEach((t, idx) => {
                 const tId = t.trophyId !== undefined ? t.trophyId : idx;
-                const cardKey = `trophy_${this.activeGameId}_${tId}`;
+                const cardKey = `trophy_fc5_${tId}`;
                 if (!this.trophies[cardKey]) {
                     this.trophies[cardKey] = {
                         earned: false,
@@ -225,10 +219,10 @@ window.appState = {
             });
         }
 
-        this.ensureCounterTargets();
         this.recalculateMetrics();
     },
 
+    // Lines 180-230: Metric Tallies
     recalculateMetrics: function() {
         let stashesCount = 0;
         let rosterCount = 0;
@@ -236,6 +230,7 @@ window.appState = {
         let totalCollectiblesCount = 0;
         let calculatedRP = 0;
 
+        // Tally Stashes
         Object.values(this.stashes).forEach(s => {
             if (s && s.collected) {
                 stashesCount++;
@@ -243,6 +238,7 @@ window.appState = {
             }
         });
 
+        // Tally Roster
         Object.values(this.roster).forEach(h => {
             if (h && h.unlocked) {
                 rosterCount++;
@@ -250,12 +246,14 @@ window.appState = {
             }
         });
 
+        // Tally Missions
         Object.values(this.missions).forEach(m => {
             if (m && m.completed) {
                 calculatedRP += 600;
             }
         });
 
+        // Tally Collectibles & Perk Magazines
         if (this.collectibles) {
             for (const cKey in this.collectibles) {
                 const group = this.collectibles[cKey];
@@ -276,6 +274,7 @@ window.appState = {
             }
         }
 
+        // Tally Trophies
         const earnedTrophies = Object.values(this.trophies).filter(t => t && t.earned).length;
         const totalTrophies = Object.keys(this.trophies).length || 51;
         this.trophies_earned = earnedTrophies;
@@ -300,13 +299,13 @@ window.appState = {
         if (el) el.innerText = val || 0;
     },
 
+    // Lines 232-295: Build COTW Payload
     buildPayload: function() {
         this.recalculateMetrics();
         return {
             activeMission: this.activeMission,
-            gameId: this.activeGameId,
+            gameId: CURRENT_GAME_ID,
             platform: this.platform,
-            friend_code: this.myFriendCode,
             trophies_earned: this.trophies_earned,
             trophies_total: this.trophies_total,
             trophies_percent: this.trophies_percent,
@@ -327,11 +326,11 @@ window.appState = {
         this.trophies_total = payload.trophies_total || 51;
         this.trophies_percent = payload.trophies_percent || 0;
         
+        // Deep merge into hydrated tree to avoid missing schema entries
         if (payload.collectibles) {
             for (const cKey in payload.collectibles) {
-                if (!this.collectibles[cKey]) {
-                    this.collectibles[cKey] = payload.collectibles[cKey];
-                } else {
+                if (!this.collectibles[cKey]) this.collectibles[cKey] = payload.collectibles[cKey];
+                else {
                     this.collectibles[cKey].collected = !!payload.collectibles[cKey].collected;
                     this.collectibles[cKey].count = payload.collectibles[cKey].count || 0;
                     if (payload.collectibles[cKey].items) {
@@ -350,39 +349,36 @@ window.appState = {
     }
 };
 
-// Section 3: Friend-Code-Keyed Firestore Persistence
+// Section 3: Authoritative Persistence Engine (Guest LocalStorage vs Cloud Firestore)
+// Lines 298-405: Guarantees guest isolation and cross-device sync
 window.appState.saveProgress = function() {
-    const friendCode = this.myFriendCode;
+    const payload = this.buildPayload();
+    const emailKey = this.getEmailKey();
 
-    if (!friendCode || !this.currentUser) {
-        const guestKey = `${this.activeGameId}_guest_progress_${this.platform}`;
+    // 1. Guest Mode: Unauthenticated visitors write strictly to LocalStorage
+    if (!emailKey) {
+        const guestKey = `fc5_guest_progress_${this.platform}`;
         try {
-            const payload = this.buildPayload();
             localStorage.setItem(guestKey, JSON.stringify(payload));
-            this.updateStatus(`[Guest Mode] Progress retained on this device [${this.platform.toUpperCase()}].`);
+            this.updateStatus(`[Guest Mode] Progress cached locally [${this.platform.toUpperCase()}].`);
         } catch (e) {
             console.warn("[Guest Storage]:", e);
         }
         return;
     }
 
-    if (!this.isCloudLoaded) {
-        console.warn("[Write Protected] Save blocked: Waiting for Firestore ledger fetch.");
-        return;
-    }
-
-    const payload = this.buildPayload();
+    // 2. Authenticated Mode: Authoritative write straight to Cloud Firestore
     if (firestore) {
         const docRef = firestore
             .collection("users")
-            .doc(friendCode)
+            .doc(emailKey)
             .collection("platform")
             .doc(this.platform)
             .collection("progress")
-            .doc(this.activeGameId);
+            .doc(CURRENT_GAME_ID);
 
         docRef.set(payload, { merge: true }).then(() => {
-            this.updateStatus(`[Cloud Saved] users/${friendCode}/platform/${this.platform}/progress/${this.activeGameId}`);
+            this.updateStatus(`[Cloud Saved] users/${emailKey}/platform/${this.platform}/progress/${CURRENT_GAME_ID}`);
         }).catch(err => {
             console.error("[Firestore Save Error]:", err);
             this.updateStatus(`Cloud Sync Failed: ${err.message}`);
@@ -390,84 +386,66 @@ window.appState.saveProgress = function() {
     }
 };
 
-window.appState.loadProgress = async function() {
-    const friendCode = this.myFriendCode;
+window.appState.loadProgress = function() {
     const emailKey = this.getEmailKey();
 
+    // Reset tree to default uncompleted state before overlaying data
     this.hydrateDefaultSchema();
 
-    if (!friendCode || !this.currentUser) {
-        const guestKey = `${this.activeGameId}_guest_progress_${this.platform}`;
+    // 1. Guest Mode: Load from LocalStorage
+    if (!emailKey) {
+        const guestKey = `fc5_guest_progress_${this.platform}`;
         try {
             const raw = localStorage.getItem(guestKey);
             if (raw) {
                 const parsed = JSON.parse(raw);
                 this.applyPayload(parsed);
                 this.updateStatus(`[Guest Mode] Restored progress from this device [${this.platform.toUpperCase()}].`);
-                this.isCloudLoaded = true;
                 return;
             }
         } catch (e) {}
 
         this.applyStateToUI();
         this.updateStatus(`[Guest Mode] Clean Ledger [${this.platform.toUpperCase()}].`);
-        this.isCloudLoaded = true;
         return;
     }
 
+    // 2. Authenticated Mode: Load from Cloud Firestore
     if (firestore) {
         this.updateStatus(`Reading cloud ledger for ${this.platform.toUpperCase()}...`);
 
-        try {
-            let doc = await firestore
-                .collection("users")
-                .doc(friendCode)
-                .collection("platform")
-                .doc(this.platform)
-                .collection("progress")
-                .doc(this.activeGameId)
-                .get();
-
-            if (!doc.exists && emailKey) {
-                const legacyDoc = await firestore
-                    .collection("users")
-                    .doc(emailKey)
-                    .collection("platform")
-                    .doc(this.platform)
-                    .collection("progress")
-                    .doc(this.activeGameId)
-                    .get();
-
-                if (legacyDoc.exists) {
-                    doc = legacyDoc;
-                    firestore.collection("users").doc(friendCode).collection("platform").doc(this.platform).collection("progress").doc(this.activeGameId).set(legacyDoc.data(), { merge: true });
+        firestore
+            .collection("users")
+            .doc(emailKey)
+            .collection("platform")
+            .doc(this.platform)
+            .collection("progress")
+            .doc(CURRENT_GAME_ID)
+            .get()
+            .then(doc => {
+                if (doc.exists) {
+                    const cloudData = doc.data();
+                    this.applyPayload(cloudData);
+                    this.updateStatus(`[Cloud Restored] Authoritative ledger loaded [${this.platform.toUpperCase()}].`);
+                } else {
+                    // Document does not exist yet: seed initial hydrated COTW structure
+                    this.applyStateToUI();
+                    this.saveProgress();
+                    this.updateStatus(`[Cloud Initialized] Seeded new COTW structure in Firestore.`);
                 }
-            }
-
-            if (doc.exists) {
-                const cloudData = doc.data();
-                this.applyPayload(cloudData);
-                this.isCloudLoaded = true;
-                this.updateStatus(`[Cloud Restored] Authoritative ledger loaded [${this.platform.toUpperCase()}].`);
-            } else {
-                this.applyStateToUI();
-                this.isCloudLoaded = true;
-                this.saveProgress();
-                this.updateStatus(`[Cloud Initialized] Seeded new ledger in Firestore.`);
-            }
-        } catch (err) {
-            console.error("[Firestore Fetch Error]:", err);
-            this.isCloudLoaded = true;
-            this.updateStatus(`Failed to read cloud save: ${err.message}`);
-        }
+            }).catch(err => {
+                console.warn("[Firestore Fetch Error]:", err);
+                this.updateStatus(`Failed to read cloud save: ${err.message}`);
+            });
     }
 };
 
+// Lines 407-440: One-Time Guest Migration on Sign In
 window.appState.migrateGuestProgressIfPresent = async function() {
-    const friendCode = this.myFriendCode;
-    if (!friendCode) return;
+    const emailKey = this.getEmailKey();
+    if (!emailKey) return;
 
-    const guestKey = `${this.activeGameId}_guest_progress_${this.platform}`;
+    const guestKey = `fc5_guest_progress_${this.platform}`;
     let guestData = null;
 
     try {
@@ -490,19 +468,15 @@ window.appState.migrateGuestProgressIfPresent = async function() {
     }
 };
 
-// Section 4: UI Painting & Multi-User Co-Op Card Badging
+// Section 4: UI Painting & Toggle Interactions
+// Lines 443-525: Maps UI checkboxes to nested COTW object maps
 window.appState.applyStateToUI = function() {
-    this.ensureCounterTargets();
     this.recalculateMetrics();
-
-    const squadEntries = Object.values(window.squadProgressCache || {});
-    const psnAuto = this.hasPsnAuto();
 
     document.querySelectorAll('.fc5-item-card').forEach(card => {
         const id = card.getAttribute('data-id');
         const type = card.getAttribute('data-type') || 'mission';
         const group = card.getAttribute('data-group') || null;
-        const ref = this.getItemRef(type, id, group);
         let isDone = false;
 
         if (type === 'stash') {
@@ -537,54 +511,10 @@ window.appState.applyStateToUI = function() {
                 btn.innerHTML = '';
             }
         }
-
-        const locked = psnAuto && !!(ref && ref.psnSynced);
-        if (btn) {
-            btn.style.boxShadow = locked ? '0 0 0 2px #3b82f6' : '';
-            btn.title = locked ? 'Verified by PlayStation Network' : '';
-        }
-
-        if (card.getAttribute('data-target')) updateCounterCard(card, ref, locked);
-
-        let squadTagContainer = card.querySelector('.squad-earners-bar');
-        if (!squadTagContainer) {
-            squadTagContainer = document.createElement('div');
-            squadTagContainer.className = 'squad-earners-bar';
-            card.appendChild(squadTagContainer);
-        }
-
-        const earners = squadEntries.filter(entry => friendHasEarnedItem(entry.data, id, type, group));
-
-        squadTagContainer.innerHTML = '';
-        if (earners.length > 0) {
-            squadTagContainer.style.cssText = 'display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.08); padding-top:6px;';
-            earners.forEach(entry => squadTagContainer.appendChild(buildAvatarBadge(entry)));
-        } else {
-            squadTagContainer.style.cssText = 'display:none;';
-        }
     });
-
-    updateSectionProgress();
 };
 
 window.appState.toggleItem = function(itemId, type, group) {
-    const ref = this.getItemRef(type, itemId, group);
-    const wasDone = !!(ref && (ref.collected || ref.unlocked || ref.completed || ref.earned));
-    const isCounter = !!(ref && Number(ref.target) > 0);
-
-    if (this.isPsnLocked(ref) && (wasDone || isCounter)) {
-        this.updateStatus('Verified by PlayStation Network. This updates automatically.');
-        return;
-    }
-
-    if (type === 'collectible' && isCounter) {
-        ref.count = wasDone ? 0 : Number(ref.target);
-        ref.collected = !wasDone;
-        this.applyStateToUI();
-        this.saveProgress();
-        return;
-    }
-
     if (type === 'stash') {
         if (!this.stashes[itemId]) this.stashes[itemId] = { collected: false, psnSynced: false };
         this.stashes[itemId].collected = !this.stashes[itemId].collected;
@@ -627,485 +557,24 @@ window.adjRank = function(rankKey, delta) {
     appState.saveProgress();
 };
 
-// Section 4C: Universal PSN Links, Counters & Section Progress
-function resolveItemTarget(item, trophyIdOverride) {
-    if (!item || typeof item !== 'object') return 0;
-    const explicit = Number(item.target ?? item.count_target ?? item.psn_target ?? 0);
-    if (explicit > 0) return explicit;
-    if (item.counter === true) {
-        const tid = trophyIdOverride ?? item.psn_trophy_id ?? item.trophy_id ?? item.psnTrophyId;
-        const trophies = (appState.psnSkeleton && appState.psnSkeleton.trophies) ? Object.values(appState.psnSkeleton.trophies) : [];
-        const match = trophies.find(t => t && String(t.trophyId) === String(tid));
-        const fromSkeleton = Number(match && (match.targetValue ?? match.trophyProgressTargetValue) || 0);
-        if (fromSkeleton > 0) return fromSkeleton;
-    }
-    return 0;
-}
-
-function buildPsnLinks(data) {
-    const links = [];
-    if (!data || typeof data !== 'object') return links;
-
-    const read = (item, type, id, group) => {
-        if (!item || typeof item !== 'object') return;
-        const tid = item.psn_trophy_id ?? item.trophy_id ?? item.psnTrophyId;
-        if (tid === undefined || tid === null || tid === '') return;
-        links.push({ type: type, id: id, group: group || null, trophyId: String(tid), target: resolveItemTarget(item, tid) });
-    };
-
-    if (data.collectibles) {
-        for (const cKey in data.collectibles) {
-            const group = data.collectibles[cKey];
-            if (group && Array.isArray(group.items)) group.items.forEach(it => read(it, 'collectible', it.id, cKey));
-        }
-    }
-    if (data.prepper_stashes) {
-        ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
-            (data.prepper_stashes[reg] || []).forEach(s => read(s, 'stash', s.id));
-        });
-    }
-    if (Array.isArray(data.guns_and_fangs_for_hire)) data.guns_and_fangs_for_hire.forEach(h => read(h, 'roster', h.id));
-    if (Array.isArray(data.walkthrough_missions)) data.walkthrough_missions.forEach(m => read(m, 'mission', m.id));
-    if (data.survivalist_magazines) {
-        ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
-            (data.survivalist_magazines[reg] || []).forEach((m, idx) => read(m, 'magazine', `mag_${reg}_${idx}`));
-        });
-    }
-    return links;
-}
-
-function normalizeLiveTrophy(tObj) {
-    const earned = !!(tObj && (tObj.earned === true || tObj.isEarned === true));
-    const target = Number(tObj && (tObj.targetValue ?? tObj.trophyProgressTargetValue) || 0) || 0;
-    let current = Number(tObj && (tObj.currentValue ?? tObj.trophyProgress ?? 0) || 0) || 0;
-    if (earned && target > 0) current = target;
-    return {
-        earned: earned,
-        current: current,
-        target: target,
-        name: (tObj && (tObj.name || tObj.trophyName)) || 'Trophy',
-        rank: String((tObj && (tObj.type || tObj.trophyType)) || 'Bronze').toUpperCase()
-    };
-}
-
-function ledgerItem(ledger, link) {
-    const ensure = (obj, key, fallback) => { if (!obj[key] || typeof obj[key] !== 'object') obj[key] = fallback; return obj[key]; };
-    if (link.type === 'collectible') {
-        const cols = ensure(ledger, 'collectibles', {});
-        const g = ensure(cols, link.group, { items: {} });
-        const items = ensure(g, 'items', {});
-        return ensure(items, link.id, { collected: false });
-    }
-    if (link.type === 'magazine') {
-        const cols = ensure(ledger, 'collectibles', {});
-        const g = ensure(cols, 'survivalist_magazines', { items: {} });
-        const items = ensure(g, 'items', {});
-        return ensure(items, link.id, { collected: false });
-    }
-    if (link.type === 'stash') return ensure(ensure(ledger, 'stashes', {}), link.id, { collected: false });
-    if (link.type === 'roster') return ensure(ensure(ledger, 'roster', {}), link.id, { unlocked: false });
-    return ensure(ensure(ledger, 'missions', {}), link.id, { completed: false });
-}
-
-function setLedgerItemDone(item, type, done) {
-    if (type === 'roster') item.unlocked = done;
-    else if (type === 'mission') item.completed = done;
-    else item.collected = done;
-}
-
-function isLedgerItemDone(item, type) {
-    if (type === 'roster') return !!item.unlocked;
-    if (type === 'mission') return !!item.completed;
-    return !!item.collected;
-}
-
-function applyPsnLive(ledger, live, gameId, links) {
-    if (!ledger || !live || typeof live !== 'object') return false;
-    let modified = false;
-    if (!ledger.trophies || typeof ledger.trophies !== 'object') ledger.trophies = {};
-
-    Object.entries(live).forEach(([tId, raw]) => {
-        const t = normalizeLiveTrophy(raw);
-        if (!t.earned) return;
-        const key = `trophy_${gameId}_${tId}`;
-        const existing = ledger.trophies[key];
-        if (!existing || !existing.earned || !existing.psnSynced) {
-            ledger.trophies[key] = Object.assign({}, existing || {}, { earned: true, name: (existing && existing.name) || t.name, rank: (existing && existing.rank) || t.rank, psnSynced: true });
-            modified = true;
-        }
-    });
-
-    (links || []).forEach(link => {
-        const raw = live[link.trophyId];
-        if (!raw) return;
-        const t = normalizeLiveTrophy(raw);
-        const item = ledgerItem(ledger, link);
-
-        if (link.target > 0) {
-            const value = Math.max(0, Math.min(link.target, t.earned ? link.target : t.current));
-            const done = value >= link.target;
-            if (item.count !== value || item.collected !== done || item.psnSynced !== true || item.target !== link.target) {
-                item.count = value;
-                item.target = link.target;
-                setLedgerItemDone(item, link.type, done);
-                item.psnSynced = true;
-                modified = true;
-            }
-        } else if (t.earned) {
-            if (!isLedgerItemDone(item, link.type) || item.psnSynced !== true) {
-                setLedgerItemDone(item, link.type, true);
-                item.psnSynced = true;
-                modified = true;
-            }
-        }
-    });
-
-    return modified;
-}
-
-window.appState.hasPsnAuto = function() {
-    return this.platform === 'ps' && !!(this.myPsnGamertag || this.myPsnAccountId);
-};
-
-window.appState.getItemRef = function(type, id, group) {
-    if (type === 'stash') return this.stashes[id];
-    if (type === 'roster') return this.roster[id];
-    if (type === 'collectible') return group ? this.collectibles[group]?.items?.[id] : undefined;
-    if (type === 'magazine') return this.collectibles.survivalist_magazines?.items?.[id];
-    if (type === 'trophy') return this.trophies[id];
-    return this.missions[id];
-};
-
-window.appState.isPsnLocked = function(ref) {
-    return this.hasPsnAuto() && !!ref && ref.psnSynced === true;
-};
-
-window.appState.ensureCounterTargets = function() {
-    if (!this.gameData || !this.gameData.collectibles) return;
-    for (const cKey in this.gameData.collectibles) {
-        const group = this.gameData.collectibles[cKey];
-        if (!group || !Array.isArray(group.items)) continue;
-        group.items.forEach(cItem => {
-            const target = resolveItemTarget(cItem);
-            if (target <= 0) return;
-            if (!this.collectibles[cKey]) this.collectibles[cKey] = { collected: false, count: 0, psnSynced: false, total: group.items.length, items: {} };
-            if (!this.collectibles[cKey].items) this.collectibles[cKey].items = {};
-            if (!this.collectibles[cKey].items[cItem.id]) this.collectibles[cKey].items[cItem.id] = { collected: false, name: cItem.name || '', psnSynced: false };
-            const ref = this.collectibles[cKey].items[cItem.id];
-            ref.target = target;
-            if (typeof ref.count !== 'number') ref.count = 0;
-        });
-    }
-};
-
-window.appState.setCounter = function(group, itemId, value) {
-    const ref = this.collectibles[group]?.items?.[itemId];
-    if (!ref) return;
-    if (this.isPsnLocked(ref)) {
-        this.updateStatus('Synced from PlayStation. This count updates automatically.');
-        this.applyStateToUI();
-        return;
-    }
-    const target = Number(ref.target) || 0;
-    let v = Math.floor(Number(value) || 0);
-    v = Math.max(0, target > 0 ? Math.min(target, v) : v);
-    ref.count = v;
-    ref.collected = target > 0 ? v >= target : v > 0;
-    this.applyStateToUI();
-    this.saveProgress();
-};
-
-window.appState.adjCounter = function(group, itemId, delta) {
-    const ref = this.collectibles[group]?.items?.[itemId];
-    if (!ref) return;
-    this.setCounter(group, itemId, (Number(ref.count) || 0) + delta);
-};
-
-window.appState.refreshPsnProgress = async function() {
-    if (!this.hasPsnAuto() || !this.activePsnCommId) return false;
-    const psnKey = await resolvePsnKey(this.myPsnGamertag, this.myPsnAccountId);
-    const live = await fetchPsnLiveFor(psnKey);
-    if (!live) return false;
-
-    this.psnLive = live;
-    const modified = applyPsnLive(this, live, this.activeGameId, this.psnLinks);
-    if (modified) {
-        this.applyStateToUI();
-        if (this.isCloudLoaded) this.saveProgress();
-    }
-    return modified;
-};
-
-function updateCounterCard(card, ref, locked) {
-    const target = Number(card.getAttribute('data-target')) || 0;
-    const count = Math.max(0, Math.min(target, Number(ref && ref.count) || 0));
-    const input = card.querySelector('.counter-input');
-    const fill = card.querySelector('.counter-fill');
-    const label = card.querySelector('.counter-label');
-
-    if (input) {
-        if (typeof document.activeElement === 'undefined' || document.activeElement !== input) input.value = count;
-        input.disabled = !!locked;
-    }
-    if (fill) fill.style.width = `${target > 0 ? Math.round((count / target) * 100) : 0}%`;
-    if (label) label.textContent = locked ? 'Synced from PlayStation' : '';
-    card.querySelectorAll('.counter-btn').forEach(b => { b.disabled = !!locked; });
-}
-
-function updateSectionProgress() {
-    document.querySelectorAll('.category-section').forEach(sec => {
-        const chip = sec.querySelector('.section-progress');
-        if (!chip) return;
-        const cards = Array.from(sec.querySelectorAll('.fc5-item-card'));
-        const total = cards.length;
-        const done = cards.filter(c => c.classList.contains('completed')).length;
-        const complete = total > 0 && done >= total;
-        chip.textContent = `${done} / ${total}`;
-        chip.style.color = complete ? '#34d399' : '#fff';
-        chip.style.borderColor = complete ? '#34d399' : 'var(--user-theme-accent)';
-        chip.style.background = complete ? 'rgba(52,211,153,0.15)' : 'rgba(255,85,0,0.18)';
-    });
-}
-
-function progressChip(total) {
-    return `<span class="section-progress" style="margin-left:10px; font-size:0.8rem; font-weight:800; padding:2px 10px; border-radius:12px; border:1px solid var(--user-theme-accent); background:rgba(255,85,0,0.18); color:#fff; white-space:nowrap; vertical-align:middle;">0 / ${total}</span>`;
-}
-
-function counterControlsHtml(group, id, target) {
-    const btnStyle = 'width:30px; height:30px; border-radius:6px; border:1px solid rgba(255,255,255,0.2); background:#1e293b; color:#fff; font-weight:900; cursor:pointer;';
-    return `
-        <div style="display:flex; align-items:center; gap:8px; margin:6px 0;">
-            <button type="button" class="counter-btn" style="${btnStyle}" onclick="appState.adjCounter('${group}', '${id}', -1)" aria-label="Decrease">−</button>
-            <input type="number" class="counter-input" min="0" max="${target}" value="0" style="width:84px; height:30px; text-align:center; border-radius:6px; border:1px solid rgba(255,255,255,0.2); background:#0f172a; color:#fff; font-weight:800;" onchange="appState.setCounter('${group}', '${id}', this.value)">
-            <span style="color:#94a3b8; font-size:0.85rem; font-weight:700;">/ ${target}</span>
-            <button type="button" class="counter-btn" style="${btnStyle}" onclick="appState.adjCounter('${group}', '${id}', 1)" aria-label="Increase">+</button>
-            <span class="counter-label" style="margin-left:auto; font-size:0.7rem; font-weight:800; color:#60a5fa;"></span>
-        </div>
-        <div style="height:6px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden; margin-bottom:6px;">
-            <div class="counter-fill" style="height:100%; width:0%; background:var(--user-theme-accent);"></div>
-        </div>`;
-}
-
-// Section 4B: Friend Earner Helpers
-function friendHasEarnedItem(sData, id, type, group) {
-    if (!sData || typeof sData !== 'object') return false;
-
-    if (type === 'stash') {
-        return !!(sData.stashes?.[id]?.collected);
-    } else if (type === 'roster') {
-        return !!(sData.roster?.[id]?.unlocked);
-    } else if (type === 'collectible') {
-        if (group && sData.collectibles?.[group]?.items?.[id]) {
-            return !!(sData.collectibles[group].items[id].collected);
-        }
-        return false;
-    } else if (type === 'magazine') {
-        if (sData.collectibles?.survivalist_magazines?.items?.[id]) {
-            return !!(sData.collectibles.survivalist_magazines.items[id].collected);
-        }
-        return false;
-    } else if (type === 'trophy') {
-        return !!(sData.trophies?.[id]?.earned);
-    }
-    return !!(sData.missions?.[id]?.completed);
-}
-
-function buildAvatarBadge(entry) {
-    const name = (entry && entry.username) ? String(entry.username) : 'Squad Member';
-    const wrap = document.createElement('span');
-    wrap.className = 'squad-avatar-badge';
-    wrap.title = `${name} has this`;
-    wrap.style.cssText = 'width:26px; height:26px; border-radius:50%; border:2px solid var(--user-theme-accent); overflow:hidden; display:inline-flex; align-items:center; justify-content:center; background:#1e293b; color:#fff; font-size:0.7rem; font-weight:800; flex:0 0 auto;';
-
-    const initial = name.trim().charAt(0).toUpperCase() || '?';
-    const avatarUrl = toSecureUrl(entry && entry.avatar ? entry.avatar : '');
-
-    if (avatarUrl) {
-        const img = document.createElement('img');
-        img.src = avatarUrl;
-        img.alt = name;
-        img.style.cssText = 'width:100%; height:100%; object-fit:cover; display:block;';
-        img.onerror = function() {
-            img.remove();
-            wrap.textContent = initial;
-        };
-        wrap.appendChild(img);
-    } else {
-        wrap.textContent = initial;
-    }
-    return wrap;
-}
-
-// Section 5: Universal Profile & Squad Bridge via Friend Codes
-window.appState.fetchUserProfile = async function() {
+// Section 5: Squad Co-Op Bridge via RTDB Friend Codes
+// Lines 536-614: Realtime squad sync querying corresponding platform progress
+window.appState.fetchUserFriendCode = async function() {
     const emailKey = this.getEmailKey();
     if (!rtdb || !emailKey) return;
-
     try {
-        const snap = await rtdb.ref(`/users/${emailKey}`).once('value');
-        const userProfile = snap.val() || {};
-
-        this.myFriendCode = userProfile.friend_code || null;
-        this.myPsnGamertag = userProfile.psn_username || userProfile.gamertag || null;
-        this.myPsnAccountId = userProfile.psn_account_id || userProfile.accountId || null;
-
+        const snap = await rtdb.ref(`/users/${emailKey}/friend_code`).once('value');
+        this.myFriendCode = snap.val() || 'TLWWTSNU';
         const display = document.getElementById('myFriendCodeDisplay');
-        if (display && this.myFriendCode) {
-            display.innerText = this.myFriendCode;
-        }
+        if (display) display.innerText = this.myFriendCode;
     } catch (e) {
-        console.warn("[User Profile Fetch Error]:", e);
+        console.warn("[Friend Code Fetch]:", e);
     }
 };
-
-function normalizePlatformKey(raw) {
-    const p = String(raw || '').toLowerCase().trim();
-    if (!p) return null;
-    if (p === 'ps' || p === 'psn' || p === 'ps4' || p === 'ps5' || p.includes('playstation') || p.includes('sony')) return 'ps';
-    if (p.includes('xbox')) return 'xbox';
-    if (p.includes('steam')) return 'steam';
-    if (p === 'pc' || p.includes('windows')) return 'pc';
-    return null;
-}
-
-const PLATFORM_LABELS = { ps: 'PLAYSTATION', xbox: 'XBOX', pc: 'PC', steam: 'STEAM' };
-
-function buildPlatformCandidates(friendPrimaryPlatform, viewerPlatform) {
-    const list = [normalizePlatformKey(friendPrimaryPlatform), viewerPlatform, 'ps', 'pc', 'xbox', 'steam'].filter(Boolean);
-    return Array.from(new Set(list));
-}
-
-async function fetchFriendProgressDoc(friendCode, platforms) {
-    for (const plat of platforms) {
-        const doc = await firestore
-            .collection("users")
-            .doc(friendCode)
-            .collection("platform")
-            .doc(plat)
-            .collection("progress")
-            .doc(appState.activeGameId)
-            .get();
-        if (doc.exists) return { data: doc.data() || {}, platform: plat };
-    }
-    return null;
-}
-
-window.psnIndexCache = null;
-async function getPsnGamertagIndex() {
-    const cached = window.psnIndexCache;
-    if (cached && (Date.now() - cached.at) < 5 * 60 * 1000) return cached.map;
-    const snap = await rtdb.ref('/psn/usersByGamerTag').once('value');
-    const map = snap.val() || {};
-    window.psnIndexCache = { at: Date.now(), map: map };
-    return map;
-}
-
-async function resolvePsnKey(tag, accountId) {
-    if (!rtdb) return tag || null;
-    try {
-        const map = await getPsnGamertagIndex();
-        const keys = Object.keys(map);
-        if (tag && map[tag] !== undefined) return tag;
-        const lower = String(tag || '').toLowerCase();
-        const byName = lower ? keys.find(k => k.toLowerCase() === lower) : null;
-        if (byName) return byName;
-        if (accountId) {
-            const byId = keys.find(k => String(map[k]) === String(accountId));
-            if (byId) return byId;
-        }
-    } catch (e) {
-        console.warn("[PSN Index Lookup Error]:", e);
-    }
-    return tag || null;
-}
-
-async function fetchPsnLiveFor(psnKey) {
-    if (!rtdb || !psnKey || !appState.activePsnCommId) return null;
-    try {
-        const snap = await rtdb.ref(`/psn/gamertags/${psnKey}/liveTrophyProgress/${appState.activePsnCommId}`).once('value');
-        const live = snap.val();
-        if (!live || typeof live !== 'object') return null;
-
-        const out = {};
-        Object.entries(live).forEach(([tId, tObj]) => {
-            if (tObj && typeof tObj === 'object') out[String(tId)] = tObj;
-        });
-        return Object.keys(out).length ? out : null;
-    } catch (e) {
-        console.warn(`[PSN Live Trophy Error for ${psnKey}]:`, e);
-        return null;
-    }
-}
-
-async function fetchPsnAvatarFor(psnKey) {
-    if (!rtdb || !psnKey) return '';
-    try {
-        const snap = await rtdb.ref(`/psn/gamertags/${psnKey}/avatar`).once('value');
-        const val = snap.val();
-        return (typeof val === 'string') ? val : '';
-    } catch (e) {
-        return '';
-    }
-}
-
-function buildFriendLedger(friendData, psnLive) {
-    const ledger = Object.assign({}, friendData || {});
-    if (!ledger.trophies || typeof ledger.trophies !== 'object') ledger.trophies = {};
-
-    if (psnLive) {
-        applyPsnLive(ledger, psnLive, appState.activeGameId, appState.psnLinks);
-    }
-
-    const total = Object.keys(appState.trophies).length || appState.trophies_total || 51;
-    const earned = Object.values(ledger.trophies).filter(t => t && t.earned).length;
-    ledger.trophies_earned = Math.max(earned, Number(ledger.trophies_earned) || 0);
-    ledger.trophies_percent = Math.max(total > 0 ? Math.round((earned / total) * 100) : 0, Number(ledger.trophies_percent) || 0);
-
-    if (psnLive) {
-        const ranks = Object.assign({}, ledger.ranks || {});
-        let col = 0;
-        Object.values(ledger.collectibles || {}).forEach(g => {
-            Object.values((g && g.items) || {}).forEach(it => { if (it && it.collected) col++; });
-        });
-        ranks.collectibles = Math.max(col, Number(ranks.collectibles) || 0);
-        ranks.stashes = Math.max(Object.values(ledger.stashes || {}).filter(x => x && x.collected).length, Number(ranks.stashes) || 0);
-        ledger.ranks = ranks;
-    }
-    return ledger;
-}
-
-async function resolveFriendIdentity(fKey, fRaw) {
-    const f = (fRaw && typeof fRaw === 'object') ? fRaw : {};
-    const keyLooksLikeEmail = typeof fKey === 'string' && fKey.includes('_at_');
-    const emailKey = f.email_key || f.emailKey || (keyLooksLikeEmail ? fKey : null);
-
-    let profile = {};
-    const missingSomething = !f.friend_code || !f.username || !(f.avatar_url || f.avatar) || !(f.psn_username || f.gamertag);
-    if (emailKey && rtdb && missingSomething) {
-        try {
-            const snap = await rtdb.ref(`/users/${emailKey}`).once('value');
-            profile = snap.val() || {};
-        } catch (e) {
-            profile = {};
-        }
-    }
-
-    return {
-        friendCode: f.friend_code || f.friendCode || profile.friend_code || (keyLooksLikeEmail ? null : fKey),
-        username: f.username || profile.username || profile.display_name || profile.displayName || 'Squad Member',
-        avatar: toSecureUrl(f.avatar_url || f.avatar || profile.avatar_url || profile.photoURL || profile.avatar || ''),
-        psnTag: f.psn_username || f.gamertag || profile.psn_username || profile.gamertag || null,
-        psnAccountId: f.psn_account_id || profile.psn_account_id || null,
-        primaryPlatform: f.primary_platform || profile.primary_platform || null
-    };
-}
-
-let friendsSyncInFlight = false;
 
 window.appState.syncFriendsProgress = async function() {
     const rosterContainer = document.getElementById('friendsRosterContainer');
     if (!rosterContainer) return;
-    if (friendsSyncInFlight) return;
 
     const emailKey = this.getEmailKey();
     if (!emailKey) {
@@ -1113,98 +582,69 @@ window.appState.syncFriendsProgress = async function() {
         return;
     }
 
-    friendsSyncInFlight = true;
     try {
         const friendsSnap = await rtdb.ref(`/users/${emailKey}/friends`).once('value');
         const friendsData = friendsSnap.val();
 
         if (!friendsData || Object.keys(friendsData).length === 0) {
-            window.squadProgressCache = {};
             rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">No squad members linked yet. Share your friend code to link co-op members.</div>';
-            this.applyStateToUI();
             return;
         }
 
-        const newCache = {};
         let cardsHtml = '';
+        for (const [fKey, fObj] of Object.entries(friendsData)) {
+            const friendUsername = fObj.username || fKey;
+            const friendTargetKey = fObj.email ? fObj.email.replace(/@/g, '_at_').replace(/\./g, '_') : fKey;
 
-        for (const [fKey, fRaw] of Object.entries(friendsData)) {
-            const identity = await resolveFriendIdentity(fKey, fRaw);
-            const platformCandidates = buildPlatformCandidates(identity.primaryPlatform, this.platform);
-
-            let progress = null;
-            let readError = null;
-            if (firestore && identity.friendCode) {
+            let friendData = null;
+            if (firestore) {
                 try {
-                    progress = await fetchFriendProgressDoc(identity.friendCode, platformCandidates);
-                } catch (err) {
-                    readError = err;
-                    console.warn(`[Squad Firestore Error for ${identity.friendCode}]:`, err);
-                }
+                    const fDoc = await firestore
+                        .collection("users")
+                        .doc(friendTargetKey)
+                        .collection("platform")
+                        .doc(this.platform)
+                        .collection("progress")
+                        .doc(CURRENT_GAME_ID)
+                        .get();
+
+                    if (fDoc.exists) {
+                        friendData = fDoc.data();
+                    }
+                } catch (err) {}
             }
 
-            const usedPlatform = progress ? progress.platform : (platformCandidates[0] || this.platform);
-            const psnKey = await resolvePsnKey(identity.psnTag, identity.psnAccountId);
-            const psnLive = (psnKey && usedPlatform === 'ps') ? await fetchPsnLiveFor(psnKey) : null;
-            const friendData = buildFriendLedger(progress ? progress.data : {}, psnLive);
-
-            let avatar = identity.avatar;
-            if (!avatar && psnKey) avatar = toSecureUrl(await fetchPsnAvatarFor(psnKey));
-
-            const cacheKey = identity.friendCode || fKey;
-            newCache[cacheKey] = {
-                username: identity.username,
-                avatar: avatar,
-                platform: usedPlatform,
-                data: friendData
-            };
-
-            const rpVal = friendData.ranks?.rp || 0;
-            const stashesVal = friendData.ranks?.stashes || 0;
-            const colVal = friendData.ranks?.collectibles || 0;
-            const trophyPercent = friendData.trophies_percent || 0;
-            const platformLabel = PLATFORM_LABELS[usedPlatform] || String(usedPlatform).toUpperCase();
-
-            let statusNote = '';
-            if (readError) {
-                statusNote = `<div style="font-size:0.7rem; color:#f87171; margin-top:2px;">Can't read this friend's saved progress (${escapeHtml(readError.code || 'error')}).</div>`;
-            } else if (!progress && !psnLive) {
-                statusNote = `<div style="font-size:0.7rem; color:#94a3b8; margin-top:2px;">No saved progress for this game yet.</div>`;
-            }
+            const rpVal = friendData?.ranks?.rp || 0;
+            const stashesVal = friendData?.ranks?.stashes || 0;
+            const colVal = friendData?.ranks?.collectibles || 0;
+            const trophyPercent = friendData?.trophies_percent || 0;
 
             cardsHtml += `
-                <div style="background:#1e293b; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px; display:flex; gap:12px; align-items:center;">
-                    ${avatar ? `<img src="${escapeHtml(avatar)}" style="width:44px; height:44px; border-radius:50%; object-fit:cover; border:2px solid var(--user-theme-accent);" onerror="this.style.display='none'">` : ''}
-                    <div style="flex:1;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                            <div style="font-weight:900; color:#fff; font-size:0.95rem;">${escapeHtml(identity.username)}</div>
-                            <span style="font-size:0.7rem; font-weight:800; background:rgba(255,85,0,0.2); color:var(--user-theme-accent); padding:2px 6px; border-radius:4px; text-transform:uppercase;">
-                                ${escapeHtml(platformLabel)}
-                            </span>
-                        </div>
-                        <div style="font-size:0.75rem; color:#cbd5e1; margin-bottom:2px;">
-                            <strong>RP:</strong> ${rpVal} • <strong>Stashes:</strong> ${stashesVal} • <strong>Collectibles:</strong> ${colVal}
-                        </div>
-                        <div style="font-size:0.75rem; color:#94a3b8;">
-                            Trophy Progress: <strong style="color:#fff;">${trophyPercent}%</strong>
-                        </div>
-                        ${statusNote}
+                <div style="background:#1e293b; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <div style="font-weight:900; color:#fff; font-size:0.95rem;">${escapeHtml(friendUsername)}</div>
+                        <span style="font-size:0.7rem; font-weight:800; background:rgba(255,85,0,0.2); color:var(--user-theme-accent); padding:2px 6px; border-radius:4px; text-transform:uppercase;">
+                            ${escapeHtml(this.platform)}
+                        </span>
+                    </div>
+                    <div style="font-size:0.75rem; color:#cbd5e1; margin-bottom:4px;">
+                        <strong>RP:</strong> ${rpVal} • <strong>Stashes:</strong> ${stashesVal} • <strong>Collectibles:</strong> ${colVal}
+                    </div>
+                    <div style="font-size:0.75rem; color:#94a3b8;">
+                        Trophy Progress: <strong>${trophyPercent}%</strong>
                     </div>
                 </div>
             `;
         }
 
-        window.squadProgressCache = newCache;
         rosterContainer.innerHTML = cardsHtml;
-        this.applyStateToUI();
     } catch (e) {
-        console.warn("[Friends Roster Sync Error]:", e);
-    } finally {
-        friendsSyncInFlight = false;
+        console.warn("[Friends Roster Error]:", e);
     }
 };
 
-// Section 6: Dynamic Top Navigation Bar (/utm_links)
+// Section 6: Dynamic Navbar (/utm_links)
+// Lines 617-688: Top-level menu architecture
 async function buildUtmNavigation() {
     const navContainer = document.getElementById('dynamicNavLinks');
     if (!navContainer || !rtdb) return;
@@ -1295,15 +735,16 @@ async function buildUtmNavigation() {
 
         navContainer.innerHTML = navHtml;
     } catch (e) {
-        console.warn("[UTM Navigation Fetch Error]:", e);
+        console.warn("[UTM Navigation Fetch]:", e);
     }
 }
 
-// Section 7: PSN Game Skeleton Ingestion
+// Section 7: PSN Skeleton & Live Trophy Tracking
+// Lines 691-744: CommID telemetry
 async function syncPsnSkeleton() {
-    if (!rtdb || !appState.activePsnCommId) return;
+    if (!rtdb) return;
     try {
-        const snap = await rtdb.ref(`/psn/games/${appState.activePsnCommId}`).once('value');
+        const snap = await rtdb.ref(`/psn/games/${PSN_FC5_COMM_ID}`).once('value');
         const skeleton = snap.val();
         if (!skeleton) return;
 
@@ -1318,16 +759,55 @@ async function syncPsnSkeleton() {
             if (fav2) fav2.href = posterUrl;
             if (navLogo) navLogo.src = posterUrl;
         }
+
+        if (appState.currentUser && appState.platform === 'ps') {
+            await autoCheckUserPsnTrophies();
+        }
     } catch (e) {
-        console.warn("[PSN Skeleton Sync Error]:", e);
+        console.warn("[PSN Skeleton Sync]:", e);
     }
 }
 
 async function autoCheckUserPsnTrophies() {
-    return appState.refreshPsnProgress();
+    const emailKey = appState.getEmailKey();
+    if (!rtdb || !emailKey) return;
+
+    try {
+        const userProfileSnap = await rtdb.ref(`/users/${emailKey}/psn_username`).once('value');
+        const gamertag = userProfileSnap.val() || 'wildhorse_spirit';
+
+        const liveTrophiesSnap = await rtdb.ref(`/psn/gamertags/${gamertag}/liveTrophyProgress/${PSN_FC5_COMM_ID}`).once('value');
+        const liveTrophies = liveTrophiesSnap.val();
+
+        if (liveTrophies && typeof liveTrophies === 'object') {
+            let stateModified = false;
+            Object.entries(liveTrophies).forEach(([tId, tObj]) => {
+                if (tObj && (tObj.earned === true || tObj.isEarned === true)) {
+                    const cardKey = `trophy_fc5_${tId}`;
+                    if (!appState.trophies[cardKey] || !appState.trophies[cardKey].earned) {
+                        appState.trophies[cardKey] = {
+                            earned: true,
+                            name: tObj.trophyName || appState.trophies[cardKey]?.name || 'Trophy',
+                            rank: (tObj.trophyType || 'Bronze').toUpperCase(),
+                            psnSynced: true
+                        };
+                        stateModified = true;
+                    }
+                }
+            });
+
+            if (stateModified) {
+                appState.applyStateToUI();
+                appState.saveProgress();
+            }
+        }
+    } catch (e) {
+        console.warn("[Live Trophy Auto-Check]:", e);
+    }
 }
 
-// Section 8: Render Game Companion Content Cards
+// Section 8: Render Far Cry 5 Tactical Accordion Sections
+// Lines 747-920: Populates cards with data-group and data-type binding
 function renderFarCry5Companion(data) {
     const container = document.getElementById('section-container');
     if (!container || !data) return;
@@ -1339,7 +819,7 @@ function renderFarCry5Companion(data) {
         html += `
         <section class="category-section section-collapsed" id="cat-walkthroughs">
             <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                <h2>📖 Story Campaign & Boss Encounters ${progressChip(data.walkthrough_missions.length)}</h2>
+                <h2>📖 Story Campaign & Boss Encounters (${data.walkthrough_missions.length})</h2>
                 <span>▾</span>
             </div>
             <div class="section-content">
@@ -1354,7 +834,6 @@ function renderFarCry5Companion(data) {
                                 <button type="button" class="check-btn" onclick="appState.toggleItem('${item.id}', 'mission')" aria-label="Toggle Mission"></button>
                             </div>
                             <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(item.guide || '')}</p>
-                            <div class="squad-earners-bar"></div>
                         </div>
                     `).join('')}
                 </div>
@@ -1376,7 +855,7 @@ function renderFarCry5Companion(data) {
                 html += `
                 <section class="category-section section-collapsed" id="cat-stash-${reg.key}">
                     <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                        <h2>📦 Prepper Stashes — ${reg.label} ${progressChip(list.length)}</h2>
+                        <h2>📦 Prepper Stashes — ${reg.label} (${list.length})</h2>
                         <span>▾</span>
                     </div>
                     <div class="section-content">
@@ -1392,7 +871,6 @@ function renderFarCry5Companion(data) {
                                         <button type="button" class="check-btn" onclick="appState.toggleItem('${s.id}', 'stash')" aria-label="Toggle Stash"></button>
                                     </div>
                                     <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(s.guide || '')}</p>
-                                    <div class="squad-earners-bar"></div>
                                 </div>
                             `).join('')}
                         </div>
@@ -1402,7 +880,7 @@ function renderFarCry5Companion(data) {
         });
     }
 
-    // 8C. Collectibles
+    // 8C. Collectibles (6 Sets)
     if (data.collectibles) {
         for (const cKey in data.collectibles) {
             const group = data.collectibles[cKey];
@@ -1411,15 +889,13 @@ function renderFarCry5Companion(data) {
                 html += `
                 <section class="category-section section-collapsed" id="cat-col-${cKey}">
                     <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                        <h2>🗂️ Collectibles: ${escapeHtml(groupTitle)} ${progressChip(group.items.length)}</h2>
+                        <h2>🗂️ Collectibles: ${escapeHtml(groupTitle)} (${group.items.length})</h2>
                         <span>▾</span>
                     </div>
                     <div class="section-content">
                         <div class="trophy-grid">
-                            ${group.items.map(item => {
-                                const counterTarget = resolveItemTarget(item);
-                                return `
-                                <div class="trophy-card fc5-item-card" data-id="${item.id}" data-type="collectible" data-group="${cKey}"${counterTarget > 0 ? ` data-target="${counterTarget}"` : ''}>
+                            ${group.items.map(item => `
+                                <div class="trophy-card fc5-item-card" data-id="${item.id}" data-type="collectible" data-group="${cKey}">
                                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                         <div>
                                             <span class="trophy-rank rank-bronze">${escapeHtml(item.region || group.region || 'Hope County')}</span>
@@ -1429,11 +905,8 @@ function renderFarCry5Companion(data) {
                                         <button type="button" class="check-btn" onclick="appState.toggleItem('${item.id}', 'collectible', '${cKey}')" aria-label="Toggle Collectible"></button>
                                     </div>
                                     <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(item.guide || '')}</p>
-                                    ${counterTarget > 0 ? counterControlsHtml(cKey, item.id, counterTarget) : ''}
-                                    <div class="squad-earners-bar"></div>
                                 </div>
-                            `;
-                            }).join('')}
+                            `).join('')}
                         </div>
                     </div>
                 </section>`;
@@ -1446,7 +919,7 @@ function renderFarCry5Companion(data) {
         html += `
         <section class="category-section section-collapsed" id="cat-roster">
             <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                <h2>🐾 Guns & Fangs for Hire ${progressChip(data.guns_and_fangs_for_hire.length)}</h2>
+                <h2>🐾 Guns & Fangs for Hire (${data.guns_and_fangs_for_hire.length})</h2>
                 <span>▾</span>
             </div>
             <div class="section-content">
@@ -1464,7 +937,6 @@ function renderFarCry5Companion(data) {
                             <div style="font-size:0.78rem; color:#cbd5e1; margin-bottom:8px;">
                                 <strong>Unlock Mission:</strong> ${escapeHtml(h.unlock_mission)} (${escapeHtml(h.location)})
                             </div>
-                            <div class="squad-earners-bar"></div>
                         </div>
                     `).join('')}
                 </div>
@@ -1472,21 +944,21 @@ function renderFarCry5Companion(data) {
         </section>`;
     }
 
-    // 8E. PSN Trophies
+    // 8E. Trophies & Achievements
     const trophiesList = (appState.psnSkeleton && appState.psnSkeleton.trophies) ? Object.values(appState.psnSkeleton.trophies) : (data.trophies_and_achievements || []);
 
     if (Array.isArray(trophiesList) && trophiesList.length > 0) {
         html += `
         <section class="category-section section-collapsed" id="cat-trophies">
             <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                <h2>🏆 PSN Official Trophies & Achievements ${progressChip(trophiesList.length)}</h2>
+                <h2>🏆 PSN Official Trophies & Achievements (${trophiesList.length})</h2>
                 <span>▾</span>
             </div>
             <div class="section-content">
                 <div class="trophy-grid">
                     ${trophiesList.map((t, idx) => {
                         const tId = t.trophyId !== undefined ? t.trophyId : idx;
-                        const trophyCardId = `trophy_${appState.activeGameId}_${tId}`;
+                        const trophyCardId = `trophy_fc5_${tId}`;
                         const tName = t.name || t.trophyName || 'Trophy';
                         const tDesc = t.detail || t.description || '';
                         const tIcon = toSecureUrl(t.icon || t.trophyIconUrl || '');
@@ -1510,7 +982,6 @@ function renderFarCry5Companion(data) {
                                 <button type="button" class="check-btn" onclick="appState.toggleItem('${trophyCardId}', 'trophy')" aria-label="Toggle Trophy"></button>
                             </div>
                             <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(tDesc)}</p>
-                            <div class="squad-earners-bar"></div>
                         </div>`;
                     }).join('')}
                 </div>
@@ -1519,9 +990,11 @@ function renderFarCry5Companion(data) {
     }
 
     container.innerHTML = html;
+    appState.applyStateToUI();
 }
 
 // Section 9: Helpers
+// Lines 923-946: Sanitization & Relative Protocol Enforcement
 function toSecureUrl(url) {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
@@ -1545,77 +1018,12 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
-// Section 10: Dynamic Manifest Catalog & Auto Pill Bar Loader
-async function initGameCatalog() {
-    const manifestUrls = [
-        './data/games/index.json',
-        './data/index.json',
-        '../game/data/games/index.json',
-        '/Website/game/data/games/index.json'
-    ];
-
-    let manifest = null;
-    for (const url of manifestUrls) {
-        try {
-            const res = await fetch(url);
-            if (res.ok) {
-                manifest = await res.json();
-                break;
-            }
-        } catch (e) {}
-    }
-
-    if (!manifest || !Array.isArray(manifest.games)) {
-        console.error('[Manifest Error] Could not load games index manifest.');
-        return;
-    }
-
-    renderGamePillsFromManifest(manifest.games);
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const targetSlug = (urlParams.get('game') || 'farcry5').toLowerCase();
-
-    const selectedGame = manifest.games.find(g => g.id.toLowerCase() === targetSlug) || manifest.games[0];
-
-    try {
-        const gameRes = await fetch(selectedGame.path);
-        if (!gameRes.ok) throw new Error(`HTTP ${gameRes.status}`);
-        const gameJson = await gameRes.json();
-
-        appState.gameData = gameJson;
-        appState.activeGame = gameJson.game || selectedGame.name;
-        appState.activeGameId = gameJson.gameId || selectedGame.id;
-        appState.activePsnCommId = gameJson.commId || selectedGame.commId || null;
-
-        await syncPsnSkeleton();
-        renderFarCry5Companion(gameJson);
-    } catch (err) {
-        console.error(`[Load Error] Failed to fetch game file at ${selectedGame.path}:`, err);
-    }
-}
-
-function renderGamePillsFromManifest(gamesList) {
-    const pillBar = document.getElementById('gamePillsBar');
-    if (!pillBar) return;
-
-    const currentSlug = new URLSearchParams(window.location.search).get('game') || 'farcry5';
-
-    pillBar.innerHTML = gamesList.map(g => {
-        const isActive = g.id.toLowerCase() === currentSlug.toLowerCase();
-        return `
-            <a href="?game=${g.id}" class="game-pill ${isActive ? 'active' : ''}" style="text-decoration:none;">
-                <span>${g.icon || '🎮'}</span>
-                <span>${escapeHtml(g.name)}</span>
-            </a>
-        `;
-    }).join('');
-}
-
-// Section 11: Sequential Lifecycle
+// Section 10: Primary Lifecycle Gate
+// Lines 949-1033: Initialization, Auth Listeners, and Data Hydration
 document.addEventListener('DOMContentLoaded', async () => {
     await buildUtmNavigation();
 
-    const platformSelector = document.getElementById('platformSelect') || document.getElementById('platformSelector');
+    const platformSelector = document.getElementById('platformSelector');
     if (platformSelector) {
         platformSelector.value = appState.platform;
         platformSelector.addEventListener('change', (e) => {
@@ -1649,12 +1057,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Step 1: Initialize Manifest & Companion Render
-    await initGameCatalog();
-
-    // Step 2: Auth listener
     if (auth) {
         auth.onAuthStateChanged(async (user) => {
+            appState.authInitialized = true;
             if (user) {
                 appState.currentUser = user;
                 appState.activeEmail = user.email;
@@ -1672,18 +1077,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (nameBadge) nameBadge.innerText = appState.activeUser;
                 if (authModal) authModal.classList.add('hidden');
 
-                await appState.fetchUserProfile();
+                await appState.fetchUserFriendCode();
                 await appState.loadProgress();
                 await appState.migrateGuestProgressIfPresent();
-                await appState.refreshPsnProgress();
                 await appState.syncFriendsProgress();
             } else {
                 appState.currentUser = null;
                 appState.activeEmail = null;
                 appState.activeUser = 'Guest';
-                appState.myFriendCode = null;
-                appState.myPsnGamertag = null;
-                window.squadProgressCache = {};
 
                 const nameEl = document.getElementById('resistance-name');
                 if (nameEl) nameEl.innerText = `GUEST [${appState.platform.toUpperCase()}]`;
@@ -1692,16 +1093,34 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const badge = document.getElementById('userProfileBadge');
                 if (badge) badge.classList.add('hidden');
 
-                await appState.loadProgress();
+                appState.loadProgress();
             }
         });
     }
 
-    // Step 3: Squad polling interval
-    setInterval(async () => {
-        if (document.visibilityState === 'visible' && appState.currentUser && appState.isCloudLoaded) {
-            await appState.refreshPsnProgress();
-            appState.syncFriendsProgress();
+    const dataUrls = [
+        './data/farcry5.json',
+        './farcry5.json',
+        '../game/data/farcry5.json',
+        '//raw.githubusercontent.com/Werewolf3788/Website/main/game/data/farcry5.json'
+    ];
+
+    const loadData = async (idx) => {
+        if (idx >= dataUrls.length) return;
+        try {
+            const res = await fetch(dataUrls[idx]);
+            if (!res.ok) throw new Error();
+            const json = await res.json();
+            appState.gameData = json;
+            await syncPsnSkeleton();
+            renderFarCry5Companion(json);
+            
+            if (appState.authInitialized) {
+                appState.loadProgress();
+            }
+        } catch (e) {
+            loadData(idx + 1);
         }
-    }, 120000);
+    };
+    loadData(0);
 });
