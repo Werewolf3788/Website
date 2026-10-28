@@ -2,8 +2,8 @@
  * Project: Universal Multi-Game Resistance Companion & Field Ledger
  * File: game.js
  * Location: /game/game.js
- * Version: 11.4.0-EMBEDDED-DATA-ENGINE
- * Build Timestamp: 2026-10-27 22:35:00 EDT (America/New_York)
+ * Version: v11.5.0-AUTH-SYNC-UNIVERSAL-JSON
+ * Build Timestamp: 2026-10-27 22:50:00 EDT (America/New_York)
  * Primary Backend: entertainment-71888
  * ============================================================================ */
 
@@ -32,608 +32,13 @@ try {
 
 window.squadProgressCache = {};
 
-// Embedded Far Cry 5 Master Data Catalog
-const EMBEDDED_FARCRY5_DATA = {
-  "game": "Far Cry 5",
-  "gameId": "FarCry5",
-  "psn_communication_id": "NPWR12514_00",
-  "activeMission": "Hope County Resistance",
-  "collectibles": {
-    "baseball_cards": {
-      "quest_name": "Grand Slam",
-      "quest_giver": "George",
-      "quest_giver_location": "Oberlin Picnic Area, Whitetail Mountains",
-      "total_count": 9,
-      "region": "Whitetail Mountains",
-      "items": [ 
-        {
-          "id": "baseball_card_01",
-          "name": "Southwest of F.A.N.G Center",
-          "location": "House by a small body of water southwest of F.A.N.G Center",
-          "guide": "Eliminate enemies outside to the left of the house. Enter the house; the card is on a shelf above the couch."
-        },
-        {
-          "id": "baseball_card_02",
-          "name": "North West of Cedar Lake",
-          "location": "Lakeside house northwest of Cedar Lake",
-          "guide": "Clear the enemies on the lakeside of the building. Head inside to find the card on the chest of drawers next to the bed."
-        },
-        {
-          "id": "baseball_card_03",
-          "name": "West of Cedar Lake",
-          "location": "Mountain cabin west of Cedar Lake",
-          "guide": "Access via grapple or flying vehicle. Clear enemies and enter through the front door; the card is immediately behind the opening door on a desk."
-        },
-        {
-          "id": "baseball_card_04",
-          "name": "North of Whitetail Park Visitor Center",
-          "location": "Shack in the hills north of Whitetail Park Visitor Center",
-          "guide": "Enter the enemy-free shack and turn left. The card sits on a shelf."
-        },
-        {
-          "id": "baseball_card_05",
-          "name": "South West of Clagett Boathouse",
-          "location": "Petrol station on the road southwest of Clagett Boathouse",
-          "guide": "Enter the petrol station building. The card is on a shelf underneath the 'Clothing' sign."
-        },
-        {
-          "id": "baseball_card_06",
-          "name": "Cooper Cabin",
-          "location": "Cabin northeast of the Wolf's Den",
-          "guide": "Head inside to the room with a mattress propped up against the wall. The card is on the shelf straight ahead."
-        },
-        {
-          "id": "baseball_card_07",
-          "name": "F.A.N.G Center",
-          "location": "F.A.N.G Center gift shop",
-          "guide": "Liberate or clear the cultists. Enter the building to the right of the main entrance; the card is on a merchandise shelf in the center of the gift shop."
-        },
-        {
-          "id": "baseball_card_08",
-          "name": "McNeil Residence",
-          "location": "Northeast of F.A.N.G Center along the road",
-          "guide": "Clear the cultists and enter the white shed to the left. The card is on a shelf on the wall behind the door."
-        },
-        {
-          "id": "baseball_card_09",
-          "name": "North East of Baron Lumber Mill",
-          "location": "White shipping-container style house on race tracks behind Baron Lumber Mill",
-          "guide": "Clear nearby enemies, kick down the boarded-up door, and take the card off the wall as you enter."
-        }
-      ]
-    },
-    "comic_books": {
-      "quest_name": "Golden Age Nostalgia",
-      "quest_giver": "Nadine Abercrombie",
-      "quest_giver_location": "Dodd Residence (between Fall's End and Rae-Rae's Pumpkin Farm), Holland Valley",
-      "total_count": 12,
-      "items": [
-        {
-          "id": "comic_01",
-          "region": "Holland Valley",
-          "name": "Parker Laboratories",
-          "location": "West of Fall's End",
-          "guide": "Go up the stairs inside the house with the green roof. The comic book is directly ahead on the desk."
-        },
-        {
-          "id": "comic_02",
-          "region": "Holland Valley",
-          "name": "Boyd Residence",
-          "location": "Directly west of the Dodd Residence",
-          "guide": "Enter the house, turn left into the bedroom, and find the comic book on the bed next to a hunting bow."
-        },
-        {
-          "id": "comic_03",
-          "region": "Holland Valley",
-          "name": "Bradbury Farm",
-          "location": "South of Lamb of God Church, below crop circle",
-          "guide": "Enter the large barn to the right. Jump up to the second level via boxes in front of the blue tarp; the comic is on an old mattress."
-        },
-        {
-          "id": "comic_04",
-          "region": "Whitetail Mountains",
-          "name": "Jefferson Lookout Tower",
-          "location": "Mountain peak west of the Wolf's Den",
-          "guide": "Go to the cliffside entrance and ascend the stairs into the tower. The comic sits on a table right inside the entrance."
-        },
-        {
-          "id": "comic_05",
-          "region": "Whitetail Mountains",
-          "name": "McNeil Residence",
-          "location": "On the road between F.A.N.G Center and Fort Drubman",
-          "guide": "Break the boarded-up window around the back of the house. Enter into the second room, turn left into the bathroom, and grab the comic from the basin."
-        },
-        {
-          "id": "comic_06",
-          "region": "Whitetail Mountains",
-          "name": "Elliot Residence",
-          "location": "South of F.A.N.G Center",
-          "guide": "Climb onto the verandah where the barbed wire is broken and enter through the broken window. The comic is on cases next to a lamp."
-        },
-        {
-          "id": "comic_07",
-          "region": "Henbane River",
-          "name": "Peaches Taxidermy",
-          "location": "Peaches Taxidermy workshop grounds",
-          "guide": "Enter the grey house through the white door on the left side of the property. The comic is located right next to the television."
-        },
-        {
-          "id": "comic_08",
-          "region": "Henbane River",
-          "name": "Chan Residence",
-          "location": "Just south of Angel's Peak",
-          "guide": "Go around the back of the house, enter through the blue door, and find the comic on a bed directly behind the door."
-        },
-        {
-          "id": "comic_09",
-          "region": "Henbane River",
-          "name": "Vasquez Residence",
-          "location": "Waterfront between Faith's region and Dutch's Island",
-          "guide": "Dispatch the cultists outside, enter through the front door, and grab the comic from the living room couch."
-        },
-        {
-          "id": "comic_10",
-          "region": "Henbane River",
-          "name": "O'Hara's Haunted House",
-          "location": "Border of Faith and John's regions, northwest of Dead Man's River",
-          "guide": "Climb the crate with blue ropes behind the house onto the roof, drop to the scaffolding, and crouch through the second-floor window. The comic is on a mattress."
-        },
-        {
-          "id": "comic_11",
-          "region": "Henbane River",
-          "name": "Boshaw Manor",
-          "location": "Southwest of Moonflower Trailer Park",
-          "guide": "Walk up the ramp into the house marked with 'No Smoking' signs. Go to the rear bedroom; the comic is on the bedside table."
-        },
-        {
-          "id": "comic_12",
-          "region": "Henbane River",
-          "name": "Camp Cougars",
-          "location": "Campsite southeast of Peaches Taxidermy",
-          "guide": "Clear cultists/predators at the campsite. The comic is lying on the ground directly in front of one of the tents."
-        }
-      ]
-    },
-    "bobbleheads": {
-      "quest_name": "Mint Condition",
-      "quest_giver": "Dave Fowler",
-      "quest_giver_location": "Fowler's Retreat, Whitetail Mountains",
-      "total_count": 10,
-      "items": [
-        {
-          "id": "bobblehead_01",
-          "region": "Whitetail Mountains",
-          "name": "Baron Lumber Mill",
-          "location": "Baron Lumber Mill main building",
-          "guide": "Ascend the front stairs and enter through the window. The bobblehead is straight ahead in the kitchen."
-        },
-        {
-          "id": "bobblehead_02",
-          "region": "Whitetail Mountains",
-          "name": "Whitetail Park Ranger Station",
-          "location": "Southwest of F.A.N.G Center",
-          "guide": "Enter the main office, go behind the front desk into the adjacent room, and grab the bobblehead from the chest of drawers on the left wall."
-        },
-        {
-          "id": "bobblehead_03",
-          "region": "Whitetail Mountains",
-          "name": "Island North of Grand View Hotel",
-          "location": "Small island cabin north of Grand View Hotel",
-          "guide": "Swim north to the island log cabin. The bobblehead is located inside on a splash of blood on the bed."
-        },
-        {
-          "id": "bobblehead_04",
-          "region": "Whitetail Mountains",
-          "name": "Lansdowne Airstrip",
-          "location": "Hangar north of F.A.N.G Center (Inside 'Hangar Pains' Prepper Stash)",
-          "guide": "Grapple the nearby radio tower, wingsuit/parachute onto the hangar roof, drop through the open skylight, and find the bobblehead on a shelf."
-        },
-        {
-          "id": "bobblehead_05",
-          "region": "Whitetail Mountains",
-          "name": "Whitetail Park Visitor Center",
-          "location": "Visitor Center gift shop",
-          "guide": "Head up the stairs and turn left into the souvenir shop. The bobblehead sits directly in front on a merchandise display shelf."
-        },
-        {
-          "id": "bobblehead_06",
-          "region": "Whitetail Mountains",
-          "name": "South Park Entrance",
-          "location": "Border of Jacob's and John's regions, north of Rae-Rae's Pumpkin Farm",
-          "guide": "Ascend the wooden stairs behind the buildings. The bobblehead is on the floor mixed with discarded junk."
-        },
-        {
-          "id": "bobblehead_07",
-          "region": "Holland Valley",
-          "name": "St. Isidore School",
-          "location": "Abandoned school northeast of Fall's End",
-          "guide": "Climb onto the main school roof to retrieve the keys from the chimney. Zipline to the outbuilding, unlock it, and pick the bobblehead up from the shelf."
-        },
-        {
-          "id": "bobblehead_08",
-          "region": "Holland Valley",
-          "name": "Bradbury Tractor Shed",
-          "location": "North of the crop circle between Fall's End and Lamb of God Church",
-          "guide": "Approach the small building next to the shed, break the wooden slats covering the window, and retrieve the bobblehead inside the broken refrigerator."
-        },
-        {
-          "id": "bobblehead_09",
-          "region": "Henbane River",
-          "name": "8-Bit Pizza Bar",
-          "location": "West of Hope County Jail",
-          "guide": "Walk through the front door, pass behind the service counter into the kitchen, and grab the bobblehead off the shelf next to the dishware."
-        },
-        {
-          "id": "bobblehead_10",
-          "region": "Henbane River",
-          "name": "Feeney Residence",
-          "location": "Eastern outskirts of Henbane River",
-          "guide": "Clear the cultists in the field and enter the house. The bobblehead is on the kitchen counter against the wall."
-        }
-      ]
-    },
-    "vietnam_lighters": {
-      "quest_name": "What They Carried",
-      "quest_giver": "Wendell Redler",
-      "quest_giver_location": "Redler Residence, East of Fall's End",
-      "total_count": 12,
-      "items": [
-        {
-          "id": "lighter_01",
-          "region": "Whitetail Mountains",
-          "name": "West of Cedar Lake",
-          "location": "Underground bunker west of Cedar Lake",
-          "guide": "Climb down into the bunker and grab the lighter off the shelf next to two blue barrels."
-        },
-        {
-          "id": "lighter_02",
-          "region": "Whitetail Mountains",
-          "name": "North West of Widow's Creek",
-          "location": "Bunker off the main road northwest of Widow's Creek",
-          "guide": "Enter the roadside bunker and retrieve the lighter located in the back room next to the television."
-        },
-        {
-          "id": "lighter_03",
-          "region": "Whitetail Mountains",
-          "name": "Whitetail Park Visitor Center",
-          "location": "Visitor Center information building",
-          "guide": "Climb the stairs and turn left into the information center. The lighter is on a set of shelves in the second room to the left."
-        },
-        {
-          "id": "lighter_04",
-          "region": "Whitetail Mountains",
-          "name": "Elliot Residence",
-          "location": "Bunker at Elliot Residence (South of F.A.N.G Center)",
-          "guide": "Enter the upper story via the broken window, navigate down to the kitchen for the keycard, shoot the bunker lock in the shed outside, and find the lighter on the bench."
-        },
-        {
-          "id": "lighter_05",
-          "region": "Holland Valley",
-          "name": "Fillmore Residence",
-          "location": "East of Fall's End, west of Dead Man's River",
-          "guide": "Enter the antler-adorned shed and descend into the bunker. The lighter sits on shelves in the second room."
-        },
-        {
-          "id": "lighter_06",
-          "region": "Holland Valley",
-          "name": "Miller Residence",
-          "location": "Southwest of Fillmore Residence",
-          "guide": "Head to the white shed and drop down into the bunker hatch. The lighter is on the floor beside the nightstand."
-        },
-        {
-          "id": "lighter_07",
-          "region": "Holland Valley",
-          "name": "Harris Residence",
-          "location": "Northwest Holland Valley",
-          "guide": "Enter the bunker via the hatch inside the brown wooden shed. The lighter is on the shelves beside the bed."
-        },
-        {
-          "id": "lighter_08",
-          "region": "Holland Valley",
-          "name": "Rae-Rae's Pumpkin Farm",
-          "location": "North of Fall's End",
-          "guide": "Find the bunker hatch out in the open behind the farm buildings. The lighter is on a chair beside the bed."
-        },
-        {
-          "id": "lighter_09",
-          "region": "Henbane River",
-          "name": "McCoy Cabin",
-          "location": "West of Peaches Taxidermy",
-          "guide": "Locate the bunker hatch partially covered by green tarp. The lighter is on the shelving unit in the second room."
-        },
-        {
-          "id": "lighter_10",
-          "region": "Henbane River",
-          "name": "McClean Residence",
-          "location": "Border between Faith's region and Dutch's Island",
-          "guide": "Clear any hostile cultists and access the bunker near the rear of the property. The lighter is on the bed in the rear room."
-        },
-        {
-          "id": "lighter_11",
-          "region": "Henbane River",
-          "name": "Abercrombie Residence",
-          "location": "East of Hope County Jail",
-          "guide": "Go behind the main house to find the bunker entrance before the stairs. The lighter is on shelves in the second room."
-        },
-        {
-          "id": "lighter_12",
-          "region": "Henbane River",
-          "name": "Counselor's Cabin",
-          "location": "West and slightly south of Moonflower Trailer Park",
-          "guide": "Walk between the house and shed to reach the backyard bunker hatch. The lighter is in the second room on the shelf near the couch."
-        }
-      ]
-    },
-    "vinyl_crates": {
-      "quest_name": "Turn the Tables",
-      "quest_giver": "Wheaty",
-      "quest_giver_location": "Wolf's Den, Whitetail Mountains",
-      "quest_prerequisite": "Gearing Up",
-      "total_count": 10,
-      "region": "Whitetail Mountains",
-      "items": [
-        {
-          "id": "vinyl_01",
-          "name": "Osprey Cabin",
-          "location": "Directly south of Wolf's Den down the cliff",
-          "guide": "Enter through the side door of the log cabin. The crate sits on the coffee table between the sofa and television."
-        },
-        {
-          "id": "vinyl_02",
-          "name": "Dansky Cabin",
-          "location": "South of Wolf's Den between two roads",
-          "guide": "Approach the front door with the keypad lock; the vinyl crate is located outside under a table to the left of the door."
-        },
-        {
-          "id": "vinyl_03",
-          "name": "Hunter's Pass Shelter",
-          "location": "Northwest of Wolf's Den",
-          "guide": "Clear the area around the small brick cabin and head inside. The crate is on a table immediately past the door."
-        },
-        {
-          "id": "vinyl_04",
-          "name": "Red Tail Cabin",
-          "location": "Directly east of Wolf's Den",
-          "guide": "Enter the large wooden house and turn left into the kitchen. The crate rests on the counter beside the window."
-        },
-        {
-          "id": "vinyl_05",
-          "name": "Breakthrough Camp",
-          "location": "East of Red Tail Cabin",
-          "guide": "Pass through the main camp gate and turn right to the first lock house. The crate is on a shelf along the entryway wall."
-        },
-        {
-          "id": "vinyl_06",
-          "name": "North Park Entrance",
-          "location": "Road heading west from F.A.N.G Center",
-          "guide": "Go inside the southern building. The vinyl crate is sitting on top of a low bookshelf."
-        },
-        {
-          "id": "vinyl_07",
-          "name": "The Grill Steak",
-          "location": "Outdoor restaurant south of F.A.N.G Center",
-          "guide": "Walk past the barbecue grill and truck toward the gazebo shelter. The crate is in front of a tent underneath."
-        },
-        {
-          "id": "vinyl_08",
-          "name": "MCA Mobile Lab",
-          "location": "East of Baron Lumber Mill",
-          "guide": "Dispatch any wolves roaming the perimeter. The crate is sitting directly under the open grey canopy tent."
-        },
-        {
-          "id": "vinyl_09",
-          "name": "Linero Building Supplies",
-          "location": "North of Baron Lumber Mill, west of Fort Drubman",
-          "guide": "Proceed to the construction trailer at the back of the site, enter the blue door, and retrieve the crate on a desk behind a filing cabinet."
-        },
-        {
-          "id": "vinyl_10",
-          "name": "South Park Entrance",
-          "location": "Border road between Wolf's Den and Rae-Rae's Pumpkin Farm",
-          "guide": "Enter the roadside office next to the ACROD parking spot. The crate is on the floor in front of tipped filing cabinets."
-        }
-      ]
-    },
-    "whiskey_barrels": {
-      "quest_name": "Whiskey River",
-      "quest_giver": "Sherri",
-      "quest_giver_location": "Can of Worms Fishing Store, Silver Lake, Henbane River",
-      "required_perk": "Human Fish",
-      "total_count": 15,
-      "items": [
-        {
-          "id": "whiskey_01",
-          "region": "Henbane River",
-          "name": "East of Can of Worms Fishing Store",
-          "location": "Silver Lake shallows east of the fishing store",
-          "guide": "Swim out from the shore and dive into the lake bed; the barrel sits in reeds beside a submerged log."
-        },
-        {
-          "id": "whiskey_02",
-          "region": "Henbane River",
-          "name": "West of Drubman Marina",
-          "location": "Silver Lake waters west of Drubman Marina",
-          "guide": "Dive underwater between a large boulder and a fallen log to retrieve the barrel."
-        },
-        {
-          "id": "whiskey_03",
-          "region": "Henbane River",
-          "name": "Silver Lake Campgrounds",
-          "location": "Just north off the shoreline of Silver Lake Campgrounds",
-          "guide": "Dive down next to a large rock and a floating Bliss barrel."
-        },
-        {
-          "id": "whiskey_04",
-          "region": "Henbane River",
-          "name": "Tanami Residence",
-          "location": "Island offshore from Tanami Residence",
-          "guide": "Locate the metal shipping container suspended from a crane over the water; swim inside the open end to find the barrel at the bottom."
-        },
-        {
-          "id": "whiskey_05",
-          "region": "Whitetail Mountains",
-          "name": "West of Tanami Residence",
-          "location": "Lake inlet halfway toward the northern bridge",
-          "guide": "Dive into a small underwater rocky cavern along the lake bed to locate the barrel."
-        },
-        {
-          "id": "whiskey_06",
-          "region": "Whitetail Mountains",
-          "name": "East of Oberlin Picnic Area",
-          "location": "Silver Lake inlet south of two small islands",
-          "guide": "Submerge into another small rocky underwater alcove marked on the map."
-        },
-        {
-          "id": "whiskey_07",
-          "region": "Whitetail Mountains",
-          "name": "South of Oberlin Picnic Area",
-          "location": "Coastal rocky outcropping on an island south of Oberlin Picnic Area",
-          "guide": "The barrel is on top of tall rocks above water. Grapple to Adelaide's helicopter or fly up to drop onto the high rock ledge."
-        },
-        {
-          "id": "whiskey_08",
-          "region": "Whitetail Mountains",
-          "name": "Clagett Bay",
-          "location": "Under the lake surface below the large island in Clagett Bay",
-          "guide": "Dive down to locate a sunken helicopter; the barrel is resting inside the wreckage."
-        },
-        {
-          "id": "whiskey_09",
-          "region": "Dutch's Island",
-          "name": "Forest Research Station",
-          "location": "Off the coast of Dutch's Island near the Forest Research Station",
-          "guide": "Dive beneath the water surface and retrieve the barrel pinned under a pile of submerged timber."
-        },
-        {
-          "id": "whiskey_10",
-          "region": "Holland Valley",
-          "name": "West of Silver Lake Boathouse",
-          "location": "Open water halfway between Dutch's Island and Holland shore",
-          "guide": "Dive straight down roughly 150m southwest of the research station to find the barrel on the lake floor."
-        },
-        {
-          "id": "whiskey_11",
-          "region": "Henbane River",
-          "name": "South of Central Radio Tower",
-          "location": "Under the southern bridge near Dutch's Island border",
-          "guide": "Locate the submerged cage near a large rock formation; swim around the open side to collect the barrel."
-        },
-        {
-          "id": "whiskey_12",
-          "region": "Whitetail Mountains",
-          "name": "North of Dutch's Island",
-          "location": "Lake waters north of Dutch's Island above two islets",
-          "guide": "Dive through murky water to search the sunken debris field where the barrel is lodged."
-        },
-        {
-          "id": "whiskey_13",
-          "region": "Henbane River",
-          "name": "North of Vasquez Residence",
-          "location": "Under the bridge north of Vasquez Residence",
-          "guide": "Enter the large metal pipe opening from the land side and swim through to retrieve the barrel at the end of the line."
-        },
-        {
-          "id": "whiskey_14",
-          "region": "Henbane River",
-          "name": "South of Tanami Residence",
-          "location": "Channel between islands south of Tanami Residence",
-          "guide": "Dive down and enter the mouth of an underwater drainage culvert to collect the barrel."
-        },
-        {
-          "id": "whiskey_15",
-          "region": "Henbane River",
-          "name": "West of Can of Worms Fishing Store",
-          "location": "Bridge canal west of Can of Worms Fishing Store",
-          "guide": "Locate the fully submerged shipping container among the wrecks, swim inside, and make an immediate left-then-right turn to grab the final barrel."
-        }
-      ]
-    }
-  },
-  "prepper_stashes": {
-    "holland_valley": [
-      {
-        "id": "stash_hv_01",
-        "name": "Deep Dive",
-        "location": "Laurel Residence, directly west of Rye & Son's Aviation",
-        "required_gear": "None",
-        "unique_rewards": null,
-        "guide": "Read the note inside the house on the kitchen counter. Go out to the backyard shed, open the hatch beside it, and climb down the ladder into the water."
-      },
-      {
-        "id": "stash_hv_02",
-        "name": "D.I.Y. and D.O.A.",
-        "location": "Doverspike Compound, foot of the mountains in northwest Holland Valley",
-        "required_gear": "None",
-        "unique_rewards": null,
-        "guide": "Read the clue next to the shed door to the left of the house. Head inside the main house to the back bedroom dresser to retrieve the shed key."
-      }
-    ],
-    "henbane_river": [
-      {
-        "id": "stash_hr_01",
-        "name": "Animal Control",
-        "location": "Howling Cave, down the hill north of Peaches Taxidermy",
-        "required_gear": "Grappling Hook",
-        "unique_rewards": null,
-        "guide": "Read the note on the crate down the hill from the cave mouth. Eliminate the cultists outside and enter the cave."
-      }
-    ],
-    "whitetail_mountains": [
-      {
-        "id": "stash_wm_01",
-        "name": "Cliffhanger",
-        "location": "Crashed truck beneath the bridge on the western edge of Whitetail Mountains",
-        "required_gear": "Grappling Hook",
-        "unique_rewards": null,
-        "guide": "Inspect Ted's note beside the crashed truck in the ravine bottom. Follow the blood trail heading up the hill toward the waterfall cliff."
-      }
-    ]
-  },
-  "guns_and_fangs_for_hire": [
-    {
-      "id": "hire_01",
-      "name": "Adelaide Drubman",
-      "title": "The Chopper Queen",
-      "type": "Guns For Hire",
-      "region": "Henbane River",
-      "location": "Drubman Marina",
-      "unlock_mission": "Friendly Skies",
-      "skills": [
-        { "name": "Call a Chopper", "description": "Will provide air support and deliver a helicopter." },
-        { "name": "Less Reload", "description": "Gun + Big Magazine = More shooting." }
-      ]
-    },
-    {
-      "id": "hire_02",
-      "name": "Boomer",
-      "title": "The Good Boy",
-      "type": "Fangs For Hire",
-      "region": "Holland Valley",
-      "location": "Rae-Rae's Pumpkin Farm",
-      "unlock_mission": "Man's Best Friend",
-      "skills": [
-        { "name": "Pointer", "description": "Will tag all enemies nearby." },
-        { "name": "Retriever", "description": "Will sometimes fetch a weapon after an attack." }
-      ]
-    }
-  ],
-  "walkthrough_missions": [
-    {
-      "id": "walkthrough_prologue_01",
-      "mission_name": "The Warrant",
-      "region": "Dutch's Island (Prologue)",
-      "guide": "Follow Sheriff Whitehorse on rails into the church. Approach Joseph Seed when instructed."
-    }
-  ]
-};
-
-// Section 2: Universal State Engine
+// Section 2: Universal Global State Engine
 window.appState = {
     activeUser: 'Guest',
     activeEmail: null,
     platform: 'ps',
     currentUser: null,
-    gameData: EMBEDDED_FARCRY5_DATA,
+    gameData: null,
     psnSkeleton: null,
     myFriendCode: null,
     myPsnGamertag: null,
@@ -668,7 +73,7 @@ window.appState = {
         this.platform = newPlatform.toLowerCase();
         this.isCloudLoaded = false;
         
-        const platformSelector = document.getElementById('platformSelect');
+        const platformSelector = document.getElementById('platformSelect') || document.getElementById('platformSelector');
         if (platformSelector && platformSelector.value !== this.platform) {
             platformSelector.value = this.platform;
         }
@@ -686,128 +91,143 @@ window.appState = {
         }
     },
 
+    // Truly Universal Schema Hydration: parses whatever keys/arrays exist in your JSON
     hydrateDefaultSchema: function() {
         if (!this.gameData) return;
+
         this.psnLinks = buildPsnLinks(this.gameData);
         if (!this.custom) this.custom = {};
 
         const data = this.gameData;
         const systemKeys = new Set(['game', 'gameId', 'commId', 'psn_communication_id', 'activeMission', 'version', 'ranks', 'trophies_and_achievements']);
 
-        if (data.collectibles) {
-            for (const cKey in data.collectibles) {
-                const group = data.collectibles[cKey];
-                const itemsList = (group && Array.isArray(group.items)) ? group.items : [];
-                if (!this.collectibles[cKey]) {
-                    this.collectibles[cKey] = {
-                        collected: false,
-                        count: 0,
-                        psnSynced: false,
-                        total: itemsList.length,
-                        quest_name: group.quest_name || cKey,
-                        items: {}
-                    };
-                }
-                itemsList.forEach((cItem, idx) => {
-                    const cId = cItem.id !== undefined ? String(cItem.id) : `col_${cKey}_${idx}`;
-                    if (!this.collectibles[cKey].items[cId]) {
-                        this.collectibles[cKey].items[cId] = {
+        Object.entries(data).forEach(([catKey, catValue]) => {
+            if (systemKeys.has(catKey) || !catValue) return;
+
+            if (catKey === 'collectibles') {
+                for (const cKey in catValue) {
+                    const group = catValue[cKey];
+                    const itemsList = (group && Array.isArray(group.items)) ? group.items : [];
+                    if (!this.collectibles[cKey]) {
+                        this.collectibles[cKey] = {
                             collected: false,
-                            name: cItem.name || '',
-                            region: cItem.region || group.region || '',
-                            location: cItem.location || '',
-                            target: resolveItemTarget(cItem),
                             count: 0,
-                            psnSynced: false
+                            psnSynced: false,
+                            total: itemsList.length,
+                            quest_name: group.quest_name || cKey,
+                            items: {}
                         };
                     }
-                });
-            }
-        }
-
-        if (data.prepper_stashes) {
-            Object.entries(data.prepper_stashes).forEach(([regKey, stashList]) => {
-                if (Array.isArray(stashList)) {
-                    stashList.forEach(s => {
-                        const sId = String(s.id);
-                        if (!this.stashes[sId]) {
-                            this.stashes[sId] = {
+                    itemsList.forEach((cItem, idx) => {
+                        const cId = cItem.id !== undefined ? String(cItem.id) : `col_${cKey}_${idx}`;
+                        if (!this.collectibles[cKey].items[cId]) {
+                            this.collectibles[cKey].items[cId] = {
                                 collected: false,
-                                name: s.name || '',
-                                region: regKey,
-                                required_gear: s.required_gear || 'None',
-                                location: s.location || '',
+                                name: cItem.name || '',
+                                region: cItem.region || group.region || '',
+                                location: cItem.location || '',
+                                target: resolveItemTarget(cItem),
+                                count: 0,
                                 psnSynced: false
                             };
                         }
                     });
                 }
-            });
-        }
-
-        if (Array.isArray(data.guns_and_fangs_for_hire)) {
-            data.guns_and_fangs_for_hire.forEach(h => {
-                const hId = String(h.id);
-                if (!this.roster[hId]) {
-                    this.roster[hId] = {
-                        unlocked: false,
-                        name: h.name || '',
-                        type: h.type || 'Specialist',
-                        unlock_mission: h.unlock_mission || '',
-                        psnSynced: false
-                    };
-                }
-            });
-        }
-
-        if (Array.isArray(data.walkthrough_missions)) {
-            data.walkthrough_missions.forEach(m => {
-                const mId = String(m.id);
-                if (!this.missions[mId]) {
-                    this.missions[mId] = {
-                        completed: false,
-                        mission_name: m.mission_name || '',
-                        region: m.region || 'Hope County',
-                        psnSynced: false
-                    };
-                }
-            });
-        }
-
-        Object.entries(data).forEach(([catKey, catValue]) => {
-            if (systemKeys.has(catKey) || ['collectibles', 'prepper_stashes', 'guns_and_fangs_for_hire', 'walkthrough_missions'].includes(catKey)) return;
-
-            if (Array.isArray(catValue)) {
-                if (!this.custom[catKey]) this.custom[catKey] = {};
-                catValue.forEach((it, idx) => {
-                    const itId = it.id !== undefined ? String(it.id) : `${catKey}_${idx}`;
-                    if (!this.custom[catKey][itId]) {
-                        this.custom[catKey][itId] = {
-                            completed: false,
-                            name: it.name || it.challenge || it.target || `Item ${idx + 1}`,
-                            psnSynced: false
-                        };
-                    }
-                });
-            } else if (typeof catValue === 'object') {
-                if (!this.custom[catKey]) this.custom[catKey] = {};
-                Object.entries(catValue).forEach(([subKey, subItems]) => {
-                    if (Array.isArray(subItems)) {
-                        subItems.forEach((it, idx) => {
-                            const itId = it.id !== undefined ? String(it.id) : `${subKey}_${idx}`;
-                            if (!this.custom[catKey][itId]) {
-                                this.custom[catKey][itId] = {
-                                    completed: false,
-                                    name: it.name || it.challenge || it.target || `Item ${idx + 1}`,
-                                    group: subKey,
+            } else if (catKey === 'prepper_stashes') {
+                Object.entries(catValue).forEach(([regKey, stashList]) => {
+                    if (Array.isArray(stashList)) {
+                        stashList.forEach(s => {
+                            const sId = String(s.id);
+                            if (!this.stashes[sId]) {
+                                this.stashes[sId] = {
+                                    collected: false,
+                                    name: s.name || '',
+                                    region: regKey,
+                                    required_gear: s.required_gear || 'None',
+                                    location: s.location || '',
                                     psnSynced: false
                                 };
                             }
                         });
                     }
                 });
+            } else if (catKey === 'guns_and_fangs_for_hire' && Array.isArray(catValue)) {
+                catValue.forEach(h => {
+                    const hId = String(h.id);
+                    if (!this.roster[hId]) {
+                        this.roster[hId] = {
+                            unlocked: false,
+                            name: h.name || '',
+                            type: h.type || 'Specialist',
+                            unlock_mission: h.unlock_mission || '',
+                            psnSynced: false
+                        };
+                    }
+                });
+            } else if (catKey === 'walkthrough_missions' && Array.isArray(catValue)) {
+                catValue.forEach(m => {
+                    const mId = String(m.id);
+                    if (!this.missions[mId]) {
+                        this.missions[mId] = {
+                            completed: false,
+                            mission_name: m.mission_name || '',
+                            region: m.region || 'Hope County',
+                            psnSynced: false
+                        };
+                    }
+                });
+            } else {
+                // Any custom category added to JSON (weapons, challenges, easter eggs, etc.)
+                if (!this.custom[catKey]) this.custom[catKey] = {};
+                if (Array.isArray(catValue)) {
+                    catValue.forEach((it, idx) => {
+                        const itId = it.id !== undefined ? String(it.id) : `${catKey}_${idx}`;
+                        if (!this.custom[catKey][itId]) {
+                            this.custom[catKey][itId] = {
+                                completed: false,
+                                name: it.name || it.mission_name || it.challenge || it.target || `Item ${idx + 1}`,
+                                psnSynced: false
+                            };
+                        }
+                    });
+                } else if (typeof catValue === 'object') {
+                    Object.entries(catValue).forEach(([subKey, subItems]) => {
+                        if (Array.isArray(subItems)) {
+                            subItems.forEach((it, idx) => {
+                                const itId = it.id !== undefined ? String(it.id) : `${subKey}_${idx}`;
+                                if (!this.custom[catKey][itId]) {
+                                    this.custom[catKey][itId] = {
+                                        completed: false,
+                                        name: it.name || it.challenge || it.target || `Item ${idx + 1}`,
+                                        group: subKey,
+                                        psnSynced: false
+                                    };
+                                }
+                            });
+                        }
+                    });
+                }
             }
         });
+
+        const trophySource = (this.psnSkeleton && this.psnSkeleton.trophies) 
+            ? Object.values(this.psnSkeleton.trophies) 
+            : (this.gameData?.trophies_and_achievements || []);
+
+        if (Array.isArray(trophySource)) {
+            trophySource.forEach((t, idx) => {
+                const tId = t.trophyId !== undefined ? t.trophyId : idx;
+                const cardKey = `trophy_${this.activeGameId}_${tId}`;
+                if (!this.trophies[cardKey]) {
+                    this.trophies[cardKey] = {
+                        earned: false,
+                        name: t.name || t.trophyName || 'Trophy',
+                        rank: (t.type || t.rank || 'Bronze').toUpperCase(),
+                        psnSynced: false
+                    };
+                }
+            });
+        }
 
         this.ensureCounterTargets();
         this.recalculateMetrics();
@@ -816,6 +236,7 @@ window.appState = {
     recalculateMetrics: function() {
         let stashesCount = 0;
         let rosterCount = 0;
+        let perksCount = 0;
         let totalCollectiblesCount = 0;
         let calculatedRP = 0;
 
@@ -854,6 +275,9 @@ window.appState = {
                     group.collected = (group.total > 0 && groupCount >= group.total);
                 }
             }
+            if (this.collectibles.survivalist_magazines) {
+                perksCount = this.collectibles.survivalist_magazines.count || 0;
+            }
         }
 
         const earnedTrophies = Object.values(this.trophies).filter(t => t && t.earned).length;
@@ -864,11 +288,13 @@ window.appState = {
 
         this.ranks.stashes = stashesCount;
         this.ranks.roster = rosterCount;
+        this.ranks.perks = perksCount;
         this.ranks.collectibles = totalCollectiblesCount;
         this.ranks.rp = calculatedRP;
 
         this.updateRankDisplay('stashes', stashesCount);
         this.updateRankDisplay('roster', rosterCount);
+        this.updateRankDisplay('perks', perksCount);
         this.updateRankDisplay('collectibles', totalCollectiblesCount);
         this.updateRankDisplay('rp', calculatedRP);
     },
@@ -930,7 +356,7 @@ window.appState = {
     }
 };
 
-// Section 3: Persistence Engine
+// Section 3: Friend-Code-Keyed Firestore Persistence
 window.appState.saveProgress = function() {
     const friendCode = this.myFriendCode;
 
@@ -946,21 +372,34 @@ window.appState.saveProgress = function() {
         return;
     }
 
-    if (!this.isCloudLoaded) return;
+    if (!this.isCloudLoaded) {
+        console.warn("[Write Protected] Save blocked: Waiting for Firestore ledger fetch.");
+        return;
+    }
 
     const payload = this.buildPayload();
     if (firestore) {
-        firestore.collection("users").doc(friendCode).collection("platform").doc(this.platform).collection("progress").doc(this.activeGameId)
-            .set(payload, { merge: true }).then(() => {
-                this.updateStatus(`[Cloud Saved]`);
-            }).catch(err => {
-                console.error("[Firestore Save Error]:", err);
-            });
+        const docRef = firestore
+            .collection("users")
+            .doc(friendCode)
+            .collection("platform")
+            .doc(this.platform)
+            .collection("progress")
+            .doc(this.activeGameId);
+
+        docRef.set(payload, { merge: true }).then(() => {
+            this.updateStatus(`[Cloud Saved] users/${friendCode}/platform/${this.platform}/progress/${this.activeGameId}`);
+        }).catch(err => {
+            console.error("[Firestore Save Error]:", err);
+            this.updateStatus(`Cloud Sync Failed: ${err.message}`);
+        });
     }
 };
 
 window.appState.loadProgress = async function() {
     const friendCode = this.myFriendCode;
+    const emailKey = this.getEmailKey();
+
     this.hydrateDefaultSchema();
 
     if (!friendCode || !this.currentUser) {
@@ -968,59 +407,169 @@ window.appState.loadProgress = async function() {
         try {
             const raw = localStorage.getItem(guestKey);
             if (raw) {
-                this.applyPayload(JSON.parse(raw));
+                const parsed = JSON.parse(raw);
+                this.applyPayload(parsed);
+                this.updateStatus(`[Guest Mode] Restored progress from this device [${this.platform.toUpperCase()}].`);
                 this.isCloudLoaded = true;
                 return;
             }
         } catch (e) {}
 
         this.applyStateToUI();
+        this.updateStatus(`[Guest Mode] Clean Ledger [${this.platform.toUpperCase()}].`);
         this.isCloudLoaded = true;
         return;
     }
 
     if (firestore) {
+        this.updateStatus(`Reading cloud ledger for ${this.platform.toUpperCase()}...`);
+
         try {
-            const doc = await firestore.collection("users").doc(friendCode).collection("platform").doc(this.platform).collection("progress").doc(this.activeGameId).get();
+            let doc = await firestore
+                .collection("users")
+                .doc(friendCode)
+                .collection("platform")
+                .doc(this.platform)
+                .collection("progress")
+                .doc(this.activeGameId)
+                .get();
+
+            if (!doc.exists && emailKey) {
+                const legacyDoc = await firestore
+                    .collection("users")
+                    .doc(emailKey)
+                    .collection("platform")
+                    .doc(this.platform)
+                    .collection("progress")
+                    .doc(this.activeGameId)
+                    .get();
+
+                if (legacyDoc.exists) {
+                    doc = legacyDoc;
+                    firestore.collection("users").doc(friendCode).collection("platform").doc(this.platform).collection("progress").doc(this.activeGameId).set(legacyDoc.data(), { merge: true });
+                }
+            }
+
             if (doc.exists) {
-                this.applyPayload(doc.data());
+                const cloudData = doc.data();
+                this.applyPayload(cloudData);
+                this.isCloudLoaded = true;
+                this.updateStatus(`[Cloud Restored] Authoritative ledger loaded [${this.platform.toUpperCase()}].`);
             } else {
                 this.applyStateToUI();
+                this.isCloudLoaded = true;
                 this.saveProgress();
+                this.updateStatus(`[Cloud Initialized] Seeded new ledger in Firestore.`);
             }
-            this.isCloudLoaded = true;
         } catch (err) {
+            console.error("[Firestore Fetch Error]:", err);
             this.isCloudLoaded = true;
+            this.updateStatus(`Failed to read cloud save: ${err.message}`);
         }
     }
 };
 
-window.appState.migrateGuestProgressIfPresent = async function() {};
+window.appState.migrateGuestProgressIfPresent = async function() {
+    const friendCode = this.myFriendCode;
+    if (!friendCode) return;
 
-// Section 4: UI Painter
+    const guestKey = `${this.activeGameId}_guest_progress_${this.platform}`;
+    let guestData = null;
+
+    try {
+        const raw = localStorage.getItem(guestKey);
+        if (raw) guestData = JSON.parse(raw);
+    } catch (e) {}
+
+    if (guestData && (
+        (guestData.ranks && guestData.ranks.rp > 0) ||
+        Object.keys(guestData.stashes || {}).length > 0 ||
+        Object.keys(guestData.collectibles || {}).length > 0 ||
+        Object.keys(guestData.missions || {}).length > 0
+    )) {
+        this.updateStatus("Importing guest checks to your Cloud Ledger...");
+        this.applyPayload(guestData);
+        this.saveProgress();
+
+        localStorage.removeItem(guestKey);
+        this.updateStatus("Guest checks successfully synced to your cloud account.");
+    }
+};
+
+// Section 4: Universal UI Painting & Multi-User Co-Op Card Badging
 window.appState.applyStateToUI = function() {
     this.ensureCounterTargets();
     this.recalculateMetrics();
+
+    const squadEntries = Object.values(window.squadProgressCache || {});
+    const psnAuto = this.hasPsnAuto();
 
     document.querySelectorAll('.fc5-item-card').forEach(card => {
         const id = card.getAttribute('data-id');
         const type = card.getAttribute('data-type') || 'mission';
         const group = card.getAttribute('data-group') || null;
+        const ref = this.getItemRef(type, id, group);
         let isDone = false;
 
-        if (type === 'stash') isDone = !!(this.stashes[id]?.collected);
-        else if (type === 'roster') isDone = !!(this.roster[id]?.unlocked);
-        else if (type === 'collectible') isDone = !!(group && this.collectibles[group]?.items?.[id]?.collected);
-        else if (type.startsWith('custom_')) isDone = !!(this.custom[type.replace('custom_', '')]?.[id]?.completed);
-        else isDone = !!(this.missions[id]?.completed);
+        if (type === 'stash') {
+            isDone = !!(this.stashes[id]?.collected);
+        } else if (type === 'roster') {
+            isDone = !!(this.roster[id]?.unlocked);
+        } else if (type === 'collectible') {
+            if (group && this.collectibles[group]?.items?.[id]) {
+                isDone = !!(this.collectibles[group].items[id].collected);
+            }
+        } else if (type === 'magazine') {
+            if (this.collectibles.survivalist_magazines?.items?.[id]) {
+                isDone = !!(this.collectibles.survivalist_magazines.items[id].collected);
+            }
+        } else if (type === 'trophy') {
+            isDone = !!(this.trophies[id]?.earned);
+        } else if (type.startsWith('custom_')) {
+            const catKey = type.replace('custom_', '');
+            isDone = !!(this.custom[catKey]?.[id]?.completed);
+        } else {
+            isDone = !!(this.missions[id]?.completed);
+        }
 
         const btn = card.querySelector('.check-btn');
         if (isDone) {
             card.classList.add('completed');
-            if (btn) { btn.classList.add('is-done'); btn.innerHTML = '✓'; }
+            if (btn) {
+                btn.classList.add('is-done');
+                btn.innerHTML = '✓';
+            }
         } else {
             card.classList.remove('completed');
-            if (btn) { btn.classList.remove('is-done'); btn.innerHTML = ''; }
+            if (btn) {
+                btn.classList.remove('is-done');
+                btn.innerHTML = '';
+            }
+        }
+
+        const locked = psnAuto && !!(ref && ref.psnSynced);
+        if (btn) {
+            btn.style.boxShadow = locked ? '0 0 0 2px #3b82f6' : '';
+            btn.title = locked ? 'Verified by PlayStation Network' : '';
+        }
+
+        if (card.getAttribute('data-target')) updateCounterCard(card, ref, locked);
+
+        let squadTagContainer = card.querySelector('.squad-earners-bar');
+        if (!squadTagContainer) {
+            squadTagContainer = document.createElement('div');
+            squadTagContainer.className = 'squad-earners-bar';
+            card.appendChild(squadTagContainer);
+        }
+
+        const earners = squadEntries.filter(entry => friendHasEarnedItem(entry.data, id, type, group));
+
+        squadTagContainer.innerHTML = '';
+        if (earners.length > 0) {
+            squadTagContainer.style.cssText = 'display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.08); padding-top:6px;';
+            earners.forEach(entry => squadTagContainer.appendChild(buildAvatarBadge(entry)));
+        } else {
+            squadTagContainer.style.cssText = 'display:none;';
         }
     });
 
@@ -1028,25 +577,47 @@ window.appState.applyStateToUI = function() {
 };
 
 window.appState.toggleItem = function(itemId, type, group) {
-    const wasDone = !!(this.getItemRef(type, itemId, group)?.completed || this.getItemRef(type, itemId, group)?.collected || this.getItemRef(type, itemId, group)?.unlocked);
+    const ref = this.getItemRef(type, itemId, group);
+    const wasDone = !!(ref && (ref.collected || ref.unlocked || ref.completed || ref.earned));
+    const isCounter = !!(ref && Number(ref.target) > 0);
+
+    if (this.isPsnLocked(ref) && (wasDone || isCounter)) {
+        this.updateStatus('Verified by PlayStation Network. This updates automatically.');
+        return;
+    }
+
+    if (type === 'collectible' && isCounter) {
+        ref.count = wasDone ? 0 : Number(ref.target);
+        ref.collected = !wasDone;
+        this.applyStateToUI();
+        this.saveProgress();
+        return;
+    }
 
     if (type === 'stash') {
-        if (!this.stashes[itemId]) this.stashes[itemId] = { collected: false };
+        if (!this.stashes[itemId]) this.stashes[itemId] = { collected: false, psnSynced: false };
         this.stashes[itemId].collected = !this.stashes[itemId].collected;
     } else if (type === 'roster') {
-        if (!this.roster[itemId]) this.roster[itemId] = { unlocked: false };
+        if (!this.roster[itemId]) this.roster[itemId] = { unlocked: false, psnSynced: false };
         this.roster[itemId].unlocked = !this.roster[itemId].unlocked;
     } else if (type === 'collectible') {
         if (group && this.collectibles[group]?.items?.[itemId]) {
             this.collectibles[group].items[itemId].collected = !this.collectibles[group].items[itemId].collected;
         }
+    } else if (type === 'magazine') {
+        if (this.collectibles.survivalist_magazines?.items?.[itemId]) {
+            this.collectibles.survivalist_magazines.items[itemId].collected = !this.collectibles.survivalist_magazines.items[itemId].collected;
+        }
+    } else if (type === 'trophy') {
+        if (!this.trophies[itemId]) this.trophies[itemId] = { earned: false, psnSynced: false };
+        this.trophies[itemId].earned = !this.trophies[itemId].earned;
     } else if (type.startsWith('custom_')) {
-        const cat = type.replace('custom_', '');
-        if (!this.custom[cat]) this.custom[cat] = {};
-        if (!this.custom[cat][itemId]) this.custom[cat][itemId] = { completed: false };
-        this.custom[cat][itemId].completed = !this.custom[cat][itemId].completed;
+        const catKey = type.replace('custom_', '');
+        if (!this.custom[catKey]) this.custom[catKey] = {};
+        if (!this.custom[catKey][itemId]) this.custom[catKey][itemId] = { completed: false, psnSynced: false };
+        this.custom[catKey][itemId].completed = !this.custom[catKey][itemId].completed;
     } else {
-        if (!this.missions[itemId]) this.missions[itemId] = { completed: false };
+        if (!this.missions[itemId]) this.missions[itemId] = { completed: false, psnSynced: false };
         this.missions[itemId].completed = !this.missions[itemId].completed;
     }
 
@@ -1054,24 +625,246 @@ window.appState.toggleItem = function(itemId, type, group) {
     this.saveProgress();
 };
 
+window.appState.updateStatus = function(msg) {
+    const statLine = document.getElementById('stat-line');
+    if (statLine) {
+        statLine.innerText = `[${new Date().toLocaleTimeString('en-US', { hour12: false })}] ${msg}`;
+    }
+};
+
+window.adjRank = function(rankKey, delta) {
+    if (!appState.ranks) appState.ranks = {};
+    const current = Number(appState.ranks[rankKey] || 0);
+    const nextVal = Math.max(0, current + delta);
+    appState.ranks[rankKey] = nextVal;
+    appState.updateRankDisplay(rankKey, nextVal);
+    appState.saveProgress();
+};
+
+// Section 4C: Universal PSN Links, Counters & Section Progress
+function resolveItemTarget(item, trophyIdOverride) {
+    if (!item || typeof item !== 'object') return 0;
+    const explicit = Number(item.target ?? item.count_target ?? item.psn_target ?? 0);
+    if (explicit > 0) return explicit;
+    if (item.counter === true) {
+        const tid = trophyIdOverride ?? item.psn_trophy_id ?? item.trophy_id ?? item.psnTrophyId;
+        const trophies = (appState.psnSkeleton && appState.psnSkeleton.trophies) ? Object.values(appState.psnSkeleton.trophies) : [];
+        const match = trophies.find(t => t && String(t.trophyId) === String(tid));
+        const fromSkeleton = Number(match && (match.targetValue ?? match.trophyProgressTargetValue) || 0);
+        if (fromSkeleton > 0) return fromSkeleton;
+    }
+    return 0;
+}
+
+function buildPsnLinks(data) {
+    const links = [];
+    if (!data || typeof data !== 'object') return links;
+
+    const read = (item, type, id, group) => {
+        if (!item || typeof item !== 'object') return;
+        const tid = item.psn_trophy_id ?? item.trophy_id ?? item.psnTrophyId;
+        if (tid === undefined || tid === null || tid === '') return;
+        links.push({ type: type, id: id, group: group || null, trophyId: String(tid), target: resolveItemTarget(item, tid) });
+    };
+
+    if (data.collectibles) {
+        for (const cKey in data.collectibles) {
+            const group = data.collectibles[cKey];
+            if (group && Array.isArray(group.items)) group.items.forEach(it => read(it, 'collectible', it.id, cKey));
+        }
+    }
+    if (data.prepper_stashes) {
+        ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
+            (data.prepper_stashes[reg] || []).forEach(s => read(s, 'stash', s.id));
+        });
+    }
+    if (Array.isArray(data.guns_and_fangs_for_hire)) data.guns_and_fangs_for_hire.forEach(h => read(h, 'roster', h.id));
+    if (Array.isArray(data.walkthrough_missions)) data.walkthrough_missions.forEach(m => read(m, 'mission', m.id));
+    if (data.survivalist_magazines) {
+        ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
+            (data.survivalist_magazines[reg] || []).forEach((m, idx) => read(m, 'magazine', `mag_${reg}_${idx}`));
+        });
+    }
+    return links;
+}
+
+function normalizeLiveTrophy(tObj) {
+    const earned = !!(tObj && (tObj.earned === true || tObj.isEarned === true));
+    const target = Number(tObj && (tObj.targetValue ?? tObj.trophyProgressTargetValue) || 0) || 0;
+    let current = Number(tObj && (tObj.currentValue ?? tObj.trophyProgress ?? 0) || 0) || 0;
+    if (earned && target > 0) current = target;
+    return {
+        earned: earned,
+        current: current,
+        target: target,
+        name: (tObj && (tObj.name || tObj.trophyName)) || 'Trophy',
+        rank: String((tObj && (tObj.type || tObj.trophyType)) || 'Bronze').toUpperCase()
+    };
+}
+
+function ledgerItem(ledger, link) {
+    const ensure = (obj, key, fallback) => { if (!obj[key] || typeof obj[key] !== 'object') obj[key] = fallback; return obj[key]; };
+    if (link.type === 'collectible') {
+        const cols = ensure(ledger, 'collectibles', {});
+        const g = ensure(cols, link.group, { items: {} });
+        const items = ensure(g, 'items', {});
+        return ensure(items, link.id, { collected: false });
+    }
+    if (link.type === 'magazine') {
+        const cols = ensure(ledger, 'collectibles', {});
+        const g = ensure(cols, 'survivalist_magazines', { items: {} });
+        const items = ensure(g, 'items', {});
+        return ensure(items, link.id, { collected: false });
+    }
+    if (link.type === 'stash') return ensure(ensure(ledger, 'stashes', {}), link.id, { collected: false });
+    if (link.type === 'roster') return ensure(ensure(ledger, 'roster', {}), link.id, { unlocked: false });
+    return ensure(ensure(ledger, 'missions', {}), link.id, { completed: false });
+}
+
+function setLedgerItemDone(item, type, done) {
+    if (type === 'roster') item.unlocked = done;
+    else if (type === 'mission') item.completed = done;
+    else item.collected = done;
+}
+
+function isLedgerItemDone(item, type) {
+    if (type === 'roster') return !!item.unlocked;
+    if (type === 'mission') return !!item.completed;
+    return !!item.collected;
+}
+
+function applyPsnLive(ledger, live, gameId, links) {
+    if (!ledger || !live || typeof live !== 'object') return false;
+    let modified = false;
+    if (!ledger.trophies || typeof ledger.trophies !== 'object') ledger.trophies = {};
+
+    Object.entries(live).forEach(([tId, raw]) => {
+        const t = normalizeLiveTrophy(raw);
+        if (!t.earned) return;
+        const key = `trophy_${gameId}_${tId}`;
+        const existing = ledger.trophies[key];
+        if (!existing || !existing.earned || !existing.psnSynced) {
+            ledger.trophies[key] = Object.assign({}, existing || {}, { earned: true, name: (existing && existing.name) || t.name, rank: (existing && existing.rank) || t.rank, psnSynced: true });
+            modified = true;
+        }
+    });
+
+    (links || []).forEach(link => {
+        const raw = live[link.trophyId];
+        if (!raw) return;
+        const t = normalizeLiveTrophy(raw);
+        const item = ledgerItem(ledger, link);
+
+        if (link.target > 0) {
+            const value = Math.max(0, Math.min(link.target, t.earned ? link.target : t.current));
+            const done = value >= link.target;
+            if (item.count !== value || item.collected !== done || item.psnSynced !== true || item.target !== link.target) {
+                item.count = value;
+                item.target = link.target;
+                setLedgerItemDone(item, link.type, done);
+                item.psnSynced = true;
+                modified = true;
+            }
+        } else if (t.earned) {
+            if (!isLedgerItemDone(item, link.type) || item.psnSynced !== true) {
+                setLedgerItemDone(item, link.type, true);
+                item.psnSynced = true;
+                modified = true;
+            }
+        }
+    });
+
+    return modified;
+}
+
+window.appState.hasPsnAuto = function() {
+    return this.platform === 'ps' && !!(this.myPsnGamertag || this.myPsnAccountId);
+};
+
 window.appState.getItemRef = function(type, id, group) {
     if (type === 'stash') return this.stashes[id];
     if (type === 'roster') return this.roster[id];
     if (type === 'collectible') return group ? this.collectibles[group]?.items?.[id] : undefined;
-    if (type.startsWith('custom_')) return this.custom?.[type.replace('custom_', '')]?.[id];
+    if (type === 'magazine') return this.collectibles.survivalist_magazines?.items?.[id];
+    if (type === 'trophy') return this.trophies[id];
     return this.missions[id];
 };
 
-window.appState.ensureCounterTargets = function() {};
-window.appState.updateStatus = function(msg) {};
-window.adjRank = function(rankKey, delta) {
-    appState.ranks[rankKey] = Math.max(0, Number(appState.ranks[rankKey] || 0) + delta);
-    appState.updateRankDisplay(rankKey, appState.ranks[rankKey]);
-    appState.saveProgress();
+window.appState.isPsnLocked = function(ref) {
+    return this.hasPsnAuto() && !!ref && ref.psnSynced === true;
 };
 
-function resolveItemTarget(item) { return Number(item?.target || 0); }
-function buildPsnLinks() { return []; }
+window.appState.ensureCounterTargets = function() {
+    if (!this.gameData || !this.gameData.collectibles) return;
+    for (const cKey in this.gameData.collectibles) {
+        const group = this.gameData.collectibles[cKey];
+        if (!group || !Array.isArray(group.items)) continue;
+        group.items.forEach(cItem => {
+            const target = resolveItemTarget(cItem);
+            if (target <= 0) return;
+            if (!this.collectibles[cKey]) this.collectibles[cKey] = { collected: false, count: 0, psnSynced: false, total: group.items.length, items: {} };
+            if (!this.collectibles[cKey].items) this.collectibles[cKey].items = {};
+            if (!this.collectibles[cKey].items[cItem.id]) this.collectibles[cKey].items[cItem.id] = { collected: false, name: cItem.name || '', psnSynced: false };
+            const ref = this.collectibles[cKey].items[cItem.id];
+            ref.target = target;
+            if (typeof ref.count !== 'number') ref.count = 0;
+        });
+    }
+};
+
+window.appState.setCounter = function(group, itemId, value) {
+    const ref = this.collectibles[group]?.items?.[itemId];
+    if (!ref) return;
+    if (this.isPsnLocked(ref)) {
+        this.updateStatus('Synced from PlayStation. This count updates automatically.');
+        this.applyStateToUI();
+        return;
+    }
+    const target = Number(ref.target) || 0;
+    let v = Math.floor(Number(value) || 0);
+    v = Math.max(0, target > 0 ? Math.min(target, v) : v);
+    ref.count = v;
+    ref.collected = target > 0 ? v >= target : v > 0;
+    this.applyStateToUI();
+    this.saveProgress();
+};
+
+window.appState.adjCounter = function(group, itemId, delta) {
+    const ref = this.collectibles[group]?.items?.[itemId];
+    if (!ref) return;
+    this.setCounter(group, itemId, (Number(ref.count) || 0) + delta);
+};
+
+window.appState.refreshPsnProgress = async function() {
+    if (!this.hasPsnAuto() || !this.activePsnCommId) return false;
+    const psnKey = await resolvePsnKey(this.myPsnGamertag, this.myPsnAccountId);
+    const live = await fetchPsnLiveFor(psnKey);
+    if (!live) return false;
+
+    this.psnLive = live;
+    const modified = applyPsnLive(this, live, this.activeGameId, this.psnLinks);
+    if (modified) {
+        this.applyStateToUI();
+        if (this.isCloudLoaded) this.saveProgress();
+    }
+    return modified;
+};
+
+function updateCounterCard(card, ref, locked) {
+    const target = Number(card.getAttribute('data-target')) || 0;
+    const count = Math.max(0, Math.min(target, Number(ref && ref.count) || 0));
+    const input = card.querySelector('.counter-input');
+    const fill = card.querySelector('.counter-fill');
+    const label = card.querySelector('.counter-label');
+
+    if (input) {
+        if (typeof document.activeElement === 'undefined' || document.activeElement !== input) input.value = count;
+        input.disabled = !!locked;
+    }
+    if (fill) fill.style.width = `${target > 0 ? Math.round((count / target) * 100) : 0}%`;
+    if (label) label.textContent = locked ? 'Synced from PlayStation' : '';
+    card.querySelectorAll('.counter-btn').forEach(b => { b.disabled = !!locked; });
+}
 
 function updateSectionProgress() {
     document.querySelectorAll('.category-section').forEach(sec => {
@@ -1080,7 +873,11 @@ function updateSectionProgress() {
         const cards = Array.from(sec.querySelectorAll('.fc5-item-card'));
         const total = cards.length;
         const done = cards.filter(c => c.classList.contains('completed')).length;
+        const complete = total > 0 && done >= total;
         chip.textContent = `${done} / ${total}`;
+        chip.style.color = complete ? '#34d399' : '#fff';
+        chip.style.borderColor = complete ? '#34d399' : 'var(--user-theme-accent)';
+        chip.style.background = complete ? 'rgba(52,211,153,0.15)' : 'rgba(255,85,0,0.18)';
     });
 }
 
@@ -1088,36 +885,490 @@ function progressChip(total) {
     return `<span class="section-progress" style="margin-left:10px; font-size:0.8rem; font-weight:800; padding:2px 10px; border-radius:12px; border:1px solid var(--user-theme-accent); background:rgba(255,85,0,0.18); color:#fff; white-space:nowrap; vertical-align:middle;">0 / ${total}</span>`;
 }
 
-function toSecureUrl(url) { return url || ''; }
-function escapeHtml(str) { return str ? String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''; }
+function counterControlsHtml(group, id, target) {
+    const btnStyle = 'width:30px; height:30px; border-radius:6px; border:1px solid rgba(255,255,255,0.2); background:#1e293b; color:#fff; font-weight:900; cursor:pointer;';
+    return `
+        <div style="display:flex; align-items:center; gap:8px; margin:6px 0;">
+            <button type="button" class="counter-btn" style="${btnStyle}" onclick="appState.adjCounter('${group}', '${id}', -1)" aria-label="Decrease">−</button>
+            <input type="number" class="counter-input" min="0" max="${target}" value="0" style="width:84px; height:30px; text-align:center; border-radius:6px; border:1px solid rgba(255,255,255,0.2); background:#0f172a; color:#fff; font-weight:800;" onchange="appState.setCounter('${group}', '${id}', this.value)">
+            <span style="color:#94a3b8; font-size:0.85rem; font-weight:700;">/ ${target}</span>
+            <button type="button" class="counter-btn" style="${btnStyle}" onclick="appState.adjCounter('${group}', '${id}', 1)" aria-label="Increase">+</button>
+            <span class="counter-label" style="margin-left:auto; font-size:0.7rem; font-weight:800; color:#60a5fa;"></span>
+        </div>
+        <div style="height:6px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden; margin-bottom:6px;">
+            <div class="counter-fill" style="height:100%; width:0%; background:var(--user-theme-accent);"></div>
+        </div>`;
+}
 
-// Section 5: Full Companion Renderer
-function renderFullCompanion(data) {
+// Section 4B: Friend Earner Helpers
+function friendHasEarnedItem(sData, id, type, group) {
+    if (!sData || typeof sData !== 'object') return false;
+
+    if (type === 'stash') {
+        return !!(sData.stashes?.[id]?.collected);
+    } else if (type === 'roster') {
+        return !!(sData.roster?.[id]?.unlocked);
+    } else if (type === 'collectible') {
+        if (group && sData.collectibles?.[group]?.items?.[id]) {
+            return !!(sData.collectibles[group].items[id].collected);
+        }
+        return false;
+    } else if (type === 'magazine') {
+        if (sData.collectibles?.survivalist_magazines?.items?.[id]) {
+            return !!(sData.collectibles.survivalist_magazines.items[id].collected);
+        }
+        return false;
+    } else if (type === 'trophy') {
+        return !!(sData.trophies?.[id]?.earned);
+    }
+    return !!(sData.missions?.[id]?.completed);
+}
+
+function buildAvatarBadge(entry) {
+    const name = (entry && entry.username) ? String(entry.username) : 'Squad Member';
+    const wrap = document.createElement('span');
+    wrap.className = 'squad-avatar-badge';
+    wrap.title = `${name} has this`;
+    wrap.style.cssText = 'width:26px; height:26px; border-radius:50%; border:2px solid var(--user-theme-accent); overflow:hidden; display:inline-flex; align-items:center; justify-content:center; background:#1e293b; color:#fff; font-size:0.7rem; font-weight:800; flex:0 0 auto;';
+
+    const initial = name.trim().charAt(0).toUpperCase() || '?';
+    const avatarUrl = toSecureUrl(entry && entry.avatar ? entry.avatar : '');
+
+    if (avatarUrl) {
+        const img = document.createElement('img');
+        img.src = avatarUrl;
+        img.alt = name;
+        img.style.cssText = 'width:100%; height:100%; object-fit:cover; display:block;';
+        img.onerror = function() {
+            img.remove();
+            wrap.textContent = initial;
+        };
+        wrap.appendChild(img);
+    } else {
+        wrap.textContent = initial;
+    }
+    return wrap;
+}
+
+// Section 5: Universal Profile & Squad Bridge via Friend Codes
+window.appState.fetchUserProfile = async function() {
+    const emailKey = this.getEmailKey();
+    if (!rtdb || !emailKey) return;
+
+    try {
+        const snap = await rtdb.ref(`/users/${emailKey}`).once('value');
+        const userProfile = snap.val() || {};
+
+        this.myFriendCode = userProfile.friend_code || null;
+        this.myPsnGamertag = userProfile.psn_username || userProfile.gamertag || null;
+        this.myPsnAccountId = userProfile.psn_account_id || userProfile.accountId || null;
+
+        const display = document.getElementById('myFriendCodeDisplay');
+        if (display && this.myFriendCode) {
+            display.innerText = this.myFriendCode;
+        }
+    } catch (e) {
+        console.warn("[User Profile Fetch Error]:", e);
+    }
+};
+
+function normalizePlatformKey(raw) {
+    const p = String(raw || '').toLowerCase().trim();
+    if (!p) return null;
+    if (p === 'ps' || p === 'psn' || p === 'ps4' || p === 'ps5' || p.includes('playstation') || p.includes('sony')) return 'ps';
+    if (p.includes('xbox')) return 'xbox';
+    if (p.includes('steam')) return 'steam';
+    if (p === 'pc' || p.includes('windows')) return 'pc';
+    return null;
+}
+
+const PLATFORM_LABELS = { ps: 'PLAYSTATION', xbox: 'XBOX', pc: 'PC', steam: 'STEAM' };
+
+function buildPlatformCandidates(friendPrimaryPlatform, viewerPlatform) {
+    const list = [normalizePlatformKey(friendPrimaryPlatform), viewerPlatform, 'ps', 'pc', 'xbox', 'steam'].filter(Boolean);
+    return Array.from(new Set(list));
+}
+
+async function fetchFriendProgressDoc(friendCode, platforms) {
+    for (const plat of platforms) {
+        const doc = await firestore
+            .collection("users")
+            .doc(friendCode)
+            .collection("platform")
+            .doc(plat)
+            .collection("progress")
+            .doc(appState.activeGameId)
+            .get();
+        if (doc.exists) return { data: doc.data() || {}, platform: plat };
+    }
+    return null;
+}
+
+window.psnIndexCache = null;
+async function getPsnGamertagIndex() {
+    const cached = window.psnIndexCache;
+    if (cached && (Date.now() - cached.at) < 5 * 60 * 1000) return cached.map;
+    const snap = await rtdb.ref('/psn/usersByGamerTag').once('value');
+    const map = snap.val() || {};
+    window.psnIndexCache = { at: Date.now(), map: map };
+    return map;
+}
+
+async function resolvePsnKey(tag, accountId) {
+    if (!rtdb) return tag || null;
+    try {
+        const map = await getPsnGamertagIndex();
+        const keys = Object.keys(map);
+        if (tag && map[tag] !== undefined) return tag;
+        const lower = String(tag || '').toLowerCase();
+        const byName = lower ? keys.find(k => k.toLowerCase() === lower) : null;
+        if (byName) return byName;
+        if (accountId) {
+            const byId = keys.find(k => String(map[k]) === String(accountId));
+            if (byId) return byId;
+        }
+    } catch (e) {
+        console.warn("[PSN Index Lookup Error]:", e);
+    }
+    return tag || null;
+}
+
+async function fetchPsnLiveFor(psnKey) {
+    if (!rtdb || !psnKey || !appState.activePsnCommId) return null;
+    try {
+        const snap = await rtdb.ref(`/psn/gamertags/${psnKey}/liveTrophyProgress/${appState.activePsnCommId}`).once('value');
+        const live = snap.val();
+        if (!live || typeof live !== 'object') return null;
+
+        const out = {};
+        Object.entries(live).forEach(([tId, tObj]) => {
+            if (tObj && typeof tObj === 'object') out[String(tId)] = tObj;
+        });
+        return Object.keys(out).length ? out : null;
+    } catch (e) {
+        console.warn(`[PSN Live Trophy Error for ${psnKey}]:`, e);
+        return null;
+    }
+}
+
+async function fetchPsnAvatarFor(psnKey) {
+    if (!rtdb || !psnKey) return '';
+    try {
+        const snap = await rtdb.ref(`/psn/gamertags/${psnKey}/avatar`).once('value');
+        const val = snap.val();
+        return (typeof val === 'string') ? val : '';
+    } catch (e) {
+        return '';
+    }
+}
+
+function buildFriendLedger(friendData, psnLive) {
+    const ledger = Object.assign({}, friendData || {});
+    if (!ledger.trophies || typeof ledger.trophies !== 'object') ledger.trophies = {};
+
+    if (psnLive) {
+        applyPsnLive(ledger, psnLive, appState.activeGameId, appState.psnLinks);
+    }
+
+    const total = Object.keys(appState.trophies).length || appState.trophies_total || 51;
+    const earned = Object.values(ledger.trophies).filter(t => t && t.earned).length;
+    ledger.trophies_earned = Math.max(earned, Number(ledger.trophies_earned) || 0);
+    ledger.trophies_percent = Math.max(total > 0 ? Math.round((earned / total) * 100) : 0, Number(ledger.trophies_percent) || 0);
+
+    if (psnLive) {
+        const ranks = Object.assign({}, ledger.ranks || {});
+        let col = 0;
+        Object.values(ledger.collectibles || {}).forEach(g => {
+            Object.values((g && g.items) || {}).forEach(it => { if (it && it.collected) col++; });
+        });
+        ranks.collectibles = Math.max(col, Number(ranks.collectibles) || 0);
+        ranks.stashes = Math.max(Object.values(ledger.stashes || {}).filter(x => x && x.collected).length, Number(ranks.stashes) || 0);
+        ledger.ranks = ranks;
+    }
+    return ledger;
+}
+
+async function resolveFriendIdentity(fKey, fRaw) {
+    const f = (fRaw && typeof fRaw === 'object') ? fRaw : {};
+    const keyLooksLikeEmail = typeof fKey === 'string' && fKey.includes('_at_');
+    const emailKey = f.email_key || f.emailKey || (keyLooksLikeEmail ? fKey : null);
+
+    let profile = {};
+    const missingSomething = !f.friend_code || !f.username || !(f.avatar_url || f.avatar) || !(f.psn_username || f.gamertag);
+    if (emailKey && rtdb && missingSomething) {
+        try {
+            const snap = await rtdb.ref(`/users/${emailKey}`).once('value');
+            profile = snap.val() || {};
+        } catch (e) {
+            profile = {};
+        }
+    }
+
+    return {
+        friendCode: f.friend_code || f.friendCode || profile.friend_code || (keyLooksLikeEmail ? null : fKey),
+        username: f.username || profile.username || profile.display_name || profile.displayName || 'Squad Member',
+        avatar: toSecureUrl(f.avatar_url || f.avatar || profile.avatar_url || profile.photoURL || profile.avatar || ''),
+        psnTag: f.psn_username || f.gamertag || profile.psn_username || profile.gamertag || null,
+        psnAccountId: f.psn_account_id || profile.psn_account_id || null,
+        primaryPlatform: f.primary_platform || profile.primary_platform || null
+    };
+}
+
+let friendsSyncInFlight = false;
+
+window.appState.syncFriendsProgress = async function() {
+    const rosterContainer = document.getElementById('friendsRosterContainer');
+    if (!rosterContainer) return;
+    if (friendsSyncInFlight) return;
+
+    const emailKey = this.getEmailKey();
+    if (!emailKey) {
+        rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">Sign in to view your Squad Co-Op Ledger.</div>';
+        return;
+    }
+
+    friendsSyncInFlight = true;
+    try {
+        const friendsSnap = await rtdb.ref(`/users/${emailKey}/friends`).once('value');
+        const friendsData = friendsSnap.val();
+
+        if (!friendsData || Object.keys(friendsData).length === 0) {
+            window.squadProgressCache = {};
+            rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">No squad members linked yet. Share your friend code to link co-op members.</div>';
+            this.applyStateToUI();
+            return;
+        }
+
+        const newCache = {};
+        let cardsHtml = '';
+
+        for (const [fKey, fRaw] of Object.entries(friendsData)) {
+            const identity = await resolveFriendIdentity(fKey, fRaw);
+            const platformCandidates = buildPlatformCandidates(identity.primaryPlatform, this.platform);
+
+            let progress = null;
+            let readError = null;
+            if (firestore && identity.friendCode) {
+                try {
+                    progress = await fetchFriendProgressDoc(identity.friendCode, platformCandidates);
+                } catch (err) {
+                    readError = err;
+                    console.warn(`[Squad Firestore Error for ${identity.friendCode}]:`, err);
+                }
+            }
+
+            const usedPlatform = progress ? progress.platform : (platformCandidates[0] || this.platform);
+            const psnKey = await resolvePsnKey(identity.psnTag, identity.psnAccountId);
+            const psnLive = (psnKey && usedPlatform === 'ps') ? await fetchPsnLiveFor(psnKey) : null;
+            const friendData = buildFriendLedger(progress ? progress.data : {}, psnLive);
+
+            let avatar = identity.avatar;
+            if (!avatar && psnKey) avatar = toSecureUrl(await fetchPsnAvatarFor(psnKey));
+
+            const cacheKey = identity.friendCode || fKey;
+            newCache[cacheKey] = {
+                username: identity.username,
+                avatar: avatar,
+                platform: usedPlatform,
+                data: friendData
+            };
+
+            const rpVal = friendData.ranks?.rp || 0;
+            const stashesVal = friendData.ranks?.stashes || 0;
+            const colVal = friendData.ranks?.collectibles || 0;
+            const trophyPercent = friendData.trophies_percent || 0;
+            const platformLabel = PLATFORM_LABELS[usedPlatform] || String(usedPlatform).toUpperCase();
+
+            let statusNote = '';
+            if (readError) {
+                statusNote = `<div style="font-size:0.7rem; color:#f87171; margin-top:2px;">Can't read this friend's saved progress (${escapeHtml(readError.code || 'error')}).</div>`;
+            } else if (!progress && !psnLive) {
+                statusNote = `<div style="font-size:0.7rem; color:#94a3b8; margin-top:2px;">No saved progress for this game yet.</div>`;
+            }
+
+            cardsHtml += `
+                <div style="background:#1e293b; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px; display:flex; gap:12px; align-items:center;">
+                    ${avatar ? `<img src="${escapeHtml(avatar)}" style="width:44px; height:44px; border-radius:50%; object-fit:cover; border:2px solid var(--user-theme-accent);" onerror="this.style.display='none'">` : ''}
+                    <div style="flex:1;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <div style="font-weight:900; color:#fff; font-size:0.95rem;">${escapeHtml(identity.username)}</div>
+                            <span style="font-size:0.7rem; font-weight:800; background:rgba(255,85,0,0.2); color:var(--user-theme-accent); padding:2px 6px; border-radius:4px; text-transform:uppercase;">
+                                ${escapeHtml(platformLabel)}
+                            </span>
+                        </div>
+                        <div style="font-size:0.75rem; color:#cbd5e1; margin-bottom:2px;">
+                            <strong>RP:</strong> ${rpVal} • <strong>Stashes:</strong> ${stashesVal} • <strong>Collectibles:</strong> ${colVal}
+                        </div>
+                        <div style="font-size:0.75rem; color:#94a3b8;">
+                            Trophy Progress: <strong style="color:#fff;">${trophyPercent}%</strong>
+                        </div>
+                        ${statusNote}
+                    </div>
+                </div>
+            `;
+        }
+
+        window.squadProgressCache = newCache;
+        rosterContainer.innerHTML = cardsHtml;
+        this.applyStateToUI();
+    } catch (e) {
+        console.warn("[Friends Roster Sync Error]:", e);
+    } finally {
+        friendsSyncInFlight = false;
+    }
+};
+
+// Section 6: Dynamic Top Navigation Bar (/utm_links)
+async function buildUtmNavigation() {
+    const navContainer = document.getElementById('dynamicNavLinks');
+    if (!navContainer || !rtdb) return;
+
+    try {
+        const snap = await rtdb.ref('/utm_links').once('value');
+        const data = snap.val();
+        if (!data) return;
+
+        const linksList = [];
+        function walk(node) {
+            if (!node || typeof node !== 'object') return;
+            const url = node.url || node.link || node.href;
+            if (url && typeof url === 'string') {
+                linksList.push({
+                    title: node.title || node.name || 'Link',
+                    url: toSecureUrl(url),
+                    image: toSecureUrl(node.image || node.thumb || null),
+                    group: node.group ? String(node.group).trim() : 'Standalone',
+                    rowNumber: Number(node.rowNumber || 999)
+                });
+                return;
+            }
+            Object.values(node).forEach(child => walk(child));
+        }
+        walk(data);
+
+        const standalone = [];
+        const groups = {};
+
+        linksList.forEach(item => {
+            const grp = item.group;
+            if (grp.toLowerCase() === 'standalone' || grp === '') {
+                standalone.push(item);
+            } else {
+                if (!groups[grp]) groups[grp] = [];
+                groups[grp].push(item);
+            }
+        });
+
+        const groupCards = Object.entries(groups).map(([gName, items]) => {
+            items.sort((a, b) => a.rowNumber - b.rowNumber);
+            return {
+                title: gName,
+                isGroup: true,
+                items: items,
+                sortWeight: Math.min(...items.map(i => i.rowNumber))
+            };
+        });
+
+        const standaloneCards = standalone.map(item => ({
+            ...item,
+            isGroup: false,
+            sortWeight: item.rowNumber
+        }));
+
+        const unifiedMenu = [...groupCards, ...standaloneCards].sort((a, b) => a.sortWeight - b.sortWeight);
+
+        let navHtml = '';
+        unifiedMenu.forEach(entry => {
+            if (entry.isGroup) {
+                navHtml += `
+                    <div class="nav-folder">
+                        <button type="button" class="nav-btn" onclick="this.parentElement.classList.toggle('active')">
+                            <i class="fas fa-folder text-yellow-400"></i>
+                            <span>${escapeHtml(entry.title)}</span>
+                            <span style="font-size:9px;">▾</span>
+                        </button>
+                        <div class="folder-menu">
+                            ${entry.items.map(sub => `
+                                <a href="${sub.url}" class="nav-btn" style="width:100%; justify-content:flex-start;">
+                                    ${sub.image ? `<img src="${sub.image}" class="nav-icon" onerror="this.style.display='none'">` : ''}
+                                    <span class="truncate">${escapeHtml(sub.title)}</span>
+                                </a>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                navHtml += `
+                    <a href="${entry.url}" class="nav-btn">
+                        ${entry.image ? `<img src="${entry.image}" class="nav-icon" onerror="this.style.display='none'">` : ''}
+                        <span>${escapeHtml(entry.title)}</span>
+                    </a>
+                `;
+            }
+        });
+
+        navContainer.innerHTML = navHtml;
+    } catch (e) {
+        console.warn("[UTM Navigation Fetch Error]:", e);
+    }
+}
+
+// Section 7: PSN Game Skeleton Ingestion
+async function syncPsnSkeleton() {
+    if (!rtdb || !appState.activePsnCommId) return;
+    try {
+        const snap = await rtdb.ref(`/psn/games/${appState.activePsnCommId}`).once('value');
+        const skeleton = snap.val();
+        if (!skeleton) return;
+
+        appState.psnSkeleton = skeleton;
+
+        const posterUrl = toSecureUrl(skeleton.posterArt);
+        if (posterUrl) {
+            const fav1 = document.getElementById('dynamicFavicon');
+            const fav2 = document.getElementById('dynamicAppleIcon');
+            const navLogo = document.getElementById('navHeaderLogo');
+            if (fav1) fav1.href = posterUrl;
+            if (fav2) fav2.href = posterUrl;
+            if (navLogo) navLogo.src = posterUrl;
+        }
+    } catch (e) {
+        console.warn("[PSN Skeleton Sync Error]:", e);
+    }
+}
+
+async function autoCheckUserPsnTrophies() {
+    return appState.refreshPsnProgress();
+}
+
+// Section 8: Render Game Companion Content Cards (Fully Dynamic)
+function renderFarCry5Companion(data) {
     const container = document.getElementById('section-container');
     if (!container || !data) return;
 
     let html = '';
 
-    // Walkthrough Missions
+    // 1. Walkthrough Missions
     if (Array.isArray(data.walkthrough_missions)) {
         html += `
         <section class="category-section section-collapsed" id="cat-walkthroughs">
             <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                <h2>📖 Story Campaign & Encounters ${progressChip(data.walkthrough_missions.length)}</h2>
+                <h2>📖 Story Campaign & Boss Encounters ${progressChip(data.walkthrough_missions.length)}</h2>
                 <span>▾</span>
             </div>
             <div class="section-content">
                 <div class="trophy-grid">
                     ${data.walkthrough_missions.map(item => `
-                        <div class="trophy-card fc5-item-card" data-id="${escapeHtml(item.id)}" data-type="mission">
+                        <div class="trophy-card fc5-item-card" data-id="${item.id}" data-type="mission">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                 <div>
                                     <span class="trophy-rank rank-gold">${escapeHtml(item.region || 'Hope County')}</span>
                                     <h3 style="color:#fff; font-size:1rem; margin-top:4px;">${escapeHtml(item.mission_name)}</h3>
                                 </div>
-                                <button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(item.id)}', 'mission')"></button>
+                                <button type="button" class="check-btn" onclick="appState.toggleItem('${item.id}', 'mission')" aria-label="Toggle Mission"></button>
                             </div>
                             <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(item.guide || '')}</p>
+                            <div class="squad-earners-bar"></div>
                         </div>
                     `).join('')}
                 </div>
@@ -1125,28 +1376,31 @@ function renderFullCompanion(data) {
         </section>`;
     }
 
-    // Prepper Stashes
+    // 2. Prepper Stashes
     if (data.prepper_stashes) {
         Object.entries(data.prepper_stashes).forEach(([regKey, list]) => {
             if (Array.isArray(list) && list.length > 0) {
+                const regTitle = regKey.replace(/_/g, ' ').toUpperCase();
                 html += `
                 <section class="category-section section-collapsed" id="cat-stash-${regKey}">
                     <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                        <h2>📦 Prepper Stashes — ${escapeHtml(regKey.replace(/_/g, ' ').toUpperCase())} ${progressChip(list.length)}</h2>
+                        <h2>📦 Prepper Stashes — ${escapeHtml(regTitle)} ${progressChip(list.length)}</h2>
                         <span>▾</span>
                     </div>
                     <div class="section-content">
                         <div class="trophy-grid">
                             ${list.map(s => `
-                                <div class="trophy-card fc5-item-card" data-id="${escapeHtml(s.id)}" data-type="stash">
+                                <div class="trophy-card fc5-item-card" data-id="${s.id}" data-type="stash">
                                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                         <div>
                                             <span class="trophy-rank rank-silver">${escapeHtml(s.required_gear || 'No Gear Required')}</span>
                                             <h3 style="color:#fff; font-size:1rem; margin-top:4px;">${escapeHtml(s.name)}</h3>
+                                            <div style="font-size:0.75rem; color:var(--user-theme-accent);">${escapeHtml(s.location || '')}</div>
                                         </div>
-                                        <button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(s.id)}', 'stash')"></button>
+                                        <button type="button" class="check-btn" onclick="appState.toggleItem('${s.id}', 'stash')" aria-label="Toggle Stash"></button>
                                     </div>
                                     <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(s.guide || '')}</p>
+                                    <div class="squad-earners-bar"></div>
                                 </div>
                             `).join('')}
                         </div>
@@ -1156,38 +1410,46 @@ function renderFullCompanion(data) {
         });
     }
 
-    // Collectibles
+    // 3. Collectibles
     if (data.collectibles) {
-        Object.entries(data.collectibles).forEach(([cKey, group]) => {
+        for (const cKey in data.collectibles) {
+            const group = data.collectibles[cKey];
             if (group && Array.isArray(group.items)) {
+                const groupTitle = group.quest_name ? `${group.quest_name} (${cKey.replace(/_/g, ' ').toUpperCase()})` : cKey.replace(/_/g, ' ').toUpperCase();
                 html += `
                 <section class="category-section section-collapsed" id="cat-col-${cKey}">
                     <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                        <h2>🗂️ Collectibles: ${escapeHtml(cKey.replace(/_/g, ' ').toUpperCase())} ${progressChip(group.items.length)}</h2>
+                        <h2>🗂️ Collectibles: ${escapeHtml(groupTitle)} ${progressChip(group.items.length)}</h2>
                         <span>▾</span>
                     </div>
                     <div class="section-content">
                         <div class="trophy-grid">
-                            ${group.items.map(item => `
-                                <div class="trophy-card fc5-item-card" data-id="${escapeHtml(item.id)}" data-type="collectible" data-group="${cKey}">
+                            ${group.items.map(item => {
+                                const counterTarget = resolveItemTarget(item);
+                                return `
+                                <div class="trophy-card fc5-item-card" data-id="${item.id}" data-type="collectible" data-group="${cKey}"${counterTarget > 0 ? ` data-target="${counterTarget}"` : ''}>
                                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                         <div>
-                                            <span class="trophy-rank rank-bronze">${escapeHtml(item.region || 'Hope County')}</span>
+                                            <span class="trophy-rank rank-bronze">${escapeHtml(item.region || group.region || 'Hope County')}</span>
                                             <h3 style="color:#fff; font-size:0.95rem; margin-top:4px;">${escapeHtml(item.name)}</h3>
+                                            <div style="font-size:0.75rem; color:#94a3b8;">${escapeHtml(item.location || '')}</div>
                                         </div>
-                                        <button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(item.id)}', 'collectible', '${cKey}')"></button>
+                                        <button type="button" class="check-btn" onclick="appState.toggleItem('${item.id}', 'collectible', '${cKey}')" aria-label="Toggle Collectible"></button>
                                     </div>
                                     <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(item.guide || '')}</p>
+                                    ${counterTarget > 0 ? counterControlsHtml(cKey, item.id, counterTarget) : ''}
+                                    <div class="squad-earners-bar"></div>
                                 </div>
-                            `).join('')}
+                            `;
+                            }).join('')}
                         </div>
                     </div>
                 </section>`;
             }
-        });
+        }
     }
 
-    // Guns & Fangs for Hire
+    // 4. Guns & Fangs for Hire
     if (Array.isArray(data.guns_and_fangs_for_hire)) {
         html += `
         <section class="category-section section-collapsed" id="cat-roster">
@@ -1198,16 +1460,142 @@ function renderFullCompanion(data) {
             <div class="section-content">
                 <div class="trophy-grid">
                     ${data.guns_and_fangs_for_hire.map(h => `
-                        <div class="trophy-card fc5-item-card" data-id="${escapeHtml(h.id)}" data-type="roster">
+                        <div class="trophy-card fc5-item-card" data-id="${h.id}" data-type="roster">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                 <div>
                                     <span class="trophy-rank rank-platinum">${escapeHtml(h.type)}</span>
                                     <h3 style="color:#fff; font-size:1.05rem; margin-top:4px;">${escapeHtml(h.name)}</h3>
+                                    <div style="font-size:0.8rem; color:var(--user-theme-accent); font-weight:700;">${escapeHtml(h.title)}</div>
                                 </div>
-                                <button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(h.id)}', 'roster')"></button>
+                                <button type="button" class="check-btn" onclick="appState.toggleItem('${h.id}', 'roster')" aria-label="Toggle Hire"></button>
                             </div>
+                            <div style="font-size:0.78rem; color:#cbd5e1; margin-bottom:8px;">
+                                <strong>Unlock Mission:</strong> ${escapeHtml(h.unlock_mission)} (${escapeHtml(h.location)})
+                            </div>
+                            <div class="squad-earners-bar"></div>
                         </div>
                     `).join('')}
+                </div>
+            </div>
+        </section>`;
+    }
+
+    // 5. Universal Dynamic Renderer for ANY New JSON Category (Weapons, Challenges, Secrets, etc.)
+    const systemKeys = new Set(['game', 'gameId', 'commId', 'psn_communication_id', 'activeMission', 'version', 'ranks', 'collectibles', 'prepper_stashes', 'guns_and_fangs_for_hire', 'walkthrough_missions', 'survivalist_magazines', 'trophies_and_achievements']);
+
+    Object.entries(data).forEach(([catKey, catValue]) => {
+        if (systemKeys.has(catKey) || !catValue) return;
+
+        const formattedTitle = catKey.replace(/_/g, ' ').toUpperCase();
+
+        if (Array.isArray(catValue) && catValue.length > 0) {
+            html += `
+            <section class="category-section section-collapsed" id="cat-custom-${catKey}">
+                <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
+                    <h2>📋 ${escapeHtml(formattedTitle)} ${progressChip(catValue.length)}</h2>
+                    <span>▾</span>
+                </div>
+                <div class="section-content">
+                    <div class="trophy-grid">
+                        ${catValue.map((item, idx) => {
+                            const itemId = item.id !== undefined ? String(item.id) : `${catKey}_${idx}`;
+                            const itemName = item.name || item.mission_name || item.challenge || item.title || `Item ${idx + 1}`;
+                            const itemDesc = item.guide || item.description || item.requirement || item.details || '';
+                            return `
+                            <div class="trophy-card fc5-item-card" data-id="${escapeHtml(itemId)}" data-type="custom_${catKey}">
+                                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                                    <div>
+                                        <span class="trophy-rank rank-silver">${escapeHtml(item.type || item.region || formattedTitle)}</span>
+                                        <h3 style="color:#fff; font-size:1rem; margin-top:4px;">${escapeHtml(itemName)}</h3>
+                                        ${item.price ? `<div style="font-size:0.75rem; color:var(--user-theme-accent);">${escapeHtml(item.price)}</div>` : ''}
+                                    </div>
+                                    <button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(itemId)}', 'custom_${catKey}')" aria-label="Toggle Item"></button>
+                                </div>
+                                ${itemDesc ? `<p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(itemDesc)}</p>` : ''}
+                                <div class="squad-earners-bar"></div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>
+            </section>`;
+        } else if (typeof catValue === 'object') {
+            Object.entries(catValue).forEach(([subKey, subItems]) => {
+                if (Array.isArray(subItems) && subItems.length > 0) {
+                    const subTitle = `${formattedTitle} — ${subKey.replace(/_/g, ' ').toUpperCase()}`;
+                    html += `
+                    <section class="category-section section-collapsed" id="cat-custom-${catKey}-${subKey}">
+                        <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
+                            <h2>📁 ${escapeHtml(subTitle)} ${progressChip(subItems.length)}</h2>
+                            <span>▾</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="trophy-grid">
+                                ${subItems.map((item, idx) => {
+                                    const itemId = item.id !== undefined ? String(item.id) : `${subKey}_${idx}`;
+                                    const itemName = item.name || item.challenge || item.target || `Item ${idx + 1}`;
+                                    const itemDesc = item.guide || item.description || item.requirement || '';
+                                    return `
+                                    <div class="trophy-card fc5-item-card" data-id="${escapeHtml(itemId)}" data-type="custom_${catKey}">
+                                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                                            <div>
+                                                <span class="trophy-rank rank-silver">${escapeHtml(subKey)}</span>
+                                                <h3 style="color:#fff; font-size:1rem; margin-top:4px;">${escapeHtml(itemName)}</h3>
+                                            </div>
+                                            <button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(itemId)}', 'custom_${catKey}')" aria-label="Toggle Item"></button>
+                                        </div>
+                                        ${itemDesc ? `<p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(itemDesc)}</p>` : ''}
+                                        <div class="squad-earners-bar"></div>
+                                    </div>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </section>`;
+                }
+            });
+        }
+    });
+
+    // 6. PSN Trophies
+    const trophiesList = (appState.psnSkeleton && appState.psnSkeleton.trophies) ? Object.values(appState.psnSkeleton.trophies) : (data.trophies_and_achievements || []);
+
+    if (Array.isArray(trophiesList) && trophiesList.length > 0) {
+        html += `
+        <section class="category-section section-collapsed" id="cat-trophies">
+            <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
+                <h2>🏆 PSN Official Trophies & Achievements ${progressChip(trophiesList.length)}</h2>
+                <span>▾</span>
+            </div>
+            <div class="section-content">
+                <div class="trophy-grid">
+                    ${trophiesList.map((t, idx) => {
+                        const tId = t.trophyId !== undefined ? t.trophyId : idx;
+                        const trophyCardId = `trophy_${appState.activeGameId}_${tId}`;
+                        const tName = t.name || t.trophyName || 'Trophy';
+                        const tDesc = t.detail || t.description || '';
+                        const tIcon = toSecureUrl(t.icon || t.trophyIconUrl || '');
+                        const tType = (t.type || t.rank || 'Bronze').toUpperCase();
+
+                        let badgeClass = 'rank-bronze';
+                        if (tType.includes('PLATINUM')) badgeClass = 'rank-platinum';
+                        else if (tType.includes('GOLD')) badgeClass = 'rank-gold';
+                        else if (tType.includes('SILVER')) badgeClass = 'rank-silver';
+
+                        return `
+                        <div class="trophy-card fc5-item-card" data-id="${trophyCardId}" data-type="trophy">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                                <div style="display:flex; gap:10px; align-items:center;">
+                                    ${tIcon ? `<img src="${tIcon}" style="width:40px; height:40px; border-radius:6px; object-fit:cover; border:1px solid rgba(255,255,255,0.2);" onerror="this.style.display='none'">` : ''}
+                                    <div>
+                                        <span class="trophy-rank ${badgeClass}">${escapeHtml(tType)}</span>
+                                        <h3 style="color:#fff; font-size:0.95rem; margin-top:2px;">${escapeHtml(tName)}</h3>
+                                    </div>
+                                </div>
+                                <button type="button" class="check-btn" onclick="appState.toggleItem('${trophyCardId}', 'trophy')" aria-label="Toggle Trophy"></button>
+                            </div>
+                            <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(tDesc)}</p>
+                            <div class="squad-earners-bar"></div>
+                        </div>`;
+                    }).join('')}
                 </div>
             </div>
         </section>`;
@@ -1216,12 +1604,187 @@ function renderFullCompanion(data) {
     container.innerHTML = html;
 }
 
-// Section 6: Initialization
+// Section 9: Helpers
+function toSecureUrl(url) {
+    if (!url || typeof url !== 'string') return '';
+    const trimmed = url.trim();
+    if (trimmed.startsWith('/')) return trimmed;
+    if (trimmed.startsWith('http://static-resource.np.community.playstation.net/')) {
+        return trimmed.replace('http://static-resource.np.community.playstation.net/', 'https://static-resource.np.community.playstation.net/');
+    }
+    if (trimmed.startsWith('http://')) {
+        return trimmed.replace(/^http:\/\//i, 'https://');
+    }
+    return trimmed;
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function renderGamePillsFromManifest(gamesList) {
+    const pillBar = document.getElementById('gamePillsBar');
+    if (!pillBar || !Array.isArray(gamesList)) return;
+
+    const currentSlug = new URLSearchParams(window.location.search).get('game') || 'farcry5';
+
+    pillBar.innerHTML = gamesList.map(g => {
+        const isActive = g.id.toLowerCase() === currentSlug.toLowerCase();
+        return `
+            <a href="?game=${g.id}" class="game-pill ${isActive ? 'active' : ''}" style="text-decoration:none;">
+                <span>${g.icon || '🎮'}</span>
+                <span>${escapeHtml(g.name)}</span>
+            </a>
+        `;
+    }).join('');
+}
+
+// Section 10: Dynamic Manifest Catalog & Auto Pill Bar Loader
+async function initGameCatalog() {
+    const manifestUrls = [
+        './data/games/index.json',
+        './data/index.json',
+        '../game/data/games/index.json',
+        '/Website/game/data/games/index.json'
+    ];
+
+    let manifest = null;
+    for (const url of manifestUrls) {
+        try {
+            const res = await fetch(url);
+            if (res.ok) {
+                manifest = await res.json();
+                break;
+            }
+        } catch (e) {}
+    }
+
+    if (!manifest || !Array.isArray(manifest.games)) {
+        console.error('[Manifest Error] Could not load games index manifest.');
+        return;
+    }
+
+    renderGamePillsFromManifest(manifest.games);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetSlug = (urlParams.get('game') || 'farcry5').toLowerCase();
+
+    const selectedGame = manifest.games.find(g => g.id.toLowerCase() === targetSlug) || manifest.games[0];
+
+    try {
+        const gameRes = await fetch(selectedGame.path);
+        if (!gameRes.ok) throw new Error(`HTTP ${gameRes.status}`);
+        const gameJson = await gameRes.json();
+
+        appState.gameData = gameJson;
+        appState.activeGame = gameJson.game || selectedGame.name;
+        appState.activeGameId = gameJson.gameId || selectedGame.id;
+        appState.activePsnCommId = gameJson.commId || selectedGame.commId || null;
+
+        await syncPsnSkeleton();
+        renderFarCry5Companion(gameJson);
+    } catch (err) {
+        console.error(`[Load Error] Failed to fetch game file at ${selectedGame.path}:`, err);
+    }
+}
+
+// Section 11: Sequential Lifecycle
 document.addEventListener('DOMContentLoaded', async () => {
-    const json = EMBEDDED_FARCRY5_DATA;
-    appState.gameData = json;
-    appState.hydrateDefaultSchema();
-    renderFullCompanion(json);
-    appState.applyStateToUI();
-    console.log("[Engine Ready] Loaded Far Cry 5 from embedded script catalog.");
+    await buildUtmNavigation();
+
+    const platformSelector = document.getElementById('platformSelect') || document.getElementById('platformSelector');
+    if (platformSelector) {
+        platformSelector.value = appState.platform;
+        platformSelector.addEventListener('change', (e) => {
+            appState.switchPlatform(e.target.value);
+        });
+    }
+
+    const menuBtn = document.getElementById('mobileMenuBtn');
+    const navLinks = document.getElementById('dynamicNavLinks');
+    if (menuBtn && navLinks) {
+        menuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('is-open');
+        });
+    }
+
+    const authBtn = document.getElementById('authModalBtn');
+    const authModal = document.getElementById('authModal');
+    const authClose = document.getElementById('authModalClose');
+    const googleBtn = document.getElementById('googleSignInBtn');
+
+    if (authBtn && authModal) authBtn.addEventListener('click', () => authModal.classList.remove('hidden'));
+    if (authClose && authModal) authClose.addEventListener('click', () => authModal.classList.add('hidden'));
+
+    if (googleBtn && auth) {
+        googleBtn.addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(err => {
+                console.error("[Auth Popup Error]:", err);
+                alert(`Sign-in error: ${err.message}`);
+            });
+        });
+    }
+
+    // Step 1: Initialize Manifest & Companion Render
+    await initGameCatalog();
+
+    // Step 2: Auth listener
+    if (auth) {
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                appState.currentUser = user;
+                appState.activeEmail = user.email;
+                appState.activeUser = user.displayName || 'Resistance Member';
+
+                const nameEl = document.getElementById('resistance-name');
+                if (nameEl) nameEl.innerText = `${appState.activeUser.toUpperCase()} [${appState.platform.toUpperCase()}]`;
+
+                if (authBtn) authBtn.classList.add('hidden');
+                const badge = document.getElementById('userProfileBadge');
+                const avatar = document.getElementById('headerUserAvatar');
+                const nameBadge = document.getElementById('userDisplayName');
+                if (badge) badge.classList.remove('hidden');
+                if (avatar && user.photoURL) avatar.src = user.photoURL;
+                if (nameBadge) nameBadge.innerText = appState.activeUser;
+                if (authModal) authModal.classList.add('hidden');
+
+                await appState.fetchUserProfile();
+                await appState.loadProgress();
+                await appState.migrateGuestProgressIfPresent();
+                await appState.refreshPsnProgress();
+                await appState.syncFriendsProgress();
+            } else {
+                appState.currentUser = null;
+                appState.activeEmail = null;
+                appState.activeUser = 'Guest';
+                appState.myFriendCode = null;
+                appState.myPsnGamertag = null;
+                window.squadProgressCache = {};
+
+                const nameEl = document.getElementById('resistance-name');
+                if (nameEl) nameEl.innerText = `GUEST [${appState.platform.toUpperCase()}]`;
+
+                if (authBtn) authBtn.classList.remove('hidden');
+                const badge = document.getElementById('userProfileBadge');
+                if (badge) badge.classList.add('hidden');
+
+                await appState.loadProgress();
+            }
+        });
+    }
+
+    // Step 3: Squad polling interval
+    setInterval(async () => {
+        if (document.visibilityState === 'visible' && appState.currentUser && appState.isCloudLoaded) {
+            await appState.refreshPsnProgress();
+            appState.syncFriendsProgress();
+        }
+    }, 120000);
 });
