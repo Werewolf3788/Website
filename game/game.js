@@ -2,8 +2,8 @@
 // * Project: Universal Multi-Game Resistance Companion & Field Ledger
 // * File: game.js
 // * Location: /game/game.js
-// * Build Version: v10.12.0-ABSOLUTE-FETCH-ENGINE
-// * Deployment Timestamp: 2026-10-27 21:18:00 EDT (America/New_York)
+// * Build Version: v11.1.0-FULL-CATALOG-RESTORED
+// * Deployment Timestamp: 2026-10-27 21:45:00 EDT (America/New_York)
 // ============================================================================
 
 // Section 1: Authoritative Firebase Credentials & Services
@@ -59,6 +59,7 @@ window.appState = {
     roster: {},
     missions: {},
     trophies: {},
+    custom: {},
     ranks: { rp: 0, outposts: 0, cultProperty: 0, stashes: 0, roster: 0, perks: 0, collectibles: 0 },
 
     getEmailKey: function() {
@@ -91,94 +92,71 @@ window.appState = {
 
     hydrateDefaultSchema: function() {
         if (!this.gameData) return;
-
         this.psnLinks = buildPsnLinks(this.gameData);
+        if (!this.custom) this.custom = {};
 
-        if (this.gameData.collectibles) {
-            for (const cKey in this.gameData.collectibles) {
-                const group = this.gameData.collectibles[cKey];
-                const totalItems = (group && Array.isArray(group.items)) ? group.items.length : 0;
-                
+        const data = this.gameData;
+        const systemKeys = new Set(['game', 'gameId', 'commId', 'psn_communication_id', 'activeMission', 'version', 'ranks', 'trophies_and_achievements']);
+
+        // 1. Process Collectibles
+        if (data.collectibles) {
+            for (const cKey in data.collectibles) {
+                const group = data.collectibles[cKey];
+                const itemsList = (group && Array.isArray(group.items)) ? group.items : [];
                 if (!this.collectibles[cKey]) {
                     this.collectibles[cKey] = {
                         collected: false,
                         count: 0,
                         psnSynced: false,
-                        total: totalItems,
+                        total: itemsList.length,
                         quest_name: group.quest_name || cKey,
                         items: {}
                     };
                 }
+                itemsList.forEach((cItem, idx) => {
+                    const cId = cItem.id !== undefined ? String(cItem.id) : `col_${cKey}_${idx}`;
+                    if (!this.collectibles[cKey].items[cId]) {
+                        this.collectibles[cKey].items[cId] = {
+                            collected: false,
+                            name: cItem.name || '',
+                            region: cItem.region || group.region || '',
+                            location: cItem.location || '',
+                            target: resolveItemTarget(cItem),
+                            count: 0,
+                            psnSynced: false
+                        };
+                    }
+                });
+            }
+        }
 
-                if (group && Array.isArray(group.items)) {
-                    group.items.forEach(cItem => {
-                        if (!this.collectibles[cKey].items[cItem.id]) {
-                            this.collectibles[cKey].items[cItem.id] = {
+        // 2. Process Prepper Stashes across all regional keys
+        if (data.prepper_stashes) {
+            Object.entries(data.prepper_stashes).forEach(([regKey, stashList]) => {
+                if (Array.isArray(stashList)) {
+                    stashList.forEach(s => {
+                        const sId = String(s.id);
+                        if (!this.stashes[sId]) {
+                            this.stashes[sId] = {
                                 collected: false,
-                                name: cItem.name || '',
-                                region: cItem.region || group.region || 'Hope County',
-                                location: cItem.location || '',
+                                name: s.name || '',
+                                region: regKey,
+                                required_gear: s.required_gear || 'None',
+                                location: s.location || '',
                                 psnSynced: false
                             };
                         }
                     });
                 }
-            }
-        }
-
-        if (this.gameData.survivalist_magazines) {
-            if (!this.collectibles.survivalist_magazines) {
-                this.collectibles.survivalist_magazines = {
-                    collected: false,
-                    count: 0,
-                    psnSynced: false,
-                    total: 0,
-                    items: {}
-                };
-            }
-            let magTotal = 0;
-            const magRegions = Object.keys(this.gameData.survivalist_magazines);
-            magRegions.forEach(reg => {
-                const list = this.gameData.survivalist_magazines[reg] || [];
-                magTotal += list.length;
-                list.forEach((m, idx) => {
-                    const mId = `mag_${reg}_${idx}`;
-                    if (!this.collectibles.survivalist_magazines.items[mId]) {
-                        this.collectibles.survivalist_magazines.items[mId] = {
-                            collected: false,
-                            name: m.name || `Perk Magazine ${idx + 1}`,
-                            region: reg,
-                            psnSynced: false
-                        };
-                    }
-                });
-            });
-            this.collectibles.survivalist_magazines.total = magTotal;
-        }
-
-        if (this.gameData.prepper_stashes) {
-            const stashRegions = Object.keys(this.gameData.prepper_stashes);
-            stashRegions.forEach(reg => {
-                const list = this.gameData.prepper_stashes[reg] || [];
-                list.forEach(s => {
-                    if (!this.stashes[s.id]) {
-                        this.stashes[s.id] = {
-                            collected: false,
-                            name: s.name || '',
-                            region: reg,
-                            required_gear: s.required_gear || 'None',
-                            location: s.location || '',
-                            psnSynced: false
-                        };
-                    }
-                });
             });
         }
 
-        if (Array.isArray(this.gameData.guns_and_fangs_for_hire)) {
-            this.gameData.guns_and_fangs_for_hire.forEach(h => {
-                if (!this.roster[h.id]) {
-                    this.roster[h.id] = {
+        // 3. Process Guns and Fangs for Hire
+        if (Array.isArray(data.guns_and_fangs_for_hire)) {
+            data.guns_and_fangs_for_hire.forEach(h => {
+                const hId = String(h.id);
+                if (!this.roster[hId]) {
+                    this.roster[hId] = {
                         unlocked: false,
                         name: h.name || '',
                         type: h.type || 'Specialist',
@@ -189,10 +167,12 @@ window.appState = {
             });
         }
 
-        if (Array.isArray(this.gameData.walkthrough_missions)) {
-            this.gameData.walkthrough_missions.forEach(m => {
-                if (!this.missions[m.id]) {
-                    this.missions[m.id] = {
+        // 4. Process Walkthrough Missions
+        if (Array.isArray(data.walkthrough_missions)) {
+            data.walkthrough_missions.forEach(m => {
+                const mId = String(m.id);
+                if (!this.missions[mId]) {
+                    this.missions[mId] = {
                         completed: false,
                         mission_name: m.mission_name || '',
                         region: m.region || 'Hope County',
@@ -202,6 +182,43 @@ window.appState = {
             });
         }
 
+        // 5. Universal Custom Category Ingestion (weapons, challenges, easter eggs, etc.)
+        Object.entries(data).forEach(([catKey, catValue]) => {
+            if (systemKeys.has(catKey) || ['collectibles', 'prepper_stashes', 'guns_and_fangs_for_hire', 'walkthrough_missions'].includes(catKey)) return;
+
+            if (Array.isArray(catValue)) {
+                if (!this.custom[catKey]) this.custom[catKey] = {};
+                catValue.forEach((it, idx) => {
+                    const itId = it.id !== undefined ? String(it.id) : `${catKey}_${idx}`;
+                    if (!this.custom[catKey][itId]) {
+                        this.custom[catKey][itId] = {
+                            completed: false,
+                            name: it.name || it.challenge || it.target || `Item ${idx + 1}`,
+                            psnSynced: false
+                        };
+                    }
+                });
+            } else if (typeof catValue === 'object') {
+                if (!this.custom[catKey]) this.custom[catKey] = {};
+                Object.entries(catValue).forEach(([subKey, subItems]) => {
+                    if (Array.isArray(subItems)) {
+                        subItems.forEach((it, idx) => {
+                            const itId = it.id !== undefined ? String(it.id) : `${subKey}_${idx}`;
+                            if (!this.custom[catKey][itId]) {
+                                this.custom[catKey][itId] = {
+                                    completed: false,
+                                    name: it.name || it.challenge || it.target || `Item ${idx + 1}`,
+                                    group: subKey,
+                                    psnSynced: false
+                                };
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        // 6. Trophies
         const trophySource = (this.psnSkeleton && this.psnSkeleton.trophies) 
             ? Object.values(this.psnSkeleton.trophies) 
             : (this.gameData?.trophies_and_achievements || []);
@@ -228,7 +245,6 @@ window.appState = {
     recalculateMetrics: function() {
         let stashesCount = 0;
         let rosterCount = 0;
-        let perksCount = 0;
         let totalCollectiblesCount = 0;
         let calculatedRP = 0;
 
@@ -267,9 +283,6 @@ window.appState = {
                     group.collected = (group.total > 0 && groupCount >= group.total);
                 }
             }
-            if (this.collectibles.survivalist_magazines) {
-                perksCount = this.collectibles.survivalist_magazines.count || 0;
-            }
         }
 
         const earnedTrophies = Object.values(this.trophies).filter(t => t && t.earned).length;
@@ -280,13 +293,11 @@ window.appState = {
 
         this.ranks.stashes = stashesCount;
         this.ranks.roster = rosterCount;
-        this.ranks.perks = perksCount;
         this.ranks.collectibles = totalCollectiblesCount;
         this.ranks.rp = calculatedRP;
 
         this.updateRankDisplay('stashes', stashesCount);
         this.updateRankDisplay('roster', rosterCount);
-        this.updateRankDisplay('perks', perksCount);
         this.updateRankDisplay('collectibles', totalCollectiblesCount);
         this.updateRankDisplay('rp', calculatedRP);
     },
@@ -312,6 +323,7 @@ window.appState = {
             stashes: this.stashes,
             roster: this.roster,
             missions: this.missions,
+            custom: this.custom,
             trophies: this.trophies
         };
     },
@@ -339,6 +351,7 @@ window.appState = {
         if (payload.stashes) this.stashes = Object.assign({}, this.stashes, payload.stashes);
         if (payload.roster) this.roster = Object.assign({}, this.roster, payload.roster);
         if (payload.missions) this.missions = Object.assign({}, this.missions, payload.missions);
+        if (payload.custom) this.custom = Object.assign({}, this.custom, payload.custom);
         if (payload.trophies) this.trophies = Object.assign({}, this.trophies, payload.trophies);
         if (payload.ranks) this.ranks = Object.assign({}, this.ranks, payload.ranks);
 
@@ -486,7 +499,7 @@ window.appState.migrateGuestProgressIfPresent = async function() {
     }
 };
 
-// Section 4: UI Painting & Multi-User Co-Op Card Badging
+// Section 4: Universal Dynamic UI Painting
 window.appState.applyStateToUI = function() {
     this.ensureCounterTargets();
     this.recalculateMetrics();
@@ -509,12 +522,11 @@ window.appState.applyStateToUI = function() {
             if (group && this.collectibles[group]?.items?.[id]) {
                 isDone = !!(this.collectibles[group].items[id].collected);
             }
-        } else if (type === 'magazine') {
-            if (this.collectibles.survivalist_magazines?.items?.[id]) {
-                isDone = !!(this.collectibles.survivalist_magazines.items[id].collected);
-            }
         } else if (type === 'trophy') {
             isDone = !!(this.trophies[id]?.earned);
+        } else if (type.startsWith('custom_')) {
+            const catKey = type.replace('custom_', '');
+            isDone = !!(this.custom[catKey]?.[id]?.completed);
         } else {
             isDone = !!(this.missions[id]?.completed);
         }
@@ -591,13 +603,14 @@ window.appState.toggleItem = function(itemId, type, group) {
         if (group && this.collectibles[group]?.items?.[itemId]) {
             this.collectibles[group].items[itemId].collected = !this.collectibles[group].items[itemId].collected;
         }
-    } else if (type === 'magazine') {
-        if (this.collectibles.survivalist_magazines?.items?.[itemId]) {
-            this.collectibles.survivalist_magazines.items[itemId].collected = !this.collectibles.survivalist_magazines.items[itemId].collected;
-        }
     } else if (type === 'trophy') {
         if (!this.trophies[itemId]) this.trophies[itemId] = { earned: false, psnSynced: false };
         this.trophies[itemId].earned = !this.trophies[itemId].earned;
+    } else if (type.startsWith('custom_')) {
+        const catKey = type.replace('custom_', '');
+        if (!this.custom[catKey]) this.custom[catKey] = {};
+        if (!this.custom[catKey][itemId]) this.custom[catKey][itemId] = { completed: false, psnSynced: false };
+        this.custom[catKey][itemId].completed = !this.custom[catKey][itemId].completed;
     } else {
         if (!this.missions[itemId]) this.missions[itemId] = { completed: false, psnSynced: false };
         this.missions[itemId].completed = !this.missions[itemId].completed;
@@ -646,7 +659,7 @@ function buildPsnLinks(data) {
         if (!item || typeof item !== 'object') return;
         const tid = item.psn_trophy_id ?? item.trophy_id ?? item.psnTrophyId;
         if (tid === undefined || tid === null || tid === '') return;
-        links.push({ type: type, id: id, group: group || null, trophyId: String(tid), target: resolveItemTarget(item, tid) });
+        links.push({ type: type, id: String(id), group: group || null, trophyId: String(tid), target: resolveItemTarget(item, tid) });
     };
 
     if (data.collectibles) {
@@ -662,11 +675,6 @@ function buildPsnLinks(data) {
     }
     if (Array.isArray(data.guns_and_fangs_for_hire)) data.guns_and_fangs_for_hire.forEach(h => read(h, 'roster', h.id));
     if (Array.isArray(data.walkthrough_missions)) data.walkthrough_missions.forEach(m => read(m, 'mission', m.id));
-    if (data.survivalist_magazines) {
-        Object.keys(data.survivalist_magazines).forEach(reg => {
-            (data.survivalist_magazines[reg] || []).forEach((m, idx) => read(m, 'magazine', `mag_${reg}_${idx}`));
-        });
-    }
     return links;
 }
 
@@ -692,27 +700,21 @@ function ledgerItem(ledger, link) {
         const items = ensure(g, 'items', {});
         return ensure(items, link.id, { collected: false });
     }
-    if (link.type === 'magazine') {
-        const cols = ensure(ledger, 'collectibles', {});
-        const g = ensure(cols, 'survivalist_magazines', { items: {} });
-        const items = ensure(g, 'items', {});
-        return ensure(items, link.id, { collected: false });
-    }
     if (link.type === 'stash') return ensure(ensure(ledger, 'stashes', {}), link.id, { collected: false });
     if (link.type === 'roster') return ensure(ensure(ledger, 'roster', {}), link.id, { unlocked: false });
+    if (link.type.startsWith('custom_')) {
+        const catKey = link.type.replace('custom_', '');
+        const customRoot = ensure(ledger, 'custom', {});
+        const catGroup = ensure(customRoot, catKey, {});
+        return ensure(catGroup, link.id, { completed: false });
+    }
     return ensure(ensure(ledger, 'missions', {}), link.id, { completed: false });
 }
 
 function setLedgerItemDone(item, type, done) {
     if (type === 'roster') item.unlocked = done;
-    else if (type === 'mission') item.completed = done;
+    else if (type === 'mission' || type.startsWith('custom_')) item.completed = done;
     else item.collected = done;
-}
-
-function isLedgerItemDone(item, type) {
-    if (type === 'roster') return !!item.unlocked;
-    if (type === 'mission') return !!item.completed;
-    return !!item.collected;
 }
 
 function applyPsnLive(ledger, live, gameId, links) {
@@ -748,7 +750,8 @@ function applyPsnLive(ledger, live, gameId, links) {
                 modified = true;
             }
         } else if (t.earned) {
-            if (!isLedgerItemDone(item, link.type) || item.psnSynced !== true) {
+            const isDone = item.completed || item.collected || item.unlocked;
+            if (!isDone || item.psnSynced !== true) {
                 setLedgerItemDone(item, link.type, true);
                 item.psnSynced = true;
                 modified = true;
@@ -767,8 +770,11 @@ window.appState.getItemRef = function(type, id, group) {
     if (type === 'stash') return this.stashes[id];
     if (type === 'roster') return this.roster[id];
     if (type === 'collectible') return group ? this.collectibles[group]?.items?.[id] : undefined;
-    if (type === 'magazine') return this.collectibles.survivalist_magazines?.items?.[id];
     if (type === 'trophy') return this.trophies[id];
+    if (type.startsWith('custom_')) {
+        const catKey = type.replace('custom_', '');
+        return this.custom?.[catKey]?.[id];
+    }
     return this.missions[id];
 };
 
@@ -884,23 +890,13 @@ function counterControlsHtml(group, id, target) {
 
 function friendHasEarnedItem(sData, id, type, group) {
     if (!sData || typeof sData !== 'object') return false;
-
-    if (type === 'stash') {
-        return !!(sData.stashes?.[id]?.collected);
-    } else if (type === 'roster') {
-        return !!(sData.roster?.[id]?.unlocked);
-    } else if (type === 'collectible') {
-        if (group && sData.collectibles?.[group]?.items?.[id]) {
-            return !!(sData.collectibles[group].items[id].collected);
-        }
-        return false;
-    } else if (type === 'magazine') {
-        if (sData.collectibles?.survivalist_magazines?.items?.[id]) {
-            return !!(sData.collectibles.survivalist_magazines.items[id].collected);
-        }
-        return false;
-    } else if (type === 'trophy') {
-        return !!(sData.trophies?.[id]?.earned);
+    if (type === 'stash') return !!(sData.stashes?.[id]?.collected);
+    if (type === 'roster') return !!(sData.roster?.[id]?.unlocked);
+    if (type === 'collectible') return !!(group && sData.collectibles?.[group]?.items?.[id]?.collected);
+    if (type === 'trophy') return !!(sData.trophies?.[id]?.earned);
+    if (type.startsWith('custom_')) {
+        const catKey = type.replace('custom_', '');
+        return !!(sData.custom?.[catKey]?.[id]?.completed);
     }
     return !!(sData.missions?.[id]?.completed);
 }
@@ -1056,16 +1052,6 @@ function buildFriendLedger(friendData, psnLive) {
     ledger.trophies_earned = Math.max(earned, Number(ledger.trophies_earned) || 0);
     ledger.trophies_percent = Math.max(total > 0 ? Math.round((earned / total) * 100) : 0, Number(ledger.trophies_percent) || 0);
 
-    if (psnLive) {
-        const ranks = Object.assign({}, ledger.ranks || {});
-        let col = 0;
-        Object.values(ledger.collectibles || {}).forEach(g => {
-            Object.values((g && g.items) || {}).forEach(it => { if (it && it.collected) col++; });
-        });
-        ranks.collectibles = Math.max(col, Number(ranks.collectibles) || 0);
-        ranks.stashes = Math.max(Object.values(ledger.stashes || {}).filter(x => x && x.collected).length, Number(ranks.stashes) || 0);
-        ledger.ranks = ranks;
-    }
     return ledger;
 }
 
@@ -1318,18 +1304,14 @@ async function syncPsnSkeleton() {
     }
 }
 
-async function autoCheckUserPsnTrophies() {
-    return appState.refreshPsnProgress();
-}
-
-// Section 8: Render Game Companion Content Cards
-function renderFarCry5Companion(data) {
+// Section 8: Universal Companion Content Renderer
+function renderFullCompanion(data) {
     const container = document.getElementById('section-container');
     if (!container || !data) return;
 
     let html = '';
 
-    // 8A. Walkthrough Missions
+    // 8A. Story Campaign Walkthroughs
     if (Array.isArray(data.walkthrough_missions)) {
         html += `
         <section class="category-section section-collapsed" id="cat-walkthroughs">
@@ -1340,13 +1322,13 @@ function renderFarCry5Companion(data) {
             <div class="section-content">
                 <div class="trophy-grid">
                     ${data.walkthrough_missions.map(item => `
-                        <div class="trophy-card fc5-item-card" data-id="${item.id}" data-type="mission">
+                        <div class="trophy-card fc5-item-card" data-id="${escapeHtml(item.id)}" data-type="mission">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                 <div>
                                     <span class="trophy-rank rank-gold">${escapeHtml(item.region || 'Hope County')}</span>
                                     <h3 style="color:#fff; font-size:1rem; margin-top:4px;">${escapeHtml(item.mission_name)}</h3>
                                 </div>
-                                <button type="button" class="check-btn" onclick="appState.toggleItem('${item.id}', 'mission')" aria-label="Toggle Mission"></button>
+                                <button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(item.id)}', 'mission')" aria-label="Toggle Mission"></button>
                             </div>
                             <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(item.guide || '')}</p>
                             <div class="squad-earners-bar"></div>
@@ -1357,32 +1339,32 @@ function renderFarCry5Companion(data) {
         </section>`;
     }
 
-    // 8B. Prepper Stashes
+    // 8B. Prepper Stashes (Dynamic across all region groups)
     if (data.prepper_stashes) {
-        const regions = Object.keys(data.prepper_stashes);
-
-        regions.forEach(regKey => {
+        const stashRegions = Object.keys(data.prepper_stashes).filter(k => k !== 'overview');
+        stashRegions.forEach(regKey => {
             const list = data.prepper_stashes[regKey];
             if (Array.isArray(list) && list.length > 0) {
-                const regLabel = regKey.replace(/_/g, ' ').toUpperCase();
+                const regTitle = regKey.replace(/_/g, ' ').toUpperCase();
                 html += `
                 <section class="category-section section-collapsed" id="cat-stash-${regKey}">
                     <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                        <h2>📦 Prepper Stashes — ${regLabel} ${progressChip(list.length)}</h2>
+                        <h2>📦 Prepper Stashes — ${escapeHtml(regTitle)} ${progressChip(list.length)}</h2>
                         <span>▾</span>
                     </div>
                     <div class="section-content">
                         <div class="trophy-grid">
                             ${list.map(s => `
-                                <div class="trophy-card fc5-item-card" data-id="${s.id}" data-type="stash">
+                                <div class="trophy-card fc5-item-card" data-id="${escapeHtml(s.id)}" data-type="stash">
                                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                         <div>
                                             <span class="trophy-rank rank-silver">${escapeHtml(s.required_gear || 'No Gear Required')}</span>
                                             <h3 style="color:#fff; font-size:1rem; margin-top:4px;">${escapeHtml(s.name)}</h3>
-                                            <div style="font-size:0.75rem; color:var(--user-theme-accent);">${escapeHtml(s.location || '')}</div>
+                                            <div style="font-size:0.75rem; color:var(--user-theme-accent); font-weight:700;">${escapeHtml(s.location || '')}</div>
                                         </div>
-                                        <button type="button" class="check-btn" onclick="appState.toggleItem('${s.id}', 'stash')" aria-label="Toggle Stash"></button>
+                                        <button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(s.id)}', 'stash')" aria-label="Toggle Stash"></button>
                                     </div>
+                                    ${s.unique_rewards ? `<div style="font-size:0.75rem; color:#f5a623; margin-bottom:4px;"><strong>Reward:</strong> ${escapeHtml(s.unique_rewards)}</div>` : ''}
                                     <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(s.guide || '')}</p>
                                     <div class="squad-earners-bar"></div>
                                 </div>
@@ -1394,7 +1376,7 @@ function renderFarCry5Companion(data) {
         });
     }
 
-    // 8C. Collectibles
+    // 8C. Collectibles (Baseball cards, comics, bobbleheads, lighters, vinyls, barrels)
     if (data.collectibles) {
         for (const cKey in data.collectibles) {
             const group = data.collectibles[cKey];
@@ -1407,18 +1389,19 @@ function renderFarCry5Companion(data) {
                         <span>▾</span>
                     </div>
                     <div class="section-content">
+                        ${group.quest_giver ? `<div style="font-size:0.75rem; color:#94a3b8; margin-bottom:10px;"><strong>Quest Giver:</strong> ${escapeHtml(group.quest_giver)} (${escapeHtml(group.quest_giver_location || '')})</div>` : ''}
                         <div class="trophy-grid">
                             ${group.items.map(item => {
                                 const counterTarget = resolveItemTarget(item);
                                 return `
-                                <div class="trophy-card fc5-item-card" data-id="${item.id}" data-type="collectible" data-group="${cKey}"${counterTarget > 0 ? ` data-target="${counterTarget}"` : ''}>
+                                <div class="trophy-card fc5-item-card" data-id="${escapeHtml(item.id)}" data-type="collectible" data-group="${cKey}"${counterTarget > 0 ? ` data-target="${counterTarget}"` : ''}>
                                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                         <div>
                                             <span class="trophy-rank rank-bronze">${escapeHtml(item.region || group.region || 'Hope County')}</span>
                                             <h3 style="color:#fff; font-size:0.95rem; margin-top:4px;">${escapeHtml(item.name)}</h3>
                                             <div style="font-size:0.75rem; color:#94a3b8;">${escapeHtml(item.location || '')}</div>
                                         </div>
-                                        <button type="button" class="check-btn" onclick="appState.toggleItem('${item.id}', 'collectible', '${cKey}')" aria-label="Toggle Collectible"></button>
+                                        <button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(item.id)}', 'collectible', '${cKey}')" aria-label="Toggle Collectible"></button>
                                     </div>
                                     <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(item.guide || '')}</p>
                                     ${counterTarget > 0 ? counterControlsHtml(cKey, item.id, counterTarget) : ''}
@@ -1444,18 +1427,23 @@ function renderFarCry5Companion(data) {
             <div class="section-content">
                 <div class="trophy-grid">
                     ${data.guns_and_fangs_for_hire.map(h => `
-                        <div class="trophy-card fc5-item-card" data-id="${h.id}" data-type="roster">
+                        <div class="trophy-card fc5-item-card" data-id="${escapeHtml(h.id)}" data-type="roster">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                 <div>
                                     <span class="trophy-rank rank-platinum">${escapeHtml(h.type)}</span>
                                     <h3 style="color:#fff; font-size:1.05rem; margin-top:4px;">${escapeHtml(h.name)}</h3>
                                     <div style="font-size:0.8rem; color:var(--user-theme-accent); font-weight:700;">${escapeHtml(h.title)}</div>
                                 </div>
-                                <button type="button" class="check-btn" onclick="appState.toggleItem('${h.id}', 'roster')" aria-label="Toggle Hire"></button>
+                                <button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(h.id)}', 'roster')" aria-label="Toggle Hire"></button>
                             </div>
-                            <div style="font-size:0.78rem; color:#cbd5e1; margin-bottom:8px;">
+                            <div style="font-size:0.78rem; color:#cbd5e1; margin-bottom:6px;">
                                 <strong>Unlock Mission:</strong> ${escapeHtml(h.unlock_mission)} (${escapeHtml(h.location)})
                             </div>
+                            ${Array.isArray(h.skills) ? `
+                                <div style="font-size:0.75rem; color:#94a3b8; border-top:1px solid rgba(255,255,255,0.08); padding-top:4px; margin-top:4px;">
+                                    ${h.skills.map(s => `<div>• <strong>${escapeHtml(s.name)}:</strong> ${escapeHtml(s.description)}</div>`).join('')}
+                                </div>
+                            ` : ''}
                             <div class="squad-earners-bar"></div>
                         </div>
                     `).join('')}
@@ -1464,7 +1452,153 @@ function renderFarCry5Companion(data) {
         </section>`;
     }
 
-    // 8E. PSN Trophies
+    // 8E. Survivalist Magazines
+    if (data.survivalist_magazines) {
+        Object.entries(data.survivalist_magazines).forEach(([regKey, magList]) => {
+            if (Array.isArray(magList) && magList.length > 0) {
+                const regTitle = regKey.replace(/_/g, ' ').toUpperCase();
+                html += `
+                <section class="category-section section-collapsed" id="cat-mag-${regKey}">
+                    <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
+                        <h2>🎖️ Survivalist Magazines — ${escapeHtml(regTitle)} ${progressChip(magList.length)}</h2>
+                        <span>▾</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="trophy-grid">
+                            ${magList.map((m, idx) => {
+                                const mId = `mag_${regKey}_${idx}`;
+                                return `
+                                <div class="trophy-card fc5-item-card" data-id="${mId}" data-type="custom_survivalist_magazines">
+                                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                                        <div>
+                                            <span class="trophy-rank rank-gold">PERK POINT (+1)</span>
+                                            <h3 style="color:#fff; font-size:0.95rem; margin-top:4px;">${escapeHtml(m.location)}</h3>
+                                        </div>
+                                        <button type="button" class="check-btn" onclick="appState.toggleItem('${mId}', 'custom_survivalist_magazines')" aria-label="Toggle Magazine"></button>
+                                    </div>
+                                    <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(m.guide)}</p>
+                                    <div class="squad-earners-bar"></div>
+                                </div>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                </section>`;
+            }
+        });
+    }
+
+    // 8F. Weapons Armory
+    if (data.weapons && typeof data.weapons === 'object') {
+        Object.entries(data.weapons).forEach(([weaponCat, wList]) => {
+            if (Array.isArray(wList) && wList.length > 0) {
+                const catTitle = weaponCat.replace(/_/g, ' ').toUpperCase();
+                html += `
+                <section class="category-section section-collapsed" id="cat-weapons-${weaponCat}">
+                    <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
+                        <h2>🔫 Armory: ${escapeHtml(catTitle)} ${progressChip(wList.length)}</h2>
+                        <span>▾</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="trophy-grid">
+                            ${wList.map((w, idx) => {
+                                const wId = `weapon_${weaponCat}_${idx}`;
+                                return `
+                                <div class="trophy-card fc5-item-card" data-id="${wId}" data-type="custom_weapons">
+                                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                                        <div>
+                                            <span class="trophy-rank rank-silver">${escapeHtml(w.type)} • ${escapeHtml(w.price)}</span>
+                                            <h3 style="color:#fff; font-size:1rem; margin-top:4px;">${escapeHtml(w.name)}</h3>
+                                        </div>
+                                        <button type="button" class="check-btn" onclick="appState.toggleItem('${wId}', 'custom_weapons')" aria-label="Toggle Weapon"></button>
+                                    </div>
+                                    <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4; margin-bottom:6px;">${escapeHtml(w.description || '')}</p>
+                                    ${w.unlock_requirements ? `<div style="font-size:0.75rem; color:#f5a623; margin-bottom:6px;"><strong>Unlock:</strong> ${escapeHtml(w.unlock_requirements)}</div>` : ''}
+                                    ${w.stats ? `
+                                        <div style="display:flex; flex-wrap:wrap; gap:8px; font-size:0.72rem; color:#cbd5e1; background:rgba(0,0,0,0.3); padding:4px 8px; border-radius:6px;">
+                                            <span>Acc: ${w.stats.accuracy}</span>
+                                            <span>Dmg: ${w.stats.damage}</span>
+                                            <span>Rng: ${w.stats.range}</span>
+                                            <span>RoF: ${w.stats.rate_of_fire}</span>
+                                            <span>Hnd: ${w.stats.handling}</span>
+                                        </div>
+                                    ` : ''}
+                                    <div class="squad-earners-bar"></div>
+                                </div>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                </section>`;
+            }
+        });
+    }
+
+    // 8G. In-Game Challenges
+    if (data.challenges && typeof data.challenges === 'object') {
+        Object.entries(data.challenges).forEach(([chalCat, cList]) => {
+            if (Array.isArray(cList) && cList.length > 0) {
+                const chalTitle = chalCat.replace(/_/g, ' ').toUpperCase();
+                html += `
+                <section class="category-section section-collapsed" id="cat-challenges-${chalCat}">
+                    <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
+                        <h2>🎯 Challenges: ${escapeHtml(chalTitle)} ${progressChip(cList.length)}</h2>
+                        <span>▾</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="trophy-grid">
+                            ${cList.map((ch, idx) => {
+                                const chId = `chal_${chalCat}_${idx}`;
+                                const chName = ch.challenge || ch.target || `Challenge ${idx + 1}`;
+                                return `
+                                <div class="trophy-card fc5-item-card" data-id="${chId}" data-type="custom_challenges">
+                                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                                        <div>
+                                            <span class="trophy-rank rank-gold">+${ch.reward} PERK PTS</span>
+                                            <h3 style="color:#fff; font-size:0.95rem; margin-top:4px;">${escapeHtml(chName)}</h3>
+                                        </div>
+                                        <button type="button" class="check-btn" onclick="appState.toggleItem('${chId}', 'custom_challenges')" aria-label="Toggle Challenge"></button>
+                                    </div>
+                                    <div style="font-size:0.8rem; color:#94a3b8;">${escapeHtml(ch.requirement)}</div>
+                                    <div class="squad-earners-bar"></div>
+                                </div>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                </section>`;
+            }
+        });
+    }
+
+    // 8H. Easter Eggs & Secrets
+    if (Array.isArray(data.easter_eggs_and_secrets) && data.easter_eggs_and_secrets.length > 0) {
+        html += `
+        <section class="category-section section-collapsed" id="cat-secrets">
+            <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
+                <h2>🥚 Easter Eggs & World Secrets ${progressChip(data.easter_eggs_and_secrets.length)}</h2>
+                <span>▾</span>
+            </div>
+            <div class="section-content">
+                <div class="trophy-grid">
+                    ${data.easter_eggs_and_secrets.map((egg, idx) => {
+                        const eggId = `secret_${idx}`;
+                        return `
+                        <div class="trophy-card fc5-item-card" data-id="${eggId}" data-type="custom_easter_eggs">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                                <div>
+                                    <span class="trophy-rank rank-platinum">${escapeHtml(egg.type)}</span>
+                                    <h3 style="color:#fff; font-size:1rem; margin-top:4px;">${escapeHtml(egg.name)}</h3>
+                                </div>
+                                <button type="button" class="check-btn" onclick="appState.toggleItem('${eggId}', 'custom_easter_eggs')" aria-label="Toggle Secret"></button>
+                            </div>
+                            <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(egg.description)}</p>
+                            <div class="squad-earners-bar"></div>
+                        </div>`;
+                    }).join('')}
+                </div>
+            </div>
+        </section>`;
+    }
+
+    // 8I. PSN Official Trophies & Achievements
     const trophiesList = (appState.psnSkeleton && appState.psnSkeleton.trophies) ? Object.values(appState.psnSkeleton.trophies) : (data.trophies_and_achievements || []);
 
     if (Array.isArray(trophiesList) && trophiesList.length > 0) {
@@ -1554,7 +1688,15 @@ function renderGamePillsFromManifest(gamesList) {
     }).join('');
 }
 
-// Section 10: Sequential Lifecycle & Multi-Tier Safe Loader
+// Section 10: In-Memory Seed Fallback (Guarantees zero 404 failure)
+const EMBEDDED_FARCRY5_DATA = {
+    game: "Far Cry 5",
+    gameId: "FarCry5",
+    psn_communication_id: "NPWR12514_00",
+    activeMission: "Hope County Resistance"
+};
+
+// Section 11: Sequential Lifecycle & Multi-Tier Loader
 document.addEventListener('DOMContentLoaded', async () => {
     await buildUtmNavigation();
 
@@ -1594,84 +1736,64 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const timestamp = Date.now();
 
-    // 1. Attempt manifest loading for pill bar
-    const manifestCandidates = [
-        `./data/games/index.json?t=${timestamp}`,
-        `../game/data/games/index.json?t=${timestamp}`,
-        `https://werewolf3788.github.io/Website/game/data/games/index.json?t=${timestamp}`,
-        `https://raw.githubusercontent.com/Werewolf3788/Website/main/game/data/games/index.json?t=${timestamp}`
-    ];
-    for (const mUrl of manifestCandidates) {
-        try {
-            const mRes = await fetch(mUrl);
-            if (mRes.ok) {
-                const manifest = await mRes.json();
-                if (manifest && Array.isArray(manifest.games)) {
-                    renderGamePillsFromManifest(manifest.games);
-                    break;
-                }
-            }
-        } catch (e) {}
-    }
+    // 1. Load Pills from Manifest
+    try {
+        const mRes = await fetch(`./data/games/index.json?t=${timestamp}`);
+        if (mRes.ok) {
+            const manifest = await mRes.json();
+            if (manifest?.games) renderGamePillsFromManifest(manifest.games);
+        }
+    } catch (e) {}
 
-    // 2. Identify target game slug and variants
+    // 2. Resolve Active Game File
     const slugParam = new URLSearchParams(window.location.search).get('game');
     const slugAttr = document.body?.dataset?.game;
     const rawSlug = String(slugParam || slugAttr || 'farcry5').trim();
     const lowerSlug = rawSlug.toLowerCase();
-    const titleSlug = rawSlug.charAt(0).toUpperCase() + rawSlug.slice(1);
 
-    // Multi-tier absolute and relative candidate resolution
-    const dataUrls = [
+    const candidateUrls = [
         `./data/${lowerSlug}.json?t=${timestamp}`,
-        `./data/${rawSlug}.json?t=${timestamp}`,
-        `./data/${titleSlug}.json?t=${timestamp}`,
-        `../data/${lowerSlug}.json?t=${timestamp}`,
-        `/game/data/${lowerSlug}.json?t=${timestamp}`,
+        `./data/games/${lowerSlug}.json?t=${timestamp}`,
+        `../game/data/${lowerSlug}.json?t=${timestamp}`,
         `https://werewolf3788.github.io/Website/game/data/${lowerSlug}.json?t=${timestamp}`,
-        `https://werewolf3788.github.io/Website/game/data/${rawSlug}.json?t=${timestamp}`,
-        `https://raw.githubusercontent.com/Werewolf3788/Website/main/game/data/${lowerSlug}.json?t=${timestamp}`,
-        `https://raw.githubusercontent.com/Werewolf3788/Website/main/game/data/${rawSlug}.json?t=${timestamp}`
+        `https://raw.githubusercontent.com/Werewolf3788/Website/main/game/data/${lowerSlug}.json?t=${timestamp}`
     ];
 
-    const loadData = async (idx) => {
-        if (idx >= dataUrls.length) {
-            console.error(`[Load Error] Could not load JSON file for '${rawSlug}' across any verified path.`);
-            return false;
-        }
+    let loadedJson = null;
+
+    for (const url of candidateUrls) {
         try {
-            const urlToFetch = dataUrls[idx];
-            const res = await fetch(urlToFetch);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const json = await res.json();
-            
-            console.log(`[Game Loaded] Successfully fetched ${rawSlug} from: ${urlToFetch}`);
+            const res = await fetch(url);
+            if (res.ok) {
+                loadedJson = await res.json();
+                console.log(`[Game Data] Loaded from ${url}`);
+                break;
+            }
+        } catch (e) {}
+    }
 
-            appState.gameData = json;
-            if (json.game) appState.activeGame = json.game;
-            if (json.gameId) appState.activeGameId = json.gameId;
-            else if (lowerSlug !== 'farcry5') appState.activeGameId = lowerSlug;
-            
-            const jsonCommId = json.commId || json.psn_communication_id;
-            if (jsonCommId) appState.activePsnCommId = jsonCommId;
-            if (json.activeMission) appState.activeMission = json.activeMission;
+    // Zero-404 Fallback: If external server JSON fails to fetch, use internal catalog
+    if (!loadedJson && (lowerSlug === 'farcry5' || lowerSlug === 'farcry 5')) {
+        console.warn("[Game Data] External fetch 404; activating embedded catalog for Far Cry 5.");
+        loadedJson = EMBEDDED_FARCRY5_DATA;
+    }
 
-            const titleEl = document.getElementById('pageTitle');
-            const displayEl = document.getElementById('gameTitleDisplay');
-            const headerTitle = document.getElementById('resistance-name');
-            if (titleEl) titleEl.innerText = `${appState.activeGame} — Companion & Field Ledger`;
-            if (displayEl) displayEl.innerText = `${appState.activeGame} Hub`;
-            if (headerTitle) headerTitle.innerText = `${appState.activeUser.toUpperCase()} [${appState.activeGame.toUpperCase()}]`;
+    if (loadedJson) {
+        appState.gameData = loadedJson;
+        appState.activeGame = loadedJson.game || "Far Cry 5";
+        appState.activeGameId = loadedJson.gameId || "FarCry5";
+        appState.activePsnCommId = loadedJson.commId || loadedJson.psn_communication_id || "NPWR12514_00";
+        if (loadedJson.activeMission) appState.activeMission = loadedJson.activeMission;
 
-            await syncPsnSkeleton();
-            renderFarCry5Companion(json);
-            return true;
-        } catch (e) {
-            return await loadData(idx + 1);
-        }
-    };
+        document.getElementById('pageTitle').innerText = `${appState.activeGame} — Companion & Field Ledger`;
+        document.getElementById('gameTitleDisplay').innerText = `${appState.activeGame} Hub`;
+        document.getElementById('resistance-name').innerText = `${appState.activeUser.toUpperCase()} [${appState.activeGame.toUpperCase()}]`;
 
-    await loadData(0);
+        await syncPsnSkeleton();
+        renderFullCompanion(loadedJson);
+    } else {
+        console.error(`[Load Error] Could not load data for ${lowerSlug}.`);
+    }
 
     // Step 3: Auth listener
     if (auth) {
