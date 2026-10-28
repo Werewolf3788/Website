@@ -2,8 +2,8 @@
 // * Project: Universal Multi-Game Resistance Companion & Field Ledger
 // * File: game.js
 // * Location: /game/game.js
-// * Build Version: v10.11.0-RESTORED-JSON-LOADER
-// * Deployment Timestamp: 2026-10-27 21:05:00 EDT (America/New_York)
+// * Build Version: v10.12.0-ABSOLUTE-FETCH-ENGINE
+// * Deployment Timestamp: 2026-10-27 21:18:00 EDT (America/New_York)
 // ============================================================================
 
 // Section 1: Authoritative Firebase Credentials & Services
@@ -35,7 +35,7 @@ window.squadProgressCache = {};
 window.appState = {
     activeUser: 'Guest',
     activeEmail: null,
-    platform: 'ps', // 'ps', 'pc', 'xbox', 'steam'
+    platform: 'ps',
     currentUser: null,
     gameData: null,
     psnSkeleton: null,
@@ -94,7 +94,6 @@ window.appState = {
 
         this.psnLinks = buildPsnLinks(this.gameData);
 
-        // 1. Collectibles
         if (this.gameData.collectibles) {
             for (const cKey in this.gameData.collectibles) {
                 const group = this.gameData.collectibles[cKey];
@@ -127,7 +126,6 @@ window.appState = {
             }
         }
 
-        // Perk Magazines
         if (this.gameData.survivalist_magazines) {
             if (!this.collectibles.survivalist_magazines) {
                 this.collectibles.survivalist_magazines = {
@@ -139,7 +137,8 @@ window.appState = {
                 };
             }
             let magTotal = 0;
-            ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
+            const magRegions = Object.keys(this.gameData.survivalist_magazines);
+            magRegions.forEach(reg => {
                 const list = this.gameData.survivalist_magazines[reg] || [];
                 magTotal += list.length;
                 list.forEach((m, idx) => {
@@ -157,9 +156,9 @@ window.appState = {
             this.collectibles.survivalist_magazines.total = magTotal;
         }
 
-        // 2. Prepper Stashes
         if (this.gameData.prepper_stashes) {
-            ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
+            const stashRegions = Object.keys(this.gameData.prepper_stashes);
+            stashRegions.forEach(reg => {
                 const list = this.gameData.prepper_stashes[reg] || [];
                 list.forEach(s => {
                     if (!this.stashes[s.id]) {
@@ -176,7 +175,6 @@ window.appState = {
             });
         }
 
-        // 3. Roster Map
         if (Array.isArray(this.gameData.guns_and_fangs_for_hire)) {
             this.gameData.guns_and_fangs_for_hire.forEach(h => {
                 if (!this.roster[h.id]) {
@@ -191,7 +189,6 @@ window.appState = {
             });
         }
 
-        // 4. Walkthrough Missions Map
         if (Array.isArray(this.gameData.walkthrough_missions)) {
             this.gameData.walkthrough_missions.forEach(m => {
                 if (!this.missions[m.id]) {
@@ -205,7 +202,6 @@ window.appState = {
             });
         }
 
-        // 5. Trophies Map
         const trophySource = (this.psnSkeleton && this.psnSkeleton.trophies) 
             ? Object.values(this.psnSkeleton.trophies) 
             : (this.gameData?.trophies_and_achievements || []);
@@ -660,14 +656,14 @@ function buildPsnLinks(data) {
         }
     }
     if (data.prepper_stashes) {
-        ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
+        Object.keys(data.prepper_stashes).forEach(reg => {
             (data.prepper_stashes[reg] || []).forEach(s => read(s, 'stash', s.id));
         });
     }
     if (Array.isArray(data.guns_and_fangs_for_hire)) data.guns_and_fangs_for_hire.forEach(h => read(h, 'roster', h.id));
     if (Array.isArray(data.walkthrough_missions)) data.walkthrough_missions.forEach(m => read(m, 'mission', m.id));
     if (data.survivalist_magazines) {
-        ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
+        Object.keys(data.survivalist_magazines).forEach(reg => {
             (data.survivalist_magazines[reg] || []).forEach((m, idx) => read(m, 'magazine', `mag_${reg}_${idx}`));
         });
     }
@@ -886,7 +882,6 @@ function counterControlsHtml(group, id, target) {
         </div>`;
 }
 
-// Section 4B: Friend Earner Helpers
 function friendHasEarnedItem(sData, id, type, group) {
     if (!sData || typeof sData !== 'object') return false;
 
@@ -1364,19 +1359,16 @@ function renderFarCry5Companion(data) {
 
     // 8B. Prepper Stashes
     if (data.prepper_stashes) {
-        const regions = [
-            { key: 'holland_valley', label: 'Holland Valley (John)' },
-            { key: 'henbane_river', label: 'Henbane River (Faith)' },
-            { key: 'whitetail_mountains', label: 'Whitetail Mountains (Jacob)' }
-        ];
+        const regions = Object.keys(data.prepper_stashes);
 
-        regions.forEach(reg => {
-            const list = data.prepper_stashes[reg.key];
+        regions.forEach(regKey => {
+            const list = data.prepper_stashes[regKey];
             if (Array.isArray(list) && list.length > 0) {
+                const regLabel = regKey.replace(/_/g, ' ').toUpperCase();
                 html += `
-                <section class="category-section section-collapsed" id="cat-stash-${reg.key}">
+                <section class="category-section section-collapsed" id="cat-stash-${regKey}">
                     <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                        <h2>📦 Prepper Stashes — ${reg.label} ${progressChip(list.length)}</h2>
+                        <h2>📦 Prepper Stashes — ${regLabel} ${progressChip(list.length)}</h2>
                         <span>▾</span>
                     </div>
                     <div class="section-content">
@@ -1562,7 +1554,7 @@ function renderGamePillsFromManifest(gamesList) {
     }).join('');
 }
 
-// Section 10: Sequential Lifecycle & Restored Reliable Loader
+// Section 10: Sequential Lifecycle & Multi-Tier Safe Loader
 document.addEventListener('DOMContentLoaded', async () => {
     await buildUtmNavigation();
 
@@ -1600,49 +1592,65 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Optional: Load pill bar from manifest if it exists
     const timestamp = Date.now();
-    try {
-        const manifestRes = await fetch(`./data/games/index.json?t=${timestamp}`);
-        if (manifestRes.ok) {
-            const manifest = await manifestRes.json();
-            if (manifest && Array.isArray(manifest.games)) {
-                renderGamePillsFromManifest(manifest.games);
-            }
-        }
-    } catch (e) {}
 
-    // Step 1: Sequential Recursive Data Loader
+    // 1. Attempt manifest loading for pill bar
+    const manifestCandidates = [
+        `./data/games/index.json?t=${timestamp}`,
+        `../game/data/games/index.json?t=${timestamp}`,
+        `https://werewolf3788.github.io/Website/game/data/games/index.json?t=${timestamp}`,
+        `https://raw.githubusercontent.com/Werewolf3788/Website/main/game/data/games/index.json?t=${timestamp}`
+    ];
+    for (const mUrl of manifestCandidates) {
+        try {
+            const mRes = await fetch(mUrl);
+            if (mRes.ok) {
+                const manifest = await mRes.json();
+                if (manifest && Array.isArray(manifest.games)) {
+                    renderGamePillsFromManifest(manifest.games);
+                    break;
+                }
+            }
+        } catch (e) {}
+    }
+
+    // 2. Identify target game slug and variants
     const slugParam = new URLSearchParams(window.location.search).get('game');
     const slugAttr = document.body?.dataset?.game;
-    const gameSlug = String(slugParam || slugAttr || 'farcry5').toLowerCase().replace(/[^a-z0-9_-]/g, '') || 'farcry5';
+    const rawSlug = String(slugParam || slugAttr || 'farcry5').trim();
+    const lowerSlug = rawSlug.toLowerCase();
+    const titleSlug = rawSlug.charAt(0).toUpperCase() + rawSlug.slice(1);
 
+    // Multi-tier absolute and relative candidate resolution
     const dataUrls = [
-        `./data/${gameSlug}.json?t=${timestamp}`,
-        `./data/${gameSlug}.json`,
-        `./${gameSlug}.json`,
-        `../game/data/${gameSlug}.json`,
-        `./data/games/${gameSlug}.json`,
-        `//werewolf3788.github.io/Website/game/data/${gameSlug}.json`,
-        `//raw.githubusercontent.com/Werewolf3788/Website/main/game/data/${gameSlug}.json`
+        `./data/${lowerSlug}.json?t=${timestamp}`,
+        `./data/${rawSlug}.json?t=${timestamp}`,
+        `./data/${titleSlug}.json?t=${timestamp}`,
+        `../data/${lowerSlug}.json?t=${timestamp}`,
+        `/game/data/${lowerSlug}.json?t=${timestamp}`,
+        `https://werewolf3788.github.io/Website/game/data/${lowerSlug}.json?t=${timestamp}`,
+        `https://werewolf3788.github.io/Website/game/data/${rawSlug}.json?t=${timestamp}`,
+        `https://raw.githubusercontent.com/Werewolf3788/Website/main/game/data/${lowerSlug}.json?t=${timestamp}`,
+        `https://raw.githubusercontent.com/Werewolf3788/Website/main/game/data/${rawSlug}.json?t=${timestamp}`
     ];
 
     const loadData = async (idx) => {
         if (idx >= dataUrls.length) {
-            console.error(`[Load Error] Could not load JSON file for '${gameSlug}' across any verified path.`);
+            console.error(`[Load Error] Could not load JSON file for '${rawSlug}' across any verified path.`);
             return false;
         }
         try {
-            const res = await fetch(dataUrls[idx]);
+            const urlToFetch = dataUrls[idx];
+            const res = await fetch(urlToFetch);
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const json = await res.json();
             
-            console.log(`[Game Loaded] Successfully fetched ${gameSlug} from: ${dataUrls[idx]}`);
+            console.log(`[Game Loaded] Successfully fetched ${rawSlug} from: ${urlToFetch}`);
 
             appState.gameData = json;
             if (json.game) appState.activeGame = json.game;
             if (json.gameId) appState.activeGameId = json.gameId;
-            else if (gameSlug !== 'farcry5') appState.activeGameId = gameSlug;
+            else if (lowerSlug !== 'farcry5') appState.activeGameId = lowerSlug;
             
             const jsonCommId = json.commId || json.psn_communication_id;
             if (jsonCommId) appState.activePsnCommId = jsonCommId;
@@ -1665,7 +1673,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await loadData(0);
 
-    // Step 2: Auth listener (Triggers only after DOM cards exist)
+    // Step 3: Auth listener
     if (auth) {
         auth.onAuthStateChanged(async (user) => {
             if (user) {
@@ -1710,7 +1718,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Step 3: Squad polling interval
+    // Step 4: Keep squad view fresh
     setInterval(async () => {
         if (document.visibilityState === 'visible' && appState.currentUser && appState.isCloudLoaded) {
             await appState.refreshPsnProgress();
