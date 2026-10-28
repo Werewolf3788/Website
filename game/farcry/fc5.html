@@ -486,7 +486,7 @@
         }
     </style>
 
-    <!-- Firebaseauthoritative SDK v8 (Compat) -->
+    <!-- Firebase Authoritative SDK v8 (Compat) -->
     <script src="//www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="//www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="//www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -614,15 +614,46 @@
     <footer class="site-footer">
         <div>
             <span>Project: Far Cry 5 Resistance Companion & Field Ledger</span> | 
-            <span>Build Version: v10.0.0-COTW-STRUCTURAL-ALIGNMENT</span>
+            <span>Build Version: v10.0.4-COTW-STRUCTURAL-ALIGNMENT</span>
         </div>
         <div>
-            <span>Timestamp (EDT): 2026-10-28 03:08:00</span>
+            <span>Timestamp (EDT): 2026-10-28 03:25:00</span>
         </div>
     </footer>
 
     <!-- Section 7: Companion Logic Engine Script Binding -->
-    <!-- References /game/fc5.js directly via relative protocol -->
-    <script src="./fc5.js"></script>
+    <!-- Lines 348-378: Dynamic Loader targeting /game/farcry/fc5.js with GitHub failovers -->
+    <script>
+    (function() {
+        const candidatePaths = [
+            '/game/farcry/fc5.js',
+            './game/farcry/fc5.js',
+            './farcry/fc5.js',
+            '//raw.githubusercontent.com/Werewolf3788/Website/main/game/farcry/fc5.js',
+            '//werewolf3788.github.io/Website/game/farcry/fc5.js',
+            '/fc5.js'
+        ];
+
+        function tryLoad(idx) {
+            if (idx >= candidatePaths.length) {
+                console.error('[fc5.js Engine]: All script candidate paths failed to load.');
+                const stat = document.getElementById('stat-line');
+                if (stat) stat.innerText = '[System Error] game/farcry/fc5.js could not be loaded from server.';
+                return;
+            }
+            const s = document.createElement('script');
+            s.src = candidatePaths[idx];
+            s.onload = function() {
+                console.log('[fc5.js Engine]: Successfully bound from ' + candidatePaths[idx]);
+            };
+            s.onerror = function() {
+                tryLoad(idx + 1);
+            };
+            document.body.appendChild(s);
+        }
+
+        tryLoad(0);
+    })();
+    </script>
 </body>
 </html>
