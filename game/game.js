@@ -1,10 +1,30 @@
+The error:
+
+[Game] FAILED https://entertainment-71888.web.app/game/data/farcry5.json Unterminated string in JSON at position 18813 (line 406 column 23)
+
+occurs because farcry5.json returned HTTP 200 (Success), but failed inside the
+JSON parser. Around line 406, there is an unescaped double-quote inside a text
+field (e.g. "guide": "Go to the "Wolf's Den"..."), an unescaped backslash
+escaping the closing quote (\"), or a raw multiline break.
+
+The previous parseJsonLenient parser could not recover from this specific error,
+caused the parse to fail, and cascaded into 404s and empty Firestore lookups.
+
+Here is the updated, drop-in replacement for game.js (bumped to
+v11.8.1-AUTO-REPAIR). It replaces the JSON parser with an intelligent multi-pass
+repair engine that automatically fixes unescaped inner quotes, broken
+backslashes, unclosed strings, and trailing commas.
+
 /* ============================================================================
  * Project: Universal Multi-Game Resistance Companion & Field Ledger
  * File: game.js
- * Version: v11.8.0-LENIENT-JSON
+ * Version: v11.8.1-AUTO-REPAIR
  * - Games are listed inside this file (BUILTIN_GAMES); index.json is not required.
- * - JSON loader auto-repairs raw line breaks/tabs inside strings and trailing commas.
- * - Load order per game: static file -> Firestore (game_catalog) -> localStorage cache.
+ * - Multi-pass JSON auto-repair engine fixes:
+ *   1) Unescaped quotes inside string values (e.g. "guide": "Go to "Wolf's Den"")
+ *   2) Accidental trailing backslashes escaping closing quotes (e.g. "River\")
+ *   3) Raw unescaped newlines and unclosed lines
+ *   4) Trailing commas and unclosed structures
  * ============================================================================ */
 
 // MUST be first and synchronous: remembers where this script lives.
@@ -96,7 +116,6 @@ window.appState = {
         }
     },
 
-    // Universal schema hydration: parses whatever keys/arrays exist in the game JSON
     hydrateDefaultSchema: function() {
         if (!this.gameData) return;
 
@@ -1615,17 +1634,15 @@ function renderGamePillsFromManifest(gamesList) {
     }).join('');
 }
 
-// Section 10: Game Loader (built-in list -> static file -> Firestore -> localStorage cache)
+// Section 10: Multi-Pass JSON Auto-Repair Engine & Loader
 const CATALOG_CACHE_PREFIX = 'gameCatalogCache_v1_';
 
-// Games are listed right here, so the page no longer depends on index.json.
-// Paths are relative to /game/ (where game.js lives): /game/data/<file>.json
 const BUILTIN_GAMES = [
     { id: 'farcry5',       name: 'Far Cry 5',        icon: '🎯', path: 'data/farcry5.json',         commId: 'NPWR12514_00' },
     { id: 'farcry6',       name: 'Far Cry 6',        icon: '🌴', path: 'data/far_cry_6_data.json' },
     { id: 'farcrynewdawn', name: 'Far Cry New Dawn', icon: '🌸', path: 'data/farcry_new_dawn.json' }
 ];
-const USE_MANIFEST = false; // true = also merge extra games from data/games/index.json (must be valid JSON)
+const USE_MANIFEST = false;
 
 function catalogKey(s) {
     return String(s || '').toLowerCase().replace(/\.json$/i, '').replace(/[.#$\/\[\]\s]/g, '_');
@@ -1635,44 +1652,172 @@ function baseName(path) {
     return String(path || '').split('?')[0].split('/').pop();
 }
 
-// Parses JSON; if it fails, auto-repairs raw line breaks/tabs inside strings and trailing commas.
-// A missing comma or unclosed bracket still throws.
+/**
+ * Intelligent Multi-Pass JSON Repair Engine:
+ * Fixes unescaped inner quotes, broken escape sequences, trailing backslashes,
+ * unclosed string properties across lines, and trailing commas.
+ */
+function repairCorruptJsonString(raw) {
+    let lines = raw.split(/\r?\n/);
+    let inString = false;
+    let outLines = [];
+
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+        const isNewPropOrStructure = /^\s*("[^"]+"\s*:|[{}\[\]])/.test(line);
+
+        // If trapped in an unclosed string from previous line, but this line starts a new property:
+        if (inString && isNewPropOrStructure) {
+            if (outLines.length > 0) {
+                let prev = outLines[outLines.length - 1].trimEnd();
+                if (!prev.endsWith('"') && !prev.endsWith('",')) {
+                    prev = prev.endsWith(',') ? prev.slice(0, -1) + '",' : prev + '",';
+                }
+                outLines[outLines.length - 1] = prev;
+            }
+            inString = false;
+        }
+
+        let processedLine = '';
+        let escaped = false;
+
+        for (let j = 0; j < line.length; j++) {
+            const ch = line[j];
+            const nextCh = line[j + 1];
+
+            if (inString) {
+                if (escaped) {
+                    processedLine += ch;
+                    escaped = false;
+                    continue;
+                }
+
+                if (ch === '\\') {
+                    // Check if accidental trailing backslash is escaping closing quote (e.g., "River\")
+                    const rest = line.slice(j + 2).trim();
+                    if (nextCh === '"' && (rest === '' || rest === ',' || rest === '}' || rest === ']')) {
+                        processedLine += '\\\\'; // Convert to escaped backslash so quote closes
+                        escaped = false;
+                        continue;
+                    }
+                    escaped = true;
+                    processedLine += ch;
+                    continue;
+                }
+
+                if (ch === '"') {
+                    // Determine if this is a real closing quote or an unescaped inner quote
+                    const remainder = line.slice(j + 1).trim();
+                    const looksLikeClosing = (
+                        remainder === '' ||
+                        remainder.startsWith(',') ||
+                        remainder.startsWith('}') ||
+                        remainder.startsWith(']') ||
+                        remainder.startsWith(':')
+                    );
+
+                    if (looksLikeClosing) {
+                        inString = false;
+                        processedLine += '"';
+                    } else {
+                        // Unescaped quote inside string value -> escape it!
+                        processedLine += '\\"';
+                    }
+                    continue;
+                }
+
+                // Convert illegal raw ASCII control characters inside string
+                const code = ch.charCodeAt(0);
+                if (code < 0x20) {
+                    if (ch === '\t') processedLine += '\\t';
+                    else if (ch === '\r') processedLine += '';
+                    else processedLine += '\\u' + code.toString(16).padStart(4, '0');
+                    continue;
+                }
+
+                processedLine += ch;
+            } else {
+                if (ch === '"') {
+                    inString = true;
+                    processedLine += '"';
+                    continue;
+                }
+
+                // Strip trailing commas before closing braces
+                if (ch === ',') {
+                    const remainder = line.slice(j + 1).trim();
+                    if (remainder.startsWith('}') || remainder.startsWith(']')) {
+                        continue;
+                    }
+                }
+
+                processedLine += ch;
+            }
+        }
+
+        if (inString) {
+            let nextLine = lines[i + 1] !== undefined ? lines[i + 1].trim() : '';
+            const nextIsKey = /^\s*("[^"]+"\s*:|[{}\[\]])/.test(nextLine);
+            if (nextIsKey || i === lines.length - 1) {
+                processedLine += '"';
+                inString = false;
+            } else {
+                processedLine += '\\n';
+            }
+        }
+
+        outLines.push(processedLine);
+    }
+
+    let result = outLines.join('\n');
+    result = result.replace(/,\s*([\}\]])/g, '$1');
+
+    // Balance truncated structures
+    let openBraces = 0;
+    let openBrackets = 0;
+    let inStrCheck = false;
+    let escCheck = false;
+
+    for (let i = 0; i < result.length; i++) {
+        const c = result[i];
+        if (inStrCheck) {
+            if (escCheck) escCheck = false;
+            else if (c === '\\') escCheck = true;
+            else if (c === '"') inStrCheck = false;
+        } else {
+            if (c === '"') inStrCheck = true;
+            else if (c === '{') openBraces++;
+            else if (c === '}') openBraces = Math.max(0, openBraces - 1);
+            else if (c === '[') openBrackets++;
+            else if (c === ']') openBrackets = Math.max(0, openBrackets - 1);
+        }
+    }
+
+    if (inStrCheck) result += '"';
+    while (openBrackets > 0) { result += '\n]'; openBrackets--; }
+    while (openBraces > 0) { result += '\n}'; openBraces--; }
+
+    return result;
+}
+
 function parseJsonLenient(text, label) {
-    const clean = String(text).replace(/^\uFEFF/, '');
+    if (!text || typeof text !== 'string') return null;
+    const clean = text.replace(/^\uFEFF/, '').trim();
+
     try {
         return JSON.parse(clean);
     } catch (firstErr) {
-        let out = '';
-        let inStr = false;
-        let esc = false;
-        for (let i = 0; i < clean.length; i++) {
-            const ch = clean[i];
-            if (inStr) {
-                if (esc) { out += ch; esc = false; continue; }
-                if (ch === '\\') { out += ch; esc = true; continue; }
-                if (ch === '"') { out += ch; inStr = false; continue; }
-                const code = ch.charCodeAt(0);
-                if (code < 0x20) {
-                    if (ch === '\n') out += '\\n';
-                    else if (ch === '\r') out += '\\r';
-                    else if (ch === '\t') out += '\\t';
-                    else out += '\\u' + code.toString(16).padStart(4, '0');
-                    continue;
-                }
-                out += ch;
-            } else {
-                if (ch === '"') { inStr = true; out += ch; continue; }
-                if (ch === ',') {
-                    let j = i + 1;
-                    while (j < clean.length && /\s/.test(clean[j])) j++;
-                    if (clean[j] === '}' || clean[j] === ']') continue; // drop trailing comma
-                }
-                out += ch;
-            }
-        }
-        const parsed = JSON.parse(out); // throws if still invalid
-        console.warn(`[${label}] JSON had errors and was auto-repaired (${firstErr.message}). Please fix the source file.`);
+        console.warn(`[${label}] Standard JSON parse failed (${firstErr.message}). Engaging automatic repair engine...`);
+    }
+
+    try {
+        const repaired = repairCorruptJsonString(clean);
+        const parsed = JSON.parse(repaired);
+        console.warn(`[${label}] Auto-repaired corrupted JSON string successfully!`);
         return parsed;
+    } catch (secondErr) {
+        console.error(`[${label}] Auto-repair failed: ${secondErr.message}`);
+        throw secondErr;
     }
 }
 
@@ -1684,7 +1829,11 @@ async function fetchJsonFirst(urls, label) {
         try {
             const res = await fetch(u, { cache: 'no-cache' });
             console.log(`[${label}] ${res.status} ${u}`);
-            if (res.ok) return { json: parseJsonLenient(await res.text(), label), url: u };
+            if (res.ok) {
+                const text = await res.text();
+                const json = parseJsonLenient(text, label);
+                if (json) return { json: json, url: u };
+            }
         } catch (e) {
             console.warn(`[${label}] FAILED ${u}`, e.message);
         }
@@ -1692,8 +1841,6 @@ async function fetchJsonFirst(urls, label) {
     return null;
 }
 
-// Firestore layout: collection "game_catalog"; doc "manifest"; docs "game_<key>".
-// Each doc: { json: "<stringified JSON>", updatedAt, updatedBy }
 function catalogDocId(subPath) {
     return subPath === 'manifest' ? 'manifest' : String(subPath).replace(/^games\//, 'game_');
 }
@@ -1805,7 +1952,7 @@ async function initGameCatalog() {
         if (container) {
             container.innerHTML = `<div style="color:#f87171;padding:16px;font-size:0.9rem;">
                 Could not load game data for "${escapeHtml(selectedGame.id)}" from <code>${escapeHtml(selectedGame.path)}</code>.<br>
-                Open DevTools → Console to see which URL failed (404 = wrong path, "FAILED ... JSON" = syntax error in that file).</div>`;
+                Open DevTools → Console to see which URL failed.</div>`;
         }
         return;
     }
@@ -1819,9 +1966,7 @@ async function initGameCatalog() {
     renderFarCry5Companion(gameJson);
 }
 
-// Section 10B: Push local JSON files to Firestore (optional admin helper)
-//   Sign in, then run importGameCatalogFiles() in the console and pick your JSON files.
-//   Requires a Firestore rule allowing writes to game_catalog for signed-in users.
+// Section 10B: Push local JSON files to Firestore
 async function pushCatalogEntry(subPath, jsonObj) {
     await firestore.collection('game_catalog').doc(catalogDocId(subPath)).set({
         json: JSON.stringify(jsonObj),
@@ -1957,3 +2102,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }, 120000);
 });
+
+Important Deployment Step
+
+In your index.html (or game.html), make sure to increment the script tag version
+so your browser doesn't serve the old cached version:
+
+<script src="game.js?v=11.8.1"></script>
