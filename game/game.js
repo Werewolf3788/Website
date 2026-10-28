@@ -2,9 +2,13 @@
  * Project: Universal Multi-Game Resistance Companion & Field Ledger
  * File: game.js
  * Location: /game/game.js
- * Version: 11.2.0
- * Build Timestamp: 2026-10-27 22:18:00 EDT (America/New_York)
+ * Version: 11.3.0
+ * Build Timestamp: 2026-10-27 22:29:00 EDT (America/New_York)
  * Primary Backend: entertainment-71888
+ * Change Log (v11.3.0):
+ *   - DIRECT RAW GITHUB LOADER: Fetches farcry5.json directly from your GitHub repo raw URL.
+ *   - FULL CATALOG RENDERING: Renders walkthroughs, stashes, collectibles, hire roster,
+ *     survivalist magazines, weapons armory, challenges, and easter eggs.
  * ============================================================================ */
 
 // Section 1: Cloud Credentials & Core Initializers
@@ -1179,7 +1183,6 @@ window.appState.syncFriendsProgress = async function() {
     }
 };
 
-// Section 6: Dynamic Top Navigation Bar (/utm_links)
 async function buildUtmNavigation() {
     const navContainer = document.getElementById('dynamicNavLinks');
     if (!navContainer || !rtdb) return;
@@ -1274,7 +1277,6 @@ async function buildUtmNavigation() {
     }
 }
 
-// Section 7: PSN Game Skeleton Ingestion
 async function syncPsnSkeleton() {
     if (!rtdb || !appState.activePsnCommId) return;
     try {
@@ -1592,7 +1594,7 @@ function renderFullCompanion(data) {
         </section>`;
     }
 
-    // 8I. PSN Official Trophies & Achievements
+    // 8I. PSN Trophies
     const trophiesList = (appState.psnSkeleton && appState.psnSkeleton.trophies) ? Object.values(appState.psnSkeleton.trophies) : (data.trophies_and_achievements || []);
 
     if (Array.isArray(trophiesList) && trophiesList.length > 0) {
@@ -1681,16 +1683,13 @@ function renderGamePillsFromManifest(gamesList) {
     }).join('');
 }
 
-// Section 9: Resilient Multi-Tier Catalog & Direct Fallback
+// Section 9: Direct Raw GitHub Loader
 async function loadTargetGameJson(slug) {
     const timestamp = Date.now();
     const candidateUrls = [
-        `./data/${slug}.json?t=${timestamp}`,
-        `./data/games/${slug}.json?t=${timestamp}`,
-        `../data/${slug}.json?t=${timestamp}`,
-        `https://werewolf3788.github.io/Website/game/data/${slug}.json?t=${timestamp}`,
         `https://raw.githubusercontent.com/Werewolf3788/Website/main/game/data/${slug}.json?t=${timestamp}`,
-        `https://raw.githubusercontent.com/Werewolf3788/Website/main/data/${slug}.json?t=${timestamp}`
+        `https://raw.githubusercontent.com/Werewolf3788/Website/main/data/${slug}.json?t=${timestamp}`,
+        `./data/${slug}.json?t=${timestamp}`
     ];
 
     for (const u of candidateUrls) {
@@ -1698,7 +1697,7 @@ async function loadTargetGameJson(slug) {
             const res = await fetch(u);
             if (res.ok) {
                 const data = await res.json();
-                console.log(`[Game Data] Successfully loaded from ${u}`);
+                console.log(`[Game Data] Successfully loaded from GitHub Raw: ${u}`);
                 return data;
             }
         } catch (e) {}
@@ -1749,14 +1748,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 1. Load Dynamic Manifest for Navigation Pills
     try {
-        const mRes = await fetch(`./data/games/index.json?t=${timestamp}`);
+        const mRes = await fetch(`https://raw.githubusercontent.com/Werewolf3788/Website/main/game/data/games/index.json?t=${timestamp}`);
         if (mRes.ok) {
             const manifest = await mRes.json();
             if (manifest?.games) renderGamePillsFromManifest(manifest.games);
         }
     } catch (e) {}
 
-    // 2. Resolve Active Game File
+    // 2. Resolve Active Game File via Raw GitHub
     const slugParam = new URLSearchParams(window.location.search).get('game');
     const slugAttr = document.body?.dataset?.game;
     const rawSlug = String(slugParam || slugAttr || 'farcry5').trim();
