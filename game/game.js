@@ -2,13 +2,14 @@
 // * Project: Universal Multi-Game Resistance Companion & Field Ledger
 // * File: game.js
 // * Location: /game/game.js
-// * Build Version: v10.9.0-DYNAMIC-MANIFEST-CATALOG
-// * Change Log (v10.9.0):
-// *   - FIX: Resolved 'require is not defined' by decoupling backend psn.js from frontend client.
-// *   - NEW: initGameCatalog() dynamically loads index manifest (./data/games/index.json).
-// *   - NEW: renderGamePillsFromManifest() auto-populates #gamePillsBar from verified game items.
-// *   - RETAIN: Full PSN live trophy overrides, friends ledger sync, and Firebase RTDB/Firestore bindings.
-// * Deployment Timestamp: 2026-10-27 19:17:00 EDT (America/New_York)
+// * Build Version: v10.10.0-UNIFIED-MANIFEST-ROUTER
+// * Change Log (v10.10.0):
+// *   - NEW: initGameCatalog() targets game/data/games/index.json as authoritative catalog manifest.
+// *   - NEW: Auto-populates dynamic #gamePillsBar with active pill states from manifest items.
+// *   - FIX: Multi-tier fallback paths eliminate 404s across GitHub Pages and Firebase Hosting.
+// *   - RETAIN: Zero dropped lines across Firebase RTDB/Firestore, PSN live trophy tracking,
+// *     co-op friend ledger overlays, progressive duration, and counter card management.
+// * Deployment Timestamp: 2026-10-27 19:58:00 EDT (America/New_York)
 // ============================================================================
 
 // Section 1: Authoritative Firebase Credentials & Services
@@ -1549,61 +1550,94 @@ function escapeHtml(str) {
 async function initGameCatalog() {
     const manifestUrls = [
         './data/games/index.json',
-        './data/index.json',
         '../game/data/games/index.json',
-        '/Website/game/data/games/index.json'
+        '/game/data/games/index.json',
+        '/Website/game/data/games/index.json',
+        '//werewolf3788.github.io/Website/game/data/games/index.json',
+        '//raw.githubusercontent.com/Werewolf3788/Website/main/game/data/games/index.json'
     ];
 
     let manifest = null;
+    let manifestLoadedFrom = '';
+
     for (const url of manifestUrls) {
         try {
             const res = await fetch(url);
             if (res.ok) {
                 manifest = await res.json();
+                manifestLoadedFrom = url;
                 break;
             }
         } catch (e) {}
     }
 
-    if (!manifest || !Array.isArray(manifest.games)) {
-        console.error('[Manifest Error] Could not load games index manifest.');
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetSlug = (urlParams.get('game') || manifest?.defaultGame || 'farcry5').toLowerCase();
+
+    let selectedEntry = null;
+
+    if (manifest && Array.isArray(manifest.games)) {
+        renderGamePillsFromManifest(manifest.games);
+        selectedEntry = manifest.games.find(g => g.id.toLowerCase() === targetSlug) || manifest.games[0];
+        console.log(`[Manifest Loaded] Loaded index manifest from: ${manifestLoadedFrom}`);
+    }
+
+    const candidatePaths = selectedEntry?.path ? [selectedEntry.path] : [];
+    candidatePaths.push(
+        `./data/games/${targetSlug}.json`,
+        `../game/data/games/${targetSlug}.json`,
+        `/game/data/games/${targetSlug}.json`,
+        `/Website/game/data/games/${targetSlug}.json`,
+        `./data/${targetSlug}.json`,
+        `../game/data/${targetSlug}.json`,
+        `//werewolf3788.github.io/Website/game/data/games/${targetSlug}.json`,
+        `//werewolf3788.github.io/Website/game/data/${targetSlug}.json`,
+        `//raw.githubusercontent.com/Werewolf3788/Website/main/game/data/games/${targetSlug}.json`,
+        `//raw.githubusercontent.com/Werewolf3788/Website/main/game/data/${targetSlug}.json`
+    );
+
+    let gameJson = null;
+    let resolvedPath = '';
+
+    for (const p of candidatePaths) {
+        if (!p) continue;
+        try {
+            const res = await fetch(p);
+            if (res.ok) {
+                gameJson = await res.json();
+                resolvedPath = p;
+                break;
+            }
+        } catch (e) {}
+    }
+
+    if (!gameJson) {
+        console.error(`[Load Error] Failed to fetch game JSON for '${targetSlug}' across all candidate paths.`);
         return;
     }
 
-    renderGamePillsFromManifest(manifest.games);
+    console.log(`[Game Loaded] Successfully fetched ${gameJson.game || targetSlug} from: ${resolvedPath}`);
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const targetSlug = (urlParams.get('game') || 'farcry5').toLowerCase();
+    appState.gameData = gameJson;
+    appState.activeGame = gameJson.game || selectedEntry?.name || "Far Cry 5";
+    appState.activeGameId = gameJson.gameId || selectedEntry?.id || targetSlug;
+    appState.activePsnCommId = gameJson.commId || gameJson.psn_communication_id || selectedEntry?.commId || "NPWR12514_00";
+    if (gameJson.activeMission) appState.activeMission = gameJson.activeMission;
 
-    const selectedGame = manifest.games.find(g => g.id.toLowerCase() === targetSlug) || manifest.games[0];
-
-    try {
-        const gameRes = await fetch(selectedGame.path);
-        if (!gameRes.ok) throw new Error(`HTTP ${gameRes.status}`);
-        const gameJson = await gameRes.json();
-
-        appState.gameData = gameJson;
-        appState.activeGame = gameJson.game || selectedGame.name;
-        appState.activeGameId = gameJson.gameId || selectedGame.id;
-        appState.activePsnCommId = gameJson.commId || selectedGame.commId || null;
-
-        await syncPsnSkeleton();
-        renderFarCry5Companion(gameJson);
-    } catch (err) {
-        console.error(`[Load Error] Failed to fetch game file at ${selectedGame.path}:`, err);
-    }
+    await syncPsnSkeleton();
+    renderFarCry5Companion(gameJson);
 }
 
 function renderGamePillsFromManifest(gamesList) {
     const pillBar = document.getElementById('gamePillsBar');
     if (!pillBar) return;
 
-    const currentSlug = new URLSearchParams(window.location.search).get('game') || 'farcry5';
+    const currentSlug = (new URLSearchParams(window.location.search).get('game') || 'farcry5').toLowerCase();
 
     pillBar.innerHTML = gamesList.map(g => {
-        const isActive = g.id.toLowerCase() === currentSlug.toLowerCase();
+        const isActive = g.id.toLowerCase() === currentSlug;
         return `
-            <a href="?game=${g.id}" class="game-pill ${isActive ? 'active' : ''}" style="text-decoration:none;">
+            <a href="?game=${encodeURIComponent(g.id)}" class="game-pill ${isActive ? 'active' : ''}" style="text-decoration:none;">
                 <span>${g.icon || '🎮'}</span>
                 <span>${escapeHtml(g.name)}</span>
             </a>
