@@ -1,11 +1,20 @@
 /* ============================================================================
  * Project: Universal Multi-Game Resistance Companion & Field Ledger
  * File: game.js
- * Location: /game/game.js
- * Version: v11.5.0-AUTH-SYNC-UNIVERSAL-JSON
- * Build Timestamp: 2026-10-27 22:50:00 EDT (America/New_York)
- * Primary Backend: entertainment-71888
+ * Version: v11.6.0-CATALOG-FALLBACK
+ * Changes vs 11.5.0:
+ *   - Catalog loader: static files (resolved from script location) -> Firestore
+ *     (game_catalog) -> localStorage cache. Every attempt is logged to the console.
+ *   - importGameCatalogFiles(): pick index.json + game JSONs from your computer and
+ *     push them to Firebase (stored as strings, so RTDB key/array rules can't break them).
+ *   - Minor fixes: custom_ items resolve correctly, survivalist_magazines not duplicated
+ *     into custom state.
  * ============================================================================ */
+
+// MUST be first and synchronous: remembers where this script lives.
+const SCRIPT_BASE = (document.currentScript && document.currentScript.src)
+    ? new URL('.', document.currentScript.src).href
+    : new URL('.', location.href).href;
 
 // Section 1: Cloud Credentials & Core Initializers
 const firebaseConfig = {
@@ -46,7 +55,7 @@ window.appState = {
     psnLinks: [],
     psnLive: null,
     isCloudLoaded: false,
-    
+
     activeGame: "Far Cry 5",
     activeGameId: "FarCry5",
     activePsnCommId: "NPWR12514_00",
@@ -72,7 +81,7 @@ window.appState = {
         if (!newPlatform) return;
         this.platform = newPlatform.toLowerCase();
         this.isCloudLoaded = false;
-        
+
         const platformSelector = document.getElementById('platformSelect') || document.getElementById('platformSelector');
         if (platformSelector && platformSelector.value !== this.platform) {
             platformSelector.value = this.platform;
@@ -83,7 +92,7 @@ window.appState = {
             const displayName = this.currentUser ? this.activeUser.toUpperCase() : 'GUEST';
             nameEl.innerText = `${displayName} [${this.platform.toUpperCase()}]`;
         }
-        
+
         await this.loadProgress();
         await this.refreshPsnProgress();
         if (this.currentUser) {
@@ -91,7 +100,7 @@ window.appState = {
         }
     },
 
-    // Truly Universal Schema Hydration: parses whatever keys/arrays exist in your JSON
+    // Universal schema hydration: parses whatever keys/arrays exist in the game JSON
     hydrateDefaultSchema: function() {
         if (!this.gameData) return;
 
@@ -99,7 +108,7 @@ window.appState = {
         if (!this.custom) this.custom = {};
 
         const data = this.gameData;
-        const systemKeys = new Set(['game', 'gameId', 'commId', 'psn_communication_id', 'activeMission', 'version', 'ranks', 'trophies_and_achievements']);
+        const systemKeys = new Set(['game', 'gameId', 'commId', 'psn_communication_id', 'activeMission', 'version', 'ranks', 'trophies_and_achievements', 'survivalist_magazines']);
 
         Object.entries(data).forEach(([catKey, catValue]) => {
             if (systemKeys.has(catKey) || !catValue) return;
@@ -177,7 +186,6 @@ window.appState = {
                     }
                 });
             } else {
-                // Any custom category added to JSON (weapons, challenges, easter eggs, etc.)
                 if (!this.custom[catKey]) this.custom[catKey] = {};
                 if (Array.isArray(catValue)) {
                     catValue.forEach((it, idx) => {
@@ -210,8 +218,8 @@ window.appState = {
             }
         });
 
-        const trophySource = (this.psnSkeleton && this.psnSkeleton.trophies) 
-            ? Object.values(this.psnSkeleton.trophies) 
+        const trophySource = (this.psnSkeleton && this.psnSkeleton.trophies)
+            ? Object.values(this.psnSkeleton.trophies)
             : (this.gameData?.trophies_and_achievements || []);
 
         if (Array.isArray(trophySource)) {
@@ -255,9 +263,7 @@ window.appState = {
         });
 
         Object.values(this.missions).forEach(m => {
-            if (m && m.completed) {
-                calculatedRP += 600;
-            }
+            if (m && m.completed) calculatedRP += 600;
         });
 
         if (this.collectibles) {
@@ -331,7 +337,7 @@ window.appState = {
         this.trophies_earned = payload.trophies_earned || 0;
         this.trophies_total = payload.trophies_total || 51;
         this.trophies_percent = payload.trophies_percent || 0;
-        
+
         if (payload.collectibles) {
             for (const cKey in payload.collectibles) {
                 if (!this.collectibles[cKey]) {
@@ -380,12 +386,9 @@ window.appState.saveProgress = function() {
     const payload = this.buildPayload();
     if (firestore) {
         const docRef = firestore
-            .collection("users")
-            .doc(friendCode)
-            .collection("platform")
-            .doc(this.platform)
-            .collection("progress")
-            .doc(this.activeGameId);
+            .collection("users").doc(friendCode)
+            .collection("platform").doc(this.platform)
+            .collection("progress").doc(this.activeGameId);
 
         docRef.set(payload, { merge: true }).then(() => {
             this.updateStatus(`[Cloud Saved] users/${friendCode}/platform/${this.platform}/progress/${this.activeGameId}`);
@@ -426,22 +429,16 @@ window.appState.loadProgress = async function() {
 
         try {
             let doc = await firestore
-                .collection("users")
-                .doc(friendCode)
-                .collection("platform")
-                .doc(this.platform)
-                .collection("progress")
-                .doc(this.activeGameId)
+                .collection("users").doc(friendCode)
+                .collection("platform").doc(this.platform)
+                .collection("progress").doc(this.activeGameId)
                 .get();
 
             if (!doc.exists && emailKey) {
                 const legacyDoc = await firestore
-                    .collection("users")
-                    .doc(emailKey)
-                    .collection("platform")
-                    .doc(this.platform)
-                    .collection("progress")
-                    .doc(this.activeGameId)
+                    .collection("users").doc(emailKey)
+                    .collection("platform").doc(this.platform)
+                    .collection("progress").doc(this.activeGameId)
                     .get();
 
                 if (legacyDoc.exists) {
@@ -451,8 +448,7 @@ window.appState.loadProgress = async function() {
             }
 
             if (doc.exists) {
-                const cloudData = doc.data();
-                this.applyPayload(cloudData);
+                this.applyPayload(doc.data());
                 this.isCloudLoaded = true;
                 this.updateStatus(`[Cloud Restored] Authoritative ledger loaded [${this.platform.toUpperCase()}].`);
             } else {
@@ -674,14 +670,14 @@ function buildPsnLinks(data) {
         }
     }
     if (data.prepper_stashes) {
-        ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
+        Object.keys(data.prepper_stashes).forEach(reg => {
             (data.prepper_stashes[reg] || []).forEach(s => read(s, 'stash', s.id));
         });
     }
     if (Array.isArray(data.guns_and_fangs_for_hire)) data.guns_and_fangs_for_hire.forEach(h => read(h, 'roster', h.id));
     if (Array.isArray(data.walkthrough_missions)) data.walkthrough_missions.forEach(m => read(m, 'mission', m.id));
     if (data.survivalist_magazines) {
-        ['holland_valley', 'henbane_river', 'whitetail_mountains'].forEach(reg => {
+        Object.keys(data.survivalist_magazines).forEach(reg => {
             (data.survivalist_magazines[reg] || []).forEach((m, idx) => read(m, 'magazine', `mag_${reg}_${idx}`));
         });
     }
@@ -787,6 +783,7 @@ window.appState.getItemRef = function(type, id, group) {
     if (type === 'collectible') return group ? this.collectibles[group]?.items?.[id] : undefined;
     if (type === 'magazine') return this.collectibles.survivalist_magazines?.items?.[id];
     if (type === 'trophy') return this.trophies[id];
+    if (type && type.startsWith('custom_')) return this.custom[type.replace('custom_', '')]?.[id];
     return this.missions[id];
 };
 
@@ -858,7 +855,7 @@ function updateCounterCard(card, ref, locked) {
     const label = card.querySelector('.counter-label');
 
     if (input) {
-        if (typeof document.activeElement === 'undefined' || document.activeElement !== input) input.value = count;
+        if (document.activeElement !== input) input.value = count;
         input.disabled = !!locked;
     }
     if (fill) fill.style.width = `${target > 0 ? Math.round((count / target) * 100) : 0}%`;
@@ -914,12 +911,11 @@ function friendHasEarnedItem(sData, id, type, group) {
         }
         return false;
     } else if (type === 'magazine') {
-        if (sData.collectibles?.survivalist_magazines?.items?.[id]) {
-            return !!(sData.collectibles.survivalist_magazines.items[id].collected);
-        }
-        return false;
+        return !!(sData.collectibles?.survivalist_magazines?.items?.[id]?.collected);
     } else if (type === 'trophy') {
         return !!(sData.trophies?.[id]?.earned);
+    } else if (type && type.startsWith('custom_')) {
+        return !!(sData.custom?.[type.replace('custom_', '')]?.[id]?.completed);
     }
     return !!(sData.missions?.[id]?.completed);
 }
@@ -964,9 +960,7 @@ window.appState.fetchUserProfile = async function() {
         this.myPsnAccountId = userProfile.psn_account_id || userProfile.accountId || null;
 
         const display = document.getElementById('myFriendCodeDisplay');
-        if (display && this.myFriendCode) {
-            display.innerText = this.myFriendCode;
-        }
+        if (display && this.myFriendCode) display.innerText = this.myFriendCode;
     } catch (e) {
         console.warn("[User Profile Fetch Error]:", e);
     }
@@ -992,12 +986,9 @@ function buildPlatformCandidates(friendPrimaryPlatform, viewerPlatform) {
 async function fetchFriendProgressDoc(friendCode, platforms) {
     for (const plat of platforms) {
         const doc = await firestore
-            .collection("users")
-            .doc(friendCode)
-            .collection("platform")
-            .doc(plat)
-            .collection("progress")
-            .doc(appState.activeGameId)
+            .collection("users").doc(friendCode)
+            .collection("platform").doc(plat)
+            .collection("progress").doc(appState.activeGameId)
             .get();
         if (doc.exists) return { data: doc.data() || {}, platform: plat };
     }
@@ -1066,9 +1057,7 @@ function buildFriendLedger(friendData, psnLive) {
     const ledger = Object.assign({}, friendData || {});
     if (!ledger.trophies || typeof ledger.trophies !== 'object') ledger.trophies = {};
 
-    if (psnLive) {
-        applyPsnLive(ledger, psnLive, appState.activeGameId, appState.psnLinks);
-    }
+    if (psnLive) applyPsnLive(ledger, psnLive, appState.activeGameId, appState.psnLinks);
 
     const total = Object.keys(appState.trophies).length || appState.trophies_total || 51;
     const earned = Object.values(ledger.trophies).filter(t => t && t.earned).length;
@@ -1261,20 +1250,10 @@ async function buildUtmNavigation() {
 
         const groupCards = Object.entries(groups).map(([gName, items]) => {
             items.sort((a, b) => a.rowNumber - b.rowNumber);
-            return {
-                title: gName,
-                isGroup: true,
-                items: items,
-                sortWeight: Math.min(...items.map(i => i.rowNumber))
-            };
+            return { title: gName, isGroup: true, items: items, sortWeight: Math.min(...items.map(i => i.rowNumber)) };
         });
 
-        const standaloneCards = standalone.map(item => ({
-            ...item,
-            isGroup: false,
-            sortWeight: item.rowNumber
-        }));
-
+        const standaloneCards = standalone.map(item => ({ ...item, isGroup: false, sortWeight: item.rowNumber }));
         const unifiedMenu = [...groupCards, ...standaloneCards].sort((a, b) => a.sortWeight - b.sortWeight);
 
         let navHtml = '';
@@ -1359,7 +1338,7 @@ function renderFarCry5Companion(data) {
             <div class="section-content">
                 <div class="trophy-grid">
                     ${data.walkthrough_missions.map(item => `
-                        <div class="trophy-card fc5-item-card" data-id="${item.id}" data-type="mission">
+                        <div class="trophy-card fc5-item-card" data-id="${escapeHtml(String(item.id))}" data-type="mission">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                 <div>
                                     <span class="trophy-rank rank-gold">${escapeHtml(item.region || 'Hope County')}</span>
@@ -1390,7 +1369,7 @@ function renderFarCry5Companion(data) {
                     <div class="section-content">
                         <div class="trophy-grid">
                             ${list.map(s => `
-                                <div class="trophy-card fc5-item-card" data-id="${s.id}" data-type="stash">
+                                <div class="trophy-card fc5-item-card" data-id="${escapeHtml(String(s.id))}" data-type="stash">
                                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                         <div>
                                             <span class="trophy-rank rank-silver">${escapeHtml(s.required_gear || 'No Gear Required')}</span>
@@ -1427,7 +1406,7 @@ function renderFarCry5Companion(data) {
                             ${group.items.map(item => {
                                 const counterTarget = resolveItemTarget(item);
                                 return `
-                                <div class="trophy-card fc5-item-card" data-id="${item.id}" data-type="collectible" data-group="${cKey}"${counterTarget > 0 ? ` data-target="${counterTarget}"` : ''}>
+                                <div class="trophy-card fc5-item-card" data-id="${escapeHtml(String(item.id))}" data-type="collectible" data-group="${cKey}"${counterTarget > 0 ? ` data-target="${counterTarget}"` : ''}>
                                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                         <div>
                                             <span class="trophy-rank rank-bronze">${escapeHtml(item.region || group.region || 'Hope County')}</span>
@@ -1460,7 +1439,7 @@ function renderFarCry5Companion(data) {
             <div class="section-content">
                 <div class="trophy-grid">
                     ${data.guns_and_fangs_for_hire.map(h => `
-                        <div class="trophy-card fc5-item-card" data-id="${h.id}" data-type="roster">
+                        <div class="trophy-card fc5-item-card" data-id="${escapeHtml(String(h.id))}" data-type="roster">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                 <div>
                                     <span class="trophy-rank rank-platinum">${escapeHtml(h.type)}</span>
@@ -1480,7 +1459,7 @@ function renderFarCry5Companion(data) {
         </section>`;
     }
 
-    // 5. Universal Dynamic Renderer for ANY New JSON Category (Weapons, Challenges, Secrets, etc.)
+    // 5. Universal renderer for ANY other JSON category
     const systemKeys = new Set(['game', 'gameId', 'commId', 'psn_communication_id', 'activeMission', 'version', 'ranks', 'collectibles', 'prepper_stashes', 'guns_and_fangs_for_hire', 'walkthrough_missions', 'survivalist_magazines', 'trophies_and_achievements']);
 
     Object.entries(data).forEach(([catKey, catValue]) => {
@@ -1609,12 +1588,7 @@ function toSecureUrl(url) {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
     if (trimmed.startsWith('/')) return trimmed;
-    if (trimmed.startsWith('http://static-resource.np.community.playstation.net/')) {
-        return trimmed.replace('http://static-resource.np.community.playstation.net/', 'https://static-resource.np.community.playstation.net/');
-    }
-    if (trimmed.startsWith('http://')) {
-        return trimmed.replace(/^http:\/\//i, 'https://');
-    }
+    if (trimmed.startsWith('http://')) return trimmed.replace(/^http:\/\//i, 'https://');
     return trimmed;
 }
 
@@ -1635,9 +1609,9 @@ function renderGamePillsFromManifest(gamesList) {
     const currentSlug = new URLSearchParams(window.location.search).get('game') || 'farcry5';
 
     pillBar.innerHTML = gamesList.map(g => {
-        const isActive = g.id.toLowerCase() === currentSlug.toLowerCase();
+        const isActive = String(g.id).toLowerCase() === currentSlug.toLowerCase();
         return `
-            <a href="?game=${g.id}" class="game-pill ${isActive ? 'active' : ''}" style="text-decoration:none;">
+            <a href="?game=${encodeURIComponent(g.id)}" class="game-pill ${isActive ? 'active' : ''}" style="text-decoration:none;">
                 <span>${g.icon || '🎮'}</span>
                 <span>${escapeHtml(g.name)}</span>
             </a>
@@ -1645,54 +1619,210 @@ function renderGamePillsFromManifest(gamesList) {
     }).join('');
 }
 
-// Section 10: Dynamic Manifest Catalog & Auto Pill Bar Loader
-async function initGameCatalog() {
-    const manifestUrls = [
-        './data/games/index.json',
-        './data/index.json',
-        '../game/data/games/index.json',
-        '/Website/game/data/games/index.json'
-    ];
+// Section 10: Game Catalog Loader
+//   Order: static file (resolved from page + script location) -> Firestore -> localStorage cache.
+const CATALOG_CACHE_PREFIX = 'gameCatalogCache_v1_';
 
-    let manifest = null;
-    for (const url of manifestUrls) {
+function catalogKey(s) {
+    return String(s || '').toLowerCase().replace(/\.json$/i, '').replace(/[.#$\/\[\]\s]/g, '_');
+}
+
+function baseName(path) {
+    return String(path || '').split('?')[0].split('/').pop();
+}
+
+async function fetchJsonFirst(urls, label) {
+    const seen = new Set();
+    for (const u of urls) {
+        if (!u || seen.has(u)) continue;
+        seen.add(u);
         try {
-            const res = await fetch(url);
-            if (res.ok) {
-                manifest = await res.json();
-                break;
-            }
-        } catch (e) {}
+            const res = await fetch(u, { cache: 'no-cache' });
+            console.log(`[${label}] ${res.status} ${u}`);
+            if (res.ok) return { json: await res.json(), url: u };
+        } catch (e) {
+            console.warn(`[${label}] FAILED ${u}`, e.message);
+        }
+    }
+    return null;
+}
+
+// Firestore layout: collection "game_catalog"; doc "manifest"; docs "game_<key>".
+// Each doc: { json: "<stringified JSON>", updatedAt, updatedBy }  (string avoids Firestore's
+// nested-array restriction and the 1 MiB-per-doc field-shape problems).
+function catalogDocId(subPath) {
+    return subPath === 'manifest' ? 'manifest' : String(subPath).replace(/^games\//, 'game_');
+}
+
+async function fetchCatalogFromFirebase(subPath, label) {
+    if (!firestore) return null;
+    const docId = catalogDocId(subPath);
+    try {
+        const doc = await firestore.collection('game_catalog').doc(docId).get();
+        const v = doc.exists ? doc.data() : null;
+        if (v && typeof v.json === 'string') {
+            console.log(`[${label}] 200 firestore:game_catalog/${docId}`);
+            return JSON.parse(v.json);
+        }
+        console.log(`[${label}] empty firestore:game_catalog/${docId}`);
+    } catch (e) {
+        console.warn(`[${label}] firestore:game_catalog/${docId} failed:`, e.code || e.message);
+    }
+    return null;
+}
+
+function readCatalogCache(key) {
+    try {
+        const raw = localStorage.getItem(CATALOG_CACHE_PREFIX + key);
+        return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+}
+
+function writeCatalogCache(key, json) {
+    try { localStorage.setItem(CATALOG_CACHE_PREFIX + key, JSON.stringify(json)); } catch (e) {}
+}
+
+async function loadManifest() {
+    const rel = (p) => [new URL(p, location.href).href, new URL(p, SCRIPT_BASE).href];
+    const staticHit = await fetchJsonFirst([
+        ...rel('data/games/index.json'),
+        ...rel('data/index.json'),
+        ...rel('games/index.json'),
+        ...rel('index.json')
+    ], 'Manifest');
+    if (staticHit && Array.isArray(staticHit.json.games)) {
+        writeCatalogCache('manifest', staticHit.json);
+        return staticHit.json;
     }
 
-    if (!manifest || !Array.isArray(manifest.games)) {
-        console.error('[Manifest Error] Could not load games index manifest.');
+    const fb = await fetchCatalogFromFirebase('manifest', 'Manifest');
+    if (fb && Array.isArray(fb.games)) {
+        writeCatalogCache('manifest', fb);
+        return fb;
+    }
+
+    const cached = readCatalogCache('manifest');
+    if (cached && Array.isArray(cached.games)) {
+        console.warn('[Manifest] Using cached copy from localStorage.');
+        return cached;
+    }
+    return null;
+}
+
+async function loadGameJson(game) {
+    const id = String(game.id || '');
+    const pathVal = game.path || `data/games/${id}.json`;
+    const file = baseName(pathVal);
+
+    const staticHit = await fetchJsonFirst([
+        new URL(pathVal, location.href).href,
+        new URL(pathVal, SCRIPT_BASE).href,
+        new URL(`data/games/${file}`, location.href).href,
+        new URL(`data/games/${file}`, SCRIPT_BASE).href,
+        new URL(`data/games/${id}.json`, location.href).href
+    ], 'Game');
+    if (staticHit) {
+        writeCatalogCache(`game_${catalogKey(id)}`, staticHit.json);
+        return staticHit.json;
+    }
+
+    for (const k of [catalogKey(id), catalogKey(file)]) {
+        const fb = await fetchCatalogFromFirebase(`games/${k}`, 'Game');
+        if (fb) {
+            writeCatalogCache(`game_${catalogKey(id)}`, fb);
+            return fb;
+        }
+    }
+
+    const cached = readCatalogCache(`game_${catalogKey(id)}`);
+    if (cached) {
+        console.warn(`[Game] Using cached copy of ${id} from localStorage.`);
+        return cached;
+    }
+    return null;
+}
+
+async function initGameCatalog() {
+    const targetSlug = (new URLSearchParams(window.location.search).get('game') || 'farcry5').toLowerCase();
+    const container = document.getElementById('section-container');
+
+    const manifest = await loadManifest();
+    let selectedGame;
+
+    if (manifest) {
+        renderGamePillsFromManifest(manifest.games);
+        selectedGame = manifest.games.find(g => String(g.id).toLowerCase() === targetSlug) || manifest.games[0];
+    } else {
+        console.error('[Manifest] Not found anywhere. Trying direct game file for slug:', targetSlug);
+        selectedGame = { id: targetSlug, name: targetSlug, path: `data/games/${targetSlug}.json` };
+    }
+
+    const gameJson = await loadGameJson(selectedGame);
+    if (!gameJson) {
+        if (container) {
+            container.innerHTML = `<div style="color:#f87171;padding:16px;font-size:0.9rem;">
+                Could not load game data for "${escapeHtml(selectedGame.id)}".<br>
+                Open DevTools → Console to see every URL/Firebase path that was tried.<br>
+                Fix: put the JSON files in <code>data/games/</code> on your host, or run
+                <code>importGameCatalogFiles()</code> in the console to upload them to Firestore.</div>`;
+        }
         return;
     }
 
-    renderGamePillsFromManifest(manifest.games);
+    appState.gameData = gameJson;
+    appState.activeGame = gameJson.game || selectedGame.name;
+    appState.activeGameId = gameJson.gameId || selectedGame.id;
+    appState.activePsnCommId = gameJson.commId || gameJson.psn_communication_id || selectedGame.commId || null;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const targetSlug = (urlParams.get('game') || 'farcry5').toLowerCase();
-
-    const selectedGame = manifest.games.find(g => g.id.toLowerCase() === targetSlug) || manifest.games[0];
-
-    try {
-        const gameRes = await fetch(selectedGame.path);
-        if (!gameRes.ok) throw new Error(`HTTP ${gameRes.status}`);
-        const gameJson = await gameRes.json();
-
-        appState.gameData = gameJson;
-        appState.activeGame = gameJson.game || selectedGame.name;
-        appState.activeGameId = gameJson.gameId || selectedGame.id;
-        appState.activePsnCommId = gameJson.commId || selectedGame.commId || null;
-
-        await syncPsnSkeleton();
-        renderFarCry5Companion(gameJson);
-    } catch (err) {
-        console.error(`[Load Error] Failed to fetch game file at ${selectedGame.path}:`, err);
-    }
+    await syncPsnSkeleton();
+    renderFarCry5Companion(gameJson);
 }
+
+// Section 10B: Push local JSON files to Firebase (admin helper)
+//   Usage: sign in, then run  importGameCatalogFiles()  in the console (or add a button with
+//   id="catalogImportBtn"). Select index.json plus every game JSON in one go.
+//   Requires Firestore rules allowing writes to game_catalog for signed-in users.
+async function pushCatalogEntry(subPath, jsonObj) {
+    await firestore.collection('game_catalog').doc(catalogDocId(subPath)).set({
+        json: JSON.stringify(jsonObj),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedBy: (auth.currentUser && auth.currentUser.email) || 'unknown'
+    });
+}
+
+window.importGameCatalogFiles = function() {
+    if (!auth.currentUser) {
+        alert('Sign in first (Firestore writes need auth).');
+        return;
+    }
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json,application/json';
+    input.multiple = true;
+
+    input.onchange = async () => {
+        const report = [];
+        for (const file of Array.from(input.files)) {
+            try {
+                const json = JSON.parse(await file.text());
+                if (Array.isArray(json.games)) {
+                    await pushCatalogEntry('manifest', json);
+                    report.push(`✓ manifest <- ${file.name} (${json.games.length} games)`);
+                } else {
+                    const keys = new Set([catalogKey(file.name)]);
+                    if (json.gameId) keys.add(catalogKey(json.gameId));
+                    for (const k of keys) await pushCatalogEntry(`games/${k}`, json);
+                    report.push(`✓ game ${Array.from(keys).join(', ')} <- ${file.name}`);
+                }
+            } catch (e) {
+                report.push(`✗ ${file.name}: ${e.code || e.message}`);
+            }
+        }
+        console.log('[Catalog Import]\n' + report.join('\n'));
+        alert(report.join('\n') + '\n\nReload the page to test.');
+    };
+    input.click();
+};
 
 // Section 11: Sequential Lifecycle
 document.addEventListener('DOMContentLoaded', async () => {
@@ -1701,18 +1831,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     const platformSelector = document.getElementById('platformSelect') || document.getElementById('platformSelector');
     if (platformSelector) {
         platformSelector.value = appState.platform;
-        platformSelector.addEventListener('change', (e) => {
-            appState.switchPlatform(e.target.value);
-        });
+        platformSelector.addEventListener('change', (e) => appState.switchPlatform(e.target.value));
     }
 
     const menuBtn = document.getElementById('mobileMenuBtn');
     const navLinks = document.getElementById('dynamicNavLinks');
     if (menuBtn && navLinks) {
-        menuBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('is-open');
-        });
+        menuBtn.addEventListener('click', () => navLinks.classList.toggle('is-open'));
     }
+
+    const importBtn = document.getElementById('catalogImportBtn');
+    if (importBtn) importBtn.addEventListener('click', () => window.importGameCatalogFiles());
 
     const authBtn = document.getElementById('authModalBtn');
     const authModal = document.getElementById('authModal');
@@ -1732,7 +1861,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Step 1: Initialize Manifest & Companion Render
+    // Step 1: Manifest + companion render
     await initGameCatalog();
 
     // Step 2: Auth listener
