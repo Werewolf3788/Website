@@ -1,0 +1,345 @@
+{
+  "$schema_version": "1.0.0",
+  "game_meta": {
+    "title": "Far Cry 6",
+    "developer": "Ubisoft Toronto",
+    "publisher": "Ubisoft",
+    "engine": "Dunia Engine 2",
+    "setting": "Yara (Tropical Caribbean Island)",
+    "protagonist": "Dani Rojas",
+    "antagonist": "Antón Castillo",
+    "sources": [
+      {
+        "id": "ign_collectibles",
+        "title": "IGN - Far Cry 6 Collectibles Guide",
+        "url": "https://www.ign.com/wikis/far-cry-6/Collectibles"
+      },
+      {
+        "id": "ign_weapons",
+        "title": "IGN - Far Cry 6 Weapons Guide",
+        "url": "https://www.ign.com/wikis/far-cry-6/Weapons"
+      },
+      {
+        "id": "ign_walkthrough",
+        "title": "IGN - Far Cry 6 Walkthrough",
+        "url": "https://www.ign.com/wikis/far-cry-6/Walkthrough"
+      },
+      {
+        "id": "ign_side_quests",
+        "title": "IGN - Far Cry 6 Side Quests (Yaran Stories)",
+        "url": "https://www.ign.com/wikis/far-cry-6/Side_Quests"
+      },
+      {
+        "id": "ign_mythical_animals",
+        "title": "IGN - All Mythical Animal Locations",
+        "url": "https://www.ign.com/wikis/far-cry-6/All_Mythical_Animal_Locations"
+      },
+      {
+        "id": "ign_fnd_caches",
+        "title": "IGN - All FND Cache Locations",
+        "url": "https://www.ign.com/wikis/far-cry-6/All_FND_Cache_Locations"
+      },
+      {
+        "id": "ign_libertad_crates",
+        "title": "IGN - All Libertad Crate Locations",
+        "url": "https://www.ign.com/wikis/far-cry-6/All_Libertad_Crate_Locations"
+      },
+      {
+        "id": "ign_oluwa_shrines",
+        "title": "IGN - Oluwa Shrines & Oku's Idols",
+        "url": "https://www.ign.com/wikis/far-cry-6/Oluwa_Shrines_-_Oku%27s_Idols"
+      },
+      {
+        "id": "fandom_wiki",
+        "title": "Far Cry Wiki - Far Cry 6 Hub",
+        "url": "https://farcry.fandom.com/wiki/Far_Cry_6"
+      }
+    ]
+  },
+  "regions": [
+    { "id": "isla_santuario", "name": "Isla Santuario", "type": "Starting Island" },
+    { "id": "madrugada", "name": "Madrugada", "rebel_faction": "Montero Family" },
+    { "id": "valle_de_oro", "name": "Valle de Oro", "rebel_faction": "Maximas Matanzas" },
+    { "id": "el_este", "name": "El Este", "rebel_faction": "Legends of '67 / La Moral" },
+    { "id": "esperanza", "name": "Esperanza", "type": "Capital City / Castillo Stronghold" }
+  ],
+  "weapons": {
+    "resolver_weapons": [
+      {
+        "id": "tostador",
+        "name": "Tostador",
+        "type": "Flamethrower",
+        "ammo_type": "Gasoline",
+        "obtained_from": "Juan Cortez (Automatic unlock during 'Juan of a Kind')",
+        "special_trait": "High-intensity area denial against infantry and biological targets"
+      },
+      {
+        "id": "discoteca",
+        "name": "Discos Locos",
+        "type": "Disc Launcher",
+        "ammo_type": "CDs",
+        "obtained_from": "Purchased from Juan with Depleted Uranium",
+        "special_trait": "Silent lethal headshots using high-velocity saw blades and CDs"
+      },
+      {
+        "id": "pyro-techno",
+        "name": "Pyrotechno",
+        "type": "Fireworks Launcher",
+        "ammo_type": "Bottle Rockets",
+        "obtained_from": "Purchased from Juan with Depleted Uranium",
+        "special_trait": "Fires multi-rocket volleys effective at knocking down helicopters"
+      }
+    ],
+    "unique_weapons": [
+      {
+        "id": "autocrat",
+        "name": "The Autocrat",
+        "category": "Pistol",
+        "location": "Fort Quito (Isla Santuario)",
+        "coordinates": "Underground armory behind wooden mesh barrier",
+        "mods": ["Armor-Piercing Rounds", "Trigger Discipline", "Gut-Wrencher"]
+      },
+      {
+        "id": "bullseye",
+        "name": "Bullseye",
+        "category": "Bow",
+        "location": "Sierra Perdida (El Este)",
+        "coordinates": "Suspended cage near Verde River",
+        "mods": ["Precision Arrow", "Crosshair Sight", "High Ground"]
+      },
+      {
+        "id": "el-general",
+        "name": "El General",
+        "category": "Auto-Pistol",
+        "location": "Prado Meadows (Isla Santuario)",
+        "coordinates": "FND Munitions Storage basement bunker",
+        "mods": ["Blast Rounds", "Trigger Discipline", "Nimble Hands"]
+      },
+      {
+        "id": "la-varita",
+        "name": "La Varita",
+        "category": "Rifle (Resolver / Triada)",
+        "location": "Oluwa Cave (Isla Santuario)",
+        "coordinates": "Reward for completing 'Triada Blessings'",
+        "mods": ["Shoots through walls when paired with Triador Supremo"]
+      }
+    ],
+    "supremos": [
+      {
+        "id": "exterminador",
+        "name": "Exterminador",
+        "type": "Offensive",
+        "ability": "Armageddon Strike (fires a barrage of homing rockets)",
+        "acquisition": "Starter Supremo provided by Juan Cortez"
+      },
+      {
+        "id": "triador",
+        "name": "Triador",
+        "type": "Stealth / Utility",
+        "ability": "Truesight (marks enemies through solid cover; pairs with La Varita)",
+        "acquisition": "Oluwa Cave chest upon returning all 3 Triada Relics"
+      },
+      {
+        "id": "furioso",
+        "name": "Furioso",
+        "type": "Mobility / Assault",
+        "ability": "Thrust boost dodge leaving an incendiary ring behind Dani",
+        "acquisition": "Purchased from Juan Cortez"
+      }
+    ]
+  },
+  "triada_blessings_and_hunts": {
+    "quest_line": "Triada Blessings",
+    "hub_location": "Oluwa Cave, Isla Santuario",
+    "relics": [
+      {
+        "relic_name": "Ida's Triada Relic",
+        "region": "Madrugada",
+        "location": "La Triada / Dos Monjas Mohote",
+        "type": "Treasure Hunt: Ida's Triada Relic",
+        "solution": "Scale cliffs using grapple swings and ziplines across cavern shafts.",
+        "reward": "Ida's Sigil gear piece + Ida's Relic"
+      },
+      {
+        "relic_name": "Oku's Triada Relic",
+        "region": "Valle de Oro",
+        "location": "Fort Santa Maria (Villa / Haunted Estate)",
+        "type": "Treasure Hunt: And the Beat Goes On / Oku's Idol",
+        "solution": "Visit estate at night. Press piano button, push switch behind mirror, press room switches in sequence, and retrieve key to enter the well.",
+        "reward": "Oku's Deliverance gear piece + Oku's Relic"
+      },
+      {
+        "relic_name": "Mimo Abosi's Triada Relic",
+        "region": "El Este",
+        "location": "Catalina Ridge / D'Silva Quarry",
+        "type": "Treasure Hunt: Mimo Abosi's Triada Relic",
+        "solution": "Grab keycard from dead worker, shoot out electrical generator lock, turn off flooded generator switch, dive through flooded tunnel to the shaft.",
+        "reward": "Mimo Abosi's Mirage gear piece + Mimo Abosi's Relic"
+      }
+    ],
+    "completion_rewards": {
+      "amigo": "Oluso (Shadow Panther)",
+      "weapon": "La Varita",
+      "supremo": "Triador"
+    }
+  },
+  "collectibles": {
+    "mythical_animals": [
+      {
+        "id": "mamutito",
+        "name": "Mamutito",
+        "species": "Wild Hog",
+        "region": "Isla Santuario",
+        "location": "North of Cayo Seguro in a stone arena",
+        "drops": ["Mamutito's Tusks (Trade for Primal Mask)"]
+      },
+      {
+        "id": "venodiente",
+        "name": "Venodiente",
+        "species": "Crocodile",
+        "region": "Valle de Oro",
+        "location": "Hazardous Waste Disposal pool in Balaceras",
+        "drops": ["Venodiente Leather (Trade for Primal Vest)"]
+      },
+      {
+        "id": "sanguinario",
+        "name": "Sanguinario",
+        "species": "Jaguar",
+        "region": "El Este",
+        "location": "Southern coast of Sierra Perdida (Spawns only at night)",
+        "drops": ["Sanguinario Pelt (Trade for Primal Pants)"]
+      },
+      {
+        "id": "black_demon",
+        "name": "Black & White Demons",
+        "species": "Wolf Pair",
+        "region": "Madrugada",
+        "location": "North of Aguas Lindas near the reservoir",
+        "drops": ["Demon Pelts (Trade for Primal Boots & Bracers)"]
+      }
+    ],
+    "criptograma_chests": [
+      {
+        "id": "cripto_01",
+        "region": "Isla Santuario",
+        "location": "Armonia settlement",
+        "charts_needed": ["#01 Yaran Palm", "#06 Yaran Flag"],
+        "reward": "Hazmat Gloves MK II"
+      },
+      {
+        "id": "cripto_02",
+        "region": "Madrugada",
+        "location": "Poesia coastal pier",
+        "charts_needed": ["#03 Dog", "#22 Pig"],
+        "reward": "Riot Helmet MK II"
+      }
+    ],
+    "roosters": [
+      {
+        "id": "el-rata",
+        "name": "El Rata",
+        "region": "Madrugada",
+        "location": "Montero Farm (near the cockfighting arena cage)"
+      },
+      {
+        "id": "el-dorado",
+        "name": "El Dorado",
+        "region": "Madrugada",
+        "location": "Cat Sanctuary bunker during 'Spur of the Moment' Yaran Story"
+      }
+    ],
+    "usb_songs": [
+      {
+        "id": "usb_01",
+        "track_name": "Hitboy",
+        "region": "Isla Santuario",
+        "location": "Viviro Nueve Plantation office desk"
+      },
+      {
+        "id": "usb_02",
+        "track_name": "Pulpa De Tamarindo",
+        "region": "Madrugada",
+        "location": "Olympo Hideout table in Costa Del Mar"
+      }
+    ],
+    "containers": {
+      "fnd_caches": {
+        "description": "Black and red military lockboxes holding Gunpowder, Supremo-Bond, and crafting materials",
+        "primary_contents": ["Gunpowder", "Supremo-Bond", "Recycled Glass", "Industrial Composite"]
+      },
+      "libertad_crates": {
+        "description": "Blue and cyan crates painted with the Libertad star, containing gear and weapons",
+        "primary_contents": ["Libertad Armor Sets", "Standard Base Weapons"]
+      }
+    }
+  },
+  "walkthrough_and_quests": {
+    "amigos": [
+      {
+        "name": "Guapo",
+        "type": "Carnivorous Crocodile",
+        "recruitment_quest": "Juan of a Kind",
+        "region": "Isla Santuario",
+        "perks": ["Body Regulation (Self-revive)", "Cornered Beast", "Carnivore"]
+      },
+      {
+        "name": "Chorizo",
+        "type": "Paralyzed Dachshund (Wheelchair)",
+        "recruitment_quest": "Who's a Good Boy? / Fetch Quest",
+        "region": "Madrugada (Montero Farm)",
+        "perks": ["Attention Seeker (Distracts guards)", "Looter", "Scratch You Earned"]
+      },
+      {
+        "name": "Chicharrón",
+        "type": "Aggressive Rooster",
+        "recruitment_quest": "Man's Best Enemy chain",
+        "region": "El Este",
+        "perks": ["Roid Rage", "Angrier Bird", "Chicken Feet"]
+      },
+      {
+        "name": "Boomer (Boom-Boom)",
+        "type": "Scout Dog",
+        "recruitment_quest": "Boom or Bust (Fetch from shipping container)",
+        "region": "Valle de Oro",
+        "perks": ["Pointer", "Trained Tracker", "Thick Coat"]
+      },
+      {
+        "name": "Oluso",
+        "type": "Shadow Stealth Panther",
+        "recruitment_quest": "Triada Blessings",
+        "region": "Isla Santuario (Oluwa Cave)",
+        "perks": ["Shadow Sprite", "Mimo Abosi's Mirage", "Ida's Rage"]
+      }
+    ],
+    "key_operations": [
+      {
+        "operation_id": "op_01",
+        "title": "La Noche",
+        "region": "Esperanza",
+        "prerequisite": "None (Prologue)",
+        "objective": "Escape the military curfew through the sewers with Lita."
+      },
+      {
+        "operation_id": "op_02",
+        "title": "The Lucky One",
+        "region": "Isla Santuario",
+        "prerequisite": "La Noche",
+        "objective": "Wake up on the beach of Isla Santuario and rendezvous with Clara Garcia."
+      },
+      {
+        "operation_id": "op_03",
+        "title": "Juan of a Kind",
+        "region": "Isla Santuario",
+        "prerequisite": "The Lucky One",
+        "objective": "Locate Juan Cortez at the bar in Armonia and return with Guapo."
+      },
+      {
+        "operation_id": "op_04",
+        "title": "Libertad Rises",
+        "region": "Isla Santuario",
+        "prerequisite": "Clear Isla Santuario Operations",
+        "objective": "Assault the offshore naval blockades and escape to the Zamok Archipelago."
+      }
+    ]
+  }
+}
