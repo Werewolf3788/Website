@@ -15,11 +15,11 @@
       "path": "./data/games/farcry_new_dawn.json"
     },
     {
-      "id": "sniper_elite_5",
-      "name": "Sniper Elite 5",
+      "id": "farcry_6",
+      "name": "Far Cry 6",
       "icon": "🎯",
-      "commId": "NPWR22759_00",
-      "path": "./data/games/sniper_elite_5.json"
+      "commId": "PPSA01876_00",
+      "path": "./data/far_cry_6_data.json"
     },
     {
       "id": "way_of_the_hunter",
