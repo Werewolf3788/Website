@@ -1,12 +1,13 @@
-// ============================================================================
-// * Project: Universal Multi-Game Resistance Companion & Field Ledger
-// * File: game.js
-// * Location: /game/game.js
-// * Build Version: v11.1.0-FULL-CATALOG-RESTORED
-// * Deployment Timestamp: 2026-10-27 21:45:00 EDT (America/New_York)
-// ============================================================================
+/* ============================================================================
+ * Project: Universal Multi-Game Resistance Companion & Field Ledger
+ * File: game.js
+ * Location: /game/game.js
+ * Version: 11.2.0
+ * Build Timestamp: 2026-10-27 22:18:00 EDT (America/New_York)
+ * Primary Backend: entertainment-71888
+ * ============================================================================ */
 
-// Section 1: Authoritative Firebase Credentials & Services
+// Section 1: Cloud Credentials & Core Initializers
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -31,7 +32,7 @@ try {
 
 window.squadProgressCache = {};
 
-// Section 2: Universal Global State Engine
+// Section 2: Universal State Engine
 window.appState = {
     activeUser: 'Guest',
     activeEmail: null,
@@ -98,7 +99,6 @@ window.appState = {
         const data = this.gameData;
         const systemKeys = new Set(['game', 'gameId', 'commId', 'psn_communication_id', 'activeMission', 'version', 'ranks', 'trophies_and_achievements']);
 
-        // 1. Process Collectibles
         if (data.collectibles) {
             for (const cKey in data.collectibles) {
                 const group = data.collectibles[cKey];
@@ -130,7 +130,6 @@ window.appState = {
             }
         }
 
-        // 2. Process Prepper Stashes across all regional keys
         if (data.prepper_stashes) {
             Object.entries(data.prepper_stashes).forEach(([regKey, stashList]) => {
                 if (Array.isArray(stashList)) {
@@ -151,7 +150,6 @@ window.appState = {
             });
         }
 
-        // 3. Process Guns and Fangs for Hire
         if (Array.isArray(data.guns_and_fangs_for_hire)) {
             data.guns_and_fangs_for_hire.forEach(h => {
                 const hId = String(h.id);
@@ -167,7 +165,6 @@ window.appState = {
             });
         }
 
-        // 4. Process Walkthrough Missions
         if (Array.isArray(data.walkthrough_missions)) {
             data.walkthrough_missions.forEach(m => {
                 const mId = String(m.id);
@@ -182,7 +179,6 @@ window.appState = {
             });
         }
 
-        // 5. Universal Custom Category Ingestion (weapons, challenges, easter eggs, etc.)
         Object.entries(data).forEach(([catKey, catValue]) => {
             if (systemKeys.has(catKey) || ['collectibles', 'prepper_stashes', 'guns_and_fangs_for_hire', 'walkthrough_missions'].includes(catKey)) return;
 
@@ -218,7 +214,6 @@ window.appState = {
             }
         });
 
-        // 6. Trophies
         const trophySource = (this.psnSkeleton && this.psnSkeleton.trophies) 
             ? Object.values(this.psnSkeleton.trophies) 
             : (this.gameData?.trophies_and_achievements || []);
@@ -359,7 +354,7 @@ window.appState = {
     }
 };
 
-// Section 3: Friend-Code-Keyed Firestore Persistence
+// Section 3: Persistence Engine
 window.appState.saveProgress = function() {
     const friendCode = this.myFriendCode;
 
@@ -376,7 +371,6 @@ window.appState.saveProgress = function() {
     }
 
     if (!this.isCloudLoaded) {
-        console.warn("[Write Protected] Save blocked: Waiting for Firestore ledger fetch.");
         return;
     }
 
@@ -412,7 +406,7 @@ window.appState.loadProgress = async function() {
             if (raw) {
                 const parsed = JSON.parse(raw);
                 this.applyPayload(parsed);
-                this.updateStatus(`[Guest Mode] Restored progress from this device [${this.platform.toUpperCase()}].`);
+                this.updateStatus(`[Guest Mode] Restored progress [${this.platform.toUpperCase()}].`);
                 this.isCloudLoaded = true;
                 return;
             }
@@ -485,7 +479,7 @@ window.appState.migrateGuestProgressIfPresent = async function() {
     } catch (e) {}
 
     if (guestData && (
-        (guestData.ranks && guestData.ranks.rp > 0) ||
+        (guestData.ranks && Object.values(guestData.ranks).some(v => v > 0)) ||
         Object.keys(guestData.stashes || {}).length > 0 ||
         Object.keys(guestData.collectibles || {}).length > 0 ||
         Object.keys(guestData.missions || {}).length > 0
@@ -499,7 +493,7 @@ window.appState.migrateGuestProgressIfPresent = async function() {
     }
 };
 
-// Section 4: Universal Dynamic UI Painting
+// Section 4: Dynamic UI Painter
 window.appState.applyStateToUI = function() {
     this.ensureCounterTargets();
     this.recalculateMetrics();
@@ -636,7 +630,7 @@ window.adjRank = function(rankKey, delta) {
     appState.saveProgress();
 };
 
-// Section 4C: Universal PSN Links, Counters & Section Progress
+// Section 4C: PSN Linking & Progress Evaluation
 function resolveItemTarget(item, trophyIdOverride) {
     if (!item || typeof item !== 'object') return 0;
     const explicit = Number(item.target ?? item.count_target ?? item.psn_target ?? 0);
@@ -1304,7 +1298,7 @@ async function syncPsnSkeleton() {
     }
 }
 
-// Section 8: Universal Companion Content Renderer
+// Section 8: Universal Full Companion Renderer
 function renderFullCompanion(data) {
     const container = document.getElementById('section-container');
     if (!container || !data) return;
@@ -1339,7 +1333,7 @@ function renderFullCompanion(data) {
         </section>`;
     }
 
-    // 8B. Prepper Stashes (Dynamic across all region groups)
+    // 8B. Prepper Stashes
     if (data.prepper_stashes) {
         const stashRegions = Object.keys(data.prepper_stashes).filter(k => k !== 'overview');
         stashRegions.forEach(regKey => {
@@ -1376,7 +1370,7 @@ function renderFullCompanion(data) {
         });
     }
 
-    // 8C. Collectibles (Baseball cards, comics, bobbleheads, lighters, vinyls, barrels)
+    // 8C. Collectibles
     if (data.collectibles) {
         for (const cKey in data.collectibles) {
             const group = data.collectibles[cKey];
@@ -1647,7 +1641,6 @@ function renderFullCompanion(data) {
     container.innerHTML = html;
 }
 
-// Section 9: Helpers
 function toSecureUrl(url) {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
@@ -1688,15 +1681,33 @@ function renderGamePillsFromManifest(gamesList) {
     }).join('');
 }
 
-// Section 10: In-Memory Seed Fallback (Guarantees zero 404 failure)
-const EMBEDDED_FARCRY5_DATA = {
-    game: "Far Cry 5",
-    gameId: "FarCry5",
-    psn_communication_id: "NPWR12514_00",
-    activeMission: "Hope County Resistance"
-};
+// Section 9: Resilient Multi-Tier Catalog & Direct Fallback
+async function loadTargetGameJson(slug) {
+    const timestamp = Date.now();
+    const candidateUrls = [
+        `./data/${slug}.json?t=${timestamp}`,
+        `./data/games/${slug}.json?t=${timestamp}`,
+        `../data/${slug}.json?t=${timestamp}`,
+        `https://werewolf3788.github.io/Website/game/data/${slug}.json?t=${timestamp}`,
+        `https://raw.githubusercontent.com/Werewolf3788/Website/main/game/data/${slug}.json?t=${timestamp}`,
+        `https://raw.githubusercontent.com/Werewolf3788/Website/main/data/${slug}.json?t=${timestamp}`
+    ];
 
-// Section 11: Sequential Lifecycle & Multi-Tier Loader
+    for (const u of candidateUrls) {
+        try {
+            const res = await fetch(u);
+            if (res.ok) {
+                const data = await res.json();
+                console.log(`[Game Data] Successfully loaded from ${u}`);
+                return data;
+            }
+        } catch (e) {}
+    }
+
+    return null;
+}
+
+// Section 10: Lifecycle Execution
 document.addEventListener('DOMContentLoaded', async () => {
     await buildUtmNavigation();
 
@@ -1736,7 +1747,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const timestamp = Date.now();
 
-    // 1. Load Pills from Manifest
+    // 1. Load Dynamic Manifest for Navigation Pills
     try {
         const mRes = await fetch(`./data/games/index.json?t=${timestamp}`);
         if (mRes.ok) {
@@ -1751,32 +1762,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const rawSlug = String(slugParam || slugAttr || 'farcry5').trim();
     const lowerSlug = rawSlug.toLowerCase();
 
-    const candidateUrls = [
-        `./data/${lowerSlug}.json?t=${timestamp}`,
-        `./data/games/${lowerSlug}.json?t=${timestamp}`,
-        `../game/data/${lowerSlug}.json?t=${timestamp}`,
-        `https://werewolf3788.github.io/Website/game/data/${lowerSlug}.json?t=${timestamp}`,
-        `https://raw.githubusercontent.com/Werewolf3788/Website/main/game/data/${lowerSlug}.json?t=${timestamp}`
-    ];
-
-    let loadedJson = null;
-
-    for (const url of candidateUrls) {
-        try {
-            const res = await fetch(url);
-            if (res.ok) {
-                loadedJson = await res.json();
-                console.log(`[Game Data] Loaded from ${url}`);
-                break;
-            }
-        } catch (e) {}
-    }
-
-    // Zero-404 Fallback: If external server JSON fails to fetch, use internal catalog
-    if (!loadedJson && (lowerSlug === 'farcry5' || lowerSlug === 'farcry 5')) {
-        console.warn("[Game Data] External fetch 404; activating embedded catalog for Far Cry 5.");
-        loadedJson = EMBEDDED_FARCRY5_DATA;
-    }
+    const loadedJson = await loadTargetGameJson(lowerSlug);
 
     if (loadedJson) {
         appState.gameData = loadedJson;
@@ -1792,10 +1778,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         await syncPsnSkeleton();
         renderFullCompanion(loadedJson);
     } else {
-        console.error(`[Load Error] Could not load data for ${lowerSlug}.`);
+        console.error(`[Load Error] Could not load JSON file for '${rawSlug}'.`);
     }
 
-    // Step 3: Auth listener
+    // 3. Auth Listener: Only queries Firestore after login
     if (auth) {
         auth.onAuthStateChanged(async (user) => {
             if (user) {
@@ -1840,7 +1826,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Step 4: Keep squad view fresh
+    // 4. Polling loop
     setInterval(async () => {
         if (document.visibilityState === 'visible' && appState.currentUser && appState.isCloudLoaded) {
             await appState.refreshPsnProgress();
