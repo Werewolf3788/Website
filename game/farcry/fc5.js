@@ -2,12 +2,12 @@
 // * Project: Far Cry 5 Hope County Resistance Companion & Field Ledger
 // * File: fc5.js
 // * Location: /game/farcry/fc5.js
-// * Build Version: v10.1.0-COTW-STRUCTURAL-ALIGNMENT
-// * Deployment Timestamp: 2026-10-28 04:11:00 EDT (America/New_York)
+// * Build Version: v10.1.1-COTW-STRUCTURAL-ALIGNMENT
+// * Deployment Timestamp: 2026-10-28 04:20:00 EDT (America/New_York)
 // ============================================================================
 
-// Section 1: Authoritative Firebase Engine Initialization
-// Lines 10-34: Configuration bindings for entertainment-71888
+// Section 1: Unified Firebase Configuration (entertainment-71888)
+// Lines 10-34: Production credentials and authoritative service bindings
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -34,7 +34,7 @@ const CURRENT_GAME_ID = "FarCry5";
 let ACTIVE_COMM_ID = "NPWR12514_00";
 
 // Section 2: Global State Engine & Dynamic Multi-Platform Store
-// Lines 37-330: Dynamic item hydration and multi-platform isolation
+// Lines 37-330: Additive item hydration and strict multi-platform ledger isolation
 window.appState = {
     activeUser: 'Guest',
     activeEmail: null,
@@ -90,7 +90,7 @@ window.appState = {
         }
     },
 
-    // Lines 86-215: Additive Schema Hydration (No hardcoded collectible limits)
+    // Lines 86-215: Additive Schema Hydration (Supports any custom key added to JSON)
     hydrateFromRawJson: function(data) {
         if (!data || typeof data !== 'object') return;
         this.gameData = data;
@@ -99,7 +99,7 @@ window.appState = {
             ACTIVE_COMM_ID = data.psn_communication_id;
         }
 
-        // 1. Dynamic Collectibles Sets (Supports any custom key added to JSON)
+        // 1. Dynamic Collectibles Sets
         if (data.collectibles && typeof data.collectibles === 'object') {
             for (const cKey in data.collectibles) {
                 const group = data.collectibles[cKey];
@@ -140,7 +140,6 @@ window.appState = {
                                 psnSynced: false
                             };
                         } else {
-                            // Update display metadata without overriding completion status
                             this.collectibles[cKey].items[cItem.id].name = cItem.name || this.collectibles[cKey].items[cItem.id].name;
                             this.collectibles[cKey].items[cItem.id].region = cItem.region || this.collectibles[cKey].items[cItem.id].region;
                             this.collectibles[cKey].items[cItem.id].location = cItem.location || this.collectibles[cKey].items[cItem.id].location;
@@ -396,7 +395,6 @@ window.appState = {
         this.trophies_total = payload.trophies_total || this.trophies_total;
         this.trophies_percent = payload.trophies_percent || 0;
         
-        // Merge Collectibles (preserves user checks while keeping new items from JSON)
         if (payload.collectibles) {
             for (const cKey in payload.collectibles) {
                 if (!this.collectibles[cKey]) {
@@ -407,7 +405,6 @@ window.appState = {
                     if (payload.collectibles[cKey].items) {
                         for (const itemId in payload.collectibles[cKey].items) {
                             if (!this.collectibles[cKey].items[itemId]) {
-                                // Restoration: Item was present in Firestore ledger, preserve it
                                 this.collectibles[cKey].items[itemId] = payload.collectibles[cKey].items[itemId];
                             } else {
                                 this.collectibles[cKey].items[itemId].collected = !!payload.collectibles[cKey].items[itemId].collected;
@@ -494,7 +491,6 @@ window.appState.saveProgress = function() {
 window.appState.loadProgress = function() {
     const userKey = this.getUserKey();
     
-    // Always re-hydrate from active JSON and trophy skeleton to catch new items
     if (this.gameData) this.hydrateFromRawJson(this.gameData);
     if (this.psnSkeleton) this.hydrateTrophiesFromSkeleton(this.psnSkeleton);
 
@@ -530,11 +526,9 @@ window.appState.loadProgress = function() {
             if (doc.exists) {
                 const cloudData = doc.data();
                 this.applyPayload(cloudData);
-                // Push any new items discovered in JSON into Firestore immediately
                 this.saveProgress();
                 this.updateStatus(`[Cloud Synced] users/${userKey}/platform/${this.platform}/game/${CURRENT_GAME_ID}`);
             } else {
-                // Initial creation: Seed full schema parsed from JSON into Firestore
                 this.applyStateToUI();
                 this.saveProgress();
                 this.updateStatus(`[Cloud Seeded] Pushed full game ledger to Firestore: users/${userKey}`);
@@ -664,7 +658,7 @@ window.adjRank = function(rankKey, delta) {
 };
 
 // Section 5: Squad Co-Op Bridge via RTDB Friend Codes
-// Lines 518-595: Isolated query of friends' progress matching active platform
+// Lines 518-595: Multi-Platform isolated query of friends' progress
 window.appState.fetchUserFriendCode = async function() {
     if (!this.currentUser || !this.currentUser.email || !rtdb) return;
     const emailKey = this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
@@ -674,7 +668,7 @@ window.appState.fetchUserFriendCode = async function() {
         const display = document.getElementById('myFriendCodeDisplay');
         if (display) display.innerText = this.myFriendCode;
 
-        // Strictly verify if an authenticated PSN Gamertag is registered
+        // Verify if an authenticated PSN Gamertag is registered
         const psnSnap = await rtdb.ref(`/users/${emailKey}/psn_username`).once('value');
         if (psnSnap.exists() && psnSnap.val()) {
             this.psnGamertag = String(psnSnap.val()).trim();
@@ -874,7 +868,7 @@ async function syncPsnSkeleton() {
     const commId = ACTIVE_COMM_ID;
 
     try {
-        // 1. Fetch master trophy structure from RTDB (static game ledger has no trophies)
+        // 1. Fetch master trophy structure from RTDB
         const snap = await rtdb.ref(`/psn/games/${commId}`).once('value');
         const skeleton = snap.val();
         if (skeleton) {
@@ -892,7 +886,7 @@ async function syncPsnSkeleton() {
             }
         }
 
-        // 2. Dynamic Favicon from linked user's recentGames (if registered)
+        // 2. Dynamic Favicon from linked user's recentGames
         if (appState.psnGamertag) {
             const recentSnap = await rtdb.ref(`/psn/gamertags/${appState.psnGamertag}/recentGames`).once('value');
             const recentGames = recentSnap.val();
@@ -905,7 +899,7 @@ async function syncPsnSkeleton() {
                     const navLogo = document.getElementById('navHeaderLogo');
                     if (fav1) fav1.href = posterUrl;
                     if (fav2) fav2.href = posterUrl;
-                    if (navLogo) navLogo.src = posterUrl;
+                    if (navLogo && !navLogo.src.includes('/utm_links/')) navLogo.src = posterUrl;
                 }
             }
         }
@@ -1078,7 +1072,7 @@ function renderFarCry5Companion(data) {
         }
     }
 
-    // 8D. Universal Collectibles Sets (Renders all keys present in data.collectibles)
+    // 8D. Universal Collectibles Sets (Renders all dynamic sets present in data.collectibles)
     if (data.collectibles && typeof data.collectibles === 'object') {
         for (const cKey in data.collectibles) {
             const group = data.collectibles[cKey];
@@ -1220,8 +1214,8 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
-// Section 10: Dynamic JSON Loader with Cache-Busting & Lifecycle Gate
-// Lines 1013-1130: Bypasses browser cache, renders items, and binds auth
+// Section 10: Dynamic JSON Loader with Path Target & Lifecycle Gate
+// Lines 1013-1130: Direct local-path priority matching /game/farcry/farcry5.json
 async function initFarCry5Engine() {
     await buildUtmNavigation();
 
@@ -1307,15 +1301,13 @@ async function initFarCry5Engine() {
         });
     }
 
-    // Dynamic Cache-Buster Time parameter: guarantees freshly added JSON items load instantly
+    // Direct Target Sequence matching /game/farcry/farcry5.json
     const cacheBuster = `?cb=${Date.now()}`;
     const jsonCandidates = [
-        `./farcry5.json${cacheBuster}`,
         `/game/farcry/farcry5.json${cacheBuster}`,
-        `./data/farcry5.json${cacheBuster}`,
-        `/game/data/farcry5.json${cacheBuster}`,
+        `./farcry5.json${cacheBuster}`,
         `//raw.githubusercontent.com/Werewolf3788/Website/main/game/farcry/farcry5.json${cacheBuster}`,
-        `//raw.githubusercontent.com/Werewolf3788/Website/main/game/data/farcry5.json${cacheBuster}`
+        `//werewolf3788.github.io/Website/game/farcry/farcry5.json${cacheBuster}`
     ];
 
     const fetchJson = async (idx) => {
@@ -1328,7 +1320,7 @@ async function initFarCry5Engine() {
                 appState.hydrateFromRawJson(fullJson);
                 appState.updateStatus(`[Hydrated] Loaded freshly from ${jsonCandidates[idx]}`);
                 
-                // Fetch trophy skeleton from RTDB and render UI
+                // Fetch master trophy skeleton from RTDB and render UI
                 await syncPsnSkeleton();
                 renderFarCry5Companion(fullJson);
                 appState.loadProgress();
