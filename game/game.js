@@ -2,12 +2,518 @@
 // * Project: Far Cry 5 Hope County Resistance Companion & Field Ledger
 // * File: fc5.js
 // * Location: /game/fc5.js
-// * Build Version: v10.0.0-COTW-STRUCTURAL-ALIGNMENT
-// * Deployment Timestamp: 2026-10-27 00:35:00 EDT (America/New_York)
+// * Build Version: v10.0.2-COTW-STRUCTURAL-ALIGNMENT
+// * Deployment Timestamp: 2026-10-28 03:14:00 EDT (America/New_York)
 // ============================================================================
 
-// Section 1: Unified Firebase Configuration (entertainment-71888)
-// Lines 9-33: Production credentials and authoritative service bindings
+// Section 1: Embedded Authoritative In-Memory Game Ledger
+// Lines 11-370: Embedded JSON payload eliminating fetch 404 deadlocks
+const fc5_embedded_data = {
+  "game": "Far Cry 5",
+  "gameId": "FarCry5",
+  "psn_communication_id": "NPWR12514_00",
+  "activeMission": "Hope County Resistance",
+  "collectibles": {
+    "baseball_cards": {
+      "quest_name": "Grand Slam",
+      "quest_giver": "George",
+      "quest_giver_location": "Oberlin Picnic Area, Whitetail Mountains",
+      "total_count": 9,
+      "region": "Whitetail Mountains",
+      "items": [
+        {
+          "id": "baseball_card_01",
+          "name": "Southwest of F.A.N.G Center",
+          "location": "House by a small body of water southwest of F.A.N.G Center",
+          "guide": "Eliminate enemies outside to the left of the house. Enter the house; the card is on a shelf above the couch."
+        },
+        {
+          "id": "baseball_card_02",
+          "name": "North West of Cedar Lake",
+          "location": "Lakeside house northwest of Cedar Lake",
+          "guide": "Clear the enemies on the lakeside of the building. Head inside to find the card on the chest of drawers next to the bed."
+        },
+        {
+          "id": "baseball_card_03",
+          "name": "West of Cedar Lake",
+          "location": "Mountain cabin west of Cedar Lake",
+          "guide": "Access via grapple or flying vehicle. Clear enemies and enter through the front door; the card is immediately behind the opening door on a desk."
+        },
+        {
+          "id": "baseball_card_04",
+          "name": "North of Whitetail Park Visitor Center",
+          "location": "Shack in the hills north of Whitetail Park Visitor Center",
+          "guide": "Enter the enemy-free shack and turn left. The card sits on a shelf."
+        },
+        {
+          "id": "baseball_card_05",
+          "name": "South West of Clagett Boathouse",
+          "location": "Petrol station on the road southwest of Clagett Boathouse",
+          "guide": "Enter the petrol station building. The card is on a shelf underneath the 'Clothing' sign."
+        },
+        {
+          "id": "baseball_card_06",
+          "name": "Cooper Cabin",
+          "location": "Cabin northeast of the Wolf's Den",
+          "guide": "Head inside to the room with a mattress propped up against the wall. The card is on the shelf straight ahead."
+        },
+        {
+          "id": "baseball_card_07",
+          "name": "F.A.N.G Center",
+          "location": "F.A.N.G Center gift shop",
+          "guide": "Liberate or clear the cultists. Enter the building to the right of the main entrance; the card is on a merchandise shelf in the center of the gift shop."
+        },
+        {
+          "id": "baseball_card_08",
+          "name": "McNeil Residence",
+          "location": "Northeast of F.A.N.G Center along the road",
+          "guide": "Clear the cultists and enter the white shed to the left. The card is on a shelf on the wall behind the door."
+        },
+        {
+          "id": "baseball_card_09",
+          "name": "North East of Baron Lumber Mill",
+          "location": "White shipping-container style house on race tracks behind Baron Lumber Mill",
+          "guide": "Clear nearby enemies, kick down the boarded-up door, and take the card off the wall as you enter."
+        }
+      ]
+    },
+    "comic_books": {
+      "quest_name": "Golden Age Nostalgia",
+      "quest_giver": "Nadine Abercrombie",
+      "quest_giver_location": "Dodd Residence (between Fall's End and Rae-Rae's Pumpkin Farm), Holland Valley",
+      "total_count": 12,
+      "items": [
+        {
+          "id": "comic_01",
+          "region": "Holland Valley",
+          "name": "Parker Laboratories",
+          "location": "West of Fall's End",
+          "guide": "Go up the stairs inside the house with the green roof. The comic book is directly ahead on the desk."
+        },
+        {
+          "id": "comic_02",
+          "region": "Holland Valley",
+          "name": "Boyd Residence",
+          "location": "Directly west of the Dodd Residence",
+          "guide": "Enter the house, turn left into the bedroom, and find the comic book on the bed next to a hunting bow."
+        },
+        {
+          "id": "comic_03",
+          "region": "Holland Valley",
+          "name": "Bradbury Farm",
+          "location": "South of Lamb of God Church, below crop circle",
+          "guide": "Enter the large barn to the right. Jump up to the second level via boxes in front of the blue tarp; the comic is on an old mattress."
+        },
+        {
+          "id": "comic_04",
+          "region": "Whitetail Mountains",
+          "name": "Jefferson Lookout Tower",
+          "location": "Mountain peak west of the Wolf's Den",
+          "guide": "Go to the cliffside entrance and ascend the stairs into the tower. The comic sits on a table right inside the entrance."
+        },
+        {
+          "id": "comic_05",
+          "region": "Whitetail Mountains",
+          "name": "McNeil Residence",
+          "location": "On the road between F.A.N.G Center and Fort Drubman",
+          "guide": "Break the boarded-up window around the back of the house. Enter into the second room, turn left into the bathroom, and grab the comic from the basin."
+        },
+        {
+          "id": "comic_06",
+          "region": "Whitetail Mountains",
+          "name": "Elliot Residence",
+          "location": "South of F.A.N.G Center",
+          "guide": "Climb onto the verandah where the barbed wire is broken and enter through the broken window. The comic is on cases next to a lamp."
+        },
+        {
+          "id": "comic_07",
+          "region": "Henbane River",
+          "name": "Peaches Taxidermy",
+          "location": "Peaches Taxidermy workshop grounds",
+          "guide": "Enter the grey house through the white door on the left side of the property. The comic is located right next to the television."
+        },
+        {
+          "id": "comic_08",
+          "region": "Henbane River",
+          "name": "Chan Residence",
+          "location": "Just south of Angel's Peak",
+          "guide": "Go around the back of the house, enter through the blue door, and find the comic on a bed directly behind the door."
+        },
+        {
+          "id": "comic_09",
+          "region": "Henbane River",
+          "name": "Vasquez Residence",
+          "location": "Waterfront between Faith's region and Dutch's Island",
+          "guide": "Dispatch the cultists outside, enter through the front door, and grab the comic from the living room couch."
+        },
+        {
+          "id": "comic_10",
+          "region": "Henbane River",
+          "name": "O'Hara's Haunted House",
+          "location": "Border of Faith and John's regions, northwest of Dead Man's River",
+          "guide": "Climb the crate with blue ropes behind the house onto the roof, drop to the scaffolding, and crouch through the second-floor window. The comic is on a mattress."
+        },
+        {
+          "id": "comic_11",
+          "region": "Henbane River",
+          "name": "Boshaw Manor",
+          "location": "Southwest of Moonflower Trailer Park",
+          "guide": "Walk up the ramp into the house marked with 'No Smoking' signs. Go to the rear bedroom; the comic is on the bedside table."
+        },
+        {
+          "id": "comic_12",
+          "region": "Henbane River",
+          "name": "Camp Cougars",
+          "location": "Campsite southeast of Peaches Taxidermy",
+          "guide": "Clear cultists/predators at the campsite. The comic is lying on the ground directly in front of one of the tents."
+        }
+      ]
+    },
+    "bobbleheads": {
+      "quest_name": "Mint Condition",
+      "quest_giver": "Dave Fowler",
+      "quest_giver_location": "Fowler's Retreat, Whitetail Mountains",
+      "total_count": 10,
+      "items": [
+        {
+          "id": "bobblehead_01",
+          "region": "Whitetail Mountains",
+          "name": "Baron Lumber Mill",
+          "location": "Baron Lumber Mill main building",
+          "guide": "Ascend the front stairs and enter through the window. The bobblehead is straight ahead in the kitchen."
+        },
+        {
+          "id": "bobblehead_02",
+          "region": "Whitetail Mountains",
+          "name": "Whitetail Park Ranger Station",
+          "location": "Southwest of F.A.N.G Center",
+          "guide": "Enter the main office, go behind the front desk into the adjacent room, and grab the bobblehead from the chest of drawers on the left wall."
+        },
+        {
+          "id": "bobblehead_03",
+          "region": "Whitetail Mountains",
+          "name": "Island North of Grand View Hotel",
+          "location": "Small island cabin north of Grand View Hotel",
+          "guide": "Swim north to the island log cabin. The bobblehead is located inside on a splash of blood on the bed."
+        },
+        {
+          "id": "bobblehead_04",
+          "region": "Whitetail Mountains",
+          "name": "Lansdowne Airstrip",
+          "location": "Hangar north of F.A.N.G Center (Inside 'Hangar Pains' Prepper Stash)",
+          "guide": "Grapple the nearby radio tower, wingsuit/parachute onto the hangar roof, drop through the open skylight, and find the bobblehead on a shelf."
+        },
+        {
+          "id": "bobblehead_05",
+          "region": "Whitetail Mountains",
+          "name": "Whitetail Park Visitor Center",
+          "location": "Visitor Center gift shop",
+          "guide": "Head up the stairs and turn left into the souvenir shop. The bobblehead sits directly in front on a merchandise display shelf."
+        },
+        {
+          "id": "bobblehead_06",
+          "region": "Whitetail Mountains",
+          "name": "South Park Entrance",
+          "location": "Border of Jacob's and John's regions, north of Rae-Rae's Pumpkin Farm",
+          "guide": "Ascend the wooden stairs behind the buildings. The bobblehead is on the floor mixed with discarded junk."
+        },
+        {
+          "id": "bobblehead_07",
+          "region": "Holland Valley",
+          "name": "St. Isidore School",
+          "location": "Abandoned school northeast of Fall's End",
+          "guide": "Climb onto the main school roof to retrieve the keys from the chimney. Zipline to the outbuilding, unlock it, and pick the bobblehead up from the shelf."
+        },
+        {
+          "id": "bobblehead_08",
+          "region": "Holland Valley",
+          "name": "Bradbury Tractor Shed",
+          "location": "North of the crop circle between Fall's End and Lamb of God Church",
+          "guide": "Approach the small building next to the shed, break the wooden slats covering the window, and retrieve the bobblehead inside the broken refrigerator."
+        },
+        {
+          "id": "bobblehead_09",
+          "region": "Henbane River",
+          "name": "8-Bit Pizza Bar",
+          "location": "West of Hope County Jail",
+          "guide": "Walk through the front door, pass behind the service counter into the kitchen, and grab the bobblehead off the shelf next to the dishware."
+        },
+        {
+          "id": "bobblehead_10",
+          "region": "Henbane River",
+          "name": "Feeney Residence",
+          "location": "Eastern outskirts of Henbane River",
+          "guide": "Clear the cultists in the field and enter the house. The bobblehead is on the kitchen counter against the wall."
+        }
+      ]
+    },
+    "vietnam_lighters": {
+      "quest_name": "What They Carried",
+      "quest_giver": "Wendell Redler",
+      "quest_giver_location": "Redler Residence, East of Fall's End",
+      "total_count": 12,
+      "items": [
+        {
+          "id": "lighter_01",
+          "region": "Whitetail Mountains",
+          "name": "West of Cedar Lake",
+          "location": "Underground bunker west of Cedar Lake",
+          "guide": "Climb down into the bunker and grab the lighter off the shelf next to two blue barrels."
+        },
+        {
+          "id": "lighter_02",
+          "region": "Whitetail Mountains",
+          "name": "North West of Widow's Creek",
+          "location": "Bunker off the main road northwest of Widow's Creek",
+          "guide": "Enter the roadside bunker and retrieve the lighter located in the back room next to the television."
+        },
+        {
+          "id": "lighter_03",
+          "region": "Whitetail Mountains",
+          "name": "Whitetail Park Visitor Center",
+          "location": "Visitor Center information building",
+          "guide": "Climb the stairs and turn left into the information center. The lighter is on a set of shelves in the second room to the left."
+        },
+        {
+          "id": "lighter_04",
+          "region": "Whitetail Mountains",
+          "name": "Elliot Residence",
+          "location": "Bunker at Elliot Residence (South of F.A.N.G Center)",
+          "guide": "Enter the upper story via the broken window, navigate down to the kitchen for the keycard, shoot the bunker lock in the shed outside, and find the lighter on the bench."
+        },
+        {
+          "id": "lighter_05",
+          "region": "Holland Valley",
+          "name": "Fillmore Residence",
+          "location": "East of Fall's End, west of Dead Man's River",
+          "guide": "Enter the antler-adorned shed and descend into the bunker. The lighter sits on shelves in the second room."
+        },
+        {
+          "id": "lighter_06",
+          "region": "Holland Valley",
+          "name": "Miller Residence",
+          "location": "Southwest of Fillmore Residence",
+          "guide": "Head to the white shed and drop down into the bunker hatch. The lighter is on the floor beside the nightstand."
+        },
+        {
+          "id": "lighter_07",
+          "region": "Holland Valley",
+          "name": "Harris Residence",
+          "location": "Northwest Holland Valley",
+          "guide": "Enter the bunker via the hatch inside the brown wooden shed. The lighter is on the shelves beside the bed."
+        },
+        {
+          "id": "lighter_08",
+          "region": "Holland Valley",
+          "name": "Rae-Rae's Pumpkin Farm",
+          "location": "North of Fall's End",
+          "guide": "Find the bunker hatch out in the open behind the farm buildings. The lighter is on a chair beside the bed."
+        },
+        {
+          "id": "lighter_09",
+          "region": "Henbane River",
+          "name": "McCoy Cabin",
+          "location": "West of Peaches Taxidermy",
+          "guide": "Locate the bunker hatch partially covered by green tarp. The lighter is on the shelving unit in the second room."
+        },
+        {
+          "id": "lighter_10",
+          "region": "Henbane River",
+          "name": "McClean Residence",
+          "location": "Border between Faith's region and Dutch's Island",
+          "guide": "Clear any hostile cultists and access the bunker near the rear of the property. The lighter is on the bed in the rear room."
+        },
+        {
+          "id": "lighter_11",
+          "region": "Henbane River",
+          "name": "Abercrombie Residence",
+          "location": "East of Hope County Jail",
+          "guide": "Go behind the main house to find the bunker entrance before the stairs. The lighter is on shelves in the second room."
+        },
+        {
+          "id": "lighter_12",
+          "region": "Henbane River",
+          "name": "Counselor's Cabin",
+          "location": "West and slightly south of Moonflower Trailer Park",
+          "guide": "Walk between the house and shed to reach the backyard bunker hatch. The lighter is in the second room on the shelf near the couch."
+        }
+      ]
+    },
+    "vinyl_crates": {
+      "quest_name": "Turn the Tables",
+      "quest_giver": "Wheaty",
+      "quest_giver_location": "Wolf's Den, Whitetail Mountains",
+      "quest_prerequisite": "Gearing Up",
+      "total_count": 10,
+      "region": "Whitetail Mountains",
+      "items": [
+        {
+          "id": "vinyl_01",
+          "name": "Osprey Cabin",
+          "location": "Directly south of Wolf's Den down the cliff",
+          "guide": "Enter through the side door of the log cabin. The crate sits on the coffee table between the sofa and television."
+        },
+        {
+          "id": "vinyl_02",
+          "name": "Dansky Cabin",
+          "location": "South of Wolf's Den between two roads",
+          "guide": "Approach the front door with the keypad lock; the vinyl crate is located outside under a table to the left of the door."
+        },
+        {
+          "id": "vinyl_03",
+          "name": "Hunter's Pass Shelter",
+          "location": "Northwest of Wolf's Den",
+          "guide": "Clear the area around the small brick cabin and head inside. The crate is on a table immediately past the door."
+        },
+        {
+          "id": "vinyl_04",
+          "name": "Red Tail Cabin",
+          "location": "Directly east of Wolf's Den",
+          "guide": "Enter the large wooden house and turn left into the kitchen. The crate rests on the counter beside the window."
+        },
+        {
+          "id": "vinyl_05",
+          "name": "Breakthrough Camp",
+          "location": "East of Red Tail Cabin",
+          "guide": "Pass through the main camp gate and turn right to the first lock house. The crate is on a shelf along the entryway wall."
+        },
+        {
+          "id": "vinyl_06",
+          "name": "North Park Entrance",
+          "location": "Road heading west from F.A.N.G Center",
+          "guide": "Go inside the southern building. The vinyl crate is sitting on top of a low bookshelf."
+        },
+        {
+          "id": "vinyl_07",
+          "name": "The Grill Steak",
+          "location": "Outdoor restaurant south of F.A.N.G Center",
+          "guide": "Walk past the barbecue grill and truck toward the gazebo shelter. The crate is in front of a tent underneath."
+        },
+        {
+          "id": "vinyl_08",
+          "name": "MCA Mobile Lab",
+          "location": "East of Baron Lumber Mill",
+          "guide": "Dispatch any wolves roaming the perimeter. The crate is sitting directly under the open grey canopy tent."
+        },
+        {
+          "id": "vinyl_09",
+          "name": "Linero Building Supplies",
+          "location": "North of Baron Lumber Mill, west of Fort Drubman",
+          "guide": "Proceed to the construction trailer at the back of the site, enter the blue door, and retrieve the crate on a desk behind a filing cabinet."
+        },
+        {
+          "id": "vinyl_10",
+          "name": "South Park Entrance",
+          "location": "Border road between Wolf's Den and Rae-Rae's Pumpkin Farm",
+          "guide": "Enter the roadside office next to the ACROD parking spot. The crate is on the floor in front of tipped filing cabinets."
+        }
+      ]
+    },
+    "whiskey_barrels": {
+      "quest_name": "Whiskey River",
+      "quest_giver": "Sherri Woodhouse",
+      "quest_giver_location": "Can of Worms Fishing Store, Silver Lake, Henbane River",
+      "required_perk": "Human Fish",
+      "total_count": 15,
+      "region": "Henbane River",
+      "items": [
+        {
+          "id": "whiskey_01",
+          "name": "Can of Worms Shoreline",
+          "location": "East of Can of Worms Fishing Store along the shoreline",
+          "guide": "Follow the rope marker down to the lake bed; the barrel sits near a submerged rock."
+        },
+        {
+          "id": "whiskey_02",
+          "name": "West of Drubman Marina",
+          "location": "Lake floor west-southwest of Drubman Marina island",
+          "guide": "Swim underwater near the reedy rock formations to retrieve the cask."
+        },
+        {
+          "id": "whiskey_03",
+          "name": "Silver Lake Campgrounds",
+          "location": "North of Silver Lake Campgrounds east of the bridge",
+          "guide": "Dive underwater along the south shore amongst discarded Bliss containers to grab the barrel."
+        },
+        {
+          "id": "whiskey_04",
+          "name": "Tanami Residence Crane",
+          "location": "Submerged shipping container beside Tanami island",
+          "guide": "Swim through the hole in the top of the container hanging from the crane to retrieve the barrel at the bottom."
+        },
+        {
+          "id": "whiskey_05",
+          "name": "Northwest of Tanami Residence",
+          "location": "Underwater cave northwest of Tanami island",
+          "guide": "Dive off the small rock point and follow the marker into an underwater cavern."
+        },
+        {
+          "id": "whiskey_06",
+          "name": "East of Oberlin Picnic Area",
+          "location": "Between two small rocky islands east of Oberlin Picnic Area",
+          "guide": "Stop between the islands and dive down to find the cask inside a rocky crevice."
+        },
+        {
+          "id": "whiskey_07",
+          "name": "South of Oberlin Picnic Area",
+          "location": "High rock outcrop island in northern Silver Lake",
+          "guide": "Access via helicopter, plane, or low southeastern ledge; cask rests on a rocky perch above water."
+        },
+        {
+          "id": "whiskey_08",
+          "name": "Clagett Bay Helicopter",
+          "location": "Underwater south of large island in Clagett Bay",
+          "guide": "Dive down to the submerged wreckage of a helicopter and grab the barrel from the cockpit."
+        },
+        {
+          "id": "whiskey_09",
+          "name": "South of Dutch's Island Bridge",
+          "location": "North of the bridge connecting Holland Valley and Henbane River",
+          "guide": "Locate the submerged cage. Shoot the lock from above or underwater, then swim in to claim the barrel."
+        },
+        {
+          "id": "whiskey_10",
+          "name": "North of Dutch's Island",
+          "location": "One-third distance between northern island and far shore",
+          "guide": "Dive down into the structural wreckage along the lake bed to find the cask."
+        },
+        {
+          "id": "whiskey_11",
+          "name": "North of Vasquez Residence",
+          "location": "Culvert pipe beneath the bridge to Joseph's Island",
+          "guide": "Swim into the metal drainage pipe opening along the shoreline to reach the barrel inside."
+        },
+        {
+          "id": "whiskey_12",
+          "name": "South of Tanami Channel",
+          "location": "Underwater drain system between islands south of Tanami Residence",
+          "guide": "Locate the concrete drain pipe on the west side of the small island and grab the barrel inside."
+        },
+        {
+          "id": "whiskey_13",
+          "name": "West of Can of Worms Bridge",
+          "location": "Fallen shipping containers under the bridge west of Can of Worms",
+          "guide": "Dive down into the fully submerged shipping container; the cask is inside on the right."
+        },
+        {
+          "id": "whiskey_14",
+          "name": "Northwest of Dutch's Bunker",
+          "location": "Ruins of submerged cabin northwest of Dutch's Bunker",
+          "guide": "Follow the rope marker down to the flooded house foundation to retrieve the barrel."
+        },
+        {
+          "id": "whiskey_15",
+          "name": "Forest Research Station Dock",
+          "location": "Lake floor just off the dock at Forest Research Station",
+          "guide": "Dive down into the pile of sunken logs near the dock to pull out the final whiskey cask."
+        }
+      ]
+    }
+  }
+};
+
+// Section 2: Unified Firebase Configuration (entertainment-71888)
+// Lines 373-397: Authoritative production bindings and persistence
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -33,19 +539,19 @@ try {
 const CURRENT_GAME_ID = "FarCry5";
 const PSN_FC5_COMM_ID = "NPWR12514_00";
 
-// Section 2: Global State Engine & COTW Hydration Core
-// Lines 36-295: Structured entity trees matching COTW directly
+// Section 3: Global State Engine & COTW Hydration Core
+// Lines 400-645: Structured entity trees matching COTW directly
 window.appState = {
     activeUser: 'Guest',
     activeEmail: null,
     platform: 'ps', // 'ps', 'pc', 'xbox', 'steam'
     currentUser: null,
-    gameData: null,
+    gameData: fc5_embedded_data,
     psnSkeleton: null,
     myFriendCode: null,
     authInitialized: false,
     
-    // Exact COTW Document Root Schema
+    // Authoritative Root Schema
     activeMission: "Hope County Resistance",
     gameId: CURRENT_GAME_ID,
     trophies_earned: 0,
@@ -84,11 +590,11 @@ window.appState = {
         }
     },
 
-    // Lines 86-178: Hydrate game JSON into COTW Map structures
+    // Hydrate game JSON into COTW Map structures
     hydrateDefaultSchema: function() {
         if (!this.gameData) return;
 
-        // 1. Collectibles (Group maps matching COTW: collected, count, psnSynced, total)
+        // 1. Collectibles (Baseball Cards, Comics, Bobbleheads, Lighters, Vinyl, Whiskey)
         if (this.gameData.collectibles) {
             for (const cKey in this.gameData.collectibles) {
                 const group = this.gameData.collectibles[cKey];
@@ -137,12 +643,13 @@ window.appState = {
                 const list = this.gameData.survivalist_magazines[reg] || [];
                 magTotal += list.length;
                 list.forEach((m, idx) => {
-                    const mId = `mag_${reg}_${idx}`;
+                    const mId = m.id || `mag_${reg}_${idx}`;
                     if (!this.collectibles.survivalist_magazines.items[mId]) {
                         this.collectibles.survivalist_magazines.items[mId] = {
                             collected: false,
                             name: m.name || `Perk Magazine ${idx + 1}`,
                             region: reg,
+                            location: m.location || '',
                             psnSynced: false
                         };
                     }
@@ -222,7 +729,6 @@ window.appState = {
         this.recalculateMetrics();
     },
 
-    // Lines 180-230: Metric Tallies
     recalculateMetrics: function() {
         let stashesCount = 0;
         let rosterCount = 0;
@@ -230,7 +736,6 @@ window.appState = {
         let totalCollectiblesCount = 0;
         let calculatedRP = 0;
 
-        // Tally Stashes
         Object.values(this.stashes).forEach(s => {
             if (s && s.collected) {
                 stashesCount++;
@@ -238,7 +743,6 @@ window.appState = {
             }
         });
 
-        // Tally Roster
         Object.values(this.roster).forEach(h => {
             if (h && h.unlocked) {
                 rosterCount++;
@@ -246,14 +750,12 @@ window.appState = {
             }
         });
 
-        // Tally Missions
         Object.values(this.missions).forEach(m => {
             if (m && m.completed) {
                 calculatedRP += 600;
             }
         });
 
-        // Tally Collectibles & Perk Magazines
         if (this.collectibles) {
             for (const cKey in this.collectibles) {
                 const group = this.collectibles[cKey];
@@ -274,7 +776,6 @@ window.appState = {
             }
         }
 
-        // Tally Trophies
         const earnedTrophies = Object.values(this.trophies).filter(t => t && t.earned).length;
         const totalTrophies = Object.keys(this.trophies).length || 51;
         this.trophies_earned = earnedTrophies;
@@ -299,7 +800,6 @@ window.appState = {
         if (el) el.innerText = val || 0;
     },
 
-    // Lines 232-295: Build COTW Payload
     buildPayload: function() {
         this.recalculateMetrics();
         return {
@@ -326,7 +826,6 @@ window.appState = {
         this.trophies_total = payload.trophies_total || 51;
         this.trophies_percent = payload.trophies_percent || 0;
         
-        // Deep merge into hydrated tree to avoid missing schema entries
         if (payload.collectibles) {
             for (const cKey in payload.collectibles) {
                 if (!this.collectibles[cKey]) this.collectibles[cKey] = payload.collectibles[cKey];
@@ -349,13 +848,12 @@ window.appState = {
     }
 };
 
-// Section 3: Authoritative Persistence Engine (Guest LocalStorage vs Cloud Firestore)
-// Lines 298-405: Guarantees guest isolation and cross-device sync
+// Section 4: Authoritative Persistence Engine (Guest LocalStorage vs Cloud Firestore)
+// Lines 648-755: Isolation and cloud database sync
 window.appState.saveProgress = function() {
     const payload = this.buildPayload();
     const emailKey = this.getEmailKey();
 
-    // 1. Guest Mode: Unauthenticated visitors write strictly to LocalStorage
     if (!emailKey) {
         const guestKey = `fc5_guest_progress_${this.platform}`;
         try {
@@ -367,7 +865,6 @@ window.appState.saveProgress = function() {
         return;
     }
 
-    // 2. Authenticated Mode: Authoritative write straight to Cloud Firestore
     if (firestore) {
         const docRef = firestore
             .collection("users")
@@ -388,11 +885,8 @@ window.appState.saveProgress = function() {
 
 window.appState.loadProgress = function() {
     const emailKey = this.getEmailKey();
-
-    // Reset tree to default uncompleted state before overlaying data
     this.hydrateDefaultSchema();
 
-    // 1. Guest Mode: Load from LocalStorage
     if (!emailKey) {
         const guestKey = `fc5_guest_progress_${this.platform}`;
         try {
@@ -410,7 +904,6 @@ window.appState.loadProgress = function() {
         return;
     }
 
-    // 2. Authenticated Mode: Load from Cloud Firestore
     if (firestore) {
         this.updateStatus(`Reading cloud ledger for ${this.platform.toUpperCase()}...`);
 
@@ -428,7 +921,6 @@ window.appState.loadProgress = function() {
                     this.applyPayload(cloudData);
                     this.updateStatus(`[Cloud Restored] Authoritative ledger loaded [${this.platform.toUpperCase()}].`);
                 } else {
-                    // Document does not exist yet: seed initial hydrated COTW structure
                     this.applyStateToUI();
                     this.saveProgress();
                     this.updateStatus(`[Cloud Initialized] Seeded new COTW structure in Firestore.`);
@@ -440,7 +932,6 @@ window.appState.loadProgress = function() {
     }
 };
 
-// Lines 407-440: One-Time Guest Migration on Sign In
 window.appState.migrateGuestProgressIfPresent = async function() {
     const emailKey = this.getEmailKey();
     if (!emailKey) return;
@@ -468,8 +959,8 @@ window.appState.migrateGuestProgressIfPresent = async function() {
     }
 };
 
-// Section 4: UI Painting & Toggle Interactions
-// Lines 443-525: Maps UI checkboxes to nested COTW object maps
+// Section 5: UI Painting & Toggle Interactions
+// Lines 758-840: Checkbox and card state handlers
 window.appState.applyStateToUI = function() {
     this.recalculateMetrics();
 
@@ -557,8 +1048,8 @@ window.adjRank = function(rankKey, delta) {
     appState.saveProgress();
 };
 
-// Section 5: Squad Co-Op Bridge via RTDB Friend Codes
-// Lines 536-614: Realtime squad sync querying corresponding platform progress
+// Section 6: Squad Co-Op Bridge via RTDB Friend Codes
+// Lines 843-920: Squad sync and friend progress ledger
 window.appState.fetchUserFriendCode = async function() {
     const emailKey = this.getEmailKey();
     if (!rtdb || !emailKey) return;
@@ -643,16 +1134,29 @@ window.appState.syncFriendsProgress = async function() {
     }
 };
 
-// Section 6: Dynamic Navbar (/utm_links)
-// Lines 617-688: Top-level menu architecture
+// Section 7: Dynamic Navbar & Branding (/utm_links)
+// Lines 923-1015: Strict rowNumber sorting and logo/favicon dynamic binding
 async function buildUtmNavigation() {
     const navContainer = document.getElementById('dynamicNavLinks');
-    if (!navContainer || !rtdb) return;
+    if (!rtdb) return;
 
     try {
         const snap = await rtdb.ref('/utm_links').once('value');
         const data = snap.val();
         if (!data) return;
+
+        const settingsLogo = data?.Settings?.[0]?.image || data?.Settings?.image;
+        if (settingsLogo) {
+            const logoUrl = toSecureUrl(settingsLogo);
+            const fav1 = document.getElementById('dynamicFavicon');
+            const fav2 = document.getElementById('dynamicAppleIcon');
+            const navLogo = document.getElementById('navHeaderLogo');
+            if (fav1) fav1.href = logoUrl;
+            if (fav2) fav2.href = logoUrl;
+            if (navLogo) navLogo.src = logoUrl;
+        }
+
+        if (!navContainer) return;
 
         const linksList = [];
         function walk(node) {
@@ -739,8 +1243,8 @@ async function buildUtmNavigation() {
     }
 }
 
-// Section 7: PSN Skeleton & Live Trophy Tracking
-// Lines 691-744: CommID telemetry
+// Section 8: PSN Skeleton & Live Trophy Tracking
+// Lines 1018-1085: CommID NPWR12514_00 telemetry
 async function syncPsnSkeleton() {
     if (!rtdb) return;
     try {
@@ -755,9 +1259,9 @@ async function syncPsnSkeleton() {
             const fav1 = document.getElementById('dynamicFavicon');
             const fav2 = document.getElementById('dynamicAppleIcon');
             const navLogo = document.getElementById('navHeaderLogo');
-            if (fav1) fav1.href = posterUrl;
-            if (fav2) fav2.href = posterUrl;
-            if (navLogo) navLogo.src = posterUrl;
+            if (fav1 && !fav1.href.includes('/utm_links/')) fav1.href = posterUrl;
+            if (fav2 && !fav2.href.includes('/utm_links/')) fav2.href = posterUrl;
+            if (navLogo && !navLogo.src.includes('/utm_links/')) navLogo.src = posterUrl;
         }
 
         if (appState.currentUser && appState.platform === 'ps') {
@@ -806,15 +1310,15 @@ async function autoCheckUserPsnTrophies() {
     }
 }
 
-// Section 8: Render Far Cry 5 Tactical Accordion Sections
-// Lines 747-920: Populates cards with data-group and data-type binding
+// Section 9: Render Far Cry 5 Tactical Accordion Sections
+// Lines 1088-1290: Populates cards with data-group and data-type binding
 function renderFarCry5Companion(data) {
     const container = document.getElementById('section-container');
     if (!container || !data) return;
 
     let html = '';
 
-    // 8A. Walkthrough Missions
+    // 9A. Walkthrough Missions
     if (Array.isArray(data.walkthrough_missions)) {
         html += `
         <section class="category-section section-collapsed" id="cat-walkthroughs">
@@ -841,7 +1345,7 @@ function renderFarCry5Companion(data) {
         </section>`;
     }
 
-    // 8B. Prepper Stashes
+    // 9B. Prepper Stashes
     if (data.prepper_stashes) {
         const regions = [
             { key: 'holland_valley', label: 'Holland Valley (John)' },
@@ -880,7 +1384,49 @@ function renderFarCry5Companion(data) {
         });
     }
 
-    // 8C. Collectibles (6 Sets)
+    // 9C. Survivalist & Perk Magazines
+    if (data.survivalist_magazines) {
+        const regions = [
+            { key: 'holland_valley', label: 'Holland Valley' },
+            { key: 'henbane_river', label: 'Henbane River' },
+            { key: 'whitetail_mountains', label: 'Whitetail Mountains' }
+        ];
+
+        let totalMags = 0;
+        regions.forEach(r => totalMags += (data.survivalist_magazines[r.key] || []).length);
+
+        if (totalMags > 0) {
+            html += `
+            <section class="category-section section-collapsed" id="cat-magazines">
+                <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
+                    <h2>📚 Survivalist & Perk Magazines (${totalMags})</h2>
+                    <span>▾</span>
+                </div>
+                <div class="section-content">
+                    <div class="trophy-grid">
+                        ${regions.flatMap(reg => (data.survivalist_magazines[reg.key] || []).map((m, idx) => {
+                            const mId = m.id || `mag_${reg.key}_${idx}`;
+                            return `
+                                <div class="trophy-card fc5-item-card" data-id="${mId}" data-type="magazine">
+                                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                                        <div>
+                                            <span class="trophy-rank rank-bronze">${escapeHtml(reg.label)}</span>
+                                            <h3 style="color:#fff; font-size:0.95rem; margin-top:4px;">${escapeHtml(m.name || `Perk Magazine ${idx + 1}`)}</h3>
+                                            <div style="font-size:0.75rem; color:#94a3b8;">${escapeHtml(m.location || '')}</div>
+                                        </div>
+                                        <button type="button" class="check-btn" onclick="appState.toggleItem('${mId}', 'magazine')" aria-label="Toggle Magazine"></button>
+                                    </div>
+                                    <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(m.guide || '')}</p>
+                                </div>
+                            `;
+                        })).join('')}
+                    </div>
+                </div>
+            </section>`;
+        }
+    }
+
+    // 9D. Hope County Collectibles (Baseball Cards, Comic Books, Bobbleheads, Lighters, Vinyl Crates, Whiskey Barrels)
     if (data.collectibles) {
         for (const cKey in data.collectibles) {
             const group = data.collectibles[cKey];
@@ -893,6 +1439,13 @@ function renderFarCry5Companion(data) {
                         <span>▾</span>
                     </div>
                     <div class="section-content">
+                        ${group.quest_giver ? `
+                            <div style="font-size:0.8rem; color:#cbd5e1; margin-bottom:12px; background:rgba(255,255,255,0.03); padding:8px 12px; border-radius:6px; border-left:3px solid var(--user-theme-accent);">
+                                <strong>Quest Giver:</strong> ${escapeHtml(group.quest_giver)} &bull; 
+                                <strong>Location:</strong> ${escapeHtml(group.quest_giver_location || 'Hope County')}
+                                ${group.required_perk ? ` &bull; <strong>Required Perk:</strong> <span style="color:#38bdf8;">${escapeHtml(group.required_perk)}</span>` : ''}
+                            </div>
+                        ` : ''}
                         <div class="trophy-grid">
                             ${group.items.map(item => `
                                 <div class="trophy-card fc5-item-card" data-id="${item.id}" data-type="collectible" data-group="${cKey}">
@@ -914,7 +1467,7 @@ function renderFarCry5Companion(data) {
         }
     }
 
-    // 8D. Guns & Fangs for Hire
+    // 9E. Guns & Fangs for Hire
     if (Array.isArray(data.guns_and_fangs_for_hire)) {
         html += `
         <section class="category-section section-collapsed" id="cat-roster">
@@ -930,12 +1483,12 @@ function renderFarCry5Companion(data) {
                                 <div>
                                     <span class="trophy-rank rank-platinum">${escapeHtml(h.type)}</span>
                                     <h3 style="color:#fff; font-size:1.05rem; margin-top:4px;">${escapeHtml(h.name)}</h3>
-                                    <div style="font-size:0.8rem; color:var(--user-theme-accent); font-weight:700;">${escapeHtml(h.title)}</div>
+                                    <div style="font-size:0.8rem; color:var(--user-theme-accent); font-weight:700;">${escapeHtml(h.title || '')}</div>
                                 </div>
                                 <button type="button" class="check-btn" onclick="appState.toggleItem('${h.id}', 'roster')" aria-label="Toggle Hire"></button>
                             </div>
                             <div style="font-size:0.78rem; color:#cbd5e1; margin-bottom:8px;">
-                                <strong>Unlock Mission:</strong> ${escapeHtml(h.unlock_mission)} (${escapeHtml(h.location)})
+                                <strong>Unlock Mission:</strong> ${escapeHtml(h.unlock_mission)} (${escapeHtml(h.location || 'Hope County')})
                             </div>
                         </div>
                     `).join('')}
@@ -944,7 +1497,7 @@ function renderFarCry5Companion(data) {
         </section>`;
     }
 
-    // 8E. Trophies & Achievements
+    // 9F. PSN Official Trophies & Achievements
     const trophiesList = (appState.psnSkeleton && appState.psnSkeleton.trophies) ? Object.values(appState.psnSkeleton.trophies) : (data.trophies_and_achievements || []);
 
     if (Array.isArray(trophiesList) && trophiesList.length > 0) {
@@ -993,8 +1546,8 @@ function renderFarCry5Companion(data) {
     appState.applyStateToUI();
 }
 
-// Section 9: Helpers
-// Lines 923-946: Sanitization & Relative Protocol Enforcement
+// Section 10: Sanitization & URL Normalization
+// Lines 1293-1315: Protocol sanitation
 function toSecureUrl(url) {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
@@ -1018,8 +1571,8 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
-// Section 10: Primary Lifecycle Gate
-// Lines 949-1033: Initialization, Auth Listeners, and Data Hydration
+// Section 11: Primary Lifecycle Gate & Zero-Delay Hydration
+// Lines 1318-1420: Renders in-memory ledger instantly then connects live telemetry
 document.addEventListener('DOMContentLoaded', async () => {
     await buildUtmNavigation();
 
@@ -1057,6 +1610,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // 1. Instant In-Memory Hydration (Bypasses any 404 Fetch Delay)
+    renderFarCry5Companion(fc5_embedded_data);
+    await syncPsnSkeleton();
+    appState.loadProgress();
+
+    // 2. Auth Listeners & Cloud Sync Gate
     if (auth) {
         auth.onAuthStateChanged(async (user) => {
             appState.authInitialized = true;
@@ -1098,29 +1657,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    const dataUrls = [
-        './data/farcry5.json',
-        './farcry5.json',
-        '../game/data/farcry5.json',
-        '//raw.githubusercontent.com/Werewolf3788/Website/main/game/data/farcry5.json'
-    ];
-
-    const loadData = async (idx) => {
-        if (idx >= dataUrls.length) return;
+    // 3. Background Remote Check (RTDB /game_data/farcry5)
+    if (rtdb) {
         try {
-            const res = await fetch(dataUrls[idx]);
-            if (!res.ok) throw new Error();
-            const json = await res.json();
-            appState.gameData = json;
-            await syncPsnSkeleton();
-            renderFarCry5Companion(json);
-            
-            if (appState.authInitialized) {
+            const rtdbSnap = await rtdb.ref('/game_data/farcry5').once('value');
+            const rtdbJson = rtdbSnap.val();
+            if (rtdbJson) {
+                // Merge any remote-defined missions or stashes on top of embedded ledger
+                appState.gameData = Object.assign({}, fc5_embedded_data, rtdbJson);
+                renderFarCry5Companion(appState.gameData);
                 appState.loadProgress();
+                appState.updateStatus("[RTDB Synchronized] Merged remote game updates.");
             }
-        } catch (e) {
-            loadData(idx + 1);
+        } catch (rtdbErr) {
+            console.warn("[RTDB Background Sync Note]:", rtdbErr);
         }
-    };
-    loadData(0);
+    }
 });
