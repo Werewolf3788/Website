@@ -1,14 +1,10 @@
 /* ============================================================================
  * Project: Universal Multi-Game Resistance Companion & Field Ledger
  * File: game.js
- * Version: v11.6.0-CATALOG-FALLBACK
- * Changes vs 11.5.0:
- *   - Catalog loader: static files (resolved from script location) -> Firestore
- *     (game_catalog) -> localStorage cache. Every attempt is logged to the console.
- *   - importGameCatalogFiles(): pick index.json + game JSONs from your computer and
- *     push them to Firebase (stored as strings, so RTDB key/array rules can't break them).
- *   - Minor fixes: custom_ items resolve correctly, survivalist_magazines not duplicated
- *     into custom state.
+ * Version: v11.7.0-DIRECT-GAME-FILES
+ * - Games are listed inside this file (BUILTIN_GAMES); index.json is no longer required.
+ * - Load order per game: static file -> Firestore (game_catalog) -> localStorage cache.
+ * - importGameCatalogFiles(): upload JSON files to Firestore (stored as strings).
  * ============================================================================ */
 
 // MUST be first and synchronous: remembers where this script lives.
@@ -1619,9 +1615,17 @@ function renderGamePillsFromManifest(gamesList) {
     }).join('');
 }
 
-// Section 10: Game Catalog Loader
-//   Order: static file (resolved from page + script location) -> Firestore -> localStorage cache.
+// Section 10: Game Loader (built-in list -> static file -> Firestore -> localStorage cache)
 const CATALOG_CACHE_PREFIX = 'gameCatalogCache_v1_';
+
+// Games are listed right here, so the page no longer depends on index.json.
+// Paths are relative to /game/ (where game.js lives): /game/data/<file>.json
+const BUILTIN_GAMES = [
+    { id: 'farcry5',       name: 'Far Cry 5',        icon: '🎯', path: 'data/farcry5.json',         commId: 'NPWR12514_00' },
+    { id: 'farcry6',       name: 'Far Cry 6',        icon: '🌴', path: 'data/far_cry_6_data.json' },
+    { id: 'farcrynewdawn', name: 'Far Cry New Dawn', icon: '🌸', path: 'data/farcry_new_dawn.json' }
+];
+const USE_MANIFEST = false; // true = also merge extra games from data/games/index.json (must be valid JSON)
 
 function catalogKey(s) {
     return String(s || '').toLowerCase().replace(/\.json$/i, '').replace(/[.#$\/\[\]\s]/g, '_');
@@ -1648,8 +1652,7 @@ async function fetchJsonFirst(urls, label) {
 }
 
 // Firestore layout: collection "game_catalog"; doc "manifest"; docs "game_<key>".
-// Each doc: { json: "<stringified JSON>", updatedAt, updatedBy }  (string avoids Firestore's
-// nested-array restriction and the 1 MiB-per-doc field-shape problems).
+// Each doc: { json: "<stringified JSON>", updatedAt, updatedBy }
 function catalogDocId(subPath) {
     return subPath === 'manifest' ? 'manifest' : String(subPath).replace(/^games\//, 'game_');
 }
@@ -1686,9 +1689,7 @@ async function loadManifest() {
     const rel = (p) => [new URL(p, location.href).href, new URL(p, SCRIPT_BASE).href];
     const staticHit = await fetchJsonFirst([
         ...rel('data/games/index.json'),
-        ...rel('data/index.json'),
-        ...rel('games/index.json'),
-        ...rel('index.json')
+        ...rel('data/index.json')
     ], 'Manifest');
     if (staticHit && Array.isArray(staticHit.json.games)) {
         writeCatalogCache('manifest', staticHit.json);
@@ -1711,15 +1712,14 @@ async function loadManifest() {
 
 async function loadGameJson(game) {
     const id = String(game.id || '');
-    const pathVal = game.path || `data/games/${id}.json`;
+    const pathVal = game.path || `data/${id}.json`;
     const file = baseName(pathVal);
 
     const staticHit = await fetchJsonFirst([
-        new URL(pathVal, location.href).href,
         new URL(pathVal, SCRIPT_BASE).href,
-        new URL(`data/games/${file}`, location.href).href,
-        new URL(`data/games/${file}`, SCRIPT_BASE).href,
-        new URL(`data/games/${id}.json`, location.href).href
+        new URL(pathVal, location.href).href,
+        new URL(`data/${file}`, SCRIPT_BASE).href,
+        new URL(`data/games/${file}`, SCRIPT_BASE).href
     ], 'Game');
     if (staticHit) {
         writeCatalogCache(`game_${catalogKey(id)}`, staticHit.json);
@@ -1746,25 +1746,25 @@ async function initGameCatalog() {
     const targetSlug = (new URLSearchParams(window.location.search).get('game') || 'farcry5').toLowerCase();
     const container = document.getElementById('section-container');
 
-    const manifest = await loadManifest();
-    let selectedGame;
-
-    if (manifest) {
-        renderGamePillsFromManifest(manifest.games);
-        selectedGame = manifest.games.find(g => String(g.id).toLowerCase() === targetSlug) || manifest.games[0];
-    } else {
-        console.error('[Manifest] Not found anywhere. Trying direct game file for slug:', targetSlug);
-        selectedGame = { id: targetSlug, name: targetSlug, path: `data/games/${targetSlug}.json` };
+    let games = BUILTIN_GAMES.slice();
+    if (USE_MANIFEST) {
+        const manifest = await loadManifest();
+        if (manifest) {
+            manifest.games.forEach(g => {
+                if (!games.some(b => String(b.id).toLowerCase() === String(g.id).toLowerCase())) games.push(g);
+            });
+        }
     }
+
+    renderGamePillsFromManifest(games);
+    const selectedGame = games.find(g => String(g.id).toLowerCase() === targetSlug) || games[0];
 
     const gameJson = await loadGameJson(selectedGame);
     if (!gameJson) {
         if (container) {
             container.innerHTML = `<div style="color:#f87171;padding:16px;font-size:0.9rem;">
-                Could not load game data for "${escapeHtml(selectedGame.id)}".<br>
-                Open DevTools → Console to see every URL/Firebase path that was tried.<br>
-                Fix: put the JSON files in <code>data/games/</code> on your host, or run
-                <code>importGameCatalogFiles()</code> in the console to upload them to Firestore.</div>`;
+                Could not load game data for "${escapeHtml(selectedGame.id)}" from <code>${escapeHtml(selectedGame.path)}</code>.<br>
+                Open DevTools → Console to see which URL failed (404 = wrong path, "FAILED ... JSON" = syntax error in that file).</div>`;
         }
         return;
     }
@@ -1778,10 +1778,9 @@ async function initGameCatalog() {
     renderFarCry5Companion(gameJson);
 }
 
-// Section 10B: Push local JSON files to Firebase (admin helper)
-//   Usage: sign in, then run  importGameCatalogFiles()  in the console (or add a button with
-//   id="catalogImportBtn"). Select index.json plus every game JSON in one go.
-//   Requires Firestore rules allowing writes to game_catalog for signed-in users.
+// Section 10B: Push local JSON files to Firestore (optional admin helper)
+//   Sign in, then run importGameCatalogFiles() in the console and pick your JSON files.
+//   Requires a Firestore rule allowing writes to game_catalog for signed-in users.
 async function pushCatalogEntry(subPath, jsonObj) {
     await firestore.collection('game_catalog').doc(catalogDocId(subPath)).set({
         json: JSON.stringify(jsonObj),
@@ -1861,7 +1860,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Step 1: Manifest + companion render
+    // Step 1: Load the game list + selected game, then render
     await initGameCatalog();
 
     // Step 2: Auth listener
