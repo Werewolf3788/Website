@@ -1,30 +1,9 @@
-The error:
-
-[Game] FAILED https://entertainment-71888.web.app/game/data/farcry5.json Unterminated string in JSON at position 18813 (line 406 column 23)
-
-occurs because farcry5.json returned HTTP 200 (Success), but failed inside the
-JSON parser. Around line 406, there is an unescaped double-quote inside a text
-field (e.g. "guide": "Go to the "Wolf's Den"..."), an unescaped backslash
-escaping the closing quote (\"), or a raw multiline break.
-
-The previous parseJsonLenient parser could not recover from this specific error,
-caused the parse to fail, and cascaded into 404s and empty Firestore lookups.
-
-Here is the updated, drop-in replacement for game.js (bumped to
-v11.8.1-AUTO-REPAIR). It replaces the JSON parser with an intelligent multi-pass
-repair engine that automatically fixes unescaped inner quotes, broken
-backslashes, unclosed strings, and trailing commas.
-
 /* ============================================================================
  * Project: Universal Multi-Game Resistance Companion & Field Ledger
  * File: game.js
- * Version: v11.8.1-AUTO-REPAIR
- * - Games are listed inside this file (BUILTIN_GAMES); index.json is not required.
- * - Multi-pass JSON auto-repair engine fixes:
- *   1) Unescaped quotes inside string values (e.g. "guide": "Go to "Wolf's Den"")
- *   2) Accidental trailing backslashes escaping closing quotes (e.g. "River\")
- *   3) Raw unescaped newlines and unclosed lines
- *   4) Trailing commas and unclosed structures
+ * Version: v11.8.2-AUTO-REPAIR-GITHUB-DIRECT
+ * - Hardcoded GitHub raw path for farcry5.json
+ * - Multi-pass JSON auto-repair engine
  * ============================================================================ */
 
 // MUST be first and synchronous: remembers where this script lives.
@@ -1434,7 +1413,7 @@ function renderFarCry5Companion(data) {
                                     ${counterTarget > 0 ? counterControlsHtml(cKey, item.id, counterTarget) : ''}
                                     <div class="squad-earners-bar"></div>
                                 </div>
-                            `;
+                                `;
                             }).join('')}
                         </div>
                     </div>
@@ -1638,8 +1617,8 @@ function renderGamePillsFromManifest(gamesList) {
 const CATALOG_CACHE_PREFIX = 'gameCatalogCache_v1_';
 
 const BUILTIN_GAMES = [
-    { id: 'farcry5',       name: 'Far Cry 5',        icon: '🎯', path: 'data/farcry5.json',         commId: 'NPWR12514_00' },
-    { id: 'farcry6',       name: 'Far Cry 6',        icon: '🌴', path: 'data/far_cry_6_data.json' },
+    { id: 'farcry5',        name: 'Far Cry 5',        icon: '🎯', path: 'https://raw.githubusercontent.com/Werewolf3788/Website/main/game/data/farcry5.json', commId: 'NPWR12514_00' },
+    { id: 'farcry6',        name: 'Far Cry 6',        icon: '🌴', path: 'data/far_cry_6_data.json' },
     { id: 'farcrynewdawn', name: 'Far Cry New Dawn', icon: '🌸', path: 'data/farcry_new_dawn.json' }
 ];
 const USE_MANIFEST = false;
@@ -1666,7 +1645,6 @@ function repairCorruptJsonString(raw) {
         let line = lines[i];
         const isNewPropOrStructure = /^\s*("[^"]+"\s*:|[{}\[\]])/.test(line);
 
-        // If trapped in an unclosed string from previous line, but this line starts a new property:
         if (inString && isNewPropOrStructure) {
             if (outLines.length > 0) {
                 let prev = outLines[outLines.length - 1].trimEnd();
@@ -1693,10 +1671,9 @@ function repairCorruptJsonString(raw) {
                 }
 
                 if (ch === '\\') {
-                    // Check if accidental trailing backslash is escaping closing quote (e.g., "River\")
                     const rest = line.slice(j + 2).trim();
                     if (nextCh === '"' && (rest === '' || rest === ',' || rest === '}' || rest === ']')) {
-                        processedLine += '\\\\'; // Convert to escaped backslash so quote closes
+                        processedLine += '\\\\';
                         escaped = false;
                         continue;
                     }
@@ -1706,7 +1683,6 @@ function repairCorruptJsonString(raw) {
                 }
 
                 if (ch === '"') {
-                    // Determine if this is a real closing quote or an unescaped inner quote
                     const remainder = line.slice(j + 1).trim();
                     const looksLikeClosing = (
                         remainder === '' ||
@@ -1720,13 +1696,11 @@ function repairCorruptJsonString(raw) {
                         inString = false;
                         processedLine += '"';
                     } else {
-                        // Unescaped quote inside string value -> escape it!
                         processedLine += '\\"';
                     }
                     continue;
                 }
 
-                // Convert illegal raw ASCII control characters inside string
                 const code = ch.charCodeAt(0);
                 if (code < 0x20) {
                     if (ch === '\t') processedLine += '\\t';
@@ -1743,7 +1717,6 @@ function repairCorruptJsonString(raw) {
                     continue;
                 }
 
-                // Strip trailing commas before closing braces
                 if (ch === ',') {
                     const remainder = line.slice(j + 1).trim();
                     if (remainder.startsWith('}') || remainder.startsWith(']')) {
@@ -1772,7 +1745,6 @@ function repairCorruptJsonString(raw) {
     let result = outLines.join('\n');
     result = result.replace(/,\s*([\}\]])/g, '$1');
 
-    // Balance truncated structures
     let openBraces = 0;
     let openBrackets = 0;
     let inStrCheck = false;
@@ -1903,12 +1875,14 @@ async function loadGameJson(game) {
     const pathVal = game.path || `data/${id}.json`;
     const file = baseName(pathVal);
 
-    const staticHit = await fetchJsonFirst([
+    const candidateUrls = pathVal.startsWith('http') ? [pathVal] : [
         new URL(pathVal, SCRIPT_BASE).href,
         new URL(pathVal, location.href).href,
         new URL(`data/${file}`, SCRIPT_BASE).href,
         new URL(`data/games/${file}`, SCRIPT_BASE).href
-    ], 'Game');
+    ];
+
+    const staticHit = await fetchJsonFirst(candidateUrls, 'Game');
     if (staticHit) {
         writeCatalogCache(`game_${catalogKey(id)}`, staticHit.json);
         return staticHit.json;
@@ -2102,10 +2076,3 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }, 120000);
 });
-
-Important Deployment Step
-
-In your index.html (or game.html), make sure to increment the script tag version
-so your browser doesn't serve the old cached version:
-
-<script src="game.js?v=11.8.1"></script>
