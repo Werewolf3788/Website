@@ -1,9 +1,9 @@
 // ============================================================================
 // * Project: Far Cry 5 Hope County Resistance Companion & Field Ledger
 // * File: fc5.js
-// * Location: /game/fc5.js
-// * Build Version: v10.0.2-COTW-STRUCTURAL-ALIGNMENT
-// * Deployment Timestamp: 2026-10-28 03:14:00 EDT (America/New_York)
+// * Location: /game/farcry/fc5.js
+// * Build Version: v10.0.5-COTW-STRUCTURAL-ALIGNMENT
+// * Deployment Timestamp: 2026-10-28 03:28:00 EDT (America/New_York)
 // ============================================================================
 
 // Section 1: Embedded Authoritative In-Memory Game Ledger
@@ -513,7 +513,7 @@ const fc5_embedded_data = {
 };
 
 // Section 2: Unified Firebase Configuration (entertainment-71888)
-// Lines 373-397: Authoritative production bindings and persistence
+// Lines 373-397: Production credentials and authoritative service bindings
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -564,7 +564,9 @@ window.appState = {
     trophies: {},
     ranks: { rp: 0, outposts: 0, cultProperty: 0, stashes: 0, roster: 0, perks: 0, collectibles: 0 },
 
-    getEmailKey: function() {
+    // Resolves authoritative friend_code key (e.g., GQGI0SWY)
+    getUserKey: function() {
+        if (this.myFriendCode) return this.myFriendCode;
         if (!this.currentUser || !this.currentUser.email) return null;
         return this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
     },
@@ -848,13 +850,13 @@ window.appState = {
     }
 };
 
-// Section 4: Authoritative Persistence Engine (Guest LocalStorage vs Cloud Firestore)
-// Lines 648-755: Isolation and cloud database sync
+// Section 4: Authoritative Persistence Engine (FriendKey / Firestore Path Target)
+// Lines 648-765: users/{friendKey}/platform/{platform}/progress/FarCry5
 window.appState.saveProgress = function() {
     const payload = this.buildPayload();
-    const emailKey = this.getEmailKey();
+    const userKey = this.getUserKey();
 
-    if (!emailKey) {
+    if (!userKey) {
         const guestKey = `fc5_guest_progress_${this.platform}`;
         try {
             localStorage.setItem(guestKey, JSON.stringify(payload));
@@ -868,14 +870,14 @@ window.appState.saveProgress = function() {
     if (firestore) {
         const docRef = firestore
             .collection("users")
-            .doc(emailKey)
+            .doc(userKey)
             .collection("platform")
             .doc(this.platform)
             .collection("progress")
             .doc(CURRENT_GAME_ID);
 
         docRef.set(payload, { merge: true }).then(() => {
-            this.updateStatus(`[Cloud Saved] users/${emailKey}/platform/${this.platform}/progress/${CURRENT_GAME_ID}`);
+            this.updateStatus(`[Cloud Saved] users/${userKey}/platform/${this.platform}/progress/${CURRENT_GAME_ID}`);
         }).catch(err => {
             console.error("[Firestore Save Error]:", err);
             this.updateStatus(`Cloud Sync Failed: ${err.message}`);
@@ -884,10 +886,10 @@ window.appState.saveProgress = function() {
 };
 
 window.appState.loadProgress = function() {
-    const emailKey = this.getEmailKey();
+    const userKey = this.getUserKey();
     this.hydrateDefaultSchema();
 
-    if (!emailKey) {
+    if (!userKey) {
         const guestKey = `fc5_guest_progress_${this.platform}`;
         try {
             const raw = localStorage.getItem(guestKey);
@@ -905,36 +907,37 @@ window.appState.loadProgress = function() {
     }
 
     if (firestore) {
-        this.updateStatus(`Reading cloud ledger for ${this.platform.toUpperCase()}...`);
+        this.updateStatus(`Reading cloud ledger: users/${userKey}/platform/${this.platform.toUpperCase()}...`);
 
-        firestore
+        const docRef = firestore
             .collection("users")
-            .doc(emailKey)
+            .doc(userKey)
             .collection("platform")
             .doc(this.platform)
             .collection("progress")
-            .doc(CURRENT_GAME_ID)
-            .get()
-            .then(doc => {
-                if (doc.exists) {
-                    const cloudData = doc.data();
-                    this.applyPayload(cloudData);
-                    this.updateStatus(`[Cloud Restored] Authoritative ledger loaded [${this.platform.toUpperCase()}].`);
-                } else {
-                    this.applyStateToUI();
-                    this.saveProgress();
-                    this.updateStatus(`[Cloud Initialized] Seeded new COTW structure in Firestore.`);
-                }
-            }).catch(err => {
-                console.warn("[Firestore Fetch Error]:", err);
-                this.updateStatus(`Failed to read cloud save: ${err.message}`);
-            });
+            .doc(CURRENT_GAME_ID);
+
+        docRef.get().then(doc => {
+            if (doc.exists) {
+                const cloudData = doc.data();
+                this.applyPayload(cloudData);
+                this.updateStatus(`[Cloud Restored] Loaded: users/${userKey}/platform/${this.platform}/progress/${CURRENT_GAME_ID}`);
+            } else {
+                // Seed entire embedded JSON payload into Firestore immediately
+                this.applyStateToUI();
+                this.saveProgress();
+                this.updateStatus(`[Cloud Seeded] Pushed default JSON ledger to Firestore: users/${userKey}`);
+            }
+        }).catch(err => {
+            console.warn("[Firestore Fetch Error]:", err);
+            this.updateStatus(`Failed to read cloud save: ${err.message}`);
+        });
     }
 };
 
 window.appState.migrateGuestProgressIfPresent = async function() {
-    const emailKey = this.getEmailKey();
-    if (!emailKey) return;
+    const userKey = this.getUserKey();
+    if (!userKey) return;
 
     const guestKey = `fc5_guest_progress_${this.platform}`;
     let guestData = null;
@@ -960,7 +963,7 @@ window.appState.migrateGuestProgressIfPresent = async function() {
 };
 
 // Section 5: UI Painting & Toggle Interactions
-// Lines 758-840: Checkbox and card state handlers
+// Lines 768-850: Instant check states
 window.appState.applyStateToUI = function() {
     this.recalculateMetrics();
 
@@ -1049,13 +1052,13 @@ window.adjRank = function(rankKey, delta) {
 };
 
 // Section 6: Squad Co-Op Bridge via RTDB Friend Codes
-// Lines 843-920: Squad sync and friend progress ledger
+// Lines 853-935: Realtime squad sync querying users/{friendTargetKey}/platform/{platform}/progress/FarCry5
 window.appState.fetchUserFriendCode = async function() {
-    const emailKey = this.getEmailKey();
-    if (!rtdb || !emailKey) return;
+    if (!this.currentUser || !this.currentUser.email || !rtdb) return;
+    const emailKey = this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
     try {
         const snap = await rtdb.ref(`/users/${emailKey}/friend_code`).once('value');
-        this.myFriendCode = snap.val() || 'TLWWTSNU';
+        this.myFriendCode = snap.val() || 'GQGI0SWY';
         const display = document.getElementById('myFriendCodeDisplay');
         if (display) display.innerText = this.myFriendCode;
     } catch (e) {
@@ -1067,11 +1070,12 @@ window.appState.syncFriendsProgress = async function() {
     const rosterContainer = document.getElementById('friendsRosterContainer');
     if (!rosterContainer) return;
 
-    const emailKey = this.getEmailKey();
-    if (!emailKey) {
+    if (!this.currentUser || !this.currentUser.email || !rtdb) {
         rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">Sign in to view your Squad Co-Op Ledger.</div>';
         return;
     }
+
+    const emailKey = this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
 
     try {
         const friendsSnap = await rtdb.ref(`/users/${emailKey}/friends`).once('value');
@@ -1085,7 +1089,8 @@ window.appState.syncFriendsProgress = async function() {
         let cardsHtml = '';
         for (const [fKey, fObj] of Object.entries(friendsData)) {
             const friendUsername = fObj.username || fKey;
-            const friendTargetKey = fObj.email ? fObj.email.replace(/@/g, '_at_').replace(/\./g, '_') : fKey;
+            // Target friend code or sanitized email
+            const friendTargetKey = fObj.friend_code || (fObj.email ? fObj.email.replace(/@/g, '_at_').replace(/\./g, '_') : fKey);
 
             let friendData = null;
             if (firestore) {
@@ -1135,7 +1140,7 @@ window.appState.syncFriendsProgress = async function() {
 };
 
 // Section 7: Dynamic Navbar & Branding (/utm_links)
-// Lines 923-1015: Strict rowNumber sorting and logo/favicon dynamic binding
+// Lines 938-1030: Strict rowNumber sorting and logo/favicon dynamic binding
 async function buildUtmNavigation() {
     const navContainer = document.getElementById('dynamicNavLinks');
     if (!rtdb) return;
@@ -1244,7 +1249,7 @@ async function buildUtmNavigation() {
 }
 
 // Section 8: PSN Skeleton & Live Trophy Tracking
-// Lines 1018-1085: CommID NPWR12514_00 telemetry
+// Lines 1033-1095: CommID NPWR12514_00 telemetry
 async function syncPsnSkeleton() {
     if (!rtdb) return;
     try {
@@ -1273,8 +1278,8 @@ async function syncPsnSkeleton() {
 }
 
 async function autoCheckUserPsnTrophies() {
-    const emailKey = appState.getEmailKey();
-    if (!rtdb || !emailKey) return;
+    if (!appState.currentUser || !appState.currentUser.email || !rtdb) return;
+    const emailKey = appState.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
 
     try {
         const userProfileSnap = await rtdb.ref(`/users/${emailKey}/psn_username`).once('value');
@@ -1310,8 +1315,8 @@ async function autoCheckUserPsnTrophies() {
     }
 }
 
-// Section 9: Render Far Cry 5 Tactical Accordion Sections
-// Lines 1088-1290: Populates cards with data-group and data-type binding
+// Section 9: Render Far Cry 5 Tactical Sections (EXPANDED BY DEFAULT)
+// Lines 1098-1300: Content is immediately visible on screen
 function renderFarCry5Companion(data) {
     const container = document.getElementById('section-container');
     if (!container || !data) return;
@@ -1321,7 +1326,7 @@ function renderFarCry5Companion(data) {
     // 9A. Walkthrough Missions
     if (Array.isArray(data.walkthrough_missions)) {
         html += `
-        <section class="category-section section-collapsed" id="cat-walkthroughs">
+        <section class="category-section" id="cat-walkthroughs">
             <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
                 <h2>📖 Story Campaign & Boss Encounters (${data.walkthrough_missions.length})</h2>
                 <span>▾</span>
@@ -1357,7 +1362,7 @@ function renderFarCry5Companion(data) {
             const list = data.prepper_stashes[reg.key];
             if (Array.isArray(list) && list.length > 0) {
                 html += `
-                <section class="category-section section-collapsed" id="cat-stash-${reg.key}">
+                <section class="category-section" id="cat-stash-${reg.key}">
                     <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
                         <h2>📦 Prepper Stashes — ${reg.label} (${list.length})</h2>
                         <span>▾</span>
@@ -1397,7 +1402,7 @@ function renderFarCry5Companion(data) {
 
         if (totalMags > 0) {
             html += `
-            <section class="category-section section-collapsed" id="cat-magazines">
+            <section class="category-section" id="cat-magazines">
                 <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
                     <h2>📚 Survivalist & Perk Magazines (${totalMags})</h2>
                     <span>▾</span>
@@ -1433,7 +1438,7 @@ function renderFarCry5Companion(data) {
             if (group && Array.isArray(group.items)) {
                 const groupTitle = group.quest_name ? `${group.quest_name} (${cKey.replace(/_/g, ' ').toUpperCase()})` : cKey.replace(/_/g, ' ').toUpperCase();
                 html += `
-                <section class="category-section section-collapsed" id="cat-col-${cKey}">
+                <section class="category-section" id="cat-col-${cKey}">
                     <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
                         <h2>🗂️ Collectibles: ${escapeHtml(groupTitle)} (${group.items.length})</h2>
                         <span>▾</span>
@@ -1470,7 +1475,7 @@ function renderFarCry5Companion(data) {
     // 9E. Guns & Fangs for Hire
     if (Array.isArray(data.guns_and_fangs_for_hire)) {
         html += `
-        <section class="category-section section-collapsed" id="cat-roster">
+        <section class="category-section" id="cat-roster">
             <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
                 <h2>🐾 Guns & Fangs for Hire (${data.guns_and_fangs_for_hire.length})</h2>
                 <span>▾</span>
@@ -1502,7 +1507,7 @@ function renderFarCry5Companion(data) {
 
     if (Array.isArray(trophiesList) && trophiesList.length > 0) {
         html += `
-        <section class="category-section section-collapsed" id="cat-trophies">
+        <section class="category-section" id="cat-trophies">
             <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
                 <h2>🏆 PSN Official Trophies & Achievements (${trophiesList.length})</h2>
                 <span>▾</span>
@@ -1547,7 +1552,7 @@ function renderFarCry5Companion(data) {
 }
 
 // Section 10: Sanitization & URL Normalization
-// Lines 1293-1315: Protocol sanitation
+// Lines 1303-1325: Protocol sanitization
 function toSecureUrl(url) {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
@@ -1571,9 +1576,9 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
-// Section 11: Primary Lifecycle Gate & Zero-Delay Hydration
-// Lines 1318-1420: Renders in-memory ledger instantly then connects live telemetry
-document.addEventListener('DOMContentLoaded', async () => {
+// Section 11: Universal Self-Starting Lifecycle Gate
+// Lines 1328-1430: Guarantees immediate painting regardless of loader timing
+async function initFarCry5Engine() {
     await buildUtmNavigation();
 
     const platformSelector = document.getElementById('platformSelector');
@@ -1610,12 +1615,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 1. Instant In-Memory Hydration (Bypasses any 404 Fetch Delay)
+    // 1. Instant painting of embedded ledger directly to the DOM
     renderFarCry5Companion(fc5_embedded_data);
     await syncPsnSkeleton();
     appState.loadProgress();
 
-    // 2. Auth Listeners & Cloud Sync Gate
+    // 2. Auth State Changed Listener
     if (auth) {
         auth.onAuthStateChanged(async (user) => {
             appState.authInitialized = true;
@@ -1636,6 +1641,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (nameBadge) nameBadge.innerText = appState.activeUser;
                 if (authModal) authModal.classList.add('hidden');
 
+                // Retrieve friend code (e.g. GQGI0SWY) then load/seed cloud ledger
                 await appState.fetchUserFriendCode();
                 await appState.loadProgress();
                 await appState.migrateGuestProgressIfPresent();
@@ -1657,20 +1663,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 3. Background Remote Check (RTDB /game_data/farcry5)
+    // 3. Optional Remote Merge Check (/game_data/farcry5)
     if (rtdb) {
         try {
             const rtdbSnap = await rtdb.ref('/game_data/farcry5').once('value');
             const rtdbJson = rtdbSnap.val();
             if (rtdbJson) {
-                // Merge any remote-defined missions or stashes on top of embedded ledger
                 appState.gameData = Object.assign({}, fc5_embedded_data, rtdbJson);
                 renderFarCry5Companion(appState.gameData);
                 appState.loadProgress();
-                appState.updateStatus("[RTDB Synchronized] Merged remote game updates.");
             }
-        } catch (rtdbErr) {
-            console.warn("[RTDB Background Sync Note]:", rtdbErr);
-        }
+        } catch (e) {}
     }
-});
+}
+
+// Authoritative Execution Gate: Fire immediately if document is already ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFarCry5Engine);
+} else {
+    initFarCry5Engine();
+}
