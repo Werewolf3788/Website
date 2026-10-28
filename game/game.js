@@ -1,10 +1,10 @@
 /* ============================================================================
  * Project: Universal Multi-Game Resistance Companion & Field Ledger
  * File: game.js
- * Version: v11.7.0-DIRECT-GAME-FILES
- * - Games are listed inside this file (BUILTIN_GAMES); index.json is no longer required.
+ * Version: v11.8.0-LENIENT-JSON
+ * - Games are listed inside this file (BUILTIN_GAMES); index.json is not required.
+ * - JSON loader auto-repairs raw line breaks/tabs inside strings and trailing commas.
  * - Load order per game: static file -> Firestore (game_catalog) -> localStorage cache.
- * - importGameCatalogFiles(): upload JSON files to Firestore (stored as strings).
  * ============================================================================ */
 
 // MUST be first and synchronous: remembers where this script lives.
@@ -1635,6 +1635,47 @@ function baseName(path) {
     return String(path || '').split('?')[0].split('/').pop();
 }
 
+// Parses JSON; if it fails, auto-repairs raw line breaks/tabs inside strings and trailing commas.
+// A missing comma or unclosed bracket still throws.
+function parseJsonLenient(text, label) {
+    const clean = String(text).replace(/^\uFEFF/, '');
+    try {
+        return JSON.parse(clean);
+    } catch (firstErr) {
+        let out = '';
+        let inStr = false;
+        let esc = false;
+        for (let i = 0; i < clean.length; i++) {
+            const ch = clean[i];
+            if (inStr) {
+                if (esc) { out += ch; esc = false; continue; }
+                if (ch === '\\') { out += ch; esc = true; continue; }
+                if (ch === '"') { out += ch; inStr = false; continue; }
+                const code = ch.charCodeAt(0);
+                if (code < 0x20) {
+                    if (ch === '\n') out += '\\n';
+                    else if (ch === '\r') out += '\\r';
+                    else if (ch === '\t') out += '\\t';
+                    else out += '\\u' + code.toString(16).padStart(4, '0');
+                    continue;
+                }
+                out += ch;
+            } else {
+                if (ch === '"') { inStr = true; out += ch; continue; }
+                if (ch === ',') {
+                    let j = i + 1;
+                    while (j < clean.length && /\s/.test(clean[j])) j++;
+                    if (clean[j] === '}' || clean[j] === ']') continue; // drop trailing comma
+                }
+                out += ch;
+            }
+        }
+        const parsed = JSON.parse(out); // throws if still invalid
+        console.warn(`[${label}] JSON had errors and was auto-repaired (${firstErr.message}). Please fix the source file.`);
+        return parsed;
+    }
+}
+
 async function fetchJsonFirst(urls, label) {
     const seen = new Set();
     for (const u of urls) {
@@ -1643,7 +1684,7 @@ async function fetchJsonFirst(urls, label) {
         try {
             const res = await fetch(u, { cache: 'no-cache' });
             console.log(`[${label}] ${res.status} ${u}`);
-            if (res.ok) return { json: await res.json(), url: u };
+            if (res.ok) return { json: parseJsonLenient(await res.text(), label), url: u };
         } catch (e) {
             console.warn(`[${label}] FAILED ${u}`, e.message);
         }
@@ -1803,7 +1844,7 @@ window.importGameCatalogFiles = function() {
         const report = [];
         for (const file of Array.from(input.files)) {
             try {
-                const json = JSON.parse(await file.text());
+                const json = parseJsonLenient(await file.text(), file.name);
                 if (Array.isArray(json.games)) {
                     await pushCatalogEntry('manifest', json);
                     report.push(`✓ manifest <- ${file.name} (${json.games.length} games)`);
