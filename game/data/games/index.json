@@ -20,13 +20,7 @@
       "icon": "🎯",
       "commId": "PPSA01876_00",
       "path": "./data/far_cry_6_data.json"
-    },
-    {
-      "id": "way_of_the_hunter",
-      "name": "Way of the Hunter",
-      "icon": "🦌",
-      "commId": "NPWR24391_00",
-      "path": "./data/games/way_of_the_hunter.json"
+    }
     }
   ]
 }
