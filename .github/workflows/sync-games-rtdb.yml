@@ -29,8 +29,8 @@ jobs:
             echo "Uploading $filename as key: $gamekey ..."
             
             response=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X PUT \
-              -H "Content-Type: application/json" \
-              -d @"$filepath" \
+              -H "Content-Type: application/json; charset=utf-8" \
+              --data-binary @"$filepath" \
               "https://entertainment-71888-default-rtdb.firebaseio.com/games/${gamekey}.json")
             
             http_status=$(echo "$response" | grep "HTTP_STATUS" | cut -d':' -f2)
