@@ -31,6 +31,8 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
 .avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid var(--primary);background:var(--bg-surface)}
 .swatch{width:46px;height:38px;padding:2px;cursor:pointer}
 .rgb input{width:64px;text-align:center}
+.savebar{position:sticky;bottom:0;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:24px;padding:12px 0;background:var(--bg-secondary);border-top:1px solid var(--border-color)}
+.savebar .hint{margin:0}
 .hidden{display:none!important}
 #msg{position:sticky;top:8px;z-index:5;padding:10px 14px;border-radius:6px;margin-bottom:12px;background:var(--bg-surface);border:1px solid var(--border-color)}
 #google_translate_element,.goog-te-banner-frame,.skiptranslate,.goog-logo-link{display:none!important}
@@ -49,7 +51,7 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
   <div class="row"><button class="primary" id="gBtn">Continue with Google</button></div>
   <label>Email &amp; password</label>
   <div class="row"><input id="em" type="email" placeholder="Email" autocomplete="email"><input id="pw" type="password" placeholder="Password" autocomplete="current-password">
-  <button id="emIn">Sign in</button><button id="emUp">Create account</button></div>
+  <button id="emIn">Sign in</button><button id="emUp">Create account</button><button id="emReset">Forgot password</button></div>
   <label>Phone</label>
   <div class="row"><input id="ph" type="tel" placeholder="+1 555 123 4567"><button id="phSend">Send code</button></div>
   <div class="row hidden" id="codeRow"><input id="code" placeholder="6-digit code" inputmode="numeric"><button id="phOk">Verify</button></div>
@@ -60,6 +62,19 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
 <section id="app" class="hidden">
   <div class="row"><img id="av" class="avatar" alt="Your avatar"><div><strong id="who"></strong><div class="hint" id="whoSub"></div></div><button id="out" style="margin-left:auto">Sign out</button></div>
 
+  <div id="linkBox">
+  <h2>Sign-in methods</h2>
+  <p class="hint">Link a phone number or email so you can always get back in, even without Google. Everything stays on the same profile.</p>
+  <div id="methods" class="box"></div>
+  <div id="lEmailBox"><label>Link email &amp; password</label>
+    <div class="row"><input id="lem" type="email" placeholder="Email" autocomplete="email"><input id="lpw" type="password" placeholder="New password (6+ characters)" autocomplete="new-password"><button id="lEmBtn">Link email</button></div></div>
+  <div id="lPhoneBox"><label>Link phone number</label>
+    <div class="row"><input id="lph" type="tel" placeholder="+1 555 123 4567"><button id="lphSend">Send code</button></div>
+    <div class="row hidden" id="lCodeRow" style="margin-top:6px"><input id="lcode" placeholder="6-digit code" inputmode="numeric"><button id="lphOk">Verify &amp; link</button></div></div>
+  <div class="row" style="margin-top:8px"><button id="lGoogle">Link Google</button></div>
+  <div id="rc2"></div>
+  </div>
+
   <h2>Profile</h2>
   <label for="username">Display name / gamer tag</label><input id="username" maxlength="32">
   <label>Friend code</label>
@@ -69,7 +84,7 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
   <h2>Profile image</h2>
   <div class="row"><select id="avatar_source">
     <option value="google">Google profile image</option><option value="psn">PlayStation image</option>
-    <option value="twitch">Twitch image</option><option value="custom">Custom URL</option></select>
+    <option value="steam">Steam image</option><option value="twitch">Twitch image</option><option value="custom">Custom URL</option></select>
     <input id="avatar_custom" placeholder="https://..." class="hidden"></div>
 
   <h2>Linked accounts</h2>
@@ -99,7 +114,7 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
   <div class="row"><select id="lang"><option value="auto">Match my device</option></select></div>
   <p class="hint">The site translates automatically to your device language. Pick another here to override it.</p>
 
-  <div class="row" style="margin-top:24px"><button class="primary" id="save">Save settings</button></div>
+  <div class="savebar"><button class="primary" id="save">Save settings</button><span id="saveState" class="hint" role="status"></span></div>
 
   <h2>Delete account &amp; erase cloud records</h2>
   <div class="box bad">Permanently removes your profile, private keys, friend code, Firestore records and login. This cannot be undone.</div>
@@ -141,11 +156,17 @@ const keyOf=u=>u.email?u.email.toLowerCase().replace(/\./g,'_').replace('@','_at
 const HANDLES=[['psn_username','PlayStation username','psn_username_scope'],['steam_id','Steam ID','steam_id_scope'],['xbox_gamertag','Xbox gamertag','xbox_gamertag_scope'],['twitch_username','Twitch username','twitch_scope']];
 const SCOPES=[['private','No One (Private)'],['friends','Friends'],['public','Public']];
 let U,K,D={},S={};
+let loading=true,dirty=false;
+const setState=(t,c)=>{const e=$('saveState');e.textContent=t;e.style.color=c||'var(--text-muted)'};
+const markDirty=e=>{if(loading||(e&&e.target&&e.target.closest&&e.target.closest('#linkBox')))return;dirty=true;setState('Unsaved changes','var(--secondary)')};
+$('app').addEventListener('input',markDirty);$('app').addEventListener('change',markDirty);
+window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
 
 // ---- Sign in ----
 $('gBtn').onclick=()=>auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>say(e.message,1));
 $('emIn').onclick=()=>auth.signInWithEmailAndPassword($('em').value,$('pw').value).catch(e=>say(e.message,1));
-$('emUp').onclick=()=>auth.createUserWithEmailAndPassword($('em').value,$('pw').value).catch(e=>say(e.message,1));
+$('emUp').onclick=()=>auth.createUserWithEmailAndPassword($('em').value,$('pw').value).then(c=>c.user.sendEmailVerification().catch(()=>{})).catch(e=>say(e.message,1));
+$('emReset').onclick=()=>auth.sendPasswordResetEmail($('em').value.trim()).then(()=>say('Password reset email sent.')).catch(e=>say(e.message,1));
 let conf,rv;
 $('phSend').onclick=async()=>{try{rv=rv||new firebase.auth.RecaptchaVerifier('rc',{size:'invisible'});
   conf=await auth.signInWithPhoneNumber($('ph').value.trim(),rv);$('codeRow').classList.remove('hidden');say('Code sent.')}catch(e){say(e.message,1)}};
@@ -194,7 +215,7 @@ function setColor(n,hex,apply=true){
   $('c'+n).oninput=e=>setColor(n,e.target.value);
   $(n==1?'h1':'h2x').oninput=e=>{let v=e.target.value.trim();if(v&&v[0]!=='#')v='#'+v;setColor(n,v)};
 });
-$('resetC').onclick=()=>{setColor(1,'#0088ff');setColor(2,'#f5a623')};
+$('resetC').onclick=()=>{setColor(1,'#0088ff');setColor(2,'#f5a623');markDirty()};
 
 // ---- Avatar ----
 async function resolveAvatar(){
@@ -202,14 +223,19 @@ async function resolveAvatar(){
   let url=D.avatar_url||'';
   if(s==='google')url=U.photoURL||'';
   else if(s==='custom')url=$('avatar_custom').value.trim();
-  else if(s==='psn')url=D.psn_avatar_url||'';
+  else if(s==='psn'){const n=$('psn_username').value.trim().toLowerCase();url='';
+    if(n){try{const v=(await db.ref('psn/gamertags/'+n+'/avatar').get()).val();url=typeof v==='string'?v:(v&&v.url)||''}catch(e){}}
+    if(!url)say('No PlayStation image found yet for that username.',1)}
+  else if(s==='steam'){const id=$('steam_id').value.trim();url='';
+    if(id){try{const v=(await db.ref('steam_users/'+id+'/profile/avatar').get()).val();url=typeof v==='string'?v:(v&&v.url)||''}catch(e){}}
+    if(!url)say('No Steam image found yet for that ID.',1)}
   else if(s==='twitch'){const n=$('twitch_username').value.trim();
     if(n){try{const t=(await (await fetch('https://decapi.me/twitch/avatar/'+encodeURIComponent(n))).text()).trim();if(/^https?:/.test(t))url=t;else say('Twitch image not found for that name.',1)}catch(e){}}}
   $('av').src=url||'';return url;
 }
 $('avatar_source').onchange=resolveAvatar;
 $('avatar_custom').onchange=resolveAvatar;
-$('twitch_username').addEventListener('change',()=>$('avatar_source').value==='twitch'&&resolveAvatar());
+[['twitch_username','twitch'],['psn_username','psn'],['steam_id','steam']].forEach(([f,s])=>$(f).addEventListener('change',()=>$('avatar_source').value===s&&resolveAvatar()));
 
 // ---- Load / save ----
 const rand8=()=>Array.from(crypto.getRandomValues(new Uint8Array(8)),b=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b%32]).join('');
@@ -220,22 +246,32 @@ async function ensureFriendCode(){
   throw new Error('Could not create a friend code. Try again.');
 }
 async function load(){
-  [D,S]=(await Promise.all([db.ref('users/'+K).get(),db.ref('user_secrets/'+K).get()])).map(s=>s.val()||{});
+  loading=true;
+  D=(await db.ref('users/'+K).get()).val()||{};
+  if(!D.updated_at&&!D.username){
+    const t=Date.now(),init={username:U.displayName||(U.email||'').split('@')[0]||'Hunter',avatar_source:'google',avatar_url:U.photoURL||'',primary_color:'#0088ff',secondary_color:'#f5a623',created_at:t,updated_at:t};
+    try{await db.ref('users/'+K).update(init);Object.assign(D,init);say('Profile created in your account.')}catch(e){say(e.message,1)}
+  }
+  try{S=(await db.ref('user_secrets/'+K).get()).val()||{}}catch(e){S={};say('Could not read private keys. Publish the user_secrets rules in Realtime Database.',1)}
   $('who').textContent=D.username||U.displayName||U.email||U.phoneNumber;
   $('whoSub').textContent=U.email||U.phoneNumber||'';
   $('username').value=D.username||U.displayName||'';
   $('avatar_source').value=D.avatar_source||'google';$('avatar_custom').value=D.avatar_source==='custom'?D.avatar_url||'':'';
   HANDLES.forEach(([f,,s])=>{$(f).value=D[f]||'';$(s).value=D[s]||'private'});
-  $('psn_account_id').value=S.psn_account_id||'';$('psn_npsso').value=S.psn_npsso||'';
+  $('psn_account_id').value=D.psn_account_id||S.psn_account_id||'';$('psn_npsso').value=S.psn_npsso||'';
   $('npssoState').textContent=S.psn_npsso?(D.psn_npsso_valid===false?'Saved token has expired. Paste a new one.':'Token saved.'):'';
   (D.links||[]).slice(0,5).forEach((l,i)=>$('lk'+i).value=l);
   setColor(1,D.primary_color||'#0088ff');setColor(2,D.secondary_color||'#f5a623');
   $('friend_code').value=await ensureFriendCode();
-  resolveAvatar();
+  await resolveAvatar();
+  renderMethods();
+  loading=false;dirty=false;
+  setState(D.updated_at?'Last saved: '+new Date(D.updated_at).toLocaleString():'Not saved yet');
 }
 $('cp').onclick=()=>navigator.clipboard.writeText($('friend_code').value).then(()=>say('Friend code copied.'));
 
 $('save').onclick=async()=>{
+  const b=$('save');b.disabled=true;b.textContent='Saving…';
   try{
     const url=await resolveAvatar(),now=Date.now();
     const pub={username:$('username').value.trim(),avatar_source:$('avatar_source').value,avatar_url:url,
@@ -245,11 +281,57 @@ $('save').onclick=async()=>{
     const npsso=$('psn_npsso').value.trim();
     if(npsso&&!/^[A-Za-z0-9]{64}$/.test(npsso))return say('NPSSO must be exactly 64 letters and numbers.',1);
     if(npsso&&npsso!==S.psn_npsso)pub.psn_npsso_valid=true;
+    pub.psn_account_id=$('psn_account_id').value.trim();
     await db.ref('users/'+K).update(pub);
-    await db.ref('user_secrets/'+K).update({psn_account_id:$('psn_account_id').value.trim(),psn_npsso:npsso,updated_at:now});
-    Object.assign(D,pub);say('Settings saved.');
-  }catch(e){say(e.message,1)}
+    const back=(await db.ref('users/'+K).get()).val()||{};
+    if(back.primary_color!==pub.primary_color||back.secondary_color!==pub.secondary_color||(back.avatar_url||'')!==(pub.avatar_url||'')||back.username!==pub.username)
+      throw new Error('Saved, but the values read back differ. Try again.');
+    D=back;dirty=false;
+    let ok=true;
+    try{await db.ref('user_secrets/'+K).update({psn_npsso:npsso,updated_at:now})}catch(e){ok=false}
+    const t=new Date(now).toLocaleString();
+    if(ok){say('Saved to your account.');setState('Saved to cloud: '+t+' ✓','var(--accent-green)')}
+    else{say('Profile saved, but the NPSSO could not be saved. Publish the user_secrets rules.',1);setState('Profile saved '+t+'. NPSSO not saved.','var(--danger)')}
+  }catch(e){say(e.message,1);setState('Not saved. '+e.message,'var(--danger)')}
+  finally{b.disabled=false;b.textContent='Save settings'}
 };
+
+// ---- Link / unlink sign-in methods ----
+const PNAME={'google.com':'Google','password':'Email & password','phone':'Phone'};
+function renderMethods(){
+  const pd=U.providerData,has=id=>pd.some(p=>p.providerId===id);
+  $('methods').innerHTML=pd.map(p=>`<div class="row" style="margin:4px 0"><span style="flex:1">${PNAME[p.providerId]||esc(p.providerId)}: ${esc(p.phoneNumber||p.email||'')}${p.providerId==='password'?(U.emailVerified?' (verified)':' (not verified)'):''}</span>${p.providerId==='phone'&&pd.length>1?'<button data-un="phone">Unlink</button>':''}</div>`).join('');
+  $('methods').querySelectorAll('[data-un]').forEach(b=>b.onclick=async()=>{if(!confirm('Remove this phone number from your sign-in methods?'))return;try{await U.unlink('phone');await afterLink()}catch(e){linkErr(e)}});
+  $('lEmailBox').classList.toggle('hidden',has('password'));
+  $('lPhoneBox').classList.toggle('hidden',has('phone'));
+  $('lGoogle').classList.toggle('hidden',has('google.com'));
+}
+const linkErr=e=>say({'auth/credential-already-in-use':'That phone number or email already belongs to another account. Sign in with it instead.','auth/email-already-in-use':'That email already belongs to another account. Sign in with it instead.','auth/provider-already-linked':'That method is already linked.','auth/requires-recent-login':'For security, sign out and sign in again, then retry.','auth/weak-password':'Password needs at least 6 characters.','auth/invalid-verification-code':'That code is not correct.'}[e.code]||e.message,1);
+async function migrate(a,b){
+  for(const n of ['users','user_secrets']){
+    const src=await db.ref(n+'/'+a).get();
+    if(src.exists()&&!(await db.ref(n+'/'+b).get()).exists()){await db.ref(n+'/'+b).set(src.val());await db.ref(n+'/'+a).remove()}
+  }
+  const fc=(await db.ref('users/'+b+'/friend_code').get()).val();
+  if(fc)await db.ref('friend_codes/'+fc).set(b);
+}
+async function adoptUidData(){
+  if(!U.email||K===U.uid)return;
+  if((await db.ref('users/'+U.uid).get()).exists()&&!(await db.ref('users/'+K).get()).exists())await migrate(U.uid,K);
+}
+async function afterLink(){
+  try{await U.reload();await U.getIdToken(true);
+    const nk=keyOf(U);if(nk!==K){await migrate(K,nk);K=nk}
+    await load();say('Sign-in methods updated.')}catch(e){say(e.message,1)}
+  renderMethods();
+}
+$('lGoogle').onclick=()=>U.linkWithPopup(new firebase.auth.GoogleAuthProvider()).then(afterLink).catch(linkErr);
+$('lEmBtn').onclick=()=>U.linkWithCredential(firebase.auth.EmailAuthProvider.credential($('lem').value.trim(),$('lpw').value))
+  .then(async()=>{try{await U.sendEmailVerification()}catch(e){}await afterLink();say('Email linked. Check your inbox to verify it.')}).catch(linkErr);
+let lconf,lrv;
+$('lphSend').onclick=async()=>{try{lrv=lrv||new firebase.auth.RecaptchaVerifier('rc2',{size:'invisible'});
+  lconf=await U.linkWithPhoneNumber($('lph').value.trim(),lrv);$('lCodeRow').classList.remove('hidden');say('Code sent.')}catch(e){linkErr(e)}};
+$('lphOk').onclick=()=>lconf&&lconf.confirm($('lcode').value.trim()).then(afterLink).catch(linkErr);
 
 // ---- Delete everything listed in the privacy policy ----
 $('del').onclick=async()=>{
@@ -268,7 +350,7 @@ $('del').onclick=async()=>{
 
 auth.onAuthStateChanged(async u=>{
   U=u;$('authBox').classList.toggle('hidden',!!u);$('app').classList.toggle('hidden',!u);
-  if(u){K=keyOf(u);try{await load()}catch(e){say(e.message,1)}}
+  if(u){K=keyOf(u);try{await adoptUidData();await load()}catch(e){say(e.message,1)}}
 });
 </script>
 </body>
