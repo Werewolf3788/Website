@@ -1,11 +1,12 @@
 # ==============================================================================
-# GitHub Actions Workflow: Deploy to Firebase Hosting
-# Target Project: entertainment-71888  |  Site: https://entertainment-71888.web.app
+# GitHub Actions Workflow: Dual-Deploy to Firebase Hosting & GitHub Pages
+# Firebase:      https://entertainment-71888.web.app  (hosting.public in firebase.json)
+# GitHub Pages:  https://werewolf3788.github.io/Website/  (whole repo, for overlays)
 # Target Secret: GCP_SA_KEY_WEBSITE
-# Deploys whatever folder firebase.json names under hosting.public (your /public).
+# The two deploys run as separate jobs, so one failing does not block the other.
 # ==============================================================================
 
-name: Deploy to Firebase Hosting
+name: Deploy to Firebase Hosting & GitHub Pages
 
 on:
   push:
@@ -15,17 +16,16 @@ on:
 
 permissions:
   contents: read
-
-# One deploy at a time
-concurrency:
-  group: firebase-hosting
-  cancel-in-progress: false
+  pages: write
+  id-token: write
 
 jobs:
-  deploy:
+  firebase:
     name: Deploy to Firebase Hosting
     runs-on: ubuntu-latest
-
+    concurrency:
+      group: firebase-hosting
+      cancel-in-progress: false
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -37,3 +37,28 @@ jobs:
           args: deploy --only hosting --project entertainment-71888
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_WEBSITE }}
+
+  pages:
+    name: Deploy to GitHub Pages (overlays)
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
