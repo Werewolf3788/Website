@@ -1,0 +1,406 @@
+{
+  "game": "Far Cry 5",
+  "gameId": "FarCry5",
+  "psn_communication_id": "NPWR12514_00",
+  "activeMission": "Hope County Resistance",
+  "collectibles": {
+    "baseball_cards": {
+      "quest_name": "Grand Slam",
+      "quest_giver": "George",
+      "quest_giver_location": "Oberlin Picnic Area, Whitetail Mountains",
+      "total_count": 9,
+      "region": "Whitetail Mountains",
+      "items": [
+        {
+          "id": "baseball_card_01",
+          "name": "Southwest of F.A.N.G Center",
+          "location": "House by a small body of water southwest of F.A.N.G Center",
+          "guide": "Eliminate enemies outside to the left of the house. Enter the house; the card is on a shelf above the couch."
+        },
+        {
+          "id": "baseball_card_02",
+          "name": "North West of Cedar Lake",
+          "location": "Lakeside house northwest of Cedar Lake",
+          "guide": "Clear the enemies on the lakeside of the building. Head inside to find the card on the chest of drawers next to the bed."
+        },
+        {
+          "id": "baseball_card_03",
+          "name": "West of Cedar Lake",
+          "location": "Mountain cabin west of Cedar Lake",
+          "guide": "Access via grapple or flying vehicle. Clear enemies and enter through the front door; the card is immediately behind the opening door on a desk."
+        },
+        {
+          "id": "baseball_card_04",
+          "name": "North of Whitetail Park Visitor Center",
+          "location": "Shack in the hills north of Whitetail Park Visitor Center",
+          "guide": "Enter the enemy-free shack and turn left. The card sits on a shelf."
+        },
+        {
+          "id": "baseball_card_05",
+          "name": "South West of Clagett Boathouse",
+          "location": "Petrol station on the road southwest of Clagett Boathouse",
+          "guide": "Enter the petrol station building. The card is on a shelf underneath the 'Clothing' sign."
+        },
+        {
+          "id": "baseball_card_06",
+          "name": "Cooper Cabin",
+          "location": "Cabin northeast of the Wolf's Den",
+          "guide": "Head inside to the room with a mattress propped up against the wall. The card is on the shelf straight ahead."
+        },
+        {
+          "id": "baseball_card_07",
+          "name": "F.A.N.G Center",
+          "location": "F.A.N.G Center gift shop",
+          "guide": "Liberate or clear the cultists. Enter the building to the right of the main entrance; the card is on a merchandise shelf in the center of the gift shop."
+        },
+        {
+          "id": "baseball_card_08",
+          "name": "McNeil Residence",
+          "location": "Northeast of F.A.N.G Center along the road",
+          "guide": "Clear the cultists and enter the white shed to the left. The card is on a shelf on the wall behind the door."
+        },
+        {
+          "id": "baseball_card_09",
+          "name": "North East of Baron Lumber Mill",
+          "location": "White shipping-container style house on race tracks behind Baron Lumber Mill",
+          "guide": "Clear nearby enemies, kick down the boarded-up door, and take the card off the wall as you enter."
+        }
+      ]
+    },
+    "comic_books": {
+      "quest_name": "Golden Age Nostalgia",
+      "quest_giver": "Nadine Abercrombie",
+      "quest_giver_location": "Dodd Residence (between Fall's End and Rae-Rae's Pumpkin Farm), Holland Valley",
+      "total_count": 12,
+      "items": [
+        {
+          "id": "comic_01",
+          "region": "Holland Valley",
+          "name": "Parker Laboratories",
+          "location": "West of Fall's End",
+          "guide": "Go up the stairs inside the house with the green roof. The comic book is directly ahead on the desk."
+        },
+        {
+          "id": "comic_02",
+          "region": "Holland Valley",
+          "name": "Boyd Residence",
+          "location": "Directly west of the Dodd Residence",
+          "guide": "Enter the house, turn left into the bedroom, and find the comic book on the bed next to a hunting bow."
+        },
+        {
+          "id": "comic_03",
+          "region": "Holland Valley",
+          "name": "Bradbury Farm",
+          "location": "South of Lamb of God Church, below crop circle",
+          "guide": "Enter the large barn to the right. Jump up to the second level via boxes in front of the blue tarp; the comic is on an old mattress."
+        },
+        {
+          "id": "comic_04",
+          "region": "Whitetail Mountains",
+          "name": "Jefferson Lookout Tower",
+          "location": "Mountain peak west of the Wolf's Den",
+          "guide": "Go to the cliffside entrance and ascend the stairs into the tower. The comic sits on a table right inside the entrance."
+        },
+        {
+          "id": "comic_05",
+          "region": "Whitetail Mountains",
+          "name": "McNeil Residence",
+          "location": "On the road between F.A.N.G Center and Fort Drubman",
+          "guide": "Break the boarded-up window around the back of the house. Enter into the second room, turn left into the bathroom, and grab the comic from the basin."
+        },
+        {
+          "id": "comic_06",
+          "region": "Whitetail Mountains",
+          "name": "Elliot Residence",
+          "location": "South of F.A.N.G Center",
+          "guide": "Climb onto the verandah where the barbed wire is broken and enter through the broken window. The comic is on cases next to a lamp."
+        },
+        {
+          "id": "comic_07",
+          "region": "Henbane River",
+          "name": "Peaches Taxidermy",
+          "location": "Peaches Taxidermy workshop grounds",
+          "guide": "Enter the grey house through the white door on the left side of the property. The comic is located right next to the television."
+        },
+        {
+          "id": "comic_08",
+          "region": "Henbane River",
+          "name": "Chan Residence",
+          "location": "Just south of Angel's Peak",
+          "guide": "Go around the back of the house, enter through the blue door, and find the comic on a bed directly behind the door."
+        },
+        {
+          "id": "comic_09",
+          "region": "Henbane River",
+          "name": "Vasquez Residence",
+          "location": "Waterfront between Faith's region and Dutch's Island",
+          "guide": "Dispatch the cultists outside, enter through the front door, and grab the comic from the living room couch."
+        },
+        {
+          "id": "comic_10",
+          "region": "Henbane River",
+          "name": "O'Hara's Haunted House",
+          "location": "Border of Faith and John's regions, northwest of Dead Man's River",
+          "guide": "Climb the crate with blue ropes behind the house onto the roof, drop to the scaffolding, and crouch through the second-floor window. The comic is on a mattress."
+        },
+        {
+          "id": "comic_11",
+          "region": "Henbane River",
+          "name": "Boshaw Manor",
+          "location": "Southwest of Moonflower Trailer Park",
+          "guide": "Walk up the ramp into the house marked with 'No Smoking' signs. Go to the rear bedroom; the comic is on the bedside table."
+        },
+        {
+          "id": "comic_12",
+          "region": "Henbane River",
+          "name": "Camp Cougars",
+          "location": "Campsite southeast of Peaches Taxidermy",
+          "guide": "Clear cultists/predators at the campsite. The comic is lying on the ground directly in front of one of the tents."
+        }
+      ]
+    },
+    "bobbleheads": {
+      "quest_name": "Mint Condition",
+      "quest_giver": "Dave Fowler",
+      "quest_giver_location": "Fowler's Retreat, Whitetail Mountains",
+      "total_count": 10,
+      "items": [
+        {
+          "id": "bobblehead_01",
+          "region": "Whitetail Mountains",
+          "name": "Baron Lumber Mill",
+          "location": "Baron Lumber Mill main building",
+          "guide": "Ascend the front stairs and enter through the window. The bobblehead is straight ahead in the kitchen."
+        },
+        {
+          "id": "bobblehead_02",
+          "region": "Whitetail Mountains",
+          "name": "Whitetail Park Ranger Station",
+          "location": "Southwest of F.A.N.G Center",
+          "guide": "Enter the main office, go behind the front desk into the adjacent room, and grab the bobblehead from the chest of drawers on the left wall."
+        },
+        {
+          "id": "bobblehead_03",
+          "region": "Whitetail Mountains",
+          "name": "Island North of Grand View Hotel",
+          "location": "Small island cabin north of Grand View Hotel",
+          "guide": "Swim north to the island log cabin. The bobblehead is located inside on a splash of blood on the bed."
+        },
+        {
+          "id": "bobblehead_04",
+          "region": "Whitetail Mountains",
+          "name": "Lansdowne Airstrip",
+          "location": "Hangar north of F.A.N.G Center (Inside 'Hangar Pains' Prepper Stash)",
+          "guide": "Grapple the nearby radio tower, wingsuit/parachute onto the hangar roof, drop through the open skylight, and find the bobblehead on a shelf."
+        },
+        {
+          "id": "bobblehead_05",
+          "region": "Whitetail Mountains",
+          "name": "Whitetail Park Visitor Center",
+          "location": "Visitor Center gift shop",
+          "guide": "Head up the stairs and turn left into the souvenir shop. The bobblehead sits directly in front on a merchandise display shelf."
+        },
+        {
+          "id": "bobblehead_06",
+          "region": "Whitetail Mountains",
+          "name": "South Park Entrance",
+          "location": "Border of Jacob's and John's regions, north of Rae-Rae's Pumpkin Farm",
+          "guide": "Ascend the wooden stairs behind the buildings. The bobblehead is on the floor mixed with discarded junk."
+        },
+        {
+          "id": "bobblehead_07",
+          "region": "Holland Valley",
+          "name": "St. Isidore School",
+          "location": "Abandoned school northeast of Fall's End",
+          "guide": "Climb onto the main school roof to retrieve the keys from the chimney. Zipline to the outbuilding, unlock it, and pick the bobblehead up from the shelf."
+        },
+        {
+          "id": "bobblehead_08",
+          "region": "Holland Valley",
+          "name": "Bradbury Tractor Shed",
+          "location": "North of the crop circle between Fall's End and Lamb of God Church",
+          "guide": "Approach the small building next to the shed, break the wooden slats covering the window, and retrieve the bobblehead inside the broken refrigerator."
+        },
+        {
+          "id": "bobblehead_09",
+          "region": "Henbane River",
+          "name": "8-Bit Pizza Bar",
+          "location": "West of Hope County Jail",
+          "guide": "Walk through the front door, pass behind the service counter into the kitchen, and grab the bobblehead off the shelf next to the dishware."
+        },
+        {
+          "id": "bobblehead_10",
+          "region": "Henbane River",
+          "name": "Feeney Residence",
+          "location": "Eastern outskirts of Henbane River",
+          "guide": "Clear the cultists in the field and enter the house. The bobblehead is on the kitchen counter against the wall."
+        }
+      ]
+    },
+    "vietnam_lighters": {
+      "quest_name": "What They Carried",
+      "quest_giver": "Wendell Redler",
+      "quest_giver_location": "Redler Residence, East of Fall's End",
+      "total_count": 12,
+      "items": [
+        {
+          "id": "lighter_01",
+          "region": "Whitetail Mountains",
+          "name": "West of Cedar Lake",
+          "location": "Underground bunker west of Cedar Lake",
+          "guide": "Climb down into the bunker and grab the lighter off the shelf next to two blue barrels."
+        },
+        {
+          "id": "lighter_02",
+          "region": "Whitetail Mountains",
+          "name": "North West of Widow's Creek",
+          "location": "Bunker off the main road northwest of Widow's Creek",
+          "guide": "Enter the roadside bunker and retrieve the lighter located in the back room next to the television."
+        },
+        {
+          "id": "lighter_03",
+          "region": "Whitetail Mountains",
+          "name": "Whitetail Park Visitor Center",
+          "location": "Visitor Center information building",
+          "guide": "Climb the stairs and turn left into the information center. The lighter is on a set of shelves in the second room to the left."
+        },
+        {
+          "id": "lighter_04",
+          "region": "Whitetail Mountains",
+          "name": "Elliot Residence",
+          "location": "Bunker at Elliot Residence (South of F.A.N.G Center)",
+          "guide": "Enter the upper story via the broken window, navigate down to the kitchen for the keycard, shoot the bunker lock in the shed outside, and find the lighter on the bench."
+        },
+        {
+          "id": "lighter_05",
+          "region": "Holland Valley",
+          "name": "Fillmore Residence",
+          "location": "East of Fall's End, west of Dead Man's River",
+          "guide": "Enter the antler-adorned shed and descend into the bunker. The lighter sits on shelves in the second room."
+        },
+        {
+          "id": "lighter_06",
+          "region": "Holland Valley",
+          "name": "Miller Residence",
+          "location": "Southwest of Fillmore Residence",
+          "guide": "Head to the white shed and drop down into the bunker hatch. The lighter is on the floor beside the nightstand."
+        },
+        {
+          "id": "lighter_07",
+          "region": "Holland Valley",
+          "name": "Harris Residence",
+          "location": "Northwest Holland Valley",
+          "guide": "Enter the bunker via the hatch inside the brown wooden shed. The lighter is on the shelves beside the bed."
+        },
+        {
+          "id": "lighter_08",
+          "region": "Holland Valley",
+          "name": "Rae-Rae's Pumpkin Farm",
+          "location": "North of Fall's End",
+          "guide": "Find the bunker hatch out in the open behind the farm buildings. The lighter is on a chair beside the bed."
+        },
+        {
+          "id": "lighter_09",
+          "region": "Henbane River",
+          "name": "McCoy Cabin",
+          "location": "West of Peaches Taxidermy",
+          "guide": "Locate the bunker hatch partially covered by green tarp. The lighter is on the shelving unit in the second room."
+        },
+        {
+          "id": "lighter_10",
+          "region": "Henbane River",
+          "name": "McClean Residence",
+          "location": "Border between Faith's region and Dutch's Island",
+          "guide": "Clear any hostile cultists and access the bunker near the rear of the property. The lighter is on the bed in the rear room."
+        },
+        {
+          "id": "lighter_11",
+          "region": "Henbane River",
+          "name": "Abercrombie Residence",
+          "location": "East of Hope County Jail",
+          "guide": "Go behind the main house to find the bunker entrance before the stairs. The lighter is on shelves in the second room."
+        },
+        {
+          "id": "lighter_12",
+          "region": "Henbane River",
+          "name": "Counselor's Cabin",
+          "location": "West and slightly south of Moonflower Trailer Park",
+          "guide": "Walk between the house and shed to reach the backyard bunker hatch. The lighter is in the second room on the shelf near the couch."
+        }
+      ]
+    },
+    "vinyl_crates": {
+      "quest_name": "Turn the Tables",
+      "quest_giver": "Wheaty",
+      "quest_giver_location": "Wolf's Den, Whitetail Mountains",
+      "quest_prerequisite": "Gearing Up",
+      "total_count": 10,
+      "region": "Whitetail Mountains",
+      "items": [
+        {
+          "id": "vinyl_01",
+          "name": "Osprey Cabin",
+          "location": "Directly south of Wolf's Den down the cliff",
+          "guide": "Enter through the side door of the log cabin. The crate sits on the coffee table between the sofa and television."
+        },
+        {
+          "id": "vinyl_02",
+          "name": "Dansky Cabin",
+          "location": "South of Wolf's Den between two roads",
+          "guide": "Approach the front door with the keypad lock; the vinyl crate is located outside under a table to the left of the door."
+        },
+        {
+          "id": "vinyl_03",
+          "name": "Hunter's Pass Shelter",
+          "location": "Northwest of Wolf's Den",
+          "guide": "Clear the area around the small brick cabin and head inside. The crate is on a table immediately past the door."
+        },
+        {
+          "id": "vinyl_04",
+          "name": "Red Tail Cabin",
+          "location": "Directly east of Wolf's Den",
+          "guide": "Enter the large wooden house and turn left into the kitchen. The crate rests on the counter beside the window."
+        },
+        {
+          "id": "vinyl_05",
+          "name": "Breakthrough Camp",
+          "location": "East of Red Tail Cabin",
+          "guide": "Pass through the main camp gate and turn right to the first lock house. The crate is on a shelf along the entryway wall."
+        },
+        {
+          "id": "vinyl_06",
+          "name": "North Park Entrance",
+          "location": "Road heading west from F.A.N.G Center",
+          "guide": "Go inside the southern building. The vinyl crate is sitting on top of a low bookshelf."
+        },
+        {
+          "id": "vinyl_07",
+          "name": "The Grill Steak",
+          "location": "Outdoor restaurant south of F.A.N.G Center",
+          "guide": "Walk past the barbecue grill and truck toward the gazebo shelter. The crate is in front of a tent underneath."
+        },
+        {
+          "id": "vinyl_08",
+          "name": "MCA Mobile Lab",
+          "location": "East of Baron Lumber Mill",
+          "guide": "Dispatch any wolves roaming the perimeter. The crate is sitting directly under the open grey canopy tent."
+        },
+        {
+          "id": "vinyl_09",
+          "name": "Linero Building Supplies",
+          "location": "North of Baron Lumber Mill, west of Fort Drubman",
+          "guide": "Proceed to the construction trailer at the back of the site, enter the blue door, and retrieve the crate on a desk behind a filing cabinet."
+        },
+        {
+          "id": "vinyl_10",
+          "name": "South Park Entrance",
+          "location": "Border road between Wolf's Den and Rae-Rae's Pumpkin Farm",
+          "guide": "Enter the roadside office next to the ACROD parking spot. The crate is on the floor in front of tipped filing cabinets."
+        }
+      ]
+    },
+    "whiskey_barrels": {
+      "quest_name": "Whiskey River",
+      "quest_giver": "Sherri",
+      "quest_giver_location": "Can of Worms Fishing Store, Silver Lake, Henbane River",
+      "required_perk
