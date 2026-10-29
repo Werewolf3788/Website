@@ -1,21 +1,32 @@
 {
+  "id": "./",
   "short_name": "TrophyTracker",
   "name": "PSN Trophy & Progress Tracker",
+  "description": "Track PlayStation trophies, Steam games and hunting progress.",
   "icons": [
     {
-      "src": "/icons/icon-192.png",
+      "src": "icons/icon-192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "icons/icon-512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any"
     }
   ],
-  "start_url": "/index.html",
-  "background_color": "#121212",
-  "theme_color": "#1f1f1f",
+  "start_url": "./index.html",
+  "scope": "./",
+  "background_color": "#0a0d12",
+  "theme_color": "#131821",
   "display": "standalone",
-  "orientation": "any"
+  "orientation": "any",
+  "shortcuts": [
+    {
+      "name": "Settings",
+      "url": "./settings.html"
+    }
+  ]
 }
