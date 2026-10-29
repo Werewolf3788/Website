@@ -4,7 +4,6 @@ on:
   push:
     paths:
       - 'public/games/**'
-      - 'website/public/games/**'
       - '.github/workflows/sync-games-rtdb.yml'
   workflow_dispatch:
 
@@ -15,12 +14,33 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+      - name: Verify JSON Files Exist
+        run: |
+          echo "Checking public/games folder:"
+          ls -la public/games/
 
-      - name: Sync Games to RTDB
-        env:
-          FIREBASE_ENTERTAINEMENT_API: ${{ secrets.FIREBASE_ENTERTAINEMENT_API }}
-        run: node scripts/sync-games-rtdb.js
+      - name: Push All Game JSONs to Firebase RTDB
+        run: |
+          for filepath in public/games/*.json; do
+            [ -e "$filepath" ] || continue
+            filename=$(basename "$filepath")
+            gamekey="${filename%.*}"
+            
+            echo "Uploading $filename as key: $gamekey ..."
+            
+            response=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X PUT \
+              -H "Content-Type: application/json" \
+              -d @"$filepath" \
+              "https://entertainment-71888-default-rtdb.firebaseio.com/games/${gamekey}.json")
+            
+            http_status=$(echo "$response" | grep "HTTP_STATUS" | cut -d':' -f2)
+            body=$(echo "$response" | sed '/HTTP_STATUS/d')
+            
+            echo "Status Code: $http_status"
+            if [ "$http_status" -ne 200 ]; then
+              echo "Firebase Error Response: $body"
+              exit 1
+            else
+              echo "Successfully synced $gamekey to /games/$gamekey"
+            fi
+          done
