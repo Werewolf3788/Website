@@ -2,6 +2,19 @@
   "game": "Far Cry® 5",
   "gameId": "FarCry5",
   "commId": "NPWR12514_00",
+  "platforms": {
+    "playstation": {
+      "commId": "NPWR12514_00"
+    },
+    "steam": {
+      "appId": 552520,
+      "url": "https://store.steampowered.com/app/552520/Far_Cry_5/"
+    },
+    "xbox": {
+      "productId": "br7x7mvbbqkm",
+      "url": "https://www.xbox.com/en-US/games/store/far-cry-5/br7x7mvbbqkm"
+    }
+  },
   "lastUpdated": "2026-10-27T01:50:44.714Z",
   "overallProgress": 0,
   "activeMission": "In Progress",
