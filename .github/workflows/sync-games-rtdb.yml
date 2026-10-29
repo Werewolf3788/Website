@@ -3,8 +3,8 @@ name: Sync Game JSONs to Firebase RTDB
 on:
   push:
     paths:
-      - 'website/public/game/**'
-      - 'public/game/**'
+      - 'public/games/**'
+      - 'website/public/games/**'
       - '.github/workflows/sync-games-rtdb.yml'
   workflow_dispatch:
 
@@ -12,17 +12,14 @@ jobs:
   sync-games:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up Node.js runtime (v20 has native global fetch)
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # Step 3: Run the sync script using existing GitHub Secret
       - name: Sync Games to RTDB
         env:
           FIREBASE_ENTERTAINEMENT_API: ${{ secrets.FIREBASE_ENTERTAINEMENT_API }}
