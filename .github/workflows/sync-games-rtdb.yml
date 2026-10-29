@@ -14,33 +14,64 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Verify JSON Files Exist
+      - name: Validate and Push JSONs to RTDB
+        shell: python
         run: |
-          echo "Checking public/games folder:"
-          ls -la public/games/
+          import os
+          import glob
+          import json
+          import urllib.request
+          import urllib.error
 
-      - name: Push All Game JSONs to Firebase RTDB
-        run: |
-          for filepath in public/games/*.json; do
-            [ -e "$filepath" ] || continue
-            filename=$(basename "$filepath")
-            gamekey="${filename%.*}"
-            
-            echo "Uploading $filename as key: $gamekey ..."
-            
-            response=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X PUT \
-              -H "Content-Type: application/json; charset=utf-8" \
-              --data-binary @"$filepath" \
-              "https://entertainment-71888-default-rtdb.firebaseio.com/games/${gamekey}.json")
-            
-            http_status=$(echo "$response" | grep "HTTP_STATUS" | cut -d':' -f2)
-            body=$(echo "$response" | sed '/HTTP_STATUS/d')
-            
-            echo "Status Code: $http_status"
-            if [ "$http_status" -ne 200 ]; then
-              echo "Firebase Error Response: $body"
-              exit 1
-            else
-              echo "Successfully synced $gamekey to /games/$gamekey"
-            fi
-          done
+          target_dir = "public/games"
+          if not os.path.exists(target_dir):
+              print(f"Error: Directory '{target_dir}' does not exist.")
+              exit(1)
+
+          json_files = glob.glob(os.path.join(target_dir, "*.json"))
+          if not json_files:
+              print(f"No .json files found in {target_dir}")
+              exit(0)
+
+          print(f"Found {len(json_files)} game file(s). Starting validation and upload...")
+
+          for filepath in json_files:
+              filename = os.path.basename(filepath)
+              game_key = os.path.splitext(filename)[0]
+
+              # Step 1: Read and validate JSON syntax
+              try:
+                  with open(filepath, 'r', encoding='utf-8') as f:
+                      raw_data = json.load(f)
+              except Exception as err:
+                  print(f"SYNTAX ERROR in {filename}: {err}")
+                  print("Firebase will reject this file until the syntax error is corrected.")
+                  exit(1)
+
+              # Step 2: Minify valid JSON to clean bytes
+              clean_payload = json.dumps(raw_data).encode('utf-8')
+
+              # Step 3: PUT directly to RTDB REST endpoint
+              url = f"https://entertainment-71888-default-rtdb.firebaseio.com/games/{game_key}.json"
+              print(f"Pushing {filename} to /games/{game_key} ...")
+
+              req = urllib.request.Request(
+                  url,
+                  data=clean_payload,
+                  headers={"Content-Type": "application/json; charset=utf-8"},
+                  method="PUT"
+              )
+
+              try:
+                  with urllib.request.urlopen(req) as resp:
+                      if resp.status == 200:
+                          print(f"Successfully synced: /games/{game_key}")
+                      else:
+                          print(f"Unexpected status: {resp.status}")
+                          exit(1)
+              except urllib.error.HTTPError as http_err:
+                  error_body = http_err.read().decode('utf-8')
+                  print(f"Firebase HTTP {http_err.code} Error: {error_body}")
+                  exit(1)
+
+          print("All game files validated and synced to Firebase RTDB.")
