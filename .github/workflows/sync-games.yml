@@ -1,0 +1,29 @@
+name: Sync Game Data to Firestore
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "game/data/games/**.json"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Firebase Admin
+        run: npm install firebase-admin
+
+      - name: Run Firestore Sync Script
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.GCP_SA_KEY_ENTERTAINMENT }}
+        run: node scripts/sync-games.mjs
