@@ -1,61 +1,70 @@
 // ==============================================================================
 // Service Worker: Offline Caching & App Shell
-// Timestamp: 2026-09-07 17:42:23 EDT (New York)
+// Network first with cache fallback. Same-origin pages only.
 // ==============================================================================
 
-const CACHE_NAME = "trophy-tracker-v1";
+const CACHE_NAME = "trophy-tracker-v2";
+
+// Relative paths resolve next to this file, so this works on
+// werewolf3788.github.io/Website/ and on playstation-be936.web.app alike.
 const ASSETS_TO_CACHE = [
-  "/",
-  "/index.html",
-  "/manifest.json"
+  "./",
+  "index.html",
+  "settings.html",
+  "privacy.html",
+  "manifest.json"
 ];
 
-// Install Event - Pre-cache core shell
+// Install: pre-cache the shell. One missing file must not break the install.
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.allSettled(
+        ASSETS_TO_CACHE.map((url) => cache.add(new Request(url, { cache: "reload" })))
+      )
+    )
   );
   self.skipWaiting();
 });
 
-// Activate Event - Clean up stale caches
+// Activate: remove old caches.
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    })
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+    )
   );
   self.clients.claim();
 });
 
-// Fetch Event - Network first with cache fallback
+// Fetch: network first, cache fallback.
 self.addEventListener("fetch", (event) => {
-  // Pass non-GET requests straight through
-  if (event.request.method !== "GET") return;
+  const req = event.request;
+  if (req.method !== "GET") return;
+
+  const url = new URL(req.url);
+  // Let Firebase, Google sign-in, DecAPI, Steam and every other site go straight to the network.
+  if (url.origin !== self.location.origin) return;
+  // Never touch Firebase's sign-in handler pages.
+  if (url.pathname.includes("/__/")) return;
 
   event.respondWith(
-    fetch(event.request)
-      .then((networkResponse) => {
-        // Cache valid responses for offline use
-        if (networkResponse && networkResponse.status === 200) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
+    fetch(req)
+      .then((res) => {
+        if (res && res.status === 200 && res.type === "basic") {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
         }
-        return networkResponse;
+        return res;
       })
-      .catch(() => {
-        // Return cached version if network fails
-        return caches.match(event.request);
+      .catch(async () => {
+        const hit = await caches.match(req);
+        if (hit) return hit;
+        if (req.mode === "navigate") {
+          const shell = await caches.match("index.html");
+          if (shell) return shell;
+        }
+        return Response.error();
       })
   );
 });
