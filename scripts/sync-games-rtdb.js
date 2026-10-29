@@ -1,4 +1,4 @@
-// Section 1: Line 1 - Environment & Path Discovery
+// Section 1: Line 1 - Environment & Configuration
 const fs = require('fs');
 const path = require('path');
 
@@ -9,17 +9,18 @@ if (!apiKey) {
 }
 
 const RTDB_BASE = "https://entertainment-71888-default-rtdb.firebaseio.com";
+const rootDir = process.cwd();
 
-// Section 2: Line 12 - Resolve game directory in website/public/game or public/game
-const potentialPaths = [
-  path.join(__dirname, '../website/public/game'),
-  path.join(__dirname, '../public/game'),
-  path.join(process.cwd(), 'website/public/game'),
-  path.join(process.cwd(), 'public/game')
+// Section 2: Line 14 - Directory Targeting for public/games
+const candidatePaths = [
+  path.join(rootDir, 'public/games'),
+  path.join(rootDir, 'website/public/games'),
+  path.join(__dirname, '../public/games'),
+  path.join(__dirname, '../website/public/games')
 ];
 
 let targetDir = null;
-for (const p of potentialPaths) {
+for (const p of candidatePaths) {
   if (fs.existsSync(p)) {
     targetDir = p;
     break;
@@ -27,11 +28,11 @@ for (const p of potentialPaths) {
 }
 
 if (!targetDir) {
-  console.error("Could not find public/game directory in candidate paths:", potentialPaths);
+  console.error("Could not find public/games directory in candidate paths:", candidatePaths);
   process.exit(1);
 }
 
-console.log(`Scanning target directory: ${targetDir}`);
+console.log(`Discovered active game directory: ${targetDir}`);
 
 // Section 3: Line 38 - Upload Loop via Firebase RTDB REST API
 async function pushGamesToRTDB() {
@@ -39,7 +40,7 @@ async function pushGamesToRTDB() {
   const jsonFiles = files.filter(file => file.endsWith('.json'));
 
   if (jsonFiles.length === 0) {
-    console.log("No .json files found in game directory.");
+    console.log("No .json files found in public/games directory.");
     process.exit(0);
   }
 
@@ -47,18 +48,15 @@ async function pushGamesToRTDB() {
 
   for (const file of jsonFiles) {
     const filePath = path.join(targetDir, file);
-    // Sanitize game key: remove .json and any invalid RTDB characters (. $ # [ ] /)
+    // Sanitize game key: farcry5.json -> farcry5
     const gameKey = path.basename(file, '.json').replace(/[.#$\[\]\/]/g, '_');
 
     try {
       const fileData = fs.readFileSync(filePath, 'utf8');
-      // Validate that the file is valid JSON before sending
-      JSON.parse(fileData);
+      JSON.parse(fileData); // Syntax check
 
-      // Target path: /games/{gamename}.json
       const targetUrl = `${RTDB_BASE}/games/${gameKey}.json?auth=${apiKey}`;
-
-      console.log(`Uploading [${file}] to ${RTDB_BASE}/games/${gameKey}...`);
+      console.log(`Uploading [${file}] to /games/${gameKey}...`);
 
       const response = await fetch(targetUrl, {
         method: 'PUT',
