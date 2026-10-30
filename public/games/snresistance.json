@@ -361,10 +361,12 @@
     { "ribbon_demolitionist", "name": "Demolitionist", "requirement": "Double kill by shooting placed TNT or trap" },
     { "ribbon_grenadier", "name": "Grenadier", "requirement": "5 grenade kills" },
     { "ribbon_trapper", "name": "Trapper", "requirement": "3 booby trap kills" },
-    { "ribbon_rifle_specialist", "name": "Rifle Specialist", "requirement": "20 kills with sniper rifle" }
-  ]
+   { "id": "se5_mp_avenger", "name": "Avenger", "requirement": "Kill the enemy who recently killed your co-op partner." }
+      ]
+    }
+  }
 }
-"trophies": [
+  "trophies": [
     { "trophyId": 0, "name": "Sniper Elite", "rank": "PLATINUM", "description": "Obtain all Trophies." },
     { "trophyId": 1, "name": "Dam Buster", "rank": "BRONZE", "description": "Sabotage the Dam and destroy the AA guns." },
     { "trophyId": 2, "name": "Welcome to the Resistance", "rank": "BRONZE", "description": "Find the Mole and uncover the Superweapon plot." },
