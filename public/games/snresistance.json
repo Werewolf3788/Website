@@ -1,5 +1,5 @@
 {
-  "$schema_version": "1.0.0",
+  "schema_version": "1.0.0",
   "game": "Sniper Elite: Resistance",
   "gameId": "SniperEliteResistance",
   "commId": "NPWR40813_00",
@@ -12,7 +12,7 @@
       "appId": 2169200
     },
     "xbox": {
-      "productId": "9n4g3k34t18g"
+      "productId": "9mxrg5gcrpxz"
     }
   },
   "metrics": [
@@ -119,1298 +119,964 @@
       "guide": "Infiltrate the movie set estate, identify the real Führer among his doubles, eliminate Hitler, and exfiltrate undetected."
     }
   ],
-  "collectibles": {
-    "personal_letters": {
-      "quest_name": "Pen Pal",
-      "total_count": 35,
-      "items": [
-        {
-          "id": "let_m2_01",
-          "name": "A Lost Soul Trembles",
-          "region": "Mission 2: Dead Drop",
-          "location": "First-floor church safe. Key is on ground-floor table beside gramophone."
-        },
-        {
-          "id": "let_m2_02",
-          "name": "Missing You Dearly",
-          "region": "Mission 2: Dead Drop",
-          "location": "Château smaller courtyard, resting on a stone bench."
-        },
-        {
-          "id": "let_m2_03",
-          "name": "Surrounded by Idiots",
-          "region": "Mission 2: Dead Drop",
-          "location": "Municipal Library reception counter on the north side."
-        },
-        {
-          "id": "let_m2_04",
-          "name": "A Withering Tree",
-          "region": "Mission 2: Dead Drop",
-          "location": "Town square, on an outdoor cafe table."
-        },
-        {
-          "id": "let_m2_05",
-          "name": "A Nephew's Concern",
-          "region": "Mission 2: Dead Drop",
-          "location": "Bench along the northern residential road."
-        },
-        {
-          "id": "let_m3_01",
-          "name": "Be Safe, My Dear",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "Ground-floor safe inside the house of the second objective."
-        },
-        {
-          "id": "let_m3_02",
-          "name": "We Are Everywhere",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "Hotel second floor corner room, accessible by climbing window ledge."
-        },
-        {
-          "id": "let_m3_03",
-          "name": "Cross of Lorraine",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "Top floor table of the safehouse holding the optional objective."
-        },
-        {
-          "id": "let_m3_04",
-          "name": "Missing Her Birthday",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "First floor bench inside the central train terminal."
-        },
-        {
-          "id": "let_m3_05",
-          "name": "The Scars of War",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "Park bench in the ornamental garden area."
-        },
-        {
-          "id": "let_m4_01",
-          "name": "A Gift, And A Name",
-          "region": "Mission 4: Collision Course",
-          "location": "Pinned to tree trunk on the right side immediately post-zipline."
-        },
-        {
-          "id": "let_m4_02",
-          "name": "I Will Miss You",
-          "region": "Mission 4: Collision Course",
-          "location": "Table inside small timber outpost shack."
-        },
-        {
-          "id": "let_m4_03",
-          "name": "What a Discovery!",
-          "region": "Mission 4: Collision Course",
-          "location": "Locked riverside cabin requiring lockpick or bolt cutters."
-        },
-        {
-          "id": "let_m4_04",
-          "name": "So Boring!",
-          "region": "Mission 4: Collision Course",
-          "location": "Wooden crate on upper platform of the Flak tower."
-        },
-        {
-          "id": "let_m4_05",
-          "name": "I'm so Sorry",
-          "region": "Mission 4: Collision Course",
-          "location": "Destroyed farmhouse room behind wooden ladder."
-        },
-        {
-          "id": "let_m5_01",
-          "name": "Location Exposed",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "Cargo crate located on the southwest perimeter."
-        },
-        {
-          "id": "let_m5_02",
-          "name": "A Childish Party!",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "Desk inside the bridge checkpoint guard hut."
-        },
-        {
-          "id": "let_m5_03",
-          "name": "I Miss You So Much",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "Bench inside the eastern perimeter enemy camp."
-        },
-        {
-          "id": "let_m5_04",
-          "name": "It is all in Ruins",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "First-floor bedroom beneath the bedside nightstand."
-        },
-        {
-          "id": "let_m5_05",
-          "name": "Be a Man, Not a Boy!",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "Foreman's office table overlooking synthesis vats."
-        },
-        {
-          "id": "let_m6_01",
-          "name": "Just Do Your Job",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "First floor of destroyed building on a wooden box (rear entrance)."
-        },
-        {
-          "id": "let_m6_02",
-          "name": "I Am Fed Up",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "Stone table inside the church in front of the safe."
-        },
-        {
-          "id": "let_m6_03",
-          "name": "Something is Strange",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "Lying on the ground inside ruins."
-        },
-        {
-          "id": "let_m6_04",
-          "name": "Beautiful Views",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "Wooden box at the top entrance heading underground."
-        },
-        {
-          "id": "let_m6_05",
-          "name": "Fools Everywhere",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "Bench in the corner on the upper-left perimeter of the village."
-        },
-        {
-          "id": "let_m7_01",
-          "name": "Trouble in the Ranks",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "Upstairs table inside residential farmhouse."
-        },
-        {
-          "id": "let_m7_02",
-          "name": "Barn Watch",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "Inside small timber barn resting on a wooden workbench table."
-        },
-        {
-          "id": "let_m7_03",
-          "name": "I Feel Uneasy",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "Second-floor table positioned beside the window."
-        },
-        {
-          "id": "let_m7_04",
-          "name": "Security Check",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "Guard outpost desk along the northern access track."
-        },
-        {
-          "id": "let_m7_05",
-          "name": "Final Preparations",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "Bunker staging office table near testing rail line."
-        },
-        {
-          "id": "let_m8_01",
-          "name": "Victory is Imminent!",
-          "region": "Mission 8: End of the Line",
-          "location": "Top floor command office table overlooking train tracks."
-        },
-        {
-          "id": "let_m8_02",
-          "name": "Home Soon, My Love",
-          "region": "Mission 8: End of the Line",
-          "location": "Maintenance desk at the bottom of the concrete grain silo."
-        },
-        {
-          "id": "let_m8_03",
-          "name": "What We've Achieved",
-          "region": "Mission 8: End of the Line",
-          "location": "Locked residential house room; key held by yard patrol officer."
-        },
-        {
-          "id": "let_m8_04",
-          "name": "Burn After Reading",
-          "region": "Mission 8: End of the Line",
-          "location": "Outbuilding office adjacent to Kill List target zone."
-        },
-        {
-          "id": "let_m8_05",
-          "name": "I Think This Is It",
-          "region": "Mission 8: End of the Line",
-          "location": "First-floor records office inside central station concourse."
-        },
-        {
-          "id": "let_m10_01",
-          "name": "Director's Grievance",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Production trailer office desk beside soundstage entrance."
-        },
-        {
-          "id": "let_m10_02",
-          "name": "Double Trouble",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Dressing room vanity table behind main studio set."
-        },
-        {
-          "id": "let_m10_03",
-          "name": "Prop Master Memo",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Storage loft crate accessible via exterior scaffold ladder."
-        },
-        {
-          "id": "let_m10_04",
-          "name": "Film Stock Shortage",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Editing booth bench on upper balcony overlooking studio."
-        },
-        {
-          "id": "let_m10_05",
-          "name": "Security Alert: Lookalikes",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Estate gatehouse table beside vehicle checkpoint barrier."
-        }
-      ]
-    },
-    "classified_documents": {
-      "quest_name": "Top Secret",
-      "total_count": 35,
-      "items": [
-        {
-          "id": "doc_m1_01",
-          "name": "Flak Operations Order",
-          "region": "Mission 1: Behind Enemy Lines",
-          "location": "Bunker command post desk beside the primary generator."
-        },
-        {
-          "id": "doc_m2_01",
-          "name": "Findings Report",
-          "region": "Mission 2: Dead Drop",
-          "location": "Staging table covered with radio gear on west canal street."
-        },
-        {
-          "id": "doc_m2_02",
-          "name": "Orders to Follow",
-          "region": "Mission 2: Dead Drop",
-          "location": "Château courtyard room beside the center courtyard tree."
-        },
-        {
-          "id": "doc_m2_03",
-          "name": "Use the Library",
-          "region": "Mission 2: Dead Drop",
-          "location": "Safe inside eastern house. Key located upstairs on a chair."
-        },
-        {
-          "id": "doc_m2_04",
-          "name": "Tightening Security",
-          "region": "Mission 2: Dead Drop",
-          "location": "First-floor cafe table in the Kill List target's quarters."
-        },
-        {
-          "id": "doc_m2_05",
-          "name": "Increased Security",
-          "region": "Mission 2: Dead Drop",
-          "location": "Military supply tent table inside central barracks."
-        },
-        {
-          "id": "doc_m3_01",
-          "name": "Gestapo Briefing",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "Hotel Terminus penthouse suite table; key located in opposite room."
-        },
-        {
-          "id": "doc_m3_02",
-          "name": "Hotel Refurbishment",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "Ground-floor reception lobby desk inside Hotel Terminus."
-        },
-        {
-          "id": "doc_m3_03",
-          "name": "Hotel Storage",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "Attic storage loft accessible via exterior maintenance ladder."
-        },
-        {
-          "id": "doc_m3_04",
-          "name": "Rail Network Control",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "Harbor watchtower upper observation console."
-        },
-        {
-          "id": "doc_m3_05",
-          "name": "Cargo Details",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "Terminal dispatcher office table; tied to main objective."
-        },
-        {
-          "id": "doc_m4_01",
-          "name": "Transfer Details",
-          "region": "Mission 4: Collision Course",
-          "location": "Top floor command desk of the valley manor."
-        },
-        {
-          "id": "doc_m4_02",
-          "name": "Requisition Orders",
-          "region": "Mission 4: Collision Course",
-          "location": "Bunker storage bay under metal catwalk railing."
-        },
-        {
-          "id": "doc_m4_03",
-          "name": "Findings Report",
-          "region": "Mission 4: Collision Course",
-          "location": "Conference room table on first floor of administrative wing."
-        },
-        {
-          "id": "doc_m4_04",
-          "name": "Requesting Support",
-          "region": "Mission 4: Collision Course",
-          "location": "First-floor landing table situated behind spiral stairs."
-        },
-        {
-          "id": "doc_m4_05",
-          "name": "Dam Damage Report",
-          "region": "Mission 4: Collision Course",
-          "location": "Control room console directly opposite main sabotage switch."
-        },
-        {
-          "id": "doc_m5_01",
-          "name": "Scuttle Order",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "First-floor laboratory office adjacent to destruction panel."
-        },
-        {
-          "id": "doc_m5_02",
-          "name": "Wilhelm's Folly",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "Engineering office desk overlooking chemical storage silos."
-        },
-        {
-          "id": "doc_m5_03",
-          "name": "Classified Cargo",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "Shipping depot office desk on first floor."
-        },
-        {
-          "id": "doc_m5_04",
-          "name": "Intruder Spotted",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "Security corridor table past emergency metal blast bulkhead."
-        },
-        {
-          "id": "doc_m5_05",
-          "name": "Scuttle Instructions",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "Plant manager's office safe; key carried by target officer."
-        },
-        {
-          "id": "doc_m6_01",
-          "name": "Roof Weakness Found",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "First-floor bureau office table."
-        },
-        {
-          "id": "doc_m6_02",
-          "name": "Defend our Skies",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "Wooden bench inside the estate greenhouse."
-        },
-        {
-          "id": "doc_m6_03",
-          "name": "Ready on your Order",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "Table inside building housing Gestapo officers."
-        },
-        {
-          "id": "doc_m6_04",
-          "name": "No Retreat",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "Top floor safe (requires satchel charge or key from watchtower patrol)."
-        },
-        {
-          "id": "doc_m6_05",
-          "name": "Schoene's Notes",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "Shelf inside bottom-right corner room of the underground chamber."
-        },
-        {
-          "id": "doc_m7_01",
-          "name": "A Service Hatch",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "Ground-floor corridor with pink walls, first door on the right."
-        },
-        {
-          "id": "doc_m7_02",
-          "name": "Control Room Key",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "Subterranean basement room on right side following downstairs path."
-        },
-        {
-          "id": "doc_m7_03",
-          "name": "Rocket Fuse Setup",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "Safe inside secondary objective bunker (satchel charge or officer key)."
-        },
-        {
-          "id": "doc_m7_04",
-          "name": "Hydraulics Concerns",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "Bunker supply box in small utility vault."
-        },
-        {
-          "id": "doc_m7_05",
-          "name": "Vulnerability Found",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "Desk in the bunker reached immediately after unlocking control room."
-        },
-        {
-          "id": "doc_m8_01",
-          "name": "Zugwerfer Departure",
-          "region": "Mission 8: End of the Line",
-          "location": "First-floor round room locked office; shared with Rifle Workbench."
-        },
-        {
-          "id": "doc_m8_02",
-          "name": "Prepare to Strike!",
-          "region": "Mission 8: End of the Line",
-          "location": "Bunker room beside ladder at default insertion point."
-        },
-        {
-          "id": "doc_m8_03",
-          "name": "Rusty Turntable",
-          "region": "Mission 8: End of the Line",
-          "location": "Railyard warehouse maintenance office desk."
-        },
-        {
-          "id": "doc_m8_04",
-          "name": "Railyard Management",
-          "region": "Mission 8: End of the Line",
-          "location": "Chair beside dispatch table inside central grain silo."
-        },
-        {
-          "id": "doc_m8_05",
-          "name": "Turret Locations",
-          "region": "Mission 8: End of the Line",
-          "location": "Upper staging catwalk room; located beside SMG Workbench."
-        },
-        {
-          "id": "doc_m10_01",
-          "name": "Shooting Schedule",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Soundstage control booth desk overlooking fake alpine set."
-        },
-        {
-          "id": "doc_m10_02",
-          "name": "Pyrotechnic Safety Protocols",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Armory workbench table inside film equipment bunker."
-        },
-        {
-          "id": "doc_m10_03",
-          "name": "Führer Itinerary",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Château private study safe (requires studio manager key)."
-        },
-        {
-          "id": "doc_m10_04",
-          "name": "Prop Weapons Manifest",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Cargo loading dock office clipboard table."
-        },
-        {
-          "id": "doc_m10_05",
-          "name": "Evacuation Contingency",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Underground emergency bunker desk beside rail spur."
-        }
-      ]
-    },
-    "hidden_items": {
-      "quest_name": "Treasure Hunter",
-      "total_count": 22,
-      "items": [
-        {
-          "id": "item_m2_01",
-          "name": "Poster: La Résistance",
-          "region": "Mission 2: Dead Drop",
-          "location": "Back alley brick wall; unlocks Propaganda Mission 'La Résistance'."
-        },
-        {
-          "id": "item_m2_02",
-          "name": "Police Report: #222",
-          "region": "Mission 2: Dead Drop",
-          "location": "Library archives shelf; required for 'File O' Facts'."
-        },
-        {
-          "id": "item_m2_03",
-          "name": "Police Report: #223",
-          "region": "Mission 2: Dead Drop",
-          "location": "Library reading room desk; required for 'File O' Facts'."
-        },
-        {
-          "id": "item_m2_04",
-          "name": "Police Report: #224",
-          "region": "Mission 2: Dead Drop",
-          "location": "Library basement stack; required for 'File O' Facts'."
-        },
-        {
-          "id": "item_m3_01",
-          "name": "Resistance Flag",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "Ground-floor wooden box in Cross of Lorraine house."
-        },
-        {
-          "id": "item_m3_02",
-          "name": "Gestapo ID Badge",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "Crate on western road bridge checkpoint."
-        },
-        {
-          "id": "item_m3_03",
-          "name": "Poster: Le Sniper",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "Exterior wall near optional safehouse; unlocks 'Le Sniper'."
-        },
-        {
-          "id": "item_m4_01",
-          "name": "French Wine Bottle",
-          "region": "Mission 4: Collision Course",
-          "location": "Tavern bar counter on the first floor."
-        },
-        {
-          "id": "item_m4_02",
-          "name": "Rubber Gas Mask",
-          "region": "Mission 4: Collision Course",
-          "location": "Storage table in corner of tavern cellar."
-        },
-        {
-          "id": "item_m4_03",
-          "name": "Poster: Libération",
-          "region": "Mission 4: Collision Course",
-          "location": "Abutment wall behind bridge panzer; unlocks 'Libération'."
-        },
-        {
-          "id": "item_m5_01",
-          "name": "Playing Cards",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "Wooden crate in southern encampment clearing."
-        },
-        {
-          "id": "item_m5_02",
-          "name": "Laboratory ID",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "First-floor office room off the chemical plant lobby."
-        },
-        {
-          "id": "item_m5_03",
-          "name": "Poster: Le Maquis Voit Tout!",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "Exterior wall of guard shack; unlocks 'Le Maquis Voit Tout'."
-        },
-        {
-          "id": "item_m6_01",
-          "name": "TODT Uniform Badge",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "Basement cellar reached via stairs behind the house."
-        },
-        {
-          "id": "item_m6_02",
-          "name": "Committee C Map",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "Pinned to wall in center room of large underground bunker chamber."
-        },
-        {
-          "id": "item_m6_03",
-          "name": "Poster: Prende Le Maquis",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "Exterior building wall (bottom-left area); unlocks Propaganda Mission 5."
-        },
-        {
-          "id": "item_m7_01",
-          "name": "Engraved Lighter",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "Table immediately inside the entrance of the house."
-        },
-        {
-          "id": "item_m7_02",
-          "name": "Broken Pressure Gauge",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "Metal shelf in compressor room along test canal."
-        },
-        {
-          "id": "item_m7_03",
-          "name": "Poster: Debout La France",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "Outbuilding brick facade; unlocks Propaganda Mission 7."
-        },
-        {
-          "id": "item_m8_01",
-          "name": "AA Repair Manual",
-          "region": "Mission 8: End of the Line",
-          "location": "Tool locker base inside the large concrete silo."
-        },
-        {
-          "id": "item_m8_02",
-          "name": "New Tank Blueprints",
-          "region": "Mission 8: End of the Line",
-          "location": "Ground-floor depot crate corner."
-        },
-        {
-          "id": "item_m8_03",
-          "name": "Poster: Pour Une France Libre",
-          "region": "Mission 8: End of the Line",
-          "location": "First-floor exterior rail wall; unlocks 'Pour Une France Libre'."
-        },
-        {
-          "id": "item_m10_01",
-          "name": "Clapperboard: Take 88",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Resting on director's chair in central studio soundstage."
-        },
-        {
-          "id": "item_m10_02",
-          "name": "Hitler Mustache Wax",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Dressing room makeup mirror counter."
-        },
-        {
-          "id": "item_m10_03",
-          "name": "Prop Luger (Rubber)",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Costume storage room shelf near studio canteen."
-        },
-        {
-          "id": "item_m10_04",
-          "name": "Signed Film Reel",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Private screening room projection booth table."
-        }
-      ]
-    },
-    "stone_eagles": {
-      "quest_name": "Spread Your Wings",
-      "total_count": 21,
-      "items": [
-        {
-          "id": "eagle_m2_01",
-          "name": "Dead-Eye Target 1",
-          "region": "Mission 2: Dead Drop",
-          "location": "Rooftop gable of residence west of the church."
-        },
-        {
-          "id": "eagle_m2_02",
-          "name": "Dead-Eye Target 2",
-          "region": "Mission 2: Dead Drop",
-          "location": "Pediment ridge of municipal building right of library."
-        },
-        {
-          "id": "eagle_m2_03",
-          "name": "Dead-Eye Target 3",
-          "region": "Mission 2: Dead Drop",
-          "location": "Parapet crest of northeastern château tower."
-        },
-        {
-          "id": "eagle_m3_01",
-          "name": "Dead-Eye Target 1",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "Off-map church steeple visible looking southwest from road bridge."
-        },
-        {
-          "id": "eagle_m3_02",
-          "name": "Dead-Eye Target 2",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "Clocktower finial atop central train concourse."
-        },
-        {
-          "id": "eagle_m3_03",
-          "name": "Dead-Eye Target 3",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "Chimney apex of brick warehouse on northwest edge."
-        },
-        {
-          "id": "eagle_m4_01",
-          "name": "Dead-Eye Target 1",
-          "region": "Mission 4: Collision Course",
-          "location": "Structural steel framework below spillway of the dam."
-        },
-        {
-          "id": "eagle_m4_02",
-          "name": "Dead-Eye Target 2",
-          "region": "Mission 4: Collision Course",
-          "location": "Rock outcropping between pine trees on northwest ridge."
-        },
-        {
-          "id": "eagle_m4_03",
-          "name": "Dead-Eye Target 3",
-          "region": "Mission 4: Collision Course",
-          "location": "Balcony railing of eastern communication tower."
-        },
-        {
-          "id": "eagle_m5_01",
-          "name": "Dead-Eye Target 1",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "Lantern gallery of distant off-map lighthouse to northwest."
-        },
-        {
-          "id": "eagle_m5_02",
-          "name": "Dead-Eye Target 2",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "Counterweight arm of heavy gantry crane on eastern docks."
-        },
-        {
-          "id": "eagle_m5_03",
-          "name": "Dead-Eye Target 3",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "Concrete lintel arch directly above railway tunnel exit."
-        },
-        {
-          "id": "eagle_m6_01",
-          "name": "Dead-Eye Target 1",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "Rooftop of house where Kill List target resides."
-        },
-        {
-          "id": "eagle_m6_02",
-          "name": "Dead-Eye Target 2",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "Spire ridge atop village church."
-        },
-        {
-          "id": "eagle_m6_03",
-          "name": "Dead-Eye Target 3",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "Corner parapet of outer castle wall along map boundary."
-        },
-        {
-          "id": "eagle_m7_01",
-          "name": "Dead-Eye Target 1",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "Silo elevator tower pinnacle on north plateau."
-        },
-        {
-          "id": "eagle_m7_02",
-          "name": "Dead-Eye Target 2",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "Gable peak of transformer substation building."
-        },
-        {
-          "id": "eagle_m7_03",
-          "name": "Dead-Eye Target 3",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "Chimney of house located near the final main objective."
-        },
-        {
-          "id": "eagle_m8_01",
-          "name": "Dead-Eye Target 1",
-          "region": "Mission 8: End of the Line",
-          "location": "Northeast tower peak of central terminal complex."
-        },
-        {
-          "id": "eagle_m8_02",
-          "name": "Dead-Eye Target 2",
-          "region": "Mission 8: End of the Line",
-          "location": "Northwest roof corner of house facing initial spawn."
-        },
-        {
-          "id": "eagle_m8_03",
-          "name": "Dead-Eye Target 3",
-          "region": "Mission 8: End of the Line",
-          "location": "Cupola top of small tower near eastern classification yard."
-        },
-        {
-          "id": "eagle_m10_01",
-          "name": "Dead-Eye Target 1",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Studio arch sign pediment above main vehicle gate."
-        },
-        {
-          "id": "eagle_m10_02",
-          "name": "Dead-Eye Target 2",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Château estate roof balustrade between stone urns."
-        },
-        {
-          "id": "eagle_m10_03",
-          "name": "Dead-Eye Target 3",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Water tower apex behind studio electrical generator."
-        }
-      ]
-    },
-    "workbenches": {
-      "quest_name": "Innovator",
-      "total_count": 21,
-      "items": [
-        {
-          "id": "wb_m1_pistol",
-          "name": "Pistol Workbench",
-          "region": "Mission 1: Behind Enemy Lines",
-          "location": "Basement of house behind barricade shortly after initial wall climb."
-        },
-        {
-          "id": "wb_m2_rifle",
-          "name": "Rifle Workbench",
-          "region": "Mission 2: Dead Drop",
-          "location": "First-floor locked apartment via rear exterior stairs; requires lockpick or bolt cutters."
-        },
-        {
-          "id": "wb_m2_pistol",
-          "name": "Pistol Workbench",
-          "region": "Mission 2: Dead Drop",
-          "location": "Subterranean catacombs between library and tavern cellar."
-        },
-        {
-          "id": "wb_m2_smg",
-          "name": "SMG Workbench",
-          "region": "Mission 2: Dead Drop",
-          "location": "Secured storeroom between inner and outer courtyards."
-        },
-        {
-          "id": "wb_m3_pistol",
-          "name": "Pistol Workbench",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "Upper floor of town hall building adjacent to rail station."
-        },
-        {
-          "id": "wb_m3_rifle",
-          "name": "Rifle Workbench",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "Secured workshop bay inside harbor cargo warehouse."
-        },
-        {
-          "id": "wb_m3_smg",
-          "name": "SMG Workbench",
-          "region": "Mission 3: Sonderzüge Sabotage",
-          "location": "Alley storage lockup accessible with lockpick."
-        },
-        {
-          "id": "wb_m4_smg",
-          "name": "SMG Workbench",
-          "region": "Mission 4: Collision Course",
-          "location": "Subterranean maintenance bunker via locked ladder hatch."
-        },
-        {
-          "id": "wb_m4_pistol",
-          "name": "Pistol Workbench",
-          "region": "Mission 4: Collision Course",
-          "location": "Top floor apartment accessible by climbing vines on exterior wall."
-        },
-        {
-          "id": "wb_m4_rifle",
-          "name": "Rifle Workbench",
-          "region": "Mission 4: Collision Course",
-          "location": "Reinforced steel doorway opposite auxiliary generator room."
-        },
-        {
-          "id": "wb_m5_rifle",
-          "name": "Rifle Workbench",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "Chemical plant basement vault via lockpick or bolt cutters."
-        },
-        {
-          "id": "wb_m5_pistol",
-          "name": "Pistol Workbench",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "Security corridor office past Kleine Blume control room."
-        },
-        {
-          "id": "wb_m5_smg",
-          "name": "SMG Workbench",
-          "region": "Mission 5: Devil's Cauldron",
-          "location": "Workshop office directly inside northern railway tunnel portal."
-        },
-        {
-          "id": "wb_m6_rifle",
-          "name": "Rifle Workbench",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "Underground chamber (turn left inside entrance; requires satchel charge)."
-        },
-        {
-          "id": "wb_m6_smg",
-          "name": "SMG Workbench",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "Basement cellar beneath house in center of village."
-        },
-        {
-          "id": "wb_m6_pistol",
-          "name": "Pistol Workbench",
-          "region": "Mission 6: Assault on Fort Rouge",
-          "location": "Locked house requiring lockpick or bolt cutters."
-        },
-        {
-          "id": "wb_m7_rifle",
-          "name": "Rifle Workbench",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "First-floor room accessed by climbing exterior rear lattice."
-        },
-        {
-          "id": "wb_m7_smg",
-          "name": "SMG Workbench",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "Loft level reached via interior ladder inside storage building."
-        },
-        {
-          "id": "wb_m7_pistol",
-          "name": "Pistol Workbench",
-          "region": "Mission 7: Lock, Stock and Barrels",
-          "location": "Balcony space situated directly above main bunker entrance."
-        },
-        {
-          "id": "wb_m8_pistol",
-          "name": "Pistol Workbench",
-          "region": "Mission 8: End of the Line",
-          "location": "First-floor residential room accessible by mantle jump."
-        },
-        {
-          "id": "wb_m8_rifle",
-          "name": "Rifle Workbench",
-          "region": "Mission 8: End of the Line",
-          "location": "First-floor locked room inside terminal station; key held by main objective guard."
-        },
-        {
-          "id": "wb_m8_smg",
-          "name": "SMG Workbench",
-          "region": "Mission 8: End of the Line",
-          "location": "Elevated staging catwalk room beside Classified Document #5."
-        },
-        {
-          "id": "wb_m10_rifle",
-          "name": "Rifle Workbench",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Stage workshop storeroom beside film set carpenters' bay."
-        },
-        {
-          "id": "wb_m10_smg",
-          "name": "SMG Workbench",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Armory locker room inside guard barracks compound."
-        },
-        {
-          "id": "wb_m10_pistol",
-          "name": "Pistol Workbench",
-          "region": "DLC: Lights, Camera, ACHTUNG!",
-          "location": "Cellar vault beneath château wine tasting room."
-        }
-      ]
-    }
-  },
-  "trophies": [
-    {
-      "trophyId": 0,
-      "name": "Sniper Elite",
-      "rank": "PLATINUM",
-      "description": "Obtain all Trophies."
-    },
-    {
-      "trophyId": 1,
-      "name": "Dam Buster",
-      "rank": "BRONZE",
-      "description": "Sabotage the Dam and destroy the AA guns."
-    },
-    {
-      "trophyId": 2,
-      "name": "Welcome to the Resistance",
-      "rank": "BRONZE",
-      "description": "Find the Mole and uncover the Superweapon plot."
-    },
-    {
-      "trophyId": 3,
-      "name": "Trainwreck",
-      "rank": "BRONZE",
-      "description": "Raid the Hotel Terminus and sabotage the Sonderzüge."
-    },
-    {
-      "trophyId": 4,
-      "name": "Bomb Squad",
-      "rank": "BRONZE",
-      "description": "Ensure Allied secrets remain unknown and confirm the location of Site D."
-    },
-    {
-      "trophyId": 5,
-      "name": "Industrial Action",
-      "rank": "BRONZE",
-      "description": "Destroy the underground chemical weapons plant and cease Kleine Blume production."
-    },
-    {
-      "trophyId": 6,
-      "name": "Blast from the Past",
-      "rank": "BRONZE",
-      "description": "Infiltrate Fort Rouge and escape before Allied bombers level the site."
-    },
-    {
-      "trophyId": 7,
-      "name": "Grapes of Wrath",
-      "rank": "BRONZE",
-      "description": "Infiltrate the V1 rocket launch site and destroy the Zugwerfer."
-    },
-    {
-      "trophyId": 8,
-      "name": "Whatever it Takes",
-      "rank": "BRONZE",
-      "description": "Stop the Zugwerfers from leaving and obliterating the D-Day landings."
-    },
-    {
-      "trophyId": 9,
-      "name": "Climbing the Ranks",
-      "rank": "BRONZE",
-      "description": "Reach rank 40."
-    },
-    {
-      "trophyId": 10,
-      "name": "Vive La Résistance",
-      "rank": "GOLD",
-      "description": "Complete the campaign."
-    },
-    {
-      "trophyId": 11,
-      "name": "Crème de la Crème",
-      "rank": "GOLD",
-      "description": "Complete the entire campaign on Authentic difficulty."
-    },
-    {
-      "trophyId": 12,
-      "name": "Full English",
-      "rank": "SILVER",
-      "description": "Complete 11 Optional objectives."
-    },
-    {
-      "trophyId": 13,
-      "name": "Hostile Takeover",
-      "rank": "BRONZE",
-      "description": "Win one Axis Invasion as an Invader."
-    },
-    {
-      "trophyId": 14,
-      "name": "Hold the Line",
-      "rank": "BRONZE",
-      "description": "Defeat an invading Sniper Jäger."
-    },
-    {
-      "trophyId": 15,
-      "name": "Brothers in Arms",
-      "rank": "BRONZE",
-      "description": "Play one team-based PVP match."
-    },
-    {
-      "trophyId": 16,
-      "name": "Just a Scratch",
-      "rank": "BRONZE",
-      "description": "Complete any mission, excluding Mission 1 and Mission 9, on any difficulty without healing."
-    },
-    {
-      "trophyId": 17,
-      "name": "Open Surgery",
-      "rank": "BRONZE",
-      "description": "Hit every Organ at least once with a Rifle."
-    },
-    {
-      "trophyId": 18,
-      "name": "Tactician",
-      "rank": "BRONZE",
-      "description": "Make a Tank shoot and destroy another enemy Vehicle."
-    },
-    {
-      "trophyId": 19,
-      "name": "Pistol Perfectionist",
-      "rank": "SILVER",
-      "description": "Obtain Six Pistol-related Mastery Medals."
-    },
-    {
-      "trophyId": 20,
-      "name": "Secondary Supremacy",
-      "rank": "SILVER",
-      "description": "Obtain Eight Secondary-related Mastery Medals."
-    },
-    {
-      "trophyId": 21,
-      "name": "Revered with Rifles",
-      "rank": "SILVER",
-      "description": "Obtain Seven Rifle-related Mastery Medals."
-    },
-    {
-      "trophyId": 22,
-      "name": "Master-at-arms",
-      "rank": "SILVER",
-      "description": "Become the Master of each Weapon."
-    },
-    {
-      "trophyId": 23,
-      "name": "Gunslinger",
-      "rank": "BRONZE",
-      "description": "Kill 150 enemies with a Pistol."
-    },
-    {
-      "trophyId": 24,
-      "name": "Skirmisher",
-      "rank": "BRONZE",
-      "description": "Kill 300 enemies with a Secondary Weapon."
-    },
-    {
-      "trophyId": 25,
-      "name": "Sharpshooter",
-      "rank": "BRONZE",
-      "description": "Kill 350 enemies with a Rifle."
-    },
-    {
-      "trophyId": 26,
-      "name": "Going The Distance",
-      "rank": "BRONZE",
-      "description": "Total kill distance of 100,000 meters."
-    },
-    {
-      "trophyId": 27,
-      "name": "Blaze of Gory",
-      "rank": "BRONZE",
-      "description": "Kill 50 enemies with Traps."
-    },
-    {
-      "trophyId": 28,
-      "name": "Eyes on the Prize",
-      "rank": "BRONZE",
-      "description": "Kill 150 enemies with any weapon while in Iron Sights."
-    },
-    {
-      "trophyId": 29,
-      "name": "Scoping Mechanism",
-      "rank": "BRONZE",
-      "description": "Kill 150 enemies with a Rifle while in Iron Sights."
-    },
-    {
-      "trophyId": 30,
-      "name": "Set to Blow",
-      "rank": "BRONZE",
-      "description": "Kill 20 soldiers using Booby traps."
-    },
-    {
-      "trophyId": 31,
-      "name": "The Big Guns",
-      "rank": "BRONZE",
-      "description": "Kill 50 soldiers with Heavy weapons."
-    },
-    {
-      "trophyId": 32,
-      "name": "Three Birds One Stone",
-      "rank": "BRONZE",
-      "description": "Kill 3 on-foot soldiers with one Grenade."
-    },
-    {
-      "trophyId": 33,
-      "name": "Jack of All Trades",
-      "rank": "BRONZE",
-      "description": "Get a kill with 20 different Weapons."
-    },
-    {
-      "trophyId": 34,
-      "name": "Das Nuts!",
-      "rank": "BRONZE",
-      "description": "Get a testicle shot with a Rifle from a distance of 100 meters or more."
-    },
-    {
-      "trophyId": 35,
-      "name": "Finders Keepers",
-      "rank": "BRONZE",
-      "description": "Kill 50 enemy soldiers with Found Weapons."
-    },
-    {
-      "trophyId": 36,
-      "name": "Le Fantôme",
-      "rank": "BRONZE",
-      "description": "Achieve 250 Ghost Kills."
-    },
-    {
-      "trophyId": 37,
-      "name": "Silent but Deadly",
-      "rank": "BRONZE",
-      "description": "Kill 50 enemies during a Sound Mask."
-    },
-    {
-      "trophyId": 38,
-      "name": "Knives for a Pro",
-      "rank": "BRONZE",
-      "description": "Perform 100 lethal Takedowns."
-    },
-    {
-      "trophyId": 39,
-      "name": "Always Greener",
-      "rank": "BRONZE",
-      "description": "While in Tall Grass, kill 50 Soldiers."
-    },
-    {
-      "trophyId": 40,
-      "name": "Pen Pal",
-      "rank": "BRONZE",
-      "description": "Collect 35 Personal Letters."
-    },
-    {
-      "trophyId": 41,
-      "name": "Top Secret",
-      "rank": "BRONZE",
-      "description": "Collect 35 Classified Documents."
-    },
-    {
-      "trophyId": 42,
-      "name": "Treasure Hunter",
-      "rank": "BRONZE",
-      "description": "Collect 22 Hidden Items."
-    },
-    {
-      "trophyId": 43,
-      "name": "Spread Your Wings",
-      "rank": "BRONZE",
-      "description": "Destroy 21 Dead-eye Targets."
-    },
-    {
-      "trophyId": 44,
-      "name": "Innovator",
-      "rank": "BRONZE",
-      "description": "Interact with 21 Workbenches."
-    },
-    {
-      "trophyId": 45,
-      "name": "Survivalist",
-      "rank": "BRONZE",
-      "description": "Complete an entire Survival mission."
-    },
-    {
-      "trophyId": 46,
-      "name": "File O' Facts",
-      "rank": "BRONZE",
-      "description": "Recover evidence implicating Resistance members within the Library in Dead Drop."
-    },
-    {
-      "trophyId": 47,
-      "name": "Sprung a Leak",
-      "rank": "BRONZE",
-      "description": "Sabotage the Dam's pump room in Collision Course."
-    },
-    {
-      "trophyId": 48,
-      "name": "Stopping Traffic",
-      "rank": "BRONZE",
-      "description": "Destroy the Trucks carrying Kleine Blume ingredients in Devil's Cauldron."
-    },
-    {
-      "trophyId": 49,
-      "name": "Lost its way Gnome",
-      "rank": "BRONZE",
-      "description": "Find the French Resistance Gnome and take a Picture."
-    },
-    {
-      "trophyId": 50,
-      "name": "Tanks for Nothing!",
-      "rank": "BRONZE",
-      "description": "Destroy the Panzer Tank in End of the Line."
-    },
-    {
-      "trophyId": 51,
-      "name": "Mastermind",
-      "rank": "BRONZE",
-      "description": "Headshot Kruger."
-    },
-    {
-      "trophyId": 52,
-      "name": "Propagandist",
-      "rank": "SILVER",
-      "description": "Complete all Propaganda missions with a 3 Star Rating."
-    },
-    {
-      "trophyId": 53,
-      "name": "Propaganda Machine",
-      "rank": "SILVER",
-      "description": "Complete all Propaganda missions with a 3 Star Rating on Authentic difficulty."
-    }
-  ]
+  "collectibles_part_1": {
+    "personal_letters": [
+      {
+        "id": "let_m2_01",
+        "name": "A Lost Soul Trembles",
+        "region": "Mission 2: Dead Drop",
+        "location": "First-floor church safe. Key is on ground-floor table beside gramophone."
+      },
+      {
+        "id": "let_m2_02",
+        "name": "Missing You Dearly",
+        "region": "Mission 2: Dead Drop",
+        "location": "Château smaller courtyard, resting on a stone bench."
+      },
+      {
+        "id": "let_m2_03",
+        "name": "Surrounded by Idiots",
+        "region": "Mission 2: Dead Drop",
+        "location": "Municipal Library reception counter on the north side."
+      },
+      {
+        "id": "let_m2_04",
+        "name": "A Withering Tree",
+        "region": "Mission 2: Dead Drop",
+        "location": "Town square, on an outdoor cafe table."
+      },
+      {
+        "id": "let_m2_05",
+        "name": "A Nephew's Concern",
+        "region": "Mission 2: Dead Drop",
+        "location": "Bench along the northern residential road."
+      },
+      {
+        "id": "let_m3_01",
+        "name": "Be Safe, My Dear",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "Ground-floor safe inside the house of the second objective."
+      },
+      {
+        "id": "let_m3_02",
+        "name": "We Are Everywhere",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "Hotel second floor corner room, accessible by climbing window ledge."
+      },
+      {
+        "id": "let_m3_03",
+        "name": "Cross of Lorraine",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "Top floor table of the safehouse holding the optional objective."
+      },
+      {
+        "id": "let_m3_04",
+        "name": "Missing Her Birthday",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "First floor bench inside the central train terminal."
+      },
+      {
+        "id": "let_m3_05",
+        "name": "The Scars of War",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "Park bench in the ornamental garden area."
+      },
+      {
+        "id": "let_m4_01",
+        "name": "A Gift, And A Name",
+        "region": "Mission 4: Collision Course",
+        "location": "Pinned to tree trunk on the right side immediately post-zipline."
+      },
+      {
+        "id": "let_m4_02",
+        "name": "I Will Miss You",
+        "region": "Mission 4: Collision Course",
+        "location": "Table inside small timber outpost shack."
+      },
+      {
+        "id": "let_m4_03",
+        "name": "What a Discovery!",
+        "region": "Mission 4: Collision Course",
+        "location": "Locked riverside cabin requiring lockpick or bolt cutters."
+      },
+      {
+        "id": "let_m4_04",
+        "name": "So Boring!",
+        "region": "Mission 4: Collision Course",
+        "location": "Wooden crate on upper platform of the Flak tower."
+      },
+      {
+        "id": "let_m4_05",
+        "name": "I'm so Sorry",
+        "region": "Mission 4: Collision Course",
+        "location": "Destroyed farmhouse room behind wooden ladder."
+      }
+    ],
+    "classified_documents": [
+      {
+        "id": "doc_m1_01",
+        "name": "Flak Operations Order",
+        "region": "Mission 1: Behind Enemy Lines",
+        "location": "Bunker command post desk beside the primary generator."
+      },
+      {
+        "id": "doc_m2_01",
+        "name": "Findings Report",
+        "region": "Mission 2: Dead Drop",
+        "location": "Staging table covered with radio gear on west canal street."
+      },
+      {
+        "id": "doc_m2_02",
+        "name": "Orders to Follow",
+        "region": "Mission 2: Dead Drop",
+        "location": "Château courtyard room beside the center courtyard tree."
+      },
+      {
+        "id": "doc_m2_03",
+        "name": "Use the Library",
+        "region": "Mission 2: Dead Drop",
+        "location": "Safe inside eastern house. Key located upstairs on a chair."
+      },
+      {
+        "id": "doc_m2_04",
+        "name": "Tightening Security",
+        "region": "Mission 2: Dead Drop",
+        "location": "First-floor cafe table in the Kill List target's quarters."
+      },
+      {
+        "id": "doc_m2_05",
+        "name": "Increased Security",
+        "region": "Mission 2: Dead Drop",
+        "location": "Military supply tent table inside central barracks."
+      },
+      {
+        "id": "doc_m3_01",
+        "name": "Gestapo Briefing",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "Hotel Terminus penthouse suite table; key located in opposite room."
+      },
+      {
+        "id": "doc_m3_02",
+        "name": "Hotel Refurbishment",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "Ground-floor reception lobby desk inside Hotel Terminus."
+      },
+      {
+        "id": "doc_m3_03",
+        "name": "Hotel Storage",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "Attic storage loft accessible via exterior maintenance ladder."
+      },
+      {
+        "id": "doc_m3_04",
+        "name": "Rail Network Control",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "Harbor watchtower upper observation console."
+      },
+      {
+        "id": "doc_m3_05",
+        "name": "Cargo Details",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "Terminal dispatcher office table; tied to main objective."
+      },
+      {
+        "id": "doc_m4_01",
+        "name": "Transfer Details",
+        "region": "Mission 4: Collision Course",
+        "location": "Top floor command desk of the valley manor."
+      },
+      {
+        "id": "doc_m4_02",
+        "name": "Requisition Orders",
+        "region": "Mission 4: Collision Course",
+        "location": "Bunker storage bay under metal catwalk railing."
+      },
+      {
+        "id": "doc_m4_03",
+        "name": "Findings Report",
+        "region": "Mission 4: Collision Course",
+        "location": "Conference room table on first floor of administrative wing."
+      },
+      {
+        "id": "doc_m4_04",
+        "name": "Requesting Support",
+        "region": "Mission 4: Collision Course",
+        "location": "First-floor landing table situated behind spiral stairs."
+      },
+      {
+        "id": "doc_m4_05",
+        "name": "Dam Damage Report",
+        "region": "Mission 4: Collision Course",
+        "location": "Control room console directly opposite main sabotage switch."
+      }
+    ],
+    "hidden_items": [
+      {
+        "id": "item_m2_01",
+        "name": "Poster: La Résistance",
+        "region": "Mission 2: Dead Drop",
+        "location": "Back alley brick wall; unlocks Propaganda Mission 'La Résistance'."
+      },
+      {
+        "id": "item_m2_02",
+        "name": "Police Report: #222",
+        "region": "Mission 2: Dead Drop",
+        "location": "Library archives shelf; required for 'File O' Facts'."
+      },
+      {
+        "id": "item_m2_03",
+        "name": "Police Report: #223",
+        "region": "Mission 2: Dead Drop",
+        "location": "Library reading room desk; required for 'File O' Facts'."
+      },
+      {
+        "id": "item_m2_04",
+        "name": "Police Report: #224",
+        "region": "Mission 2: Dead Drop",
+        "location": "Library basement stack; required for 'File O' Facts'."
+      },
+      {
+        "id": "item_m3_01",
+        "name": "Resistance Flag",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "Ground-floor wooden box in Cross of Lorraine house."
+      },
+      {
+        "id": "item_m3_02",
+        "name": "Gestapo ID Badge",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "Crate on western road bridge checkpoint."
+      },
+      {
+        "id": "item_m3_03",
+        "name": "Poster: Le Sniper",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "Exterior wall near optional safehouse; unlocks 'Le Sniper'."
+      },
+      {
+        "id": "item_m4_01",
+        "name": "French Wine Bottle",
+        "region": "Mission 4: Collision Course",
+        "location": "Tavern bar counter on the first floor."
+      },
+      {
+        "id": "item_m4_02",
+        "name": "Rubber Gas Mask",
+        "region": "Mission 4: Collision Course",
+        "location": "Storage table in corner of tavern cellar."
+      },
+      {
+        "id": "item_m4_03",
+        "name": "Poster: Libération",
+        "region": "Mission 4: Collision Course",
+        "location": "Abutment wall behind bridge panzer; unlocks 'Libération'."
+      }
+    ],
+    "stone_eagles": [
+      {
+        "id": "eagle_m2_01",
+        "name": "Dead-Eye Target 1",
+        "region": "Mission 2: Dead Drop",
+        "location": "Rooftop gable of residence west of the church."
+      },
+      {
+        "id": "eagle_m2_02",
+        "name": "Dead-Eye Target 2",
+        "region": "Mission 2: Dead Drop",
+        "location": "Pediment ridge of municipal building right of library."
+      },
+      {
+        "id": "eagle_m2_03",
+        "name": "Dead-Eye Target 3",
+        "region": "Mission 2: Dead Drop",
+        "location": "Parapet crest of northeastern château tower."
+      },
+      {
+        "id": "eagle_m3_01",
+        "name": "Dead-Eye Target 1",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "Off-map church steeple visible looking southwest from road bridge."
+      },
+      {
+        "id": "eagle_m3_02",
+        "name": "Dead-Eye Target 2",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "Clocktower finial atop central train concourse."
+      },
+      {
+        "id": "eagle_m3_03",
+        "name": "Dead-Eye Target 3",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "Chimney apex of brick warehouse on northwest edge."
+      },
+      {
+        "id": "eagle_m4_01",
+        "name": "Dead-Eye Target 1",
+        "region": "Mission 4: Collision Course",
+        "location": "Structural steel framework below spillway of the dam."
+      },
+      {
+        "id": "eagle_m4_02",
+        "name": "Dead-Eye Target 2",
+        "region": "Mission 4: Collision Course",
+        "location": "Rock outcropping between pine trees on northwest ridge."
+      },
+      {
+        "id": "eagle_m4_03",
+        "name": "Dead-Eye Target 3",
+        "region": "Mission 4: Collision Course",
+        "location": "Balcony railing of eastern communication tower."
+      }
+    ],
+    "workbenches": [
+      {
+        "id": "wb_m1_pistol",
+        "name": "Pistol Workbench",
+        "region": "Mission 1: Behind Enemy Lines",
+        "location": "Basement of house behind barricade shortly after initial wall climb."
+      },
+      {
+        "id": "wb_m2_rifle",
+        "name": "Rifle Workbench",
+        "region": "Mission 2: Dead Drop",
+        "location": "First-floor locked apartment via rear exterior stairs; requires lockpick or bolt cutters."
+      },
+      {
+        "id": "wb_m2_pistol",
+        "name": "Pistol Workbench",
+        "region": "Mission 2: Dead Drop",
+        "location": "Subterranean catacombs between library and tavern cellar."
+      },
+      {
+        "id": "wb_m2_smg",
+        "name": "SMG Workbench",
+        "region": "Mission 2: Dead Drop",
+        "location": "Secured storeroom between inner and outer courtyards."
+      },
+      {
+        "id": "wb_m3_pistol",
+        "name": "Pistol Workbench",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "Upper floor of town hall building adjacent to rail station."
+      },
+      {
+        "id": "wb_m3_rifle",
+        "name": "Rifle Workbench",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "Secured workshop bay inside harbor cargo warehouse."
+      },
+      {
+        "id": "wb_m3_smg",
+        "name": "SMG Workbench",
+        "region": "Mission 3: Sonderzüge Sabotage",
+        "location": "Alley storage lockup accessible with lockpick."
+      },
+      {
+        "id": "wb_m4_smg",
+        "name": "SMG Workbench",
+        "region": "Mission 4: Collision Course",
+        "location": "Subterranean maintenance bunker via locked ladder hatch."
+      },
+      {
+        "id": "wb_m4_pistol",
+        "name": "Pistol Workbench",
+        "region": "Mission 4: Collision Course",
+        "location": "Top floor apartment accessible by climbing vines on exterior wall."
+      },
+      {
+        "id": "wb_m4_rifle",
+        "name": "Rifle Workbench",
+        "region": "Mission 4: Collision Course",
+        "location": "Reinforced steel doorway opposite auxiliary generator room."
+      }
+    ]
+  }
 }
+"collectibles_part_2": {
+    "personal_letters": [
+      {
+        "id": "let_m5_01",
+        "name": "Location Exposed",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "Cargo crate located on the southwest perimeter."
+      },
+      {
+        "id": "let_m5_02",
+        "name": "A Childish Party!",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "Desk inside the bridge checkpoint guard hut."
+      },
+      {
+        "id": "let_m5_03",
+        "name": "I Miss You So Much",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "Bench inside the eastern perimeter enemy camp."
+      },
+      {
+        "id": "let_m5_04",
+        "name": "It is all in Ruins",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "First-floor bedroom beneath the bedside nightstand."
+      },
+      {
+        "id": "let_m5_05",
+        "name": "Be a Man, Not a Boy!",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "Foreman's office table overlooking synthesis vats."
+      },
+      {
+        "id": "let_m6_01",
+        "name": "Just Do Your Job",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "First floor of destroyed building on a wooden box (rear entrance)."
+      },
+      {
+        "id": "let_m6_02",
+        "name": "I Am Fed Up",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "Stone table inside the church in front of the safe."
+      },
+      {
+        "id": "let_m6_03",
+        "name": "Something is Strange",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "Lying on the ground inside ruins."
+      },
+      {
+        "id": "let_m6_04",
+        "name": "Beautiful Views",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "Wooden box at the top entrance heading underground."
+      },
+      {
+        "id": "let_m6_05",
+        "name": "Fools Everywhere",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "Bench in the corner on the upper-left perimeter of the village."
+      },
+      {
+        "id": "let_m7_01",
+        "name": "Trouble in the Ranks",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "Upstairs table inside residential farmhouse."
+      },
+      {
+        "id": "let_m7_02",
+        "name": "Barn Watch",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "Inside small timber barn resting on a wooden workbench table."
+      },
+      {
+        "id": "let_m7_03",
+        "name": "I Feel Uneasy",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "Second-floor table positioned beside the window."
+      },
+      {
+        "id": "let_m7_04",
+        "name": "Security Check",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "Guard outpost desk along the northern access track."
+      },
+      {
+        "id": "let_m7_05",
+        "name": "Final Preparations",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "Bunker staging office table near testing rail line."
+      },
+      {
+        "id": "let_m8_01",
+        "name": "Victory is Imminent!",
+        "region": "Mission 8: End of the Line",
+        "location": "Top floor command office table overlooking train tracks."
+      },
+      {
+        "id": "let_m8_02",
+        "name": "Home Soon, My Love",
+        "region": "Mission 8: End of the Line",
+        "location": "Maintenance desk at the bottom of the concrete grain silo."
+      },
+      {
+        "id": "let_m8_03",
+        "name": "What We've Achieved",
+        "region": "Mission 8: End of the Line",
+        "location": "Locked residential house room; key held by yard patrol officer."
+      },
+      {
+        "id": "let_m8_04",
+        "name": "Burn After Reading",
+        "region": "Mission 8: End of the Line",
+        "location": "Outbuilding office adjacent to Kill List target zone."
+      },
+      {
+        "id": "let_m8_05",
+        "name": "I Think This Is It",
+        "region": "Mission 8: End of the Line",
+        "location": "First-floor records office inside central station concourse."
+      },
+      {
+        "id": "let_m10_01",
+        "name": "Director's Grievance",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Production trailer office desk beside soundstage entrance."
+      },
+      {
+        "id": "let_m10_02",
+        "name": "Double Trouble",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Dressing room vanity table behind main studio set."
+      },
+      {
+        "id": "let_m10_03",
+        "name": "Prop Master Memo",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Storage loft crate accessible via exterior scaffold ladder."
+      },
+      {
+        "id": "let_m10_04",
+        "name": "Film Stock Shortage",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Editing booth bench on upper balcony overlooking studio."
+      },
+      {
+        "id": "let_m10_05",
+        "name": "Security Alert: Lookalikes",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Estate gatehouse table beside vehicle checkpoint barrier."
+      }
+    ],
+    "classified_documents": [
+      {
+        "id": "doc_m5_01",
+        "name": "Scuttle Order",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "First-floor laboratory office adjacent to destruction panel."
+      },
+      {
+        "id": "doc_m5_02",
+        "name": "Wilhelm's Folly",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "Engineering office desk overlooking chemical storage silos."
+      },
+      {
+        "id": "doc_m5_03",
+        "name": "Classified Cargo",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "Shipping depot office desk on first floor."
+      },
+      {
+        "id": "doc_m5_04",
+        "name": "Intruder Spotted",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "Security corridor table past emergency metal blast bulkhead."
+      },
+      {
+        "id": "doc_m5_05",
+        "name": "Scuttle Instructions",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "Plant manager's office safe; key carried by target officer."
+      },
+      {
+        "id": "doc_m6_01",
+        "name": "Roof Weakness Found",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "First-floor bureau office table."
+      },
+      {
+        "id": "doc_m6_02",
+        "name": "Defend our Skies",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "Wooden bench inside the estate greenhouse."
+      },
+      {
+        "id": "doc_m6_03",
+        "name": "Ready on your Order",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "Table inside building housing Gestapo officers."
+      },
+      {
+        "id": "doc_m6_04",
+        "name": "No Retreat",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "Top floor safe (requires satchel charge or key from watchtower patrol)."
+      },
+      {
+        "id": "doc_m6_05",
+        "name": "Schoene's Notes",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "Shelf inside bottom-right corner room of the underground chamber."
+      },
+      {
+        "id": "doc_m7_01",
+        "name": "A Service Hatch",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "Ground-floor corridor with pink walls, first door on the right."
+      },
+      {
+        "id": "doc_m7_02",
+        "name": "Control Room Key",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "Subterranean basement room on right side following downstairs path."
+      },
+      {
+        "id": "doc_m7_03",
+        "name": "Rocket Fuse Setup",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "Safe inside secondary objective bunker (satchel charge or officer key)."
+      },
+      {
+        "id": "doc_m7_04",
+        "name": "Hydraulics Concerns",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "Bunker supply box in small utility vault."
+      },
+      {
+        "id": "doc_m7_05",
+        "name": "Vulnerability Found",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "Desk in the bunker reached immediately after unlocking control room."
+      },
+      {
+        "id": "doc_m8_01",
+        "name": "Zugwerfer Departure",
+        "region": "Mission 8: End of the Line",
+        "location": "First-floor round room locked office; shared with Rifle Workbench."
+      },
+      {
+        "id": "doc_m8_02",
+        "name": "Prepare to Strike!",
+        "region": "Mission 8: End of the Line",
+        "location": "Bunker room beside ladder at default insertion point."
+      },
+      {
+        "id": "doc_m8_03",
+        "name": "Rusty Turntable",
+        "region": "Mission 8: End of the Line",
+        "location": "Railyard warehouse maintenance office desk."
+      },
+      {
+        "id": "doc_m8_04",
+        "name": "Railyard Management",
+        "region": "Mission 8: End of the Line",
+        "location": "Chair beside dispatch table inside central grain silo."
+      },
+      {
+        "id": "doc_m8_05",
+        "name": "Turret Locations",
+        "region": "Mission 8: End of the Line",
+        "location": "Upper staging catwalk room; located beside SMG Workbench."
+      },
+      {
+        "id": "doc_m10_01",
+        "name": "Shooting Schedule",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Soundstage control booth desk overlooking fake alpine set."
+      },
+      {
+        "id": "doc_m10_02",
+        "name": "Pyrotechnic Safety Protocols",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Armory workbench table inside film equipment bunker."
+      },
+      {
+        "id": "doc_m10_03",
+        "name": "Führer Itinerary",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Château private study safe (requires studio manager key)."
+      },
+      {
+        "id": "doc_m10_04",
+        "name": "Prop Weapons Manifest",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Cargo loading dock office clipboard table."
+      },
+      {
+        "id": "doc_m10_05",
+        "name": "Evacuation Contingency",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Underground emergency bunker desk beside rail spur."
+      }
+    ],
+    "hidden_items": [
+      {
+        "id": "item_m5_01",
+        "name": "Playing Cards",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "Wooden crate in southern encampment clearing."
+      },
+      {
+        "id": "item_m5_02",
+        "name": "Laboratory ID",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "First-floor office room off the chemical plant lobby."
+      },
+      {
+        "id": "item_m5_03",
+        "name": "Poster: Le Maquis Voit Tout!",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "Exterior wall of guard shack; unlocks 'Le Maquis Voit Tout'."
+      },
+      {
+        "id": "item_m6_01",
+        "name": "TODT Uniform Badge",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "Basement cellar reached via stairs behind the house."
+      },
+      {
+        "id": "item_m6_02",
+        "name": "Committee C Map",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "Pinned to wall in center room of large underground bunker chamber."
+      },
+      {
+        "id": "item_m6_03",
+        "name": "Poster: Prende Le Maquis",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "Exterior building wall (bottom-left area); unlocks Propaganda Mission 5."
+      },
+      {
+        "id": "item_m7_01",
+        "name": "Engraved Lighter",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "Table immediately inside the entrance of the house."
+      },
+      {
+        "id": "item_m7_02",
+        "name": "Broken Pressure Gauge",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "Metal shelf in compressor room along test canal."
+      },
+      {
+        "id": "item_m7_03",
+        "name": "Poster: Debout La France",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "Outbuilding brick facade; unlocks Propaganda Mission 7."
+      },
+      {
+        "id": "item_m8_01",
+        "name": "AA Repair Manual",
+        "region": "Mission 8: End of the Line",
+        "location": "Tool locker base inside the large concrete silo."
+      },
+      {
+        "id": "item_m8_02",
+        "name": "New Tank Blueprints",
+        "region": "Mission 8: End of the Line",
+        "location": "Ground-floor depot crate corner."
+      },
+      {
+        "id": "item_m8_03",
+        "name": "Poster: Pour Une France Libre",
+        "region": "Mission 8: End of the Line",
+        "location": "First-floor exterior rail wall; unlocks 'Pour Une France Libre'."
+      },
+      {
+        "id": "item_m10_01",
+        "name": "Clapperboard: Take 88",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Resting on director's chair in central studio soundstage."
+      },
+      {
+        "id": "item_m10_02",
+        "name": "Hitler Mustache Wax",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Dressing room makeup mirror counter."
+      },
+      {
+        "id": "item_m10_03",
+        "name": "Prop Luger (Rubber)",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Costume storage room shelf near studio canteen."
+      },
+      {
+        "id": "item_m10_04",
+        "name": "Signed Film Reel",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Private screening room projection booth table."
+      }
+    ],
+    "stone_eagles": [
+      {
+        "id": "eagle_m5_01",
+        "name": "Dead-Eye Target 1",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "Lantern gallery of distant off-map lighthouse to northwest."
+      },
+      {
+        "id": "eagle_m5_02",
+        "name": "Dead-Eye Target 2",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "Counterweight arm of heavy gantry crane on eastern docks."
+      },
+      {
+        "id": "eagle_m5_03",
+        "name": "Dead-Eye Target 3",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "Concrete lintel arch directly above railway tunnel exit."
+      },
+      {
+        "id": "eagle_m6_01",
+        "name": "Dead-Eye Target 1",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "Rooftop of house where Kill List target resides."
+      },
+      {
+        "id": "eagle_m6_02",
+        "name": "Dead-Eye Target 2",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "Spire ridge atop village church."
+      },
+      {
+        "id": "eagle_m6_03",
+        "name": "Dead-Eye Target 3",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "Corner parapet of outer castle wall along map boundary."
+      },
+      {
+        "id": "eagle_m7_01",
+        "name": "Dead-Eye Target 1",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "Silo elevator tower pinnacle on north plateau."
+      },
+      {
+        "id": "eagle_m7_02",
+        "name": "Dead-Eye Target 2",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "Gable peak of transformer substation building."
+      },
+      {
+        "id": "eagle_m7_03",
+        "name": "Dead-Eye Target 3",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "Chimney of house located near the final main objective."
+      },
+      {
+        "id": "eagle_m8_01",
+        "name": "Dead-Eye Target 1",
+        "region": "Mission 8: End of the Line",
+        "location": "Northeast tower peak of central terminal complex."
+      },
+      {
+        "id": "eagle_m8_02",
+        "name": "Dead-Eye Target 2",
+        "region": "Mission 8: End of the Line",
+        "location": "Northwest roof corner of house facing initial spawn."
+      },
+      {
+        "id": "eagle_m8_03",
+        "name": "Dead-Eye Target 3",
+        "region": "Mission 8: End of the Line",
+        "location": "Cupola top of small tower near eastern classification yard."
+      },
+      {
+        "id": "eagle_m10_01",
+        "name": "Dead-Eye Target 1",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Studio arch sign pediment above main vehicle gate."
+      },
+      {
+        "id": "eagle_m10_02",
+        "name": "Dead-Eye Target 2",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Château estate roof balustrade between stone urns."
+      },
+      {
+        "id": "eagle_m10_03",
+        "name": "Dead-Eye Target 3",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Water tower apex behind studio electrical generator."
+      }
+    ],
+    "workbenches": [
+      {
+        "id": "wb_m5_rifle",
+        "name": "Rifle Workbench",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "Chemical plant basement vault via lockpick or bolt cutters."
+      },
+      {
+        "id": "wb_m5_pistol",
+        "name": "Pistol Workbench",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "Security corridor office past Kleine Blume control room."
+      },
+      {
+        "id": "wb_m5_smg",
+        "name": "SMG Workbench",
+        "region": "Mission 5: Devil's Cauldron",
+        "location": "Workshop office directly inside northern railway tunnel portal."
+      },
+      {
+        "id": "wb_m6_rifle",
+        "name": "Rifle Workbench",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "Underground chamber (turn left inside entrance; requires satchel charge)."
+      },
+      {
+        "id": "wb_m6_smg",
+        "name": "SMG Workbench",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "Basement cellar beneath house in center of village."
+      },
+      {
+        "id": "wb_m6_pistol",
+        "name": "Pistol Workbench",
+        "region": "Mission 6: Assault on Fort Rouge",
+        "location": "Locked house requiring lockpick or bolt cutters."
+      },
+      {
+        "id": "wb_m7_rifle",
+        "name": "Rifle Workbench",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "First-floor room accessed by climbing exterior rear lattice."
+      },
+      {
+        "id": "wb_m7_smg",
+        "name": "SMG Workbench",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "Loft level reached via interior ladder inside storage building."
+      },
+      {
+        "id": "wb_m7_pistol",
+        "name": "Pistol Workbench",
+        "region": "Mission 7: Lock, Stock and Barrels",
+        "location": "Balcony space situated directly above main bunker entrance."
+      },
+      {
+        "id": "wb_m8_pistol",
+        "name": "Pistol Workbench",
+        "region": "Mission 8: End of the Line",
+        "location": "First-floor residential room accessible by mantle jump."
+      },
+      {
+        "id": "wb_m8_rifle",
+        "name": "Rifle Workbench",
+        "region": "Mission 8: End of the Line",
+        "location": "First-floor locked room inside terminal station; key held by main objective guard."
+      },
+      {
+        "id": "wb_m8_smg",
+        "name": "SMG Workbench",
+        "region": "Mission 8: End of the Line",
+        "location": "Elevated staging catwalk room beside Classified Document #5."
+      },
+      {
+        "id": "wb_m10_rifle",
+        "name": "Rifle Workbench",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Stage workshop storeroom beside film set carpenters' bay."
+      },
+      {
+        "id": "wb_m10_smg",
+        "name": "SMG Workbench",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Armory locker room inside guard barracks compound."
+      },
+      {
+        "id": "wb_m10_pistol",
+        "name": "Pistol Workbench",
+        "region": "DLC: Lights, Camera, ACHTUNG!",
+        "location": "Cellar vault beneath château wine tasting room."
+      }
+    ]
+  }
