@@ -1,8 +1,8 @@
 # ============================================================================
 # File: .github/workflows/psn-sync.yml
 # Project: PSN Live Sync Engine
-# Version: 18.5.0 - 21-Minute Presence-Gated Sync + Universal Game Data Sync
-#   - Passes FIREBASE_AUTH_SECRET to the engine
+# Version: 18.6.0 - 21-Minute Presence-Gated Sync + Universal Game Data Sync
+#   - Passes FIREBASE_AUTH_SECRET and FIREBASE_SERVICE_RAY to the engine
 #   - Passes Werewolf, Ray, Darkwing, and Marc NPSSO fallbacks
 #   - Queues runs instead of cancelling a sync mid-pass
 #   - Syncs PSN presence/hours and game/data/game.json in a single atomic pass
@@ -59,7 +59,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          npm install psn-api
+          npm install psn-api firebase-admin
 
       - name: Execute PSN Sync Engine
         env:
@@ -68,7 +68,7 @@ jobs:
           PSN_NPSSO_DARKWING: ${{ secrets.PSN_NPSSO_DARKWING }}
           PSN_NPSSO_MARC: ${{ secrets.PSN_NPSSO_MARC }}
           FIREBASE_AUTH_SECRET: ${{ secrets.FIREBASE_AUTH_SECRET }}
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          FIREBASE_SERVICE_RAY: ${{ secrets.FIREBASE_SERVICE_RAY }}
         run: |
           # 1. Run primary presence and user account sync
           if [ -f "Playstation/psn.js" ]; then
@@ -88,10 +88,10 @@ jobs:
         run: |
           git config --global user.name "Werewolf3788-Bot"
           git config --global user.email "werewolf3788-bot@users.noreply.github.com"
-          
+
           # Stage PSN presence outputs and automated game tracker data
           git add psn.json Playstation/psn.json game/data/game.json game/data/games/ 2>/dev/null || true
-          
+
           if ! git diff --cached --quiet; then
             git commit -m "Automated PSN Payload & Game Sync [skip ci] [Chicago Time: $(TZ='America/Chicago' date '+%Y-%m-%d %H:%M:%S')]"
             git pull --rebase origin main
