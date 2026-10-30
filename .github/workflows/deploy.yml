@@ -1,17 +1,21 @@
-# ==============================================================================
-# GitHub Actions Workflow: Dual-Deploy to Firebase Hosting & GitHub Pages
-# Firebase:      https://entertainment-71888.web.app  (hosting.public in firebase.json)
-# GitHub Pages:  https://werewolf3788.github.io/Website/  (whole repo, for overlays)
-# Target Secret: GCP_SA_KEY_WEBSITE
-# The two deploys run as separate jobs, so one failing does not block the other.
-# ==============================================================================
-
 name: Deploy to Firebase Hosting & GitHub Pages
 
 on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'public/games/**'
+      - 'Playstation/**'
+      - 'game/data/**'
+      - 'psn.json'
+      - 'README.md'
+      - '.github/workflows/psn.yml'
+      - '.github/workflows/sync-games-rtdb.yml'
+  workflow_run:
+    workflows: ["Sync Game JSONs to Firebase RTDB"]
+    types:
+      - completed
   workflow_dispatch:
 
 permissions:
@@ -19,18 +23,20 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: site-deployment
+  cancel-in-progress: true
+
 jobs:
   firebase:
     name: Deploy to Firebase Hosting
     runs-on: ubuntu-latest
-    concurrency:
-      group: firebase-hosting
-      cancel-in-progress: false
+    # Only run if manual, triggered by push, or if the game sync completed successfully
+    if: ${{ github.event.workflow_run == null || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Tip: pin this to a release tag or commit SHA instead of @master
       - name: Deploy to Firebase Hosting
         uses: w9jds/firebase-action@master
         with:
@@ -41,9 +47,8 @@ jobs:
   pages:
     name: Deploy to GitHub Pages (overlays)
     runs-on: ubuntu-latest
-    concurrency:
-      group: pages
-      cancel-in-progress: false
+    needs: [firebase]
+    if: ${{ github.event.workflow_run == null || github.event.workflow_run.conclusion == 'success' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
