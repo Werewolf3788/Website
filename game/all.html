@@ -1,29 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Section 1: Dynamic Meta, Responsive Viewport & Assets -->
-    <!-- Lines 4-22: Meta tags, dynamic branding bindings, and CDNs -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Far Cry 5 — Hope County Resistance Companion & Field Ledger</title>
+    <title id="pageHeaderTitle">Universal Companion & Field Ledger</title>
     
     <link id="dynamicFavicon" rel="icon" href="//raw.githubusercontent.com/Werewolf3788/Website/main/favicon.ico" type="image/x-icon">
     <link id="dynamicAppleIcon" rel="apple-touch-icon" href="//raw.githubusercontent.com/Werewolf3788/Website/main/favicon.ico">
     
-    <!-- Open Graph Metadata -->
-    <meta property="og:title" content="Far Cry 5 Resistance Companion & Ledger">
-    <meta property="og:description" content="Tactical resistance tracker, prepper stashes, roster recruitment, and PSN trophy synchronizer for Far Cry 5.">
+    <meta property="og:title" content="Universal Game Companion & Live Telemetry Ledger">
+    <meta property="og:description" content="Tactical progress tracker, dynamic collectibles, co-op squad ledgers, and live PSN telemetry synchronizer.">
     <meta property="og:type" content="website">
 
-    <!-- Stylesheets & Icon Typography -->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="//fonts.googleapis.com">
     <link rel="preconnect" href="//fonts.gstatic.com" crossorigin>
     <link href="//fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        /* Section 2: Glossy High-Contrast Design System */
-        /* Lines 26-198: CSS Layout, custom variables, and responsive behavior */
         :root {
             --bg-base: #0b0f19;
             --bg-surface: #131d31;
@@ -43,450 +37,137 @@
             --font-body: 'Inter', sans-serif;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-base); color: var(--text-main); font-family: var(--font-body); min-height: 100vh; display: flex; flex-direction: column; line-height: 1.5; }
+        a { color: inherit; text-decoration: none; }
 
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            font-family: var(--font-body);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            line-height: 1.5;
-        }
+        .site-header { background: rgba(19, 29, 49, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle); position: sticky; top: 0; z-index: 1000; padding: 0 1.5rem; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+        .header-brand { display: flex; align-items: center; gap: 12px; font-family: var(--font-display); font-size: 1.15rem; font-weight: 900; letter-spacing: 0.5px; color: #fff; }
+        .header-brand img { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-highlight); }
+        .dynamic-nav { display: flex; align-items: center; gap: 6px; }
+        .nav-btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 6px; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); background: transparent; border: 1px solid transparent; cursor: pointer; transition: all 0.2s ease; }
+        .nav-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.05); border-color: var(--border-subtle); }
+        .nav-icon { width: 18px; height: 18px; border-radius: 4px; object-fit: cover; }
+        .nav-folder { position: relative; }
+        .folder-menu { display: none; position: absolute; top: 100%; left: 0; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 6px; min-width: 200px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); flex-direction: column; gap: 4px; }
+        .nav-folder:hover .folder-menu, .nav-folder.active .folder-menu { display: flex; }
+        .header-tools { display: flex; align-items: center; gap: 12px; }
+        .btn-accent { background: var(--user-theme-accent); color: #fff; padding: 7px 14px; border-radius: 6px; border: none; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: opacity 0.2s ease; }
+        .btn-accent:hover { opacity: 0.9; }
+        .user-badge { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-subtle); padding: 4px 10px; border-radius: 20px; }
+        .user-badge img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; }
+        .mobile-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.25rem; cursor: pointer; }
 
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
+        .main-container { flex: 1; width: 92%; max-width: 1380px; margin: 1.5rem auto; display: flex; flex-direction: column; gap: 1.5rem; }
+        .hud-panel { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 1.25rem; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+        .hud-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px; margin-bottom: 12px; }
+        .hud-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .hud-select { background: var(--bg-card); border: 1px solid var(--border-subtle); color: #fff; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 0.85rem; outline: none; }
 
-        /* Top Authoritative Navbar */
-        .site-header {
-            background: rgba(19, 29, 49, 0.95);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-subtle);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            padding: 0 1.5rem;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .header-brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-family: var(--font-display);
-            font-size: 1.15rem;
-            font-weight: 900;
-            letter-spacing: 0.5px;
-            color: #fff;
-        }
-
-        .header-brand img {
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: 1px solid var(--border-highlight);
-        }
-
-        .dynamic-nav {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .nav-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 14px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            background: transparent;
-            border: 1px solid transparent;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .nav-btn:hover {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.05);
-            border-color: var(--border-subtle);
-        }
-
-        .nav-icon {
-            width: 18px;
-            height: 18px;
-            border-radius: 4px;
-            object-fit: cover;
-        }
-
-        /* Dropdown Navigation Folders */
-        .nav-folder {
-            position: relative;
-        }
-
-        .folder-menu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            padding: 6px;
-            min-width: 200px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .nav-folder:hover .folder-menu,
-        .nav-folder.active .folder-menu {
-            display: flex;
-        }
-
-        .header-tools {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .btn-accent {
-            background: var(--user-theme-accent);
-            color: #fff;
-            padding: 7px 14px;
-            border-radius: 6px;
-            border: none;
-            font-weight: 700;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: opacity 0.2s ease;
-        }
-
-        .btn-accent:hover {
-            opacity: 0.9;
-        }
-
-        .user-badge {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid var(--border-subtle);
-            padding: 4px 10px;
-            border-radius: 20px;
-        }
-
-        .user-badge img {
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .mobile-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 1.25rem;
-            cursor: pointer;
-        }
-
-        /* Main View Container */
-        .main-container {
-            flex: 1;
-            width: 92%;
-            max-width: 1380px;
-            margin: 1.5rem auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        /* Ledger Tactical Control Hub */
-        .hud-panel {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 1.25rem;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-        }
-
-        .hud-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            border-bottom: 1px solid var(--border-subtle);
-            padding-bottom: 12px;
-            margin-bottom: 12px;
-        }
-
-        .hud-title {
-            font-family: var(--font-display);
-            font-size: 1.3rem;
-            font-weight: 900;
-            color: #fff;
+        /* ======================================================== */
+        /* GAME SELECTION PILL CONTAINER                           */
+        /* ======================================================== */
+        .game-pills-bar {
             display: flex;
             align-items: center;
             gap: 10px;
+            overflow-x: auto;
+            padding: 4px 0 12px 0;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 12px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-highlight) transparent;
         }
 
-        .hud-select {
+        .game-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
             background: var(--bg-card);
             border: 1px solid var(--border-subtle);
-            color: #fff;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            outline: none;
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 12px;
-            margin-top: 12px;
-        }
-
-        .metric-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .metric-label {
-            font-size: 0.72rem;
-            text-transform: uppercase;
-            font-weight: 800;
+            border-radius: 30px;
             color: var(--text-muted);
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            font-weight: 700;
             letter-spacing: 0.5px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
         }
 
-        .metric-value {
-            font-family: var(--font-display);
-            font-size: 1.4rem;
-            font-weight: 900;
+        .game-pill:hover {
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+            background: var(--bg-card-hover);
+            transform: translateY(-1px);
+        }
+
+        .game-pill.active {
+            background: linear-gradient(135deg, rgba(255, 85, 0, 0.25) 0%, rgba(255, 85, 0, 0.1) 100%);
+            border-color: var(--user-theme-accent);
+            color: #fff;
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .game-pill-icon {
+            font-size: 0.8rem;
             color: var(--user-theme-accent);
         }
 
-        .stat-console {
-            background: #06090f;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 6px;
-            padding: 8px 12px;
-            font-family: monospace;
-            font-size: 0.75rem;
-            color: #38bdf8;
-            margin-top: 12px;
-            overflow-x: auto;
-            white-space: nowrap;
+        .game-pill.active .game-pill-icon {
+            color: #ffaa00;
         }
 
-        /* Squad Co-Op Ledger Panel */
-        .squad-panel {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 1.25rem;
-        }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 12px; }
+        .metric-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+        .metric-label { font-size: 0.72rem; text-transform: uppercase; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; }
+        .metric-value { font-family: var(--font-display); font-size: 1.4rem; font-weight: 900; color: var(--user-theme-accent); }
 
-        .squad-roster-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 12px;
-            margin-top: 12px;
-        }
+        .stat-console { background: #06090f; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 8px 12px; font-family: monospace; font-size: 0.75rem; color: #38bdf8; margin-top: 12px; overflow-x: auto; white-space: nowrap; }
 
-        /* Dynamic Accordions & Category Sections */
-        .category-section {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            margin-bottom: 1.25rem;
-            overflow: hidden;
-            transition: all 0.2s ease;
-        }
+        .squad-panel { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 1.25rem; }
+        .squad-roster-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-top: 12px; }
 
-        .category-header {
-            padding: 1rem 1.25rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
-            background: rgba(255,255,255,0.02);
-            transition: background 0.2s ease;
-        }
+        .category-section { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; margin-bottom: 1.25rem; overflow: hidden; transition: all 0.2s ease; }
+        .category-header { padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; background: rgba(255,255,255,0.02); transition: background 0.2s ease; }
+        .category-header:hover { background: rgba(255,255,255,0.04); }
+        .category-header h2 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: #fff; }
+        .section-collapsed .section-content { display: none; }
+        .section-content { padding: 1.25rem; border-top: 1px solid var(--border-subtle); }
 
-        .category-header:hover {
-            background: rgba(255,255,255,0.04);
-        }
+        .trophy-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+        .trophy-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 14px; position: relative; transition: all 0.2s ease; }
+        .trophy-card:hover { border-color: var(--border-highlight); transform: translateY(-2px); }
+        .trophy-card.completed { background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.4); }
 
-        .category-header h2 {
-            font-family: var(--font-display);
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #fff;
-        }
+        .check-btn { width: 28px; height: 28px; border-radius: 6px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; font-weight: 900; flex-shrink: 0; transition: all 0.2s ease; }
+        .check-btn:hover { background: rgba(255,255,255,0.15); }
+        .check-btn.is-done { background: #10b981; border-color: #10b981; color: #fff; }
 
-        .section-collapsed .section-content {
-            display: none;
-        }
-
-        .section-content {
-            padding: 1.25rem;
-            border-top: 1px solid var(--border-subtle);
-        }
-
-        /* Grid of Checklist Cards */
-        .trophy-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 14px;
-        }
-
-        .trophy-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 10px;
-            padding: 14px;
-            position: relative;
-            transition: all 0.2s ease;
-        }
-
-        .trophy-card:hover {
-            border-color: var(--border-highlight);
-            transform: translateY(-2px);
-        }
-
-        .trophy-card.completed {
-            background: rgba(16, 185, 129, 0.08);
-            border-color: rgba(16, 185, 129, 0.4);
-        }
-
-        .check-btn {
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid var(--border-subtle);
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 900;
-            flex-shrink: 0;
-            transition: all 0.2s ease;
-        }
-
-        .check-btn:hover {
-            background: rgba(255,255,255,0.15);
-        }
-
-        .check-btn.is-done {
-            background: #10b981;
-            border-color: #10b981;
-            color: #fff;
-        }
-
-        /* Badges */
-        .trophy-rank {
-            font-size: 0.65rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            padding: 2px 6px;
-            border-radius: 4px;
-            letter-spacing: 0.5px;
-        }
-
+        .trophy-rank { font-size: 0.65rem; font-weight: 900; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.5px; }
         .rank-bronze { background: rgba(217, 119, 6, 0.2); color: #f59e0b; }
         .rank-silver { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
         .rank-gold { background: rgba(234, 179, 8, 0.2); color: #facc15; }
         .rank-platinum { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
 
-        /* Auth Modal */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.75);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-        }
-
-        .modal-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 2rem;
-            width: 90%;
-            max-width: 420px;
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-        }
-
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 2rem; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
         .hidden { display: none !important; }
 
-        /* Persistent New York Timestamp Footer */
-        .site-footer {
-            margin-top: auto;
-            background: #070a12;
-            border-top: 1px solid var(--border-subtle);
-            padding: 1.25rem 1.5rem;
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
+        .site-footer { margin-top: auto; background: #070a12; border-top: 1px solid var(--border-subtle); padding: 1.25rem 1.5rem; font-size: 0.78rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
 
-        /* Responsive Breakpoints */
         @media (max-width: 768px) {
             .mobile-toggle { display: block; }
-            .dynamic-nav {
-                display: none;
-                position: absolute;
-                top: 64px;
-                left: 0;
-                right: 0;
-                background: var(--bg-surface);
-                flex-direction: column;
-                padding: 1rem;
-                border-bottom: 1px solid var(--border-subtle);
-            }
+            .dynamic-nav { display: none; position: absolute; top: 64px; left: 0; right: 0; background: var(--bg-surface); flex-direction: column; padding: 1rem; border-bottom: 1px solid var(--border-subtle); }
             .dynamic-nav.is-open { display: flex; }
             .trophy-grid { grid-template-columns: 1fr; }
             .site-footer { flex-direction: column; text-align: center; }
         }
     </style>
 
-    <!-- Firebase Authoritative SDK v8 (Compat) -->
     <script src="//www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="//www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="//www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -494,16 +175,14 @@
 </head>
 <body>
 
-    <!-- Section 3: Authoritative Header & Navigation Engine -->
-    <!-- Lines 204-245: Header markup, dynamic brand logo, and authentication tools -->
     <header class="site-header">
         <div class="header-brand">
             <img id="navHeaderLogo" src="//raw.githubusercontent.com/Werewolf3788/Website/main/favicon.ico" alt="" onerror="this.src='//raw.githubusercontent.com/Werewolf3788/Website/main/favicon.ico'">
-            <span>FAR CRY 5 RESISTANCE</span>
+            <span id="companionGameTitle">GAME COMPANION</span>
         </div>
 
         <nav class="dynamic-nav" id="dynamicNavLinks">
-            <!-- Programmatically sorted from /utm_links via fc5.js -->
+            <!-- Programmatically sorted from /utm_links via game/Universal.js -->
         </nav>
 
         <div class="header-tools">
@@ -518,45 +197,38 @@
         </div>
     </header>
 
-    <!-- Section 4: Main Layout & Tactical HUD -->
-    <!-- Lines 248-316: Resistance name, rank meters, status line, and friend roster -->
-    <main class="main-container">
+    <main class="main-container" id="app-root" data-game="farcry5">
 
-        <!-- Resistance Ledger & Platform Switcher -->
         <section class="hud-panel">
             <div class="hud-header">
                 <div class="hud-title">
-                    <i class="fas fa-crosshairs text-orange-500" style="color:var(--user-theme-accent);"></i>
+                    <i class="fas fa-crosshairs" style="color:var(--user-theme-accent);"></i>
                     <span id="resistance-name">GUEST [PS]</span>
                 </div>
                 <div>
                     <label for="platformSelector" style="font-size:0.75rem; font-weight:700; color:var(--text-muted); margin-right:6px;">PLATFORM:</label>
                     <select id="platformSelector" class="hud-select">
                         <option value="ps">PlayStation</option>
-                        <option value="pc">PC / Ubisoft Connect</option>
+                        <option value="pc">PC / Microsoft</option>
                         <option value="xbox">Xbox</option>
                         <option value="steam">Steam</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Dynamic Tactical Counters -->
+            <!-- Dynamic Game Selector Pills Mount -->
+            <div class="game-pills-bar" id="gamePillsContainer">
+                <!-- Generated dynamically from RTDB /games via Universal.js -->
+            </div>
+
             <div class="metrics-grid">
                 <div class="metric-card">
-                    <span class="metric-label">Resistance Points</span>
-                    <span class="metric-value" id="rank-val-rp">0</span>
-                </div>
-                <div class="metric-card">
-                    <span class="metric-label">Prepper Stashes</span>
+                    <span class="metric-label">Stashes & Hunts</span>
                     <span class="metric-value" id="rank-val-stashes">0</span>
                 </div>
                 <div class="metric-card">
-                    <span class="metric-label">Guns & Fangs Hired</span>
+                    <span class="metric-label">Recruited Roster</span>
                     <span class="metric-value" id="rank-val-roster">0</span>
-                </div>
-                <div class="metric-card">
-                    <span class="metric-label">Magazines & Perks</span>
-                    <span class="metric-value" id="rank-val-perks">0</span>
                 </div>
                 <div class="metric-card">
                     <span class="metric-label">Total Collectibles</span>
@@ -564,20 +236,18 @@
                 </div>
             </div>
 
-            <!-- Live Authoritative Engine Status Console -->
             <div class="stat-console" id="stat-line">
-                [SYSTEM READY] Listening for database hydration...
+                [SYSTEM READY] Connecting to universal telemetry ledger...
             </div>
         </section>
 
-        <!-- Squad Co-Op Bridge via RTDB Friend Codes -->
         <section class="squad-panel">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-subtle); padding-bottom:10px;">
                 <h3 style="font-family:var(--font-display); font-size:1.1rem; color:#fff;">
                     <i class="fas fa-users" style="color:var(--user-theme-accent); margin-right:6px;"></i> Squad Co-Op Ledger
                 </h3>
                 <div style="font-size:0.75rem; color:var(--text-muted);">
-                    Your Friend Code: <strong id="myFriendCodeDisplay" style="color:#fff; letter-spacing:1px;">TLWWTSNU</strong>
+                    Your Friend Code: <strong id="myFriendCodeDisplay" style="color:#fff; letter-spacing:1px;">--</strong>
                 </div>
             </div>
             <div class="squad-roster-grid" id="friendsRosterContainer">
@@ -585,18 +255,15 @@
             </div>
         </section>
 
-        <!-- Dynamic Content Mount injected via renderFarCry5Companion(data) -->
         <div id="section-container">
-            <!-- Accordion sections (Story, Stashes, Collectibles, Roster, Trophies) injected here -->
+            <!-- Dynamic Category Content Injected Here -->
         </div>
 
     </main>
 
-    <!-- Section 5: Authentication Modal -->
-    <!-- Lines 319-331: Firebase sign-in overlay -->
     <div id="authModal" class="modal-overlay hidden">
         <div class="modal-card">
-            <h3 style="font-family:var(--font-display); font-size:1.3rem; margin-bottom:8px; color:#fff;">RESISTANCE LOGIN</h3>
+            <h3 style="font-family:var(--font-display); font-size:1.3rem; margin-bottom:8px; color:#fff;">TELEMETRY LOGIN</h3>
             <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1.5rem;">
                 Sign in with Google to synchronize your campaign checklist directly with Cloud Firestore and squad members.
             </p>
@@ -609,42 +276,39 @@
         </div>
     </div>
 
-    <!-- Section 6: Authoritative Persistent Footer -->
-    <!-- Lines 334-345: New York 24-hr Timestamp, Versioning, and Architecture Standards -->
     <footer class="site-footer">
         <div>
-            <span>Project: Far Cry 5 Resistance Companion & Field Ledger</span> | 
-            <span>Build Version: v10.0.4-COTW-STRUCTURAL-ALIGNMENT</span>
+            <span>Project: Universal Game Companion & Field Ledger</span> | 
+            <span>Build Version: v10.4.0-GAME-PILLS-BAR</span>
         </div>
         <div>
-            <span>Timestamp (EDT): 2026-10-28 03:25:00</span>
+            <span>Timestamp (EDT): 2026-10-29 20:37:00</span>
         </div>
     </footer>
 
-    <!-- Section 7: Companion Logic Engine Script Binding -->
-    <!-- Lines 348-378: Dynamic Loader targeting /game/farcry/fc5.js with GitHub failovers -->
+    <!-- Universal Logic Engine -->
     <script>
     (function() {
         const candidatePaths = [
-            '/game/farcry/fc5.js',
-            './game/farcry/fc5.js',
-            './farcry/fc5.js',
-            '//raw.githubusercontent.com/Werewolf3788/Website/main/game/farcry/fc5.js',
-            '//werewolf3788.github.io/Website/game/farcry/fc5.js',
-            '/fc5.js'
+            '/game/Universal.js',
+            './game/Universal.js',
+            './Universal.js',
+            '/Universal.js',
+            '//raw.githubusercontent.com/Werewolf3788/Website/main/game/Universal.js',
+            '//werewolf3788.github.io/Website/game/Universal.js'
         ];
 
         function tryLoad(idx) {
             if (idx >= candidatePaths.length) {
-                console.error('[fc5.js Engine]: All script candidate paths failed to load.');
+                console.error('[Universal.js Engine]: All script candidate paths failed to load.');
                 const stat = document.getElementById('stat-line');
-                if (stat) stat.innerText = '[System Error] game/farcry/fc5.js could not be loaded from server.';
+                if (stat) stat.innerText = '[System Error] game/Universal.js could not be loaded from server.';
                 return;
             }
             const s = document.createElement('script');
             s.src = candidatePaths[idx];
             s.onload = function() {
-                console.log('[fc5.js Engine]: Successfully bound from ' + candidatePaths[idx]);
+                console.log('[Universal.js Engine]: Successfully bound from ' + candidatePaths[idx]);
             };
             s.onerror = function() {
                 tryLoad(idx + 1);
