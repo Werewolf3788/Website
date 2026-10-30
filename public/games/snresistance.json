@@ -364,8 +364,7 @@
    { "id": "se5_mp_avenger", "name": "Avenger", "requirement": "Kill the enemy who recently killed your co-op partner." }
       ]
     }
-  }
-}
+  },
   "trophies": [
     { "trophyId": 0, "name": "Sniper Elite", "rank": "PLATINUM", "description": "Obtain all Trophies." },
     { "trophyId": 1, "name": "Dam Buster", "rank": "BRONZE", "description": "Sabotage the Dam and destroy the AA guns." },
