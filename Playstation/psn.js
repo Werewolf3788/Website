@@ -94,14 +94,15 @@ const PULL_CONFIG = {
     CHUNK_ITEMS: 50,
     MAX_PAGES: 50,
     FRIEND_LOOKUPS_PER_RUN: 40,
-    FRIEND_RETRY_UNRESOLVED_MS: 7 * 24 * 3600 * 1000,
+    FRIEND_RETRY_UNRESOLVED_MS: 24 * 3600 * 1000,
     REQUEST_GAP_MS: 120,
     RETRIES: 2,
     PREFER_SONY_PLAYTIME: true
 };
 
-const TROPHY_MIN_YEAR = 2026;                       // trophies earned before Jan 1 of this year are hidden in RTDB
-const TROPHY_CUTOFF_MS = Date.UTC(TROPHY_MIN_YEAR, 0, 1);
+const ACTIVE_WINDOW_DAYS = 183;                      // ~6 months: games idle longer than this leave RTDB (they stay in Firestore)
+const activeCutoffMs = () => Date.now() - ACTIVE_WINDOW_DAYS * 86400000;
+const lastActivityMs = (g) => Math.max(g?.lastPlayed ? new Date(g.lastPlayed).getTime() : 0, g?.lastUpdatedDateTime ? new Date(g.lastUpdatedDateTime).getTime() : 0) || 0;
 const LEGACY_FRIEND_BUCKETS = 16;                   // old friendsDirectory/bucket_NN docs (migrated + deleted once)
 const apiStats = { calls: 0, failures: 0, errorsByLabel: {} };
 const diag = { auth: {}, members: {} };
@@ -224,12 +225,22 @@ function rtdbCanon(v) {
     return out;
 }
 
-// A game is shown in RTDB (with ALL its trophies, old ones included) only if it was active in/after the cutoff year:
-// a trophy earned this year, trophy data updated this year, or it is the game being played right now.
-function gameActiveSinceCutoff(map, lastUpdated, isActiveNow) {
+// A game stays in RTDB (liveTrophyProgress) while it was active in the last ~6 months:
+// played / trophy data updated / a trophy earned in that window, or it is the game being played right now.
+function gameActiveRecently(map, lastActivity, isActiveNow) {
     if (isActiveNow) return true;
-    if (lastUpdated && new Date(lastUpdated).getTime() >= TROPHY_CUTOFF_MS) return true;
-    return Object.values(asObjectMap(map)).some((t) => t && (t.timestamp || 0) >= TROPHY_CUTOFF_MS);
+    const cutoff = activeCutoffMs();
+    if (lastActivity && new Date(lastActivity).getTime() >= cutoff) return true;
+    return Object.values(asObjectMap(map)).some((t) => t && (t.timestamp || 0) >= cutoff);
+}
+
+// Within a qualifying game, liveTrophyProgress keeps only trophies that are earned (any date) or in progress (e.g. 22/100).
+function earnedOrInProgress(map) {
+    const out = {};
+    for (const [k, t] of Object.entries(asObjectMap(map))) {
+        if (t && (t.earned || (t.currentValue || 0) > 0)) out[k] = t;
+    }
+    return out;
 }
 
 function filterCard(record) {
@@ -918,13 +929,17 @@ async function ensureFriendsDirectory() {
 
 async function saveFriendsDirectory() {
     if (!dirtyFriendIds.size) return;
+    let wrote = 0, noName = 0, failed = 0;
     for (const id of dirtyFriendIds) {
         const f = friendsDirectoryCache[id];
-        if (f && f.onlineId) await col("friendsDirectory").doc(safeKey(f.onlineId)).set(plain(f));
+        if (!f || !f.onlineId) { noName++; continue; }
+        try { await col("friendsDirectory").doc(safeKey(f.onlineId)).set(plain(f)); wrote++; }
+        catch (e) { failed++; console.warn(`[FRIENDS] Could not write ${f.onlineId}: ${e.message}`); }
     }
     const entries = {};
     for (const [id, f] of Object.entries(friendsDirectoryCache)) entries[id] = slimFriend(f);
     await col("system").doc("friendsIndex").set(plain({ entries, updatedAt: nowEt() }));
+    console.log(`[FRIENDS] directory docs written: ${wrote}, friends without a resolvable PSN name: ${noName}, failed: ${failed}`);
     dirtyFriendIds.clear();
 }
 
@@ -1675,7 +1690,7 @@ async function getFullUserData(ctx) {
         const liveProgress = {};
         for (const [k, v] of Object.entries(asObjectMap(existing?.liveTrophyProgress))) {
             const m = asObjectMap(v);
-            if (gameActiveSinceCutoff(m, merged.get(k)?.lastUpdatedDateTime, false)) liveProgress[k] = m;
+            if (gameActiveRecently(m, lastActivityMs(merged.get(k)) || null, false)) liveProgress[k] = m;
         }
         const ingestIds = [rootCommId];
         let liveBudget = PULL_CONFIG.LIVE_PROGRESS_BACKFILL_PER_RUN;
@@ -1687,7 +1702,7 @@ async function getFullUserData(ctx) {
             const isRecent = pIdx++ < PULL_CONFIG.PROGRESS_REFRESH_RECENT_TITLES;
             const hasStored = Object.prototype.hasOwnProperty.call(trophyTitleSync, id);
             const changed = !hasStored || (trophyTitleSync[id] || null) !== (g.lastUpdatedDateTime || null);
-            const needsLive = !liveProgress[id] && g.lastUpdatedDateTime && new Date(g.lastUpdatedDateTime).getTime() >= TROPHY_CUTOFF_MS;
+            const needsLive = !liveProgress[id] && lastActivityMs(g) >= activeCutoffMs();
             if (!isRecent && !changed) {
                 if (needsLive && liveBudget > 0) { liveBudget--; ingestIds.push(id); }
                 continue;
@@ -1731,7 +1746,10 @@ async function getFullUserData(ctx) {
             }
             // RTDB only shows games that were active this year (all of that game's trophies are kept)
             if (sub.ok || mapKeys.length) {
-                if (gameActiveSinceCutoff(sub.progressMap, gMeta.lastUpdatedDateTime, isActiveId)) liveProgress[cId] = sub.progressMap;
+                if (gameActiveRecently(sub.progressMap, lastActivityMs(gMeta) || null, isActiveId)) {
+                    const keep = earnedOrInProgress(sub.progressMap);
+                    if (Object.keys(keep).length) liveProgress[cId] = keep; else delete liveProgress[cId];
+                }
                 else delete liveProgress[cId];
             }
             if (sub.ok || mapKeys.length) {
@@ -1770,7 +1788,7 @@ async function getFullUserData(ctx) {
         newlyEarned.forEach((t) => recentMap.set(`${t.commId || ""}_${t.trophyId}`, t));
         const recentTrophies = Array.from(recentMap.values())
             .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
-            .filter((t) => (t.timestamp || 0) >= TROPHY_CUTOFF_MS)
+            .filter((t) => (t.timestamp || 0) >= activeCutoffMs())
             .slice(0, PULL_CONFIG.MOST_RECENT_TROPHIES_KEPT);
 
         /* ---- Firestore: slow-changing player data ---- */
