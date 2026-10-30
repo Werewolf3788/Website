@@ -1,12 +1,12 @@
 // ============================================================================
 // * Project: Universal Game Companion & Live Telemetry Field Ledger
 // * File: game/Universal.js
-// * Build Version: v10.6.0-DYNAMIC-NAVBAR-POSTER-SYNC
-// * Deployment Timestamp: 2026-10-29 20:45:00 EDT (America/New_York)
+// * Build Version: v10.7.0-FIRESTORE-PROGRESS-ALIGNMENT-THEMES
+// * Deployment Timestamp: 2026-10-29 21:05:00 EDT (America/New_York)
 // ============================================================================
 
 // Section 1: Unified Firebase Configuration (entertainment-71888)
-// Lines 10-34: Production credentials and authoritative service bindings
+// Lines 10-34: Authoritative credentials and service bindings
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -48,7 +48,7 @@ let CURRENT_GAME_KEY = resolveActiveGameKey();
 let ACTIVE_COMM_ID = null;
 
 // Section 3: Global State Engine
-// Lines 58-335: Additive item hydration and strict multi-platform ledger isolation
+// Lines 58-360: Additive item hydration and strict multi-platform ledger isolation
 window.appState = {
     activeUser: 'Guest',
     activeEmail: null,
@@ -58,6 +58,9 @@ window.appState = {
     psnSkeleton: null,
     myFriendCode: null,
     psnGamertag: null,
+    primaryColor: null,
+    secondaryColor: null,
+    avatarUrl: null,
     authInitialized: false,
     
     gameTitle: "Game Companion",
@@ -76,6 +79,12 @@ window.appState = {
         if (this.myFriendCode) return this.myFriendCode;
         if (!this.currentUser || !this.currentUser.email) return null;
         return this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
+    },
+
+    getCanonicalGameName: function() {
+        if (this.gameId === 'farcry5') return 'FarCry5';
+        if (this.gameId === 'farcry6') return 'FarCry6';
+        return this.gameData?.gameId || this.gameId;
     },
 
     switchGame: async function(targetGameKey) {
@@ -121,13 +130,14 @@ window.appState = {
             nameEl.innerText = `${displayName} [${this.platform.toUpperCase()}]`;
         }
 
+        // Persist to RTDB primary_platform
         if (persistPin && this.currentUser && this.currentUser.email && rtdb) {
             const emailKey = this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
             try {
-                await rtdb.ref(`/users/${emailKey}/pinned_platform`).set(this.platform);
-                this.updateStatus(`[Pinned Platform] Set to ${this.platform.toUpperCase()} in RTDB.`);
+                await rtdb.ref(`/users/${emailKey}/primary_platform`).set(this.platform);
+                this.updateStatus(`[Pinned Platform] Set primary_platform to ${this.platform.toUpperCase()} in RTDB.`);
             } catch (pinErr) {
-                console.warn("[Pinned Platform Write Error]:", pinErr);
+                console.warn("[Primary Platform Write Error]:", pinErr);
             }
         }
         
@@ -144,7 +154,7 @@ window.appState = {
         if (!data || typeof data !== 'object') return;
         this.gameData = data;
         this.gameTitle = data.game || data.title || "Game Companion";
-        this.gameId = data.gameId || CURRENT_GAME_KEY;
+        this.gameId = data.gameId ? data.gameId.toLowerCase() : CURRENT_GAME_KEY;
 
         ACTIVE_COMM_ID = data.commId || 
                          data.psn_communication_id || 
@@ -156,7 +166,6 @@ window.appState = {
         const pageTitle = document.getElementById('pageHeaderTitle');
         if (pageTitle) pageTitle.innerText = `${this.gameTitle} — Universal Companion`;
 
-        // Update poster art on header logo and browser favicons
         if (ACTIVE_COMM_ID) {
             applyGamePosterArt(ACTIVE_COMM_ID);
         }
@@ -355,7 +364,7 @@ window.appState = {
     buildPayload: function() {
         this.recalculateMetrics();
         return {
-            gameId: this.gameId,
+            gameId: this.getCanonicalGameName(),
             platform: this.platform,
             trophies_earned: this.trophies_earned,
             trophies_total: this.trophies_total,
@@ -433,11 +442,12 @@ window.appState = {
     }
 };
 
-// Section 4: Authoritative Storage Gate (LocalStorage vs Firestore)
-// Lines 338-400: Unauthenticated saves strictly to LocalStorage; Authenticated saves to Firestore
+// Section 4: Authoritative Storage Gate (Aligned to Firestore /progress/ Path)
+// Lines 363-445: users/{friendCode}/platform/{platform}/progress/{canonicalGame}
 window.appState.saveProgress = function() {
     const payload = this.buildPayload();
     const userKey = this.getUserKey();
+    const gameName = this.getCanonicalGameName();
 
     if (!this.currentUser || !userKey) {
         const guestKey = `guest_progress_${this.gameId}_${this.platform}`;
@@ -454,19 +464,21 @@ window.appState.saveProgress = function() {
             .doc(userKey)
             .collection("platform")
             .doc(this.platform)
-            .collection("game")
-            .doc(this.gameId);
+            .collection("progress")
+            .doc(gameName);
 
         docRef.set(payload, { merge: true }).then(() => {
-            this.updateStatus(`[Cloud Saved] users/${userKey}/platform/${this.platform}/game/${this.gameId}`);
+            this.updateStatus(`[Cloud Saved] users/${userKey}/platform/${this.platform}/progress/${gameName}`);
         }).catch(err => {
             console.error("[Firestore Save Error]:", err);
+            this.updateStatus(`Firestore Sync Error: ${err.message}`);
         });
     }
 };
 
 window.appState.loadProgress = function() {
     const userKey = this.getUserKey();
+    const gameName = this.getCanonicalGameName();
     
     if (this.gameData) this.hydrateFromRawJson(this.gameData);
     if (this.psnSkeleton) this.hydrateTrophiesFromSkeleton(this.psnSkeleton);
@@ -492,13 +504,13 @@ window.appState.loadProgress = function() {
             .doc(userKey)
             .collection("platform")
             .doc(this.platform)
-            .collection("game")
-            .doc(this.gameId);
+            .collection("progress")
+            .doc(gameName);
 
         docRef.get().then(doc => {
             if (doc.exists) {
                 this.applyPayload(doc.data());
-                this.updateStatus(`[Cloud Synced] users/${userKey}/platform/${this.platform}/game/${this.gameId}`);
+                this.updateStatus(`[Cloud Synced] users/${userKey}/platform/${this.platform}/progress/${gameName}`);
             } else {
                 this.applyStateToUI();
                 this.saveProgress();
@@ -509,8 +521,31 @@ window.appState.loadProgress = function() {
     }
 };
 
-// Section 5: UI Toggle Handlers
-// Lines 403-465: Interactive card toggles
+// Section 5: Dynamic Theming & Colors from RTDB Profile
+// Lines 448-475: Applies primary_color, secondary_color, and avatar_url
+function applyUserProfileStyling(uData) {
+    if (!uData || typeof uData !== 'object') return;
+
+    if (uData.primary_color) {
+        document.documentElement.style.setProperty('--user-theme-accent', uData.primary_color);
+        document.documentElement.style.setProperty('--accent-glow', `${uData.primary_color}40`);
+    }
+
+    if (uData.secondary_color) {
+        document.documentElement.style.setProperty('--border-highlight', uData.secondary_color);
+    }
+
+    const avatarUrl = uData.avatar_url;
+    if (avatarUrl) {
+        const headerAvatar = document.getElementById('headerUserAvatar');
+        if (headerAvatar) {
+            headerAvatar.src = toSecureUrl(avatarUrl);
+        }
+    }
+}
+
+// Section 6: UI Toggle Handlers
+// Lines 478-540: Card toggles and state mutations
 window.appState.applyStateToUI = function() {
     this.recalculateMetrics();
 
@@ -576,8 +611,90 @@ window.appState.updateStatus = function(msg) {
     }
 };
 
-// Section 6: Dynamic PSN PosterArt Binding
-// Lines 468-500: Queries RTDB /psn/games/{commId}/posterArt and binds to browser icons & header logo
+// Section 7: Squad Co-Op Bridge (Friends-Only Isolated Queries)
+// Lines 543-625: Reads /users/{emailKey}/friends and loads their /progress/{gameName}
+window.appState.syncFriendsProgress = async function() {
+    const rosterContainer = document.getElementById('friendsRosterContainer');
+    if (!rosterContainer) return;
+
+    if (!this.currentUser || !this.currentUser.email || !rtdb) {
+        rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">Sign in to view your Squad Co-Op Ledger.</div>';
+        return;
+    }
+
+    const emailKey = this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
+    const gameName = this.getCanonicalGameName();
+
+    try {
+        const friendsSnap = await rtdb.ref(`/users/${emailKey}/friends`).once('value');
+        const friendsData = friendsSnap.val();
+
+        if (!friendsData || Object.keys(friendsData).length === 0) {
+            rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">No squad members linked. Add friend codes to share progress.</div>';
+            return;
+        }
+
+        let cardsHtml = '';
+        for (const [fKey, fObj] of Object.entries(friendsData)) {
+            const friendUsername = fObj.username || fKey;
+            const friendTargetCode = fObj.friend_code || fKey;
+            const friendPlatform = fObj.primary_platform || this.platform;
+            const friendAvatar = fObj.avatar_url || '';
+
+            let friendData = null;
+            if (firestore) {
+                try {
+                    const fDoc = await firestore
+                        .collection("users")
+                        .doc(friendTargetCode)
+                        .collection("platform")
+                        .doc(friendPlatform)
+                        .collection("progress")
+                        .doc(gameName)
+                        .get();
+
+                    if (fDoc.exists) {
+                        friendData = fDoc.data();
+                    }
+                } catch (err) {
+                    console.warn(`[Friend Progress Error for ${friendTargetCode}]:`, err);
+                }
+            }
+
+            const rpVal = friendData?.ranks?.rp || 0;
+            const stashesVal = friendData?.ranks?.stashes || 0;
+            const colVal = friendData?.ranks?.collectibles || 0;
+            const trophyPercent = friendData?.trophies_percent || 0;
+
+            cardsHtml += `
+                <div style="background:#1e293b; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            ${friendAvatar ? `<img src="${toSecureUrl(friendAvatar)}" style="width:24px; height:24px; border-radius:50%; object-fit:cover;">` : ''}
+                            <div style="font-weight:900; color:#fff; font-size:0.95rem;">${escapeHtml(friendUsername)}</div>
+                        </div>
+                        <span style="font-size:0.7rem; font-weight:800; background:rgba(255,85,0,0.2); color:var(--user-theme-accent); padding:2px 6px; border-radius:4px; text-transform:uppercase;">
+                            ${escapeHtml(friendPlatform)}
+                        </span>
+                    </div>
+                    <div style="font-size:0.75rem; color:#cbd5e1; margin-bottom:4px;">
+                        <strong>RP:</strong> ${rpVal} • <strong>Stashes:</strong> ${stashesVal} • <strong>Collectibles:</strong> ${colVal}
+                    </div>
+                    <div style="font-size:0.75rem; color:#94a3b8;">
+                        Trophy Progress: <strong>${trophyPercent}%</strong>
+                    </div>
+                </div>
+            `;
+        }
+
+        rosterContainer.innerHTML = cardsHtml;
+    } catch (e) {
+        console.warn("[Friends Roster Error]:", e);
+    }
+};
+
+// Section 8: Dynamic PSN PosterArt Binding
+// Lines 628-660: Queries RTDB /psn/games/{commId}/posterArt and binds to browser icons & header logo
 async function applyGamePosterArt(commId) {
     if (!rtdb || !commId) return;
 
@@ -604,8 +721,8 @@ async function applyGamePosterArt(commId) {
     }
 }
 
-// Section 7: Programmatic Navbar & Dynamic Menu Sorting Engine (/utm_links)
-// Lines 503-625: Hierarchical sorting by rowNumber, image thumbnails, and updatedAt smart cache buster
+// Section 9: Programmatic Navbar & Dynamic Menu Sorting Engine (/utm_links)
+// Lines 663-780: Dynamic navbar generation with smart cache-busting
 async function buildUtmNavigation() {
     const navContainer = document.getElementById('dynamicNavLinks');
     if (!rtdb) return;
@@ -615,7 +732,6 @@ async function buildUtmNavigation() {
         const data = snap.val();
         if (!data) return;
 
-        // Dynamic branding fallback from Settings if no game poster is active
         const settingsLogo = data?.Settings?.[0]?.image || data?.Settings?.image;
         if (settingsLogo && !ACTIVE_COMM_ID) {
             const logoUrl = toSecureUrl(settingsLogo);
@@ -658,9 +774,7 @@ async function buildUtmNavigation() {
         }
         walk(data);
 
-        // Smart cache-buster stamp derived from updatedAt
         const cacheBusterParam = latestTimestamp > 0 ? `?v=${latestTimestamp}` : '';
-
         const standalone = [];
         const groups = {};
 
@@ -674,7 +788,6 @@ async function buildUtmNavigation() {
             }
         });
 
-        // 1. Dropdown Sub-Sorting: Inside each group folder, links stack vertically ordered ascending by rowNumber
         const groupCards = Object.entries(groups).map(([gName, items]) => {
             items.sort((a, b) => a.rowNumber - b.rowNumber);
             return {
@@ -685,7 +798,6 @@ async function buildUtmNavigation() {
             };
         });
 
-        // 2. Top-Level Sorting: Standalone links and group folders sorted ascending by lowest rowNumber
         const standaloneCards = standalone.map(item => ({
             ...item,
             isGroup: false,
@@ -736,8 +848,8 @@ async function buildUtmNavigation() {
     }
 }
 
-// Section 8: Universal PSN Live Telemetry Engine
-// Lines 628-705: commId telemetry from /psn/gamertags/{tag}/liveTrophyProgress/{commId}
+// Section 10: Universal PSN Live Telemetry Engine
+// Lines 783-860: Automatically checks live trophies from RTDB
 async function autoCheckUserPsnTrophies() {
     if (!rtdb || !appState.psnGamertag || appState.platform !== 'ps' || !ACTIVE_COMM_ID) return;
     const commId = ACTIVE_COMM_ID;
@@ -795,8 +907,8 @@ async function autoCheckUserPsnTrophies() {
     }
 }
 
-// Section 9: Universal Dynamic Renderer
-// Lines 708-875: Dynamic section rendering
+// Section 11: Universal Dynamic Renderer
+// Lines 863-1025: Automatically renders categories loaded from /games/{gameId}
 function renderUniversalCompanion(data) {
     const container = document.getElementById('section-container');
     if (!container || !data) return;
@@ -943,8 +1055,6 @@ function renderUniversalCompanion(data) {
     appState.applyStateToUI();
 }
 
-// Section 10: Sanitization & URL Normalization
-// Lines 878-900: Relative protocol and PSN asset sanitization
 function toSecureUrl(url) {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
@@ -966,8 +1076,8 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
-// Section 11: Dynamic Game Pill Generator (/games in RTDB)
-// Lines 903-935: Renders pill buttons for all available game keys
+// Section 12: Dynamic Game Pill Generator (/games in RTDB)
+// Lines 1028-1065: Renders interactive pills for every game registered in RTDB
 async function buildGamePillsBar() {
     const container = document.getElementById('gamePillsContainer');
     if (!container || !rtdb) return;
@@ -1000,7 +1110,6 @@ async function buildGamePillsBar() {
     }
 }
 
-// Helper to pull and hydrate game data
 async function loadAndHydrateGame(gameKey) {
     appState.updateStatus(`Loading game data from RTDB: /games/${gameKey}...`);
     if (rtdb) {
@@ -1026,13 +1135,10 @@ async function loadAndHydrateGame(gameKey) {
     return false;
 }
 
-// Section 12: Universal Engine Bootstrapper
-// Lines 940-1015: Lifecycle gate, auth observers, and initial DOM hydration
+// Section 13: Universal Engine Bootstrapper
+// Lines 1068-1150: Dynamic lifecycle gate & auth listener
 async function initUniversalEngine() {
-    // 1. Build authoritative navigation menu from /utm_links with smart cache busting
     await buildUtmNavigation();
-
-    // 2. Generate Game Selection Pills from RTDB /games
     await buildGamePillsBar();
 
     const platformSelector = document.getElementById('platformSelector');
@@ -1087,6 +1193,7 @@ async function initUniversalEngine() {
                 if (nameBadge) nameBadge.innerText = appState.activeUser;
                 if (authModal) authModal.classList.add('hidden');
 
+                // Read authoritative user metadata from /users/{emailKey}
                 const emailKey = user.email.replace(/@/g, '_at_').replace(/\./g, '_');
                 try {
                     const snap = await rtdb.ref(`/users/${emailKey}`).once('value');
@@ -1097,13 +1204,18 @@ async function initUniversalEngine() {
                     const codeDisplay = document.getElementById('myFriendCodeDisplay');
                     if (codeDisplay && appState.myFriendCode) codeDisplay.innerText = appState.myFriendCode;
 
-                    if (uData.pinned_platform) {
-                        await appState.switchPlatform(uData.pinned_platform.toLowerCase(), false);
+                    // Apply custom theme colors & profile picture
+                    applyUserProfileStyling(uData);
+
+                    // Apply primary_platform pin
+                    if (uData.primary_platform) {
+                        await appState.switchPlatform(uData.primary_platform.toLowerCase(), false);
                     }
                 } catch (e) {}
 
                 if (appState.gameData) {
                     await appState.loadProgress();
+                    await appState.syncFriendsProgress();
                     if (appState.platform === 'ps' && appState.psnGamertag) {
                         await autoCheckUserPsnTrophies();
                     }
@@ -1124,7 +1236,6 @@ async function initUniversalEngine() {
         });
     }
 
-    // 3. Load active game based on resolved game key
     await loadAndHydrateGame(CURRENT_GAME_KEY);
 }
 
