@@ -1,19 +1,8 @@
-# ============================================================================
-# File: .github/workflows/psn-sync.yml
-# Project: PSN Live Sync Engine
-# Version: 18.6.0 - 21-Minute Presence-Gated Sync + Universal Game Data Sync
-#   - Passes FIREBASE_AUTH_SECRET and FIREBASE_SERVICE_RAY to the engine
-#   - Passes Werewolf, Ray, Darkwing, and Marc NPSSO fallbacks
-#   - Queues runs instead of cancelling a sync mid-pass
-#   - Syncs PSN presence/hours and game/data/game.json in a single atomic pass
-# ============================================================================
-
 name: PSN Sync and Deploy
 
 on:
   workflow_dispatch:
   schedule:
-    # Runs at :00, :21, and :42 of every hour (~21-minute intervals)
     - cron: '*/21 * * * *'
   push:
     branches:
@@ -29,8 +18,6 @@ permissions:
 
 concurrency:
   group: psn-sync-runner
-  # false = a new run waits for the current one to finish, so the hours tracker
-  # never loses a banked checkpoint or leaves a play session open.
   cancel-in-progress: false
 
 jobs:
@@ -63,39 +50,13 @@ jobs:
 
       - name: Execute PSN Sync Engine
         env:
-          PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
-          PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
-          PSN_NPSSO_DARKWING: ${{ secrets.PSN_NPSSO_DARKWING }}
-          PSN_NPSSO_MARC: ${{ secrets.PSN_NPSSO_MARC }}
-          FIREBASE_AUTH_SECRET: ${{ secrets.FIREBASE_AUTH_SECRET }}
           FIREBASE_SERVICE_RAY: ${{ secrets.FIREBASE_SERVICE_RAY }}
+          FIREBASE_AUTH_SECRET: ${{ secrets.FIREBASE_AUTH_SECRET }}
         run: |
-          # 1. Run primary presence and user account sync
           if [ -f "Playstation/psn.js" ]; then
             node Playstation/psn.js
           elif [ -f "psn.js" ]; then
             node psn.js
           else
             node index.js
-          fi
-
-          # 2. Run active game data and wiki scraper sync
-          if [ -f "scripts/sync_active_game.js" ]; then
-            node scripts/sync_active_game.js
-          fi
-
-      - name: Commit and Push PSN & Game Data
-        run: |
-          git config --global user.name "Werewolf3788-Bot"
-          git config --global user.email "werewolf3788-bot@users.noreply.github.com"
-
-          # Stage PSN presence outputs and automated game tracker data
-          git add psn.json Playstation/psn.json game/data/game.json game/data/games/ 2>/dev/null || true
-
-          if ! git diff --cached --quiet; then
-            git commit -m "Automated PSN Payload & Game Sync [skip ci] [Chicago Time: $(TZ='America/Chicago' date '+%Y-%m-%d %H:%M:%S')]"
-            git pull --rebase origin main
-            git push origin main
-          else
-            echo "No local changes detected to commit (User offline or no new trophies/game updates)."
           fi
