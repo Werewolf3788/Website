@@ -4,47 +4,25 @@
   "gameId": "SniperEliteResistance",
   "commId": "NPWR40813_00",
   "platforms": {
-    "playstation": {
-      "commId": "NPWR40813_00",
-      "titleId": "CUSA44067"
-    },
-    "steam": {
-      "appId": 2169200
-    },
-    "xbox": {
-      "productId": "9mxrg5gcrpxz"
-    }
+    "playstation": { "commId": "NPWR40813_00", "titleId": "CUSA44067" },
+    "steam": { "appId": 2169200 },
+    "xbox": { "productId": "9mxrg5gcrpxz" }
   },
-  "metrics": [
-    { "key": "personal_letters", "label": "Personal Letters", "target": 35 },
-    { "key": "classified_documents", "label": "Classified Documents", "target": 35 },
-    { "key": "hidden_items", "label": "Hidden Items", "target": 22 },
-    { "key": "stone_eagles", "label": "Dead-Eye Targets", "target": 21 },
-    { "key": "workbenches", "label": "Workbenches", "target": 21 }
-  ],
   "missions": {
     "mission_1": {
       "number": 1,
       "title": "Behind Enemy Lines",
       "region": "Northern France",
       "walkthrough": "Sabotage the dam, destroy the Flak AA installations, and exfiltrate across the perimeter bridge.",
-      "items": {
+      "collectibles": {
         "personal_letters": [],
         "classified_documents": [
-          {
-            "id": "doc_m1_01",
-            "name": "Flak Operations Order",
-            "location": "Bunker command post desk beside the primary generator."
-          }
+          { "id": "doc_m1_01", "name": "Flak Operations Order", "location": "Bunker command post desk beside primary generator." }
         ],
         "hidden_items": [],
         "stone_eagles": [],
         "workbenches": [
-          {
-            "id": "wb_m1_pistol",
-            "name": "Pistol Workbench",
-            "location": "Basement of house behind barricade shortly after initial wall climb."
-          }
+          { "id": "wb_m1_pistol", "name": "Pistol Workbench", "location": "Basement of house behind barricade after initial wall climb." }
         ]
       }
     },
@@ -53,116 +31,36 @@
       "title": "Dead Drop",
       "region": "Château & Library District",
       "walkthrough": "Infiltrate town, locate mole in cafe, search municipal library, destroy Gestapo depot.",
-      "items": {
+      "collectibles": {
         "personal_letters": [
-          {
-            "id": "let_m2_01",
-            "name": "A Lost Soul Trembles",
-            "location": "First-floor church safe. Key on ground-floor table beside gramophone."
-          },
-          {
-            "id": "let_m2_02",
-            "name": "Missing You Dearly",
-            "location": "Château smaller courtyard, resting on a stone bench."
-          },
-          {
-            "id": "let_m2_03",
-            "name": "Surrounded by Idiots",
-            "location": "Municipal Library reception counter on the north side."
-          },
-          {
-            "id": "let_m2_04",
-            "name": "A Withering Tree",
-            "location": "Town square, on an outdoor cafe table."
-          },
-          {
-            "id": "let_m2_05",
-            "name": "A Nephew's Concern",
-            "location": "Bench along the northern residential road."
-          }
+          { "id": "let_m2_01", "name": "A Lost Soul Trembles", "location": "First-floor church safe. Key on table beside gramophone." },
+          { "id": "let_m2_02", "name": "Missing You Dearly", "location": "Château courtyard stone bench." },
+          { "id": "let_m2_03", "name": "Surrounded by Idiots", "location": "Municipal Library reception counter." },
+          { "id": "let_m2_04", "name": "A Withering Tree", "location": "Town square outdoor cafe table." },
+          { "id": "let_m2_05", "name": "A Nephew's Concern", "location": "Bench along northern residential road." }
         ],
         "classified_documents": [
-          {
-            "id": "doc_m2_01",
-            "name": "Findings Report",
-            "location": "Staging table covered with radio gear on west canal street."
-          },
-          {
-            "id": "doc_m2_02",
-            "name": "Orders to Follow",
-            "location": "Château courtyard room beside the center courtyard tree."
-          },
-          {
-            "id": "doc_m2_03",
-            "name": "Use the Library",
-            "location": "Safe inside eastern house. Key located upstairs on a chair."
-          },
-          {
-            "id": "doc_m2_04",
-            "name": "Tightening Security",
-            "location": "First-floor cafe table in the Kill List target's quarters."
-          },
-          {
-            "id": "doc_m2_05",
-            "name": "Increased Security",
-            "location": "Military supply tent table inside central barracks."
-          }
+          { "id": "doc_m2_01", "name": "Findings Report", "location": "Staging table with radio gear on west canal street." },
+          { "id": "doc_m2_02", "name": "Orders to Follow", "location": "Château courtyard room beside center tree." },
+          { "id": "doc_m2_03", "name": "Use the Library", "location": "Safe inside eastern house. Key upstairs on chair." },
+          { "id": "doc_m2_04", "name": "Tightening Security", "location": "First-floor cafe table in Kill List target quarters." },
+          { "id": "doc_m2_05", "name": "Increased Security", "location": "Military supply tent table inside central barracks." }
         ],
         "hidden_items": [
-          {
-            "id": "item_m2_01",
-            "name": "Poster: La Résistance",
-            "location": "Back alley brick wall; unlocks Propaganda Mission 'La Résistance'."
-          },
-          {
-            "id": "item_m2_02",
-            "name": "Police Report: #222",
-            "location": "Library archives shelf; required for 'File O' Facts'."
-          },
-          {
-            "id": "item_m2_03",
-            "name": "Police Report: #223",
-            "location": "Library reading room desk; required for 'File O' Facts'."
-          },
-          {
-            "id": "item_m2_04",
-            "name": "Police Report: #224",
-            "location": "Library basement stack; required for 'File O' Facts'."
-          }
+          { "id": "item_m2_01", "name": "Poster: La Résistance", "location": "Back alley brick wall; unlocks Propaganda Mission." },
+          { "id": "item_m2_02", "name": "Police Report: #222", "location": "Library archives shelf; required for File O' Facts." },
+          { "id": "item_m2_03", "name": "Police Report: #223", "location": "Library reading room desk; required for File O' Facts." },
+          { "id": "item_m2_04", "name": "Police Report: #224", "location": "Library basement stack; required for File O' Facts." }
         ],
         "stone_eagles": [
-          {
-            "id": "eagle_m2_01",
-            "name": "Dead-Eye Target 1",
-            "location": "Rooftop gable of residence west of the church."
-          },
-          {
-            "id": "eagle_m2_02",
-            "name": "Dead-Eye Target 2",
-            "location": "Pediment ridge of municipal building right of library."
-          },
-          {
-            "id": "eagle_m2_03",
-            "name": "Dead-Eye Target 3",
-            "location": "Parapet crest of northeastern château tower."
-          }
+          { "id": "eagle_m2_01", "name": "Dead-Eye Target 1", "location": "Rooftop gable of residence west of church." },
+          { "id": "eagle_m2_02", "name": "Dead-Eye Target 2", "location": "Pediment ridge of municipal building right of library." },
+          { "id": "eagle_m2_03", "name": "Dead-Eye Target 3", "location": "Parapet crest of northeastern château tower." }
         ],
         "workbenches": [
-          {
-            "id": "wb_m2_rifle",
-            "name": "Rifle Workbench",
-            "location": "First-floor locked apartment via rear exterior stairs; requires lockpick/cutters."
-          },
-          {
-            "id": "wb_m2_pistol",
-            "name": "Pistol Workbench",
-            "location": "Subterranean catacombs between library and tavern cellar."
-          },
-          {
-            "id": "wb_m2_smg",
-            "name": "SMG Workbench",
-            "location": "Secured storeroom between inner and outer courtyards."
-          }
+          { "id": "wb_m2_rifle", "name": "Rifle Workbench", "location": "First-floor locked apartment via rear exterior stairs." },
+          { "id": "wb_m2_pistol", "name": "Pistol Workbench", "location": "Subterranean catacombs between library and tavern cellar." },
+          { "id": "wb_m2_smg", "name": "SMG Workbench", "location": "Secured storeroom between inner and outer courtyards." }
         ]
       }
     },
@@ -170,14 +68,14 @@
       "number": 3,
       "title": "Sonderzüge Sabotage",
       "region": "Railyard & Harbor Docks",
-      "walkthrough": "Raid Hotel Terminus, destroy Sonderzüge armored supply trains, sever switching network.",
-      "items": {
+      "walkthrough": "Raid Hotel Terminus, destroy Sonderzüge armored trains, sever switching network.",
+      "collectibles": {
         "personal_letters": [
-          { "id": "let_m3_01", "name": "Be Safe, My Dear", "location": "Ground-floor safe inside the house of second objective." },
+          { "id": "let_m3_01", "name": "Be Safe, My Dear", "location": "Ground-floor safe inside house of second objective." },
           { "id": "let_m3_02", "name": "We Are Everywhere", "location": "Hotel second floor corner room via window ledge." },
           { "id": "let_m3_03", "name": "Cross of Lorraine", "location": "Top floor table of safehouse holding optional objective." },
           { "id": "let_m3_04", "name": "Missing Her Birthday", "location": "First floor bench inside central train terminal." },
-          { "id": "let_m3_05", "name": "The Scars of War", "location": "Park bench in the ornamental garden area." }
+          { "id": "let_m3_05", "name": "The Scars of War", "location": "Park bench in ornamental garden area." }
         ],
         "classified_documents": [
           { "id": "doc_m3_01", "name": "Gestapo Briefing", "location": "Hotel Terminus penthouse suite table." },
@@ -189,10 +87,10 @@
         "hidden_items": [
           { "id": "item_m3_01", "name": "Resistance Flag", "location": "Ground-floor wooden box in Cross of Lorraine house." },
           { "id": "item_m3_02", "name": "Gestapo ID Badge", "location": "Crate on western road bridge checkpoint." },
-          { "id": "item_m3_03", "name": "Poster: Le Sniper", "location": "Exterior wall near optional safehouse; unlocks 'Le Sniper'." }
+          { "id": "item_m3_03", "name": "Poster: Le Sniper", "location": "Exterior wall near optional safehouse; unlocks Le Sniper." }
         ],
         "stone_eagles": [
-          { "id": "eagle_m3_01", "name": "Dead-Eye Target 1", "location": "Off-map church steeple visible looking southwest from bridge." },
+          { "id": "eagle_m3_01", "name": "Dead-Eye Target 1", "location": "Off-map church steeple visible looking southwest from road bridge." },
           { "id": "eagle_m3_02", "name": "Dead-Eye Target 2", "location": "Clocktower finial atop central train concourse." },
           { "id": "eagle_m3_03", "name": "Dead-Eye Target 3", "location": "Chimney apex of brick warehouse on northwest edge." }
         ],
@@ -208,11 +106,11 @@
       "title": "Collision Course",
       "region": "River Dam Basin",
       "walkthrough": "Locate Site D coordinates, plant satchels across structural supports, extract via cableway.",
-      "items": {
+      "collectibles": {
         "personal_letters": [
-          { "id": "let_m4_01", "name": "A Gift, And A Name", "location": "Pinned to tree trunk right side post-zipline." },
+          { "id": "let_m4_01", "name": "A Gift, And A Name", "location": "Pinned to tree trunk on right side post-zipline." },
           { "id": "let_m4_02", "name": "I Will Miss You", "location": "Table inside small timber outpost shack." },
-          { "id": "let_m4_03", "name": "What a Discovery!", "location": "Locked riverside cabin requiring lockpick/cutters." },
+          { "id": "let_m4_03", "name": "What a Discovery!", "location": "Locked riverside cabin requiring lockpick or bolt cutters." },
           { "id": "let_m4_04", "name": "So Boring!", "location": "Wooden crate on upper platform of Flak tower." },
           { "id": "let_m4_05", "name": "I'm so Sorry", "location": "Destroyed farmhouse room behind wooden ladder." }
         ],
@@ -221,12 +119,12 @@
           { "id": "doc_m4_02", "name": "Requisition Orders", "location": "Bunker storage bay under metal catwalk railing." },
           { "id": "doc_m4_03", "name": "Findings Report", "location": "Conference room table on first floor of admin wing." },
           { "id": "doc_m4_04", "name": "Requesting Support", "location": "First-floor landing table behind spiral stairs." },
-          { "id": "doc_m4_05", "name": "Dam Damage Report", "location": "Control room console directly opposite main sabotage switch." }
+          { "id": "doc_m4_05", "name": "Dam Damage Report", "location": "Control room console opposite main sabotage switch." }
         ],
         "hidden_items": [
           { "id": "item_m4_01", "name": "French Wine Bottle", "location": "Tavern bar counter on first floor." },
           { "id": "item_m4_02", "name": "Rubber Gas Mask", "location": "Storage table in corner of tavern cellar." },
-          { "id": "item_m4_03", "name": "Poster: Libération", "location": "Abutment wall behind bridge panzer; unlocks 'Libération'." }
+          { "id": "item_m4_03", "name": "Poster: Libération", "location": "Abutment wall behind bridge panzer; unlocks Libération." }
         ],
         "stone_eagles": [
           { "id": "eagle_m4_01", "name": "Dead-Eye Target 1", "location": "Structural steel framework below spillway of dam." },
@@ -245,7 +143,7 @@
       "title": "Devil's Cauldron",
       "region": "Chemical Synthesis Works",
       "walkthrough": "Infiltrate facility, execute scuttle orders to cease Kleine Blume production, sabotage ingredient transports.",
-      "items": {
+      "collectibles": {
         "personal_letters": [
           { "id": "let_m5_01", "name": "Location Exposed", "location": "Cargo crate located on southwest perimeter." },
           { "id": "let_m5_02", "name": "A Childish Party!", "location": "Desk inside bridge checkpoint guard hut." },
@@ -255,7 +153,7 @@
         ],
         "classified_documents": [
           { "id": "doc_m5_01", "name": "Scuttle Order", "location": "First-floor lab office adjacent to destruction panel." },
-          { "id": "doc_m5_02", "name": "Wilhelm's Folly", "location": "Engineering office desk overlooking chemical silos." },
+          { "id": "doc_m5_02", "name": "Wilhelm's Folly", "location": "Engineering office desk overlooking chemical storage silos." },
           { "id": "doc_m5_03", "name": "Classified Cargo", "location": "Shipping depot office desk on first floor." },
           { "id": "doc_m5_04", "name": "Intruder Spotted", "location": "Security corridor table past emergency blast bulkhead." },
           { "id": "doc_m5_05", "name": "Scuttle Instructions", "location": "Plant manager's office safe; key carried by target officer." }
@@ -263,17 +161,17 @@
         "hidden_items": [
           { "id": "item_m5_01", "name": "Playing Cards", "location": "Wooden crate in southern encampment clearing." },
           { "id": "item_m5_02", "name": "Laboratory ID", "location": "First-floor office room off chemical plant lobby." },
-          { "id": "item_m5_03", "name": "Poster: Le Maquis Voit Tout!", "location": "Exterior wall of guard shack; unlocks Propaganda Mission." }
+          { "id": "item_m5_03", "name": "Poster: Le Maquis Voit Tout!", "location": "Exterior wall of guard shack; unlocks Le Maquis Voit Tout." }
         ],
         "stone_eagles": [
-          { "id": "eagle_m5_01", "name": "Dead-Eye Target 1", "location": "Lantern gallery of distant lighthouse to northwest." },
+          { "id": "eagle_m5_01", "name": "Dead-Eye Target 1", "location": "Lantern gallery of distant off-map lighthouse to northwest." },
           { "id": "eagle_m5_02", "name": "Dead-Eye Target 2", "location": "Counterweight arm of heavy gantry crane on eastern docks." },
           { "id": "eagle_m5_03", "name": "Dead-Eye Target 3", "location": "Concrete lintel arch directly above railway tunnel exit." }
         ],
         "workbenches": [
-          { "id": "wb_m5_rifle", "name": "Rifle Workbench", "location": "Chemical plant basement vault via lockpick/cutters." },
+          { "id": "wb_m5_rifle", "name": "Rifle Workbench", "location": "Chemical plant basement vault via lockpick or bolt cutters." },
           { "id": "wb_m5_pistol", "name": "Pistol Workbench", "location": "Security corridor office past Kleine Blume control room." },
-          { "id": "wb_m5_smg", "name": "SMG Workbench", "location": "Workshop office inside northern railway tunnel portal." }
+          { "id": "wb_m5_smg", "name": "SMG Workbench", "location": "Workshop office directly inside northern railway tunnel portal." }
         ]
       }
     },
@@ -281,8 +179,8 @@
       "number": 6,
       "title": "Assault on Fort Rouge",
       "region": "Coastal Citadel",
-      "walkthrough": "Breach lower gate fortifications, disable coastal defense battery, exfiltrate before aerial bombardment.",
-      "items": {
+      "walkthrough": "Breach lower gate fortifications, disable coastal battery, exfiltrate before aerial bombardment.",
+      "collectibles": {
         "personal_letters": [
           { "id": "let_m6_01", "name": "Just Do Your Job", "location": "First floor of destroyed building on wooden box (rear entrance)." },
           { "id": "let_m6_02", "name": "I Am Fed Up", "location": "Stone table inside church in front of safe." },
@@ -295,7 +193,7 @@
           { "id": "doc_m6_02", "name": "Defend our Skies", "location": "Wooden bench inside estate greenhouse." },
           { "id": "doc_m6_03", "name": "Ready on your Order", "location": "Table inside building housing Gestapo officers." },
           { "id": "doc_m6_04", "name": "No Retreat", "location": "Top floor safe (satchel charge or key from watchtower patrol)." },
-          { "id": "doc_m6_05", "name": "Schoene's Notes", "location": "Shelf inside bottom-right corner room of underground chamber." }
+          { "id": "doc_m6_05", "name": "Schoene's Notes", "location": "Shelf inside bottom-right room of underground chamber." }
         ],
         "hidden_items": [
           { "id": "item_m6_01", "name": "TODT Uniform Badge", "location": "Basement cellar reached via stairs behind house." },
@@ -308,7 +206,7 @@
           { "id": "eagle_m6_03", "name": "Dead-Eye Target 3", "location": "Corner parapet of outer castle wall along boundary." }
         ],
         "workbenches": [
-          { "id": "wb_m6_rifle", "name": "Rifle Workbench", "location": "Underground chamber (turn left inside entrance; needs satchel)." },
+          { "id": "wb_m6_rifle", "name": "Rifle Workbench", "location": "Underground chamber (turn left inside entrance; requires satchel charge)." },
           { "id": "wb_m6_smg", "name": "SMG Workbench", "location": "Basement cellar beneath house in center of village." },
           { "id": "wb_m6_pistol", "name": "Pistol Workbench", "location": "Locked house requiring lockpick or bolt cutters." }
         ]
@@ -319,18 +217,18 @@
       "title": "Lock, Stock and Barrels",
       "region": "V1 Rocket Facility",
       "walkthrough": "Penetrate testing tunnels, sabotage liquid fuel reservoirs, neutralize operational Zugwerfer launch unit.",
-      "items": {
+      "collectibles": {
         "personal_letters": [
           { "id": "let_m7_01", "name": "Trouble in the Ranks", "location": "Upstairs table inside residential farmhouse." },
-          { "id": "let_m7_02", "name": "Barn Watch", "location": "Inside small timber barn on workbench table." },
+          { "id": "let_m7_02", "name": "Barn Watch", "location": "Inside small timber barn on wooden workbench table." },
           { "id": "let_m7_03", "name": "I Feel Uneasy", "location": "Second-floor table positioned beside window." },
           { "id": "let_m7_04", "name": "Security Check", "location": "Guard outpost desk along northern access track." },
           { "id": "let_m7_05", "name": "Final Preparations", "location": "Bunker staging office table near testing rail line." }
         ],
         "classified_documents": [
           { "id": "doc_m7_01", "name": "A Service Hatch", "location": "Ground-floor corridor with pink walls, first door on right." },
-          { "id": "doc_m7_02", "name": "Control Room Key", "location": "Subterranean basement room on right side following downstairs path." },
-          { "id": "doc_m7_03", "name": "Rocket Fuse Setup", "location": "Safe inside secondary objective bunker (satchel or key)." },
+          { "id": "doc_m7_02", "name": "Control Room Key", "location": "Subterranean basement room following downstairs path." },
+          { "id": "doc_m7_03", "name": "Rocket Fuse Setup", "location": "Safe inside secondary objective bunker (satchel charge or officer key)." },
           { "id": "doc_m7_04", "name": "Hydraulics Concerns", "location": "Bunker supply box in small utility vault." },
           { "id": "doc_m7_05", "name": "Vulnerability Found", "location": "Desk in bunker reached immediately after unlocking control room." }
         ],
@@ -355,35 +253,35 @@
       "number": 8,
       "title": "End of the Line",
       "region": "Central Freight Hub & Railyard",
-      "walkthrough": "Prevent final Zugwerfer deployment toward Normandy beaches, destroy patrol panzer tank.",
-      "items": {
+      "walkthrough": "Prevent final Zugwerfer deployment heading toward Normandy beaches, destroy patrol panzer tank.",
+      "collectibles": {
         "personal_letters": [
-          { "id": "let_m8_01", "name": "Victory is Imminent!", "location": "Top floor command office table overlooking tracks." },
+          { "id": "let_m8_01", "name": "Victory is Imminent!", "location": "Top floor command office table overlooking train tracks." },
           { "id": "let_m8_02", "name": "Home Soon, My Love", "location": "Maintenance desk at bottom of concrete grain silo." },
           { "id": "let_m8_03", "name": "What We've Achieved", "location": "Locked residential room; key held by yard patrol officer." },
           { "id": "let_m8_04", "name": "Burn After Reading", "location": "Outbuilding office adjacent to Kill List target zone." },
           { "id": "let_m8_05", "name": "I Think This Is It", "location": "First-floor records office inside central station concourse." }
         ],
         "classified_documents": [
-          { "id": "doc_m8_01", "name": "Zugwerfer Departure", "location": "First-floor round room locked office; shared with Rifle Workbench." },
+          { "id": "doc_m8_01", "name": "Zugwerfer Departure", "location": "First-floor locked office; shared with Rifle Workbench." },
           { "id": "doc_m8_02", "name": "Prepare to Strike!", "location": "Bunker room beside ladder at default insertion point." },
           { "id": "doc_m8_03", "name": "Rusty Turntable", "location": "Railyard warehouse maintenance office desk." },
           { "id": "doc_m8_04", "name": "Railyard Management", "location": "Chair beside dispatch table inside central grain silo." },
-          { "id": "doc_m8_05", "name": "Turret Locations", "location": "Upper staging catwalk room; beside SMG Workbench." }
+          { "id": "doc_m8_05", "name": "Turret Locations", "location": "Upper staging catwalk room; located beside SMG Workbench." }
         ],
         "hidden_items": [
           { "id": "item_m8_01", "name": "AA Repair Manual", "location": "Tool locker base inside large concrete silo." },
           { "id": "item_m8_02", "name": "New Tank Blueprints", "location": "Ground-floor depot crate corner." },
-          { "id": "item_m8_03", "name": "Poster: Pour Une France Libre", "location": "First-floor exterior rail wall; unlocks Propaganda Mission." }
+          { "id": "item_m8_03", "name": "Poster: Pour Une France Libre", "location": "First-floor exterior rail wall; unlocks Pour Une France Libre." }
         ],
         "stone_eagles": [
           { "id": "eagle_m8_01", "name": "Dead-Eye Target 1", "location": "Northeast tower peak of central terminal complex." },
           { "id": "eagle_m8_02", "name": "Dead-Eye Target 2", "location": "Northwest roof corner of house facing initial spawn." },
-          { "id": "eagle_m8_03", "name": "Dead-Eye Target 3", "location": "Cupola top of small tower near classification yard." }
+          { "id": "eagle_m8_03", "name": "Dead-Eye Target 3", "location": "Cupola top of small tower near eastern classification yard." }
         ],
         "workbenches": [
-          { "id": "wb_m8_pistol", "name": "Pistol Workbench", "location": "First-floor residential room via mantle jump." },
-          { "id": "wb_m8_rifle", "name": "Rifle Workbench", "location": "First-floor locked room in terminal; key on main objective guard." },
+          { "id": "wb_m8_pistol", "name": "Pistol Workbench", "location": "First-floor residential room accessible by mantle jump." },
+          { "id": "wb_m8_rifle", "name": "Rifle Workbench", "location": "First-floor locked room inside terminal station; key held by main objective guard." },
           { "id": "wb_m8_smg", "name": "SMG Workbench", "location": "Elevated staging catwalk room beside Classified Document #5." }
         ]
       }
@@ -393,7 +291,7 @@
       "title": "All or Nothing",
       "region": "Final Stronghold",
       "walkthrough": "Climactic final encounter. Infiltrate command center, eliminate Colonel Kruger, dismantle superweapon apparatus.",
-      "items": {
+      "collectibles": {
         "personal_letters": [],
         "classified_documents": [],
         "hidden_items": [],
@@ -406,17 +304,17 @@
       "title": "Target Führer: Lights, Camera, ACHTUNG!",
       "region": "Bavarian Film Compound (DLC)",
       "walkthrough": "Infiltrate movie set estate, identify real Führer among doubles, eliminate Hitler, exfiltrate undetected.",
-      "items": {
+      "collectibles": {
         "personal_letters": [
-          { "id": "let_m10_01", "name": "Director's Grievance", "location": "Production trailer office desk beside soundstage." },
+          { "id": "let_m10_01", "name": "Director's Grievance", "location": "Production trailer office desk beside soundstage entrance." },
           { "id": "let_m10_02", "name": "Double Trouble", "location": "Dressing room vanity table behind main studio set." },
-          { "id": "let_m10_03", "name": "Prop Master Memo", "location": "Storage loft crate via exterior scaffold ladder." },
+          { "id": "let_m10_03", "name": "Prop Master Memo", "location": "Storage loft crate accessible via exterior scaffold ladder." },
           { "id": "let_m10_04", "name": "Film Stock Shortage", "location": "Editing booth bench on upper balcony overlooking studio." },
           { "id": "let_m10_05", "name": "Security Alert: Lookalikes", "location": "Estate gatehouse table beside vehicle checkpoint barrier." }
         ],
         "classified_documents": [
           { "id": "doc_m10_01", "name": "Shooting Schedule", "location": "Soundstage control booth desk overlooking fake alpine set." },
-          { "id": "doc_m10_02", "name": "Pyrotechnic Safety Protocols", "location": "Armory workbench table inside equipment bunker." },
+          { "id": "doc_m10_02", "name": "Pyrotechnic Safety Protocols", "location": "Armory workbench table inside film equipment bunker." },
           { "id": "doc_m10_03", "name": "Führer Itinerary", "location": "Château private study safe (requires studio manager key)." },
           { "id": "doc_m10_04", "name": "Prop Weapons Manifest", "location": "Cargo loading dock office clipboard table." },
           { "id": "doc_m10_05", "name": "Evacuation Contingency", "location": "Underground emergency bunker desk beside rail spur." }
@@ -430,7 +328,7 @@
         "stone_eagles": [
           { "id": "eagle_m10_01", "name": "Dead-Eye Target 1", "location": "Studio arch sign pediment above main vehicle gate." },
           { "id": "eagle_m10_02", "name": "Dead-Eye Target 2", "location": "Château estate roof balustrade between stone urns." },
-          { "id": "eagle_m10_03", "name": "Dead-Eye Target 3", "location": "Water tower apex behind studio generator." }
+          { "id": "eagle_m10_03", "name": "Dead-Eye Target 3", "location": "Water tower apex behind studio electrical generator." }
         ],
         "workbenches": [
           { "id": "wb_m10_rifle", "name": "Rifle Workbench", "location": "Stage workshop storeroom beside film set carpenters' bay." },
@@ -440,7 +338,33 @@
       }
     }
   },
-  "trophies": [
+  "campaign_ribbons": [
+    { "id": "ribbon_assassin", "name": "Assassin", "requirement": "5 stealth takedowns" },
+    { "id": "ribbon_engineer", "name": "Engineer", "requirement": "Destroy 1 vehicle using traps" },
+    { "id": "ribbon_ghost", "name": "Ghost", "requirement": "15 kills while remaining undetected" },
+    { "id": "ribbon_distraction", "name": "Distraction Expert", "requirement": "5 kills on distracted enemies" },
+    { "id": "ribbon_wrecker", "name": "Wrecker", "requirement": "Destroy 5 vehicles" },
+    { "id": "ribbon_brawler", "name": "Brawler", "requirement": "10 lethal melee takedowns" },
+    { "ribbon_mechanic", "name": "Mechanic", "requirement": "Disable 3 vehicle engines" },
+    { "ribbon_sound_mask", "name": "Sound Mask Expert", "requirement": "Create or exploit 3 sound masks" },
+    { "ribbon_skull_crusher", "name": "Skull Crusher", "requirement": "10 headshot kills" },
+    { "ribbon_scout", "name": "Scout", "requirement": "Tag 20 enemies using binoculars" },
+    { "ribbon_cleaner", "name": "Cleaner", "requirement": "Hide 3 bodies in crates or dumpsters" },
+    { "ribbon_boxer", "name": "Boxer", "requirement": "10 non-lethal takedowns" },
+    { "ribbon_guerrilla", "name": "Guerrilla", "requirement": "3 enemy knockdowns using Schu-mines" },
+    { "ribbon_camofleur", "name": "Camofleur", "requirement": "15 kills while hidden in tall grass" },
+    { "ribbon_knockout", "name": "Knockout Expert", "requirement": "4 enemy knockdowns with thrown bottles" },
+    { "ribbon_circuit_breaker", "name": "Circuit Breaker", "requirement": "Disable an active alarm panel" },
+    { "ribbon_partisan", "name": "Partisan", "requirement": "3 environmental hazard kills" },
+    { "ribbon_merciful", "name": "Merciful", "requirement": "Hit 15 enemies with non-lethal ammunition" },
+    { "ribbon_head_doctor", "name": "Head Doctor", "requirement": "15 non-lethal headshots" },
+    { "ribbon_demolitionist", "name": "Demolitionist", "requirement": "Double kill by shooting placed TNT or trap" },
+    { "ribbon_grenadier", "name": "Grenadier", "requirement": "5 grenade kills" },
+    { "ribbon_trapper", "name": "Trapper", "requirement": "3 booby trap kills" },
+    { "ribbon_rifle_specialist", "name": "Rifle Specialist", "requirement": "20 kills with sniper rifle" }
+  ]
+}
+"trophies": [
     { "trophyId": 0, "name": "Sniper Elite", "rank": "PLATINUM", "description": "Obtain all Trophies." },
     { "trophyId": 1, "name": "Dam Buster", "rank": "BRONZE", "description": "Sabotage the Dam and destroy the AA guns." },
     { "trophyId": 2, "name": "Welcome to the Resistance", "rank": "BRONZE", "description": "Find the Mole and uncover the Superweapon plot." },
@@ -495,5 +419,23 @@
     { "trophyId": 51, "name": "Mastermind", "rank": "BRONZE", "description": "Headshot Kruger." },
     { "trophyId": 52, "name": "Propagandist", "rank": "SILVER", "description": "Complete all Propaganda missions with a 3 Star Rating." },
     { "trophyId": 53, "name": "Propaganda Machine", "rank": "SILVER", "description": "Complete all Propaganda missions with a 3 Star Rating on Authentic difficulty." }
+  ]
+}
+{ "id": "ribbon_rifle_specialist", "name": "Rifle Specialist", "requirement": "20 kills with sniper rifle" }
+  ],
+  "survival_ribbons": [
+    { "id": "surv_sentry_service", "name": "Sentry Service", "requirement": "Kill 15 Nazis while you're near the Command Post." },
+    { "id": "surv_survivor", "name": "Survivor", "requirement": "Complete a Survival Mission." },
+    { "id": "surv_boom_barrage", "name": "Boom Barrage", "requirement": "Kill 10 Nazis with the Panzerfaust." },
+    { "id": "surv_high_achiever", "name": "High Achiever", "requirement": "Kill 10 Nazis, with each kill worth at least 300 points." },
+    { "id": "surv_post_protector", "name": "Post Protector", "requirement": "Kill 5 Nazis that are actively taking your Command Post." },
+    { "id": "surv_flawless_fighter", "name": "Flawless Fighter", "requirement": "Kill 10 Nazis without taking damage." },
+    { "id": "surv_consecutive_carnage", "name": "Consecutive Carnage", "requirement": "Get the most kills two waves in a row (Multiplayer only)." },
+    { "id": "surv_no_quarter", "name": "No Quarter", "requirement": "Complete an entire stage without losing your Command Post." },
+    { "id": "surv_steadfast", "name": "Steadfast", "requirement": "Complete an entire stage without being incapacitated." },
+    { "id": "surv_sniper_suppressor", "name": "Sniper Suppressor", "requirement": "Kill 5 Nazi snipers with headshots." },
+    { "id": "surv_riders_remorse", "name": "Rider's Remorse", "requirement": "Kill 10 Nazis without allowing them to leave their vehicles." },
+    { "id": "surv_machine_gun_maverick", "name": "Machine Gun Maverick", "requirement": "Kill 10 Nazis with an MG42." },
+    { "id": "surv_fortress_keeper", "name": "Fortress Keeper", "requirement": "Complete an entire stage without an enemy making it to the Command Post." }
   ]
 }
