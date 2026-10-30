@@ -1,18 +1,12 @@
 /* ============================================================================
  * File: psn.js
  * Location: /Playstation/psn.js
- * Version: 67.3.0
+ * Version: 67.3.1
  * Description: Master Dual-Firebase PSN Telemetry & Ingestion Engine
+ *   - v67.3.1: Guarded admin.apps with optional chaining to prevent Node 22 TypeError.
+ *               Full error stack traces enabled for diagnostics.
  *   - Input Source: Kevin's Firebase (entertainment-71888) [READ-ONLY]
- *       * Reads all users, psn_account_id, and psn_npsso from /users and /user_secrets
  *   - Output Target: Ray's Firebase (playstation-stats) [WRITE-ONLY]
- *       * RTDB: Strictly /psn/gamertags/{onlineId} (51 allowed keys) & /psn/usersByGamerTag
- *       * Firestore: games/{Game_Name_Slug}, squadLeaderboard, squadAnalytics, meta, raw
- *   - Dynamic Failover:
- *       * Core 4 squad tokens run heavy pulls.
- *       * Guest with cookie gets personal heavy pull.
- *       * Guest without cookie gets lite pull via squad master session.
- *       * If Core cookies expire, active guest cookie keeps Core 4 updated via lite pull.
  * ============================================================================ */
 
 const fs = require("fs");
@@ -51,7 +45,7 @@ const KEVIN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com"
 const RAY_RTDB_URL = "https://playstation-stats-default-rtdb.firebaseio.com";
 
 const GA4_MEASUREMENT_ID = "G-CTYHDF4MSD";
-const ENGINE_VERSION = "67.3.0";
+const ENGINE_VERSION = "67.3.1";
 const LOCAL_TOKENS_PATH = path.join(__dirname, ".psn_tokens.json");
 
 const CORE_PACK = [
@@ -111,12 +105,18 @@ let rayRtdb = null;
 let rayFirestore = null;
 
 function initRayFirebaseAdmin() {
-    if (admin.apps.length > 0) {
-        rayApp = admin.apps[0];
-        rayRtdb = admin.database();
-        rayFirestore = admin.firestore();
-        return;
-    }
+    if (rayApp) return;
+
+    // Safely check if already initialized without crashing on undefined
+    try {
+        const existingApps = (admin.getApps && admin.getApps()) || admin.apps || [];
+        if (Array.isArray(existingApps) && existingApps.length > 0) {
+            rayApp = existingApps[0];
+            rayRtdb = admin.database(rayApp);
+            rayFirestore = admin.firestore(rayApp);
+            return;
+        }
+    } catch (e) {}
 
     const rawServiceKey = process.env.FIREBASE_SERVICE_RAY || "";
     if (!rawServiceKey.trim()) {
@@ -137,8 +137,8 @@ function initRayFirebaseAdmin() {
             credential: admin.credential.cert(creds),
             databaseURL: RAY_RTDB_URL
         });
-        rayRtdb = admin.database();
-        rayFirestore = admin.firestore();
+        rayRtdb = admin.database(rayApp);
+        rayFirestore = admin.firestore(rayApp);
         console.log(`[RAY FIREBASE] Native Admin connection established to: ${creds.project_id} (RTDB & Firestore)`);
     } catch (err) {
         console.error(`[FATAL ERROR] Could not parse FIREBASE_SERVICE_RAY JSON: ${err.message}`);
@@ -161,7 +161,16 @@ async function resilientFetch(url, options = {}) {
     const client = isHttps ? https : http;
 
     if (typeof fetch !== "undefined") {
-        try { return await fetch(url, options); } catch (e) {}
+        try {
+            const resp = await fetch(url, options);
+            return {
+                ok: resp.ok,
+                status: resp.status,
+                json: async () => {
+                    try { return await resp.json(); } catch (e) { return {}; }
+                }
+            };
+        } catch (e) {}
     }
 
     return new Promise((resolve, reject) => {
@@ -218,9 +227,9 @@ async function readKevinUserCredentials() {
         console.error(`[KEVIN DB ERROR] Permission denied reading /users: ${usersRes.error}. (Verify FIREBASE_AUTH_SECRET)`);
     }
 
-    const users = (usersRes && !usersRes.error) ? usersRes : {};
-    const secrets = (secretsRes && !secretsRes.error) ? secretsRes : {};
-    const legacyTags = (legacyGamertagsRes && !legacyGamertagsRes.error) ? legacyGamertagsRes : {};
+    const users = (usersRes && typeof usersRes === "object" && !usersRes.error) ? usersRes : {};
+    const secrets = (secretsRes && typeof secretsRes === "object" && !secretsRes.error) ? secretsRes : {};
+    const legacyTags = (legacyGamertagsRes && typeof legacyGamertagsRes === "object" && !legacyGamertagsRes.error) ? legacyGamertagsRes : {};
 
     const coreNpssos = { wildhorse_spirit: "", ray: "", darkwing: "", marc: "" };
     const coreAccountIds = {
@@ -268,6 +277,7 @@ async function readKevinUserCredentials() {
 
     // Check legacy /psn/gamertags node on Kevin's DB for Darkwing or Marc
     for (const [tag, data] of Object.entries(legacyTags)) {
+        if (!data || typeof data !== "object") continue;
         const lower = tag.toLowerCase();
         const cookie = normalizeNpsso(data.npsso || data.psn_npsso);
         const id = String(data.accountId || "").trim();
@@ -277,7 +287,7 @@ async function readKevinUserCredentials() {
         if (lower.includes("desdemona") && id) coreAccountIds.marc = id;
     }
 
-    console.log(`[KEVIN DB] Harvested cookies: Werewolf=${!!coreNpssos.wildhorse_spirit}, Ray=${!!coreNpssos.ray}, Darkwing=${!!coreNpssos.darkwing}, Marc=${!!coreNpssos.marc}. Guests found: ${guestList.length}`);
+    console.log(`[KEVIN DB] Harvested cookies: Werewolf=${!!coreNpssos.wildhorse_spirit}, Ray=${!!coreNpssos.ray}, Darkwing=${!!coreNpssos.darkwing}, Marc=${!!coreNpssos.marc}. Guests found: ${guestList?.length || 0}`);
     return { coreNpssos, coreAccountIds, guestList };
 }
 
@@ -333,7 +343,7 @@ async function getAuthenticated(userKey, npssoInput) {
         }
     }
 
-    if (npssoInput && npssoInput.trim().length >= 20) {
+    if (npssoInput && typeof npssoInput === "string" && npssoInput.trim().length >= 20) {
         try {
             console.log(`[AUTH] Handshaking NPSSO cookie for ${userKey}...`);
             const accessCode = await exchangeNpssoForCode(npssoInput.trim());
@@ -376,7 +386,7 @@ async function resolveSquadSession(coreNpssos, guestList) {
     }
 
     // Reverse Fallback: If all 4 Core Cookies expired, check if any registered Guest has an active cookie!
-    if (!masterAuth) {
+    if (!masterAuth && Array.isArray(guestList)) {
         console.warn("[MASTER SESSION] ⚠️ All Core cookies expired. Checking guest cookies for emergency master session...");
         for (const guest of guestList) {
             if (guest.npsso) {
@@ -470,7 +480,7 @@ async function executeSyncPass() {
             const mostRecentTrophies = [];
 
             // Full ingestion: Pull game skeletons to Ray's Firestore & trophy progress
-            if (isFull && recentTitles.length > 0) {
+            if (isFull && Array.isArray(recentTitles) && recentTitles.length > 0) {
                 for (const t of recentTitles.slice(0, PULL_CONFIG.SKELETON_REFRESH_RECENT_TITLES)) {
                     const cId = t.npCommunicationId;
                     const gName = t.trophyTitleName || t.name;
@@ -500,7 +510,7 @@ async function executeSyncPass() {
 
                     // User Trophy Progress (Keyed by Game Name in RTDB)
                     const earnedRes = await callPsn("getUserTrophiesEarnedForTitle", () => getUserTrophiesEarnedForTitle(authToUse, targetId, cId, "all", opt), {});
-                    if (earnedRes?.trophies) {
+                    if (Array.isArray(earnedRes?.trophies)) {
                         const progMap = {};
                         earnedRes.trophies.forEach(et => {
                             progMap[et.trophyId] = {
@@ -557,44 +567,46 @@ async function executeSyncPass() {
         }
 
         // 5. Ingest Guests from Kevin's Database
-        for (const guest of guestList) {
-            const guestAuth = guest.npsso ? await getAuthenticated(guest.emailKey, guest.npsso) : null;
-            const hasOwnCookie = !!(guestAuth?.accessToken);
-            const authToUse = hasOwnCookie ? guestAuth : masterAuth;
+        if (Array.isArray(guestList)) {
+            for (const guest of guestList) {
+                const guestAuth = guest.npsso ? await getAuthenticated(guest.emailKey, guest.npsso) : null;
+                const hasOwnCookie = !!(guestAuth?.accessToken);
+                const authToUse = hasOwnCookie ? guestAuth : masterAuth;
 
-            if (!authToUse || !authToUse.accessToken || !guest.accountId) continue;
+                if (!authToUse || !authToUse.accessToken || !guest.accountId) continue;
 
-            console.log(`[INGEST GUEST] Syncing ${guest.tag || guest.accountId} (${hasOwnCookie ? 'FULL PULL' : 'LITE PULL'})...`);
+                console.log(`[INGEST GUEST] Syncing ${guest.tag || guest.accountId} (${hasOwnCookie ? 'FULL PULL' : 'LITE PULL'})...`);
 
-            const profile = await callPsn("getProfileFromAccountId", () => getProfileFromAccountId(authToUse, guest.accountId), {});
-            const onlineId = profile?.onlineId || guest.tag || guest.accountId;
-            usersByGamerTag[onlineId] = String(guest.accountId);
+                const profile = await callPsn("getProfileFromAccountId", () => getProfileFromAccountId(authToUse, guest.accountId), {});
+                const onlineId = profile?.onlineId || guest.tag || guest.accountId;
+                usersByGamerTag[onlineId] = String(guest.accountId);
 
-            const rawPresence = await callPsn("getBasicPresence", () => getBasicPresence(authToUse, guest.accountId), {});
-            const isOnline = (rawPresence?.basicPresence?.onlineStatus || rawPresence?.primaryPlatformInfo?.onlineStatus || "offline") !== "offline";
-            const trophySummary = await callPsn("getUserTrophyProfileSummary", () => getUserTrophyProfileSummary(authToUse, guest.accountId), {});
+                const rawPresence = await callPsn("getBasicPresence", () => getBasicPresence(authToUse, guest.accountId), {});
+                const isOnline = (rawPresence?.basicPresence?.onlineStatus || rawPresence?.primaryPlatformInfo?.onlineStatus || "offline") !== "offline";
+                const trophySummary = await callPsn("getUserTrophyProfileSummary", () => getUserTrophyProfileSummary(authToUse, guest.accountId), {});
 
-            const guestRecord = {
-                onlineId: onlineId,
-                accountId: guest.accountId,
-                online: isOnline,
-                currentGame: isOnline ? (rawPresence?.basicPresence?.gameTitleInfoList?.[0]?.titleName || "Dashboard") : "Offline",
-                avatar: profile?.avatars?.[0]?.url || "",
-                level: trophySummary?.trophyLevel || 0,
-                trophySummary: {
-                    total: ((trophySummary?.earnedTrophies?.platinum || 0) + (trophySummary?.earnedTrophies?.gold || 0) + (trophySummary?.earnedTrophies?.silver || 0) + (trophySummary?.earnedTrophies?.bronze || 0)),
-                    platinum: trophySummary?.earnedTrophies?.platinum || 0,
-                    gold: trophySummary?.earnedTrophies?.gold || 0,
-                    silver: trophySummary?.earnedTrophies?.silver || 0,
-                    bronze: trophySummary?.earnedTrophies?.bronze || 0
-                },
-                npssoValid: hasOwnCookie,
-                npssoStatus: hasOwnCookie ? "ACTIVE" : "GUEST_LITE",
-                lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
-            };
+                const guestRecord = {
+                    onlineId: onlineId,
+                    accountId: guest.accountId,
+                    online: isOnline,
+                    currentGame: isOnline ? (rawPresence?.basicPresence?.gameTitleInfoList?.[0]?.titleName || "Dashboard") : "Offline",
+                    avatar: profile?.avatars?.[0]?.url || "",
+                    level: trophySummary?.trophyLevel || 0,
+                    trophySummary: {
+                        total: ((trophySummary?.earnedTrophies?.platinum || 0) + (trophySummary?.earnedTrophies?.gold || 0) + (trophySummary?.earnedTrophies?.silver || 0) + (trophySummary?.earnedTrophies?.bronze || 0)),
+                        platinum: trophySummary?.earnedTrophies?.platinum || 0,
+                        gold: trophySummary?.earnedTrophies?.gold || 0,
+                        silver: trophySummary?.earnedTrophies?.silver || 0,
+                        bronze: trophySummary?.earnedTrophies?.bronze || 0
+                    },
+                    npssoValid: hasOwnCookie,
+                    npssoStatus: hasOwnCookie ? "ACTIVE" : "GUEST_LITE",
+                    lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
+                };
 
-            await rayRtdb.ref(`psn/gamertags/${onlineId}`).set(filterForRtdb(guestRecord));
-            console.log(`[RAY RTDB WRITE SUCCESS] /psn/gamertags/${onlineId}`);
+                await rayRtdb.ref(`psn/gamertags/${onlineId}`).set(filterForRtdb(guestRecord));
+                console.log(`[RAY RTDB WRITE SUCCESS] /psn/gamertags/${onlineId}`);
+            }
         }
 
         // 6. Write usersByGamerTag index to Ray's RTDB
@@ -625,6 +637,7 @@ async function executeSyncPass() {
         console.log(`[SUCCESS] Full sync pass finished! Output successfully populated on Ray's Firebase.`);
     } catch (err) {
         console.error(`[SYNC ABORTED] Fatal error: ${err.message}`);
+        if (err.stack) console.error(err.stack);
     }
 }
 
