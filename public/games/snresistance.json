@@ -245,6 +245,66 @@
           "location": "Foreman's office table overlooking synthesis vats."
         },
         {
+          "id": "let_m6_01",
+          "name": "Just Do Your Job",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "First floor of destroyed building on a wooden box (rear entrance)."
+        },
+        {
+          "id": "let_m6_02",
+          "name": "I Am Fed Up",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "Stone table inside the church in front of the safe."
+        },
+        {
+          "id": "let_m6_03",
+          "name": "Something is Strange",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "Lying on the ground inside ruins."
+        },
+        {
+          "id": "let_m6_04",
+          "name": "Beautiful Views",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "Wooden box at the top entrance heading underground."
+        },
+        {
+          "id": "let_m6_05",
+          "name": "Fools Everywhere",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "Bench in the corner on the upper-left perimeter of the village."
+        },
+        {
+          "id": "let_m7_01",
+          "name": "Trouble in the Ranks",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "Upstairs table inside residential farmhouse."
+        },
+        {
+          "id": "let_m7_02",
+          "name": "Barn Watch",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "Inside small timber barn resting on a wooden workbench table."
+        },
+        {
+          "id": "let_m7_03",
+          "name": "I Feel Uneasy",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "Second-floor table positioned beside the window."
+        },
+        {
+          "id": "let_m7_04",
+          "name": "Security Check",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "Guard outpost desk along the northern access track."
+        },
+        {
+          "id": "let_m7_05",
+          "name": "Final Preparations",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "Bunker staging office table near testing rail line."
+        },
+        {
           "id": "let_m8_01",
           "name": "Victory is Imminent!",
           "region": "Mission 8: End of the Line",
@@ -273,6 +333,36 @@
           "name": "I Think This Is It",
           "region": "Mission 8: End of the Line",
           "location": "First-floor records office inside central station concourse."
+        },
+        {
+          "id": "let_m10_01",
+          "name": "Director's Grievance",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Production trailer office desk beside soundstage entrance."
+        },
+        {
+          "id": "let_m10_02",
+          "name": "Double Trouble",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Dressing room vanity table behind main studio set."
+        },
+        {
+          "id": "let_m10_03",
+          "name": "Prop Master Memo",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Storage loft crate accessible via exterior scaffold ladder."
+        },
+        {
+          "id": "let_m10_04",
+          "name": "Film Stock Shortage",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Editing booth bench on upper balcony overlooking studio."
+        },
+        {
+          "id": "let_m10_05",
+          "name": "Security Alert: Lookalikes",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Estate gatehouse table beside vehicle checkpoint barrier."
         }
       ]
     },
@@ -407,6 +497,66 @@
           "location": "Plant manager's office safe; key carried by target officer."
         },
         {
+          "id": "doc_m6_01",
+          "name": "Roof Weakness Found",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "First-floor bureau office table."
+        },
+        {
+          "id": "doc_m6_02",
+          "name": "Defend our Skies",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "Wooden bench inside the estate greenhouse."
+        },
+        {
+          "id": "doc_m6_03",
+          "name": "Ready on your Order",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "Table inside building housing Gestapo officers."
+        },
+        {
+          "id": "doc_m6_04",
+          "name": "No Retreat",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "Top floor safe (requires satchel charge or key from watchtower patrol)."
+        },
+        {
+          "id": "doc_m6_05",
+          "name": "Schoene's Notes",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "Shelf inside bottom-right corner room of the underground chamber."
+        },
+        {
+          "id": "doc_m7_01",
+          "name": "A Service Hatch",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "Ground-floor corridor with pink walls, first door on the right."
+        },
+        {
+          "id": "doc_m7_02",
+          "name": "Control Room Key",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "Subterranean basement room on right side following downstairs path."
+        },
+        {
+          "id": "doc_m7_03",
+          "name": "Rocket Fuse Setup",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "Safe inside secondary objective bunker (satchel charge or officer key)."
+        },
+        {
+          "id": "doc_m7_04",
+          "name": "Hydraulics Concerns",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "Bunker supply box in small utility vault."
+        },
+        {
+          "id": "doc_m7_05",
+          "name": "Vulnerability Found",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "Desk in the bunker reached immediately after unlocking control room."
+        },
+        {
           "id": "doc_m8_01",
           "name": "Zugwerfer Departure",
           "region": "Mission 8: End of the Line",
@@ -435,6 +585,36 @@
           "name": "Turret Locations",
           "region": "Mission 8: End of the Line",
           "location": "Upper staging catwalk room; located beside SMG Workbench."
+        },
+        {
+          "id": "doc_m10_01",
+          "name": "Shooting Schedule",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Soundstage control booth desk overlooking fake alpine set."
+        },
+        {
+          "id": "doc_m10_02",
+          "name": "Pyrotechnic Safety Protocols",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Armory workbench table inside film equipment bunker."
+        },
+        {
+          "id": "doc_m10_03",
+          "name": "Führer Itinerary",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Château private study safe (requires studio manager key)."
+        },
+        {
+          "id": "doc_m10_04",
+          "name": "Prop Weapons Manifest",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Cargo loading dock office clipboard table."
+        },
+        {
+          "id": "doc_m10_05",
+          "name": "Evacuation Contingency",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Underground emergency bunker desk beside rail spur."
         }
       ]
     },
@@ -521,6 +701,42 @@
           "location": "Exterior wall of guard shack; unlocks 'Le Maquis Voit Tout'."
         },
         {
+          "id": "item_m6_01",
+          "name": "TODT Uniform Badge",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "Basement cellar reached via stairs behind the house."
+        },
+        {
+          "id": "item_m6_02",
+          "name": "Committee C Map",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "Pinned to wall in center room of large underground bunker chamber."
+        },
+        {
+          "id": "item_m6_03",
+          "name": "Poster: Prende Le Maquis",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "Exterior building wall (bottom-left area); unlocks Propaganda Mission 5."
+        },
+        {
+          "id": "item_m7_01",
+          "name": "Engraved Lighter",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "Table immediately inside the entrance of the house."
+        },
+        {
+          "id": "item_m7_02",
+          "name": "Broken Pressure Gauge",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "Metal shelf in compressor room along test canal."
+        },
+        {
+          "id": "item_m7_03",
+          "name": "Poster: Debout La France",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "Outbuilding brick facade; unlocks Propaganda Mission 7."
+        },
+        {
           "id": "item_m8_01",
           "name": "AA Repair Manual",
           "region": "Mission 8: End of the Line",
@@ -537,6 +753,30 @@
           "name": "Poster: Pour Une France Libre",
           "region": "Mission 8: End of the Line",
           "location": "First-floor exterior rail wall; unlocks 'Pour Une France Libre'."
+        },
+        {
+          "id": "item_m10_01",
+          "name": "Clapperboard: Take 88",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Resting on director's chair in central studio soundstage."
+        },
+        {
+          "id": "item_m10_02",
+          "name": "Hitler Mustache Wax",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Dressing room makeup mirror counter."
+        },
+        {
+          "id": "item_m10_03",
+          "name": "Prop Luger (Rubber)",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Costume storage room shelf near studio canteen."
+        },
+        {
+          "id": "item_m10_04",
+          "name": "Signed Film Reel",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Private screening room projection booth table."
         }
       ]
     },
@@ -617,6 +857,42 @@
           "location": "Concrete lintel arch directly above railway tunnel exit."
         },
         {
+          "id": "eagle_m6_01",
+          "name": "Dead-Eye Target 1",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "Rooftop of house where Kill List target resides."
+        },
+        {
+          "id": "eagle_m6_02",
+          "name": "Dead-Eye Target 2",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "Spire ridge atop village church."
+        },
+        {
+          "id": "eagle_m6_03",
+          "name": "Dead-Eye Target 3",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "Corner parapet of outer castle wall along map boundary."
+        },
+        {
+          "id": "eagle_m7_01",
+          "name": "Dead-Eye Target 1",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "Silo elevator tower pinnacle on north plateau."
+        },
+        {
+          "id": "eagle_m7_02",
+          "name": "Dead-Eye Target 2",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "Gable peak of transformer substation building."
+        },
+        {
+          "id": "eagle_m7_03",
+          "name": "Dead-Eye Target 3",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "Chimney of house located near the final main objective."
+        },
+        {
           "id": "eagle_m8_01",
           "name": "Dead-Eye Target 1",
           "region": "Mission 8: End of the Line",
@@ -633,6 +909,24 @@
           "name": "Dead-Eye Target 3",
           "region": "Mission 8: End of the Line",
           "location": "Cupola top of small tower near eastern classification yard."
+        },
+        {
+          "id": "eagle_m10_01",
+          "name": "Dead-Eye Target 1",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Studio arch sign pediment above main vehicle gate."
+        },
+        {
+          "id": "eagle_m10_02",
+          "name": "Dead-Eye Target 2",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Château estate roof balustrade between stone urns."
+        },
+        {
+          "id": "eagle_m10_03",
+          "name": "Dead-Eye Target 3",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Water tower apex behind studio electrical generator."
         }
       ]
     },
@@ -640,6 +934,12 @@
       "quest_name": "Innovator",
       "total_count": 21,
       "items": [
+        {
+          "id": "wb_m1_pistol",
+          "name": "Pistol Workbench",
+          "region": "Mission 1: Behind Enemy Lines",
+          "location": "Basement of house behind barricade shortly after initial wall climb."
+        },
         {
           "id": "wb_m2_rifle",
           "name": "Rifle Workbench",
@@ -713,6 +1013,42 @@
           "location": "Workshop office directly inside northern railway tunnel portal."
         },
         {
+          "id": "wb_m6_rifle",
+          "name": "Rifle Workbench",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "Underground chamber (turn left inside entrance; requires satchel charge)."
+        },
+        {
+          "id": "wb_m6_smg",
+          "name": "SMG Workbench",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "Basement cellar beneath house in center of village."
+        },
+        {
+          "id": "wb_m6_pistol",
+          "name": "Pistol Workbench",
+          "region": "Mission 6: Assault on Fort Rouge",
+          "location": "Locked house requiring lockpick or bolt cutters."
+        },
+        {
+          "id": "wb_m7_rifle",
+          "name": "Rifle Workbench",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "First-floor room accessed by climbing exterior rear lattice."
+        },
+        {
+          "id": "wb_m7_smg",
+          "name": "SMG Workbench",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "Loft level reached via interior ladder inside storage building."
+        },
+        {
+          "id": "wb_m7_pistol",
+          "name": "Pistol Workbench",
+          "region": "Mission 7: Lock, Stock and Barrels",
+          "location": "Balcony space situated directly above main bunker entrance."
+        },
+        {
           "id": "wb_m8_pistol",
           "name": "Pistol Workbench",
           "region": "Mission 8: End of the Line",
@@ -729,6 +1065,24 @@
           "name": "SMG Workbench",
           "region": "Mission 8: End of the Line",
           "location": "Elevated staging catwalk room beside Classified Document #5."
+        },
+        {
+          "id": "wb_m10_rifle",
+          "name": "Rifle Workbench",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Stage workshop storeroom beside film set carpenters' bay."
+        },
+        {
+          "id": "wb_m10_smg",
+          "name": "SMG Workbench",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Armory locker room inside guard barracks compound."
+        },
+        {
+          "id": "wb_m10_pistol",
+          "name": "Pistol Workbench",
+          "region": "DLC: Lights, Camera, ACHTUNG!",
+          "location": "Cellar vault beneath château wine tasting room."
         }
       ]
     }
@@ -1059,372 +1413,4 @@
       "description": "Complete all Propaganda missions with a 3 Star Rating on Authentic difficulty."
     }
   ]
-}
- {
-  "collectibles_section_2": {
-    "personal_letters": [
-      {
-        "id": "let_m6_01",
-        "name": "Just Do Your Job",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "First floor of destroyed building on a wooden box (rear entrance)."
-      },
-      {
-        "id": "let_m6_02",
-        "name": "I Am Fed Up",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "Stone table inside the church in front of the safe."
-      },
-      {
-        "id": "let_m6_03",
-        "name": "Something is Strange",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "Lying on the ground inside ruins."
-      },
-      {
-        "id": "let_m6_04",
-        "name": "Beautiful Views",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "Wooden box at the top entrance heading underground."
-      },
-      {
-        "id": "let_m6_05",
-        "name": "Fools Everywhere",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "Bench in the corner on the upper-left perimeter of the village."
-      },
-      {
-        "id": "let_m7_01",
-        "name": "Trouble in the Ranks",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "Upstairs table inside residential farmhouse."
-      },
-      {
-        "id": "let_m7_02",
-        "name": "Barn Watch",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "Inside small timber barn resting on a wooden workbench table."
-      },
-      {
-        "id": "let_m7_03",
-        "name": "I Feel Uneasy",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "Second-floor table positioned beside the window."
-      },
-      {
-        "id": "let_m7_04",
-        "name": "Security Check",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "Guard outpost desk along the northern access track."
-      },
-      {
-        "id": "let_m7_05",
-        "name": "Final Preparations",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "Bunker staging office table near testing rail line."
-      },
-      {
-        "id": "let_m10_01",
-        "name": "Director's Grievance",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Production trailer office desk beside soundstage entrance."
-      },
-      {
-        "id": "let_m10_02",
-        "name": "Double Trouble",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Dressing room vanity table behind main studio set."
-      },
-      {
-        "id": "let_m10_03",
-        "name": "Prop Master Memo",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Storage loft crate accessible via exterior scaffold ladder."
-      },
-      {
-        "id": "let_m10_04",
-        "name": "Film Stock Shortage",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Editing booth bench on upper balcony overlooking studio."
-      },
-      {
-        "id": "let_m10_05",
-        "name": "Security Alert: Lookalikes",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Estate gatehouse table beside vehicle checkpoint barrier."
-      }
-    ],
-    "classified_documents": [
-      {
-        "id": "doc_m6_01",
-        "name": "Roof Weakness Found",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "First-floor bureau office table."
-      },
-      {
-        "id": "doc_m6_02",
-        "name": "Defend our Skies",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "Wooden bench inside the estate greenhouse."
-      },
-      {
-        "id": "doc_m6_03",
-        "name": "Ready on your Order",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "Table inside building housing Gestapo officers."
-      },
-      {
-        "id": "doc_m6_04",
-        "name": "No Retreat",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "Top floor safe (requires satchel charge or key from watchtower patrol)."
-      },
-      {
-        "id": "doc_m6_05",
-        "name": "Schoene's Notes",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "Shelf inside bottom-right corner room of the underground chamber."
-      },
-      {
-        "id": "doc_m7_01",
-        "name": "A Service Hatch",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "Ground-floor corridor with pink walls, first door on the right."
-      },
-      {
-        "id": "doc_m7_02",
-        "name": "Control Room Key",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "Subterranean basement room on right side following downstairs path."
-      },
-      {
-        "id": "doc_m7_03",
-        "name": "Rocket Fuse Setup",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "Safe inside secondary objective bunker (satchel charge or officer key)."
-      },
-      {
-        "id": "doc_m7_04",
-        "name": "Hydraulics Concerns",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "Bunker supply box in small utility vault."
-      },
-      {
-        "id": "doc_m7_05",
-        "name": "Vulnerability Found",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "Desk in the bunker reached immediately after unlocking control room."
-      },
-      {
-        "id": "doc_m10_01",
-        "name": "Shooting Schedule",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Soundstage control booth desk overlooking fake alpine set."
-      },
-      {
-        "id": "doc_m10_02",
-        "name": "Pyrotechnic Safety Protocols",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Armory workbench table inside film equipment bunker."
-      },
-      {
-        "id": "doc_m10_03",
-        "name": "Führer Itinerary",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Château private study safe (requires studio manager key)."
-      },
-      {
-        "id": "doc_m10_04",
-        "name": "Prop Weapons Manifest",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Cargo loading dock office clipboard table."
-      },
-      {
-        "id": "doc_m10_05",
-        "name": "Evacuation Contingency",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Underground emergency bunker desk beside rail spur."
-      }
-    ],
-    "hidden_items": [
-      {
-        "id": "item_m6_01",
-        "name": "TODT Uniform Badge",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "Basement cellar reached via stairs behind the house."
-      },
-      {
-        "id": "item_m6_02",
-        "name": "Committee C Map",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "Pinned to wall in center room of large underground bunker chamber."
-      },
-      {
-        "id": "item_m6_03",
-        "name": "Poster: Prende Le Maquis",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "Exterior building wall (bottom-left area); unlocks Propaganda Mission 5."
-      },
-      {
-        "id": "item_m7_01",
-        "name": "Engraved Lighter",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "Table immediately inside the entrance of the house."
-      },
-      {
-        "id": "item_m7_02",
-        "name": "Broken Pressure Gauge",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "Metal shelf in compressor room along test canal."
-      },
-      {
-        "id": "item_m7_03",
-        "name": "Poster: Debout La France",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "Outbuilding brick facade; unlocks Propaganda Mission 7."
-      },
-      {
-        "id": "item_m10_01",
-        "name": "Clapperboard: Take 88",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Resting on director's chair in central studio soundstage."
-      },
-      {
-        "id": "item_m10_02",
-        "name": "Hitler Mustache Wax",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Dressing room makeup mirror counter."
-      },
-      {
-        "id": "item_m10_03",
-        "name": "Prop Luger (Rubber)",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Costume storage room shelf near studio canteen."
-      },
-      {
-        "id": "item_m10_04",
-        "name": "Signed Film Reel",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Private screening room projection booth table."
-      }
-    ],
-    "stone_eagles": [
-      {
-        "id": "eagle_m6_01",
-        "name": "Dead-Eye Target 1",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "Rooftop of house where Kill List target resides."
-      },
-      {
-        "id": "eagle_m6_02",
-        "name": "Dead-Eye Target 2",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "Spire ridge atop village church."
-      },
-      {
-        "id": "eagle_m6_03",
-        "name": "Dead-Eye Target 3",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "Corner parapet of outer castle wall along map boundary."
-      },
-      {
-        "id": "eagle_m7_01",
-        "name": "Dead-Eye Target 1",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "Silo elevator tower pinnacle on north plateau."
-      },
-      {
-        "id": "eagle_m7_02",
-        "name": "Dead-Eye Target 2",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "Gable peak of transformer substation building."
-      },
-      {
-        "id": "eagle_m7_03",
-        "name": "Dead-Eye Target 3",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "Chimney of house located near the final main objective."
-      },
-      {
-        "id": "eagle_m10_01",
-        "name": "Dead-Eye Target 1",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Studio arch sign pediment above main vehicle gate."
-      },
-      {
-        "id": "eagle_m10_02",
-        "name": "Dead-Eye Target 2",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Château estate roof balustrade between stone urns."
-      },
-      {
-        "id": "eagle_m10_03",
-        "name": "Dead-Eye Target 3",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Water tower apex behind studio electrical generator."
-      }
-    ],
-    "workbenches": [
-      {
-        "id": "wb_m1_pistol",
-        "name": "Pistol Workbench",
-        "region": "Mission 1: Behind Enemy Lines",
-        "location": "Basement of house behind barricade shortly after initial wall climb."
-      },
-      {
-        "id": "wb_m6_rifle",
-        "name": "Rifle Workbench",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "Underground chamber (turn left inside entrance; requires satchel charge)."
-      },
-      {
-        "id": "wb_m6_smg",
-        "name": "SMG Workbench",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "Basement cellar beneath house in center of village."
-      },
-      {
-        "id": "wb_m6_pistol",
-        "name": "Pistol Workbench",
-        "region": "Mission 6: Assault on Fort Rouge",
-        "location": "Locked house requiring lockpick or bolt cutters."
-      },
-      {
-        "id": "wb_m7_rifle",
-        "name": "Rifle Workbench",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "First-floor room accessed by climbing exterior rear lattice."
-      },
-      {
-        "id": "wb_m7_smg",
-        "name": "SMG Workbench",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "Loft level reached via interior ladder inside storage building."
-      },
-      {
-        "id": "wb_m7_pistol",
-        "name": "Pistol Workbench",
-        "region": "Mission 7: Lock, Stock and Barrels",
-        "location": "Balcony space situated directly above main bunker entrance."
-      },
-      {
-        "id": "wb_m10_rifle",
-        "name": "Rifle Workbench",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Stage workshop storeroom beside film set carpenters' bay."
-      },
-      {
-        "id": "wb_m10_smg",
-        "name": "SMG Workbench",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Armory locker room inside guard barracks compound."
-      },
-      {
-        "id": "wb_m10_pistol",
-        "name": "Pistol Workbench",
-        "region": "DLC: Lights, Camera, ACHTUNG!",
-        "location": "Cellar vault beneath château wine tasting room."
-      }
-    ]
-  }
 }
