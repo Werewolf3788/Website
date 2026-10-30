@@ -1,12 +1,11 @@
 // ============================================================================
 // * Project: Universal Game Companion & Live Telemetry Field Ledger
 // * File: game/Universal.js
-// * Build Version: v10.8.0-FIRESTORE-PATH-USER-COLLECTION-ALIGNMENT
-// * Deployment Timestamp: 2026-10-29 21:08:00 EDT (America/New_York)
+// * Build Version: v10.9.0-STABLE-POSTER-LOOKUP-NO-LOOP
+// * Deployment Timestamp: 2026-10-29 21:12:00 EDT (America/New_York)
 // ============================================================================
 
-// Section 1: Unified Firebase Configuration (entertainment-71888)
-// Lines 10-34: Authoritative credentials and service bindings
+// Section 1: Authoritative Firebase Credentials (entertainment-71888)
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -29,8 +28,7 @@ try {
     console.warn("[Auth Persistence Error]:", e);
 }
 
-// Section 2: Dynamic Game Resolver (URL Parameter or Root DOM Attribute)
-// Lines 37-55: Resolves active game ID from ?game= / ?id= or data-game attribute
+// Section 2: Game Key Resolution
 function resolveActiveGameKey() {
     const urlParams = new URLSearchParams(window.location.search);
     const paramKey = urlParams.get('game') || urlParams.get('id');
@@ -46,9 +44,9 @@ function resolveActiveGameKey() {
 
 let CURRENT_GAME_KEY = resolveActiveGameKey();
 let ACTIVE_COMM_ID = null;
+let LAST_APPLIED_POSTER = null;
 
-// Section 3: Global State Engine
-// Lines 58-360: Additive item hydration and strict multi-platform ledger isolation
+// Section 3: Authoritative Global State Engine
 window.appState = {
     activeUser: 'Guest',
     activeEmail: null,
@@ -58,9 +56,6 @@ window.appState = {
     psnSkeleton: null,
     myFriendCode: null,
     psnGamertag: null,
-    primaryColor: null,
-    secondaryColor: null,
-    avatarUrl: null,
     authInitialized: false,
     
     gameTitle: "Game Companion",
@@ -130,18 +125,17 @@ window.appState = {
             nameEl.innerText = `${displayName} [${this.platform.toUpperCase()}]`;
         }
 
-        // Persist to RTDB primary_platform
         if (persistPin && this.currentUser && this.currentUser.email && rtdb) {
             const emailKey = this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
             try {
                 await rtdb.ref(`/users/${emailKey}/primary_platform`).set(this.platform);
-                this.updateStatus(`[Pinned Platform] Set primary_platform to ${this.platform.toUpperCase()} in RTDB.`);
+                this.updateStatus(`[Platform Pinned] Set primary_platform to ${this.platform.toUpperCase()}`);
             } catch (pinErr) {
                 console.warn("[Primary Platform Write Error]:", pinErr);
             }
         }
         
-        this.loadProgress();
+        await this.loadProgress();
         if (this.currentUser) {
             this.syncFriendsProgress();
             if (this.platform === 'ps' && this.psnGamertag) {
@@ -166,9 +160,8 @@ window.appState = {
         const pageTitle = document.getElementById('pageHeaderTitle');
         if (pageTitle) pageTitle.innerText = `${this.gameTitle} — Universal Companion`;
 
-        if (ACTIVE_COMM_ID) {
-            applyGamePosterArt(ACTIVE_COMM_ID);
-        }
+        // Search RTDB /psn/games by commId or game name
+        searchGamePosterArt(ACTIVE_COMM_ID, this.gameTitle);
 
         // 1. Dynamic Collectibles Sets
         if (data.collectibles && typeof data.collectibles === 'object') {
@@ -276,7 +269,7 @@ window.appState = {
             }
         });
 
-        // 5. Embedded Trophies List
+        // 5. Embedded Trophies
         if (data.trophies) {
             this.hydrateTrophiesFromSkeleton(data);
         }
@@ -442,8 +435,7 @@ window.appState = {
     }
 };
 
-// Section 4: Authoritative Storage Gate (Aligned to /user/{friend_code}/platform/{platform}/game/{gamename})
-// Lines 363-445: user/{friend_code}/platform/{platform}/game/{gamename}
+// Section 4: Authoritative Storage Gate (Exact Path: /user/{friend_code}/platform/{platform}/game/{gamename})
 window.appState.saveProgress = function() {
     const payload = this.buildPayload();
     const userKey = this.getUserKey();
@@ -476,7 +468,7 @@ window.appState.saveProgress = function() {
     }
 };
 
-window.appState.loadProgress = function() {
+window.appState.loadProgress = async function() {
     const userKey = this.getUserKey();
     const gameName = this.getCanonicalGameName();
     
@@ -499,30 +491,30 @@ window.appState.loadProgress = function() {
     }
 
     if (firestore) {
-        const docRef = firestore
-            .collection("user")
-            .doc(userKey)
-            .collection("platform")
-            .doc(this.platform)
-            .collection("game")
-            .doc(gameName);
+        try {
+            const docRef = firestore
+                .collection("user")
+                .doc(userKey)
+                .collection("platform")
+                .doc(this.platform)
+                .collection("game")
+                .doc(gameName);
 
-        docRef.get().then(doc => {
+            const doc = await docRef.get();
             if (doc.exists) {
                 this.applyPayload(doc.data());
                 this.updateStatus(`[Cloud Synced] user/${userKey}/platform/${this.platform}/game/${gameName}`);
             } else {
                 this.applyStateToUI();
-                this.saveProgress();
             }
-        }).catch(err => {
-            console.warn("[Firestore Fetch Error]:", err);
-        });
+        } catch (err) {
+            console.warn("[Firestore Fetch Warning]:", err);
+            this.applyStateToUI();
+        }
     }
 };
 
-// Section 5: Dynamic Theming & Colors from RTDB Profile
-// Lines 448-475: Applies primary_color, secondary_color, and avatar_url
+// Section 5: Theming, Profile Picture & Colors
 function applyUserProfileStyling(uData) {
     if (!uData || typeof uData !== 'object') return;
 
@@ -544,8 +536,7 @@ function applyUserProfileStyling(uData) {
     }
 }
 
-// Section 6: UI Toggle Handlers
-// Lines 478-540: Card toggles and state mutations
+// Section 6: UI Toggles
 window.appState.applyStateToUI = function() {
     this.recalculateMetrics();
 
@@ -611,8 +602,7 @@ window.appState.updateStatus = function(msg) {
     }
 };
 
-// Section 7: Squad Co-Op Bridge (Friends-Only Isolated Queries)
-// Lines 543-625: Reads /users/{emailKey}/friends and loads their /user/{friendTargetCode}/platform/{friendPlatform}/game/{gameName}
+// Section 7: Squad Co-Op Progress Sync (Friends-Only)
 window.appState.syncFriendsProgress = async function() {
     const rosterContainer = document.getElementById('friendsRosterContainer');
     if (!rosterContainer) return;
@@ -656,9 +646,7 @@ window.appState.syncFriendsProgress = async function() {
                     if (fDoc.exists) {
                         friendData = fDoc.data();
                     }
-                } catch (err) {
-                    console.warn(`[Friend Progress Error for ${friendTargetCode}]:`, err);
-                }
+                } catch (err) {}
             }
 
             const rpVal = friendData?.ranks?.rp || 0;
@@ -693,17 +681,33 @@ window.appState.syncFriendsProgress = async function() {
     }
 };
 
-// Section 8: Dynamic PSN PosterArt Binding
-// Lines 628-660: Queries RTDB /psn/games/{commId}/posterArt and binds to browser icons & header logo
-async function applyGamePosterArt(commId) {
-    if (!rtdb || !commId) return;
+// Section 8: Dynamic Game Poster Lookup via /psn/games by commId or Name
+async function searchGamePosterArt(commId, gameName) {
+    if (!rtdb) return;
 
     try {
-        const snap = await rtdb.ref(`/psn/games/${commId}/posterArt`).once('value');
-        const rawPoster = snap.val();
+        const snap = await rtdb.ref('/psn/games').once('value');
+        const psnGames = snap.val();
+        if (!psnGames || typeof psnGames !== 'object') return;
 
-        if (rawPoster && typeof rawPoster === 'string') {
-            const posterUrl = toSecureUrl(rawPoster);
+        let matchedPoster = null;
+
+        // Search through CUSA/TitleID nodes for matching commId or Name
+        for (const [titleId, gObj] of Object.entries(psnGames)) {
+            if (!gObj) continue;
+            
+            const matchesCommId = commId && (gObj.commId === commId || gObj.npCommunicationId === commId);
+            const matchesName = gameName && gObj.name && gObj.name.toLowerCase().trim() === gameName.toLowerCase().trim();
+
+            if ((matchesCommId || matchesName) && gObj.posterArt) {
+                matchedPoster = gObj.posterArt;
+                break;
+            }
+        }
+
+        if (matchedPoster && matchedPoster !== LAST_APPLIED_POSTER) {
+            LAST_APPLIED_POSTER = matchedPoster;
+            const posterUrl = toSecureUrl(matchedPoster);
 
             const fav1 = document.getElementById('dynamicFavicon');
             const fav2 = document.getElementById('dynamicAppleIcon');
@@ -717,40 +721,25 @@ async function applyGamePosterArt(commId) {
             }
         }
     } catch (e) {
-        console.warn(`[Poster Art Fetch Error for ${commId}]:`, e);
+        console.warn("[Poster Search Warning]:", e);
     }
 }
 
-// Section 9: Programmatic Navbar & Dynamic Menu Sorting Engine (/utm_links)
-// Lines 663-780: Dynamic navbar generation with smart cache-busting
+// Section 9: Programmatic Navbar & Sorting (/utm_links)
 async function buildUtmNavigation() {
     const navContainer = document.getElementById('dynamicNavLinks');
-    if (!rtdb) return;
+    if (!rtdb || !navContainer) return;
 
     try {
         const snap = await rtdb.ref('/utm_links').once('value');
         const data = snap.val();
         if (!data) return;
 
-        const settingsLogo = data?.Settings?.[0]?.image || data?.Settings?.image;
-        if (settingsLogo && !ACTIVE_COMM_ID) {
-            const logoUrl = toSecureUrl(settingsLogo);
-            const fav1 = document.getElementById('dynamicFavicon');
-            const fav2 = document.getElementById('dynamicAppleIcon');
-            const navLogo = document.getElementById('navHeaderLogo');
-            if (fav1) fav1.href = logoUrl;
-            if (fav2) fav2.href = logoUrl;
-            if (navLogo) navLogo.src = logoUrl;
-        }
-
-        if (!navContainer) return;
-
         const linksList = [];
         let latestTimestamp = 0;
 
         function walk(node) {
             if (!node || typeof node !== 'object') return;
-            
             const url = node.url || node.link || node.href;
             if (url && typeof url === 'string') {
                 if (node.updatedAt) {
@@ -765,8 +754,7 @@ async function buildUtmNavigation() {
                     url: toSecureUrl(url),
                     image: toSecureUrl(node.image || node.thumb || null),
                     group: node.group ? String(node.group).trim() : 'Standalone',
-                    rowNumber: Number(node.rowNumber || 999),
-                    tag: node.tag || ''
+                    rowNumber: Number(node.rowNumber || 999)
                 });
                 return;
             }
@@ -848,8 +836,7 @@ async function buildUtmNavigation() {
     }
 }
 
-// Section 10: Universal PSN Live Telemetry Engine
-// Lines 783-860: Automatically checks live trophies from RTDB
+// Section 10: Live PSN Trophy Telemetry Auto-Check
 async function autoCheckUserPsnTrophies() {
     if (!rtdb || !appState.psnGamertag || appState.platform !== 'ps' || !ACTIVE_COMM_ID) return;
     const commId = ACTIVE_COMM_ID;
@@ -907,15 +894,13 @@ async function autoCheckUserPsnTrophies() {
     }
 }
 
-// Section 11: Universal Dynamic Renderer
-// Lines 863-1025: Automatically renders categories loaded from /games/{gameId}
+// Section 11: Dynamic Section Renderer
 function renderUniversalCompanion(data) {
     const container = document.getElementById('section-container');
     if (!container || !data) return;
 
     let html = '';
 
-    // Render Quests / Operations
     const rawMissions = data.walkthrough_missions ? (Array.isArray(data.walkthrough_missions) ? data.walkthrough_missions : Object.values(data.walkthrough_missions)) : [];
     if (rawMissions.length > 0) {
         html += `
@@ -943,7 +928,6 @@ function renderUniversalCompanion(data) {
         </section>`;
     }
 
-    // Render Stashes / Treasure Hunts
     const stashesSource = data.prepper_stashes || data.treasure_hunts;
     if (stashesSource && typeof stashesSource === 'object') {
         Object.entries(stashesSource).forEach(([regKey, rawList]) => {
@@ -977,7 +961,6 @@ function renderUniversalCompanion(data) {
         });
     }
 
-    // Render Dynamic Collectibles
     if (data.collectibles && typeof data.collectibles === 'object') {
         for (const cKey in data.collectibles) {
             const group = data.collectibles[cKey];
@@ -1012,7 +995,6 @@ function renderUniversalCompanion(data) {
         }
     }
 
-    // Render Master Trophies
     const trophyEntries = Object.entries(appState.trophies);
     if (trophyEntries.length > 0) {
         html += `
@@ -1076,8 +1058,7 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
-// Section 12: Dynamic Game Pill Generator (/games in RTDB)
-// Lines 1028-1065: Renders interactive pills for every game registered in RTDB
+// Section 12: Game Pills Bar
 async function buildGamePillsBar() {
     const container = document.getElementById('gamePillsContainer');
     if (!container || !rtdb) return;
@@ -1120,7 +1101,7 @@ async function loadAndHydrateGame(gameKey) {
                 appState.hydrateFromRawJson(data);
                 appState.updateStatus(`[Connected] Authoritative ledger active for /games/${gameKey}`);
                 renderUniversalCompanion(data);
-                appState.loadProgress();
+                await appState.loadProgress();
 
                 if (appState.platform === 'ps' && appState.psnGamertag) {
                     await autoCheckUserPsnTrophies();
@@ -1135,8 +1116,7 @@ async function loadAndHydrateGame(gameKey) {
     return false;
 }
 
-// Section 13: Universal Engine Bootstrapper
-// Lines 1068-1150: Dynamic lifecycle gate & auth listener
+// Section 13: Universal Bootstrapper
 async function initUniversalEngine() {
     await buildUtmNavigation();
     await buildGamePillsBar();
@@ -1193,7 +1173,6 @@ async function initUniversalEngine() {
                 if (nameBadge) nameBadge.innerText = appState.activeUser;
                 if (authModal) authModal.classList.add('hidden');
 
-                // Read authoritative user metadata from /users/{emailKey}
                 const emailKey = user.email.replace(/@/g, '_at_').replace(/\./g, '_');
                 try {
                     const snap = await rtdb.ref(`/users/${emailKey}`).once('value');
@@ -1204,10 +1183,8 @@ async function initUniversalEngine() {
                     const codeDisplay = document.getElementById('myFriendCodeDisplay');
                     if (codeDisplay && appState.myFriendCode) codeDisplay.innerText = appState.myFriendCode;
 
-                    // Apply custom theme colors & profile picture
                     applyUserProfileStyling(uData);
 
-                    // Apply primary_platform pin
                     if (uData.primary_platform) {
                         await appState.switchPlatform(uData.primary_platform.toLowerCase(), false);
                     }
@@ -1231,7 +1208,7 @@ async function initUniversalEngine() {
                 const badge = document.getElementById('userProfileBadge');
                 if (badge) badge.classList.add('hidden');
 
-                if (appState.gameData) appState.loadProgress();
+                if (appState.gameData) await appState.loadProgress();
             }
         });
     }
