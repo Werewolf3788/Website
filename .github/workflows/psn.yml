@@ -48,9 +48,11 @@ jobs:
 
       - name: Execute PSN Sync Engine
         env:
-          # Ray's Service Account Key -> Sole destination for all writes
+          # Ray's Database Key (Writes ONLY to playstation-stats)
           FIREBASE_SERVICE_RAY: ${{ secrets.FIREBASE_SERVICE_RAY }}
-          # Kevin's Database Secret -> Used ONLY to read /users and /user_secrets
+          # Kevin's Key (Used STRICTLY for READ-ONLY access to entertainment-71888)
+          GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
           FIREBASE_AUTH_SECRET: ${{ secrets.FIREBASE_AUTH_SECRET }}
+          GITHUB_TRIGGER_EVENT: ${{ github.event_name }}
         run: |
           node Playstation/psn.js
