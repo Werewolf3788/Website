@@ -1,3 +1,5 @@
+# File: .github/workflows/psn.yml
+# PSN sync -> Ray's Firebase (RTDB + Firestore). No psn.json is committed anymore.
 name: PSN Sync and Deploy
 
 on:
@@ -5,54 +7,60 @@ on:
   schedule:
     - cron: '*/21 * * * *'
   push:
-    branches:
-      - main
-    paths:
-      - 'Playstation/**'
-      - '.github/workflows/psn.yml'
+    branches: [main]
+    paths-ignore:
+      - 'game/data/**'
+      - 'README.md'
 
 permissions:
   contents: write
 
 concurrency:
   group: psn-sync-runner
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   psn-sync-job:
     name: PSN Sync Engine
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js Environment
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
-      - name: Cache Node Modules
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
       - name: Install Dependencies
-        run: |
-          npm install psn-api firebase-admin
+        run: npm install psn-api firebase-admin
 
       - name: Execute PSN Sync Engine
         env:
-          # Ray's Database Key (Writes ONLY to playstation-stats)
+          PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
+          PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
+          PSN_NPSSO_DARKWING: ${{ secrets.PSN_NPSSO_DARKWING }}
+          PSN_NPSSO_MARC: ${{ secrets.PSN_NPSSO_MARC }}
           FIREBASE_SERVICE_RAY: ${{ secrets.FIREBASE_SERVICE_RAY }}
-          # Kevin's Key (Used STRICTLY for READ-ONLY access to entertainment-71888)
-          GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
           FIREBASE_AUTH_SECRET: ${{ secrets.FIREBASE_AUTH_SECRET }}
-          GITHUB_TRIGGER_EVENT: ${{ github.event_name }}
+          GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
         run: |
           node Playstation/psn.js
+          if [ -f "scripts/sync_active_game.js" ]; then
+            node scripts/sync_active_game.js
+          fi
+
+      - name: Commit and Push Game Data
+        run: |
+          git config --global user.name "Werewolf3788-Bot"
+          git config --global user.email "werewolf3788-bot@users.noreply.github.com"
+          git add game/data/game.json game/data/games/ 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Automated Game Sync [skip ci] [Chicago Time: $(TZ='America/Chicago' date '+%Y-%m-%d %H:%M:%S')]"
+            git pull --rebase origin main
+            git push origin main
+          else
+            echo "No game data changes to commit."
+          fi
