@@ -22,6 +22,7 @@
       "title": "Behind Enemy Lines",
       "region": "Northern France",
       "walkthrough": "Sabotage the dam, destroy the Flak AA installations, and exfiltrate across the perimeter bridge.",
+      "image_url": "",
       "collectibles": {
         "personal_letters": [],
         "classified_documents": [
@@ -43,13 +44,43 @@
           }
         ]
       },
-      "image_url": ""
+      "kill_challenge": null,
+      "propaganda_mission": null,
+      "medals": {
+        "objective": [
+          {
+            "id": "med_objective_dam_buster",
+            "name": "Dam Buster",
+            "description": "Complete Mission 1: Behind Enemy Lines with a 1 star rating.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "mission": [],
+        "long_shot": [],
+        "propaganda": []
+      },
+      "trophies": [
+        {
+          "trophyId": 1,
+          "name": "Dam Buster",
+          "rank": "BRONZE",
+          "description": "Sabotage the Dam and destroy the AA guns."
+        }
+      ]
     },
     "mission_2": {
       "number": 2,
       "title": "Dead Drop",
       "region": "Château & Library District",
       "walkthrough": "Infiltrate town, locate mole in cafe, search municipal library, destroy Gestapo depot.",
+      "image_url": "",
       "collectibles": {
         "personal_letters": [
           {
@@ -182,13 +213,127 @@
           }
         ]
       },
-      "image_url": ""
+      "kill_challenge": {
+        "mission_number": 2,
+        "mission_title": "Dead Drop",
+        "target_name": "Philo Beck",
+        "location": "Inside the cafe at the town square, berating a subordinate.",
+        "challenge": "Kill Philo Beck with a Rat Bomb.",
+        "strategy": "Grab the Rat Bomb on the 2nd-floor landing of the ruined house near the riverbed. Sneak behind the bar counter while Beck steps away, plant the bomb on the floor outline, and retreat.",
+        "reward": "Nagant M1895",
+        "image_url": ""
+      },
+      "propaganda_mission": {
+        "id": "prop_m1",
+        "number": 1,
+        "title": "La Résistance",
+        "unlock_poster": "item_m2_01",
+        "target_score": 15000,
+        "briefing": "Sniper trial. Neutralize high-priority Gestapo officers across the rooftops before time expires.",
+        "image_url": ""
+      },
+      "medals": {
+        "objective": [
+          {
+            "id": "med_objective_welcome_to_the_resistance",
+            "name": "Welcome to the Resistance",
+            "description": "Complete Mission 2: Dead Drop with a 3 star rating.",
+            "goal": 3,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "mission": [
+          {
+            "id": "med_mission_file_o_facts",
+            "name": "File O' Facts",
+            "description": "Recover evidence implicating Resistance members within the Library in Dead Drop.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "long_shot": [
+          {
+            "id": "med_longshot_mission_2_long_shot",
+            "name": "Mission 2 Long Shot",
+            "description": "Make a 250 meter shot in Dead Drop.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 2,
+            "distance_m": 250,
+            "authentic": false
+          },
+          {
+            "id": "med_longshot_mission_2_authentic_long_shot",
+            "name": "Mission 2 Authentic Long Shot",
+            "description": "Make a 250 meter shot in Dead Drop on Authentic difficulty.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 2,
+            "distance_m": 250,
+            "authentic": true
+          }
+        ],
+        "propaganda": [
+          {
+            "id": "med_propaganda_propaganda_la_resistance",
+            "name": "Propaganda: La Résistance",
+            "description": "Earn a score of 2000 in the La Résistance propaganda mission.",
+            "goal": 2000,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ]
+      },
+      "trophies": [
+        {
+          "trophyId": 2,
+          "name": "Welcome to the Resistance",
+          "rank": "BRONZE",
+          "description": "Find the Mole and uncover the Superweapon plot."
+        },
+        {
+          "trophyId": 46,
+          "name": "File O' Facts",
+          "rank": "BRONZE",
+          "description": "Recover evidence implicating Resistance members within the Library in Dead Drop."
+        }
+      ]
     },
     "mission_3": {
       "number": 3,
       "title": "Sonderzüge Sabotage",
       "region": "Railyard & Harbor Docks",
       "walkthrough": "Raid Hotel Terminus, destroy Sonderzüge armored trains, sever switching network.",
+      "image_url": "",
       "collectibles": {
         "personal_letters": [
           {
@@ -315,13 +460,123 @@
           }
         ]
       },
-      "image_url": ""
+      "kill_challenge": {
+        "mission_number": 3,
+        "mission_title": "Sonderzüge Sabotage",
+        "target_name": "Claude La Ronde",
+        "location": "Patrolling the harbor docks across the river.",
+        "challenge": "Kill Claude La Ronde with cargo.",
+        "strategy": "Take position across the river via the eastern train tracks. Wait until La Ronde walks directly under the suspended construction materials, then shoot the crane winch.",
+        "reward": "M1907",
+        "image_url": ""
+      },
+      "propaganda_mission": {
+        "id": "prop_m2",
+        "number": 2,
+        "title": "Le Sniper",
+        "unlock_poster": "item_m3_03",
+        "target_score": 18000,
+        "briefing": "Longshot trial. Eliminate enemy counter-snipers along the rail terminal gantry.",
+        "image_url": ""
+      },
+      "medals": {
+        "objective": [
+          {
+            "id": "med_objective_trainwreck",
+            "name": "Trainwreck",
+            "description": "Complete Mission 3: Sonderzüge Sabotage with a 3 star rating.",
+            "goal": 3,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "mission": [
+          {
+            "id": "med_mission_wing_wing_situation",
+            "name": "Wing-Wing Situation",
+            "description": "Destroy 10 Cardboard Pigeons in Sonderzüge Sabotage.",
+            "goal": 10,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "notes": "Typed as 0/10 but description said 109."
+          }
+        ],
+        "long_shot": [
+          {
+            "id": "med_longshot_mission_3_long_shot",
+            "name": "Mission 3 Long Shot",
+            "description": "Make a 200 meter shot in Sonderzüge Sabotage.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 3,
+            "distance_m": 200,
+            "authentic": false
+          },
+          {
+            "id": "med_longshot_mission_3_authentic_long_shot",
+            "name": "Mission 3 Authentic Long Shot",
+            "description": "Make a 80 meter shot in Sonderzüge Sabotage on Authentic difficulty.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 3,
+            "distance_m": 80,
+            "authentic": true,
+            "notes": "80 m is far below the normal 200 m; may be a typo."
+          }
+        ],
+        "propaganda": [
+          {
+            "id": "med_propaganda_propaganda_le_sniper",
+            "name": "Propaganda: Le Sniper",
+            "description": "Earn a score of 2000 in the Le Sniper propaganda mission.",
+            "goal": 2000,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ]
+      },
+      "trophies": [
+        {
+          "trophyId": 3,
+          "name": "Trainwreck",
+          "rank": "BRONZE",
+          "description": "Raid the Hotel Terminus and sabotage the Sonderzüge."
+        }
+      ]
     },
     "mission_4": {
       "number": 4,
       "title": "Collision Course",
       "region": "River Dam Basin",
       "walkthrough": "Locate Site D coordinates, plant satchels across structural supports, extract via cableway.",
+      "image_url": "",
       "collectibles": {
         "personal_letters": [
           {
@@ -448,13 +703,128 @@
           }
         ]
       },
-      "image_url": ""
+      "kill_challenge": {
+        "mission_number": 4,
+        "mission_title": "Collision Course",
+        "target_name": "Ludwig Spiegel",
+        "location": "Patrolling the lower walkway platform along the massive dam.",
+        "challenge": "Kill Ludwig Spiegel by making him fall from the dam.",
+        "strategy": "Shoot the walkway support beams from a distance while he stands on the platform to collapse it, or lure/incapacitate him to the upper dam railing and throw his body over.",
+        "reward": "M1 Garand",
+        "image_url": ""
+      },
+      "propaganda_mission": {
+        "id": "prop_m3",
+        "number": 3,
+        "title": "Libération",
+        "unlock_poster": "item_m4_03",
+        "target_score": 20000,
+        "briefing": "Demolition challenge. Destroy armored vehicles crossing the bridge perimeter with minimal ammo.",
+        "image_url": ""
+      },
+      "medals": {
+        "objective": [
+          {
+            "id": "med_objective_bomb_squad",
+            "name": "Bomb Squad",
+            "description": "Complete Mission 4: Collision Course with a 1 star rating.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "mission": [
+          {
+            "id": "med_mission_sprung_a_leak",
+            "name": "Sprung a Leak",
+            "description": "Sabotage the Dam's pump room in Collision Course.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "long_shot": [
+          {
+            "id": "med_longshot_mission_4_long_shot",
+            "name": "Mission 4 Long Shot",
+            "description": "Make a 400 meter shot in Collision Course.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 4,
+            "distance_m": 400,
+            "authentic": false
+          },
+          {
+            "id": "med_longshot_mission_4_authentic_long_shot",
+            "name": "Mission 4 Authentic Long Shot",
+            "description": "Make a 300 meter shot in Collision Course on Authentic difficulty.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 4,
+            "distance_m": 300,
+            "authentic": true
+          }
+        ],
+        "propaganda": [
+          {
+            "id": "med_propaganda_propaganda_liberation",
+            "name": "Propaganda: Libération",
+            "description": "Earn a score of 2000 in the Libération propaganda mission.",
+            "goal": 2000,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "notes": "Typed as 20000; treated as 2000."
+          }
+        ]
+      },
+      "trophies": [
+        {
+          "trophyId": 4,
+          "name": "Bomb Squad",
+          "rank": "BRONZE",
+          "description": "Ensure Allied secrets remain unknown and confirm the location of Site D."
+        },
+        {
+          "trophyId": 47,
+          "name": "Sprung a Leak",
+          "rank": "BRONZE",
+          "description": "Sabotage the Dam's pump room in Collision Course."
+        }
+      ]
     },
     "mission_5": {
       "number": 5,
       "title": "Devil's Cauldron",
       "region": "Chemical Synthesis Works",
       "walkthrough": "Infiltrate facility, execute scuttle orders to cease Kleine Blume production, sabotage ingredient transports.",
+      "image_url": "",
       "collectibles": {
         "personal_letters": [
           {
@@ -581,13 +951,127 @@
           }
         ]
       },
-      "image_url": ""
+      "kill_challenge": {
+        "mission_number": 5,
+        "mission_title": "Devil's Cauldron",
+        "target_name": "Eloi Coste",
+        "location": "Large cabin in the northern sector near the U-boat facility.",
+        "challenge": "Kill Eloi Coste with an LMG.",
+        "strategy": "Pacify or incapacitate Coste, grab the MG42 located in the second-floor bedroom, and finish him off with it while he is downed.",
+        "reward": "Trench Gun",
+        "image_url": ""
+      },
+      "propaganda_mission": {
+        "id": "prop_m4",
+        "number": 4,
+        "title": "Le Maquis Voit Tout!",
+        "unlock_poster": "item_m5_03",
+        "target_score": 22000,
+        "briefing": "Stealth infiltration challenge. Pacify all facility guards without raising an audible alarm.",
+        "image_url": ""
+      },
+      "medals": {
+        "objective": [
+          {
+            "id": "med_objective_industrial_action",
+            "name": "Industrial Action",
+            "description": "Complete Mission 5: Devil's Cauldron with a 3 star rating.",
+            "goal": 3,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "mission": [
+          {
+            "id": "med_mission_stopping_traffic",
+            "name": "Stopping Traffic",
+            "description": "Destroy trucks carrying Kleine Blume ingredients in Devil's Cauldron.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "long_shot": [
+          {
+            "id": "med_longshot_mission_5_long_shot",
+            "name": "Mission 5 Long Shot",
+            "description": "Make a 485 meter shot in Devil's Cauldron.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 5,
+            "distance_m": 485,
+            "authentic": false
+          },
+          {
+            "id": "med_longshot_mission_5_authentic_long_shot",
+            "name": "Mission 5 Authentic Long Shot",
+            "description": "Make a 280 meter shot in Devil's Cauldron on Authentic difficulty.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 5,
+            "distance_m": 280,
+            "authentic": true
+          }
+        ],
+        "propaganda": [
+          {
+            "id": "med_propaganda_propaganda_le_maquis_voit_tout",
+            "name": "Propaganda: Le Maquis Voit Tout!",
+            "description": "Earn a score of 2000 in the Le Maquis Voit Tout! propaganda mission.",
+            "goal": 2000,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ]
+      },
+      "trophies": [
+        {
+          "trophyId": 5,
+          "name": "Industrial Action",
+          "rank": "BRONZE",
+          "description": "Destroy the underground chemical weapons plant and cease Kleine Blume production."
+        },
+        {
+          "trophyId": 48,
+          "name": "Stopping Traffic",
+          "rank": "BRONZE",
+          "description": "Destroy the Trucks carrying Kleine Blume ingredients in Devil's Cauldron."
+        }
+      ]
     },
     "mission_6": {
       "number": 6,
       "title": "Assault on Fort Rouge",
       "region": "Coastal Citadel",
       "walkthrough": "Breach lower gate fortifications, disable coastal battery, exfiltrate before aerial bombardment.",
+      "image_url": "",
       "collectibles": {
         "personal_letters": [
           {
@@ -714,13 +1198,122 @@
           }
         ]
       },
-      "image_url": ""
+      "kill_challenge": {
+        "mission_number": 6,
+        "mission_title": "Assault on Fort Rouge",
+        "target_name": "Uwe Schoene",
+        "location": "Mansion located in the western sector of the town.",
+        "challenge": "Kill Uwe Schoene with a Coal Torpedo.",
+        "strategy": "Collect the Coal Torpedo from the ground-floor supply room. Sneak to the 2nd-floor fireplace undetected, rig the fuel basket, and wait for him to ignite it.",
+        "reward": "ERMA36",
+        "image_url": ""
+      },
+      "propaganda_mission": {
+        "id": "prop_m5",
+        "number": 5,
+        "title": "Prendre Le Maquis",
+        "unlock_poster": "item_m6_03",
+        "target_score": 25000,
+        "briefing": "Timed combat trial. Breach the citadel courtyard and eliminate garrison commanders.",
+        "image_url": ""
+      },
+      "medals": {
+        "objective": [
+          {
+            "id": "med_objective_blast_from_the_past",
+            "name": "Blast from the Past",
+            "description": "Complete Mission 6: Assault on Fort Rouge with a 3 star rating.",
+            "goal": 3,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "notes": "Typed as 'Mission 5'; corrected to Mission 6."
+          }
+        ],
+        "mission": [
+          {
+            "id": "med_mission_sniper_not_so_elite",
+            "name": "Sniper Not-So-Elite",
+            "description": "Melee takedown 1 sniper in Assault on Fort Rouge.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "long_shot": [
+          {
+            "id": "med_longshot_mission_6_long_shot",
+            "name": "Mission 6 Long Shot",
+            "description": "Make a 300 meter shot in Assault on Fort Rouge.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 6,
+            "distance_m": 300,
+            "authentic": false
+          },
+          {
+            "id": "med_longshot_mission_6_authentic_long_shot",
+            "name": "Mission 6 Authentic Long Shot",
+            "description": "Make a 200 meter shot in Assault on Fort Rouge on Authentic difficulty.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 6,
+            "distance_m": 200,
+            "authentic": true
+          }
+        ],
+        "propaganda": [
+          {
+            "id": "med_propaganda_propaganda_prendre_le_maquis",
+            "name": "Propaganda: Prendre Le Maquis",
+            "description": "Earn a score of 2000 in the Prendre Le Maquis propaganda mission.",
+            "goal": 2000,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ]
+      },
+      "trophies": [
+        {
+          "trophyId": 6,
+          "name": "Blast from the Past",
+          "rank": "BRONZE",
+          "description": "Infiltrate Fort Rouge and escape before Allied bombers level the site."
+        }
+      ]
     },
     "mission_7": {
       "number": 7,
       "title": "Lock, Stock and Barrels",
       "region": "V1 Rocket Facility",
       "walkthrough": "Penetrate testing tunnels, sabotage liquid fuel reservoirs, neutralize operational Zugwerfer launch unit.",
+      "image_url": "",
       "collectibles": {
         "personal_letters": [
           {
@@ -847,13 +1440,110 @@
           }
         ]
       },
-      "image_url": ""
+      "kill_challenge": {
+        "mission_number": 7,
+        "mission_title": "Lock, Stock and Barrels",
+        "target_name": "Aldo Riese",
+        "location": "Farmhouse on the western edge of the facility.",
+        "challenge": "Kill Aldo Riese with poison.",
+        "strategy": "Acquire the poison bottle from the laboratory shelf, tamper with his designated drink cup/flask on the kitchen counter, and wait for him to drink.",
+        "reward": "M1918 BAR",
+        "image_url": ""
+      },
+      "propaganda_mission": {
+        "id": "prop_m8",
+        "number": 8,
+        "title": "Debout La France",
+        "unlock_poster": "item_m7_03",
+        "target_score": 25000,
+        "briefing": "Heavy weapons trial. Defend the launch tunnel entrance from mechanized infantry waves.",
+        "unconfirmed": true,
+        "image_url": ""
+      },
+      "medals": {
+        "objective": [
+          {
+            "id": "med_objective_grapes_of_wrath",
+            "name": "Grapes of Wrath",
+            "description": "Complete Mission 7: Lock, Stock and Barrels with a 3 star rating.",
+            "goal": 3,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "mission": [
+          {
+            "id": "med_mission_oh_gnome_you_don_t",
+            "name": "Oh Gnome You Don't",
+            "description": "Destroy 10 gnomes in Lock, Stock and Barrels.",
+            "goal": 10,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "long_shot": [
+          {
+            "id": "med_longshot_mission_7_long_shot",
+            "name": "Mission 7 Long Shot",
+            "description": "Make a 200 meter shot in Lock, Stock and Barrels.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 7,
+            "distance_m": 200,
+            "authentic": false,
+            "notes": "Same distance as the Authentic version; one may be wrong."
+          },
+          {
+            "id": "med_longshot_mission_7_authentic_long_shot",
+            "name": "Mission 7 Authentic Long Shot",
+            "description": "Make a 200 meter shot in Lock, Stock and Barrels on Authentic difficulty.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 7,
+            "distance_m": 200,
+            "authentic": true,
+            "notes": "Same distance as the normal version; one may be wrong."
+          }
+        ],
+        "propaganda": []
+      },
+      "trophies": [
+        {
+          "trophyId": 7,
+          "name": "Grapes of Wrath",
+          "rank": "BRONZE",
+          "description": "Infiltrate the V1 rocket launch site and destroy the Zugwerfer."
+        }
+      ]
     },
     "mission_8": {
       "number": 8,
       "title": "End of the Line",
       "region": "Central Freight Hub & Railyard",
       "walkthrough": "Prevent final Zugwerfer deployment heading toward Normandy beaches, destroy patrol panzer tank.",
+      "image_url": "",
       "collectibles": {
         "personal_letters": [
           {
@@ -980,13 +1670,127 @@
           }
         ]
       },
-      "image_url": ""
+      "kill_challenge": {
+        "mission_number": 8,
+        "mission_title": "End of the Line",
+        "target_name": "Hermann Gottschalk",
+        "location": "Northern depot yard inspecting machinery and fuel canisters.",
+        "challenge": "Kill Hermann Gottschalk with a gas explosion.",
+        "strategy": "Wait for Gottschalk to patrol adjacent to the red pressurized fuel pumps, then fire rifle rounds into the pump cylinder until it detonates.",
+        "reward": "ZK-420S",
+        "image_url": ""
+      },
+      "propaganda_mission": {
+        "id": "prop_m7",
+        "number": 7,
+        "title": "Pour Une France Libre",
+        "unlock_poster": "item_m8_03",
+        "target_score": 30000,
+        "briefing": "Master sniper trial. Eliminate all marked targets across the railyard at authentic difficulty distance.",
+        "image_url": ""
+      },
+      "medals": {
+        "objective": [
+          {
+            "id": "med_objective_whatever_it_takes",
+            "name": "Whatever it Takes",
+            "description": "Complete Mission 8: End of the Line with a 3 star rating.",
+            "goal": 3,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "mission": [
+          {
+            "id": "med_mission_tanks_for_nothing",
+            "name": "Tanks for Nothing!",
+            "description": "Destroy the Panzer Tank in End of the Line.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "long_shot": [
+          {
+            "id": "med_longshot_mission_8_long_shot",
+            "name": "Mission 8 Long Shot",
+            "description": "Make a 425 meter shot in End of the Line.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 8,
+            "distance_m": 425,
+            "authentic": false
+          },
+          {
+            "id": "med_longshot_mission_8_authentic_long_shot",
+            "name": "Mission 8 Authentic Long Shot",
+            "description": "Make a 200 meter shot in End of the Line on Authentic difficulty.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 8,
+            "distance_m": 200,
+            "authentic": true
+          }
+        ],
+        "propaganda": [
+          {
+            "id": "med_propaganda_propaganda_pour_une_france_libre",
+            "name": "Propaganda: Pour Une France Libre",
+            "description": "Earn a score of 2000 in the Pour Une France Libre propaganda mission.",
+            "goal": 2000,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ]
+      },
+      "trophies": [
+        {
+          "trophyId": 8,
+          "name": "Whatever it Takes",
+          "rank": "BRONZE",
+          "description": "Stop the Zugwerfers from leaving and obliterating the D-Day landings."
+        },
+        {
+          "trophyId": 50,
+          "name": "Tanks for Nothing!",
+          "rank": "BRONZE",
+          "description": "Destroy the Panzer Tank in End of the Line."
+        }
+      ]
     },
     "mission_9": {
       "number": 9,
       "title": "All or Nothing",
       "region": "Final Stronghold",
       "walkthrough": "Climactic final encounter. Infiltrate command center, eliminate Colonel Kruger, dismantle superweapon apparatus.",
+      "image_url": "",
       "collectibles": {
         "personal_letters": [],
         "classified_documents": [],
@@ -994,13 +1798,98 @@
         "stone_eagles": [],
         "workbenches": []
       },
-      "image_url": ""
+      "kill_challenge": null,
+      "propaganda_mission": null,
+      "medals": {
+        "objective": [
+          {
+            "id": "med_objective_so_long_kruger",
+            "name": "So Long Kruger",
+            "description": "Kill Kruger with a rifle at a distance of 200 meters or more.",
+            "goal": 300,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "notes": "Typed as 0/300 with a 200 m distance; one of these may be a typo."
+          }
+        ],
+        "mission": [
+          {
+            "id": "med_mission_mastermind",
+            "name": "Mastermind",
+            "description": "Headshot Kruger.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          },
+          {
+            "id": "med_mission_eyes_of_a_hawk_er",
+            "name": "Eyes of a Hawk(er)",
+            "description": "Kill Kruger using a rifle while in iron sights.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          },
+          {
+            "id": "med_mission_destucktion",
+            "name": "Destucktion",
+            "description": "Kill Kruger by destroying the passing truck.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          },
+          {
+            "id": "med_mission_flameout",
+            "name": "Flameout",
+            "description": "Kill Kruger with explosive barrels before he escapes.",
+            "goal": null,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "notes": "Goal number was missing after '0/'."
+          }
+        ],
+        "long_shot": [],
+        "propaganda": []
+      },
+      "trophies": [
+        {
+          "trophyId": 51,
+          "name": "Mastermind",
+          "rank": "BRONZE",
+          "description": "Headshot Kruger."
+        }
+      ]
     },
     "mission_10_dlc": {
       "number": 10,
       "title": "Target Führer: Lights, Camera, ACHTUNG!",
       "region": "Bavarian Film Compound (DLC)",
       "walkthrough": "Infiltrate movie set estate, identify real Führer among doubles, eliminate Hitler, exfiltrate undetected.",
+      "image_url": "",
       "collectibles": {
         "personal_letters": [
           {
@@ -1133,81 +2022,17 @@
           }
         ]
       },
-      "image_url": ""
+      "kill_challenge": null,
+      "propaganda_mission": null,
+      "medals": {
+        "objective": [],
+        "mission": [],
+        "long_shot": [],
+        "propaganda": []
+      },
+      "trophies": []
     }
   },
-  "kill_challenges": [
-    {
-      "mission_number": 2,
-      "mission_title": "Dead Drop",
-      "target_name": "Philo Beck",
-      "location": "Inside the cafe at the town square, berating a subordinate.",
-      "challenge": "Kill Philo Beck with a Rat Bomb.",
-      "strategy": "Grab the Rat Bomb on the 2nd-floor landing of the ruined house near the riverbed. Sneak behind the bar counter while Beck steps away, plant the bomb on the floor outline, and retreat.",
-      "reward": "Nagant M1895",
-      "image_url": ""
-    },
-    {
-      "mission_number": 3,
-      "mission_title": "Sonderzüge Sabotage",
-      "target_name": "Claude La Ronde",
-      "location": "Patrolling the harbor docks across the river.",
-      "challenge": "Kill Claude La Ronde with cargo.",
-      "strategy": "Take position across the river via the eastern train tracks. Wait until La Ronde walks directly under the suspended construction materials, then shoot the crane winch.",
-      "reward": "M1907",
-      "image_url": ""
-    },
-    {
-      "mission_number": 4,
-      "mission_title": "Collision Course",
-      "target_name": "Ludwig Spiegel",
-      "location": "Patrolling the lower walkway platform along the massive dam.",
-      "challenge": "Kill Ludwig Spiegel by making him fall from the dam.",
-      "strategy": "Shoot the walkway support beams from a distance while he stands on the platform to collapse it, or lure/incapacitate him to the upper dam railing and throw his body over.",
-      "reward": "M1 Garand",
-      "image_url": ""
-    },
-    {
-      "mission_number": 5,
-      "mission_title": "Devil's Cauldron",
-      "target_name": "Eloi Coste",
-      "location": "Large cabin in the northern sector near the U-boat facility.",
-      "challenge": "Kill Eloi Coste with an LMG.",
-      "strategy": "Pacify or incapacitate Coste, grab the MG42 located in the second-floor bedroom, and finish him off with it while he is downed.",
-      "reward": "Trench Gun",
-      "image_url": ""
-    },
-    {
-      "mission_number": 6,
-      "mission_title": "Assault on Fort Rouge",
-      "target_name": "Uwe Schoene",
-      "location": "Mansion located in the western sector of the town.",
-      "challenge": "Kill Uwe Schoene with a Coal Torpedo.",
-      "strategy": "Collect the Coal Torpedo from the ground-floor supply room. Sneak to the 2nd-floor fireplace undetected, rig the fuel basket, and wait for him to ignite it.",
-      "reward": "ERMA36",
-      "image_url": ""
-    },
-    {
-      "mission_number": 7,
-      "mission_title": "Lock, Stock and Barrels",
-      "target_name": "Aldo Riese",
-      "location": "Farmhouse on the western edge of the facility.",
-      "challenge": "Kill Aldo Riese with poison.",
-      "strategy": "Acquire the poison bottle from the laboratory shelf, tamper with his designated drink cup/flask on the kitchen counter, and wait for him to drink.",
-      "reward": "M1918 BAR",
-      "image_url": ""
-    },
-    {
-      "mission_number": 8,
-      "mission_title": "End of the Line",
-      "target_name": "Hermann Gottschalk",
-      "location": "Northern depot yard inspecting machinery and fuel canisters.",
-      "challenge": "Kill Hermann Gottschalk with a gas explosion.",
-      "strategy": "Wait for Gottschalk to patrol adjacent to the red pressurized fuel pumps, then fire rifle rounds into the pump cylinder until it detonates.",
-      "reward": "ZK-420S",
-      "image_url": ""
-    }
-  ],
   "campaign_ribbons": [
     {
       "id": "ribbon_assassin",
@@ -1737,682 +2562,6 @@
           "name": "Top Secret",
           "description": "Collect 35 classified documents.",
           "goal": 35,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        }
-      ]
-    },
-    "missions": {
-      "missions": [
-        {
-          "id": "med_mission_just_a_scratch",
-          "name": "Just a Scratch",
-          "description": "Complete a mission, excluding Behind Enemy Lines and All or Nothing, on any difficulty without healing.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_mission_file_o_facts",
-          "name": "File O' Facts",
-          "description": "Recover evidence implicating Resistance members within the Library in Dead Drop.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_mission_wing_wing_situation",
-          "name": "Wing-Wing Situation",
-          "description": "Destroy 10 Cardboard Pigeons in Sonderzüge Sabotage.",
-          "goal": 10,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "notes": "Typed as 0/10 but description said 109."
-        },
-        {
-          "id": "med_mission_sprung_a_leak",
-          "name": "Sprung a Leak",
-          "description": "Sabotage the Dam's pump room in Collision Course.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_mission_stopping_traffic",
-          "name": "Stopping Traffic",
-          "description": "Destroy trucks carrying Kleine Blume ingredients in Devil's Cauldron.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_mission_sniper_not_so_elite",
-          "name": "Sniper Not-So-Elite",
-          "description": "Melee takedown 1 sniper in Assault on Fort Rouge.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_mission_oh_gnome_you_don_t",
-          "name": "Oh Gnome You Don't",
-          "description": "Destroy 10 gnomes in Lock, Stock and Barrels.",
-          "goal": 10,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_mission_tanks_for_nothing",
-          "name": "Tanks for Nothing!",
-          "description": "Destroy the Panzer Tank in End of the Line.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_mission_mastermind",
-          "name": "Mastermind",
-          "description": "Headshot Kruger.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_mission_eyes_of_a_hawk_er",
-          "name": "Eyes of a Hawk(er)",
-          "description": "Kill Kruger using a rifle while in iron sights.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_mission_destucktion",
-          "name": "Destucktion",
-          "description": "Kill Kruger by destroying the passing truck.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_mission_flameout",
-          "name": "Flameout",
-          "description": "Kill Kruger with explosive barrels before he escapes.",
-          "goal": null,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "notes": "Goal number was missing after '0/'."
-        }
-      ],
-      "objective": [
-        {
-          "id": "med_objective_dam_buster",
-          "name": "Dam Buster",
-          "description": "Complete Mission 1: Behind Enemy Lines with a 1 star rating.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_objective_welcome_to_the_resistance",
-          "name": "Welcome to the Resistance",
-          "description": "Complete Mission 2: Dead Drop with a 3 star rating.",
-          "goal": 3,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_objective_trainwreck",
-          "name": "Trainwreck",
-          "description": "Complete Mission 3: Sonderzüge Sabotage with a 3 star rating.",
-          "goal": 3,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_objective_bomb_squad",
-          "name": "Bomb Squad",
-          "description": "Complete Mission 4: Collision Course with a 1 star rating.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_objective_industrial_action",
-          "name": "Industrial Action",
-          "description": "Complete Mission 5: Devil's Cauldron with a 3 star rating.",
-          "goal": 3,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_objective_blast_from_the_past",
-          "name": "Blast from the Past",
-          "description": "Complete Mission 6: Assault on Fort Rouge with a 3 star rating.",
-          "goal": 3,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "notes": "Typed as 'Mission 5'; corrected to Mission 6."
-        },
-        {
-          "id": "med_objective_grapes_of_wrath",
-          "name": "Grapes of Wrath",
-          "description": "Complete Mission 7: Lock, Stock and Barrels with a 3 star rating.",
-          "goal": 3,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_objective_whatever_it_takes",
-          "name": "Whatever it Takes",
-          "description": "Complete Mission 8: End of the Line with a 3 star rating.",
-          "goal": 3,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_objective_so_long_kruger",
-          "name": "So Long Kruger",
-          "description": "Kill Kruger with a rifle at a distance of 200 meters or more.",
-          "goal": 300,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "notes": "Typed as 0/300 with a 200 m distance; one of these may be a typo."
-        },
-        {
-          "id": "med_objective_liberte",
-          "name": "Liberté",
-          "description": "Complete the campaign: Bronze on any difficulty, Silver on Sharpshooter, Gold on Sniper Elite.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "tier_conditions": {
-            "bronze": "Any difficulty",
-            "silver": "Sharpshooter difficulty",
-            "gold": "Sniper Elite difficulty"
-          }
-        },
-        {
-          "id": "med_objective_cr_me_de_la_cr_me",
-          "name": "Crème de la Crème",
-          "description": "Complete the entire campaign on Authentic difficulty.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_objective_full_english",
-          "name": "Full English",
-          "description": "Complete 11 optional objectives.",
-          "goal": 11,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        }
-      ],
-      "long_shot": [
-        {
-          "id": "med_longshot_mission_2_long_shot",
-          "name": "Mission 2 Long Shot",
-          "description": "Make a 250 meter shot in Dead Drop.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "mission_number": 2,
-          "distance_m": 250,
-          "authentic": false
-        },
-        {
-          "id": "med_longshot_mission_2_authentic_long_shot",
-          "name": "Mission 2 Authentic Long Shot",
-          "description": "Make a 250 meter shot in Dead Drop on Authentic difficulty.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "mission_number": 2,
-          "distance_m": 250,
-          "authentic": true
-        },
-        {
-          "id": "med_longshot_mission_3_long_shot",
-          "name": "Mission 3 Long Shot",
-          "description": "Make a 200 meter shot in Sonderzüge Sabotage.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "mission_number": 3,
-          "distance_m": 200,
-          "authentic": false
-        },
-        {
-          "id": "med_longshot_mission_3_authentic_long_shot",
-          "name": "Mission 3 Authentic Long Shot",
-          "description": "Make a 80 meter shot in Sonderzüge Sabotage on Authentic difficulty.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "mission_number": 3,
-          "distance_m": 80,
-          "authentic": true,
-          "notes": "80 m is far below the normal 200 m; may be a typo."
-        },
-        {
-          "id": "med_longshot_mission_4_long_shot",
-          "name": "Mission 4 Long Shot",
-          "description": "Make a 400 meter shot in Collision Course.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "mission_number": 4,
-          "distance_m": 400,
-          "authentic": false
-        },
-        {
-          "id": "med_longshot_mission_4_authentic_long_shot",
-          "name": "Mission 4 Authentic Long Shot",
-          "description": "Make a 300 meter shot in Collision Course on Authentic difficulty.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "mission_number": 4,
-          "distance_m": 300,
-          "authentic": true
-        },
-        {
-          "id": "med_longshot_mission_5_long_shot",
-          "name": "Mission 5 Long Shot",
-          "description": "Make a 485 meter shot in Devil's Cauldron.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "mission_number": 5,
-          "distance_m": 485,
-          "authentic": false
-        },
-        {
-          "id": "med_longshot_mission_5_authentic_long_shot",
-          "name": "Mission 5 Authentic Long Shot",
-          "description": "Make a 280 meter shot in Devil's Cauldron on Authentic difficulty.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "mission_number": 5,
-          "distance_m": 280,
-          "authentic": true
-        },
-        {
-          "id": "med_longshot_mission_6_long_shot",
-          "name": "Mission 6 Long Shot",
-          "description": "Make a 300 meter shot in Assault on Fort Rouge.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "mission_number": 6,
-          "distance_m": 300,
-          "authentic": false
-        },
-        {
-          "id": "med_longshot_mission_6_authentic_long_shot",
-          "name": "Mission 6 Authentic Long Shot",
-          "description": "Make a 200 meter shot in Assault on Fort Rouge on Authentic difficulty.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "mission_number": 6,
-          "distance_m": 200,
-          "authentic": true
-        },
-        {
-          "id": "med_longshot_mission_7_long_shot",
-          "name": "Mission 7 Long Shot",
-          "description": "Make a 200 meter shot in Lock, Stock and Barrels.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "mission_number": 7,
-          "distance_m": 200,
-          "authentic": false,
-          "notes": "Same distance as the Authentic version; one may be wrong."
-        },
-        {
-          "id": "med_longshot_mission_7_authentic_long_shot",
-          "name": "Mission 7 Authentic Long Shot",
-          "description": "Make a 200 meter shot in Lock, Stock and Barrels on Authentic difficulty.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "mission_number": 7,
-          "distance_m": 200,
-          "authentic": true,
-          "notes": "Same distance as the normal version; one may be wrong."
-        },
-        {
-          "id": "med_longshot_mission_8_long_shot",
-          "name": "Mission 8 Long Shot",
-          "description": "Make a 425 meter shot in End of the Line.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "mission_number": 8,
-          "distance_m": 425,
-          "authentic": false
-        },
-        {
-          "id": "med_longshot_mission_8_authentic_long_shot",
-          "name": "Mission 8 Authentic Long Shot",
-          "description": "Make a 200 meter shot in End of the Line on Authentic difficulty.",
-          "goal": 1,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "mission_number": 8,
-          "distance_m": 200,
-          "authentic": true
-        }
-      ],
-      "propaganda": [
-        {
-          "id": "med_propaganda_propaganda_la_resistance",
-          "name": "Propaganda: La Résistance",
-          "description": "Earn a score of 2000 in the La Résistance propaganda mission.",
-          "goal": 2000,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_propaganda_propaganda_le_sniper",
-          "name": "Propaganda: Le Sniper",
-          "description": "Earn a score of 2000 in the Le Sniper propaganda mission.",
-          "goal": 2000,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_propaganda_propaganda_liberation",
-          "name": "Propaganda: Libération",
-          "description": "Earn a score of 2000 in the Libération propaganda mission.",
-          "goal": 2000,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": "",
-          "notes": "Typed as 20000; treated as 2000."
-        },
-        {
-          "id": "med_propaganda_propaganda_le_maquis_voit_tout",
-          "name": "Propaganda: Le Maquis Voit Tout!",
-          "description": "Earn a score of 2000 in the Le Maquis Voit Tout! propaganda mission.",
-          "goal": 2000,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_propaganda_propaganda_prendre_le_maquis",
-          "name": "Propaganda: Prendre Le Maquis",
-          "description": "Earn a score of 2000 in the Prendre Le Maquis propaganda mission.",
-          "goal": 2000,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_propaganda_propaganda_la_voix_du_maquis",
-          "name": "Propaganda: La Voix Du Maquis",
-          "description": "Earn a score of 2000 in the La Voix Du Maquis propaganda mission.",
-          "goal": 2000,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_propaganda_propaganda_pour_une_france_libre",
-          "name": "Propaganda: Pour Une France Libre",
-          "description": "Earn a score of 2000 in the Pour Une France Libre propaganda mission.",
-          "goal": 2000,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_propaganda_propagandist",
-          "name": "Propagandist",
-          "description": "Complete all propaganda missions with a 3 star rating.",
-          "goal": 7,
-          "goal_tier": null,
-          "tiers": {
-            "bronze": null,
-            "silver": null,
-            "gold": null
-          },
-          "image_url": ""
-        },
-        {
-          "id": "med_propaganda_propaganda_machine",
-          "name": "Propaganda Machine",
-          "description": "Complete all propaganda missions with a 3 star rating on Authentic difficulty.",
-          "goal": 7,
           "goal_tier": null,
           "tiers": {
             "bronze": null,
@@ -3362,54 +3511,113 @@
           "notes": "Wording looks odd for the name; check against the game."
         }
       ]
+    },
+    "general_missions": {
+      "general_missions": [
+        {
+          "id": "med_mission_just_a_scratch",
+          "name": "Just a Scratch",
+          "description": "Complete a mission, excluding Behind Enemy Lines and All or Nothing, on any difficulty without healing.",
+          "goal": 1,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        }
+      ],
+      "general_objective": [
+        {
+          "id": "med_objective_liberte",
+          "name": "Liberté",
+          "description": "Complete the campaign: Bronze on any difficulty, Silver on Sharpshooter, Gold on Sniper Elite.",
+          "goal": 1,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": "",
+          "tier_conditions": {
+            "bronze": "Any difficulty",
+            "silver": "Sharpshooter difficulty",
+            "gold": "Sniper Elite difficulty"
+          }
+        },
+        {
+          "id": "med_objective_cr_me_de_la_cr_me",
+          "name": "Crème de la Crème",
+          "description": "Complete the entire campaign on Authentic difficulty.",
+          "goal": 1,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_objective_full_english",
+          "name": "Full English",
+          "description": "Complete 11 optional objectives.",
+          "goal": 11,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        }
+      ],
+      "propaganda": [
+        {
+          "id": "med_propaganda_propaganda_la_voix_du_maquis",
+          "name": "Propaganda: La Voix Du Maquis",
+          "description": "Earn a score of 2000 in the La Voix Du Maquis propaganda mission.",
+          "goal": 2000,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_propaganda_propagandist",
+          "name": "Propagandist",
+          "description": "Complete all propaganda missions with a 3 star rating.",
+          "goal": 7,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_propaganda_propaganda_machine",
+          "name": "Propaganda Machine",
+          "description": "Complete all propaganda missions with a 3 star rating on Authentic difficulty.",
+          "goal": 7,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        }
+      ]
     }
   },
-  "propaganda_missions": [
-    {
-      "id": "prop_m1",
-      "number": 1,
-      "title": "La Résistance",
-      "unlock_poster": "item_m2_01",
-      "target_score": 15000,
-      "briefing": "Sniper trial. Neutralize high-priority Gestapo officers across the rooftops before time expires.",
-      "image_url": ""
-    },
-    {
-      "id": "prop_m2",
-      "number": 2,
-      "title": "Le Sniper",
-      "unlock_poster": "item_m3_03",
-      "target_score": 18000,
-      "briefing": "Longshot trial. Eliminate enemy counter-snipers along the rail terminal gantry.",
-      "image_url": ""
-    },
-    {
-      "id": "prop_m3",
-      "number": 3,
-      "title": "Libération",
-      "unlock_poster": "item_m4_03",
-      "target_score": 20000,
-      "briefing": "Demolition challenge. Destroy armored vehicles crossing the bridge perimeter with minimal ammo.",
-      "image_url": ""
-    },
-    {
-      "id": "prop_m4",
-      "number": 4,
-      "title": "Le Maquis Voit Tout!",
-      "unlock_poster": "item_m5_03",
-      "target_score": 22000,
-      "briefing": "Stealth infiltration challenge. Pacify all facility guards without raising an audible alarm.",
-      "image_url": ""
-    },
-    {
-      "id": "prop_m5",
-      "number": 5,
-      "title": "Prendre Le Maquis",
-      "unlock_poster": "item_m6_03",
-      "target_score": 25000,
-      "briefing": "Timed combat trial. Breach the citadel courtyard and eliminate garrison commanders.",
-      "image_url": ""
-    },
+  "unassigned_propaganda_missions": [
     {
       "id": "prop_m6",
       "number": 6,
@@ -3418,81 +3626,14 @@
       "target_score": null,
       "briefing": null,
       "image_url": ""
-    },
-    {
-      "id": "prop_m7",
-      "number": 7,
-      "title": "Pour Une France Libre",
-      "unlock_poster": "item_m8_03",
-      "target_score": 30000,
-      "briefing": "Master sniper trial. Eliminate all marked targets across the railyard at authentic difficulty distance.",
-      "image_url": ""
-    },
-    {
-      "id": "prop_m8",
-      "number": 8,
-      "title": "Debout La France",
-      "unlock_poster": "item_m7_03",
-      "target_score": 25000,
-      "briefing": "Heavy weapons trial. Defend the launch tunnel entrance from mechanized infantry waves.",
-      "unconfirmed": true,
-      "image_url": ""
     }
   ],
-  "trophies": [
+  "general_trophies": [
     {
       "trophyId": 0,
       "name": "Sniper Elite",
       "rank": "PLATINUM",
       "description": "Obtain all Trophies."
-    },
-    {
-      "trophyId": 1,
-      "name": "Dam Buster",
-      "rank": "BRONZE",
-      "description": "Sabotage the Dam and destroy the AA guns."
-    },
-    {
-      "trophyId": 2,
-      "name": "Welcome to the Resistance",
-      "rank": "BRONZE",
-      "description": "Find the Mole and uncover the Superweapon plot."
-    },
-    {
-      "trophyId": 3,
-      "name": "Trainwreck",
-      "rank": "BRONZE",
-      "description": "Raid the Hotel Terminus and sabotage the Sonderzüge."
-    },
-    {
-      "trophyId": 4,
-      "name": "Bomb Squad",
-      "rank": "BRONZE",
-      "description": "Ensure Allied secrets remain unknown and confirm the location of Site D."
-    },
-    {
-      "trophyId": 5,
-      "name": "Industrial Action",
-      "rank": "BRONZE",
-      "description": "Destroy the underground chemical weapons plant and cease Kleine Blume production."
-    },
-    {
-      "trophyId": 6,
-      "name": "Blast from the Past",
-      "rank": "BRONZE",
-      "description": "Infiltrate Fort Rouge and escape before Allied bombers level the site."
-    },
-    {
-      "trophyId": 7,
-      "name": "Grapes of Wrath",
-      "rank": "BRONZE",
-      "description": "Infiltrate the V1 rocket launch site and destroy the Zugwerfer."
-    },
-    {
-      "trophyId": 8,
-      "name": "Whatever it Takes",
-      "rank": "BRONZE",
-      "description": "Stop the Zugwerfers from leaving and obliterating the D-Day landings."
     },
     {
       "trophyId": 9,
@@ -3717,40 +3858,10 @@
       "description": "Complete an entire Survival mission."
     },
     {
-      "trophyId": 46,
-      "name": "File O' Facts",
-      "rank": "BRONZE",
-      "description": "Recover evidence implicating Resistance members within the Library in Dead Drop."
-    },
-    {
-      "trophyId": 47,
-      "name": "Sprung a Leak",
-      "rank": "BRONZE",
-      "description": "Sabotage the Dam's pump room in Collision Course."
-    },
-    {
-      "trophyId": 48,
-      "name": "Stopping Traffic",
-      "rank": "BRONZE",
-      "description": "Destroy the Trucks carrying Kleine Blume ingredients in Devil's Cauldron."
-    },
-    {
       "trophyId": 49,
       "name": "Lost its way Gnome",
       "rank": "BRONZE",
       "description": "Find the French Resistance Gnome and take a Picture."
-    },
-    {
-      "trophyId": 50,
-      "name": "Tanks for Nothing!",
-      "rank": "BRONZE",
-      "description": "Destroy the Panzer Tank in End of the Line."
-    },
-    {
-      "trophyId": 51,
-      "name": "Mastermind",
-      "rank": "BRONZE",
-      "description": "Headshot Kruger."
     },
     {
       "trophyId": 52,
