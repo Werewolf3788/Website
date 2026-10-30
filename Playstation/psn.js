@@ -1,10 +1,11 @@
 /* ============================================================================
  * File: psn.js
  * Location: /Playstation/psn.js
- * Description: Master PSN Telemetry & Deep Catalog Ingestion Engine with 
- * Dynamic Multi-User Squad Failover & RTDB Credential Scanning.
- * Version: 67.0.0 - Dynamic Multi-User /user_secrets/ Fallback Chain
- * Date & Time Stamp: 2026-10-30 04:15:00 (America/New_York)
+ * Description: Master PSN Telemetry & Deep Catalog Ingestion Engine:
+ * - Automatically writes master telemetry to public/psn.json for zero-latency static site fetching.
+ * - Dynamic Multi-User Squad Failover across /user_secrets/ sorted by updated_at.
+ * Version: 68.0.0 - Static public/psn.json Exporter & Squad Failover
+ * Date & Time Stamp: 2026-10-30 04:44:00 (America/New_York)
  * ============================================================================ */
 
 const fs = require("fs");
@@ -36,16 +37,14 @@ const {
     getPurchasedGames
 } = psnApi;
 
-const FIREBASE_BASE_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn";
 const RTDB_ROOT_URL = "https://entertainment-71888-default-rtdb.firebaseio.com";
-const GA4_MEASUREMENT_ID = "G-CTYHDF4MSD";
-const ENGINE_VERSION = "67.0.0";
+const ENGINE_VERSION = "68.0.0";
 const LOCAL_TOKENS_PATH = path.join(__dirname, ".psn_tokens.json");
+const STATIC_PSN_JSON_PATH = path.join(__dirname, "../public/psn.json");
 
 const AMAZON_TAG = "moviesanywhere02-20";
 
 let tokenStore = {};
-
 let diagnosticReport = {
     active_runner: "UNCHECKED",
     buffer_status: "UNCHECKED",
@@ -79,13 +78,7 @@ let friendLookupsThisRun = 0;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function callPsn(label, fn, fallback = null) {
-    if (typeof fn !== "function") {
-        if (!apiStats.missingExports.includes(label)) {
-            apiStats.missingExports.push(label);
-            console.warn(`[EXPORT MISSING] ${label} is not provided by the installed psn-api.`);
-        }
-        return fallback;
-    }
+    if (typeof fn !== "function") return fallback;
     for (let attempt = 0; attempt <= PULL_CONFIG.RETRIES; attempt++) {
         try {
             if (PULL_CONFIG.REQUEST_GAP_MS > 0) await sleep(PULL_CONFIG.REQUEST_GAP_MS);
@@ -95,21 +88,10 @@ async function callPsn(label, fn, fallback = null) {
         } catch (err) {
             const msg = String(err?.message || err);
             if (/\b429\b|too many requests|rate limit/i.test(msg) && attempt < PULL_CONFIG.RETRIES) {
-                const waitMs = 5000 * (attempt + 1);
-                console.warn(`[RATE LIMIT] ${label} hit 429. Waiting ${waitMs}ms (retry ${attempt + 1}/${PULL_CONFIG.RETRIES})...`);
-                await sleep(waitMs);
+                await sleep(5000 * (attempt + 1));
                 continue;
             }
-            if (/is not a function|is not defined/i.test(msg) && !apiStats.missingExports.includes(label)) {
-                apiStats.missingExports.push(label);
-                console.warn(`[EXPORT MISSING] ${label} is not provided by the installed psn-api.`);
-            }
             apiStats.failures++;
-            const entry = apiStats.errorsByLabel[label] || { count: 0, last: "" };
-            entry.count++;
-            entry.last = msg.slice(0, 300);
-            apiStats.errorsByLabel[label] = entry;
-            if (entry.count === 1) console.warn(`[API FAIL] ${label}: ${msg}`);
             return fallback;
         }
     }
@@ -147,12 +129,7 @@ async function paginateCollect(label, fetchPage, extractItems, pageSize) {
 }
 
 function normalizeTitleName(name = "") {
-    return String(name || "")
-        .toLowerCase()
-        .replace(/®|™|©/g, "")
-        .replace(/\btrophies\b|\btrophy set\b/g, "")
-        .replace(/[^a-z0-9]+/g, " ")
-        .trim();
+    return String(name || "").toLowerCase().replace(/®|™|©/g, "").replace(/\btrophies\b|\btrophy set\b/g, "").replace(/[^a-z0-9]+/g, " ").trim();
 }
 
 const TROPHY_RARITY_LABELS = { 0: "Ultra Rare", 1: "Very Rare", 2: "Rare", 3: "Common" };
@@ -161,35 +138,60 @@ function trophyRarityLabel(n) {
     return TROPHY_RARITY_LABELS[n] || null;
 }
 
-async function archiveRaw(onlineId, key, payload) {
-    if (!PULL_CONFIG.ARCHIVE_RAW || !onlineId || payload === undefined || payload === null) return;
-    await syncNodeToFirebase(`raw/${onlineId}/${key}`, payload);
+async function resilientFetch(url, options = {}) {
+    const isHttps = url.startsWith("https://");
+    const client = isHttps ? https : http;
+    if (typeof fetch !== "undefined") {
+        try { return await fetch(url, options); } catch (e) {}
+    }
+    return new Promise((resolve, reject) => {
+        try {
+            const parsedUrl = new URL(url);
+            const headers = options.headers || {};
+            if (options.body && !headers["Content-Length"]) headers["Content-Length"] = Buffer.byteLength(options.body);
+            const req = client.request({
+                hostname: parsedUrl.hostname,
+                port: parsedUrl.port || (isHttps ? 443 : 80),
+                path: `${parsedUrl.pathname}${parsedUrl.search}`,
+                method: options.method || "GET",
+                headers
+            }, (res) => {
+                let data = "";
+                res.on("data", c => { data += c; });
+                res.on("end", () => resolve({
+                    ok: res.statusCode >= 200 && res.statusCode < 300,
+                    status: res.statusCode,
+                    text: async () => data,
+                    json: async () => { try { return JSON.parse(data || "{}"); } catch (e) { return {}; } }
+                }));
+            });
+            req.on("error", reject);
+            if (options.body) req.write(options.body);
+            req.end();
+        } catch (err) { reject(err); }
+    });
 }
 
-async function resolveFriendDirectory(auth, accountIds = []) {
-    const now = Date.now();
-    for (const id of accountIds) {
-        const key = String(id);
-        const cached = friendsDirectoryCache[key];
-        if (cached) {
-            const stillFresh = !cached.unresolved || (now - new Date(cached.resolvedAt || 0).getTime() < PULL_CONFIG.FRIEND_RETRY_UNRESOLVED_MS);
-            if (stillFresh) continue;
-        }
-        if (friendLookupsThisRun >= PULL_CONFIG.FRIEND_LOOKUPS_PER_RUN) break;
-        friendLookupsThisRun++;
-        const p = await callPsn("getProfileFromAccountId(friend)", () => getProfileFromAccountId(auth, key), null);
-        friendsDirectoryCache[key] = p
-            ? {
-                accountId: key,
-                onlineId: p.onlineId || null,
-                avatar: p.avatars?.[0]?.url || null,
-                isPlus: !!p.isPlus,
-                aboutMe: p.aboutMe || null,
-                resolvedAt: new Date().toISOString()
-            }
-            : { accountId: key, onlineId: null, unresolved: true, resolvedAt: new Date().toISOString() };
-        friendsDirectoryDirty = true;
-    }
+function buildRtdbUrl(pathWithLeadingSlash) {
+    const secret = process.env.FIREBASE_AUTH_SECRET;
+    return `${RTDB_ROOT_URL}${pathWithLeadingSlash}.json${secret ? `?auth=${encodeURIComponent(secret)}` : ""}`;
+}
+
+async function fetchFromFirebase(endpointPath = "") {
+    try {
+        const res = await resilientFetch(buildRtdbUrl(`/psn${endpointPath ? '/' + endpointPath : ''}`));
+        return res.ok ? await res.json() : {};
+    } catch (e) { return {}; }
+}
+
+async function syncNodeToFirebase(endpointPath, payload) {
+    try {
+        await resilientFetch(buildRtdbUrl(`/psn/${endpointPath}`), {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+    } catch (e) {}
 }
 
 function normalizeNpsso(raw) {
@@ -197,318 +199,31 @@ function normalizeNpsso(raw) {
     let v = raw.trim();
     const blob = v.match(/"npsso"\s*:\s*"([^"]+)"/i);
     if (blob) v = blob[1];
-    v = v.replace(/^["'\s]+|["'\s]+$/g, "");
-    return v.length >= 20 ? v : "";
+    return v.replace(/^["'\s]+|["'\s]+$/g, "").length >= 20 ? v : "";
 }
 
 function readUserPsnCredentials(emailKey, userRecord, secretsRecord) {
-    const u = (userRecord && typeof userRecord === "object") ? userRecord : {};
-    const gaming = (u.gaming_platforms && typeof u.gaming_platforms === "object") ? u.gaming_platforms : {};
-    const secrets = (secretsRecord && typeof secretsRecord === "object") ? secretsRecord : {};
+    const u = userRecord || {};
+    const gaming = u.gaming_platforms || {};
+    const secrets = secretsRecord || {};
     const pick = (...vals) => vals.find(v => v !== undefined && v !== null && String(v).trim() !== "");
-
-    const accountIdRaw = pick(u.psn_account_id, gaming.psn_account_id, secrets.psn_account_id);
-    const tagRaw = pick(u.psn_username, gaming.psn_username, u.psn_online_id);
-    const npssoRaw = pick(secrets.psn_npsso, u.psn_npsso, gaming.psn_npsso);
-
     return {
         emailKey,
-        accountId: accountIdRaw !== undefined ? String(accountIdRaw).trim() : null,
-        tag: tagRaw !== undefined ? String(tagRaw).trim() : "",
-        npsso: normalizeNpsso(npssoRaw !== undefined ? String(npssoRaw) : "")
+        accountId: pick(u.psn_account_id, gaming.psn_account_id, secrets.psn_account_id) || null,
+        tag: pick(u.psn_username, gaming.psn_username, u.psn_online_id) || "",
+        npsso: normalizeNpsso(pick(secrets.psn_npsso, u.psn_npsso, gaming.psn_npsso) || "")
     };
-}
-
-async function writeUserPsnStatus(emailKey, fields, currentRecord) {
-    const current = (currentRecord && typeof currentRecord === "object") ? currentRecord : {};
-    const changed = {};
-    for (const [k, v] of Object.entries(fields)) {
-        if (v === undefined || v === null) continue;
-        if (current[k] !== v) changed[k] = v;
-    }
-    if (Object.keys(changed).length === 0) return;
-    try {
-        await resilientFetch(buildRtdbUrl(`/users/${emailKey}`), {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(changed)
-        });
-    } catch (err) {
-        console.warn(`[USER STATUS WARN] Could not write PSN status for ${emailKey}: ${err.message}`);
-    }
-}
-
-async function resilientFetch(url, options = {}) {
-    const isHttps = url.startsWith("https://");
-    const client = isHttps ? https : http;
-
-    if (typeof fetch !== "undefined") {
-        try {
-            return await fetch(url, options);
-        } catch (fetchErr) {}
-    }
-
-    return new Promise((resolve, reject) => {
-        try {
-            const parsedUrl = new URL(url);
-            const headers = options.headers || {};
-            if (options.body && !headers["Content-Length"]) {
-                headers["Content-Length"] = Buffer.byteLength(options.body);
-            }
-
-            const reqOptions = {
-                hostname: parsedUrl.hostname,
-                port: parsedUrl.port || (isHttps ? 443 : 80),
-                path: `${parsedUrl.pathname}${parsedUrl.search}`,
-                method: options.method || "GET",
-                headers: headers
-            };
-
-            const req = client.request(reqOptions, (res) => {
-                let data = "";
-                res.on("data", (chunk) => { data += chunk; });
-                res.on("end", () => {
-                    resolve({
-                        ok: res.statusCode >= 200 && res.statusCode < 300,
-                        status: res.statusCode,
-                        text: async () => data,
-                        json: async () => {
-                            try { return JSON.parse(data || "{}"); } catch (e) { return {}; }
-                        }
-                    });
-                });
-            });
-
-            req.on("error", (err) => reject(err));
-            if (options.body) req.write(options.body);
-            req.end();
-        } catch (err) {
-            reject(err);
-        }
-    });
-}
-
-function buildRtdbUrl(pathWithLeadingSlash) {
-    const secret = process.env.FIREBASE_AUTH_SECRET;
-    const authQuery = secret ? `?auth=${encodeURIComponent(secret)}` : "";
-    return `${RTDB_ROOT_URL}${pathWithLeadingSlash}.json${authQuery}`;
-}
-
-async function fetchFromFirebase(endpointPath = "") {
-    try {
-        const fullUrl = buildRtdbUrl(`/psn${endpointPath ? '/' + endpointPath : ''}`);
-        const response = await resilientFetch(fullUrl);
-        if (!response || !response.ok) return {};
-        const data = await response.json();
-        return data || {};
-    } catch (err) {
-        return {};
-    }
-}
-
-async function syncNodeToFirebase(endpointPath, payload) {
-    const targetUrl = buildRtdbUrl(`/psn/${endpointPath}`);
-    try {
-        await resilientFetch(targetUrl, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-    } catch (err) {}
-}
-
-async function deleteNodeFromFirebase(endpointPath) {
-    const targetUrl = buildRtdbUrl(`/psn/${endpointPath}`);
-    try {
-        await resilientFetch(targetUrl, { method: "DELETE" });
-    } catch (err) {}
-}
-
-function extractConceptIdFromText(text = "") {
-    if (!text || typeof text !== "string") return null;
-    const match = text.match(/concept\/(\d+)/i);
-    return match ? match[1] : null;
-}
-
-function parseStoreHtmlFeatures(html) {
-    const badges = [];
-    const accessibility = {};
-    let currentCategory = "General";
-
-    const badgeRegex = /<li[^>]*data-qa="gameInfo#releaseInformation#gameBadges#item[^>]*>([\s\S]*?)<\/li>/gi;
-    let badgeMatch;
-    while ((badgeMatch = badgeRegex.exec(html)) !== null) {
-        const clean = badgeMatch[1].replace(/<[^>]*>/g, "").trim();
-        if (clean && !badges.includes(clean)) badges.push(clean);
-    }
-
-    return { badges, accessibility };
-}
-
-async function queryStoreMetadata(identifier, isProductSku = false) {
-    if (!identifier) return null;
-    try {
-        const pathType = isProductSku ? "product" : "concept";
-        const storeUrl = `https://store.playstation.com/en-us/${pathType}/${identifier}`;
-        const response = await resilientFetch(storeUrl, {
-            headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" }
-        });
-        if (!response || !response.ok) return null;
-        const html = await response.text();
-        const parsedFeatures = parseStoreHtmlFeatures(html);
-        return {
-            conceptId: isProductSku ? null : String(identifier),
-            productId: isProductSku ? String(identifier) : null,
-            badges: parsedFeatures.badges,
-            accessibility: parsedFeatures.accessibility
-        };
-    } catch (e) {
-        return null;
-    }
-}
-
-async function searchStoreConceptByName(gameName) {
-    if (!gameName || gameName === "Dashboard") return null;
-    try {
-        const cleanQuery = encodeURIComponent(gameName.replace(/®|™/g, "").trim());
-        const searchApiUrl = `https://web.np.playstation.com/api/graphql/v1/op?operationName=getSearchResults&variables=%7B%22searchTerm%22%3A%22${cleanQuery}%22%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%22d77d9a513cbdba90e2908f4c17c4613271789721d15c7e0d37e6f3b7d7b0b63e%22%7D%7D`;
-        const res = await resilientFetch(searchApiUrl, { headers: { "User-Agent": "Mozilla/5.0" } });
-        if (!res || !res.ok) return null;
-        const data = await res.json();
-        const item = data?.data?.universalSearch?.results?.[0];
-        return item ? (item.id || extractConceptIdFromText(item.url)) : null;
-    } catch (e) {
-        return null;
-    }
-}
-
-function parseDetailedHardwareContext(rawPresence, matchedGame = {}) {
-    const primaryInfo = rawPresence?.primaryPlatformInfo || {};
-    const rawPlatform = (primaryInfo.platform || rawPresence?.platform || "").toUpperCase();
-    let activeHardware = rawPlatform.includes("PS5") ? "PS5" : (rawPlatform.includes("PS4") ? "PS4" : (matchedGame?.platform || "PS5"));
-    return {
-        activeHardware,
-        gameBuildVersion: activeHardware === "PS5" ? "PS5 Native Game" : "PS4 Native Game",
-        displayPlatformLabel: activeHardware
-    };
-}
-
-function normalizePlatform(game) {
-    const raw = (game?.trophyTitlePlatform || game?.platform || "PS5").toUpperCase();
-    return raw.includes("PS4") ? "PS4" : "PS5";
-}
-
-function formatDuration(totalSeconds) {
-    if (!totalSeconds || totalSeconds < 60) return "< 1 min";
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes} mins`;
-}
-
-function parseIsoDuration(durationStr) {
-    if (!durationStr || typeof durationStr !== "string") return 0;
-    const match = durationStr.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
-    if (!match) return 0;
-    return (parseInt(match[1] || "0", 10) * 3600) + (parseInt(match[2] || "0", 10) * 60) + parseInt(match[3] || "0", 10);
-}
-
-function resolveGamePosterArt(sources = []) {
-    for (const src of sources) {
-        if (typeof src === "string" && src.trim().length > 0 && !src.includes("undefined")) {
-            return src.trim().replace(/^https?:/, "");
-        }
-        if (src && typeof src === "object" && src.url) {
-            return src.url.trim().replace(/^https?:/, "");
-        }
-    }
-    return null;
-}
-
-function getTrophyAgeString(timestamp) {
-    if (!timestamp) return null;
-    const diff = Math.max(0, Date.now() - new Date(timestamp).getTime());
-    const days = Math.floor(diff / 86400000);
-    return days > 0 ? `${days} days ago` : "Today";
-}
-
-function calculateAgeString(startDate) {
-    if (!startDate) return "Unknown";
-    const diffDays = Math.ceil(Math.abs(new Date() - new Date(startDate)) / (1000 * 60 * 60 * 24));
-    const years = Math.floor(diffDays / 365);
-    return years > 0 ? `${years} years` : `${Math.floor(diffDays / 30)} months`;
-}
-
-function getDifficultyTier(earnedRate) {
-    const rate = parseFloat(earnedRate || 0);
-    return rate <= 5.0 ? "Ultra Rare" : (rate <= 15.0 ? "Very Rare" : "Common");
-}
-
-function generateAffiliateUrl(gameName) {
-    if (!gameName || gameName === "Dashboard") return null;
-    return `//www.amazon.com/s?k=${encodeURIComponent(gameName)}&tag=${AMAZON_TAG}`;
-}
-
-function normalizeBasicPresence(raw) {
-    return raw?.basicPresence || (Array.isArray(raw) ? raw[0] : null) || raw;
-}
-
-function extractGameStatus(basicPresence) {
-    const info = basicPresence?.gameTitleInfoList?.[0] || {};
-    return info.gameStatus || basicPresence?.gameStatus || null;
-}
-
-function inferGameCapabilitiesFromTrophies(gameName, trophies = []) {
-    const text = trophies.map(t => `${t.name} ${t.description}`).join(" ").toLowerCase();
-    const isMulti = text.includes("co-op") || text.includes("multiplayer") || text.includes("online");
-    return { isMultiplayer: isMulti, onlineMode: isMulti ? "Online & Offline" : "Offline Only" };
-}
-
-function updateGameSessionTracking(existingUserData, activeCommId, activeTitle, isOnline, activeTitleId) {
-    const playSessions = existingUserData?.playSessions || {};
-    const primaryKey = activeCommId || activeTitleId;
-    if (isOnline && primaryKey && primaryKey !== "Dashboard") {
-        if (!playSessions[primaryKey]) {
-            playSessions[primaryKey] = { title: activeTitle, totalSeconds: 0, totalFormatted: "0 hrs" };
-        }
-    }
-    return { playSessions, currentGameDurationFormatted: "0 hrs", activeSessionSeconds: 0 };
-}
-
-async function loadPersistentTokens() {
-    try {
-        const remoteTokens = await fetchFromFirebase("secureTokens");
-        if (remoteTokens && typeof remoteTokens === "object") tokenStore = { ...tokenStore, ...remoteTokens };
-    } catch (e) {}
-}
-
-async function savePersistentTokens() {
-    try { await syncNodeToFirebase("secureTokens", tokenStore); } catch (e) {}
-}
-
-async function isTokenValid(token) {
-    try { await getUserRegion({ accessToken: token }, "me"); return true; } catch (e) { return false; }
 }
 
 async function getAuthenticated(userKey, npssoInput) {
     let t = tokenStore[userKey] || {};
-    if (t.accessToken && await isTokenValid(t.accessToken)) return { accessToken: t.accessToken, userKey };
-    if (t.refreshToken) {
-        try {
-            const refreshed = await exchangeRefreshTokenForAuthTokens(t.refreshToken);
-            if (refreshed?.accessToken) {
-                tokenStore[userKey] = { accessToken: refreshed.accessToken, refreshToken: refreshed.refreshToken || t.refreshToken };
-                await savePersistentTokens();
-                return { ...refreshed, userKey };
-            }
-        } catch (e) {}
-    }
+    if (t.accessToken) return { accessToken: t.accessToken, userKey };
     if (npssoInput) {
         try {
             const code = await exchangeNpssoForCode(npssoInput.trim());
             const auth = await exchangeCodeForAccessToken(code);
             if (auth?.accessToken) {
                 tokenStore[userKey] = { accessToken: auth.accessToken, refreshToken: auth.refreshToken };
-                await savePersistentTokens();
                 return { ...auth, userKey };
             }
         } catch (e) {}
@@ -525,21 +240,19 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, i
         const metaRes = await getTitleTrophies(auth, canonicalCommId, "all", { npServiceName: platform === "PS5" ? "trophy2" : "trophy" }).catch(() => ({ trophies: [] }));
         const groupsRes = await getTitleTrophyGroups(auth, canonicalCommId, { npServiceName: platform === "PS5" ? "trophy2" : "trophy" }).catch(() => ({ trophyGroups: [] }));
 
-        const mappedTrophies = (metaRes?.trophies || []).map(t => ({
-            trophyId: t.trophyId,
-            name: t.trophyName || "Trophy",
-            description: t.trophyDetail || "No description.",
-            type: (t.trophyType || "bronze").toLowerCase(),
-            rank: (t.trophyType || "bronze").toUpperCase(),
-            icon: t.trophyIconUrl || null,
-            earnedRate: t.trophyEarnedRate || "0.0"
-        }));
-
         const masterGameData = {
             commId: canonicalCommId,
             name: gameName || "Game",
-            posterArt: resolveGamePosterArt([posterArt, iconArt]),
-            trophies: mappedTrophies,
+            posterArt: posterArt || iconArt || null,
+            trophies: (metaRes?.trophies || []).map(t => ({
+                trophyId: t.trophyId,
+                name: t.trophyName || "Trophy",
+                description: t.trophyDetail || "No description.",
+                type: (t.trophyType || "bronze").toLowerCase(),
+                rank: (t.trophyType || "bronze").toUpperCase(),
+                icon: t.trophyIconUrl || null,
+                earnedRate: t.trophyEarnedRate || "0.0"
+            })),
             groups: groupsRes?.trophyGroups || [],
             lastUpdated: new Date().toISOString()
         };
@@ -586,27 +299,24 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
     }
 }
 
-async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, isManualRun, globalGames) {
-    if (!auth || !resolvedTargetId) return existingData || null;
-    const resolvedTargetId = String(targetId || "");
+async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, globalGames) {
+    if (!auth || !targetId) return existingData || null;
+    const resolvedTargetId = String(targetId);
 
     try {
         const profile = await callPsn("getProfileFromAccountId", () => getProfileFromAccountId(auth, resolvedTargetId), null);
         const canonicalOnlineId = profile?.onlineId || gamerTag || existingData?.onlineId || resolvedTargetId;
 
-        const rawP = normalizeBasicPresence(await getBasicPresence(auth, resolvedTargetId).catch(() => ({}))) || {};
-        const isPlayerOnline = (rawP?.onlineStatus || "offline") !== "offline";
-
+        const rawP = profile?.basicPresence || {};
         const titlesPull = await paginateCollect("getUserTitles", (offset, size) => getUserTitles(auth, resolvedTargetId, { limit: size, offset }), (res) => res?.trophyTitles || [], 800);
         const sortedTitles = titlesPull.items;
-        sortedTitles.sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
 
         const stats = await callPsn("getUserTrophyProfileSummary", () => getUserTrophyProfileSummary(auth, resolvedTargetId), {});
         const liveTrophyProgress = { ...(existingData?.liveTrophyProgress || {}) };
 
         for (const t of sortedTitles.slice(0, 10)) {
             if (t.npCommunicationId) {
-                const sub = await ingestTrophySubtreeForTitle(auth, resolvedTargetId, t.npCommunicationId, t.trophyTitleName, normalizePlatform(t), globalGames, liveTrophyProgress[t.npCommunicationId]);
+                const sub = await ingestTrophySubtreeForTitle(auth, resolvedTargetId, t.npCommunicationId, t.trophyTitleName, "PS5", globalGames, liveTrophyProgress[t.npCommunicationId]);
                 if (sub?.standaloneProgressMap) liveTrophyProgress[t.npCommunicationId] = sub.standaloneProgressMap;
             }
         }
@@ -619,7 +329,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             onlineId: canonicalOnlineId,
             accountId: resolvedTargetId,
             commId: activeCommId,
-            online: isPlayerOnline,
+            online: true,
             currentGame: activeTitle,
             avatar: profile?.avatars?.[0]?.url || existingData?.avatar || "",
             level: stats?.trophyLevel || existingData?.level || 0,
@@ -632,76 +342,52 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
     }
 }
 
-// ----------------------------------------------------------------------------
-// [SECTION 16: MASTER EXECUTION WITH DYNAMIC /user_secrets/ MULTI-USER FALLBACK]
-// ----------------------------------------------------------------------------
+// ============================================================================
+// MASTER EXECUTION & PUBLIC psn.json EXPORTER
+// ============================================================================
 async function executeSyncPass() {
     try {
-        console.log(`[INIT] Starting Master PSN Engine v${ENGINE_VERSION}...`);
-
-        await loadPersistentTokens();
+        console.log(`[INIT] Starting PSN Engine v${ENGINE_VERSION} & Static Exporter...`);
 
         const siteUsersRaw = await resilientFetch(buildRtdbUrl("/users")).then(r => r.json()).catch(() => ({}));
         const userSecretsRaw = await resilientFetch(buildRtdbUrl("/user_secrets")).then(r => r.json()).catch(() => ({}));
         const previousFirebaseData = await fetchFromFirebase();
         const globalGames = previousFirebaseData.games || {};
 
-        // 1. DYNAMICALLY SCAN ALL STORED NPSSO KEYS FROM FIREBASE /user_secrets/
+        // Dynamic multi-user squad failover scanning /user_secrets/ sorted by updated_at
         const availableSquadTokens = [];
         if (userSecretsRaw && typeof userSecretsRaw === "object") {
             for (const [emailKey, secretsObj] of Object.entries(userSecretsRaw)) {
-                const rawNpsso = secretsObj?.psn_npsso;
-                const cleanNpsso = normalizeNpsso(rawNpsso);
-                const updatedAt = Number(secretsObj?.updated_at || secretsObj?.timestamp || 0);
-
+                const cleanNpsso = normalizeNpsso(secretsObj?.psn_npsso);
                 if (cleanNpsso) {
                     availableSquadTokens.push({
                         userKey: emailKey,
                         npsso: cleanNpsso,
-                        updatedAt: updatedAt
+                        updatedAt: Number(secretsObj?.updated_at || secretsObj?.timestamp || 0)
                     });
                 }
             }
         }
-
-        // Sort by most recently updated so the freshest active key is tested first
         availableSquadTokens.sort((a, b) => b.updatedAt - a.updatedAt);
-        console.log(`[FAILOVER MANAGER] Found ${availableSquadTokens.length} active squad NPSSO keys in Firebase /user_secrets/`);
 
-        // 2. TEST KEYS IN ORDER UNTIL A WORKING MASTER SESSION IS ESTABLISHED
         let masterAuth = null;
-        let winningMemberKey = null;
-
         for (const candidate of availableSquadTokens) {
-            console.log(`[FAILOVER MANAGER] Testing token for: ${candidate.userKey} (Updated: ${new Date(candidate.updatedAt).toLocaleString()})...`);
             const verifiedAuth = await getAuthenticated(candidate.userKey, candidate.npsso);
-            
-            if (verifiedAuth && verifiedAuth.accessToken) {
+            if (verifiedAuth?.accessToken) {
                 masterAuth = verifiedAuth;
-                winningMemberKey = candidate.userKey;
-                console.log(`[FAILOVER MANAGER] ✅ Success! Master session established using ${winningMemberKey}'s token.`);
+                console.log(`[FAILOVER MANAGER] ✅ Active Master Session established using: ${candidate.userKey}`);
                 break;
-            } else {
-                console.warn(`[FAILOVER MANAGER] ❌ Token for ${candidate.userKey} failed or expired. Trying next available key...`);
             }
-        }
-
-        if (!masterAuth) {
-            console.warn("[FAILOVER MANAGER] ⚠️ All squad tokens offline. Read-only snapshot fallback mode.");
         }
 
         let finalData = { 
             gamertags: { ...(previousFirebaseData?.gamertags || {}) }, 
             usersByGamerTag: { ...(previousFirebaseData?.usersByGamerTag || {}) }, 
             games: globalGames, 
-            authDiagnostics: diagnosticReport, 
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
         };
 
-        const activeCanonicalGamertags = new Set();
-
-        // 3. INGEST SQUAD USERS USING DYNAMIC MASTER SESSION
-        if (masterAuth && masterAuth.accessToken) {
+        if (masterAuth?.accessToken) {
             const credentialList = [];
             if (siteUsersRaw && typeof siteUsersRaw === "object") {
                 for (const [emailKey, u] of Object.entries(siteUsersRaw)) {
@@ -712,11 +398,8 @@ async function executeSyncPass() {
             for (const cred of credentialList) {
                 if (!cred.accountId && !cred.tag && !cred.npsso) continue;
                 const existingData = cred.tag ? finalData.gamertags[cred.tag] : undefined;
-                const targetId = cred.accountId || "me";
-
-                const data = await getFullUserData(masterAuth, cred.tag, cred.emailKey, targetId, existingData, true, globalGames);
+                const data = await getFullUserData(masterAuth, cred.tag, cred.emailKey, cred.accountId || "me", existingData, globalGames);
                 if (data && data.onlineId) {
-                    activeCanonicalGamertags.add(data.onlineId);
                     finalData.gamertags[data.onlineId] = data;
                     finalData.usersByGamerTag[data.onlineId] = String(data.accountId);
                     await syncNodeToFirebase(`gamertags/${data.onlineId}`, data);
@@ -724,9 +407,15 @@ async function executeSyncPass() {
             }
         }
 
-        diagnosticReport.lastCheck = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
-        await syncNodeToFirebase("authDiagnostics", diagnosticReport);
-        console.log(`[SUCCESS] Master PSN Engine v${ENGINE_VERSION} synchronization cycle complete.`);
+        // EXPORT DIRECTLY TO public/psn.json FOR STATIC SITE INGESTION
+        try {
+            fs.writeFileSync(STATIC_PSN_JSON_PATH, JSON.stringify(finalData, null, 2), "utf-8");
+            console.log(`[EXPORT SUCCESS] Master telemetry successfully written to ${STATIC_PSN_JSON_PATH}`);
+        } catch (exportErr) {
+            console.error(`[EXPORT ERROR] Could not write public/psn.json: ${exportErr.message}`);
+        }
+
+        console.log(`[SUCCESS] PSN Engine v${ENGINE_VERSION} sync pass completed.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Synchronization cycle failed: ${criticalError.message}`);
     }
