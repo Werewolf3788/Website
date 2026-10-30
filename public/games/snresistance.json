@@ -439,3 +439,68 @@
     { "id": "surv_fortress_keeper", "name": "Fortress Keeper", "requirement": "Complete an entire stage without an enemy making it to the Command Post." }
   ]
 }
+"kill_challenges": [
+    {
+      "mission_number": 2,
+      "mission_title": "Dead Drop",
+      "target_name": "Philo Beck",
+      "location": "Inside the cafe at the town square, berating a subordinate.",
+      "challenge": "Kill Philo Beck with a Rat Bomb.",
+      "strategy": "Grab the Rat Bomb on the 2nd-floor landing of the ruined house near the riverbed. Sneak behind the bar counter while Beck steps away, plant the bomb on the floor outline, and retreat.",
+      "reward": "Nagant M1895"
+    },
+    {
+      "mission_number": 3,
+      "mission_title": "Sonderzüge Sabotage",
+      "target_name": "Claude La Ronde",
+      "location": "Patrolling the harbor docks across the river.",
+      "challenge": "Kill Claude La Ronde with cargo.",
+      "strategy": "Take position across the river via the eastern train tracks. Wait until La Ronde walks directly under the suspended construction materials, then shoot the crane winch.",
+      "reward": "M1907"
+    },
+    {
+      "mission_number": 4,
+      "mission_title": "Collision Course",
+      "target_name": "Ludwig Spiegel",
+      "location": "Patrolling the lower walkway platform along the massive dam.",
+      "challenge": "Kill Ludwig Spiegel by making him fall from the dam.",
+      "strategy": "Shoot the walkway support beams from a distance while he stands on the platform to collapse it, or lure/incapacitate him to the upper dam railing and throw his body over.",
+      "reward": "M1_Garand"
+    },
+    {
+      "mission_number": 5,
+      "mission_title": "Devil's Cauldron",
+      "target_name": "Eloi Coste",
+      "location": "Large cabin in the northern sector near the U-boat facility.",
+      "challenge": "Kill Eloi Coste with an LMG.",
+      "strategy": "Pacify or incapacitate Coste, grab the MG42 located in the second-floor bedroom, and finish him off with it while he is downed.",
+      "reward": "Trench Gun"
+    },
+    {
+      "mission_number": 6,
+      "mission_title": "Assault on Fort Rouge",
+      "target_name": "Uwe Schoene",
+      "location": "Mansion located in the western sector of the town.",
+      "challenge": "Kill Uwe Schoene with a Coal Torpedo.",
+      "strategy": "Collect the Coal Torpedo from the ground-floor supply room. Sneak to the 2nd-floor fireplace undetected, rig the fuel basket, and wait for him to ignite it.",
+      "reward": "ERMA36"
+    },
+    {
+      "mission_number": 7,
+      "mission_title": "Lock, Stock, and Barrels",
+      "target_name": "Aldo Riese",
+      "location": "Farmhouse on the western edge of the facility.",
+      "challenge": "Kill Aldo Riese with poison.",
+      "strategy": "Acquire the poison bottle from the laboratory shelf, tamper with his designated drink cup/flask on the kitchen counter, and wait for him to drink.",
+      "reward": "M1918 BAR"
+    },
+    {
+      "mission_number": 8,
+      "mission_title": "End of the Line",
+      "target_name": "Hermann Gottschalk",
+      "location": "Northern depot yard inspecting machinery and fuel canisters.",
+      "challenge": "Kill Hermann Gottschalk with a gas explosion.",
+      "strategy": "Wait for Gottschalk to patrol adjacent to the red pressurized fuel pumps, then fire rifle rounds into the pump cylinder until it detonates.",
+      "reward": "ZK-420S"
+    }
+  ]
