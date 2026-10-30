@@ -99,7 +99,9 @@ const PULL_CONFIG = {
     PREFER_SONY_PLAYTIME: true
 };
 
-const FRIEND_BUCKETS = 16;
+const TROPHY_MIN_YEAR = 2026;                       // trophies earned before Jan 1 of this year are hidden in RTDB
+const TROPHY_CUTOFF_MS = Date.UTC(TROPHY_MIN_YEAR, 0, 1);
+const LEGACY_FRIEND_BUCKETS = 16;                   // old friendsDirectory/bucket_NN docs (migrated + deleted once)
 const apiStats = { calls: 0, failures: 0, errorsByLabel: {} };
 const diag = { auth: {}, members: {} };
 
@@ -203,6 +205,33 @@ function asObjectMap(x) {
     return out;
 }
 
+// Mimic how RTDB hands data back: objects with mostly-sequential integer keys become arrays.
+function rtdbCanon(v) {
+    if (v === null || typeof v !== "object") return v;
+    if (Array.isArray(v)) return v.map(rtdbCanon);
+    const keys = Object.keys(v);
+    if (keys.length && keys.every((k) => /^\d+$/.test(k))) {
+        const max = Math.max(...keys.map(Number));
+        if (keys.length > (max + 1) / 2) {
+            const arr = [];
+            for (let i = 0; i <= max; i++) arr.push(v[i] === undefined ? null : rtdbCanon(v[i]));
+            return arr;
+        }
+    }
+    const out = {};
+    for (const k of keys) out[k] = rtdbCanon(v[k]);
+    return out;
+}
+
+// Only trophies actually earned on/after the cutoff year are exposed in RTDB.
+function filterRecentEarned(map) {
+    const out = {};
+    for (const [k, t] of Object.entries(asObjectMap(map))) {
+        if (t && t.earned && (t.timestamp || 0) >= TROPHY_CUTOFF_MS) out[k] = t;
+    }
+    return out;
+}
+
 function filterCard(record) {
     const slim = {};
     for (const k of Object.keys(record || {})) {
@@ -216,9 +245,9 @@ function computePatch(oldRec, newRec) {
     const fOld = filterCard(oldRec);
     const patch = {};
     for (const k of new Set([...Object.keys(fOld), ...Object.keys(fNew)])) {
-        const before = stableStringify(normalizeForRtdb(fOld[k]));
+        const before = stableStringify(rtdbCanon(normalizeForRtdb(fOld[k])));
         const afterNorm = normalizeForRtdb(fNew[k]);
-        if (before === stableStringify(afterNorm)) continue;
+        if (before === stableStringify(rtdbCanon(afterNorm))) continue;
         patch[k] = afterNorm === undefined ? null : afterNorm;
     }
     return { patch, full: normalizeForRtdb(fNew) || {} };
@@ -855,33 +884,48 @@ async function saveGame(commId, data) {
     return doc;
 }
 
-/* ---------- Friends directory (Firestore friendsDirectory/bucket_NN) ---------- */
+/* ---------- Friends directory ----------
+ * friendsDirectory/{onlineId}  one doc per friend, named by their PSN online ID.
+ * system/friendsIndex          private accountId -> slim profile lookup (keeps reads low).
+ */
 let friendsDirectoryCache = {};
 let friendsDirectoryLoaded = false;
-const dirtyFriendBuckets = new Set();
+const dirtyFriendIds = new Set();
 let friendLookupsThisRun = 0;
 
-const friendBucket = (id) => { let s = 0; for (const ch of String(id)) s = (s + ch.charCodeAt(0)) % FRIEND_BUCKETS; return s; };
-const bucketName = (n) => `bucket_${String(n).padStart(2, "0")}`;
+const slimFriend = (f) => ({ accountId: f.accountId, onlineId: f.onlineId || null, avatar: f.avatar || null, isPlus: !!f.isPlus, resolvedAt: f.resolvedAt, ...(f.unresolved ? { unresolved: true } : {}) });
 
 async function ensureFriendsDirectory() {
     if (friendsDirectoryLoaded) return;
     friendsDirectoryLoaded = true;
-    for (let b = 0; b < FRIEND_BUCKETS; b++) {
+    try {
+        const snap = await col("system").doc("friendsIndex").get();
+        if (snap.exists) { friendsDirectoryCache = snap.data().entries || {}; return; }
+    } catch (e) { console.warn(`[FRIENDS] Could not load index: ${e.message}`); return; }
+
+    // One-time migration from the old bucket_00..bucket_15 layout.
+    for (let b = 0; b < LEGACY_FRIEND_BUCKETS; b++) {
+        const ref = col("friendsDirectory").doc(`bucket_${String(b).padStart(2, "0")}`);
         try {
-            const snap = await col("friendsDirectory").doc(bucketName(b)).get();
-            if (snap.exists) Object.assign(friendsDirectoryCache, snap.data().entries || {});
-        } catch (e) { console.warn(`[FRIENDS] Could not load ${bucketName(b)}: ${e.message}`); }
+            const s = await ref.get();
+            if (!s.exists) continue;
+            for (const [id, v] of Object.entries(s.data().entries || {})) { friendsDirectoryCache[id] = v; dirtyFriendIds.add(id); }
+            await ref.delete();
+        } catch (e) { console.warn(`[FRIENDS] Migration skipped ${b}: ${e.message}`); }
     }
+    console.log(`[FRIENDS] Migrated ${dirtyFriendIds.size} friend(s) to per-onlineId docs.`);
 }
 
 async function saveFriendsDirectory() {
-    for (const b of dirtyFriendBuckets) {
-        const entries = {};
-        for (const [id, v] of Object.entries(friendsDirectoryCache)) if (friendBucket(id) === b) entries[id] = v;
-        await col("friendsDirectory").doc(bucketName(b)).set(plain({ entries, updatedAt: nowEt() }));
+    if (!dirtyFriendIds.size) return;
+    for (const id of dirtyFriendIds) {
+        const f = friendsDirectoryCache[id];
+        if (f && f.onlineId) await col("friendsDirectory").doc(safeKey(f.onlineId)).set(plain(f));
     }
-    dirtyFriendBuckets.clear();
+    const entries = {};
+    for (const [id, f] of Object.entries(friendsDirectoryCache)) entries[id] = slimFriend(f);
+    await col("system").doc("friendsIndex").set(plain({ entries, updatedAt: nowEt() }));
+    dirtyFriendIds.clear();
 }
 
 async function resolveFriendDirectory(auth, ids = []) {
@@ -900,7 +944,7 @@ async function resolveFriendDirectory(auth, ids = []) {
         friendsDirectoryCache[key] = p
             ? { accountId: key, onlineId: p.onlineId || null, avatar: p.avatars?.[0]?.url || null, isPlus: !!p.isPlus, aboutMe: p.aboutMe || null, resolvedAt: new Date().toISOString() }
             : { accountId: key, onlineId: null, unresolved: true, resolvedAt: new Date().toISOString() };
-        dirtyFriendBuckets.add(friendBucket(key));
+        dirtyFriendIds.add(key);
     }
 }
 
@@ -1639,7 +1683,13 @@ async function getFullUserData(ctx) {
             ingestIds.push(id);
         }
 
-        let activeProgress = asObjectMap(existing?.liveTrophyProgress?.[rootCommId]);
+        const trophyHashes = { ...(player.progressHash || {}) };
+        const liveProgress = {};
+        for (const [k, v] of Object.entries(asObjectMap(existing?.liveTrophyProgress))) {
+            const f = filterRecentEarned(v);
+            if (Object.keys(f).length) liveProgress[k] = f;
+        }
+        let activeProgress = {};
         let activeHunt = existing?.activeHunt || null;
         const newlyEarned = [];
 
@@ -1652,20 +1702,27 @@ async function getFullUserData(ctx) {
                 skeleton = await ensureGameSkeleton(auth, cId, gName, gPlat, gMeta.art, gMeta.trophyTitleIconUrl, gMeta.definedTrophies, purchasedGames || [], gMeta.titleId || gMeta.npTitleId, gMeta.conceptId);
             }
             const isActiveId = cId === rootCommId;
-            const sub = await ingestTrophySubtreeForTitle(auth, apiTarget, cId, gName, gPlat, skeleton, isActiveId ? activeProgress : {});
+            const sub = await ingestTrophySubtreeForTitle(auth, apiTarget, cId, gName, gPlat, skeleton, {});
             if (!sub) continue;
             if (sub.skeletonPatched) await persistPatchedGame(cId);
             if (sub.earnedList.length) newlyEarned.push(...sub.earnedList);
 
             const mapKeys = Object.keys(sub.progressMap);
             if (mapKeys.length) {
-                const same = isActiveId && stableStringify(normalizeForRtdb(sub.progressMap)) === stableStringify(normalizeForRtdb(activeProgress));
-                if (!same) {
+                const h = crypto.createHash("sha1").update(JSON.stringify(sub.progressMap)).digest("hex").slice(0, 16);
+                if (trophyHashes[cId] !== h) {
                     await playerRef.collection("trophyProgress").doc(String(cId)).set(plain({
                         commId: cId, gameKey: gameIndex[String(cId).toUpperCase()]?.key || toGameKey(gName),
                         title: gName, updatedAt: nowEt(), trophies: sub.progressMap
                     }));
+                    trophyHashes[cId] = h;
+                    playerDirty = true;
                 }
+            }
+            // RTDB only shows trophies earned in TROPHY_MIN_YEAR or later
+            if (sub.ok || mapKeys.length) {
+                const recent = filterRecentEarned(sub.progressMap);
+                if (Object.keys(recent).length) liveProgress[cId] = recent; else delete liveProgress[cId];
             }
             if (sub.ok || mapKeys.length) {
                 trophyTitleSync[cId] = gMeta.lastUpdatedDateTime || null;
@@ -1703,6 +1760,7 @@ async function getFullUserData(ctx) {
         newlyEarned.forEach((t) => recentMap.set(`${t.commId || ""}_${t.trophyId}`, t));
         const recentTrophies = Array.from(recentMap.values())
             .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
+            .filter((t) => (t.timestamp || 0) >= TROPHY_CUTOFF_MS)
             .slice(0, PULL_CONFIG.MOST_RECENT_TROPHIES_KEPT);
 
         /* ---- Firestore: slow-changing player data ---- */
@@ -1710,7 +1768,7 @@ async function getFullUserData(ctx) {
             const f = friendsDirectoryCache[String(id)];
             return f ? { accountId: f.accountId, onlineId: f.onlineId || null, avatar: f.avatar || null, isPlus: !!f.isPlus } : { accountId: String(id) };
         });
-        const playerDoc = { onlineId, accountId, updatedAt: nowEt(), trophyTitleSync };
+        const playerDoc = { onlineId, accountId, updatedAt: nowEt(), trophyTitleSync, progressHash: trophyHashes };
         if (doHeavy) {
             Object.assign(playerDoc, {
                 friendsList, friendsProfiles, friendsCount: friendsList.length,
@@ -1799,7 +1857,7 @@ async function getFullUserData(ctx) {
             playSessions,
             recentGames: recentSlim.length ? recentSlim : (existing?.recentGames || []),
             mostRecentTrophies: recentTrophies,
-            liveTrophyProgress: Object.keys(activeProgress).length ? { [rootCommId]: activeProgress } : (existing?.liveTrophyProgress || null),
+            liveTrophyProgress: Object.keys(liveProgress).length ? liveProgress : null,
             lastUpdated: nowEt()
         };
         return { card };
