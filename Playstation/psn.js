@@ -223,13 +223,12 @@ function rtdbCanon(v) {
     return out;
 }
 
-// Only trophies actually earned on/after the cutoff year are exposed in RTDB.
-function filterRecentEarned(map) {
-    const out = {};
-    for (const [k, t] of Object.entries(asObjectMap(map))) {
-        if (t && t.earned && (t.timestamp || 0) >= TROPHY_CUTOFF_MS) out[k] = t;
-    }
-    return out;
+// A game is shown in RTDB (with ALL its trophies, old ones included) only if it was active in/after the cutoff year:
+// a trophy earned this year, trophy data updated this year, or it is the game being played right now.
+function gameActiveSinceCutoff(map, lastUpdated, isActiveNow) {
+    if (isActiveNow) return true;
+    if (lastUpdated && new Date(lastUpdated).getTime() >= TROPHY_CUTOFF_MS) return true;
+    return Object.values(asObjectMap(map)).some((t) => t && (t.timestamp || 0) >= TROPHY_CUTOFF_MS);
 }
 
 function filterCard(record) {
@@ -1686,8 +1685,8 @@ async function getFullUserData(ctx) {
         const trophyHashes = { ...(player.progressHash || {}) };
         const liveProgress = {};
         for (const [k, v] of Object.entries(asObjectMap(existing?.liveTrophyProgress))) {
-            const f = filterRecentEarned(v);
-            if (Object.keys(f).length) liveProgress[k] = f;
+            const m = asObjectMap(v);
+            if (gameActiveSinceCutoff(m, null, false)) liveProgress[k] = m;
         }
         let activeProgress = {};
         let activeHunt = existing?.activeHunt || null;
@@ -1719,10 +1718,10 @@ async function getFullUserData(ctx) {
                     playerDirty = true;
                 }
             }
-            // RTDB only shows trophies earned in TROPHY_MIN_YEAR or later
+            // RTDB only shows games that were active this year (all of that game's trophies are kept)
             if (sub.ok || mapKeys.length) {
-                const recent = filterRecentEarned(sub.progressMap);
-                if (Object.keys(recent).length) liveProgress[cId] = recent; else delete liveProgress[cId];
+                if (gameActiveSinceCutoff(sub.progressMap, gMeta.lastUpdatedDateTime, isActiveId)) liveProgress[cId] = sub.progressMap;
+                else delete liveProgress[cId];
             }
             if (sub.ok || mapKeys.length) {
                 trophyTitleSync[cId] = gMeta.lastUpdatedDateTime || null;
