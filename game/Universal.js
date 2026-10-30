@@ -1,10 +1,12 @@
 // ============================================================================
 // * Project: Universal Game Companion & Live Telemetry Field Ledger
-// * File: game-companion.js
-// * Deployment Timestamp: 2026-10-29 20:30:00 EDT (America/New_York)
+// * File: game/Universal.js
+// * Build Version: v10.6.0-DYNAMIC-NAVBAR-POSTER-SYNC
+// * Deployment Timestamp: 2026-10-29 20:45:00 EDT (America/New_York)
 // ============================================================================
 
 // Section 1: Unified Firebase Configuration (entertainment-71888)
+// Lines 10-34: Production credentials and authoritative service bindings
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -28,6 +30,7 @@ try {
 }
 
 // Section 2: Dynamic Game Resolver (URL Parameter or Root DOM Attribute)
+// Lines 37-55: Resolves active game ID from ?game= / ?id= or data-game attribute
 function resolveActiveGameKey() {
     const urlParams = new URLSearchParams(window.location.search);
     const paramKey = urlParams.get('game') || urlParams.get('id');
@@ -38,13 +41,14 @@ function resolveActiveGameKey() {
         return rootElem.getAttribute('data-game').trim().toLowerCase();
     }
 
-    return "farcry5"; // Default fallback
+    return "farcry5";
 }
 
 let CURRENT_GAME_KEY = resolveActiveGameKey();
 let ACTIVE_COMM_ID = null;
 
 // Section 3: Global State Engine
+// Lines 58-335: Additive item hydration and strict multi-platform ledger isolation
 window.appState = {
     activeUser: 'Guest',
     activeEmail: null,
@@ -74,6 +78,32 @@ window.appState = {
         return this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
     },
 
+    switchGame: async function(targetGameKey) {
+        if (!targetGameKey || targetGameKey === this.gameId) return;
+        CURRENT_GAME_KEY = targetGameKey.toLowerCase();
+        this.gameId = CURRENT_GAME_KEY;
+
+        const newUrl = `${window.location.pathname}?game=${CURRENT_GAME_KEY}`;
+        window.history.replaceState({ path: newUrl }, '', newUrl);
+
+        this.collectibles = {};
+        this.stashes = {};
+        this.roster = {};
+        this.missions = {};
+        this.trophies = {};
+        this.ranks = {};
+
+        document.querySelectorAll('.game-pill').forEach(pill => {
+            if (pill.getAttribute('data-game-key') === CURRENT_GAME_KEY) {
+                pill.classList.add('active');
+            } else {
+                pill.classList.remove('active');
+            }
+        });
+
+        await loadAndHydrateGame(CURRENT_GAME_KEY);
+    },
+
     switchPlatform: async function(newPlatform, persistPin = true) {
         if (!newPlatform) return;
         const normalized = newPlatform.toLowerCase();
@@ -85,7 +115,7 @@ window.appState = {
             platformSelector.value = this.platform;
         }
 
-        const nameEl = document.getElementById('resistance-name') || document.getElementById('user-header-status');
+        const nameEl = document.getElementById('resistance-name');
         if (nameEl) {
             const displayName = this.currentUser ? this.activeUser.toUpperCase() : 'GUEST';
             nameEl.innerText = `${displayName} [${this.platform.toUpperCase()}]`;
@@ -110,14 +140,12 @@ window.appState = {
         }
     },
 
-    // Dynamic hydration for any game loaded from /games/{gameId}
     hydrateFromRawJson: function(data) {
         if (!data || typeof data !== 'object') return;
         this.gameData = data;
         this.gameTitle = data.game || data.title || "Game Companion";
         this.gameId = data.gameId || CURRENT_GAME_KEY;
 
-        // Auto-detect Sony Comm ID from top-level or platforms object
         ACTIVE_COMM_ID = data.commId || 
                          data.psn_communication_id || 
                          data.platforms?.playstation?.commId || 
@@ -125,8 +153,15 @@ window.appState = {
 
         const titleHeader = document.getElementById('companionGameTitle');
         if (titleHeader) titleHeader.innerText = this.gameTitle;
+        const pageTitle = document.getElementById('pageHeaderTitle');
+        if (pageTitle) pageTitle.innerText = `${this.gameTitle} — Universal Companion`;
 
-        // 1. Collectibles
+        // Update poster art on header logo and browser favicons
+        if (ACTIVE_COMM_ID) {
+            applyGamePosterArt(ACTIVE_COMM_ID);
+        }
+
+        // 1. Dynamic Collectibles Sets
         if (data.collectibles && typeof data.collectibles === 'object') {
             for (const cKey in data.collectibles) {
                 const group = data.collectibles[cKey];
@@ -198,7 +233,7 @@ window.appState = {
             });
         }
 
-        // 3. Roster / Amigos
+        // 3. Roster / Amigos / Guns & Fangs for Hire
         const rosterSource = data.guns_and_fangs_for_hire || data.amigos;
         const rawRoster = rosterSource ? (Array.isArray(rosterSource) ? rosterSource : Object.values(rosterSource)) : [];
         rawRoster.forEach(h => {
@@ -217,7 +252,7 @@ window.appState = {
             }
         });
 
-        // 4. Quests / Walkthrough Missions
+        // 4. Quests / Operations / Walkthrough Missions
         const rawMissions = data.walkthrough_missions ? (Array.isArray(data.walkthrough_missions) ? data.walkthrough_missions : Object.values(data.walkthrough_missions)) : [];
         rawMissions.forEach(m => {
             if (!m || !m.id) return;
@@ -399,11 +434,11 @@ window.appState = {
 };
 
 // Section 4: Authoritative Storage Gate (LocalStorage vs Firestore)
+// Lines 338-400: Unauthenticated saves strictly to LocalStorage; Authenticated saves to Firestore
 window.appState.saveProgress = function() {
     const payload = this.buildPayload();
     const userKey = this.getUserKey();
 
-    // RULE: If unauthenticated, save strictly to localStorage
     if (!this.currentUser || !userKey) {
         const guestKey = `guest_progress_${this.gameId}_${this.platform}`;
         try {
@@ -413,7 +448,6 @@ window.appState.saveProgress = function() {
         return;
     }
 
-    // RULE: If logged in, save to Firestore user profile
     if (firestore) {
         const docRef = firestore
             .collection("users")
@@ -476,6 +510,7 @@ window.appState.loadProgress = function() {
 };
 
 // Section 5: UI Toggle Handlers
+// Lines 403-465: Interactive card toggles
 window.appState.applyStateToUI = function() {
     this.recalculateMetrics();
 
@@ -541,7 +576,168 @@ window.appState.updateStatus = function(msg) {
     }
 };
 
-// Section 6: Universal PSN Live Telemetry Engine
+// Section 6: Dynamic PSN PosterArt Binding
+// Lines 468-500: Queries RTDB /psn/games/{commId}/posterArt and binds to browser icons & header logo
+async function applyGamePosterArt(commId) {
+    if (!rtdb || !commId) return;
+
+    try {
+        const snap = await rtdb.ref(`/psn/games/${commId}/posterArt`).once('value');
+        const rawPoster = snap.val();
+
+        if (rawPoster && typeof rawPoster === 'string') {
+            const posterUrl = toSecureUrl(rawPoster);
+
+            const fav1 = document.getElementById('dynamicFavicon');
+            const fav2 = document.getElementById('dynamicAppleIcon');
+            const navLogo = document.getElementById('navHeaderLogo');
+
+            if (fav1) fav1.href = posterUrl;
+            if (fav2) fav2.href = posterUrl;
+            if (navLogo) {
+                navLogo.src = posterUrl;
+                navLogo.style.display = 'inline-block';
+            }
+        }
+    } catch (e) {
+        console.warn(`[Poster Art Fetch Error for ${commId}]:`, e);
+    }
+}
+
+// Section 7: Programmatic Navbar & Dynamic Menu Sorting Engine (/utm_links)
+// Lines 503-625: Hierarchical sorting by rowNumber, image thumbnails, and updatedAt smart cache buster
+async function buildUtmNavigation() {
+    const navContainer = document.getElementById('dynamicNavLinks');
+    if (!rtdb) return;
+
+    try {
+        const snap = await rtdb.ref('/utm_links').once('value');
+        const data = snap.val();
+        if (!data) return;
+
+        // Dynamic branding fallback from Settings if no game poster is active
+        const settingsLogo = data?.Settings?.[0]?.image || data?.Settings?.image;
+        if (settingsLogo && !ACTIVE_COMM_ID) {
+            const logoUrl = toSecureUrl(settingsLogo);
+            const fav1 = document.getElementById('dynamicFavicon');
+            const fav2 = document.getElementById('dynamicAppleIcon');
+            const navLogo = document.getElementById('navHeaderLogo');
+            if (fav1) fav1.href = logoUrl;
+            if (fav2) fav2.href = logoUrl;
+            if (navLogo) navLogo.src = logoUrl;
+        }
+
+        if (!navContainer) return;
+
+        const linksList = [];
+        let latestTimestamp = 0;
+
+        function walk(node) {
+            if (!node || typeof node !== 'object') return;
+            
+            const url = node.url || node.link || node.href;
+            if (url && typeof url === 'string') {
+                if (node.updatedAt) {
+                    const parsedTs = new Date(node.updatedAt).getTime();
+                    if (!isNaN(parsedTs) && parsedTs > latestTimestamp) {
+                        latestTimestamp = parsedTs;
+                    }
+                }
+
+                linksList.push({
+                    title: node.title || node.name || 'Link',
+                    url: toSecureUrl(url),
+                    image: toSecureUrl(node.image || node.thumb || null),
+                    group: node.group ? String(node.group).trim() : 'Standalone',
+                    rowNumber: Number(node.rowNumber || 999),
+                    tag: node.tag || ''
+                });
+                return;
+            }
+            Object.values(node).forEach(child => walk(child));
+        }
+        walk(data);
+
+        // Smart cache-buster stamp derived from updatedAt
+        const cacheBusterParam = latestTimestamp > 0 ? `?v=${latestTimestamp}` : '';
+
+        const standalone = [];
+        const groups = {};
+
+        linksList.forEach(item => {
+            const grp = item.group;
+            if (grp.toLowerCase() === 'standalone' || grp === '') {
+                standalone.push(item);
+            } else {
+                if (!groups[grp]) groups[grp] = [];
+                groups[grp].push(item);
+            }
+        });
+
+        // 1. Dropdown Sub-Sorting: Inside each group folder, links stack vertically ordered ascending by rowNumber
+        const groupCards = Object.entries(groups).map(([gName, items]) => {
+            items.sort((a, b) => a.rowNumber - b.rowNumber);
+            return {
+                title: gName,
+                isGroup: true,
+                items: items,
+                sortWeight: Math.min(...items.map(i => i.rowNumber))
+            };
+        });
+
+        // 2. Top-Level Sorting: Standalone links and group folders sorted ascending by lowest rowNumber
+        const standaloneCards = standalone.map(item => ({
+            ...item,
+            isGroup: false,
+            sortWeight: item.rowNumber
+        }));
+
+        const unifiedMenu = [...groupCards, ...standaloneCards].sort((a, b) => a.sortWeight - b.sortWeight);
+
+        let navHtml = '';
+        unifiedMenu.forEach(entry => {
+            if (entry.isGroup) {
+                navHtml += `
+                    <div class="nav-folder">
+                        <button type="button" class="nav-btn" onclick="this.parentElement.classList.toggle('active')">
+                            <i class="fas fa-folder text-yellow-400"></i>
+                            <span>${escapeHtml(entry.title)}</span>
+                            <span style="font-size:9px;">▾</span>
+                        </button>
+                        <div class="folder-menu">
+                            ${entry.items.map(sub => {
+                                const targetUrl = sub.url.includes('?') ? `${sub.url}&cb=${latestTimestamp}` : `${sub.url}${cacheBusterParam}`;
+                                const isExternal = sub.url.startsWith('http') && !sub.url.includes(window.location.hostname);
+                                return `
+                                    <a href="${targetUrl}" class="nav-btn" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''} style="width:100%; justify-content:flex-start;">
+                                        ${sub.image ? `<img src="${sub.image}" class="nav-icon" onerror="this.style.display='none'">` : ''}
+                                        <span class="truncate">${escapeHtml(sub.title)}</span>
+                                    </a>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                const targetUrl = entry.url.includes('?') ? `${entry.url}&cb=${latestTimestamp}` : `${entry.url}${cacheBusterParam}`;
+                const isExternal = entry.url.startsWith('http') && !entry.url.includes(window.location.hostname);
+                navHtml += `
+                    <a href="${targetUrl}" class="nav-btn" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''}>
+                        ${entry.image ? `<img src="${entry.image}" class="nav-icon" onerror="this.style.display='none'">` : ''}
+                        <span>${escapeHtml(entry.title)}</span>
+                    </a>
+                `;
+            }
+        });
+
+        navContainer.innerHTML = navHtml;
+    } catch (e) {
+        console.warn("[UTM Navigation Fetch Error]:", e);
+    }
+}
+
+// Section 8: Universal PSN Live Telemetry Engine
+// Lines 628-705: commId telemetry from /psn/gamertags/{tag}/liveTrophyProgress/{commId}
 async function autoCheckUserPsnTrophies() {
     if (!rtdb || !appState.psnGamertag || appState.platform !== 'ps' || !ACTIVE_COMM_ID) return;
     const commId = ACTIVE_COMM_ID;
@@ -599,7 +795,8 @@ async function autoCheckUserPsnTrophies() {
     }
 }
 
-// Section 7: Universal Dynamic Renderer
+// Section 9: Universal Dynamic Renderer
+// Lines 708-875: Dynamic section rendering
 function renderUniversalCompanion(data) {
     const container = document.getElementById('section-container');
     if (!container || !data) return;
@@ -746,6 +943,8 @@ function renderUniversalCompanion(data) {
     appState.applyStateToUI();
 }
 
+// Section 10: Sanitization & URL Normalization
+// Lines 878-900: Relative protocol and PSN asset sanitization
 function toSecureUrl(url) {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
@@ -767,10 +966,74 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
-// Section 8: Universal Initialization
+// Section 11: Dynamic Game Pill Generator (/games in RTDB)
+// Lines 903-935: Renders pill buttons for all available game keys
+async function buildGamePillsBar() {
+    const container = document.getElementById('gamePillsContainer');
+    if (!container || !rtdb) return;
+
+    try {
+        const snap = await rtdb.ref('/games').once('value');
+        const gamesCatalog = snap.val();
+        if (!gamesCatalog) return;
+
+        let pillsHtml = '';
+        Object.keys(gamesCatalog).forEach(gKey => {
+            const gData = gamesCatalog[gKey];
+            const gTitle = gData?.game || gData?.title || gKey.toUpperCase();
+            const isActive = (gKey.toLowerCase() === CURRENT_GAME_KEY);
+
+            pillsHtml += `
+                <button type="button" 
+                        class="game-pill ${isActive ? 'active' : ''}" 
+                        data-game-key="${escapeHtml(gKey)}"
+                        onclick="appState.switchGame('${escapeHtml(gKey)}')">
+                    <i class="fas fa-gamepad game-pill-icon"></i>
+                    <span>${escapeHtml(gTitle)}</span>
+                </button>
+            `;
+        });
+
+        container.innerHTML = pillsHtml;
+    } catch (err) {
+        console.warn("[Game Pills Build Error]:", err);
+    }
+}
+
+// Helper to pull and hydrate game data
+async function loadAndHydrateGame(gameKey) {
+    appState.updateStatus(`Loading game data from RTDB: /games/${gameKey}...`);
+    if (rtdb) {
+        try {
+            const snap = await rtdb.ref(`/games/${gameKey}`).once('value');
+            const data = snap.val();
+            if (data) {
+                appState.hydrateFromRawJson(data);
+                appState.updateStatus(`[Connected] Authoritative ledger active for /games/${gameKey}`);
+                renderUniversalCompanion(data);
+                appState.loadProgress();
+
+                if (appState.platform === 'ps' && appState.psnGamertag) {
+                    await autoCheckUserPsnTrophies();
+                }
+                return true;
+            }
+        } catch (err) {
+            console.warn("[RTDB Load Error]:", err);
+        }
+    }
+    appState.updateStatus(`[Error] Game '/games/${gameKey}' not found in RTDB.`);
+    return false;
+}
+
+// Section 12: Universal Engine Bootstrapper
+// Lines 940-1015: Lifecycle gate, auth observers, and initial DOM hydration
 async function initUniversalEngine() {
-    const gameKey = CURRENT_GAME_KEY;
-    appState.updateStatus(`Querying RTDB: /games/${gameKey}...`);
+    // 1. Build authoritative navigation menu from /utm_links with smart cache busting
+    await buildUtmNavigation();
+
+    // 2. Generate Game Selection Pills from RTDB /games
+    await buildGamePillsBar();
 
     const platformSelector = document.getElementById('platformSelector');
     if (platformSelector) {
@@ -779,12 +1042,50 @@ async function initUniversalEngine() {
         });
     }
 
+    const menuBtn = document.getElementById('mobileMenuBtn');
+    const navLinks = document.getElementById('dynamicNavLinks');
+    if (menuBtn && navLinks) {
+        menuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('is-open');
+        });
+    }
+
+    const authBtn = document.getElementById('authModalBtn');
+    const authModal = document.getElementById('authModal');
+    const authClose = document.getElementById('authModalClose');
+    const googleBtn = document.getElementById('googleSignInBtn');
+
+    if (authBtn && authModal) authBtn.addEventListener('click', () => authModal.classList.remove('hidden'));
+    if (authClose && authModal) authClose.addEventListener('click', () => authModal.classList.add('hidden'));
+
+    if (googleBtn && auth) {
+        googleBtn.addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(err => {
+                console.error("[Auth Popup Error]:", err);
+                alert(`Sign-in error: ${err.message}`);
+            });
+        });
+    }
+
     if (auth) {
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 appState.currentUser = user;
                 appState.activeEmail = user.email;
-                appState.activeUser = user.displayName || 'Guerilla Member';
+                appState.activeUser = user.displayName || 'Member';
+
+                const nameEl = document.getElementById('resistance-name');
+                if (nameEl) nameEl.innerText = `${appState.activeUser.toUpperCase()} [${appState.platform.toUpperCase()}]`;
+
+                if (authBtn) authBtn.classList.add('hidden');
+                const badge = document.getElementById('userProfileBadge');
+                const avatar = document.getElementById('headerUserAvatar');
+                const nameBadge = document.getElementById('userDisplayName');
+                if (badge) badge.classList.remove('hidden');
+                if (avatar && user.photoURL) avatar.src = user.photoURL;
+                if (nameBadge) nameBadge.innerText = appState.activeUser;
+                if (authModal) authModal.classList.add('hidden');
 
                 const emailKey = user.email.replace(/@/g, '_at_').replace(/\./g, '_');
                 try {
@@ -792,6 +1093,10 @@ async function initUniversalEngine() {
                     const uData = snap.val() || {};
                     appState.myFriendCode = uData.friend_code || null;
                     appState.psnGamertag = uData.psn_username || null;
+                    
+                    const codeDisplay = document.getElementById('myFriendCodeDisplay');
+                    if (codeDisplay && appState.myFriendCode) codeDisplay.innerText = appState.myFriendCode;
+
                     if (uData.pinned_platform) {
                         await appState.switchPlatform(uData.pinned_platform.toLowerCase(), false);
                     }
@@ -806,31 +1111,24 @@ async function initUniversalEngine() {
             } else {
                 appState.currentUser = null;
                 appState.psnGamertag = null;
+
+                const nameEl = document.getElementById('resistance-name');
+                if (nameEl) nameEl.innerText = `GUEST [${appState.platform.toUpperCase()}]`;
+
+                if (authBtn) authBtn.classList.remove('hidden');
+                const badge = document.getElementById('userProfileBadge');
+                if (badge) badge.classList.add('hidden');
+
                 if (appState.gameData) appState.loadProgress();
             }
         });
     }
 
-    // PRIMARY READ: Pull dynamic game from RTDB /games/{gameKey}
-    if (rtdb) {
-        try {
-            const snap = await rtdb.ref(`/games/${gameKey}`).once('value');
-            const data = snap.val();
-            if (data) {
-                appState.hydrateFromRawJson(data);
-                appState.updateStatus(`[Connected] Loaded authoritative game data for /games/${gameKey}`);
-                renderUniversalCompanion(data);
-                appState.loadProgress();
-                return;
-            }
-        } catch (err) {
-            console.warn("[RTDB Load Error]:", err);
-        }
-    }
-
-    appState.updateStatus(`[Error] Game '/games/${gameKey}' not found in RTDB.`);
+    // 3. Load active game based on resolved game key
+    await loadAndHydrateGame(CURRENT_GAME_KEY);
 }
 
+// Universal Self-Starting Execution Gate
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initUniversalEngine);
 } else {
