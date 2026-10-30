@@ -1,8 +1,8 @@
 // ============================================================================
 // * Project: Universal Game Companion & Live Telemetry Field Ledger
 // * File: game/Universal.js
-// * Build Version: v10.7.0-FIRESTORE-PROGRESS-ALIGNMENT-THEMES
-// * Deployment Timestamp: 2026-10-29 21:05:00 EDT (America/New_York)
+// * Build Version: v10.8.0-FIRESTORE-PATH-USER-COLLECTION-ALIGNMENT
+// * Deployment Timestamp: 2026-10-29 21:08:00 EDT (America/New_York)
 // ============================================================================
 
 // Section 1: Unified Firebase Configuration (entertainment-71888)
@@ -442,8 +442,8 @@ window.appState = {
     }
 };
 
-// Section 4: Authoritative Storage Gate (Aligned to Firestore /progress/ Path)
-// Lines 363-445: users/{friendCode}/platform/{platform}/progress/{canonicalGame}
+// Section 4: Authoritative Storage Gate (Aligned to /user/{friend_code}/platform/{platform}/game/{gamename})
+// Lines 363-445: user/{friend_code}/platform/{platform}/game/{gamename}
 window.appState.saveProgress = function() {
     const payload = this.buildPayload();
     const userKey = this.getUserKey();
@@ -460,15 +460,15 @@ window.appState.saveProgress = function() {
 
     if (firestore) {
         const docRef = firestore
-            .collection("users")
+            .collection("user")
             .doc(userKey)
             .collection("platform")
             .doc(this.platform)
-            .collection("progress")
+            .collection("game")
             .doc(gameName);
 
         docRef.set(payload, { merge: true }).then(() => {
-            this.updateStatus(`[Cloud Saved] users/${userKey}/platform/${this.platform}/progress/${gameName}`);
+            this.updateStatus(`[Cloud Saved] user/${userKey}/platform/${this.platform}/game/${gameName}`);
         }).catch(err => {
             console.error("[Firestore Save Error]:", err);
             this.updateStatus(`Firestore Sync Error: ${err.message}`);
@@ -500,17 +500,17 @@ window.appState.loadProgress = function() {
 
     if (firestore) {
         const docRef = firestore
-            .collection("users")
+            .collection("user")
             .doc(userKey)
             .collection("platform")
             .doc(this.platform)
-            .collection("progress")
+            .collection("game")
             .doc(gameName);
 
         docRef.get().then(doc => {
             if (doc.exists) {
                 this.applyPayload(doc.data());
-                this.updateStatus(`[Cloud Synced] users/${userKey}/platform/${this.platform}/progress/${gameName}`);
+                this.updateStatus(`[Cloud Synced] user/${userKey}/platform/${this.platform}/game/${gameName}`);
             } else {
                 this.applyStateToUI();
                 this.saveProgress();
@@ -612,7 +612,7 @@ window.appState.updateStatus = function(msg) {
 };
 
 // Section 7: Squad Co-Op Bridge (Friends-Only Isolated Queries)
-// Lines 543-625: Reads /users/{emailKey}/friends and loads their /progress/{gameName}
+// Lines 543-625: Reads /users/{emailKey}/friends and loads their /user/{friendTargetCode}/platform/{friendPlatform}/game/{gameName}
 window.appState.syncFriendsProgress = async function() {
     const rosterContainer = document.getElementById('friendsRosterContainer');
     if (!rosterContainer) return;
@@ -645,11 +645,11 @@ window.appState.syncFriendsProgress = async function() {
             if (firestore) {
                 try {
                     const fDoc = await firestore
-                        .collection("users")
+                        .collection("user")
                         .doc(friendTargetCode)
                         .collection("platform")
                         .doc(friendPlatform)
-                        .collection("progress")
+                        .collection("game")
                         .doc(gameName)
                         .get();
 
