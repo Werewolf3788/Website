@@ -67,7 +67,7 @@ const RTDB_CARD_KEYS = new Set([
     "accountId", "onlineId", "avatar", "allAvatars", "bio", "plus", "region", "language",
     "level", "trophySummary", "gamesPlayed", "psnAccountAge", "earliestTrophyDate", "latestTrophyDate",
     "online", "currentGame", "currentGameId", "gameKey", "gameStatus", "gameStatusUpdated",
-    "commId", "conceptId", "art", "posterArt", "image", "currentGameArt",
+    "commId", "conceptId", "lastPlayedGame", "lastPlayedGameKey", "lastPlayedCommId", "art", "posterArt", "image", "currentGameArt",
     "currentGameHours", "currentGameNumericHours", "playedHoursApp", "playedHoursWhole",
     "playtimeSource", "sonyPlayDuration", "sessionStartedAt", "sessionStartedAtMs",
     "currentSessionSeconds", "amazonAffiliateUrl", "platform", "gameBuildVersion",
@@ -79,6 +79,7 @@ const RTDB_CARD_KEYS = new Set([
 const PULL_CONFIG = {
     SKELETON_REFRESH_RECENT_TITLES: 20,
     PROGRESS_REFRESH_RECENT_TITLES: 0,
+    LIVE_PROGRESS_BACKFILL_PER_RUN: 12,   // games active this year get filled into liveTrophyProgress a few per run
     HEAVY_REFRESH_MS: 6 * 3600 * 1000,
     SKELETON_STALE_MS: 24 * 3600 * 1000,
     RATE_PERSIST_MS: 6 * 3600 * 1000,
@@ -1402,7 +1403,10 @@ async function getFullUserData(ctx) {
             const art = existing.art || existing.posterArt || existing.currentGameArt || null;
             return {
                 card: {
-                    ...existing, online: false, currentGame: "Dashboard", currentGameId: null, gameStatus: "",
+                    ...existing, online: false, currentGame: "Dashboard", currentGameId: null, gameKey: null, commId: null, conceptId: null,
+                    lastPlayedGame: existing.currentGame && existing.currentGame !== "Dashboard" ? existing.currentGame : (existing.lastPlayedGame || null),
+                    lastPlayedGameKey: existing.gameKey || existing.lastPlayedGameKey || null,
+                    lastPlayedCommId: existing.commId || existing.lastPlayedCommId || null, gameStatus: "",
                     sessionStartedAt: "", sessionStartedAtMs: 0, currentSessionSeconds: 0,
                     art, posterArt: art, image: art, currentGameArt: art,
                     playSessions, lastUpdated: nowEt()
@@ -1600,9 +1604,10 @@ async function getFullUserData(ctx) {
                 if (gn === clean && g.npCommunicationId && String(g.npCommunicationId).startsWith("NPWR")) { canonicalActive = g.npCommunicationId; break; }
             }
         }
-        const rootCommId = canonicalActive ||
-            allGames[0]?.npCommunicationId || existing?.commId || existing?.activeHunt?.commId || "NPWR_ACTIVE";
         const isDashboard = !title || title.toUpperCase() === "DASHBOARD";
+        // Playing something with no trophy list yet (or non-trophy app): never borrow another game's IDs.
+        const rootCommId = canonicalActive ||
+            (isDashboard ? (allGames[0]?.npCommunicationId || existing?.commId || existing?.activeHunt?.commId || "NPWR_ACTIVE") : "NPWR_ACTIVE");
 
         const { playSessions, currentGameDurationFormatted, activeSessionSeconds } =
             updateGameSessionTracking(existing, rootCommId, title, isOnline, activeTitleId);
@@ -1630,21 +1635,22 @@ async function getFullUserData(ctx) {
         }
 
         const rootUp = String(rootCommId).toUpperCase();
-        const matched = merged.get(rootCommId) || (title !== "Dashboard" ? allGames[0] : null) || {};
+        const matched = merged.get(rootCommId) || (isDashboard ? allGames[0] : null) || {};
         const activeGameDoc = await getGame(rootUp);
         const hw = parseDetailedHardwareContext(rawP, matched);
         const gameKey = gameIndex[rootUp]?.key || (isDashboard ? null : toGameKey(matched.name || title));
 
-        const poster = resolveGamePosterArt([
-            isDashboard ? null : merged.get(rootCommId)?.art,
-            isDashboard ? null : (activeTitleId && merged.get(activeTitleId)?.art),
-            isDashboard ? null : matched.art,
-            isDashboard ? null : matched.trophyTitleIconUrl,
-            isDashboard ? null : existing?.currentGameArt,
-            matched.art, matched.posterArt, matched.trophyTitleIconUrl,
+        const sameGameBefore = !isDashboard && existing && existing.commId === rootCommId && existing.currentGame === title;
+        const poster = resolveGamePosterArt(isDashboard ? [
             allGames[0]?.art, allGames[0]?.posterArt, allGames[0]?.trophyTitleIconUrl,
+            existing?.art, existing?.posterArt, existing?.currentGameArt
+        ] : [
+            merged.get(rootCommId)?.art,
+            activeTitleId && merged.get(activeTitleId)?.art,
             activeGameDoc?.posterArt,
-            existing?.art, existing?.posterArt, existing?.currentGameArt, existing?.activeHunt?.art
+            matched.trophyTitleIconUrl,
+            gi.conceptIconUrl, gi.npTitleIconUrl, gi.titleIconUrl,
+            sameGameBefore ? existing.currentGameArt : null
         ]);
 
         const lifetimeFmt = matched.nativePlaytimeFormatted || existing?.currentGameHours || existing?.activeHunt?.hoursFormatted || "0 hrs";
@@ -1665,7 +1671,14 @@ async function getFullUserData(ctx) {
         const stats = await callPsn("getUserTrophyProfileSummary", () => getUserTrophyProfileSummary(auth, apiTarget), {});
 
         /* Trophy progress: active title + titles whose trophy data changed */
+        const trophyHashes = { ...(player.progressHash || {}) };
+        const liveProgress = {};
+        for (const [k, v] of Object.entries(asObjectMap(existing?.liveTrophyProgress))) {
+            const m = asObjectMap(v);
+            if (gameActiveSinceCutoff(m, merged.get(k)?.lastUpdatedDateTime, false)) liveProgress[k] = m;
+        }
         const ingestIds = [rootCommId];
+        let liveBudget = PULL_CONFIG.LIVE_PROGRESS_BACKFILL_PER_RUN;
         let progBudget = PULL_CONFIG.BACKFILL_NEW_TITLES_PER_RUN;
         let pIdx = 0;
         for (const g of allGames) {
@@ -1674,7 +1687,11 @@ async function getFullUserData(ctx) {
             const isRecent = pIdx++ < PULL_CONFIG.PROGRESS_REFRESH_RECENT_TITLES;
             const hasStored = Object.prototype.hasOwnProperty.call(trophyTitleSync, id);
             const changed = !hasStored || (trophyTitleSync[id] || null) !== (g.lastUpdatedDateTime || null);
-            if (!isRecent && !changed) continue;
+            const needsLive = !liveProgress[id] && g.lastUpdatedDateTime && new Date(g.lastUpdatedDateTime).getTime() >= TROPHY_CUTOFF_MS;
+            if (!isRecent && !changed) {
+                if (needsLive && liveBudget > 0) { liveBudget--; ingestIds.push(id); }
+                continue;
+            }
             if (!isRecent && !hasStored) {
                 if (progBudget <= 0) continue;
                 progBudget--;
@@ -1682,12 +1699,6 @@ async function getFullUserData(ctx) {
             ingestIds.push(id);
         }
 
-        const trophyHashes = { ...(player.progressHash || {}) };
-        const liveProgress = {};
-        for (const [k, v] of Object.entries(asObjectMap(existing?.liveTrophyProgress))) {
-            const m = asObjectMap(v);
-            if (gameActiveSinceCutoff(m, null, false)) liveProgress[k] = m;
-        }
         let activeProgress = {};
         let activeHunt = existing?.activeHunt || null;
         const newlyEarned = [];
@@ -1836,11 +1847,14 @@ async function getFullUserData(ctx) {
             online: isOnline,
             currentGame: title,
             currentGameId: isDashboard ? null : activeTitleId,
-            gameKey,
+            gameKey: isDashboard ? null : gameKey,
+            lastPlayedGame: allGames[0]?.name || existing?.lastPlayedGame || null,
+            lastPlayedGameKey: allGames[0] ? toGameKey(allGames[0].name) : (existing?.lastPlayedGameKey || null),
+            lastPlayedCommId: allGames[0]?.npCommunicationId || existing?.lastPlayedCommId || null,
             gameStatus: liveStatus || "",
             gameStatusUpdated: nowEt(),
-            commId: rootCommId,
-            conceptId: activeGameDoc?.conceptId || matched.conceptId || null,
+            commId: isDashboard ? null : rootCommId,
+            conceptId: isDashboard ? null : (activeGameDoc?.conceptId || matched.conceptId || null),
             art: poster, posterArt: poster, image: poster, currentGameArt: poster,
             currentGameHours: playtimeFmt, currentGameNumericHours: playtimeNum,
             playedHoursApp: `${hoursWhole}h`, playedHoursWhole: hoursWhole, playtimeSource,
