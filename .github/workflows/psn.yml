@@ -48,13 +48,9 @@ jobs:
 
       - name: Execute PSN Sync Engine
         env:
+          # Ray's Service Account Key -> Sole destination for all writes
           FIREBASE_SERVICE_RAY: ${{ secrets.FIREBASE_SERVICE_RAY }}
+          # Kevin's Database Secret -> Used ONLY to read /users and /user_secrets
           FIREBASE_AUTH_SECRET: ${{ secrets.FIREBASE_AUTH_SECRET }}
         run: |
-          if [ -f "Playstation/psn.js" ]; then
-            node Playstation/psn.js
-          elif [ -f "psn.js" ]; then
-            node psn.js
-          else
-            node index.js
-          fi
+          node Playstation/psn.js
