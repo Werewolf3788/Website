@@ -2,10 +2,16 @@ name: Sync Game JSONs to Firebase RTDB
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'public/games/**'
       - '.github/workflows/sync-games-rtdb.yml'
   workflow_dispatch:
+
+concurrency:
+  group: sync-games-runner
+  cancel-in-progress: true
 
 jobs:
   sync-games:
@@ -43,11 +49,9 @@ jobs:
               filename = os.path.basename(filepath)
               game_key = os.path.splitext(filename)[0]
 
-              # Skip any manifest or internal index files
               if game_key in ["manifest", "catalog"]:
                   continue
 
-              # Step 1: Read and validate JSON syntax
               try:
                   with open(filepath, 'r', encoding='utf-8') as f:
                       raw_data = json.load(f)
@@ -56,7 +60,6 @@ jobs:
                   failed_files.append((filename, f"Syntax Error: {err}"))
                   continue
 
-              # Step 2: Minify payload
               try:
                   clean_payload = json.dumps(raw_data).encode('utf-8')
               except Exception as dump_err:
@@ -64,7 +67,6 @@ jobs:
                   failed_files.append((filename, f"Serialization Error: {dump_err}"))
                   continue
 
-              # Step 3: PUT directly to RTDB REST endpoint
               url = f"https://entertainment-71888-default-rtdb.firebaseio.com/games/{game_key}.json"
               print(f"Pushing {filename} -> /games/{game_key} ...")
 
@@ -80,7 +82,6 @@ jobs:
                       if resp.status == 200:
                           print(f"✅ Successfully synced: /games/{game_key}")
                           success_count += 1
-                          # Extract game title for the dynamic catalog
                           game_title = raw_data.get("game") or raw_data.get("title") or game_key.upper()
                           catalog_index[game_key] = {
                               "key": game_key,
@@ -94,7 +95,6 @@ jobs:
                   print(f"❌ Upload Error on {filename}: {net_err}")
                   failed_files.append((filename, f"Error: {net_err}"))
 
-          # Step 4: Push the dynamic catalog index so Universal.js never hardcodes game lists
           if catalog_index:
               catalog_payload = json.dumps(catalog_index).encode('utf-8')
               catalog_url = "https://entertainment-71888-default-rtdb.firebaseio.com/games_catalog.json"
@@ -118,7 +118,6 @@ jobs:
               for f_name, f_err in failed_files:
                   print(f"  - {f_name}: {f_err}")
 
-          # Do not fail the whole build if at least one game was pushed
           if success_count > 0:
               print("Proceeding: Successful games are live on RTDB.")
               exit(0)
