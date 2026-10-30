@@ -2,8 +2,8 @@
 // * Project: Far Cry 5 Hope County Resistance Companion & Field Ledger
 // * File: fc5.js
 // * Location: /game/farcry/fc5.js
-// * Build Version: v10.1.1-COTW-STRUCTURAL-ALIGNMENT
-// * Deployment Timestamp: 2026-10-28 04:20:00 EDT (America/New_York)
+// * Build Version: v10.2.2-RTDB-PRIMARY-PSN-TELEMETRY-SYNC
+// * Deployment Timestamp: 2026-10-29 20:28:00 EDT (America/New_York)
 // ============================================================================
 
 // Section 1: Unified Firebase Configuration (entertainment-71888)
@@ -34,11 +34,11 @@ const CURRENT_GAME_ID = "FarCry5";
 let ACTIVE_COMM_ID = "NPWR12514_00";
 
 // Section 2: Global State Engine & Dynamic Multi-Platform Store
-// Lines 37-330: Additive item hydration and strict multi-platform ledger isolation
+// Lines 37-335: Additive item hydration and strict multi-platform ledger isolation
 window.appState = {
     activeUser: 'Guest',
     activeEmail: null,
-    platform: 'ps', // 'ps', 'pc', 'xbox', 'steam'
+    platform: 'ps', // 'ps', 'xbox', 'steam', 'pc'
     currentUser: null,
     gameData: null,
     psnSkeleton: null,
@@ -65,9 +65,11 @@ window.appState = {
         return this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
     },
 
-    switchPlatform: function(newPlatform) {
+    switchPlatform: async function(newPlatform, persistPin = true) {
         if (!newPlatform) return;
-        this.platform = newPlatform.toLowerCase();
+        const normalized = newPlatform.toLowerCase();
+        const validPlatforms = ['ps', 'xbox', 'steam', 'pc'];
+        this.platform = validPlatforms.includes(normalized) ? normalized : 'ps';
         
         const platformSelector = document.getElementById('platformSelector');
         if (platformSelector && platformSelector.value !== this.platform) {
@@ -78,6 +80,17 @@ window.appState = {
         if (nameEl) {
             const displayName = this.currentUser ? this.activeUser.toUpperCase() : 'GUEST';
             nameEl.innerText = `${displayName} [${this.platform.toUpperCase()}]`;
+        }
+
+        // Write pinned choice to RTDB if logged in and explicitly instructed
+        if (persistPin && this.currentUser && this.currentUser.email && rtdb) {
+            const emailKey = this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
+            try {
+                await rtdb.ref(`/users/${emailKey}/pinned_platform`).set(this.platform);
+                this.updateStatus(`[Pinned Platform] Set to ${this.platform.toUpperCase()} in RTDB.`);
+            } catch (pinErr) {
+                console.warn("[Pinned Platform Write Error]:", pinErr);
+            }
         }
         
         // Multi-Platform Isolation: Load isolated progress for target platform
@@ -90,20 +103,23 @@ window.appState = {
         }
     },
 
-    // Lines 86-215: Additive Schema Hydration (Supports any custom key added to JSON)
+    // Lines 98-220: Additive Schema Hydration (Handles both RTDB arrays & objects)
     hydrateFromRawJson: function(data) {
         if (!data || typeof data !== 'object') return;
         this.gameData = data;
 
         if (data.psn_communication_id) {
             ACTIVE_COMM_ID = data.psn_communication_id;
+        } else if (data.commId) {
+            ACTIVE_COMM_ID = data.commId;
         }
 
         // 1. Dynamic Collectibles Sets
         if (data.collectibles && typeof data.collectibles === 'object') {
             for (const cKey in data.collectibles) {
                 const group = data.collectibles[cKey];
-                const totalItems = (group && Array.isArray(group.items)) ? group.items.length : 0;
+                const rawItems = group?.items ? (Array.isArray(group.items) ? group.items : Object.values(group.items)) : [];
+                const totalItems = group?.total_count || rawItems.length;
 
                 if (!this.collectibles[cKey]) {
                     this.collectibles[cKey] = {
@@ -127,26 +143,24 @@ window.appState = {
                     if (!this.collectibles[cKey].items) this.collectibles[cKey].items = {};
                 }
 
-                if (group && Array.isArray(group.items)) {
-                    group.items.forEach(cItem => {
-                        if (!cItem || !cItem.id) return;
-                        if (!this.collectibles[cKey].items[cItem.id]) {
-                            this.collectibles[cKey].items[cItem.id] = {
-                                collected: false,
-                                name: cItem.name || '',
-                                region: cItem.region || group.region || 'Hope County',
-                                location: cItem.location || '',
-                                guide: cItem.guide || '',
-                                psnSynced: false
-                            };
-                        } else {
-                            this.collectibles[cKey].items[cItem.id].name = cItem.name || this.collectibles[cKey].items[cItem.id].name;
-                            this.collectibles[cKey].items[cItem.id].region = cItem.region || this.collectibles[cKey].items[cItem.id].region;
-                            this.collectibles[cKey].items[cItem.id].location = cItem.location || this.collectibles[cKey].items[cItem.id].location;
-                            this.collectibles[cKey].items[cItem.id].guide = cItem.guide || this.collectibles[cKey].items[cItem.id].guide;
-                        }
-                    });
-                }
+                rawItems.forEach(cItem => {
+                    if (!cItem || !cItem.id) return;
+                    if (!this.collectibles[cKey].items[cItem.id]) {
+                        this.collectibles[cKey].items[cItem.id] = {
+                            collected: false,
+                            name: cItem.name || '',
+                            region: cItem.region || group.region || 'Hope County',
+                            location: cItem.location || '',
+                            guide: cItem.guide || '',
+                            psnSynced: false
+                        };
+                    } else {
+                        this.collectibles[cKey].items[cItem.id].name = cItem.name || this.collectibles[cKey].items[cItem.id].name;
+                        this.collectibles[cKey].items[cItem.id].region = cItem.region || this.collectibles[cKey].items[cItem.id].region;
+                        this.collectibles[cKey].items[cItem.id].location = cItem.location || this.collectibles[cKey].items[cItem.id].location;
+                        this.collectibles[cKey].items[cItem.id].guide = cItem.guide || this.collectibles[cKey].items[cItem.id].guide;
+                    }
+                });
             }
         }
 
@@ -163,106 +177,107 @@ window.appState = {
                 };
             }
             let magTotal = 0;
-            Object.entries(data.survivalist_magazines).forEach(([regKey, list]) => {
-                if (Array.isArray(list)) {
-                    magTotal += list.length;
-                    list.forEach((m, idx) => {
-                        const mId = m.id || `mag_${regKey}_${idx}`;
-                        if (!this.collectibles.survivalist_magazines.items[mId]) {
-                            this.collectibles.survivalist_magazines.items[mId] = {
-                                collected: false,
-                                name: m.name || `Perk Magazine ${idx + 1}`,
-                                region: regKey,
-                                location: m.location || '',
-                                guide: m.guide || '',
-                                psnSynced: false
-                            };
-                        } else {
-                            this.collectibles.survivalist_magazines.items[mId].name = m.name || this.collectibles.survivalist_magazines.items[mId].name;
-                            this.collectibles.survivalist_magazines.items[mId].location = m.location || this.collectibles.survivalist_magazines.items[mId].location;
-                            this.collectibles.survivalist_magazines.items[mId].guide = m.guide || this.collectibles.survivalist_magazines.items[mId].guide;
-                        }
-                    });
-                }
+            Object.entries(data.survivalist_magazines).forEach(([regKey, rawList]) => {
+                const list = Array.isArray(rawList) ? rawList : (rawList ? Object.values(rawList) : []);
+                magTotal += list.length;
+                list.forEach((m, idx) => {
+                    const mId = m.id || `mag_${regKey}_${idx}`;
+                    if (!this.collectibles.survivalist_magazines.items[mId]) {
+                        this.collectibles.survivalist_magazines.items[mId] = {
+                            collected: false,
+                            name: m.name || `Perk Magazine ${idx + 1}`,
+                            region: regKey,
+                            location: m.location || '',
+                            guide: m.guide || '',
+                            psnSynced: false
+                        };
+                    } else {
+                        this.collectibles.survivalist_magazines.items[mId].name = m.name || this.collectibles.survivalist_magazines.items[mId].name;
+                        this.collectibles.survivalist_magazines.items[mId].location = m.location || this.collectibles.survivalist_magazines.items[mId].location;
+                        this.collectibles.survivalist_magazines.items[mId].guide = m.guide || this.collectibles.survivalist_magazines.items[mId].guide;
+                    }
+                });
             });
             this.collectibles.survivalist_magazines.total = magTotal;
         }
 
         // 3. Prepper Stashes
         if (data.prepper_stashes && typeof data.prepper_stashes === 'object') {
-            Object.entries(data.prepper_stashes).forEach(([regKey, list]) => {
-                if (Array.isArray(list)) {
-                    list.forEach(s => {
-                        if (!s || !s.id) return;
-                        if (!this.stashes[s.id]) {
-                            this.stashes[s.id] = {
-                                collected: false,
-                                name: s.name || '',
-                                region: regKey,
-                                required_gear: s.required_gear || 'None',
-                                location: s.location || '',
-                                guide: s.guide || '',
-                                psnSynced: false
-                            };
-                        } else {
-                            this.stashes[s.id].name = s.name || this.stashes[s.id].name;
-                            this.stashes[s.id].required_gear = s.required_gear || this.stashes[s.id].required_gear;
-                            this.stashes[s.id].location = s.location || this.stashes[s.id].location;
-                            this.stashes[s.id].guide = s.guide || this.stashes[s.id].guide;
-                        }
-                    });
-                }
+            Object.entries(data.prepper_stashes).forEach(([regKey, rawList]) => {
+                const list = Array.isArray(rawList) ? rawList : (rawList ? Object.values(rawList) : []);
+                list.forEach(s => {
+                    if (!s || !s.id) return;
+                    if (!this.stashes[s.id]) {
+                        this.stashes[s.id] = {
+                            collected: false,
+                            name: s.name || '',
+                            region: regKey,
+                            required_gear: s.required_gear || 'None',
+                            location: s.location || '',
+                            guide: s.guide || '',
+                            psnSynced: false
+                        };
+                    } else {
+                        this.stashes[s.id].name = s.name || this.stashes[s.id].name;
+                        this.stashes[s.id].required_gear = s.required_gear || this.stashes[s.id].required_gear;
+                        this.stashes[s.id].location = s.location || this.stashes[s.id].location;
+                        this.stashes[s.id].guide = s.guide || this.stashes[s.id].guide;
+                    }
+                });
             });
         }
 
         // 4. Roster (Guns & Fangs for Hire)
-        if (Array.isArray(data.guns_and_fangs_for_hire)) {
-            data.guns_and_fangs_for_hire.forEach(h => {
-                if (!h || !h.id) return;
-                if (!this.roster[h.id]) {
-                    this.roster[h.id] = {
-                        unlocked: false,
-                        name: h.name || '',
-                        title: h.title || '',
-                        type: h.type || 'Specialist',
-                        unlock_mission: h.unlock_mission || '',
-                        location: h.location || 'Hope County',
-                        psnSynced: false
-                    };
-                } else {
-                    this.roster[h.id].name = h.name || this.roster[h.id].name;
-                    this.roster[h.id].title = h.title || this.roster[h.id].title;
-                    this.roster[h.id].type = h.type || this.roster[h.id].type;
-                    this.roster[h.id].unlock_mission = h.unlock_mission || this.roster[h.id].unlock_mission;
-                    this.roster[h.id].location = h.location || this.roster[h.id].location;
-                }
-            });
-        }
+        const rawRoster = data.guns_and_fangs_for_hire ? (Array.isArray(data.guns_and_fangs_for_hire) ? data.guns_and_fangs_for_hire : Object.values(data.guns_and_fangs_for_hire)) : [];
+        rawRoster.forEach(h => {
+            if (!h || !h.id) return;
+            if (!this.roster[h.id]) {
+                this.roster[h.id] = {
+                    unlocked: false,
+                    name: h.name || '',
+                    title: h.title || '',
+                    type: h.type || 'Specialist',
+                    unlock_mission: h.unlock_mission || '',
+                    location: h.location || 'Hope County',
+                    psnSynced: false
+                };
+            } else {
+                this.roster[h.id].name = h.name || this.roster[h.id].name;
+                this.roster[h.id].title = h.title || this.roster[h.id].title;
+                this.roster[h.id].type = h.type || this.roster[h.id].type;
+                this.roster[h.id].unlock_mission = h.unlock_mission || this.roster[h.id].unlock_mission;
+                this.roster[h.id].location = h.location || this.roster[h.id].location;
+            }
+        });
 
         // 5. Story Campaign & Side Walkthrough Missions
-        if (Array.isArray(data.walkthrough_missions)) {
-            data.walkthrough_missions.forEach(m => {
-                if (!m || !m.id) return;
-                if (!this.missions[m.id]) {
-                    this.missions[m.id] = {
-                        completed: false,
-                        mission_name: m.mission_name || '',
-                        region: m.region || 'Hope County',
-                        guide: m.guide || '',
-                        psnSynced: false
-                    };
-                } else {
-                    this.missions[m.id].mission_name = m.mission_name || this.missions[m.id].mission_name;
-                    this.missions[m.id].region = m.region || this.missions[m.id].region;
-                    this.missions[m.id].guide = m.guide || this.missions[m.id].guide;
-                }
-            });
+        const rawMissions = data.walkthrough_missions ? (Array.isArray(data.walkthrough_missions) ? data.walkthrough_missions : Object.values(data.walkthrough_missions)) : [];
+        rawMissions.forEach(m => {
+            if (!m || !m.id) return;
+            if (!this.missions[m.id]) {
+                this.missions[m.id] = {
+                    completed: false,
+                    mission_name: m.mission_name || '',
+                    region: m.region || 'Hope County',
+                    guide: m.guide || '',
+                    psnSynced: false
+                };
+            } else {
+                this.missions[m.id].mission_name = m.mission_name || this.missions[m.id].mission_name;
+                this.missions[m.id].region = m.region || this.missions[m.id].region;
+                this.missions[m.id].guide = m.guide || this.missions[m.id].guide;
+            }
+        });
+
+        // 6. Direct Trophies Embedding
+        if (data.trophies) {
+            this.hydrateTrophiesFromSkeleton(data);
         }
 
         this.recalculateMetrics();
     },
 
-    // Lines 218-280: Synchronize Base Trophy Skeleton from RTDB /psn/games/{commId}
+    // Lines 222-280: Synchronize Trophy Skeleton from RTDB
     hydrateTrophiesFromSkeleton: function(skeleton) {
         if (!skeleton) return;
         this.psnSkeleton = skeleton;
@@ -453,23 +468,25 @@ window.appState = {
     }
 };
 
-// Section 3: Authoritative Persistence Engine & Firestore Seeder
-// Lines 348-435: users/{friendKey}/platform/{platform}/game/FarCry5
+// Section 3: Authoritative Persistence Engine (LocalStorage vs Firestore Gate)
+// Lines 348-435: Unauthenticated saves strictly to LocalStorage; Authenticated saves to Firestore
 window.appState.saveProgress = function() {
     const payload = this.buildPayload();
     const userKey = this.getUserKey();
 
-    if (!userKey) {
+    // RULE: If not logged in, persist STRICTLY to localStorage. Zero Firestore calls.
+    if (!this.currentUser || !userKey) {
         const guestKey = `fc5_guest_progress_${this.platform}`;
         try {
             localStorage.setItem(guestKey, JSON.stringify(payload));
-            this.updateStatus(`[Guest Mode] Progress cached locally [${this.platform.toUpperCase()}].`);
+            this.updateStatus(`[Guest Mode] Progress saved locally [${this.platform.toUpperCase()}].`);
         } catch (e) {
-            console.warn("[Guest Storage]:", e);
+            console.warn("[Guest LocalStorage Error]:", e);
         }
         return;
     }
 
+    // RULE: If logged in, persist to Firestore user path
     if (firestore) {
         const docRef = firestore
             .collection("users")
@@ -494,14 +511,15 @@ window.appState.loadProgress = function() {
     if (this.gameData) this.hydrateFromRawJson(this.gameData);
     if (this.psnSkeleton) this.hydrateTrophiesFromSkeleton(this.psnSkeleton);
 
-    if (!userKey) {
+    // RULE: Unauthenticated reads load strictly from localStorage
+    if (!this.currentUser || !userKey) {
         const guestKey = `fc5_guest_progress_${this.platform}`;
         try {
             const raw = localStorage.getItem(guestKey);
             if (raw) {
                 const parsed = JSON.parse(raw);
                 this.applyPayload(parsed);
-                this.updateStatus(`[Guest Mode] Restored progress from this device [${this.platform.toUpperCase()}].`);
+                this.updateStatus(`[Guest Mode] Restored local progress [${this.platform.toUpperCase()}].`);
                 return;
             }
         } catch (e) {}
@@ -511,6 +529,7 @@ window.appState.loadProgress = function() {
         return;
     }
 
+    // RULE: Authenticated reads load from Firestore
     if (firestore) {
         this.updateStatus(`Reading cloud ledger: users/${userKey}/platform/${this.platform.toUpperCase()}...`);
 
@@ -526,12 +545,11 @@ window.appState.loadProgress = function() {
             if (doc.exists) {
                 const cloudData = doc.data();
                 this.applyPayload(cloudData);
-                this.saveProgress();
                 this.updateStatus(`[Cloud Synced] users/${userKey}/platform/${this.platform}/game/${CURRENT_GAME_ID}`);
             } else {
                 this.applyStateToUI();
                 this.saveProgress();
-                this.updateStatus(`[Cloud Seeded] Pushed full game ledger to Firestore: users/${userKey}`);
+                this.updateStatus(`[Cloud Initialized] Pushed game ledger to Firestore: users/${userKey}`);
             }
         }).catch(err => {
             console.warn("[Firestore Fetch Error]:", err);
@@ -542,7 +560,7 @@ window.appState.loadProgress = function() {
 
 window.appState.migrateGuestProgressIfPresent = async function() {
     const userKey = this.getUserKey();
-    if (!userKey) return;
+    if (!this.currentUser || !userKey) return;
 
     const guestKey = `fc5_guest_progress_${this.platform}`;
     let guestData = null;
@@ -657,26 +675,34 @@ window.adjRank = function(rankKey, delta) {
     appState.saveProgress();
 };
 
-// Section 5: Squad Co-Op Bridge via RTDB Friend Codes
-// Lines 518-595: Multi-Platform isolated query of friends' progress
-window.appState.fetchUserFriendCode = async function() {
+// Section 5: Squad Co-Op Bridge via RTDB Friend Codes & Pinned Platform
+// Lines 518-605: Multi-Platform isolated query of friends' progress
+window.appState.fetchUserFriendCodeAndPin = async function() {
     if (!this.currentUser || !this.currentUser.email || !rtdb) return;
     const emailKey = this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
     try {
+        // 1. Fetch friend code
         const snap = await rtdb.ref(`/users/${emailKey}/friend_code`).once('value');
         this.myFriendCode = snap.val() || 'GQGI0SWY';
         const display = document.getElementById('myFriendCodeDisplay');
         if (display) display.innerText = this.myFriendCode;
 
-        // Verify if an authenticated PSN Gamertag is registered
+        // 2. Fetch authenticated PSN Gamertag if registered
         const psnSnap = await rtdb.ref(`/users/${emailKey}/psn_username`).once('value');
         if (psnSnap.exists() && psnSnap.val()) {
             this.psnGamertag = String(psnSnap.val()).trim();
         } else {
             this.psnGamertag = null;
         }
+
+        // 3. Fetch user's pinned platform
+        const pinSnap = await rtdb.ref(`/users/${emailKey}/pinned_platform`).once('value');
+        if (pinSnap.exists() && pinSnap.val()) {
+            const pinned = String(pinSnap.val()).toLowerCase();
+            await this.switchPlatform(pinned, false);
+        }
     } catch (e) {
-        console.warn("[Friend Code Fetch Error]:", e);
+        console.warn("[User Data / Pinned Platform Fetch Error]:", e);
     }
 };
 
@@ -753,7 +779,7 @@ window.appState.syncFriendsProgress = async function() {
 };
 
 // Section 6: Dynamic Header & Programmatic Navbar (/utm_links)
-// Lines 598-685: Sort-weighted top-level and dropdown menu generation
+// Lines 608-690: Sort-weighted top-level and dropdown menu generation
 async function buildUtmNavigation() {
     const navContainer = document.getElementById('dynamicNavLinks');
     if (!rtdb) return;
@@ -861,14 +887,13 @@ async function buildUtmNavigation() {
     }
 }
 
-// Section 7: PSN Master Skeleton & Telemetry Auto-Check
-// Lines 688-775: CommID telemetry from /psn/gamertags/{tag}/liveTrophyProgress/{commId}
+// Section 7: PSN Master Skeleton & Live Telemetry Engine
+// Lines 692-805: Telemetry pulled dynamically from /psn/gamertags/{tag}/liveTrophyProgress/{commId}
 async function syncPsnSkeleton() {
     if (!rtdb) return;
     const commId = ACTIVE_COMM_ID;
 
     try {
-        // 1. Fetch master trophy structure from RTDB
         const snap = await rtdb.ref(`/psn/games/${commId}`).once('value');
         const skeleton = snap.val();
         if (skeleton) {
@@ -886,7 +911,6 @@ async function syncPsnSkeleton() {
             }
         }
 
-        // 2. Dynamic Favicon from linked user's recentGames
         if (appState.psnGamertag) {
             const recentSnap = await rtdb.ref(`/psn/gamertags/${appState.psnGamertag}/recentGames`).once('value');
             const recentGames = recentSnap.val();
@@ -904,7 +928,6 @@ async function syncPsnSkeleton() {
             }
         }
 
-        // 3. Auto-check trophies ONLY if platform is PS and an account is explicitly linked
         if (appState.platform === 'ps' && appState.psnGamertag) {
             await autoCheckUserPsnTrophies();
         }
@@ -928,28 +951,48 @@ async function autoCheckUserPsnTrophies() {
 
             for (const [tId, tObj] of trophyEntries) {
                 if (!tObj) continue;
+                
+                // Authoritative ID resolution
                 const parsedId = tObj.trophyId !== undefined ? tObj.trophyId : tId;
                 const cardKey = `trophy_fc5_${parsedId}`;
                 const isEarnedInPsn = (tObj.earned === true || tObj.isEarned === true);
+                
+                // Telemetry tracking values
+                const currentProgress = Number(tObj.currentValue || tObj.trophyProgress || 0);
+                const targetProgress = Number(tObj.targetValue || tObj.trophyProgressTargetValue || 0);
 
                 if (!appState.trophies[cardKey]) {
                     appState.trophies[cardKey] = {
+                        trophyId: parsedId,
+                        commId: tObj.commId || tObj.npCommunicationId || commId,
                         earned: isEarnedInPsn,
                         name: tObj.name || tObj.title || tObj.gameTitle || 'Trophy',
-                        rank: (tObj.rank || tObj.type || tObj.difficultyTier || 'Bronze').toUpperCase(),
-                        description: tObj.description || '',
+                        rank: (tObj.rank || tObj.type || 'BRONZE').toUpperCase(),
+                        description: tObj.description || tObj.detail || '',
                         icon: toSecureUrl(tObj.icon || ''),
+                        earnedRate: tObj.earnedRate || null,
+                        rarity: tObj.rarity || null,
+                        rarityTier: tObj.rarityTier || tObj.difficultyTier || null,
+                        currentValue: currentProgress,
+                        targetValue: targetProgress,
+                        timestamp: tObj.timestamp || null,
                         psnSynced: isEarnedInPsn
                     };
                     stateModified = true;
                 } else {
-                    if (tObj.name) appState.trophies[cardKey].name = tObj.name;
-                    if (tObj.icon) appState.trophies[cardKey].icon = toSecureUrl(tObj.icon);
-                    if (tObj.description) appState.trophies[cardKey].description = tObj.description;
+                    const card = appState.trophies[cardKey];
+                    if (tObj.name || tObj.title) card.name = tObj.name || tObj.title;
+                    if (tObj.icon) card.icon = toSecureUrl(tObj.icon);
+                    if (tObj.description || tObj.detail) card.description = tObj.description || tObj.detail;
+                    if (tObj.earnedRate) card.earnedRate = tObj.earnedRate;
+                    if (tObj.timestamp) card.timestamp = tObj.timestamp;
+                    
+                    card.currentValue = currentProgress;
+                    card.targetValue = targetProgress;
 
-                    if (isEarnedInPsn && !appState.trophies[cardKey].earned) {
-                        appState.trophies[cardKey].earned = true;
-                        appState.trophies[cardKey].psnSynced = true;
+                    if (isEarnedInPsn && !card.earned) {
+                        card.earned = true;
+                        card.psnSynced = true;
                         stateModified = true;
                     }
                 }
@@ -958,16 +1001,16 @@ async function autoCheckUserPsnTrophies() {
             if (stateModified) {
                 appState.applyStateToUI();
                 appState.saveProgress();
-                appState.updateStatus(`[PSN Live Synced] Telemetry bound from ${gamertag}/${commId}`);
+                appState.updateStatus(`[PSN Telemetry Synced] Sourced live progress for ${gamertag} (${commId})`);
             }
         }
     } catch (e) {
-        console.warn("[Live Trophy Auto-Check Error]:", e);
+        console.warn("[Live Trophy Telemetry Error]:", e);
     }
 }
 
 // Section 8: Universal Section Renderer
-// Lines 778-985: Automatically renders any new category added to farcry5.json
+// Lines 808-1015: Automatically renders categories loaded from /games/farcry5
 function renderFarCry5Companion(data) {
     const container = document.getElementById('section-container');
     if (!container || !data) return;
@@ -975,16 +1018,17 @@ function renderFarCry5Companion(data) {
     let html = '';
 
     // 8A. Story Campaign & Side Walkthrough Missions
-    if (Array.isArray(data.walkthrough_missions) && data.walkthrough_missions.length > 0) {
+    const rawMissions = data.walkthrough_missions ? (Array.isArray(data.walkthrough_missions) ? data.walkthrough_missions : Object.values(data.walkthrough_missions)) : [];
+    if (rawMissions.length > 0) {
         html += `
         <section class="category-section" id="cat-walkthroughs">
             <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                <h2>📖 Story Campaign & Boss Encounters (${data.walkthrough_missions.length})</h2>
+                <h2>📖 Story Campaign & Boss Encounters (${rawMissions.length})</h2>
                 <span>▾</span>
             </div>
             <div class="section-content">
                 <div class="trophy-grid">
-                    ${data.walkthrough_missions.map(item => `
+                    ${rawMissions.map(item => `
                         <div class="trophy-card fc5-item-card" data-id="${item.id}" data-type="mission">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                 <div>
@@ -1003,8 +1047,9 @@ function renderFarCry5Companion(data) {
 
     // 8B. Prepper Stashes by Region
     if (data.prepper_stashes && typeof data.prepper_stashes === 'object') {
-        Object.entries(data.prepper_stashes).forEach(([regKey, list]) => {
-            if (Array.isArray(list) && list.length > 0) {
+        Object.entries(data.prepper_stashes).forEach(([regKey, rawList]) => {
+            const list = Array.isArray(rawList) ? rawList : (rawList ? Object.values(rawList) : []);
+            if (list.length > 0) {
                 const regionName = regKey.replace(/_/g, ' ').toUpperCase();
                 html += `
                 <section class="category-section" id="cat-stash-${regKey}">
@@ -1037,7 +1082,10 @@ function renderFarCry5Companion(data) {
     // 8C. Perk & Survivalist Magazines
     if (data.survivalist_magazines && typeof data.survivalist_magazines === 'object') {
         let totalMags = 0;
-        Object.values(data.survivalist_magazines).forEach(l => { if (Array.isArray(l)) totalMags += l.length; });
+        Object.values(data.survivalist_magazines).forEach(l => { 
+            const list = Array.isArray(l) ? l : (l ? Object.values(l) : []);
+            totalMags += list.length; 
+        });
 
         if (totalMags > 0) {
             html += `
@@ -1048,8 +1096,9 @@ function renderFarCry5Companion(data) {
                 </div>
                 <div class="section-content">
                     <div class="trophy-grid">
-                        ${Object.entries(data.survivalist_magazines).flatMap(([regKey, list]) => 
-                            (Array.isArray(list) ? list : []).map((m, idx) => {
+                        ${Object.entries(data.survivalist_magazines).flatMap(([regKey, rawList]) => {
+                            const list = Array.isArray(rawList) ? rawList : (rawList ? Object.values(rawList) : []);
+                            return list.map((m, idx) => {
                                 const mId = m.id || `mag_${regKey}_${idx}`;
                                 return `
                                     <div class="trophy-card fc5-item-card" data-id="${mId}" data-type="magazine">
@@ -1064,8 +1113,8 @@ function renderFarCry5Companion(data) {
                                         <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(m.guide || '')}</p>
                                     </div>
                                 `;
-                            })
-                        ).join('')}
+                            });
+                        }).join('')}
                     </div>
                 </div>
             </section>`;
@@ -1076,12 +1125,13 @@ function renderFarCry5Companion(data) {
     if (data.collectibles && typeof data.collectibles === 'object') {
         for (const cKey in data.collectibles) {
             const group = data.collectibles[cKey];
-            if (group && Array.isArray(group.items) && group.items.length > 0) {
+            const rawItems = group?.items ? (Array.isArray(group.items) ? group.items : Object.values(group.items)) : [];
+            if (rawItems.length > 0) {
                 const groupTitle = group.quest_name ? `${group.quest_name} (${cKey.replace(/_/g, ' ').toUpperCase()})` : cKey.replace(/_/g, ' ').toUpperCase();
                 html += `
                 <section class="category-section" id="cat-col-${cKey}">
                     <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                        <h2>🗂️ Collectibles: ${escapeHtml(groupTitle)} (${group.items.length})</h2>
+                        <h2>🗂️ Collectibles: ${escapeHtml(groupTitle)} (${rawItems.length})</h2>
                         <span>▾</span>
                     </div>
                     <div class="section-content">
@@ -1093,7 +1143,7 @@ function renderFarCry5Companion(data) {
                             </div>
                         ` : ''}
                         <div class="trophy-grid">
-                            ${group.items.map(item => `
+                            ${rawItems.map(item => `
                                 <div class="trophy-card fc5-item-card" data-id="${item.id}" data-type="collectible" data-group="${cKey}">
                                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                         <div>
@@ -1114,16 +1164,17 @@ function renderFarCry5Companion(data) {
     }
 
     // 8E. Guns & Fangs for Hire Roster
-    if (Array.isArray(data.guns_and_fangs_for_hire) && data.guns_and_fangs_for_hire.length > 0) {
+    const rawRoster = data.guns_and_fangs_for_hire ? (Array.isArray(data.guns_and_fangs_for_hire) ? data.guns_and_fangs_for_hire : Object.values(data.guns_and_fangs_for_hire)) : [];
+    if (rawRoster.length > 0) {
         html += `
         <section class="category-section" id="cat-roster">
             <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                <h2>🐾 Guns & Fangs for Hire (${data.guns_and_fangs_for_hire.length})</h2>
+                <h2>🐾 Guns & Fangs for Hire (${rawRoster.length})</h2>
                 <span>▾</span>
             </div>
             <div class="section-content">
                 <div class="trophy-grid">
-                    ${data.guns_and_fangs_for_hire.map(h => `
+                    ${rawRoster.map(h => `
                         <div class="trophy-card fc5-item-card" data-id="${h.id}" data-type="roster">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                                 <div>
@@ -1143,7 +1194,7 @@ function renderFarCry5Companion(data) {
         </section>`;
     }
 
-    // 8F. Official PSN Master Trophies & Achievements (Sourced via RTDB /psn/games/{commId})
+    // 8F. Official PSN Master Trophies & Achievements
     const trophyEntries = Object.entries(appState.trophies);
     if (trophyEntries.length > 0) {
         html += `
@@ -1190,7 +1241,7 @@ function renderFarCry5Companion(data) {
 }
 
 // Section 9: Sanitization & URL Normalization
-// Lines 988-1010: Relative protocol and PSN asset sanitization
+// Lines 1018-1040: Relative protocol and PSN asset sanitization
 function toSecureUrl(url) {
     if (!url || typeof url !== 'string') return '';
     const trimmed = url.trim();
@@ -1214,8 +1265,8 @@ function escapeHtml(str) {
         .replace(/'/g, '&#039;');
 }
 
-// Section 10: Dynamic JSON Loader with Path Target & Lifecycle Gate
-// Lines 1013-1130: Direct local-path priority matching /game/farcry/farcry5.json
+// Section 10: Dynamic Loader (Reads RTDB /games/farcry5 First)
+// Lines 1043-1165: RTDB /games/farcry5 primary read with local fallback
 async function initFarCry5Engine() {
     await buildUtmNavigation();
 
@@ -1223,7 +1274,8 @@ async function initFarCry5Engine() {
     if (platformSelector) {
         platformSelector.value = appState.platform;
         platformSelector.addEventListener('change', (e) => {
-            appState.switchPlatform(e.target.value);
+            // User switching manually sets & pins their platform
+            appState.switchPlatform(e.target.value, true);
         });
     }
 
@@ -1274,7 +1326,9 @@ async function initFarCry5Engine() {
                 if (nameBadge) nameBadge.innerText = appState.activeUser;
                 if (authModal) authModal.classList.add('hidden');
 
-                await appState.fetchUserFriendCode();
+                // Auto-fetch friend code, PSN gamertag, and user's pinned platform
+                await appState.fetchUserFriendCodeAndPin();
+
                 if (appState.gameData) {
                     await appState.loadProgress();
                     await appState.migrateGuestProgressIfPresent();
@@ -1301,56 +1355,49 @@ async function initFarCry5Engine() {
         });
     }
 
-    // Direct Target Sequence matching /game/farcry/farcry5.json
-    const cacheBuster = `?cb=${Date.now()}`;
-    const jsonCandidates = [
-        `/game/farcry/farcry5.json${cacheBuster}`,
-        `./farcry5.json${cacheBuster}`,
-        `//raw.githubusercontent.com/Werewolf3788/Website/main/game/farcry/farcry5.json${cacheBuster}`,
-        `//werewolf3788.github.io/Website/game/farcry/farcry5.json${cacheBuster}`
-    ];
-
-    const fetchJson = async (idx) => {
-        if (idx < jsonCandidates.length) {
-            try {
-                const res = await fetch(jsonCandidates[idx]);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const fullJson = await res.json();
-                
-                appState.hydrateFromRawJson(fullJson);
-                appState.updateStatus(`[Hydrated] Loaded freshly from ${jsonCandidates[idx]}`);
-                
-                // Fetch master trophy skeleton from RTDB and render UI
+    // Step 1: PRIMARY READ — Pull directly from RTDB node /games/farcry5
+    appState.updateStatus("Querying RTDB /games/farcry5...");
+    if (rtdb) {
+        try {
+            const rtdbSnap = await rtdb.ref('/games/farcry5').once('value');
+            const rtdbGameData = rtdbSnap.val();
+            if (rtdbGameData) {
+                appState.hydrateFromRawJson(rtdbGameData);
+                appState.updateStatus("[RTDB Connected] Loaded authoritative game data from /games/farcry5.");
                 await syncPsnSkeleton();
-                renderFarCry5Companion(fullJson);
+                renderFarCry5Companion(rtdbGameData);
                 appState.loadProgress();
                 return;
-            } catch (err) {
-                fetchJson(idx + 1);
+            }
+        } catch (rtdbErr) {
+            console.warn("[RTDB /games/farcry5 Query Warning]:", rtdbErr);
+        }
+    }
+
+    // Step 2: SECONDARY FAILOVER — Pull from local static JSON if RTDB is offline or cold
+    const cacheBuster = `?cb=${Date.now()}`;
+    const staticCandidates = [
+        `/games/farcry5.json${cacheBuster}`,
+        `/game/farcry/farcry5.json${cacheBuster}`,
+        `./farcry5.json${cacheBuster}`
+    ];
+
+    for (const url of staticCandidates) {
+        try {
+            const res = await fetch(url);
+            if (res.ok) {
+                const staticJson = await res.json();
+                appState.hydrateFromRawJson(staticJson);
+                appState.updateStatus(`[Static Failover] Loaded data from ${url}`);
+                await syncPsnSkeleton();
+                renderFarCry5Companion(staticJson);
+                appState.loadProgress();
                 return;
             }
-        }
+        } catch (e) {}
+    }
 
-        // Final failover: Check RTDB for fallback ledger
-        if (rtdb) {
-            try {
-                const rtdbSnap = await rtdb.ref('/game_data/farcry5').once('value');
-                const rtdbJson = rtdbSnap.val();
-                if (rtdbJson) {
-                    appState.hydrateFromRawJson(rtdbJson);
-                    appState.updateStatus("[Hydrated] Loaded game data from RTDB.");
-                    await syncPsnSkeleton();
-                    renderFarCry5Companion(rtdbJson);
-                    appState.loadProgress();
-                    return;
-                }
-            } catch (e) {}
-        }
-
-        appState.updateStatus("[Error] Unable to load farcry5.json. Verify file is in /game/farcry/.");
-    };
-
-    fetchJson(0);
+    appState.updateStatus("[Error] Unable to load farcry5 from RTDB (/games/farcry5) or static JSON paths.");
 }
 
 // Universal Self-Starting Execution Gate
