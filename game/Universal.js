@@ -1,8 +1,15 @@
 // ============================================================================
 // * Project: Universal Game Companion & Live Telemetry Field Ledger
 // * File: game/Universal.js
-// * Build Version: v10.9.0-STABLE-POSTER-LOOKUP-NO-LOOP
-// * Deployment Timestamp: 2026-10-29 21:12:00 EDT (America/New_York)
+// * Build Version: v10.10.0-MISSION-SCHEMA-FOLDERS-SEARCH
+// * Updated: 2026-10-30
+// * Changes vs v10.9.0:
+// *   - Reads the per-mission schema (any Sniper Elite game): each mission holds its
+// *     own collectibles, kill challenge, propaganda mission, medals and trophies.
+// *   - Ribbons and Medals each live in their own folder; everything loads collapsed.
+// *   - Live search bar (type a word, matching items appear, folders auto-open).
+// *   - Medals and ribbons are tracked/saved like trophies.
+// *   - Legacy games (Far Cry etc.) still render exactly as before.
 // ============================================================================
 
 // Section 1: Authoritative Firebase Credentials (entertainment-71888)
@@ -46,6 +53,51 @@ let CURRENT_GAME_KEY = resolveActiveGameKey();
 let ACTIVE_COMM_ID = null;
 let LAST_APPLIED_POSTER = null;
 
+// Section 2b: Shared data helpers (schema detection, list/tree walking)
+function toArr(v) {
+    return v ? (Array.isArray(v) ? v : Object.values(v)) : [];
+}
+
+// True for arrays, or objects whose keys are all numeric (how RTDB can return arrays)
+function isLeafList(node) {
+    if (Array.isArray(node)) return true;
+    if (!node || typeof node !== 'object') return false;
+    const keys = Object.keys(node);
+    return keys.length > 0 && keys.every(k => /^\d+$/.test(k));
+}
+
+// Per-mission schema: data.missions is an object of missions that each hold their own content
+function isMissionSchema(data) {
+    if (!data || !data.missions || typeof data.missions !== 'object' || Array.isArray(data.missions)) return false;
+    return Object.values(data.missions).some(m =>
+        m && typeof m === 'object' && m.number !== undefined && (m.collectibles || m.medals || m.trophies)
+    );
+}
+
+// Visit every leaf item in a nested tree of arrays/objects
+function walkLeaves(node, visit) {
+    if (!node || typeof node !== 'object') return;
+    if (isLeafList(node)) {
+        toArr(node).forEach(it => { if (it && typeof it === 'object') visit(it); });
+        return;
+    }
+    Object.values(node).forEach(child => walkLeaves(child, visit));
+}
+
+// Every trophy in the file: legacy top-level list + general_trophies + each mission's trophies
+function collectAllTrophies(data) {
+    if (!data) return [];
+    const list = [...toArr(data.trophies), ...toArr(data.general_trophies)];
+    if (data.missions && typeof data.missions === 'object') {
+        Object.values(data.missions).forEach(m => { if (m) list.push(...toArr(m.trophies)); });
+    }
+    return list;
+}
+
+function ribbonKeys(data) {
+    return Object.keys(data || {}).filter(k => /_ribbons$/.test(k));
+}
+
 // Section 3: Authoritative Global State Engine
 window.appState = {
     activeUser: 'Guest',
@@ -57,7 +109,7 @@ window.appState = {
     myFriendCode: null,
     psnGamertag: null,
     authInitialized: false,
-    
+
     gameTitle: "Game Companion",
     gameId: CURRENT_GAME_KEY,
     trophies_earned: 0,
@@ -68,6 +120,8 @@ window.appState = {
     roster: {},
     missions: {},
     trophies: {},
+    medals: {},
+    ribbons: {},
     ranks: {},
 
     getUserKey: function() {
@@ -95,6 +149,8 @@ window.appState = {
         this.roster = {};
         this.missions = {};
         this.trophies = {};
+        this.medals = {};
+        this.ribbons = {};
         this.ranks = {};
 
         document.querySelectorAll('.game-pill').forEach(pill => {
@@ -113,7 +169,7 @@ window.appState = {
         const normalized = newPlatform.toLowerCase();
         const validPlatforms = ['ps', 'xbox', 'steam', 'pc'];
         this.platform = validPlatforms.includes(normalized) ? normalized : 'ps';
-        
+
         const platformSelector = document.getElementById('platformSelector');
         if (platformSelector && platformSelector.value !== this.platform) {
             platformSelector.value = this.platform;
@@ -134,7 +190,7 @@ window.appState = {
                 console.warn("[Primary Platform Write Error]:", pinErr);
             }
         }
-        
+
         await this.loadProgress();
         if (this.currentUser) {
             this.syncFriendsProgress();
@@ -150,9 +206,9 @@ window.appState = {
         this.gameTitle = data.game || data.title || "Game Companion";
         this.gameId = data.gameId ? data.gameId.toLowerCase() : CURRENT_GAME_KEY;
 
-        ACTIVE_COMM_ID = data.commId || 
-                         data.psn_communication_id || 
-                         data.platforms?.playstation?.commId || 
+        ACTIVE_COMM_ID = data.commId ||
+                         data.psn_communication_id ||
+                         data.platforms?.playstation?.commId ||
                          null;
 
         const titleHeader = document.getElementById('companionGameTitle');
@@ -269,21 +325,141 @@ window.appState = {
             }
         });
 
-        // 5. Embedded Trophies
-        if (data.trophies) {
+        // 4b. Per-mission schema (Sniper Elite): missions, collectibles, challenges, medals, ribbons
+        if (isMissionSchema(data)) {
+            this.hydrateMissionSchema(data);
+        }
+
+        // 5. Embedded Trophies (top-level list, general_trophies and per-mission trophies)
+        if (data.trophies || data.general_trophies || isMissionSchema(data)) {
             this.hydrateTrophiesFromSkeleton(data);
         }
 
         this.recalculateMetrics();
     },
 
+    // Registers a trackable "mission-like" entry (missions, kill challenges, propaganda missions)
+    ensureMissionEntry: function(id, info) {
+        if (!id) return;
+        if (!this.missions[id]) {
+            this.missions[id] = {
+                completed: false,
+                mission_name: info.name || '',
+                region: info.region || '',
+                guide: info.guide || '',
+                psnSynced: false
+            };
+        } else {
+            this.missions[id].mission_name = info.name || this.missions[id].mission_name;
+            this.missions[id].region = info.region || this.missions[id].region;
+            this.missions[id].guide = info.guide || this.missions[id].guide;
+        }
+    },
+
+    registerMedal: function(it) {
+        if (!it || !it.id) return;
+        if (!this.medals[it.id]) {
+            this.medals[it.id] = { earned: false, name: it.name || '', description: it.description || '', psnSynced: false };
+        } else {
+            this.medals[it.id].name = it.name || this.medals[it.id].name;
+            this.medals[it.id].description = it.description || this.medals[it.id].description;
+        }
+    },
+
+    registerRibbon: function(it) {
+        if (!it || !it.id) return;
+        if (!this.ribbons[it.id]) {
+            this.ribbons[it.id] = { earned: false, name: it.name || '', requirement: it.requirement || '', psnSynced: false };
+        } else {
+            this.ribbons[it.id].name = it.name || this.ribbons[it.id].name;
+            this.ribbons[it.id].requirement = it.requirement || this.ribbons[it.id].requirement;
+        }
+    },
+
+    hydrateMissionSchema: function(data) {
+        Object.entries(data.missions).forEach(([mKey, m]) => {
+            if (!m || typeof m !== 'object') return;
+            const mLabel = `Mission ${m.number} — ${m.title || ''}`;
+
+            this.ensureMissionEntry(mKey, { name: m.title || mLabel, region: m.region || '', guide: m.walkthrough || '' });
+
+            // Collectibles: one group per mission + category, e.g. "mission_2__personal_letters"
+            Object.entries(m.collectibles || {}).forEach(([cat, list]) => {
+                const items = toArr(list).filter(it => it && it.id);
+                if (!items.length) return;
+                const gKey = `${mKey}__${cat}`;
+                if (!this.collectibles[gKey]) {
+                    this.collectibles[gKey] = {
+                        collected: false,
+                        count: 0,
+                        psnSynced: false,
+                        total: items.length,
+                        quest_name: `${mLabel} — ${cat.replace(/_/g, ' ')}`,
+                        quest_giver: '',
+                        quest_giver_location: '',
+                        required_perk: '',
+                        region: m.region || 'Game World',
+                        items: {}
+                    };
+                } else {
+                    this.collectibles[gKey].total = items.length;
+                    if (!this.collectibles[gKey].items) this.collectibles[gKey].items = {};
+                }
+                items.forEach(it => {
+                    const existing = this.collectibles[gKey].items[it.id];
+                    if (!existing) {
+                        this.collectibles[gKey].items[it.id] = {
+                            collected: false,
+                            name: it.name || '',
+                            region: m.region || '',
+                            location: it.location || '',
+                            guide: it.guide || '',
+                            psnSynced: false
+                        };
+                    } else {
+                        existing.name = it.name || existing.name;
+                        existing.location = it.location || existing.location;
+                    }
+                });
+            });
+
+            // Kill challenge
+            if (m.kill_challenge && typeof m.kill_challenge === 'object') {
+                const kc = m.kill_challenge;
+                this.ensureMissionEntry(`kill_${mKey}`, {
+                    name: `Kill List: ${kc.target_name || ''}`,
+                    region: m.region || '',
+                    guide: kc.strategy || ''
+                });
+            }
+
+            // Propaganda mission unlocked in this mission
+            if (m.propaganda_mission && m.propaganda_mission.id) {
+                const p = m.propaganda_mission;
+                this.ensureMissionEntry(p.id, { name: `Propaganda: ${p.title || ''}`, region: m.region || '', guide: p.briefing || '' });
+            }
+
+            // Mission-level medals
+            walkLeaves(m.medals, it => this.registerMedal(it));
+        });
+
+        // Propaganda missions not tied to a mission yet
+        toArr(data.unassigned_propaganda_missions).forEach(p => {
+            if (p && p.id) this.ensureMissionEntry(p.id, { name: `Propaganda: ${p.title || ''}`, region: '', guide: p.briefing || '' });
+        });
+
+        // Top-level (general) medals
+        walkLeaves(data.medals, it => this.registerMedal(it));
+
+        // Ribbons: campaign_ribbons, survival_ribbons, multiplayer_ribbons, ...
+        ribbonKeys(data).forEach(k => toArr(data[k]).forEach(r => this.registerRibbon(r)));
+    },
+
     hydrateTrophiesFromSkeleton: function(skeleton) {
         if (!skeleton) return;
         this.psnSkeleton = skeleton;
 
-        const rawList = skeleton.trophies 
-            ? (Array.isArray(skeleton.trophies) ? skeleton.trophies : Object.values(skeleton.trophies))
-            : [];
+        const rawList = collectAllTrophies(skeleton);
 
         rawList.forEach((t, idx) => {
             if (!t) return;
@@ -343,10 +519,14 @@ window.appState = {
         this.ranks.stashes = stashesCount;
         this.ranks.roster = rosterCount;
         this.ranks.collectibles = totalCollectiblesCount;
+        this.ranks.medals = Object.values(this.medals).filter(m => m && m.earned).length;
+        this.ranks.ribbons = Object.values(this.ribbons).filter(r => r && r.earned).length;
 
         this.updateRankDisplay('stashes', stashesCount);
         this.updateRankDisplay('roster', rosterCount);
         this.updateRankDisplay('collectibles', totalCollectiblesCount);
+        this.updateRankDisplay('medals', this.ranks.medals);
+        this.updateRankDisplay('ribbons', this.ranks.ribbons);
     },
 
     updateRankDisplay: function(rankKey, val) {
@@ -368,7 +548,9 @@ window.appState = {
             stashes: this.stashes,
             roster: this.roster,
             missions: this.missions,
-            trophies: this.trophies
+            trophies: this.trophies,
+            medals: this.medals,
+            ribbons: this.ribbons
         };
     },
 
@@ -377,7 +559,7 @@ window.appState = {
         this.trophies_earned = payload.trophies_earned || 0;
         this.trophies_total = payload.trophies_total || this.trophies_total;
         this.trophies_percent = payload.trophies_percent || 0;
-        
+
         if (payload.collectibles) {
             for (const cKey in payload.collectibles) {
                 if (!this.collectibles[cKey]) {
@@ -430,6 +612,20 @@ window.appState = {
             }
         }
 
+        if (payload.medals) {
+            for (const medId in payload.medals) {
+                if (!this.medals[medId]) this.medals[medId] = payload.medals[medId];
+                else this.medals[medId].earned = !!payload.medals[medId].earned;
+            }
+        }
+
+        if (payload.ribbons) {
+            for (const rbId in payload.ribbons) {
+                if (!this.ribbons[rbId]) this.ribbons[rbId] = payload.ribbons[rbId];
+                else this.ribbons[rbId].earned = !!payload.ribbons[rbId].earned;
+            }
+        }
+
         if (payload.ranks) this.ranks = Object.assign({}, this.ranks, payload.ranks);
         this.applyStateToUI();
     }
@@ -471,7 +667,7 @@ window.appState.saveProgress = function() {
 window.appState.loadProgress = async function() {
     const userKey = this.getUserKey();
     const gameName = this.getCanonicalGameName();
-    
+
     if (this.gameData) this.hydrateFromRawJson(this.gameData);
     if (this.psnSkeleton) this.hydrateTrophiesFromSkeleton(this.psnSkeleton);
 
@@ -556,6 +752,10 @@ window.appState.applyStateToUI = function() {
             }
         } else if (type === 'trophy') {
             isDone = !!(this.trophies[id]?.earned);
+        } else if (type === 'medal') {
+            isDone = !!(this.medals[id]?.earned);
+        } else if (type === 'ribbon') {
+            isDone = !!(this.ribbons[id]?.earned);
         } else {
             isDone = !!(this.missions[id]?.completed);
         }
@@ -568,6 +768,15 @@ window.appState.applyStateToUI = function() {
             card.classList.remove('completed');
             if (btn) { btn.classList.remove('is-done'); btn.innerHTML = ''; }
         }
+    });
+
+    // Folder progress badges (done/total) for every folder
+    document.querySelectorAll('.category-section').forEach(sec => {
+        const badge = sec.querySelector(':scope > .category-header .sec-progress');
+        if (!badge) return;
+        const total = sec.querySelectorAll('.game-item-card').length;
+        const done = sec.querySelectorAll('.game-item-card.completed').length;
+        badge.innerText = total ? `${done}/${total}` : '';
     });
 };
 
@@ -586,6 +795,12 @@ window.appState.toggleItem = function(itemId, type, group) {
         if (!this.trophies[itemId]) this.trophies[itemId] = { earned: false, psnSynced: false };
         this.trophies[itemId].earned = !this.trophies[itemId].earned;
         this.trophies[itemId].psnSynced = (this.platform === 'ps' && !!this.psnGamertag);
+    } else if (type === 'medal') {
+        if (!this.medals[itemId]) this.medals[itemId] = { earned: false, psnSynced: false };
+        this.medals[itemId].earned = !this.medals[itemId].earned;
+    } else if (type === 'ribbon') {
+        if (!this.ribbons[itemId]) this.ribbons[itemId] = { earned: false, psnSynced: false };
+        this.ribbons[itemId].earned = !this.ribbons[itemId].earned;
     } else {
         if (!this.missions[itemId]) this.missions[itemId] = { completed: false, psnSynced: false };
         this.missions[itemId].completed = !this.missions[itemId].completed;
@@ -695,7 +910,7 @@ async function searchGamePosterArt(commId, gameName) {
         // Search through CUSA/TitleID nodes for matching commId or Name
         for (const [titleId, gObj] of Object.entries(psnGames)) {
             if (!gObj) continue;
-            
+
             const matchesCommId = commId && (gObj.commId === commId || gObj.npCommunicationId === commId);
             const matchesName = gameName && gObj.name && gObj.name.toLowerCase().trim() === gameName.toLowerCase().trim();
 
@@ -894,11 +1109,349 @@ async function autoCheckUserPsnTrophies() {
     }
 }
 
+// Section 11a: Folder / Card builders shared by the mission-schema renderer
+const COLLECTIBLE_LABELS = {
+    personal_letters: 'Personal Letter',
+    classified_documents: 'Classified Document',
+    hidden_items: 'Hidden Item',
+    stone_eagles: 'Dead-Eye Target',
+    workbenches: 'Workbench'
+};
+
+const MEDAL_GROUP_LABELS = {
+    objective: 'Objective',
+    mission: 'Mission',
+    long_shot: 'Long Shot',
+    propaganda: 'Propaganda'
+};
+
+function humanize(key) {
+    return String(key || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function ensureUniversalStyles() {
+    if (document.getElementById('universal-extra-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'universal-extra-styles';
+    style.textContent = `
+        .search-hidden { display: none !important; }
+        .category-section.section-collapsed > .section-content { display: none; }
+        .category-section .category-section { margin-top: 10px; margin-left: 4px; }
+        .category-section .category-section > .category-header { opacity: 0.95; }
+        .category-section .category-section .category-header h2 { font-size: 0.95rem; }
+        .sec-progress { font-size: 0.75rem; font-weight: 800; color: #94a3b8; margin-left: auto; margin-right: 10px; }
+        .uni-search-wrap { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+        .uni-search-input { flex: 1 1 260px; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px; padding: 10px 14px; font-size: 0.95rem; outline: none; }
+        .uni-search-input:focus { border-color: var(--user-theme-accent, #ff5500); }
+        .uni-search-btn { background: #1e293b; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px; padding: 10px 14px; font-size: 0.8rem; font-weight: 800; cursor: pointer; }
+        .uni-search-btn:hover { border-color: var(--user-theme-accent, #ff5500); color: #fff; }
+        .uni-search-count { flex-basis: 100%; font-size: 0.75rem; color: #94a3b8; min-height: 1em; }
+        .mission-region { font-size: 0.7rem; font-weight: 700; color: #94a3b8; margin-left: 8px; }
+    `;
+    document.head.appendChild(style);
+}
+
+// Collapsed by default; title is pre-escaped HTML
+function buildFolder(titleHtml, innerHtml) {
+    return `
+    <section class="category-section section-collapsed">
+        <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
+            <h2>${titleHtml}</h2>
+            <span class="sec-progress"></span>
+            <span>▾</span>
+        </div>
+        <div class="section-content">${innerHtml}</div>
+    </section>`;
+}
+
+function gridOf(cards) {
+    return cards.length ? `<div class="trophy-grid">${cards.join('')}</div>` : '';
+}
+
+// One card for any trackable thing. data-search powers the live search.
+function buildItemCard(o) {
+    const search = [o.title, o.sub, o.body, o.badge, o.ctx, o.type].filter(Boolean).join(' ').toLowerCase();
+    const img = o.img ? toSecureUrl(o.img) : '';
+    const groupAttr = o.group ? ` data-group="${escapeHtml(o.group)}"` : '';
+    const groupArg = o.group ? `, '${escapeHtml(o.group)}'` : '';
+    return `
+    <div class="trophy-card game-item-card" data-id="${escapeHtml(o.id)}" data-type="${o.type}"${groupAttr} data-search="${escapeHtml(search)}">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div style="display:flex; gap:10px; align-items:center;">
+                ${img ? `<img src="${img}" style="width:40px; height:40px; border-radius:6px; object-fit:cover;" onerror="this.style.display='none'">` : ''}
+                <div>
+                    <span class="trophy-rank ${o.badgeClass || 'rank-bronze'}">${escapeHtml(o.badge || '')}</span>
+                    <h3 style="color:#fff; font-size:0.95rem; margin-top:4px;">${escapeHtml(o.title || '')}</h3>
+                    ${o.sub ? `<div style="font-size:0.75rem; color:#94a3b8;">${escapeHtml(o.sub)}</div>` : ''}
+                </div>
+            </div>
+            <button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(o.id)}', '${o.type}'${groupArg})" aria-label="Toggle"></button>
+        </div>
+        ${o.body ? `<p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(o.body)}</p>` : ''}
+    </div>`;
+}
+
+function medalCard(m, ctx) {
+    const tierClass = { bronze: 'rank-bronze', silver: 'rank-silver', gold: 'rank-gold' }[m.goal_tier] || 'rank-silver';
+    const parts = [];
+    if (m.goal !== undefined && m.goal !== null) parts.push(`Goal: ${m.goal}`);
+    if (m.distance_m) parts.push(`Distance: ${m.distance_m} m`);
+    const tiers = m.tiers || {};
+    const known = ['bronze', 'silver', 'gold'].filter(k => tiers[k] !== undefined && tiers[k] !== null)
+        .map(k => `${humanize(k)} ${tiers[k]}`);
+    if (known.length) parts.push(known.join(' • '));
+    const cond = m.tier_conditions || {};
+    const condTxt = ['bronze', 'silver', 'gold'].filter(k => cond[k]).map(k => `${humanize(k)}: ${cond[k]}`);
+    if (condTxt.length) parts.push(condTxt.join(' • '));
+    if (m.notes) parts.push(`Note: ${m.notes}`);
+
+    return buildItemCard({
+        id: m.id, type: 'medal', badge: (m.goal_tier || 'Medal'), badgeClass: tierClass,
+        title: m.name, sub: m.description, body: parts.join(' | '), img: m.image_url, ctx: `medal ${ctx || ''}`
+    });
+}
+
+function ribbonCard(r, ctx) {
+    return buildItemCard({
+        id: r.id, type: 'ribbon', badge: 'Ribbon', badgeClass: 'rank-silver',
+        title: r.name, sub: r.requirement, img: r.image_url, ctx: `ribbon ${ctx || ''}`
+    });
+}
+
+function trophyCardFor(tKey, ctx) {
+    const t = appState.trophies[tKey];
+    if (!t) return '';
+    const tType = (t.rank || 'Bronze').toUpperCase();
+    let badgeClass = 'rank-bronze';
+    if (tType.includes('PLATINUM')) badgeClass = 'rank-platinum';
+    else if (tType.includes('GOLD')) badgeClass = 'rank-gold';
+    else if (tType.includes('SILVER')) badgeClass = 'rank-silver';
+    return buildItemCard({
+        id: tKey, type: 'trophy', badge: tType, badgeClass,
+        title: t.name, body: t.description, img: t.icon, ctx: `trophy ${ctx || ''}`
+    });
+}
+
+// Nested object/array tree -> nested folders of cards
+function renderTree(node, cardFn, path) {
+    if (isLeafList(node)) {
+        return gridOf(toArr(node).filter(Boolean).map(it => cardFn(it, path.map(humanize).join(' '))));
+    }
+    let out = '';
+    Object.entries(node || {}).forEach(([k, v]) => {
+        const inner = renderTree(v, cardFn, path.concat(k));
+        if (inner) out += buildFolder(escapeHtml(humanize(k)), inner);
+    });
+    return out;
+}
+
+function renderMissionBlock(mKey, m, placedTrophyKeys) {
+    const mLabel = `Mission ${m.number} ${m.title || ''}`;
+    const ctx = `${mLabel} ${m.region || ''}`;
+
+    // Walkthrough card (also the "mission complete" checkbox)
+    let inner = gridOf([buildItemCard({
+        id: mKey, type: 'mission', badge: m.region || 'Campaign', badgeClass: 'rank-gold',
+        title: m.title || mLabel, sub: `Mission ${m.number}`, body: m.walkthrough || '', img: m.image_url, ctx
+    })]);
+
+    // Collectibles
+    const colCards = [];
+    Object.entries(m.collectibles || {}).forEach(([cat, list]) => {
+        toArr(list).forEach(it => {
+            if (!it || !it.id) return;
+            colCards.push(buildItemCard({
+                id: it.id, type: 'collectible', group: `${mKey}__${cat}`,
+                badge: COLLECTIBLE_LABELS[cat] || humanize(cat), badgeClass: 'rank-bronze',
+                title: it.name, sub: it.location, img: it.image_url, ctx
+            }));
+        });
+    });
+    if (colCards.length) inner += buildFolder('🗂️ Collectibles', gridOf(colCards));
+
+    // Challenges: kill list + propaganda mission
+    const chCards = [];
+    const kc = m.kill_challenge;
+    if (kc && typeof kc === 'object') {
+        const body = [
+            kc.location ? `Location: ${kc.location}` : '',
+            kc.strategy ? `Strategy: ${kc.strategy}` : '',
+            kc.reward ? `Reward: ${kc.reward}` : ''
+        ].filter(Boolean).join(' ');
+        chCards.push(buildItemCard({
+            id: `kill_${mKey}`, type: 'mission', badge: 'Kill List', badgeClass: 'rank-silver',
+            title: kc.target_name, sub: kc.challenge, body, img: kc.image_url, ctx
+        }));
+    }
+    const pm = m.propaganda_mission;
+    if (pm && pm.id) {
+        const body = [pm.briefing || '', pm.unconfirmed ? '(Unconfirmed mission)' : ''].filter(Boolean).join(' ');
+        chCards.push(buildItemCard({
+            id: pm.id, type: 'mission', badge: 'Propaganda', badgeClass: 'rank-gold',
+            title: pm.title, sub: pm.target_score ? `Target score: ${pm.target_score}` : '', body, img: pm.image_url, ctx
+        }));
+    }
+    if (chCards.length) inner += buildFolder('🎯 Challenges', gridOf(chCards));
+
+    // Medals earned in this mission
+    const medalCards = [];
+    ['objective', 'mission', 'long_shot', 'propaganda'].forEach(g => {
+        toArr(m.medals && m.medals[g]).forEach(med => {
+            if (med && med.id) medalCards.push(medalCard(med, `${ctx} ${MEDAL_GROUP_LABELS[g]}`));
+        });
+    });
+    if (medalCards.length) inner += buildFolder('🏅 Medals', gridOf(medalCards));
+
+    // Trophies for this mission
+    const trophyCards = [];
+    toArr(m.trophies).forEach(t => {
+        if (!t) return;
+        const tKey = `trophy_${appState.gameId}_${t.trophyId}`;
+        placedTrophyKeys.add(tKey);
+        const card = trophyCardFor(tKey, ctx);
+        if (card) trophyCards.push(card);
+    });
+    if (trophyCards.length) inner += buildFolder('🏆 Trophies', gridOf(trophyCards));
+
+    const title = `🎖️ Mission ${escapeHtml(m.number)} — ${escapeHtml(m.title || '')}` +
+        (m.region ? `<span class="mission-region">${escapeHtml(m.region)}</span>` : '');
+    return buildFolder(title, inner);
+}
+
+function renderMissionSchema(data) {
+    const placedTrophyKeys = new Set();
+    let html = `
+        <div class="uni-search-wrap">
+            <input type="search" id="universalSearchInput" class="uni-search-input" autocomplete="off"
+                   placeholder="Search missions, medals, ribbons, collectibles, trophies...">
+            <button type="button" class="uni-search-btn" id="uniExpandAll">Expand all</button>
+            <button type="button" class="uni-search-btn" id="uniCollapseAll">Collapse all</button>
+            <div class="uni-search-count" id="universalSearchCount"></div>
+        </div>`;
+
+    // Missions in order, each in its own folder
+    Object.entries(data.missions)
+        .filter(([, m]) => m && typeof m === 'object')
+        .sort((a, b) => (a[1].number || 0) - (b[1].number || 0))
+        .forEach(([mKey, m]) => { html += renderMissionBlock(mKey, m, placedTrophyKeys); });
+
+    // Ribbons: own folder
+    const ribbonTree = {};
+    ribbonKeys(data).forEach(k => { ribbonTree[k.replace(/_ribbons$/, '')] = data[k]; });
+    const ribbonHtml = renderTree(ribbonTree, ribbonCard, []);
+    if (ribbonHtml) html += buildFolder('🎗️ Ribbons', ribbonHtml);
+
+    // Medals: own folder (general medals; mission medals live inside each mission)
+    if (data.medals && typeof data.medals === 'object') {
+        const medalHtml = renderTree(data.medals, medalCard, []);
+        if (medalHtml) html += buildFolder('🏅 Medals', medalHtml);
+    }
+
+    // Propaganda missions not tied to a mission yet
+    const looseProp = toArr(data.unassigned_propaganda_missions).filter(p => p && p.id).map(p => buildItemCard({
+        id: p.id, type: 'mission', badge: 'Propaganda', badgeClass: 'rank-gold', title: p.title,
+        sub: p.target_score ? `Target score: ${p.target_score}` : '', body: p.briefing || '', img: p.image_url, ctx: 'propaganda unassigned'
+    }));
+    if (looseProp.length) html += buildFolder('📢 Other Propaganda Missions', gridOf(looseProp));
+
+    // General trophies: everything not already shown inside a mission
+    const generalTrophies = Object.keys(appState.trophies)
+        .filter(k => !placedTrophyKeys.has(k))
+        .map(k => trophyCardFor(k, 'general'))
+        .filter(Boolean);
+    if (generalTrophies.length) html += buildFolder('🏆 General Trophies', gridOf(generalTrophies));
+
+    return html;
+}
+
+// Section 11b: Live search + expand/collapse
+function setupUniversalSearch() {
+    const input = document.getElementById('universalSearchInput');
+    const container = document.getElementById('section-container');
+    if (!input || !container) return;
+
+    let timer = null;
+    input.addEventListener('input', () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => runUniversalSearch(input.value), 120);
+    });
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') { input.value = ''; runUniversalSearch(''); }
+    });
+
+    const expandBtn = document.getElementById('uniExpandAll');
+    const collapseBtn = document.getElementById('uniCollapseAll');
+    if (expandBtn) expandBtn.addEventListener('click', () => {
+        container.querySelectorAll('.category-section').forEach(s => s.classList.remove('section-collapsed'));
+    });
+    if (collapseBtn) collapseBtn.addEventListener('click', () => {
+        container.querySelectorAll('.category-section').forEach(s => s.classList.add('section-collapsed'));
+    });
+}
+
+function runUniversalSearch(raw) {
+    const container = document.getElementById('section-container');
+    const countEl = document.getElementById('universalSearchCount');
+    if (!container) return;
+
+    const q = String(raw || '').trim().toLowerCase();
+    const cards = container.querySelectorAll('.game-item-card');
+    const sections = Array.from(container.querySelectorAll('.category-section'));
+
+    // Cleared: show everything and put folders back how they were
+    if (!q) {
+        cards.forEach(c => c.classList.remove('search-hidden'));
+        sections.forEach(s => {
+            s.classList.remove('search-hidden');
+            if (s.dataset.prevCollapsed !== undefined) {
+                s.classList.toggle('section-collapsed', s.dataset.prevCollapsed === '1');
+                delete s.dataset.prevCollapsed;
+            }
+        });
+        if (countEl) countEl.innerText = '';
+        return;
+    }
+
+    const terms = q.split(/\s+/);
+    let matches = 0;
+    cards.forEach(c => {
+        const hay = c.getAttribute('data-search') || '';
+        const hit = terms.every(t => hay.includes(t));
+        c.classList.toggle('search-hidden', !hit);
+        if (hit) matches++;
+    });
+
+    // Deepest folders first so parents see their children's state
+    sections.slice().reverse().forEach(s => {
+        if (s.dataset.prevCollapsed === undefined) {
+            s.dataset.prevCollapsed = s.classList.contains('section-collapsed') ? '1' : '0';
+        }
+        const hasMatch = !!s.querySelector('.game-item-card:not(.search-hidden)');
+        s.classList.toggle('search-hidden', !hasMatch);
+        if (hasMatch) s.classList.remove('section-collapsed');
+    });
+
+    if (countEl) countEl.innerText = matches ? `${matches} result${matches === 1 ? '' : 's'}` : 'No results';
+}
+
 // Section 11: Dynamic Section Renderer
 function renderUniversalCompanion(data) {
     const container = document.getElementById('section-container');
     if (!container || !data) return;
 
+    ensureUniversalStyles();
+
+    // Per-mission schema (any Sniper Elite game): folders, collapsed, searchable
+    if (isMissionSchema(data)) {
+        container.innerHTML = renderMissionSchema(data);
+        appState.applyStateToUI();
+        setupUniversalSearch();
+        return;
+    }
+
+    // Legacy schema (Far Cry etc.) - unchanged
     let html = '';
 
     const rawMissions = data.walkthrough_missions ? (Array.isArray(data.walkthrough_missions) ? data.walkthrough_missions : Object.values(data.walkthrough_missions)) : [];
@@ -1049,7 +1602,7 @@ function toSecureUrl(url) {
 }
 
 function escapeHtml(str) {
-    if (!str) return '';
+    if (str === undefined || str === null || str === '') return '';
     return String(str)
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
@@ -1075,8 +1628,8 @@ async function buildGamePillsBar() {
             const isActive = (gKey.toLowerCase() === CURRENT_GAME_KEY);
 
             pillsHtml += `
-                <button type="button" 
-                        class="game-pill ${isActive ? 'active' : ''}" 
+                <button type="button"
+                        class="game-pill ${isActive ? 'active' : ''}"
                         data-game-key="${escapeHtml(gKey)}"
                         onclick="appState.switchGame('${escapeHtml(gKey)}')">
                     <i class="fas fa-gamepad game-pill-icon"></i>
@@ -1179,7 +1732,7 @@ async function initUniversalEngine() {
                     const uData = snap.val() || {};
                     appState.myFriendCode = uData.friend_code || null;
                     appState.psnGamertag = uData.psn_username || null;
-                    
+
                     const codeDisplay = document.getElementById('myFriendCodeDisplay');
                     if (codeDisplay && appState.myFriendCode) codeDisplay.innerText = appState.myFriendCode;
 
