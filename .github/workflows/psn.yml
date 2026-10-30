@@ -7,11 +7,9 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - 'psn.json'
-      - 'Playstation/psn.json'
-      - 'game/data/**'
-      - 'README.md'
+    paths:
+      - 'Playstation/**'
+      - '.github/workflows/psn.yml'
 
 permissions:
   contents: write
