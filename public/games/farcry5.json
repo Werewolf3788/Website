@@ -683,8 +683,8 @@
       "type": "bronze"
     },
     {
-      "description": "Purchase $1000 in clothing (Campaign only).",
-      "detail": "Purchase $1000 in clothing (Campaign only).",
+      "description": "Purchase 1000 in clothing (Campaign only).",
+      "detail": "Purchase 1000 in clothing (Campaign only).",
       "difficultyTier": "Rare (Medium)",
       "earnedRate": "31.6",
       "groupId": "default",
@@ -701,8 +701,8 @@
       "type": "bronze"
     },
     {
-      "description": "Spend $50000 in Vehicle Shops (Campaign only).",
-      "detail": "Spend $50000 in Vehicle Shops (Campaign only).",
+      "description": "Spend 50000 in Vehicle Shops (Campaign only).",
+      "detail": "Spend 50000 in Vehicle Shops (Campaign only).",
       "difficultyTier": "Ultra Rare (Very Hard)",
       "earnedRate": "3.9",
       "groupId": "default",
