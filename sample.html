@@ -228,9 +228,13 @@ const appP = initializeApp({
 }, "psnstats");
 const authE = getAuth(appE), dbE = getDatabase(appE);
 const authP = getAuth(appP), dbP = getDatabase(appP), fsP = getFirestore(appP);
+const fsE = getFirestore(appE);                      // tracked progress lives here: entertainment-71888 Firestore  users/{friend_code}/platform/{ps|steam|xbox...}/progress/{game}
 
 const MUSIC_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_173WA41Z0YdMPcwnL6Uz_6Hx1jbZZDw_HTxTrwVtCqLU6W2IJLv-VIS2dbMjPaMeIuAZ8cbVawpQ/pub?output=csv";
-const PLATFORMS = ["psn", "steam", "xbox", "pc", "switch"];        // users/{code}/platform/{platform}/progress/{game}
+const PLATFORMS = ["ps", "psn", "playstation", "steam", "xbox", "pc", "switch"];   // platform ids tried under users/{code}/platform/
+const PLATFORM_LABEL = { ps: "PSN", psn: "PSN", playstation: "PSN", steam: "Steam", xbox: "Xbox", pc: "PC", switch: "Switch" };
+const isPsn = (p) => ["ps", "psn", "playstation"].includes(p);
+const prettyGame = (id) => String(id).replace(/_/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/([A-Za-z])(\d)/g, "$1 $2").replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2").replace(/\s+/g, " ").trim();
 const $ = (id) => document.getElementById(id);
 
 /* ============================================================================
@@ -840,31 +844,33 @@ async function loadFriendCrossRef() {
  * 8. Tracked game progress: Firestore users/{friend_code}/platform/{platform}/progress/{game}
  * ============================================================================ */
 async function readProgress(code, platforms = PLATFORMS) {
-  const out = [];
-  await Promise.all(platforms.map(async (p) => {
-    try { const q = await getDocs(collection(fsP, "users", code, "platform", p, "progress")); q.forEach((d) => out.push({ platform: p, game: d.id, data: d.data() })); }
-    catch (e) { if (!/permission/i.test(e.message)) console.warn("[tracked]", p, e.message); else out.permission = true; }
+  const out = []; const ids = new Set(platforms);
+  try { const l = await getDocs(collection(fsE, "users", code, "platform")); l.forEach((d) => { if (platforms.includes(d.id) || !PLATFORM_LABEL[d.id]) ids.add(d.id); }); } catch (e) { if (/permission/i.test(e.message)) out.permission = true; }
+  await Promise.all([...ids].map(async (p) => {
+    try { const q = await getDocs(collection(fsE, "users", code, "platform", p, "progress")); q.forEach((d) => out.push({ platform: p, game: d.id, data: d.data() })); }
+    catch (e) { if (/permission/i.test(e.message)) out.permission = true; else console.warn("[tracked]", p, e.message); }
   }));
   return out;
 }
 const pctOf = (d) => { for (const k of ["percent", "percentage", "pct", "progress", "completion"]) { const v = Number(d[k]); if (Number.isFinite(v)) return Math.max(0, Math.min(100, v <= 1 && v > 0 && k !== "percent" ? v * 100 : v)); } return null; };
 const doneOf = (d) => d.completed === true || d.complete === true || d.done === true || /complete|done|100/i.test(String(d.status || ""));
 
-const PLATFORM_SCOPE = (d, p) => p === "psn" ? d.psn_username_scope : p === "steam" ? (d.steam_friend_code_scope || d.steam_id_scope) : p === "xbox" ? d.xbox_gamertag_scope : "private";
+const PLATFORM_SCOPE = (d, p) => isPsn(p) ? d.psn_username_scope : p === "steam" ? (d.steam_friend_code_scope || d.steam_id_scope) : p === "xbox" ? d.xbox_gamertag_scope : "private";
 async function renderTracked() {
   const code = S.target.friend_code; const card = $("tracked-card");
   if (!code) { card.classList.add("hidden"); return; }
   // a platform's tracked progress follows that platform's scope (public = anyone, friends = friends, private = owner)
   const readable = PLATFORMS.filter((p) => canSee(PLATFORM_SCOPE(S.target, p) || "private"));
   if (!readable.length) { card.classList.add("hidden"); return; }
-  const items = await readProgress(code, readable);
+  let items = await readProgress(code, readable);
+  items = items.filter((it) => PLATFORM_LABEL[it.platform] ? readable.includes(it.platform) : S.own);   // unknown platform ids: owner only
   if (!items.length) { card.classList.toggle("hidden", !items.permission || !S.own); if (items.permission && S.own) $("tracked").innerHTML = `<div class="notice">Tracked progress could not be read. Add a Firestore rule allowing reads of <code>users/{code}/platform/**</code> in the playstation-stats project.</div>`; return; }
   card.classList.remove("hidden");
   window.__tracked = items;
   $("tracked").innerHTML = `<div class="trophies">${items.map((it, i) => { const d = it.data || {}, p = pctOf(d), done = doneOf(d);
-    return `<div class="t ${done ? "done" : ""}" data-i="${i}" style="grid-template-columns:1fr auto;cursor:pointer"><div><div class="n">${esc(it.game.replace(/_/g, " "))} <span class="pill">${esc(it.platform.toUpperCase())}</span></div>${p !== null ? `<div class="bar green" style="margin-top:6px;max-width:300px"><i style="width:${p}%"></i></div>` : ""}<div class="d">${esc(d.notes || d.note || "")}</div></div><div class="r">${done ? '<b style="color:#34d399">Complete</b>' : p !== null ? `<b class="mono">${Math.round(p)}%</b>` : ""}</div></div>`; }).join("")}</div>`;
+    return `<div class="t ${done ? "done" : ""}" data-i="${i}" style="grid-template-columns:1fr auto;cursor:pointer"><div><div class="n">${esc(prettyGame(it.game))} <span class="pill">${esc(PLATFORM_LABEL[it.platform] || it.platform.toUpperCase())}</span></div>${p !== null ? `<div class="bar green" style="margin-top:6px;max-width:300px"><i style="width:${p}%"></i></div>` : ""}<div class="d">${esc(d.notes || d.note || "")}</div></div><div class="r">${done ? '<b style="color:#34d399">Complete</b>' : p !== null ? `<b class="mono">${Math.round(p)}%</b>` : ""}</div></div>`; }).join("")}</div>`;
   $("tracked").querySelectorAll(".t").forEach((el) => el.onclick = () => { const it = window.__tracked[+el.dataset.i];
-    openModal(`<h3 style="margin-top:0">${esc(it.game.replace(/_/g, " "))} <span class="pill">${esc(it.platform.toUpperCase())}</span></h3><div class="mono" style="font-size:12px;white-space:pre-wrap">${esc(JSON.stringify(it.data, null, 2))}</div>`); });
+    openModal(`<h3 style="margin-top:0">${esc(prettyGame(it.game))} <span class="pill">${esc(PLATFORM_LABEL[it.platform] || it.platform.toUpperCase())}</span></h3><div class="mono" style="font-size:12px;white-space:pre-wrap">${esc(JSON.stringify(it.data, null, 2))}</div>`); });
 }
 
 /* ============================================================================
