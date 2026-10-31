@@ -1,944 +1,883 @@
 <!DOCTYPE html>
-<!-- 
-    --- PRECISION INTEGRITY PROTOCOL ---
-    Version: 9.8.0-Wolf - Client-Side Twitch Engine | Firebase Live Integration | COTW Trophy Lodge (##/###)
-    Global Standards: S:50 R:30 B:14 H:30
-    Author: Kevin (Werewolf3788) Admin Engine
-    Engine Version: 13.9.9 UI Sync
-    Timestamp: June 26, 2026, 3:24 AM (NYT)
-    Note: NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE.
-    Updates: Real-time Firebase integration, complete map-to-array normalizers, dynamic fallbacks, high-res Eldorado PS Plus asset, interactive clickable twitch portal, theHunter COTW Firestore integration with "Rare Fur" mapping.
--->
+<!-- ============================================================================
+ * File: /profile.html   (Werewolf Project - Member Profile Hub)
+ * Shows the profile of whoever is signed in (or ?u=<friend code | user key> for someone else).
+ *   Account / menu / music  -> entertainment-71888 (users, friend_codes, utm_links)  [Firebase Auth lives here]
+ *   PSN + game data          -> playstation-stats   (RTDB psn/gamertags, Firestore games/players/users)
+ *   Music releases           -> published Google Sheet CSV
+ * ============================================================================ -->
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="900"> <!-- Hard Refresh every 15 minutes -->
-    <title>Werewolf3788 | Official Admin Hub</title>
-    
-    <!-- --- GOOGLE ANALYTICS (WEREWOLF SMART TRACKING) --- -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        
-        // Helper for New York Time
-        function getNYTime() {
-            return new Date().toLocaleString("en-US", {timeZone: "America/New_York", hour12: true});
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Profile | Werewolf Project</title>
+<link id="fav" rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23ff5f1f'/%3E%3C/svg%3E">
+<link id="touch-icon" rel="apple-touch-icon" href="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-CTYHDF4MSD',{page_type:'member_profile'});</script>
+<style>
+:root{
+  --bg:#070709; --card:#14141a; --card2:#1b1b23; --line:rgba(255,255,255,.10);
+  --text:#e2e8f0; --muted:#94a3b8; --accent:#ff5f1f; --green:#10b981; --red:#ef4444; --gold:#f59e0b;
+  --user-font:#e2e8f0;      /* users/{key}/primary_color   -> text colour on the profile card */
+  --user-border:#ff5f1f;    /* users/{key}/secondary_color -> border colour on the profile card */
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+img{max-width:100%}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+.hidden{display:none!important}
+.wrap{width:min(1280px,100% - 32px);margin-inline:auto}
 
-        gtag('config', 'G-Z9M5LXQ5XN', {
-            'stream_id': '13278632388',
-            'page_type': 'admin_dashboard',
-            'content_group': 'squad_hub',
-            'layout_version': '9.8.0',
-            'user_id': 'Werewolf3788',
-            'engagement_timezone': 'Eastern Time (New York)',
-            'engagement_timestamp_ny': getNYTime(),
-            'send_page_view': true,
-            'description': 'This is Werewolf3788 "twitch" or OneLIVIDMAN playstation stats progress on trophy\'s, he has my amazon affliflate id in recent hunt as well as in the quicklink. then we have my Last FM widget showing current song'
-        });
-    </script>
+/* ---------- top menu ---------- */
+.topnav{position:sticky;top:0;z-index:1000;background:rgba(10,10,14,.96);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.topnav .wrap{display:flex;align-items:center;gap:14px;min-height:56px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;text-decoration:none;white-space:nowrap}
+.brand img{width:34px;height:34px;border-radius:8px;object-fit:cover}
+.burger{margin-left:auto;display:none;background:none;border:0;font-size:22px;min-width:44px;min-height:44px}
+#nav{display:flex;align-items:center;gap:4px;flex:1;flex-wrap:wrap}
+.nav-btn,.nav-drop>button{display:flex;align-items:center;gap:8px;background:none;border:0;color:var(--muted);padding:10px 12px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;min-height:44px}
+.nav-btn:hover,.nav-drop>button:hover,.nav-drop.open>button{color:#fff;background:rgba(255,255,255,.06)}
+.nav-btn.current{color:#fff;box-shadow:inset 0 -2px 0 var(--accent)}
+.nav-thumb{width:22px;height:22px;border-radius:6px;object-fit:cover}
+.nav-drop{position:relative}
+.nav-menu{display:none;position:absolute;left:0;top:100%;min-width:230px;background:#1a1a22;border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 18px 40px rgba(0,0,0,.6)}
+.nav-drop.open .nav-menu{display:block}
+.nav-menu a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;text-decoration:none;color:var(--text);font-size:14px;min-height:44px}
+.nav-menu a:hover{background:rgba(255,255,255,.07)}
+.nav-user{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.nav-user img{width:30px;height:30px;border-radius:50%;object-fit:cover}
+@media(max-width:860px){
+  .burger{display:block}
+  #nav{display:none;position:absolute;left:0;right:0;top:100%;flex-direction:column;align-items:stretch;background:#0e0e13;border-bottom:1px solid var(--line);padding:8px 16px 14px;max-height:75vh;overflow:auto}
+  #nav.open{display:flex}
+  .nav-menu{position:static;box-shadow:none;border:0;background:rgba(255,255,255,.03)}
+  .nav-user span{display:none}
+}
 
-    <!-- --- EXTERNAL ASSETS --- -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- --- CUSTOM STYLES (JET ORANGE THEME) --- -->
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap');
+/* ---------- cards ---------- */
+main{padding:22px 0 120px;display:flex;flex-direction:column;gap:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px}
+.card h2{margin:0 0 14px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:980px){.grid2{grid-template-columns:1fr}}
+.muted{color:var(--muted)} .mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--line);font-size:12px;font-weight:700}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--card2);font-weight:700;text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.notice{padding:12px 14px;border-radius:12px;background:rgba(245,158,11,.10);border:1px solid rgba(245,158,11,.35);color:#fcd34d;font-size:14px}
 
-        /* --- CSS VARIABLES & TOKENS --- */
-        :root {
-            --bg-dark: #0a0a0c;
-            --wolf-gray: #1e1e24;
-            --accent-orange: #FF5F1F; /* Jet Orange */
-            --accent-orange-dim: #9e3a12;
-            --danger-red: #ef4444;
-            --warning-orange: #f59e0b;
-            --success-green: #10b981;
-            --amazon-orange: #FF9900;
-            --platinum-silver: #93c5fd;
-            --ps-blue: #00439c;
-            
-            /* Kevin's Global Mobile Standards (LOCKED) */
-            --body-text-size: 14px;
-            --header-text-size: 30px;
-            --section-padding: 50px;
-            --row-spacing: 30px;
-        }
+/* ---------- profile hero (uses the member's own colours) ---------- */
+.hero{border:2px solid var(--user-border);color:var(--user-font);display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.hero .muted{color:color-mix(in srgb,var(--user-font) 65%,transparent)}
+.hero .avatar{width:132px;height:132px;border-radius:50%;object-fit:cover;border:3px solid var(--user-border);flex:none;background:#222}
+.hero h1{margin:0;font-size:clamp(26px,5vw,40px);line-height:1.1;word-break:break-word}
+.hero .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.hero .pill{border-color:var(--user-border);color:var(--user-font)}
+.hero .pill a{text-decoration:none;border-bottom:1px dotted currentColor}
+.hero .pill.scope-private{opacity:.55}
+.code{font-family:"JetBrains Mono",monospace;letter-spacing:.12em}
 
-        /* --- BASE STYLES --- */
-        body {
-            background-color: var(--bg-dark);
-            color: #e2e8f0;
-            font-size: var(--body-text-size);
-            font-family: 'Inter', system-ui, sans-serif;
-            margin: 0; padding: 0;
-            overflow-x: hidden;
-            line-height: 1.5;
-            overflow-wrap: break-word; /* GLOBAL REQUIREMENT */
-        }
+/* ---------- friends ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{display:flex;align-items:center;gap:10px;padding:8px 12px 8px 8px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:14px;font-weight:700;text-decoration:none}
+.chip img{width:34px;height:34px;border-radius:50%;object-fit:cover}
+.chip small{display:block;font-weight:600;color:var(--muted);font-size:11px;line-height:1.1}
+a.chip:hover{border-color:var(--accent)}
 
-        /* --- NAVIGATION --- */
-        .nav-bar {
-            position: sticky; top: 0; z-index: 20000;
-            background: rgba(10, 10, 12, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 12px 20px;
-        }
-        .nav-container {
-            max-width: 1700px; margin: 0 auto;
-            display: flex; align-items: center; justify-content: space-between;
-        }
-        .nav-links-wrapper { display: none; gap: 25px; align-items: center; }
-        .nav-links-wrapper.active { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-dark); padding: 20px; border-bottom: 1px solid var(--accent-orange); }
-        .nav-link { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; color: #64748b; transition: all 0.3s; white-space: nowrap; text-decoration: none; cursor: pointer; padding: 10px 0; }
-        .nav-link:hover, .nav-link.active { color: var(--accent-orange); }
+/* ---------- PSN ---------- */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px}
+.stat b{display:block;font-size:26px;font-family:"JetBrains Mono",monospace}
+.stat span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#6b7280;margin-right:6px}
+.dot.on{background:var(--green);box-shadow:0 0 0 4px rgba(16,185,129,.2)}
+.tro-row{display:flex;gap:6px;margin-top:6px;font-size:13px;font-weight:700}
+.gold{color:#fbbf24}.plat{color:#93c5fd}.silver{color:#cbd5e1}.bronze{color:#d97706}
+.hunt-art{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;background:#0b0b10}
+.bar{height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#f97316,#fbbf24);border-radius:999px}
+.bar.green i{background:linear-gradient(90deg,#059669,#34d399)}
+.recent{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.recent .g{background:var(--card2);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;text-align:left;padding:0}
+.recent .g img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+.recent .g div{padding:8px 10px;font-size:12px;font-weight:700}
+.recent .g.sel{outline:2px solid var(--accent)}
+.recent .g .sm{font-weight:600;color:var(--muted);font-size:11px}
+.trophies{display:flex;flex-direction:column}
+.t{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;padding:12px 4px;border-top:1px solid var(--line)}
+.t:first-child{border-top:0}
+.t img{width:56px;height:56px;border-radius:10px;object-fit:cover;background:#0b0b10}
+.t .n{font-weight:800;font-size:14px}
+.t .d{font-size:12px;color:var(--muted)}
+.t .r{text-align:right;font-size:12px;min-width:86px}
+.t.done{background:linear-gradient(90deg,rgba(16,185,129,.07),transparent)}
+.t.prog .bar{margin-top:6px;max-width:260px}
+.fr{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.fr .f{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:2px 8px 2px 2px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--line)}
+.fr .f img{width:20px;height:20px;border-radius:50%;object-fit:cover}
+.fr .f.part{opacity:.75;border-style:dashed}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.filters button{padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card2);font-size:12px;font-weight:700}
+.filters button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.scroll{max-height:760px;overflow:auto}
 
-        .dropdown { position: relative; display: inline-block; padding-bottom: 5px; }
-        .dropdown-content { display: none; position: absolute; top: 100%; left: 0; background-color: var(--wolf-gray); min-width: 250px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5); z-index: 1; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; margin-top: 0px; }
-        .dropdown-content a { color: #cbd5e1; padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .dropdown-content a:hover { background-color: rgba(255, 95, 31, 0.1); color: var(--accent-orange); }
-        .dropdown:hover .dropdown-content { display: block; }
-        
-        .nav-thumb { width: 22px; height: 22px; border-radius: 4px; object-fit: cover; }
+/* ---------- floating music card ---------- */
+#music{position:fixed;left:14px;bottom:14px;z-index:900;width:min(310px,calc(100vw - 28px));background:rgba(20,20,26,.97);border:1px solid var(--line);border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.6);overflow:hidden}
+#music a.m-link{display:flex;gap:12px;align-items:center;padding:12px;text-decoration:none}
+#music img{width:64px;height:64px;border-radius:10px;object-fit:cover;flex:none}
+#music .m-label{font-size:10px;letter-spacing:.14em;font-weight:800;color:var(--accent)}
+#music .m-title{font-weight:800;font-size:14px;line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#music .m-time{font-family:"JetBrains Mono",monospace;font-size:12px;color:#34d399;margin-top:2px}
+#music .m-time.out{color:#fb923c}
+#music .m-ctl{display:flex;justify-content:space-between;align-items:center;padding:0 8px 8px;font-size:11px;color:var(--muted)}
+#music .m-ctl button{background:none;border:0;min-width:36px;min-height:32px;color:var(--muted)}
+#music .m-x{position:absolute;right:2px;top:2px;background:none;border:0;min-width:32px;min-height:32px;color:var(--muted)}
 
-        @media (min-width: 1024px) {
-            .nav-links-wrapper { display: flex; flex-direction: row; }
-            .mobile-toggle { display: none; }
-            h1 { font-size: 72px !important; }
-            h2 { font-size: 36px !important; }
-            .section-container { padding-top: 80px; padding-bottom: 80px; }
-            .nav-link { font-size: 12px; }
-        }
-
-        /* --- GLOBAL UI COMPONENTS --- */
-        h1, h2, h3 { font-size: var(--header-text-size); font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; margin: 0; line-height: 1.3; color: white; }
-        .section-container { padding-top: var(--section-padding); padding-bottom: var(--section-padding); }
-        .glass-card { background: rgba(30, 30, 36, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1.25rem; transition: all 0.3s ease; height: auto; text-decoration: none; display: block; }
-        .glass-card:hover { border-color: var(--accent-orange); transform: translateY(-3px); }
-
-        .header-stat-card { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 180px; text-align: center; position: relative; }
-        .wolf-gradient-text { background: linear-gradient(135deg, #FF5F1F 0%, #9e3a12 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        .mini-stat-label { font-size: 10px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; }
-        .mini-stat-value { font-size: 14px; font-weight: 900; color: white; }
-
-        .trophy-row { display: grid; grid-template-columns: 50px 1fr auto; align-items: center; gap: 15px; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.06); cursor: pointer; transition: all 0.3s ease; }
-        .trophy-row:hover { background: rgba(255,255,255,0.03); }
-        .trophy-icon-sq { width: 50px; height: 50px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
-        .trophy-title-text { font-weight: 800; color: var(--accent-orange); font-size: 15px; text-transform: uppercase; }
-
-        /* --- TROPHY GLOW EFFECT (EARNED IN LAST 12 HOURS) --- */
-        .recent-earn-glow {
-            border-color: rgba(255, 95, 31, 0.8) !important;
-            background: rgba(255, 95, 31, 0.06) !important;
-            box-shadow: 0 0 15px rgba(255, 95, 31, 0.25) inset, 0 0 15px rgba(255, 95, 31, 0.15) !important;
-            animation: recentEarnPulse 2.5s infinite ease-in-out;
-        }
-        @keyframes recentEarnPulse {
-            0%, 100% { box-shadow: 0 0 15px rgba(255, 95, 31, 0.25) inset, 0 0 10px rgba(255, 95, 31, 0.1) !important; }
-            50% { box-shadow: 0 0 25px rgba(255, 95, 31, 0.45) inset, 0 0 20px rgba(255, 95, 31, 0.35) !important; }
-        }
-
-        .progress-bar-container { height: 10px; background: #2d2d35; border-radius: 5px; overflow: hidden; }
-        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #FF5F1F, #9e3a12); transition: width 1.5s ease-out; }
-
-        .game-thumb { position: relative; aspect-ratio: 2/3; overflow: hidden; border-radius: 1rem; background: #1e1e24; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .game-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
-        .game-info-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 60%); display: flex; flex-direction: column; justify-content: flex-end; padding: 12px; }
-
-        #health-monitor { position: fixed; bottom: 20px; left: 20px; z-index: 10001; background: rgba(30, 30, 36, 0.85); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 9999px; border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .status-dot-pulse { width: 10px; height: 10px; border-radius: 50%; position: relative; }
-        .status-dot-pulse.online { background: var(--success-green); }
-        .status-dot-pulse.online::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; background: inherit; opacity: 0.4; animation: dotPulse 2s infinite; }
-        .status-dot-pulse.offline { background: #475569; }
-        @keyframes dotPulse { 0% { transform: scale(1); opacity: 0.4; } 70% { transform: scale(2.5); opacity: 0; } 100% { transform: scale(1); opacity: 0; } }
-
-        #trophy-lightbox { position: fixed; inset: 0; z-index: 21000; background: rgba(0,0,0,0.98); display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); padding: 20px; }
-        .modal-content { background: var(--wolf-gray); width: 100%; max-width: 500px; border-radius: 2rem; border: 1px solid rgba(255, 255, 255, 0.1); overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.8); }
-
-        .avatar-stack { display: flex; align-items: center; justify-content: center; }
-        .avatar-stack-item { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--wolf-gray); margin-left: -8px; transition: transform 0.3s; }
-        .avatar-stack-item:hover { transform: translateY(-5px); z-index: 10; }
-
-        .support-img-icon { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 2px solid rgba(255,255,255,0.05); }
-
-        /* PS PLUS GLOW & BADGE */
-        .ps-plus-active { box-shadow: 0 0 25px rgba(255, 95, 31, 0.4); border-color: var(--accent-orange) !important; }
-        .ps-plus-badge { position: absolute; bottom: 0; left: 50%; transform: translate(-50%, 50%); background: var(--ps-blue); color: white; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 900; letter-spacing: 0.1em; border: 2px solid var(--bg-dark); z-index: 10; display: none; white-space: nowrap;}
-        
-        /* KF BRAND WATERMARK */
-        .kf-watermark { position: fixed; bottom: 16px; left: 24px; z-index: 9999; opacity: 0.5; transition: opacity 0.3s; display: flex; align-items: center; pointer-events: none; }
-        .kf-watermark:hover { opacity: 1; }
-        .kf-k { color: #FF4500; transform: scaleX(-1); z-index: 2; font-weight: 900; font-size: 24px; display: inline-block; }
-        .kf-f { color: #ffffff; margin-left: -0.22em; z-index: 1; font-weight: 900; font-size: 24px; text-shadow: 1px 1px 0px rgba(0,0,0,0.8); display: inline-block; }
-    </style>
+/* ---------- lightbox / modal ---------- */
+#lb,#modal{position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:18px}
+#lb.show,#modal.show{display:flex}
+#lb img{max-width:96vw;max-height:88vh;border-radius:12px;box-shadow:0 20px 60px #000}
+#lb .cap{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:13px;color:#cbd5e1}
+#lb .x,#modal .x{position:absolute;top:10px;right:14px;font-size:30px;background:none;border:0;color:#fff;min-width:44px;min-height:44px}
+#modal .box{background:var(--card);border:1px solid var(--line);border-radius:18px;max-width:560px;width:100%;max-height:88vh;overflow:auto;padding:22px;position:relative}
+img.lb-able{cursor:zoom-in}
+</style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
 
-    <!-- KF WATERMARK -->
-    <div class="kf-watermark">
-        <span class="kf-k">K</span><span class="kf-f">F</span>
+<header class="topnav">
+  <div class="wrap">
+    <a class="brand" href="./index.html"><img id="brand-img" alt="" class="hidden"><span id="brand-name">Werewolf Project</span></a>
+    <nav id="nav" aria-label="Main menu"></nav>
+    <div class="nav-user" id="nav-user"></div>
+    <button class="burger" id="burger" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="gate" class="card" style="text-align:center">
+    <h1 style="margin-top:0" id="gate-title">Loading profile…</h1>
+    <div id="gate-msg" class="notice hidden"></div>
+    <script>setTimeout(function(){if(!window.__booted){var m=document.getElementById("gate-msg");m.textContent="Firebase did not load. This page has to be opened from your website (or any normal browser tab), not from an editor preview, so sign-in and the database can connect.";m.classList.remove("hidden");}},6000);</script>
+  </section>
+
+  <div id="app" class="hidden" style="display:flex;flex-direction:column;gap:22px">
+    <section class="card hero" id="hero"></section>
+
+    <section class="card hidden" id="requests-card"><h2><i class="fa-solid fa-user-clock"></i> Friend requests</h2><div id="requests" class="chips"></div></section>
+
+    <section class="card hidden" id="friends-card"><h2><i class="fa-solid fa-user-group"></i> Friends</h2><div id="friends" class="chips"></div></section>
+
+    <section id="psn" class="hidden" style="display:flex;flex-direction:column;gap:22px">
+      <div class="card">
+        <h2><i class="fa-brands fa-playstation"></i> PlayStation <span class="pill" id="sync-pill">--</span></h2>
+        <div class="stats" id="stats"></div>
+      </div>
+      <div class="grid2">
+        <section class="card" id="hunt"></section>
+        <section class="card"><h2><i class="fa-solid fa-clock-rotate-left"></i> Recent games</h2><div class="recent" id="recent"></div></section>
+      </div>
+      <section class="card">
+        <h2><i class="fa-solid fa-trophy"></i> Trophy progress <span id="tro-title" class="pill">--</span></h2>
+        <div class="filters" id="tro-filters"></div>
+        <div class="scroll"><div class="trophies" id="trophies"></div></div>
+      </section>
+    </section>
+
+    <section class="card hidden" id="tracked-card"><h2><i class="fa-solid fa-list-check"></i> Tracked game progress</h2><div id="tracked"></div></section>
+  </div>
+</main>
+
+<aside id="music" class="hidden" aria-label="Music releases">
+  <button class="m-x" id="m-x" aria-label="Close">&times;</button>
+  <a class="m-link" id="m-link" href="#" target="_blank" rel="noopener noreferrer">
+    <img id="m-img" alt="" class="lb-ignore">
+    <div style="min-width:0"><div class="m-label" id="m-label">UPCOMING</div><div class="m-title" id="m-title">--</div><div class="m-time" id="m-time">--</div></div>
+  </a>
+  <div class="m-ctl"><button id="m-prev" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button><span id="m-count"></span><button id="m-next" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button></div>
+</aside>
+
+<div id="lb" role="dialog" aria-label="Image viewer"><button class="x" aria-label="Close">&times;</button><img id="lb-img" alt=""><div class="cap" id="lb-cap"></div></div>
+<div id="modal" role="dialog"><div class="box"><button class="x" aria-label="Close" style="color:#fff">&times;</button><div id="modal-body"></div></div></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, get, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getFirestore, doc, getDoc, collection, getDocs, query, where, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* ============================================================================
+ * 1. Firebase apps
+ *    E = entertainment-71888  (Auth, users, friend_codes, utm_links)
+ *    P = playstation-stats    (PSN RTDB + Firestore)
+ * ============================================================================ */
+const appE = initializeApp({
+  apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc", authDomain: "entertainment-71888.firebaseapp.com",
+  databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com", projectId: "entertainment-71888",
+  storageBucket: "entertainment-71888.firebasestorage.app", messagingSenderId: "660524340277",
+  appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c"
+}, "entertainment");
+const appP = initializeApp({
+  apiKey: "AIzaSyBT3RHrZQCcBdcoPpM9hMjuzSB0KBtu5UI", authDomain: "playstation-stats.firebaseapp.com",
+  databaseURL: "https://playstation-stats-default-rtdb.firebaseio.com", projectId: "playstation-stats",
+  storageBucket: "playstation-stats.firebasestorage.app", messagingSenderId: "748816703249",
+  appId: "1:748816703249:web:3413fac9800148aa42b6b0"
+}, "psnstats");
+const authE = getAuth(appE), dbE = getDatabase(appE);
+const authP = getAuth(appP), dbP = getDatabase(appP), fsP = getFirestore(appP);
+
+const MUSIC_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_173WA41Z0YdMPcwnL6Uz_6Hx1jbZZDw_HTxTrwVtCqLU6W2IJLv-VIS2dbMjPaMeIuAZ8cbVawpQ/pub?output=csv";
+const PLATFORMS = ["psn", "steam", "xbox", "pc", "switch"];        // users/{code}/platform/{platform}/progress/{game}
+const $ = (id) => document.getElementById(id);
+
+/* ============================================================================
+ * 2. Helpers
+ * ============================================================================ */
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const keyOf = (u) => (u.email ? u.email.toLowerCase().replace(/\./g, "_").replace("@", "_at_") : u.uid);   // same as settings page
+const safeKey = (s) => String(s || "").replace(/[.$#\[\]\/]/g, "_");
+const toGameKey = (n = "") => String(n).replace(/®|™|©/g, "").replace(/[:\/\\#$\[\].\-+]/g, " ").trim().replace(/\s+/g, "_") || "Unknown_Game";
+const lc = (s) => String(s || "").trim().toLowerCase();
+const num = (v, d = 999) => { const n = parseFloat(v); return Number.isFinite(n) ? n : d; };
+const NY = { timeZone: "America/New_York", hour12: false };
+const fmtNY = (v) => { if (!v) return "--"; const d = new Date(v); return isNaN(d) ? String(v) : d.toLocaleString("en-US", NY); };
+
+function secure(u) {                           // only http(s)/relative URLs, never mixed content, never javascript:
+  if (!u || typeof u !== "string") return "";
+  let s = u.trim();
+  if (s.startsWith("//")) s = "https:" + s;
+  if (/^http:\/\//i.test(s)) s = s.replace(/^http:/i, "https:");
+  if (/^https:\/\//i.test(s) || /^(\.\/|\.\.\/|\/)[^/]/.test(s) || /^[\w-]+\.html?(\?|#|$)/.test(s)) return s;
+  return "";
+}
+const img = (u, cls = "", alt = "") => { const s = secure(u); return s ? `<img src="${esc(s)}" alt="${esc(alt)}" class="lb-able ${cls}" loading="lazy" referrerpolicy="no-referrer">` : ""; };
+
+function hash(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
+const cacheGet = (k) => { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch { return null; } };
+const cacheSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private mode */ } };
+const okColor = (c) => /^#[0-9a-f]{6}$/i.test(String(c || ""));
+const lum = (hex) => { const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.substr(i, 2), 16) / 255); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+
+/* Smart cache: paint from localStorage first, then always revalidate; only repaint when the signature changed. */
+function smartCache(name, fresh, signature, paint) {
+  const c = cacheGet(name);
+  if (c && c.sig) paint(c.data, true);
+  const sig = signature(fresh);
+  if (!c || c.sig !== sig) { cacheSet(name, { sig, data: fresh }); paint(fresh, false); }
+}
+
+/* ============================================================================
+ * 3. Lightbox (every image on the page, except images that sit inside a link/button)
+ * ============================================================================ */
+function openLightbox(src, cap) {
+  $("lb-img").src = src; $("lb-cap").textContent = cap || ""; $("lb").classList.add("show");
+}
+document.addEventListener("click", (e) => {
+  const im = e.target.closest && e.target.closest("img");
+  if (im && im.id !== "lb-img" && !im.closest("a,button,.lb-ignore") && !im.classList.contains("lb-ignore")) {
+    openLightbox(im.currentSrc || im.src, im.alt); return;
+  }
+  if (e.target.id === "lb" || e.target.closest("#lb .x")) $("lb").classList.remove("show");
+  if (e.target.id === "modal" || e.target.closest("#modal .x")) $("modal").classList.remove("show");
+  if (!e.target.closest(".nav-drop")) document.querySelectorAll(".nav-drop.open").forEach((d) => d.classList.remove("open"));
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") { $("lb").classList.remove("show"); $("modal").classList.remove("show"); } });
+const openModal = (html) => { $("modal-body").innerHTML = html; $("modal").classList.add("show"); };
+
+/* ============================================================================
+ * 4. Menu from /utm_links
+ *    - a node with a url is a link. name = name/title, or the folder key (Settings/0 -> "Settings")
+ *    - rowNumber: lower = further LEFT in the bar, and higher up inside a drop-down
+ *    - same `group` text  -> one drop-down button;   empty / null group -> its own button
+ * ============================================================================ */
+const NO_GROUP = new Set(["", "null", "none", "standalone", "undefined", "-"]);
+function collectLinks(node, key, parentKey, out) {
+  if (!node || typeof node !== "object") return;
+  const url = node.url || node.link || node.href;
+  if (typeof url === "string" && url.trim()) {
+    const label = node.name || node.title || (/^\d+$/.test(key) ? parentKey : key);
+    const g = node.group == null ? "" : String(node.group).trim();
+    out.push({ name: String(label || "Link"), url: url.trim(), image: node.image || node.img || node.icon || node.thumb || "",
+               group: NO_GROUP.has(g.toLowerCase()) ? "" : g, row: num(node.rowNumber), updatedAt: node.updatedAt || "" });
+    return;
+  }
+  for (const [k, v] of Object.entries(node)) collectLinks(v, k, key, out);
+}
+function buildMenu(data) {
+  const links = []; collectLinks(data, "", "", links);
+  const items = []; const groups = new Map();
+  for (const l of links) {
+    if (!l.group) { items.push({ type: "link", row: l.row, link: l }); continue; }
+    const k = l.group.toLowerCase();
+    if (!groups.has(k)) groups.set(k, { type: "group", name: l.group, links: [] });
+    groups.get(k).links.push(l);
+  }
+  for (const g of groups.values()) {
+    g.links.sort((a, b) => a.row - b.row || a.name.localeCompare(b.name));
+    g.row = g.links[0].row; items.push(g);
+  }
+  items.sort((a, b) => a.row - b.row || (a.link?.name || a.name).localeCompare(b.link?.name || b.name));
+  return { items, links };
+}
+const samePage = (url) => { try { const u = new URL(url, location.href); return u.origin === location.origin; } catch { return false; } };
+const thumb = (u) => { const s = secure(u); return s ? `<img class="nav-thumb" src="${esc(s)}" alt="" loading="lazy">` : ""; };
+const linkA = (l, cls) => { const href = secure(l.url) || "#"; const t = samePage(href) ? "" : ' target="_blank" rel="noopener noreferrer"';
+  const cur = (() => { try { return new URL(href, location.href).pathname === location.pathname ? " current" : ""; } catch { return ""; } })();
+  return `<a class="${cls}${cur}" href="${esc(href)}"${t}>${thumb(l.image)}<span>${esc(l.name)}</span></a>`; };
+
+function renderMenu({ items, links }) {
+  $("nav").innerHTML = items.map((n, i) => n.type === "link" ? linkA(n.link, "nav-btn")
+    : `<div class="nav-drop" data-i="${i}"><button type="button" aria-haspopup="true"><i class="fa-solid fa-folder"></i><span>${esc(n.name)}</span><i class="fa-solid fa-chevron-down" style="font-size:10px"></i></button>
+       <div class="nav-menu">${n.links.map((l) => linkA(l, "")).join("")}</div></div>`).join("");
+  $("nav").querySelectorAll(".nav-drop > button").forEach((b) => b.onclick = (e) => {
+    e.stopPropagation(); const d = b.parentElement, was = d.classList.contains("open");
+    document.querySelectorAll(".nav-drop.open").forEach((x) => x.classList.remove("open")); if (!was) d.classList.add("open");
+  });
+  // header image + favicon: this page's own entry if the menu has one, otherwise Home
+  const file = location.pathname.split("/").pop().toLowerCase();
+  const byName = links.find((l) => lc(l.name) === "profile");
+  const byUrl = links.find((l) => { try { return file && new URL(l.url, location.href).pathname.toLowerCase().endsWith("/" + file) && file !== "index.html"; } catch { return false; } });
+  const home = links.find((l) => lc(l.name) === "home") || links.find((l) => /(^|\/)index\.html?$/i.test(l.url));
+  const own = [byName, byUrl].find((l) => l && l.image);              // this page's own menu entry (utm_links/Profile)
+  const pick = own || home;
+  const src = secure(pick && pick.image);
+  if (src) {
+    $("brand-img").src = src; $("brand-img").classList.remove("hidden");
+    $("fav").href = src; $("touch-icon").href = src;
+  }
+}
+$("burger").onclick = () => $("nav").classList.toggle("open");
+
+function startMenu() {
+  const sigOf = (d) => hash(JSON.stringify(collectAndSig(d)));
+  const collectAndSig = (d) => { const l = []; collectLinks(d, "", "", l); return l.map((x) => [x.name, x.url, x.image, x.group, x.row, x.updatedAt]); };
+  const first = cacheGet("wp_menu_v2"); if (first && first.data) renderMenu(buildMenu(first.data));
+  onValue(ref(dbE, "utm_links"), (snap) => {
+    const data = snap.val(); if (!data) return;
+    const c = cacheGet("wp_menu_v2");
+    if (!c || c.sig !== sigOf(data)) { cacheSet("wp_menu_v2", { sig: sigOf(data), data }); renderMenu(buildMenu(data)); }
+  }, (err) => console.warn("[menu]", err.message));
+}
+
+/* ============================================================================
+ * 5. Floating music card (published Google Sheet CSV: Name | URL | Date | Image Url)
+ * ============================================================================ */
+function parseCSV(text) {
+  const rows = []; let row = [], cell = "", q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += c; }
+    else if (c === '"') q = true;
+    else if (c === ",") { row.push(cell); cell = ""; }
+    else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; row.push(cell); rows.push(row); row = []; cell = ""; }
+    else cell += c;
+  }
+  if (cell !== "" || row.length) { row.push(cell); rows.push(row); }
+  return rows.filter((r) => r.some((x) => String(x).trim() !== ""));
+}
+function parseReleaseDate(s) {
+  s = String(s || "").trim(); if (!s || /^n\/?a$/i.test(s)) return NaN;
+  let m = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/); if (m) return new Date(+m[1], +m[2] - 1, +m[3]).getTime();
+  m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})/); if (m) return new Date(+(m[3].length === 2 ? "20" + m[3] : m[3]), +m[1] - 1, +m[2]).getTime();
+  const t = Date.parse(s); return isNaN(t) ? NaN : t;
+}
+function releasesFromCSV(text) {
+  const out = [];
+  for (const r of parseCSV(text)) {
+    const [name, url, date, image] = r.map((x) => String(x || "").trim());
+    const t = parseReleaseDate(date); if (!name || isNaN(t)) continue;       // skips the header row too
+    out.push({ name, url: secure(url) || "#", date: t, image: secure(image) });
+  }
+  const now = Date.now(), DAY = 86400000;
+  const up = out.filter((x) => x.date > now).sort((a, b) => a.date - b.date);
+  const rel = out.filter((x) => x.date <= now && now - x.date <= 60 * DAY).sort((a, b) => b.date - a.date);
+  return [...up, ...rel];
+}
+let rel = [], relI = 0, relPaused = false;
+function paintRelease() {
+  const card = $("music");
+  if (!rel.length) { card.classList.add("hidden"); return; }
+  if (sessionStorage.getItem("wp_music_closed") === "1") return;
+  card.classList.remove("hidden");
+  relI = ((relI % rel.length) + rel.length) % rel.length;
+  const r = rel[relI];
+  const a = $("m-link"); a.href = r.url; $("m-title").textContent = r.name; $("m-count").textContent = `${relI + 1} / ${rel.length}`;
+  const im = $("m-img"); if (r.image) { im.src = r.image; im.style.visibility = "visible"; } else im.style.visibility = "hidden";
+  tickRelease();
+}
+function tickRelease() {
+  if (!rel.length) return; const r = rel[relI]; const diff = r.date - Date.now(); const t = $("m-time");
+  if (diff <= 0) { $("m-label").textContent = "OUT NOW"; t.textContent = "Out now - go listen!"; t.className = "m-time out"; return; }
+  const d = Math.floor(diff / 86400000), h = Math.floor(diff % 86400000 / 3600000), m = Math.floor(diff % 3600000 / 60000), s = Math.floor(diff % 60000 / 1000);
+  $("m-label").textContent = d === 0 ? "COMING TODAY" : `COMING IN ${d} DAY${d === 1 ? "" : "S"}`;
+  t.textContent = `${d}d ${String(h).padStart(2, "0")}h ${String(m).padStart(2, "0")}m ${String(s).padStart(2, "0")}s`; t.className = "m-time";
+}
+async function loadMusic() {
+  try {
+    const r = await fetch(`${MUSIC_CSV}&_=${Math.floor(Date.now() / 300000)}`, { cache: "no-store" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const text = await r.text();
+    smartCache("wp_music_v1", text, hash, (t) => { rel = releasesFromCSV(t); paintRelease(); });
+  } catch (e) { console.warn("[music]", e.message); const c = cacheGet("wp_music_v1"); if (c && !rel.length) { rel = releasesFromCSV(c.data); paintRelease(); } }
+}
+function startMusic() {
+  loadMusic(); setInterval(loadMusic, 10 * 60 * 1000); setInterval(tickRelease, 1000);
+  setInterval(() => { if (!relPaused && rel.length > 1) { relI++; paintRelease(); } }, 7000);
+  const card = $("music"); card.onmouseenter = () => relPaused = true; card.onmouseleave = () => relPaused = false;
+  $("m-prev").onclick = () => { relI--; paintRelease(); }; $("m-next").onclick = () => { relI++; paintRelease(); };
+  $("m-x").onclick = () => { card.classList.add("hidden"); try { sessionStorage.setItem("wp_music_closed", "1"); } catch {} };
+}
+
+/* ============================================================================
+ * 6. Who are we showing?  (signed-in member, or ?u=<friend code | user key>)
+ * ============================================================================ */
+const S = { viewer: null, viewerKey: null, viewerData: null, viewerFriends: {}, targetKey: null, target: null, own: true, isFriend: false, unsubCard: null };
+const CODE_RE = /^[A-Z0-9]{8}$/i;
+// profile.html?u=CODE   (also ?code= / ?friend= / #CODE)
+function requestedProfile() {
+  const q = new URLSearchParams(location.search);
+  const v = q.get("u") || q.get("code") || q.get("friend") || decodeURIComponent((location.hash || "").replace(/^#\/?/, ""));
+  return v ? v.trim() : null;
+}
+const shareUrl = (code) => `${location.origin}${location.pathname}?u=${encodeURIComponent(code)}`;
+const SCOPE_LABEL = { public: "Public", friends: "Friends only", private: "Only you" };
+const canSee = (scope) => S.own || scope === "public" || (scope === "friends" && S.isFriend);
+
+const LOOKUP = {};                                   // path -> error text, for the "not found" explanation
+async function rtGet(db, path) { try { return (await get(ref(db, path))).val(); } catch (e) { console.warn("[rtdb]", path, e.message); LOOKUP[path] = e.message; return null; } }
+
+async function resolveTargetKey(p) {
+  if (!p) return S.viewerKey;                       // null when signed out and no ?u=
+  if (CODE_RE.test(p)) { const k = await rtGet(dbE, "friend_codes/" + p.toUpperCase()); if (k && typeof k === "string") return k; S.codeMissing = p.toUpperCase(); return null; }
+  return p;
+}
+function friendEntries(map) {                      // users/{key}/friends/{code}: username, avatar_url, friend_code, primary_platform...
+  return Object.entries(map || {}).map(([k, f]) => ({ code: (f && f.friend_code) || k, ...(f || {}) })).filter((f) => f.code);
+}
+
+function showGate(title, bodyHtml) {
+  $("app").classList.add("hidden"); $("gate").classList.remove("hidden");
+  $("gate").innerHTML = `<h1 style="margin-top:0">${esc(title)}</h1>${bodyHtml}`;
+}
+const gateButtons = `<p><button id="gbtn2" class="btn primary"><i class="fa-brands fa-google"></i> Sign in with Google</button> <a class="btn" href="./security/setting.html">Email sign-in / settings</a></p>`;
+const googleSignIn = () => signInWithPopup(authE, new GoogleAuthProvider()).catch((e) => alert(e.message));
+
+async function loadProfile(user) {
+  S.viewer = user || null; S.viewerKey = user ? keyOf(user) : null;
+  S.viewerData = user ? ((await rtGet(dbE, "users/" + S.viewerKey)) || {}) : {};
+  S.viewerFriends = S.viewerData.friends || {};
+  S.codeMissing = null;
+  const want = requestedProfile();
+  S.targetKey = await resolveTargetKey(want);
+  if (!S.targetKey && !S.codeMissing) {                // signed out and nobody chosen
+    showGate("Find a profile", `<p class="muted">Open a member's profile with their friend code, or sign in to see your own.</p>
+      <form id="codeform" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px"><input id="codein" maxlength="8" placeholder="FRIEND CODE" style="min-height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--text);text-transform:uppercase;letter-spacing:.12em"><button class="btn primary">Open</button></form>${gateButtons}`);
+    $("codeform").onsubmit = (e) => { e.preventDefault(); const c = $("codein").value.trim(); if (c) location.search = "?u=" + encodeURIComponent(c.toUpperCase()); };
+    $("gbtn2").onclick = googleSignIn; return;
+  }
+  S.own = !!S.viewerKey && S.targetKey === S.viewerKey;
+  S.limited = false;
+  if (S.targetKey) S.target = S.own ? S.viewerData : ((await rtGet(dbE, "users/" + S.targetKey)) || null);
+  else S.target = null;
+  if (!S.target && S.codeMissing) {                    // code lookup failed: fall back to what the viewer's own friend list knows
+    const f = friendEntries(S.viewerFriends).find((x) => x.code === S.codeMissing);
+    if (f) { S.target = { username: f.username, avatar_url: f.avatar_url, friend_code: f.code }; S.limited = true; S.targetKey = null; }
+  }
+  if (!S.target) {
+    const why = S.codeMissing ? (LOOKUP["friend_codes/" + S.codeMissing]
+      ? `The database refused the lookup of friend code <b>${esc(S.codeMissing)}</b> (${esc(LOOKUP["friend_codes/" + S.codeMissing])}). The RTDB rules need to allow public read on <code>friend_codes/{code}</code> and <code>users/{key}</code>.`
+      : `Friend code <b>${esc(S.codeMissing)}</b> is not registered in <code>friend_codes</code>. The member has to open their settings page once so their code gets registered.`)
+      : `That member does not exist or has not set up a profile yet.`;
+    showGate("Profile not found", `<p class="muted">${why}</p><a class="btn" href="./profile.html">Back to profile</a>`); return;
+  }
+  const tcode = S.target.friend_code;
+  S.isFriend = S.own || friendEntries(S.viewerFriends).some((f) => tcode && f.code === tcode);
+  if (S.limited) S.isFriend = true;
+  $("gate").classList.add("hidden"); $("app").classList.remove("hidden");
+
+  const sig = hash(JSON.stringify([S.target.updated_at, S.target.last_profile_sync, S.target.avatar_url, S.target.username, S.target.primary_color, S.target.secondary_color]));
+  const cacheKey = "wp_profile_" + S.targetKey;
+  const c = cacheGet(cacheKey); if (c && c.sig === sig) { /* unchanged since last visit: no extra work needed, rendering below is cheap */ }
+  cacheSet(cacheKey, { sig, at: Date.now() });
+
+  if (S.own && tcode && !requestedProfile()) { try { history.replaceState(null, "", shareUrl(tcode)); } catch (e) { /* ignore */ } }
+  renderNavUser(); renderHero(); renderFriends();
+  renderFriendAction(); await syncSentRequests(); await renderRequests();
+  await startPsn(); await renderTracked();
+}
+
+function renderNavUser() {
+  if (!S.viewer) { $("nav-user").innerHTML = `<button class="btn" id="signin" style="min-height:34px;padding:4px 10px"><i class="fa-brands fa-google"></i> Sign in</button>`; $("signin").onclick = googleSignIn; return; }
+  const u = S.viewerData; const a = secure(u.avatar_url || S.viewer.photoURL);
+  $("nav-user").innerHTML = `${a ? `<img src="${esc(a)}" alt="" class="lb-ignore">` : ""}<span>${esc(u.username || "Member")}</span><button class="btn" id="signout" style="min-height:34px;padding:4px 10px">Sign out</button>`;
+  $("signout").onclick = () => signOut(authE);
+}
+
+function handleRows(d) {
+  const rows = [];
+  const add = (icon, label, value, scope, href) => { if (value && canSee(scope || "private")) rows.push({ icon, label, value, scope: scope || "private", href }); };
+  add("fa-brands fa-playstation", "PSN", d.psn_username, d.psn_username_scope);
+  add("fa-brands fa-steam", "Steam friend code", d.steam_friend_code || d.steam_id, d.steam_friend_code ? d.steam_friend_code_scope : (d.steam_id_scope || d.steam_friend_code_scope));
+  add("fa-brands fa-xbox", "Xbox", d.xbox_gamertag, d.xbox_gamertag_scope);
+  const tw = String(d.twitch_username || "").replace(/^@/, "").trim();
+  add("fa-brands fa-twitch", "Twitch", tw, d.twitch_scope, /^[A-Za-z0-9_]{2,25}$/.test(tw) ? "https://twitch.tv/" + tw : null);
+  return rows;
+}
+
+function renderHero() {
+  const d = S.target;
+  if (okColor(d.primary_color) && lum(d.primary_color) > 0.12) document.documentElement.style.setProperty("--user-font", d.primary_color);
+  if (okColor(d.secondary_color)) document.documentElement.style.setProperty("--user-border", d.secondary_color);
+  const name = d.username || "Member";                                // always the username, never the real name
+  document.title = `${name} | Profile`;
+  const av = secure(d.avatar_url);
+  const handles = handleRows(d).map((h) => {
+    const inner = h.href ? `<a href="${esc(h.href)}" target="_blank" rel="noopener noreferrer">${esc(h.value)}</a>` : esc(h.value);
+    return `<span class="pill ${S.own && h.scope === "private" ? "scope-private" : ""}" title="${esc(h.label)}${S.own ? " - " + SCOPE_LABEL[h.scope] : ""}"><i class="${h.icon}"></i>${inner}${S.own ? `<small class="muted" style="font-weight:600">${esc(SCOPE_LABEL[h.scope] || "")}</small>` : ""}</span>`;
+  }).join("");
+  $("hero").innerHTML = `
+    ${av ? `<img class="avatar lb-able" src="${esc(av)}" alt="${esc(name)}" referrerpolicy="no-referrer">` : `<div class="avatar" style="display:grid;place-items:center;font-size:48px;font-weight:800">${esc(name[0] || "?")}</div>`}
+    <div style="min-width:0;flex:1">
+      <h1>${esc(name)}</h1>
+      <div class="meta">
+        ${d.friend_code ? `<span class="pill" title="Friend code"><i class="fa-solid fa-id-badge"></i><span class="code">${esc(d.friend_code)}</span><button type="button" id="copy" style="background:none;border:0;padding:0 2px" aria-label="Copy friend code"><i class="fa-regular fa-copy"></i></button></span>` : ""}
+        ${handles}
+        <span id="friend-action"></span>
+        ${d.friend_code ? `<button type="button" id="share" class="pill" style="background:var(--user-border);color:#000;cursor:pointer"><i class="fa-solid fa-share-nodes"></i> Share profile</button>` : ""}
+      </div>
+      <div class="muted" style="margin-top:10px;font-size:12px">Profile synced ${esc(fmtNY(d.last_profile_sync || d.updated_at))} ET${S.own ? ` &middot; <a href="./security/setting.html">Edit settings</a>` : S.viewer ? ` &middot; <a href="./profile.html">My profile</a>` : ` &middot; <a href="#" id="hero-signin">Sign in</a>`}</div>
+    </div>`;
+  const sh = $("share");
+  if (sh) sh.onclick = async () => {
+    const url = shareUrl(d.friend_code), orig = sh.innerHTML;
+    try { if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) { await navigator.share({ title: `${name} | Werewolf Project`, url }); return; } } catch (e) { if (e.name === "AbortError") return; }
+    try { await navigator.clipboard.writeText(url); sh.innerHTML = '<i class="fa-solid fa-check"></i> Link copied'; } catch (e) { prompt("Copy this link:", url); }
+    setTimeout(() => { sh.innerHTML = orig; }, 2200);
+  };
+  const hs = $("hero-signin"); if (hs) hs.onclick = (e) => { e.preventDefault(); googleSignIn(); };
+  const cp = $("copy"); if (cp) cp.onclick = () => navigator.clipboard && navigator.clipboard.writeText(d.friend_code).then(() => { cp.innerHTML = '<i class="fa-solid fa-check"></i>'; });
+}
+
+function renderFriends() {
+  const list = S.own ? friendEntries(S.viewerFriends) : [];
+  $("friends-card").classList.toggle("hidden", !list.length);
+  $("friends").innerHTML = list.map((f) => {
+    const a = secure(f.avatar_url);
+    return `<div class="chip">${a ? `<img class="lb-able" src="${esc(a)}" alt="" referrerpolicy="no-referrer">` : ""}<div><a href="./profile.html?u=${encodeURIComponent(f.code)}" style="text-decoration:none">${esc(f.username || f.code)}</a><small>${esc(f.primary_platform || "")} ${esc(f.code)}</small></div></div>`;
+  }).join("");
+}
+
+$("gbtn") && ($("gbtn").onclick = googleSignIn);
+
+/* ============================================================================
+ * 6b. Friend requests
+ *   friend_requests/{targetKey}/{requesterCode} = { from_key, friend_code, username, avatar_url, created_at, status }
+ *   users/{requesterKey}/friend_requests_sent/{targetCode} = { target_key, created_at }
+ *   target accepts -> users/{targetKey}/friends/{requesterCode}; the requester's page adds the target the next time it loads.
+ * ============================================================================ */
+const myCode = () => S.viewerData && S.viewerData.friend_code;
+const profileInfo = (d, code) => ({ username: d.username || code, avatar_url: d.avatar_url || "", friend_code: code, primary_platform: d.psn_username ? "psn" : "", linked_at: Date.now() });
+
+async function renderFriendAction() {
+  const box = $("friend-action"); if (!box) return;
+  box.innerHTML = ""; if (S.own) return;
+  if (!S.viewer) { box.innerHTML = `<button type="button" class="pill" id="fa-signin" style="cursor:pointer"><i class="fa-solid fa-user-plus"></i> Sign in to add friend</button>`; $("fa-signin").onclick = googleSignIn; return; }
+  if (S.isFriend) { box.innerHTML = `<span class="pill"><i class="fa-solid fa-user-check"></i> Friends</span>`; return; }
+  const code = myCode(), tcode = S.target.friend_code;
+  if (!code) { box.innerHTML = `<a class="pill" href="./security/setting.html"><i class="fa-solid fa-user-plus"></i> Open settings once to get your friend code</a>`; return; }
+  if (!tcode || !S.targetKey) return;
+  const existing = await rtGet(dbE, `friend_requests/${S.targetKey}/${code}`);
+  if (existing && existing.status === "pending") { box.innerHTML = `<span class="pill"><i class="fa-regular fa-clock"></i> Request sent</span>`; return; }
+  if (existing && existing.status === "declined") { box.innerHTML = `<span class="pill muted"><i class="fa-solid fa-user-xmark"></i> Request declined</span>`; return; }
+  box.innerHTML = `<button type="button" class="pill" id="fa-add" style="cursor:pointer;background:var(--user-border);color:#000"><i class="fa-solid fa-user-plus"></i> Add friend</button>`;
+  $("fa-add").onclick = async () => {
+    const b = $("fa-add"); b.disabled = true;
+    try {
+      const me = S.viewerData;
+      await set(ref(dbE, `friend_requests/${S.targetKey}/${code}`), { from_key: S.viewerKey, friend_code: code, username: me.username || code, avatar_url: me.avatar_url || "", created_at: Date.now(), status: "pending" });
+      await set(ref(dbE, `users/${S.viewerKey}/friend_requests_sent/${tcode}`), { target_key: S.targetKey, created_at: Date.now() }).catch(() => {});
+      box.innerHTML = `<span class="pill"><i class="fa-regular fa-clock"></i> Request sent</span>`;
+    } catch (e) { b.disabled = false; alert("Could not send the request: " + e.message + "\n\nThe database rules need to allow friend_requests."); }
+  };
+}
+
+async function syncSentRequests() {                // requester side: did anyone accept?
+  if (!S.own || !S.viewerKey) return;
+  const sent = (await rtGet(dbE, `users/${S.viewerKey}/friend_requests_sent`)) || {}; const code = myCode(); let changed = false;
+  for (const [tcode, s] of Object.entries(sent)) {
+    if (!s || !s.target_key) continue;
+    const r = await rtGet(dbE, `friend_requests/${s.target_key}/${code}`); if (!r) continue;
+    if (r.status === "accepted") {
+      const t = (await rtGet(dbE, `users/${s.target_key}`)) || {};
+      try { const f = profileInfo(t, tcode); await set(ref(dbE, `users/${S.viewerKey}/friends/${tcode}`), f); S.viewerFriends[tcode] = f; await remove(ref(dbE, `users/${S.viewerKey}/friend_requests_sent/${tcode}`)); changed = true; } catch (e) { console.warn("[friends]", e.message); }
+    } else if (r.status === "declined") { try { await remove(ref(dbE, `users/${S.viewerKey}/friend_requests_sent/${tcode}`)); } catch (e) { /* ignore */ } }
+  }
+  if (changed) renderFriends();
+}
+
+async function renderRequests() {                  // target side: pending requests on my own profile
+  const card = $("requests-card"); if (!card) return;
+  if (!S.own || !S.viewerKey) { card.classList.add("hidden"); return; }
+  const all = (await rtGet(dbE, `friend_requests/${S.viewerKey}`)) || {};
+  const pending = Object.values(all).filter((r) => r && r.status === "pending");
+  card.classList.toggle("hidden", !pending.length); if (!pending.length) return;
+  $("requests").innerHTML = pending.map((r) => `<div class="chip">${img(r.avatar_url, "", r.username)}<div>${esc(r.username)}<small>${esc(r.friend_code)}</small></div>
+    <button class="btn" data-a="accept" data-c="${esc(r.friend_code)}" style="min-height:34px;padding:2px 10px">Accept</button><button class="btn" data-a="decline" data-c="${esc(r.friend_code)}" style="min-height:34px;padding:2px 10px">Decline</button></div>`).join("");
+  $("requests").querySelectorAll("button").forEach((b) => b.onclick = async () => {
+    const r = pending.find((x) => x.friend_code === b.dataset.c); if (!r) return; b.disabled = true;
+    try {
+      if (b.dataset.a === "accept") { const f = { username: r.username, avatar_url: r.avatar_url || "", friend_code: r.friend_code, primary_platform: "", linked_at: Date.now() };
+        await set(ref(dbE, `users/${S.viewerKey}/friends/${r.friend_code}`), f); S.viewerFriends[r.friend_code] = f; renderFriends(); }
+      await update(ref(dbE, `friend_requests/${S.viewerKey}/${r.friend_code}`), { status: b.dataset.a === "accept" ? "accepted" : "declined", answered_at: Date.now() });
+      renderRequests();
+    } catch (e) { b.disabled = false; alert("Could not update the request: " + e.message); }
+  });
+}
+
+/* ============================================================================
+ * 7. PlayStation (playstation-stats RTDB card + Firestore games / players)
+ * ============================================================================ */
+const P = { id: null, card: null, comm: null, filter: "all", skel: {}, gameIndex: null, usersByTag: null, friends: [], friendsLoaded: false, trackedByFriend: {} };
+const asList = (v) => (!v ? [] : Array.isArray(v) ? v.filter(Boolean) : Object.values(v));
+const tmap = (m) => { const o = {}; asList(m).forEach((t) => { if (t && t.trophyId !== undefined) o[t.trophyId] = t; }); return o; };
+
+async function findGamertag(name) {
+  P.usersByTag = (await rtGet(dbP, "psn/usersByGamerTag")) || P.usersByTag || {};
+  const want = lc(name);
+  const hit = Object.keys(P.usersByTag).find((k) => lc(k) === want);
+  if (hit) return hit;
+  for (const c of [name, safeKey(name), want]) { const v = await rtGet(dbP, "psn/gamertags/" + c + "/onlineId"); if (v) return c; }
+  return null;
+}
+
+async function startPsn() {
+  if (S.unsubCard) { S.unsubCard(); S.unsubCard = null; }
+  const name = S.target.psn_username;
+  if (!name || !canSee(S.target.psn_username_scope || "private")) { $("psn").classList.add("hidden"); return; }
+  P.id = await findGamertag(name);
+  if (!P.id) { $("psn").classList.remove("hidden"); $("stats").innerHTML = `<div class="notice" style="grid-column:1/-1">No PlayStation data for <b>${esc(name)}</b> yet. The sync only tracks accounts that have linked their PSN cookie in settings.</div>`; return; }
+  $("psn").classList.remove("hidden");
+  let firstPaint = true;
+  S.unsubCard = onValue(ref(dbP, "psn/gamertags/" + P.id), async (snap) => {
+    const c = snap.val(); if (!c) return;
+    const prev = P.card; P.card = c;
+    const live = c.liveTrophyProgress || {};
+    const switched = prev && prev.commId !== c.commId;          // player started a different game
+    if (!P.comm || switched) P.comm = (c.commId && live[c.commId]) ? c.commId : (P.comm && live[P.comm] ? P.comm : (Object.keys(live)[0] || c.commId || null));
+    renderStats(); await renderHunt(); renderRecent(); await renderTrophies();
+    if (firstPaint) { firstPaint = false; loadFriendCrossRef().then(renderTrophies); }
+  }, (e) => console.warn("[psn card]", e.message));
+}
+
+async function loadSkeleton(commId) {
+  if (!commId) return null;
+  const id = String(commId).toUpperCase(); if (P.skel[id] !== undefined) return P.skel[id];
+  let g = null;
+  try {
+    if (!P.gameIndex) P.gameIndex = ((await getDoc(doc(fsP, "meta", "gameIndex"))).data() || {}).entries || {};
+    const e = P.gameIndex[id];
+    if (e && e.key) { const s = await getDoc(doc(fsP, "games", e.key)); if (s.exists()) g = s.data(); }
+    if (!g) { const q = await getDocs(query(collection(fsP, "games"), where("commId", "==", id), limit(1))); q.forEach((d) => { g = d.data(); }); }
+  } catch (e) { console.warn("[games]", e.message); }
+  return (P.skel[id] = g);
+}
+
+function renderStats() {
+  const c = P.card, ts = c.trophySummary || {};
+  const online = !!c.online, playing = online && c.currentGame && c.currentGame !== "Dashboard";
+  $("sync-pill").textContent = "Synced " + fmtNY(c.lastUpdated) + " ET";
+  $("stats").innerHTML = `
+    <div class="stat"><span>PSN ID</span><b style="font-size:18px">${esc(c.onlineId || P.id)}</b>${c.plus ? '<span class="gold">PS Plus</span>' : ""}</div>
+    <div class="stat"><span>Status</span><b style="font-size:18px"><i class="dot ${online ? "on" : ""}"></i>${online ? "Online" : "Offline"}</b>
+      <span>${playing ? esc(c.currentGame) : online ? "On the dashboard" : "Away"}</span>${playing && c.gameStatus ? `<div style="font-size:13px;color:#34d399;margin-top:4px">${esc(c.gameStatus)}</div>` : ""}</div>
+    <div class="stat"><span>Trophy level</span><b>${esc(c.level ?? ts.trophyLevel ?? "--")}</b><span>${esc(c.region || "")} &middot; ${esc(c.psnAccountAge || "")}</span></div>
+    <div class="stat"><span>Trophies</span><b>${Number(ts.total || 0).toLocaleString()}</b>
+      <div class="tro-row"><span class="plat">${ts.platinum || 0}P</span><span class="gold">${ts.gold || 0}G</span><span class="silver">${ts.silver || 0}S</span><span class="bronze">${ts.bronze || 0}B</span></div></div>
+    <div class="stat"><span>Games played</span><b>${Number(c.gamesPlayed || 0).toLocaleString()}</b><span>${esc(c.displayPlatform || c.platform || "")}</span></div>`;
+}
+
+async function renderHunt() {
+  const c = P.card, online = !!c.online, playing = online && c.currentGame && c.currentGame !== "Dashboard";
+  const last = asList(c.recentGames)[0] || {};
+  const title = playing ? c.currentGame : (c.lastPlayedGame || last.name || "Nothing yet");
+  const comm = playing ? c.commId : (c.lastPlayedCommId || last.npCommunicationId);
+  const art = playing ? c.art : (last.art || c.art);
+  const sk = await loadSkeleton(comm);
+  const ah = (playing && c.activeHunt) || {};
+  const pct = Number(ah.progress ?? last.progress ?? 0);
+  const ratio = ah.velocity && ah.velocity.completionStatus ? ah.velocity.completionStatus : (last.earnedTotal !== undefined ? `${last.earnedTotal}/${last.definedTotal}` : "");
+  const desc = sk && sk.description ? String(sk.description).slice(0, 420) : "";
+  $("hunt").innerHTML = `<h2><i class="fa-solid fa-gamepad"></i> ${playing ? "Now playing" : "Last played"}</h2>
+    ${art ? img(art, "hunt-art", title) : ""}
+    <h3 style="margin:14px 0 4px;font-size:22px">${esc(title)}</h3>
+    ${playing && c.gameStatus ? `<div style="color:#34d399;font-weight:700;margin-bottom:6px">${esc(c.gameStatus)}</div>` : ""}
+    <div class="meta" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
+      ${playing && c.currentGameHours ? `<span class="pill"><i class="fa-regular fa-clock"></i>${esc(c.currentGameHours)}</span>` : ""}
+      ${comm ? `<span class="pill mono">${esc(comm)}</span>` : ""}
+      ${(c.platform && playing) ? `<span class="pill">${esc(c.platform)}</span>` : ""}
     </div>
+    <div class="muted" style="font-size:12px;display:flex;justify-content:space-between"><span>Completion ${ratio ? "(" + esc(ratio) + ")" : ""}</span><b>${pct}%</b></div>
+    <div class="bar"><i style="width:${Math.min(100, pct)}%"></i></div>
+    ${desc ? `<p class="muted" style="font-size:13px">${esc(desc)}${desc.length >= 420 ? "…" : ""}</p>` : ""}
+    ${playing && c.amazonAffiliateUrl && secure(c.amazonAffiliateUrl) ? `<a class="btn" target="_blank" rel="noopener noreferrer" href="${esc(secure(c.amazonAffiliateUrl))}"><i class="fa-brands fa-amazon"></i> Find on Amazon</a>` : ""}`;
+}
 
-    <!-- --- NAVIGATION --- -->
-    <nav class="nav-bar">
-        <div class="nav-container">
-            <a href="https://werewolf3788.github.io/Website/" target="pack_hub_window" class="text-white font-black text-lg flex items-center gap-2">
-                <i class="fab fa-playstation text-orange-500"></i> PACK HUB
-            </a>
-            <button class="mobile-toggle text-white text-2xl" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
-            <div class="nav-links-wrapper" id="nav-links"></div>
-        </div>
-    </nav>
+function renderRecent() {
+  const live = P.card.liveTrophyProgress || {};
+  const games = asList(P.card.recentGames);
+  $("recent").innerHTML = games.slice(0, 18).map((g) => {
+    const id = g.npCommunicationId, has = id && live[id];
+    return `<div class="g ${id === P.comm ? "sel" : ""}">${img(g.art, "", g.name)}<div class="txt" data-comm="${esc(id || "")}" style="${has ? "cursor:pointer" : "opacity:.7"}">${esc(g.name)}<div class="sm">${g.earnedTotal ?? 0}/${g.definedTotal ?? 0} &middot; ${esc(g.completionRatio || "")}</div></div></div>`;
+  }).join("") || `<div class="muted">No recent games.</div>`;
+  $("recent").querySelectorAll(".txt").forEach((t) => t.onclick = () => { const id = t.dataset.comm; if (id && live[id]) { P.comm = id; renderRecent(); renderTrophies(); } });
+}
 
-    <!-- --- HEALTH MONITOR --- -->
-    <div id="health-monitor">
-        <div id="health-dot" class="status-dot-pulse bg-gray-500"></div>
-        <div class="flex flex-col">
-            <span id="health-label" class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Handshake</span>
-            <span id="health-value" class="text-[11px] font-black text-white uppercase tracking-tighter">Status: Initializing</span>
-        </div>
-    </div>
+/* ---------- trophy tracking maths (counts like 22/100) ---------- */
+function tracking(t) {
+  const earned = !!(t.earned || t.isEarned);
+  let cur = Number(t.currentValue ?? t.trophyProgress ?? 0), tgt = Number(t.targetValue ?? t.trophyProgressTargetValue ?? 0);
+  if ((!tgt || tgt <= 1) && typeof t.subProgressRatio === "string" && t.subProgressRatio.includes("/")) { const [a, b] = t.subProgressRatio.split("/").map((x) => Number(x.trim())); if (b > 1) { cur = a; tgt = b; } }
+  if (!tgt || tgt <= 1 || isNaN(tgt)) return null;
+  if (earned) cur = tgt;
+  return { cur, tgt, pct: Math.min(100, Math.round((cur / tgt) * 100)) };
+}
+const TCOL = { platinum: "plat", gold: "gold", silver: "silver", bronze: "bronze" };
 
-    <!-- --- HEADER --- -->
-    <header class="w-full text-center section-container px-6">
-        <div class="max-w-7xl mx-auto">
-            <div class="relative inline-block mb-10">
-                <div class="absolute inset-0 bg-[#FF5F1F] blur-[120px] opacity-30 rounded-full"></div>
-                <img id="main-avatar" src="" class="relative w-44 h-44 lg:w-64 lg:h-64 rounded-full border-4 border-[#FF5F1F] shadow-2xl mx-auto object-cover" onerror="this.src='https://placehold.co/250x250/1e1e24/FF5F1F?text=WOLF'">
-                <div id="ps-plus-indicator" class="ps-plus-badge"><i class="fab fa-playstation"></i> PLUS MEMBER</div>
-            </div>
-            
-            <h1 class="wolf-gradient-text mb-4">Werewolf3788</h1>
-            <div class="text-[10px] lg:text-[18px] font-black text-gray-400 uppercase tracking-[0.5em] mb-12">Official Pack Admin Hub</div>
-            
-            <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 max-w-7xl mx-auto text-center">
-                <!-- TWITCH STATUS (Clickable Portal) -->
-                <a href="https://twitch.tv/werewolf3788" target="_blank" class="glass-card header-stat-card p-5 lg:p-8 border-b-4 border-purple-500 hover:scale-[1.03] active:scale-[0.98] transition-transform duration-300 cursor-pointer">
-                    <div class="text-[11px] lg:text-[13px] text-purple-400 font-black mb-1 uppercase text-center w-full tracking-widest">Twitch Status</div>
-                    <div id="twitch-live-status" class="text-3xl lg:text-5xl font-black text-gray-500">OFFLINE</div>
-                    <div id="twitch-status-msg" class="text-[10px] text-gray-300 font-bold uppercase mt-2 italic whitespace-normal leading-tight">"--"</div>
-                    <div id="twitch-age" class="text-[10px] text-gray-400 font-black uppercase mt-1">Followers: --</div>
-                </a>
+async function renderTrophies() {
+  const live = tmap((P.card.liveTrophyProgress || {})[P.comm] || {});
+  const sk = await loadSkeleton(P.comm);
+  const skList = (sk && sk.trophies) || [];
+  const gname = (sk && sk.name) || (asList(P.card.recentGames).find((g) => g.npCommunicationId === P.comm) || {}).name || P.comm || "--";
+  $("tro-title").textContent = gname;
+  let rows = Object.values(live).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  const earnedN = rows.filter((t) => t.earned).length, progN = rows.length - earnedN;
+  const lockedList = skList.filter((s) => !live[s.trophyId]);
+  const fl = [["all", `All (${rows.length})`], ["earned", `Earned (${earnedN})`], ["progress", `In progress (${progN})`]];
+  if (lockedList.length) fl.push(["locked", `Not started (${lockedList.length})`]);
+  $("tro-filters").innerHTML = fl.map(([k, l]) => `<button class="${P.filter === k ? "on" : ""}" data-f="${k}">${esc(l)}</button>`).join("");
+  $("tro-filters").querySelectorAll("button").forEach((b) => b.onclick = () => { P.filter = b.dataset.f; renderTrophies(); });
 
-                <!-- PSN LIBRARY STATS -->
-                <div class="glass-card header-stat-card p-5 lg:p-8 border-b-4 border-[#FF5F1F]">
-                    <div class="text-[11px] lg:text-[13px] text-orange-400 font-black mb-1 uppercase text-center w-full tracking-widest">PSN Library</div>
-                    <div id="games-played-count" class="text-3xl lg:text-5xl font-black text-white">--</div>
-                    <div class="text-[10px] text-gray-300 font-bold uppercase mt-2 italic whitespace-normal leading-tight">Total Games</div>
-                </div>
+  let shown = rows;
+  if (P.filter === "earned") shown = rows.filter((t) => t.earned);
+  else if (P.filter === "progress") shown = rows.filter((t) => !t.earned);
+  else if (P.filter === "locked") shown = lockedList.map((s) => ({ ...s, earned: false, _locked: true }));
 
-                <!-- PSN LEVEL -->
-                <div class="glass-card header-stat-card p-5 lg:p-8 border-b-4 border-[#9e3a12]">
-                    <div class="text-[11px] lg:text-[13px] text-orange-400 font-black mb-1 uppercase tracking-widest text-center w-full">PSN Level</div>
-                    <div id="psn-level-label" class="text-3xl lg:text-5xl font-black text-white">--</div>
-                    <div id="psn-region" class="text-[10px] text-gray-300 font-bold uppercase mt-2">Region: US</div>
-                    <div id="psn-account-age" class="text-[10px] text-gray-400 font-black uppercase mt-1 tracking-tighter italic">Legacy Tracker Enabled</div>
-                </div>
+  $("trophies").innerHTML = shown.length ? shown.map((t) => {
+    const tr = tracking(t), icon = t.icon, type = (t.type || "bronze").toLowerCase();
+    const frs = t._locked ? "" : friendChips(P.comm, t.trophyId);
+    return `<div class="t ${t.earned ? "done" : tr ? "prog" : ""}" data-id="${esc(t.trophyId)}">
+      ${icon ? img(icon, "", t.name || t.title) : "<div></div>"}
+      <div style="min-width:0"><div class="n"><i class="fa-solid fa-trophy ${TCOL[type] || ""}"></i> ${esc(t.name || t.title || "Trophy")}</div>
+        <div class="d">${esc(t.detail || t.description || "")}</div>
+        ${tr && !t.earned ? `<div class="bar"><i style="width:${tr.pct}%"></i></div>` : ""}${frs}</div>
+      <div class="r">${t.earned ? `<b style="color:#34d399">Earned</b><br>${esc(t.earnedDate ? String(t.earnedDate).split(",")[0] : "")}` : tr ? `<b class="mono">${tr.cur.toLocaleString()}/${tr.tgt.toLocaleString()}</b>` : `<span class="muted">Locked</span>`}
+        <div class="muted">${esc(t.rarity || (t.earnedRate ? t.earnedRate + "%" : ""))}</div></div></div>`;
+  }).join("") : `<div class="muted" style="padding:16px 4px">Nothing here yet.</div>`;
+  $("trophies").querySelectorAll(".t").forEach((el) => el.onclick = (e) => {
+    if (e.target.closest("img")) return;
+    const t = (P.filter === "locked" ? lockedList : Object.values(live)).find((x) => String(x.trophyId) === el.dataset.id); if (t) trophyModal(t, gname);
+  });
+}
 
-                <!-- TOTAL TROPHIES -->
-                <div id="trophy-card" class="glass-card header-stat-card p-5 lg:p-8 border-b-4 border-yellow-500">
-                    <div class="text-[11px] lg:text-[13px] text-yellow-500 font-black mb-1 uppercase tracking-widest text-center w-full">Legacy Trophies</div>
-                    <div id="trophy-total" class="text-3xl lg:text-5xl font-black text-white mb-4">--</div>
-                    <div class="grid grid-cols-4 gap-2 pt-4 border-t border-white/5 w-full">
-                        <div class="flex flex-col items-center"><i class="fas fa-trophy text-blue-300 text-[10px] mb-1"></i><div id="plat-count" class="mini-stat-value text-xs">0</div></div>
-                        <div class="flex flex-col items-center"><i class="fas fa-trophy text-amber-400 text-[10px] mb-1"></i><div id="gold-count" class="mini-stat-value text-xs">0</div></div>
-                        <div class="flex flex-col items-center"><i class="fas fa-trophy text-slate-400 text-[10px] mb-1"></i><div id="silver-count" class="mini-stat-value text-xs">0</div></div>
-                        <div class="flex flex-col items-center"><i class="fas fa-trophy text-orange-700 text-[10px] mb-1"></i><div id="bronze-count" class="mini-stat-value text-xs">0</div></div>
-                    </div>
-                </div>
+function trophyModal(t, gname) {
+  const tr = tracking(t);
+  const fr = P.friends.map((f) => { const m = tmap((f.card && f.card.liveTrophyProgress || {})[P.comm])[t.trophyId]; return m ? { f, m } : null; }).filter(Boolean);
+  openModal(`<div style="display:flex;gap:14px;align-items:center">${t.icon ? img(t.icon, "", t.name) : ""}<div><div class="muted" style="font-size:12px">${esc(gname)}</div><h3 style="margin:0">${esc(t.name || t.title)}</h3></div></div>
+    <p>${esc(t.detail || t.description || "")}</p>
+    <div class="meta" style="display:flex;gap:8px;flex-wrap:wrap">
+      <span class="pill">${esc((t.type || "").toUpperCase())}</span>${t.rarity ? `<span class="pill">${esc(t.rarity)} earned</span>` : ""}${t.rarityTier ? `<span class="pill">${esc(t.rarityTier)}</span>` : ""}
+      ${t.earned ? `<span class="pill" style="color:#34d399">Earned ${esc(t.earnedDate || "")}</span>` : tr ? `<span class="pill mono">${tr.cur}/${tr.tgt}</span>` : ""}</div>
+    ${t.rewardName ? `<p class="muted">Reward: ${esc(t.rewardName)}</p>` : ""}
+    ${fr.length ? `<h4>Friends</h4><div class="chips">${fr.map(({ f, m }) => { const x = tracking(m); return `<div class="chip">${img(f.avatar, "", f.name)}<div>${esc(f.name)}<small>${m.earned ? "Earned " + esc(String(m.earnedDate || "").split(",")[0]) : x ? x.cur + "/" + x.tgt : "in progress"}</small></div></div>`; }).join("")}</div>` : ""}`);
+}
 
-                <!-- CURRENT STATUS -->
-                <div class="glass-card header-stat-card p-5 lg:p-8 border-b-4 border-green-500 col-span-2 lg:col-span-1">
-                    <div id="online-status-label" class="text-[14px] lg:text-[18px] font-black text-white uppercase text-center leading-tight">Handshaking</div>
-                    <div id="current-game-sub" class="text-[11px] text-green-400 font-black uppercase mt-1">Connecting...</div>
-                    <div id="current-activity" class="text-[10px] text-gray-300 font-bold uppercase mt-2">Activity: --</div>
-                    <div id="current-platform" class="text-[10px] text-gray-400 font-black uppercase mt-1 tracking-tighter">System: PS5</div>
-                </div>
-            </div>
-        </div>
-    </header>
+/* ---------- friends cross-reference ---------- */
+function friendChips(comm, trophyId) {
+  const out = [];
+  for (const f of P.friends) {
+    const m = tmap((f.card && f.card.liveTrophyProgress || {})[comm])[trophyId]; if (!m) continue;
+    const x = tracking(m);
+    out.push(`<span class="f ${m.earned ? "" : "part"}" title="${esc(f.name)}${m.earned ? " earned this" : ""}">${img(f.avatar, "", f.name)}${esc(f.name)}${m.earned ? ' <i class="fa-solid fa-check" style="color:#34d399"></i>' : x ? " " + x.cur + "/" + x.tgt : ""}</span>`);
+  }
+  return out.length ? `<div class="fr">${out.join("")}</div>` : "";
+}
 
-    <!-- --- MAIN AREA --- -->
-    <main class="max-w-[1700px] mx-auto px-6 pb-24 flex-1">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start">
-            
-            <div class="lg:col-span-2 flex flex-col gap-8 lg:gap-12">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-                    <div class="flex flex-col gap-8 lg:gap-12">
-                        <section class="glass-card p-8 lg:p-12">
-                            <div class="flex justify-between items-start mb-6">
-                                <h2 class="opacity-90 text-[20px] lg:text-[36px]">About Me</h2>
-                                <i class="fab fa-playstation text-blue-500 text-xl" title="PSN Bio Integrated"></i>
-                            </div>
-                            <p id="profile-bio" class="leading-relaxed text-gray-400 text-base lg:text-xl">Official Admin Profile</p>
-                        </section>
+async function loadFriendCrossRef() {
+  if (P.friendsLoaded) return; P.friendsLoaded = true;
+  const found = new Map();                                              // lower-case PSN id -> { id, name, avatar, via:Set }
+  const addFriend = (id, name, avatar, via) => { const k = lc(id); if (!id || k === lc(P.id)) return; const f = found.get(k) || { id, name: name || id, avatar: avatar || "", via: new Set() }; if (name) f.name = name; if (avatar) f.avatar = avatar; f.via.add(via); found.set(k, f); };
+  const byTag = P.usersByTag || (await rtGet(dbP, "psn/usersByGamerTag")) || {};
 
-                        <!-- LAST PLAYED HERO -->
-                        <section id="last-played-hero" class="glass-card overflow-hidden">
-                            <div class="p-8 lg:p-12 pb-4"><h2 class="mb-6 text-orange-500 flex items-center gap-3 uppercase"><i class="fas fa-history"></i> Active Hunt</h2></div>
-                            <a id="active-game-store-link" href="#" target="psn_store_window" class="block relative w-full aspect-video bg-orange-900/10 border-y border-white/5 group">
-                                <img id="active-game-art" src="" class="w-full h-full object-cover hidden" onerror="this.src='https://placehold.co/600x337/1e1e24/FF5F1F?text=PLAYSTATION+GAME'">
-                                <div id="active-game-fallback" class="w-full h-full flex items-center justify-center"><i class="fab fa-playstation text-7xl text-orange-500/30"></i></div>
-                                <div class="absolute inset-0 bg-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                    <div class="px-6 py-2 bg-black/80 rounded-full border border-orange-500 text-orange-500 font-black text-xs uppercase tracking-widest">View on PSN Store</div>
-                                </div>
-                            </a>
-                            <div class="p-8 lg:p-12">
-                                <div id="active-game-title" class="text-xl lg:text-4xl font-black text-white mb-2 uppercase leading-tight">---</div>
-                                <div id="hunter-persona-badge" class="inline-block px-3 py-1 bg-white/10 text-orange-400 border border-orange-500/50 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 hidden"></div>
-                                
-                                <div class="space-y-4 bg-white/5 p-6 rounded-2xl border border-white/5">
-                                    <div class="flex justify-between items-end"><span class="text-[11px] lg:text-[14px] text-gray-300 font-black uppercase text-orange-400">Hunt Progress</span><span id="active-game-progress-text" class="text-lg lg:text-2xl font-black text-orange-500">0%</span></div>
-                                    <div class="progress-bar-container lg:h-5"><div id="active-game-progress-fill" class="progress-bar-fill" style="width: 0%"></div></div>
-                                    <div class="flex flex-wrap justify-between gap-4 text-[10px] font-black text-gray-400 uppercase">
-                                        <div class="flex items-center gap-1"><i class="far fa-clock text-orange-400"></i>Started: <span id="game-journey-age" class="text-white">--</span></div>
-                                        <div class="flex items-center gap-1"><i class="fas fa-bullseye text-orange-400"></i><span id="active-game-ratio" class="text-white">--/--</span> Objectives</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
+  // (1) the target's PSN friend list (Firestore players/{id}.friendsList = account ids) matched to tracked players
+  try {
+    const mine = (await getDoc(doc(fsP, "players", safeKey(P.id)))).data() || {};
+    const ids = new Set((mine.friendsList || []).map(String));
+    for (const [tag, acc] of Object.entries(byTag)) if (ids.has(String(acc))) addFriend(tag, tag, "", "psn");
+  } catch (e) { console.warn("[psn friends]", e.message); }
 
-                    <div class="flex flex-col gap-8 lg:gap-12">
-                        <!-- RECENT HUNTS -->
-                        <section id="recent-hunts-section" class="glass-card p-8 lg:p-12">
-                            <h2 class="mb-10 text-orange-500 text-center uppercase tracking-widest">Recent Hunts</h2>
-                            <div id="recent-games-container" class="grid grid-cols-2 gap-4"></div>
-                        </section>
-                    </div>
-                </div>
+  // (2) friend-code friends (own profile only): their linked PSN username, if their privacy allows it
+  const codes = S.own ? friendEntries(S.viewerFriends).slice(0, 40) : [];
+  await Promise.all(codes.map(async (f) => {
+    const key = await rtGet(dbE, "friend_codes/" + f.code); if (!key || typeof key !== "string") return;
+    const u = await rtGet(dbE, "users/" + key); if (!u) return;
+    const nm = u.psn_username, sc = u.psn_username_scope || "private";
+    const tag = nm && (sc === "public" || sc === "friends") && Object.keys(byTag).find((k) => lc(k) === lc(nm));
+    if (tag) addFriend(tag, f.username || u.username || tag, f.avatar_url || u.avatar_url, "friend code");
+    P.trackedByFriend[tag || f.code] = { code: f.code, name: f.username || u.username || f.code, avatar: f.avatar_url || u.avatar_url };
+  }));
 
-                <section id="mission-log-container" class="glass-card overflow-hidden">
-                    <div class="p-8 lg:p-12 border-b border-white/5"><h2 id="checklist-header-text" class="text-white flex items-center gap-3 uppercase"><i class="fas fa-list-check text-orange-500"></i> Trophy Checklist</h2></div>
-                    <div id="trophy-checklist-container" class="max-h-[800px] overflow-y-auto divide-y divide-white/5 no-scrollbar"></div>
-                </section>
-            </div>
+  // fetch each friend's live trophy card (public RTDB)
+  P.friends = await Promise.all([...found.values()].slice(0, 30).map(async (f) => {
+    const card = await rtGet(dbP, "psn/gamertags/" + safeKey(f.id));
+    return { ...f, via: [...f.via], name: (S.own && P.trackedByFriend[f.id] && P.trackedByFriend[f.id].name) || f.name, avatar: f.avatar || (card && card.avatar) || "", card };
+  }));
+}
 
-            <!-- RIGHT COLUMN -->
-            <div class="flex flex-col gap-8 lg:gap-12">
-                <!-- STANDALONE RECENTLY EARNED TROPHY CARD -->
-                <section id="recent-trophy-card" class="glass-card p-8 border-t-4 border-yellow-500 hidden">
-                    <h2 class="text-yellow-500 flex items-center gap-3 mb-6 uppercase"><i class="fas fa-trophy"></i> Recently Earned</h2>
-                    <div class="flex gap-4 items-center bg-white/5 p-4 rounded-xl">
-                        <img id="last-trophy-icon" src="" class="w-16 h-16 rounded-lg object-cover" onerror="this.src='https://placehold.co/64x64/202024/FF5F1F?text=🏆'">
-                        <div class="min-w-0 flex-1">
-                            <div id="last-trophy-name" class="font-black text-white uppercase truncate">---</div>
-                            <div id="last-trophy-game" class="text-[10px] font-black text-yellow-500 uppercase truncate">---</div>
-                        </div>
-                    </div>
-                </section>
+/* ============================================================================
+ * 8. Tracked game progress: Firestore users/{friend_code}/platform/{platform}/progress/{game}
+ * ============================================================================ */
+async function readProgress(code, platforms = PLATFORMS) {
+  const out = [];
+  await Promise.all(platforms.map(async (p) => {
+    try { const q = await getDocs(collection(fsP, "users", code, "platform", p, "progress")); q.forEach((d) => out.push({ platform: p, game: d.id, data: d.data() })); }
+    catch (e) { if (!/permission/i.test(e.message)) console.warn("[tracked]", p, e.message); else out.permission = true; }
+  }));
+  return out;
+}
+const pctOf = (d) => { for (const k of ["percent", "percentage", "pct", "progress", "completion"]) { const v = Number(d[k]); if (Number.isFinite(v)) return Math.max(0, Math.min(100, v <= 1 && v > 0 && k !== "percent" ? v * 100 : v)); } return null; };
+const doneOf = (d) => d.completed === true || d.complete === true || d.done === true || /complete|done|100/i.test(String(d.status || ""));
 
-                <!-- THEHUNTER: COTW TROPHY LODGE (Firestore live sync) -->
-                <section id="cotw-card" class="glass-card p-8 border-b-4 border-emerald-500 text-center transition-all">
-                    <h2 class="mb-6 text-emerald-400 flex items-center justify-center gap-3 uppercase tracking-tighter">
-                        <i class="fas fa-paw"></i> COTW Trophy Lodge
-                    </h2>
-                    <div class="grid grid-cols-3 gap-3">
-                        <!-- Great One -->
-                        <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
-                            <i class="fas fa-crown text-yellow-400 text-lg mb-1 animate-pulse"></i>
-                            <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Great One</span>
-                            <span id="cotw-great-one" class="text-base font-black text-white">--</span>
-                        </div>
-                        <!-- Rare Fur -->
-                        <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
-                            <i class="fas fa-sparkles text-pink-300 text-lg mb-1"></i>
-                            <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Rare Fur</span>
-                            <span id="cotw-rare-fur" class="text-base font-black text-white">--</span>
-                        </div>
-                        <!-- Diamond -->
-                        <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
-                            <i class="fas fa-gem text-cyan-400 text-lg mb-1"></i>
-                            <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Diamond</span>
-                            <span id="cotw-diamond" class="text-base font-black text-white">--</span>
-                        </div>
-                        <!-- Gold -->
-                        <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
-                            <i class="fas fa-award text-amber-400 text-lg mb-1"></i>
-                            <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Gold</span>
-                            <span id="cotw-gold" class="text-base font-black text-white">--</span>
-                        </div>
-                        <!-- Silver -->
-                        <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
-                            <i class="fas fa-award text-slate-300 text-lg mb-1"></i>
-                            <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Silver</span>
-                            <span id="cotw-silver" class="text-base font-black text-white">--</span>
-                        </div>
-                        <!-- Bronze -->
-                        <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
-                            <i class="fas fa-award text-amber-700 text-lg mb-1"></i>
-                            <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Bronze</span>
-                            <span id="cotw-bronze" class="text-base font-black text-white">--</span>
-                        </div>
-                    </div>
-                </section>
+const PLATFORM_SCOPE = (d, p) => p === "psn" ? d.psn_username_scope : p === "steam" ? (d.steam_friend_code_scope || d.steam_id_scope) : p === "xbox" ? d.xbox_gamertag_scope : "private";
+async function renderTracked() {
+  const code = S.target.friend_code; const card = $("tracked-card");
+  if (!code) { card.classList.add("hidden"); return; }
+  // a platform's tracked progress follows that platform's scope (public = anyone, friends = friends, private = owner)
+  const readable = PLATFORMS.filter((p) => canSee(PLATFORM_SCOPE(S.target, p) || "private"));
+  if (!readable.length) { card.classList.add("hidden"); return; }
+  const items = await readProgress(code, readable);
+  if (!items.length) { card.classList.toggle("hidden", !items.permission || !S.own); if (items.permission && S.own) $("tracked").innerHTML = `<div class="notice">Tracked progress could not be read. Add a Firestore rule allowing reads of <code>users/{code}/platform/**</code> in the playstation-stats project.</div>`; return; }
+  card.classList.remove("hidden");
+  window.__tracked = items;
+  $("tracked").innerHTML = `<div class="trophies">${items.map((it, i) => { const d = it.data || {}, p = pctOf(d), done = doneOf(d);
+    return `<div class="t ${done ? "done" : ""}" data-i="${i}" style="grid-template-columns:1fr auto;cursor:pointer"><div><div class="n">${esc(it.game.replace(/_/g, " "))} <span class="pill">${esc(it.platform.toUpperCase())}</span></div>${p !== null ? `<div class="bar green" style="margin-top:6px;max-width:300px"><i style="width:${p}%"></i></div>` : ""}<div class="d">${esc(d.notes || d.note || "")}</div></div><div class="r">${done ? '<b style="color:#34d399">Complete</b>' : p !== null ? `<b class="mono">${Math.round(p)}%</b>` : ""}</div></div>`; }).join("")}</div>`;
+  $("tracked").querySelectorAll(".t").forEach((el) => el.onclick = () => { const it = window.__tracked[+el.dataset.i];
+    openModal(`<h3 style="margin-top:0">${esc(it.game.replace(/_/g, " "))} <span class="pill">${esc(it.platform.toUpperCase())}</span></h3><div class="mono" style="font-size:12px;white-space:pre-wrap">${esc(JSON.stringify(it.data, null, 2))}</div>`); });
+}
 
-                <!-- GHOST SQUAD OPERATOR STATUS (Realtime Database Sync) -->
-                <section id="ghost-squad-card" class="glass-card p-8 border-b-4 border-orange-600 text-center transition-all hidden">
-                    <h2 class="mb-4 text-orange-500 flex items-center justify-center gap-3 uppercase tracking-tighter">
-                        <i class="fas fa-shield-halved"></i> Ghost Squad Operator
-                    </h2>
-                    <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">Tactical Combat Profile</div>
-                    <div class="bg-black/30 p-4 rounded-2xl border border-white/5 space-y-3 text-left">
-                        <div id="ghost-squad-details" class="divide-y divide-white/5">
-                            <!-- Dynamic fields populated from RTDB -->
-                        </div>
-                    </div>
-                </section>
-
-                <!-- PS PLUS PREMIUM WIDGET -->
-                <section id="ps-plus-card" class="glass-card p-8 border-b-4 border-orange-500 text-center transition-all">
-                    <h2 class="mb-6 text-[#FF5F1F] flex items-center justify-center gap-3 uppercase tracking-tighter"><i class="fab fa-playstation"></i> PS Plus Premium</h2>
-                    <div class="flex justify-center group">
-                        <a href="https://www.playstation.com/en-us/ps-plus/" target="psn_store_window">
-                            <!-- Premium Eldorado offer badge loaded natively per specification -->
-                            <img src="https://assetsdelivery.eldorado.gg/v7/_offers-v2_/2e84e915-faa9-4670-b6a1-2406ea1f3a64_Offer_20241113013824_723432Large.png?w=255" alt="PS Plus Premium Offer" class="w-32 h-32 object-contain p-2 rounded-2xl border border-white/10 group-hover:border-orange-500 transition-all duration-300 shadow-2xl bg-black/40">
-                        </a>
-                    </div>
-                </section>
-
-                <section id="music-section" class="glass-card p-8 text-center border-b-4 border-pink-500">
-                    <h2 class="mb-8 text-pink-400 flex items-center justify-center gap-4"><i class="fas fa-headphones"></i> Now Playing</h2>
-                    <div class="flex justify-center">
-                        <a id="music-link" href="https://www.last.fm/user/KR888434" target="lastfm_window">
-                            <img id="music-widget-img" src="" class="rounded-2xl shadow-2xl border border-white/10" onerror="this.src='https://placehold.co/300x120/1e1e24/FF5F1F?text=last.fm+Widget'">
-                        </a>
-                    </div>
-                </section>
-
-                <section class="glass-card p-8 lg:p-12 space-y-5">
-                    <h2 class="mb-8 opacity-70 text-center tracking-[0.2em] uppercase text-[11px] font-black leading-relaxed block h-auto text-gray-300">Support & Socials</h2>
-                    <div id="dynamic-support-links" class="space-y-4"></div>
-                    <a href="https://amzn.to/4n3OpPL" target="amazon_store_window" class="flex items-center p-6 rounded-2xl bg-[#FF9900]/10 border border-[#FF9900]/30 hover:border-[#FF9900] transition-all group h-auto">
-                        <i class="fab fa-amazon text-4xl text-[#FF9900] group-hover:scale-110 transition-transform"></i>
-                        <div class="flex-1 ml-5 text-left"><div class="font-black lg:text-xl text-white leading-tight">Amazon Store</div><div class="text-[11px] text-gray-300 font-bold uppercase leading-normal">Support the Pack</div></div>
-                    </a>
-                </section>
-            </div>
-        </div>
-        <div class="text-center mt-12 text-[11px] font-black text-gray-500 uppercase tracking-[0.4em]">Wolf Admin Handshake: <span id="sync-time" class="text-gray-300">--</span></div>
-    </main>
-
-    <div id="trophy-lightbox" onclick="closeTrophyLightbox()"></div>
-
-    <!-- --- CLIENT-SIDE ENGINE SCRIPTS --- -->
-    <script>
-        const REPO_BASE = "https://raw.githubusercontent.com/Werewolf3788/Website/main/";
-        const MENU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv";
-        const PLUS_IMG = "https://assetsdelivery.eldorado.gg/v7/_offers-v2_/2e84e915-faa9-4670-b6a1-2406ea1f3a64_Offer_20241113013824_723432Large.png?w=255";
-        const COTW_FIRESTORE_URL = "https://firestore.googleapis.com/v1/projects/game-tracker-5b2ef/databases/(default)/documents/artifacts/cotw-trophy-display/public/data/userTrophies/Werewolf3788";
-        
-        // --- TAG DEFINITIONS ---
-        const MY_TAGS = ["werewolf", "werewolf3788"];
-        const OTHER_MEMBER_TAGS = ["raymystyro", "onelividman", "darkwing", "darkwing69420", "terrdog", "terrdog420", "fluffy", "phoenix_darkfire", "elucidatorvah", "jcrow", "jcrow207", "unicornbunnyshiv"];
-
-        let currentTrophyData = [];
-
-        // Safety normalizer to protect checklist maps and dynamic objects in Firebase RTDB arrays
-        function convertFirebaseArray(data) {
-            if (!data) return [];
-            if (Array.isArray(data)) return data;
-            if (typeof data === 'object') {
-                const keys = Object.keys(data).map(Number).filter(n => !isNaN(n));
-                if (keys.length > 0) {
-                    const arr = [];
-                    keys.forEach(k => { arr[k] = data[k]; });
-                    return arr.filter(item => item !== undefined);
-                }
-                return Object.values(data);
-            }
-            return [];
-        }
-
-        function getRelativeTime(timestamp) {
-            if (!timestamp || timestamp === 0) return "Starting...";
-            const now = Date.now();
-            const diff = now - timestamp;
-            const minutes = Math.floor(diff / 60000);
-            const hours = Math.floor(minutes / 60);
-            const days = Math.floor(hours / 24);
-            const months = Math.floor(days / 30);
-            const years = Math.floor(days / 365);
-            if (years > 0) return years === 1 ? "1 year ago" : `${years} years ago`;
-            if (months > 0) return months === 1 ? "1 month ago" : `${months} months ago`;
-            if (days > 0) return days === 1 ? "Yesterday" : `${days} days ago`;
-            if (hours > 0) return `${hours}h ago`;
-            if (minutes > 0) return `${minutes}m ago`;
-            return "Just now";
-        }
-
-        function logSmartEvent(eventName, params) {
-            if (typeof gtag === 'function') {
-                const nyTime = new Date().toLocaleString("en-US", {timeZone: "America/New_York", hour12: true});
-                gtag('event', eventName, { ...params, 'ny_timestamp': nyTime });
-            }
-        }
-
-        function refreshMusic() {
-            const img = document.getElementById('music-widget-img');
-            if(!img) return;
-            const now = Math.floor(Date.now() / 60000); 
-            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=9.5.0`;
-        }
-
-        // --- CLIENT-SIDE TWITCH FETCH ---
-        async function fetchLiveTwitch() {
-            try {
-                const username = "werewolf3788";
-                
-                const [statusRes, gameRes, followRes, titleRes] = await Promise.all([
-                    fetch(`https://decapi.me/twitch/uptime/${username}`).then(r=>r.text()),
-                    fetch(`https://decapi.me/twitch/game/${username}`).then(r=>r.text()),
-                    fetch(`https://decapi.me/twitch/followcount/${username}`).then(r=>r.text()),
-                    fetch(`https://decapi.me/twitch/title/${username}`).then(r=>r.text())
-                ]);
-
-                const isLive = !statusRes.toLowerCase().includes("offline") && 
-                               !statusRes.toLowerCase().includes("error") && 
-                               !statusRes.toLowerCase().includes("not found");
-                               
-                const game = gameRes.includes("Error") ? null : gameRes.trim();
-                const followers = followRes.includes("Error") ? "0" : followRes.trim();
-                const title = titleRes.includes("Error") ? "Offline" : titleRes.trim();
-
-                const twLive = document.getElementById('twitch-live-status');
-                const twMsg = document.getElementById('twitch-status-msg');
-                const twAge = document.getElementById('twitch-age');
-
-                if (twLive) {
-                    twLive.innerText = isLive ? "LIVE" : "OFFLINE";
-                    twLive.className = isLive ? "text-3xl lg:text-5xl font-black text-purple-400" : "text-3xl lg:text-5xl font-black text-gray-500";
-                }
-                if (twAge) {
-                    twAge.innerText = `Followers: ${followers}`;
-                }
-                if (twMsg) {
-                    twMsg.innerText = isLive ? `Streaming: ${game}` : `"${title}"`;
-                }
-            } catch (e) {
-                console.error("Twitch Client-Side Fetch Error:", e);
-            }
-        }
-
-        async function buildSmartMenu() {
-            try {
-                const response = await fetch(MENU_CSV_URL + "&t=" + Date.now());
-                const csvData = await response.text();
-                const rows = csvData.split('\n').slice(1);
-                const menuContainer = document.getElementById('nav-links');
-                const supportContainer = document.getElementById('dynamic-support-links');
-                const groupedLinks = {};
-                const flatLinks = [];
-                let supportHtml = "";
-
-                rows.forEach(row => {
-                    const cols = row.split(',');
-                    if (cols.length >= 3) {
-                        const name = cols[0].trim();
-                        const tag = cols[1].trim().toLowerCase(); 
-                        const url = cols[2].trim();              
-                        const img = cols[3] ? cols[3].trim() : ""; 
-
-                        if (MY_TAGS.includes(tag)) {
-                            supportHtml += `
-                                <a href="${url}" target="support_window" onclick="logSmartEvent('click_support_link', {'link_name': '${name}'})" class="support-card flex items-center p-4 rounded-xl bg-white/5 border border-white/10 hover:border-orange-500 transition-all group h-auto mb-4">
-                                    ${img ? `<img src="${img}" class="support-img-icon mr-4">` : `<i class="fas fa-external-link-alt text-2xl text-orange-500 mr-4"></i>`}
-                                    <div class="flex-1 text-left">
-                                        <div class="font-black text-white leading-tight uppercase text-xs">${name}</div>
-                                        <div class="text-[9px] text-gray-400 font-bold uppercase tracking-widest leading-none mt-1">Open Admin Portal</div>
-                                    </div>
-                                </a>`;
-                            return;
-                        }
-                        if (OTHER_MEMBER_TAGS.includes(tag)) return;
-                        if (tag) {
-                            if (!groupedLinks[tag]) groupedLinks[tag] = [];
-                            groupedLinks[tag].push({ name, url, img });
-                        } else {
-                            flatLinks.push({ name, url });
-                        }
-                    }
-                });
-
-                let navHtml = flatLinks.map(i => `<a href="${i.url}" target="pack_hub_window" class="nav-link">${i.name}</a>`).join('');
-                for (const g in groupedLinks) {
-                    const label = g.charAt(0).toUpperCase() + g.slice(1);
-                    navHtml += `<div class="dropdown"><span class="nav-link">${label} <i class="fas fa-chevron-down ml-1 text-[8px]"></i></span><div class="dropdown-content">${groupedLinks[g].map(i => `<a href="${i.url}" target="pack_hub_window">${i.img ? `<img src="${i.img}" class="nav-thumb" onerror="this.style.display='none'">` : ''}${i.name}</a>`).join('')}</div></div>`;
-                }
-                if (menuContainer) menuContainer.innerHTML = navHtml;
-                if (supportContainer) supportContainer.innerHTML = supportHtml;
-            } catch (e) { console.error("CSV Handshake Failed"); }
-        }
-
-        function toggleNav() { const nav = document.getElementById('nav-links'); if(nav) nav.classList.toggle('active'); }
-        
-        function openStore(gameName, affiliateUrl, source) { 
-            logSmartEvent('click_game_link', { 'game_name': gameName, 'link_url': affiliateUrl || 'PSN_Store', 'click_source': source || 'recent_hunts' });
-            window.open(affiliateUrl || `https://store.playstation.com/en-us/search/${encodeURIComponent(gameName)}`, 'psn_store_window'); 
-        }
-        
-        function closeTrophyLightbox() { const lb = document.getElementById('trophy-lightbox'); if(lb) lb.style.display = 'none'; }
-
-        function openTrophyLightbox(idx) {
-            const t = currentTrophyData[idx];
-            const lb = document.getElementById('trophy-lightbox');
-            if(!t || !lb) return;
-            lb.innerHTML = `<div class="modal-content" onclick="event.stopPropagation()"><div class="relative w-full aspect-square bg-black"><img src="${t.icon}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/250x250/202024/FF5F1F?text=🏆'"><div class="absolute top-6 right-6"><button onclick="closeTrophyLightbox()" class="w-12 h-12 rounded-full bg-black/50 backdrop-blur-xl border border-white/20 text-white flex items-center justify-center text-xl"><i class="fas fa-times"></i></button></div></div><div class="p-8 lg:p-12 space-y-6"><div><div class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-2">${t.type} Trophy</div><h3 class="text-2xl lg:text-3xl font-black text-white uppercase leading-tight">${t.name}</h3></div><p class="text-gray-200 text-lg leading-relaxed">${t.description || 'Secret Objective'}</p><div class="grid grid-cols-2 gap-4 pt-6 border-t border-white/5"><div class="bg-white/5 p-4 rounded-2xl border border-white/5"><div class="text-[10px] font-black text-gray-400 uppercase">Rarity</div><div class="text-white font-black">${t.rarity || 'Rare'}</div><div class="text-[8px] text-gray-500 font-bold uppercase mt-1">${t.earnedRate || '0.0'}% Global</div></div><div class="bg-white/5 p-4 rounded-2xl border border-white/5"><div class="text-[10px] font-black text-gray-400 uppercase">Status</div><div class="font-black ${t.earned ? 'text-green-400' : 'text-orange-400'}">${t.earned ? 'EARNED' : (t.hidden ? 'HIDDEN' : 'LOCKED')}</div></div></div></div></div>`;
-            lb.style.display = 'flex';
-        }
-
-        // --- FIRESTORE COTW LOADER ---
-        function getFirestoreValue(field) {
-            if (!field) return 0;
-            if (field.integerValue !== undefined) return parseInt(field.integerValue);
-            if (field.doubleValue !== undefined) return parseFloat(field.doubleValue);
-            if (field.stringValue !== undefined) return parseInt(field.stringValue) || field.stringValue;
-            return 0;
-        }
-
-        async function updateCOTWLodge() {
-            try {
-                const res = await fetch(COTW_FIRESTORE_URL);
-                if (!res.ok) return;
-                const doc = await res.json();
-                const fields = doc.fields || {};
-
-                // Case-insensitive & spacing resilient key finder
-                const extractVal = (keys) => {
-                    for (const key of keys) {
-                        const normKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
-                        for (const fKey in fields) {
-                            const normFKey = fKey.toLowerCase().replace(/[^a-z0-9]/g, '');
-                            if (normKey === normFKey) {
-                                return getFirestoreValue(fields[fKey]);
-                            }
-                        }
-                    }
-                    return 0;
-                };
-
-                const greatOne = extractVal(['greatone', 'great_one', 'great one']);
-                const rareFur = extractVal(['albino', 'furtype', 'fur_type', 'fur type', 'rare_fur', 'rarefur']);
-                const diamond = extractVal(['diamond']);
-                const gold = extractVal(['gold']);
-                const silver = extractVal(['silver']);
-                const bronze = extractVal(['bronze']);
-
-                document.getElementById('cotw-great-one').innerText = greatOne;
-                document.getElementById('cotw-rare-fur').innerText = rareFur;
-                document.getElementById('cotw-diamond').innerText = diamond;
-                document.getElementById('cotw-gold').innerText = gold;
-                document.getElementById('cotw-silver').innerText = silver;
-                document.getElementById('cotw-bronze').innerText = bronze;
-
-            } catch (e) {
-                console.error("Firestore COTW sync failed cleanly:", e);
-            }
-        }
-
-        // --- TIME LOCALIZER FOR USER DEVICES ---
-        function getDeviceHandshakeTime(lastUpdatedStr) {
-            if (!lastUpdatedStr || lastUpdatedStr === "--") return "--";
-            
-            // Append " UTC" so the browser parses the static server string in UTC
-            // and translates it to the viewer's exact device locale timezone!
-            let dateObj = new Date(lastUpdatedStr + " UTC");
-            if (isNaN(dateObj.getTime())) {
-                dateObj = new Date(lastUpdatedStr);
-            }
-            if (isNaN(dateObj.getTime())) return lastUpdatedStr;
-            
-            return dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + 
-                   " (" + dateObj.toLocaleDateString([], { month: 'numeric', day: 'numeric' }) + ")";
-        }
-
-        // --- GHOST SQUAD RTDB OPERATOR SYNC ---
-        async function updateGhostSquad() {
-            try {
-                const res = await fetch("https://game-tracker-5b2ef-default-rtdb.firebaseio.com/ghost_squad/operators/Werewolf3788.json?t=" + Date.now());
-                if (!res.ok) return;
-                const operator = await res.json();
-                
-                if (operator) {
-                    const card = document.getElementById('ghost-squad-card');
-                    if (card) card.classList.remove('hidden');
-                    
-                    const detailsContainer = document.getElementById('ghost-squad-details');
-                    if (detailsContainer) {
-                        let html = "";
-                        // Dynamically render keys excluding objects/arrays
-                        for (const [key, val] of Object.entries(operator)) {
-                            if (typeof val !== 'object' && val !== null) {
-                                // Format camelCase or snake_case key to clean uppercase words
-                                const cleanKey = key.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').toUpperCase();
-                                html += `
-                                    <div class="flex justify-between items-center py-2 text-xs">
-                                        <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider">${cleanKey}</span>
-                                        <span class="font-black text-white uppercase">${val}</span>
-                                    </div>`;
-                            }
-                        }
-                        detailsContainer.innerHTML = html;
-                    }
-                }
-            } catch (e) {
-                console.error("Ghost Squad sync failed cleanly:", e);
-            }
-        }
-
-        // --- REAL-TIME FIREBASE STORAGE SYNC ---
-        async function updateHub() {
-            try {
-                // Fetch directly from Firebase Realtime Database with Cache Buster
-                const firebaseRes = await fetch("https://game-tracker-5b2ef-default-rtdb.firebaseio.com/psn/users/werewolf.json?t=" + Date.now());
-                const wolf = await firebaseRes.json();
-                
-                // Fetching KFruti data for the legacy trophy counter
-                const frutiRes = await fetch("https://game-tracker-5b2ef-default-rtdb.firebaseio.com/psn/users/kfruti.json?t=" + Date.now());
-                const fruti = await frutiRes.json();
-
-                if (wolf) {
-                    const hDot = document.getElementById('health-dot');
-                    const hVal = document.getElementById('health-value');
-                    if (hDot) { 
-                        hDot.className = "status-dot-pulse online"; 
-                        hVal.innerText = (wolf.onlineId || "Werewolf") + " Handshake: Firebase Live"; 
-                    }
-
-                    const mainAv = document.getElementById('main-avatar'); if(mainAv) mainAv.src = wolf.avatar || "";
-                    
-                    // PS PLUS BADGE INJECTION & CARD ACTIVATION
-                    const plusBadge = document.getElementById('ps-plus-indicator');
-                    const plusCard = document.getElementById('ps-plus-card');
-                    if (wolf.plus) {
-                        if (plusBadge) plusBadge.style.display = 'block';
-                        if (plusCard) {
-                            plusCard.style.display = 'block';
-                            plusCard.classList.add('ps-plus-active');
-                        }
-                    } else {
-                        if (plusBadge) plusBadge.style.display = 'none';
-                        if (plusCard) {
-                            plusCard.style.display = 'none';
-                            plusCard.classList.remove('ps-plus-active');
-                        }
-                    }
-
-                    const bioEl = document.getElementById('profile-bio'); if(bioEl) bioEl.innerText = wolf.bio || "Official Admin Profile";
-                    const lvlEl = document.getElementById('psn-level-label'); if(lvlEl) lvlEl.innerText = wolf.level || "--";
-                    const regEl = document.getElementById('psn-region'); if(regEl) regEl.innerText = "Region: " + (wolf.region || "US");
-                    
-                    const ageEl = document.getElementById('psn-account-age'); 
-                    if(ageEl) {
-                        const legacyAge = (fruti && fruti.psnAccountAge) ? fruti.psnAccountAge : wolf.psnAccountAge;
-                        ageEl.innerText = "Legacy Age: " + (legacyAge || "Veteran");
-                    }
-
-                    // Dynamic local timezone device sync time formatting!
-                    const syncEl = document.getElementById('sync-time'); 
-                    if(syncEl) {
-                        syncEl.innerText = getDeviceHandshakeTime(wolf.lastUpdated);
-                    }
-
-                    // PSN LIBRARY COUNT
-                    const gamesPlayedEl = document.getElementById('games-played-count');
-                    if (gamesPlayedEl && wolf.gamesPlayed !== undefined) {
-                        gamesPlayedEl.innerText = wolf.gamesPlayed;
-                    }
-
-                    const sLabel = document.getElementById('online-status-label');
-                    const gSub = document.getElementById('current-game-sub');
-                    const actLabel = document.getElementById('current-activity');
-                    if (sLabel) {
-                        if (wolf.online) {
-                            sLabel.innerText = "Online"; sLabel.className = "text-[14px] lg:text-[18px] font-black text-green-500 uppercase text-center leading-tight";
-                            if(gSub) gSub.innerText = wolf.currentGame || "Dashboard"; if(actLabel) actLabel.innerText = "Activity: " + (wolf.currentGameActivity || "Active");
-                        } else {
-                            sLabel.innerText = "Offline"; sLabel.className = "text-[14px] lg:text-[18px] font-black text-gray-500 uppercase text-center leading-tight";
-                            if(gSub) gSub.innerText = "Away"; if(actLabel) actLabel.innerText = "Activity: Idle";
-                        }
-                    }
-
-                    const wSum = wolf.trophySummary || {};
-                    const fSum = (fruti && fruti.trophySummary) ? fruti.trophySummary : { platinum: 0, gold: 0, silver: 0, bronze: 0, total: 0 };
-                    
-                    const tTotal = document.getElementById('trophy-total'); if(tTotal) tTotal.innerText = ((wSum.total || 0) + (fSum.total || 0)).toLocaleString();
-                    const pC = document.getElementById('plat-count'); if(pC) pC.innerText = (wSum.platinum || 0) + (fSum.platinum || 0);
-                    const gC = document.getElementById('gold-count'); if(gC) gC.innerText = (wSum.gold || 0) + (fSum.gold || 0);
-                    const sC = document.getElementById('silver-count'); if(sC) sC.innerText = (wSum.silver || 0) + (fSum.silver || 0);
-                    const bC = document.getElementById('bronze-count'); if(bC) bC.innerText = (wSum.bronze || 0) + (fSum.bronze || 0);
-
-                    // ACTIVE HUNT RENDER ENGINE (With Smart Dynamic Fallback Check)
-                    let hunt = wolf.activeHunt;
-                    const recentGamesNormal = convertFirebaseArray(wolf.recentGames);
-                    
-                    // Fallback to the first item in recent games list if activeHunt is empty
-                    if (!hunt && recentGamesNormal.length > 0) {
-                        const firstRecent = recentGamesNormal[0];
-                        hunt = {
-                            title: firstRecent.name,
-                            progress: parseInt(firstRecent.progress) || 0,
-                            trophies: firstRecent.trophies || [],
-                            velocity: {
-                                completionStatus: firstRecent.ratio || "0/0",
-                                hunterPersona: "Recent Active Hunt"
-                            }
-                        };
-                    }
-
-                    if (hunt) {
-                        const huntHero = document.getElementById('last-played-hero'); if(huntHero) huntHero.classList.remove('hidden');
-                        
-                        // Parse trophies using robust Normalizer to support maps/arrays
-                        currentTrophyData = convertFirebaseArray(hunt.trophies);
-                        const activeTitle = document.getElementById('active-game-title'); if(activeTitle) activeTitle.innerText = hunt.title || "---";
-                        
-                        // HUNTER PERSONA BADGE
-                        const personaBadge = document.getElementById('hunter-persona-badge');
-                        if (personaBadge && hunt.velocity && hunt.velocity.hunterPersona) {
-                            personaBadge.innerText = hunt.velocity.hunterPersona;
-                            personaBadge.classList.remove('hidden');
-                        } else if (personaBadge) {
-                            personaBadge.classList.add('hidden');
-                        }
-
-                        const artImg = document.getElementById('active-game-art');
-                        const fbBox = document.getElementById('active-game-fallback');
-                        const resolvedArt = wolf.currentGameArt || (recentGamesNormal.length > 0 ? recentGamesNormal[0].art : null);
-                        if (resolvedArt && artImg) { artImg.src = resolvedArt; artImg.classList.remove('hidden'); if(fbBox) fbBox.classList.add('hidden'); }
-                        
-                        const earnedT = currentTrophyData.filter(t => t.earned && t.timestamp > 0);
-                        const jAge = document.getElementById('game-journey-age');
-                        if (jAge && earnedT.length > 0) { jAge.innerText = getRelativeTime([...earnedT].sort((a,b) => a.timestamp - b.timestamp)[0].timestamp); }
-
-                        const storeLink = document.getElementById('active-game-store-link');
-                        if(storeLink) storeLink.href = `https://store.playstation.com/en-us/search/${encodeURIComponent(hunt.title)}`;
-                        
-                        // EXPLICIT RATIO MATH EXPOSED EVERYWHERE
-                        const completionFraction = (hunt.velocity && hunt.velocity.completionStatus) ? hunt.velocity.completionStatus : `${earnedT.length}/${currentTrophyData.length}`;
-                        
-                        const ratio = document.getElementById('active-game-ratio'); 
-                        if(ratio) ratio.innerText = completionFraction;
-                        
-                        const pct = hunt.progress !== undefined ? hunt.progress : Math.round((earnedT.length / Math.max(currentTrophyData.length, 1)) * 100);
-                        const pText = document.getElementById('active-game-progress-text'); 
-                        if(pText) pText.innerHTML = `${pct}% <span class="text-[14px] text-gray-400 ml-1 tracking-widest">(${completionFraction})</span>`;
-                        
-                        const pFill = document.getElementById('active-game-progress-fill'); 
-                        if(pFill) pFill.style.width = pct + "%";
-
-                        const checklistHeader = document.querySelector('#checklist-header-text');
-                        if(checklistHeader) checklistHeader.innerHTML = `<i class="fas fa-list-check text-orange-500"></i> Trophy Checklist <span class="text-gray-500 ml-2 tracking-widest text-sm">(${completionFraction})</span>`;
-
-                        const checklist = document.getElementById('trophy-checklist-container');
-                        if(checklist) {
-                            if (currentTrophyData.length > 0) {
-                                checklist.innerHTML = currentTrophyData.map((t, idx) => {
-                                    let individualProgressTracker = "";
-                                    if (!t.earned && t.targetValue > 1) {
-                                        individualProgressTracker = `<div class="text-[10px] font-black text-blue-400 uppercase tracking-widest mt-1">Progress: ${t.currentValue || 0} / ${t.targetValue}</div>`;
-                                    }
-
-                                    // Dynamic 12-Hour Glow Check
-                                    const isEarnedRecently = t.earned && t.timestamp > 0 && (Date.now() - t.timestamp <= 12 * 60 * 60 * 1000);
-                                    const recentEarnBadge = isEarnedRecently ? `<span class="ml-2 text-[8px] bg-orange-600/30 text-orange-400 border border-orange-500/50 rounded px-1 animate-pulse font-bold tracking-widest"><i class="fas fa-fire mr-1"></i>RECENT</span>` : '';
-
-                                    return `
-                                    <div class="trophy-row ${isEarnedRecently ? 'recent-earn-glow' : ''}" onclick="openTrophyLightbox(${idx})">
-                                        <img src="${t.icon}" class="trophy-icon-sq ${!t.earned && t.hidden ? 'opacity-30 blur-[2px]' : ''}" onerror="this.src='https://placehold.co/50x50/202024/FF5F1F?text=🏆'">
-                                        <div class="min-w-0 flex-1">
-                                            <div class="trophy-title-text truncate font-black ${t.earned ? 'text-green-500' : 'text-orange-500'} text-xs">
-                                                ${!t.earned && t.hidden ? '<i class="fas fa-eye-slash mr-1 text-gray-500"></i> HIDDEN TROPHY' : t.name}${recentEarnBadge}
-                                            </div>
-                                            <div class="trophy-desc-text truncate text-[10px] opacity-70 text-gray-400">
-                                                ${!t.earned && t.hidden ? 'Keep playing to discover this secret.' : t.description}
-                                            </div>
-                                            ${individualProgressTracker}
-                                            <div class="text-[8px] font-black text-gray-500 uppercase mt-1 tracking-widest">${t.earnedRate || '0.0'}% Global Earn Rate</div>
-                                        </div>
-                                        <div class="min-w-[100px] text-right">
-                                            ${t.earned ? `<div class="font-black text-[9px] text-green-500 uppercase">EARNED</div><div class="text-[8px] text-gray-500 uppercase">${getRelativeTime(t.timestamp)}</div>` : `<div class="text-[9px] font-black uppercase text-gray-600">${t.rarity || t.type}</div>`}
-                                        </div>
-                                    </div>`;
-                                }).join('');
-                            } else {
-                                checklist.innerHTML = `<div class="p-8 text-center text-gray-500 font-bold uppercase tracking-widest text-xs">Trophies synced with playstation networks</div>`;
-                            }
-                        }
-                    }
-
-                    // RECENT EARNED TROPHY LOGIC (Standalone Card with Auto-Discovery fallbacks)
-                    let recTrophy = null;
-                    const mostRecentNormal = convertFirebaseArray(wolf.mostRecentTrophies);
-                    if (mostRecentNormal.length > 0 && mostRecentNormal[0].name) {
-                        recTrophy = mostRecentNormal[0];
-                    } else if (currentTrophyData.length > 0) {
-                        // Fallback: Dynamically discover the latest earned trophy from current game checklist
-                        const earnedTrophies = currentTrophyData.filter(t => t.earned && t.timestamp > 0);
-                        if (earnedTrophies.length > 0) {
-                            earnedTrophies.sort((a,b) => b.timestamp - a.timestamp);
-                            recTrophy = {
-                                name: earnedTrophies[0].name,
-                                icon: earnedTrophies[0].icon,
-                                game: hunt ? hunt.title : "Active Hunt",
-                                timestamp: earnedTrophies[0].timestamp
-                            };
-                        }
-                    }
-
-                    const recCard = document.getElementById('recent-trophy-card');
-                    if (recTrophy) {
-                        const recIcon = document.getElementById('last-trophy-icon');
-                        const recName = document.getElementById('last-trophy-name');
-                        const recGame = document.getElementById('last-trophy-game');
-                        
-                        if (recIcon && recName && recGame) {
-                            recIcon.src = recTrophy.icon || "";
-                            recName.innerText = recTrophy.name || "Secret Trophy";
-                            recGame.innerText = recTrophy.game || "Playstation System";
-                            
-                            // Dynamic 12-Hour Glow Check on the Standalone Card
-                            const isTrophyRecent = recTrophy.timestamp > 0 && (Date.now() - recTrophy.timestamp <= 12 * 60 * 60 * 1000);
-                            if (recCard) {
-                                recCard.classList.remove('hidden');
-                                if (isTrophyRecent) {
-                                    recCard.classList.add('recent-earn-glow');
-                                } else {
-                                    recCard.classList.remove('recent-earn-glow');
-                                }
-                            }
-                        }
-                    } else {
-                        if (recCard) recCard.classList.add('hidden');
-                    }
-
-                    // RECENT HUNTS CONTAINER
-                    document.getElementById('recent-games-container').innerHTML = recentGamesNormal.slice(0, 6).map(g => `
-                        <div class="game-thumb ${parseInt(g.progress) >= 100 ? 'platinum-glow' : ''}" onclick="openStore('${g.name}', '${g.amazonAffiliateUrl || ''}', 'recent_hunts')">
-                            <img src="${g.art}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/150x225/1e1e24/FF5F1F?text=GAME'">
-                            <div class="game-info-overlay"><div class="text-[11px] font-black text-orange-400 uppercase tracking-tighter">${g.ratio}</div><div class="text-[10px] font-black text-white/70 uppercase tracking-widest">${g.progress}%</div></div>
-                        </div>`).join('');
-                }
-            } catch (e) { console.error("Firebase Sync Failure:", e); }
-        }
-
-        buildSmartMenu();
-        refreshMusic();
-        fetchLiveTwitch(); // Call Twitch instantly on load
-        updateCOTWLodge();
-        updateGhostSquad();
-        updateHub();
-        setInterval(refreshMusic, 60000);
-        setInterval(fetchLiveTwitch, 60000); // Poll Twitch every 60s directly from browser
-        setInterval(updateCOTWLodge, 30000); // Poll Firestore COTW document state
-        setInterval(updateGhostSquad, 30000); // Poll Realtime Database ghost_squad path
-        setInterval(updateHub, 30000); // Poll Firebase live database updates every 30s
-    </script>
+/* ============================================================================
+ * 9. Boot
+ * ============================================================================ */
+startMenu(); startMusic();
+signInAnonymously(authP).catch((e) => console.warn("[psn anon auth]", e.message));
+onAuthStateChanged(authE, async (u) => {
+  window.__booted = true;
+  try { if (!authP.currentUser) await signInAnonymously(authP); } catch (e) { /* rules may allow public reads */ }
+  try { await loadProfile(u); }
+  catch (e) { console.error(e); showGate("Could not load the profile", `<div class="notice">${esc(e.message)}</div>`); }
+});
+</script>
 </body>
 </html>
