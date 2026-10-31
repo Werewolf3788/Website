@@ -953,6 +953,22 @@ function ensureUniversalStyles() {
     document.head.appendChild(style);
 }
 
+function humanize(key) {
+    return String(key || '')
+        .replace(/_/g, ' ')
+        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .replace(/\b\w/g, c => c.toUpperCase())
+        .trim();
+}
+
+const COLLECTIBLE_LABELS = {
+    personal_letters: '✉️ Personal Letter',
+    classified_documents: '📜 Classified Document',
+    hidden_items: '🏷️ Hidden Item',
+    stone_eagles: '🦅 Stone Eagle',
+    workbenches: '⚙️ Workbench'
+};
+
 function buildFolder(titleHtml, innerHtml) {
     return `
     <section class="category-section section-collapsed">
@@ -988,6 +1004,7 @@ function buildItemCard(o) {
             <button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(o.id)}', '${o.type}'${groupArg})" aria-label="Toggle"></button>
         </div>
         ${o.body ? `<p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(o.body)}</p>` : ''}
+        ${o.link ? `<a href="${escapeHtml(o.link)}" target="_blank" rel="noopener" style="font-size:0.75rem; font-weight:800; color:var(--user-theme-accent, #ff5500); text-decoration:none;">▶ ${escapeHtml(o.linkLabel || 'Watch')}</a>` : ''}
     </div>`;
 }
 
@@ -1041,7 +1058,9 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
 
     let inner = gridOf([buildItemCard({
         id: mKey, type: 'mission', badge: m.region || 'Campaign', badgeClass: 'rank-gold',
-        title: m.title || mLabel, sub: `Mission ${m.number}`, body: m.walkthrough || '', img: m.image_url, ctx
+        title: m.title || mLabel, sub: [`Mission ${m.number}`, m.date].filter(Boolean).join(' · '),
+        body: m.walkthrough || '', img: m.image_url, ctx,
+        link: m.guide_video && m.guide_video.url, linkLabel: m.guide_video ? `Full guide video (${m.guide_video.creator || 'YouTube'})` : ''
     })]);
 
     const colCards = [];
@@ -1051,7 +1070,10 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
             colCards.push(buildItemCard({
                 id: it.id, type: 'collectible', group: `${mKey}__${cat}`,
                 badge: COLLECTIBLE_LABELS[cat] || humanize(cat), badgeClass: 'rank-bronze',
-                title: it.name, sub: it.location, img: it.image_url, ctx
+                title: it.name, sub: it.location,
+                body: [it.headline, it.author ? `— ${it.author}` : '', it.summary, it.unlocks ? `Unlocks: ${it.unlocks}` : ''].filter(Boolean).join(' '),
+                img: it.image_url, ctx,
+                link: it.video_url, linkLabel: 'Watch guide'
             }));
         });
     });
