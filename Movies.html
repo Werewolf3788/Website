@@ -100,7 +100,7 @@
   --display:'Bebas Neue','Inter',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;overflow-x:clip}
 body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.5;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
@@ -207,7 +207,7 @@ main{padding-bottom:40px}
 /* ---------- Poster card ---------- */
 .card{position:relative;display:block;border-radius:var(--radius);outline-offset:3px}
 .card .pw{position:relative;aspect-ratio:2/3;border-radius:var(--radius);overflow:hidden;background:linear-gradient(135deg,#1c1c25,#121218);box-shadow:0 0 0 1px rgba(255,255,255,.06);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
-.card img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s}
+.card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s}
 .card img.ld{opacity:1}
 .card .noimg{position:absolute;inset:0;display:grid;place-items:center;padding:14px;text-align:center;font-family:var(--display);font-size:22px;color:#55556a;line-height:1}
 .card .badges{position:absolute;top:8px;left:8px;right:8px;display:flex;flex-wrap:wrap;gap:4px;pointer-events:none}
@@ -344,30 +344,37 @@ footer .fl{display:flex;flex-wrap:wrap;gap:18px}
 @media (max-width:900px){
   :root{--top-h:56px}
   #sitebar,.mainnav,.searchbox,#install-btn,.hide-m{display:none !important}
-  #topbar{gap:10px;padding-top:var(--safe-t);height:calc(var(--top-h) + var(--safe-t))}
-  .brand b{font-size:23px}
-  .brand img{width:32px;height:32px}
+  #topbar{gap:8px;padding:var(--safe-t) 12px 0 16px;height:calc(var(--top-h) + var(--safe-t))}
+  #topbar .brand b{font-size:21px;letter-spacing:1px}
+  #topbar .brand img{width:30px;height:30px}
+  #menu-btn{display:none}
+  .top-actions{gap:2px}
   body{padding-bottom:calc(var(--tab-h) + var(--safe-b))}
   #tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:70;height:calc(var(--tab-h) + var(--safe-b));padding-bottom:var(--safe-b);background:rgba(13,13,18,.94);backdrop-filter:saturate(160%) blur(16px);-webkit-backdrop-filter:saturate(160%) blur(16px);border-top:1px solid rgba(255,255,255,.07)}
   #tabbar a,#tabbar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10.5px;font-weight:600;color:var(--dim)}
   #tabbar svg{width:23px;height:23px}
   #tabbar .active{color:var(--text)}
   #tabbar .active svg{color:var(--red)}
-  #hero{min-height:auto}
-  .hero-inner{grid-template-columns:1fr;padding:26px var(--pad) 22px;gap:0}
+  #hero{min-height:min(64vh,520px)}
+  .hero-bg{inset:0;filter:brightness(.42) saturate(115%);transform:none;background-position:center 20%}
+  #hero::after{background:linear-gradient(0deg,var(--bg) 4%,rgba(11,11,15,.55) 55%,rgba(11,11,15,.2) 100%)}
+  .hero-inner{grid-template-columns:1fr;padding:120px var(--pad) 18px;gap:0}
+  .hero-dots{margin-top:20px}
   .hero-poster{display:none}
   .hero-title{font-size:clamp(40px,12vw,60px)}
-  .hero-desc{font-size:14.5px;-webkit-line-clamp:3}
+  .hero-desc{font-size:14.5px;-webkit-line-clamp:2}
   .hero-cta .btn{flex:1}
   .row{grid-auto-columns:clamp(112px,31vw,150px);gap:10px}
   .row-arrow{display:none}
   .grid{grid-template-columns:repeat(3,1fr);gap:18px 10px}
   .card .ct{font-size:13px}
+  .bdg{font-size:8.5px;padding:2px 4px;letter-spacing:.3px}
+  .card .badges{top:5px;left:5px;right:5px;gap:3px}
   .section{margin-top:26px}
   .modal .detail{margin:0;width:100%;height:100%;max-height:none;border-radius:0;padding-bottom:calc(20px + var(--safe-b))}
   .d-hero{grid-template-columns:1fr;padding:calc(64px + var(--safe-t)) 20px 18px;gap:20px}
-  .d-poster{width:52%;margin:0 auto}
-  .d-close{top:calc(12px + var(--safe-t))}
+  .d-poster{width:44%;margin:0 auto}
+  .d-close{position:fixed;top:calc(12px + var(--safe-t));right:12px}
   .d-section{padding:4px 20px 22px}
   .buy{grid-template-columns:1fr}
   .sheet{margin:0;position:absolute;left:0;right:0;bottom:0;width:100%;border-radius:20px 20px 0 0;padding-bottom:calc(26px + var(--safe-b))}
@@ -831,8 +838,7 @@ function card(m) {
   if (m.ytFree) b.push('<span class="bdg free">Free</span>');
   const sub = [m.year, m.isTV ? 'TV' : m.runtime].filter(Boolean).join(' · ');
   return `<a class="card" href="${titleUrl(m)}" data-key="${esc(m.key)}" aria-label="${esc(m.title + (m.year ? ' (' + m.year + ')' : ''))}">
-    <div class="pw">${m.poster ? `<img src="${esc(m.poster)}" alt="" loading="lazy" decoding="async" onload="this.classList.add('ld')" onerror="this.remove()">` : ''}
-      <div class="noimg" ${m.poster ? 'style="z-index:-1"' : ''}>${esc(m.title)}</div>
+    <div class="pw"><div class="noimg">${esc(m.title)}</div>${m.poster ? `<img src="${esc(m.poster)}" alt="" loading="lazy" decoding="async" onload="this.classList.add('ld')" onerror="this.remove()">` : ''}
       <div class="badges">${b.join('')}</div>
       <div class="ov">${esc([m.rating, m.genres[0]].filter(Boolean).join(' · '))}<div class="stores">${storeDots(m)}</div></div></div>
     <div class="ct">${esc(m.title)}</div><div class="cs">${esc(sub)}</div></a>`;
@@ -899,9 +905,8 @@ function viewHome() {
   topGenres.forEach(g => { html += rowSection(g, base.filter(m => m.genres.includes(g)), qs({ view: 'browse', genre: g }), { count: genreCount[g] }); });
   return html;
 }
-function emptyHtml() {
-  return `<div class="grid"><div class="empty"><b>No titles match</b>Try another store or clear your filters.<div style="margin-top:16px"><a class="btn btn-ghost btn-sm" href="?view=browse">Clear filters</a></div></div></div>`;
-}
+const emptyInner = () => `<div class="empty"><b>No titles match</b>Try another store or clear your filters.<div style="margin-top:16px"><a class="btn btn-ghost btn-sm" href="?view=browse&store=">Clear filters</a></div></div>`;
+const emptyHtml = () => `<div class="grid">${emptyInner()}</div>`;
 let gridList = [], gridShown = 0;
 const BATCH = 48;
 function viewGrid() {
@@ -916,7 +921,7 @@ function viewGrid() {
   if (state.collection) chips.push(['collection', 'Collection: ' + state.collection]);
   if (state.q && !isSearch) chips.push(['q', '“' + state.q + '”']);
   return `<div class="page-head"><h1>${state.collection && state.view === 'browse' ? esc(state.collection) : titles[state.view]}</h1><p>${fmt(gridList.length)} ${gridList.length === 1 ? 'title' : 'titles'}${state.store ? ' on ' + esc(STORE[state.store].label) : ''}</p></div>
-  ${isSearch ? `<label class="searchbox mobile-search" style="display:flex"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="sr-only">Search</span><input id="search-mobile" type="search" placeholder="Search titles, actors, genres…" value="${esc(state.q)}" autocomplete="off"></label>` : ''}
+  ${isSearch ? `<label class="searchbox mobile-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="sr-only">Search</span><input id="search-mobile" type="search" placeholder="Search titles, actors, genres…" value="${esc(state.q)}" autocomplete="off"></label>` : ''}
   <div style="margin-top:12px">${storeBar()}</div>
   <div class="toolbar">
     ${sel('genre', 'All genres', state.genre, genres.map(g => [g, g]))}
@@ -924,7 +929,7 @@ function viewGrid() {
     <label class="select"><span class="sr-only">Sort</span><select data-filter="sort">${[['added', 'Recently added'], ['az', 'Title A–Z'], ['za', 'Title Z–A'], ['newest', 'Release: newest'], ['oldest', 'Release: oldest']].map(o => `<option value="${o[0]}" ${o[0] === state.sort ? 'selected' : ''}>${o[1]}</option>`).join('')}</select></label>
     ${chips.map(c => `<span class="active-filter">${esc(c[1])}<button type="button" data-clear="${c[0]}" aria-label="Remove filter">${ICON.close}</button></span>`).join('')}
   </div>
-  <div class="grid" id="grid">${gridList.length ? '' : (catalog.length ? emptyHtml().replace(/^<div class="grid">|<\/div>$/g, '') : skeleton())}</div><div id="sentinel"></div>`;
+  <div class="grid" id="grid">${gridList.length ? '' : (catalog.length ? emptyInner() : skeleton())}</div><div id="sentinel"></div>`;
 }
 function skeleton(n = 18) { return Array.from({ length: n }, () => '<div class="card sk"><div class="pw"></div><div class="ct" style="margin-top:10px"></div></div>').join(''); }
 function moreGrid() {
@@ -969,17 +974,18 @@ function readUrl() {
   state.t = p.get('t') || '';
   // Old Discord links: Movies#tt0133093 -> ?t=tt0133093
   const h = decodeURIComponent(location.hash.slice(1)).trim();
-  if (h && !state.t) { state.t = h; history.replaceState(null, '', qs({ t: h }).replace(/^\?$/, '?') + (qs() === '?' ? 't=' : '&t=') + encodeURIComponent(h)); fixUrlFromHash(h); }
+  if (h && !state.t) { state.t = h; history.replaceState(null, '', detailUrl(h)); }
 }
-function fixUrlFromHash(h) { const base = qs(); history.replaceState(null, '', (base === '?' ? '?' : base + '&') + 't=' + encodeURIComponent(h)); }
+function detailUrl(id) { const base = qs(); return (base === '?' ? '?' : base + '&') + 't=' + encodeURIComponent(id); }
+const cleanUrl = u => u === '?' ? location.pathname : u;
 function go(over, replace) {
   Object.assign(state, over);
-  const url = qs();
+  const url = cleanUrl(qs());
   history[replace ? 'replaceState' : 'pushState'](null, '', url);
   render();
-  if (!replace) { scrollTo({ top: 0, behavior: 'instant' in document.documentElement.style ? 'instant' : 'auto' }); trackPage(document.title, location.pathname + url); }
+  if (!replace) { scrollTo(0, 0); trackPage(document.title, location.pathname + url); }
 }
-addEventListener('popstate', () => { closeModal('detail-modal', true); readUrl(); render(); });
+addEventListener('popstate', () => { closeModal('detail-modal', true); resetSeo(); readUrl(); render(); });
 
 /* ---------------- detail view ---------------- */
 function storeUrl(m, s) {
@@ -1034,12 +1040,11 @@ function findByParam(t) {
 }
 function openDetailByParam(t, push) { const m = findByParam(t); if (m) openDetail(m, push); }
 function openDetail(m, push = true) {
-  current = m;
+  current = m; state.t = '';
   $('#detail').innerHTML = detailHtml(m);
-  $('#detail').scrollTop = 0;
   openModal('detail-modal');
-  const url = qs({ t: m.id || m.key }).replace(/^\?$/, '?');
-  const full = url === '?' ? '?t=' + encodeURIComponent(m.id || m.key) : url + (url.includes('t=') ? '' : '&t=' + encodeURIComponent(m.id || m.key));
+  $('#detail').scrollTop = 0;
+  const full = detailUrl(m.id || m.key);
   if (push) history.pushState({ d: 1 }, '', full);
   setSeo(m, full);
   track('view_item', { items: [{ item_id: m.id || m.key, item_name: m.title, item_category: m.type, item_category2: m.genres[0] || '', item_variant: m.edition || 'Standard' }] });
@@ -1048,7 +1053,7 @@ function openDetail(m, push = true) {
 function closeDetail() {
   if (!$('#detail-modal').classList.contains('open')) return;
   closeModal('detail-modal');
-  if (new URLSearchParams(location.search).has('t')) { state.t = ''; history.pushState(null, '', qs()); }
+  if (new URLSearchParams(location.search).has('t')) { state.t = ''; history.pushState(null, '', cleanUrl(qs())); }
   resetSeo();
 }
 
@@ -1100,14 +1105,14 @@ function onSearchInput(e) {
   const v = e.target.value;
   searchTimer = setTimeout(() => {
     const keepFocus = e.target.id;
-    if (state.view !== 'search' && state.view !== 'browse' && state.view !== 'movies' && state.view !== 'tv') go({ view: 'search', q: v, collection: '' }, false);
+    if (state.view !== 'search' && keepFocus === 'search-desktop') go({ view: 'search', q: v, genre: '', rating: '', collection: '' }, false);
     else go({ q: v }, true);
     const el = document.getElementById(keepFocus); if (el && document.activeElement !== el) { el.focus(); el.setSelectionRange(v.length, v.length); }
     if (v.trim().length > 1) track('search', { search_term: v.trim() });
   }, 260);
 }
 $('#search-desktop').addEventListener('input', onSearchInput);
-$('#search-desktop').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); go({ view: state.view === 'home' ? 'search' : state.view, q: e.target.value }, false); } });
+$('#search-desktop').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); clearTimeout(searchTimer); go({ view: 'search', q: e.target.value, genre: '', rating: '', collection: '' }, state.view === 'search'); } });
 
 document.addEventListener('click', e => {
   const t = e.target;
@@ -1139,7 +1144,7 @@ document.addEventListener('click', e => {
     return;
   }
   const chip = t.closest('[data-store]');
-  if (chip) { const s = chip.dataset.store; track('filter_store', { store: s || 'all' }); go({ store: s }, state.view !== 'home'); return; }
+  if (chip) { const s = chip.dataset.store; track('filter_store', { store: s || 'all' }); go({ store: s }, true); return; }
   const clr = t.closest('[data-clear]'); if (clr) { go({ [clr.dataset.clear]: '' }, true); return; }
   const sc = t.closest('[data-scroll]');
   if (sc) { const row = sc.parentElement.querySelector('.row'); row.scrollBy({ left: sc.dataset.scroll * row.clientWidth * .85, behavior: 'smooth' }); return; }
@@ -1157,7 +1162,7 @@ document.addEventListener('change', e => {
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { if ($('#viewer').classList.contains('open')) return $('#viewer').classList.remove('open'); const m = $$('.modal.open').pop(); if (m) { if (m.id === 'detail-modal') closeDetail(); else closeModal(m.id); } }
-  if (e.key === '/' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); (innerWidth > 900 ? $('#search-desktop') : null)?.focus() || go({ view: 'search' }); }
+  if (e.key === '/' && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); if (innerWidth > 900) $('#search-desktop').focus(); else go({ view: 'search' }); }
 });
 $('#menu-btn').onclick = () => openModal('drawer');
 $('#bell-btn').onclick = () => openAlerts();
@@ -1191,7 +1196,7 @@ if (isIOS && !isStandalone()) $('#install-btn').style.display = 'inline-flex';
 /* ---------------- service worker ---------------- */
 let swReg = null;
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  navigator.serviceWorker.register('movies-sw.js', { scope: './' }).then(r => { swReg = r; }).catch(err => console.warn('[SW]', err));
+  navigator.serviceWorker.register('movies-sw.js', { scope: './Movies' }).then(r => { swReg = r; }).catch(err => console.warn('[SW]', err));
   navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'open' && e.data.url) { location.href = e.data.url; } });
 }
 
@@ -1203,8 +1208,9 @@ function paintAlertState() {
 }
 function openAlerts() {
   const cur = lsGet(LS.alertStore) || '';
-  $('#alert-store-opts').innerHTML = [['', 'Every new title']].concat(STORES.map(s => [s.key, 'Only titles on ' + s.label]))
-    .map(([k, l]) => `<label class="opt"><input type="radio" name="alert-store" value="${k}" ${k === cur ? 'checked' : ''}> ${esc(l)}</label>`).join('');
+  $('#alert-store-opts').innerHTML = `<label class="select" style="display:block"><span class="sr-only">Which titles</span><select id="alert-store" style="width:100%">` +
+    [['', 'Every new title']].concat(STORES.map(s => [s.key, 'Only titles on ' + s.label]))
+    .map(([k, l]) => `<option value="${k}" ${k === cur ? 'selected' : ''}>${esc(l)}</option>`).join('') + '</select></label>';
   const st = $('#alerts-status');
   st.className = 'status-line' + (alertsOn() ? ' ok' : '');
   st.textContent = alertsOn() ? 'Alerts are on for this device.' : (isIOS && !isStandalone() ? 'On iPhone/iPad, install the app to your Home Screen first, then turn alerts on from the app.' : '');
@@ -1226,7 +1232,7 @@ async function sendToSheet(body) {
   await fetch(CFG.pushEndpoint, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
 }
 async function enableAlerts() {
-  const store = ($('input[name="alert-store"]:checked') || {}).value || '';
+  const store = ($('#alert-store') || {}).value || '';
   const st = $('#alerts-status');
   if (!('Notification' in window) || !('serviceWorker' in navigator)) { st.textContent = 'This browser does not support notifications.'; return; }
   if (isIOS && !isStandalone()) { closeModal('alerts-modal', true); openModal('ios-modal'); return; }
@@ -1293,7 +1299,7 @@ async function localAlertCheck() {
 readUrl();
 paintAlertState();
 render();
-trackPage(document.title, location.pathname + location.search);
+if (!state.t) trackPage(document.title, location.pathname + location.search);
 loadMenu();
 readCachedCsv().then(text => { if (text) { applyCsv(text, false); setSync('', 'Saved library loaded · checking for updates…'); } }).finally(refresh);
 setInterval(refresh, CFG.refreshMs);
