@@ -1,0 +1,165 @@
+/* ============================================================================
+   Werewolf Project - shared app shell (menu, bottom nav, install, notifications)
+   Loaded on every page by assets/ww-shell.js
+   Layouts:
+     Desktop (wide)          -> top menu with dropdown folders
+     Desktop (narrow/tablet) -> top bar with a sandwich button + slide-in drawer
+     Phones / touch portrait -> app-style bottom navigation with pop-up sheets
+   ========================================================================== */
+:root {
+    --ww-bg: #0f172a;
+    --ww-bg-2: #1e293b;
+    --ww-border: rgba(148, 163, 184, .25);
+    --ww-text: #f1f5f9;
+    --ww-muted: #94a3b8;
+    --ww-accent: #38bdf8;
+    --ww-bar-h: 60px;
+    --ww-bn-h: 66px;
+    --ww-font: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* Hide each page's old menu once the shell is running */
+html.ww-shell-on [data-ww-legacy-nav] { display: none !important; }
+
+/* ---------- Top bar (pages without their own header) ---------- */
+#ww-topbar {
+    position: sticky; top: 0; z-index: 9000; height: var(--ww-bar-h);
+    display: flex; align-items: center; gap: 12px; padding: 0 clamp(10px, 3vw, 28px);
+    background: rgba(15, 23, 42, .94); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--ww-border); font-family: var(--ww-font); box-sizing: border-box;
+}
+#ww-topbar .ww-brand {
+    display: inline-flex; align-items: center; gap: 8px; color: var(--ww-text); text-decoration: none;
+    font-weight: 900; letter-spacing: -.3px; font-size: 1.05rem; white-space: nowrap; flex: 0 0 auto;
+}
+#ww-topbar .ww-brand img { width: 30px; height: 30px; border-radius: 7px; }
+#ww-topbar .ww-brand b { color: var(--ww-accent); }
+#ww-topbar .ww-nav-slot { flex: 1 1 auto; min-width: 0; display: flex; justify-content: flex-end; }
+
+/* ---------- Menu (inside a slot or the top bar) ---------- */
+.ww-menu { display: flex; align-items: center; gap: 4px; font-family: var(--ww-font); min-width: 0; }
+.ww-menu-links { display: flex; align-items: center; gap: 2px; list-style: none; margin: 0; padding: 0; flex-wrap: nowrap; }
+.ww-menu-links > li { position: relative; }
+.ww-menu a.ww-link, .ww-menu button.ww-link {
+    display: inline-flex; align-items: center; gap: 7px; min-height: 44px; padding: 0 12px; border-radius: 10px;
+    color: var(--ww-text); background: none; border: 1px solid transparent; cursor: pointer; white-space: nowrap;
+    font: 700 .9rem var(--ww-font); text-decoration: none;
+}
+.ww-menu a.ww-link:hover, .ww-menu button.ww-link:hover, .ww-menu button.ww-link[aria-expanded="true"] {
+    background: var(--ww-bg-2); border-color: var(--ww-border);
+}
+.ww-menu a.ww-link.is-active { color: var(--ww-accent); }
+.ww-menu .ww-caret { font-size: .65rem; opacity: .8; }
+.ww-ico { width: 18px; height: 18px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ww-thumb { width: 22px; height: 22px; border-radius: 5px; object-fit: cover; flex: 0 0 auto; }
+
+.ww-dropdown {
+    display: none; position: absolute; right: 0; top: calc(100% + 6px); z-index: 9100; min-width: 220px; max-height: 70vh; overflow-y: auto;
+    list-style: none; margin: 0; padding: 6px; background: var(--ww-bg); border: 1px solid var(--ww-border); border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, .55);
+}
+.ww-menu-links > li.is-open > .ww-dropdown { display: block; }
+.ww-dropdown a {
+    display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 12px; border-radius: 8px;
+    color: var(--ww-text); text-decoration: none; font: 600 .9rem var(--ww-font);
+}
+.ww-dropdown a:hover { background: var(--ww-bg-2); }
+
+.ww-burger {
+    display: none; align-items: center; justify-content: center; gap: 8px; min-width: 48px; min-height: 44px; padding: 0 12px;
+    background: var(--ww-bg-2); color: var(--ww-text); border: 1px solid var(--ww-border); border-radius: 10px; cursor: pointer;
+    font: 800 .85rem var(--ww-font); letter-spacing: .5px;
+}
+.ww-burger svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2.2; fill: none; stroke-linecap: round; }
+
+/* Narrow desktop / tablet: sandwich menu */
+html.ww-burger-mode .ww-menu-links { display: none; }
+html.ww-burger-mode .ww-burger { display: inline-flex; }
+
+/* ---------- Slide-in drawer (sandwich menu) ---------- */
+#ww-drawer-backdrop { display: none; position: fixed; inset: 0; z-index: 9400; background: rgba(2, 6, 23, .6); }
+#ww-drawer-backdrop.is-open { display: block; }
+#ww-drawer {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 9500; width: min(360px, 88vw);
+    transform: translateX(105%); transition: transform .22s ease-out; overflow-y: auto;
+    background: var(--ww-bg); border-left: 1px solid var(--ww-border); box-shadow: -16px 0 40px rgba(0, 0, 0, .5);
+    font-family: var(--ww-font); color: var(--ww-text); padding: 14px 14px calc(14px + env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
+}
+#ww-drawer.is-open { transform: none; }
+.ww-drawer-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.ww-drawer-head strong { font-size: .8rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ww-muted); }
+.ww-close { min-width: 44px; min-height: 44px; background: var(--ww-bg-2); color: var(--ww-text); border: 1px solid var(--ww-border); border-radius: 10px; cursor: pointer; font-size: 1.1rem; }
+
+/* Shared list styles for the drawer and bottom sheets */
+.ww-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.ww-list a, .ww-row, .ww-group > summary {
+    display: flex; align-items: center; gap: 12px; width: 100%; min-height: 50px; padding: 10px 14px; box-sizing: border-box;
+    background: var(--ww-bg-2); border: 1px solid var(--ww-border); border-radius: 12px; color: var(--ww-text);
+    text-decoration: none; cursor: pointer; font: 700 .95rem var(--ww-font); text-align: left;
+}
+.ww-list a:hover, .ww-row:hover, .ww-group > summary:hover { border-color: var(--ww-accent); }
+.ww-list a.is-active { border-color: var(--ww-accent); color: var(--ww-accent); }
+.ww-row .ww-row-detail { margin-left: auto; font-weight: 600; font-size: .8rem; color: var(--ww-muted); }
+.ww-group { margin: 0; }
+.ww-group > summary { list-style: none; }
+.ww-group > summary::-webkit-details-marker { display: none; }
+.ww-group > summary::after { content: '▾'; margin-left: auto; font-size: .8rem; color: var(--ww-muted); transition: transform .2s; }
+.ww-group[open] > summary::after { transform: rotate(180deg); }
+.ww-group > .ww-list { padding: 6px 0 4px 12px; }
+.ww-group > .ww-list a { min-height: 44px; font-weight: 600; background: transparent; }
+.ww-section-title { margin: 14px 4px 6px; font: 800 .7rem var(--ww-font); letter-spacing: 1.5px; text-transform: uppercase; color: var(--ww-muted); }
+
+/* ---------- Bottom navigation (phones + touch portrait tablets) ---------- */
+#ww-bottom-nav, .ww-sheet, #ww-sheet-backdrop { display: none; }
+html.ww-bn-mode #ww-topbar .ww-nav-slot,
+html.ww-bn-mode [data-ww-nav-slot] { display: none !important; }
+html.ww-bn-mode body { padding-bottom: calc(var(--ww-bn-h) + env(safe-area-inset-bottom, 0px)) !important; }
+html.ww-bn-mode #ww-bottom-nav {
+    display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 9300;
+    height: calc(var(--ww-bn-h) + env(safe-area-inset-bottom, 0px)); padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: rgba(15, 23, 42, .97); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid var(--ww-border); box-shadow: 0 -8px 24px rgba(0, 0, 0, .45); box-sizing: border-box;
+}
+.ww-bn-btn {
+    flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    padding: 6px 2px; background: none; border: 0; color: var(--ww-muted); text-decoration: none; cursor: pointer;
+    font: 700 .68rem var(--ww-font); letter-spacing: .3px; -webkit-tap-highlight-color: transparent;
+}
+.ww-bn-btn span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ww-bn-btn .ww-ico { width: 24px; height: 24px; }
+.ww-bn-btn.is-active, .ww-bn-btn[aria-expanded="true"] { color: var(--ww-accent); }
+.ww-bn-btn:focus-visible { outline: 2px solid var(--ww-accent); outline-offset: -4px; border-radius: 10px; }
+
+html.ww-bn-mode #ww-sheet-backdrop.is-open { display: block; position: fixed; inset: 0; z-index: 9250; background: rgba(2, 6, 23, .6); }
+html.ww-bn-mode .ww-sheet.is-open {
+    display: block; position: fixed; left: 8px; right: 8px; z-index: 9260;
+    bottom: calc(var(--ww-bn-h) + 8px + env(safe-area-inset-bottom, 0px));
+    max-height: 70vh; overflow-y: auto; padding: 12px; border-radius: 18px; box-sizing: border-box;
+    background: var(--ww-bg); border: 1px solid var(--ww-border); box-shadow: 0 -12px 36px rgba(0, 0, 0, .6);
+    font-family: var(--ww-font); color: var(--ww-text); animation: wwSheetUp .2s ease-out;
+}
+@keyframes wwSheetUp { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (min-width: 600px) { html.ww-bn-mode .ww-sheet.is-open { left: 50%; right: auto; width: 440px; transform: translateX(-50%); animation: none; } }
+.ww-sheet-title { margin: 2px 4px 10px; font: 800 .72rem var(--ww-font); letter-spacing: 1.5px; text-transform: uppercase; color: var(--ww-muted); }
+
+/* Installed app: respect the notch / status bar */
+@media (display-mode: standalone) {
+    #ww-topbar { padding-top: env(safe-area-inset-top, 0px); height: calc(var(--ww-bar-h) + env(safe-area-inset-top, 0px)); }
+}
+
+/* ---------- Small toast ---------- */
+#ww-toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 9900; max-width: min(92vw, 460px);
+    padding: 12px 16px; border-radius: 12px; background: #020617; color: var(--ww-text); border: 1px solid var(--ww-accent);
+    font: 600 .9rem var(--ww-font); box-shadow: 0 10px 30px rgba(0, 0, 0, .5); opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+#ww-toast.is-on { opacity: 1; }
+html.ww-bn-mode #ww-toast { bottom: calc(var(--ww-bn-h) + 16px + env(safe-area-inset-bottom, 0px)); }
+
+@media (prefers-reduced-motion: reduce) {
+    #ww-drawer, .ww-sheet.is-open, #ww-toast { transition: none !important; animation: none !important; }
+}
+
+/* Buttons the shell hides (e.g. Install when the app is already installed) */
+.ww-list [hidden], #ww-drawer [hidden], .ww-sheet [hidden] { display: none !important; }

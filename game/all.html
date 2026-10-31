@@ -505,6 +505,8 @@
     <script src="//www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="//www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="//www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <link rel="stylesheet" href="../assets/ww-shell.css">
+    <script defer src="../assets/ww-shell.js"></script>
 </head>
 <body>
 
@@ -514,17 +516,18 @@
             <span id="companionGameTitle">GAME COMPANION</span>
         </div>
 
-        <nav class="dynamic-nav" id="dynamicNavLinks">
+        <nav data-ww-legacy-nav class="dynamic-nav" id="dynamicNavLinks">
             <!-- Programmatically sorted from /utm_links via game/Universal.js -->
         </nav>
 
-        <div class="header-tools">
+        <div data-ww-nav-slot style="flex:1 1 auto;min-width:0;display:flex;justify-content:flex-end;align-items:center"></div>
+<div class="header-tools">
             <button type="button" class="btn-accent" id="authModalBtn">SIGN IN</button>
             <div id="userProfileBadge" class="user-badge hidden">
                 <img id="headerUserAvatar" src="" alt="">
                 <span id="userDisplayName" style="font-size:0.8rem; font-weight:700;">Member</span>
             </div>
-            <button type="button" class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle Navigation">
+            <button data-ww-legacy-nav type="button" class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle Navigation">
                 <i class="fas fa-bars"></i>
             </button>
         </div>

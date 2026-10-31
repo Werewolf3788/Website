@@ -1160,6 +1160,8 @@
       }
       @keyframes spinAround { to { transform: rotate(360deg); } }
     </style>
+    <link rel="stylesheet" href="assets/ww-shell.css">
+    <script defer src="assets/ww-shell.js"></script>
 </head>
 <body class="theme-dark">
 
@@ -1167,7 +1169,7 @@
 <header id="top-navbar-wrapper">
     <nav id="top-navbar" class="master-85-width">
         <div class="nav-left-zone">
-            <button id="nav-toggle-btn" class="nav-btn black-outline" onclick="toggleNavMenu()" aria-label="Open Navigation Menu">
+            <button data-ww-legacy-nav id="nav-toggle-btn" class="nav-btn black-outline" onclick="toggleNavMenu()" aria-label="Open Navigation Menu">
                 ☰
             </button>
             <div class="nav-brand black-outline" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
@@ -1179,12 +1181,13 @@
             </div>
         </div>
 
-        <div id="desktop-menubar-container">
+        <div data-ww-legacy-nav id="desktop-menubar-container">
             <div id="desktop-home-slot"></div>
             <div id="desktop-folders-slot"></div>
         </div>
 
-        <div class="nav-actions">
+        <div data-ww-nav-slot style="flex:1 1 auto;min-width:0;display:flex;justify-content:flex-end;align-items:center"></div>
+<div class="nav-actions">
             <button id="pwa-install-btn" class="nav-btn install-pwa-btn black-outline" onclick="triggerPwaInstallPrompt()" style="display: none;" title="Install Werewolf Cinema App">
                 📲 <span>Install App</span>
             </button>
@@ -1196,8 +1199,8 @@
 </header>
 
 <!-- Mobile Navigation Drawer -->
-<div id="nav-drawer-overlay" onclick="closeNavMenu()"></div>
-<div id="nav-drawer">
+<div data-ww-legacy-nav id="nav-drawer-overlay" onclick="closeNavMenu()"></div>
+<div data-ww-legacy-nav id="nav-drawer">
     <div class="drawer-header">
         <div class="drawer-title black-outline">⚡ NAVIGATION & DIRECTORY</div>
         <button class="drawer-close black-outline" onclick="closeNavMenu()" aria-label="Close Drawer">✕</button>
@@ -2022,53 +2025,26 @@
             }
         }
 
-        // 1. Dedicated Realtime Listener for /movies_stats
-        database.ref('movies_stats').on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data && typeof data === 'object') {
-                statsCache = data;
-                applyStatsToPillsAndHeader();
+        // Catalog + stats now come straight from the Google Sheet (published CSV),
+        // no Firebase reads. See loadCatalogFromSheet() below.
+        loadCatalogFromSheet().then(({ map, stats, storeTabsLoaded }) => {
+            if (!map || !Object.keys(map).length) throw new Error('Sheet returned no movies');
+            statsCache = stats;
+            applyStatsToPillsAndHeader();
+            moviesMap = map;
+            STRICT_STORE_GATE = storeTabsLoaded > 0;
+            rebuildMoviesArray(true);
+            if (syncDot && syncText) {
+                syncDot.className = 'dot-synced';
+                syncText.textContent = storeTabsLoaded > 0
+                    ? 'Catalog Synchronized from Google Sheet'
+                    : 'Catalog loaded (store links unavailable: share the sheet as "Anyone with the link")';
             }
-        });
-
-        // 2. Realtime Listener for /movies_guide (Catalog Data)
-        const moviesRef = database.ref('movies_guide');
-        moviesRef.on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data && typeof data === 'object' && Object.keys(data).length > 0) {
-                let hasFreshChanges = false;
-                if (!cachedRaw) {
-                    hasFreshChanges = true;
-                } else {
-                    const incomingKeys = Object.keys(data);
-                    for (let i = 0; i < incomingKeys.length; i++) {
-                        const k = incomingKeys[i];
-                        if (!moviesMap[k] || (data[k].lastSynced && data[k].lastSynced !== moviesMap[k].lastSynced)) {
-                            hasFreshChanges = true;
-                            break;
-                        }
-                    }
-                }
-
-                moviesMap = data;
-                rebuildMoviesArray(true);
-                
-                if (syncDot && syncText) {
-                    syncDot.className = 'dot-synced';
-                    syncText.textContent = hasFreshChanges ? 'Live Catalog Synchronized' : 'Live Realtime Stream Active';
-                }
-            } else {
-                console.warn("[Write-Protection Gate] Incoming snapshot was null or empty. Retaining existing cache without wiping state.");
-                if (!cachedRaw) {
-                    moviesMap = {};
-                    rebuildMoviesArray(false);
-                }
-            }
-        }, (error) => {
-            console.error("[Firebase Stream Error]:", error);
+        }).catch((error) => {
+            console.error('[Sheet Catalog Error]:', error);
             if (syncDot && syncText) {
                 syncDot.className = 'dot-error';
-                syncText.textContent = 'Firebase Stream Offline (Serving Local Cache)';
+                syncText.textContent = 'Google Sheet Offline (Serving Local Cache)';
             }
         });
     }
@@ -2349,6 +2325,153 @@
     }
 
     // STRICT STOREFRONT REBUILD: Only titles with an actual URL in a storefront appear
+    // ======================================================================
+    // GOOGLE SHEET CATALOG (replaces Firebase /movies_guide + /movies_stats)
+    // Same column rules as the sheet's Code.gs (mapMdbHeaders/buildMovieData)
+    // ======================================================================
+    const SHEET_MDB_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbnwK6U18P1u1eAS8a_PqZzpOKxQ9AATL6RBH7CfxXQR10YPM63akRqxSDbNiXYJWs92tvobh6iqE7/pub?output=csv";
+    const SHEET_DOC_ID = "1UcQrzcGFKyWUo3EJWhjzRcWNRAp8NbhmjJkPFfe_Fvk";
+    // Storefront tabs: [link key, tab name]
+    const SHEET_STORE_TABS = [
+        ['amazon', 'Amazon'], ['apple', 'Apple Tv'], ['fandango', 'Fandango'], ['google', 'Google Family Share'],
+        ['justwatch', 'JustWatch'], ['ma', 'Movies Anywhere'], ['youtube', 'YouTube']
+    ];
+    let STRICT_STORE_GATE = true;
+
+    const sheetTabCsvUrl = (tab) => `https://docs.google.com/spreadsheets/d/${SHEET_DOC_ID}/gviz/tq?tqx=out:csv&headers=1&sheet=${encodeURIComponent(tab)}`;
+
+    function parseCsv(text) {
+        const rows = []; let row = []; let field = ''; let q = false;
+        for (let i = 0; i < text.length; i++) {
+            const c = text[i];
+            if (q) {
+                if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else q = false; }
+                else field += c;
+            } else if (c === '"') q = true;
+            else if (c === ',') { row.push(field); field = ''; }
+            else if (c === '\n' || c === '\r') {
+                if (c === '\r' && text[i + 1] === '\n') i++;
+                row.push(field); rows.push(row); row = []; field = '';
+            } else field += c;
+        }
+        if (field !== '' || row.length) { row.push(field); rows.push(row); }
+        return rows;
+    }
+    async function fetchCsv(url) {
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        if (/^\s*<(!doctype|html)/i.test(text)) throw new Error('Sheet is not public');
+        return parseCsv(text);
+    }
+    function sheetCleanMediaId(rawInput) {
+        if (!rawInput) return '';
+        const s = rawInput.toString().trim();
+        let m;
+        if ((m = s.match(/thetvdb\.com\/series\/[^\/]+\/episodes\/(\d+)/i))) return 'tvdb-ep-' + m[1];
+        if ((m = s.match(/thetvdb\.com\/series\/([^\/]+)\/seasons\/(?:official\/)?(\d+)/i))) return 'tvdb-slug-' + m[1] + '-s' + m[2];
+        if ((m = s.match(/thetvdb\.com\/series\/([^\/]+)/i))) return 'tvdb-' + m[1];
+        if ((m = s.match(/\{([^}]+)\}/))) { let inner = m[1].trim(); if (inner.toLowerCase().startsWith('imdb-')) inner = inner.substring(5); return inner.toLowerCase(); }
+        if ((m = s.match(/tmdb[-_]?\d+/i))) return m[0].toLowerCase();
+        if ((m = s.match(/(imdb-)?(tt\d+)/i))) return m[2].toLowerCase();
+        if ((m = s.match(/tvdb[-_]?season[-_]?\d+/i))) return m[0].toLowerCase();
+        if ((m = s.match(/tvdb[-_]?(ep-|season-)?\d+/i))) return m[0].toLowerCase();
+        if ((m = s.match(/Series ID\s*(\d+)/i))) return 'tvdb-' + m[1];
+        return s.toLowerCase();
+    }
+    function sheetMovieKey(cleanId, edition) {
+        const id = cleanId.toString().replace(/[^\w-]/g, '').trim().toLowerCase();
+        if (edition && edition.toLowerCase() !== 'standard') return id + '_' + edition.toString().replace(/[^\w-]/g, '').trim().toLowerCase();
+        return id;
+    }
+    function sheetColIndex(headers, aliases) {
+        for (let h = 0; h < headers.length; h++) for (const a of aliases) if (headers[h].indexOf(a) !== -1) return h;
+        return -1;
+    }
+    const sheetIsTrue = (v) => { const s = (v || '').toString().trim().toLowerCase(); return s.includes('✅') || s === 'true' || s === '1' || s === 'yes'; };
+
+    async function loadCatalogFromSheet() {
+        let mdb;
+        try { mdb = await fetchCsv(SHEET_MDB_CSV); }
+        catch (e) { mdb = await fetchCsv(sheetTabCsvUrl('MDB')); }
+
+        const headers = (mdb[0] || []).map(h => h.toString().trim().toLowerCase());
+        const col = {
+            title: sheetColIndex(headers, ['name (a)', 'name', 'title']),
+            year: sheetColIndex(headers, ['year (b)', 'year']),
+            id: sheetColIndex(headers, ['imdb-id (c)', 'imdb-id', 'imdb id', 'tmdb-id']),
+            edition: sheetColIndex(headers, ['edition (4)', 'edition', 'cut', 'version']),
+            collection: sheetColIndex(headers, ['collections (d)', 'collections', 'collection']),
+            dateAdded: sheetColIndex(headers, ['date added to library', 'ded to library', 'date added', 'added']),
+            poster: sheetColIndex(headers, ['poster image (g)', 'poster image', 'poster']),
+            actors: sheetColIndex(headers, ['actors (h)', 'actors', 'cast']),
+            runtime: sheetColIndex(headers, ['running time (i)', 'running time', 'runtime']),
+            genre: sheetColIndex(headers, ['genre (j)', 'genre']),
+            description: sheetColIndex(headers, ['brief description (k)', 'brief description', 'description', 'plot']),
+            streaming: sheetColIndex(headers, ['streaming platforms (l)', 'streaming platforms', 'streaming']),
+            type: sheetColIndex(headers, ['movie / tv shows (m)', 'movie / tv', 'tv shows', 'type']),
+            holidays: sheetColIndex(headers, ['holiday (n)', 'holiday']),
+            rating: sheetColIndex(headers, ['rating (o)', 'rating']),
+            ratingReason: sheetColIndex(headers, ['ratingreason', 'rating reason']),
+            studio: sheetColIndex(headers, ['studio (p)', 'studio'])
+        };
+        // the (Q)/(R) header cells hold the sheet's own totals
+        const val = (row, i) => (i === -1 || row[i] == null) ? '' : row[i].toString().trim();
+
+        // Storefront tabs: column A = id, B = link, Google C = family share, YouTube G = free
+        const links = {}; const family = {}; const ytFree = {};
+        const platformCounts = { amazon: 0, apple: 0, fandango: 0, google: 0, justwatch: 0, moviesanywhere: 0, youtube: 0 };
+        let storeTabsLoaded = 0;
+        await Promise.all(SHEET_STORE_TABS.map(async ([key, tab]) => {
+            links[key] = {};
+            try {
+                const rows = await fetchCsv(sheetTabCsvUrl(tab));
+                storeTabsLoaded++;
+                rows.slice(1).forEach(r => {
+                    const id = sheetCleanMediaId(val(r, 0)).toLowerCase();
+                    const url = val(r, 1);
+                    if (url) platformCounts[key === 'ma' ? 'moviesanywhere' : key]++;
+                    if (id && url) links[key][id] = url;
+                    if (key === 'google' && id && sheetIsTrue(val(r, 2))) family[id] = true;
+                    if (key === 'youtube' && id && sheetIsTrue(val(r, 6))) ytFree[id] = true;
+                });
+            } catch (e) { console.warn(`[Sheet] tab "${tab}" not readable:`, e.message); }
+        }));
+
+        const map = {}; let totalTitles = 0;
+        mdb.slice(1).forEach(row => {
+            let title = val(row, col.title);
+            if (!title) return;
+            const cleanId = sheetCleanMediaId(val(row, col.id));
+            if (cleanId) totalTitles++;
+            const lookup = cleanId.toLowerCase();
+            let edition = val(row, col.edition);
+            let rating = val(row, col.rating);
+            if (/unrated/i.test(edition)) {
+                edition = 'Unrated';
+                if (!rating || /^(n\/a|not rated)$/i.test(rating)) rating = 'Unrated';
+            }
+            const yt = links.youtube[lookup] || '';
+            map[sheetMovieKey(cleanId || title, edition)] = {
+                title, id: cleanId, edition,
+                year: val(row, col.year), dateAdded: val(row, col.dateAdded),
+                rating, ratingReason: val(row, col.ratingReason), runtime: val(row, col.runtime),
+                genre: val(row, col.genre), collection: val(row, col.collection),
+                actors: val(row, col.actors).split(/[,;]/).map(a => a.trim()).filter(Boolean),
+                poster: val(row, col.poster), description: val(row, col.description),
+                type: val(row, col.type) || 'Movie', holidays: val(row, col.holidays),
+                streaming: val(row, col.streaming), studio: val(row, col.studio),
+                amazon: links.amazon[lookup] || '', apple: links.apple[lookup] || '', fandango: links.fandango[lookup] || '',
+                google: links.google[lookup] || '', googleFamilyShare: family[lookup] === true,
+                justwatch: links.justwatch[lookup] || '', ma: links.ma[lookup] || '',
+                youtube: yt, youtubeFree: ytFree[lookup] === true || yt.toLowerCase().includes('free')
+            };
+        });
+
+        const totalLinks = Object.values(platformCounts).reduce((a, b) => a + b, 0);
+        return { map, storeTabsLoaded, stats: { total_links: totalLinks, total_titles: totalTitles, platforms: platformCounts, lastSynced: new Date().toISOString() } };
+    }
+
     function rebuildMoviesArray(saveCache = true) {
         if (!moviesMap || typeof moviesMap !== 'object') return;
 
@@ -2399,7 +2522,7 @@
             );
 
             // Zero ghost cards: if there is no storefront link, it does not exist in the library
-            if (!hasActiveStorefrontLink) return;
+            if (STRICT_STORE_GATE && !hasActiveStorefrontLink) return;
 
             const isTvShow = (v.type && v.type.toLowerCase().includes('tv')) || (v.id && v.id.toLowerCase().includes('tvdb'));
 

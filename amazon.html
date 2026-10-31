@@ -929,6 +929,8 @@
       }
     }
   </style>
+    <link rel="stylesheet" href="assets/ww-shell.css">
+    <script defer src="assets/ww-shell.js"></script>
 </head>
 <body>
 
@@ -1078,23 +1080,7 @@
       appleTouchIcon.href = manifestObject.icons[0].src;
       document.head.appendChild(appleTouchIcon);
 
-      if ("serviceWorker" in navigator) {
-        const swScript = `
-          self.addEventListener('install', (e) => self.skipWaiting());
-          self.addEventListener('activate', (e) => e.waitUntil(clients.claim()));
-          self.addEventListener('fetch', (e) => {
-            if (e.request.url.includes('firebaseio.com') || e.request.url.includes('googleapis.com')) {
-              return;
-            }
-            e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-          });
-        `;
-        const swBlob = new Blob([swScript], { type: "application/javascript" });
-        const swUrl = URL.createObjectURL(swBlob);
-        navigator.serviceWorker.register(swUrl).catch(err => {
-          console.warn("Service Worker registration notice:", err);
-        });
-      }
+      // Service worker + install are handled site-wide by assets/ww-shell.js
     })();
   </script>
 
