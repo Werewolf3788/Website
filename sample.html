@@ -120,7 +120,7 @@ a.chip:hover{border-color:var(--accent)}
 .fr .f{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:2px 8px 2px 2px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--line)}
 .fr .f img{width:20px;height:20px;border-radius:50%;object-fit:cover}
 .fr .f.part{opacity:.85;border-style:dashed}.fr .f.lock{opacity:.55}.fr .f.done{border-color:rgba(52,211,153,.5);background:rgba(52,211,153,.1)}
-.dlc{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-top:8px}.dlc-i{display:flex;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--card2)}.dlc-i img{width:48px;height:48px;border-radius:8px;object-fit:cover}.dlc-i b{font-size:13px;display:block}.dlc-i small{color:var(--muted);font-size:11px}
+.dlc{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-top:8px}.dlc-i{display:flex;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--card2)}.dlc-i img{width:48px;height:48px;border-radius:8px;object-fit:cover}.dlc-i b{font-size:13px;display:block}.dlc-t{display:grid;grid-template-columns:36px 1fr auto;gap:8px;align-items:center;padding:6px 0;font-size:12px;width:100%}.dlc-t img{width:36px;height:36px;border-radius:6px}.dlc-t small{color:var(--muted);display:block;font-size:11px}.dlc-t span{text-align:right;font-size:11px}.dlc-i small{color:var(--muted);font-size:11px}
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .filters button{padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card2);font-size:12px;font-weight:700}
 .filters button.on{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -769,16 +769,23 @@ function renderStats() {
 }
 
 const proto = (u) => { u = String(u || ""); return u.startsWith("//") ? "https:" + u : u; };
-function dlcHtml(sk, ah) {
+function dlcHtml(sk, ah, live) {
   const list = asList(sk && sk.dlcs).filter((d) => d && (d.isDLC || d.groupId));
   if (!list.length) return "";
   const ge = {}; asList(ah && ah.groupEarnings).forEach((g) => { if (g && g.trophyGroupId !== undefined) ge[g.trophyGroupId] = g; });
   const sum = (o) => Object.values(o || {}).reduce((a, b) => a + (Number(b) || 0), 0);
+  const mine = Object.values(live || {});
   const items = list.map((d) => {
-    const dt = d.definedTrophies || {}, g = ge[d.groupId];
-    const ico = ["platinum", "gold", "silver", "bronze"].filter((k) => dt[k]).map((k) => `<span class="${TCOL[k]}"><i class="fa-solid fa-trophy"></i> ${dt[k]}</span>`).join(" ");
-    const earned = g ? sum(g.earnedTrophies) : null, total = sum(dt);
-    return `<div class="dlc-i">${d.image ? img(proto(d.image), "", d.name || d.title) : ""}<div style="min-width:0"><b>${esc(d.name || d.title || "Add-on")}</b><small>${d.groupId === "default" ? "Base game" : "DLC"}${d.isOwned ? " &middot; Owned" : ""}${d.size && d.size !== "Unknown" ? " &middot; " + esc(d.size) : ""}</small><div style="font-size:12px;display:flex;gap:8px;flex-wrap:wrap">${ico}${earned !== null && total ? `<span class="muted">${earned}/${total} earned${g.progress !== undefined ? " &middot; " + g.progress + "%" : ""}</span>` : ""}</div></div></div>`;
+    const dt = d.definedTrophies || {}, g = ge[d.groupId], total = sum(dt);
+    const got = mine.filter((t) => String(t.groupId || "default") === String(d.groupId || "default") && t.earned).sort((x, y) => (y.timestamp || 0) - (x.timestamp || 0));
+    const prog = mine.filter((t) => String(t.groupId || "default") === String(d.groupId || "default") && !t.earned && tracking(t));
+    const cnt = {}; got.forEach((t) => { const k = String(t.type || "bronze").toLowerCase(); cnt[k] = (cnt[k] || 0) + 1; });
+    const earned = got.length || (g ? sum(g.earnedTrophies) : 0);
+    const ico = ["platinum", "gold", "silver", "bronze"].filter((k) => dt[k]).map((k) => `<span class="${TCOL[k]}"><i class="fa-solid fa-trophy"></i> ${cnt[k] || 0}/${dt[k]}</span>`).join(" ");
+    const pct = total ? Math.round((earned / total) * 100) : null;
+    const row = (t, extra) => `<div class="dlc-t">${t.icon ? img(t.icon, "", t.name) : "<div></div>"}<div style="min-width:0"><b><i class="fa-solid fa-trophy ${TCOL[String(t.type || "bronze").toLowerCase()] || ""}"></i> ${esc(t.name || "Trophy")}</b><small>${esc(t.detail || t.description || "")}</small></div><span>${extra}</span></div>`;
+    const detail = got.length || prog.length ? `<details class="trk-list" style="grid-column:1/-1"><summary>Your trophies <b>${got.length}${prog.length ? " + " + prog.length + " in progress" : ""}</b></summary>${got.map((t) => row(t, `<b style="color:#34d399">Earned</b><br>${esc(String(t.earnedDate || "").split(",")[0])}`)).join("")}${prog.map((t) => { const x = tracking(t); return row(t, `<b class="mono">${x.cur}/${x.tgt}</b>`); }).join("")}</details>` : "";
+    return `<div class="dlc-i" style="flex-wrap:wrap">${d.image ? img(proto(d.image), "", d.name || d.title) : ""}<div style="min-width:0;flex:1"><b>${esc(d.name || d.title || "Add-on")}</b><small>${d.groupId === "default" ? "Base game" : "DLC"}${d.isOwned ? " &middot; Owned" : ""}${d.size && d.size !== "Unknown" ? " &middot; " + esc(d.size) : ""}</small><div style="font-size:12px;display:flex;gap:8px;flex-wrap:wrap">${ico}${total ? `<span class="muted">${earned}/${total}${pct !== null ? " &middot; " + pct + "%" : ""}</span>` : ""}</div>${total ? `<div class="bar" style="margin-top:4px"><i style="width:${pct}%"></i></div>` : ""}</div>${detail}</div>`;
   }).join("");
   return `<div class="muted" style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-top:12px">Add-on / DLC packs</div><div class="dlc">${items}</div>`;
 }
@@ -807,7 +814,7 @@ async function renderHunt() {
     </div>
     <div class="muted" style="font-size:12px;display:flex;justify-content:space-between"><span>Completion ${ratio ? "(" + esc(ratio) + ")" : ""}</span><b>${pct}%</b></div>
     <div class="bar"><i style="width:${Math.min(100, pct)}%"></i></div>
-    ${dlcHtml(sk, ah)}
+    ${dlcHtml(sk, ah, tmap((c.liveTrophyProgress || {})[comm] || {}))}
     ${desc ? `<p class="muted" style="font-size:13px">${esc(desc)}${desc.length >= 420 ? "…" : ""}</p>` : ""}
     ${playing && c.amazonAffiliateUrl && secure(c.amazonAffiliateUrl) ? `<a class="btn" target="_blank" rel="noopener noreferrer" href="${esc(secure(c.amazonAffiliateUrl))}"><i class="fa-brands fa-amazon"></i> Find on Amazon</a>` : ""}`;
   paintTracked();
