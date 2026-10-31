@@ -5811,7 +5811,8 @@
       ]
     },
     "rifleAttachments": {
-      "ZK-420S": {
+      "zk_420s": {
+        "rifle": "ZK-420S",
         "note": "Captured on the ZK-420S. Sight statChanges are relative to the default PU scope; muzzle statChanges are relative to no muzzle.",
         "sights": [
           {
@@ -6197,7 +6198,8 @@
           }
         ]
       },
-      "Lee No.4": {
+      "lee_no4": {
+        "rifle": "Lee No.4",
         "note": "Captured on the Lee No.4. All statChanges are relative to the default part in each slot (Iron Sights, Standard barrel/receiver/construction, no muzzle/stock/foregrip, Standard Issue magazine), recomputed from screens where other parts were equipped. audibleRange is in metres.",
         "sights": [
           {
