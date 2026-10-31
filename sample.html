@@ -62,7 +62,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 main{padding:22px 0 120px;display:flex;flex-direction:column;gap:22px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px}
 .card h2{margin:0 0 14px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
 @media(max-width:980px){.grid2{grid-template-columns:1fr}}
 .muted{color:var(--muted)} .mono{font-family:"JetBrains Mono",ui-monospace,monospace}
 .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--line);font-size:12px;font-weight:700}
@@ -139,6 +139,7 @@ a.chip:hover{border-color:var(--accent)}
 .trk-region{margin:8px 0 2px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .trk-item{display:flex;align-items:center;gap:8px;font-size:13px;padding:3px 0;color:var(--muted)}
 .trk-item.done{color:var(--text)} .trk-item.done i{color:#34d399}
+.trk-fr{display:flex;gap:10px;align-items:center;margin:8px 0}.trk-fr img{width:30px;height:30px;border-radius:50%;object-fit:cover}
 .trk-friends{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
 .trk-friends .chips{margin-top:6px}
 
@@ -777,7 +778,7 @@ async function renderHunt() {
   const pct = Number(ah.progress ?? last.progress ?? 0);
   const ratio = ah.velocity && ah.velocity.completionStatus ? ah.velocity.completionStatus : (last.earnedTotal !== undefined ? `${last.earnedTotal}/${last.definedTotal}` : "");
   const desc = sk && sk.description ? String(sk.description).slice(0, 420) : "";
-  TRK.huntKey = normTitle(title);
+  TRK.huntKey = normTitle(title); TRK.huntTitle = String(title).replace(/[®™©]/g, "").trim();
   $("hunt").innerHTML = `<h2><i class="fa-solid fa-gamepad"></i> ${playing ? "Now playing" : "Last played"}</h2>
     ${art ? img(art, "hunt-art", title) : ""}
     <div id="hunt-tracked" style="margin-top:12px"></div>
@@ -961,7 +962,7 @@ function analyse(data) {                         // turn a progress document int
 }
 const statLabel = (k) => ({ rp: "RP" }[k] || idLabel(k));
 
-const TRK = { groups: [], sel: {}, friends: {}, huntKey: "" };
+const TRK = { groups: [], sel: {}, friends: {}, huntKey: "", huntTitle: "" };
 function groupItems(items) {
   const m = new Map();
   for (const it of items) {
@@ -984,6 +985,15 @@ function checklistHtml(l) {
     `<div class="trk-region">${esc(r)}</div>${its.map((i) => `<div class="trk-item ${i.done ? "done" : ""}"><i class="fa-${i.done ? "solid fa-circle-check" : "regular fa-circle"}"></i><span>${esc(i.name)}</span>${i.synced ? '<span class="pill" style="font-size:10px">PSN synced</span>' : ""}</div>`).join("")}`).join("")}</details>`;
 }
 
+function friendsHtml(fr) {
+  if (!fr || !fr.length) return "";
+  const rows = fr.slice().sort((x, y) => (y.a.pct ?? -1) - (x.a.pct ?? -1)).map((f) => {
+    const a = f.a, txt = a.total ? `${a.done}/${a.total}` : a.pct !== null ? a.pct + "%" : a.stats.slice(0, 3).map((x) => `${Number(x.v).toLocaleString()} ${statLabel(x.k)}`).join(" · ") || "tracking";
+    return `<div class="trk-fr">${img(f.avatar, "", f.name)}<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;gap:8px;font-size:13px"><b>${esc(f.name)} <span class="muted" style="font-weight:600;font-size:11px">${esc(PLATFORM_LABEL[f.platform] || f.platform)}</span></b><span>${esc(txt)}${a.total && a.pct !== null ? ` &middot; ${a.pct}%` : ""}</span></div>${a.pct !== null ? `<div class="bar green" style="margin-top:4px"><i style="width:${Math.max(0, Math.min(100, a.pct))}%"></i></div>` : ""}</div></div>`;
+  }).join("");
+  return `<div class="trk-friends"><div class="muted" style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Friends' progress</div>${rows}</div>`;
+}
+
 function trackedCard(g) {
   const sel = TRK.sel[g.key] || g.entries[0].platform; const e = g.entries.find((x) => x.platform === sel) || g.entries[0]; const a = e.a;
   const tabs = g.entries.length > 1 ? `<div class="trk-tabs">${g.entries.map((x) => `<button type="button" class="trk-tab ${x === e ? "on" : ""}" data-g="${esc(g.key)}" data-p="${esc(x.platform)}">${esc(PLATFORM_LABEL[x.platform] || x.platform)}</button>`).join("")}</div>` : `<span class="pill">${esc(PLATFORM_LABEL[e.platform] || e.platform)}</span>`;
@@ -993,16 +1003,20 @@ function trackedCard(g) {
     ${a.stats.length ? `<div class="trk-stats">${a.stats.map((s) => `<span class="sc"><b>${Number(s.v).toLocaleString()}</b>${esc(statLabel(s.k))}</span>`).join("")}</div>` : ""}
     ${a.lists.map(checklistHtml).join("")}
     ${a.updated ? `<div class="muted" style="font-size:11px;margin-top:8px">Updated ${esc(fmtNY(a.updated))} ET</div>` : ""}
-    ${fr.length ? `<div class="trk-friends"><div class="muted" style="font-size:11px;letter-spacing:.1em;text-transform:uppercase">Friends tracking this game</div><div class="chips">${fr.map((f) => `<div class="chip">${img(f.avatar, "", f.name)}<div>${esc(f.name)}<small>${esc(PLATFORM_LABEL[f.platform] || f.platform)} &middot; ${f.a.total ? f.a.done + "/" + f.a.total : f.a.pct !== null ? f.a.pct + "%" : "tracking"}</small></div></div>`).join("")}</div></div>` : ""}</div>`;
+    ${friendsHtml(fr)}</div>`;
 }
 
 function paintTracked() {
-  if (!TRK.groups.length) return;
   const slot = $("hunt-tracked"), mine = TRK.groups.find((g) => g.key === TRK.huntKey);
-  if (slot) slot.innerHTML = mine ? trackedCard(mine) : "";
-  const rest = TRK.groups.filter((g) => !(slot && g === mine));
+  if (slot) {
+    const fr = TRK.friends[TRK.huntKey] || [];
+    if (mine) slot.innerHTML = trackedCard(mine);
+    else if (S.own && TRK.huntKey && TRK.huntTitle && TRK.huntTitle !== "Nothing yet") slot.innerHTML = `<div class="trk"><div class="trk-head"><h3>Game tracking</h3></div><div class="muted" style="font-size:13px">You haven't tracked progress for this game yet.</div>${friendsHtml(fr)}</div>`;
+    else slot.innerHTML = "";
+  }
+  const rest = TRK.groups.filter((g) => !(slot && g.key === TRK.huntKey));
   $("tracked-card").classList.toggle("hidden", !rest.length);
-  $("tracked").innerHTML = `<div class="trk-grid">${rest.map(trackedCard).join("")}</div>`;
+  $("tracked").innerHTML = rest.length ? `<div class="trk-grid">${rest.map(trackedCard).join("")}</div>` : "";
 }
 document.addEventListener("click", (e) => { const b = e.target.closest && e.target.closest(".trk-tab"); if (b) { TRK.sel[b.dataset.g] = b.dataset.p; paintTracked(); } });
 
@@ -1015,25 +1029,27 @@ async function ensureFriendUsers() {
   return S.friendUser;
 }
 
-async function loadFriendTracked() {                  // friends' progress for the same games (own profile only)
-  if (!S.own || !TRK.groups.length) return;
-  const users = await ensureFriendUsers(); const friends = friendEntries(S.viewerFriends).slice(0, 20);
-  const reads = [];
-  for (const f of friends) {
-    const u = users[f.code]; if (!u) continue;
-    for (const p of ["ps", "steam", "xbox", "pc"]) {
-      const sc = PLATFORM_SCOPE(u, p) || "private"; if (sc !== "public" && sc !== "friends") continue;
-      for (const g of TRK.groups) for (const id of new Set(g.entries.map((x) => x.game)))
-        reads.push(getDoc(doc(fsE, "users", f.code, "platform", p, "progress", id)).then((s) => { if (!s.exists()) return;
-          const data = s.data(); (TRK.friends[g.key] = TRK.friends[g.key] || []).push({ name: u.username || f.username || f.code, avatar: u.avatar_url || f.avatar_url, platform: p, a: analyse(data) }); }).catch(() => {}));
-    }
-  }
-  await Promise.all(reads); paintTracked();
+async function loadFriendTracked() {                  // friends' progress for any game (own profile only), matched by game title
+  if (!S.own) return;
+  const users = await ensureFriendUsers(); const friends = friendEntries(S.viewerFriends).slice(0, 25);
+  TRK.friends = {};
+  await Promise.all(friends.map(async (f) => {
+    const u = users[f.code]; if (!u) return;
+    const name = u.username || f.username || f.code, avatar = u.avatar_url || f.avatar_url;
+    await Promise.all(["ps", "steam", "xbox", "pc"].map(async (p) => {
+      const sc = PLATFORM_SCOPE(u, p) || "private"; if (sc !== "public" && sc !== "friends") return;
+      try { (await getDocs(collection(fsE, "users", f.code, "platform", p, "progress"))).forEach((d) => {
+        const k = normTitle(prettyGame(d.id)); (TRK.friends[k] = TRK.friends[k] || []).push({ name, avatar, platform: p, code: f.code, a: analyse(d.data()) }); }); }
+      catch (e) { if (!/permission/i.test(e.message)) console.warn("[friend progress]", f.code, p, e.message); }
+    }));
+  }));
+  paintTracked();
 }
 
 async function renderTracked() {
   const code = S.target.friend_code; const card = $("tracked-card");
-  TRK.groups = []; TRK.friends = {}; const slot = $("hunt-tracked"); if (slot) slot.innerHTML = "";
+  TRK.groups = []; const slot = $("hunt-tracked"); if (slot) slot.innerHTML = "";
+  loadFriendTracked();
   if (!code) { card.classList.add("hidden"); return; }
   // a platform's tracked progress follows that platform's scope (public = anyone, friends = friends, private = owner)
   const readable = PLATFORMS.filter((p) => canSee(PLATFORM_SCOPE(S.target, p) || "private"));
@@ -1041,7 +1057,7 @@ async function renderTracked() {
   let items = await readProgress(code, readable);
   items = items.filter((it) => PLATFORM_LABEL[it.platform] ? readable.includes(it.platform) : S.own);   // unknown platform ids: owner only
   if (!items.length) { card.classList.toggle("hidden", !items.permission || !S.own); if (items.permission && S.own) $("tracked").innerHTML = `<div class="notice">Tracked progress could not be read. Add a Firestore rule allowing reads of <code>users/{code}/platform/**</code> in the entertainment-71888 project.</div>`; return; }
-  TRK.groups = groupItems(items); paintTracked(); loadFriendTracked();
+  TRK.groups = groupItems(items); paintTracked();
 }
 
 /* ============================================================================
