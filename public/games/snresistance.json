@@ -22,17 +22,10 @@
       "title": "Behind Enemy Lines",
       "region": "Northern France",
       "walkthrough": "Sabotage the dam, destroy the Flak AA installations, and exfiltrate across the perimeter bridge.",
-      "image_url": "",
+      "image_url": "/public/games/snresistance/images/missions/m01-behind-enemy-lines.jpg",
       "collectibles": {
         "personal_letters": [],
-        "classified_documents": [
-          {
-            "id": "doc_m1_01",
-            "name": "Flak Operations Order",
-            "location": "Bunker command post desk beside primary generator.",
-            "image_url": ""
-          }
-        ],
+        "classified_documents": [],
         "hidden_items": [],
         "stone_eagles": [],
         "workbenches": [
@@ -40,7 +33,10 @@
             "id": "wb_m1_pistol",
             "name": "Pistol Workbench",
             "location": "Basement of house behind barricade after initial wall climb.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Pistol Close Quarters kit.",
+            "unlocks": "Pistol Close Quarters kit",
+            "emoji": "⚙️"
           }
         ]
       },
@@ -73,45 +69,84 @@
           "rank": "BRONZE",
           "description": "Sabotage the Dam and destroy the AA guns."
         }
-      ]
+      ],
+      "date": "May 13th 1944",
+      "guide_video": {
+        "creator": "Trophy Tom",
+        "channel": "https://www.youtube.com/@TrophyTom",
+        "video_id": "dhWUawXXkeo",
+        "url": "https://www.youtube.com/watch?v=dhWUawXXkeo",
+        "title": "Sniper Elite: Resistance - Mission 1 - All Collectibles & Trophies 🏆 Behind Enemy Lines",
+        "chapters": []
+      }
     },
     "mission_2": {
       "number": 2,
       "title": "Dead Drop",
       "region": "Château & Library District",
       "walkthrough": "Infiltrate town, locate mole in cafe, search municipal library, destroy Gestapo depot.",
-      "image_url": "",
+      "image_url": "/public/games/snresistance/images/missions/m02-dead-drop.jpg",
       "collectibles": {
         "personal_letters": [
           {
             "id": "let_m2_01",
             "name": "A Lost Soul Trembles",
             "location": "First-floor church safe. Key on table beside gramophone.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Faith in Troubled Times.",
+            "author": "Xavier Eugène Genoud",
+            "summary": "A priest writes that he has hidden a distressed Abwehr officer in the church tower, and believes the man may be working for the Resistance.",
+            "video_time": 105,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=105s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m2_02",
             "name": "Missing You Dearly",
             "location": "Château courtyard stone bench.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "My Heart Yearns to Embrace You.",
+            "author": "Diedrich Eckhardt",
+            "summary": "A soldier writes to his sweetheart Heidi about the Gestapo arriving at the Citadel to hunt for a mole.",
+            "video_time": 362,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=362s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m2_03",
             "name": "Surrounded by Idiots",
             "location": "Municipal Library reception counter.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Endlessly Questioned for No Reason.",
+            "author": "Leopold Schuller",
+            "summary": "An angry soldier tells his mother the Gestapo interrogated him for hours over the mole, when they should be looking at the Abwehr.",
+            "video_time": 420,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=420s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m2_04",
             "name": "A Withering Tree",
             "location": "Town square outdoor cafe table.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "It Is a Shadow of Its Former Self",
+            "author": "Etourneau",
+            "summary": "A coded letter to 'Moineau' about a frightened, withering tree that the gardener refuses to uproot.",
+            "video_time": 329,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=329s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m2_05",
             "name": "A Nephew's Concern",
             "location": "Bench along northern residential road.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Tough Times and Trying Times.",
+            "author": "Eren Schulz",
+            "summary": "A soldier thanks his Aunt Helga for her letter, misses home, and notes the pressure is building without knowing why.",
+            "video_time": 482,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=482s",
+            "emoji": "✉️"
           }
         ],
         "classified_documents": [
@@ -119,57 +154,107 @@
             "id": "doc_m2_01",
             "name": "Findings Report",
             "location": "Staging table with radio gear on west canal street.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "The Search for Ernst Günsche.",
+            "author": "Hochoffizier Johan Wolfgarde",
+            "summary": "Report that Ernst Günsche's top-floor apartment was found abandoned, with no clue to where he went.",
+            "video_time": 241,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=241s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m2_02",
             "name": "Orders to Follow",
             "location": "Château courtyard room beside center tree.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Instructions for Handling \"The Package\".",
+            "author": "Gruppenführer Gottschalk",
+            "summary": "Directive to guard all intelligence about 'The Package' inside the Citadel's offices.",
+            "video_time": 362,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=362s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m2_03",
             "name": "Use the Library",
             "location": "Safe inside eastern house. Key upstairs on chair.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Using the Library as Storage.",
+            "author": "Hauptkommandant Johannes Heinrich",
+            "summary": "Documents on the partisan investigation are to be stored in the library archives due to lack of space.",
+            "video_time": 290,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=290s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m2_04",
             "name": "Tightening Security",
             "location": "First-floor cafe table in Kill List target quarters.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "video_time": 329,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=329s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m2_05",
             "name": "Increased Security",
             "location": "Military supply tent table inside central barracks.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Lockdown of St. Raymond Initiated",
+            "author": "Gruppenführer Gottschalk",
+            "summary": "Orders doubling patrols, reinforcing checkpoints and raising surveillance across St. Raymond.",
+            "video_time": 264,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=264s",
+            "emoji": "📜"
           }
         ],
         "hidden_items": [
           {
             "id": "item_m2_01",
-            "name": "Poster: La Résistance",
+            "name": "La Résistance",
             "location": "Back alley brick wall; unlocks Propaganda Mission.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "Fight for Your Freedom!",
+            "summary": "A Resistance propaganda poster; the narrator admits the Resistance has a talent for eye-catching posters.",
+            "video_time": 0,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=0s",
+            "emoji": "🏷️"
           },
           {
             "id": "item_m2_02",
             "name": "Police Report: #222",
             "location": "Library archives shelf; required for File O' Facts.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "Resistance File: Isabelle Dubois",
+            "author": "Hauptmann Reinhardt Schulz",
+            "summary": "Wanted file on suspected Resistance member Isabelle Dubois, ordering her capture for interrogation.",
+            "video_time": 420,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=420s",
+            "emoji": "🏷️"
           },
           {
             "id": "item_m2_03",
             "name": "Police Report: #223",
             "location": "Library reading room desk; required for File O' Facts.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "Resistance File: Pierre Moreau",
+            "author": "Hauptmann Reinhardt Schulz",
+            "summary": "Wanted file on Pierre Moreau, accused of inciting insurgency and sheltering fugitives.",
+            "video_time": 420,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=420s",
+            "emoji": "🏷️"
           },
           {
             "id": "item_m2_04",
             "name": "Police Report: #224",
             "location": "Library basement stack; required for File O' Facts.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "Resistance File: Gilles Brasfort",
+            "author": "Hauptmann Reinhardt Schulz",
+            "summary": "Wanted file on Gilles Brasfort, an armed insurgent who escaped an earlier arrest attempt.",
+            "video_time": 420,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=420s",
+            "emoji": "🏷️"
           }
         ],
         "stone_eagles": [
@@ -177,19 +262,28 @@
             "id": "eagle_m2_01",
             "name": "Dead-Eye Target 1",
             "location": "Rooftop gable of residence west of church.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 170,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=170s",
+            "emoji": "🦅"
           },
           {
             "id": "eagle_m2_02",
             "name": "Dead-Eye Target 2",
             "location": "Pediment ridge of municipal building right of library.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 170,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=170s",
+            "emoji": "🦅"
           },
           {
             "id": "eagle_m2_03",
             "name": "Dead-Eye Target 3",
             "location": "Parapet crest of northeastern château tower.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 170,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=170s",
+            "emoji": "🦅"
           }
         ],
         "workbenches": [
@@ -197,19 +291,34 @@
             "id": "wb_m2_rifle",
             "name": "Rifle Workbench",
             "location": "First-floor locked apartment via rear exterior stairs.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Rifle Marksmanship package.",
+            "unlocks": "Rifle Marksmanship package",
+            "video_time": 66,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=66s",
+            "emoji": "⚙️"
           },
           {
             "id": "wb_m2_pistol",
             "name": "Pistol Workbench",
             "location": "Subterranean catacombs between library and tavern cellar.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Pistol Carbine kit.",
+            "unlocks": "Pistol Carbine kit",
+            "video_time": 519,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=519s",
+            "emoji": "⚙️"
           },
           {
             "id": "wb_m2_smg",
             "name": "SMG Workbench",
             "location": "Secured storeroom between inner and outer courtyards.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Secondary Control upgrades pack.",
+            "unlocks": "Secondary Control upgrades pack",
+            "video_time": 362,
+            "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=362s",
+            "emoji": "⚙️"
           }
         ]
       },
@@ -326,6 +435,77 @@
           "rank": "BRONZE",
           "description": "Recover evidence implicating Resistance members within the Library in Dead Drop."
         }
+      ],
+      "date": "May 14th 1944",
+      "guide_video": {
+        "creator": "Trophy Tom",
+        "channel": "https://www.youtube.com/@TrophyTom",
+        "video_id": "0MJ9Tcpv4Tg",
+        "url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg",
+        "chapters": [
+          {
+            "time": 0,
+            "label": "Hidden Item 1/4 – La Résistance"
+          },
+          {
+            "time": 43,
+            "label": "Starting Location 1/2 – Scaffold Yard"
+          },
+          {
+            "time": 66,
+            "label": "Workbench 1/3 – Rifle"
+          },
+          {
+            "time": 105,
+            "label": "Personal Letter 1/5 – A Lost Soul Trembles"
+          },
+          {
+            "time": 170,
+            "label": "Stone Eagle 1-3/3"
+          },
+          {
+            "time": 241,
+            "label": "Classified Document 1/5 – Findings Report"
+          },
+          {
+            "time": 264,
+            "label": "Classified Document 2/5 – Increased Security"
+          },
+          {
+            "time": 290,
+            "label": "Classified Document 3/5 – Use the Library"
+          },
+          {
+            "time": 329,
+            "label": "Personal Letter 2/5 – A Withering Tree + Classified Document 4/5 – Tightening Security"
+          },
+          {
+            "time": 362,
+            "label": "Workbench 2/3 – SMG + Personal Letter 3/5 – Missing You Dearly + Classified Document 5/5 – Orders to Follow"
+          },
+          {
+            "time": 420,
+            "label": "Personal Letter 4/5 – Surrounded by Idiots + Hidden Item 2-4/4 – Police Reports #222, #223, #224"
+          },
+          {
+            "time": 482,
+            "label": "Starting Location 2/2 – Citadel Apartments + Personal Letter 5/5 – A Nephew's Concern"
+          },
+          {
+            "time": 519,
+            "label": "Workbench 3/3 – Pistol"
+          }
+        ]
+      },
+      "starting_locations": [
+        {
+          "name": "Scaffold Yard",
+          "video_time": 43
+        },
+        {
+          "name": "Citadel Apartments",
+          "video_time": 482
+        }
       ]
     },
     "mission_3": {
@@ -333,38 +513,67 @@
       "title": "Sonderzüge Sabotage",
       "region": "Railyard & Harbor Docks",
       "walkthrough": "Raid Hotel Terminus, destroy Sonderzüge armored trains, sever switching network.",
-      "image_url": "",
+      "image_url": "/public/games/snresistance/images/missions/m03-sonderzuge-sabotage.jpg",
       "collectibles": {
         "personal_letters": [
           {
             "id": "let_m3_01",
             "name": "Be Safe, My Dear",
             "location": "Ground-floor safe inside house of second objective.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Our Story Must Not End Here.",
+            "author": "Alain",
+            "summary": "Alain begs his childhood friend Lina to stay safe and avoid risks while the Nazis are around.",
+            "video_time": 699,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=699s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m3_02",
             "name": "We Are Everywhere",
             "location": "Hotel second floor corner room via window ledge.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Our Eyes and Ears Are Everywhere.",
+            "summary": "A Resistance message to Celeste reminding members they are many, hidden, and waiting to strike.",
+            "video_time": 303,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=303s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m3_03",
             "name": "Cross of Lorraine",
             "location": "Top floor table of safehouse holding optional objective.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Look to Lorraine's Shadow.",
+            "author": "Singe",
+            "summary": "A coded note to comrades: the Cross of Lorraine marks a hidden way, and 'M. C' urges caution.",
+            "video_time": 144,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=144s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m3_04",
             "name": "Missing Her Birthday",
             "location": "First floor bench inside central train terminal.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Tell Her I'm Sorry.",
+            "author": "Abel Ingman",
+            "summary": "A soldier writes to Magda, heartbroken to miss their daughter's second birthday.",
+            "video_time": 539,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=539s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m3_05",
             "name": "The Scars of War",
             "location": "Park bench in ornamental garden area.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Are You Proud, Father?",
+            "author": "Lornez Gruber",
+            "summary": "A fanatical soldier tells his father about a facial wound he wears proudly for the Reich.",
+            "video_time": 517,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=517s",
+            "emoji": "✉️"
           }
         ],
         "classified_documents": [
@@ -372,31 +581,59 @@
             "id": "doc_m3_01",
             "name": "Gestapo Briefing",
             "location": "Hotel Terminus penthouse suite table.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Vastly Expedited Timeline",
+            "author": "Gruppenführer Gottschalk",
+            "summary": "After the dam attack, the Kleine Blume project must be accelerated and train cargo protected.",
+            "video_time": 280,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=280s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m3_02",
             "name": "Hotel Refurbishment",
             "location": "Ground-floor reception lobby desk inside Hotel Terminus.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Prepare for the Gestapo's Arrival",
+            "summary": "Hotel Terminus is being turned into Gestapo headquarters and staff are ordered to serve them.",
+            "video_time": 366,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=366s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m3_03",
             "name": "Hotel Storage",
             "location": "Attic storage loft accessible via exterior ladder.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Cellar Security Must Be Improved",
+            "author": "Oberkommandierender Dietrich Würtz",
+            "summary": "A spot check found the basement holding classified items completely unguarded.",
+            "video_time": 615,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=615s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m3_04",
             "name": "Rail Network Control",
             "location": "Harbor watchtower upper observation console.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "It's an Impenetrable Wall.",
+            "author": "Generalmajor La Ronde",
+            "summary": "A complaint to Gottschalk that Special Committee C's directives are undermining control of the railways.",
+            "video_time": 252,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=252s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m3_05",
             "name": "Cargo Details",
             "location": "Terminal dispatcher office table.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Destination: Site D, E, F, H",
+            "summary": "A cargo manifest of solvents, reactants and classified chemicals bound for Sites D, E, F and H.",
+            "video_time": 539,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=539s",
+            "emoji": "📜"
           }
         ],
         "hidden_items": [
@@ -404,19 +641,34 @@
             "id": "item_m3_01",
             "name": "Resistance Flag",
             "location": "Ground-floor wooden box in Cross of Lorraine house.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "Much More Than Colored Cloth.",
+            "summary": "A battered Resistance pennant; the narrator reflects on the courage of the Resistance fighters.",
+            "video_time": 118,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=118s",
+            "emoji": "🏷️"
           },
           {
             "id": "item_m3_02",
             "name": "Gestapo ID Badge",
             "location": "Crate on western road bridge checkpoint.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "An Idiot Lost His ID Badge.",
+            "summary": "A lost Gestapo badge traced to someone reporting to Gottschalk, who supposedly has no authority here.",
+            "video_time": 740,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=740s",
+            "emoji": "🏷️"
           },
           {
             "id": "item_m3_03",
-            "name": "Poster: Le Sniper",
+            "name": "Le Sniper",
             "location": "Exterior wall near optional safehouse; unlocks Le Sniper.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "Sharp Shooting to Keep the Enemy at Bay.",
+            "summary": "A Resistance poster recruiting snipers; the narrator admires their defiance.",
+            "video_time": 91,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=91s",
+            "emoji": "🏷️"
           }
         ],
         "stone_eagles": [
@@ -424,19 +676,28 @@
             "id": "eagle_m3_01",
             "name": "Dead-Eye Target 1",
             "location": "Off-map church steeple visible looking southwest from road bridge.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 0,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=0s",
+            "emoji": "🦅"
           },
           {
             "id": "eagle_m3_02",
             "name": "Dead-Eye Target 2",
             "location": "Clocktower finial atop central train concourse.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 0,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=0s",
+            "emoji": "🦅"
           },
           {
             "id": "eagle_m3_03",
             "name": "Dead-Eye Target 3",
             "location": "Chimney apex of brick warehouse on northwest edge.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 0,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=0s",
+            "emoji": "🦅"
           }
         ],
         "workbenches": [
@@ -444,19 +705,34 @@
             "id": "wb_m3_pistol",
             "name": "Pistol Workbench",
             "location": "Upper floor of town hall building adjacent to rail station.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Pistol Capacity Crate.",
+            "unlocks": "Pistol Capacity Crate",
+            "video_time": 582,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=582s",
+            "emoji": "⚙️"
           },
           {
             "id": "wb_m3_rifle",
             "name": "Rifle Workbench",
             "location": "Secured workshop bay inside harbor cargo warehouse.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Rifle Assault Kit.",
+            "unlocks": "Rifle Assault Kit",
+            "video_time": 226,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=226s",
+            "emoji": "⚙️"
           },
           {
             "id": "wb_m3_smg",
             "name": "SMG Workbench",
             "location": "Alley storage lockup accessible with lockpick.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Secondary Capacity Mods pack.",
+            "unlocks": "Secondary Capacity Mods pack",
+            "video_time": 174,
+            "video_url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE&t=174s",
+            "emoji": "⚙️"
           }
         ]
       },
@@ -569,6 +845,98 @@
           "rank": "BRONZE",
           "description": "Raid the Hotel Terminus and sabotage the Sonderzüge."
         }
+      ],
+      "date": "May 20th 1944",
+      "guide_video": {
+        "creator": "Trophy Tom",
+        "channel": "https://www.youtube.com/@TrophyTom",
+        "video_id": "GiYGQJ3IbZE",
+        "url": "https://www.youtube.com/watch?v=GiYGQJ3IbZE",
+        "title": "Sniper Elite: Resistance - Mission 3 - All Collectibles & Trophies 🏆 Sonderzüge Sabotage",
+        "chapters": [
+          {
+            "time": 0,
+            "label": "Stone Eagle 1-3/3"
+          },
+          {
+            "time": 91,
+            "label": "Hidden Item 1/3 – Le Sniper"
+          },
+          {
+            "time": 118,
+            "label": "Hidden Item 2/3 – Resistance Flag"
+          },
+          {
+            "time": 144,
+            "label": "Personal Letter 1/5 – Cross of Lorraine"
+          },
+          {
+            "time": 174,
+            "label": "Workbench 1/3 – SMG"
+          },
+          {
+            "time": 201,
+            "label": "Starting Location 1/2 – Signal Box"
+          },
+          {
+            "time": 226,
+            "label": "Workbench 2/3 – Rifle"
+          },
+          {
+            "time": 252,
+            "label": "Classified Document 1/5 – Rail Network Control"
+          },
+          {
+            "time": 280,
+            "label": "Classified Document 2/5 – Gestapo Briefing"
+          },
+          {
+            "time": 303,
+            "label": "Personal Letter 2/5 – We Are Everywhere"
+          },
+          {
+            "time": 366,
+            "label": "Classified Document 3/5 – Hotel Refurbishment"
+          },
+          {
+            "time": 517,
+            "label": "Personal Letter 3/5 – The Scars of War"
+          },
+          {
+            "time": 539,
+            "label": "Personal Letter 4/5 – Missing Her Birthday + Classified Document 4/5 – Cargo Details"
+          },
+          {
+            "time": 582,
+            "label": "Workbench 3/3 – Pistol"
+          },
+          {
+            "time": 615,
+            "label": "Classified Document 5/5 – Hotel Storage"
+          },
+          {
+            "time": 658,
+            "label": "Starting Location 2/2 – Parkview Apartments"
+          },
+          {
+            "time": 699,
+            "label": "Personal Letter 5/5 – Be Safe, My Dear"
+          },
+          {
+            "time": 740,
+            "label": "Hidden Item 3/3 – Gestapo ID Badge"
+          }
+        ]
+      },
+      "starting_locations": [
+        {
+          "name": "Signal Box",
+          "video_time": 201
+        },
+        {
+          "name": "Parkview Apartments",
+          "video_time": 658
+        }
       ]
     },
     "mission_4": {
@@ -576,38 +944,68 @@
       "title": "Collision Course",
       "region": "River Dam Basin",
       "walkthrough": "Locate Site D coordinates, plant satchels across structural supports, extract via cableway.",
-      "image_url": "",
+      "image_url": "/public/games/snresistance/images/missions/m04-collision-course.jpg",
       "collectibles": {
         "personal_letters": [
           {
             "id": "let_m4_01",
-            "name": "A Gift, And A Name",
+            "name": "A Gift, and a Name",
             "location": "Pinned to tree trunk on right side post-zipline.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Chance Favors the Prepared",
+            "author": "Corneille Noir",
+            "summary": "A departing Resistance contact tells 'H' gifts were left in the barn, and explains why he is called 'The Wraith'.",
+            "video_time": 0,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=0s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m4_02",
             "name": "I Will Miss You",
             "location": "Table inside small timber outpost shack.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Regret Is a Luxury I Can No Longer Afford.",
+            "author": "Walter",
+            "summary": "Walter warns his neighbor Florent to flee before the Nazis arrive, regretting that he stayed.",
+            "video_time": 460,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=460s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m4_03",
             "name": "What a Discovery!",
             "location": "Locked riverside cabin requiring lockpick or bolt cutters.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "A New Type of Bomb.",
+            "author": "Jürgen",
+            "summary": "A soldier brags that a downed Allied plane carried a strange new bomb now boxed up at the train station.",
+            "video_time": 57,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=57s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m4_04",
             "name": "So Boring!",
             "location": "Wooden crate on upper platform of Flak tower.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "I Can't Take It Anymore!",
+            "author": "Erik",
+            "summary": "A bored guard complains to his mother about endless duty on the same dam tower.",
+            "video_time": 337,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=337s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m4_05",
-            "name": "I'm so Sorry",
+            "name": "I'm So Sorry",
             "location": "Destroyed farmhouse room behind wooden ladder.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "It's Too Late for Me, My Love.",
+            "author": "Adalwin",
+            "summary": "The groundskeeper's last letter to Yda: Walter betrayed him to the Nazis and he expects to be killed.",
+            "video_time": 483,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=483s",
+            "emoji": "✉️"
           }
         ],
         "classified_documents": [
@@ -615,51 +1013,96 @@
             "id": "doc_m4_01",
             "name": "Transfer Details",
             "location": "Top floor command desk of valley manor.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Prepare for Their Departure.",
+            "author": "Oberst Spiegel",
+            "summary": "Schoene's scientists leave tomorrow with a Gestapo escort and must be kept in complete privacy until then.",
+            "video_time": 252,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=252s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m4_02",
             "name": "Requisition Orders",
             "location": "Bunker storage bay under metal catwalk railing.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Prepare the Listed Amenities for Transport.",
+            "author": "Oberst Spiegel",
+            "summary": "An absurd supply list for the scientists, including silk pyjamas and a live goat.",
+            "video_time": 358,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=358s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m4_03",
             "name": "Findings Report",
             "location": "Conference room table on first floor of admin wing.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Exceedingly Promising Results.",
+            "author": "Wissenschaftler Henrik Weber",
+            "summary": "The 'bouncing bomb' technology could be adapted for Project Z, with test parts to be built in Marseilles.",
+            "video_time": 557,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=557s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m4_04",
             "name": "Requesting Support",
             "location": "First-floor landing table behind spiral stairs.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Field Research Is Required.",
+            "author": "Oberstleutnant Ulrich Weimann",
+            "summary": "A plea to Speer for resources to study the Allied bomb wreckage, warning about Gottschalk and Schoene.",
+            "video_time": 79,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=79s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m4_05",
             "name": "Dam Damage Report",
             "location": "Control room console opposite main sabotage switch.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Interim Repairs Continue.",
+            "author": "Chefingenieur Heinrich Müller",
+            "summary": "The dam breach caused major flooding; a temperamental backup pump is draining it during repairs.",
+            "video_time": 313,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=313s",
+            "emoji": "📜"
           }
         ],
         "hidden_items": [
           {
             "id": "item_m4_01",
-            "name": "French Wine Bottle",
+            "name": "Wine Bottle",
             "location": "Tavern bar counter on first floor.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "Can't Drink Now, I'm on the Job.",
+            "summary": "A bottle from the 'Vallée des Dieux' vineyard; the narrator would rather have a pint.",
+            "video_time": 252,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=252s",
+            "emoji": "🏷️"
           },
           {
             "id": "item_m4_02",
-            "name": "Rubber Gas Mask",
+            "name": "Gas Mask",
             "location": "Storage table in corner of tavern cellar.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "Further Confirmation of the Threat We Face.",
+            "summary": "More gas masks suggest the Nazis' superweapon is chemical, not artillery.",
+            "video_time": 527,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=527s",
+            "emoji": "🏷️"
           },
           {
             "id": "item_m4_03",
-            "name": "Poster: Libération",
+            "name": "Libération",
             "location": "Abutment wall behind bridge panzer; unlocks Libération.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "Fighting for Your Freedom Means Fighting for France!",
+            "summary": "A Resistance poster urging the French to liberate their homeland.",
+            "video_time": 501,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=501s",
+            "emoji": "🏷️"
           }
         ],
         "stone_eagles": [
@@ -667,19 +1110,28 @@
             "id": "eagle_m4_01",
             "name": "Dead-Eye Target 1",
             "location": "Structural steel framework below spillway of dam.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 144,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=144s",
+            "emoji": "🦅"
           },
           {
             "id": "eagle_m4_02",
             "name": "Dead-Eye Target 2",
             "location": "Rock outcropping between pine trees on northwest ridge.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 144,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=144s",
+            "emoji": "🦅"
           },
           {
             "id": "eagle_m4_03",
             "name": "Dead-Eye Target 3",
             "location": "Balcony railing of eastern communication tower.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 144,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=144s",
+            "emoji": "🦅"
           }
         ],
         "workbenches": [
@@ -687,19 +1139,34 @@
             "id": "wb_m4_smg",
             "name": "SMG Workbench",
             "location": "Subterranean maintenance bunker via locked ladder hatch.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Secondary Stability pack.",
+            "unlocks": "Secondary Stability pack",
+            "video_time": 104,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=104s",
+            "emoji": "⚙️"
           },
           {
             "id": "wb_m4_pistol",
             "name": "Pistol Workbench",
             "location": "Top floor apartment via vines on exterior wall.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Pistol Power upgrades pack.",
+            "unlocks": "Pistol Power upgrades pack",
+            "video_time": 28,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=28s",
+            "emoji": "⚙️"
           },
           {
             "id": "wb_m4_rifle",
             "name": "Rifle Workbench",
             "location": "Reinforced steel doorway opposite generator room.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Rifle Mobility Mods pack.",
+            "unlocks": "Rifle Mobility Mods pack",
+            "video_time": 358,
+            "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=358s",
+            "emoji": "⚙️"
           }
         ]
       },
@@ -815,7 +1282,97 @@
           "trophyId": 47,
           "name": "Sprung a Leak",
           "rank": "BRONZE",
-          "description": "Sabotage the Dam's pump room in Collision Course."
+          "description": "Sabotage the Dam's pump room in Collision Course.",
+          "video_time": 405,
+          "video_url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw&t=405s"
+        }
+      ],
+      "date": "May 21st 1944",
+      "guide_video": {
+        "creator": "Trophy Tom",
+        "channel": "https://www.youtube.com/@TrophyTom",
+        "video_id": "UtWlbIK2Lbw",
+        "url": "https://www.youtube.com/watch?v=UtWlbIK2Lbw",
+        "title": "Sniper Elite: Resistance - Mission 4 - All Collectibles & Trophies 🏆 Collision Course",
+        "chapters": [
+          {
+            "time": 0,
+            "label": "Personal Letter 1/5 – A Gift, and a Name"
+          },
+          {
+            "time": 28,
+            "label": "Workbench 1/3 – Pistol"
+          },
+          {
+            "time": 57,
+            "label": "Personal Letter 2/5 – What a Discovery!"
+          },
+          {
+            "time": 79,
+            "label": "Classified Document 1/5 – Requesting Support"
+          },
+          {
+            "time": 104,
+            "label": "Workbench 2/3 – SMG"
+          },
+          {
+            "time": 144,
+            "label": "Stone Eagle 1-3/3"
+          },
+          {
+            "time": 219,
+            "label": "TROPHY – Lost Its Way Gnome"
+          },
+          {
+            "time": 252,
+            "label": "Hidden Item 1/3 – Wine Bottle + Classified Document 2/5 – Transfer Details"
+          },
+          {
+            "time": 313,
+            "label": "Classified Document 3/5 – Dam Damage Report"
+          },
+          {
+            "time": 337,
+            "label": "Personal Letter 3/5 – So Boring!"
+          },
+          {
+            "time": 358,
+            "label": "Classified Document 4/5 – Requisition Order + Workbench 3/3 – Rifle"
+          },
+          {
+            "time": 405,
+            "label": "TROPHY – Sprung a Leak"
+          },
+          {
+            "time": 433,
+            "label": "Starting Location 2/2 – Pump House"
+          },
+          {
+            "time": 460,
+            "label": "Personal Letter 4/5 – I Will Miss You"
+          },
+          {
+            "time": 483,
+            "label": "Personal Letter 5/5 – I'm So Sorry"
+          },
+          {
+            "time": 501,
+            "label": "Hidden Item 2/3 – Libération (Propaganda Poster)"
+          },
+          {
+            "time": 527,
+            "label": "Hidden Item 3/3 – Gas Mask"
+          },
+          {
+            "time": 557,
+            "label": "Classified Document 5/5 – Findings Report"
+          }
+        ]
+      },
+      "starting_locations": [
+        {
+          "name": "Pump House",
+          "video_time": 433
         }
       ]
     },
@@ -824,38 +1381,68 @@
       "title": "Devil's Cauldron",
       "region": "Chemical Synthesis Works",
       "walkthrough": "Infiltrate facility, execute scuttle orders to cease Kleine Blume production, sabotage ingredient transports.",
-      "image_url": "",
+      "image_url": "/public/games/snresistance/images/missions/m05-devils-cauldron.jpg",
       "collectibles": {
         "personal_letters": [
           {
             "id": "let_m5_01",
             "name": "Location Exposed",
             "location": "Cargo crate located on southwest perimeter.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Prepare to Leave, We Have Been Spotted.",
+            "author": "Pierre",
+            "summary": "Pierre warns Eveli their cover is blown and they must escape quietly.",
+            "video_time": 51,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=51s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m5_02",
             "name": "A Childish Party!",
             "location": "Desk inside bridge checkpoint guard hut.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Not Even Cake Can Fix This Stupidity.",
+            "author": "Phillipe",
+            "summary": "A collaborator grumbles about an SS Charlemagne officer's lavish birthday party.",
+            "video_time": 51,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=51s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m5_03",
             "name": "I Miss You So Much",
             "location": "Bench inside eastern perimeter enemy camp.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Please Reply to My Letters.",
+            "author": "Hanna",
+            "summary": "A mistress begs her married 'soldier boy' to answer her five unanswered letters.",
+            "video_time": 136,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=136s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m5_04",
-            "name": "It is all in Ruins",
+            "name": "It Is All in Ruins",
             "location": "First-floor bedroom beneath bedside nightstand.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Staying Is a Death Sentence, but Leaving Is Even Harder",
+            "author": "Marianne",
+            "summary": "A café owner tells Jon she is closing rather than keep serving the Nazis.",
+            "video_time": 136,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=136s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m5_05",
-            "name": "Be a Man, Not a Boy!",
+            "name": "Be a Man, Not a Boy",
             "location": "Foreman's office table overlooking synthesis vats.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Do Not Give Them Kindness, Be Ruthless.",
+            "author": "Oma Felda",
+            "summary": "A grandmother urges Gunter to be ruthless in serving the Reich.",
+            "video_time": 458,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=458s",
+            "emoji": "✉️"
           }
         ],
         "classified_documents": [
@@ -863,31 +1450,57 @@
             "id": "doc_m5_01",
             "name": "Scuttle Order",
             "location": "First-floor lab office adjacent to destruction panel.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "In Case of Emergency.",
+            "author": "Gruppenführer Gottschalk",
+            "summary": "If the factory is captured, lock it down and destroy the Kleine Blume chamber, staff included.",
+            "video_time": 618,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=618s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m5_02",
             "name": "Wilhelm's Folly",
             "location": "Engineering office desk overlooking chemical storage silos.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Do Not Overload the Fuel Station",
+            "summary": "A warning not to overfill docked U-boats, after Wilhelm nearly caused an explosion.",
+            "video_time": 223,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=223s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m5_03",
             "name": "Classified Cargo",
             "location": "Shipping depot office desk on first floor.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Destroy After Reading.",
+            "author": "Gruppenführer Gottschalk",
+            "summary": "Strict secrecy and sealed-container rules for the convoy's dangerous cargo.",
+            "video_time": 26,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=26s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m5_04",
             "name": "Intruder Spotted",
             "location": "Security corridor table past emergency blast bulkhead.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "They're Swarming Everywhere",
+            "author": "Gruppenführer Gottschalk",
+            "summary": "An intruder was caught inside the facility; all personnel must step up security.",
+            "video_time": 426,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=426s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m5_05",
             "name": "Scuttle Instructions",
             "location": "Plant manager's office safe; key carried by target officer.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "video_time": 618,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=618s",
+            "emoji": "📜"
           }
         ],
         "hidden_items": [
@@ -895,19 +1508,34 @@
             "id": "item_m5_01",
             "name": "Playing Cards",
             "location": "Wooden crate in southern encampment clearing.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "This War Is a Game of Chance.",
+            "summary": "A Luftwaffe deck of cards; the narrator vows to deal the Nazis out of the game.",
+            "video_time": 363,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=363s",
+            "emoji": "🏷️"
           },
           {
             "id": "item_m5_02",
             "name": "Laboratory ID",
             "location": "First-floor office room off chemical plant lobby.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "A Way into the Monster's Lair.",
+            "summary": "A lab ID granting access to the inner sanctum where the Nazis brew their deadly weapons.",
+            "video_time": 363,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=363s",
+            "emoji": "🏷️"
           },
           {
             "id": "item_m5_03",
-            "name": "Poster: Le Maquis Voit Tout!",
+            "name": "Le Maquis Voit Tout!",
             "location": "Exterior wall of guard shack; unlocks Le Maquis Voit Tout.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "Memories of a Fierce Ally",
+            "summary": "A Resistance poster that reminds the narrator of Carillon, a fierce and relentless Resistance leader.",
+            "video_time": 98,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=98s",
+            "emoji": "🏷️"
           }
         ],
         "stone_eagles": [
@@ -915,19 +1543,28 @@
             "id": "eagle_m5_01",
             "name": "Dead-Eye Target 1",
             "location": "Lantern gallery of distant off-map lighthouse to northwest.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 246,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=246s",
+            "emoji": "🦅"
           },
           {
             "id": "eagle_m5_02",
             "name": "Dead-Eye Target 2",
             "location": "Counterweight arm of heavy gantry crane on eastern docks.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 246,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=246s",
+            "emoji": "🦅"
           },
           {
             "id": "eagle_m5_03",
             "name": "Dead-Eye Target 3",
             "location": "Concrete lintel arch directly above railway tunnel exit.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 246,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=246s",
+            "emoji": "🦅"
           }
         ],
         "workbenches": [
@@ -935,19 +1572,34 @@
             "id": "wb_m5_rifle",
             "name": "Rifle Workbench",
             "location": "Chemical plant basement vault via lockpick or bolt cutters.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Rifle Upgrades Materials pack.",
+            "unlocks": "Rifle Upgrades Materials pack",
+            "video_time": 98,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=98s",
+            "emoji": "⚙️"
           },
           {
             "id": "wb_m5_pistol",
             "name": "Pistol Workbench",
             "location": "Security corridor office past Kleine Blume control room.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Pistol Stealth pack.",
+            "unlocks": "Pistol Stealth pack",
+            "video_time": 570,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=570s",
+            "emoji": "⚙️"
           },
           {
             "id": "wb_m5_smg",
             "name": "SMG Workbench",
             "location": "Workshop office directly inside northern railway tunnel portal.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Secondary Barrel Mods pack.",
+            "unlocks": "Secondary Barrel Mods pack",
+            "video_time": 0,
+            "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=0s",
+            "emoji": "⚙️"
           }
         ]
       },
@@ -1062,7 +1714,93 @@
           "trophyId": 48,
           "name": "Stopping Traffic",
           "rank": "BRONZE",
-          "description": "Destroy the Trucks carrying Kleine Blume ingredients in Devil's Cauldron."
+          "description": "Destroy the Trucks carrying Kleine Blume ingredients in Devil's Cauldron.",
+          "video_time": 514,
+          "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=514s"
+        }
+      ],
+      "date": "May 25th 1944",
+      "guide_video": {
+        "creator": "Trophy Tom",
+        "channel": "https://www.youtube.com/@TrophyTom",
+        "video_id": "li-jkWVLGYM",
+        "url": "https://www.youtube.com/watch?v=li-jkWVLGYM",
+        "title": "Sniper Elite: Resistance - Mission 5 - All Collectibles & Trophies 🏆 Devil's Cauldron",
+        "chapters": [
+          {
+            "time": 0,
+            "label": "Workbench 1/3 – SMG"
+          },
+          {
+            "time": 26,
+            "label": "Classified Document 1/5 – Classified Cargo"
+          },
+          {
+            "time": 51,
+            "label": "Personal Letter 1/5 – A Childish Party! + Personal Letter 2/5 – Location Exposed"
+          },
+          {
+            "time": 98,
+            "label": "Hidden Item 1/3 – Le Maquis Voit Tout! + Workbench 2/3 – Rifle"
+          },
+          {
+            "time": 136,
+            "label": "Personal Letter 3/5 – It Is All in Ruins + Personal Letter 4/5 – I Miss You So Much"
+          },
+          {
+            "time": 198,
+            "label": "Starting Location 1/2 – Coastal Landing"
+          },
+          {
+            "time": 223,
+            "label": "Classified Document 2/5 – Wilhelm's Folly"
+          },
+          {
+            "time": 246,
+            "label": "Stone Eagle 1-3/3"
+          },
+          {
+            "time": 363,
+            "label": "Hidden Item 2/3 – Laboratory ID + Hidden Item 3/3 – Playing Cards"
+          },
+          {
+            "time": 426,
+            "label": "Classified Document 3/5 – Intruder Spotted"
+          },
+          {
+            "time": 458,
+            "label": "Personal Letter 5/5 – Be a Man, Not a Boy"
+          },
+          {
+            "time": 483,
+            "label": "Starting Location 2/2 – Quarry Lake"
+          },
+          {
+            "time": 514,
+            "label": "TROPHY – Stopping Traffic"
+          },
+          {
+            "time": 570,
+            "label": "Workbench 3/3 – Pistol"
+          },
+          {
+            "time": 618,
+            "label": "Classified Document 4/5 – Scuttle Instructions + Classified Document 5/5 – Scuttle Order"
+          },
+          {
+            "time": 676,
+            "label": "TROPHY – Three Birds One Stone"
+          }
+        ]
+      },
+      "starting_locations": [
+        {
+          "name": "Coastal Landing",
+          "video_time": 198
+        },
+        {
+          "name": "Quarry Lake",
+          "video_time": 483
         }
       ]
     },
@@ -1071,38 +1809,68 @@
       "title": "Assault on Fort Rouge",
       "region": "Coastal Citadel",
       "walkthrough": "Breach lower gate fortifications, disable coastal battery, exfiltrate before aerial bombardment.",
-      "image_url": "",
+      "image_url": "/public/games/snresistance/images/missions/m06-assault-on-fort-rouge.jpg",
       "collectibles": {
         "personal_letters": [
           {
             "id": "let_m6_01",
-            "name": "Just Do Your Job",
+            "name": "Just Do Your Job.",
             "location": "First floor of destroyed building on wooden box (rear entrance).",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Instructions for New Assignee",
+            "author": "Dr. Schoene",
+            "summary": "Schoene tells his assistant Johan to keep the fireplace stocked and stay out of his business.",
+            "video_time": 107,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=107s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m6_02",
             "name": "I Am Fed Up",
             "location": "Stone table inside church in front of safe.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Our Newborn Daughter Behaves Better Than My Boss.",
+            "author": "Friedrich",
+            "summary": "A soldier complains to his wife that his doctor boss barks orders and burns project paperwork.",
+            "video_time": 289,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=289s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m6_03",
-            "name": "Something is Strange",
+            "name": "Something Is Strange",
             "location": "Lying on ground inside ruins.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "I Have a Feeling Something Bad Is Going to Happen.",
+            "author": "Jean-Eric",
+            "summary": "A market trader tells his daughter Amélie that the town has gone eerily quiet.",
+            "video_time": 216,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=216s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m6_04",
             "name": "Beautiful Views",
             "location": "Wooden box at top entrance heading underground.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Do Not Worry, Victory Is Coming!",
+            "author": "Karl Klein Jr",
+            "summary": "A proud lookout writes home about the tower views and his hoped-for promotion.",
+            "video_time": 483,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=483s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m6_05",
             "name": "Fools Everywhere",
             "location": "Bench in corner on upper-left perimeter of village.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Brother, Have You Ever Worked with Imbeciles? I Have.",
+            "author": "Gunter Schmidt",
+            "summary": "A mechanic vents to his brother that nobody else can maintain the vehicles.",
+            "video_time": 161,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=161s",
+            "emoji": "✉️"
           }
         ],
         "classified_documents": [
@@ -1110,51 +1878,96 @@
             "id": "doc_m6_01",
             "name": "Roof Weakness Found",
             "location": "First-floor bureau office table.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "The Roof Is Weak, Use the Ladder to Inspect the Problem.",
+            "author": "Ingenieur Luis Bärbel",
+            "summary": "The fortress roof is structurally weak and could collapse under bombardment.",
+            "video_time": 184,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=184s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m6_02",
-            "name": "Defend our Skies",
+            "name": "Defend Our Skies",
             "location": "Wooden bench inside estate greenhouse.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Prepare for the Worst",
+            "author": "Oberst Hans Müller",
+            "summary": "AA gun crews are put on high alert for an imminent Allied air attack.",
+            "video_time": 316,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=316s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m6_03",
-            "name": "Ready on your Order",
+            "name": "Ready on Your Order",
             "location": "Table inside building housing Gestapo officers.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "We Are Preparing Our Defences",
+            "author": "Hauptmann Ernst Schäfer",
+            "summary": "The Resistance is evacuating civilians, so AA crews have been readied for an Allied attack.",
+            "video_time": 413,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=413s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m6_04",
             "name": "No Retreat",
             "location": "Top floor safe (satchel charge or key from watchtower patrol).",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Stand Firm, or Be Prepared to Fall",
+            "author": "Obergruppenführer Otto Kruger",
+            "summary": "Orders to defend the fortress to the last man with no evacuation.",
+            "video_time": 444,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=444s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m6_05",
             "name": "Schoene's Notes",
             "location": "Shelf inside bottom-right room of underground chamber.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Kleine Blume - Applications and Weaknesses",
+            "author": "Doctor Uwe Schoene",
+            "summary": "Notes on the Kleine Blume nerve agent, its delivery methods, and incendiary bombs as the only defence.",
+            "video_time": 622,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=622s",
+            "emoji": "📜"
           }
         ],
         "hidden_items": [
           {
             "id": "item_m6_01",
-            "name": "TODT Uniform Badge",
+            "name": "Todt Uniform Badge",
             "location": "Basement cellar reached via stairs behind house.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "Todt Boys Are a Nasty Bunch.",
+            "summary": "A Todt construction-crew badge; the narrator recalls their brutal treatment of prisoners.",
+            "video_time": 77,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=77s",
+            "emoji": "🏷️"
           },
           {
             "id": "item_m6_02",
             "name": "Committee C Map",
             "location": "Pinned to wall in center room of underground chamber.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "A Map. Who Knows Where It Might Lead?",
+            "summary": "A map of the French rail network that may lead to the Kleine Blume.",
+            "video_time": 596,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=596s",
+            "emoji": "🏷️"
           },
           {
             "id": "item_m6_03",
-            "name": "Poster: Prendre Le Maquis",
+            "name": "Prende Le Maquis",
             "location": "Exterior building wall; unlocks Prendre Le Maquis.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "Join Us to Reclaim Your Land and Lost Freedom!",
+            "summary": "A Resistance poster that reminds the narrator of Corneille Noir, a fiery Resistance fighter.",
+            "video_time": 137,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=137s",
+            "emoji": "🏷️"
           }
         ],
         "stone_eagles": [
@@ -1162,19 +1975,28 @@
             "id": "eagle_m6_01",
             "name": "Dead-Eye Target 1",
             "location": "Rooftop of house where Kill List target resides.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 0,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=0s",
+            "emoji": "🦅"
           },
           {
             "id": "eagle_m6_02",
             "name": "Dead-Eye Target 2",
             "location": "Spire ridge atop village church.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 0,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=0s",
+            "emoji": "🦅"
           },
           {
             "id": "eagle_m6_03",
             "name": "Dead-Eye Target 3",
             "location": "Corner parapet of outer castle wall along boundary.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 0,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=0s",
+            "emoji": "🦅"
           }
         ],
         "workbenches": [
@@ -1182,19 +2004,34 @@
             "id": "wb_m6_rifle",
             "name": "Rifle Workbench",
             "location": "Underground chamber (turn left inside entrance; requires satchel charge).",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Rifle Caliber Conversion kit.",
+            "unlocks": "Rifle Caliber Conversion kit",
+            "video_time": 532,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=532s",
+            "emoji": "⚙️"
           },
           {
             "id": "wb_m6_smg",
             "name": "SMG Workbench",
             "location": "Basement cellar beneath house in center of village.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Secondary Assault kit.",
+            "unlocks": "Secondary Assault kit",
+            "video_time": 240,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=240s",
+            "emoji": "⚙️"
           },
           {
             "id": "wb_m6_pistol",
             "name": "Pistol Workbench",
             "location": "Locked house requiring lockpick or bolt cutters.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Pistol Weight Reduction kit.",
+            "unlocks": "Pistol Weight Reduction kit",
+            "video_time": 364,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=364s",
+            "emoji": "⚙️"
           }
         ]
       },
@@ -1306,6 +2143,106 @@
           "rank": "BRONZE",
           "description": "Infiltrate Fort Rouge and escape before Allied bombers level the site."
         }
+      ],
+      "date": "June 1st 1944",
+      "guide_video": {
+        "creator": "Trophy Tom",
+        "channel": "https://www.youtube.com/@TrophyTom",
+        "video_id": "DhYVOpTrGIU",
+        "url": "https://www.youtube.com/watch?v=DhYVOpTrGIU",
+        "title": "Sniper Elite: Resistance - Mission 6 - All Collectibles & Trophies 🏆 Assault on Fort Rouge",
+        "chapters": [
+          {
+            "time": 0,
+            "label": "Stone Eagle 1-3/3"
+          },
+          {
+            "time": 77,
+            "label": "Hidden Item 1/3 – Todt Uniform Badge"
+          },
+          {
+            "time": 107,
+            "label": "Personal Letter 1/5 – Just Do Your Job"
+          },
+          {
+            "time": 137,
+            "label": "Hidden Item 2/3 – Prendre Le Maquis (Propaganda Poster)"
+          },
+          {
+            "time": 161,
+            "label": "Personal Letter 2/5 – Fools Everywhere"
+          },
+          {
+            "time": 184,
+            "label": "Classified Document 1/5 – Roof Weakness Found"
+          },
+          {
+            "time": 216,
+            "label": "Personal Letter 3/5 – Something Is Strange"
+          },
+          {
+            "time": 240,
+            "label": "Workbench 1/3 – SMG"
+          },
+          {
+            "time": 289,
+            "label": "Personal Letter 4/5 – I Am Fed Up"
+          },
+          {
+            "time": 316,
+            "label": "Classified Document 2/5 – Defend Our Skies"
+          },
+          {
+            "time": 336,
+            "label": "Starting Location 1/2 – Breached Wall"
+          },
+          {
+            "time": 364,
+            "label": "Workbench 2/3 – Pistol"
+          },
+          {
+            "time": 391,
+            "label": "Starting Location 2/2 – Checkpoint Cabin"
+          },
+          {
+            "time": 413,
+            "label": "Classified Document 3/5 – Ready on Your Order"
+          },
+          {
+            "time": 444,
+            "label": "Classified Document 4/5 – No Retreat"
+          },
+          {
+            "time": 483,
+            "label": "Personal Letter 5/5 – Beautiful Views"
+          },
+          {
+            "time": 532,
+            "label": "Workbench 3/3 – Rifle"
+          },
+          {
+            "time": 596,
+            "label": "Hidden Item 3/3 – Committee C Map"
+          },
+          {
+            "time": 622,
+            "label": "Classified Document 5/5 – Schoene's Notes"
+          },
+          {
+            "time": 648,
+            "label": "TROPHY – Tactician"
+          }
+        ]
+      },
+      "starting_locations": [
+        {
+          "name": "Breached Wall",
+          "video_time": 336
+        },
+        {
+          "name": "Checkpoint Cabin",
+          "video_time": 391
+        }
       ]
     },
     "mission_7": {
@@ -1313,38 +2250,65 @@
       "title": "Lock, Stock and Barrels",
       "region": "V1 Rocket Facility",
       "walkthrough": "Penetrate testing tunnels, sabotage liquid fuel reservoirs, neutralize operational Zugwerfer launch unit.",
-      "image_url": "",
+      "image_url": "/public/games/snresistance/images/missions/m07-lock-stock-and-barrels.jpg",
       "collectibles": {
         "personal_letters": [
           {
             "id": "let_m7_01",
-            "name": "Trouble in the Ranks",
-            "location": "Upstairs table inside residential farmhouse.",
-            "image_url": ""
+            "name": "What Do They Want?",
+            "location": "",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Will the Nazis Destroy What We Have Built?",
+            "author": "Marie-Anne",
+            "summary": "Marie-Anne worries to her father about why the Nazis have come to their vineyard, Château de la Vigne.",
+            "video_time": 0,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=0s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m7_02",
-            "name": "Barn Watch",
-            "location": "Inside small timber barn on wooden workbench table.",
-            "image_url": ""
+            "name": "Do Not Worry, Mother",
+            "location": "",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "video_time": 80,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=80s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m7_03",
             "name": "I Feel Uneasy",
             "location": "Second-floor table positioned beside window.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Something Is Going On and I Don't Know What.",
+            "author": "Thomas",
+            "summary": "A worker tells Emily the château's new owners are hiding a secret from the staff.",
+            "video_time": 299,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=299s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m7_04",
-            "name": "Security Check",
-            "location": "Guard outpost desk along northern access track.",
-            "image_url": ""
+            "name": "Everything Is Fine!",
+            "location": "",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "I Love My Job, the Wine, and, with Luck, the Owner's Daughter.",
+            "author": "Pierre",
+            "summary": "A new vineyard worker tells his sister he's settling in and has a crush on the owner's daughter.",
+            "video_time": 107,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=107s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m7_05",
-            "name": "Final Preparations",
-            "location": "Bunker staging office table near testing rail line.",
-            "image_url": ""
+            "name": "Lying Is Necessary",
+            "location": "",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Focus on Your Job, That's All We Can Do.",
+            "author": "Aldric Candide",
+            "summary": "A father tells his daughter Marie to keep the Nazi involvement hidden from the workers.",
+            "video_time": 228,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=228s",
+            "emoji": "✉️"
           }
         ],
         "classified_documents": [
@@ -1352,31 +2316,61 @@
             "id": "doc_m7_01",
             "name": "A Service Hatch",
             "location": "Ground-floor corridor with pink walls, first door on right.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "A New Addition to Enhance Security.",
+            "author": "Hauptmann Otto Klein",
+            "summary": "The dining room floor was covered over to hide access to the facility hatch.",
+            "video_time": 378,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=378s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m7_02",
             "name": "Control Room Key",
             "location": "Subterranean basement room following downstairs path.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "The Control Room's Security Is Top Priority.",
+            "author": "Hochrangiger Offizier Andreas Wagner",
+            "summary": "The control room key must stay with the on-duty commanding officer at all times.",
+            "video_time": 403,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=403s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m7_03",
             "name": "Rocket Fuse Setup",
             "location": "Safe inside secondary objective bunker (satchel charge or officer key).",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Adjust the Rocket Fuse Properly.",
+            "author": "Chefingenieur Heinrich Müller",
+            "summary": "A warning that incorrectly set rocket fuses risk premature detonation.",
+            "video_time": 171,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=171s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m7_04",
             "name": "Hydraulics Concerns",
             "location": "Bunker supply box in small utility vault.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Routine Inspections Must Be Maintained",
+            "author": "Chefingenieur Heinrich Müller",
+            "summary": "Misset launch-ramp hydraulics could leave rockets stuck and exploding on the pad.",
+            "video_time": 126,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=126s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m7_05",
             "name": "Vulnerability Found",
             "location": "Desk in bunker reached immediately after unlocking control room.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "A Weak Spot Has Been Identified on the Zugwerfer.",
+            "author": "Chefingenieur Heinrich Müller",
+            "summary": "A defective armor plate has left a side vent on the Zugwerfer exposed until replacements arrive.",
+            "video_time": 403,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=403s",
+            "emoji": "📜"
           }
         ],
         "hidden_items": [
@@ -1384,19 +2378,34 @@
             "id": "item_m7_01",
             "name": "Engraved Lighter",
             "location": "Table immediately inside entrance of house.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "Choosing to Live Is Just as Important as Refusing to Die.",
+            "summary": "A lighter engraved '14.02.42', a reminder of what the fight is for.",
+            "video_time": 250,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=250s",
+            "emoji": "🏷️"
           },
           {
             "id": "item_m7_02",
-            "name": "Broken Pressure Gauge",
-            "location": "Metal shelf in compressor room along test canal.",
-            "image_url": ""
+            "name": "La Voix Du Maquis",
+            "location": "",
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "Hear Our Voice as We Strike at the Heart of Tyranny!",
+            "summary": "A Resistance poster that fills the narrator with pride in the Maquis fighters.",
+            "video_time": 19,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=19s",
+            "emoji": "🏷️"
           },
           {
             "id": "item_m7_03",
-            "name": "Poster: Debout La France",
-            "location": "Outbuilding brick facade; unlocks Debout La France.",
-            "image_url": ""
+            "name": "Gold Pocket Watch",
+            "location": "",
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "A Lost Family Heirloom, Memory, and Life.",
+            "summary": "An ornate, worn pocket watch, likely a family heirloom lost to the war.",
+            "video_time": 149,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=149s",
+            "emoji": "🏷️"
           }
         ],
         "stone_eagles": [
@@ -1404,19 +2413,28 @@
             "id": "eagle_m7_01",
             "name": "Dead-Eye Target 1",
             "location": "Silo elevator tower pinnacle on north plateau.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 329,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=329s",
+            "emoji": "🦅"
           },
           {
             "id": "eagle_m7_02",
             "name": "Dead-Eye Target 2",
             "location": "Gable peak of transformer substation building.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 329,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=329s",
+            "emoji": "🦅"
           },
           {
             "id": "eagle_m7_03",
             "name": "Dead-Eye Target 3",
             "location": "Chimney of house located near final main objective.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 441,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=441s",
+            "emoji": "🦅"
           }
         ],
         "workbenches": [
@@ -1424,19 +2442,34 @@
             "id": "wb_m7_rifle",
             "name": "Rifle Workbench",
             "location": "First-floor room accessed by climbing exterior rear lattice.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Rifle Muzzle Upgrade kit.",
+            "unlocks": "Rifle Muzzle Upgrade kit",
+            "video_time": 19,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=19s",
+            "emoji": "⚙️"
           },
           {
             "id": "wb_m7_smg",
             "name": "SMG Workbench",
             "location": "Loft level reached via interior ladder inside storage building.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Secondary Recoil pack.",
+            "unlocks": "Secondary Recoil pack",
+            "video_time": 281,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=281s",
+            "emoji": "⚙️"
           },
           {
             "id": "wb_m7_pistol",
             "name": "Pistol Workbench",
             "location": "Balcony space situated directly above main bunker entrance.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Pistol Caliber Conversion kit.",
+            "unlocks": "Pistol Caliber Conversion kit",
+            "video_time": 201,
+            "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=201s",
+            "emoji": "⚙️"
           }
         ]
       },
@@ -1536,6 +2569,98 @@
           "rank": "BRONZE",
           "description": "Infiltrate the V1 rocket launch site and destroy the Zugwerfer."
         }
+      ],
+      "date": "June 3rd 1944",
+      "guide_video": {
+        "creator": "Trophy Tom",
+        "channel": "https://www.youtube.com/@TrophyTom",
+        "video_id": "yV9qaBhxCuM",
+        "url": "https://www.youtube.com/watch?v=yV9qaBhxCuM",
+        "title": "Sniper Elite: Resistance - Mission 7 - All Collectibles & Trophies 🏆 Lock, Stock and Barrels",
+        "chapters": [
+          {
+            "time": 0,
+            "label": "Personal Letter 1/5 – What Do They Want?"
+          },
+          {
+            "time": 19,
+            "label": "Hidden Item 1/3 – La Voix Du Maquis + Workbench 1/3 – Rifle"
+          },
+          {
+            "time": 52,
+            "label": "Starting Location 1/2 – Windmill"
+          },
+          {
+            "time": 80,
+            "label": "Personal Letter 2/5 – Do Not Worry, Mother"
+          },
+          {
+            "time": 107,
+            "label": "Personal Letter 3/5 – Everything Is Fine!"
+          },
+          {
+            "time": 126,
+            "label": "Classified Document 1/5 – Hydraulics Concerns"
+          },
+          {
+            "time": 149,
+            "label": "Hidden Item 2/3 – Gold Pocket Watch"
+          },
+          {
+            "time": 171,
+            "label": "Classified Document 2/5 – Rocket Fuse Setup"
+          },
+          {
+            "time": 201,
+            "label": "Workbench 2/3 – Pistol"
+          },
+          {
+            "time": 228,
+            "label": "Personal Letter 4/5 – Lying Is Necessary"
+          },
+          {
+            "time": 250,
+            "label": "Hidden Item 3/3 – Engraved Lighter"
+          },
+          {
+            "time": 269,
+            "label": "Starting Location 2/2 – Western Farmhouse"
+          },
+          {
+            "time": 281,
+            "label": "Workbench 3/3 – SMG"
+          },
+          {
+            "time": 299,
+            "label": "Personal Letter 5/5 – I Feel Uneasy"
+          },
+          {
+            "time": 329,
+            "label": "Stone Eagle 1+2/3"
+          },
+          {
+            "time": 378,
+            "label": "Classified Document 3/5 – A Service Hatch"
+          },
+          {
+            "time": 403,
+            "label": "Classified Document 4/5 – Control Room Key + Classified Document 5/5 – Vulnerability Found"
+          },
+          {
+            "time": 441,
+            "label": "Stone Eagle 3/3"
+          }
+        ]
+      },
+      "starting_locations": [
+        {
+          "name": "Windmill",
+          "video_time": 52
+        },
+        {
+          "name": "Western Farmhouse",
+          "video_time": 269
+        }
       ]
     },
     "mission_8": {
@@ -1543,38 +2668,68 @@
       "title": "End of the Line",
       "region": "Central Freight Hub & Railyard",
       "walkthrough": "Prevent final Zugwerfer deployment heading toward Normandy beaches, destroy patrol panzer tank.",
-      "image_url": "",
+      "image_url": "/public/games/snresistance/images/missions/m08-end-of-the-line.jpg",
       "collectibles": {
         "personal_letters": [
           {
             "id": "let_m8_01",
-            "name": "Victory is Imminent!",
+            "name": "Victory Is Imminent!",
             "location": "Top floor command office table overlooking train tracks.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Our Goal Is Within Reach!",
+            "author": "Klaus Hauptmann",
+            "summary": "A loyal soldier tells his father that Special Committee C's secret weapons will win the war.",
+            "video_time": 432,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=432s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m8_02",
             "name": "Home Soon, My Love",
             "location": "Maintenance desk at bottom of concrete grain silo.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Don't Fret, My Darling. It Won't Be Long Now.",
+            "author": "Johan",
+            "summary": "A soldier tells his wife victory is near and proposes naming their son after Kruger.",
+            "video_time": 561,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=561s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m8_03",
             "name": "What We've Achieved",
             "location": "Locked residential room; key held by yard patrol officer.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Keep Your Chin Up, We Have Got This in the Bag!",
+            "author": "Ralf Achenrainer",
+            "summary": "The site has been rebuilt into a fortress while made to look like a bombed-out ruin.",
+            "video_time": 163,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=163s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m8_04",
             "name": "Burn After Reading",
             "location": "Outbuilding office adjacent to Kill List target zone.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "We Have Updates on Their Movements.",
+            "author": "Blackbird",
+            "summary": "A secret letter to 'Bluebell' about Gottschalk's weak oversight and the coming Zugwerfer launch.",
+            "video_time": 264,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=264s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m8_05",
             "name": "I Think This Is It",
             "location": "First-floor records office inside central station concourse.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "These May Be My Last Words to You.",
+            "author": "Matthias",
+            "summary": "A disillusioned soldier writes what he fears is his final letter to his wife.",
+            "video_time": 491,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=491s",
+            "emoji": "✉️"
           }
         ],
         "classified_documents": [
@@ -1582,31 +2737,60 @@
             "id": "doc_m8_01",
             "name": "Zugwerfer Departure",
             "location": "First-floor locked office; shared with Rifle Workbench.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Blast Door Protocol",
+            "author": "Vorgesetzter Otto Ammermann",
+            "summary": "The blast doors must stay open so the train can depart without delay.",
+            "video_time": 521,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=521s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m8_02",
             "name": "Prepare to Strike!",
             "location": "Bunker room beside ladder at default insertion point.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "We Will Crush the Allied Forces and Emerge Victorious!",
+            "author": "Chefingenieur Heinrich Müller",
+            "summary": "Orders to have the train fully fuelled and ready to depart ahead of the Allied invasion.",
+            "video_time": 50,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=50s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m8_03",
             "name": "Rusty Turntable",
             "location": "Railyard warehouse maintenance office desk.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "Be Careful at the Old Roundhouse.",
+            "author": "Reichsingenieurdirektor Arthur Achleitner",
+            "summary": "The turntable at the old Roundhouse needs urgent maintenance after a previous incident.",
+            "video_time": 239,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=239s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m8_04",
             "name": "Railyard Management",
             "location": "Chair beside dispatch table inside central grain silo.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "There Is a Change in Command.",
+            "author": "Reichsmarshal Hans-Jürgen von Band",
+            "summary": "Control of the site passes to Gottschalk, Kruger and Dr. Schoene, effective immediately.",
+            "video_time": 360,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=360s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m8_05",
             "name": "Turret Locations",
             "location": "Upper staging catwalk room; located beside SMG Workbench.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "headline": "AA Turrets in the Trenches",
+            "summary": "Soldiers are told to be ready to man the anti-aircraft turrets placed in No Man's Land.",
+            "video_time": 195,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=195s",
+            "emoji": "📜"
           }
         ],
         "hidden_items": [
@@ -1614,19 +2798,34 @@
             "id": "item_m8_01",
             "name": "AA Repair Manual",
             "location": "Tool locker base inside large concrete silo.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "Not on My Watch!",
+            "summary": "A Flakvierling 38 repair manual; the narrator shrugs at the effort to keep the turrets running.",
+            "video_time": 284,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=284s",
+            "emoji": "🏷️"
           },
           {
             "id": "item_m8_02",
             "name": "New Tank Blueprints",
             "location": "Ground-floor depot crate corner.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "This Could Change Everything.",
+            "summary": "Blueprints suggesting the Zugwerfers use a modified tank firing mechanism with Kleine Blume shells.",
+            "video_time": 87,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=87s",
+            "emoji": "🏷️"
           },
           {
             "id": "item_m8_03",
-            "name": "Poster: Pour Une France Libre",
+            "name": "Pour une France Libre",
             "location": "First-floor exterior rail wall; unlocks Pour Une France Libre.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "headline": "For a Free France, No Price Is Too High.",
+            "summary": "A Resistance poster honoring everyone who fights and sacrifices for a free France.",
+            "video_time": 87,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=87s",
+            "emoji": "🏷️"
           }
         ],
         "stone_eagles": [
@@ -1634,19 +2833,28 @@
             "id": "eagle_m8_01",
             "name": "Dead-Eye Target 1",
             "location": "Northeast tower peak of central terminal complex.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 0,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=0s",
+            "emoji": "🦅"
           },
           {
             "id": "eagle_m8_02",
             "name": "Dead-Eye Target 2",
             "location": "Northwest roof corner of house facing initial spawn.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 0,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=0s",
+            "emoji": "🦅"
           },
           {
             "id": "eagle_m8_03",
             "name": "Dead-Eye Target 3",
             "location": "Cupola top of small tower near eastern classification yard.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 463,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=463s",
+            "emoji": "🦅"
           }
         ],
         "workbenches": [
@@ -1654,19 +2862,34 @@
             "id": "wb_m8_pistol",
             "name": "Pistol Workbench",
             "location": "First-floor residential room accessible by mantle jump.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Pistol Power upgrades pack.",
+            "unlocks": "Pistol Power upgrades pack",
+            "video_time": 386,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=386s",
+            "emoji": "⚙️"
           },
           {
             "id": "wb_m8_rifle",
             "name": "Rifle Workbench",
             "location": "First-floor locked room inside terminal station; key held by main objective guard.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Rifle Mobility Mods pack.",
+            "unlocks": "Rifle Mobility Mods pack",
+            "video_time": 521,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=521s",
+            "emoji": "⚙️"
           },
           {
             "id": "wb_m8_smg",
             "name": "SMG Workbench",
             "location": "Elevated staging catwalk room beside Classified Document #5.",
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "description": "This workbench contained the Secondary Stability pack.",
+            "unlocks": "Secondary Stability pack",
+            "video_time": 195,
+            "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=195s",
+            "emoji": "⚙️"
           }
         ]
       },
@@ -1781,7 +3004,101 @@
           "trophyId": 50,
           "name": "Tanks for Nothing!",
           "rank": "BRONZE",
-          "description": "Destroy the Panzer Tank in End of the Line."
+          "description": "Destroy the Panzer Tank in End of the Line.",
+          "video_time": 317,
+          "video_url": "https://www.youtube.com/watch?v=0C0R7J-7FDo&t=317s"
+        }
+      ],
+      "date": "June 5th 1944",
+      "guide_video": {
+        "creator": "Trophy Tom",
+        "channel": "https://www.youtube.com/@TrophyTom",
+        "video_id": "0C0R7J-7FDo",
+        "url": "https://www.youtube.com/watch?v=0C0R7J-7FDo",
+        "title": "Sniper Elite: Resistance - Mission 8 - All Collectibles & Trophies 🏆 End of the Line",
+        "chapters": [
+          {
+            "time": 0,
+            "label": "Stone Eagle 1+2/3"
+          },
+          {
+            "time": 50,
+            "label": "Classified Document 1/5 – Prepare to Strike!"
+          },
+          {
+            "time": 87,
+            "label": "Hidden Item 1/3 – Pour une France Libre + Hidden Item 2/3 – New Tank Blueprints"
+          },
+          {
+            "time": 139,
+            "label": "Starting Location 1/2 – Bombed Factory"
+          },
+          {
+            "time": 163,
+            "label": "Personal Letter 1/5 – What We've Achieved"
+          },
+          {
+            "time": 195,
+            "label": "Classified Document 2/5 – Turret Locations + Workbench 1/3 – SMG"
+          },
+          {
+            "time": 239,
+            "label": "Classified Document 3/5 – Rusty Turntable"
+          },
+          {
+            "time": 264,
+            "label": "Personal Letter 2/5 – Burn After Reading"
+          },
+          {
+            "time": 284,
+            "label": "Hidden Item 3/3 – AA Repair Manual"
+          },
+          {
+            "time": 317,
+            "label": "TROPHY – Tanks for Nothing"
+          },
+          {
+            "time": 360,
+            "label": "Classified Document 4/5 – Railyard Management"
+          },
+          {
+            "time": 386,
+            "label": "Workbench 2/3 – Pistol"
+          },
+          {
+            "time": 432,
+            "label": "Personal Letter 3/5 – Victory Is Imminent!"
+          },
+          {
+            "time": 463,
+            "label": "Stone Eagle 3/3"
+          },
+          {
+            "time": 491,
+            "label": "Personal Letter 4/5 – I Think This Is It"
+          },
+          {
+            "time": 521,
+            "label": "Workbench 3/3 – Rifle + Classified Document 5/5 – Zugwerfer Departure"
+          },
+          {
+            "time": 561,
+            "label": "Personal Letter 5/5 – Home Soon, My Love"
+          },
+          {
+            "time": 578,
+            "label": "Starting Location 2/2 – Eastern Rail Yard"
+          }
+        ]
+      },
+      "starting_locations": [
+        {
+          "name": "Bombed Factory",
+          "video_time": 139
+        },
+        {
+          "name": "Eastern Rail Yard",
+          "video_time": 578
         }
       ]
     },
@@ -3875,5 +5192,1652 @@
       "rank": "SILVER",
       "description": "Complete all Propaganda missions with a 3 Star Rating on Authentic difficulty."
     }
-  ]
+  ],
+  "collectible_types": [
+    {
+      "key": "personal_letters",
+      "name": "Personal Letters",
+      "emoji": "✉️",
+      "icon_url": "/public/games/snresistance/images/icons/personal-letter.png",
+      "image_url": "/public/games/snresistance/images/collectibles/personal-letters.jpg",
+      "total": 35
+    },
+    {
+      "key": "classified_documents",
+      "name": "Classified Documents",
+      "emoji": "📜",
+      "icon_url": "/public/games/snresistance/images/icons/classified-document.png",
+      "image_url": "/public/games/snresistance/images/collectibles/classified-documents.jpg",
+      "total": 35
+    },
+    {
+      "key": "hidden_items",
+      "name": "Hidden Items",
+      "emoji": "🏷️",
+      "icon_url": "/public/games/snresistance/images/icons/hidden-item.png",
+      "image_url": "/public/games/snresistance/images/collectibles/hidden-items.jpg",
+      "total": 22
+    },
+    {
+      "key": "stone_eagles",
+      "name": "Stone Eagles",
+      "emoji": "🦅",
+      "icon_url": "/public/games/snresistance/images/icons/eagle.png",
+      "image_url": "/public/games/snresistance/images/collectibles/stone-eagles.jpg",
+      "total": 21
+    },
+    {
+      "key": "workbenches",
+      "name": "Workbenches",
+      "emoji": "⚙️",
+      "icon_url": "/public/games/snresistance/images/icons/workbench.png",
+      "image_url": "/public/games/snresistance/images/collectibles/workbenches.jpg",
+      "total": 22
+    }
+  ],
+  "guide_videos": {
+    "creator": "Trophy Tom",
+    "channel": "https://www.youtube.com/@TrophyTom",
+    "playlistId": "PLtA90_ts33NGSL7svQR7wc3gx2nQsQL6c",
+    "playlist": "https://www.youtube.com/playlist?list=PLtA90_ts33NGSL7svQR7wc3gx2nQsQL6c"
+  },
+  "skills": {
+    "note": "XP and Skill Points are earned across campaign and survival modes, but skills can be allocated differently for each game mode.",
+    "trees": [
+      {
+        "name": "Combat",
+        "totalSkills": 9,
+        "skills": [
+          {
+            "name": "Back in the Fight",
+            "position": "center",
+            "description": "A Med Kit can be used to revive yourself when incapacitated.",
+            "image": "/public/games/snresistance/images/back-in-the-fight.jpg"
+          },
+          {
+            "name": "No Time to Bleed",
+            "position": "inner-top",
+            "description": "Secondary weapons can be used whilst incapacitated.",
+            "image": "/public/games/snresistance/images/no-time-to-bleed.jpg"
+          },
+          {
+            "name": "Combat Medic",
+            "position": "outer-top",
+            "cost": 2,
+            "description": "When reviving, can use all your bandages instead of a single medkit.",
+            "image": "/public/games/snresistance/images/combat-medic.jpg"
+          },
+          {
+            "name": "Triangulation",
+            "position": "inner-right",
+            "description": "Enemies are scope tagged when they damage you.",
+            "image": "/public/games/snresistance/images/triangulation.jpg"
+          },
+          {
+            "name": "Advanced Triangulation",
+            "position": "outer-right",
+            "description": "Enemies are scope tagged when they shoot at you.",
+            "image": "/public/games/snresistance/images/advanced-triangulation.jpg"
+          },
+          {
+            "name": "Steady Hand",
+            "position": "inner-bottom",
+            "description": "Scope shake from taking damage is drastically reduced.",
+            "image": "/public/games/snresistance/images/steady-hand.jpg"
+          },
+          {
+            "name": "Swift Hands",
+            "position": "outer-bottom",
+            "cost": 2,
+            "description": "Enemies will be automatically searched during a takedown.",
+            "image": "/public/games/snresistance/images/swift-hands.jpg"
+          },
+          {
+            "name": "Grenade Throwback",
+            "position": "inner-left",
+            "description": "Tap Triangle to quick throw a nearby live grenade.",
+            "image": "/public/games/snresistance/images/grenade-throwback.jpg"
+          },
+          {
+            "name": "Quick Trap",
+            "position": "outer-left",
+            "cost": 2,
+            "description": "Tap R1 to quickly throw a trap down. The trap is not visible to enemies in combat.",
+            "image": "/public/games/snresistance/images/quick-trap.jpg"
+          }
+        ]
+      },
+      {
+        "name": "Equipment",
+        "totalSkills": 9,
+        "skills": [
+          {
+            "name": "Scavenge Weapon Ammo",
+            "position": "center",
+            "description": "Ammo can be removed from found weapons.",
+            "image": "/public/games/snresistance/images/scavenge-weapon-ammo.jpg"
+          },
+          {
+            "name": "Carry More Decoys",
+            "position": "inner-top",
+            "description": "Increased carry limit for Bottles and Decoys.",
+            "image": "/public/games/snresistance/images/carry-more-decoys.jpg"
+          },
+          {
+            "name": "Pistol Special Ammo",
+            "position": "outer-top",
+            "cost": 2,
+            "description": "Add a second box of Pistol Special Ammo to your Loadout.",
+            "image": "/public/games/snresistance/images/pistol-special-ammo.jpg"
+          },
+          {
+            "name": "Carry More Explosives",
+            "position": "inner-right",
+            "description": "Increased carry limit for Grenades and TNT.",
+            "image": "/public/games/snresistance/images/carry-more-explosives.jpg"
+          },
+          {
+            "name": "Secondary Special Ammo",
+            "position": "outer-right",
+            "cost": 2,
+            "description": "Add a second box of Secondary Special Ammo to your Loadout.",
+            "image": "/public/games/snresistance/images/secondary-special-ammo.jpg"
+          },
+          {
+            "name": "Carry More Traps",
+            "position": "inner-bottom",
+            "description": "Increased carry limit for Teller Mines and Schu-Mines.",
+            "image": "/public/games/snresistance/images/carry-more-traps.jpg"
+          },
+          {
+            "name": "Rifle Special Ammo",
+            "position": "outer-bottom",
+            "cost": 2,
+            "description": "Add a second box of Rifle Special Ammo to your Loadout.",
+            "image": "/public/games/snresistance/images/rifle-special-ammo.jpg"
+          },
+          {
+            "name": "Extra Item Slot 1",
+            "position": "inner-left",
+            "description": "Add an extra item to your Loadout.",
+            "image": "/public/games/snresistance/images/extra-item-slot-1.jpg"
+          },
+          {
+            "name": "Extra Item Slot 2",
+            "position": "outer-left",
+            "cost": 2,
+            "description": "Add another extra item to your Loadout.",
+            "image": "/public/games/snresistance/images/extra-item-slot-2.jpg"
+          }
+        ]
+      },
+      {
+        "name": "Body",
+        "totalSkills": 9,
+        "skills": [
+          {
+            "name": "Maintain Focus",
+            "position": "center",
+            "description": "The longer you are in Focus, the longer it takes for the effects to wear off.",
+            "image": "/public/games/snresistance/images/maintain-focus.jpg"
+          },
+          {
+            "name": "Focus Range",
+            "position": "inner-top",
+            "description": "Increased range of Focus.",
+            "image": "/public/games/snresistance/images/focus-range.jpg"
+          },
+          {
+            "name": "Focus Movement",
+            "position": "outer-top",
+            "cost": 2,
+            "description": "Move faster while in Focus.",
+            "image": "/public/games/snresistance/images/focus-movement.jpg"
+          },
+          {
+            "name": "Health Boost 1",
+            "position": "inner-right",
+            "description": "Add an extra health segment.",
+            "image": "/public/games/snresistance/images/health-boost-1.jpg"
+          },
+          {
+            "name": "Health Boost 2",
+            "position": "outer-right",
+            "cost": 2,
+            "description": "Add another extra health segment.",
+            "image": "/public/games/snresistance/images/health-boost-2.jpg"
+          },
+          {
+            "name": "Speedy Recovery",
+            "position": "inner-bottom",
+            "description": "Health regeneration begins sooner.",
+            "image": "/public/games/snresistance/images/speedy-recovery.jpg"
+          },
+          {
+            "name": "Stabilized",
+            "position": "outer-bottom",
+            "cost": 2,
+            "description": "Heart Rate is reduced when using a Bandage or Med Kit.",
+            "image": "/public/games/snresistance/images/stabilized.jpg"
+          },
+          {
+            "name": "Cardio",
+            "position": "inner-left",
+            "description": "Reduce the Heart Rate increase caused by Sprinting.",
+            "image": "/public/games/snresistance/images/cardio.jpg"
+          },
+          {
+            "name": "Deep Breath",
+            "position": "outer-left",
+            "description": "Reduce the Heart Rate increase caused by Empty Lung.",
+            "image": "/public/games/snresistance/images/deep-breath.jpg"
+          }
+        ]
+      }
+    ]
+  },
+  "weapons": {
+    "statScaleNote": "power/rateOfFire/control/mobility are 0-100 estimates measured from the in-game stat bars.",
+    "rifles": [
+      {
+        "name": "Berthier 1916",
+        "description": "The Berthier is a rugged, well-rounded rifle found in service with both Vichy and Free French units.",
+        "stats": {
+          "power": 85,
+          "rateOfFire": 13,
+          "control": 40,
+          "mobility": 27
+        },
+        "audibleRange": "140 m",
+        "zoom": "8x",
+        "magazineSize": 5,
+        "pros": [
+          "All Rounder",
+          "Extremely High Damage"
+        ],
+        "cons": [],
+        "detailedStats": {
+          "effectiveRange": 400,
+          "muzzleVelocity": 740,
+          "damage": 145,
+          "roundsPerMinute": 29,
+          "reloadTime": 3.01,
+          "aimStability": 24,
+          "horizontalRecoil": 17,
+          "verticalRecoil": 18,
+          "spreadAccuracy": 60,
+          "recoilRecovery": 500,
+          "timeToAim": 478,
+          "equipTime": 700,
+          "sprintMovementSpeed": 100,
+          "aimedMovementSpeed": 100
+        }
+      },
+      {
+        "name": "Lebel Model 1886",
+        "description": "A hard-hitting 8mm bolt-action infantry rifle that entered service in the French Army in 1887.",
+        "stats": {
+          "power": 72,
+          "rateOfFire": 24,
+          "control": 50,
+          "mobility": 28
+        },
+        "audibleRange": "91 m",
+        "zoom": "12x",
+        "magazineSize": 8,
+        "pros": [
+          "Extremely High Damage"
+        ],
+        "cons": [
+          "Slow to Reload",
+          "Slow Bolt Action"
+        ],
+        "note": "Stats captured from a customized version of this rifle.",
+        "detailedStats": {
+          "effectiveRange": 400,
+          "muzzleVelocity": 545,
+          "damage": 130,
+          "roundsPerMinute": 22,
+          "reloadTime": 5.36,
+          "aimStability": 30,
+          "horizontalRecoil": 11,
+          "verticalRecoil": 14,
+          "spreadAccuracy": 31,
+          "recoilRecovery": 300,
+          "timeToAim": 500,
+          "equipTime": 648,
+          "sprintMovementSpeed": 112,
+          "aimedMovementSpeed": 120
+        }
+      },
+      {
+        "name": "MAS 44",
+        "description": "The MAS 44 comes from a line of French prototype rifles pre-dating WW2. Its semi-automatic fire rate gives it greater short and mid range capability than its bolt action counterparts.",
+        "stats": {
+          "power": 68,
+          "rateOfFire": 68,
+          "control": 43,
+          "mobility": 28
+        },
+        "audibleRange": "130 m",
+        "zoom": "3x",
+        "magazineSize": 10,
+        "pros": [
+          "Rapid Fire"
+        ],
+        "cons": [
+          "Poor Aim Stability",
+          "Long Time to Aim"
+        ],
+        "detailedStats": {
+          "effectiveRange": 400,
+          "muzzleVelocity": 700,
+          "damage": 105,
+          "roundsPerMinute": 360,
+          "reloadTime": 2.86,
+          "aimStability": 26,
+          "horizontalRecoil": 16,
+          "verticalRecoil": 17,
+          "spreadAccuracy": 65,
+          "recoilRecovery": 400,
+          "timeToAim": 317,
+          "equipTime": 700,
+          "sprintMovementSpeed": 100,
+          "aimedMovementSpeed": 100
+        }
+      },
+      {
+        "name": "ZK-420S",
+        "description": "An effective battle rifle developed in Czechoslovakia, with superb control and accuracy at close-to-mid range.",
+        "stats": {
+          "power": 40,
+          "rateOfFire": 80,
+          "control": 73,
+          "mobility": 77
+        },
+        "audibleRange": "105 m",
+        "zoom": "3x",
+        "magazineSize": 10,
+        "pros": [
+          "Easy to Control",
+          "Rapid Fire"
+        ],
+        "cons": [
+          "Weak Damage",
+          "Poor at Long Range"
+        ],
+        "detailedStats": {
+          "effectiveRange": 280,
+          "muzzleVelocity": 607,
+          "damage": 79,
+          "roundsPerMinute": 378,
+          "reloadTime": 1.97,
+          "aimStability": 20,
+          "horizontalRecoil": 12,
+          "verticalRecoil": 11,
+          "spreadAccuracy": 52,
+          "recoilRecovery": 400,
+          "timeToAim": 167,
+          "equipTime": 600,
+          "sprintMovementSpeed": 100,
+          "aimedMovementSpeed": 100
+        }
+      },
+      {
+        "name": "Lee No.4",
+        "description": "The British bolt-action rifle, famous for its ergonomics and ability to lay down accurate shots rapidly.",
+        "stats": {
+          "power": 72,
+          "rateOfFire": 35,
+          "control": 57,
+          "mobility": 58
+        },
+        "audibleRange": "105 m",
+        "zoom": "8x",
+        "magazineSize": 10,
+        "pros": [
+          "Great Aim Stability",
+          "Easy to Control"
+        ],
+        "cons": [
+          "Slow to Reload"
+        ],
+        "unlockRequirement": "Complete Mission 6: Assault on Fort Rouge",
+        "detailedStats": {
+          "effectiveRange": 600,
+          "muzzleVelocity": 740,
+          "damage": 115,
+          "roundsPerMinute": 44,
+          "reloadTime": 6.54,
+          "aimStability": 14,
+          "horizontalRecoil": 15,
+          "verticalRecoil": 14,
+          "spreadAccuracy": 35,
+          "recoilRecovery": 450,
+          "timeToAim": 278,
+          "equipTime": 700,
+          "sprintMovementSpeed": 100,
+          "aimedMovementSpeed": 100
+        }
+      },
+      {
+        "name": "M1 Garand",
+        "description": "The standard infantry rifle of the United States. Chambered for the .30-06 M.1903 cartridge, it is both accurate and powerful with a hefty recoil.",
+        "stats": {
+          "power": 68,
+          "rateOfFire": 50,
+          "control": 40,
+          "mobility": 22
+        },
+        "audibleRange": "130 m",
+        "zoom": "8x",
+        "magazineSize": 8,
+        "pros": [
+          "Very High Zoom"
+        ],
+        "cons": [
+          "Poor Aim Stability",
+          "Difficult to Control"
+        ],
+        "unlockRequirement": "Complete the Kill Challenge in Mission 4: Collision Course",
+        "detailedStats": {
+          "effectiveRange": 400,
+          "muzzleVelocity": 740,
+          "damage": 95,
+          "roundsPerMinute": 300,
+          "reloadTime": 2.93,
+          "aimStability": 26,
+          "horizontalRecoil": 25,
+          "verticalRecoil": 20,
+          "spreadAccuracy": 52,
+          "recoilRecovery": 500,
+          "timeToAim": 366,
+          "equipTime": 583,
+          "sprintMovementSpeed": 100,
+          "aimedMovementSpeed": 100
+        }
+      },
+      {
+        "name": "Mosin-Nagant M91/30",
+        "description": "Famous for its power and reliability, the \"three-line rifle\" from the east is an outstanding brute of a rifle.",
+        "stats": {
+          "power": 82,
+          "rateOfFire": 15,
+          "control": 58,
+          "mobility": 33
+        },
+        "audibleRange": "140 m",
+        "zoom": "3x",
+        "magazineSize": 5,
+        "pros": [
+          "Minimal Bullet Drop",
+          "Easy to Control"
+        ],
+        "cons": [
+          "Very Slow Bolt Action"
+        ],
+        "unlockRequirement": "Complete all of the propaganda Sniping missions (base campaign only, 3 missions)",
+        "detailedStats": {
+          "effectiveRange": 550,
+          "muzzleVelocity": 800,
+          "damage": 130,
+          "roundsPerMinute": 30,
+          "reloadTime": 3.71,
+          "aimStability": 18,
+          "horizontalRecoil": 14,
+          "verticalRecoil": 15,
+          "spreadAccuracy": 48,
+          "recoilRecovery": 450,
+          "timeToAim": 350,
+          "equipTime": 700,
+          "sprintMovementSpeed": 100,
+          "aimedMovementSpeed": 100
+        }
+      }
+    ],
+    "rifleSpecialAmmo": {
+      "note": "statChanges are exact deltas from the Toggle Stats view, measured on the ZK-420S (base 607 m/s, 79 HP, 280 m, 105 m audible). Values may differ on other rifles.",
+      "types": [
+        {
+          "name": "Armor Piercing",
+          "rounds": 20,
+          "description": "Penetrates surfaces such as metal & rock.",
+          "pros": [
+            "Penetrates Metal and Stone"
+          ],
+          "cons": [
+            "Leaves Obvious Bullet Trail"
+          ],
+          "image": "/public/games/snresistance/images/ammo-armor-piercing.jpg",
+          "statChanges": {
+            "muzzleVelocity": 61
+          }
+        },
+        {
+          "name": "Match",
+          "rounds": 25,
+          "description": "Long-range rounds with reduced bullet drop.",
+          "pros": [
+            "Greatly Reduces Bullet Drop",
+            "Increases Effective Range"
+          ],
+          "cons": [
+            "Louder"
+          ],
+          "image": "/public/games/snresistance/images/ammo-match.jpg",
+          "statChanges": {
+            "effectiveRange": 112,
+            "muzzleVelocity": 243,
+            "audibleRange": 15
+          }
+        },
+        {
+          "name": "Non-Lethal",
+          "rounds": 20,
+          "description": "Wooden rounds for knocking out enemies.",
+          "pros": [
+            "Non-Lethal Incapacitation",
+            "Quieter"
+          ],
+          "cons": [
+            "Added Bullet Drop"
+          ],
+          "image": "/public/games/snresistance/images/ammo-non-lethal.jpg",
+          "statChanges": {
+            "muzzleVelocity": -61,
+            "audibleRange": -26
+          }
+        },
+        {
+          "name": "Soft Point",
+          "rounds": 20,
+          "description": "Extremely powerful against unarmored infantry.",
+          "pros": [
+            "Increases Damage Significantly"
+          ],
+          "cons": [
+            "Cannot Penetrate Helmets or Wood"
+          ],
+          "image": "/public/games/snresistance/images/ammo-soft-point.jpg",
+          "statChanges": {
+            "muzzleVelocity": -61,
+            "damage": 31
+          }
+        },
+        {
+          "name": "Subsonic",
+          "rounds": 15,
+          "description": "Very quiet rounds perfect for stealth kills.",
+          "pros": [
+            "Significantly Quieter"
+          ],
+          "cons": [
+            "Weak Damage",
+            "Added Bullet Drop"
+          ],
+          "image": "/public/games/snresistance/images/ammo-subsonic.jpg",
+          "statChanges": {
+            "effectiveRange": -28,
+            "muzzleVelocity": -91,
+            "damage": -24,
+            "audibleRange": -73
+          }
+        },
+        {
+          "name": "High Explosive",
+          "description": "Exploding round with short-range splash damage.",
+          "pros": [
+            "High Damage"
+          ],
+          "cons": [
+            "Extreme Bullet Drop",
+            "Very Loud"
+          ],
+          "unlockRequirement": "Complete Mission 7: Lock, Stock and Barrels",
+          "image": "/public/games/snresistance/images/ammo-high-explosive.jpg",
+          "statChanges": {
+            "muzzleVelocity": -121,
+            "damage": 94,
+            "audibleRange": 105
+          }
+        }
+      ]
+    },
+    "rifleAttachments": {
+      "ZK-420S": {
+        "note": "Captured on the ZK-420S. Sight statChanges are relative to the default PU scope; muzzle statChanges are relative to no muzzle.",
+        "sights": [
+          {
+            "name": "Iron Sights",
+            "zoom": "1x",
+            "description": "Standard-issue iron sight setup suited to close-range combat.",
+            "pros": [
+              "Very Fast Aim Speed"
+            ],
+            "cons": [
+              "No Bullet Drop Indicator"
+            ],
+            "statChanges": {
+              "aimStability": -2,
+              "timeToAim": -24,
+              "equipTime": -100,
+              "aimedMovementSpeed": 30
+            }
+          },
+          {
+            "name": "PU",
+            "zoom": "3x",
+            "description": "A basic but lightweight design from the Soviet Union.",
+            "pros": [
+              "Excellent Aim Stability",
+              "Very Fast Aim Speed"
+            ],
+            "cons": [
+              "Very Low Zoom"
+            ],
+            "image": "/public/games/snresistance/images/sight-pu.jpg",
+            "statChanges": {}
+          },
+          {
+            "name": "ZF4",
+            "zoom": "6x",
+            "description": "Advanced for its time with multiple zoom options.",
+            "pros": [
+              "Versatile All Rounder"
+            ],
+            "cons": [],
+            "image": "/public/games/snresistance/images/sight-zf4.jpg",
+            "statChanges": {
+              "aimStability": 3,
+              "timeToAim": 68
+            }
+          },
+          {
+            "name": "ZF41 CQB",
+            "zoom": "5x",
+            "description": "Designed for precise close-quarters combat, the ZF41 is lightweight and nimble, permitting great aim stability at low zoom levels.",
+            "pros": [
+              "Very Fast Aim Speed"
+            ],
+            "cons": [
+              "Poor Aim Stability"
+            ],
+            "image": "/public/games/snresistance/images/sight-zf41-cqb.jpg",
+            "statChanges": {
+              "aimStability": 4,
+              "timeToAim": 2
+            }
+          }
+        ],
+        "barrels": [
+          {
+            "name": "Standard",
+            "description": "Standard Issue Barrel.",
+            "pros": [],
+            "cons": []
+          },
+          {
+            "name": "Extended Marksmen",
+            "description": "Increases damage and reduces bullet drop and windage, thanks to improved muzzle velocity.",
+            "pros": [
+              "Increases Damage",
+              "Reduces Bullet Drop"
+            ],
+            "cons": [
+              "Slower Movement"
+            ],
+            "effects": {
+              "power": "slight increase",
+              "control": "decrease",
+              "mobility": "decrease"
+            }
+          },
+          {
+            "name": "Heavy Parkerized",
+            "description": "Heavy barrel reduces recoil but also reduces mobility.",
+            "pros": [
+              "Reduces Recoil"
+            ],
+            "cons": [
+              "Slower Rate of Fire"
+            ],
+            "effects": {
+              "rateOfFire": "decrease",
+              "control": "increase",
+              "mobility": "slight decrease"
+            }
+          },
+          {
+            "name": "Short Carbine",
+            "description": "The shorter barrel decreases the accuracy of the weapon, reducing the effective range but also its weight, improving mobility.",
+            "pros": [
+              "Faster Movement",
+              "Improves Aim Stability"
+            ],
+            "cons": [
+              "Greatly Increases Bullet Drop"
+            ],
+            "effects": {
+              "power": "slight decrease",
+              "control": "slight increase",
+              "mobility": "increase"
+            }
+          },
+          {
+            "name": "Lightened and Blued",
+            "description": "The lightened barrel helps to increase the rate of fire thanks to its reduced weight.",
+            "pros": [
+              "Faster Rate of Fire",
+              "Quicker Aim Time"
+            ],
+            "cons": [
+              "Increases Vertical Recoil"
+            ],
+            "effects": {
+              "rateOfFire": "increase",
+              "control": "slight decrease",
+              "mobility": "slight increase"
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 4: Collision Course"
+          }
+        ],
+        "muzzles": [
+          {
+            "name": "None",
+            "description": "No Muzzle Device attached.",
+            "statChanges": {}
+          },
+          {
+            "name": "MK2 Boys Brake",
+            "description": "A revision to the highly effective Mk1 Boys anti-tank muzzle brake.",
+            "statChanges": {
+              "muzzleVelocity": 38,
+              "horizontalRecoil": -5,
+              "recoilRecovery": -80,
+              "audibleRange": 15
+            }
+          },
+          {
+            "name": "Modified 12G Compensator",
+            "description": "Heavy-duty Cuts compensator produced originally for 12 gauge shotguns to aid control.",
+            "statChanges": {
+              "aimStability": 2,
+              "horizontalRecoil": -3,
+              "verticalRecoil": -3,
+              "timeToAim": 8
+            }
+          },
+          {
+            "name": "Bramit Suppressor",
+            "description": "Highly effective 'Three-Line' Soviet suppressor.",
+            "statChanges": {
+              "muzzleVelocity": -130,
+              "damage": -16,
+              "aimStability": 2,
+              "audibleRange": -57
+            },
+            "unlockRequirement": "Complete all of the propaganda Combat missions (base campaign only)"
+          },
+          {
+            "name": "HAL-CON 43",
+            "description": "Derived and adapted from the 1943 Argentinian SMG, it dramatically reduces recoil.",
+            "statChanges": {
+              "verticalRecoil": -4,
+              "timeToAim": 16,
+              "equipTime": 150
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 7: Lock, Stock and Barrels"
+          },
+          {
+            "name": "MK II Suppressor",
+            "description": "Bespoke SOE suppressor designed for the Mk II Sten to service special operations.",
+            "statChanges": {
+              "muzzleVelocity": -90,
+              "aimStability": 4,
+              "timeToAim": 8,
+              "equipTime": 67,
+              "audibleRange": -47
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 7: Lock, Stock and Barrels"
+          },
+          {
+            "name": "MK II-S Suppressor",
+            "description": "A special version of the original Sten Mk II suppressor designed and produced by SOE.",
+            "statChanges": {
+              "muzzleVelocity": -150,
+              "damage": -11,
+              "aimStability": 4,
+              "timeToAim": 18,
+              "equipTime": 106,
+              "audibleRange": -57
+            },
+            "unlockRequirement": "Complete all of the propaganda Combat missions (base campaign only)"
+          },
+          {
+            "name": "USGI Brake",
+            "description": "Designed to improve handling, the American USGI Muzzle Brake can be fitted to a variety of weapons.",
+            "statChanges": {
+              "horizontalRecoil": -4,
+              "recoilRecovery": -80,
+              "timeToAim": 3,
+              "audibleRange": 10
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 7: Lock, Stock and Barrels"
+          },
+          {
+            "name": "USGI Hider",
+            "description": "The enlarged cone reduces muzzle flash and boosts muzzle velocity slightly thanks to its conical design.",
+            "statChanges": {
+              "muzzleVelocity": 30,
+              "spreadAccuracy": -8,
+              "timeToAim": 8,
+              "equipTime": 67,
+              "aimedMovementSpeed": -10,
+              "audibleRange": 0
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 7: Lock, Stock and Barrels"
+          }
+        ],
+        "statChangesNote": "statChanges are exact deltas from the Toggle Stats view, in the same units as detailedStatsUnits (audibleRange in m). Applied to the ZK-420S base stats.",
+        "slots": [
+          "Special Ammo 1",
+          "Special Ammo 2",
+          "Sight",
+          "Barrel",
+          "Muzzle",
+          "Magazine",
+          "Stock",
+          "Foregrip",
+          "Receiver",
+          "Construction"
+        ],
+        "receivers": [
+          {
+            "name": "Standard",
+            "description": "Standard Issue Receiver.",
+            "statChanges": {}
+          },
+          {
+            "name": "Long Travel Trigger",
+            "description": "The long-travel trigger improves spread accuracy.",
+            "statChanges": {
+              "roundsPerMinute": -38,
+              "spreadAccuracy": -10
+            }
+          },
+          {
+            "name": "Match Bolt",
+            "description": "Precisely handcrafted for ultimate precision and marksmanship.",
+            "statChanges": {
+              "muzzleVelocity": 90,
+              "roundsPerMinute": -57,
+              "reloadTime": 0.22
+            }
+          },
+          {
+            "name": "Short Travel Trigger",
+            "description": "The short-travel trigger helps speed up the weapon's rate of fire.",
+            "statChanges": {
+              "roundsPerMinute": 38,
+              "spreadAccuracy": 13
+            }
+          },
+          {
+            "name": "Heavy Bolt",
+            "description": "A heavy bolt and carrier slows down the recoil impulse and improves control.",
+            "statChanges": {
+              "roundsPerMinute": -34,
+              "reloadTime": 0.15,
+              "horizontalRecoil": -4,
+              "verticalRecoil": -2
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 6: Assault on Fort Rouge"
+          },
+          {
+            "name": "Lightened Assembly",
+            "description": "Lightened components help to increase the rate of fire.",
+            "statChanges": {
+              "muzzleVelocity": -40,
+              "damage": -14,
+              "roundsPerMinute": 76,
+              "reloadTime": -0.18
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 4: Collision Course"
+          }
+        ],
+        "foregrips": [
+          {
+            "name": "None",
+            "description": "No Foregrip attached.",
+            "statChanges": {}
+          },
+          {
+            "name": "Reinforced Band",
+            "description": "The heavy band reinforces the barrel, permitting higher internal pressure, increasing power.",
+            "statChanges": {
+              "muzzleVelocity": 60,
+              "roundsPerMinute": -26,
+              "reloadTime": 0.13
+            }
+          }
+        ],
+        "stocks": [
+          {
+            "name": "None",
+            "description": "No Stock modification attached.",
+            "statChanges": {}
+          },
+          {
+            "name": "Heavy Buttplate",
+            "description": "The heavy steel buttplate adds weight to the back of the weapon changing its handling characteristics.",
+            "statChanges": {
+              "aimStability": 2,
+              "horizontalRecoil": -3,
+              "verticalRecoil": -2,
+              "timeToAim": 8,
+              "equipTime": 67
+            }
+          },
+          {
+            "name": "Leather Pad",
+            "description": "Although increasing the reload time, the cheek pad provides greater aim stability.",
+            "statChanges": {
+              "reloadTime": 0.35,
+              "aimStability": -8
+            }
+          },
+          {
+            "name": "Magazine Pouch",
+            "description": "Reduces the time taken to reload thanks to the ergonomic location of the magazines.",
+            "statChanges": {
+              "reloadTime": -0.39,
+              "aimStability": 5
+            }
+          },
+          {
+            "name": "Rubber Buttplate",
+            "description": "The rubber buttplate on the rear of the stock helps improve weapon control.",
+            "statChanges": {
+              "horizontalRecoil": -2,
+              "verticalRecoil": -2,
+              "spreadAccuracy": 13
+            }
+          },
+          {
+            "name": "Wooden Pad",
+            "note": "Locked on capture; details not yet recorded."
+          }
+        ],
+        "magazines": [
+          {
+            "name": "Standard Issue",
+            "description": "Standard default magazine issued with the weapon.",
+            "statChanges": {}
+          },
+          {
+            "name": "GEW98 Overpressure Magazine",
+            "description": "Loaded with overpressure rounds, power and damage are increased but weapon control is reduced due to added recoil.",
+            "statChanges": {
+              "muzzleVelocity": 30,
+              "damage": 10,
+              "aimStability": 4,
+              "horizontalRecoil": 5,
+              "verticalRecoil": 4,
+              "timeToAim": 14,
+              "magazineSize": -5
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 6: Assault on Fort Rouge"
+          }
+        ]
+      },
+      "Lee No.4": {
+        "note": "Captured on the Lee No.4. All statChanges are relative to the default part in each slot (Iron Sights, Standard barrel/receiver/construction, no muzzle/stock/foregrip, Standard Issue magazine), recomputed from screens where other parts were equipped. audibleRange is in metres.",
+        "sights": [
+          {
+            "name": "Iron Sights",
+            "zoom": "1x",
+            "description": "Standard-issue iron sight setup suited to close-range combat.",
+            "statChanges": {}
+          },
+          {
+            "name": "A5 Win & Co",
+            "zoom": "8x",
+            "description": "US issue sniper scope, commonly found on the 1903 rifle.",
+            "statChanges": {
+              "aimStability": 4,
+              "timeToAim": 117,
+              "equipTime": 117,
+              "aimedMovementSpeed": -24
+            },
+            "image": "/public/games/snresistance/images/lee-sight-a5-win-co.jpg"
+          },
+          {
+            "name": "No.32 Mk2",
+            "zoom": "8x",
+            "description": "With revised and slightly improved optics, the Mk2 No.32 was issued to British snipers to replace the Mk1.",
+            "statChanges": {
+              "aimStability": 5,
+              "timeToAim": 153,
+              "equipTime": 117,
+              "aimedMovementSpeed": -24
+            },
+            "image": "/public/games/snresistance/images/lee-sight-no32-mk2.jpg"
+          },
+          {
+            "name": "PPCo",
+            "zoom": "4x",
+            "description": "Used by British and Commonwealth snipers in WW1, the PPCo is robust and offers low magnification.",
+            "statChanges": {
+              "aimStability": 2,
+              "timeToAim": 136,
+              "equipTime": 117,
+              "aimedMovementSpeed": -24
+            },
+            "image": "/public/games/snresistance/images/lee-sight-ppco.jpg"
+          },
+          {
+            "name": "B4 Win & Co",
+            "zoom": "7x",
+            "description": "Based upon the Win & Co A5, the B4 has slightly reduced zoom but is lighter and faster to aim.",
+            "statChanges": {
+              "aimStability": 5,
+              "timeToAim": 70,
+              "equipTime": 117,
+              "aimedMovementSpeed": -24
+            },
+            "image": "/public/games/snresistance/images/lee-sight-b4-win-co.jpg",
+            "unlockRequirement": "Find the Rifle Workbench in Mission 8: End of the Line"
+          },
+          {
+            "name": "M81",
+            "zoom": "10x",
+            "description": "Issued with the M1C sniper rifle, this versatile scope was later refined to produce the M84.",
+            "statChanges": {
+              "aimStability": 3,
+              "timeToAim": 124,
+              "equipTime": 117,
+              "aimedMovementSpeed": -24
+            },
+            "image": "/public/games/snresistance/images/lee-sight-m81.jpg",
+            "unlockRequirement": "Complete all of the propaganda Combat missions (base campaign only)"
+          },
+          {
+            "name": "M84",
+            "zoom": "12x",
+            "description": "Modern for its time with a good range of zoom levels, the M84 is often found on specialized American rifles.",
+            "statChanges": {
+              "aimStability": 6,
+              "timeToAim": 153,
+              "equipTime": 117,
+              "aimedMovementSpeed": -24
+            },
+            "image": "/public/games/snresistance/images/lee-sight-m84.jpg",
+            "unlockRequirement": "Find the Rifle Workbench in Mission 6: Assault on Fort Rouge"
+          },
+          {
+            "name": "No.32 Mk1",
+            "zoom": "8x",
+            "description": "The No.32 was issued to British snipers as part of the first notable effort to respect and embrace the sniper's role on the battlefield.",
+            "statChanges": {
+              "aimStability": 5,
+              "timeToAim": 128,
+              "equipTime": 117,
+              "aimedMovementSpeed": -24
+            },
+            "image": "/public/games/snresistance/images/lee-sight-no32-mk1.jpg",
+            "unlockRequirement": "Complete all of the propaganda Combat missions (base campaign only)"
+          }
+        ],
+        "barrels": [
+          {
+            "name": "Standard",
+            "description": "Standard Issue Barrel.",
+            "statChanges": {}
+          },
+          {
+            "name": "Extended Marksmen",
+            "description": "Increases damage and reduces bullet drop and windage, thanks to improved muzzle velocity.",
+            "statChanges": {
+              "muzzleVelocity": 100,
+              "damage": 10,
+              "roundsPerMinute": -8,
+              "aimStability": 5,
+              "horizontalRecoil": 4,
+              "timeToAim": 31,
+              "sprintMovementSpeed": -8,
+              "aimedMovementSpeed": -26
+            }
+          },
+          {
+            "name": "Heavy Parkerized",
+            "description": "Heavy barrel reduces recoil but also reduces mobility.",
+            "statChanges": {
+              "roundsPerMinute": -8,
+              "reloadTime": 0.73,
+              "horizontalRecoil": -3,
+              "verticalRecoil": -3,
+              "timeToAim": 31,
+              "equipTime": 103
+            }
+          },
+          {
+            "name": "Lightened and Blued",
+            "description": "The lightened barrel helps to increase the rate of fire thanks to its reduced weight.",
+            "statChanges": {
+              "roundsPerMinute": 4,
+              "reloadTime": -0.59,
+              "verticalRecoil": 3,
+              "timeToAim": -36,
+              "equipTime": -53
+            }
+          },
+          {
+            "name": "Short Carbine",
+            "description": "Increases aim and movement speed at a cost to muzzle velocity.",
+            "statChanges": {
+              "muzzleVelocity": -120,
+              "aimStability": -3,
+              "timeToAim": -30,
+              "equipTime": -97,
+              "sprintMovementSpeed": 12,
+              "aimedMovementSpeed": 26
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 3: Sonderzüge Sabotage"
+          }
+        ],
+        "muzzles": [
+          {
+            "name": "None",
+            "description": "No Muzzle Device attached.",
+            "statChanges": {}
+          },
+          {
+            "name": "HAL-CON 43",
+            "description": "Derived and adapted from the 1943 Argentinian SMG, it dramatically reduces recoil.",
+            "statChanges": {
+              "verticalRecoil": -4,
+              "timeToAim": 21,
+              "equipTime": 146
+            }
+          },
+          {
+            "name": "Maxin 1910 Suppressor",
+            "description": "An effective and common US suppressor.",
+            "statChanges": {
+              "muzzleVelocity": -35,
+              "aimStability": 2,
+              "audibleRange": -37
+            }
+          },
+          {
+            "name": "MK II Suppressor",
+            "description": "Bespoke SOE suppressor designed for the Mk II Sten to service special operations.",
+            "statChanges": {
+              "muzzleVelocity": -90,
+              "aimStability": 5,
+              "timeToAim": 11,
+              "equipTime": 65,
+              "audibleRange": -48
+            }
+          },
+          {
+            "name": "MK1 Boys Brake",
+            "description": "Inspired by the Mk1 Boys anti-tank muzzle brake.",
+            "statChanges": {
+              "roundsPerMinute": 2,
+              "horizontalRecoil": -4,
+              "verticalRecoil": -3,
+              "recoilRecovery": -113,
+              "timeToAim": 11,
+              "audibleRange": 21
+            }
+          },
+          {
+            "name": "USGI Brake",
+            "description": "Designed to improve handling, the American USGI Muzzle Brake can be fitted to a variety of weapons.",
+            "statChanges": {
+              "horizontalRecoil": -5,
+              "recoilRecovery": -90,
+              "timeToAim": 4,
+              "audibleRange": 10
+            }
+          },
+          {
+            "name": "USGI Hider",
+            "description": "The enlarged cone reduces muzzle flash and boosts muzzle velocity slightly thanks to its conical design.",
+            "statChanges": {
+              "muzzleVelocity": 30,
+              "spreadAccuracy": -9,
+              "timeToAim": 11,
+              "equipTime": 65,
+              "aimedMovementSpeed": -10
+            }
+          },
+          {
+            "name": "MK II-S Suppressor",
+            "description": "A special version of the original Sten Mk II suppressor designed and produced by SOE.",
+            "statChanges": {
+              "muzzleVelocity": -150,
+              "damage": -11,
+              "aimStability": 5,
+              "timeToAim": 23,
+              "equipTime": 103,
+              "audibleRange": -58
+            },
+            "unlockRequirement": "Complete all of the propaganda Combat missions (base campaign only)"
+          },
+          {
+            "name": "MK2 Boys Brake",
+            "description": "A revision to the highly effective Mk1 Boys anti-tank muzzle brake.",
+            "statChanges": {
+              "muzzleVelocity": 38,
+              "horizontalRecoil": -6,
+              "recoilRecovery": -90,
+              "audibleRange": 15
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 8: End of the Line"
+          }
+        ],
+        "magazines": [
+          {
+            "name": "Standard Issue",
+            "description": "Standard default magazine issued with the weapon.",
+            "statChanges": {}
+          },
+          {
+            "name": "20Rd Magazine",
+            "description": "A large extended magazine that offers much greater capacity at the cost of reduced mobility.",
+            "statChanges": {
+              "aimStability": 7,
+              "timeToAim": 18,
+              "equipTime": 146,
+              "sprintMovementSpeed": -2,
+              "aimedMovementSpeed": -10,
+              "magazineSize": 10
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 6: Assault on Fort Rouge"
+          },
+          {
+            "name": "5Rd Lightweight Magazine",
+            "description": "A small lightweight magazine, offering the shooter better mobility and reload speeds.",
+            "statChanges": {
+              "roundsPerMinute": 2,
+              "reloadTime": -0.73,
+              "aimStability": -2,
+              "timeToAim": -19,
+              "magazineSize": -5
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 6: Assault on Fort Rouge"
+          },
+          {
+            "name": "Small Overpressure Magazine",
+            "description": "Smaller capacity overpressure magazine that boosts power but also recoil, making the weapon harder to control.",
+            "statChanges": {
+              "muzzleVelocity": 30,
+              "damage": 10,
+              "horizontalRecoil": 5,
+              "verticalRecoil": 4,
+              "recoilRecovery": 45,
+              "audibleRange": 6,
+              "magazineSize": -5
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 6: Assault on Fort Rouge"
+          }
+        ],
+        "stocks": [
+          {
+            "name": "None",
+            "description": "No Stock modification attached.",
+            "statChanges": {}
+          },
+          {
+            "name": "Leather Pad",
+            "description": "Although increasing the reload time, the cheek pad provides greater aim stability.",
+            "statChanges": {
+              "reloadTime": 1.15,
+              "aimStability": -5
+            }
+          },
+          {
+            "name": "Rubber Buttplate",
+            "description": "The rubber buttplate on the rear of the stock helps improve weapon control.",
+            "statChanges": {
+              "horizontalRecoil": -4,
+              "verticalRecoil": -3,
+              "spreadAccuracy": 11
+            }
+          },
+          {
+            "name": "Bullet Loops",
+            "description": "Reduces rechamber and reload times.",
+            "statChanges": {
+              "roundsPerMinute": 9,
+              "reloadTime": -0.59,
+              "aimStability": 7
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 3: Sonderzüge Sabotage"
+          },
+          {
+            "name": "Heavy Buttplate",
+            "description": "The heavy steel buttplate adds weight to the back of the weapon changing its handling characteristics.",
+            "statChanges": {
+              "aimStability": 3,
+              "horizontalRecoil": -5,
+              "verticalRecoil": -2,
+              "timeToAim": 11,
+              "equipTime": 65
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 8: End of the Line"
+          },
+          {
+            "name": "Wooden Pad",
+            "description": "Provides the shooter with greater stability at the cost of added recoil.",
+            "statChanges": {
+              "aimStability": -4,
+              "horizontalRecoil": 6,
+              "recoilRecovery": 68
+            },
+            "unlockRequirement": "Complete all of the propaganda Combat missions (base campaign only)"
+          }
+        ],
+        "foregrips": [
+          {
+            "name": "None",
+            "description": "No Foregrip attached.",
+            "statChanges": {}
+          },
+          {
+            "name": "Thick Grip Tape",
+            "description": "Provides lots of additional grip, significantly altering the handling and control of the weapon.",
+            "statChanges": {
+              "aimStability": 3,
+              "spreadAccuracy": -17
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 6: Assault on Fort Rouge"
+          },
+          {
+            "name": "Thin Grip Tape",
+            "description": "Provides additional grip, altering the handling and control of the weapon.",
+            "statChanges": {
+              "aimStability": 2,
+              "spreadAccuracy": -11
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 3: Sonderzüge Sabotage"
+          }
+        ],
+        "receivers": [
+          {
+            "name": "Standard",
+            "description": "Standard Issue Receiver.",
+            "statChanges": {}
+          },
+          {
+            "name": "Lightened Assembly",
+            "description": "Lightened components help to increase the rate of fire.",
+            "statChanges": {
+              "muzzleVelocity": -40,
+              "damage": -14,
+              "roundsPerMinute": 7,
+              "reloadTime": -0.59
+            }
+          },
+          {
+            "name": "Short Travel Trigger",
+            "description": "The short-travel trigger helps speed up the weapon's rate of fire.",
+            "statChanges": {
+              "roundsPerMinute": 3,
+              "spreadAccuracy": 11
+            }
+          },
+          {
+            "name": "Heavy Bolt",
+            "description": "A heavy bolt and carrier slows down the recoil impulse and improves control.",
+            "statChanges": {
+              "roundsPerMinute": -4,
+              "reloadTime": 0.49,
+              "horizontalRecoil": -5,
+              "verticalRecoil": -2
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 6: Assault on Fort Rouge"
+          },
+          {
+            "name": "Long Travel Trigger",
+            "description": "The long-travel trigger improves spread accuracy.",
+            "statChanges": {
+              "roundsPerMinute": -4,
+              "spreadAccuracy": -9
+            },
+            "unlockRequirement": "Find the Rifle Workbench in Mission 3: Sonderzüge Sabotage"
+          }
+        ],
+        "constructions": [
+          {
+            "name": "Standard",
+            "description": "Standard Issue Construction.",
+            "statChanges": {}
+          },
+          {
+            "name": "Laminated Beech",
+            "description": "The grippy laminated surface changes the weapon handling characteristics.",
+            "statChanges": {
+              "aimStability": -3,
+              "timeToAim": 37,
+              "sprintMovementSpeed": -5
+            }
+          },
+          {
+            "name": "Light Elm",
+            "description": "This lightweight elm construction reduces the weight of the weapon.",
+            "statChanges": {
+              "verticalRecoil": 2,
+              "sprintMovementSpeed": 5
+            }
+          }
+        ],
+        "cosmetics": [
+          {
+            "name": "None",
+            "description": "No Wrap Attached.",
+            "statChanges": {}
+          },
+          {
+            "name": "Cloth Wrap",
+            "description": "Cloth wraps helped to conceal the shooter, and varied in the color and style to suit the environment.",
+            "statChanges": {},
+            "unlockRequirement": "Kill an Axis Invader 14 times in Axis Invasion mode"
+          }
+        ]
+      }
+    },
+    "detailedStatsUnits": {
+      "effectiveRange": "m",
+      "muzzleVelocity": "m/s",
+      "damage": "HP",
+      "roundsPerMinute": "rpm",
+      "reloadTime": "s",
+      "aimStability": "cm",
+      "horizontalRecoil": "cm",
+      "verticalRecoil": "cm",
+      "spreadAccuracy": "cm",
+      "recoilRecovery": "ms",
+      "timeToAim": "ms",
+      "equipTime": "ms",
+      "sprintMovementSpeed": "%",
+      "aimedMovementSpeed": "%"
+    },
+    "detailedStatsNote": "From the in-game Toggle Stats view. Lower is better for aim stability, recoil, spread, recoil recovery, reload, time to aim and equip time. Lebel values are from a customized rifle."
+  },
+  "weapon_roster": {
+    "note": "Full weapon list from outside guides (not from in-game screenshots). Rifles with full data are under weapons.rifles.",
+    "sources": [
+      "https://hardcoregamer.com/sniper-elite-resistance-unlock-all-weapons/"
+    ],
+    "rifles": [
+      "Berthier 1916",
+      "Lebel Model 1886",
+      "MAS 44",
+      "ZK-420S",
+      "Lee No.4",
+      "M1 Garand",
+      "Mosin-Nagant M91/30",
+      "Karabiner 98 (K98)"
+    ],
+    "secondaries": [
+      "MAS 38",
+      "UD-42",
+      "Model 1907",
+      "Stengun MK2",
+      "Trench Gun",
+      "ERMA .36",
+      "M1918 BAR",
+      "SIG MKMS"
+    ],
+    "pistols": [
+      "Modèle 1935A",
+      "Welrod",
+      "Nagant M1895",
+      "Star Ruby",
+      "Hi-Power 9MM",
+      "M1912",
+      "M1911"
+    ],
+    "rifleNotes": {
+      "Karabiner 98 (K98)": "Not shown in the in-game rifle list on capture; may be DLC or added via Get More Guns."
+    }
+  },
+  "tactical_items": {
+    "healing": [
+      "Med Kit",
+      "Bandage"
+    ],
+    "explosivesAndMines": [
+      "Grenade",
+      "Teller Mine",
+      "Schu-Mine",
+      "TNT",
+      "Satchel Charge"
+    ],
+    "utility": [
+      "Decoy"
+    ],
+    "notes": {
+      "Satchel Charge": "Unlocked through the campaign."
+    }
+  },
+  "recommended_loadouts": [
+    {
+      "name": "Stealth / Long-Range Campaign",
+      "rifle": "Lee No.4 (suppressed)",
+      "secondary": "SIG MKMS",
+      "pistol": "Welrod",
+      "items": [
+        "Decoy",
+        "Teller Mine"
+      ],
+      "source": "https://www.thegamer.com/sniper-elite-resistance-best-campaign-loadout-guide/"
+    },
+    {
+      "name": "Authentic Difficulty",
+      "rifle": "Lee No.4",
+      "secondary": "Trench Gun",
+      "pistol": "Modèle 1935A",
+      "items": [
+        "Med Kit",
+        "Bandage",
+        "Mines"
+      ],
+      "source": "https://www.thegamer.com/sniper-elite-resistance-best-authentic-loadout-weapons/"
+    }
+  ],
+  "tutorials": {
+    "total": 64,
+    "categories": [
+      {
+        "name": "Fundamentals",
+        "count": 8,
+        "image": "/public/games/snresistance/images/tutorials/fundamentals.jpg"
+      },
+      {
+        "name": "Combat",
+        "count": 11,
+        "image": "/public/games/snresistance/images/tutorials/combat.jpg"
+      },
+      {
+        "name": "Progression",
+        "count": 7,
+        "image": "/public/games/snresistance/images/tutorials/progression.jpg"
+      },
+      {
+        "name": "Items",
+        "count": 5,
+        "image": "/public/games/snresistance/images/tutorials/items.jpg"
+      },
+      {
+        "name": "Tactics",
+        "count": 9,
+        "image": "/public/games/snresistance/images/tutorials/tactics.jpg"
+      },
+      {
+        "name": "Adversaries",
+        "count": 11,
+        "image": "/public/games/snresistance/images/tutorials/adversaries.jpg"
+      },
+      {
+        "name": "Environment",
+        "count": 6,
+        "image": "/public/games/snresistance/images/tutorials/environment.jpg"
+      },
+      {
+        "name": "Multiplayer",
+        "count": 7,
+        "image": "/public/games/snresistance/images/tutorials/multiplayer.jpg"
+      }
+    ]
+  },
+  "ribbon_categories": {
+    "total": 103,
+    "categories": [
+      {
+        "name": "Campaign / Survival",
+        "total": 47,
+        "image": "/public/games/snresistance/images/ribbons/campaign-survival.jpg"
+      },
+      {
+        "name": "Multiplayer",
+        "total": 56,
+        "image": "/public/games/snresistance/images/ribbons/multiplayer.jpg"
+      }
+    ]
+  },
+  "medal_categories": {
+    "total": 133,
+    "note": "Up to 3 unlocked medals can be equipped on the player card.",
+    "categories": [
+      {
+        "name": "General",
+        "total": 20,
+        "image": "/public/games/snresistance/images/medals/general.jpg"
+      },
+      {
+        "name": "Missions",
+        "total": 47,
+        "image": "/public/games/snresistance/images/medals/missions.jpg"
+      },
+      {
+        "name": "Weapons and Items",
+        "total": 35,
+        "image": "/public/games/snresistance/images/medals/weapons-and-items.jpg"
+      },
+      {
+        "name": "Survival",
+        "total": 9,
+        "image": "/public/games/snresistance/images/medals/survival.jpg"
+      },
+      {
+        "name": "Multiplayer",
+        "total": 22,
+        "image": "/public/games/snresistance/images/medals/multiplayer.jpg"
+      }
+    ]
+  }
 }
