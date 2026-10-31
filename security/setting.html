@@ -87,6 +87,9 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
   <div class="box sec"><strong>Owner-only.</strong> These values are never shown to friends. They hide automatically 60 seconds after you reveal them.</div>
   <label for="psn_account_id">PSN Account ID #</label><div class="row" data-secret="psn_account_id"></div>
   <label for="psn_npsso">PSN NPSSO cookie</label><div class="row" data-secret="psn_npsso"></div>
+  <div class="box"><strong>To get your PSN Account ID</strong>
+    <p>Open <a href="https://psn.flipscreen.games" target="_blank" rel="noopener">psn.flipscreen.games</a>, type your PlayStation username and copy the long number it shows (the Account ID, usually 19 digits). Paste it in the Account ID box above.</p>
+    <p id="accState" class="hint"></p></div>
   <div class="box"><strong>How to get your NPSSO</strong>
     <p>1. Sign in to PlayStation in this browser. 2. Open <a href="https://ca.account.sony.com/api/v1/ssocookie" target="_blank" rel="noopener">ca.account.sony.com/api/v1/ssocookie</a>. 3. Paste everything it shows, or only the 64-character value. We keep just the token.</p>
     <p id="npssoState" class="hint"></p></div>
@@ -187,6 +190,15 @@ $('psn_npsso').addEventListener('input',e=>{
   else{st.textContent='No 64-character token found yet.';st.style.color='var(--text-muted)'}
 });
 
+// Account ID: keep only the digits (accepts a pasted line like "Account ID: 2732...")
+$('psn_account_id').addEventListener('input',e=>{
+  const v=e.target.value.trim(),st=$('accState');
+  if(!v){st.textContent='';return}
+  const m=v.match(/\d{10,20}/);
+  if(m){if(m[0]!==v)e.target.value=m[0];st.textContent='Account ID detected ('+m[0].length+' digits).';st.style.color='var(--accent-green)'}
+  else{st.textContent='The Account ID is a long number only (no letters).';st.style.color='var(--text-muted)'}
+});
+
 // ---- Colors ----
 const okHex=h=>/^#[0-9a-f]{6}$/i.test(h);
 const toRgb=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16));
@@ -268,6 +280,8 @@ $('save').onclick=async()=>{
     HANDLES.forEach(([f,,s])=>{pub[f]=$(f).value.trim();pub[s]=$(s).value});
     const npsso=$('psn_npsso').value.trim();
     if(npsso&&!/^[A-Za-z0-9]{64}$/.test(npsso))return say('NPSSO must be exactly 64 letters and numbers.',1);
+    const acc=$('psn_account_id').value.trim();
+    if(acc&&!/^\d{10,20}$/.test(acc))return say('PSN Account ID must be numbers only. Get it from psn.flipscreen.games.',1);
     if(npsso&&npsso!==S.psn_npsso)pub.psn_npsso_valid=true;
     pub.psn_account_id=$('psn_account_id').value.trim();
     await db.ref('users/'+K).update(pub);
