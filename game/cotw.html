@@ -737,6 +737,8 @@
             letter-spacing: 0.05em;
         }
     </style>
+    <link rel="stylesheet" href="../assets/ww-shell.css">
+    <script defer src="../assets/ww-shell.js"></script>
 </head>
 <body data-active-user="Werewolf">
     <!-- Google Tag Manager (noscript) -->
@@ -748,7 +750,7 @@
 
     <div class="container tracker-container">
         <!-- Section 1: Dynamic Top Navigation Bar -->
-        <header class="nav-wrapper-centered" role="banner">
+        <header data-ww-legacy-nav class="nav-wrapper-centered" role="banner">
             <button type="button" id="mobile-sandwich-btn" class="sandwich-btn" onclick="appState.toggleNavFolder('dynamic-nav-links', event)" aria-label="Toggle Navigation Menu">
                 <span class="sandwich-icon">☰</span>
                 <span class="sandwich-label">Menu</span>

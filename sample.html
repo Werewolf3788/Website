@@ -165,15 +165,18 @@ a.chip:hover{border-color:var(--accent)}
 #modal .box{background:var(--card);border:1px solid var(--line);border-radius:18px;max-width:560px;width:100%;max-height:88vh;overflow:auto;padding:22px;position:relative}
 img.lb-able{cursor:zoom-in}
 </style>
+    <link rel="stylesheet" href="assets/ww-shell.css">
+    <script defer src="assets/ww-shell.js"></script>
 </head>
 <body>
 
 <header class="topnav">
   <div class="wrap">
     <a class="brand" href="./index.html"><img id="brand-img" alt="" class="hidden"><span id="brand-name">Werewolf Project</span></a>
-    <nav id="nav" aria-label="Main menu"></nav>
-    <div class="nav-user" id="nav-user"></div>
-    <button class="burger" id="burger" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+    <nav data-ww-legacy-nav id="nav" aria-label="Main menu"></nav>
+    <div data-ww-nav-slot style="flex:1 1 auto;min-width:0;display:flex;justify-content:flex-end;align-items:center"></div>
+<div class="nav-user" id="nav-user"></div>
+    <button data-ww-legacy-nav class="burger" id="burger" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
   </div>
 </header>
 
