@@ -36,7 +36,9 @@
             "image_url": "/public/games/snresistance/images/icons/workbench.png",
             "description": "This workbench contained the Pistol Close Quarters kit.",
             "unlocks": "Pistol Close Quarters kit",
-            "emoji": "⚙️"
+            "emoji": "⚙️",
+            "video_time": 0,
+            "video_url": "https://www.youtube.com/watch?v=dhWUawXXkeo&t=0s"
           }
         ]
       },
@@ -77,7 +79,12 @@
         "video_id": "dhWUawXXkeo",
         "url": "https://www.youtube.com/watch?v=dhWUawXXkeo",
         "title": "Sniper Elite: Resistance - Mission 1 - All Collectibles & Trophies 🏆 Behind Enemy Lines",
-        "chapters": []
+        "chapters": [
+          {
+            "time": 0,
+            "label": "Workbench 1/1 – Pistol"
+          }
+        ]
       }
     },
     "mission_2": {
