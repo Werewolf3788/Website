@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history so each file's last-changed date is available
 
       - name: Validate and Push JSONs to RTDB
         shell: python
@@ -28,6 +30,24 @@ jobs:
           import json
           import urllib.request
           import urllib.error
+          import subprocess
+          from datetime import datetime, timezone
+
+          sync_time = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+          commit_sha = os.environ.get("GITHUB_SHA", "")[:7]
+
+          def file_last_changed(path):
+              # When this file was last changed in git (ISO 8601, UTC)
+              try:
+                  out = subprocess.run(
+                      ["git", "log", "-1", "--format=%cI", "--", path],
+                      capture_output=True, text=True, check=True
+                  ).stdout.strip()
+                  if out:
+                      return datetime.fromisoformat(out).astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+              except Exception:
+                  pass
+              return sync_time
 
           target_dir = "public/games"
           if not os.path.exists(target_dir):
@@ -60,6 +80,14 @@ jobs:
                   failed_files.append((filename, f"Syntax Error: {err}"))
                   continue
 
+              updated_at = file_last_changed(filepath)
+              if isinstance(raw_data, dict):
+                  raw_data["_meta"] = {
+                      "updated_at": updated_at,
+                      "synced_at": sync_time,
+                      "commit": commit_sha
+                  }
+
               try:
                   clean_payload = json.dumps(raw_data).encode('utf-8')
               except Exception as dump_err:
@@ -80,13 +108,15 @@ jobs:
               try:
                   with urllib.request.urlopen(req) as resp:
                       if resp.status == 200:
-                          print(f"✅ Successfully synced: /games/{game_key}")
+                          print(f"✅ Successfully synced: /games/{game_key} (file last changed {updated_at})")
                           success_count += 1
                           game_title = raw_data.get("game") or raw_data.get("title") or game_key.upper()
                           catalog_index[game_key] = {
                               "key": game_key,
                               "title": game_title,
-                              "file": filename
+                              "file": filename,
+                              "updated_at": updated_at,
+                              "synced_at": sync_time
                           }
                       else:
                           print(f"⚠️ Unexpected status {resp.status} for {filename}")
