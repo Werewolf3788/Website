@@ -211,7 +211,7 @@ import { getFirestore, doc, getDoc, collection, getDocs, query, where, limit } f
 
 /* ============================================================================
  * 1. Firebase apps
- *    E = entertainment-71888  (Auth, users, friend_codes, utm_links)
+ *    E = entertainment-71888  (Auth, users, friend_codes, utm_links)  [default app = same login as the other pages]
  *    P = playstation-stats    (PSN RTDB + Firestore)
  * ============================================================================ */
 const appE = initializeApp({
@@ -219,7 +219,7 @@ const appE = initializeApp({
   databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com", projectId: "entertainment-71888",
   storageBucket: "entertainment-71888.firebasestorage.app", messagingSenderId: "660524340277",
   appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c"
-}, "entertainment");
+});   // default app on purpose: the saved sign-in is stored per app name, so this shares the login with settings.html / index.html
 const appP = initializeApp({
   apiKey: "AIzaSyBT3RHrZQCcBdcoPpM9hMjuzSB0KBtu5UI", authDomain: "playstation-stats.firebaseapp.com",
   databaseURL: "https://playstation-stats-default-rtdb.firebaseio.com", projectId: "playstation-stats",
