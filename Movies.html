@@ -3,7 +3,12 @@
      FILE: Movies.html
      PROJECT: Werewolf Cinema Library
      TIMESTAMP (24-hr NY Time): 2026-10-31 20:30:00 EDT
-     VERSION: 5.0.0
+     VERSION: 5.1.0
+     CHANGELOG 5.1.0:
+       - Home rows show different titles (daily shuffle, no repeats across rows)
+       - Full library A-Z grid at the bottom of Home (loads as you scroll)
+       - Desktop: removed duplicate menu button; 'Make default store' on the store bar
+       - Language follows the device automatically (Google Translate)
      CHANGELOG 5.0.0:
        - Full redesign: streaming-app layout (featured banner, poster rows,
          browse grid with filters, detail view). App-style bottom tabs on phones.
@@ -78,7 +83,21 @@
   });
 </script>
 
-<!-- Language tools -->
+<!-- Language tools: follow the device language automatically (first visit only, so a manual choice sticks) -->
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem('ww_lang_auto_done')) return;
+      localStorage.setItem('ww_lang_auto_done', '1');
+      if (/(^|;\s*)googtrans=/.test(document.cookie)) return;
+      var l = ((navigator.languages && navigator.languages[0]) || navigator.language || 'en').toLowerCase();
+      var code = /^zh-(tw|hk|mo|hant)/.test(l) ? 'zh-TW' : /^zh/.test(l) ? 'zh-CN' : l.split('-')[0];
+      if (code === 'en') return;
+      document.cookie = 'googtrans=/en/' + code + '; path=/';
+      document.cookie = 'googtrans=/en/' + code + '; path=/; domain=' + location.hostname;
+    } catch (e) {}
+  })();
+</script>
 <script>
   function googleTranslateElementInit() {
     new google.translate.TranslateElement({ pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, autoDisplay: false }, 'google_translate_element');
@@ -323,6 +342,10 @@ main{padding-bottom:40px}
 .dr-title{font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--dim);margin:20px 4px 8px}
 .dr-btn{width:100%;display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font-weight:600;margin-bottom:8px;text-align:left}
 #google_translate_element{margin:4px}
+/* hide Google Translate's top banner so it doesn't push the app down */
+.goog-te-banner-frame,iframe.skiptranslate,.VIpgJd-ZVi9od-ORHb-OEVmcd{display:none !important}
+body{top:0 !important}
+.goog-tooltip,.goog-text-highlight{box-shadow:none !important;background:none !important}
 
 /* ---------- Footer ---------- */
 footer{border-top:1px solid #1b1b24;margin-top:60px;padding:34px var(--pad) calc(34px + var(--safe-b));color:var(--dim);font-size:13px;display:grid;gap:10px}
@@ -381,6 +404,9 @@ footer .fl{display:flex;flex-wrap:wrap;gap:18px}
   .mobile-search{display:flex !important}
 }
 @media (max-width:420px){ .grid{grid-template-columns:repeat(3,1fr);gap:16px 8px} }
+@media (min-width:901px){ .mobile-only{display:none !important} .storebar{flex-wrap:wrap;overflow:visible;scroll-snap-type:none} }
+.pin-link{display:inline-flex;align-items:center;height:38px;padding:0 6px;color:var(--muted);font-weight:600;font-size:13px;white-space:nowrap}
+.pin-link:hover{color:var(--text)}
 .mobile-search{display:none;margin:16px var(--pad) 0;width:auto !important;height:46px}
 @media (display-mode:standalone){ #install-btn,.install-only{display:none !important} }
 @media (prefers-reduced-motion:reduce){ *{animation:none !important;transition:none !important;scroll-behavior:auto !important} }
@@ -396,7 +422,7 @@ footer .fl{display:flex;flex-wrap:wrap;gap:18px}
 <header id="topbar">
   <a class="brand" href="?" data-nav="home" aria-label="Werewolf Cinema home">
     <img src="https://raw.githubusercontent.com/Werewolf3788/Website/main/Images/werewolf_movie_anywhere.jpg" alt="" width="36" height="36">
-    <b>WEREWOLF <span>CINEMA</span></b>
+    <b class="notranslate" translate="no">WEREWOLF <span>CINEMA</span></b>
   </a>
   <nav class="mainnav" aria-label="Cinema sections">
     <a href="?" data-nav="home">Home</a>
@@ -416,7 +442,7 @@ footer .fl{display:flex;flex-wrap:wrap;gap:18px}
     <button class="icon-btn" id="bell-btn" type="button" aria-label="New title alerts">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="pip"></span>
     </button>
-    <button class="icon-btn" id="menu-btn" type="button" aria-label="Open menu">
+    <button class="icon-btn mobile-only" id="menu-btn" type="button" aria-label="Open menu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
   </div>
@@ -434,7 +460,7 @@ footer .fl{display:flex;flex-wrap:wrap;gap:18px}
     <span id="sync"><i></i><span id="sync-text">Loading library…</span></span>
   </div>
   <p>As an Amazon Associate, Werewolf3788 earns from qualifying purchases. Amazon links on this site are affiliate links; links to other stores are not.</p>
-  <p>Poster art and metadata courtesy of TMDb, TheTVDB and OMDb. Werewolf Cinema v5.0.0</p>
+  <p>Poster art and metadata courtesy of TMDb, TheTVDB and OMDb. Werewolf Cinema v5.1.0</p>
 </footer>
 
 <!-- Phone tab bar -->
@@ -490,7 +516,7 @@ footer .fl{display:flex;flex-wrap:wrap;gap:18px}
   <div class="scrim" data-close></div>
   <div class="panel">
     <div class="dr-h">
-      <a class="brand" href="?" data-nav="home"><img src="https://raw.githubusercontent.com/Werewolf3788/Website/main/Images/werewolf_movie_anywhere.jpg" alt="" width="32" height="32"><b>WEREWOLF <span>CINEMA</span></b></a>
+      <a class="brand" href="?" data-nav="home"><img src="https://raw.githubusercontent.com/Werewolf3788/Website/main/Images/werewolf_movie_anywhere.jpg" alt="" width="32" height="32"><b class="notranslate" translate="no">WEREWOLF <span>CINEMA</span></b></a>
       <button class="icon-btn" data-close aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     </div>
     <div class="dr-title">App</div>
@@ -500,7 +526,7 @@ footer .fl{display:flex;flex-wrap:wrap;gap:18px}
     <div class="select" style="display:block"><select id="pin-select" style="width:100%" aria-label="Default store"></select></div>
     <div class="dr-title">Werewolf3788</div>
     <div id="drawer-menu"></div>
-    <div class="dr-title">Language</div>
+    <div class="dr-title">Language <span style="text-transform:none;letter-spacing:0;font-weight:600">· follows your device</span></div>
     <div id="google_translate_element"></div>
   </div>
 </div>
@@ -841,7 +867,7 @@ function card(m) {
     <div class="pw"><div class="noimg">${esc(m.title)}</div>${m.poster ? `<img src="${esc(m.poster)}" alt="" loading="lazy" decoding="async" onload="this.classList.add('ld')" onerror="this.remove()">` : ''}
       <div class="badges">${b.join('')}</div>
       <div class="ov">${esc([m.rating, m.genres[0]].filter(Boolean).join(' · '))}<div class="stores">${storeDots(m)}</div></div></div>
-    <div class="ct">${esc(m.title)}</div><div class="cs">${esc(sub)}</div></a>`;
+    <div class="ct notranslate" translate="no">${esc(m.title)}</div><div class="cs">${esc(sub)}</div></a>`;
 }
 function rowSection(title, list, moreHref, opts = {}) {
   if (!list.length) return '';
@@ -852,7 +878,9 @@ function rowSection(title, list, moreHref, opts = {}) {
 }
 function storeBar() {
   const all = `<button class="store-chip ${!state.store ? 'active' : ''}" data-store="">All stores <span class="n">${fmt(stats.links)}</span></button>`;
-  return `<div class="storebar" role="toolbar" aria-label="Filter by store">${all}${STORES.map(s => `<button class="store-chip ${state.store === s.key ? 'active' : ''}" data-store="${s.key}"><span class="sw" style="background:${s.color}"></span>${esc(s.label)} <span class="n">${fmt(stats.stores[s.key])}</span></button>`).join('')}</div>`;
+  const pinned = lsGet(LS.pin) || '';
+  const pin = state.store !== pinned ? `<button class="pin-link" type="button" data-pin="${state.store}">📌 Make ${state.store ? esc(STORE[state.store].label) : 'All stores'} my default</button>` : (pinned ? `<span class="pin-link" style="cursor:default">📌 Your default</span>` : '');
+  return `<div class="storebar" role="toolbar" aria-label="Filter by store">${all}${STORES.map(s => `<button class="store-chip ${state.store === s.key ? 'active' : ''}" data-store="${s.key}"><span class="sw" style="background:${s.color}"></span>${esc(s.label)} <span class="n">${fmt(stats.stores[s.key])}</span></button>`).join('')}${pin}</div>`;
 }
 function qs(over) {
   const p = new URLSearchParams(); const o = { ...state, t: '', ...over };
@@ -867,7 +895,7 @@ function heroHtml(m) {
   return `<div class="hero-bg" style="background-image:url('${esc(m.poster || CFG.fallbackImg)}')"></div>
   <div class="hero-inner"><div>
     <div class="hero-kicker">${m.isToday ? 'Added today' : 'Recently added'}${m.isTV ? ' · TV' : ''}</div>
-    <h1 class="hero-title">${esc(m.title)}</h1>
+    <h1 class="hero-title notranslate" translate="no">${esc(m.title)}</h1>
     <div class="hero-meta">${meta.join('<span class="dot"></span>')}</div>
     <p class="hero-desc">${esc(m.description)}</p>
     <div class="hero-cta"><a class="btn btn-primary" href="${titleUrl(m)}" data-key="${esc(m.key)}">${ICON.play}Where to watch</a>
@@ -881,28 +909,55 @@ function setHero(i) {
   heroIdx = (i + heroList.length) % heroList.length; el.innerHTML = heroHtml(heroList[heroIdx]);
 }
 
+// Daily shuffle: rows change every day but stay the same if you refresh
+function seededShuffle(list, seedText) {
+  let h = 2166136261; for (const c of seedText) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
+  const rnd = () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 100000) / 100000; };
+  const a = [...list];
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
 function viewHome() {
   const base = filtered({ view: 'home', q: '', genre: '', rating: '', collection: '', sort: 'added' });
   heroList = base.filter(m => m.poster).slice(0, 5);
+  const day = new Date().toDateString() + '|' + state.store;
+  const ROW = 36;
+  const used = new Set();
+  // Pick titles for a row, preferring ones not shown in earlier rows
+  const pick = (list, shuffle) => {
+    const src = shuffle ? seededShuffle(list, day + list.length) : list;
+    const fresh = src.filter(m => !used.has(m.key)), rest = src.filter(m => used.has(m.key));
+    const out = fresh.concat(rest).slice(0, ROW);
+    out.forEach(m => used.add(m.key));
+    return out;
+  };
   const today = base.filter(m => m.isToday);
   const movies = base.filter(m => !m.isTV), tv = base.filter(m => m.isTV);
   const genreCount = {}; base.forEach(m => m.genres.forEach(g => genreCount[g] = (genreCount[g] || 0) + 1));
-  const topGenres = Object.keys(genreCount).sort((a, b) => genreCount[b] - genreCount[a]).slice(0, 7);
+  const topGenres = Object.keys(genreCount).filter(g => genreCount[g] >= 4).sort((a, b) => genreCount[b] - genreCount[a]).slice(0, 14);
   const colls = {}; base.forEach(m => { if (m.collection) (colls[m.collection] = colls[m.collection] || []).push(m); });
-  const collKeys = Object.keys(colls).filter(k => colls[k].length > 1).sort((a, b) => colls[b].length - colls[a].length).slice(0, 24);
+  const collKeys = seededShuffle(Object.keys(colls).filter(k => colls[k].length > 1), day).slice(0, 30);
   const collHtml = collKeys.map(k => { const p = colls[k].find(x => x.poster); return `<a class="coll" href="${qs({ view: 'browse', collection: k })}">${p ? `<img src="${esc(p.poster)}" alt="" loading="lazy">` : ''}<div><b>${esc(k)}</b><small>${colls[k].length} titles</small></div></a>`; }).join('');
   const st = state.store ? STORE[state.store].label : '';
+  const R = (title, list, more, opts = {}) => list.length ? rowSection(title, list, more, opts) : '';
 
   let html = (heroList.length ? '<section id="hero" aria-label="Featured"></section>' : '') + '<div class="section">' + storeBar() + '</div>';
-  if (!base.length) html += emptyHtml();
-  html += rowSection('Added today', today, qs({ view: 'browse', sort: 'added' }), { count: today.length });
-  html += rowSection(st ? `Recently added on ${st}` : 'Recently added', base, qs({ view: 'browse', sort: 'added' }));
-  if (!state.store) html += rowSection('On Movies Anywhere', base.filter(m => m.isMA), qs({ view: 'browse', store: 'moviesanywhere' }), { count: stats.stores.moviesanywhere });
-  html += rowSection('Free with ads on YouTube', base.filter(m => m.ytFree), qs({ view: 'browse', store: 'youtube' }));
-  html += rowSection('Movies', movies, qs({ view: 'movies' }), { count: movies.length });
-  html += rowSection('TV Shows', tv, qs({ view: 'tv' }), { count: tv.length });
-  if (collHtml) html += rowSection('Collections', collKeys, null, { html: collHtml, count: collKeys.length });
-  topGenres.forEach(g => { html += rowSection(g, base.filter(m => m.genres.includes(g)), qs({ view: 'browse', genre: g }), { count: genreCount[g] }); });
+  if (!base.length) return html + emptyHtml();
+  html += R('Added today', pick(today), qs({ view: 'browse', sort: 'added' }), { count: today.length });
+  html += R(st ? `Recently added on ${st}` : 'Recently added', pick(base.filter(m => !m.isToday)), qs({ view: 'browse', sort: 'added' }));
+  html += R('Picks from the library', pick(base, true), qs({ view: 'browse', sort: 'az' }), { count: base.length });
+  if (!state.store) html += R('On Movies Anywhere', pick(base.filter(m => m.isMA), true), qs({ view: 'browse', store: 'moviesanywhere' }), { count: base.filter(m => m.isMA).length });
+  html += R('Free with ads on YouTube', pick(base.filter(m => m.ytFree), true), qs({ view: 'browse', store: 'youtube' }));
+  html += R('TV Shows', pick(tv, true), qs({ view: 'tv' }), { count: tv.length });
+  if (collHtml) html += rowSection('Collections', collKeys, null, { html: collHtml, count: Object.keys(colls).filter(k => colls[k].length > 1).length });
+  topGenres.forEach((g, i) => {
+    html += R(g, pick(base.filter(m => m.genres.includes(g)), true), qs({ view: 'browse', genre: g }), { count: genreCount[g] });
+    if (i === 3) html += R('More movies', pick(movies, true), qs({ view: 'movies' }), { count: movies.length });
+  });
+  // Whole library, loads more as you scroll
+  gridList = [...base].sort((a, b) => a.title.localeCompare(b.title, undefined, { numeric: true })); gridShown = 0;
+  html += `<section class="section" data-list="Full library"><div class="row-head"><h2>The full library <small>${fmt(base.length)} titles · A–Z</small></h2><a href="${qs({ view: 'browse', sort: 'az' })}">Filter &amp; sort ›</a></div>
+    <div class="grid" id="grid" style="padding-top:6px"></div><div id="sentinel"></div></section>`;
   return html;
 }
 const emptyInner = () => `<div class="empty"><b>No titles match</b>Try another store or clear your filters.<div style="margin-top:16px"><a class="btn btn-ghost btn-sm" href="?view=browse&store=">Clear filters</a></div></div>`;
@@ -953,10 +1008,14 @@ function render() {
     track('view_item_list', { item_list_name: 'home' + (state.store ? '_' + state.store : '') });
   } else {
     app.innerHTML = viewGrid();
-    if (catalog.length) moreGrid();
+  }
+  if ($('#grid') && catalog.length) {
+    moreGrid();
     if (io) io.disconnect();
     io = new IntersectionObserver(e => { if (e[0].isIntersecting) moreGrid(); }, { rootMargin: '900px' });
     const s = $('#sentinel'); if (s) io.observe(s);
+  }
+  if (state.view !== 'home') {
     const sm = $('#search-mobile'); if (sm) { sm.addEventListener('input', onSearchInput); if (!state.q && innerWidth <= 900) sm.focus({ preventScroll: true }); }
   }
   $('#search-desktop').value = state.view === 'search' || state.q ? state.q : '';
@@ -1015,7 +1074,7 @@ function detailHtml(m) {
     <img class="d-poster" src="${esc(m.poster || CFG.fallbackImg)}" alt="${esc(m.title)} poster" data-zoom>
     <div>
       <div class="d-type">${m.type}${m.isToday ? ' · Added today' : m.isNew ? ' · New' : ''}</div>
-      <h2 class="d-title" id="d-title">${esc(m.title)}</h2>
+      <h2 class="d-title notranslate" translate="no" id="d-title">${esc(m.title)}</h2>
       <div class="d-meta">${meta.join('<span class="dot"></span>')}</div>
       ${m.description ? `<p class="d-desc">${esc(m.description)}</p>` : ''}
       <dl class="d-facts">
@@ -1143,6 +1202,8 @@ document.addEventListener('click', e => {
     go({ view: p.get('view') || 'home', store: p.has('store') ? (p.get('store') || '') : state.store, q: p.get('q') || '', genre: p.get('genre') || '', rating: p.get('rating') || '', collection: p.get('collection') || '', sort: p.get('sort') || 'added', t: '' });
     return;
   }
+  const pinBtn = t.closest('[data-pin]');
+  if (pinBtn) { const v = pinBtn.dataset.pin; v ? lsSet(LS.pin, v) : lsDel(LS.pin); pinSel.value = v; track('set_default_store', { store: v || 'all' }); toast(v ? `${STORE[v].label} is now your default` : 'Showing all stores by default'); render(); return; }
   const chip = t.closest('[data-store]');
   if (chip) { const s = chip.dataset.store; track('filter_store', { store: s || 'all' }); go({ store: s }, true); return; }
   const clr = t.closest('[data-clear]'); if (clr) { go({ [clr.dataset.clear]: '' }, true); return; }
