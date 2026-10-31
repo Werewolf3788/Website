@@ -119,7 +119,8 @@ a.chip:hover{border-color:var(--accent)}
 .fr{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
 .fr .f{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:2px 8px 2px 2px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--line)}
 .fr .f img{width:20px;height:20px;border-radius:50%;object-fit:cover}
-.fr .f.part{opacity:.75;border-style:dashed}
+.fr .f.part{opacity:.85;border-style:dashed}.fr .f.lock{opacity:.55}.fr .f.done{border-color:rgba(52,211,153,.5);background:rgba(52,211,153,.1)}
+.dlc{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-top:8px}.dlc-i{display:flex;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--card2)}.dlc-i img{width:48px;height:48px;border-radius:8px;object-fit:cover}.dlc-i b{font-size:13px;display:block}.dlc-i small{color:var(--muted);font-size:11px}
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .filters button{padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card2);font-size:12px;font-weight:700}
 .filters button.on{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -767,6 +768,21 @@ function renderStats() {
     <div class="stat"><span>Games played</span><b>${Number(c.gamesPlayed || 0).toLocaleString()}</b><span>${esc(c.displayPlatform || c.platform || "")}</span></div>`;
 }
 
+const proto = (u) => { u = String(u || ""); return u.startsWith("//") ? "https:" + u : u; };
+function dlcHtml(sk, ah) {
+  const list = asList(sk && sk.dlcs).filter((d) => d && (d.isDLC || d.groupId));
+  if (!list.length) return "";
+  const ge = {}; asList(ah && ah.groupEarnings).forEach((g) => { if (g && g.trophyGroupId !== undefined) ge[g.trophyGroupId] = g; });
+  const sum = (o) => Object.values(o || {}).reduce((a, b) => a + (Number(b) || 0), 0);
+  const items = list.map((d) => {
+    const dt = d.definedTrophies || {}, g = ge[d.groupId];
+    const ico = ["platinum", "gold", "silver", "bronze"].filter((k) => dt[k]).map((k) => `<span class="${TCOL[k]}"><i class="fa-solid fa-trophy"></i> ${dt[k]}</span>`).join(" ");
+    const earned = g ? sum(g.earnedTrophies) : null, total = sum(dt);
+    return `<div class="dlc-i">${d.image ? img(proto(d.image), "", d.name || d.title) : ""}<div style="min-width:0"><b>${esc(d.name || d.title || "Add-on")}</b><small>${d.groupId === "default" ? "Base game" : "DLC"}${d.isOwned ? " &middot; Owned" : ""}${d.size && d.size !== "Unknown" ? " &middot; " + esc(d.size) : ""}</small><div style="font-size:12px;display:flex;gap:8px;flex-wrap:wrap">${ico}${earned !== null && total ? `<span class="muted">${earned}/${total} earned${g.progress !== undefined ? " &middot; " + g.progress + "%" : ""}</span>` : ""}</div></div></div>`;
+  }).join("");
+  return `<div class="muted" style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-top:12px">Add-on / DLC packs</div><div class="dlc">${items}</div>`;
+}
+
 async function renderHunt() {
   const c = P.card, online = !!c.online, playing = online && c.currentGame && c.currentGame !== "Dashboard";
   const last = asList(c.recentGames)[0] || {};
@@ -791,6 +807,7 @@ async function renderHunt() {
     </div>
     <div class="muted" style="font-size:12px;display:flex;justify-content:space-between"><span>Completion ${ratio ? "(" + esc(ratio) + ")" : ""}</span><b>${pct}%</b></div>
     <div class="bar"><i style="width:${Math.min(100, pct)}%"></i></div>
+    ${dlcHtml(sk, ah)}
     ${desc ? `<p class="muted" style="font-size:13px">${esc(desc)}${desc.length >= 420 ? "…" : ""}</p>` : ""}
     ${playing && c.amazonAffiliateUrl && secure(c.amazonAffiliateUrl) ? `<a class="btn" target="_blank" rel="noopener noreferrer" href="${esc(secure(c.amazonAffiliateUrl))}"><i class="fa-brands fa-amazon"></i> Find on Amazon</a>` : ""}`;
   paintTracked();
@@ -847,7 +864,7 @@ async function renderTrophies() {
 
   $("trophies").innerHTML = shown.length ? shown.map((t) => {
     const tr = tracking(t), icon = t.icon, type = (t.type || "bronze").toLowerCase();
-    const frs = t._locked ? "" : friendChips(P.comm, t.trophyId);
+    const frs = friendChips(P.comm, t.trophyId);
     return `<div class="t ${t.earned ? "done" : tr ? "prog" : ""}" data-id="${esc(t.trophyId)}">
       ${icon ? img(icon, "", t.name || t.title) : "<div></div>"}
       <div style="min-width:0"><div class="n"><i class="fa-solid fa-trophy ${TCOL[type] || ""}"></i> ${esc(t.name || t.title || "Trophy")}</div>
@@ -864,25 +881,32 @@ async function renderTrophies() {
 
 function trophyModal(t, gname) {
   const tr = tracking(t);
-  const fr = P.friends.map((f) => { const m = tmap((f.card && f.card.liveTrophyProgress || {})[P.comm])[t.trophyId]; return m ? { f, m } : null; }).filter(Boolean);
+  const fr = P.friends.filter((f) => friendHas(f, P.comm)).map((f) => ({ f, st: friendState(f, P.comm, t.trophyId) }));
   openModal(`<div style="display:flex;gap:14px;align-items:center">${t.icon ? img(t.icon, "", t.name) : ""}<div><div class="muted" style="font-size:12px">${esc(gname)}</div><h3 style="margin:0">${esc(t.name || t.title)}</h3></div></div>
     <p>${esc(t.detail || t.description || "")}</p>
     <div class="meta" style="display:flex;gap:8px;flex-wrap:wrap">
       <span class="pill">${esc((t.type || "").toUpperCase())}</span>${t.rarity ? `<span class="pill">${esc(t.rarity)} earned</span>` : ""}${t.rarityTier ? `<span class="pill">${esc(t.rarityTier)}</span>` : ""}
       ${t.earned ? `<span class="pill" style="color:#34d399">Earned ${esc(t.earnedDate || "")}</span>` : tr ? `<span class="pill mono">${tr.cur}/${tr.tgt}</span>` : ""}</div>
     ${t.rewardName ? `<p class="muted">Reward: ${esc(t.rewardName)}</p>` : ""}
-    ${fr.length ? `<h4>Friends</h4><div class="chips">${fr.map(({ f, m }) => { const x = tracking(m); return `<div class="chip">${img(f.avatar, "", f.name)}<div>${esc(f.name)}<small>${m.earned ? "Earned " + esc(String(m.earnedDate || "").split(",")[0]) : x ? x.cur + "/" + x.tgt : "in progress"}</small></div></div>`; }).join("")}</div>` : ""}`);
+    ${fr.length ? `<h4>Squad presence</h4><div class="chips">${fr.map(({ f, st }) => `<div class="chip">${img(f.avatar, "", f.name)}<div>${esc(f.name)}<small>${st.s === "done" ? "Done" + (st.m.earnedDate ? " &middot; " + esc(st.m.earnedDate) : "") : st.s === "part" ? esc(st.text) : "Locked (0/1)"}</small></div></div>`).join("")}</div>` : ""}`);
 }
 
 /* ---------- friends cross-reference ---------- */
+const friendHas = (f, comm) => { const c = f.card || {}; return !!((c.liveTrophyProgress || {})[comm] || asList(c.recentGames).some((g) => g && g.npCommunicationId === comm)); };
+function friendState(f, comm, trophyId) {          // earned / partial / locked for one friend and one trophy
+  const m = tmap((f.card && f.card.liveTrophyProgress || {})[comm])[trophyId];
+  if (m) { const x = tracking(m); return m.earned ? { s: "done", m, text: "Done" + (m.earnedDate ? " · " + m.earnedDate : "") } : { s: "part", m, text: x ? x.cur + "/" + x.tgt : "In progress" }; }
+  return { s: "lock", m: null, text: "0/1" };
+}
 function friendChips(comm, trophyId) {
   const out = [];
   for (const f of P.friends) {
-    const m = tmap((f.card && f.card.liveTrophyProgress || {})[comm])[trophyId]; if (!m) continue;
-    const x = tracking(m);
-    out.push(`<span class="f ${m.earned ? "" : "part"}" title="${esc(f.name)}${m.earned ? " earned this" : ""}">${img(f.avatar, "", f.name)}${esc(f.name)}${m.earned ? ' <i class="fa-solid fa-check" style="color:#34d399"></i>' : x ? " " + x.cur + "/" + x.tgt : ""}</span>`);
+    if (!friendHas(f, comm)) continue;
+    const st = friendState(f, comm, trophyId);
+    const ic = st.s === "done" ? '<i class="fa-solid fa-circle-check" style="color:#34d399"></i>' : st.s === "lock" ? '<i class="fa-solid fa-lock" style="opacity:.6"></i>' : "";
+    out.push(`<span class="f ${st.s}" title="${esc(f.name)}">${img(f.avatar, "", f.name)}${esc(f.name)} ${ic} <span style="font-weight:600;opacity:.85">${esc(st.text)}</span></span>`);
   }
-  return out.length ? `<div class="fr">${out.join("")}</div>` : "";
+  return out.length ? `<div class="muted" style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-top:6px">Squad presence</div><div class="fr" style="margin-top:3px">${out.join("")}</div>` : "";
 }
 
 async function loadFriendCrossRef() {
