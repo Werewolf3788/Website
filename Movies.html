@@ -2,8 +2,10 @@
 <!-- ==========================================================================
      FILE: Movies.html
      PROJECT: Werewolf Cinema Library
-     TIMESTAMP (24-hr NY Time): 2026-10-31 20:30:00 EDT
-     VERSION: 5.1.0
+     TIMESTAMP (24-hr NY Time): 2026-10-31 19:51:08 EDT
+     VERSION: 5.1.1
+     CHANGELOG 5.1.1:
+       - iPhone in Safari: alerts button now shows Add to Home Screen steps
      CHANGELOG 5.1.0:
        - Home rows show different titles (daily shuffle, no repeats across rows)
        - Full library A-Z grid at the bottom of Home (loads as you scroll)
@@ -460,7 +462,7 @@ footer .fl{display:flex;flex-wrap:wrap;gap:18px}
     <span id="sync"><i></i><span id="sync-text">Loading library…</span></span>
   </div>
   <p>As an Amazon Associate, Werewolf3788 earns from qualifying purchases. Amazon links on this site are affiliate links; links to other stores are not.</p>
-  <p>Poster art and metadata courtesy of TMDb, TheTVDB and OMDb. Werewolf Cinema v5.1.0</p>
+  <p>Poster art and metadata courtesy of TMDb, TheTVDB and OMDb. Werewolf Cinema v5.1.1</p>
 </footer>
 
 <!-- Phone tab bar -->
@@ -500,12 +502,12 @@ footer .fl{display:flex;flex-wrap:wrap;gap:18px}
   <div class="sheet">
     <button class="icon-btn x" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     <h2 id="ios-h">Install on iPhone or iPad</h2>
-    <p>Werewolf Cinema works like an app from your Home Screen, and alerts need it installed this way.</p>
+    <p>Werewolf Cinema works like an app from your Home Screen. iPhone only allows alerts from the Home Screen app.</p>
     <ol class="steps">
       <li>Open this page in Safari.</li>
       <li>Tap the Share button (square with an arrow).</li>
       <li>Choose “Add to Home Screen”, then tap Add.</li>
-      <li>Open Werewolf Cinema from your Home Screen.</li>
+      <li>Open Werewolf Cinema from your Home Screen, tap the 🔔 bell, then “Turn on alerts”.</li>
     </ol>
     <button class="btn btn-primary" data-close type="button" style="width:100%">Got it</button>
   </div>
@@ -552,16 +554,16 @@ const CFG = {
 
   // Firebase Cloud Messaging (Firebase console > Project settings > General > Your apps > Web app)
   firebase: {
-    apiKey: '',
+    apiKey: 'AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc',
     authDomain: 'entertainment-71888.firebaseapp.com',
     projectId: 'entertainment-71888',
-    messagingSenderId: '',
-    appId: ''
+    messagingSenderId: '660524340277',
+    appId: '1:660524340277:web:ef8f4ed04fa985a4f88d7c'
   },
   // Firebase console > Project settings > Cloud Messaging > Web Push certificates > Key pair
-  vapidKey: '',
+  vapidKey: 'BHuvkU--hpgQG09UUh4mFPPmAtUzPhBE-5H_JTEUMBnB7KvkrwKfRRsrTfsjm1YXzcaljPxIZ8VTWT0opCOOZuk',
   // Apps Script > Deploy > New deployment > Web app URL (ends in /exec)
-  pushEndpoint: ''
+  pushEndpoint: 'https://script.google.com/macros/s/AKfycbyVGrJxpoW1Id5v81NSHV2e3jsI551ryhLYl7MT-irqqrFc9nMXbV__hI0foD8DBURICg/exec'
 };
 const PUSH_READY = !!(CFG.firebase.apiKey && CFG.firebase.messagingSenderId && CFG.firebase.appId && CFG.vapidKey && CFG.pushEndpoint);
 
@@ -1274,7 +1276,9 @@ function openAlerts() {
     .map(([k, l]) => `<option value="${k}" ${k === cur ? 'selected' : ''}>${esc(l)}</option>`).join('') + '</select></label>';
   const st = $('#alerts-status');
   st.className = 'status-line' + (alertsOn() ? ' ok' : '');
-  st.textContent = alertsOn() ? 'Alerts are on for this device.' : (isIOS && !isStandalone() ? 'On iPhone/iPad, install the app to your Home Screen first, then turn alerts on from the app.' : '');
+  st.textContent = alertsOn() ? 'Alerts are on for this device.' : (isIOS && !isStandalone() ? 'On iPhone and iPad, alerts only work from the Home Screen app. Tap below to see how to add it.' : '');
+  $('#alerts-on').textContent = isIOS && !isStandalone() ? 'Add to Home Screen' : 'Turn on alerts';
+  $('#alerts-off').style.display = alertsOn() ? '' : 'none';
   openModal('alerts-modal');
 }
 function loadScript(src) { return new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.appendChild(s); }); }
@@ -1295,8 +1299,9 @@ async function sendToSheet(body) {
 async function enableAlerts() {
   const store = ($('#alert-store') || {}).value || '';
   const st = $('#alerts-status');
-  if (!('Notification' in window) || !('serviceWorker' in navigator)) { st.textContent = 'This browser does not support notifications.'; return; }
-  if (isIOS && !isStandalone()) { closeModal('alerts-modal', true); openModal('ios-modal'); return; }
+  // iPhone/iPad: Safari only allows notifications from the Home Screen app, so show the install steps first
+  if (isIOS && !isStandalone()) { closeModal('alerts-modal', true); openModal('ios-modal'); track('pwa_install_help', { platform: 'ios', from: 'alerts' }); return; }
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) { st.textContent = isIOS ? 'Alerts need iOS 16.4 or newer. Update your iPhone in Settings > General > Software Update.' : 'This browser does not support notifications. Try Chrome, Edge, Safari or Firefox.'; return; }
   st.className = 'status-line'; st.textContent = 'Asking for permission…';
   const perm = await Notification.requestPermission();
   if (perm !== 'granted') { st.textContent = 'Notifications are blocked. Allow them in your browser or phone settings, then try again.'; return; }
