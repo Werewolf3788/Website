@@ -88,8 +88,8 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
   <label for="psn_account_id">PSN Account ID #</label><div class="row" data-secret="psn_account_id"></div>
   <label for="psn_npsso">PSN NPSSO cookie</label><div class="row" data-secret="psn_npsso"></div>
   <div class="box"><strong>To get your PSN Account ID</strong>
-    <p>Open <a href="https://psn.flipscreen.games" target="_blank" rel="noopener">psn.flipscreen.games</a>, type your PlayStation username and copy the long number it shows (the Account ID, usually 19 digits). Paste it in the Account ID box above.</p>
-    <p id="accState" class="hint"></p></div>
+    <p>Open <a href="https://psn.flipscreen.games" target="_blank" rel="noopener">psn.flipscreen.games</a>, type your PlayStation username and copy the long number it shows (the Account ID, usually 19 digits). Paste it in the Account ID box above. If the site already knows that ID, your PlayStation username fills in by itself (and the other way round).</p>
+    <p id="accState" class="hint"></p><button type="button" id="usePsn" class="hidden"></button></div>
   <div class="box"><strong>How to get your NPSSO</strong>
     <p>1. Sign in to PlayStation in this browser. 2. Open <a href="https://ca.account.sony.com/api/v1/ssocookie" target="_blank" rel="noopener">ca.account.sony.com/api/v1/ssocookie</a>. 3. Paste everything it shows, or only the 64-character value. We keep just the token.</p>
     <p id="npssoState" class="hint"></p></div>
@@ -150,6 +150,12 @@ firebase.initializeApp({
   messagingSenderId:"660524340277",appId:"1:660524340277:web:ef8f4ed04fa985a4f88d7c"
 });
 const auth=firebase.auth(),db=firebase.database(),fs=firebase.firestore();
+// PlayStation Stats project (read-only here): used to look up PSN username <-> Account ID
+const appP=firebase.initializeApp({apiKey:"AIzaSyBT3RHrZQCcBdcoPpM9hMjuzSB0KBtu5UI",authDomain:"playstation-stats.firebaseapp.com",
+  databaseURL:"https://playstation-stats-default-rtdb.firebaseio.com",projectId:"playstation-stats",
+  storageBucket:"playstation-stats.firebasestorage.app",messagingSenderId:"748816703249",appId:"1:748816703249:web:3413fac9800148aa42b6b0"},"psnstats");
+const dbP=appP.database(),fsP=appP.firestore();
+const psnReady=appP.auth().signInAnonymously().catch(()=>{});
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const say=(t,bad)=>{const m=$('msg');m.textContent=t;m.style.borderColor=bad?'var(--danger)':'var(--accent-green)';m.classList.remove('hidden');clearTimeout(say.t);say.t=setTimeout(()=>m.classList.add('hidden'),6000)};
@@ -214,6 +220,34 @@ $('steam_api_key').addEventListener('input',e=>{
   if(m){e.target.value=m[0].toUpperCase();st.textContent='Key detected (32 characters).';st.style.color='var(--accent-green)'}
   else{st.textContent='A Steam key is 32 letters A-F and numbers.';st.style.color='var(--text-muted)'}
 });
+
+// ---- PSN: Account ID <-> username lookup (site's PSN data: tracked players + their PSN friends) ----
+let psnMap=null;
+async function psnTagMap(){if(psnMap)return psnMap;await psnReady;
+  try{psnMap=(await dbP.ref('psn/usersByGamerTag').get()).val()||{}}catch(e){psnMap={}}return psnMap}
+async function psnNameFor(id){
+  const m=await psnTagMap();const hit=Object.keys(m).find(t=>String(m[t])===id);if(hit)return hit;
+  try{const q=await fsP.collection('friendsDirectory').where('accountId','==',id).limit(1).get();if(!q.empty)return q.docs[0].data().onlineId||q.docs[0].id}catch(e){}
+  return''}
+async function psnIdFor(name){const n=name.toLowerCase();
+  const m=await psnTagMap();const hit=Object.keys(m).find(t=>t.toLowerCase()===n);if(hit&&m[hit])return String(m[hit]);
+  try{const d=await fsP.collection('friendsDirectory').doc(name.replace(/[.$#\[\]\/]/g,'_')).get();if(d.exists&&d.data().accountId)return String(d.data().accountId)}catch(e){}
+  return''}
+async function fillPsnName(){
+  const id=$('psn_account_id').value.trim(),st=$('accState');if(!/^\d{10,20}$/.test(id)){$('usePsn').classList.add('hidden');return}
+  const name=await psnNameFor(id);if($('psn_account_id').value.trim()!==id)return;
+  const cur=$('psn_username').value.trim(),ub=$('usePsn');ub.classList.add('hidden');
+  if(!name){st.innerHTML='Account ID '+esc(id)+'. Username not in the site\'s PSN data yet, so type it in the PlayStation username box.';st.style.color='var(--text-muted)';return}
+  if(!cur){$('psn_username').value=name;st.textContent='Username filled in: '+name+'. Press Save settings to keep it.';st.style.color='var(--accent-green)';if(!loading)markDirty();$('avatar_source').value==='psn'&&resolveAvatar();return}
+  if(cur.toLowerCase()===name.toLowerCase()){st.textContent='Account ID matches '+name+'.';st.style.color='var(--accent-green)';return}
+  st.innerHTML='This Account ID belongs to <strong>'+esc(name)+'</strong>, not '+esc(cur)+'.';st.style.color='var(--secondary)';
+  ub.textContent='Use '+name;ub.classList.remove('hidden');
+  ub.onclick=()=>{$('psn_username').value=name;markDirty();fillPsnName();$('avatar_source').value==='psn'&&resolveAvatar()}}
+async function fillPsnId(){
+  const name=$('psn_username').value.trim();if(!name||$('psn_account_id').value.trim())return;
+  const id=await psnIdFor(name);if(id&&!$('psn_account_id').value.trim()){$('psn_account_id').value=id;$('accState').textContent='Account ID filled in from your username: '+id+'. Press Save settings to keep it.';$('accState').style.color='var(--accent-green)';markDirty()}}
+let psnT;$('psn_account_id').addEventListener('input',()=>{clearTimeout(psnT);psnT=setTimeout(fillPsnName,500)});
+$('psn_username').addEventListener('change',()=>{fillPsnId();fillPsnName()});
 
 // ---- Colors ----
 const okHex=h=>/^#[0-9a-f]{6}$/i.test(h);
@@ -303,6 +337,7 @@ async function load(){
   $('friend_code').value=await ensureFriendCode();
   await resolveAvatar();
   showSteam();
+  if($('psn_account_id').value.trim())fillPsnName();else fillPsnId();
   renderMethods();
   loading=false;dirty=false;
   setState(D.updated_at?'Last saved: '+new Date(D.updated_at).toLocaleString():'Not saved yet');
