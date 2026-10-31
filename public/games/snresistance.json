@@ -1,1464 +1,3879 @@
-// ============================================================================
-// * Project: Universal Game Companion & Live Telemetry Field Ledger
-// * File: game/Universal.js
-// * Build Version: v11.7.1-CROSS-TELEMETRY-SYNC
-// * Deployment Timestamp: 2026-10-30 04:05:00 EDT (America/New_York)
-// ============================================================================
-
-// Section 1: Authoritative Firebase Credentials (entertainment-71888)
-const firebaseConfig = {
-    apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
-    authDomain: "entertainment-71888.firebaseapp.com",
-    databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
-    projectId: "entertainment-71888",
-    storageBucket: "entertainment-71888.firebasestorage.app",
-    messagingSenderId: "660524340277",
-    appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
-    measurementId: "G-JDNSLD3GFE"
-};
-
-const app = (!firebase.apps || !firebase.apps.length) ? firebase.initializeApp(firebaseConfig) : firebase.app();
-const auth = firebase.auth(app);
-const rtdb = firebase.database(app);
-const firestore = firebase.firestore(app);
-
-try {
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-} catch (e) {
-    console.warn("[Auth Persistence Error]:", e);
-}
-
-// Section 2: Game Key Resolution
-function resolveActiveGameKey() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const paramKey = urlParams.get('game') || urlParams.get('id');
-    if (paramKey) return paramKey.trim().toLowerCase();
-
-    const rootElem = document.getElementById('app-root') || document.getElementById('section-container');
-    if (rootElem && rootElem.getAttribute('data-game')) {
-        return rootElem.getAttribute('data-game').trim().toLowerCase();
-    }
-
-    return "snresistance";
-}
-
-let CURRENT_GAME_KEY = resolveActiveGameKey();
-let ACTIVE_COMM_ID = null;
-let LAST_APPLIED_POSTER = null;
-
-// Shared data helpers
-function toArr(v) {
-    return v ? (Array.isArray(v) ? v : Object.values(v)) : [];
-}
-
-function isLeafList(node) {
-    if (Array.isArray(node)) return true;
-    if (!node || typeof node !== 'object') return false;
-    const keys = Object.keys(node);
-    return keys.length > 0 && keys.every(k => /^\d+$/.test(k));
-}
-
-function isMissionSchema(data) {
-    if (!data || !data.missions || typeof data.missions !== 'object' || Array.isArray(data.missions)) return false;
-    return Object.values(data.missions).some(m =>
-        m && typeof m === 'object' && m.number !== undefined && (m.collectibles || m.medals || m.trophies)
-    );
-}
-
-function walkLeaves(node, visit) {
-    if (!node || typeof node !== 'object') return;
-    if (isLeafList(node)) {
-        toArr(node).forEach(it => { if (it && typeof it === 'object') visit(it); });
-        return;
-    }
-    Object.values(node).forEach(child => walkLeaves(child, visit));
-}
-
-function collectAllTrophies(data) {
-    if (!data) return [];
-    const list = [...toArr(data.trophies), ...toArr(data.general_trophies)];
-    if (data.missions && typeof data.missions === 'object') {
-        Object.values(data.missions).forEach(m => { if (m) list.push(...toArr(m.trophies)); });
-    }
-    return list;
-}
-
-function ribbonKeys(data) {
-    return Object.keys(data || {}).filter(k => /_ribbons$/.test(k));
-}
-
-// Section 3: Authoritative Global State Engine
-window.appState = {
-    activeUser: 'Guest',
-    activeEmail: null,
-    platform: 'ps',
-    currentUser: null,
-    gameData: null,
-    psnSkeleton: null,
-    myFriendCode: null,
-    psnGamertag: null,
-    authInitialized: false,
-
-    gameTitle: "Game Companion",
-    gameId: CURRENT_GAME_KEY,
-    trophies_earned: 0,
-    trophies_total: 0,
-    trophies_percent: 0,
-    collectibles: {},
-    stashes: {},
-    roster: {},
-    missions: {},
-    trophies: {},
-    medals: {},
-    ribbons: {},
-    ranks: {},
-
-    getUserKey: function() {
-        if (this.myFriendCode) return this.myFriendCode;
-        if (!this.currentUser || !this.currentUser.email) return null;
-        return this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
+{
+  "schema_version": "1.0.0",
+  "game": "Sniper Elite: Resistance",
+  "gameId": "SniperEliteResistance",
+  "commId": "NPWR40813_00",
+  "image_url": "",
+  "platforms": {
+    "playstation": {
+      "commId": "NPWR40813_00",
+      "titleId": "CUSA44067"
     },
-
-    getCanonicalGameName: function() {
-        if (this.gameId === 'farcry5') return 'FarCry5';
-        if (this.gameId === 'farcry6') return 'FarCry6';
-        if (this.gameId === 'sniperelite5' || this.gameId === 'se5') return 'SniperElite5';
-        if (this.gameId === 'snresistance') return 'SniperEliteResistance';
-        return this.gameData?.gameId || this.gameId;
+    "steam": {
+      "appId": 2169200
     },
-
-    switchGame: async function(targetGameKey) {
-        if (!targetGameKey) return;
-        const normalized = targetGameKey.toLowerCase() === 'se5' ? 'sniperelite5' : targetGameKey.toLowerCase();
-        if (normalized === this.gameId && this.gameData) return;
-
-        CURRENT_GAME_KEY = normalized;
-        this.gameId = CURRENT_GAME_KEY;
-
-        const newUrl = `${window.location.pathname}?game=${CURRENT_GAME_KEY}`;
-        window.history.replaceState({ path: newUrl }, '', newUrl);
-
-        this.collectibles = {};
-        this.stashes = {};
-        this.roster = {};
-        this.missions = {};
-        this.trophies = {};
-        this.medals = {};
-        this.ribbons = {};
-        this.ranks = {};
-
-        document.querySelectorAll('.game-pill').forEach(pill => {
-            if (pill.getAttribute('data-game-key') === CURRENT_GAME_KEY) {
-                pill.classList.add('active');
-            } else {
-                pill.classList.remove('active');
-            }
-        });
-
-        await loadAndHydrateGame(CURRENT_GAME_KEY);
+    "xbox": {
+      "productId": "9mxrg5gcrpxz"
+    }
+  },
+  "missions": {
+    "mission_1": {
+      "number": 1,
+      "title": "Behind Enemy Lines",
+      "region": "Northern France",
+      "walkthrough": "Sabotage the dam, destroy the Flak AA installations, and exfiltrate across the perimeter bridge.",
+      "image_url": "",
+      "collectibles": {
+        "personal_letters": [],
+        "classified_documents": [
+          {
+            "id": "doc_m1_01",
+            "name": "Flak Operations Order",
+            "location": "Bunker command post desk beside primary generator.",
+            "image_url": ""
+          }
+        ],
+        "hidden_items": [],
+        "stone_eagles": [],
+        "workbenches": [
+          {
+            "id": "wb_m1_pistol",
+            "name": "Pistol Workbench",
+            "location": "Basement of house behind barricade after initial wall climb.",
+            "image_url": ""
+          }
+        ]
+      },
+      "kill_challenge": null,
+      "propaganda_mission": null,
+      "medals": {
+        "objective": [
+          {
+            "id": "med_objective_dam_buster",
+            "name": "Dam Buster",
+            "description": "Complete Mission 1: Behind Enemy Lines with a 1 star rating.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "mission": [],
+        "long_shot": [],
+        "propaganda": []
+      },
+      "trophies": [
+        {
+          "trophyId": 1,
+          "name": "Dam Buster",
+          "rank": "BRONZE",
+          "description": "Sabotage the Dam and destroy the AA guns."
+        }
+      ]
     },
-
-    switchPlatform: async function(newPlatform, persistPin = true) {
-        if (!newPlatform) return;
-        const normalized = newPlatform.toLowerCase();
-        const validPlatforms = ['ps', 'xbox', 'steam', 'pc'];
-        this.platform = validPlatforms.includes(normalized) ? normalized : 'ps';
-
-        const platformSelector = document.getElementById('platformSelector');
-        if (platformSelector && platformSelector.value !== this.platform) {
-            platformSelector.value = this.platform;
+    "mission_2": {
+      "number": 2,
+      "title": "Dead Drop",
+      "region": "Château & Library District",
+      "walkthrough": "Infiltrate town, locate mole in cafe, search municipal library, destroy Gestapo depot.",
+      "image_url": "",
+      "collectibles": {
+        "personal_letters": [
+          {
+            "id": "let_m2_01",
+            "name": "A Lost Soul Trembles",
+            "location": "First-floor church safe. Key on table beside gramophone.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m2_02",
+            "name": "Missing You Dearly",
+            "location": "Château courtyard stone bench.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m2_03",
+            "name": "Surrounded by Idiots",
+            "location": "Municipal Library reception counter.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m2_04",
+            "name": "A Withering Tree",
+            "location": "Town square outdoor cafe table.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m2_05",
+            "name": "A Nephew's Concern",
+            "location": "Bench along northern residential road.",
+            "image_url": ""
+          }
+        ],
+        "classified_documents": [
+          {
+            "id": "doc_m2_01",
+            "name": "Findings Report",
+            "location": "Staging table with radio gear on west canal street.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m2_02",
+            "name": "Orders to Follow",
+            "location": "Château courtyard room beside center tree.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m2_03",
+            "name": "Use the Library",
+            "location": "Safe inside eastern house. Key upstairs on chair.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m2_04",
+            "name": "Tightening Security",
+            "location": "First-floor cafe table in Kill List target quarters.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m2_05",
+            "name": "Increased Security",
+            "location": "Military supply tent table inside central barracks.",
+            "image_url": ""
+          }
+        ],
+        "hidden_items": [
+          {
+            "id": "item_m2_01",
+            "name": "Poster: La Résistance",
+            "location": "Back alley brick wall; unlocks Propaganda Mission.",
+            "image_url": ""
+          },
+          {
+            "id": "item_m2_02",
+            "name": "Police Report: #222",
+            "location": "Library archives shelf; required for File O' Facts.",
+            "image_url": ""
+          },
+          {
+            "id": "item_m2_03",
+            "name": "Police Report: #223",
+            "location": "Library reading room desk; required for File O' Facts.",
+            "image_url": ""
+          },
+          {
+            "id": "item_m2_04",
+            "name": "Police Report: #224",
+            "location": "Library basement stack; required for File O' Facts.",
+            "image_url": ""
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "eagle_m2_01",
+            "name": "Dead-Eye Target 1",
+            "location": "Rooftop gable of residence west of church.",
+            "image_url": ""
+          },
+          {
+            "id": "eagle_m2_02",
+            "name": "Dead-Eye Target 2",
+            "location": "Pediment ridge of municipal building right of library.",
+            "image_url": ""
+          },
+          {
+            "id": "eagle_m2_03",
+            "name": "Dead-Eye Target 3",
+            "location": "Parapet crest of northeastern château tower.",
+            "image_url": ""
+          }
+        ],
+        "workbenches": [
+          {
+            "id": "wb_m2_rifle",
+            "name": "Rifle Workbench",
+            "location": "First-floor locked apartment via rear exterior stairs.",
+            "image_url": ""
+          },
+          {
+            "id": "wb_m2_pistol",
+            "name": "Pistol Workbench",
+            "location": "Subterranean catacombs between library and tavern cellar.",
+            "image_url": ""
+          },
+          {
+            "id": "wb_m2_smg",
+            "name": "SMG Workbench",
+            "location": "Secured storeroom between inner and outer courtyards.",
+            "image_url": ""
+          }
+        ]
+      },
+      "kill_challenge": {
+        "mission_number": 2,
+        "mission_title": "Dead Drop",
+        "target_name": "Philo Beck",
+        "location": "Inside the cafe at the town square, berating a subordinate.",
+        "challenge": "Kill Philo Beck with a Rat Bomb.",
+        "strategy": "Grab the Rat Bomb on the 2nd-floor landing of the ruined house near the riverbed. Sneak behind the bar counter while Beck steps away, plant the bomb on the floor outline, and retreat.",
+        "reward": "Nagant M1895",
+        "image_url": ""
+      },
+      "propaganda_mission": {
+        "id": "prop_m1",
+        "number": 1,
+        "title": "La Résistance",
+        "unlock_poster": "item_m2_01",
+        "target_score": 15000,
+        "briefing": "Sniper trial. Neutralize high-priority Gestapo officers across the rooftops before time expires.",
+        "image_url": ""
+      },
+      "medals": {
+        "objective": [
+          {
+            "id": "med_objective_welcome_to_the_resistance",
+            "name": "Welcome to the Resistance",
+            "description": "Complete Mission 2: Dead Drop with a 3 star rating.",
+            "goal": 3,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "mission": [
+          {
+            "id": "med_mission_file_o_facts",
+            "name": "File O' Facts",
+            "description": "Recover evidence implicating Resistance members within the Library in Dead Drop.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "long_shot": [
+          {
+            "id": "med_longshot_mission_2_long_shot",
+            "name": "Mission 2 Long Shot",
+            "description": "Make a 250 meter shot in Dead Drop.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 2,
+            "distance_m": 250,
+            "authentic": false
+          },
+          {
+            "id": "med_longshot_mission_2_authentic_long_shot",
+            "name": "Mission 2 Authentic Long Shot",
+            "description": "Make a 250 meter shot in Dead Drop on Authentic difficulty.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 2,
+            "distance_m": 250,
+            "authentic": true
+          }
+        ],
+        "propaganda": [
+          {
+            "id": "med_propaganda_propaganda_la_resistance",
+            "name": "Propaganda: La Résistance",
+            "description": "Earn a score of 2000 in the La Résistance propaganda mission.",
+            "goal": 2000,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ]
+      },
+      "trophies": [
+        {
+          "trophyId": 2,
+          "name": "Welcome to the Resistance",
+          "rank": "BRONZE",
+          "description": "Find the Mole and uncover the Superweapon plot."
+        },
+        {
+          "trophyId": 46,
+          "name": "File O' Facts",
+          "rank": "BRONZE",
+          "description": "Recover evidence implicating Resistance members within the Library in Dead Drop."
         }
-
-        const nameEl = document.getElementById('resistance-name');
-        if (nameEl) {
-            const displayName = this.currentUser ? this.activeUser.toUpperCase() : 'GUEST';
-            nameEl.innerText = `${displayName} [${this.platform.toUpperCase()}]`;
-        }
-
-        if (persistPin && this.currentUser && this.currentUser.email && rtdb) {
-            const emailKey = this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
-            try {
-                await rtdb.ref(`/users/${emailKey}/primary_platform`).set(this.platform);
-                this.updateStatus(`[Platform Pinned] Set primary_platform to ${this.platform.toUpperCase()}`);
-            } catch (pinErr) {
-                console.warn("[Primary Platform Write Error]:", pinErr);
-            }
-        }
-
-        await this.loadProgress();
-        if (this.currentUser) {
-            this.syncFriendsProgress();
-            if (this.psnGamertag) {
-                await autoCheckUserPsnTrophies();
-            }
-        }
+      ]
     },
-
-    hydrateFromRawJson: function(data) {
-        if (!data || typeof data !== 'object') return;
-        this.gameData = data;
-        this.gameTitle = data.game || data.title || "Game Companion";
-        this.gameId = data.gameId ? data.gameId.toLowerCase() : CURRENT_GAME_KEY;
-
-        ACTIVE_COMM_ID = data.commId || 
-                         data.psn_communication_id || 
-                         data.platforms?.playstation?.commId || 
-                         null;
-
-        const titleHeader = document.getElementById('companionGameTitle');
-        if (titleHeader) titleHeader.innerText = this.gameTitle;
-        const pageTitle = document.getElementById('pageHeaderTitle');
-        if (pageTitle) pageTitle.innerText = `${this.gameTitle} — Field Companion`;
-
-        searchGamePosterArt(ACTIVE_COMM_ID, this.gameTitle);
-
-        if (isMissionSchema(data)) {
-            this.hydrateMissionSchema(data);
+    "mission_3": {
+      "number": 3,
+      "title": "Sonderzüge Sabotage",
+      "region": "Railyard & Harbor Docks",
+      "walkthrough": "Raid Hotel Terminus, destroy Sonderzüge armored trains, sever switching network.",
+      "image_url": "",
+      "collectibles": {
+        "personal_letters": [
+          {
+            "id": "let_m3_01",
+            "name": "Be Safe, My Dear",
+            "location": "Ground-floor safe inside house of second objective.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m3_02",
+            "name": "We Are Everywhere",
+            "location": "Hotel second floor corner room via window ledge.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m3_03",
+            "name": "Cross of Lorraine",
+            "location": "Top floor table of safehouse holding optional objective.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m3_04",
+            "name": "Missing Her Birthday",
+            "location": "First floor bench inside central train terminal.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m3_05",
+            "name": "The Scars of War",
+            "location": "Park bench in ornamental garden area.",
+            "image_url": ""
+          }
+        ],
+        "classified_documents": [
+          {
+            "id": "doc_m3_01",
+            "name": "Gestapo Briefing",
+            "location": "Hotel Terminus penthouse suite table.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m3_02",
+            "name": "Hotel Refurbishment",
+            "location": "Ground-floor reception lobby desk inside Hotel Terminus.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m3_03",
+            "name": "Hotel Storage",
+            "location": "Attic storage loft accessible via exterior ladder.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m3_04",
+            "name": "Rail Network Control",
+            "location": "Harbor watchtower upper observation console.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m3_05",
+            "name": "Cargo Details",
+            "location": "Terminal dispatcher office table.",
+            "image_url": ""
+          }
+        ],
+        "hidden_items": [
+          {
+            "id": "item_m3_01",
+            "name": "Resistance Flag",
+            "location": "Ground-floor wooden box in Cross of Lorraine house.",
+            "image_url": ""
+          },
+          {
+            "id": "item_m3_02",
+            "name": "Gestapo ID Badge",
+            "location": "Crate on western road bridge checkpoint.",
+            "image_url": ""
+          },
+          {
+            "id": "item_m3_03",
+            "name": "Poster: Le Sniper",
+            "location": "Exterior wall near optional safehouse; unlocks Le Sniper.",
+            "image_url": ""
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "eagle_m3_01",
+            "name": "Dead-Eye Target 1",
+            "location": "Off-map church steeple visible looking southwest from road bridge.",
+            "image_url": ""
+          },
+          {
+            "id": "eagle_m3_02",
+            "name": "Dead-Eye Target 2",
+            "location": "Clocktower finial atop central train concourse.",
+            "image_url": ""
+          },
+          {
+            "id": "eagle_m3_03",
+            "name": "Dead-Eye Target 3",
+            "location": "Chimney apex of brick warehouse on northwest edge.",
+            "image_url": ""
+          }
+        ],
+        "workbenches": [
+          {
+            "id": "wb_m3_pistol",
+            "name": "Pistol Workbench",
+            "location": "Upper floor of town hall building adjacent to rail station.",
+            "image_url": ""
+          },
+          {
+            "id": "wb_m3_rifle",
+            "name": "Rifle Workbench",
+            "location": "Secured workshop bay inside harbor cargo warehouse.",
+            "image_url": ""
+          },
+          {
+            "id": "wb_m3_smg",
+            "name": "SMG Workbench",
+            "location": "Alley storage lockup accessible with lockpick.",
+            "image_url": ""
+          }
+        ]
+      },
+      "kill_challenge": {
+        "mission_number": 3,
+        "mission_title": "Sonderzüge Sabotage",
+        "target_name": "Claude La Ronde",
+        "location": "Patrolling the harbor docks across the river.",
+        "challenge": "Kill Claude La Ronde with cargo.",
+        "strategy": "Take position across the river via the eastern train tracks. Wait until La Ronde walks directly under the suspended construction materials, then shoot the crane winch.",
+        "reward": "M1907",
+        "image_url": ""
+      },
+      "propaganda_mission": {
+        "id": "prop_m2",
+        "number": 2,
+        "title": "Le Sniper",
+        "unlock_poster": "item_m3_03",
+        "target_score": 18000,
+        "briefing": "Longshot trial. Eliminate enemy counter-snipers along the rail terminal gantry.",
+        "image_url": ""
+      },
+      "medals": {
+        "objective": [
+          {
+            "id": "med_objective_trainwreck",
+            "name": "Trainwreck",
+            "description": "Complete Mission 3: Sonderzüge Sabotage with a 3 star rating.",
+            "goal": 3,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "mission": [
+          {
+            "id": "med_mission_wing_wing_situation",
+            "name": "Wing-Wing Situation",
+            "description": "Destroy 10 Cardboard Pigeons in Sonderzüge Sabotage.",
+            "goal": 10,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "notes": "Typed as 0/10 but description said 109."
+          }
+        ],
+        "long_shot": [
+          {
+            "id": "med_longshot_mission_3_long_shot",
+            "name": "Mission 3 Long Shot",
+            "description": "Make a 200 meter shot in Sonderzüge Sabotage.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 3,
+            "distance_m": 200,
+            "authentic": false
+          },
+          {
+            "id": "med_longshot_mission_3_authentic_long_shot",
+            "name": "Mission 3 Authentic Long Shot",
+            "description": "Make a 80 meter shot in Sonderzüge Sabotage on Authentic difficulty.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 3,
+            "distance_m": 80,
+            "authentic": true,
+            "notes": "80 m is far below the normal 200 m; may be a typo."
+          }
+        ],
+        "propaganda": [
+          {
+            "id": "med_propaganda_propaganda_le_sniper",
+            "name": "Propaganda: Le Sniper",
+            "description": "Earn a score of 2000 in the Le Sniper propaganda mission.",
+            "goal": 2000,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ]
+      },
+      "trophies": [
+        {
+          "trophyId": 3,
+          "name": "Trainwreck",
+          "rank": "BRONZE",
+          "description": "Raid the Hotel Terminus and sabotage the Sonderzüge."
         }
-
-        if (data.collectibles && typeof data.collectibles === 'object') {
-            for (const cKey in data.collectibles) {
-                const group = data.collectibles[cKey];
-                const rawItems = group?.items ? (Array.isArray(group.items) ? group.items : Object.values(group.items)) : [];
-                if (!this.collectibles[cKey]) this.collectibles[cKey] = { items: {} };
-
-                rawItems.forEach(cItem => {
-                    if (!cItem || !cItem.id) return;
-                    if (!this.collectibles[cKey].items[cItem.id]) {
-                        this.collectibles[cKey].items[cItem.id] = {
-                            collected: false,
-                            name: cItem.name || '',
-                            region: cItem.region || group.region || '',
-                            location: cItem.location || '',
-                            guide: cItem.guide || ''
-                        };
-                    }
-                });
-            }
-        }
-
-        if (data.trophies || data.general_trophies || isMissionSchema(data)) {
-            this.hydrateTrophiesFromSkeleton(data);
-        }
-
-        this.recalculateMetrics();
+      ]
     },
-
-    ensureMissionEntry: function(id, info) {
-        if (!id) return;
-        if (!this.missions[id]) {
-            this.missions[id] = {
-                completed: false,
-                mission_name: info.name || '',
-                region: info.region || '',
-                guide: info.guide || ''
-            };
-        } else {
-            this.missions[id].mission_name = info.name || this.missions[id].mission_name;
-            this.missions[id].region = info.region || this.missions[id].region;
-            this.missions[id].guide = info.guide || this.missions[id].guide;
+    "mission_4": {
+      "number": 4,
+      "title": "Collision Course",
+      "region": "River Dam Basin",
+      "walkthrough": "Locate Site D coordinates, plant satchels across structural supports, extract via cableway.",
+      "image_url": "",
+      "collectibles": {
+        "personal_letters": [
+          {
+            "id": "let_m4_01",
+            "name": "A Gift, And A Name",
+            "location": "Pinned to tree trunk on right side post-zipline.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m4_02",
+            "name": "I Will Miss You",
+            "location": "Table inside small timber outpost shack.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m4_03",
+            "name": "What a Discovery!",
+            "location": "Locked riverside cabin requiring lockpick or bolt cutters.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m4_04",
+            "name": "So Boring!",
+            "location": "Wooden crate on upper platform of Flak tower.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m4_05",
+            "name": "I'm so Sorry",
+            "location": "Destroyed farmhouse room behind wooden ladder.",
+            "image_url": ""
+          }
+        ],
+        "classified_documents": [
+          {
+            "id": "doc_m4_01",
+            "name": "Transfer Details",
+            "location": "Top floor command desk of valley manor.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m4_02",
+            "name": "Requisition Orders",
+            "location": "Bunker storage bay under metal catwalk railing.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m4_03",
+            "name": "Findings Report",
+            "location": "Conference room table on first floor of admin wing.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m4_04",
+            "name": "Requesting Support",
+            "location": "First-floor landing table behind spiral stairs.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m4_05",
+            "name": "Dam Damage Report",
+            "location": "Control room console opposite main sabotage switch.",
+            "image_url": ""
+          }
+        ],
+        "hidden_items": [
+          {
+            "id": "item_m4_01",
+            "name": "French Wine Bottle",
+            "location": "Tavern bar counter on first floor.",
+            "image_url": ""
+          },
+          {
+            "id": "item_m4_02",
+            "name": "Rubber Gas Mask",
+            "location": "Storage table in corner of tavern cellar.",
+            "image_url": ""
+          },
+          {
+            "id": "item_m4_03",
+            "name": "Poster: Libération",
+            "location": "Abutment wall behind bridge panzer; unlocks Libération.",
+            "image_url": ""
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "eagle_m4_01",
+            "name": "Dead-Eye Target 1",
+            "location": "Structural steel framework below spillway of dam.",
+            "image_url": ""
+          },
+          {
+            "id": "eagle_m4_02",
+            "name": "Dead-Eye Target 2",
+            "location": "Rock outcropping between pine trees on northwest ridge.",
+            "image_url": ""
+          },
+          {
+            "id": "eagle_m4_03",
+            "name": "Dead-Eye Target 3",
+            "location": "Balcony railing of eastern communication tower.",
+            "image_url": ""
+          }
+        ],
+        "workbenches": [
+          {
+            "id": "wb_m4_smg",
+            "name": "SMG Workbench",
+            "location": "Subterranean maintenance bunker via locked ladder hatch.",
+            "image_url": ""
+          },
+          {
+            "id": "wb_m4_pistol",
+            "name": "Pistol Workbench",
+            "location": "Top floor apartment via vines on exterior wall.",
+            "image_url": ""
+          },
+          {
+            "id": "wb_m4_rifle",
+            "name": "Rifle Workbench",
+            "location": "Reinforced steel doorway opposite generator room.",
+            "image_url": ""
+          }
+        ]
+      },
+      "kill_challenge": {
+        "mission_number": 4,
+        "mission_title": "Collision Course",
+        "target_name": "Ludwig Spiegel",
+        "location": "Patrolling the lower walkway platform along the massive dam.",
+        "challenge": "Kill Ludwig Spiegel by making him fall from the dam.",
+        "strategy": "Shoot the walkway support beams from a distance while he stands on the platform to collapse it, or lure/incapacitate him to the upper dam railing and throw his body over.",
+        "reward": "M1 Garand",
+        "image_url": ""
+      },
+      "propaganda_mission": {
+        "id": "prop_m3",
+        "number": 3,
+        "title": "Libération",
+        "unlock_poster": "item_m4_03",
+        "target_score": 20000,
+        "briefing": "Demolition challenge. Destroy armored vehicles crossing the bridge perimeter with minimal ammo.",
+        "image_url": ""
+      },
+      "medals": {
+        "objective": [
+          {
+            "id": "med_objective_bomb_squad",
+            "name": "Bomb Squad",
+            "description": "Complete Mission 4: Collision Course with a 1 star rating.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "mission": [
+          {
+            "id": "med_mission_sprung_a_leak",
+            "name": "Sprung a Leak",
+            "description": "Sabotage the Dam's pump room in Collision Course.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "long_shot": [
+          {
+            "id": "med_longshot_mission_4_long_shot",
+            "name": "Mission 4 Long Shot",
+            "description": "Make a 400 meter shot in Collision Course.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 4,
+            "distance_m": 400,
+            "authentic": false
+          },
+          {
+            "id": "med_longshot_mission_4_authentic_long_shot",
+            "name": "Mission 4 Authentic Long Shot",
+            "description": "Make a 300 meter shot in Collision Course on Authentic difficulty.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 4,
+            "distance_m": 300,
+            "authentic": true
+          }
+        ],
+        "propaganda": [
+          {
+            "id": "med_propaganda_propaganda_liberation",
+            "name": "Propaganda: Libération",
+            "description": "Earn a score of 2000 in the Libération propaganda mission.",
+            "goal": 2000,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "notes": "Typed as 20000; treated as 2000."
+          }
+        ]
+      },
+      "trophies": [
+        {
+          "trophyId": 4,
+          "name": "Bomb Squad",
+          "rank": "BRONZE",
+          "description": "Ensure Allied secrets remain unknown and confirm the location of Site D."
+        },
+        {
+          "trophyId": 47,
+          "name": "Sprung a Leak",
+          "rank": "BRONZE",
+          "description": "Sabotage the Dam's pump room in Collision Course."
         }
+      ]
     },
-
-    registerMedal: function(it) {
-        if (!it || !it.id) return;
-        if (!this.medals[it.id]) {
-            this.medals[it.id] = { earned: false, name: it.name || '', description: it.description || '' };
-        } else {
-            this.medals[it.id].name = it.name || this.medals[it.id].name;
-            this.medals[it.id].description = it.description || this.medals[it.id].description;
+    "mission_5": {
+      "number": 5,
+      "title": "Devil's Cauldron",
+      "region": "Chemical Synthesis Works",
+      "walkthrough": "Infiltrate facility, execute scuttle orders to cease Kleine Blume production, sabotage ingredient transports.",
+      "image_url": "",
+      "collectibles": {
+        "personal_letters": [
+          {
+            "id": "let_m5_01",
+            "name": "Location Exposed",
+            "location": "Cargo crate located on southwest perimeter.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m5_02",
+            "name": "A Childish Party!",
+            "location": "Desk inside bridge checkpoint guard hut.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m5_03",
+            "name": "I Miss You So Much",
+            "location": "Bench inside eastern perimeter enemy camp.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m5_04",
+            "name": "It is all in Ruins",
+            "location": "First-floor bedroom beneath bedside nightstand.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m5_05",
+            "name": "Be a Man, Not a Boy!",
+            "location": "Foreman's office table overlooking synthesis vats.",
+            "image_url": ""
+          }
+        ],
+        "classified_documents": [
+          {
+            "id": "doc_m5_01",
+            "name": "Scuttle Order",
+            "location": "First-floor lab office adjacent to destruction panel.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m5_02",
+            "name": "Wilhelm's Folly",
+            "location": "Engineering office desk overlooking chemical storage silos.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m5_03",
+            "name": "Classified Cargo",
+            "location": "Shipping depot office desk on first floor.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m5_04",
+            "name": "Intruder Spotted",
+            "location": "Security corridor table past emergency blast bulkhead.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m5_05",
+            "name": "Scuttle Instructions",
+            "location": "Plant manager's office safe; key carried by target officer.",
+            "image_url": ""
+          }
+        ],
+        "hidden_items": [
+          {
+            "id": "item_m5_01",
+            "name": "Playing Cards",
+            "location": "Wooden crate in southern encampment clearing.",
+            "image_url": ""
+          },
+          {
+            "id": "item_m5_02",
+            "name": "Laboratory ID",
+            "location": "First-floor office room off chemical plant lobby.",
+            "image_url": ""
+          },
+          {
+            "id": "item_m5_03",
+            "name": "Poster: Le Maquis Voit Tout!",
+            "location": "Exterior wall of guard shack; unlocks Le Maquis Voit Tout.",
+            "image_url": ""
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "eagle_m5_01",
+            "name": "Dead-Eye Target 1",
+            "location": "Lantern gallery of distant off-map lighthouse to northwest.",
+            "image_url": ""
+          },
+          {
+            "id": "eagle_m5_02",
+            "name": "Dead-Eye Target 2",
+            "location": "Counterweight arm of heavy gantry crane on eastern docks.",
+            "image_url": ""
+          },
+          {
+            "id": "eagle_m5_03",
+            "name": "Dead-Eye Target 3",
+            "location": "Concrete lintel arch directly above railway tunnel exit.",
+            "image_url": ""
+          }
+        ],
+        "workbenches": [
+          {
+            "id": "wb_m5_rifle",
+            "name": "Rifle Workbench",
+            "location": "Chemical plant basement vault via lockpick or bolt cutters.",
+            "image_url": ""
+          },
+          {
+            "id": "wb_m5_pistol",
+            "name": "Pistol Workbench",
+            "location": "Security corridor office past Kleine Blume control room.",
+            "image_url": ""
+          },
+          {
+            "id": "wb_m5_smg",
+            "name": "SMG Workbench",
+            "location": "Workshop office directly inside northern railway tunnel portal.",
+            "image_url": ""
+          }
+        ]
+      },
+      "kill_challenge": {
+        "mission_number": 5,
+        "mission_title": "Devil's Cauldron",
+        "target_name": "Eloi Coste",
+        "location": "Large cabin in the northern sector near the U-boat facility.",
+        "challenge": "Kill Eloi Coste with an LMG.",
+        "strategy": "Pacify or incapacitate Coste, grab the MG42 located in the second-floor bedroom, and finish him off with it while he is downed.",
+        "reward": "Trench Gun",
+        "image_url": ""
+      },
+      "propaganda_mission": {
+        "id": "prop_m4",
+        "number": 4,
+        "title": "Le Maquis Voit Tout!",
+        "unlock_poster": "item_m5_03",
+        "target_score": 22000,
+        "briefing": "Stealth infiltration challenge. Pacify all facility guards without raising an audible alarm.",
+        "image_url": ""
+      },
+      "medals": {
+        "objective": [
+          {
+            "id": "med_objective_industrial_action",
+            "name": "Industrial Action",
+            "description": "Complete Mission 5: Devil's Cauldron with a 3 star rating.",
+            "goal": 3,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "mission": [
+          {
+            "id": "med_mission_stopping_traffic",
+            "name": "Stopping Traffic",
+            "description": "Destroy trucks carrying Kleine Blume ingredients in Devil's Cauldron.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "long_shot": [
+          {
+            "id": "med_longshot_mission_5_long_shot",
+            "name": "Mission 5 Long Shot",
+            "description": "Make a 485 meter shot in Devil's Cauldron.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 5,
+            "distance_m": 485,
+            "authentic": false
+          },
+          {
+            "id": "med_longshot_mission_5_authentic_long_shot",
+            "name": "Mission 5 Authentic Long Shot",
+            "description": "Make a 280 meter shot in Devil's Cauldron on Authentic difficulty.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 5,
+            "distance_m": 280,
+            "authentic": true
+          }
+        ],
+        "propaganda": [
+          {
+            "id": "med_propaganda_propaganda_le_maquis_voit_tout",
+            "name": "Propaganda: Le Maquis Voit Tout!",
+            "description": "Earn a score of 2000 in the Le Maquis Voit Tout! propaganda mission.",
+            "goal": 2000,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ]
+      },
+      "trophies": [
+        {
+          "trophyId": 5,
+          "name": "Industrial Action",
+          "rank": "BRONZE",
+          "description": "Destroy the underground chemical weapons plant and cease Kleine Blume production."
+        },
+        {
+          "trophyId": 48,
+          "name": "Stopping Traffic",
+          "rank": "BRONZE",
+          "description": "Destroy the Trucks carrying Kleine Blume ingredients in Devil's Cauldron."
         }
+      ]
     },
-
-    registerRibbon: function(it) {
-        if (!it || !it.id) return;
-        if (!this.ribbons[it.id]) {
-            this.ribbons[it.id] = { earned: false, name: it.name || '', requirement: it.requirement || '' };
-        } else {
-            this.ribbons[it.id].name = it.name || this.ribbons[it.id].name;
-            this.ribbons[it.id].requirement = it.requirement || this.ribbons[it.id].requirement;
+    "mission_6": {
+      "number": 6,
+      "title": "Assault on Fort Rouge",
+      "region": "Coastal Citadel",
+      "walkthrough": "Breach lower gate fortifications, disable coastal battery, exfiltrate before aerial bombardment.",
+      "image_url": "",
+      "collectibles": {
+        "personal_letters": [
+          {
+            "id": "let_m6_01",
+            "name": "Just Do Your Job",
+            "location": "First floor of destroyed building on wooden box (rear entrance).",
+            "image_url": ""
+          },
+          {
+            "id": "let_m6_02",
+            "name": "I Am Fed Up",
+            "location": "Stone table inside church in front of safe.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m6_03",
+            "name": "Something is Strange",
+            "location": "Lying on ground inside ruins.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m6_04",
+            "name": "Beautiful Views",
+            "location": "Wooden box at top entrance heading underground.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m6_05",
+            "name": "Fools Everywhere",
+            "location": "Bench in corner on upper-left perimeter of village.",
+            "image_url": ""
+          }
+        ],
+        "classified_documents": [
+          {
+            "id": "doc_m6_01",
+            "name": "Roof Weakness Found",
+            "location": "First-floor bureau office table.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m6_02",
+            "name": "Defend our Skies",
+            "location": "Wooden bench inside estate greenhouse.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m6_03",
+            "name": "Ready on your Order",
+            "location": "Table inside building housing Gestapo officers.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m6_04",
+            "name": "No Retreat",
+            "location": "Top floor safe (satchel charge or key from watchtower patrol).",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m6_05",
+            "name": "Schoene's Notes",
+            "location": "Shelf inside bottom-right room of underground chamber.",
+            "image_url": ""
+          }
+        ],
+        "hidden_items": [
+          {
+            "id": "item_m6_01",
+            "name": "TODT Uniform Badge",
+            "location": "Basement cellar reached via stairs behind house.",
+            "image_url": ""
+          },
+          {
+            "id": "item_m6_02",
+            "name": "Committee C Map",
+            "location": "Pinned to wall in center room of underground chamber.",
+            "image_url": ""
+          },
+          {
+            "id": "item_m6_03",
+            "name": "Poster: Prendre Le Maquis",
+            "location": "Exterior building wall; unlocks Prendre Le Maquis.",
+            "image_url": ""
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "eagle_m6_01",
+            "name": "Dead-Eye Target 1",
+            "location": "Rooftop of house where Kill List target resides.",
+            "image_url": ""
+          },
+          {
+            "id": "eagle_m6_02",
+            "name": "Dead-Eye Target 2",
+            "location": "Spire ridge atop village church.",
+            "image_url": ""
+          },
+          {
+            "id": "eagle_m6_03",
+            "name": "Dead-Eye Target 3",
+            "location": "Corner parapet of outer castle wall along boundary.",
+            "image_url": ""
+          }
+        ],
+        "workbenches": [
+          {
+            "id": "wb_m6_rifle",
+            "name": "Rifle Workbench",
+            "location": "Underground chamber (turn left inside entrance; requires satchel charge).",
+            "image_url": ""
+          },
+          {
+            "id": "wb_m6_smg",
+            "name": "SMG Workbench",
+            "location": "Basement cellar beneath house in center of village.",
+            "image_url": ""
+          },
+          {
+            "id": "wb_m6_pistol",
+            "name": "Pistol Workbench",
+            "location": "Locked house requiring lockpick or bolt cutters.",
+            "image_url": ""
+          }
+        ]
+      },
+      "kill_challenge": {
+        "mission_number": 6,
+        "mission_title": "Assault on Fort Rouge",
+        "target_name": "Uwe Schoene",
+        "location": "Mansion located in the western sector of the town.",
+        "challenge": "Kill Uwe Schoene with a Coal Torpedo.",
+        "strategy": "Collect the Coal Torpedo from the ground-floor supply room. Sneak to the 2nd-floor fireplace undetected, rig the fuel basket, and wait for him to ignite it.",
+        "reward": "ERMA36",
+        "image_url": ""
+      },
+      "propaganda_mission": {
+        "id": "prop_m5",
+        "number": 5,
+        "title": "Prendre Le Maquis",
+        "unlock_poster": "item_m6_03",
+        "target_score": 25000,
+        "briefing": "Timed combat trial. Breach the citadel courtyard and eliminate garrison commanders.",
+        "image_url": ""
+      },
+      "medals": {
+        "objective": [
+          {
+            "id": "med_objective_blast_from_the_past",
+            "name": "Blast from the Past",
+            "description": "Complete Mission 6: Assault on Fort Rouge with a 3 star rating.",
+            "goal": 3,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "notes": "Typed as 'Mission 5'; corrected to Mission 6."
+          }
+        ],
+        "mission": [
+          {
+            "id": "med_mission_sniper_not_so_elite",
+            "name": "Sniper Not-So-Elite",
+            "description": "Melee takedown 1 sniper in Assault on Fort Rouge.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "long_shot": [
+          {
+            "id": "med_longshot_mission_6_long_shot",
+            "name": "Mission 6 Long Shot",
+            "description": "Make a 300 meter shot in Assault on Fort Rouge.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 6,
+            "distance_m": 300,
+            "authentic": false
+          },
+          {
+            "id": "med_longshot_mission_6_authentic_long_shot",
+            "name": "Mission 6 Authentic Long Shot",
+            "description": "Make a 200 meter shot in Assault on Fort Rouge on Authentic difficulty.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 6,
+            "distance_m": 200,
+            "authentic": true
+          }
+        ],
+        "propaganda": [
+          {
+            "id": "med_propaganda_propaganda_prendre_le_maquis",
+            "name": "Propaganda: Prendre Le Maquis",
+            "description": "Earn a score of 2000 in the Prendre Le Maquis propaganda mission.",
+            "goal": 2000,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ]
+      },
+      "trophies": [
+        {
+          "trophyId": 6,
+          "name": "Blast from the Past",
+          "rank": "BRONZE",
+          "description": "Infiltrate Fort Rouge and escape before Allied bombers level the site."
         }
+      ]
     },
-
-    hydrateMissionSchema: function(data) {
-        Object.entries(data.missions).forEach(([mKey, m]) => {
-            if (!m || typeof m !== 'object') return;
-            const mLabel = `Mission ${m.number} — ${m.title || ''}`;
-            this.ensureMissionEntry(mKey, { name: m.title || mLabel, region: m.region || '', guide: m.walkthrough || '' });
-
-            Object.entries(m.collectibles || {}).forEach(([cat, list]) => {
-                const items = toArr(list).filter(it => it && it.id);
-                if (!items.length) return;
-                const gKey = `${mKey}__${cat}`;
-                if (!this.collectibles[gKey]) {
-                    this.collectibles[gKey] = {
-                        collected: false,
-                        count: 0,
-                        total: items.length,
-                        quest_name: `${mLabel} — ${cat.replace(/_/g, ' ')}`,
-                        region: m.region || 'Game World',
-                        items: {}
-                    };
-                } else {
-                    this.collectibles[gKey].total = items.length;
-                    if (!this.collectibles[gKey].items) this.collectibles[gKey].items = {};
-                }
-                items.forEach(it => {
-                    if (!this.collectibles[gKey].items[it.id]) {
-                        this.collectibles[gKey].items[it.id] = {
-                            collected: false,
-                            name: it.name || '',
-                            region: m.region || '',
-                            location: it.location || ''
-                        };
-                    }
-                });
-            });
-
-            if (m.kill_challenge && typeof m.kill_challenge === 'object') {
-                const kc = m.kill_challenge;
-                this.ensureMissionEntry(`kill_${mKey}`, {
-                    name: `Kill List: ${kc.target_name || ''}`,
-                    region: m.region || '',
-                    guide: kc.strategy || ''
-                });
-            }
-
-            if (m.propaganda_mission && m.propaganda_mission.id) {
-                const p = m.propaganda_mission;
-                this.ensureMissionEntry(p.id, { name: `Propaganda: ${p.title || ''}`, region: m.region || '', guide: p.briefing || '' });
-            }
-
-            walkLeaves(m.medals, it => this.registerMedal(it));
-        });
-
-        toArr(data.unassigned_propaganda_missions).forEach(p => {
-            if (p && p.id) this.ensureMissionEntry(p.id, { name: `Propaganda: ${p.title || ''}`, region: '', guide: p.briefing || '' });
-        });
-
-        walkLeaves(data.medals, it => this.registerMedal(it));
-        ribbonKeys(data).forEach(k => toArr(data[k]).forEach(r => this.registerRibbon(r)));
+    "mission_7": {
+      "number": 7,
+      "title": "Lock, Stock and Barrels",
+      "region": "V1 Rocket Facility",
+      "walkthrough": "Penetrate testing tunnels, sabotage liquid fuel reservoirs, neutralize operational Zugwerfer launch unit.",
+      "image_url": "",
+      "collectibles": {
+        "personal_letters": [
+          {
+            "id": "let_m7_01",
+            "name": "Trouble in the Ranks",
+            "location": "Upstairs table inside residential farmhouse.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m7_02",
+            "name": "Barn Watch",
+            "location": "Inside small timber barn on wooden workbench table.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m7_03",
+            "name": "I Feel Uneasy",
+            "location": "Second-floor table positioned beside window.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m7_04",
+            "name": "Security Check",
+            "location": "Guard outpost desk along northern access track.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m7_05",
+            "name": "Final Preparations",
+            "location": "Bunker staging office table near testing rail line.",
+            "image_url": ""
+          }
+        ],
+        "classified_documents": [
+          {
+            "id": "doc_m7_01",
+            "name": "A Service Hatch",
+            "location": "Ground-floor corridor with pink walls, first door on right.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m7_02",
+            "name": "Control Room Key",
+            "location": "Subterranean basement room following downstairs path.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m7_03",
+            "name": "Rocket Fuse Setup",
+            "location": "Safe inside secondary objective bunker (satchel charge or officer key).",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m7_04",
+            "name": "Hydraulics Concerns",
+            "location": "Bunker supply box in small utility vault.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m7_05",
+            "name": "Vulnerability Found",
+            "location": "Desk in bunker reached immediately after unlocking control room.",
+            "image_url": ""
+          }
+        ],
+        "hidden_items": [
+          {
+            "id": "item_m7_01",
+            "name": "Engraved Lighter",
+            "location": "Table immediately inside entrance of house.",
+            "image_url": ""
+          },
+          {
+            "id": "item_m7_02",
+            "name": "Broken Pressure Gauge",
+            "location": "Metal shelf in compressor room along test canal.",
+            "image_url": ""
+          },
+          {
+            "id": "item_m7_03",
+            "name": "Poster: Debout La France",
+            "location": "Outbuilding brick facade; unlocks Debout La France.",
+            "image_url": ""
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "eagle_m7_01",
+            "name": "Dead-Eye Target 1",
+            "location": "Silo elevator tower pinnacle on north plateau.",
+            "image_url": ""
+          },
+          {
+            "id": "eagle_m7_02",
+            "name": "Dead-Eye Target 2",
+            "location": "Gable peak of transformer substation building.",
+            "image_url": ""
+          },
+          {
+            "id": "eagle_m7_03",
+            "name": "Dead-Eye Target 3",
+            "location": "Chimney of house located near final main objective.",
+            "image_url": ""
+          }
+        ],
+        "workbenches": [
+          {
+            "id": "wb_m7_rifle",
+            "name": "Rifle Workbench",
+            "location": "First-floor room accessed by climbing exterior rear lattice.",
+            "image_url": ""
+          },
+          {
+            "id": "wb_m7_smg",
+            "name": "SMG Workbench",
+            "location": "Loft level reached via interior ladder inside storage building.",
+            "image_url": ""
+          },
+          {
+            "id": "wb_m7_pistol",
+            "name": "Pistol Workbench",
+            "location": "Balcony space situated directly above main bunker entrance.",
+            "image_url": ""
+          }
+        ]
+      },
+      "kill_challenge": {
+        "mission_number": 7,
+        "mission_title": "Lock, Stock and Barrels",
+        "target_name": "Aldo Riese",
+        "location": "Farmhouse on the western edge of the facility.",
+        "challenge": "Kill Aldo Riese with poison.",
+        "strategy": "Acquire the poison bottle from the laboratory shelf, tamper with his designated drink cup/flask on the kitchen counter, and wait for him to drink.",
+        "reward": "M1918 BAR",
+        "image_url": ""
+      },
+      "propaganda_mission": {
+        "id": "prop_m8",
+        "number": 8,
+        "title": "Debout La France",
+        "unlock_poster": "item_m7_03",
+        "target_score": 25000,
+        "briefing": "Heavy weapons trial. Defend the launch tunnel entrance from mechanized infantry waves.",
+        "unconfirmed": true,
+        "image_url": ""
+      },
+      "medals": {
+        "objective": [
+          {
+            "id": "med_objective_grapes_of_wrath",
+            "name": "Grapes of Wrath",
+            "description": "Complete Mission 7: Lock, Stock and Barrels with a 3 star rating.",
+            "goal": 3,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "mission": [
+          {
+            "id": "med_mission_oh_gnome_you_don_t",
+            "name": "Oh Gnome You Don't",
+            "description": "Destroy 10 gnomes in Lock, Stock and Barrels.",
+            "goal": 10,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "long_shot": [
+          {
+            "id": "med_longshot_mission_7_long_shot",
+            "name": "Mission 7 Long Shot",
+            "description": "Make a 200 meter shot in Lock, Stock and Barrels.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 7,
+            "distance_m": 200,
+            "authentic": false,
+            "notes": "Same distance as the Authentic version; one may be wrong."
+          },
+          {
+            "id": "med_longshot_mission_7_authentic_long_shot",
+            "name": "Mission 7 Authentic Long Shot",
+            "description": "Make a 200 meter shot in Lock, Stock and Barrels on Authentic difficulty.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 7,
+            "distance_m": 200,
+            "authentic": true,
+            "notes": "Same distance as the normal version; one may be wrong."
+          }
+        ],
+        "propaganda": []
+      },
+      "trophies": [
+        {
+          "trophyId": 7,
+          "name": "Grapes of Wrath",
+          "rank": "BRONZE",
+          "description": "Infiltrate the V1 rocket launch site and destroy the Zugwerfer."
+        }
+      ]
     },
-
-    hydrateTrophiesFromSkeleton: function(skeleton) {
-        if (!skeleton) return;
-        this.psnSkeleton = skeleton;
-
-        const rawList = collectAllTrophies(skeleton);
-        rawList.forEach((t, idx) => {
-            if (!t) return;
-            const tId = t.trophyId !== undefined ? t.trophyId : idx;
-            const cardKey = `trophy_${this.gameId}_${tId}`;
-
-            if (!this.trophies[cardKey]) {
-                this.trophies[cardKey] = {
-                    earned: false,
-                    name: t.name || t.trophyName || t.title || 'Trophy',
-                    rank: (t.rank || t.type || 'Bronze').toUpperCase(),
-                    description: t.description || t.detail || '',
-                    icon: toSecureUrl(t.icon || t.trophyIconUrl || ''),
-                    trophyId: tId,
-                    psnSynced: false
-                };
-            } else {
-                this.trophies[cardKey].name = t.name || this.trophies[cardKey].name;
-                this.trophies[cardKey].rank = (t.rank || this.trophies[cardKey].rank).toUpperCase();
-                this.trophies[cardKey].description = t.description || this.trophies[cardKey].description;
-                if (t.icon) this.trophies[cardKey].icon = toSecureUrl(t.icon);
-            }
-        });
-
-        this.recalculateMetrics();
+    "mission_8": {
+      "number": 8,
+      "title": "End of the Line",
+      "region": "Central Freight Hub & Railyard",
+      "walkthrough": "Prevent final Zugwerfer deployment heading toward Normandy beaches, destroy patrol panzer tank.",
+      "image_url": "",
+      "collectibles": {
+        "personal_letters": [
+          {
+            "id": "let_m8_01",
+            "name": "Victory is Imminent!",
+            "location": "Top floor command office table overlooking train tracks.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m8_02",
+            "name": "Home Soon, My Love",
+            "location": "Maintenance desk at bottom of concrete grain silo.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m8_03",
+            "name": "What We've Achieved",
+            "location": "Locked residential room; key held by yard patrol officer.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m8_04",
+            "name": "Burn After Reading",
+            "location": "Outbuilding office adjacent to Kill List target zone.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m8_05",
+            "name": "I Think This Is It",
+            "location": "First-floor records office inside central station concourse.",
+            "image_url": ""
+          }
+        ],
+        "classified_documents": [
+          {
+            "id": "doc_m8_01",
+            "name": "Zugwerfer Departure",
+            "location": "First-floor locked office; shared with Rifle Workbench.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m8_02",
+            "name": "Prepare to Strike!",
+            "location": "Bunker room beside ladder at default insertion point.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m8_03",
+            "name": "Rusty Turntable",
+            "location": "Railyard warehouse maintenance office desk.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m8_04",
+            "name": "Railyard Management",
+            "location": "Chair beside dispatch table inside central grain silo.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m8_05",
+            "name": "Turret Locations",
+            "location": "Upper staging catwalk room; located beside SMG Workbench.",
+            "image_url": ""
+          }
+        ],
+        "hidden_items": [
+          {
+            "id": "item_m8_01",
+            "name": "AA Repair Manual",
+            "location": "Tool locker base inside large concrete silo.",
+            "image_url": ""
+          },
+          {
+            "id": "item_m8_02",
+            "name": "New Tank Blueprints",
+            "location": "Ground-floor depot crate corner.",
+            "image_url": ""
+          },
+          {
+            "id": "item_m8_03",
+            "name": "Poster: Pour Une France Libre",
+            "location": "First-floor exterior rail wall; unlocks Pour Une France Libre.",
+            "image_url": ""
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "eagle_m8_01",
+            "name": "Dead-Eye Target 1",
+            "location": "Northeast tower peak of central terminal complex.",
+            "image_url": ""
+          },
+          {
+            "id": "eagle_m8_02",
+            "name": "Dead-Eye Target 2",
+            "location": "Northwest roof corner of house facing initial spawn.",
+            "image_url": ""
+          },
+          {
+            "id": "eagle_m8_03",
+            "name": "Dead-Eye Target 3",
+            "location": "Cupola top of small tower near eastern classification yard.",
+            "image_url": ""
+          }
+        ],
+        "workbenches": [
+          {
+            "id": "wb_m8_pistol",
+            "name": "Pistol Workbench",
+            "location": "First-floor residential room accessible by mantle jump.",
+            "image_url": ""
+          },
+          {
+            "id": "wb_m8_rifle",
+            "name": "Rifle Workbench",
+            "location": "First-floor locked room inside terminal station; key held by main objective guard.",
+            "image_url": ""
+          },
+          {
+            "id": "wb_m8_smg",
+            "name": "SMG Workbench",
+            "location": "Elevated staging catwalk room beside Classified Document #5.",
+            "image_url": ""
+          }
+        ]
+      },
+      "kill_challenge": {
+        "mission_number": 8,
+        "mission_title": "End of the Line",
+        "target_name": "Hermann Gottschalk",
+        "location": "Northern depot yard inspecting machinery and fuel canisters.",
+        "challenge": "Kill Hermann Gottschalk with a gas explosion.",
+        "strategy": "Wait for Gottschalk to patrol adjacent to the red pressurized fuel pumps, then fire rifle rounds into the pump cylinder until it detonates.",
+        "reward": "ZK-420S",
+        "image_url": ""
+      },
+      "propaganda_mission": {
+        "id": "prop_m7",
+        "number": 7,
+        "title": "Pour Une France Libre",
+        "unlock_poster": "item_m8_03",
+        "target_score": 30000,
+        "briefing": "Master sniper trial. Eliminate all marked targets across the railyard at authentic difficulty distance.",
+        "image_url": ""
+      },
+      "medals": {
+        "objective": [
+          {
+            "id": "med_objective_whatever_it_takes",
+            "name": "Whatever it Takes",
+            "description": "Complete Mission 8: End of the Line with a 3 star rating.",
+            "goal": 3,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "mission": [
+          {
+            "id": "med_mission_tanks_for_nothing",
+            "name": "Tanks for Nothing!",
+            "description": "Destroy the Panzer Tank in End of the Line.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ],
+        "long_shot": [
+          {
+            "id": "med_longshot_mission_8_long_shot",
+            "name": "Mission 8 Long Shot",
+            "description": "Make a 425 meter shot in End of the Line.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 8,
+            "distance_m": 425,
+            "authentic": false
+          },
+          {
+            "id": "med_longshot_mission_8_authentic_long_shot",
+            "name": "Mission 8 Authentic Long Shot",
+            "description": "Make a 200 meter shot in End of the Line on Authentic difficulty.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "mission_number": 8,
+            "distance_m": 200,
+            "authentic": true
+          }
+        ],
+        "propaganda": [
+          {
+            "id": "med_propaganda_propaganda_pour_une_france_libre",
+            "name": "Propaganda: Pour Une France Libre",
+            "description": "Earn a score of 2000 in the Pour Une France Libre propaganda mission.",
+            "goal": 2000,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          }
+        ]
+      },
+      "trophies": [
+        {
+          "trophyId": 8,
+          "name": "Whatever it Takes",
+          "rank": "BRONZE",
+          "description": "Stop the Zugwerfers from leaving and obliterating the D-Day landings."
+        },
+        {
+          "trophyId": 50,
+          "name": "Tanks for Nothing!",
+          "rank": "BRONZE",
+          "description": "Destroy the Panzer Tank in End of the Line."
+        }
+      ]
     },
-
-    recalculateMetrics: function() {
-        let totalCollectiblesCount = 0;
-        let totalPossibleCollectibles = 0;
-
-        for (const cKey in this.collectibles) {
-            const group = this.collectibles[cKey];
-            if (group && group.items) {
-                let groupCount = 0;
-                Object.values(group.items).forEach(item => {
-                    totalPossibleCollectibles++;
-                    if (item && item.collected) {
-                        groupCount++;
-                        totalCollectiblesCount++;
-                    }
-                });
-                group.count = groupCount;
-                group.collected = (group.total > 0 && groupCount >= group.total);
-            }
+    "mission_9": {
+      "number": 9,
+      "title": "All or Nothing",
+      "region": "Final Stronghold",
+      "walkthrough": "Climactic final encounter. Infiltrate command center, eliminate Colonel Kruger, dismantle superweapon apparatus.",
+      "image_url": "",
+      "collectibles": {
+        "personal_letters": [],
+        "classified_documents": [],
+        "hidden_items": [],
+        "stone_eagles": [],
+        "workbenches": []
+      },
+      "kill_challenge": null,
+      "propaganda_mission": null,
+      "medals": {
+        "objective": [
+          {
+            "id": "med_objective_so_long_kruger",
+            "name": "So Long Kruger",
+            "description": "Kill Kruger with a rifle at a distance of 200 meters or more.",
+            "goal": 300,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "notes": "Typed as 0/300 with a 200 m distance; one of these may be a typo."
+          }
+        ],
+        "mission": [
+          {
+            "id": "med_mission_mastermind",
+            "name": "Mastermind",
+            "description": "Headshot Kruger.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          },
+          {
+            "id": "med_mission_eyes_of_a_hawk_er",
+            "name": "Eyes of a Hawk(er)",
+            "description": "Kill Kruger using a rifle while in iron sights.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          },
+          {
+            "id": "med_mission_destucktion",
+            "name": "Destucktion",
+            "description": "Kill Kruger by destroying the passing truck.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": ""
+          },
+          {
+            "id": "med_mission_flameout",
+            "name": "Flameout",
+            "description": "Kill Kruger with explosive barrels before he escapes.",
+            "goal": null,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "",
+            "notes": "Goal number was missing after '0/'."
+          }
+        ],
+        "long_shot": [],
+        "propaganda": []
+      },
+      "trophies": [
+        {
+          "trophyId": 51,
+          "name": "Mastermind",
+          "rank": "BRONZE",
+          "description": "Headshot Kruger."
         }
-
-        const earnedTrophies = Object.values(this.trophies).filter(t => t && t.earned).length;
-        const totalTrophies = Object.keys(this.trophies).length || 0;
-        this.trophies_earned = earnedTrophies;
-        this.trophies_total = totalTrophies;
-        this.trophies_percent = totalTrophies > 0 ? Math.round((earnedTrophies / totalTrophies) * 100) : 0;
-
-        this.ranks.collectibles = totalCollectiblesCount;
-        this.ranks.medals = Object.values(this.medals).filter(m => m && m.earned).length;
-        this.ranks.ribbons = Object.values(this.ribbons).filter(r => r && r.earned).length;
-
-        this.updateRankDisplay('collectibles', `${totalCollectiblesCount}/${totalPossibleCollectibles}`);
-        this.updateRankDisplay('trophies', `${earnedTrophies}/${totalTrophies}`);
+      ]
     },
-
-    updateRankDisplay: function(rankKey, val) {
-        const el = document.getElementById(`rank-val-${rankKey}`);
-        if (el) el.innerText = val || 0;
+    "mission_10_dlc": {
+      "number": 10,
+      "title": "Target Führer: Lights, Camera, ACHTUNG!",
+      "region": "Bavarian Film Compound (DLC)",
+      "walkthrough": "Infiltrate movie set estate, identify real Führer among doubles, eliminate Hitler, exfiltrate undetected.",
+      "image_url": "",
+      "collectibles": {
+        "personal_letters": [
+          {
+            "id": "let_m10_01",
+            "name": "Director's Grievance",
+            "location": "Production trailer office desk beside soundstage entrance.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m10_02",
+            "name": "Double Trouble",
+            "location": "Dressing room vanity table behind main studio set.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m10_03",
+            "name": "Prop Master Memo",
+            "location": "Storage loft crate accessible via exterior scaffold ladder.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m10_04",
+            "name": "Film Stock Shortage",
+            "location": "Editing booth bench on upper balcony overlooking studio.",
+            "image_url": ""
+          },
+          {
+            "id": "let_m10_05",
+            "name": "Security Alert: Lookalikes",
+            "location": "Estate gatehouse table beside vehicle checkpoint barrier.",
+            "image_url": ""
+          }
+        ],
+        "classified_documents": [
+          {
+            "id": "doc_m10_01",
+            "name": "Shooting Schedule",
+            "location": "Soundstage control booth desk overlooking fake alpine set.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m10_02",
+            "name": "Pyrotechnic Safety Protocols",
+            "location": "Armory workbench table inside film equipment bunker.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m10_03",
+            "name": "Führer Itinerary",
+            "location": "Château private study safe (requires studio manager key).",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m10_04",
+            "name": "Prop Weapons Manifest",
+            "location": "Cargo loading dock office clipboard table.",
+            "image_url": ""
+          },
+          {
+            "id": "doc_m10_05",
+            "name": "Evacuation Contingency",
+            "location": "Underground emergency bunker desk beside rail spur.",
+            "image_url": ""
+          }
+        ],
+        "hidden_items": [
+          {
+            "id": "item_m10_01",
+            "name": "Clapperboard: Take 88",
+            "location": "Resting on director's chair in central studio soundstage.",
+            "image_url": ""
+          },
+          {
+            "id": "item_m10_02",
+            "name": "Hitler Mustache Wax",
+            "location": "Dressing room makeup mirror counter.",
+            "image_url": ""
+          },
+          {
+            "id": "item_m10_03",
+            "name": "Prop Luger (Rubber)",
+            "location": "Costume storage room shelf near studio canteen.",
+            "image_url": ""
+          },
+          {
+            "id": "item_m10_04",
+            "name": "Signed Film Reel",
+            "location": "Private screening room projection booth table.",
+            "image_url": ""
+          }
+        ],
+        "stone_eagles": [
+          {
+            "id": "eagle_m10_01",
+            "name": "Dead-Eye Target 1",
+            "location": "Studio arch sign pediment above main vehicle gate.",
+            "image_url": ""
+          },
+          {
+            "id": "eagle_m10_02",
+            "name": "Dead-Eye Target 2",
+            "location": "Château estate roof balustrade between stone urns.",
+            "image_url": ""
+          },
+          {
+            "id": "eagle_m10_03",
+            "name": "Dead-Eye Target 3",
+            "location": "Water tower apex behind studio electrical generator.",
+            "image_url": ""
+          }
+        ],
+        "workbenches": [
+          {
+            "id": "wb_m10_rifle",
+            "name": "Rifle Workbench",
+            "location": "Stage workshop storeroom beside film set carpenters' bay.",
+            "image_url": ""
+          },
+          {
+            "id": "wb_m10_smg",
+            "name": "SMG Workbench",
+            "location": "Armory locker room inside guard barracks compound.",
+            "image_url": ""
+          },
+          {
+            "id": "wb_m10_pistol",
+            "name": "Pistol Workbench",
+            "location": "Cellar vault beneath château wine tasting room.",
+            "image_url": ""
+          }
+        ]
+      },
+      "kill_challenge": null,
+      "propaganda_mission": null,
+      "medals": {
+        "objective": [],
+        "mission": [],
+        "long_shot": [],
+        "propaganda": []
+      },
+      "trophies": []
+    }
+  },
+  "campaign_ribbons": [
+    {
+      "id": "ribbon_assassin",
+      "name": "Assassin",
+      "requirement": "5 stealth takedowns",
+      "image_url": ""
     },
-
-    buildPayload: function() {
-        this.recalculateMetrics();
-        return {
-            gameId: this.getCanonicalGameName(),
-            platform: this.platform,
-            trophies_earned: this.trophies_earned,
-            trophies_total: this.trophies_total,
-            trophies_percent: this.trophies_percent,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            ranks: this.ranks,
-            collectibles: this.collectibles,
-            stashes: this.stashes,
-            roster: this.roster,
-            missions: this.missions,
-            medals: this.medals,
-            ribbons: this.ribbons,
-            trophies: this.trophies
-        };
+    {
+      "id": "ribbon_engineer",
+      "name": "Engineer",
+      "requirement": "Destroy 1 vehicle using traps",
+      "image_url": ""
     },
-
-    applyPayload: function(payload) {
-        if (!payload || typeof payload !== 'object') return;
-        this.trophies_earned = payload.trophies_earned || 0;
-        this.trophies_total = payload.trophies_total || this.trophies_total;
-        this.trophies_percent = payload.trophies_percent || 0;
-
-        if (payload.collectibles) {
-            for (const cKey in payload.collectibles) {
-                if (this.collectibles[cKey]?.items && payload.collectibles[cKey]?.items) {
-                    for (const itemId in payload.collectibles[cKey].items) {
-                        if (this.collectibles[cKey].items[itemId]) {
-                            this.collectibles[cKey].items[itemId].collected = !!payload.collectibles[cKey].items[itemId].collected;
-                        }
-                    }
-                }
-            }
+    {
+      "id": "ribbon_ghost",
+      "name": "Ghost",
+      "requirement": "15 kills while remaining undetected",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_distraction",
+      "name": "Distraction Expert",
+      "requirement": "5 kills on distracted enemies",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_wrecker",
+      "name": "Wrecker",
+      "requirement": "Destroy 5 vehicles",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_brawler",
+      "name": "Brawler",
+      "requirement": "10 lethal melee takedowns",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_mechanic",
+      "name": "Mechanic",
+      "requirement": "Disable 3 vehicle engines",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_sound_mask",
+      "name": "Sound Mask Expert",
+      "requirement": "Create or exploit 3 sound masks",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_skull_crusher",
+      "name": "Skull Crusher",
+      "requirement": "10 headshot kills",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_scout",
+      "name": "Scout",
+      "requirement": "Tag 20 enemies using binoculars",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_cleaner",
+      "name": "Cleaner",
+      "requirement": "Hide 3 bodies in crates or dumpsters",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_boxer",
+      "name": "Boxer",
+      "requirement": "10 non-lethal takedowns",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_guerrilla",
+      "name": "Guerrilla",
+      "requirement": "3 enemy knockdowns using Schu-mines",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_camofleur",
+      "name": "Camofleur",
+      "requirement": "15 kills while hidden in tall grass",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_knockout",
+      "name": "Knockout Expert",
+      "requirement": "4 enemy knockdowns with thrown bottles",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_circuit_breaker",
+      "name": "Circuit Breaker",
+      "requirement": "Disable an active alarm panel",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_partisan",
+      "name": "Partisan",
+      "requirement": "3 environmental hazard kills",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_merciful",
+      "name": "Merciful",
+      "requirement": "Hit 15 enemies with non-lethal ammunition",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_head_doctor",
+      "name": "Head Doctor",
+      "requirement": "15 non-lethal headshots",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_demolitionist",
+      "name": "Demolitionist",
+      "requirement": "Double kill by shooting placed TNT or trap",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_grenadier",
+      "name": "Grenadier",
+      "requirement": "5 grenade kills",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_trapper",
+      "name": "Trapper",
+      "requirement": "3 booby trap kills",
+      "image_url": ""
+    },
+    {
+      "id": "ribbon_rifle_specialist",
+      "name": "Rifle Specialist",
+      "requirement": "20 kills with sniper rifle",
+      "image_url": ""
+    }
+  ],
+  "survival_ribbons": [
+    {
+      "id": "surv_sentry_service",
+      "name": "Sentry Service",
+      "requirement": "Kill 15 Nazis while you're near the Command Post.",
+      "image_url": ""
+    },
+    {
+      "id": "surv_survivor",
+      "name": "Survivor",
+      "requirement": "Complete a Survival Mission.",
+      "image_url": ""
+    },
+    {
+      "id": "surv_boom_barrage",
+      "name": "Boom Barrage",
+      "requirement": "Kill 10 Nazis with the Panzerfaust.",
+      "image_url": ""
+    },
+    {
+      "id": "surv_high_achiever",
+      "name": "High Achiever",
+      "requirement": "Kill 10 Nazis, with each kill worth at least 300 points.",
+      "image_url": ""
+    },
+    {
+      "id": "surv_post_protector",
+      "name": "Post Protector",
+      "requirement": "Kill 5 Nazis that are actively taking your Command Post.",
+      "image_url": ""
+    },
+    {
+      "id": "surv_flawless_fighter",
+      "name": "Flawless Fighter",
+      "requirement": "Kill 10 Nazis without taking damage.",
+      "image_url": ""
+    },
+    {
+      "id": "surv_consecutive_carnage",
+      "name": "Consecutive Carnage",
+      "requirement": "Get the most kills two waves in a row (Multiplayer only).",
+      "image_url": ""
+    },
+    {
+      "id": "surv_no_quarter",
+      "name": "No Quarter",
+      "requirement": "Complete an entire stage without losing your Command Post.",
+      "image_url": ""
+    },
+    {
+      "id": "surv_steadfast",
+      "name": "Steadfast",
+      "requirement": "Complete an entire stage without being incapacitated.",
+      "image_url": ""
+    },
+    {
+      "id": "surv_sniper_suppressor",
+      "name": "Sniper Suppressor",
+      "requirement": "Kill 5 Nazi snipers with headshots.",
+      "image_url": ""
+    },
+    {
+      "id": "surv_riders_remorse",
+      "name": "Rider's Remorse",
+      "requirement": "Kill 10 Nazis without allowing them to leave their vehicles.",
+      "image_url": ""
+    },
+    {
+      "id": "surv_machine_gun_maverick",
+      "name": "Machine Gun Maverick",
+      "requirement": "Kill 10 Nazis with an MG42.",
+      "image_url": ""
+    },
+    {
+      "id": "surv_fortress_keeper",
+      "name": "Fortress Keeper",
+      "requirement": "Complete an entire stage without an enemy making it to the Command Post.",
+      "image_url": ""
+    }
+  ],
+  "multiplayer_ribbons": [
+    {
+      "id": "mp_first_blood",
+      "name": "First Blood",
+      "requirement": "Score the first kill of the match.",
+      "image_url": ""
+    },
+    {
+      "id": "mp_longshot",
+      "name": "Longshot",
+      "requirement": "Kill an enemy player from over 150 meters away.",
+      "image_url": ""
+    },
+    {
+      "id": "mp_avenger",
+      "name": "Avenger",
+      "requirement": "Kill the enemy player who just eliminated your teammate.",
+      "image_url": ""
+    },
+    {
+      "id": "mp_spotter",
+      "name": "Spotter",
+      "requirement": "Tag 3 enemy players who are subsequently eliminated by allies.",
+      "image_url": ""
+    },
+    {
+      "id": "mp_streak",
+      "name": "Dominator",
+      "requirement": "Achieve a killstreak of 5 players without dying.",
+      "image_url": ""
+    },
+    {
+      "id": "mp_axis_hunter",
+      "name": "Invader Down",
+      "requirement": "Eliminate an invading Axis Sniper Jäger during campaign co-op.",
+      "image_url": ""
+    },
+    {
+      "id": "mp_axis_victory",
+      "name": "Invasion Master",
+      "requirement": "Successfully eliminate the Allied sniper host as the invading Jäger.",
+      "image_url": ""
+    }
+  ],
+  "multiplayer_ribbons_note": "Not verified against the game; some entries may be inaccurate.",
+  "medals": {
+    "general": {
+      "general": [
+        {
+          "id": "med_general_brothers_in_arms",
+          "name": "Brothers in Arms",
+          "description": "Play one team-based PVP match.",
+          "goal": 1,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_general_going_the_distance",
+          "name": "Going the Distance",
+          "description": "Achieve a total kill distance of 20,000 meters.",
+          "goal": 20000,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_general_climbing_the_ranks",
+          "name": "Climbing the Ranks",
+          "description": "Reach rank 40.",
+          "goal": 40,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_general_hold_the_line",
+          "name": "Hold the Line",
+          "description": "Defeat an invading Sniper Jäger.",
+          "goal": 1,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_general_hostile_takeover",
+          "name": "Hostile Takeover",
+          "description": "Win one Axis Invasion as an Invader.",
+          "goal": 1,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_general_ultimate_longshot",
+          "name": "Ultimate Longshot",
+          "description": "Hit the target at the furthest distance in the shooting range.",
+          "goal": 1,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_general_prolific_person",
+          "name": "Prolific Person",
+          "description": "Shoot the Dead-Eye target in the shooting range.",
+          "goal": 1,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
         }
-
-        if (payload.missions) {
-            for (const mId in payload.missions) {
-                if (this.missions[mId]) this.missions[mId].completed = !!payload.missions[mId].completed;
-            }
+      ],
+      "combat": [
+        {
+          "id": "med_combat_le_fantome",
+          "name": "Le Fantôme",
+          "description": "Achieve 250 Ghost Kills.",
+          "goal": 250,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_combat_knives_for_a_pro",
+          "name": "Knives for a Pro",
+          "description": "Perform 100 lethal takedowns.",
+          "goal": 100,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_combat_das_nuts",
+          "name": "Das Nuts!",
+          "description": "Get a testicle shot with a rifle from a distance of 100 meters or more.",
+          "goal": 1,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_combat_tactician",
+          "name": "Tactician",
+          "description": "Make a tank shoot and destroy another enemy vehicle.",
+          "goal": 12,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": "",
+          "notes": "Goal typed as 0/12; the trophy version only needs one."
+        },
+        {
+          "id": "med_combat_open_surgery",
+          "name": "Open Surgery",
+          "description": "Hit every organ at least once with a rifle.",
+          "goal": 8,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_combat_silent_but_deadly",
+          "name": "Silent but Deadly",
+          "description": "Kill 50 enemies during a sound mask.",
+          "goal": 50,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_combat_always_greener",
+          "name": "Always Greener",
+          "description": "While in tall grass, kill 20 soldiers.",
+          "goal": 12,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": "",
+          "notes": "Goal typed as 0/12 but description says 20; trophy version says 50."
+        },
+        {
+          "id": "med_combat_three_birds_one_stone",
+          "name": "Three Birds One Stone",
+          "description": "Kill 3 on-foot soldiers with one grenade.",
+          "goal": 1,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
         }
-
-        if (payload.trophies) {
-            for (const tKey in payload.trophies) {
-                if (this.trophies[tKey]) this.trophies[tKey].earned = !!payload.trophies[tKey].earned;
-            }
+      ],
+      "collectibles_and_unlockables": [
+        {
+          "id": "med_collect_spread_your_wings",
+          "name": "Spread Your Wings",
+          "description": "Destroy 21 Dead-Eye targets.",
+          "goal": 21,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_collect_pen_pal",
+          "name": "Pen Pal",
+          "description": "While playing the main campaign, collect 35 personal letters.",
+          "goal": 35,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": "",
+          "notes": "Typed as 'collect 25' with goal 35."
+        },
+        {
+          "id": "med_collect_treasure_hunter",
+          "name": "Treasure Hunter",
+          "description": "Collect 22 hidden items.",
+          "goal": 22,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": "",
+          "notes": "Typed as 'personal items'; treated as hidden items."
+        },
+        {
+          "id": "med_collect_innovator",
+          "name": "Innovator",
+          "description": "Interact with 22 workbenches.",
+          "goal": 22,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": "",
+          "notes": "Trophy version says 21."
+        },
+        {
+          "id": "med_collect_top_secret",
+          "name": "Top Secret",
+          "description": "Collect 35 classified documents.",
+          "goal": 35,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
         }
-
-        if (payload.medals) {
-            for (const medId in payload.medals) {
-                if (this.medals[medId]) this.medals[medId].earned = !!payload.medals[medId].earned;
-            }
+      ]
+    },
+    "weapons_and_items": {
+      "weapons_and_items": [
+        {
+          "id": "med_weapons_sharpshooter",
+          "name": "Sharpshooter",
+          "description": "Kill 350 enemies with a rifle.",
+          "goal": 350,
+          "goal_tier": "silver",
+          "tiers": {
+            "bronze": null,
+            "silver": 350,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_weapons_eyes_on_the_prize",
+          "name": "Eyes on the Prize",
+          "description": "Kill 200 enemies with any weapon while in iron sights.",
+          "goal": 200,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 200,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": "",
+          "notes": "Trophy version says 150."
+        },
+        {
+          "id": "med_weapons_set_to_blow",
+          "name": "Set to Blow",
+          "description": "Kill 10 soldiers by sabotaging bodies, objects and vehicles.",
+          "goal": 10,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 10,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": "",
+          "notes": "Trophy version says booby traps."
+        },
+        {
+          "id": "med_weapons_scoping_mechanism",
+          "name": "Scoping Mechanism",
+          "description": "Kill 50 enemies with a rifle while in iron sights.",
+          "goal": 50,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 50,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_weapons_blaze_of_gory",
+          "name": "Blaze of Gory",
+          "description": "Kill 25 enemies with traps.",
+          "goal": 25,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 25,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_weapons_gunslinger",
+          "name": "Gunslinger",
+          "description": "Kill 75 enemies with pistols.",
+          "goal": 75,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 75,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_weapons_the_big_guns",
+          "name": "The Big Guns",
+          "description": "Kill 20 soldiers with heavy weapons.",
+          "goal": 20,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 20,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_weapons_skirmisher",
+          "name": "Skirmisher",
+          "description": "Kill 50 enemies with secondary weapons.",
+          "goal": 50,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 50,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_weapons_finders_keepers",
+          "name": "Finders Keepers",
+          "description": "Kill 50 enemy soldiers with found weapons.",
+          "goal": 50,
+          "goal_tier": "silver",
+          "tiers": {
+            "bronze": null,
+            "silver": 50,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_weapons_jack_of_all_trades",
+          "name": "Jack of All Trades",
+          "description": "Get a kill with 20 different weapons.",
+          "goal": 20,
+          "goal_tier": "gold",
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": 20
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_weapons_master_at_arms",
+          "name": "Master-at-Arms",
+          "description": "Become the master of each weapon type.",
+          "goal": 3,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": "",
+          "notes": "Single badge with no tiers."
         }
-
-        if (payload.ribbons) {
-            for (const rbId in payload.ribbons) {
-                if (this.ribbons[rbId]) this.ribbons[rbId].earned = !!payload.ribbons[rbId].earned;
-            }
+      ],
+      "pistol_perfectionist": [
+        {
+          "id": "med_pistol_pistol_perfectionist",
+          "name": "Pistol Perfectionist",
+          "description": "Obtain 6 pistol-related mastery medals.",
+          "goal": 6,
+          "goal_tier": "gold",
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": 6
+          },
+          "image_url": "",
+          "notes": "7 pistol masters are listed; only 6 are needed."
+        },
+        {
+          "id": "med_pistol_m1935a_master",
+          "name": "M1935A Master",
+          "description": "Ghost kill 5 enemies with the M1935A.",
+          "goal": 5,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pistol_welrod_master",
+          "name": "Welrod Master",
+          "description": "Ghost kill 5 enemies with the Welrod.",
+          "goal": 5,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pistol_nagant_m1895_master",
+          "name": "Nagant M1895 Master",
+          "description": "Ghost kill 5 enemies with the Nagant M1895.",
+          "goal": 5,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pistol_hp_9mm_master",
+          "name": "HP 9mm Master",
+          "description": "Ghost kill 5 enemies with the HP 9mm.",
+          "goal": 5,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pistol_32_ruby_master",
+          "name": ".32 Ruby Master",
+          "description": "Ghost kill 5 enemies with the .32 Ruby.",
+          "goal": 5,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pistol_semi_auto_m1912_master",
+          "name": "Semi-Auto M1912 Master",
+          "description": "Ghost kill 5 enemies with the Semi-Auto M1912.",
+          "goal": 5,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pistol_mod_712_master",
+          "name": "Mod.712 Master",
+          "description": "Ghost kill 25 enemies with the Mod.712.",
+          "goal": 25,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 25,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
         }
-
-        this.applyStateToUI();
-    }
-};
-
-// Section 4: Authoritative Storage Gate
-window.appState.saveProgress = function() {
-    const payload = this.buildPayload();
-    const userKey = this.getUserKey();
-    const gameName = this.getCanonicalGameName();
-
-    if (!this.currentUser || !userKey) {
-        const guestKey = `guest_progress_${this.gameId}_${this.platform}`;
-        try {
-            localStorage.setItem(guestKey, JSON.stringify(payload));
-            this.updateStatus(`[Guest Mode] Saved locally [${this.platform.toUpperCase()}].`);
-        } catch (e) {}
-        return;
-    }
-
-    if (firestore) {
-        const docRef = firestore
-            .collection("user")
-            .doc(userKey)
-            .collection("platform")
-            .doc(this.platform)
-            .collection("game")
-            .doc(gameName);
-
-        docRef.set(payload, { merge: true }).then(() => {
-            this.updateStatus(`[Cloud Saved] user/${userKey}/platform/${this.platform}/game/${gameName}`);
-        }).catch(err => {
-            console.error("[Firestore Save Error]:", err);
-            this.updateStatus(`Firestore Sync Error: ${err.message}`);
-        });
-    }
-};
-
-window.appState.loadProgress = async function() {
-    const userKey = this.getUserKey();
-    const gameName = this.getCanonicalGameName();
-
-    if (this.gameData) this.hydrateFromRawJson(this.gameData);
-
-    if (!this.currentUser || !userKey) {
-        const guestKey = `guest_progress_${this.gameId}_${this.platform}`;
-        try {
-            const raw = localStorage.getItem(guestKey);
-            if (raw) {
-                this.applyPayload(JSON.parse(raw));
-                this.updateStatus(`[Guest Mode] Restored local progress.`);
-                return;
-            }
-        } catch (e) {}
-        this.applyStateToUI();
-        return;
-    }
-
-    if (firestore) {
-        try {
-            const docRef = firestore
-                .collection("user")
-                .doc(userKey)
-                .collection("platform")
-                .doc(this.platform)
-                .collection("game")
-                .doc(gameName);
-
-            const doc = await docRef.get();
-            if (doc.exists) {
-                this.applyPayload(doc.data());
-                this.updateStatus(`[Cloud Synced] Loaded progress data.`);
-            } else {
-                this.applyStateToUI();
-            }
-        } catch (err) {
-            console.warn("[Firestore Fetch Warning]:", err);
-            this.applyStateToUI();
+      ],
+      "secondary_supremacy": [
+        {
+          "id": "med_secondary_secondary_supremacy",
+          "name": "Secondary Supremacy",
+          "description": "Obtain 8 secondary-related mastery medals.",
+          "goal": 8,
+          "goal_tier": "gold",
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": 8
+          },
+          "image_url": "",
+          "notes": "9 secondary masters are listed; only 8 are needed."
+        },
+        {
+          "id": "med_secondary_m_38_master",
+          "name": "M.38 Master",
+          "description": "Kill 100 enemies with the M.38.",
+          "goal": 100,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 100,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_secondary_sten_mk2_master",
+          "name": "Sten Mk2 Master",
+          "description": "Kill 100 enemies with the Sten Mk2.",
+          "goal": 100,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 100,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_secondary_m1907_master",
+          "name": "M1907 Master",
+          "description": "Kill 5 enemies with the M1907.",
+          "goal": 5,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_secondary_erma_36_master",
+          "name": "ERMA.36 Master",
+          "description": "Kill 5 enemies with the ERMA.36 SMG.",
+          "goal": 5,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_secondary_mkms_master",
+          "name": "MKMS Master",
+          "description": "Kill 5 enemies with the MKMS.",
+          "goal": 5,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_secondary_ud_42_master",
+          "name": "UD-42 Master",
+          "description": "Kill 100 enemies with the UD-42.",
+          "goal": 100,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 100,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_secondary_trench_gun_master",
+          "name": "Trench Gun Master",
+          "description": "Kill 5 enemies with the Trench Gun.",
+          "goal": 5,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_secondary_m1918_bar_master",
+          "name": "M1918 BAR Master",
+          "description": "Kill 5 enemies with the M1918 BAR.",
+          "goal": 5,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_secondary_m1a1_gov_master",
+          "name": "M1A1 Gov. Master",
+          "description": "Kill 5 enemies with the M1A1 Gov. SMG.",
+          "goal": 5,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
         }
-    }
-};
-
-// Section 5: Theming, Profile Picture & Custom Colors
-function applyUserProfileStyling(uData) {
-    if (!uData || typeof uData !== 'object') return;
-
-    if (uData.primary_color) {
-        document.documentElement.style.setProperty('--user-theme-accent', uData.primary_color);
-        document.documentElement.style.setProperty('--accent-glow', `${uData.primary_color}40`);
-    }
-
-    if (uData.secondary_color) {
-        document.documentElement.style.setProperty('--border-highlight', uData.secondary_color);
-    }
-
-    const avatarUrl = uData.avatar_url;
-    if (avatarUrl) {
-        const headerAvatar = document.getElementById('headerUserAvatar');
-        if (headerAvatar) headerAvatar.src = toSecureUrl(avatarUrl);
-    }
-}
-
-// Section 6: UI State Toggles & Renderers
-window.appState.applyStateToUI = function() {
-    this.recalculateMetrics();
-
-    document.querySelectorAll('.game-item-card').forEach(card => {
-        const id = card.getAttribute('data-id');
-        const type = card.getAttribute('data-type') || 'mission';
-        const group = card.getAttribute('data-group') || null;
-        let isDone = false;
-
-        if (type === 'collectible') {
-            if (group && this.collectibles[group]?.items?.[id]) {
-                isDone = !!(this.collectibles[group].items[id].collected);
-            }
-        } else if (type === 'trophy') {
-            isDone = !!(this.trophies[id]?.earned);
-        } else if (type === 'medal') {
-            isDone = !!(this.medals[id]?.earned);
-        } else if (type === 'ribbon') {
-            isDone = !!(this.ribbons[id]?.earned);
-        } else {
-            isDone = !!(this.missions[id]?.completed);
+      ],
+      "revered_with_rifles": [
+        {
+          "id": "med_rifle_revered_with_rifles",
+          "name": "Revered with Rifles",
+          "description": "Obtain 7 rifle-related mastery medals.",
+          "goal": 7,
+          "goal_tier": "gold",
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": 7
+          },
+          "image_url": "",
+          "notes": "9 rifle masters are listed; only 7 are needed."
+        },
+        {
+          "id": "med_rifle_lebel_m1886_master",
+          "name": "Lebel M1886 Master",
+          "description": "Headshot 25 enemies with the Lebel M1886 over a distance of 100 meters.",
+          "goal": 25,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 25,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_rifle_berthier_master",
+          "name": "Berthier Master",
+          "description": "Headshot 25 enemies with the Berthier over a distance of 100 meters.",
+          "goal": 25,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 25,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_rifle_lee_no_4_master",
+          "name": "Lee-No.4 Master",
+          "description": "Headshot 25 enemies with the Lee-No.4 over a distance of 100 meters.",
+          "goal": 25,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 25,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_rifle_mosin_nagant_master",
+          "name": "Mosin-Nagant Master",
+          "description": "Headshot 5 enemies with the Mosin-Nagant over a distance of 100 meters.",
+          "goal": 5,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_rifle_mas_44_master",
+          "name": "MAS 44 Master",
+          "description": "Headshot 5 enemies with the MAS 44 over a distance of 100 meters.",
+          "goal": 5,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_rifle_m1_garand_master",
+          "name": "M1 Garand Master",
+          "description": "Headshot 5 enemies with the M1 Garand over a distance of 100 meters.",
+          "goal": 5,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_rifle_zk_420s_master",
+          "name": "ZK-420S Master",
+          "description": "Headshot 5 enemies with the ZK-420S over a distance of 100 meters.",
+          "goal": 5,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_rifle_m1903_master",
+          "name": "M1903 Master",
+          "description": "Headshot 5 enemies with the M1903 over a distance of 100 meters.",
+          "goal": 5,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_rifle_d_l_carbine_master",
+          "name": "D.L. Carbine Master",
+          "description": "Headshot 5 enemies with the D.L. Carbine over a distance of 100 meters.",
+          "goal": 5,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
         }
-
-        const btn = card.querySelector('.check-btn');
-        if (isDone) {
-            card.classList.add('completed');
-            if (btn) { btn.classList.add('is-done'); btn.innerHTML = '✓'; }
-        } else {
-            card.classList.remove('completed');
-            if (btn) { btn.classList.remove('is-done'); btn.innerHTML = ''; }
+      ]
+    },
+    "survival": {
+      "survival": [
+        {
+          "id": "med_survival_survivalist",
+          "name": "Survivalist",
+          "description": "Complete 1 survival mission.",
+          "goal": 1,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_survival_operation_overlord",
+          "name": "Operation Overlord",
+          "description": "Unlock and complete all operations on a mission.",
+          "goal": 1,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_survival_survival_specialist",
+          "name": "Survival Specialist",
+          "description": "Complete 30 waves in survival.",
+          "goal": 30,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": "",
+          "notes": "Original text: 'sufficient waves'; 30 taken from the goal."
         }
-    });
-
-    document.querySelectorAll('.category-section').forEach(sec => {
-        const badge = sec.querySelector(':scope > .category-header .sec-progress');
-        if (!badge) return;
-        const total = sec.querySelectorAll('.game-item-card').length;
-        const done = sec.querySelectorAll('.game-item-card.completed').length;
-        badge.innerText = total ? `${done}/${total}` : '';
-    });
-};
-
-window.appState.toggleItem = function(itemId, type, group) {
-    if (type === 'collectible') {
-        if (group && this.collectibles[group]?.items?.[itemId]) {
-            this.collectibles[group].items[itemId].collected = !this.collectibles[group].items[itemId].collected;
+      ],
+      "map": [
+        {
+          "id": "med_survmap_survivor_fortress_command",
+          "name": "Survivor: Fortress Command",
+          "description": "Earn a score of 50000 in the Fortress Command survival mission.",
+          "goal": 50000,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 50000,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_survmap_survivor_mark_of_the_eagle",
+          "name": "Survivor: Mark of the Eagle",
+          "description": "Earn a score of 50000 in the Mark of the Eagle survival mission.",
+          "goal": 50000,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 50000,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_survmap_survivor_pest_control",
+          "name": "Survivor: Pest Control",
+          "description": "Earn a score of 40000 in the Pest Control survival mission.",
+          "goal": 40000,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 40000,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_survmap_survivor_tide_of_war",
+          "name": "Survivor: Tide of War",
+          "description": "Earn a score of 50000 in the Tide of War survival mission.",
+          "goal": 50000,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 50000,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_survmap_survivor_the_gallant_few",
+          "name": "Survivor: The Gallant Few",
+          "description": "Earn a score of 50000 in the The Gallant Few survival mission.",
+          "goal": 50000,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 50000,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_survmap_survivor_unwanted_guests",
+          "name": "Survivor: Unwanted Guests",
+          "description": "Earn a score of 50000 in the Unwanted Guests survival mission.",
+          "goal": 50000,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 50000,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
         }
-    } else if (type === 'trophy') {
-        if (!this.trophies[itemId]) this.trophies[itemId] = { earned: false };
-        this.trophies[itemId].earned = !this.trophies[itemId].earned;
-    } else if (type === 'medal') {
-        if (!this.medals[itemId]) this.medals[itemId] = { earned: false };
-        this.medals[itemId].earned = !this.medals[itemId].earned;
-    } else if (type === 'ribbon') {
-        if (!this.ribbons[itemId]) this.ribbons[itemId] = { earned: false };
-        this.ribbons[itemId].earned = !this.ribbons[itemId].earned;
-    } else {
-        if (!this.missions[itemId]) this.missions[itemId] = { completed: false };
-        this.missions[itemId].completed = !this.missions[itemId].completed;
-    }
-
-    this.applyStateToUI();
-    this.saveProgress();
-};
-
-window.appState.updateStatus = function(msg) {
-    const statLine = document.getElementById('stat-line');
-    if (statLine) statLine.innerText = `[${new Date().toLocaleTimeString('en-US', { hour12: false })}] ${msg}`;
-};
-
-// Section 7: Squad Co-Op Ledger with Clean Avatar Cards
-window.appState.syncFriendsProgress = async function() {
-    const rosterContainer = document.getElementById('friendsRosterContainer');
-    if (!rosterContainer) return;
-
-    if (!this.currentUser || !this.currentUser.email || !rtdb) {
-        rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">Sign in to view your Squad Co-Op Ledger.</div>';
-        return;
-    }
-
-    const emailKey = this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
-    const gameName = this.getCanonicalGameName();
-
-    try {
-        const friendsSnap = await rtdb.ref(`/users/${emailKey}/friends`).once('value');
-        const friendsData = friendsSnap.val();
-
-        if (!friendsData || Object.keys(friendsData).length === 0) {
-            rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">No squad members linked. Add friend codes to share progress.</div>';
-            return;
+      ]
+    },
+    "multiplayer": {
+      "player_vs_player": [
+        {
+          "id": "med_pvp_longshot_legend",
+          "name": "Longshot Legend",
+          "description": "Total scoped rifle kill distance.",
+          "goal": 10000,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 10000,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pvp_lone_wolf",
+          "name": "Lone Wolf",
+          "description": "Complete and win free-for-all matches.",
+          "goal": 10,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 10,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pvp_team_effort",
+          "name": "Team Effort",
+          "description": "Total Team Tagger and Squad Savior ribbons.",
+          "goal": 10,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 10,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pvp_triumphant_teamwork",
+          "name": "Triumphant Teamwork",
+          "description": "Complete and win team matches.",
+          "goal": 10,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 10,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pvp_commendation_collector",
+          "name": "Commendation Collector",
+          "description": "Total ribbons earned.",
+          "goal": 100,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 100,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pvp_prolific_player",
+          "name": "Prolific Player",
+          "description": "Total matches completed.",
+          "goal": 50,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 50,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pvp_sidearm_sharpshooter",
+          "name": "Sidearm Sharpshooter",
+          "description": "Total pistol kills.",
+          "goal": 25,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 25,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pvp_squad_goals",
+          "name": "Squad Goals",
+          "description": "Complete and win squad matches.",
+          "goal": 10,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 10,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pvp_secondary_specialist",
+          "name": "Secondary Specialist",
+          "description": "Total secondary weapon kills.",
+          "goal": 50,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 50,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pvp_headshot_harbinger",
+          "name": "Headshot Harbinger",
+          "description": "Total headshot kills.",
+          "goal": 50,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 50,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pvp_no_cross_conqueror",
+          "name": "No Cross Conqueror",
+          "description": "Complete and win No Cross matches.",
+          "goal": 10,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 10,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pvp_streak_supreme",
+          "name": "Streak Supreme",
+          "description": "Total kill streak ribbons earned.",
+          "goal": 10,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 10,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pvp_hotstepper",
+          "name": "Hotstepper",
+          "description": "Total trap kills.",
+          "goal": 20,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 20,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pvp_executioner",
+          "name": "Executioner",
+          "description": "Total kills.",
+          "goal": 200,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 200,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pvp_tagged_and_bagged",
+          "name": "Tagged and Bagged",
+          "description": "Total tagged target kills.",
+          "goal": 1000,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 1000,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pvp_rifle_ruler",
+          "name": "Rifle Ruler",
+          "description": "Total rifle kills.",
+          "goal": 100,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 100,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_pvp_extraordinaire",
+          "name": "Extraordinaire",
+          "description": "Total MVP and Squad MVP ribbons.",
+          "goal": 10,
+          "goal_tier": "bronze",
+          "tiers": {
+            "bronze": 10,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
         }
-
-        let cardsHtml = '';
-        for (const [fKey, fObj] of Object.entries(friendsData)) {
-            const friendUsername = fObj.username || fKey;
-            const friendTargetCode = fObj.friend_code || fKey;
-            const friendPlatform = fObj.primary_platform || this.platform;
-            const friendAvatar = fObj.avatar_url || '';
-
-            let friendData = null;
-            if (firestore) {
-                try {
-                    const fDoc = await firestore
-                        .collection("user")
-                        .doc(friendTargetCode)
-                        .collection("platform")
-                        .doc(friendPlatform)
-                        .collection("game")
-                        .doc(gameName)
-                        .get();
-
-                    if (fDoc.exists) friendData = fDoc.data();
-                } catch (err) {}
-            }
-
-            const colVal = friendData?.ranks?.collectibles || 0;
-            const trophyPercent = friendData?.trophies_percent || 0;
-
-            cardsHtml += `
-                <div style="background:#1e293b; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px; display:flex; align-items:center; gap:12px;">
-                    ${friendAvatar ? `<img src="${toSecureUrl(friendAvatar)}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid var(--border-highlight);" onerror="this.style.display='none'">` : '<div style="width:40px; height:40px; border-radius:50%; background:#334155; display:flex; align-items:center; justify-content:center;"><i class="fas fa-user"></i></div>'}
-                    <div style="flex:1;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                            <div style="font-weight:900; color:#fff; font-size:0.95rem;">${escapeHtml(friendUsername)}</div>
-                            <span style="font-size:0.65rem; font-weight:800; background:rgba(255,85,0,0.2); color:var(--user-theme-accent); padding:2px 6px; border-radius:4px; text-transform:uppercase;">
-                                ${escapeHtml(friendPlatform)}
-                            </span>
-                        </div>
-                        <div style="font-size:0.75rem; color:#cbd5e1; display:flex; gap:10px;">
-                            <span>Collectibles: <strong>${colVal}</strong></span>
-                            <span>Trophies: <strong>${trophyPercent}%</strong></span>
-                        </div>
-                    </div>
-                </div>
-            `;
+      ],
+      "prestige": [
+        {
+          "id": "med_prestige_juggernaut",
+          "name": "Juggernaut",
+          "description": "Total kills earned with a KDR of 2.0 or higher while in prestige.",
+          "goal": 300,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_prestige_distance_dominator",
+          "name": "Distance Dominator",
+          "description": "Total 150m+ unassisted rifle kills while in prestige.",
+          "goal": 125,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_prestige_master_of_masters",
+          "name": "Master of Masters",
+          "description": "Total matches won with 10+ kills while in prestige.",
+          "goal": 150,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_prestige_skillful_savant",
+          "name": "Skillful Savant",
+          "description": "Total performance score while in prestige.",
+          "goal": 100000,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_prestige_stealth_slayer",
+          "name": "Stealth Slayer",
+          "description": "Total relocations while in prestige.",
+          "goal": 500,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": "",
+          "notes": "Wording looks odd for the name; check against the game."
         }
-
-        rosterContainer.innerHTML = cardsHtml;
-    } catch (e) {
-        console.warn("[Friends Roster Error]:", e);
-    }
-};
-
-// Section 8: Dynamic Poster Art Lookup via /psn/games
-async function searchGamePosterArt(commId, gameName) {
-    if (!rtdb) return;
-
-    try {
-        const snap = await rtdb.ref('/psn/games').once('value');
-        const psnGames = snap.val();
-        if (!psnGames || typeof psnGames !== 'object') return;
-
-        let matchedPoster = null;
-        for (const [titleId, gObj] of Object.entries(psnGames)) {
-            if (!gObj) continue;
-            const matchesCommId = commId && (gObj.commId === commId || gObj.npCommunicationId === commId);
-            const matchesName = gameName && gObj.name && gObj.name.toLowerCase().trim() === gameName.toLowerCase().trim();
-
-            if ((matchesCommId || matchesName) && gObj.posterArt) {
-                matchedPoster = gObj.posterArt;
-                break;
-            }
+      ]
+    },
+    "general_missions": {
+      "general_missions": [
+        {
+          "id": "med_mission_just_a_scratch",
+          "name": "Just a Scratch",
+          "description": "Complete a mission, excluding Behind Enemy Lines and All or Nothing, on any difficulty without healing.",
+          "goal": 1,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
         }
-
-        if (matchedPoster && matchedPoster !== LAST_APPLIED_POSTER) {
-            LAST_APPLIED_POSTER = matchedPoster;
-            const posterUrl = toSecureUrl(matchedPoster);
-
-            const fav1 = document.getElementById('dynamicFavicon');
-            const fav2 = document.getElementById('dynamicAppleIcon');
-            const navLogo = document.getElementById('navHeaderLogo');
-
-            if (fav1) fav1.href = posterUrl;
-            if (fav2) fav2.href = posterUrl;
-            if (navLogo) {
-                navLogo.src = posterUrl;
-                navLogo.style.display = 'inline-block';
-            }
+      ],
+      "general_objective": [
+        {
+          "id": "med_objective_liberte",
+          "name": "Liberté",
+          "description": "Complete the campaign: Bronze on any difficulty, Silver on Sharpshooter, Gold on Sniper Elite.",
+          "goal": 1,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": "",
+          "tier_conditions": {
+            "bronze": "Any difficulty",
+            "silver": "Sharpshooter difficulty",
+            "gold": "Sniper Elite difficulty"
+          }
+        },
+        {
+          "id": "med_objective_cr_me_de_la_cr_me",
+          "name": "Crème de la Crème",
+          "description": "Complete the entire campaign on Authentic difficulty.",
+          "goal": 1,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_objective_full_english",
+          "name": "Full English",
+          "description": "Complete 11 optional objectives.",
+          "goal": 11,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
         }
-    } catch (e) {
-        console.warn("[Poster Search Warning]:", e);
-    }
-}
-
-// Section 9: Programmatic Navbar & Sorting (/utm_links)
-async function buildUtmNavigation() {
-    const navContainer = document.getElementById('dynamicNavLinks');
-    if (!rtdb || !navContainer) return;
-
-    try {
-        const snap = await rtdb.ref('/utm_links').once('value');
-        const data = snap.val();
-        if (!data) return;
-
-        const linksList = [];
-        let latestTimestamp = 0;
-
-        function walk(node) {
-            if (!node || typeof node !== 'object') return;
-            const url = node.url || node.link || node.href;
-            if (url && typeof url === 'string') {
-                if (node.updatedAt) {
-                    const parsedTs = new Date(node.updatedAt).getTime();
-                    if (!isNaN(parsedTs) && parsedTs > latestTimestamp) latestTimestamp = parsedTs;
-                }
-                linksList.push({
-                    title: node.title || node.name || 'Link',
-                    url: toSecureUrl(url),
-                    image: toSecureUrl(node.image || node.thumb || null),
-                    group: node.group ? String(node.group).trim() : 'Standalone',
-                    rowNumber: Number(node.rowNumber || 999)
-                });
-                return;
-            }
-            Object.values(node).forEach(child => walk(child));
+      ],
+      "propaganda": [
+        {
+          "id": "med_propaganda_propaganda_la_voix_du_maquis",
+          "name": "Propaganda: La Voix Du Maquis",
+          "description": "Earn a score of 2000 in the La Voix Du Maquis propaganda mission.",
+          "goal": 2000,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_propaganda_propagandist",
+          "name": "Propagandist",
+          "description": "Complete all propaganda missions with a 3 star rating.",
+          "goal": 7,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
+        },
+        {
+          "id": "med_propaganda_propaganda_machine",
+          "name": "Propaganda Machine",
+          "description": "Complete all propaganda missions with a 3 star rating on Authentic difficulty.",
+          "goal": 7,
+          "goal_tier": null,
+          "tiers": {
+            "bronze": null,
+            "silver": null,
+            "gold": null
+          },
+          "image_url": ""
         }
-        walk(data);
-
-        const cacheBusterParam = latestTimestamp > 0 ? `?v=${latestTimestamp}` : '';
-        const standalone = [];
-        const groups = {};
-
-        linksList.forEach(item => {
-            const grp = item.group;
-            if (grp.toLowerCase() === 'standalone' || grp === '') {
-                standalone.push(item);
-            } else {
-                if (!groups[grp]) groups[grp] = [];
-                groups[grp].push(item);
-            }
-        });
-
-        const groupCards = Object.entries(groups).map(([gName, items]) => {
-            items.sort((a, b) => a.rowNumber - b.rowNumber);
-            return {
-                title: gName,
-                isGroup: true,
-                items: items,
-                sortWeight: Math.min(...items.map(i => i.rowNumber))
-            };
-        });
-
-        const standaloneCards = standalone.map(item => ({
-            ...item,
-            isGroup: false,
-            sortWeight: item.rowNumber
-        }));
-
-        const unifiedMenu = [...groupCards, ...standaloneCards].sort((a, b) => a.sortWeight - b.sortWeight);
-
-        let navHtml = '';
-        unifiedMenu.forEach(entry => {
-            if (entry.isGroup) {
-                navHtml += `
-                    <div class="nav-folder">
-                        <button type="button" class="nav-btn" onclick="this.parentElement.classList.toggle('active')">
-                            <i class="fas fa-folder text-yellow-400"></i>
-                            <span>${escapeHtml(entry.title)}</span>
-                            <span style="font-size:9px;">▾</span>
-                        </button>
-                        <div class="folder-menu">
-                            ${entry.items.map(sub => {
-                                const targetUrl = sub.url.includes('?') ? `${sub.url}&cb=${latestTimestamp}` : `${sub.url}${cacheBusterParam}`;
-                                const isExternal = sub.url.startsWith('http') && !sub.url.includes(window.location.hostname);
-                                return `
-                                    <a href="${targetUrl}" class="nav-btn" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''} style="width:100%; justify-content:flex-start;">
-                                        ${sub.image ? `<img src="${sub.image}" class="nav-icon" onerror="this.style.display='none'">` : ''}
-                                        <span class="truncate">${escapeHtml(sub.title)}</span>
-                                    </a>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                `;
-            } else {
-                const targetUrl = entry.url.includes('?') ? `${entry.url}&cb=${latestTimestamp}` : `${entry.url}${cacheBusterParam}`;
-                const isExternal = entry.url.startsWith('http') && !entry.url.includes(window.location.hostname);
-                navHtml += `
-                    <a href="${targetUrl}" class="nav-btn" ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''}>
-                        ${entry.image ? `<img src="${entry.image}" class="nav-icon" onerror="this.style.display='none'">` : ''}
-                        <span>${escapeHtml(entry.title)}</span>
-                    </a>
-                `;
-            }
-        });
-
-        navContainer.innerHTML = navHtml;
-    } catch (e) {
-        console.warn("[UTM Navigation Fetch Error]:", e);
+      ]
     }
-}
-
-// Section 10: Universal PSN Trophy & Cross-Telemetry Auto-Check
-async function autoCheckUserPsnTrophies() {
-    if (!rtdb || !appState.psnGamertag || !ACTIVE_COMM_ID) return;
-    const commId = ACTIVE_COMM_ID;
-    const gamertag = appState.psnGamertag;
-
-    try {
-        const liveTrophiesSnap = await rtdb.ref(`/psn/gamertags/${gamertag}/liveTrophyProgress/${commId}`).once('value');
-        const liveTrophies = liveTrophiesSnap.val();
-
-        if (liveTrophies && (Array.isArray(liveTrophies) || typeof liveTrophies === 'object')) {
-            let stateModified = false;
-            const trophyEntries = Array.isArray(liveTrophies) ? liveTrophies.entries() : Object.entries(liveTrophies);
-
-            for (const [tId, tObj] of trophyEntries) {
-                if (!tObj) continue;
-                const parsedId = tObj.trophyId !== undefined ? tObj.trophyId : tId;
-                const cardKey = `trophy_${appState.gameId}_${parsedId}`;
-                const isEarnedInPsn = (tObj.earned === true || tObj.isEarned === true);
-
-                if (appState.trophies[cardKey]) {
-                    const card = appState.trophies[cardKey];
-                    // Map PlayStation visual metadata across all platforms
-                    if (tObj.name) card.name = tObj.name;
-                    if (tObj.description) card.description = tObj.description;
-                    if (tObj.icon) card.icon = toSecureUrl(tObj.icon);
-                    if (tObj.rank) card.rank = tObj.rank.toUpperCase();
-
-                    if (isEarnedInPsn && !card.earned) {
-                        card.earned = true;
-                        card.psnSynced = true;
-                        stateModified = true;
-                    }
-                }
-
-                // Cross-Telemetry Sync: Map specific numerical achievements to medals and missions
-                const trophyName = (tObj.name || '').toLowerCase();
-                const progressRatio = Number(tObj.subProgressRatio || 0);
-                const isCompletedProgress = progressRatio >= 1.0 || isEarnedInPsn;
-
-                if (trophyName.includes('climbing the ranks')) {
-                    const medalKey = 'med_climbing_ranks';
-                    if (appState.medals[medalKey] && isCompletedProgress) {
-                        appState.medals[medalKey].earned = true;
-                        stateModified = true;
-                    }
-                }
-                if (trophyName.includes('full english')) {
-                    // Auto-complete missions/objectives when trophy criteria is met
-                    stateModified = true;
-                }
-            }
-
-            if (stateModified) {
-                appState.applyStateToUI();
-                appState.saveProgress();
-                appState.updateStatus(`[Cross-Telemetry Synced] PlayStation progress mapped for ${gamertag}`);
-            }
-        }
-    } catch (e) {
-        console.warn("[Live Telemetry Error]:", e);
+  },
+  "unassigned_propaganda_missions": [
+    {
+      "id": "prop_m6",
+      "number": 6,
+      "title": "La Voix Du Maquis",
+      "unlock_poster": null,
+      "target_score": null,
+      "briefing": null,
+      "image_url": ""
     }
-}
-
-// Section 11: Mission-Schema Dynamic Renderer with Folders and Search
-function ensureUniversalStyles() {
-    if (document.getElementById('universal-extra-styles')) return;
-    const style = document.createElement('style');
-    style.id = 'universal-extra-styles';
-    style.textContent = `
-        .search-hidden { display: none !important; }
-        .category-section.section-collapsed > .section-content { display: none; }
-        .category-section .category-section { margin-top: 10px; margin-left: 4px; }
-        .category-section .category-section > .category-header { opacity: 0.95; }
-        .category-section .category-section .category-header h2 { font-size: 0.95rem; }
-        .sec-progress { font-size: 0.75rem; font-weight: 800; color: #94a3b8; margin-left: auto; margin-right: 10px; }
-        .uni-search-wrap { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
-        .uni-search-input { flex: 1 1 260px; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 10px; padding: 10px 14px; font-size: 0.95rem; outline: none; }
-        .uni-search-input:focus { border-color: var(--user-theme-accent, #ff5500); }
-        .uni-search-btn { background: #1e293b; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 10px; padding: 10px 14px; font-size: 0.8rem; font-weight: 800; cursor: pointer; }
-        .uni-search-btn:hover { border-color: var(--user-theme-accent, #ff5500); color: #fff; }
-        .uni-search-count { flex-basis: 100%; font-size: 0.75rem; color: #94a3b8; min-height: 1em; }
-        .mission-region { font-size: 0.7rem; font-weight: 700; color: #94a3b8; margin-left: 8px; }
-    `;
-    document.head.appendChild(style);
-}
-
-function buildFolder(titleHtml, innerHtml) {
-    return `
-    <section class="category-section section-collapsed">
-        <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-            <h2>${titleHtml}</h2>
-            <span class="sec-progress"></span>
-            <span>▾</span>
-        </div>
-        <div class="section-content">${innerHtml}</div>
-    </section>`;
-}
-
-function gridOf(cards) {
-    return cards.length ? `<div class="trophy-grid">${cards.join('')}</div>` : '';
-}
-
-function buildItemCard(o) {
-    const search = [o.title, o.sub, o.body, o.badge, o.ctx, o.type].filter(Boolean).join(' ').toLowerCase();
-    const img = o.img ? toSecureUrl(o.img) : '';
-    const groupAttr = o.group ? ` data-group="${escapeHtml(o.group)}"` : '';
-    const groupArg = o.group ? `, '${escapeHtml(o.group)}'` : '';
-    return `
-    <div class="trophy-card game-item-card" data-id="${escapeHtml(o.id)}" data-type="${o.type}"${groupAttr} data-search="${escapeHtml(search)}">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-            <div style="display:flex; gap:10px; align-items:center;">
-                ${img ? `<img src="${img}" style="width:40px; height:40px; border-radius:6px; object-fit:cover;" onerror="this.style.display='none'">` : ''}
-                <div>
-                    <span class="trophy-rank ${o.badgeClass || 'rank-bronze'}">${escapeHtml(o.badge || '')}</span>
-                    <h3 style="color:#fff; font-size:0.95rem; margin-top:4px;">${escapeHtml(o.title || '')}</h3>
-                    ${o.sub ? `<div style="font-size:0.75rem; color:#94a3b8;">${escapeHtml(o.sub)}</div>` : ''}
-                </div>
-            </div>
-            <button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(o.id)}', '${o.type}'${groupArg})" aria-label="Toggle"></button>
-        </div>
-        ${o.body ? `<p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(o.body)}</p>` : ''}
-    </div>`;
-}
-
-function medalCard(m, ctx) {
-    const tierClass = { bronze: 'rank-bronze', silver: 'rank-silver', gold: 'rank-gold' }[m.goal_tier] || 'rank-silver';
-    const parts = [];
-    if (m.goal !== undefined && m.goal !== null) parts.push(`Goal: ${m.goal}`);
-    if (m.distance_m) parts.push(`Distance: ${m.distance_m} m`);
-    return buildItemCard({
-        id: m.id, type: 'medal', badge: (m.goal_tier || 'Medal'), badgeClass: tierClass,
-        title: m.name, sub: m.description, body: parts.join(' | '), img: m.image_url, ctx: `medal ${ctx || ''}`
-    });
-}
-
-function ribbonCard(r, ctx) {
-    return buildItemCard({
-        id: r.id, type: 'ribbon', badge: 'Ribbon', badgeClass: 'rank-silver',
-        title: r.name, sub: r.requirement, img: r.image_url, ctx: `ribbon ${ctx || ''}`
-    });
-}
-
-function trophyCardFor(tKey, ctx) {
-    const t = appState.trophies[tKey];
-    if (!t) return '';
-    const tType = (t.rank || 'Bronze').toUpperCase();
-    let badgeClass = 'rank-bronze';
-    if (tType.includes('PLATINUM')) badgeClass = 'rank-platinum';
-    else if (tType.includes('GOLD')) badgeClass = 'rank-gold';
-    else if (tType.includes('SILVER')) badgeClass = 'rank-silver';
-    return buildItemCard({
-        id: tKey, type: 'trophy', badge: tType, badgeClass,
-        title: t.name, body: t.description, img: t.icon, ctx: `trophy ${ctx || ''}`
-    });
-}
-
-function renderTree(node, cardFn, path) {
-    if (isLeafList(node)) {
-        return gridOf(toArr(node).filter(Boolean).map(it => cardFn(it, path.map(humanize).join(' '))));
+  ],
+  "general_trophies": [
+    {
+      "trophyId": 0,
+      "name": "Sniper Elite",
+      "rank": "PLATINUM",
+      "description": "Obtain all Trophies."
+    },
+    {
+      "trophyId": 9,
+      "name": "Climbing the Ranks",
+      "rank": "BRONZE",
+      "description": "Reach rank 40."
+    },
+    {
+      "trophyId": 10,
+      "name": "Vive La Résistance",
+      "rank": "GOLD",
+      "description": "Complete the campaign."
+    },
+    {
+      "trophyId": 11,
+      "name": "Crème de la Crème",
+      "rank": "GOLD",
+      "description": "Complete the entire campaign on Authentic difficulty."
+    },
+    {
+      "trophyId": 12,
+      "name": "Full English",
+      "rank": "SILVER",
+      "description": "Complete 11 Optional objectives."
+    },
+    {
+      "trophyId": 13,
+      "name": "Hostile Takeover",
+      "rank": "BRONZE",
+      "description": "Win one Axis Invasion as an Invader."
+    },
+    {
+      "trophyId": 14,
+      "name": "Hold the Line",
+      "rank": "BRONZE",
+      "description": "Defeat an invading Sniper Jäger."
+    },
+    {
+      "trophyId": 15,
+      "name": "Brothers in Arms",
+      "rank": "BRONZE",
+      "description": "Play one team-based PVP match."
+    },
+    {
+      "trophyId": 16,
+      "name": "Just a Scratch",
+      "rank": "BRONZE",
+      "description": "Complete any mission, excluding Mission 1 and Mission 9, on any difficulty without healing."
+    },
+    {
+      "trophyId": 17,
+      "name": "Open Surgery",
+      "rank": "BRONZE",
+      "description": "Hit every Organ at least once with a Rifle."
+    },
+    {
+      "trophyId": 18,
+      "name": "Tactician",
+      "rank": "BRONZE",
+      "description": "Make a Tank shoot and destroy another enemy Vehicle."
+    },
+    {
+      "trophyId": 19,
+      "name": "Pistol Perfectionist",
+      "rank": "SILVER",
+      "description": "Obtain Six Pistol-related Mastery Medals."
+    },
+    {
+      "trophyId": 20,
+      "name": "Secondary Supremacy",
+      "rank": "SILVER",
+      "description": "Obtain Eight Secondary-related Mastery Medals."
+    },
+    {
+      "trophyId": 21,
+      "name": "Revered with Rifles",
+      "rank": "SILVER",
+      "description": "Obtain Seven Rifle-related Mastery Medals."
+    },
+    {
+      "trophyId": 22,
+      "name": "Master-at-arms",
+      "rank": "SILVER",
+      "description": "Become the Master of each Weapon."
+    },
+    {
+      "trophyId": 23,
+      "name": "Gunslinger",
+      "rank": "BRONZE",
+      "description": "Kill 150 enemies with a Pistol."
+    },
+    {
+      "trophyId": 24,
+      "name": "Skirmisher",
+      "rank": "BRONZE",
+      "description": "Kill 300 enemies with a Secondary Weapon."
+    },
+    {
+      "trophyId": 25,
+      "name": "Sharpshooter",
+      "rank": "BRONZE",
+      "description": "Kill 350 enemies with a Rifle."
+    },
+    {
+      "trophyId": 26,
+      "name": "Going The Distance",
+      "rank": "BRONZE",
+      "description": "Total kill distance of 100,000 meters."
+    },
+    {
+      "trophyId": 27,
+      "name": "Blaze of Gory",
+      "rank": "BRONZE",
+      "description": "Kill 50 enemies with Traps."
+    },
+    {
+      "trophyId": 28,
+      "name": "Eyes on the Prize",
+      "rank": "BRONZE",
+      "description": "Kill 150 enemies with any weapon while in Iron Sights."
+    },
+    {
+      "trophyId": 29,
+      "name": "Scoping Mechanism",
+      "rank": "BRONZE",
+      "description": "Kill 150 enemies with a Rifle while in Iron Sights."
+    },
+    {
+      "trophyId": 30,
+      "name": "Set to Blow",
+      "rank": "BRONZE",
+      "description": "Kill 20 soldiers using Booby traps."
+    },
+    {
+      "trophyId": 31,
+      "name": "The Big Guns",
+      "rank": "BRONZE",
+      "description": "Kill 50 soldiers with Heavy weapons."
+    },
+    {
+      "trophyId": 32,
+      "name": "Three Birds One Stone",
+      "rank": "BRONZE",
+      "description": "Kill 3 on-foot soldiers with one Grenade."
+    },
+    {
+      "trophyId": 33,
+      "name": "Jack of All Trades",
+      "rank": "BRONZE",
+      "description": "Get a kill with 20 different Weapons."
+    },
+    {
+      "trophyId": 34,
+      "name": "Das Nuts!",
+      "rank": "BRONZE",
+      "description": "Get a testicle shot with a Rifle from a distance of 100 meters or more."
+    },
+    {
+      "trophyId": 35,
+      "name": "Finders Keepers",
+      "rank": "BRONZE",
+      "description": "Kill 50 enemy soldiers with Found Weapons."
+    },
+    {
+      "trophyId": 36,
+      "name": "Le Fantôme",
+      "rank": "BRONZE",
+      "description": "Achieve 250 Ghost Kills."
+    },
+    {
+      "trophyId": 37,
+      "name": "Silent but Deadly",
+      "rank": "BRONZE",
+      "description": "Kill 50 enemies during a Sound Mask."
+    },
+    {
+      "trophyId": 38,
+      "name": "Knives for a Pro",
+      "rank": "BRONZE",
+      "description": "Perform 100 lethal Takedowns."
+    },
+    {
+      "trophyId": 39,
+      "name": "Always Greener",
+      "rank": "BRONZE",
+      "description": "While in Tall Grass, kill 50 Soldiers."
+    },
+    {
+      "trophyId": 40,
+      "name": "Pen Pal",
+      "rank": "BRONZE",
+      "description": "Collect 35 Personal Letters."
+    },
+    {
+      "trophyId": 41,
+      "name": "Top Secret",
+      "rank": "BRONZE",
+      "description": "Collect 35 Classified Documents."
+    },
+    {
+      "trophyId": 42,
+      "name": "Treasure Hunter",
+      "rank": "BRONZE",
+      "description": "Collect 22 Hidden Items."
+    },
+    {
+      "trophyId": 43,
+      "name": "Spread Your Wings",
+      "rank": "BRONZE",
+      "description": "Destroy 21 Dead-eye Targets."
+    },
+    {
+      "trophyId": 44,
+      "name": "Innovator",
+      "rank": "BRONZE",
+      "description": "Interact with 21 Workbenches."
+    },
+    {
+      "trophyId": 45,
+      "name": "Survivalist",
+      "rank": "BRONZE",
+      "description": "Complete an entire Survival mission."
+    },
+    {
+      "trophyId": 49,
+      "name": "Lost its way Gnome",
+      "rank": "BRONZE",
+      "description": "Find the French Resistance Gnome and take a Picture."
+    },
+    {
+      "trophyId": 52,
+      "name": "Propagandist",
+      "rank": "SILVER",
+      "description": "Complete all Propaganda missions with a 3 Star Rating."
+    },
+    {
+      "trophyId": 53,
+      "name": "Propaganda Machine",
+      "rank": "SILVER",
+      "description": "Complete all Propaganda missions with a 3 Star Rating on Authentic difficulty."
     }
-    let out = '';
-    Object.entries(node || {}).forEach(([k, v]) => {
-        const inner = renderTree(v, cardFn, path.concat(k));
-        if (inner) out += buildFolder(escapeHtml(humanize(k)), inner);
-    });
-    return out;
-}
-
-function renderMissionBlock(mKey, m, placedTrophyKeys) {
-    const mLabel = `Mission ${m.number} ${m.title || ''}`;
-    const ctx = `${mLabel} ${m.region || ''}`;
-
-    let inner = gridOf([buildItemCard({
-        id: mKey, type: 'mission', badge: m.region || 'Campaign', badgeClass: 'rank-gold',
-        title: m.title || mLabel, sub: `Mission ${m.number}`, body: m.walkthrough || '', img: m.image_url, ctx
-    })]);
-
-    const colCards = [];
-    Object.entries(m.collectibles || {}).forEach(([cat, list]) => {
-        toArr(list).forEach(it => {
-            if (!it || !it.id) return;
-            colCards.push(buildItemCard({
-                id: it.id, type: 'collectible', group: `${mKey}__${cat}`,
-                badge: COLLECTIBLE_LABELS[cat] || humanize(cat), badgeClass: 'rank-bronze',
-                title: it.name, sub: it.location, img: it.image_url, ctx
-            }));
-        });
-    });
-    if (colCards.length) inner += buildFolder('🗂️ Collectibles', gridOf(colCards));
-
-    const chCards = [];
-    const kc = m.kill_challenge;
-    if (kc && typeof kc === 'object') {
-        const body = [kc.location, kc.strategy, kc.reward ? `Reward: ${kc.reward}` : ''].filter(Boolean).join(' ');
-        chCards.push(buildItemCard({
-            id: `kill_${mKey}`, type: 'mission', badge: 'Kill List', badgeClass: 'rank-silver',
-            title: kc.target_name, sub: kc.challenge, body, img: kc.image_url, ctx
-        }));
-    }
-    const pm = m.propaganda_mission;
-    if (pm && pm.id) {
-        chCards.push(buildItemCard({
-            id: pm.id, type: 'mission', badge: 'Propaganda', badgeClass: 'rank-gold',
-            title: pm.title, sub: pm.target_score ? `Target: ${pm.target_score}` : '', body: pm.briefing || '', img: pm.image_url, ctx
-        }));
-    }
-    if (chCards.length) inner += buildFolder('🎯 Challenges', gridOf(chCards));
-
-    const trophyCards = [];
-    toArr(m.trophies).forEach(t => {
-        if (!t) return;
-        const tKey = `trophy_${appState.gameId}_${t.trophyId}`;
-        placedTrophyKeys.add(tKey);
-        const card = trophyCardFor(tKey, ctx);
-        if (card) trophyCards.push(card);
-    });
-    if (trophyCards.length) inner += buildFolder('🏆 Trophies', gridOf(trophyCards));
-
-    const title = `🎖️ Mission ${escapeHtml(m.number)} — ${escapeHtml(m.title || '')}` +
-        (m.region ? `<span class="mission-region">${escapeHtml(m.region)}</span>` : '');
-    return buildFolder(title, inner);
-}
-
-function renderMissionSchema(data) {
-    const placedTrophyKeys = new Set();
-    let html = `
-        <div class="uni-search-wrap">
-            <input type="search" id="universalSearchInput" class="uni-search-input" autocomplete="off"
-                   placeholder="Search missions, medals, ribbons, collectibles, trophies...">
-            <button type="button" class="uni-search-btn" id="uniExpandAll">Expand all</button>
-            <button type="button" class="uni-search-btn" id="uniCollapseAll">Collapse all</button>
-            <div class="uni-search-count" id="universalSearchCount"></div>
-        </div>`;
-
-    Object.entries(data.missions)
-        .filter(([, m]) => m && typeof m === 'object')
-        .sort((a, b) => (a[1].number || 0) - (b[1].number || 0))
-        .forEach(([mKey, m]) => { html += renderMissionBlock(mKey, m, placedTrophyKeys); });
-
-    const ribbonTree = {};
-    ribbonKeys(data).forEach(k => { ribbonTree[k.replace(/_ribbons$/, '')] = data[k]; });
-    const ribbonHtml = renderTree(ribbonTree, ribbonCard, []);
-    if (ribbonHtml) html += buildFolder('🎗️ Ribbons', ribbonHtml);
-
-    if (data.medals && typeof data.medals === 'object') {
-        const medalHtml = renderTree(data.medals, medalCard, []);
-        if (medalHtml) html += buildFolder('🏅 Medals', medalHtml);
-    }
-
-    const generalTrophies = Object.keys(appState.trophies)
-        .filter(k => !placedTrophyKeys.has(k))
-        .map(k => trophyCardFor(k, 'general'))
-        .filter(Boolean);
-    if (generalTrophies.length) html += buildFolder('🏆 General Trophies', gridOf(generalTrophies));
-
-    return html;
-}
-
-function setupUniversalSearch() {
-    const input = document.getElementById('universalSearchInput');
-    const container = document.getElementById('section-container');
-    if (!input || !container) return;
-
-    let timer = null;
-    input.addEventListener('input', () => {
-        clearTimeout(timer);
-        timer = setTimeout(() => runUniversalSearch(input.value), 120);
-    });
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') { input.value = ''; runUniversalSearch(''); }
-    });
-
-    const expandBtn = document.getElementById('uniExpandAll');
-    const collapseBtn = document.getElementById('uniCollapseAll');
-    if (expandBtn) expandBtn.addEventListener('click', () => {
-        container.querySelectorAll('.category-section').forEach(s => s.classList.remove('section-collapsed'));
-    });
-    if (collapseBtn) collapseBtn.addEventListener('click', () => {
-        container.querySelectorAll('.category-section').forEach(s => s.classList.add('section-collapsed'));
-    });
-}
-
-function runUniversalSearch(raw) {
-    const container = document.getElementById('section-container');
-    const countEl = document.getElementById('universalSearchCount');
-    if (!container) return;
-
-    const q = String(raw || '').trim().toLowerCase();
-    const cards = container.querySelectorAll('.game-item-card');
-    const sections = Array.from(container.querySelectorAll('.category-section'));
-
-    if (!q) {
-        cards.forEach(c => c.classList.remove('search-hidden'));
-        sections.forEach(s => {
-            s.classList.remove('search-hidden');
-            if (s.dataset.prevCollapsed !== undefined) {
-                s.classList.toggle('section-collapsed', s.dataset.prevCollapsed === '1');
-                delete s.dataset.prevCollapsed;
-            }
-        });
-        if (countEl) countEl.innerText = '';
-        return;
-    }
-
-    const terms = q.split(/\s+/);
-    let matches = 0;
-    cards.forEach(c => {
-        const hay = c.getAttribute('data-search') || '';
-        const hit = terms.every(t => hay.includes(t));
-        c.classList.toggle('search-hidden', !hit);
-        if (hit) matches++;
-    });
-
-    sections.slice().reverse().forEach(s => {
-        if (s.dataset.prevCollapsed === undefined) {
-            s.dataset.prevCollapsed = s.classList.contains('section-collapsed') ? '1' : '0';
-        }
-        const hasMatch = !!s.querySelector('.game-item-card:not(.search-hidden)');
-        s.classList.toggle('search-hidden', !hasMatch);
-        if (hasMatch) s.classList.remove('section-collapsed');
-    });
-
-    if (countEl) countEl.innerText = matches ? `${matches} result${matches === 1 ? '' : 's'}` : 'No results';
-}
-
-function renderUniversalCompanion(data) {
-    const container = document.getElementById('section-container');
-    if (!container || !data) return;
-
-    ensureUniversalStyles();
-
-    if (isMissionSchema(data)) {
-        container.innerHTML = renderMissionSchema(data);
-        appState.applyStateToUI();
-        setupUniversalSearch();
-        return;
-    }
-
-    let html = '';
-    const rawMissions = data.walkthrough_missions ? (Array.isArray(data.walkthrough_missions) ? data.walkthrough_missions : Object.values(data.walkthrough_missions)) : [];
-    if (rawMissions.length > 0) {
-        html += `
-        <section class="category-section">
-            <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                <h2>📖 Story Operations & Quests (${rawMissions.length})</h2>
-                <span>▾</span>
-            </div>
-            <div class="section-content">
-                <div class="trophy-grid">
-                    ${rawMissions.map(m => `
-                        <div class="trophy-card game-item-card" data-id="${m.id}" data-type="mission">
-                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                                <div>
-                                    <span class="trophy-rank rank-gold">${escapeHtml(m.region || 'Campaign')}</span>
-                                    <h3 style="color:#fff; font-size:1rem; margin-top:4px;">${escapeHtml(m.mission_name || m.title)}</h3>
-                                </div>
-                                <button type="button" class="check-btn" onclick="appState.toggleItem('${m.id}', 'mission')" aria-label="Toggle Mission"></button>
-                            </div>
-                            <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(m.guide || '')}</p>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        </section>`;
-    }
-
-    const trophyEntries = Object.entries(appState.trophies);
-    if (trophyEntries.length > 0) {
-        html += `
-        <section class="category-section">
-            <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
-                <h2>🏆 Trophies & Achievements (${trophyEntries.length})</h2>
-                <span>▾</span>
-            </div>
-            <div class="section-content">
-                <div class="trophy-grid">
-                    ${trophyEntries.map(([tKey, t]) => {
-                        const tIcon = toSecureUrl(t.icon || '');
-                        const tType = (t.rank || 'Bronze').toUpperCase();
-                        let badgeClass = 'rank-bronze';
-                        if (tType.includes('PLATINUM')) badgeClass = 'rank-platinum';
-                        else if (tType.includes('GOLD')) badgeClass = 'rank-gold';
-                        else if (tType.includes('SILVER')) badgeClass = 'rank-silver';
-
-                        return `
-                        <div class="trophy-card game-item-card" data-id="${tKey}" data-type="trophy">
-                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                                <div style="display:flex; gap:10px; align-items:center;">
-                                    ${tIcon ? `<img src="${tIcon}" style="width:40px; height:40px; border-radius:6px; object-fit:cover;" onerror="this.style.display='none'">` : ''}
-                                    <div>
-                                        <span class="trophy-rank ${badgeClass}">${escapeHtml(tType)}</span>
-                                        <h3 style="color:#fff; font-size:0.95rem; margin-top:2px;">${escapeHtml(t.name)}</h3>
-                                    </div>
-                                </div>
-                                <button type="button" class="check-btn" onclick="appState.toggleItem('${tKey}', 'trophy')" aria-label="Toggle Trophy"></button>
-                            </div>
-                            <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(t.description)}</p>
-                        </div>`;
-                    }).join('')}
-                </div>
-            </div>
-        </section>`;
-    }
-
-    container.innerHTML = html;
-    appState.applyStateToUI();
-}
-
-function toSecureUrl(url) {
-    if (!url || typeof url !== 'string') return '';
-    const trimmed = url.trim();
-    if (trimmed.startsWith('/')) return trimmed;
-    if (trimmed.startsWith('http://static-resource.np.community.playstation.net/')) {
-        return trimmed.replace('http://static-resource.np.community.playstation.net/', 'https://static-resource.np.community.playstation.net/');
-    }
-    if (trimmed.startsWith('http://')) return trimmed.replace(/^http:\/\//i, 'https://');
-    return trimmed;
-}
-
-function escapeHtml(str) {
-    if (str === undefined || str === null || str === '') return '';
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}
-
-// Section 12: Game Pills Bar
-async function buildGamePillsBar() {
-    const container = document.getElementById('gamePillsContainer');
-    if (!container || !rtdb) return;
-
-    try {
-        const snap = await rtdb.ref('/games').once('value');
-        const gamesCatalog = snap.val();
-        if (!gamesCatalog) return;
-
-        let pillsHtml = '';
-        Object.keys(gamesCatalog).forEach(gKey => {
-            const gData = gamesCatalog[gKey];
-            const gTitle = gData?.game || gData?.title || gKey.toUpperCase();
-            const isActive = (gKey.toLowerCase() === CURRENT_GAME_KEY);
-
-            pillsHtml += `
-                <button type="button" 
-                        class="game-pill ${isActive ? 'active' : ''}" 
-                        data-game-key="${escapeHtml(gKey)}"
-                        onclick="appState.switchGame('${escapeHtml(gKey)}')">
-                    <i class="fas fa-gamepad game-pill-icon"></i>
-                    <span>${escapeHtml(gTitle)}</span>
-                </button>
-            `;
-        });
-
-        container.innerHTML = pillsHtml;
-    } catch (err) {
-        console.warn("[Game Pills Build Error]:", err);
-    }
-}
-
-async function loadAndHydrateGame(gameKey) {
-    appState.updateStatus(`Loading game data from RTDB: /games/${gameKey}...`);
-    if (rtdb) {
-        try {
-            const snap = await rtdb.ref(`/games/${gameKey}`).once('value');
-            const data = snap.val();
-            if (data) {
-                appState.hydrateFromRawJson(data);
-                appState.updateStatus(`[Connected] Authoritative ledger active for /games/${gameKey}`);
-                renderUniversalCompanion(data);
-                await appState.loadProgress();
-
-                if (appState.psnGamertag) {
-                    await autoCheckUserPsnTrophies();
-                }
-                return true;
-            }
-        } catch (err) {
-            console.warn("[RTDB Load Error]:", err);
-        }
-    }
-    appState.updateStatus(`[Error] Game '/games/${gameKey}' not found in RTDB.`);
-    return false;
-}
-
-// Section 13: Universal Bootstrapper
-async function initUniversalEngine() {
-    await buildUtmNavigation();
-    await buildGamePillsBar();
-
-    const platformSelector = document.getElementById('platformSelector');
-    if (platformSelector) {
-        platformSelector.addEventListener('change', (e) => {
-            appState.switchPlatform(e.target.value, true);
-        });
-    }
-
-    const menuBtn = document.getElementById('mobileMenuBtn');
-    const navLinks = document.getElementById('dynamicNavLinks');
-    if (menuBtn && navLinks) {
-        menuBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('is-open');
-        });
-    }
-
-    const authBtn = document.getElementById('authModalBtn');
-    const authModal = document.getElementById('authModal');
-    const authClose = document.getElementById('authModalClose');
-    const googleBtn = document.getElementById('googleSignInBtn');
-
-    if (authBtn && authModal) authBtn.addEventListener('click', () => authModal.classList.remove('hidden'));
-    if (authClose && authModal) authClose.addEventListener('click', () => authModal.classList.add('hidden'));
-
-    if (googleBtn && auth) {
-        googleBtn.addEventListener('click', () => {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).catch(err => {
-                console.error("[Auth Popup Error]:", err);
-                alert(`Sign-in error: ${err.message}`);
-            });
-        });
-    }
-
-    if (auth) {
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                appState.currentUser = user;
-                appState.activeEmail = user.email;
-                appState.activeUser = user.displayName || 'Member';
-
-                const nameEl = document.getElementById('resistance-name');
-                if (nameEl) nameEl.innerText = `${appState.activeUser.toUpperCase()} [${appState.platform.toUpperCase()}]`;
-
-                if (authBtn) authBtn.classList.add('hidden');
-                const badge = document.getElementById('userProfileBadge');
-                const avatar = document.getElementById('headerUserAvatar');
-                const nameBadge = document.getElementById('userDisplayName');
-                if (badge) badge.classList.remove('hidden');
-                if (avatar && user.photoURL) avatar.src = user.photoURL;
-                if (nameBadge) nameBadge.innerText = appState.activeUser;
-                if (authModal) authModal.classList.add('hidden');
-
-                const emailKey = user.email.replace(/@/g, '_at_').replace(/\./g, '_');
-                try {
-                    const snap = await rtdb.ref(`/users/${emailKey}`).once('value');
-                    const uData = snap.val() || {};
-                    appState.myFriendCode = uData.friend_code || null;
-                    appState.psnGamertag = uData.psn_username || null;
-
-                    const codeDisplay = document.getElementById('myFriendCodeDisplay');
-                    if (codeDisplay && appState.myFriendCode) codeDisplay.innerText = appState.myFriendCode;
-
-                    applyUserProfileStyling(uData);
-
-                    if (uData.primary_platform) {
-                        await appState.switchPlatform(uData.primary_platform.toLowerCase(), false);
-                    }
-                } catch (e) {}
-
-                if (appState.gameData) {
-                    await appState.loadProgress();
-                    await appState.syncFriendsProgress();
-                    if (appState.psnGamertag) {
-                        await autoCheckUserPsnTrophies();
-                    }
-                }
-            } else {
-                appState.currentUser = null;
-                appState.psnGamertag = null;
-
-                const nameEl = document.getElementById('resistance-name');
-                if (nameEl) nameEl.innerText = `GUEST [${appState.platform.toUpperCase()}]`;
-
-                if (authBtn) authBtn.classList.remove('hidden');
-                const badge = document.getElementById('userProfileBadge');
-                if (badge) badge.classList.add('hidden');
-
-                if (appState.gameData) await appState.loadProgress();
-            }
-        });
-    }
-
-    await loadAndHydrateGame(CURRENT_GAME_KEY);
-}
-
-// Universal Self-Starting Execution Gate
-if (document.readyState === 'link' || document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initUniversalEngine);
-} else {
-    initUniversalEngine();
+  ]
 }
