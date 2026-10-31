@@ -80,7 +80,7 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
     <input id="avatar_custom" placeholder="https://..." class="hidden"></div>
 
   <h2>Linked accounts</h2>
-  <p class="hint">Choose who can see each handle. Account ID and NPSSO below are always private.</p>
+  <p class="hint">Choose who can see each handle. Account ID, NPSSO and Steam API key below are always private.</p>
   <div id="handles"></div>
 
   <h2>PlayStation sync (private)</h2>
@@ -99,6 +99,10 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
   <div class="box sec"><strong>Make your Steam data visible to the site.</strong>
     <p>On Steam open <a href="https://steamcommunity.com/my/edit/settings" target="_blank" rel="noopener">Profile &gt; Edit Profile &gt; Privacy Settings</a> and set <em>My profile</em>, <em>Game details</em> and <em>Friends list</em> to <strong>Public</strong>. Steam only shares friends and games for public profiles. The site checks Steam every 2 hours.</p>
     <p id="steamState" class="hint"></p></div>
+  <label for="steam_api_key">Steam Web API key (private, optional)</label><div class="row" data-secret="steam_api_key"></div>
+  <div class="box"><strong>Owner-only.</strong> Never shown to friends. It hides 60 seconds after you reveal it.
+    <p>Optional: the site uses its own key if you leave this empty. To use yours, open <a href="https://steamcommunity.com/dev/apikey" target="_blank" rel="noopener">steamcommunity.com/dev/apikey</a>, sign in, enter <code>entertainment-71888.firebaseapp.com</code> as the domain, and paste the 32-character key. A key does not unlock a private Steam profile; the privacy settings above still apply.</p>
+    <p id="steamKeyState" class="hint"></p></div>
 
   <h2>Personal links (up to 5)</h2>
   <div id="links"></div>
@@ -202,6 +206,15 @@ $('psn_account_id').addEventListener('input',e=>{
   else{st.textContent='The Account ID is a long number only (no letters).';st.style.color='var(--text-muted)'}
 });
 
+// Steam API key: 32 hex characters (accepts "Key: XXXX" pasted from Steam)
+$('steam_api_key').addEventListener('input',e=>{
+  const v=e.target.value.trim(),st=$('steamKeyState');
+  if(!v){st.textContent='';return}
+  const m=v.match(/\b[0-9A-Fa-f]{32}\b/);
+  if(m){e.target.value=m[0].toUpperCase();st.textContent='Key detected (32 characters).';st.style.color='var(--accent-green)'}
+  else{st.textContent='A Steam key is 32 letters A-F and numbers.';st.style.color='var(--text-muted)'}
+});
+
 // ---- Colors ----
 const okHex=h=>/^#[0-9a-f]{6}$/i.test(h);
 const toRgb=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16));
@@ -283,6 +296,7 @@ async function load(){
   $('avatar_source').value=D.avatar_source||'google';$('avatar_custom').value=D.avatar_source==='custom'?D.avatar_url||'':'';
   HANDLES.forEach(([f,,s])=>{$(f).value=D[f]||'';$(s).value=D[s]||'private'});
   $('psn_account_id').value=D.psn_account_id||S.psn_account_id||'';$('psn_npsso').value=S.psn_npsso||'';
+  $('steam_api_key').value=S.steam_api_key||'';$('steamKeyState').textContent=S.steam_api_key?(D.steam_api_key_valid===false?'Steam rejected the saved key. Paste a new one.':'Key saved.'):'';
   $('npssoState').textContent=S.psn_npsso?(D.psn_npsso_valid===false?'Saved token has expired. Paste a new one.':'Token saved.'):'';
   (D.links||[]).slice(0,5).forEach((l,i)=>$('lk'+i).value=l);
   setColor(1,D.primary_color||'#0088ff');setColor(2,D.secondary_color||'#f5a623');
@@ -305,6 +319,9 @@ $('save').onclick=async()=>{
     HANDLES.forEach(([f,,s])=>{pub[f]=$(f).value.trim();pub[s]=$(s).value});
     const npsso=$('psn_npsso').value.trim();
     if(npsso&&!/^[A-Za-z0-9]{64}$/.test(npsso))return say('NPSSO must be exactly 64 letters and numbers.',1);
+    const skey=$('steam_api_key').value.trim().toUpperCase();
+    if(skey&&!/^[0-9A-F]{32}$/.test(skey))return say('Steam API key must be exactly 32 characters (0-9, A-F).',1);
+    if(skey&&skey!==S.steam_api_key)pub.steam_api_key_valid=true;
     const acc=$('psn_account_id').value.trim();
     if(acc&&!/^\d{10,20}$/.test(acc))return say('PSN Account ID must be numbers only. Get it from psn.flipscreen.games.',1);
     if(npsso&&npsso!==S.psn_npsso)pub.psn_npsso_valid=true;
@@ -315,10 +332,10 @@ $('save').onclick=async()=>{
       throw new Error('Saved, but the values read back differ. Try again.');
     D=back;dirty=false;
     let ok=true;
-    try{await db.ref('user_secrets/'+K).update({psn_npsso:npsso,updated_at:now})}catch(e){ok=false}
+    try{await db.ref('user_secrets/'+K).update({psn_npsso:npsso,steam_api_key:skey,updated_at:now});S.psn_npsso=npsso;S.steam_api_key=skey}catch(e){ok=false}
     const t=new Date(now).toLocaleString();
     if(ok){say('Saved to your account.');setState('Saved to cloud: '+t+' ✓','var(--accent-green)')}
-    else{say('Profile saved, but the NPSSO could not be saved. Publish the user_secrets rules.',1);setState('Profile saved '+t+'. NPSSO not saved.','var(--danger)')}
+    else{say('Profile saved, but the NPSSO and Steam key could not be saved. Publish the user_secrets rules.',1);setState('Profile saved '+t+'. Private keys not saved.','var(--danger)')}
   }catch(e){say(e.message,1);setState('Not saved. '+e.message,'var(--danger)')}
   finally{b.disabled=false;b.textContent='Save settings'}
 };
