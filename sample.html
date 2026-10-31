@@ -206,7 +206,7 @@ img.lb-able{cursor:zoom-in}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getDatabase, ref, get, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, get, set, update, remove, onValue, query as dbQuery, orderByChild, equalTo, limitToFirst } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getFirestore, doc, getDoc, collection, getDocs, query, where, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* ============================================================================
@@ -455,7 +455,21 @@ async function rtGet(db, path) { try { return (await get(ref(db, path))).val(); 
 
 async function resolveTargetKey(p) {
   if (!p) return S.viewerKey;                       // null when signed out and no ?u=
-  if (CODE_RE.test(p)) { const k = await rtGet(dbE, "friend_codes/" + p.toUpperCase()); if (k && typeof k === "string") return k; S.codeMissing = p.toUpperCase(); return null; }
+  if (CODE_RE.test(p)) {
+    const code = p.toUpperCase();
+    const k = await rtGet(dbE, "friend_codes/" + code); if (k && typeof k === "string") return k;
+    // not in the registry: is it the signed-in member's own code?  (then register it so everyone else can find it too)
+    if (S.viewerKey && S.viewerData && S.viewerData.friend_code === code) {
+      try { await set(ref(dbE, "friend_codes/" + code), S.viewerKey); } catch (e) { console.warn("[friend_codes] could not register", e.message); }
+      return S.viewerKey;
+    }
+    // last resort: search users by friend_code (works when the rules allow reading /users)
+    try {
+      const snap = await get(dbQuery(ref(dbE, "users"), orderByChild("friend_code"), equalTo(code), limitToFirst(1)));
+      const found = snap.exists() ? Object.keys(snap.val())[0] : null; if (found) return found;
+    } catch (e) { /* no permission or no index: fall through */ }
+    S.codeMissing = code; return null;
+  }
   return p;
 }
 function friendEntries(map) {                      // users/{key}/friends/{code}: username, avatar_url, friend_code, primary_platform...
@@ -508,7 +522,8 @@ async function loadProfile(user) {
   cacheSet(cacheKey, { sig, at: Date.now() });
 
   if (S.own && tcode && !requestedProfile()) { try { history.replaceState(null, "", shareUrl(tcode)); } catch (e) { /* ignore */ } }
-  renderNavUser(); renderHero(); renderFriends();
+  renderNavUser(); renderHero(); renderFriends(); refreshFriendChips();
+  watchProfile();
   renderFriendAction(); await syncSentRequests(); await renderRequests();
   await startPsn(); await renderTracked();
 }
@@ -563,6 +578,37 @@ function renderHero() {
   };
   const hs = $("hero-signin"); if (hs) hs.onclick = (e) => { e.preventDefault(); googleSignIn(); };
   const cp = $("copy"); if (cp) cp.onclick = () => navigator.clipboard && navigator.clipboard.writeText(d.friend_code).then(() => { cp.innerHTML = '<i class="fa-solid fa-check"></i>'; });
+}
+
+/* Settings changes (colours, avatar, handles, scopes...) show up live: users/{key} is watched and any change repaints. */
+const sigOf = (d) => hash(JSON.stringify(d || {}));
+function watchProfile() {
+  if (S.unsubUser) { S.unsubUser(); S.unsubUser = null; }
+  if (!S.targetKey || S.limited) return;
+  let last = sigOf(S.target);
+  S.unsubUser = onValue(ref(dbE, "users/" + S.targetKey), (snap) => {
+    const d = snap.val(); if (!d) return;
+    const s = sigOf(d); if (s === last) return; last = s;
+    const old = S.target; S.target = d; if (S.own) { S.viewerData = d; S.viewerFriends = d.friends || {}; }
+    renderHero(); if (S.own) { renderNavUser(); renderFriends(); refreshFriendChips(); }
+    const psnChanged = old.psn_username !== d.psn_username || old.psn_username_scope !== d.psn_username_scope;
+    if (psnChanged) startPsn();
+    renderTracked();
+  }, (e) => console.warn("[profile watch]", e.message));
+}
+
+/* Friend chips follow each friend's own profile (name + avatar), not the copy stored when they were added. */
+async function refreshFriendChips() {
+  if (!S.own) return;
+  const list = friendEntries(S.viewerFriends).slice(0, 40); let changed = false;
+  await Promise.all(list.map(async (f) => {
+    const key = await rtGet(dbE, "friend_codes/" + f.code); if (!key || typeof key !== "string") return;
+    const u = await rtGet(dbE, "users/" + key); if (!u) return;
+    const slot = Object.keys(S.viewerFriends).find((k) => k === f.code || (S.viewerFriends[k] && S.viewerFriends[k].friend_code === f.code)); if (!slot) return;
+    const cur = S.viewerFriends[slot] || {};
+    if ((u.username && u.username !== cur.username) || (u.avatar_url && u.avatar_url !== cur.avatar_url)) { S.viewerFriends[slot] = { ...cur, username: u.username || cur.username, avatar_url: u.avatar_url || cur.avatar_url }; changed = true; }
+  }));
+  if (changed) renderFriends();
 }
 
 function renderFriends() {
