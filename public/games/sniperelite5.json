@@ -2,137 +2,430 @@
   "schema_version": "1.0.0",
   "game": "Sniper Elite 5",
   "gameId": "SniperElite5",
-  "commId": "NPWR24208_00",
+  "commId": "NPWR21465_00",
   "platforms": {
     "playstation": {
-      "commId": "NPWR24208_00",
-      "titleId": "CUSA19124"
+      "commId": "NPWR21465_00",
+      "titleId": "PPSA01685",
+      "productId": "UP4363-PPSA01685_00-SNIPERELITE50000",
+      "deluxeProductId": "UP4363-PPSA01685_00-SNIPERELITE500DE",
+      "store_url": "https://store.playstation.com/en-us/product/UP4363-PPSA01685_00-SNIPERELITE50000",
+      "ps4": {
+        "titleId": "CUSA16075",
+        "commId": "NPWR25764_00"
+      }
     },
     "steam": {
-      "appId": 1029690
+      "appId": 1029690,
+      "store_url": "https://store.steampowered.com/app/1029690/Sniper_Elite_5/"
     },
     "xbox": {
-      "productId": "9nk86d1x9wbb"
+      "productId": "9pp8q82h79lc",
+      "store_url": "https://www.xbox.com/en-US/games/store/sniper-elite-5/9pp8q82h79lc"
     }
   },
   "metrics": [
-    { "key": "personal_letters", "label": "Personal Letters", "target": 41 },
-    { "key": "classified_documents", "label": "Classified Documents", "target": 39 },
-    { "key": "hidden_items", "label": "Hidden Items", "target": 24 },
-    { "key": "stone_eagles", "label": "Stone Eagles", "target": 24 },
-    { "key": "workbenches", "label": "Workbenches", "target": 24 }
+    {
+      "key": "personal_letters",
+      "label": "Personal Letters",
+      "target": 41
+    },
+    {
+      "key": "classified_documents",
+      "label": "Classified Documents",
+      "target": 39
+    },
+    {
+      "key": "hidden_items",
+      "label": "Hidden Items",
+      "target": 24
+    },
+    {
+      "key": "stone_eagles",
+      "label": "Stone Eagles",
+      "target": 24
+    },
+    {
+      "key": "workbenches",
+      "label": "Workbenches",
+      "target": 24
+    }
   ],
   "missions": {
     "mission_1": {
       "number": 1,
       "title": "The Atlantic Wall",
-      "region": "Colleville-sur-Mer",
-      "kill_challenge": "Assassinate Steffen Beckendorf with an explosion.",
+      "region": "Colline-Sur-Mer",
+      "kill_challenge": "Kill Beckendorf with an Explosion",
       "collectibles": {
         "personal_letters": [
-          { "id": "se5_let_m1_01", "name": "Picked Some Violets", "location": "Upstairs bedroom table in small northern farmstead." },
-          { "id": "se5_let_m1_02", "name": "Upcoming Delivery", "location": "Couch inside residential villa parlor." },
-          { "id": "se5_let_m1_03", "name": "Violets Are Wilting", "location": "Attic floorboard table inside ruined timber house." },
-          { "id": "se5_let_m1_04", "name": "Violets Don't Wilt", "location": "Hotel room bedside cabinet." },
-          { "id": "se5_let_m1_05", "name": "Pests In The Garden", "location": "Searchlight bunker command desk." },
-          { "id": "se5_let_m1_06", "name": "Boches At The Door", "location": "Bench in the central residential garden." }
+          {
+            "id": "se5_let_m1_01",
+            "name": "Picked Some Violets",
+            "location": "Upstairs bedroom table in small northern farmstead."
+          },
+          {
+            "id": "se5_let_m1_02",
+            "name": "Upcoming Delivery",
+            "location": "Couch inside residential villa parlor."
+          },
+          {
+            "id": "se5_let_m1_03",
+            "name": "Violets Are Wilting",
+            "location": "Attic floorboard table inside ruined timber house."
+          },
+          {
+            "id": "se5_let_m1_04",
+            "name": "Violets Don't Wilt",
+            "location": "Hotel room bedside cabinet."
+          },
+          {
+            "id": "se5_let_m1_05",
+            "name": "Pests In The Garden",
+            "location": "Searchlight bunker command desk."
+          },
+          {
+            "id": "se5_let_m1_06",
+            "name": "Boches At The Door",
+            "location": "Bench in the central residential garden."
+          }
         ],
         "classified_documents": [
-          { "id": "se5_doc_m1_01", "name": "Resistance Captured", "location": "Boathouse table beside starting shoreline." },
-          { "id": "se5_doc_m1_02", "name": "Beach Defences", "location": "Safe inside radar facility command office." },
-          { "id": "se5_doc_m1_03", "name": "Lacking Air Support", "location": "Bunker radio room table on eastern flank." },
-          { "id": "se5_doc_m1_04", "name": "AtlanticWall Report", "location": "Naval bunker lower safe room." }
+          {
+            "id": "se5_doc_m1_01",
+            "name": "Resistance Captured",
+            "location": "Boathouse table beside starting shoreline."
+          },
+          {
+            "id": "se5_doc_m1_02",
+            "name": "Beach Defences",
+            "location": "Safe inside radar facility command office."
+          },
+          {
+            "id": "se5_doc_m1_03",
+            "name": "Lacking Air Support",
+            "location": "Bunker radio room table on eastern flank."
+          },
+          {
+            "id": "se5_doc_m1_04",
+            "name": "AtlanticWall Report",
+            "location": "Naval bunker lower safe room."
+          }
         ],
         "hidden_items": [
-          { "id": "se5_item_m1_01", "name": "Resistance Photo", "location": "Locker room bench in town center." },
-          { "id": "se5_item_m1_02", "name": "Radio Tin", "location": "Under bushes beside coastal mortar pit." },
-          { "id": "se5_item_m1_03", "name": "FFI Flag", "location": "Basement wine cellar rack." }
+          {
+            "id": "se5_item_m1_01",
+            "name": "Resistance Photo",
+            "location": "Locker room bench in town center."
+          },
+          {
+            "id": "se5_item_m1_02",
+            "name": "Radio Tin",
+            "location": "Under bushes beside coastal mortar pit."
+          },
+          {
+            "id": "se5_item_m1_03",
+            "name": "FFI Flag",
+            "location": "Basement wine cellar rack."
+          }
         ],
         "stone_eagles": [
-          { "id": "se5_eagle_m1_01", "name": "Stone Eagle 1", "location": "Rooftop ridge of town church spire." },
-          { "id": "se5_eagle_m1_02", "name": "Stone Eagle 2", "location": "Chimney stack on bunker barracks building." },
-          { "id": "se5_eagle_m1_03", "name": "Stone Eagle 3", "location": "Stone gateway arch above coastal battery road." }
+          {
+            "id": "se5_eagle_m1_01",
+            "name": "Stone Eagle 1",
+            "location": "Rooftop ridge of town church spire."
+          },
+          {
+            "id": "se5_eagle_m1_02",
+            "name": "Stone Eagle 2",
+            "location": "Chimney stack on bunker barracks building."
+          },
+          {
+            "id": "se5_eagle_m1_03",
+            "name": "Stone Eagle 3",
+            "location": "Stone gateway arch above coastal battery road."
+          }
         ],
         "workbenches": [
-          { "id": "se5_wb_m1_rifle", "name": "Rifle Workbench", "location": "Underground armory bunker." },
-          { "id": "se5_wb_m1_smg", "name": "SMG Workbench", "location": "Attic loft above town vehicle depot." },
-          { "id": "se5_wb_m1_pistol", "name": "Pistol Workbench", "location": "Gun battery cellar storage room." }
+          {
+            "id": "se5_wb_m1_rifle",
+            "name": "Rifle Workbench",
+            "location": "Underground armory bunker."
+          },
+          {
+            "id": "se5_wb_m1_smg",
+            "name": "SMG Workbench",
+            "location": "Attic loft above town vehicle depot."
+          },
+          {
+            "id": "se5_wb_m1_pistol",
+            "name": "Pistol Workbench",
+            "location": "Gun battery cellar storage room."
+          }
         ]
+      },
+      "date": "May 28th 1944",
+      "image_url": "/public/games/sniperelite5/images/missions/m01-the-atlantic-wall.jpg",
+      "description": "Karl Fairburne and a squad of US Rangers infiltrate the Nazi-occupied seaside town of Colline-Sur-Mer, under cover of an Allied aerial assault. Karl's orders are to take out a Radar Tower before rendezvousing with his Resistance contact, Blue Viper.",
+      "optional_objectives": [
+        "Destroy the Gun Battery",
+        "Neutralize the Coastal Defenses",
+        "Neutralize Anti-Air Guns"
+      ],
+      "kill_target": "Steffen Beckendorf",
+      "starting_locations": 4,
+      "collectible_totals": {
+        "personal_letters": 6,
+        "classified_documents": 4,
+        "hidden_items": 3,
+        "stone_eagles": 3,
+        "workbenches": 3,
+        "total": 19
       }
     },
     "mission_2": {
       "number": 2,
       "title": "Occupied Residence",
-      "region": "Château de Berengar",
-      "kill_challenge": "Assassinate Friedrich Kummler with the grand ballroom chandelier.",
+      "region": "Chateau de Berengar",
+      "kill_challenge": "Crush him with one of the Chateau's chandeliers",
       "collectibles": {
         "personal_letters": [
-          { "id": "se5_let_m2_01", "name": "Do Not Fail Me Nephew", "location": "Château second-floor guest quarters desk." },
-          { "id": "se5_let_m2_02", "name": "Need A Scapegoat", "location": "Stable loft table across from the coach house." },
-          { "id": "se5_let_m2_03", "name": "Brother I Have A Plan", "location": "Manor parlor room side table." },
-          { "id": "se5_let_m2_04", "name": "Good Plan, Lets Do It", "location": "Balcony accessible by climbing exterior wall vine." }
+          {
+            "id": "se5_let_m2_01",
+            "name": "Do Not Fail Me Nephew",
+            "location": "Château second-floor guest quarters desk."
+          },
+          {
+            "id": "se5_let_m2_02",
+            "name": "Need A Scapegoat",
+            "location": "Stable loft table across from the coach house."
+          },
+          {
+            "id": "se5_let_m2_03",
+            "name": "Brother I Have A Plan",
+            "location": "Manor parlor room side table."
+          },
+          {
+            "id": "se5_let_m2_04",
+            "name": "Good Plan, Lets Do It",
+            "location": "Balcony accessible by climbing exterior wall vine."
+          }
         ],
         "classified_documents": [
-          { "id": "se5_doc_m2_01", "name": "Orders Of The Day", "location": "Guardhouse reception counter." },
-          { "id": "se5_doc_m2_02", "name": "Renovation Complete", "location": "Library desk beside circular staircase." },
-          { "id": "se5_doc_m2_03", "name": "Operation Kraken", "location": "Möller's private office safe." },
-          { "id": "se5_doc_m2_04", "name": "New Orders Effective Immediately", "location": "Estate courtyard supply tent." },
-          { "id": "se5_doc_m2_05", "name": "Immediate Request For Repairs", "location": "Cellar boiler maintenance room." },
-          { "id": "se5_doc_m2_06", "name": "Grateful Thanks", "location": "Attic secret room desk." }
+          {
+            "id": "se5_doc_m2_01",
+            "name": "Orders Of The Day",
+            "location": "Guardhouse reception counter."
+          },
+          {
+            "id": "se5_doc_m2_02",
+            "name": "Renovation Complete",
+            "location": "Library desk beside circular staircase."
+          },
+          {
+            "id": "se5_doc_m2_03",
+            "name": "Operation Kraken",
+            "location": "Möller's private office safe."
+          },
+          {
+            "id": "se5_doc_m2_04",
+            "name": "New Orders Effective Immediately",
+            "location": "Estate courtyard supply tent."
+          },
+          {
+            "id": "se5_doc_m2_05",
+            "name": "Immediate Request For Repairs",
+            "location": "Cellar boiler maintenance room."
+          },
+          {
+            "id": "se5_doc_m2_06",
+            "name": "Grateful Thanks",
+            "location": "Attic secret room desk."
+          }
         ],
         "hidden_items": [
-          { "id": "se5_item_m2_01", "name": "Old Man Statuette", "location": "Garden hedge maze stone plinth." },
-          { "id": "se5_item_m2_02", "name": "Group Statuette", "location": "Bedside cabinet in château master suite." },
-          { "id": "se5_item_m2_03", "name": "Soldier Statuette", "location": "Tower lookout desk reached via green vine." }
+          {
+            "id": "se5_item_m2_01",
+            "name": "Old Man Statuette",
+            "location": "Garden hedge maze stone plinth."
+          },
+          {
+            "id": "se5_item_m2_02",
+            "name": "Group Statuette",
+            "location": "Bedside cabinet in château master suite."
+          },
+          {
+            "id": "se5_item_m2_03",
+            "name": "Soldier Statuette",
+            "location": "Tower lookout desk reached via green vine."
+          }
         ],
         "stone_eagles": [
-          { "id": "se5_eagle_m2_01", "name": "Stone Eagle 1", "location": "Central château roof balustrade peak." },
-          { "id": "se5_eagle_m2_02", "name": "Stone Eagle 2", "location": "Gatehouse stone pinnacle." },
-          { "id": "se5_eagle_m2_03", "name": "Stone Eagle 3", "location": "Carved stone eagle on eastern pavilion gazebo." }
+          {
+            "id": "se5_eagle_m2_01",
+            "name": "Stone Eagle 1",
+            "location": "Central château roof balustrade peak."
+          },
+          {
+            "id": "se5_eagle_m2_02",
+            "name": "Stone Eagle 2",
+            "location": "Gatehouse stone pinnacle."
+          },
+          {
+            "id": "se5_eagle_m2_03",
+            "name": "Stone Eagle 3",
+            "location": "Carved stone eagle on eastern pavilion gazebo."
+          }
         ],
         "workbenches": [
-          { "id": "se5_wb_m2_rifle", "name": "Rifle Workbench", "location": "Cellar armory behind locked gate." },
-          { "id": "se5_wb_m2_smg", "name": "SMG Workbench", "location": "Attic workshop room." },
-          { "id": "se5_wb_m2_pistol", "name": "Pistol Workbench", "location": "Stable outbuilding workshop." }
+          {
+            "id": "se5_wb_m2_rifle",
+            "name": "Rifle Workbench",
+            "location": "Cellar armory behind locked gate."
+          },
+          {
+            "id": "se5_wb_m2_smg",
+            "name": "SMG Workbench",
+            "location": "Attic workshop room."
+          },
+          {
+            "id": "se5_wb_m2_pistol",
+            "name": "Pistol Workbench",
+            "location": "Stable outbuilding workshop."
+          }
         ]
+      },
+      "date": "May 29th 1944",
+      "image_url": "/public/games/sniperelite5/images/missions/m02-occupied-residence.jpg",
+      "description": "Trapped behind enemy lines, Karl prepares to strike back at Obergruppenführer Abelard Möller, the Nazi responsible for ongoing atrocities and attacks on the French Resistance. Möller's operations are shrouded in secrecy, but the Resistance believe the Nazi stronghold of Chateau de Berengar holds the key.",
+      "optional_objectives": [
+        "Recover the Stolen Antiques"
+      ],
+      "kill_target": "Friedrich Kummler",
+      "starting_locations": 3,
+      "collectible_totals": {
+        "personal_letters": 4,
+        "classified_documents": 6,
+        "hidden_items": 3,
+        "stone_eagles": 3,
+        "workbenches": 3,
+        "total": 19
       }
     },
     "mission_3": {
       "number": 3,
       "title": "Spy Academy",
-      "region": "Mont-Saint-Michel",
+      "region": "Beaumont-Saint-Denis",
       "kill_challenge": "Assassinate Fabian Richter using a stealth takedown.",
       "collectibles": {
         "personal_letters": [
-          { "id": "se5_let_m3_01", "name": "Parking Problems", "location": "Causeway bridge checkpoint guard desk." },
-          { "id": "se5_let_m3_02", "name": "Fragile, Do Not Break", "location": "Harbor storage shed crate." },
-          { "id": "se5_let_m3_03", "name": "Do Not Be Late", "location": "Carried by patrolling officer near abbey plaza." },
-          { "id": "se5_let_m3_04", "name": "Its Easy Money", "location": "Tavern bar table on mid-tier street." },
-          { "id": "se5_let_m3_05", "name": "Just Attend One", "location": "Church pew Bible rest." }
+          {
+            "id": "se5_let_m3_01",
+            "name": "Parking Problems",
+            "location": "Causeway bridge checkpoint guard desk."
+          },
+          {
+            "id": "se5_let_m3_02",
+            "name": "Fragile, Do Not Break",
+            "location": "Harbor storage shed crate."
+          },
+          {
+            "id": "se5_let_m3_03",
+            "name": "Do Not Be Late",
+            "location": "Carried by patrolling officer near abbey plaza."
+          },
+          {
+            "id": "se5_let_m3_04",
+            "name": "Its Easy Money",
+            "location": "Tavern bar table on mid-tier street."
+          },
+          {
+            "id": "se5_let_m3_05",
+            "name": "Just Attend One",
+            "location": "Church pew Bible rest."
+          }
         ],
         "classified_documents": [
-          { "id": "se5_doc_m3_01", "name": "Priority Package", "location": "Post office sorting table." },
-          { "id": "se5_doc_m3_02", "name": "Wont Be Attending", "location": "Academy lecture podium table." },
-          { "id": "se5_doc_m3_03", "name": "Training Scenarios", "location": "Spy briefing room desk." },
-          { "id": "se5_doc_m3_04", "name": "Resource Request", "location": "Abbey armory office." },
-          { "id": "se5_doc_m3_05", "name": "Armoury Exposed", "location": "Crypt chamber wall rack." }
+          {
+            "id": "se5_doc_m3_01",
+            "name": "Priority Package",
+            "location": "Post office sorting table."
+          },
+          {
+            "id": "se5_doc_m3_02",
+            "name": "Wont Be Attending",
+            "location": "Academy lecture podium table."
+          },
+          {
+            "id": "se5_doc_m3_03",
+            "name": "Training Scenarios",
+            "location": "Spy briefing room desk."
+          },
+          {
+            "id": "se5_doc_m3_04",
+            "name": "Resource Request",
+            "location": "Abbey armory office."
+          },
+          {
+            "id": "se5_doc_m3_05",
+            "name": "Armoury Exposed",
+            "location": "Crypt chamber wall rack."
+          }
         ],
         "hidden_items": [
-          { "id": "se5_item_m3_01", "name": "Kriegsmarine Playing Cards", "location": "Officer mess hall table." },
-          { "id": "se5_item_m3_02", "name": "Ornate Compass", "location": "Abbey observation tower shelf." },
-          { "id": "se5_item_m3_03", "name": "Covert Ops Field Manual", "location": "Underground spy training bunker." }
+          {
+            "id": "se5_item_m3_01",
+            "name": "Kriegsmarine Playing Cards",
+            "location": "Officer mess hall table."
+          },
+          {
+            "id": "se5_item_m3_02",
+            "name": "Ornate Compass",
+            "location": "Abbey observation tower shelf."
+          },
+          {
+            "id": "se5_item_m3_03",
+            "name": "Covert Ops Field Manual",
+            "location": "Underground spy training bunker."
+          }
         ],
         "stone_eagles": [
-          { "id": "se5_eagle_m3_01", "name": "Stone Eagle 1", "location": "Abbey peak pinnacle." },
-          { "id": "se5_eagle_m3_02", "name": "Stone Eagle 2", "location": "Rooftop stone parapet overlooking southern tidal bay." },
-          { "id": "se5_eagle_m3_03", "name": "Stone Eagle 3", "location": "Gargoyle parapet overlooking the main entrance causeway." }
+          {
+            "id": "se5_eagle_m3_01",
+            "name": "Stone Eagle 1",
+            "location": "Abbey peak pinnacle."
+          },
+          {
+            "id": "se5_eagle_m3_02",
+            "name": "Stone Eagle 2",
+            "location": "Rooftop stone parapet overlooking southern tidal bay."
+          },
+          {
+            "id": "se5_eagle_m3_03",
+            "name": "Stone Eagle 3",
+            "location": "Gargoyle parapet overlooking the main entrance causeway."
+          }
         ],
         "workbenches": [
-          { "id": "se5_wb_m3_smg", "name": "SMG Workbench", "location": "Tide gate tunnel lockup." },
-          { "id": "se5_wb_m3_pistol", "name": "Pistol Workbench", "location": "Abbey library cellar." },
-          { "id": "se5_wb_m3_rifle", "name": "Rifle Workbench", "location": "Highest fortified tower staging room." }
+          {
+            "id": "se5_wb_m3_smg",
+            "name": "SMG Workbench",
+            "location": "Tide gate tunnel lockup."
+          },
+          {
+            "id": "se5_wb_m3_pistol",
+            "name": "Pistol Workbench",
+            "location": "Abbey library cellar."
+          },
+          {
+            "id": "se5_wb_m3_rifle",
+            "name": "Rifle Workbench",
+            "location": "Highest fortified tower staging room."
+          }
         ]
-      }
+      },
+      "date": "May 30th 1944",
+      "image_url": "/public/games/sniperelite5/images/missions/m03-spy-academy.jpg"
     },
     "mission_4": {
       "number": 4,
@@ -141,109 +434,343 @@
       "kill_challenge": "Assassinate Matthaus Ehrlich with a rat bomb.",
       "collectibles": {
         "personal_letters": [
-          { "id": "se5_let_m4_01", "name": "Klaus! You Idiot", "location": "Scrapyard control booth table." },
-          { "id": "se5_let_m4_02", "name": "The Suspense", "location": "Overhead gantry catwalk desk." },
-          { "id": "se5_let_m4_03", "name": "Sheers' Notebook", "location": "Office desk in chemical plant wing." },
-          { "id": "se5_let_m4_04", "name": "Losing The Time", "location": "Railyard depot floor." },
-          { "id": "se5_let_m4_05", "name": "Your Order Awaits", "location": "Machine shop breakroom." },
-          { "id": "se5_let_m4_06", "name": "Ehrlich's Done For", "location": "Dispatch station office table." }
+          {
+            "id": "se5_let_m4_01",
+            "name": "Klaus! You Idiot",
+            "location": "Scrapyard control booth table."
+          },
+          {
+            "id": "se5_let_m4_02",
+            "name": "The Suspense",
+            "location": "Overhead gantry catwalk desk."
+          },
+          {
+            "id": "se5_let_m4_03",
+            "name": "Sheers' Notebook",
+            "location": "Office desk in chemical plant wing."
+          },
+          {
+            "id": "se5_let_m4_04",
+            "name": "Losing The Time",
+            "location": "Railyard depot floor."
+          },
+          {
+            "id": "se5_let_m4_05",
+            "name": "Your Order Awaits",
+            "location": "Machine shop breakroom."
+          },
+          {
+            "id": "se5_let_m4_06",
+            "name": "Ehrlich's Done For",
+            "location": "Dispatch station office table."
+          }
         ],
         "classified_documents": [
-          { "id": "se5_doc_m4_01", "name": "Shipping Orders", "location": "Freight office clipboard desk." },
-          { "id": "se5_doc_m4_02", "name": "No More Games", "location": "Furnace control room table." },
-          { "id": "se5_doc_m4_03", "name": "Bureaucratic Oaf", "location": "Factory superintendent office desk." },
-          { "id": "se5_doc_m4_04", "name": "Increase Security", "location": "Main entry checkpoint guard post." }
+          {
+            "id": "se5_doc_m4_01",
+            "name": "Shipping Orders",
+            "location": "Freight office clipboard desk."
+          },
+          {
+            "id": "se5_doc_m4_02",
+            "name": "No More Games",
+            "location": "Furnace control room table."
+          },
+          {
+            "id": "se5_doc_m4_03",
+            "name": "Bureaucratic Oaf",
+            "location": "Factory superintendent office desk."
+          },
+          {
+            "id": "se5_doc_m4_04",
+            "name": "Increase Security",
+            "location": "Main entry checkpoint guard post."
+          }
         ],
         "hidden_items": [
-          { "id": "se5_item_m4_01", "name": "Gold Pocket Watch", "location": "Resting on timber beam in worker barracks." },
-          { "id": "se5_item_m4_02", "name": "Stealth Plating", "location": "Machining lathe workbench." },
-          { "id": "se5_item_m4_03", "name": "P.1000 Ratte Plans", "location": "Smelting floor master vault." }
+          {
+            "id": "se5_item_m4_01",
+            "name": "Gold Pocket Watch",
+            "location": "Resting on timber beam in worker barracks."
+          },
+          {
+            "id": "se5_item_m4_02",
+            "name": "Stealth Plating",
+            "location": "Machining lathe workbench."
+          },
+          {
+            "id": "se5_item_m4_03",
+            "name": "P.1000 Ratte Plans",
+            "location": "Smelting floor master vault."
+          }
         ],
         "stone_eagles": [
-          { "id": "se5_eagle_m4_01", "name": "Stone Eagle 1", "location": "Factory roof apex peak." },
-          { "id": "se5_eagle_m4_02", "name": "Stone Eagle 2", "location": "Brick exhaust chimney top." },
-          { "id": "se5_eagle_m4_03", "name": "Stone Eagle 3", "location": "Water silo support frame." }
+          {
+            "id": "se5_eagle_m4_01",
+            "name": "Stone Eagle 1",
+            "location": "Factory roof apex peak."
+          },
+          {
+            "id": "se5_eagle_m4_02",
+            "name": "Stone Eagle 2",
+            "location": "Brick exhaust chimney top."
+          },
+          {
+            "id": "se5_eagle_m4_03",
+            "name": "Stone Eagle 3",
+            "location": "Water silo support frame."
+          }
         ],
         "workbenches": [
-          { "id": "se5_wb_m4_pistol", "name": "Pistol Workbench", "location": "Railyard engine shed storage room." },
-          { "id": "se5_wb_m4_rifle", "name": "Rifle Workbench", "location": "Foundry armory lockup." },
-          { "id": "se5_wb_m4_smg", "name": "SMG Workbench", "location": "Transformer vault basement." }
+          {
+            "id": "se5_wb_m4_pistol",
+            "name": "Pistol Workbench",
+            "location": "Railyard engine shed storage room."
+          },
+          {
+            "id": "se5_wb_m4_rifle",
+            "name": "Rifle Workbench",
+            "location": "Foundry armory lockup."
+          },
+          {
+            "id": "se5_wb_m4_smg",
+            "name": "SMG Workbench",
+            "location": "Transformer vault basement."
+          }
         ]
-      }
+      },
+      "date": "May 31st 1944",
+      "image_url": "/public/games/sniperelite5/images/missions/m04-war-factory.jpg"
     },
     "mission_5": {
       "number": 5,
       "title": "Festung Guernsey",
-      "region": "Channel Islands",
+      "region": "The English Channel",
       "kill_challenge": "Assassinate Lanzo Baumann by burying him in concrete.",
       "collectibles": {
         "personal_letters": [
-          { "id": "se5_let_m5_01", "name": "No Need To Worry", "location": "Bunker barracks bedside table." },
-          { "id": "se5_let_m5_02", "name": "Getting Off The Island", "location": "Harbor workshop desk." },
-          { "id": "se5_let_m5_03", "name": "Confiscated Goods", "location": "Mirus gun battery office table." },
-          { "id": "se5_let_m5_04", "name": "Escaping Islanders", "location": "Coastal cottage kitchen table." },
-          { "id": "se5_let_m5_05", "name": "Harass The Huns", "location": "Underground hospital records room." }
+          {
+            "id": "se5_let_m5_01",
+            "name": "No Need To Worry",
+            "location": "Bunker barracks bedside table."
+          },
+          {
+            "id": "se5_let_m5_02",
+            "name": "Getting Off The Island",
+            "location": "Harbor workshop desk."
+          },
+          {
+            "id": "se5_let_m5_03",
+            "name": "Confiscated Goods",
+            "location": "Mirus gun battery office table."
+          },
+          {
+            "id": "se5_let_m5_04",
+            "name": "Escaping Islanders",
+            "location": "Coastal cottage kitchen table."
+          },
+          {
+            "id": "se5_let_m5_05",
+            "name": "Harass The Huns",
+            "location": "Underground hospital records room."
+          }
         ],
         "classified_documents": [
-          { "id": "se5_doc_m5_01", "name": "Grin And Bear It", "location": "Flak tower radio desk." },
-          { "id": "se5_doc_m5_02", "name": "Cuts Costs Cost Life's", "location": "Construction quarry office safe." },
-          { "id": "se5_doc_m5_03", "name": "Oafish Officers", "location": "Mirus gun control console." },
-          { "id": "se5_doc_m5_04", "name": "Transport Troubles", "location": "Perimeter checkpoint hut." },
-          { "id": "se5_doc_m5_05", "name": "Drastic Measures", "location": "Underground research facility command desk." }
+          {
+            "id": "se5_doc_m5_01",
+            "name": "Grin And Bear It",
+            "location": "Flak tower radio desk."
+          },
+          {
+            "id": "se5_doc_m5_02",
+            "name": "Cuts Costs Cost Life's",
+            "location": "Construction quarry office safe."
+          },
+          {
+            "id": "se5_doc_m5_03",
+            "name": "Oafish Officers",
+            "location": "Mirus gun control console."
+          },
+          {
+            "id": "se5_doc_m5_04",
+            "name": "Transport Troubles",
+            "location": "Perimeter checkpoint hut."
+          },
+          {
+            "id": "se5_doc_m5_05",
+            "name": "Drastic Measures",
+            "location": "Underground research facility command desk."
+          }
         ],
         "hidden_items": [
-          { "id": "se5_item_m5_01", "name": "TODT Uniform Badge", "location": "Foreman locker bench." },
-          { "id": "se5_item_m5_02", "name": "Crystal Radio", "location": "Hidden floorboard cavity in village residence." },
-          { "id": "se5_item_m5_03", "name": "Comfort Bags", "location": "Church loft crate." }
+          {
+            "id": "se5_item_m5_01",
+            "name": "TODT Uniform Badge",
+            "location": "Foreman locker bench."
+          },
+          {
+            "id": "se5_item_m5_02",
+            "name": "Crystal Radio",
+            "location": "Hidden floorboard cavity in village residence."
+          },
+          {
+            "id": "se5_item_m5_03",
+            "name": "Comfort Bags",
+            "location": "Church loft crate."
+          }
         ],
         "stone_eagles": [
-          { "id": "se5_eagle_m5_01", "name": "Stone Eagle 1", "location": "Distant offshore sea stack ridge." },
-          { "id": "se5_eagle_m5_02", "name": "Stone Eagle 2", "location": "Submarine watchtower concrete crest." },
-          { "id": "se5_eagle_m5_03", "name": "Stone Eagle 3", "location": "Church bell steeple gable." }
+          {
+            "id": "se5_eagle_m5_01",
+            "name": "Stone Eagle 1",
+            "location": "Distant offshore sea stack ridge."
+          },
+          {
+            "id": "se5_eagle_m5_02",
+            "name": "Stone Eagle 2",
+            "location": "Submarine watchtower concrete crest."
+          },
+          {
+            "id": "se5_eagle_m5_03",
+            "name": "Stone Eagle 3",
+            "location": "Church bell steeple gable."
+          }
         ],
         "workbenches": [
-          { "id": "se5_wb_m5_rifle", "name": "Rifle Workbench", "location": "Underground trench armory." },
-          { "id": "se5_wb_m5_pistol", "name": "Pistol Workbench", "location": "Heavy bunker supply bay." },
-          { "id": "se5_wb_m5_smg", "name": "SMG Workbench", "location": "Quarry machine repair shop." }
+          {
+            "id": "se5_wb_m5_rifle",
+            "name": "Rifle Workbench",
+            "location": "Underground trench armory."
+          },
+          {
+            "id": "se5_wb_m5_pistol",
+            "name": "Pistol Workbench",
+            "location": "Heavy bunker supply bay."
+          },
+          {
+            "id": "se5_wb_m5_smg",
+            "name": "SMG Workbench",
+            "location": "Quarry machine repair shop."
+          }
         ]
-      }
+      },
+      "date": "June 1st 1944",
+      "image_url": "/public/games/sniperelite5/images/missions/m05-festung-guernsey.jpg"
     },
     "mission_6": {
       "number": 6,
-      "title": "Liberation",
-      "region": "Le Douche",
+      "title": "Libération",
+      "region": "Desponts-sur-Douve",
       "kill_challenge": "Assassinate Jaan Trautmann using poison.",
       "collectibles": {
         "personal_letters": [
-          { "id": "se5_let_m6_01", "name": "They're Out Here", "location": "Farmstead attic mattress side." },
-          { "id": "se5_let_m6_02", "name": "Watch Your Back", "location": "Bridge guard shack table." },
-          { "id": "se5_let_m6_03", "name": "Barely Escaped", "location": "Town square residence drawer." },
-          { "id": "se5_let_m6_04", "name": "Give Me Strength", "location": "Church choir balcony bench." },
-          { "id": "se5_let_m6_05", "name": "Vengeance is Nigh", "location": "Trautmann mansion first-floor desk." }
+          {
+            "id": "se5_let_m6_01",
+            "name": "They're Out Here",
+            "location": "Farmstead attic mattress side."
+          },
+          {
+            "id": "se5_let_m6_02",
+            "name": "Watch Your Back",
+            "location": "Bridge guard shack table."
+          },
+          {
+            "id": "se5_let_m6_03",
+            "name": "Barely Escaped",
+            "location": "Town square residence drawer."
+          },
+          {
+            "id": "se5_let_m6_04",
+            "name": "Give Me Strength",
+            "location": "Church choir balcony bench."
+          },
+          {
+            "id": "se5_let_m6_05",
+            "name": "Vengeance is Nigh",
+            "location": "Trautmann mansion first-floor desk."
+          }
         ],
         "classified_documents": [
-          { "id": "se5_doc_m6_01", "name": "Hold The Line", "location": "Trench bunker radio shelf." },
-          { "id": "se5_doc_m6_02", "name": "Incoming Armour", "location": "Bridge outpost command table." },
-          { "id": "se5_doc_m6_03", "name": "Unfit For Duty", "location": "Watermill office desk." },
-          { "id": "se5_doc_m6_04", "name": "A Surplus Bridge", "location": "Plow field farmhouse safe." },
-          { "id": "se5_doc_m6_05", "name": "Resistance Fanatic Located", "location": "Mansion study table." }
+          {
+            "id": "se5_doc_m6_01",
+            "name": "Hold The Line",
+            "location": "Trench bunker radio shelf."
+          },
+          {
+            "id": "se5_doc_m6_02",
+            "name": "Incoming Armour",
+            "location": "Bridge outpost command table."
+          },
+          {
+            "id": "se5_doc_m6_03",
+            "name": "Unfit For Duty",
+            "location": "Watermill office desk."
+          },
+          {
+            "id": "se5_doc_m6_04",
+            "name": "A Surplus Bridge",
+            "location": "Plow field farmhouse safe."
+          },
+          {
+            "id": "se5_doc_m6_05",
+            "name": "Resistance Fanatic Located",
+            "location": "Mansion study table."
+          }
         ],
         "hidden_items": [
-          { "id": "se5_item_m6_01", "name": "Lucky Rabbit's Foot", "location": "Downed glider wreckage floor." },
-          { "id": "se5_item_m6_02", "name": "Stolen Medals", "location": "Town hall safe cavity." },
-          { "id": "se5_item_m6_03", "name": "Engraved Lighter", "location": "Field hospital locker." }
+          {
+            "id": "se5_item_m6_01",
+            "name": "Lucky Rabbit's Foot",
+            "location": "Downed glider wreckage floor."
+          },
+          {
+            "id": "se5_item_m6_02",
+            "name": "Stolen Medals",
+            "location": "Town hall safe cavity."
+          },
+          {
+            "id": "se5_item_m6_03",
+            "name": "Engraved Lighter",
+            "location": "Field hospital locker."
+          }
         ],
         "stone_eagles": [
-          { "id": "se5_eagle_m6_01", "name": "Stone Eagle 1", "location": "Watermill roof apex." },
-          { "id": "se5_eagle_m6_02", "name": "Stone Eagle 2", "location": "Town square municipal building pediment." },
-          { "id": "se5_eagle_m6_03", "name": "Stone Eagle 3", "location": "Stone cottage chimney." }
+          {
+            "id": "se5_eagle_m6_01",
+            "name": "Stone Eagle 1",
+            "location": "Watermill roof apex."
+          },
+          {
+            "id": "se5_eagle_m6_02",
+            "name": "Stone Eagle 2",
+            "location": "Town square municipal building pediment."
+          },
+          {
+            "id": "se5_eagle_m6_03",
+            "name": "Stone Eagle 3",
+            "location": "Stone cottage chimney."
+          }
         ],
         "workbenches": [
-          { "id": "se5_wb_m6_pistol", "name": "Pistol Workbench", "location": "River farmhouse barn." },
-          { "id": "se5_wb_m6_smg", "name": "SMG Workbench", "location": "Watermill maintenance shed." },
-          { "id": "se5_wb_m6_rifle", "name": "Rifle Workbench", "location": "Town hall basement armory." }
+          {
+            "id": "se5_wb_m6_pistol",
+            "name": "Pistol Workbench",
+            "location": "River farmhouse barn."
+          },
+          {
+            "id": "se5_wb_m6_smg",
+            "name": "SMG Workbench",
+            "location": "Watermill maintenance shed."
+          },
+          {
+            "id": "se5_wb_m6_rifle",
+            "name": "Rifle Workbench",
+            "location": "Town hall basement armory."
+          }
         ]
-      }
+      },
+      "date": "June 11th 1944",
+      "image_url": "/public/games/sniperelite5/images/missions/m06-liberation.jpg"
     },
     "mission_7": {
       "number": 7,
@@ -252,76 +779,228 @@
       "kill_challenge": "Assassinate Christian Jungers by dropping a V2 rocket on him.",
       "collectibles": {
         "personal_letters": [
-          { "id": "se5_let_m7_01", "name": "We Had A Deal", "location": "Train depot staging office desk." },
-          { "id": "se5_let_m7_02", "name": "I Cant Work Like This", "location": "Weapons testing lab bench." },
-          { "id": "se5_let_m7_03", "name": "The V2s Are Obsolete", "location": "Dome assembly platform desk." },
-          { "id": "se5_let_m7_04", "name": "Thinking Out Loud", "location": "Residential bunker bunk table." },
-          { "id": "se5_let_m7_05", "name": "Our Worst Fears", "location": "Castle overlook guard hut." }
+          {
+            "id": "se5_let_m7_01",
+            "name": "We Had A Deal",
+            "location": "Train depot staging office desk."
+          },
+          {
+            "id": "se5_let_m7_02",
+            "name": "I Cant Work Like This",
+            "location": "Weapons testing lab bench."
+          },
+          {
+            "id": "se5_let_m7_03",
+            "name": "The V2s Are Obsolete",
+            "location": "Dome assembly platform desk."
+          },
+          {
+            "id": "se5_let_m7_04",
+            "name": "Thinking Out Loud",
+            "location": "Residential bunker bunk table."
+          },
+          {
+            "id": "se5_let_m7_05",
+            "name": "Our Worst Fears",
+            "location": "Castle overlook guard hut."
+          }
         ],
         "classified_documents": [
-          { "id": "se5_doc_m7_01", "name": "Intruder Sighted", "location": "Subterranean rail terminus desk." },
-          { "id": "se5_doc_m7_02", "name": "Dr Jungers Schedule", "location": "Jungers' office master safe." },
-          { "id": "se5_doc_m7_03", "name": "Prufstand XII Plans", "location": "V2 wind tunnel testing room." },
-          { "id": "se5_doc_m7_04", "name": "Pressurisation Report", "location": "Liquid oxygen refuelling site." },
-          { "id": "se5_doc_m7_05", "name": "Kraken Fuel Issues", "location": "Main facility entrance outpost desk." }
+          {
+            "id": "se5_doc_m7_01",
+            "name": "Intruder Sighted",
+            "location": "Subterranean rail terminus desk."
+          },
+          {
+            "id": "se5_doc_m7_02",
+            "name": "Dr Jungers Schedule",
+            "location": "Jungers' office master safe."
+          },
+          {
+            "id": "se5_doc_m7_03",
+            "name": "Prufstand XII Plans",
+            "location": "V2 wind tunnel testing room."
+          },
+          {
+            "id": "se5_doc_m7_04",
+            "name": "Pressurisation Report",
+            "location": "Liquid oxygen refuelling site."
+          },
+          {
+            "id": "se5_doc_m7_05",
+            "name": "Kraken Fuel Issues",
+            "location": "Main facility entrance outpost desk."
+          }
         ],
         "hidden_items": [
-          { "id": "se5_item_m7_01", "name": "Prufstand XII Plans", "location": "Command dome technical drafting board." },
-          { "id": "se5_item_m7_02", "name": "Reichsmark Bag", "location": "Rail car cargo compartment." },
-          { "id": "se5_item_m7_03", "name": "Miniature V2 Rocket", "location": "Engineering showroom display table." }
+          {
+            "id": "se5_item_m7_01",
+            "name": "Prufstand XII Plans",
+            "location": "Command dome technical drafting board."
+          },
+          {
+            "id": "se5_item_m7_02",
+            "name": "Reichsmark Bag",
+            "location": "Rail car cargo compartment."
+          },
+          {
+            "id": "se5_item_m7_03",
+            "name": "Miniature V2 Rocket",
+            "location": "Engineering showroom display table."
+          }
         ],
         "stone_eagles": [
-          { "id": "se5_eagle_m7_01", "name": "Stone Eagle 1", "location": "Distant rail bridge arch support." },
-          { "id": "se5_eagle_m7_02", "name": "Stone Eagle 2", "location": "Castle wall corner bastion." },
-          { "id": "se5_eagle_m7_03", "name": "Stone Eagle 3", "location": "Testing facility concrete dome parapet." }
+          {
+            "id": "se5_eagle_m7_01",
+            "name": "Stone Eagle 1",
+            "location": "Distant rail bridge arch support."
+          },
+          {
+            "id": "se5_eagle_m7_02",
+            "name": "Stone Eagle 2",
+            "location": "Castle wall corner bastion."
+          },
+          {
+            "id": "se5_eagle_m7_03",
+            "name": "Stone Eagle 3",
+            "location": "Testing facility concrete dome parapet."
+          }
         ],
         "workbenches": [
-          { "id": "se5_wb_m7_pistol", "name": "Pistol Workbench", "location": "Overlook garage outbuilding." },
-          { "id": "se5_wb_m7_rifle", "name": "Rifle Workbench", "location": "V2 rocket staging floor armory." },
-          { "id": "se5_wb_m7_smg", "name": "SMG Workbench", "location": "Underground bunker utility corridor." }
+          {
+            "id": "se5_wb_m7_pistol",
+            "name": "Pistol Workbench",
+            "location": "Overlook garage outbuilding."
+          },
+          {
+            "id": "se5_wb_m7_rifle",
+            "name": "Rifle Workbench",
+            "location": "V2 rocket staging floor armory."
+          },
+          {
+            "id": "se5_wb_m7_smg",
+            "name": "SMG Workbench",
+            "location": "Underground bunker utility corridor."
+          }
         ]
-      }
+      },
+      "date": "June 12th 1944",
+      "image_url": "/public/games/sniperelite5/images/missions/m07-secret-weapons.jpg"
     },
     "mission_8": {
       "number": 8,
-      "title": "Rubble & Ruin",
-      "region": "Saint-Nazaire",
+      "title": "Rubble and Ruin",
+      "region": "St Nazaire",
       "kill_challenge": "Assassinate Shinji Yoshikawa using a Type 100 or Type 14.",
       "collectibles": {
         "personal_letters": [
-          { "id": "se5_let_m8_01", "name": "Your Man Charlie", "location": "Ruined town house first-floor table." },
-          { "id": "se5_let_m8_02", "name": "Orders To Stand Down", "location": "Hotel lobby counter." },
-          { "id": "se5_let_m8_03", "name": "He Is Not The One", "location": "Church altar table." },
-          { "id": "se5_let_m8_04", "name": "Clean Exit", "location": "Submarine pen dry dock walkway desk." },
-          { "id": "se5_let_m8_05", "name": "Final Warning", "location": "Submarine pen control office." }
+          {
+            "id": "se5_let_m8_01",
+            "name": "Your Man Charlie",
+            "location": "Ruined town house first-floor table."
+          },
+          {
+            "id": "se5_let_m8_02",
+            "name": "Orders To Stand Down",
+            "location": "Hotel lobby counter."
+          },
+          {
+            "id": "se5_let_m8_03",
+            "name": "He Is Not The One",
+            "location": "Church altar table."
+          },
+          {
+            "id": "se5_let_m8_04",
+            "name": "Clean Exit",
+            "location": "Submarine pen dry dock walkway desk."
+          },
+          {
+            "id": "se5_let_m8_05",
+            "name": "Final Warning",
+            "location": "Submarine pen control office."
+          }
         ],
         "classified_documents": [
-          { "id": "se5_doc_m8_01", "name": "Sub Pen Repairs", "location": "Sub pen workshop shelf." },
-          { "id": "se5_doc_m8_02", "name": "Harbour Clearances", "location": "Harbor master dispatch office safe." },
-          { "id": "se5_doc_m8_03", "name": "U-Boat Manifest", "location": "Dry dock submarine catwalk table." },
-          { "id": "se5_doc_m8_04", "name": "Kraken Departs", "location": "Bunker command center central plotting map table." }
+          {
+            "id": "se5_doc_m8_01",
+            "name": "Sub Pen Repairs",
+            "location": "Sub pen workshop shelf."
+          },
+          {
+            "id": "se5_doc_m8_02",
+            "name": "Harbour Clearances",
+            "location": "Harbor master dispatch office safe."
+          },
+          {
+            "id": "se5_doc_m8_03",
+            "name": "U-Boat Manifest",
+            "location": "Dry dock submarine catwalk table."
+          },
+          {
+            "id": "se5_doc_m8_04",
+            "name": "Kraken Departs",
+            "location": "Bunker command center central plotting map table."
+          }
         ],
         "hidden_items": [
-          { "id": "se5_item_m8_01", "name": "Stolen Painting", "location": "Art collector apartment wall safe." },
-          { "id": "se5_item_m8_02", "name": "Kriegsmarine Dagger", "location": "U-boat officer quarters bunk." },
-          { "id": "se5_item_m8_03", "name": "Yoshikawa's Codebook", "location": "Yoshikawa private office desk." }
+          {
+            "id": "se5_item_m8_01",
+            "name": "Stolen Painting",
+            "location": "Art collector apartment wall safe."
+          },
+          {
+            "id": "se5_item_m8_02",
+            "name": "Kriegsmarine Dagger",
+            "location": "U-boat officer quarters bunk."
+          },
+          {
+            "id": "se5_item_m8_03",
+            "name": "Yoshikawa's Codebook",
+            "location": "Yoshikawa private office desk."
+          }
         ],
         "stone_eagles": [
-          { "id": "se5_eagle_m8_01", "name": "Stone Eagle 1", "location": "Destroyed church pediment arch." },
-          { "id": "se5_eagle_m8_02", "name": "Stone Eagle 2", "location": "Harbor entrance lighthouse stone trim." },
-          { "id": "se5_eagle_m8_03", "name": "Stone Eagle 3", "location": "Submarine pen blast door roof crest." }
+          {
+            "id": "se5_eagle_m8_01",
+            "name": "Stone Eagle 1",
+            "location": "Destroyed church pediment arch."
+          },
+          {
+            "id": "se5_eagle_m8_02",
+            "name": "Stone Eagle 2",
+            "location": "Harbor entrance lighthouse stone trim."
+          },
+          {
+            "id": "se5_eagle_m8_03",
+            "name": "Stone Eagle 3",
+            "location": "Submarine pen blast door roof crest."
+          }
         ],
         "workbenches": [
-          { "id": "se5_wb_m8_smg", "name": "SMG Workbench", "location": "Town square resistance cache." },
-          { "id": "se5_wb_m8_pistol", "name": "Pistol Workbench", "location": "Sub pen maintenance shop." },
-          { "id": "se5_wb_m8_rifle", "name": "Rifle Workbench", "location": "Torpedo staging room locker." }
+          {
+            "id": "se5_wb_m8_smg",
+            "name": "SMG Workbench",
+            "location": "Town square resistance cache."
+          },
+          {
+            "id": "se5_wb_m8_pistol",
+            "name": "Pistol Workbench",
+            "location": "Sub pen maintenance shop."
+          },
+          {
+            "id": "se5_wb_m8_rifle",
+            "name": "Rifle Workbench",
+            "location": "Torpedo staging room locker."
+          }
         ]
-      }
+      },
+      "date": "June 13th 1944",
+      "image_url": "/public/games/sniperelite5/images/missions/m08-rubble-and-ruin.jpg"
     },
     "mission_9": {
       "number": 9,
       "title": "Loose Ends",
-      "region": "Château Grounds Overlook",
+      "region": "Chateau de Berengar",
       "kill_challenge": "Assassinate Abelard Möller with a rifle headshot at extreme distance.",
       "collectibles": {
         "personal_letters": [],
@@ -329,247 +1008,1267 @@
         "hidden_items": [],
         "stone_eagles": [],
         "workbenches": []
-      }
+      },
+      "date": "June 13th 1944",
+      "image_url": "/public/games/sniperelite5/images/missions/m09-loose-ends.jpg"
     },
     "mission_10_dlc": {
       "number": 10,
-      "title": "Target Führer: Wolf Mountain",
-      "region": "Berghof (Obersalzberg)",
+      "title": "Wolf Mountain",
+      "region": "The Berghof, Bavarian Alps",
       "kill_challenge": "Assassinate Adolf Hitler (multiple methods: chandelier, bowling pin, poison, explosion).",
       "collectibles": {
         "personal_letters": [
-          { "id": "se5_let_m10_01", "name": "Construction Woes", "location": "Perimeter tea house table." },
-          { "id": "se5_let_m10_02", "name": "Gourmet Chef Memo", "location": "Berghof kitchen counter." },
-          { "id": "se5_let_m10_03", "name": "Führer's Health", "location": "Private bedroom nightstand." },
-          { "id": "se5_let_m10_04", "name": "Security Measures", "location": "Berghof garage dispatch office." },
-          { "id": "se5_let_m10_05", "name": "Staff Grievance", "location": "Servant quarters dining table." }
+          {
+            "id": "se5_let_m10_01",
+            "name": "Construction Woes",
+            "location": "Perimeter tea house table."
+          },
+          {
+            "id": "se5_let_m10_02",
+            "name": "Gourmet Chef Memo",
+            "location": "Berghof kitchen counter."
+          },
+          {
+            "id": "se5_let_m10_03",
+            "name": "Führer's Health",
+            "location": "Private bedroom nightstand."
+          },
+          {
+            "id": "se5_let_m10_04",
+            "name": "Security Measures",
+            "location": "Berghof garage dispatch office."
+          },
+          {
+            "id": "se5_let_m10_05",
+            "name": "Staff Grievance",
+            "location": "Servant quarters dining table."
+          }
         ],
         "classified_documents": [
-          { "id": "se5_doc_m10_01", "name": "Hitler's Travel Plans", "location": "Private study desk safe." },
-          { "id": "se5_doc_m10_02", "name": "Berghof Security Manual", "location": "Gatehouse entrance desk." },
-          { "id": "se5_doc_m10_03", "name": "Tunnel Maintenance Logs", "location": "Underground bunker electrical room." },
-          { "id": "se5_doc_m10_04", "name": "Anti-Air Placements", "location": "Flak battery dugout." },
-          { "id": "se5_doc_m10_05", "name": "Guest List", "location": "Dining room sideboard." }
+          {
+            "id": "se5_doc_m10_01",
+            "name": "Hitler's Travel Plans",
+            "location": "Private study desk safe."
+          },
+          {
+            "id": "se5_doc_m10_02",
+            "name": "Berghof Security Manual",
+            "location": "Gatehouse entrance desk."
+          },
+          {
+            "id": "se5_doc_m10_03",
+            "name": "Tunnel Maintenance Logs",
+            "location": "Underground bunker electrical room."
+          },
+          {
+            "id": "se5_doc_m10_04",
+            "name": "Anti-Air Placements",
+            "location": "Flak battery dugout."
+          },
+          {
+            "id": "se5_doc_m10_05",
+            "name": "Guest List",
+            "location": "Dining room sideboard."
+          }
         ],
         "hidden_items": [
-          { "id": "se5_item_m10_01", "name": "Hitler's Pipe", "location": "Study smoking room stand." },
-          { "id": "se5_item_m10_02", "name": "Gold Party Badge", "location": "Master bedroom dresser drawer." },
-          { "id": "se5_item_m10_03", "name": "Eva's Diary", "location": "Tea house living room shelf." }
+          {
+            "id": "se5_item_m10_01",
+            "name": "Hitler's Pipe",
+            "location": "Study smoking room stand."
+          },
+          {
+            "id": "se5_item_m10_02",
+            "name": "Gold Party Badge",
+            "location": "Master bedroom dresser drawer."
+          },
+          {
+            "id": "se5_item_m10_03",
+            "name": "Eva's Diary",
+            "location": "Tea house living room shelf."
+          }
         ],
         "stone_eagles": [
-          { "id": "se5_eagle_m10_01", "name": "Stone Eagle 1", "location": "Berghof main roof gable." },
-          { "id": "se5_eagle_m10_02", "name": "Stone Eagle 2", "location": "Perimeter checkpoint archway." },
-          { "id": "se5_eagle_m10_03", "name": "Stone Eagle 3", "location": "Distant cliffside watchtower pinnacle." }
+          {
+            "id": "se5_eagle_m10_01",
+            "name": "Stone Eagle 1",
+            "location": "Berghof main roof gable."
+          },
+          {
+            "id": "se5_eagle_m10_02",
+            "name": "Stone Eagle 2",
+            "location": "Perimeter checkpoint archway."
+          },
+          {
+            "id": "se5_eagle_m10_03",
+            "name": "Stone Eagle 3",
+            "location": "Distant cliffside watchtower pinnacle."
+          }
         ],
         "workbenches": [
-          { "id": "se5_wb_m10_rifle", "name": "Rifle Workbench", "location": "Berghof armory basement vault." },
-          { "id": "se5_wb_m10_smg", "name": "SMG Workbench", "location": "Underground escape tunnel workshop." },
-          { "id": "se5_wb_m10_pistol", "name": "Pistol Workbench", "location": "Garage maintenance pit." }
+          {
+            "id": "se5_wb_m10_rifle",
+            "name": "Rifle Workbench",
+            "location": "Berghof armory basement vault."
+          },
+          {
+            "id": "se5_wb_m10_smg",
+            "name": "SMG Workbench",
+            "location": "Underground escape tunnel workshop."
+          },
+          {
+            "id": "se5_wb_m10_pistol",
+            "name": "Pistol Workbench",
+            "location": "Garage maintenance pit."
+          }
         ]
+      },
+      "date": "July 13th 1944",
+      "image_url": "/public/games/sniperelite5/images/missions/dlc-wolf-mountain.jpg",
+      "dlc": true,
+      "dlc_pack": "Target Führer: Wolf Mountain",
+      "collectible_totals": {
+        "total": 19
       }
     },
     "mission_11_dlc": {
       "number": 11,
       "title": "Landing Force",
-      "region": "Coastal Gun Battery Island",
-      "kill_challenge": "Disable island defenses and sabotage lighthouse telemetry.",
+      "region": "Marseille Coast",
+      "kill_challenge": "Kill Kraus with Poison",
       "collectibles": {
         "personal_letters": [
-          { "id": "se5_let_m11_01", "name": "Island Blues", "location": "Barracks bunk table." },
-          { "id": "se5_let_m11_02", "name": "Shore Patrol Report", "location": "Pier watch office desk." }
+          {
+            "id": "se5_let_m11_01",
+            "name": "Island Blues",
+            "location": "Barracks bunk table."
+          },
+          {
+            "id": "se5_let_m11_02",
+            "name": "Shore Patrol Report",
+            "location": "Pier watch office desk."
+          }
         ],
         "classified_documents": [
-          { "id": "se5_doc_m11_01", "name": "Battery Readiness", "location": "Gun battery plotting desk." },
-          { "id": "se5_doc_m11_02", "name": "Radio Logbook", "location": "Lighthouse communication room." }
+          {
+            "id": "se5_doc_m11_01",
+            "name": "Battery Readiness",
+            "location": "Gun battery plotting desk."
+          },
+          {
+            "id": "se5_doc_m11_02",
+            "name": "Radio Logbook",
+            "location": "Lighthouse communication room."
+          }
         ],
         "hidden_items": [
-          { "id": "se5_item_m11_01", "name": "Naval Telescope", "location": "Lighthouse lantern gallery." },
-          { "id": "se5_item_m11_02", "name": "Smuggler's Coin", "location": "Sea cave smuggler cache." }
+          {
+            "id": "se5_item_m11_01",
+            "name": "Naval Telescope",
+            "location": "Lighthouse lantern gallery."
+          },
+          {
+            "id": "se5_item_m11_02",
+            "name": "Smuggler's Coin",
+            "location": "Sea cave smuggler cache."
+          }
         ],
         "stone_eagles": [
-          { "id": "se5_eagle_m11_01", "name": "Stone Eagle 1", "location": "Lighthouse exterior dome rim." },
-          { "id": "se5_eagle_m11_02", "name": "Stone Eagle 2", "location": "Coastal cliff boulder formation." },
-          { "id": "se5_eagle_m11_03", "name": "Stone Eagle 3", "location": "Fort entrance bastion pediment." }
+          {
+            "id": "se5_eagle_m11_01",
+            "name": "Stone Eagle 1",
+            "location": "Lighthouse exterior dome rim."
+          },
+          {
+            "id": "se5_eagle_m11_02",
+            "name": "Stone Eagle 2",
+            "location": "Coastal cliff boulder formation."
+          },
+          {
+            "id": "se5_eagle_m11_03",
+            "name": "Stone Eagle 3",
+            "location": "Fort entrance bastion pediment."
+          }
         ],
         "workbenches": [
-          { "id": "se5_wb_m11_rifle", "name": "Rifle Workbench", "location": "Battery bunker ammo storage." },
-          { "id": "se5_wb_m11_smg", "name": "SMG Workbench", "location": "Dockside boat repair bay." },
-          { "id": "se5_wb_m11_pistol", "name": "Pistol Workbench", "location": "Coastal lookout outpost." }
+          {
+            "id": "se5_wb_m11_rifle",
+            "name": "Rifle Workbench",
+            "location": "Battery bunker ammo storage."
+          },
+          {
+            "id": "se5_wb_m11_smg",
+            "name": "SMG Workbench",
+            "location": "Dockside boat repair bay."
+          },
+          {
+            "id": "se5_wb_m11_pistol",
+            "name": "Pistol Workbench",
+            "location": "Coastal lookout outpost."
+          }
         ]
+      },
+      "date": "August 15th 1944",
+      "image_url": "/public/games/sniperelite5/images/missions/dlc-landing-force.jpg",
+      "dlc": true,
+      "description": "After the successful Normandy landing to the north, Operation Dragoon prepares to apply pressure on the Nazis from the south and force them out of France.",
+      "kill_target": "Hermann Kraus",
+      "starting_locations": 3,
+      "collectible_totals": {
+        "personal_letters": 3,
+        "classified_documents": 2,
+        "hidden_items": 2,
+        "stone_eagles": 3,
+        "workbenches": 3,
+        "total": 13
       }
     },
     "mission_12_dlc": {
       "number": 12,
       "title": "Conqueror",
-      "region": "Fallen Town of Falaise",
-      "kill_challenge": "Eliminate the armored division garrison and castle commander.",
+      "region": "Falaise",
+      "kill_challenge": "Kill Hoffman with a Chandelier",
       "collectibles": {
         "personal_letters": [
-          { "id": "se5_let_m12_01", "name": "Surrounded", "location": "Cellar hideout table." },
-          { "id": "se5_let_m12_02", "name": "Final Stand", "location": "Castle courtyard barrack." }
+          {
+            "id": "se5_let_m12_01",
+            "name": "Surrounded",
+            "location": "Cellar hideout table."
+          },
+          {
+            "id": "se5_let_m12_02",
+            "name": "Final Stand",
+            "location": "Castle courtyard barrack."
+          }
         ],
         "classified_documents": [
-          { "id": "se5_doc_m12_01", "name": "Defensive Perimeter", "location": "Command tent plotting table." },
-          { "id": "se5_doc_m12_02", "name": "Panzer Orders", "location": "Motor pool maintenance desk." }
+          {
+            "id": "se5_doc_m12_01",
+            "name": "Defensive Perimeter",
+            "location": "Command tent plotting table."
+          },
+          {
+            "id": "se5_doc_m12_02",
+            "name": "Panzer Orders",
+            "location": "Motor pool maintenance desk."
+          }
         ],
         "hidden_items": [
-          { "id": "se5_item_m12_01", "name": "Medieval Crest", "location": "Castle keep display case." },
-          { "id": "se5_item_m12_02", "name": "French Resistance Radio", "location": "Bakery rubble floor." }
+          {
+            "id": "se5_item_m12_01",
+            "name": "Medieval Crest",
+            "location": "Castle keep display case."
+          },
+          {
+            "id": "se5_item_m12_02",
+            "name": "French Resistance Radio",
+            "location": "Bakery rubble floor."
+          }
         ],
         "stone_eagles": [
-          { "id": "se5_eagle_m12_01", "name": "Stone Eagle 1", "location": "Castle keep corner pinnacle." },
-          { "id": "se5_eagle_m12_02", "name": "Stone Eagle 2", "location": "Town cathedral bell tower arch." },
-          { "id": "se5_eagle_m12_03", "name": "Stone Eagle 3", "location": "Gate arch masonry peak." }
+          {
+            "id": "se5_eagle_m12_01",
+            "name": "Stone Eagle 1",
+            "location": "Castle keep corner pinnacle."
+          },
+          {
+            "id": "se5_eagle_m12_02",
+            "name": "Stone Eagle 2",
+            "location": "Town cathedral bell tower arch."
+          },
+          {
+            "id": "se5_eagle_m12_03",
+            "name": "Stone Eagle 3",
+            "location": "Gate arch masonry peak."
+          }
         ],
         "workbenches": [
-          { "id": "se5_wb_m12_rifle", "name": "Rifle Workbench", "location": "Castle armory vault." },
-          { "id": "se5_wb_m12_smg", "name": "SMG Workbench", "location": "Motor pool garage." },
-          { "id": "se5_wb_m12_pistol", "name": "Pistol Workbench", "location": "Ruined town hall cellar." }
+          {
+            "id": "se5_wb_m12_rifle",
+            "name": "Rifle Workbench",
+            "location": "Castle armory vault."
+          },
+          {
+            "id": "se5_wb_m12_smg",
+            "name": "SMG Workbench",
+            "location": "Motor pool garage."
+          },
+          {
+            "id": "se5_wb_m12_pistol",
+            "name": "Pistol Workbench",
+            "location": "Ruined town hall cellar."
+          }
         ]
+      },
+      "date": "August 21st 1944",
+      "image_url": "/public/games/sniperelite5/images/missions/dlc-conqueror.jpg",
+      "dlc": true,
+      "description": "The Nazis have been driven back to Falaise Castle, where they are making a desperate last stand. Karl has orders to secure the town, breach the castle walls, eliminate General Konig, and force a German surrender.",
+      "kill_target": "Kristian Hoffmann",
+      "starting_locations": 3,
+      "collectible_totals": {
+        "personal_letters": 3,
+        "classified_documents": 2,
+        "hidden_items": 2,
+        "stone_eagles": 3,
+        "workbenches": 3,
+        "total": 13
       }
     },
     "mission_13_dlc": {
       "number": 13,
       "title": "Rough Landing",
-      "region": "Dense Forest & Crash Site",
-      "kill_challenge": "Rescue stranded Allied airmen and destroy secret weapon payload.",
+      "region": "Fréteval Forest",
+      "kill_challenge": "Kill Nazi Spy with an Explosion.",
       "collectibles": {
         "personal_letters": [
-          { "id": "se5_let_m13_01", "name": "Forest Ambush", "location": "Logging camp cabin desk." },
-          { "id": "se5_let_m13_02", "name": "Search Orders", "location": "Checkpost communications desk." }
+          {
+            "id": "se5_let_m13_01",
+            "name": "Forest Ambush",
+            "location": "Logging camp cabin desk."
+          },
+          {
+            "id": "se5_let_m13_02",
+            "name": "Search Orders",
+            "location": "Checkpost communications desk."
+          }
         ],
         "classified_documents": [
-          { "id": "se5_doc_m13_01", "name": "Crash Coordinates", "location": "Patrol command tent table." },
-          { "id": "se5_doc_m13_02", "name": "Cargo Manifest", "location": "Timber rail station office safe." }
+          {
+            "id": "se5_doc_m13_01",
+            "name": "Crash Coordinates",
+            "location": "Patrol command tent table."
+          },
+          {
+            "id": "se5_doc_m13_02",
+            "name": "Cargo Manifest",
+            "location": "Timber rail station office safe."
+          }
         ],
         "hidden_items": [
-          { "id": "se5_item_m13_01", "name": "Pilot's Dog Tags", "location": "Cockpit wreckage frame." },
-          { "id": "se5_item_m13_02", "name": "German Signal Flare", "location": "Ranger watch post shelf." }
+          {
+            "id": "se5_item_m13_01",
+            "name": "Pilot's Dog Tags",
+            "location": "Cockpit wreckage frame."
+          },
+          {
+            "id": "se5_item_m13_02",
+            "name": "German Signal Flare",
+            "location": "Ranger watch post shelf."
+          }
         ],
         "stone_eagles": [
-          { "id": "se5_eagle_m13_01", "name": "Stone Eagle 1", "location": "Logging flume timber trestle." },
-          { "id": "se5_eagle_m13_02", "name": "Stone Eagle 2", "location": "Distant cliff outcropping." },
-          { "id": "se5_eagle_m13_03", "name": "Stone Eagle 3", "location": "Old sawmill chimney top." }
+          {
+            "id": "se5_eagle_m13_01",
+            "name": "Stone Eagle 1",
+            "location": "Logging flume timber trestle."
+          },
+          {
+            "id": "se5_eagle_m13_02",
+            "name": "Stone Eagle 2",
+            "location": "Distant cliff outcropping."
+          },
+          {
+            "id": "se5_eagle_m13_03",
+            "name": "Stone Eagle 3",
+            "location": "Old sawmill chimney top."
+          }
         ],
         "workbenches": [
-          { "id": "se5_wb_m13_rifle", "name": "Rifle Workbench", "location": "Sawmill tool shed." },
-          { "id": "se5_wb_m13_smg", "name": "SMG Workbench", "location": "Forest outpost cellar." },
-          { "id": "se5_wb_m13_pistol", "name": "Pistol Workbench", "location": "Rail siding maintenance locker." }
+          {
+            "id": "se5_wb_m13_rifle",
+            "name": "Rifle Workbench",
+            "location": "Sawmill tool shed."
+          },
+          {
+            "id": "se5_wb_m13_smg",
+            "name": "SMG Workbench",
+            "location": "Forest outpost cellar."
+          },
+          {
+            "id": "se5_wb_m13_pistol",
+            "name": "Pistol Workbench",
+            "location": "Rail siding maintenance locker."
+          }
         ]
+      },
+      "date": "August 28th 1944",
+      "image_url": "/public/games/sniperelite5/images/missions/dlc-rough-landing.jpg",
+      "dlc": true,
+      "description": "Allied aircraft have been shot down over Fréteval Forest, with the pilots holding intel that we cannot allow the Nazis to apprehend.",
+      "kill_target": "Luc Masson",
+      "starting_locations": 3,
+      "collectible_totals": {
+        "personal_letters": 3,
+        "classified_documents": 2,
+        "hidden_items": 2,
+        "stone_eagles": 3,
+        "workbenches": 3,
+        "total": 13
+      }
+    },
+    "mission_14_dlc": {
+      "number": 14,
+      "title": "Kraken Awakes",
+      "collectibles": {
+        "personal_letters": [],
+        "classified_documents": [],
+        "hidden_items": [],
+        "stone_eagles": [],
+        "workbenches": []
+      },
+      "region": "Finistère, Brittany",
+      "date": "September 21st 1944",
+      "image_url": "/public/games/sniperelite5/images/missions/dlc-kraken-awakes.jpg",
+      "dlc": true,
+      "description": "Resistance scouts have traced the Nazi's Kraken convoys to a Drydock base. Further intel also confirms that Vogel, previous assistant to Möller is now leading Project Kraken. Infiltrate the Nazi base, eliminate Vogel and disrupt whatever the Nazis are up to.",
+      "kill_target": "Erich Windolf",
+      "starting_locations": 3,
+      "kill_challenge": "Kill Windolf with Cargo",
+      "collectible_totals": {
+        "personal_letters": 3,
+        "classified_documents": 2,
+        "hidden_items": 2,
+        "stone_eagles": 3,
+        "workbenches": 3,
+        "total": 13
       }
     }
   },
   "medals": {
     "general": [
-      { "id": "se5_med_sharp", "name": "Sharpshooter", "requirement": "Achieve 500 total kills using sniper rifles across any mode." },
-      { "id": "se5_med_ghost", "name": "Ghost", "requirement": "Perform 250 undetected stealth kills or takedowns." },
-      { "id": "se5_med_head", "name": "Headhunter", "requirement": "Achieve 250 precision headshots." },
-      { "id": "se5_med_organ", "name": "Internal Anatomy", "requirement": "Land a kill shot on every vital internal organ at least once." },
-      { "id": "se5_med_tank", "name": "Armor Demolisher", "requirement": "Destroy 25 tanks or armored vehicles." },
-      { "id": "se5_med_trap", "name": "Trap Master", "requirement": "Kill 100 enemy combatants using planted mines or TNT." }
+      {
+        "id": "se5_med_sharp",
+        "name": "Sharpshooter",
+        "requirement": "Achieve 500 total kills using sniper rifles across any mode."
+      },
+      {
+        "id": "se5_med_ghost",
+        "name": "Ghost",
+        "requirement": "Perform 250 undetected stealth kills or takedowns."
+      },
+      {
+        "id": "se5_med_head",
+        "name": "Headhunter",
+        "requirement": "Achieve 250 precision headshots."
+      },
+      {
+        "id": "se5_med_organ",
+        "name": "Internal Anatomy",
+        "requirement": "Land a kill shot on every vital internal organ at least once."
+      },
+      {
+        "id": "se5_med_tank",
+        "name": "Armor Demolisher",
+        "requirement": "Destroy 25 tanks or armored vehicles."
+      },
+      {
+        "id": "se5_med_trap",
+        "name": "Trap Master",
+        "requirement": "Kill 100 enemy combatants using planted mines or TNT."
+      }
     ],
     "weapons": [
-      { "id": "se5_med_m1_garand", "name": "M1 Garand Mastery", "requirement": "Kill 50 enemies from over 100m with the M1 Garand." },
-      { "id": "se5_med_kar98k", "name": "Kar98k Mastery", "requirement": "Achieve 50 sound-masked kills with the Kar98k." },
-      { "id": "se5_med_m1903", "name": "M1903 Mastery", "requirement": "Achieve 50 vital organ kills with the M1903." },
-      { "id": "se5_med_gewehr43", "name": "Gewehr 43 Mastery", "requirement": "Achieve 50 headshots with the Gewehr 43." },
-      { "id": "se5_med_mp40", "name": "MP40 Mastery", "requirement": "Kill 50 enemies from the hip with the MP40." },
-      { "id": "se5_med_sten", "name": "Sten Mk2 Mastery", "requirement": "Kill 50 enemies in bursts without taking damage with the Sten." },
-      { "id": "se5_med_m1911", "name": "M1911 Mastery", "requirement": "Kill 50 enemies using the M1911 while crouched." },
-      { "id": "se5_med_luger", "name": "Luger P08 Mastery", "requirement": "Kill 50 enemies with suppressed shots using the Luger P08." }
+      {
+        "id": "se5_med_m1_garand",
+        "name": "M1 Garand Mastery",
+        "requirement": "Kill 50 enemies from over 100m with the M1 Garand."
+      },
+      {
+        "id": "se5_med_kar98k",
+        "name": "Kar98k Mastery",
+        "requirement": "Achieve 50 sound-masked kills with the Kar98k."
+      },
+      {
+        "id": "se5_med_m1903",
+        "name": "M1903 Mastery",
+        "requirement": "Achieve 50 vital organ kills with the M1903."
+      },
+      {
+        "id": "se5_med_gewehr43",
+        "name": "Gewehr 43 Mastery",
+        "requirement": "Achieve 50 headshots with the Gewehr 43."
+      },
+      {
+        "id": "se5_med_mp40",
+        "name": "MP40 Mastery",
+        "requirement": "Kill 50 enemies from the hip with the MP40."
+      },
+      {
+        "id": "se5_med_sten",
+        "name": "Sten Mk2 Mastery",
+        "requirement": "Kill 50 enemies in bursts without taking damage with the Sten."
+      },
+      {
+        "id": "se5_med_m1911",
+        "name": "M1911 Mastery",
+        "requirement": "Kill 50 enemies using the M1911 while crouched."
+      },
+      {
+        "id": "se5_med_luger",
+        "name": "Luger P08 Mastery",
+        "requirement": "Kill 50 enemies with suppressed shots using the Luger P08."
+      }
     ],
     "survival": [
-      { "id": "se5_med_surv_complete", "name": "Endurance Master", "requirement": "Complete all 12 waves on any Survival map." },
-      { "id": "se5_med_surv_flawless", "name": "Iron Bunker", "requirement": "Clear 3 consecutive waves without losing a single Command Post." },
-      { "id": "se5_med_surv_medic", "name": "Battlefield Surgeon", "requirement": "Revive teammates 20 times in Survival mode." },
-      { "id": "se5_med_surv_panzer", "name": "Heavy Ordinance", "requirement": "Kill 50 enemies using pickup heavy weapons (MG42, Panzerfaust)." }
+      {
+        "id": "se5_med_surv_complete",
+        "name": "Endurance Master",
+        "requirement": "Complete all 12 waves on any Survival map."
+      },
+      {
+        "id": "se5_med_surv_flawless",
+        "name": "Iron Bunker",
+        "requirement": "Clear 3 consecutive waves without losing a single Command Post."
+      },
+      {
+        "id": "se5_med_surv_medic",
+        "name": "Battlefield Surgeon",
+        "requirement": "Revive teammates 20 times in Survival mode."
+      },
+      {
+        "id": "se5_med_surv_panzer",
+        "name": "Heavy Ordinance",
+        "requirement": "Kill 50 enemies using pickup heavy weapons (MG42, Panzerfaust)."
+      }
     ],
     "multiplayer": [
-      { "id": "se5_med_invader_kills", "name": "Jäger Menace", "requirement": "Kill 50 Allied snipers while invading campaigns as the Sniper Jäger." },
-      { "id": "se5_med_defender_kills", "name": "Hunter of Hunters", "requirement": "Kill 50 invading Sniper Jägers in your own campaign." },
-      { "id": "se5_med_pvp_win", "name": "Competitive Elite", "requirement": "Win 25 competitive multiplayer team matches." },
-      { "id": "se5_med_longest_shot", "name": "Longshot Champion", "requirement": "Land a verified multiplayer kill from 300+ meters." }
+      {
+        "id": "se5_med_invader_kills",
+        "name": "Jäger Menace",
+        "requirement": "Kill 50 Allied snipers while invading campaigns as the Sniper Jäger."
+      },
+      {
+        "id": "se5_med_defender_kills",
+        "name": "Hunter of Hunters",
+        "requirement": "Kill 50 invading Sniper Jägers in your own campaign."
+      },
+      {
+        "id": "se5_med_pvp_win",
+        "name": "Competitive Elite",
+        "requirement": "Win 25 competitive multiplayer team matches."
+      },
+      {
+        "id": "se5_med_longest_shot",
+        "name": "Longshot Champion",
+        "requirement": "Land a verified multiplayer kill from 300+ meters."
+      }
     ]
   },
   "ribbons": {
     "campaign": [
-      { "id": "se5_rib_assassin", "name": "Assassin", "requirement": "5 stealth takedowns in a single mission." },
-      { "id": "se5_rib_sound_mask", "name": "Sound Mask Expert", "requirement": "5 kills masked by ambient environmental audio." },
-      { "id": "se5_rib_trapper", "name": "Trapper", "requirement": "3 kills with booby-trapped corpses or mines." },
-      { "id": "se5_rib_ghost", "name": "Ghost", "requirement": "15 kills while remaining completely undetected." },
-      { "id": "se5_rib_demolitionist", "name": "Demolitionist", "requirement": "Destroy 2 vehicles using environmental explosives or satchels." },
-      { "id": "se5_rib_rifle_specialist", "name": "Rifle Specialist", "requirement": "20 sniper rifle kills in a single mission." },
-      { "id": "se5_rib_pistoleer", "name": "Pistoleer", "requirement": "10 pistol kills in a single mission." }
+      {
+        "id": "se5_rib_assassin",
+        "name": "Assassin",
+        "requirement": "5 stealth takedowns in a single mission."
+      },
+      {
+        "id": "se5_rib_sound_mask",
+        "name": "Sound Mask Expert",
+        "requirement": "5 kills masked by ambient environmental audio."
+      },
+      {
+        "id": "se5_rib_trapper",
+        "name": "Trapper",
+        "requirement": "3 kills with booby-trapped corpses or mines."
+      },
+      {
+        "id": "se5_rib_ghost",
+        "name": "Ghost",
+        "requirement": "15 kills while remaining completely undetected."
+      },
+      {
+        "id": "se5_rib_demolitionist",
+        "name": "Demolitionist",
+        "requirement": "Destroy 2 vehicles using environmental explosives or satchels."
+      },
+      {
+        "id": "se5_rib_rifle_specialist",
+        "name": "Rifle Specialist",
+        "requirement": "20 sniper rifle kills in a single mission."
+      },
+      {
+        "id": "se5_rib_pistoleer",
+        "name": "Pistoleer",
+        "requirement": "10 pistol kills in a single mission."
+      }
     ],
     "survival": [
-      { "id": "se5_surv_wave_clear", "name": "Wave Clearer", "requirement": "Survive 5 waves in a Survival match." },
-      { "id": "se5_surv_cp_defend", "name": "Command Post Guardian", "requirement": "Kill 10 enemies inside an active Command Post perimeter." },
-      { "id": "se5_surv_no_damage", "name": "Untouchable", "requirement": "Clear an entire wave without sustaining damage." },
-      { "id": "se5_surv_revive", "name": "Field Medic", "requirement": "Revive 3 downed squadmates." }
+      {
+        "id": "se5_surv_wave_clear",
+        "name": "Wave Clearer",
+        "requirement": "Survive 5 waves in a Survival match."
+      },
+      {
+        "id": "se5_surv_cp_defend",
+        "name": "Command Post Guardian",
+        "requirement": "Kill 10 enemies inside an active Command Post perimeter."
+      },
+      {
+        "id": "se5_surv_no_damage",
+        "name": "Untouchable",
+        "requirement": "Clear an entire wave without sustaining damage."
+      },
+      {
+        "id": "se5_surv_revive",
+        "name": "Field Medic",
+        "requirement": "Revive 3 downed squadmates."
+      }
     ],
-    "multiplayer": [
-      { "id": "se5_mp_first_blood", "name": "First Strike", "requirement": "Score the first kill of a multiplayer match." },
-      { "id": "se5_mp_headshot_streak", "name": "Marksman Streak", "requirement": "Achieve 3 consecutive headshot kills without dying." },
-      { "id": "se5_mp_tagger", "name": "Spotter Assist", "requirement": "Tag 5 enemies that are subsequently eliminated by teammates." },
-      { "id": "se5_mp_avenger", "name": "Avenger", "requirement": "Kill the enemy who recently killed your co-op partner." }
+    "multiplayer": {
+      "combat": [
+        {
+          "id": "se5_mprib_name_taker",
+          "name": "Name Taker",
+          "requirement": "Kill every opposing player in the match once",
+          "image_url": "/public/games/sniperelite5/images/ribbons/name-taker.jpg"
+        },
+        {
+          "id": "se5_mprib_punishment",
+          "name": "Punishment",
+          "requirement": "Score 3 Punisher Kills",
+          "image_url": "/public/games/sniperelite5/images/ribbons/punishment.jpg"
+        },
+        {
+          "id": "se5_mprib_kill_streak_ultra",
+          "name": "Kill Streak Ultra",
+          "requirement": "Achieve a 15 Kill Streak",
+          "image_url": "/public/games/sniperelite5/images/ribbons/kill-streak-ultra.jpg"
+        },
+        {
+          "id": "se5_mprib_melee_master",
+          "name": "Melee Master",
+          "requirement": "Score 5 Melee Kills",
+          "image_url": "/public/games/sniperelite5/images/ribbons/melee-master.jpg"
+        },
+        {
+          "id": "se5_mprib_kill_streak_assassin",
+          "name": "Kill Streak Assassin",
+          "requirement": "Achieve a 5 Kill Streak",
+          "image_url": "/public/games/sniperelite5/images/ribbons/kill-streak-assassin.jpg"
+        },
+        {
+          "id": "se5_mprib_pistol_virtuoso",
+          "name": "Pistol Virtuoso",
+          "requirement": "Score 5 Pistol Kills",
+          "image_url": "/public/games/sniperelite5/images/ribbons/pistol-virtuoso.jpg"
+        },
+        {
+          "id": "se5_mprib_secondary_weapon_champion",
+          "name": "Secondary Weapon Champion",
+          "requirement": "Score 5 Secondary Weapon Kills",
+          "image_url": "/public/games/sniperelite5/images/ribbons/secondary-weapon-champion.jpg"
+        },
+        {
+          "id": "se5_mprib_rival_rouser",
+          "name": "Rival Rouser",
+          "requirement": "Initiate 3 Rivalries in a single match",
+          "image_url": "/public/games/sniperelite5/images/ribbons/rival-rouser.jpg"
+        },
+        {
+          "id": "se5_mprib_grenadier",
+          "name": "Grenadier",
+          "requirement": "Score 3 Grenade Kills",
+          "image_url": "/public/games/sniperelite5/images/ribbons/grenadier.jpg"
+        },
+        {
+          "id": "se5_mprib_kill_streak_warrior",
+          "name": "Kill Streak Warrior",
+          "requirement": "Achieve a 10 Kill Streak",
+          "image_url": "/public/games/sniperelite5/images/ribbons/kill-streak-warrior.jpg"
+        },
+        {
+          "id": "se5_mprib_rapid_action_repeater",
+          "name": "Rapid Action Repeater",
+          "requirement": "Score 3 rifle kills in quick succession",
+          "image_url": "/public/games/sniperelite5/images/ribbons/rapid-action-repeater.jpg"
+        }
+      ],
+      "tactics": [
+        {
+          "id": "se5_mprib_battle_tour",
+          "name": "Battle Tour",
+          "requirement": "Relocate 3 times during a match",
+          "image_url": "/public/games/sniperelite5/images/ribbons/battle-tour.jpg"
+        },
+        {
+          "id": "se5_mprib_assassin_prime",
+          "name": "Assassin Prime",
+          "requirement": "Score the first kill in a match",
+          "image_url": "/public/games/sniperelite5/images/ribbons/assassin-prime.jpg"
+        },
+        {
+          "id": "se5_mprib_disarmament_demon",
+          "name": "Disarmament Demon",
+          "requirement": "Disarm 3 Traps",
+          "image_url": "/public/games/sniperelite5/images/ribbons/disarmament-demon.jpg"
+        },
+        {
+          "id": "se5_mprib_demolitions_expert",
+          "name": "Demolitions Expert",
+          "requirement": "Kill an enemy by shooting an explosive or trap",
+          "image_url": "/public/games/sniperelite5/images/ribbons/demolitions-expert.jpg"
+        },
+        {
+          "id": "se5_mprib_hidden_and_dangerous",
+          "name": "Hidden and Dangerous",
+          "requirement": "Score 5 Kills From Within Foliage",
+          "image_url": "/public/games/sniperelite5/images/ribbons/hidden-and-dangerous.jpg"
+        },
+        {
+          "id": "se5_mprib_tag_hunter",
+          "name": "Tag Hunter",
+          "requirement": "Kill 5 tagged enemies",
+          "image_url": "/public/games/sniperelite5/images/ribbons/tag-hunter.jpg"
+        },
+        {
+          "id": "se5_mprib_shared_punishment",
+          "name": "Shared Punishment",
+          "requirement": "Score a punisher kill on 3 different players in a match",
+          "image_url": "/public/games/sniperelite5/images/ribbons/shared-punishment.jpg"
+        },
+        {
+          "id": "se5_mprib_triple_toppler",
+          "name": "Triple Toppler",
+          "requirement": "Get 3 kills against any 1st placed enemy",
+          "image_url": "/public/games/sniperelite5/images/ribbons/triple-toppler.jpg"
+        },
+        {
+          "id": "se5_mprib_steady_shooter",
+          "name": "Steady Shooter",
+          "requirement": "Score 8 Empty Lung Kills",
+          "image_url": "/public/games/sniperelite5/images/ribbons/steady-shooter.jpg"
+        },
+        {
+          "id": "se5_mprib_full_tour",
+          "name": "Full Tour",
+          "requirement": "Relocate 5 Times in a row",
+          "image_url": "/public/games/sniperelite5/images/ribbons/full-tour.jpg"
+        },
+        {
+          "id": "se5_mprib_trapper",
+          "name": "Trapper",
+          "requirement": "Score 3 Trap Kills",
+          "image_url": "/public/games/sniperelite5/images/ribbons/trapper.jpg"
+        },
+        {
+          "id": "se5_mprib_perfect_trap_technician",
+          "name": "Perfect Trap Technician",
+          "requirement": "Kill 3 opponents with a single explosive",
+          "image_url": "/public/games/sniperelite5/images/ribbons/perfect-trap-technician.jpg"
+        }
+      ],
+      "performance": [
+        {
+          "id": "se5_mprib_team_match_win",
+          "name": "Team Match Win",
+          "requirement": "Win a Team Match",
+          "image_url": "/public/games/sniperelite5/images/ribbons/team-match-win.jpg"
+        },
+        {
+          "id": "se5_mprib_squad_match_win",
+          "name": "Squad Match Win",
+          "requirement": "Win a Squad Match",
+          "image_url": "/public/games/sniperelite5/images/ribbons/squad-match-win.jpg"
+        },
+        {
+          "id": "se5_mprib_distance_king",
+          "name": "Distance King",
+          "requirement": "Achieve the highest cumulative kill distance in a distance-based match",
+          "image_url": "/public/games/sniperelite5/images/ribbons/distance-king.jpg"
+        },
+        {
+          "id": "se5_mprib_longest_shot",
+          "name": "Longest Shot",
+          "requirement": "Score the longest shot in the match",
+          "image_url": "/public/games/sniperelite5/images/ribbons/longest-shot.jpg"
+        },
+        {
+          "id": "se5_mprib_deciding_shot",
+          "name": "Deciding Shot",
+          "requirement": "Get the match winning shot",
+          "image_url": "/public/games/sniperelite5/images/ribbons/deciding-shot.jpg"
+        },
+        {
+          "id": "se5_mprib_top_kills",
+          "name": "Top Kills",
+          "requirement": "Achieve the highest kills in a kill-based match",
+          "image_url": "/public/games/sniperelite5/images/ribbons/top-kills.jpg"
+        },
+        {
+          "id": "se5_mprib_mvp",
+          "name": "MVP",
+          "requirement": "Have the most kills and fewest deaths at the end of the match",
+          "image_url": "/public/games/sniperelite5/images/ribbons/mvp.jpg"
+        },
+        {
+          "id": "se5_mprib_squad_mvp",
+          "name": "Squad MVP",
+          "requirement": "Have the highest kills, fewest deaths, and longest shot on your team in a Squad Match",
+          "image_url": "/public/games/sniperelite5/images/ribbons/squad-mvp.jpg"
+        },
+        {
+          "id": "se5_mprib_commendable_performance",
+          "name": "Commendable Performance",
+          "requirement": "Earn 3 Accolades in a match",
+          "image_url": "/public/games/sniperelite5/images/ribbons/commendable-performance.jpg"
+        },
+        {
+          "id": "se5_mprib_free_for_all_win",
+          "name": "Free-For-All Win",
+          "requirement": "Win a Free-For-All Match",
+          "image_url": "/public/games/sniperelite5/images/ribbons/free-for-all-win.jpg"
+        },
+        {
+          "id": "se5_mprib_high_score",
+          "name": "High Score",
+          "requirement": "Achieve the highest Performance Score in a score-based match.",
+          "image_url": "/public/games/sniperelite5/images/ribbons/high-score.jpg"
+        },
+        {
+          "id": "se5_mprib_no_cross_win",
+          "name": "No Cross Win",
+          "requirement": "Win a No Cross Match",
+          "image_url": "/public/games/sniperelite5/images/ribbons/no-cross-win.jpg"
+        }
+      ],
+      "support": [
+        {
+          "id": "se5_mprib_team_triage",
+          "name": "Team Triage",
+          "requirement": "Revive every member of your team once in a Squad Match",
+          "image_url": "/public/games/sniperelite5/images/ribbons/team-triage.jpg"
+        },
+        {
+          "id": "se5_mprib_spotter",
+          "name": "Spotter",
+          "requirement": "Score 3 Tag Assists for the same ally",
+          "image_url": "/public/games/sniperelite5/images/ribbons/spotter.jpg"
+        },
+        {
+          "id": "se5_mprib_assist_assassin",
+          "name": "Assist Assassin",
+          "requirement": "Earn 5 Kill Assists in a Match",
+          "image_url": "/public/games/sniperelite5/images/ribbons/assist-assassin.jpg"
+        },
+        {
+          "id": "se5_mprib_eyes_and_ears",
+          "name": "Eyes and Ears",
+          "requirement": "Score a tag assist for every member of your team in a Squad Match",
+          "image_url": "/public/games/sniperelite5/images/ribbons/eyes-and-ears.jpg"
+        },
+        {
+          "id": "se5_mprib_tagger",
+          "name": "Tagger",
+          "requirement": "Earn 5 Tag Assists in a Match",
+          "image_url": "/public/games/sniperelite5/images/ribbons/tagger.jpg"
+        },
+        {
+          "id": "se5_mprib_intervention_technician",
+          "name": "Intervention Technician",
+          "requirement": "Score 3 Kills against targets who are performing Melee Kills",
+          "image_url": "/public/games/sniperelite5/images/ribbons/intervention-technician.jpg"
+        },
+        {
+          "id": "se5_mprib_superior_squad",
+          "name": "Superior Squad",
+          "requirement": "As a team, eliminate all players on all 3 opposing teams once in a Squad Match without dying",
+          "image_url": "/public/games/sniperelite5/images/ribbons/superior-squad.jpg"
+        },
+        {
+          "id": "se5_mprib_combat_medic",
+          "name": "Combat Medic",
+          "requirement": "Revive a team mate 5 times",
+          "image_url": "/public/games/sniperelite5/images/ribbons/combat-medic.jpg"
+        }
+      ]
+    },
+    "multiplayer_unverified": [
+      {
+        "id": "se5_mp_first_blood",
+        "name": "First Strike",
+        "requirement": "Score the first kill of a multiplayer match."
+      },
+      {
+        "id": "se5_mp_headshot_streak",
+        "name": "Marksman Streak",
+        "requirement": "Achieve 3 consecutive headshot kills without dying."
+      },
+      {
+        "id": "se5_mp_tagger",
+        "name": "Spotter Assist",
+        "requirement": "Tag 5 enemies that are subsequently eliminated by teammates."
+      },
+      {
+        "id": "se5_mp_avenger",
+        "name": "Avenger",
+        "requirement": "Kill the enemy who recently killed your co-op partner."
+      }
     ]
-  }
-}
   },
   "trophies": [
-    { "trophyId": 0, "name": "Sniper Elite", "rank": "PLATINUM", "description": "Obtain all Trophies." },
-    { "trophyId": 1, "name": "The Cover of Darkness", "rank": "BRONZE", "description": "Complete The Atlantic Wall." },
-    { "trophyId": 2, "name": "City of Lights", "rank": "BRONZE", "description": "Complete Occupied Residence." },
-    { "trophyId": 3, "name": "Target Acquired", "rank": "BRONZE", "description": "Complete Spy Academy." },
-    { "trophyId": 4, "name": "Going Nuclear", "rank": "BRONZE", "description": "Complete War Factory." },
-    { "trophyId": 5, "name": "Operation Kraken", "rank": "BRONZE", "description": "Complete Festung Guernsey." },
-    { "trophyId": 6, "name": "End of the Tunnel", "rank": "BRONZE", "description": "Complete Liberation." },
-    { "trophyId": 7, "name": "Turning Point", "rank": "BRONZE", "description": "Complete Secret Weapons." },
-    { "trophyId": 8, "name": "Total Destruction", "rank": "BRONZE", "description": "Complete Rubble & Ruin." },
-    { "trophyId": 9, "name": "Liberté", "rank": "GOLD", "description": "Complete the Campaign." },
-    { "trophyId": 10, "name": "Best of the Best", "rank": "GOLD", "description": "Complete the Campaign on Authentic difficulty." },
-    { "trophyId": 11, "name": "No Stone Unturned", "rank": "SILVER", "description": "Complete 16 Optional Objectives." },
-    { "trophyId": 12, "name": "Opposing Force", "rank": "BRONZE", "description": "Win one Axis Invasion as an Invader." },
-    { "trophyId": 13, "name": "Enemy at the Gates", "rank": "BRONZE", "description": "Defeat an invading Sniper Jäger." },
-    { "trophyId": 14, "name": "Fields of Glory", "rank": "BRONZE", "description": "Play one team-based PVP match." },
-    { "trophyId": 15, "name": "It'll Buff Right Out", "rank": "BRONZE", "description": "Destroy Möller's shiny new car in Mission 2." },
-    { "trophyId": 16, "name": "Locomotion Commotion", "rank": "BRONZE", "description": "In Martressac, create an accident that destroys the train in the storage area." },
-    { "trophyId": 17, "name": "Up Close and Personal", "rank": "BRONZE", "description": "Perform 100 lethal takedowns." },
-    { "trophyId": 18, "name": "Organ Grinder", "rank": "BRONZE", "description": "Hit every organ at least once with a rifle." },
-    { "trophyId": 19, "name": "Strategist", "rank": "BRONZE", "description": "Make a tank shoot and destroy another enemy vehicle." },
-    { "trophyId": 20, "name": "Master of Pistols", "rank": "SILVER", "description": "Obtain six pistol-related mastery medals." },
-    { "trophyId": 21, "name": "Master of Secondaries", "rank": "SILVER", "description": "Obtain six secondary-related mastery medals." },
-    { "trophyId": 22, "name": "Master of Rifles", "rank": "SILVER", "description": "Obtain six rifle-related mastery medals." },
-    { "trophyId": 23, "name": "Gunslinger", "rank": "BRONZE", "description": "Kill 150 enemies with a Pistol." },
-    { "trophyId": 24, "name": "Skirmisher", "rank": "BRONZE", "description": "Kill 300 enemies with a Secondary Weapon." },
-    { "trophyId": 25, "name": "Sharpshooter", "rank": "BRONZE", "description": "Kill 350 enemies with a Rifle." },
-    { "trophyId": 26, "name": "A Man of Many Talents", "rank": "BRONZE", "description": "Kill 50 enemies with found weapons." },
-    { "trophyId": 27, "name": "Der Geist", "rank": "BRONZE", "description": "Achieve 250 ghost kills." },
-    { "trophyId": 28, "name": "As Quiet as a Mouse", "rank": "BRONZE", "description": "Kill 50 enemies during a sound mask." },
-    { "trophyId": 29, "name": "Close Quarters", "rank": "BRONZE", "description": "Kill 100 enemies with stealth melee takedowns." },
-    { "trophyId": 30, "name": "Snake in the Grass", "rank": "BRONZE", "description": "While in tall grass, kill 50 enemies." },
-    { "trophyId": 31, "name": "From Paris with Love", "rank": "BRONZE", "description": "Collect 41 Personal Letters." },
-    { "trophyId": 32, "name": "Burn After Reading", "rank": "BRONZE", "description": "Collect 39 Classified Documents." },
-    { "trophyId": 33, "name": "Souvenir Hunter", "rank": "BRONZE", "description": "Collect 24 Hidden Items." },
-    { "trophyId": 34, "name": "Eagle Eyed", "rank": "BRONZE", "description": "Destroy 24 Dead-eye Targets." },
-    { "trophyId": 35, "name": "Tinkerer", "rank": "BRONZE", "description": "Interact with 24 Workbenches." },
-    { "trophyId": 36, "name": "Lord of War", "rank": "SILVER", "description": "Become a master of each weapon." },
-    { "trophyId": 37, "name": "Out of Bounds", "rank": "BRONZE", "description": "Kill Ehrlich with a rat bomb in War Factory." },
-    { "trophyId": 38, "name": "Guernsey Ghouls", "rank": "BRONZE", "description": "Kill Baumann by dropping him into the cement vat in Festung Guernsey." },
-    { "trophyId": 39, "name": "Slick Little Bastard", "rank": "BRONZE", "description": "Kill Trautmann with poison in Liberation." },
-    { "trophyId": 40, "name": "A Hole in One", "rank": "BRONZE", "description": "Kill Hitler with a testicle shot in Target Führer: Wolf Mountain." },
-    { "trophyId": 41, "name": "Living on the Edge", "rank": "BRONZE", "description": "Complete an entire Survival mission." },
-    { "trophyId": 42, "name": "Shoot the Breeze", "rank": "BRONZE", "description": "Hit every target in the firing range in Mission 1." },
-    { "trophyId": 43, "name": "Precision Targeting", "rank": "BRONZE", "description": "Kill 3 enemies with a single grenade." },
-    { "trophyId": 44, "name": "The Long Game", "rank": "BRONZE", "description": "Achieve a total kill distance of 100,000 meters." },
-    { "trophyId": 45, "name": "Road Rage", "rank": "BRONZE", "description": "In Research Facility, run over 10 enemies with an armored car." },
-    { "trophyId": 46, "name": "Don't Lose Your Head", "rank": "BRONZE", "description": "Kill 3 enemies with headshots while hanging from a ledge." },
-    { "trophyId": 47, "name": "Iron Sight Elite", "rank": "BRONZE", "description": "Kill 150 enemies with a rifle using iron sights only." },
-    { "trophyId": 48, "name": "Set to Explode", "rank": "BRONZE", "description": "Kill 20 soldiers using booby-trapped bodies." },
-    { "trophyId": 49, "name": "Can't Touch This", "rank": "BRONZE", "description": "Complete any mission on any difficulty without taking damage." },
-    { "trophyId": 50, "name": "Climbing the Ranks", "rank": "BRONZE", "description": "Reach Rank 40." },
-    { "trophyId": 51, "name": "Going Solo", "rank": "BRONZE", "description": "Complete any 3 missions on Authentic difficulty without a co-op partner." },
-    { "trophyId": 52, "name": "Sniper Veteran", "rank": "SILVER", "description": "Reach Rank 50." },
-    { "trophyId": 53, "name": "No Stone Left Standing", "rank": "GOLD", "description": "Complete all Campaign missions on Authentic difficulty with all optional objectives." }
-  ]
+    {
+      "trophyId": 0,
+      "name": "Sniper Elite",
+      "rank": "PLATINUM",
+      "description": "Obtain all Trophies."
+    },
+    {
+      "trophyId": 1,
+      "name": "The Cover of Darkness",
+      "rank": "BRONZE",
+      "description": "Complete The Atlantic Wall."
+    },
+    {
+      "trophyId": 2,
+      "name": "City of Lights",
+      "rank": "BRONZE",
+      "description": "Complete Occupied Residence."
+    },
+    {
+      "trophyId": 3,
+      "name": "Target Acquired",
+      "rank": "BRONZE",
+      "description": "Complete Spy Academy."
+    },
+    {
+      "trophyId": 4,
+      "name": "Going Nuclear",
+      "rank": "BRONZE",
+      "description": "Complete War Factory."
+    },
+    {
+      "trophyId": 5,
+      "name": "Operation Kraken",
+      "rank": "BRONZE",
+      "description": "Complete Festung Guernsey."
+    },
+    {
+      "trophyId": 6,
+      "name": "End of the Tunnel",
+      "rank": "BRONZE",
+      "description": "Complete Liberation."
+    },
+    {
+      "trophyId": 7,
+      "name": "Turning Point",
+      "rank": "BRONZE",
+      "description": "Complete Secret Weapons."
+    },
+    {
+      "trophyId": 8,
+      "name": "Total Destruction",
+      "rank": "BRONZE",
+      "description": "Complete Rubble & Ruin."
+    },
+    {
+      "trophyId": 9,
+      "name": "Liberté",
+      "rank": "GOLD",
+      "description": "Complete the Campaign."
+    },
+    {
+      "trophyId": 10,
+      "name": "Best of the Best",
+      "rank": "GOLD",
+      "description": "Complete the Campaign on Authentic difficulty."
+    },
+    {
+      "trophyId": 11,
+      "name": "No Stone Unturned",
+      "rank": "SILVER",
+      "description": "Complete 16 Optional Objectives."
+    },
+    {
+      "trophyId": 12,
+      "name": "Opposing Force",
+      "rank": "BRONZE",
+      "description": "Win one Axis Invasion as an Invader."
+    },
+    {
+      "trophyId": 13,
+      "name": "Enemy at the Gates",
+      "rank": "BRONZE",
+      "description": "Defeat an invading Sniper Jäger."
+    },
+    {
+      "trophyId": 14,
+      "name": "Fields of Glory",
+      "rank": "BRONZE",
+      "description": "Play one team-based PVP match."
+    },
+    {
+      "trophyId": 15,
+      "name": "It'll Buff Right Out",
+      "rank": "BRONZE",
+      "description": "Destroy Möller's shiny new car in Mission 2."
+    },
+    {
+      "trophyId": 16,
+      "name": "Locomotion Commotion",
+      "rank": "BRONZE",
+      "description": "In Martressac, create an accident that destroys the train in the storage area."
+    },
+    {
+      "trophyId": 17,
+      "name": "Up Close and Personal",
+      "rank": "BRONZE",
+      "description": "Perform 100 lethal takedowns."
+    },
+    {
+      "trophyId": 18,
+      "name": "Organ Grinder",
+      "rank": "BRONZE",
+      "description": "Hit every organ at least once with a rifle."
+    },
+    {
+      "trophyId": 19,
+      "name": "Strategist",
+      "rank": "BRONZE",
+      "description": "Make a tank shoot and destroy another enemy vehicle."
+    },
+    {
+      "trophyId": 20,
+      "name": "Master of Pistols",
+      "rank": "SILVER",
+      "description": "Obtain six pistol-related mastery medals."
+    },
+    {
+      "trophyId": 21,
+      "name": "Master of Secondaries",
+      "rank": "SILVER",
+      "description": "Obtain six secondary-related mastery medals."
+    },
+    {
+      "trophyId": 22,
+      "name": "Master of Rifles",
+      "rank": "SILVER",
+      "description": "Obtain six rifle-related mastery medals."
+    },
+    {
+      "trophyId": 23,
+      "name": "Gunslinger",
+      "rank": "BRONZE",
+      "description": "Kill 150 enemies with a Pistol."
+    },
+    {
+      "trophyId": 24,
+      "name": "Skirmisher",
+      "rank": "BRONZE",
+      "description": "Kill 300 enemies with a Secondary Weapon."
+    },
+    {
+      "trophyId": 25,
+      "name": "Sharpshooter",
+      "rank": "BRONZE",
+      "description": "Kill 350 enemies with a Rifle."
+    },
+    {
+      "trophyId": 26,
+      "name": "A Man of Many Talents",
+      "rank": "BRONZE",
+      "description": "Kill 50 enemies with found weapons."
+    },
+    {
+      "trophyId": 27,
+      "name": "Der Geist",
+      "rank": "BRONZE",
+      "description": "Achieve 250 ghost kills."
+    },
+    {
+      "trophyId": 28,
+      "name": "As Quiet as a Mouse",
+      "rank": "BRONZE",
+      "description": "Kill 50 enemies during a sound mask."
+    },
+    {
+      "trophyId": 29,
+      "name": "Close Quarters",
+      "rank": "BRONZE",
+      "description": "Kill 100 enemies with stealth melee takedowns."
+    },
+    {
+      "trophyId": 30,
+      "name": "Snake in the Grass",
+      "rank": "BRONZE",
+      "description": "While in tall grass, kill 50 enemies."
+    },
+    {
+      "trophyId": 31,
+      "name": "From Paris with Love",
+      "rank": "BRONZE",
+      "description": "Collect 41 Personal Letters."
+    },
+    {
+      "trophyId": 32,
+      "name": "Burn After Reading",
+      "rank": "BRONZE",
+      "description": "Collect 39 Classified Documents."
+    },
+    {
+      "trophyId": 33,
+      "name": "Souvenir Hunter",
+      "rank": "BRONZE",
+      "description": "Collect 24 Hidden Items."
+    },
+    {
+      "trophyId": 34,
+      "name": "Eagle Eyed",
+      "rank": "BRONZE",
+      "description": "Destroy 24 Dead-eye Targets."
+    },
+    {
+      "trophyId": 35,
+      "name": "Tinkerer",
+      "rank": "BRONZE",
+      "description": "Interact with 24 Workbenches."
+    },
+    {
+      "trophyId": 36,
+      "name": "Lord of War",
+      "rank": "SILVER",
+      "description": "Become a master of each weapon."
+    },
+    {
+      "trophyId": 37,
+      "name": "Out of Bounds",
+      "rank": "BRONZE",
+      "description": "Kill Ehrlich with a rat bomb in War Factory."
+    },
+    {
+      "trophyId": 38,
+      "name": "Guernsey Ghouls",
+      "rank": "BRONZE",
+      "description": "Kill Baumann by dropping him into the cement vat in Festung Guernsey."
+    },
+    {
+      "trophyId": 39,
+      "name": "Slick Little Bastard",
+      "rank": "BRONZE",
+      "description": "Kill Trautmann with poison in Liberation."
+    },
+    {
+      "trophyId": 40,
+      "name": "A Hole in One",
+      "rank": "BRONZE",
+      "description": "Kill Hitler with a testicle shot in Target Führer: Wolf Mountain."
+    },
+    {
+      "trophyId": 41,
+      "name": "Living on the Edge",
+      "rank": "BRONZE",
+      "description": "Complete an entire Survival mission."
+    },
+    {
+      "trophyId": 42,
+      "name": "Shoot the Breeze",
+      "rank": "BRONZE",
+      "description": "Hit every target in the firing range in Mission 1."
+    },
+    {
+      "trophyId": 43,
+      "name": "Precision Targeting",
+      "rank": "BRONZE",
+      "description": "Kill 3 enemies with a single grenade."
+    },
+    {
+      "trophyId": 44,
+      "name": "The Long Game",
+      "rank": "BRONZE",
+      "description": "Achieve a total kill distance of 100,000 meters."
+    },
+    {
+      "trophyId": 45,
+      "name": "Road Rage",
+      "rank": "BRONZE",
+      "description": "In Research Facility, run over 10 enemies with an armored car."
+    },
+    {
+      "trophyId": 46,
+      "name": "Don't Lose Your Head",
+      "rank": "BRONZE",
+      "description": "Kill 3 enemies with headshots while hanging from a ledge."
+    },
+    {
+      "trophyId": 47,
+      "name": "Iron Sight Elite",
+      "rank": "BRONZE",
+      "description": "Kill 150 enemies with a rifle using iron sights only."
+    },
+    {
+      "trophyId": 48,
+      "name": "Set to Explode",
+      "rank": "BRONZE",
+      "description": "Kill 20 soldiers using booby-trapped bodies."
+    },
+    {
+      "trophyId": 49,
+      "name": "Can't Touch This",
+      "rank": "BRONZE",
+      "description": "Complete any mission on any difficulty without taking damage."
+    },
+    {
+      "trophyId": 50,
+      "name": "Climbing the Ranks",
+      "rank": "BRONZE",
+      "description": "Reach Rank 40."
+    },
+    {
+      "trophyId": 51,
+      "name": "Going Solo",
+      "rank": "BRONZE",
+      "description": "Complete any 3 missions on Authentic difficulty without a co-op partner."
+    },
+    {
+      "trophyId": 52,
+      "name": "Sniper Veteran",
+      "rank": "SILVER",
+      "description": "Reach Rank 50."
+    },
+    {
+      "trophyId": 53,
+      "name": "No Stone Left Standing",
+      "rank": "GOLD",
+      "description": "Complete all Campaign missions on Authentic difficulty with all optional objectives."
+    }
+  ],
+  "image_url": "https://image.api.playstation.com/vulcan/ap/rnd/202202/2116/59jHCjMBRhuRhPUKUUy2gkNd.png",
+  "crossplay": {
+    "supported": true,
+    "platforms": [
+      "PC (Steam, Windows, Xbox Game Pass)",
+      "PlayStation 4",
+      "PlayStation 5",
+      "Xbox One",
+      "Xbox Series X|S"
+    ],
+    "modes": [
+      "Campaign co-op",
+      "Online multiplayer (PvP)",
+      "Axis Invasion"
+    ],
+    "toggle": "Options > Game > Cross-Play Allowed",
+    "no_cross_mode": "Multiplayer has a \"No Cross\" mode for players who want to avoid cross-platform matchmaking.",
+    "invites": "Open the lobby or pre-load screen, select the user info panel (F2 on PC, Y / Triangle on console) and exchange invite codes.",
+    "source": "https://support.rebellion.com/hc/en-gb/articles/4573848870557-Does-the-game-have-cross-play"
+  },
+  "play_modes": [
+    "Campaign",
+    "Host Co-Op Game",
+    "Find Co-Op Game",
+    "Axis Invasion",
+    "Survival",
+    "Multiplayer"
+  ],
+  "ribbon_totals": {
+    "campaign_survival": 47,
+    "multiplayer": 56,
+    "multiplayer_categories": {
+      "tactics": 12,
+      "performance": 12,
+      "support": 8
+    },
+    "note": "Multiplayer: Tactics 12, Performance 12 and Support 8 are complete. \"combat\" is a placeholder name for the first category (header not captured); 11 of its ribbons recorded so far. multiplayer_unverified holds older entries not seen in game."
+  }
 }
