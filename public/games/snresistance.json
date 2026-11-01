@@ -1983,11 +1983,12 @@
           {
             "id": "eagle_m6_01",
             "name": "Dead-Eye Target 1",
-            "location": "Rooftop of house where Kill List target resides.",
+            "location": "Western side of the church roof, west of the tower. You can shoot it the moment the mission starts (about 315 m from the start).",
             "image_url": "/public/games/snresistance/images/icons/eagle.png",
             "video_time": 0,
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=0s",
-            "emoji": "🦅"
+            "emoji": "🦅",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/eagle_m6_01.jpg"
           },
           {
             "id": "eagle_m6_02",
