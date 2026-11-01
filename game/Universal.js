@@ -1023,6 +1023,10 @@ function ensureUniversalStyles() {
         .harvest-form { display: flex; flex-wrap: wrap; gap: 8px; }
         .hunt-input { flex: 1 1 140px; padding: 8px 10px; }
         .ctl-wrap { overflow-x: auto; }
+        .guide-sec { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.06); color: #cbd5e1; font-size: 0.85rem; line-height: 1.5; }
+        .guide-sec h3 { color: #fff; font-size: 1rem; margin-bottom: 6px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .guide-sec ul { margin: 6px 0 8px 18px; } .guide-sec li { margin: 3px 0; }
+        .guide-src { font-size: 0.7rem; color: #64748b; margin-top: 6px; }
         .ctl-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; color: #e2e8f0; }
         .ctl-table th { text-align: left; color: #94a3b8; font-weight: 600; padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.12); }
         .ctl-table td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); vertical-align: top; }
@@ -1635,6 +1639,28 @@ function walletPanelHtml(data) {
 }
 
 // Hunting games (e.g. Way of the Hunter 2): reserves, species, quests, challenges
+function newPlayerGuideHtml(data) {
+    const g = data.new_player_guide; if (!g) return '';
+    const badge = (sec) => sec.verified ? '<span class="game-chip" style="background:#14532d;">Confirmed</span>' : '<span class="game-chip" style="background:#713f12;">Not confirmed yet</span>';
+    const energyTable = () => {
+        const rows = toArr(data.species).filter(sp => sp && sp.class).sort((a, b) => a.class - b.class || a.name.localeCompare(b.name)).map(sp => {
+            const h = sp.recommended_hit || {};
+            return `<tr><td>${escapeHtml(sp.name)}</td><td>${sp.class}</td><td>${escapeHtml(h.bullet || '—')}</td><td>${escapeHtml(h.buckshot || '—')}</td><td>${escapeHtml(h.slug || '—')}</td></tr>`;
+        }).join('');
+        return `<div class="ctl-wrap"><table class="ctl-table"><thead><tr><th>Animal</th><th>Class</th><th>Bullet energy</th><th>Buckshot</th><th>Slug</th></tr></thead><tbody>${rows}</tbody></table></div><p style="font-size:0.72rem;color:#64748b;">"—" = not in your encyclopedia screenshots yet.</p>`;
+    };
+    const body = toArr(g.sections).map(sec => `
+        <div class="guide-sec">
+            <h3>${escapeHtml(sec.title)} ${badge(sec)}</h3>
+            ${sec.body ? `<p>${escapeHtml(sec.body)}</p>` : ''}
+            ${toArr(sec.bullets).length ? `<ul>${toArr(sec.bullets).map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>` : ''}
+            ${sec.auto_table === 'species_energy' ? energyTable() : ''}
+            ${toArr(sec.weapons).length ? `<div class="ctl-wrap"><table class="ctl-table"><thead><tr><th>Weapon</th><th>Type</th><th>Caliber</th><th>In WOTH2?</th><th>Notes</th></tr></thead><tbody>${toArr(sec.weapons).map(w => `<tr><td>${escapeHtml(w.name)}</td><td>${escapeHtml(w.type || '')}</td><td>${escapeHtml(w.caliber || '')}</td><td>${w.seen_in_woth2 ? '✔ Seen' : 'Unconfirmed'}</td><td>${escapeHtml(w.note || '')}</td></tr>`).join('')}</tbody></table></div>` : ''}
+            ${toArr(sec.first_game_only_likely).length ? `<p style="font-size:0.75rem;color:#94a3b8;">Probably first game only: ${toArr(sec.first_game_only_likely).map(escapeHtml).join(', ')}</p>` : ''}
+            ${sec.source ? `<p class="guide-src">Source: ${escapeHtml(sec.source)}</p>` : ''}
+        </div>`).join('');
+    return buildFolder('📘 ' + escapeHtml(g.title || 'New Player Guide'), `<div class="guide">${body}</div>`);
+}
 function renderHuntingSchema(data) {
     const byName = {};
     toArr(data.species).forEach(sp => { if (sp && sp.name) byName[sp.name.toLowerCase()] = sp; });
@@ -1663,6 +1689,7 @@ function renderHuntingSchema(data) {
     if (data.crossplay) chips.push(`<span class="game-chip${data.crossplay.supported ? ' on' : ''}" title="${escapeHtml(data.crossplay.note || '')}">${data.crossplay.supported ? '✔ Cross-play' : '✖ No cross-play'}</span>`);
     if (data.multiplayer) chips.push(`<span class="game-chip">${escapeHtml(data.multiplayer)}</span>`);
     if (chips.length) html += `<div class="game-overview">${chips.join('')}</div>`;
+    html += newPlayerGuideHtml(data);
     html += walletPanelHtml(data);
 
     const listed = new Set();

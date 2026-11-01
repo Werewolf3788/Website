@@ -3765,5 +3765,170 @@
       "https://hunterway.wiki/animal-locations/",
       "https://hunterway.wiki/mark-animals/"
     ]
+  },
+  "new_player_guide": {
+    "title": "New Player Guide",
+    "sections": [
+      {
+        "id": "shot_energy",
+        "title": "Match your shot to the animal",
+        "verified": true,
+        "source": "In-game encyclopedia (your screenshots)",
+        "body": "Way of the Hunter 2 does not use the first game's 'ammo tier' numbers. Each animal has a class (1 = smallest, 9 = biggest) and a recommended bullet energy in joules (J) at the moment of impact. Pick a gun and ammo whose energy at your shooting distance falls inside that range. Too little energy gives a wounded animal and a long blood trail; far too much ruins the meat and lowers the harvest score. Shotguns list a distance range instead (buckshot / slug), and 'Inappropriate' means do not use it on that animal.",
+        "auto_table": "species_energy",
+        "bullets": [
+          "Check the energy number on the ammo in the weapon screen; it drops the farther away the animal is.",
+          "Aim for the heart/lungs; a clean hit gives a better harvest rating and more credits.",
+          "Class 8-9 (moose, bison, crocodile, hippo) need the heaviest rifles; the hippo, lion and Cape buffalo can charge you."
+        ]
+      },
+      {
+        "id": "weapons",
+        "title": "Weapons seen so far",
+        "verified": false,
+        "source": "Mixed: your screenshots, Nine Rocks update post (Kilimaya), Reddit update 0.4.1 review, and a Google AI summary that partly describes the first game",
+        "body": "Only weapons marked 'seen in WOTH2' are confirmed for this game. The rest came from a summary that mixes in Way of the Hunter 1, so treat them as unconfirmed until you see them in the shop.",
+        "weapons": [
+          {
+            "name": "Primacy Classic Hunter MK II",
+            "type": "Rifle",
+            "seen_in_woth2": true,
+            "note": "Seen in your screenshots"
+          },
+          {
+            "name": "Terra Fractal TR",
+            "type": "Compound bow",
+            "seen_in_woth2": true,
+            "note": "Added in the Kilimaya update (official post)"
+          },
+          {
+            "name": "CVA Cascade LRX",
+            "caliber": ".270 Winchester",
+            "type": "Rifle",
+            "seen_in_woth2": false,
+            "note": "Reported in the 0.4.1 update review"
+          },
+          {
+            "name": "Primacy Safari Elite",
+            "caliber": ".375 H&H Magnum",
+            "type": "Rifle",
+            "seen_in_woth2": false,
+            "note": "Big game (moose, elk, bison, buffalo)"
+          },
+          {
+            "name": "Christensen Arms Evoke",
+            "caliber": ".338 Lapua Magnum",
+            "type": "Rifle",
+            "seen_in_woth2": false,
+            "note": "Long range, large deer"
+          },
+          {
+            "name": "Vanhoutte Stinger 22",
+            "caliber": ".22 Long Rifle",
+            "type": "Rifle",
+            "seen_in_woth2": false,
+            "note": "Small game"
+          },
+          {
+            "name": "Strasser RS700-22",
+            "caliber": ".22 Long Rifle",
+            "type": "Rifle",
+            "seen_in_woth2": false,
+            "note": "Small game"
+          },
+          {
+            "name": "Primacy Morning Silence",
+            "caliber": "20 gauge",
+            "type": "Shotgun",
+            "seen_in_woth2": false,
+            "note": "Birds and hares"
+          },
+          {
+            "name": "Buffden Apex Predator",
+            "type": "Crossbow",
+            "seen_in_woth2": false,
+            "note": "Wide range of animals at close range with the right bolts"
+          },
+          {
+            "name": "Skye Ferran Wonder",
+            "type": "Compound bow",
+            "seen_in_woth2": false
+          },
+          {
+            "name": "Primacy Classic 7700",
+            "type": "Rifle",
+            "seen_in_woth2": false
+          },
+          {
+            "name": "Merkel Helix Speedster",
+            "type": "Rifle",
+            "seen_in_woth2": false
+          },
+          {
+            "name": "Bonser & Klein Standard",
+            "caliber": "16 gauge",
+            "type": "Shotgun",
+            "seen_in_woth2": false
+          },
+          {
+            "name": "Merkel SXS 45E",
+            "type": "Shotgun",
+            "seen_in_woth2": false
+          }
+        ],
+        "first_game_only_likely": [
+          "Steyr SM12",
+          "Steyr Monobloc",
+          "Steyr Scout",
+          "Steyr Zephyr II",
+          "Bergara B14 HMR"
+        ]
+      },
+      {
+        "id": "stars",
+        "title": "Trophy stars (1 to 5)",
+        "verified": false,
+        "source": "Community summary",
+        "body": "Trophy rating comes from fitness, age and trophy size together.",
+        "bullets": [
+          "1 star: young, weak or average; only shoot to cull the herd.",
+          "2-4 stars: growing or mid animals; protect the good genetics, cull the poor ones.",
+          "5 stars: the best trophies, usually the result of managing a herd over time (use the Watchlist to time it)."
+        ]
+      },
+      {
+        "id": "maps",
+        "title": "The maps",
+        "verified": true,
+        "source": "Nine Rocks Games Kilimaya update post; Steam store page",
+        "bullets": [
+          "New Laurentia (Canada): 100 km² (about 40 sq mi).",
+          "Kilimaya Reserve (Africa): 100 km² (about 40 sq mi).",
+          "Hearth & Hunt Headquarters: 16 km² (about 6 sq mi), the lodge hub.",
+          "The first game's maps were 144 km² each."
+        ]
+      },
+      {
+        "id": "leveling",
+        "title": "Leveling, credits and skill points",
+        "verified": false,
+        "source": "Your screenshots + community notes",
+        "bullets": [
+          "Each level-up pays credits (800 at L14, 850 at L15, 950 at L17) and unlocks gear; the Wallet adds this for you.",
+          "A normal harvest gives about 70-100 XP; missions, NPC objectives and challenges give bigger one-time XP.",
+          "Max level is reportedly 32 (not confirmed)."
+        ]
+      },
+      {
+        "id": "time",
+        "title": "Game time",
+        "verified": false,
+        "source": "Community notes",
+        "bullets": [
+          "3 in-game days = 1 year for the animals; ages go up at midnight.",
+          "Put the in-game day and time into the Wallet so the Watchlist countdown stays right."
+        ]
+      }
+    ]
   }
 }
