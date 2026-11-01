@@ -471,6 +471,10 @@ function requestedProfile() {
 const shareUrl = (code) => `${location.origin}${location.pathname}?u=${encodeURIComponent(code)}`;
 const SCOPE_LABEL = { public: "Public", friends: "Friends only", private: "Only you" };
 const canSee = (scope) => S.own || scope === "public" || (scope === "friends" && S.isFriend);
+/* Game tracker + PSN trophies follow the "Game & trophy tracking" setting (default: friends):
+   public = anyone, friends = friends, close = close friends only, private = owner only */
+const trackingScope = () => (S.target && S.target.tracking_scope) || "friends";
+const canSeeTracking = () => { const sc = trackingScope(); return S.own || sc === "public" || (sc === "friends" && S.isFriend) || (sc === "close" && S.isCloseFriend); };
 
 const LOOKUP = {};                                   // path -> error text, for the "not found" explanation
 async function rtGet(db, path) { try { return (await get(ref(db, path))).val(); } catch (e) { console.warn("[rtdb]", path, e.message); LOOKUP[path] = e.message; return null; } }
@@ -536,6 +540,11 @@ async function loadProfile(user) {
   const tcode = S.target.friend_code;
   S.isFriend = S.own || friendEntries(S.viewerFriends).some((f) => tcode && f.code === tcode);
   if (S.limited) S.isFriend = true;
+  S.isCloseFriend = false;
+  if (!S.own && S.targetKey && S.viewerData && S.viewerData.friend_code) {
+    const cf = await rtGet(dbE, "users/" + S.targetKey + "/friends/" + S.viewerData.friend_code + "/close_friend");
+    S.isCloseFriend = cf === true;
+  }
   $("gate").classList.add("hidden"); $("app").classList.remove("hidden");
 
   const sig = hash(JSON.stringify([S.target.updated_at, S.target.last_profile_sync, S.target.avatar_url, S.target.username, S.target.primary_color, S.target.secondary_color]));
@@ -614,7 +623,7 @@ function watchProfile() {
     const s = sigOf(d); if (s === last) return; last = s;
     const old = S.target; S.target = d; if (S.own) { S.viewerData = d; S.viewerFriends = d.friends || {}; }
     renderHero(); if (S.own) { renderNavUser(); renderFriends(); refreshFriendChips(); }
-    const psnChanged = old.psn_username !== d.psn_username || old.psn_username_scope !== d.psn_username_scope;
+    const psnChanged = old.psn_username !== d.psn_username || old.psn_username_scope !== d.psn_username_scope || old.tracking_scope !== d.tracking_scope;
     if (psnChanged) startPsn();
     renderTracked();
   }, (e) => console.warn("[profile watch]", e.message));
@@ -728,7 +737,7 @@ async function findGamertag(name) {
 async function startPsn() {
   if (S.unsubCard) { S.unsubCard(); S.unsubCard = null; }
   const name = S.target.psn_username;
-  if (!name || !canSee(S.target.psn_username_scope || "private")) { $("psn").classList.add("hidden"); return; }
+  if (!name || !canSeeTracking()) { $("psn").classList.add("hidden"); return; }
   P.id = await findGamertag(name);
   if (!P.id) { $("psn").classList.remove("hidden"); $("stats").innerHTML = `<div class="notice" style="grid-column:1/-1">No PlayStation data for <b>${esc(name)}</b> yet. The sync only tracks accounts that have linked their PSN cookie in settings.</div>`; return; }
   $("psn").classList.remove("hidden");
@@ -1085,8 +1094,8 @@ async function renderTracked() {
   TRK.groups = []; const slot = $("hunt-tracked"); if (slot) slot.innerHTML = "";
   loadFriendTracked();
   if (!code) { card.classList.add("hidden"); return; }
-  // a platform's tracked progress follows that platform's scope (public = anyone, friends = friends, private = owner)
-  const readable = PLATFORMS.filter((p) => canSee(PLATFORM_SCOPE(S.target, p) || "private"));
+  // tracked progress (every platform, every game) follows the Game & trophy tracking setting
+  const readable = canSeeTracking() ? PLATFORMS.slice() : [];
   if (!readable.length) { card.classList.add("hidden"); return; }
   let items = await readProgress(code, readable);
   items = items.filter((it) => PLATFORM_LABEL[it.platform] ? readable.includes(it.platform) : S.own);   // unknown platform ids: owner only
