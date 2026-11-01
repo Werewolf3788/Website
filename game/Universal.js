@@ -2567,6 +2567,41 @@ async function buildGamePillsBar() {
     }
 }
 
+// Live game data: when GitHub syncs a new version of /games/{key}, re-render
+// in place (keeping your progress, open sections and scroll position).
+let gameWatch = null;
+function watchGameData(gameKey, loadedSync) {
+    if (!rtdb) return;
+    if (gameWatch) { gameWatch.ref.off('value', gameWatch.cb); gameWatch = null; }
+    const ref = rtdb.ref(`/games/${gameKey}/_meta/synced_at`);
+    let current = loadedSync || null;
+    const cb = async (snap) => {
+        const v = snap.val();
+        if (!v || v === current) return;
+        if (!current) { current = v; return; }
+        current = v;
+        if (CURRENT_GAME_KEY !== gameKey) return;
+        try {
+            const data = (await rtdb.ref(`/games/${gameKey}`).once('value')).val();
+            if (!data) return;
+            const open = new Set([...document.querySelectorAll('#section-container .category-section:not(.section-collapsed) > .category-header h2')].map(h => h.innerText));
+            const y = window.scrollY;
+            const keep = appState.buildPayload();
+            const friends = appState.friendsProgress;
+            appState.hydrateFromRawJson(data);
+            renderUniversalCompanion(data);
+            appState.applyPayload(keep);
+            appState.friendsProgress = friends;
+            document.querySelectorAll('#section-container .category-section > .category-header h2').forEach(h => { if (open.has(h.innerText)) h.closest('.category-section').classList.remove('section-collapsed'); });
+            appState.applyStateToUI();
+            window.scrollTo(0, y);
+            appState.updateStatus(`[Live update] New game data synced ${new Date(v).toLocaleTimeString()}`);
+        } catch (e) { console.warn('[Live game update]', e); }
+    };
+    ref.on('value', cb);
+    gameWatch = { ref, cb };
+}
+
 async function loadAndHydrateGame(gameKey) {
     appState.updateStatus(`Loading game data from RTDB: /games/${gameKey}...`);
     if (rtdb) {
@@ -2578,6 +2613,7 @@ async function loadAndHydrateGame(gameKey) {
                 appState.updateStatus(`[Connected] Authoritative ledger active for /games/${gameKey}`);
                 renderUniversalCompanion(data);
                 await appState.loadProgress();
+                watchGameData(gameKey, data && data._meta && data._meta.synced_at);
 
                 if (appState.psnGamertag) {
                     await autoCheckUserPsnTrophies();
