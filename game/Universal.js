@@ -1156,7 +1156,7 @@ function ensureUniversalStyles() {
         .ts-dot { width: 8px; height: 8px; border-radius: 50%; border: none; background: #475569; cursor: pointer; padding: 0; }
         .ts-dot.active { background: var(--user-theme-accent, #f97316); }
         .ts-empty { color: #94a3b8; font-size: 0.85rem; margin-bottom: 10px; }
-        .trophy-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+        .trophy-room-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
         .trophy-tile { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px; border-radius: 10px; background: var(--bg-card, #1e293b); border: 1px solid rgba(255,255,255,0.08); color: #fff; cursor: pointer; text-align: center; }
         .trophy-tile img, .tt-nophoto { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; background: #0f172a; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
         .tt-name { font-size: 0.82rem; font-weight: 700; } .tt-stars { color: #facc15; font-size: 0.8rem; } .tt-score { font-size: 0.72rem; color: #94a3b8; }
@@ -2153,7 +2153,7 @@ function walletPanelHtml(data) {
             <label class="hunt-file harvest-photo-field" hidden>📷 Trophy photo <input type="file" name="photo" accept="image/*"></label>
             <button type="submit" class="uni-search-btn">Save harvest</button>
         </form>`, '<div id="killTally" class="kill-tally"></div><div id="harvestLogList" class="hunt-card-list"></div>'))}
-    ${buildFolder('🏆 Trophy Room (Taxidermy)', '<div id="trophySlideshow"></div><div id="trophyGrid" class="trophy-grid"></div>')}
+    ${buildFolder('🏆 Trophy Room (Taxidermy)', '<div id="trophySlideshow"></div><div id="trophyGrid" class="trophy-room-grid"></div>')}
     ${buildFolder('🛒 Wishlist (weapons, gear...)', two(`
         <form class="harvest-form" onsubmit="event.preventDefault(); appState.addWish(this);">
             <input name="name" placeholder="Item (e.g. Primacy Superior 7700)" required ${inp}>
