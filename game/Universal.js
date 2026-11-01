@@ -864,6 +864,15 @@ window.appState.syncFriendsProgress = async function() {
             try { const k = (await rtdb.ref(`/friend_codes/${code}`).once('value')).val(); if (typeof k === 'string') userKey = k; } catch (e) {}
             if (userKey) { try { profile = (await rtdb.ref(`/users/${userKey}`).once('value')).val() || {}; } catch (e) {} }
             const name = fObj.username || profile.username || profile.display_name || code;
+            // Respect the friend's "Game & trophy tracking" setting (default: friends can see it).
+            const scope = profile.tracking_scope || 'friends';
+            let allowed = scope !== 'private';
+            if (scope === 'close') {
+                allowed = false;
+                const myCode = this.myFriendCode;
+                if (userKey && myCode) { try { allowed = (await rtdb.ref(`/users/${userKey}/friends/${myCode}/close_friend`).once('value')).val() === true; } catch (e) {} }
+            }
+            if (!allowed) return { code, userKey, name, avatar: fObj.avatar_url || profile.avatar_url || '', hidden: scope, done: new Set(), ribbons: {}, hasSave: false, psnCount: 0 };
             const avatar = fObj.avatar_url || profile.avatar_url || '';
             const plats = [...new Set([normPlatform(profile.primary_platform), normPlatform(fObj.primary_platform), this.platform, 'ps', 'xbox', 'steam', 'pc'].filter(Boolean))];
             const save = await readFriendSave([...new Set([code, userKey].filter(Boolean))], plats, gameName);
@@ -877,7 +886,7 @@ window.appState.syncFriendsProgress = async function() {
                 } catch (e) {}
             }
             const { done, ribbons } = friendDoneSet(save && save.data, psnEarned);
-            return { code, name, avatar, platform: save ? save.platform : (plats[0] || ''), hasSave: !!save, psnTag, psnCount: psnEarned.length, done, ribbons, save: save && save.data };
+            return { code, userKey, name, avatar, plats, platform: save ? save.platform : (plats[0] || ''), hasSave: !!save, psnTag, psnCount: psnEarned.length, done, ribbons, save: save && save.data };
         }));
         if (token !== friendSyncToken) return;
         this.friendsProgress = results;
@@ -909,13 +918,46 @@ function renderSquadRoster() {
         const stats = hunting
             ? `<span>Level <strong>${escapeHtml(String(sv.wallet?.level || '?'))}</strong></span><span>Kills <strong>${toArr(sv.harvestLog).length}</strong></span><span>🏆 <strong>${toArr(sv.harvestLog).filter(h => h.taxidermy).length}</strong></span>`
             : `<span>Checklist <strong>${doneHere}/${total}</strong></span>${trophies.length ? `<span>Trophies <strong>${tDone}/${trophies.length}</strong></span>` : ''}${ribbonTotal ? `<span>Ribbons <strong>${fmtNum(ribbonTotal)}</strong></span>` : ''}`;
+        if (f.hidden) return `<div class="squad-card">${f.avatar ? `<img src="${toSecureUrl(f.avatar)}" class="squad-av" onerror="this.style.display='none'">` : `<div class="squad-av squad-ini">${escapeHtml(friendInitials(f.name))}</div>`}
+            <div style="flex:1;"><div style="font-weight:900;color:#fff;font-size:0.95rem;">${escapeHtml(f.name)}</div><div style="font-size:0.72rem;color:#94a3b8;">🔒 ${f.hidden === 'close' ? 'Shares tracking with close friends only' : 'Keeps game tracking private'}</div></div></div>`;
         const note = !f.hasSave && !f.psnCount ? 'No save for this game yet' : [f.hasSave ? `Save on ${f.platform.toUpperCase()}` : 'No site save', f.psnTag ? (f.psnCount ? `PSN ${f.psnTag}: ${f.psnCount} trophies` : `PSN ${f.psnTag}`) : ''].filter(Boolean).join(' · ');
         return `<div class="squad-card">
             ${f.avatar ? `<img src="${toSecureUrl(f.avatar)}" class="squad-av" onerror="this.style.display='none'">` : `<div class="squad-av squad-ini">${escapeHtml(friendInitials(f.name))}</div>`}
             <div style="flex:1;min-width:0;"><div style="font-weight:900;color:#fff;font-size:0.95rem;">${escapeHtml(f.name)}</div>
-            <div class="squad-stats">${stats}</div><div style="font-size:0.68rem;color:#64748b;">${escapeHtml(note)}</div></div></div>`;
+            <div class="squad-stats">${stats}</div><div style="font-size:0.68rem;color:#64748b;">${escapeHtml(note)}</div>
+            <button type="button" class="pack-btn" style="margin-top:6px;" onclick="appState.showFriendAllGames('${escapeHtml(f.code)}', this)">📚 All games</button>
+            <div class="squad-all" data-for="${escapeHtml(f.code)}"></div></div></div>`;
     }).join('') || '<div style="font-size:0.8rem; color:#94a3b8;">No squad members linked.</div>';
 }
+function canonicalFor(key, g) {
+    const k = String(key).toLowerCase();
+    if (k === 'farcry5') return 'FarCry5';
+    if (k === 'farcry6') return 'FarCry6';
+    if (k === 'sniperelite5' || k === 'se5') return 'SniperElite5';
+    if (k === 'snresistance') return 'SniperEliteResistance';
+    return (g && g.gameId) || key;
+}
+window.appState.showFriendAllGames = async function(code, btn) {
+    const f = toArr(this.friendsProgress).find(x => x.code === code); if (!f) return;
+    const box = document.querySelector(`.squad-all[data-for="${CSS.escape(code)}"]`); if (!box) return;
+    if (box.innerHTML) { box.innerHTML = ''; return; }
+    box.innerHTML = '<div style="font-size:0.72rem;color:#94a3b8;">Loading every game…</div>';
+    const cat = window.__gamesCatalog || {};
+    const rows = await Promise.all(Object.entries(cat).map(async ([gKey, g]) => {
+        const save = await readFriendSave([...new Set([f.code, f.userKey].filter(Boolean))], f.plats || [this.platform], canonicalFor(gKey, g));
+        const d = save && save.data;
+        const title = (g && (g.game || g.title)) || gKey;
+        if (!d) return `<div class="sa-row"><span>${escapeHtml(title)}</span><span style="color:#64748b;">No save</span></div>`;
+        let col = 0; Object.values(d.collectibles || {}).forEach(gr => Object.values((gr && gr.items) || {}).forEach(it => { if (it && it.collected) col++; }));
+        const missions = Object.values(d.missions || {}).filter(m => m && m.completed).length;
+        const ribbons = Object.values(d.ribbons || {}).reduce((a, r) => a + (Number(r && r.count) || 0), 0);
+        const parts = Array.isArray(d.harvestLog)
+            ? [`Level ${(d.wallet && d.wallet.level) || '?'}`, `${d.harvestLog.length} kills`, `${d.harvestLog.filter(h => h.taxidermy).length} mounts`]
+            : [missions ? `${missions} missions` : '', col ? `${col} collectibles` : '', d.trophies_total ? `Trophies ${d.trophies_percent || 0}%` : '', ribbons ? `${fmtNum(ribbons)} ribbons` : ''].filter(Boolean);
+        return `<div class="sa-row"><a href="?game=${escapeHtml(gKey)}" onclick="event.preventDefault(); appState.switchGame('${escapeHtml(gKey)}')">${escapeHtml(title)}</a><span>${escapeHtml(parts.join(' · ') || 'Started')} <small>(${escapeHtml(save.platform.toUpperCase())})</small></span></div>`;
+    }));
+    box.innerHTML = rows.join('') || '<div style="font-size:0.72rem;color:#94a3b8;">No games found.</div>';
+};
 function applyFriendMarks() {
     const list = toArr(appState.friendsProgress);
     document.querySelectorAll('#section-container .game-item-card').forEach(card => {
@@ -1173,6 +1215,10 @@ function ensureUniversalStyles() {
         .fm-chip { display: inline-flex; align-items: center; gap: 3px; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.5); border-radius: 999px; padding: 1px 6px 1px 1px; font-size: 0.65rem; color: #a7f3d0; }
         .fm-chip img, .fm-chip b { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; display: inline-flex; align-items: center; justify-content: center; background: #065f46; color: #fff; font-size: 0.55rem; }
         .fm-chip i { font-style: normal; font-weight: 700; }
+        .squad-all { margin-top: 6px; }
+        .sa-row { display: flex; justify-content: space-between; gap: 8px; font-size: 0.72rem; color: #cbd5e1; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .sa-row a { color: #fff; font-weight: 700; text-decoration: none; }
+        .sa-row small { color: #64748b; }
         .squad-card { background: var(--bg-card, #1e293b); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 12px; }
         .squad-av { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
         .squad-ini { background: #334155; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; }
@@ -2496,6 +2542,7 @@ async function buildGamePillsBar() {
         const snap = await rtdb.ref('/games').once('value');
         const gamesCatalog = snap.val();
         if (!gamesCatalog) return;
+        window.__gamesCatalog = gamesCatalog;
 
         let pillsHtml = '';
         Object.keys(gamesCatalog).forEach(gKey => {

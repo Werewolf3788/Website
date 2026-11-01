@@ -83,6 +83,15 @@ button.danger{background:rgba(231,76,60,.12);border-color:var(--danger);color:va
   <p class="hint">Choose who can see each handle. Account ID, NPSSO and Steam API key below are always private.</p>
   <div id="handles"></div>
 
+  <h2>Game &amp; trophy tracking</h2>
+  <p class="hint">Who can see your game tracker progress (checklists, collectibles, ribbons, hunting logs) and your PlayStation trophies on the Games page. This covers every game.</p>
+  <div class="row"><select id="tracking_scope">
+    <option value="public">Public (anyone)</option><option value="friends">Friends</option>
+    <option value="close">Close friends only</option><option value="private">No One (Private)</option></select></div>
+  <label>Close friends</label>
+  <p class="hint">Tick the friends who count as close friends. They see your tracking when it's set to "Close friends only".</p>
+  <div id="closeFriends" class="box"></div>
+
   <h2>PlayStation sync (private)</h2>
   <div class="box sec"><strong>Owner-only.</strong> These values are never shown to friends. They hide automatically 60 seconds after you reveal them.</div>
   <label for="psn_account_id">PSN Account ID #</label><div class="row" data-secret="psn_account_id"></div>
@@ -334,6 +343,8 @@ async function load(){
   $('npssoState').textContent=S.psn_npsso?(D.psn_npsso_valid===false?'Saved token has expired. Paste a new one.':'Token saved.'):'';
   (D.links||[]).slice(0,5).forEach((l,i)=>$('lk'+i).value=l);
   setColor(1,D.primary_color||'#0088ff');setColor(2,D.secondary_color||'#f5a623');
+  $('tracking_scope').value=D.tracking_scope||'friends';
+  renderCloseFriends();
   $('friend_code').value=await ensureFriendCode();
   await resolveAvatar();
   showSteam();
@@ -341,6 +352,12 @@ async function load(){
   renderMethods();
   loading=false;dirty=false;
   setState(D.updated_at?'Last saved: '+new Date(D.updated_at).toLocaleString():'Not saved yet');
+}
+function renderCloseFriends(){
+  const fr=Object.entries(D.friends||{});
+  $('closeFriends').innerHTML=fr.length?fr.map(([code,f])=>{f=f||{};const c=f.friend_code||code;
+    return `<label style="display:flex;gap:8px;align-items:center;font-weight:500;margin:4px 0"><input type="checkbox" class="cf" data-code="${esc(code)}" style="width:auto"${f.close_friend?' checked':''}> ${esc(f.username||c)} <span class="hint" style="margin:0">${esc(c)}</span></label>`}).join('')
+    :'<span class="hint">No friends added yet. Add friends by friend code first.</span>';
 }
 $('cp').onclick=()=>navigator.clipboard.writeText($('friend_code').value).then(()=>say('Friend code copied.'));
 
@@ -361,7 +378,10 @@ $('save').onclick=async()=>{
     if(acc&&!/^\d{10,20}$/.test(acc))return say('PSN Account ID must be numbers only. Get it from psn.flipscreen.games.',1);
     if(npsso&&npsso!==S.psn_npsso)pub.psn_npsso_valid=true;
     pub.psn_account_id=$('psn_account_id').value.trim();
+    pub.tracking_scope=$('tracking_scope').value;
+    const cfs={};document.querySelectorAll('#closeFriends .cf').forEach(cb=>{cfs['friends/'+cb.dataset.code+'/close_friend']=cb.checked});
     await db.ref('users/'+K).update(pub);
+    if(Object.keys(cfs).length)await db.ref('users/'+K).update(cfs);
     const back=(await db.ref('users/'+K).get()).val()||{};
     if(back.primary_color!==pub.primary_color||back.secondary_color!==pub.secondary_color||(back.avatar_url||'')!==(pub.avatar_url||'')||back.username!==pub.username)
       throw new Error('Saved, but the values read back differ. Try again.');
