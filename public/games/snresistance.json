@@ -1858,19 +1858,6 @@
             "location_image_url": "/public/games/snresistance/images/locations/m6/let_m6_03.jpg"
           },
           {
-            "id": "let_m6_04",
-            "name": "Beautiful Views",
-            "location": "On a crate on top of the fort, behind the sniper nest.",
-            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
-            "headline": "Do Not Worry, Victory Is Coming!",
-            "author": "Karl Klein Jr",
-            "summary": "A proud lookout writes home about the tower views and his hoped-for promotion.",
-            "video_time": 483,
-            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=483s",
-            "emoji": "✉️",
-            "location_image_url": "/public/games/snresistance/images/locations/m6/let_m6_04.jpg"
-          },
-          {
             "id": "let_m6_05",
             "name": "Fools Everywhere",
             "location": "On a bench next to a yellow container by the road.",
@@ -1882,6 +1869,19 @@
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=161s",
             "emoji": "✉️",
             "location_image_url": "/public/games/snresistance/images/locations/m6/let_m6_05.jpg"
+          },
+          {
+            "id": "let_m6_04",
+            "name": "Beautiful Views",
+            "location": "On a crate on top of the fort, behind the sniper nest.",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "headline": "Do Not Worry, Victory Is Coming!",
+            "author": "Karl Klein Jr",
+            "summary": "A proud lookout writes home about the tower views and his hoped-for promotion.",
+            "video_time": 483,
+            "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=483s",
+            "emoji": "✉️",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/let_m6_04.jpg"
           }
         ],
         "classified_documents": [
@@ -1979,7 +1979,7 @@
           },
           {
             "id": "item_m6_03",
-            "name": "Prendre Le Maquis",
+            "name": "Prende Le Maquis",
             "location": "On the wall of the house on the southwestern side of the village.",
             "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
             "headline": "Join Us to Reclaim Your Land and Lost Freedom!",
@@ -1988,7 +1988,8 @@
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=137s",
             "emoji": "🏷️",
             "location_image_url": "/public/games/snresistance/images/locations/m6/item_m6_03.jpg",
-            "unlocks": "Propaganda Mission 5"
+            "unlocks": "Propaganda Mission 5",
+            "note": "The in-game collectibles list spells it 'Prende Le Maquis'; the poster itself reads 'Prendre Le Maquis'."
           }
         ],
         "stone_eagles": [
@@ -2292,7 +2293,8 @@
           "keys": 3,
           "miscellaneous": 5
         }
-      }
+      },
+      "collectible_order_note": "Cards follow the in-game Collectibles screen order. Personal letters 4 and 5 (Fools Everywhere, Beautiful Views) were still undiscovered on the screenshot, so their order is a best guess."
     },
     "mission_7": {
       "number": 7,
