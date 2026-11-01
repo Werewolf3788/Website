@@ -19,7 +19,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
     const keep = [SHELL, POSTERS, 'ww-cinema-data-v1'];
-    for (const k of await caches.keys()) if (k.startsWith('ww-') && !keep.includes(k)) await caches.delete(k);
+    for (const k of await caches.keys()) if (k.startsWith('ww-') && !k.startsWith('ww-shell-v') && !keep.includes(k)) await caches.delete(k);
     await self.clients.claim();
   })());
 });

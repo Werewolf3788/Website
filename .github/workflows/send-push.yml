@@ -1,0 +1,38 @@
+name: Send Push Notification
+
+# Actions tab -> "Send Push Notification" -> Run workflow
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: 'Notification title'
+        required: true
+        default: 'Werewolf Project'
+      body:
+        description: 'Message'
+        required: true
+      url:
+        description: 'Page to open when tapped (e.g. ./Movies.html or ./game/all.html)'
+        required: false
+        default: './'
+      image:
+        description: 'Optional picture URL'
+        required: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-save web-push@3
+      - name: Send
+        run: node scripts/send-push.js
+        env:
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          PUSH_TITLE: ${{ inputs.title }}
+          PUSH_BODY: ${{ inputs.body }}
+          PUSH_URL: ${{ inputs.url }}
+          PUSH_IMAGE: ${{ inputs.image }}

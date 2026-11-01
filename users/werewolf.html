@@ -342,6 +342,8 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
+    <link rel="stylesheet" href="../assets/ww-shell.css">
+    <script defer src="../assets/ww-shell.js"></script>
 </head>
 <body class="min-h-screen flex flex-col pt-16">
 
@@ -356,11 +358,12 @@
                 <i class="fab fa-playstation text-orange-500"></i> PACK HUB
             </a>
             
-            <button class="mobile-toggle flex items-center justify-center" onclick="toggleNav()" aria-label="Toggle Menu">
+            <button data-ww-legacy-nav class="mobile-toggle flex items-center justify-center" onclick="toggleNav()" aria-label="Toggle Menu">
                 <i class="fas fa-bars"></i>
             </button>
             
-            <div class="nav-links-wrapper" id="dynamic-nav-container">
+            <div data-ww-nav-slot style="flex:1 1 auto;min-width:0;display:flex;justify-content:flex-end;align-items:center"></div>
+<div data-ww-legacy-nav class="nav-links-wrapper" id="dynamic-nav-container">
                 <span class="text-xs text-gray-500 font-bold uppercase tracking-wider">Loading Directory...</span>
             </div>
         </div>
