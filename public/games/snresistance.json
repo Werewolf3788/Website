@@ -2579,9 +2579,9 @@
           {
             "id": "med_longshot_mission_7_long_shot",
             "name": "Mission 7 Long Shot",
-            "description": "Make a 200 meter shot in Lock, Stock and Barrels.",
+            "description": "Make a 350 meter shot in Lock, Stock and Barrels.",
             "goal": 1,
-            "goal_tier": null,
+            "goal_tier": "gold",
             "tiers": {
               "bronze": null,
               "silver": null,
@@ -2589,9 +2589,12 @@
             },
             "image_url": "",
             "mission_number": 7,
-            "distance_m": 200,
+            "distance_m": 350,
             "authentic": false,
-            "notes": "Same distance as the Authentic version; one may be wrong."
+            "notes": "350 m confirmed from MapMaster's 'Long Shot Gold Medal Sniping Spot'.",
+            "tip": "Stand near the tree by the road and shoot the Elite Sniper on top of the western windmill (about 368 m).",
+            "map_url": "https://mapmaster.io/games/sniper-elite-resistance/maps/mission-7-lock-stock-and-barrels?locationId=42248",
+            "location_image_url": "/public/games/snresistance/images/locations/med_longshot_mission_7.jpg"
           },
           {
             "id": "med_longshot_mission_7_authentic_long_shot",
@@ -2608,7 +2611,7 @@
             "mission_number": 7,
             "distance_m": 200,
             "authentic": true,
-            "notes": "Same distance as the normal version; one may be wrong."
+            "notes": "Distance not confirmed yet (the normal Long Shot is 350 m)."
           }
         ],
         "propaganda": []
@@ -2729,7 +2732,9 @@
             "id": "gnome_m7_01",
             "name": "Gnome 1/10",
             "video_time": 0,
-            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=0s"
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=0s",
+            "location": "On the small hill near the stone wall.",
+            "location_image_url": "/public/games/snresistance/images/locations/gnome_m7_01.jpg"
           },
           {
             "id": "gnome_m7_02",

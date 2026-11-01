@@ -1417,7 +1417,8 @@ function medalCard(m, ctx) {
     if (m.distance_m) parts.push(`Distance: ${m.distance_m} m`);
     return buildItemCard({
         id: m.id, type: 'medal', badge: (m.goal_tier || 'Medal'), badgeClass: tierClass,
-        title: m.name, sub: m.description, body: parts.join(' | '), img: m.image_url, ctx: `medal ${ctx || ''}`
+        title: m.name, sub: m.description, body: [parts.join(' | '), m.tip ? `Tip: ${m.tip}` : ''].filter(Boolean).join(' — '), img: m.image_url, ctx: `medal ${ctx || ''}`,
+        locImg: m.location_image_url, link: m.map_url || m.video_url, linkLabel: m.map_url ? 'Open on map' : (m.video_url ? 'Watch guide' : '')
     });
 }
 
