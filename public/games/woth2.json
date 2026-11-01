@@ -63,24 +63,100 @@
       "region": "North America",
       "map_image_url": "/public/games/woth2/images/maps/new_laurentia.jpg",
       "areas": [
-        "Thunderbird Muskeg",
-        "Mishipeshu Swamp",
-        "Wetiko Foothills",
+        "Jackalope Cordillera",
         "Kermode Plateau",
         "Lake Sasquatch",
-        "Jackalope Cordillera",
-        "Qalakum Shore"
+        "Mishipeshu Swamp",
+        "Slalakum Shore",
+        "Thunderbird Muskeg",
+        "Wetiko Foothills"
       ],
       "species": [
-        "Wood bison",
-        "Northwestern wolf",
-        "Rocky Mountain elk",
-        "American wolverine",
+        "Mallard",
+        "Snowshoe Hare",
         "White-tailed ptarmigan",
-        "Rocky Mountain mule deer",
+        "Eastern wild turkey",
+        "American wolverine",
+        "Northwestern white-tailed deer",
+        "Rocky Mountain pronghorn",
+        "Northwestern wolf",
+        "Central European boar",
         "Dall sheep",
-        "Grizzly bear"
-      ]
+        "Rocky Mountain mule deer",
+        "Grizzly bear",
+        "Rocky Mountain elk",
+        "Western moose",
+        "Wood bison"
+      ],
+      "regions": [
+        {
+          "id": "jackalope_cordillera",
+          "name": "Jackalope Cordillera",
+          "npc": "Patrick Harper",
+          "terrain": "mountains"
+        },
+        {
+          "id": "kermode_plateau",
+          "name": "Kermode Plateau",
+          "npc": null,
+          "terrain": "lowlands and highlands"
+        },
+        {
+          "id": "lake_sasquatch",
+          "name": "Lake Sasquatch",
+          "npc": null,
+          "terrain": "lowlands and highlands"
+        },
+        {
+          "id": "mishipeshu_swamp",
+          "name": "Mishipeshu Swamp",
+          "npc": null,
+          "terrain": "swamps"
+        },
+        {
+          "id": "slalakum_shore",
+          "name": "Slalakum Shore",
+          "npc": "Juniper",
+          "terrain": "shoreline and highlands"
+        },
+        {
+          "id": "thunderbird_muskeg",
+          "name": "Thunderbird Muskeg",
+          "npc": "Regina Harper",
+          "terrain": "swamps"
+        },
+        {
+          "id": "wetiko_foothills",
+          "name": "Wetiko Foothills",
+          "npc": "Mikael Anderson",
+          "terrain": "lowlands and highlands"
+        }
+      ],
+      "regions_check": {
+        "verified": true,
+        "note": "Region names and NPC markers (Patrick Harper, Juniper, Regina Harper, Mikael) match the in-game map."
+      },
+      "overview": {
+        "location": "Southern Canadian Rockies / Northern Wetlands",
+        "area_sq_km": 100,
+        "story_campaign": "Moose Population Investigation & Warden Support",
+        "primary_features": [
+          "Hunting Dog Blood Tracking",
+          "Deployable Tents & Fast Travel",
+          "Species-Specific Lodge Dioramas",
+          "Habitat Enhancement Tasks"
+        ],
+        "species_count": 15,
+        "verified": false,
+        "source": "Community notes (not yet checked in game)",
+        "note": "The in-game home base is called Hearth & Hunt Headquarters; the notes' 'Whitetail Foothills Main Lodge' name was dropped."
+      },
+      "genetic_rule": {
+        "rule": "Species existing across multiple regions maintain completely isolated populations with independent fitness calculations.",
+        "verified": false,
+        "source": "Community notes (not yet checked in game)"
+      },
+      "species_check": "15-species list from notes; the in-game map legend showed 8 of them (filtered view)."
     },
     {
       "id": "hearth_and_hunt_estate",
@@ -367,7 +443,20 @@
         "speed": "30 yps"
       },
       "trivia": "White-tailed deer swim well and use wide streams and lakes to escape predators.",
-      "image_url": ""
+      "image_url": "",
+      "regions_new_laurentia": [
+        "Lake Sasquatch",
+        "Kermode Plateau",
+        "Mishipeshu Swamp",
+        "Slalakum Shore",
+        "Wetiko Foothills"
+      ],
+      "aggression": {
+        "level": "Passive",
+        "charge_trigger": "None (Flees on spook)",
+        "verified": false,
+        "source": "Community notes (not yet checked in game)"
+      }
     },
     {
       "id": "rocky_mountain_mule_deer",
@@ -436,7 +525,19 @@
         "speed": "30 yps"
       },
       "trivia": "Mule deer can sense water about two feet below ground.",
-      "image_url": ""
+      "image_url": "",
+      "regions_new_laurentia": [
+        "Jackalope Cordillera",
+        "Kermode Plateau",
+        "Slalakum Shore",
+        "Wetiko Foothills"
+      ],
+      "aggression": {
+        "level": "Passive",
+        "charge_trigger": "None (Flees)",
+        "verified": false,
+        "source": "Community notes (not yet checked in game)"
+      }
     },
     {
       "id": "blesbok",
@@ -750,7 +851,18 @@
         "speed": "45 yps"
       },
       "trivia": "In hot weather elk stay near water and wade or lie in it to cool off and avoid biting insects.",
-      "image_url": ""
+      "image_url": "",
+      "regions_new_laurentia": [
+        "Kermode Plateau",
+        "Slalakum Shore",
+        "Wetiko Foothills"
+      ],
+      "aggression": {
+        "level": "Defensive Rut",
+        "charge_trigger": "Bull rut season when pressed closely or wounded",
+        "verified": false,
+        "source": "Community notes (not yet checked in game)"
+      }
     },
     {
       "id": "northwestern_wolf",
@@ -818,7 +930,22 @@
         "speed": "37 yps"
       },
       "trivia": "Gray wolves feed pups by bringing swallowed food back up for them.",
-      "image_url": ""
+      "image_url": "",
+      "regions_new_laurentia": [
+        "Jackalope Cordillera",
+        "Kermode Plateau",
+        "Lake Sasquatch",
+        "Mishipeshu Swamp",
+        "Slalakum Shore",
+        "Thunderbird Muskeg",
+        "Wetiko Foothills"
+      ],
+      "aggression": {
+        "level": "Predatory / Pack Aggression",
+        "charge_trigger": "Encircling hunter at close range, night stalking, or pack defense",
+        "verified": false,
+        "source": "Community notes (not yet checked in game)"
+      }
     },
     {
       "id": "wood_bison",
@@ -882,7 +1009,17 @@
         "speed": "35 yps"
       },
       "trivia": "A bison's coat insulates so well that snow can sit on its back without melting.",
-      "image_url": ""
+      "image_url": "",
+      "regions_new_laurentia": [
+        "Kermode Plateau",
+        "Slalakum Shore"
+      ],
+      "aggression": {
+        "level": "Territorial Trample",
+        "charge_trigger": "Approaching herd within 50m, wounding lead bull, or blocking movement",
+        "verified": false,
+        "source": "Community notes (not yet checked in game)"
+      }
     },
     {
       "id": "rocky_mountain_pronghorn",
@@ -945,7 +1082,17 @@
         "speed": "60 yps"
       },
       "trivia": "Pronghorns can spot movement about 3 miles (4.8 km) away.",
-      "image_url": ""
+      "image_url": "",
+      "regions_new_laurentia": [
+        "Kermode Plateau",
+        "Slalakum Shore"
+      ],
+      "aggression": {
+        "level": "Passive",
+        "charge_trigger": "None (Relies on high speed escape)",
+        "verified": false,
+        "source": "Community notes (not yet checked in game)"
+      }
     },
     {
       "id": "western_moose",
@@ -976,7 +1123,17 @@
       },
       "trivia": "Moose are usually slow and calm but can turn aggressive and fast when angered or startled.",
       "note": "Overview page (sex differences, strengths, max size) not captured yet.",
-      "image_url": ""
+      "image_url": "",
+      "regions_new_laurentia": [
+        "Mishipeshu Swamp",
+        "Thunderbird Muskeg"
+      ],
+      "aggression": {
+        "level": "Territorial / Violent Charge",
+        "charge_trigger": "Cornered in swamp water, sick moose encounters, or sudden approach",
+        "verified": false,
+        "source": "Community notes (not yet checked in game)"
+      }
     },
     {
       "id": "southern_warthog",
@@ -1008,13 +1165,176 @@
         ]
       },
       "note": "Encyclopedia page not captured yet; trophy fields from harvest reports."
+    },
+    {
+      "id": "mallard",
+      "name": "Mallard",
+      "scientific_name": "Anas platyrhynchos platyrhynchos",
+      "class": 1,
+      "class_verified": false,
+      "image_url": "",
+      "regions_new_laurentia": [
+        "Lake Sasquatch",
+        "Mishipeshu Swamp",
+        "Slalakum Shore",
+        "Thunderbird Muskeg",
+        "Wetiko Foothills"
+      ],
+      "aggression": {
+        "level": "Passive",
+        "charge_trigger": "None (Flees on sound/sight)",
+        "verified": false,
+        "source": "Community notes (not yet checked in game)"
+      },
+      "note": "Encyclopedia page not captured yet."
+    },
+    {
+      "id": "snowshoe_hare",
+      "name": "Snowshoe Hare",
+      "scientific_name": "Lepus americanus americanus",
+      "class": 1,
+      "class_verified": false,
+      "image_url": "",
+      "regions_new_laurentia": [
+        "Jackalope Cordillera",
+        "Lake Sasquatch"
+      ],
+      "aggression": {
+        "level": "Passive",
+        "charge_trigger": "None (Flees)",
+        "verified": false,
+        "source": "Community notes (not yet checked in game)"
+      },
+      "note": "Encyclopedia page not captured yet."
+    },
+    {
+      "id": "white_tailed_ptarmigan",
+      "name": "White-tailed ptarmigan",
+      "scientific_name": "Lagopus leucura",
+      "class": 1,
+      "class_verified": false,
+      "image_url": "",
+      "regions_new_laurentia": [
+        "Jackalope Cordillera",
+        "Lake Sasquatch"
+      ],
+      "aggression": {
+        "level": "Passive",
+        "charge_trigger": "None (Flees)",
+        "verified": false,
+        "source": "Community notes (not yet checked in game)"
+      },
+      "note": "Encyclopedia page not captured yet."
+    },
+    {
+      "id": "eastern_wild_turkey",
+      "name": "Eastern wild turkey",
+      "scientific_name": "Meleagris gallopavo silvestris",
+      "class": 2,
+      "class_verified": false,
+      "image_url": "",
+      "regions_new_laurentia": [
+        "Mishipeshu Swamp",
+        "Slalakum Shore",
+        "Thunderbird Muskeg",
+        "Wetiko Foothills"
+      ],
+      "aggression": {
+        "level": "Passive",
+        "charge_trigger": "None (Flees)",
+        "verified": false,
+        "source": "Community notes (not yet checked in game)"
+      },
+      "note": "Encyclopedia page not captured yet."
+    },
+    {
+      "id": "american_wolverine",
+      "name": "American wolverine",
+      "scientific_name": "Gulo gulo luscus",
+      "class": 3,
+      "class_verified": false,
+      "image_url": "",
+      "regions_new_laurentia": [
+        "Jackalope Cordillera",
+        "Kermode Plateau",
+        "Slalakum Shore"
+      ],
+      "aggression": {
+        "level": "Defensive / Territorial",
+        "charge_trigger": "Cornered in close brush or defending feeding kills",
+        "verified": false,
+        "source": "Community notes (not yet checked in game)"
+      },
+      "note": "Encyclopedia page not captured yet."
+    },
+    {
+      "id": "central_european_boar",
+      "name": "Central European boar",
+      "scientific_name": "Sus scrofa scrofa",
+      "class": 5,
+      "class_verified": false,
+      "image_url": "",
+      "regions_new_laurentia": [
+        "Lake Sasquatch",
+        "Mishipeshu Swamp",
+        "Slalakum Shore",
+        "Wetiko Foothills"
+      ],
+      "aggression": {
+        "level": "Aggressive Charge",
+        "charge_trigger": "Wounded non-fatal shots, startling sound under 40m, or sow with piglets",
+        "verified": false,
+        "source": "Community notes (not yet checked in game)"
+      },
+      "note": "Encyclopedia page not captured yet."
+    },
+    {
+      "id": "dall_sheep",
+      "name": "Dall sheep",
+      "scientific_name": "Ovis dalli dalli",
+      "class": 5,
+      "class_verified": false,
+      "image_url": "",
+      "regions_new_laurentia": [
+        "Jackalope Cordillera",
+        "Lake Sasquatch",
+        "Kermode Plateau"
+      ],
+      "aggression": {
+        "level": "Passive",
+        "charge_trigger": "None (Escapes to high steep cliffs)",
+        "verified": false,
+        "source": "Community notes (not yet checked in game)"
+      },
+      "note": "Encyclopedia page not captured yet."
+    },
+    {
+      "id": "grizzly_bear",
+      "name": "Grizzly bear",
+      "scientific_name": "Ursus arctos horribilis",
+      "class": 7,
+      "class_verified": false,
+      "image_url": "",
+      "regions_new_laurentia": [
+        "Jackalope Cordillera",
+        "Kermode Plateau",
+        "Lake Sasquatch"
+      ],
+      "aggression": {
+        "level": "Apex Lethal Aggression",
+        "charge_trigger": "Close encounter (<60m), wounded non-vitals, or defending kill site",
+        "verified": false,
+        "source": "Community notes (not yet checked in game)"
+      },
+      "note": "Encyclopedia page not captured yet."
     }
   ],
   "harvest_ranking": {
     "explanation": "Each species is scored on its own trophy type (antlers, horns, tusks, skull, weight or body length). A harvest report shows the measurements, each with points, adding up to a Total Trophy Score. It also gives a Hunt Rating (letter grade for shot quality, e.g. S++), a 1-5 star Trophy Rating, and a sell price based on dressed weight.",
     "hunt_rating_scale_seen": [
       "S++",
-      "S+"
+      "S+",
+      "A++"
     ],
     "examples": [
       {
@@ -1109,159 +1429,36 @@
           "dressed_weight": "304.2 lb",
           "price_per_unit": "1.5 / lb"
         }
-      }
-    ]
-  },
-  "skills": {
-    "categories": [
-      {
-        "name": "Ambusher",
-        "total": 24
       },
       {
-        "name": "Naturalist",
-        "total": 23
-      },
-      {
-        "name": "Scout",
-        "total": 23
-      },
-      {
-        "name": "Sharpshooter",
-        "total": 18
-      },
-      {
-        "name": "Stalker",
-        "total": 12
-      }
-    ]
-  },
-  "challenges": {
-    "note": "Challenges have tiers; XP shown is the reward per tier. Progress numbers are from the player's own save.",
-    "scout": [
-      {
-        "name": "Drive any vehicle.",
-        "tier_xp": [
-          null,
-          null,
-          260,
-          1010
-        ]
-      },
-      {
-        "name": "Discover any place in Kilimaya Reserve."
-      },
-      {
-        "name": "Discover any place in New Laurentia."
-      },
-      {
-        "name": "Place any tent.",
-        "tier_xp": [
-          null,
-          null,
-          130
-        ]
-      },
-      {
-        "name": "Discover an animal Species in Kilimaya Reserve."
-      },
-      {
-        "name": "Discover an animal Species in New Laurentia."
-      },
-      {
-        "name": "Improve navigation in Kilimaya Reserve.",
-        "tier_xp": [
-          80,
-          260,
-          780
-        ]
-      },
-      {
-        "name": "Improve navigation in New Laurentia.",
-        "tier_xp": [
-          80,
-          260,
-          780
-        ]
-      }
-    ],
-    "sharpshooter": [
-      {
-        "name": "Harvest an animal shot with any shotgun.",
-        "tier_xp": [
-          10,
-          50,
-          260
-        ]
-      },
-      {
-        "name": "Harvest an animal shot with any rifle.",
-        "tier_xp": [
-          null,
-          null,
-          260
-        ]
-      },
-      {
-        "name": "Harvest an animal shot with any crossbow.",
-        "tier_xp": [
-          10,
-          50,
-          260
-        ]
-      },
-      {
-        "name": "Harvest an animal shot with any bow.",
-        "tier_xp": [
-          10,
-          50,
-          260
-        ]
-      },
-      {
-        "name": "Harvest an animal after hitting its heart or both lungs.",
-        "tier_xp": [
-          null,
-          null,
-          260
-        ]
-      },
-      {
-        "name": "Harvest an animal shot with any firearm that has a suppressor installed.",
-        "tier_xp": [
-          null,
-          null,
-          130
-        ]
-      }
-    ],
-    "stalker": [
-      {
-        "name": "Harvest an animal without being seen.",
-        "tier_xp": [
-          null,
-          null,
-          155,
-          520
-        ]
-      },
-      {
-        "name": "Harvest an animal without it catching your scent.",
-        "tier_xp": [
-          null,
-          null,
-          null,
-          520
-        ]
-      },
-      {
-        "name": "Harvest an animal without being heard.",
-        "tier_xp": [
-          null,
-          null,
-          155,
-          520
-        ]
+        "species": "Grizzly Bear",
+        "sex": "Female",
+        "age": "19 yrs",
+        "fitness": "42.9%",
+        "weight": "379.7 lb",
+        "rarity": "Common",
+        "measurements": [
+          {
+            "name": "Skull length",
+            "value": "12 in"
+          },
+          {
+            "name": "Skull width",
+            "value": "7 in"
+          }
+        ],
+        "total_trophy_score": 490,
+        "hunt_rating": "A++",
+        "trophy_rating_stars": 1,
+        "sell_price": 149,
+        "weight_and_price": {
+          "raw_weight": "379.7 lb",
+          "shot_degradation": "77.6 lb",
+          "dressing_waste": "151.9 lb",
+          "dressed_weight": "150.2 lb",
+          "price_per_unit": "1.0 / lb"
+        },
+        "source": "Earlier play log (not a screenshot)"
       }
     ]
   },
@@ -1277,7 +1474,9 @@
       "rewards": {
         "money": 1800,
         "xp": 310
-      }
+      },
+      "verified": true,
+      "source": "In-game screenshots"
     },
     {
       "name": "Marketing Matters",
@@ -1290,7 +1489,9 @@
       "rewards": {
         "money": 1050,
         "xp": 235
-      }
+      },
+      "verified": true,
+      "source": "In-game screenshots"
     },
     {
       "name": "Chalk and Talk",
@@ -1307,34 +1508,508 @@
         "xp": 235,
         "optional_money": 600,
         "optional_xp": 170
-      }
+      },
+      "verified": true,
+      "source": "In-game screenshots"
     },
     {
-      "name": "Loudest Deer",
-      "type": "Story",
+      "name": "For the Hearth",
+      "type": "Mission",
+      "giver": "Angel",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a male Mule deer near your Lodge. Choose to taxidermy it when harvesting."
+      ],
+      "rewards": null,
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "For the Hunt",
+      "type": "Mission",
+      "giver": "Angel",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Place a male Mule deer in a diorama with a mid-sized herbivore in your lodge.",
+        "Take a look at your surroundings at a Map board in the Lodge."
+      ],
+      "rewards": null,
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Angel on your shoulder",
+      "type": "Mission",
+      "giver": "Angel",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Check out the Hearth & Hunt files on the locals."
+      ],
+      "rewards": {
+        "money": 600,
+        "xp_unverified": 15
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Fox Fires",
+      "type": "Mission",
       "giver": "Mikael",
       "reserve": "New Laurentia",
-      "summary": "Mikael wants you to see a high-fitness elk from the herd he has looked after for years.",
       "objectives": [
-        "Harvest a male Rocky Mountain elk. Its Fitness must be 70.0% or higher."
+        "Analyze any Dall sheep feeding or resting zones. The areas where to find them are highlighted on the Hunting map.",
+        "Harvest a Dall sheep."
+      ],
+      "rewards": {
+        "money": 1050,
+        "xp_unverified": 40
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Loudest deer",
+      "type": "Mission",
+      "giver": "Mikael",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a male Rocky Mountain elk. Its Fitness must be 70% or higher."
       ],
       "rewards": {
         "money": 1050,
         "xp": 235
-      }
+      },
+      "verified": true,
+      "source": "In-game screenshots",
+      "note": "Notes listed 40 XP; the game shows 235 XP."
+    },
+    {
+      "name": "Pack Dynamics",
+      "type": "Mission",
+      "giver": "Mikael",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Animals possess intelligence that often surprises people. The older and fitter an animal is, the better it conceals itself. Calling becomes essential."
+      ],
+      "rewards": {
+        "money": 1050,
+        "xp_unverified": 40
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "One shot, no waste",
+      "type": "Mission",
+      "giver": "Mikael",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Save up money and buy a better rifle for larger animals so meat is not damaged by improper ammunition."
+      ],
+      "rewards": {
+        "money": 1050,
+        "xp_unverified": 40
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Heterochromia Iridum",
+      "type": "Mission",
+      "giver": "Juniper",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a male White-tailed deer with your Dog companion active at the time of the shot.",
+        "Have your Dog companion successfully find and follow the blood trail of any shot White-tailed deer."
+      ],
+      "rewards": {
+        "money": 600,
+        "xp_unverified": 15
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Who let the bloodhounds out?",
+      "type": "Mission",
+      "giver": "Juniper",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Shoot and harvest an Elk between 00:00-05:00 with your Dog companion active at the time of the shot."
+      ],
+      "rewards": {
+        "money": 1050,
+        "xp_unverified": 40
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Friendly competition",
+      "type": "Mission",
+      "giver": "Juniper",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Shoot and harvest 3 Wolverines."
+      ],
+      "rewards": {
+        "money": 600,
+        "xp_unverified": 15
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Parasomnias",
+      "type": "Mission",
+      "giver": "Juniper",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Locate and harvest the lone Dall sheep."
+      ],
+      "rewards": {
+        "money": 1050,
+        "xp_unverified": 40
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Pieris Marginalis",
+      "type": "Mission",
+      "giver": "Regina",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Find invasive plant species in the location highlighted on your Map and remove them.",
+        "Create a butterfly garden."
+      ],
+      "rewards": {
+        "money": 1050,
+        "xp_unverified": 40
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Cercyonis Pegala",
+      "type": "Mission",
+      "giver": "Regina",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest 3 White-tailed deer with their Fitness at 60% or lower."
+      ],
+      "rewards": {
+        "money": 1050,
+        "xp_unverified": 40
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Eynnis lucilius",
+      "type": "Mission",
+      "giver": "Regina",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest the sick moose in the highlighted area on the hunting map. (0/3)"
+      ],
+      "rewards": {
+        "money": 1050,
+        "xp_unverified": 40
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Speiredonia mutabilis",
+      "type": "Mission",
+      "giver": "Regina",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Get to the area of the last known sighting of the moose with bloodied antlers."
+      ],
+      "rewards": {
+        "money": 600,
+        "xp_unverified": 15
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Tyria Jacobaeae",
+      "type": "Mission",
+      "giver": "automatic after Speiredonia mutabilis",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Enter the swamps and get ready for the moose with bloodied antlers.",
+        "Option 1: Shoot and harvest the moose with bloodied antlers. Option 2: Leave the highlighted zone and let the moose live.",
+        "Talk to Regina. Talk to Patrick."
+      ],
+      "rewards": null,
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Crystal clarity",
+      "type": "Mission",
+      "giver": "Patrick",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest an animal using a bow sight.",
+        "Harvest an animal using a crossbow sight.",
+        "Harvest an animal with a bolt-action rifle without using a scope."
+      ],
+      "rewards": {
+        "money": 1800,
+        "xp_unverified": 100
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Talk turkey to me",
+      "type": "Mission",
+      "giver": "Patrick",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Call 3 Wild turkeys to a distance of 100 m or less from you."
+      ],
+      "rewards": {
+        "money": 1800,
+        "xp_unverified": 100
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Hunting Solo",
+      "type": "Mission",
+      "giver": "Campsite, northern Thunderbird Muskeg",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest 5 Mallards without using your Dog companion. Each bird must weigh 1.3 kg or more."
+      ],
+      "rewards": {
+        "money": 1800,
+        "xp_unverified": 100
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Wattle Bearers",
+      "type": "Mission",
+      "giver": "Campsite, northeastern Slalakum Shore",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest 2 female Wild turkeys with Fitness 60% or lower.",
+        "Harvest 2 male Wild turkeys with Fitness 60% or lower."
+      ],
+      "rewards": {
+        "money": 800,
+        "xp_unverified": 15
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Cycle of Life",
+      "type": "Mission",
+      "giver": "Campsite, central Slalakum Shore",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest 3 Snowshoe hares. Each animal must weigh 1.3 kg or more."
+      ],
+      "rewards": {
+        "money": 800,
+        "xp_unverified": 15
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Iconic pairing",
+      "type": "Mission",
+      "giver": "Campsite, central Slalakum Shore",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Create a taxidermy diorama with a Grizzly bear and a Wood Bison."
+      ],
+      "rewards": {
+        "money": 1200,
+        "xp_unverified": 40
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Weather Extremes",
+      "type": "Mission",
+      "giver": "Campsite, east of Jackalope Cordillera",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a Dall sheep. Shoot it only once from 400 m or more with the Primacy Vision Unity scope attached."
+      ],
+      "rewards": {
+        "money": 1800,
+        "xp_unverified": 100
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Fifteen stars",
+      "type": "Mission",
+      "giver": "Campsite, Kermode Plateau west",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest 3 Elk with their Trophy ratings at 5 stars."
+      ],
+      "rewards": {
+        "money": 2100,
+        "xp_unverified": 250
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
     },
     {
       "name": "Bison Bank",
       "type": "Mission",
+      "giver": "Campsite, Kermode Plateau center east",
       "reserve": "New Laurentia",
-      "summary": "Help researchers check on the New Laurentia bison herds.",
       "objectives": [
-        "Harvest a male Bison with its Fitness at 40.0% or higher."
+        "Harvest a male Bison with its Fitness at 40% or higher."
       ],
       "rewards": {
         "money": 300,
         "xp": 100
-      }
+      },
+      "verified": true,
+      "source": "In-game screenshots",
+      "note": "Notes listed 5 XP; the game shows 100 XP."
+    },
+    {
+      "name": "Lure in",
+      "type": "Mission",
+      "giver": "Campsite, Kermode Plateau far east",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a male Grizzly bear using a luring scent."
+      ],
+      "rewards": {
+        "money": 1200,
+        "xp_unverified": 40
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Zip up",
+      "type": "Mission",
+      "giver": "Campsite, Wetiko Foothills northwest",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a Mule deer. Shoot it between 00:00-03:00 with a night vision scope attached."
+      ],
+      "rewards": {
+        "money": 1200,
+        "xp_unverified": 40
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Superhero of the wilderness",
+      "type": "Mission",
+      "giver": "Campsite, Lake Sasquatch east",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a Wolverine using a tripod stand."
+      ],
+      "rewards": {
+        "money": 300,
+        "xp_unverified": 5
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Quail country",
+      "type": "Mission",
+      "giver": "Campsite, Slalakum Shore south",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a male White-tailed ptarmigan with Fitness 60% or higher.",
+        "Harvest a female White-tailed ptarmigan with Fitness 60% or higher."
+      ],
+      "rewards": {
+        "money": 1200,
+        "xp_unverified": 40
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Which one has a white butt?",
+      "type": "Mission",
+      "giver": "Campsite, Kermode Plateau center",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a White-tailed deer with a 5-star Trophy rating.",
+        "Harvest a Mule deer with a 5-star Trophy rating."
+      ],
+      "rewards": {
+        "money": 2100,
+        "xp_unverified": 250
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Super pigs",
+      "type": "Mission",
+      "giver": "Campsite, Kermode Plateau southeast",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Call a Wild boar with Fitness 80% or more. Make sure it reacts and wait until it is 100 m away or closer."
+      ],
+      "rewards": {
+        "money": 1800,
+        "xp_unverified": 100
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "MooseNews",
+      "type": "Mission",
+      "giver": "Campsite, Thunderbird Muskeg southeast",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a Moose. Shoot it only once using the .338 Lapua Magnum caliber."
+      ],
+      "rewards": {
+        "money": 800,
+        "xp_unverified": 15
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Artificial route",
+      "type": "Mission",
+      "giver": "Campsite, Slalakum Shore center east",
+      "reserve": "New Laurentia",
+      "objectives": [
+        "Harvest a Pronghorn with Fitness 70% or higher. Shoot it only once to the heart from 200 m or more."
+      ],
+      "rewards": {
+        "money": 1800,
+        "xp_unverified": 100
+      },
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
     }
   ],
   "land_management": [
@@ -1355,22 +2030,375 @@
         "Cape buffalo"
       ],
       "cost": 5570,
-      "effect": "Lowers the fitness potential of affected species until cleaned up"
+      "effect": "Lowers the fitness potential of affected species until cleaned up",
+      "verified": true,
+      "source": "In-game screenshots"
+    },
+    {
+      "name": "Invasive plant",
+      "type": "Invasive plant",
+      "reserve": "New Laurentia",
+      "area": "Thunderbird Muskeg",
+      "cost": 3015,
+      "affects": [
+        "Mallard",
+        "Eastern wild turkey"
+      ],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Invasive plant",
+      "type": "Invasive plant",
+      "reserve": "New Laurentia",
+      "area": "Thunderbird Muskeg",
+      "cost": 3015,
+      "affects": [
+        "Mallard",
+        "Eastern wild turkey"
+      ],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Invasive plant",
+      "type": "Invasive plant",
+      "reserve": "New Laurentia",
+      "area": "Thunderbird Muskeg",
+      "cost": 3015,
+      "affects": [
+        "Mallard",
+        "Eastern wild turkey"
+      ],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Pollution",
+      "type": "Pollution",
+      "reserve": "New Laurentia",
+      "area": "Lake Sasquatch, E",
+      "cost": 5670,
+      "affects": [
+        "Northwestern White-tailed deer"
+      ],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Feeder",
+      "type": "Feeder",
+      "reserve": "New Laurentia",
+      "area": "Slalakum Shore",
+      "cost": 3540,
+      "affects": [
+        "Wood Bison",
+        "Rocky Mountain Elk",
+        "Northwestern Wolf"
+      ],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Feeder",
+      "type": "Feeder",
+      "reserve": "New Laurentia",
+      "area": "Slalakum Shore",
+      "cost": 2970,
+      "affects": [
+        "Wood Bison",
+        "Rocky Mountain Elk",
+        "Northwestern White-Tailed Deer"
+      ],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Feeder",
+      "type": "Feeder",
+      "reserve": "New Laurentia",
+      "area": "Slalakum Shore",
+      "cost": 2355,
+      "affects": [
+        "Mallard",
+        "Eastern wild turkey"
+      ],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Feeder",
+      "type": "Feeder",
+      "reserve": "New Laurentia",
+      "area": "Slalakum Shore, NW",
+      "cost": 2355,
+      "affects": [
+        "Mallard",
+        "Eastern wild turkey"
+      ],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Feeder",
+      "type": "Feeder",
+      "reserve": "New Laurentia",
+      "area": "Slalakum Shore, N",
+      "cost": 2970,
+      "affects": [
+        "American wolverine",
+        "Eastern wild turkey"
+      ],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Feeder",
+      "type": "Feeder",
+      "reserve": "New Laurentia",
+      "area": "Thunderbird Muskeg, NW",
+      "cost": 2355,
+      "affects": [
+        "Mallard",
+        "Eastern wild turkey"
+      ],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Feeder",
+      "type": "Feeder",
+      "reserve": "New Laurentia",
+      "area": "Thunderbird Muskeg, NE",
+      "cost": 2355,
+      "affects": [
+        "Western moose"
+      ],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Feeder",
+      "type": "Feeder",
+      "reserve": "New Laurentia",
+      "area": "Thunderbird Muskeg, SE",
+      "cost": 2355,
+      "affects": [
+        "Western moose"
+      ],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Feeder",
+      "type": "Feeder",
+      "reserve": "New Laurentia",
+      "area": "Lake Sasquatch, N",
+      "cost": 2970,
+      "affects": [
+        "Mallard",
+        "White-tailed ptarmigan"
+      ],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
     },
     {
       "name": "Habitat Enhancement",
-      "type": "Habitat Enhancement",
-      "impact": "Low",
+      "type": "Feeder",
       "reserve": "New Laurentia",
       "area": "Lake Sasquatch",
-      "description": "Build an enhancement to improve the quality of local animal populations.",
+      "cost": 2355,
       "affects": [
         "Snowshoe hare",
-        "Northwestern white-tailed deer",
+        "Northwestern White-tailed deer",
         "Dall sheep"
       ],
+      "verified": true,
+      "source": "In-game screenshots",
+      "impact": "Low",
+      "description": "Build a habitat enhancement to improve the quality of local animal populations."
+    },
+    {
+      "name": "Feeder",
+      "type": "Feeder",
+      "reserve": "New Laurentia",
+      "area": "Lake Sasquatch, SW",
       "cost": 2355,
-      "effect": "Raises the fitness potential of affected species"
+      "affects": [
+        "Northwestern White-tailed deer"
+      ],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Damaged bridge",
+      "type": "Damaged bridge",
+      "reserve": "New Laurentia",
+      "area": "Slalakum Shore, SW",
+      "cost": 3220,
+      "affects": [],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Damaged bridge",
+      "type": "Damaged bridge",
+      "reserve": "New Laurentia",
+      "area": "Slalakum Shore, S",
+      "cost": 2610,
+      "affects": [],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Damaged bridge",
+      "type": "Damaged bridge",
+      "reserve": "New Laurentia",
+      "area": "Slalakum Shore, SE",
+      "cost": 2610,
+      "affects": [],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Damaged bridge",
+      "type": "Damaged bridge",
+      "reserve": "New Laurentia",
+      "area": "Thunderbird Muskeg, E",
+      "cost": 3220,
+      "affects": [],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Damaged bridge",
+      "type": "Damaged bridge",
+      "reserve": "New Laurentia",
+      "area": "Mishipeshu Swamp, N",
+      "cost": 2610,
+      "affects": [],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Damaged bridge",
+      "type": "Damaged bridge",
+      "reserve": "New Laurentia",
+      "area": "Wetiko Foothills, S",
+      "cost": 1215,
+      "affects": [],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Damaged bridge",
+      "type": "Damaged bridge",
+      "reserve": "New Laurentia",
+      "area": "Wetiko Foothills, SE",
+      "cost": 1215,
+      "affects": [],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Damaged bridge",
+      "type": "Damaged bridge",
+      "reserve": "New Laurentia",
+      "area": "Kermode Plateau, SE",
+      "cost": 1215,
+      "affects": [],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Damaged bridge",
+      "type": "Damaged bridge",
+      "reserve": "New Laurentia",
+      "area": "Jackalope Cordillera, W",
+      "cost": 2640,
+      "affects": [],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Blocked passage",
+      "type": "Blocked passage",
+      "reserve": "New Laurentia",
+      "area": "Kermode Plateau, SE",
+      "cost": 1830,
+      "affects": [],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Blocked passage",
+      "type": "Blocked passage",
+      "reserve": "New Laurentia",
+      "area": "Jackalope Cordillera, NW",
+      "cost": 2640,
+      "affects": [],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Blocked passage",
+      "type": "Blocked passage",
+      "reserve": "New Laurentia",
+      "area": "Lake Sasquatch, E",
+      "cost": 2640,
+      "affects": [],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Hunting stand",
+      "type": "Hunting stand",
+      "reserve": "New Laurentia",
+      "area": "Mishipeshu Swamp, NE",
+      "cost": 3300,
+      "affects": [],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Hunting stand",
+      "type": "Hunting stand",
+      "reserve": "New Laurentia",
+      "area": "Mishipeshu Swamp, center",
+      "cost": 3735,
+      "affects": [],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Hunting stand",
+      "type": "Hunting stand",
+      "reserve": "New Laurentia",
+      "area": "Kermode Plateau, center E",
+      "cost": 3030,
+      "affects": [],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Hunting stand",
+      "type": "Hunting stand",
+      "reserve": "New Laurentia",
+      "area": "Kermode Plateau, center W",
+      "cost": 3735,
+      "affects": [],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
+    },
+    {
+      "name": "Hunting stand",
+      "type": "Hunting stand",
+      "reserve": "New Laurentia",
+      "area": "Lake Sasquatch, NE",
+      "cost": 3030,
+      "affects": [],
+      "verified": false,
+      "source": "Community notes (not yet checked in game)"
     }
   ],
   "trophy_lodge": {
@@ -1406,5 +2434,1143 @@
     "Overgaard",
     "WildHeart",
     "Lewellings"
-  ]
+  ],
+  "species_status": {
+    "active_count": 28,
+    "active_count_verified": true,
+    "note": "The in-game encyclopedia lists 28 species.",
+    "upcoming_update_count": 2,
+    "upcoming_verified": false
+  },
+  "lifecycles": {
+    "rule": "1 in-game year = 3 in-game days; animals die of old age at their max age if not harvested.",
+    "verified": false,
+    "source": "Community notes (not yet checked in game)",
+    "note": "Merged from two notes files (lifecycle + lifecycles). Where they disagree, both values are kept.",
+    "species": [
+      {
+        "species": "Mallard",
+        "max_age_years": 4,
+        "total_lifespan_days": 12,
+        "young_years": "1",
+        "adult_years": "2",
+        "mature_years": "3-4",
+        "advice": [
+          "Fast generational turnover. Cull low-fitness drakes quickly."
+        ]
+      },
+      {
+        "species": "Snowshoe Hare",
+        "max_age_years": 4,
+        "total_lifespan_days": 12,
+        "young_years": "1",
+        "adult_years": "2",
+        "mature_years": "3-4",
+        "advice": [
+          "Short life span. Natural death occurs within 12 in-game days."
+        ]
+      },
+      {
+        "species": "White-tailed ptarmigan",
+        "max_age_years": 3,
+        "total_lifespan_days": 9,
+        "young_years": "1",
+        "adult_years": "2",
+        "mature_years": "3",
+        "advice": [
+          "Extremely fast generation cycle; despawns at end of Year 3."
+        ]
+      },
+      {
+        "species": "Eastern wild turkey",
+        "max_age_years": 5,
+        "total_lifespan_days": 15,
+        "young_years": "1",
+        "adult_years": "2-3",
+        "mature_years": "4-5",
+        "advice": [
+          "High trophy spurs peak in Mature Year 5. Dies of old age after 15 in-game days."
+        ]
+      },
+      {
+        "species": "American wolverine",
+        "max_age_years": 8,
+        "total_lifespan_days": 24,
+        "young_years": "1-2",
+        "adult_years": "3-5",
+        "mature_years": "6-8",
+        "advice": [
+          "Solitary animal. Mature Year 8 marks permanent despawn window."
+        ]
+      },
+      {
+        "species": "Northwestern white-tailed deer",
+        "max_age_years": 10,
+        "total_lifespan_days": 30,
+        "young_years": "1-2",
+        "adult_years": "3-7",
+        "mature_years": "8-10",
+        "advice": [
+          "Trophy antlers peak in Mature Years 9-10. Must be harvested before Year 11 turnover.",
+          "Allow 80%+ fitness bucks to reach Mature stage (8-10 yrs) for 5-star trophy rack spread."
+        ]
+      },
+      {
+        "species": "Rocky Mountain pronghorn",
+        "max_age_years": 10,
+        "total_lifespan_days": 30,
+        "young_years": "1-3",
+        "adult_years": "4-6",
+        "mature_years": "7-10",
+        "advice": [
+          "Cull low-fitness bucks during Adult phase to clear genetics before Mature rut."
+        ]
+      },
+      {
+        "species": "Northwestern wolf",
+        "max_age_years_reported": [
+          8,
+          12
+        ],
+        "conflict": "The two lifecycle notes disagree on this species' max age and stage years.",
+        "stages_by_source": [
+          {
+            "max": 12,
+            "young": "1-3",
+            "adult": "4-7",
+            "mature": "8-12"
+          },
+          {
+            "max": 8,
+            "young": "1-2",
+            "adult": "3-5",
+            "mature": "6-8"
+          }
+        ],
+        "advice": [
+          "Alpha status shifts at Year 12 death. Older wolves hold dense cover.",
+          "High mortality rate; cull pack leaders with sub-60% fitness."
+        ]
+      },
+      {
+        "species": "Central European boar",
+        "max_age_years": 11,
+        "total_lifespan_days": 33,
+        "young_years": "1-3",
+        "adult_years": "4-7",
+        "mature_years": "8-11",
+        "advice": [
+          "Tusks reach max trophy score in Mature Year 11. Dies if unhunted."
+        ]
+      },
+      {
+        "species": "Dall sheep",
+        "max_age_years_reported": [
+          13,
+          14
+        ],
+        "conflict": "The two lifecycle notes disagree on this species' max age and stage years.",
+        "stages_by_source": [
+          {
+            "max": 13,
+            "young": "1-4",
+            "adult": "5-8",
+            "mature": "9-13"
+          },
+          {
+            "max": 14,
+            "young": "1-3",
+            "adult": "4-9",
+            "mature": "10-14"
+          }
+        ],
+        "advice": [
+          "Full curl horns develop by Year 11. High risk of natural mortality after Year 13.",
+          "Full horn curl occurs during mature stage (10-14 yrs)."
+        ]
+      },
+      {
+        "species": "Rocky Mountain mule deer",
+        "max_age_years_reported": [
+          11,
+          12
+        ],
+        "conflict": "The two lifecycle notes disagree on this species' max age and stage years.",
+        "stages_by_source": [
+          {
+            "max": 11,
+            "young": "1-3",
+            "adult": "4-6",
+            "mature": "7-11"
+          },
+          {
+            "max": 12,
+            "young": "1-3",
+            "adult": "4-8",
+            "mature": "9-12"
+          }
+        ],
+        "advice": [
+          "5-Star potential locks in Mature stage. Dies of old age at 33 in-game days.",
+          "Do not harvest in Young stage (1-3 yrs) unless rack is heavily deformed. Harvest 1-2 star Mature before year 12."
+        ]
+      },
+      {
+        "species": "Grizzly bear",
+        "max_age_years_reported": [
+          22,
+          25
+        ],
+        "conflict": "The two lifecycle notes disagree on this species' max age and stage years.",
+        "stages_by_source": [
+          {
+            "max": 22,
+            "young": "1-5",
+            "adult": "6-14",
+            "mature": "15-22"
+          },
+          {
+            "max": 25,
+            "young": "1-5",
+            "adult": "6-16",
+            "mature": "17-25"
+          }
+        ],
+        "advice": [
+          "Extremely slow aging cycle. Culling mistakes take over 60 in-game days to recover.",
+          "Skull measurements max out late in Mature life stage."
+        ]
+      },
+      {
+        "species": "Rocky Mountain elk",
+        "max_age_years_reported": [
+          14,
+          15
+        ],
+        "conflict": "The two lifecycle notes disagree on this species' max age and stage years.",
+        "stages_by_source": [
+          {
+            "max": 14,
+            "young": "1-4",
+            "adult": "5-9",
+            "mature": "10-14"
+          },
+          {
+            "max": 15,
+            "young": "1-4",
+            "adult": "5-10",
+            "mature": "11-15"
+          }
+        ],
+        "advice": [
+          "Bulls reach maximum 5-star beam spread at Year 13-14. Despawns at Year 15.",
+          "Pass on spike bulls. Target low-mass mature bulls with uneven main beams."
+        ]
+      },
+      {
+        "species": "Western moose",
+        "max_age_years": 16,
+        "total_lifespan_days": 48,
+        "young_years": "1-4",
+        "adult_years": "5-11",
+        "mature_years": "12-16",
+        "advice": [
+          "Highest trophy paddle weight is achieved in late Mature stage before old age death.",
+          "Moose paddle width and point count peak at year 13-15."
+        ]
+      },
+      {
+        "species": "Wood bison",
+        "max_age_years": 18,
+        "total_lifespan_days": 54,
+        "young_years": "1-5",
+        "adult_years": "6-12",
+        "mature_years": "13-18",
+        "advice": [
+          "Heavy horn bases require full maturity. Natural death occurs after 54 in-game days."
+        ]
+      }
+    ]
+  },
+  "trophy_scoring_templates": {
+    "scoring_templates": {
+      "cervid_antler": {
+        "category": "Antlered Big Game",
+        "fields": [
+          {
+            "id": "main_beam",
+            "label": "Main Beam Length",
+            "unit": "in"
+          },
+          {
+            "id": "inside_spread",
+            "label": "Inside Spread",
+            "unit": "in"
+          },
+          {
+            "id": "outside_spread",
+            "label": "Outside Spread",
+            "unit": "in"
+          },
+          {
+            "id": "base_circumference",
+            "label": "Circumference at Base",
+            "unit": "in"
+          },
+          {
+            "id": "typical_points_len",
+            "label": "Length of Typical Points",
+            "unit": "in"
+          },
+          {
+            "id": "point_count",
+            "label": "Total Points Count",
+            "unit": "count"
+          }
+        ],
+        "verified": false
+      },
+      "palmate_moose": {
+        "category": "Palmate Antlers",
+        "fields": [
+          {
+            "id": "palm_length",
+            "label": "Palm Length",
+            "unit": "in"
+          },
+          {
+            "id": "palm_width",
+            "label": "Palm Width",
+            "unit": "in"
+          },
+          {
+            "id": "inside_spread",
+            "label": "Inside Spread",
+            "unit": "in"
+          },
+          {
+            "id": "points_left",
+            "label": "Left Palm Points",
+            "unit": "count"
+          },
+          {
+            "id": "points_right",
+            "label": "Right Palm Points",
+            "unit": "count"
+          }
+        ],
+        "verified": false
+      },
+      "predator_skull": {
+        "category": "Carnivore Skull",
+        "fields": [
+          {
+            "id": "skull_length",
+            "label": "Skull Length",
+            "unit": "in"
+          },
+          {
+            "id": "skull_width",
+            "label": "Skull Width",
+            "unit": "in"
+          }
+        ],
+        "verified": true,
+        "verified_on": "Southern lion and Grizzly bear harvest reports"
+      },
+      "horned_bovid": {
+        "category": "Horns",
+        "fields": [
+          {
+            "id": "horn_length",
+            "label": "Horn Length",
+            "unit": "in"
+          },
+          {
+            "id": "base_circumference",
+            "label": "Circumference at Base",
+            "unit": "in"
+          },
+          {
+            "id": "tip_to_tip",
+            "label": "Tip-to-Tip Spread",
+            "unit": "in"
+          }
+        ],
+        "verified": false
+      },
+      "avian_game": {
+        "category": "Birds & Waterfowl",
+        "fields": [
+          {
+            "id": "beard_length",
+            "label": "Beard Length",
+            "unit": "in"
+          },
+          {
+            "id": "spur_left",
+            "label": "Left Spur Length",
+            "unit": "in"
+          },
+          {
+            "id": "spur_right",
+            "label": "Right Spur Length",
+            "unit": "in"
+          }
+        ],
+        "verified": false
+      },
+      "tusks": {
+        "category": "Tusks",
+        "fields": [
+          {
+            "id": "main_beam",
+            "label": "Length of main beam",
+            "unit": "in"
+          },
+          {
+            "id": "base_circumference",
+            "label": "Circumference at base",
+            "unit": "in"
+          }
+        ],
+        "verified": true,
+        "verified_on": "Southern warthog harvest report"
+      }
+    },
+    "species_mapping": {
+      "Rocky Mountain mule deer": "cervid_antler",
+      "Northwestern white-tailed deer": "cervid_antler",
+      "Rocky Mountain elk": "cervid_antler",
+      "Western moose": "palmate_moose",
+      "Grizzly bear": "predator_skull",
+      "Northwestern wolf": "predator_skull",
+      "American wolverine": "predator_skull",
+      "Dall sheep": "horned_bovid",
+      "Wood bison": "horned_bovid",
+      "Rocky Mountain pronghorn": "horned_bovid",
+      "Eastern wild turkey": "avian_game",
+      "Mallard": "avian_game",
+      "White-tailed ptarmigan": "avian_game",
+      "Southern lion": "predator_skull",
+      "Spotted hyena": "predator_skull",
+      "Southern warthog": "tusks"
+    },
+    "note": "Only templates marked verified match a real harvest screen. Other field lists come from notes."
+  },
+  "challenges": {
+    "total": 100,
+    "total_verified": true,
+    "trees": [
+      {
+        "name": "Ambusher",
+        "total": 24,
+        "description": null,
+        "items": []
+      },
+      {
+        "name": "Naturalist",
+        "total": 23,
+        "description": null,
+        "items": []
+      },
+      {
+        "name": "Scout",
+        "total": 23,
+        "description": "Driving, discovering places and species, placing tents, improving navigation.",
+        "items": [
+          {
+            "name": "Drive any vehicle.",
+            "tier_xp": [
+              null,
+              null,
+              260,
+              1010
+            ]
+          },
+          {
+            "name": "Discover any place in Kilimaya Reserve."
+          },
+          {
+            "name": "Discover any place in New Laurentia."
+          },
+          {
+            "name": "Place any tent.",
+            "tier_xp": [
+              null,
+              null,
+              130
+            ]
+          },
+          {
+            "name": "Discover an animal Species in Kilimaya Reserve."
+          },
+          {
+            "name": "Discover an animal Species in New Laurentia."
+          },
+          {
+            "name": "Improve navigation in Kilimaya Reserve.",
+            "tier_xp": [
+              80,
+              260,
+              780
+            ]
+          },
+          {
+            "name": "Improve navigation in New Laurentia.",
+            "tier_xp": [
+              80,
+              260,
+              780
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Sharpshooter",
+        "total": 18,
+        "description": "Harvests by weapon type (shotgun, rifle, crossbow, bow), heart/lung hits, suppressed firearms.",
+        "items": [
+          {
+            "name": "Harvest an animal shot with any shotgun.",
+            "tier_xp": [
+              10,
+              50,
+              260
+            ]
+          },
+          {
+            "name": "Harvest an animal shot with any rifle.",
+            "tier_xp": [
+              null,
+              null,
+              260
+            ]
+          },
+          {
+            "name": "Harvest an animal shot with any crossbow.",
+            "tier_xp": [
+              10,
+              50,
+              260
+            ]
+          },
+          {
+            "name": "Harvest an animal shot with any bow.",
+            "tier_xp": [
+              10,
+              50,
+              260
+            ]
+          },
+          {
+            "name": "Harvest an animal after hitting its heart or both lungs.",
+            "tier_xp": [
+              null,
+              null,
+              260
+            ]
+          },
+          {
+            "name": "Harvest an animal shot with any firearm that has a suppressor installed.",
+            "tier_xp": [
+              null,
+              null,
+              130
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Stalker",
+        "total": 12,
+        "description": "Harvesting without being seen, heard or scented.",
+        "items": [
+          {
+            "name": "Harvest an animal without being seen.",
+            "tier_xp": [
+              null,
+              null,
+              155,
+              520
+            ]
+          },
+          {
+            "name": "Harvest an animal without it catching your scent.",
+            "tier_xp": [
+              null,
+              null,
+              null,
+              520
+            ]
+          },
+          {
+            "name": "Harvest an animal without being heard.",
+            "tier_xp": [
+              null,
+              null,
+              155,
+              520
+            ]
+          }
+        ]
+      }
+    ],
+    "note": "Notes called the first tree 'Features'; the game calls it Ambusher. Tree descriptions are based on the challenges captured in screenshots."
+  },
+  "quests_note": "Mission XP in the notes was wrong for both missions checked (money matched), so XP for unchecked missions is stored as xp_unverified.",
+  "land_management_notes": {
+    "total_new_laurentia": 32,
+    "mechanics": "Feeders provide low impact on animal potential; pollution and invasive plants have a high impact. For instance, white-tailed deer in Lake Sasquatch cannot reach 'Thriving' until Lake Sasquatch pollution is cleared and both feeders are installed.",
+    "verified": false,
+    "source": "Community notes (not yet checked in game)",
+    "checked": "The Lake Sasquatch feeder (2,355; snowshoe hare, white-tailed deer, Dall sheep; Impact: Low) matches the game."
+  },
+  "herd_management": {
+    "verified": false,
+    "source": "Community notes (not yet checked in game)",
+    "stewardship_levels": [
+      {
+        "level": "Critical",
+        "avg_fitness_range": "< 50%",
+        "status_desc": "Habitat neglected. Heavy inbreeding and poor genetics dominate the herds."
+      },
+      {
+        "level": "Vulnerable",
+        "avg_fitness_range": "50% - 59%",
+        "status_desc": "Genetic potential compromised. Aggressive culling of low-tier males required."
+      },
+      {
+        "level": "Stable",
+        "avg_fitness_range": "60% - 69%",
+        "status_desc": "Baseline ecosystem health. Feeders and clean water will elevate the herd."
+      },
+      {
+        "level": "Healthy",
+        "avg_fitness_range": "70% - 79%",
+        "status_desc": "Strong genetics. 3-star and 4-star trophies appearing regularly."
+      },
+      {
+        "level": "Thriving",
+        "avg_fitness_range": "80%+",
+        "status_desc": "Elite ecosystem. Habitat enhancements active; 5-star trophies spawn consistently."
+      }
+    ],
+    "interventions": {
+      "culling_quota": "Remove at least 2 mature males under 55% fitness per generation to lift regional average.",
+      "pollution_removal": "Eliminating toxic runoffs (e.g., Lake Sasquatch) unlocks the genetic ceiling for all surrounding herds.",
+      "feeder_installation": "Mineral feeders provide consistent nutrition, shielding young animals from genetic stalls during harsh weather."
+    },
+    "fitness_advisor": [
+      {
+        "range": "< 55%",
+        "label": "Inferior Genetics",
+        "action": "Cull. Remove to stop weak genetics passing to future generations.",
+        "status": "cull"
+      },
+      {
+        "range": "55% - 69.9%",
+        "label": "Moderate Genetics",
+        "action": "Average herd member. Let it reach adult; cull if male trophy potential stalls.",
+        "status": "monitor"
+      },
+      {
+        "range": "70%+",
+        "label": "Superior Genetics",
+        "action": "Do not harvest early. Let it reach the oldest mature age for 5-star potential.",
+        "status": "protect"
+      }
+    ],
+    "watchlist_rules": [
+      {
+        "when": "1 year or less left to live",
+        "urgency": "CRITICAL",
+        "message": "Final year: the animal will die of old age soon. Harvest now."
+      },
+      {
+        "when": "Fitness 85% or higher",
+        "urgency": "PROTECT / GROW",
+        "message": "5-star potential. Let it age further."
+      },
+      {
+        "when": "Fitness under 55%",
+        "urgency": "CULL",
+        "message": "Inferior genetics. Remove before the year rolls over."
+      },
+      {
+        "when": "Otherwise",
+        "urgency": "MONITOR",
+        "message": "Average genetics. Watch how its trophy develops."
+      }
+    ],
+    "note": "Fitness itself is real (shown on harvest reports and quest objectives); these thresholds and labels are notes, not game rules."
+  },
+  "blood_diagnostics": {
+    "verified": false,
+    "source": "Community notes (not yet checked in game)",
+    "types": [
+      {
+        "id": "pink_oxygenated",
+        "label": "Pink with Oxygen Bubbles",
+        "organ": "Lungs / Heart",
+        "lethality": "Fatal (Close Recovery)",
+        "color": "#f472b6"
+      },
+      {
+        "id": "dark_crimson",
+        "label": "Dark Crimson Red",
+        "organ": "Liver",
+        "lethality": "High (Extended Tracking)",
+        "color": "#881337"
+      },
+      {
+        "id": "watery_food",
+        "label": "Red with Food Particles",
+        "organ": "Stomach / Intestines",
+        "lethality": "Slow Bleed (Long Track Required)",
+        "color": "#b91c1c"
+      },
+      {
+        "id": "light_scratch",
+        "label": "Low Volume Red Blood",
+        "organ": "Superficial Flesh Scratch",
+        "lethality": "Non-Fatal (Animal May Survive)",
+        "color": "#ef4444"
+      }
+    ]
+  },
+  "tracking": {
+    "verified": false,
+    "source": "Community notes (not yet checked in game)",
+    "rule": "The V-split in cloven hoof prints always points in the direction of animal movement. Follow split prints to intercept active grazing corridors.",
+    "seasonal_corridors": [
+      {
+        "species": "Rocky Mountain mule deer",
+        "region": "Wetiko Foothills",
+        "summer_trail": "High ridge elevation transitions along sunlit northern slopes.",
+        "winter_trail": "Sheltered creek beds and pine valley brush to escape deep snow drifts.",
+        "grazing_area": "Open scrub clearings between 07:00 and 11:00; slow meandering herd pattern."
+      },
+      {
+        "species": "Northwestern white-tailed deer",
+        "region": "Lake Sasquatch",
+        "summer_trail": "Lakeshore riverbanks and willow fringes near water sources.",
+        "winter_trail": "Dense hemlock and spruce canopies for thermal bedding cover.",
+        "grazing_area": "Agricultural grass corridors and lake marsh edges."
+      },
+      {
+        "species": "Rocky Mountain elk",
+        "region": "Kermode Plateau",
+        "summer_trail": "Alpine meadows and highland scree plateaus.",
+        "winter_trail": "South-facing lower foothills and grassy river bottoms.",
+        "grazing_area": "Large open plateaus; bulls feed in perimeter meadows while cows graze center."
+      },
+      {
+        "species": "Western moose",
+        "region": "Thunderbird Muskeg",
+        "summer_trail": "Wet peatland marshes, shallow lakes, and birch flats.",
+        "winter_trail": "Subalpine river valleys with willow thickets for winter browse.",
+        "grazing_area": "Submerged vegetation and willow shrub corridors."
+      },
+      {
+        "species": "Wood bison",
+        "region": "Slalakum Shore",
+        "summer_trail": "Coastal sedge flats and breeze-cooled shore terraces.",
+        "winter_trail": "Deep-forest windbreak hollows with shallow snowpack.",
+        "grazing_area": "Expansive coastal grasslands; herds graze in line formations."
+      },
+      {
+        "species": "Dall sheep",
+        "region": "Jackalope Cordillera",
+        "summer_trail": "Exposed high crags, rocky saddles, and wind-scoured ridgelines.",
+        "winter_trail": "Lower south-facing alpine cliffs where wind strips away snow.",
+        "grazing_area": "Steep alpine tundra slopes with escape cliffs within 50 meters."
+      },
+      {
+        "species": "Northwestern wolf",
+        "region": "All Regions",
+        "summer_trail": "High ridge passes and game trail choke points.",
+        "winter_trail": "Frozen river drainages and low valley deer yards.",
+        "grazing_area": "Territory patrol perimeter; pack travels 8-15km between kills."
+      }
+    ]
+  },
+  "need_zone_clusters": {
+    "verified": false,
+    "source": "Community notes (not yet checked in game)",
+    "proximity_yards": 50,
+    "clusters": [
+      {
+        "cluster_id": "sasquatch_river_cervid_01",
+        "region": "Lake Sasquatch",
+        "species": "Rocky Mountain mule deer",
+        "cluster_notes": "Interacting with any point in this 50-yd river corridor unlocks all linked watering spots.",
+        "zones": [
+          {
+            "zone_id": "sas_mule_drink_01",
+            "type": "Drinking",
+            "schedule": "09:00 - 13:00",
+            "landmark": "North Shingle Riverbank (Middle Point)",
+            "proximity_to_center_yds": 0
+          },
+          {
+            "zone_id": "sas_mule_drink_02",
+            "type": "Drinking",
+            "schedule": "09:00 - 13:00",
+            "landmark": "East Gravel Shallows",
+            "proximity_to_center_yds": 37
+          },
+          {
+            "zone_id": "sas_mule_feed_01",
+            "type": "Feeding",
+            "schedule": "05:00 - 09:00",
+            "landmark": "Alder Clearing Ridge",
+            "proximity_to_center_yds": 58
+          }
+        ]
+      },
+      {
+        "cluster_id": "wetiko_basin_bear_01",
+        "region": "Wetiko Foothills",
+        "species": "Grizzly bear",
+        "cluster_notes": "Creek bend feeding and resting zone cluster.",
+        "zones": [
+          {
+            "zone_id": "wet_bear_feed_01",
+            "type": "Feeding",
+            "schedule": "04:00 - 08:00",
+            "landmark": "Salmon Shallows Rapids",
+            "proximity_to_center_yds": 0
+          },
+          {
+            "zone_id": "wet_bear_drink_01",
+            "type": "Drinking",
+            "schedule": "11:00 - 15:00",
+            "landmark": "Rapids Downstream Eddy",
+            "proximity_to_center_yds": 42
+          },
+          {
+            "zone_id": "wet_bear_rest_01",
+            "type": "Resting",
+            "schedule": "15:00 - 19:00",
+            "landmark": "Thick Spruce Bluff",
+            "proximity_to_center_yds": 50
+          }
+        ]
+      },
+      {
+        "cluster_id": "cordillera_dall_sheep_01",
+        "region": "Jackalope Cordillera",
+        "species": "Dall sheep",
+        "cluster_notes": "High alpine scree mineral lick and watering pocket.",
+        "zones": [
+          {
+            "zone_id": "cor_dall_drink_01",
+            "type": "Drinking",
+            "schedule": "10:00 - 14:00",
+            "landmark": "Alpine Tarn Shoreline",
+            "proximity_to_center_yds": 0
+          },
+          {
+            "zone_id": "cor_dall_feed_01",
+            "type": "Feeding",
+            "schedule": "06:00 - 10:00",
+            "landmark": "Upper Scree Meadow",
+            "proximity_to_center_yds": 45
+          }
+        ]
+      }
+    ],
+    "note": "Landmark names here do not appear on the in-game map; treat as rough guides."
+  },
+  "hunting_dog": {
+    "breed_example": "American Foxhound",
+    "max_skill_level": 6,
+    "skills": [
+      {
+        "id": "bonding_level",
+        "name": "Bonding Level",
+        "description": "Determines hunter trust, obedience range, and calm composure around aggressive predators like bears and wolves.",
+        "verified": false
+      },
+      {
+        "id": "following_commands",
+        "name": "Following Commands",
+        "max": 6,
+        "description": "Controls response speed to Heel, Sit, Stay, and Lie Down. High ranks prevent barking or rustling brush.",
+        "verified": false
+      },
+      {
+        "id": "blood_tracking",
+        "name": "Blood Tracking",
+        "max": 6,
+        "description": "Level 1-3 tracks heavy, fresh blood. Level 4-6 can follow faint flesh scratches through water, rocks, and rain to stop meat degradation.",
+        "verified": false
+      },
+      {
+        "id": "search_and_quartering",
+        "name": "Search and Quartering",
+        "max": 6,
+        "description": "Weaves in zig-zag patterns ahead of the hunter through thick brush to flush upland birds and retrieve small game.",
+        "verified": false
+      }
+    ],
+    "note": "Skill names and max level 6 appear in both notes files; descriptions are unverified."
+  },
+  "gear": {
+    "verified": false,
+    "source": "Community notes (not yet checked in game)",
+    "firearms": [
+      {
+        "id": "primacy_classic_hunter_mk_ii",
+        "name": "Primacy Classic Hunter MK II",
+        "caliber": ".308 Winchester",
+        "tier": 6,
+        "recommended_ammo_type": "Polymer-tipped hollow point",
+        "ammo_brand": "Lewellings Grande Swift",
+        "ammo_tier_compatibility": "Tier 3-5 / 6"
+      }
+    ],
+    "optics": [
+      {
+        "id": "primacy_vision_deluxe_4_16x50_woth_e",
+        "name": "Primacy Vision Deluxe 4-16x50 WotH Edition",
+        "brand": "Primacy Firearms",
+        "description": "Custom long-range scope with mounting rings and a unique engraving. Intended for experienced hunters.",
+        "magnification": "4x - 16x",
+        "lens_size_mm": 50,
+        "lens_quality": "Enhanced",
+        "night_vision_performance": null
+      },
+      {
+        "id": "zoomxd_blackout_nv",
+        "name": "ZOOMXD Blackout-NV",
+        "brand": "ZOOM XD",
+        "description": "Very high-quality reflex sight with a night vision overlay for fast-moving targets at a close range.",
+        "magnification": "1x",
+        "lens_size_mm": 20,
+        "lens_quality": "Enhanced",
+        "night_vision_performance": "Enhanced"
+      },
+      {
+        "id": "zoomxd_vision_professional_1_5_6x42",
+        "name": "ZOOMXD Vision Professional 1.5-6x42",
+        "brand": "ZOOM XD",
+        "description": "Scope intended for closer ranges, equipped with a lens that is large for its category.",
+        "magnification": "1.5x - 6x",
+        "lens_size_mm": 42,
+        "lens_quality": "Standard",
+        "night_vision_performance": null
+      }
+    ],
+    "scents": [
+      {
+        "id": "wildheart_smoked_meat_scent",
+        "name": "WildHeart Smoked Meat Scent",
+        "brand": "WildHeart",
+        "category": "Food-based luring scent",
+        "description": "This luring scent imitates the smell of smoked meat.",
+        "price": 20,
+        "required_level": 13,
+        "target_animals": [
+          "Northwestern wolf",
+          "Grizzly bear",
+          "Spotted hyena",
+          "Nile crocodile",
+          "Southern lion"
+        ],
+        "max_effective_distance": "Close",
+        "attraction_strength": "Enhanced",
+        "effective_duration": "Long"
+      },
+      {
+        "id": "wildheart_sweet_corn_scent",
+        "name": "WildHeart Sweet Corn Scent",
+        "brand": "WildHeart",
+        "category": "Food-based luring scent",
+        "description": "This luring scent imitates the smell of sweet corn.",
+        "price": 20,
+        "required_level": 0,
+        "target_animals": [
+          "Dall sheep",
+          "Blue wildebeest",
+          "Rocky Mountain pronghorn",
+          "Southern warthog",
+          "Central European boar"
+        ],
+        "max_effective_distance": "Close",
+        "attraction_strength": "Enhanced",
+        "effective_duration": "Long"
+      },
+      {
+        "id": "wildheart_doe_attraction_scent",
+        "name": "WildHeart Doe Attraction Scent",
+        "brand": "WildHeart",
+        "price": 15,
+        "required_level": 9
+      },
+      {
+        "id": "wildheart_rabbit_scent",
+        "name": "WildHeart Rabbit Scent",
+        "brand": "WildHeart",
+        "price": 10,
+        "required_level": 0
+      },
+      {
+        "id": "wildheart_deer_estrus_scent",
+        "name": "WildHeart Deer Estrus Scent",
+        "brand": "WildHeart",
+        "price": 15,
+        "required_level": 0
+      }
+    ],
+    "checked": "Primacy Classic Hunter MK II (.308 Winchester), Lewellings Grande Swift ammo and WildHeart Sweet Corn Scent appear in the inventory screenshot."
+  },
+  "controls": {
+    "verified": false,
+    "source": "Community notes (not yet checked in game)",
+    "bindings": [
+      {
+        "action": "Fire / Place animal marker (Hold) / Use caller or field gear",
+        "ps5_input": "R2",
+        "ps5_trigger_type": "Press / Hold",
+        "xbox_input": "RT",
+        "xbox_trigger_type": "Press / Hold"
+      },
+      {
+        "action": "Firearm ADS / Binocular Use / Select call",
+        "ps5_input": "L2",
+        "ps5_trigger_type": "Press",
+        "xbox_input": "LT",
+        "xbox_trigger_type": "Press"
+      },
+      {
+        "action": "Place marker",
+        "ps5_input": "R1",
+        "ps5_trigger_type": "Press",
+        "xbox_input": "RB",
+        "xbox_trigger_type": "Press"
+      },
+      {
+        "action": "Open radial menu / Firearm Hold breath",
+        "ps5_input": "L1",
+        "ps5_trigger_type": "Press",
+        "xbox_input": "LB",
+        "xbox_trigger_type": "Press"
+      },
+      {
+        "action": "Open Hunting map",
+        "ps5_input": "Touchpad",
+        "ps5_trigger_type": "Press",
+        "xbox_input": "View Button",
+        "xbox_trigger_type": "Press"
+      },
+      {
+        "action": "Pause menu / Show tracker",
+        "ps5_input": "Options",
+        "ps5_trigger_type": "Toggle",
+        "xbox_input": "Menu Button",
+        "xbox_trigger_type": "Toggle"
+      },
+      {
+        "action": "Interact",
+        "ps5_input": "Square",
+        "ps5_trigger_type": "Press",
+        "xbox_input": "X",
+        "xbox_trigger_type": "Press"
+      },
+      {
+        "action": "Jump",
+        "ps5_input": "Cross",
+        "ps5_trigger_type": "Press",
+        "xbox_input": "A",
+        "xbox_trigger_type": "Press"
+      },
+      {
+        "action": "Crouch / Prone",
+        "ps5_input": "Circle",
+        "ps5_trigger_type": "Press / Hold",
+        "xbox_input": "B",
+        "xbox_trigger_type": "Press / Hold"
+      },
+      {
+        "action": "Hunter assist",
+        "ps5_input": "Triangle",
+        "ps5_trigger_type": "Press",
+        "xbox_input": "Y",
+        "xbox_trigger_type": "Press"
+      },
+      {
+        "action": "Move / Run",
+        "ps5_input": "L3 (Left Stick Click)",
+        "ps5_trigger_type": "Press",
+        "xbox_input": "LS (Left Stick Click)",
+        "xbox_trigger_type": "Press"
+      },
+      {
+        "action": "Look / Walk",
+        "ps5_input": "R3 (Right Stick Click)",
+        "ps5_trigger_type": "Press",
+        "xbox_input": "RS (Right Stick Click)",
+        "xbox_trigger_type": "Press"
+      },
+      {
+        "action": "Gear slot 1 / Mount shooting stick",
+        "ps5_input": "D-Pad Up",
+        "ps5_trigger_type": "Press / Hold",
+        "xbox_input": "D-Pad Up",
+        "xbox_trigger_type": "Press / Hold"
+      },
+      {
+        "action": "Gear slot 4",
+        "ps5_input": "D-Pad Down",
+        "ps5_trigger_type": "Press",
+        "xbox_input": "D-Pad Down",
+        "xbox_trigger_type": "Press"
+      },
+      {
+        "action": "Gear slot 5 / Toggle headlight",
+        "ps5_input": "D-Pad Left",
+        "ps5_trigger_type": "Press / Hold",
+        "xbox_input": "D-Pad Left",
+        "xbox_trigger_type": "Press / Hold"
+      },
+      {
+        "action": "Gear slot 6",
+        "ps5_input": "D-Pad Right",
+        "ps5_trigger_type": "Press",
+        "xbox_input": "D-Pad Right",
+        "xbox_trigger_type": "Press"
+      }
+    ]
+  },
+  "extras_unverified": {
+    "verified": false,
+    "source": "Community notes (not yet checked in game)",
+    "trophy_categories": [
+      "Typical (1-5 Star)",
+      "Non-Typical",
+      "Superior",
+      "Mythical"
+    ],
+    "gear_attachments": [
+      "Muzzle Brake",
+      "Suppressor",
+      "Bow Silencer",
+      "Bow Stabilizer"
+    ],
+    "note": "Suppressors are confirmed (a Sharpshooter challenge asks for one); the rest are unchecked."
+  },
+  "data_sources": {
+    "verified": "Anything from your in-game screenshots: store IDs, encyclopedia pages, harvest reports, maps, quests, challenges, land management items marked verified.",
+    "unverified": "Sections marked \"verified\": false came from older notes and have not been checked in game.",
+    "corrections_made": [
+      "Challenge tree 'Features' renamed to 'Ambusher'",
+      "Loudest Deer XP 40 -> 235",
+      "Bison Bank XP 5 -> 100",
+      "Lodge name 'Whitetail Foothills Main Lodge' dropped (game: Hearth & Hunt Headquarters)",
+      "'Qalakum Shore' fixed to 'Slalakum Shore'",
+      "Two lifecycle files merged; conflicts kept side by side"
+    ]
+  }
 }

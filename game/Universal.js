@@ -1337,24 +1337,68 @@ function renderHuntingSchema(data) {
     if (toArr(data.quests).length) {
         html += buildFolder('📜 Quests', gridOf(toArr(data.quests).map((q, i) => buildItemCard({
             id: `quest_${i}`, type: 'mission', badge: q.type || 'Quest', badgeClass: 'rank-gold', title: q.name,
-            sub: [q.giver, q.reserve].filter(Boolean).join(' · '), body: [q.summary, ...toArr(q.objectives).map(o => `• ${o}`), q.rewards ? `Rewards: $${q.rewards.money} · ${q.rewards.xp} XP` : ''].filter(Boolean).join(' '), ctx: 'quest'
+            sub: [q.giver, q.reserve].filter(Boolean).join(' · '), body: [q.summary, ...toArr(q.objectives).map(o => `• ${o}`), q.rewards ? `Rewards: $${q.rewards.money}${q.rewards.xp != null ? ` · ${q.rewards.xp} XP` : ''}` : '', q.verified === false ? '(unverified)' : ''].filter(Boolean).join(' '), ctx: 'quest'
         }))));
     }
     if (data.challenges) {
         let ch = '';
-        Object.entries(data.challenges).forEach(([cat, list]) => {
-            if (!Array.isArray(list)) return;
-            ch += buildFolder(escapeHtml(humanize(cat)), gridOf(list.map((c, i) => buildItemCard({
+        const trees = Array.isArray(data.challenges.trees) ? data.challenges.trees.map(t => [t.name, t.items || [], t])
+            : Object.entries(data.challenges).filter(([, v]) => Array.isArray(v)).map(([k, v]) => [k, v, null]);
+        trees.forEach(([cat, list, tree]) => {
+            const head = tree ? `${escapeHtml(cat)} <span class="mission-region">${tree.total} challenges${list.length ? `, ${list.length} recorded` : ''}</span>` : escapeHtml(humanize(cat));
+            ch += buildFolder(head, (tree && tree.description ? `<div class="mission-detail"><div><p>${escapeHtml(tree.description)}</p></div></div>` : '') + gridOf(list.map((c, i) => buildItemCard({
                 id: `challenge_${cat}_${i}`, type: 'mission', badge: humanize(cat), badgeClass: 'rank-bronze', title: c.name,
                 sub: toArr(c.tier_xp).filter(x => x).length ? `Tier XP: ${toArr(c.tier_xp).filter(x => x).join(' / ')}` : '', ctx: 'challenge'
             }))));
         });
         if (ch) html += buildFolder('🎯 Challenges', ch);
     }
+    const unv = (sec) => sec && sec.verified === false ? ' <span class="mission-region">⚠ unverified notes</span>' : '';
+    const textCard = (id, badge, title, sub, body) => buildItemCard({ id, type: 'mission', badge, badgeClass: 'rank-silver', title, sub, body, ctx: badge });
+    if (data.lifecycles && toArr(data.lifecycles.species).length) {
+        const lc = data.lifecycles;
+        html += buildFolder('⏳ Life Cycles' + unv(lc), `<div class="mission-detail"><div><p>${escapeHtml(lc.rule || '')}</p></div></div>` + gridOf(toArr(lc.species).map((e, i) => textCard(
+            `life_${i}`, e.conflict ? 'Sources disagree' : `Max ${e.max_age_years} yrs`, e.species,
+            e.conflict ? `Reported max age: ${toArr(e.max_age_years_reported).join(' or ')} yrs` : `Young ${e.young_years} · Adult ${e.adult_years} · Mature ${e.mature_years} · ${e.total_lifespan_days} days`,
+            toArr(e.advice).join(' ')))));
+    }
+    if (data.herd_management) {
+        const hm = data.herd_management;
+        const lv = toArr(hm.stewardship_levels).map((l, i) => textCard(`stew_${i}`, l.avg_fitness_range, l.level, '', l.status_desc));
+        const fa = toArr(hm.fitness_advisor).map((f, i) => textCard(`fit_${i}`, f.range, f.label, f.status, f.action));
+        const iv = Object.entries(hm.interventions || {}).map(([k, v], i) => textCard(`int_${i}`, 'Intervention', humanize(k), '', v));
+        html += buildFolder('🧬 Herd Management' + unv(hm), buildFolder('Fitness Advisor', gridOf(fa)) + buildFolder('Stewardship Levels', gridOf(lv)) + buildFolder('Interventions', gridOf(iv)));
+    }
+    if (data.need_zone_clusters) {
+        const nz = data.need_zone_clusters;
+        html += buildFolder('💧 Need Zone Clusters' + unv(nz), gridOf(toArr(nz.clusters).map((c, i) => textCard(`nz_${i}`, c.region, c.species, c.cluster_notes,
+            toArr(c.zones).map(z => `${z.type} ${z.schedule}: ${z.landmark}`).join(' | ')))));
+    }
+    if (data.tracking) {
+        const t = data.tracking;
+        html += buildFolder('🐾 Tracking & Corridors' + unv(t), `<div class="mission-detail"><div><p>${escapeHtml(t.rule || '')}</p></div></div>` + gridOf(toArr(t.seasonal_corridors).map((c, i) => textCard(
+            `trail_${i}`, c.region, c.species, '', `Summer: ${c.summer_trail} Winter: ${c.winter_trail} Grazing: ${c.grazing_area}`))));
+    }
+    if (data.blood_diagnostics) {
+        html += buildFolder('🩸 Blood Diagnostics' + unv(data.blood_diagnostics), gridOf(toArr(data.blood_diagnostics.types).map((b, i) => textCard(`blood_${i}`, b.lethality, b.label, b.organ, ''))));
+    }
+    if (data.hunting_dog) {
+        html += buildFolder('🐕 Hunting Dog', gridOf(toArr(data.hunting_dog.skills).map((k, i) => textCard(`dog_${i}`, k.max ? `Max ${k.max}` : 'Skill', k.name, '', k.description))));
+    }
+    if (data.gear) {
+        const g = data.gear;
+        const cards = [...toArr(g.firearms).map((f, i) => textCard(`fa_${i}`, 'Firearm', f.name, f.caliber, `Ammo: ${f.ammo_brand || ''} ${f.recommended_ammo_type || ''}`)),
+            ...toArr(g.optics).map((o, i) => textCard(`op_${i}`, 'Optic', o.name, o.magnification, o.description)),
+            ...toArr(g.scents).map((sc, i) => textCard(`sc_${i}`, 'Scent', sc.name, sc.required_level ? `Level ${sc.required_level}` : '', toArr(sc.target_animals).join(', ')))];
+        html += buildFolder('🎒 Gear' + unv(g), gridOf(cards));
+    }
+    if (data.controls) {
+        html += buildFolder('🎮 Controls' + unv(data.controls), gridOf(toArr(data.controls.bindings).map((b, i) => textCard(`ctl_${i}`, `PS ${b.ps5_input} · Xbox ${b.xbox_input}`, b.action, b.ps5_trigger_type, ''))));
+    }
     if (toArr(data.land_management).length) {
         html += buildFolder('🌿 Land Management', gridOf(toArr(data.land_management).map((l, i) => buildItemCard({
-            id: `land_${i}`, type: 'mission', badge: `${l.type} · ${l.impact}`, badgeClass: 'rank-silver', title: `${l.name} — ${l.area}`,
-            sub: `${l.reserve} · Cost ${l.cost}`, body: `${l.description} Affects: ${toArr(l.affects).join(', ')}.`, img: l.image_url, ctx: 'land'
+            id: `land_${i}`, type: 'mission', badge: [l.type, l.impact, l.verified === false ? '⚠' : ''].filter(Boolean).join(' · '), badgeClass: 'rank-silver', title: `${l.name} — ${l.area}`,
+            sub: `${l.reserve} · Cost ${l.cost}`, body: [l.description, toArr(l.affects).length ? `Affects: ${toArr(l.affects).join(', ')}.` : ''].filter(Boolean).join(' '), img: l.image_url, ctx: 'land'
         }))));
     }
     return html;
