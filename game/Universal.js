@@ -765,6 +765,8 @@ function updateGameMetrics() {
         const of = (type) => cards.filter(c => c.getAttribute('data-type') === type);
         const doneOf = (list) => list.filter(c => c.classList.contains('completed')).length;
         const missions = of('mission');
+        const crk = data.campaign_rank;
+        if (crk) boxes.push(`<div class="metric-card" role="button" tabindex="0" style="cursor:pointer" onclick="openRankPanel()" title="Open Campaign Rank & Arsenal"><span class="metric-label">Campaign Rank</span><span class="metric-value">${st.campaignRank || '—'}/${crk.max}</span><span class="metric-sub">${st.campaignRankSource === 'psn' ? 'Synced from PSN' : (st.campaignRank ? 'Tap to update' : 'Tap to set your rank')}</span></div>`);
         if (missions.length) boxes.push(box('Missions', `${doneOf(missions)}/${missions.length}`));
         const coll = of('collectible');
         if (coll.length) {
@@ -779,12 +781,12 @@ function updateGameMetrics() {
             boxes.push(box('Ribbons Earned', fmtNum(earned), `${doneOf(ribbons)}/${ribbons.length} types`));
         }
         const trophies = of('trophy');
-        if (trophies.length && boxes.length < 3) boxes.push(box('Trophies', `${doneOf(trophies)}/${trophies.length}`));
+        if (trophies.length && boxes.length < 4) boxes.push(box('Trophies', `${doneOf(trophies)}/${trophies.length}`));
         const medals = of('medal');
-        if (medals.length && boxes.length < 3) boxes.push(box('Medals', `${doneOf(medals)}/${medals.length}`));
+        if (medals.length && boxes.length < 4) boxes.push(box('Medals', `${doneOf(medals)}/${medals.length}`));
         if (!boxes.length) { if (grid.innerHTML !== grid.dataset.original) grid.innerHTML = grid.dataset.original; return; }
     }
-    const html = boxes.slice(0, 3).join('');
+    const html = boxes.slice(0, 4).join('');
     if (grid.innerHTML !== html) grid.innerHTML = html;
 }
 
@@ -2102,6 +2104,14 @@ function weaponUnlockStatus(wp) {
     }
     return { ok: null, text: 'Tick it when you have it' };
 }
+function openRankPanel() {
+    const h = [...document.querySelectorAll('#section-container .category-section > .category-header h2')].find(x => /Campaign Rank/.test(x.innerText));
+    if (!h) return;
+    const sec = h.closest('.category-section'); sec.classList.remove('section-collapsed');
+    sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => { const i = document.getElementById('campaignRankInput'); if (i) i.focus({ preventScroll: true }); }, 500);
+}
+window.openRankPanel = openRankPanel;
 function rankPanelHtml(data) {
     const cr = data.campaign_rank;
     const groups = {};
