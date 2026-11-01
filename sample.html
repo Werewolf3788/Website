@@ -512,6 +512,7 @@ const googleSignIn = () => signInWithPopup(authE, new GoogleAuthProvider()).catc
 async function loadProfile(user) {
   S.viewer = user || null; S.viewerKey = user ? keyOf(user) : null;
   S.viewerData = user ? ((await rtGet(dbE, "users/" + S.viewerKey)) || {}) : {};
+  if (user) { const av = S.viewerData.avatar_url || user.photoURL || ""; try{if(av){localStorage.setItem('ww_user_avatar',av)}else{localStorage.removeItem('ww_user_avatar')}window.dispatchEvent(new Event('ww-avatar'))}catch(e){} }
   S.viewerFriends = S.viewerData.friends || {};
   S.codeMissing = null;
   const want = requestedProfile();

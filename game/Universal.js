@@ -2721,6 +2721,7 @@ async function initUniversalEngine() {
                     if (codeDisplay && appState.myFriendCode) codeDisplay.innerText = appState.myFriendCode;
 
                     applyUserProfileStyling(uData);
+                    { const av = uData.avatar_url || user.photoURL || ''; try{if(av){localStorage.setItem('ww_user_avatar',av)}else{localStorage.removeItem('ww_user_avatar')}window.dispatchEvent(new Event('ww-avatar'))}catch(e){} }
 
                     if (uData.primary_platform) {
                         await appState.switchPlatform(uData.primary_platform.toLowerCase(), false);
@@ -2736,6 +2737,7 @@ async function initUniversalEngine() {
                 }
             } else {
                 appState.currentUser = null;
+                try { localStorage.removeItem('ww_user_avatar'); window.dispatchEvent(new Event('ww-avatar')); } catch (e) {}
                 appState.psnGamertag = null;
 
                 const nameEl = document.getElementById('resistance-name');

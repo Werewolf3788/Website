@@ -110,6 +110,67 @@
         if (!head.querySelector('link[href$="ww-shell.css"]')) add('link', { rel: 'stylesheet', href: rootUrl('assets/ww-shell.css') });
     }
 
+    // --------------------------------------------- personalized app icon
+    // Signed-in pages save the member's profile image (localStorage
+    // "ww_user_avatar"); the installed app then uses it as its icon.
+    const AVATAR_KEY = 'ww_user_avatar';
+    let baseManifestHref = null, personalizedFor = null;
+    function makeIcon(url, size, pad) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.referrerPolicy = 'no-referrer';
+            img.onload = () => {
+                try {
+                    const c = document.createElement('canvas'); c.width = c.height = size;
+                    const g = c.getContext('2d');
+                    g.fillStyle = '#0f172a'; g.fillRect(0, 0, size, size);
+                    const inner = size * (1 - pad * 2), off = size * pad;
+                    const sc = Math.max(inner / img.width, inner / img.height);
+                    const w = img.width * sc, h = img.height * sc;
+                    g.save(); g.beginPath(); g.rect(off, off, inner, inner); g.clip();
+                    g.drawImage(img, off + (inner - w) / 2, off + (inner - h) / 2, w, h); g.restore();
+                    resolve(c.toDataURL('image/png'));
+                } catch (e) { resolve(null); }   // image host doesn't allow CORS
+            };
+            img.onerror = () => resolve(null);
+            img.src = secure(url);
+        });
+    }
+    async function personalizeApp() {
+        if (OWN_PWA) return;
+        let url = null; try { url = localStorage.getItem(AVATAR_KEY); } catch (e) {}
+        const link = document.head.querySelector('link[rel="manifest"]');
+        if (!link) return;
+        if (!baseManifestHref) baseManifestHref = link.href;
+        if (!url) {
+            if (personalizedFor) { link.href = baseManifestHref; personalizedFor = null; }
+            return;
+        }
+        if (personalizedFor === url) return;
+        const [any512, mask512, touch180] = await Promise.all([makeIcon(url, 512, 0), makeIcon(url, 512, 0.1), makeIcon(url, 180, 0)]);
+        if (!any512) return;
+        try {
+            const m = await (await fetch(baseManifestHref, { cache: 'no-cache' })).json();
+            const abs = (u) => new URL(u, baseManifestHref).href;
+            m.id = abs(m.id || './'); m.start_url = abs(m.start_url || './'); m.scope = abs(m.scope || './');
+            (m.shortcuts || []).forEach(sc => { sc.url = abs(sc.url); });
+            (m.screenshots || []).forEach(sh => { sh.src = abs(sh.src); });
+            const defaults = (m.icons || []).map(ic => ({ ...ic, src: abs(ic.src) }));
+            m.icons = [
+                { src: any512, sizes: '512x512', type: 'image/png', purpose: 'any' },
+                { src: mask512, sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+                ...defaults.filter(ic => !/512x512/.test(ic.sizes))
+            ];
+            const blob = new Blob([JSON.stringify(m)], { type: 'application/manifest+json' });
+            link.href = URL.createObjectURL(blob);
+            document.head.querySelectorAll('link[rel="apple-touch-icon"]').forEach(l => { l.href = touch180 || any512; });
+            personalizedFor = url;
+        } catch (e) { console.warn('[ww-shell] personalized icon:', e); }
+    }
+    window.addEventListener('storage', (e) => { if (e.key === AVATAR_KEY) personalizeApp(); });
+    window.addEventListener('ww-avatar', personalizeApp);
+
     // ------------------------------------------------------------ menu data
     function parseMenu(data) {
         const items = [];
@@ -447,6 +508,7 @@ ${OWN_PWA ? '' : `<li><button type="button" class="ww-row" data-ww-install hidde
     // ---------------------------------------------------------------- boot
     async function boot() {
         ensureHead();
+        personalizeApp();
         const cached = readCache();
         MENU = cached ? cached.menu : [];
         render();

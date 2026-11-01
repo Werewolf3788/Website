@@ -330,6 +330,7 @@ async function ensureFriendCode(){
 async function load(){
   loading=true;
   D=(await db.ref('users/'+K).get()).val()||{};
+  {const av=D.avatar_url||U.photoURL||'';try{if(av){localStorage.setItem('ww_user_avatar',av)}else{localStorage.removeItem('ww_user_avatar')}window.dispatchEvent(new Event('ww-avatar'))}catch(e){}}
   if(!D.updated_at&&!D.username){
     const t=Date.now(),init={username:U.displayName||(U.email||'').split('@')[0]||'Hunter',avatar_source:'google',avatar_url:U.photoURL||'',primary_color:'#0088ff',secondary_color:'#f5a623',created_at:t,updated_at:t};
     try{await db.ref('users/'+K).update(init);Object.assign(D,init);say('Profile created in your account.')}catch(e){say(e.message,1)}
@@ -388,6 +389,7 @@ $('save').onclick=async()=>{
     if(back.primary_color!==pub.primary_color||back.secondary_color!==pub.secondary_color||(back.avatar_url||'')!==(pub.avatar_url||'')||back.username!==pub.username)
       throw new Error('Saved, but the values read back differ. Try again.');
     D=back;dirty=false;
+    {const av=D.avatar_url||'';try{if(av){localStorage.setItem('ww_user_avatar',av)}else{localStorage.removeItem('ww_user_avatar')}window.dispatchEvent(new Event('ww-avatar'))}catch(e){}}
     let ok=true;
     try{await db.ref('user_secrets/'+K).update({psn_npsso:npsso,steam_api_key:skey,updated_at:now});S.psn_npsso=npsso;S.steam_api_key=skey}catch(e){ok=false}
     const t=new Date(now).toLocaleString();
