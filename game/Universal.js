@@ -1497,6 +1497,7 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
         const tools = [['bolt_cutters', 'Bolt cutters'], ['crowbar', 'Crowbars'], ['satchel_charges', 'Satchel charges'], ['coal_torpedoes', 'Coal torpedoes'], ['keys', 'Keys']].filter(([k]) => mc[k]).map(([k, l]) => `${l} ${mc[k]}`).join(' · ');
         detail.push(`<div><h4>🗺️ Collectible Map</h4><p><a href="${escapeHtml(m.interactive_map.url)}" target="_blank" rel="noopener" class="uni-search-btn" style="display:inline-block;">Open interactive map (${escapeHtml(m.interactive_map.source || 'map')})</a></p>${mc.starting_points ? `<p style="font-size:0.78rem;color:#94a3b8;">Starting points ${mc.starting_points} · Exfil ${mc.exfiltration_points || '?'}${tools ? ` · ${tools}` : ''}</p>` : ''}</div>`);
     }
+    if (toArr(m.primary_objectives).length) detail.push(`<div><h4>Main Objectives</h4><ul>${toArr(m.primary_objectives).map(o => `<li>${escapeHtml(o)}</li>`).join('')}</ul></div>`);
     if (toArr(m.optional_objectives).length) detail.push(`<div><h4>Optional Objectives (${toArr(m.optional_objectives).length})</h4><ul>${toArr(m.optional_objectives).map(o => `<li>${escapeHtml(o)}</li>`).join('')}</ul></div>`);
     if (m.kill_target || (typeof m.kill_challenge === 'string' && m.kill_challenge)) {
         detail.push(`<div><h4>Kill List</h4>${m.kill_target ? `<p><strong>${escapeHtml(m.kill_target)}</strong></p>` : ''}${typeof m.kill_challenge === 'string' && m.kill_challenge ? `<p>Kill challenge: ${escapeHtml(m.kill_challenge)}</p>` : ''}</div>`);

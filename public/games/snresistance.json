@@ -2798,7 +2798,16 @@
           }
         ],
         "numbering_note": "Gnome numbers follow MapMaster. Trophy Tom's video may find them in a different order, so a card's 'Watch guide' timestamp can show a different gnome."
-      }
+      },
+      "primary_objectives": [
+        "Locate the last remaining Kleine Blume warheads — Locate the underground facility"
+      ],
+      "optional_objectives": [
+        "Eliminate the Elite Snipers — Neutralize Elite Snipers (3)",
+        "Destroy the V1 Launch Site — Sabotage the Site (2)"
+      ],
+      "kill_target": "Aldo Riese",
+      "objectives_source": "In-game pause map (user screenshot); main objective list grows as the mission goes on."
     },
     "mission_8": {
       "number": 8,
