@@ -42,20 +42,22 @@
         "Kinyonga Highveld"
       ],
       "species": [
-        "Southern yellow-billed duck",
+        "Greater kudu",
         "Blue wildebeest",
+        "Nile crocodile",
         "Spotted hyena",
+        "Blesbok",
         "Cape mountain zebra",
         "Common hippopotamus",
         "Cape honey badger",
         "Southern lion",
-        "Southern warthog",
         "South African ostrich",
         "Cape buffalo",
-        "Greater kudu",
-        "Nile crocodile",
-        "Blesbok"
-      ]
+        "Southern yellow-billed duck",
+        "Southern warthog"
+      ],
+      "species_check": "13 species, confirmed by the in-game map legend and both wikis.",
+      "area_sq_km": 100
     },
     {
       "id": "new_laurentia",
@@ -138,7 +140,6 @@
       },
       "overview": {
         "location": "Southern Canadian Rockies / Northern Wetlands",
-        "area_sq_km": 100,
         "story_campaign": "Moose Population Investigation & Warden Support",
         "primary_features": [
           "Hunting Dog Blood Tracking",
@@ -156,13 +157,16 @@
         "verified": false,
         "source": "Community notes (not yet checked in game)"
       },
-      "species_check": "15-species list from notes; the in-game map legend showed 8 of them (filtered view)."
+      "species_check": "15 species, confirmed by both wikis (they name a few slightly differently, e.g. 'Northwestern grey wolf'; the game's names are used here).",
+      "area_sq_km": 100
     },
     {
       "id": "hearth_and_hunt_estate",
       "name": "Hearth & Hunt Headquarters",
       "map_image_url": "/public/games/woth2/images/maps/hearth_and_hunt_estate.jpg",
-      "note": "Home base (Hearth & Hunt Estate)."
+      "note": "Home base (Hearth & Hunt Estate).",
+      "area_sq_km": 16,
+      "description": "Hub with an expandable lodge, a cross-reserve trophy display and a smaller hunting area (not a full reserve)."
     }
   ],
   "species_list_encyclopedia": [
@@ -254,7 +258,8 @@
         "speed": "19 yps"
       },
       "trivia": "Honey badgers raid beehives for honey and larvae, shrugging off stings from aggressive bee swarms.",
-      "image_url": ""
+      "image_url": "",
+      "charges_player": false
     },
     {
       "id": "common_hippopotamus",
@@ -317,7 +322,8 @@
         "speed": "19 yps"
       },
       "trivia": "Turtles and young crocodiles sometimes bask on top of hippos.",
-      "image_url": ""
+      "image_url": "",
+      "charges_player": true
     },
     {
       "id": "cape_mountain_zebra",
@@ -377,7 +383,8 @@
         "speed": "43 yps"
       },
       "trivia": "Zebras see well both by day and at night.",
-      "image_url": ""
+      "image_url": "",
+      "charges_player": false
     },
     {
       "id": "northwestern_white_tailed_deer",
@@ -455,8 +462,10 @@
         "level": "Passive",
         "charge_trigger": "None (Flees on spook)",
         "verified": false,
-        "source": "Community notes (not yet checked in game)"
-      }
+        "source": "Community notes (not yet checked in game)",
+        "wiki_check": "Both wikis say only Southern lion, Common hippopotamus and Cape buffalo charge the player in 1.0, so this aggression note is likely wrong."
+      },
+      "charges_player": false
     },
     {
       "id": "rocky_mountain_mule_deer",
@@ -536,8 +545,10 @@
         "level": "Passive",
         "charge_trigger": "None (Flees)",
         "verified": false,
-        "source": "Community notes (not yet checked in game)"
-      }
+        "source": "Community notes (not yet checked in game)",
+        "wiki_check": "Both wikis say only Southern lion, Common hippopotamus and Cape buffalo charge the player in 1.0, so this aggression note is likely wrong."
+      },
+      "charges_player": false
     },
     {
       "id": "blesbok",
@@ -597,7 +608,8 @@
         "speed": "43 yps"
       },
       "trivia": "Heavy hunting once left only 17 wild bontebok.",
-      "image_url": ""
+      "image_url": "",
+      "charges_player": false
     },
     {
       "id": "spotted_hyena",
@@ -663,7 +675,8 @@
         "speed": "37 yps"
       },
       "trivia": "Hyena fossils exist on four continents, but spotted hyenas have lived only in Africa for about the last 8,000 years.",
-      "image_url": ""
+      "image_url": "",
+      "charges_player": false
     },
     {
       "id": "nile_crocodile",
@@ -723,7 +736,8 @@
         "speed": "22 yps"
       },
       "trivia": "Adult crocodiles help their young hatch out of their eggs.",
-      "image_url": ""
+      "image_url": "",
+      "charges_player": false
     },
     {
       "id": "blue_wildebeest",
@@ -788,7 +802,8 @@
         "speed": "50 yps"
       },
       "trivia": "Some wildebeest have been seen chasing predators.",
-      "image_url": ""
+      "image_url": "",
+      "charges_player": false
     },
     {
       "id": "rocky_mountain_elk",
@@ -861,8 +876,10 @@
         "level": "Defensive Rut",
         "charge_trigger": "Bull rut season when pressed closely or wounded",
         "verified": false,
-        "source": "Community notes (not yet checked in game)"
-      }
+        "source": "Community notes (not yet checked in game)",
+        "wiki_check": "Both wikis say only Southern lion, Common hippopotamus and Cape buffalo charge the player in 1.0, so this aggression note is likely wrong."
+      },
+      "charges_player": false
     },
     {
       "id": "northwestern_wolf",
@@ -944,8 +961,10 @@
         "level": "Predatory / Pack Aggression",
         "charge_trigger": "Encircling hunter at close range, night stalking, or pack defense",
         "verified": false,
-        "source": "Community notes (not yet checked in game)"
-      }
+        "source": "Community notes (not yet checked in game)",
+        "wiki_check": "Both wikis say only Southern lion, Common hippopotamus and Cape buffalo charge the player in 1.0, so this aggression note is likely wrong."
+      },
+      "charges_player": false
     },
     {
       "id": "wood_bison",
@@ -1018,8 +1037,10 @@
         "level": "Territorial Trample",
         "charge_trigger": "Approaching herd within 50m, wounding lead bull, or blocking movement",
         "verified": false,
-        "source": "Community notes (not yet checked in game)"
-      }
+        "source": "Community notes (not yet checked in game)",
+        "wiki_check": "Both wikis say only Southern lion, Common hippopotamus and Cape buffalo charge the player in 1.0, so this aggression note is likely wrong."
+      },
+      "charges_player": false
     },
     {
       "id": "rocky_mountain_pronghorn",
@@ -1091,8 +1112,10 @@
         "level": "Passive",
         "charge_trigger": "None (Relies on high speed escape)",
         "verified": false,
-        "source": "Community notes (not yet checked in game)"
-      }
+        "source": "Community notes (not yet checked in game)",
+        "wiki_check": "Both wikis say only Southern lion, Common hippopotamus and Cape buffalo charge the player in 1.0, so this aggression note is likely wrong."
+      },
+      "charges_player": false
     },
     {
       "id": "western_moose",
@@ -1132,8 +1155,10 @@
         "level": "Territorial / Violent Charge",
         "charge_trigger": "Cornered in swamp water, sick moose encounters, or sudden approach",
         "verified": false,
-        "source": "Community notes (not yet checked in game)"
-      }
+        "source": "Community notes (not yet checked in game)",
+        "wiki_check": "Both wikis say only Southern lion, Common hippopotamus and Cape buffalo charge the player in 1.0, so this aggression note is likely wrong."
+      },
+      "charges_player": false
     },
     {
       "id": "southern_warthog",
@@ -1148,7 +1173,8 @@
           "Circumference at base"
         ]
       },
-      "note": "Encyclopedia page not captured yet; trophy fields from a harvest report."
+      "note": "Encyclopedia page not captured yet; trophy fields from a harvest report.",
+      "charges_player": false
     },
     {
       "id": "southern_lion",
@@ -1164,7 +1190,8 @@
           "Skull width"
         ]
       },
-      "note": "Encyclopedia page not captured yet; trophy fields from harvest reports."
+      "note": "Encyclopedia page not captured yet; trophy fields from harvest reports.",
+      "charges_player": true
     },
     {
       "id": "mallard",
@@ -1184,9 +1211,11 @@
         "level": "Passive",
         "charge_trigger": "None (Flees on sound/sight)",
         "verified": false,
-        "source": "Community notes (not yet checked in game)"
+        "source": "Community notes (not yet checked in game)",
+        "wiki_check": "Both wikis say only Southern lion, Common hippopotamus and Cape buffalo charge the player in 1.0, so this aggression note is likely wrong."
       },
-      "note": "Encyclopedia page not captured yet."
+      "note": "Encyclopedia page not captured yet.",
+      "charges_player": false
     },
     {
       "id": "snowshoe_hare",
@@ -1203,9 +1232,11 @@
         "level": "Passive",
         "charge_trigger": "None (Flees)",
         "verified": false,
-        "source": "Community notes (not yet checked in game)"
+        "source": "Community notes (not yet checked in game)",
+        "wiki_check": "Both wikis say only Southern lion, Common hippopotamus and Cape buffalo charge the player in 1.0, so this aggression note is likely wrong."
       },
-      "note": "Encyclopedia page not captured yet."
+      "note": "Encyclopedia page not captured yet.",
+      "charges_player": false
     },
     {
       "id": "white_tailed_ptarmigan",
@@ -1222,9 +1253,11 @@
         "level": "Passive",
         "charge_trigger": "None (Flees)",
         "verified": false,
-        "source": "Community notes (not yet checked in game)"
+        "source": "Community notes (not yet checked in game)",
+        "wiki_check": "Both wikis say only Southern lion, Common hippopotamus and Cape buffalo charge the player in 1.0, so this aggression note is likely wrong."
       },
-      "note": "Encyclopedia page not captured yet."
+      "note": "Encyclopedia page not captured yet.",
+      "charges_player": false
     },
     {
       "id": "eastern_wild_turkey",
@@ -1243,9 +1276,11 @@
         "level": "Passive",
         "charge_trigger": "None (Flees)",
         "verified": false,
-        "source": "Community notes (not yet checked in game)"
+        "source": "Community notes (not yet checked in game)",
+        "wiki_check": "Both wikis say only Southern lion, Common hippopotamus and Cape buffalo charge the player in 1.0, so this aggression note is likely wrong."
       },
-      "note": "Encyclopedia page not captured yet."
+      "note": "Encyclopedia page not captured yet.",
+      "charges_player": false
     },
     {
       "id": "american_wolverine",
@@ -1263,9 +1298,11 @@
         "level": "Defensive / Territorial",
         "charge_trigger": "Cornered in close brush or defending feeding kills",
         "verified": false,
-        "source": "Community notes (not yet checked in game)"
+        "source": "Community notes (not yet checked in game)",
+        "wiki_check": "Both wikis say only Southern lion, Common hippopotamus and Cape buffalo charge the player in 1.0, so this aggression note is likely wrong."
       },
-      "note": "Encyclopedia page not captured yet."
+      "note": "Encyclopedia page not captured yet.",
+      "charges_player": false
     },
     {
       "id": "central_european_boar",
@@ -1284,9 +1321,11 @@
         "level": "Aggressive Charge",
         "charge_trigger": "Wounded non-fatal shots, startling sound under 40m, or sow with piglets",
         "verified": false,
-        "source": "Community notes (not yet checked in game)"
+        "source": "Community notes (not yet checked in game)",
+        "wiki_check": "Both wikis say only Southern lion, Common hippopotamus and Cape buffalo charge the player in 1.0, so this aggression note is likely wrong."
       },
-      "note": "Encyclopedia page not captured yet."
+      "note": "Encyclopedia page not captured yet.",
+      "charges_player": false
     },
     {
       "id": "dall_sheep",
@@ -1304,9 +1343,11 @@
         "level": "Passive",
         "charge_trigger": "None (Escapes to high steep cliffs)",
         "verified": false,
-        "source": "Community notes (not yet checked in game)"
+        "source": "Community notes (not yet checked in game)",
+        "wiki_check": "Both wikis say only Southern lion, Common hippopotamus and Cape buffalo charge the player in 1.0, so this aggression note is likely wrong."
       },
-      "note": "Encyclopedia page not captured yet."
+      "note": "Encyclopedia page not captured yet.",
+      "charges_player": false
     },
     {
       "id": "grizzly_bear",
@@ -1324,9 +1365,39 @@
         "level": "Apex Lethal Aggression",
         "charge_trigger": "Close encounter (<60m), wounded non-vitals, or defending kill site",
         "verified": false,
-        "source": "Community notes (not yet checked in game)"
+        "source": "Community notes (not yet checked in game)",
+        "wiki_check": "Both wikis say only Southern lion, Common hippopotamus and Cape buffalo charge the player in 1.0, so this aggression note is likely wrong."
       },
-      "note": "Encyclopedia page not captured yet."
+      "note": "Encyclopedia page not captured yet.",
+      "charges_player": false
+    },
+    {
+      "id": "greater_kudu",
+      "name": "Greater kudu",
+      "image_url": "",
+      "note": "Encyclopedia page not captured yet.",
+      "charges_player": false
+    },
+    {
+      "id": "south_african_ostrich",
+      "name": "South African ostrich",
+      "image_url": "",
+      "note": "Encyclopedia page not captured yet.",
+      "charges_player": false
+    },
+    {
+      "id": "cape_buffalo",
+      "name": "Cape buffalo",
+      "image_url": "",
+      "note": "Encyclopedia page not captured yet.",
+      "charges_player": true
+    },
+    {
+      "id": "southern_yellow_billed_duck",
+      "name": "Southern yellow-billed duck",
+      "image_url": "",
+      "note": "Encyclopedia page not captured yet.",
+      "charges_player": false
     }
   ],
   "harvest_ranking": {
@@ -2438,12 +2509,15 @@
   "species_status": {
     "active_count": 28,
     "active_count_verified": true,
-    "note": "The in-game encyclopedia lists 28 species.",
+    "note": "28 species (15 + 13), confirmed by the in-game encyclopedia and both wikis.",
     "upcoming_update_count": 2,
-    "upcoming_verified": false
+    "upcoming_verified": false,
+    "total": 28,
+    "new_laurentia": 15,
+    "kilimaya_reserve": 13
   },
   "lifecycles": {
-    "rule": "1 in-game year = 3 in-game days; animals die of old age at their max age if not harvested.",
+    "rule": "3 in-game days = 1 year of aging; updates happen at midnight in game.",
     "verified": false,
     "source": "Community notes (not yet checked in game)",
     "note": "Merged from two notes files (lifecycle + lifecycles). Where they disagree, both values are kept.",
@@ -2613,7 +2687,13 @@
         "advice": [
           "5-Star potential locks in Mature stage. Dies of old age at 33 in-game days.",
           "Do not harvest in Young stage (1-3 yrs) unless rack is heavily deformed. Harvest 1-2 star Mature before year 12."
-        ]
+        ],
+        "community_stages": {
+          "young": "1-3 yrs (days 1-9)",
+          "adult": "4-6 yrs (days 10-18)",
+          "mature": "7-12 yrs (days 19-36)",
+          "source": "Steam discussion for the first Way of the Hunter"
+        }
       },
       {
         "species": "Grizzly bear",
@@ -2689,6 +2769,20 @@
         "advice": [
           "Heavy horn bases require full maturity. Natural death occurs after 54 in-game days."
         ]
+      }
+    ],
+    "rules": [
+      {
+        "rule": "3 in-game days = 1 year of animal aging.",
+        "source": "Community/YouTube; also how the first game worked"
+      },
+      {
+        "rule": "Aging, score updates and respawns happen at midnight in game.",
+        "source": "YouTube guide"
+      },
+      {
+        "rule": "Animals move through Young, Adult and Mature stages; aging needs real play time between resets (sleep-spamming does not age them).",
+        "source": "Steam discussion (first game)"
       }
     ]
   },
@@ -3570,7 +3664,64 @@
       "Bison Bank XP 5 -> 100",
       "Lodge name 'Whitetail Foothills Main Lodge' dropped (game: Hearth & Hunt Headquarters)",
       "'Qalakum Shore' fixed to 'Slalakum Shore'",
-      "Two lifecycle files merged; conflicts kept side by side"
+      "Two lifecycle files merged; conflicts kept side by side",
+      "Aggression notes flagged: only Southern lion, Common hippopotamus and Cape buffalo charge in 1.0 (per both wikis)"
+    ]
+  },
+  "player_levels": {
+    "xp_to_next_level": {
+      "2": 200,
+      "13": 1500,
+      "14": 1650,
+      "16": 1950
+    },
+    "verified_levels": [
+      "13",
+      "14",
+      "16"
+    ],
+    "note": "XP needed to reach the next level, read from the pause-menu XP bar (level 2 from earlier notes). Add more as you see them."
+  },
+  "currency": {
+    "name": "Credits",
+    "earned_from": [
+      "Selling harvests",
+      "Quest rewards"
+    ],
+    "note": "Shown by the coin icon in game."
+  },
+  "game_facts": {
+    "multiplayer": "Two-player co-op free hunt in 1.0; single-player and multiplayer worlds are separate.",
+    "difficulty_levels": 3,
+    "ammo_sets_carried": {
+      "no_backpack": 2,
+      "default_backpack": 4,
+      "big_backpack": 6
+    },
+    "camps": "Tents/camps unlock later and allow fast travel, changing time and summoning a vehicle; Stations allow fast travel and vehicles but not time changes.",
+    "hunting_dog": "Finds animal signs, locates active need zones and follows blood trails. 1.0 has one dog breed; more training and a dog DLC are planned.",
+    "trophies": "Trophies are procedurally generated. Rocky Mountain mule deer were the first species to get non-typical racks.",
+    "tracks": "Tracks are generated between need zones (feeding, drinking, resting); spooked animals leave temporary tracks.",
+    "pc_requirements": {
+      "minimum": "Windows 11 64-bit, Ryzen 5 3600X / Core i5-9600K, RTX 2060 / RX 5600 XT, 16 GB RAM, 38 GB",
+      "recommended": "Windows 11 64-bit, Ryzen 5 7600X / Core i5-14600K, RTX 4060 Ti / RX 7600 XT, 16 GB RAM, 38 GB"
+    },
+    "playtime": "About 30 hours of objectives (estimate; no HowLongToBeat data yet).",
+    "editions": {
+      "standard_usd": 39.99,
+      "deluxe_usd": 59.99,
+      "season_pass_usd": 34.99,
+      "note": "Owners of the first game get 13% off."
+    },
+    "sources": [
+      "https://wayofthehunter.wiki/guides/animals-list",
+      "https://hunterway.wiki/animal-list/",
+      "https://wayofthehunter.wiki/guides/beginner-guide",
+      "https://hunterway.wiki/maps/",
+      "https://wayofthehunter.wiki/guides/system-requirements",
+      "https://wayofthehunter.wiki/guides/way-of-the-hunter-how-long-to-beat",
+      "https://hunterway.wiki/animal-locations/",
+      "https://hunterway.wiki/mark-animals/"
     ]
   }
 }

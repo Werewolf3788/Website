@@ -123,6 +123,9 @@ window.appState = {
     trophies: {},
     medals: {},
     ribbons: {},
+    wallet: { credits: 0, level: 1, xp: 0, xpNext: null },
+    harvestLog: [],
+    wishlist: [],
     ranks: {},
 
     getUserKey: function() {
@@ -157,6 +160,9 @@ window.appState = {
         this.trophies = {};
         this.medals = {};
         this.ribbons = {};
+        this.wallet = { credits: 0, level: 1, xp: 0, xpNext: null };
+        this.harvestLog = [];
+        this.wishlist = [];
         this.ranks = {};
 
         document.querySelectorAll('.game-pill').forEach(pill => {
@@ -452,12 +458,18 @@ window.appState = {
             missions: this.missions,
             medals: this.medals,
             ribbons: this.ribbons,
+            wallet: this.wallet,
+            harvestLog: this.harvestLog,
+            wishlist: this.wishlist,
             trophies: this.trophies
         };
     },
 
     applyPayload: function(payload) {
         if (!payload || typeof payload !== 'object') return;
+        if (payload.wallet && typeof payload.wallet === 'object') this.wallet = Object.assign({ credits: 0, level: 1, xp: 0, xpNext: null }, payload.wallet);
+        if (Array.isArray(payload.harvestLog)) this.harvestLog = payload.harvestLog;
+        if (Array.isArray(payload.wishlist)) this.wishlist = payload.wishlist;
         this.trophies_earned = payload.trophies_earned || 0;
         this.trophies_total = payload.trophies_total || this.trophies_total;
         this.trophies_percent = payload.trophies_percent || 0;
@@ -607,6 +619,7 @@ function applyUserProfileStyling(uData) {
 // Section 6: UI State Toggles & Renderers
 window.appState.applyStateToUI = function() {
     this.recalculateMetrics();
+    if (typeof renderWalletUI === 'function') renderWalletUI();
 
     document.querySelectorAll('.game-item-card').forEach(card => {
         const id = card.getAttribute('data-id');
@@ -998,6 +1011,12 @@ function ensureUniversalStyles() {
         .game-overview { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
         .game-chip { padding: 6px 12px; border-radius: 999px; background: #1e293b; border: 1px solid rgba(255,255,255,0.12); color: #e2e8f0; font-size: 0.78rem; font-weight: 700; }
         .game-chip.on { border-color: #22c55e; color: #86efac; }
+        .wallet-meter { font-size: 0.78rem; color: #cbd5e1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; }
+        .wm-num { font-weight: 800; color: #fbbf24; }
+        .wm-num.ok { color: #86efac; }
+        .wm-bar { flex: 1 1 120px; height: 6px; border-radius: 999px; background: #0f172a; overflow: hidden; min-width: 80px; }
+        .wm-bar > span { display: block; height: 100%; background: linear-gradient(90deg, #f59e0b, #22c55e); }
+        .harvest-form { display: flex; flex-wrap: wrap; gap: 8px; }
     `;
     document.head.appendChild(style);
 }
@@ -1055,6 +1074,7 @@ function buildItemCard(o) {
                 : `<button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(o.id)}', '${o.type}'${groupArg})" aria-label="Toggle"></button>`}
         </div>
         ${o.body ? `<p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(o.body)}</p>` : ''}
+        ${o.price ? `<div class="price-meter wallet-meter" data-price="${Number(o.price) || 0}"></div>` : ''}
         ${o.link ? `<a href="${escapeHtml(o.link)}" target="_blank" rel="noopener" style="font-size:0.75rem; font-weight:800; color:var(--user-theme-accent, #ff5500); text-decoration:none;">▶ ${escapeHtml(o.linkLabel || 'Watch')}</a>` : ''}
     </div>`;
 }
@@ -1282,6 +1302,147 @@ function runUniversalSearch(raw) {
     if (countEl) countEl.innerText = matches ? `${matches} result${matches === 1 ? '' : 's'}` : 'No results';
 }
 
+// ---------------------------------------------------------------------------
+// Hunter wallet: credits, level/XP, harvest log, wishlist and "needed/total"
+// price meters on anything that costs credits (hunting games)
+// ---------------------------------------------------------------------------
+const fmtNum = (n) => Number(n || 0).toLocaleString('en-US');
+function xpNeededFor(level) {
+    const table = appState.gameData?.player_levels?.xp_to_next_level || {};
+    const v = table[String(level)];
+    return v ? Number(v) : null;
+}
+function meterHtml(needed, total, unit) {
+    const pct = total ? Math.min(100, Math.round(((total - needed) / total) * 100)) : 0;
+    return `<span class="wm-num${needed <= 0 ? ' ok' : ''}">${needed <= 0 ? '✔ ' : ''}${fmtNum(Math.max(0, needed))}/${fmtNum(total)}${unit ? ' ' + unit : ''}</span><span class="wm-bar"><span style="width:${pct}%"></span></span>`;
+}
+function renderWalletUI() {
+    const w = appState.wallet || {};
+    const c = document.getElementById('walletCredits'); if (!c) return;
+    if (document.activeElement !== c) c.value = w.credits || 0;
+    const lv = document.getElementById('walletLevel'); if (document.activeElement !== lv) lv.value = w.level || 1;
+    const xp = document.getElementById('walletXp'); if (document.activeElement !== xp) xp.value = w.xp || 0;
+    const nx = document.getElementById('walletXpNext');
+    const next = w.xpNext || xpNeededFor(w.level);
+    if (document.activeElement !== nx) nx.value = next || '';
+    const lvMeter = document.getElementById('walletLevelMeter');
+    if (lvMeter) lvMeter.innerHTML = next ? `XP needed for level ${(w.level || 1) + 1}: ` + meterHtml(next - (w.xp || 0), next, 'XP') : 'Enter the XP needed for the next level (shown on the pause menu).';
+    document.querySelectorAll('.price-meter').forEach(el => {
+        const price = Number(el.dataset.price || 0);
+        el.innerHTML = 'Credits needed: ' + meterHtml(price - (w.credits || 0), price, '');
+    });
+    const log = document.getElementById('harvestLogList');
+    if (log) {
+        log.innerHTML = appState.harvestLog.length ? appState.harvestLog.slice().reverse().map(h => `
+            <div class="trophy-card"><div style="display:flex;justify-content:space-between;gap:8px;">
+                <div><span class="trophy-rank rank-gold">${escapeHtml(h.huntRating || 'Harvest')}</span>
+                <h3 style="color:#fff;font-size:0.95rem;margin-top:4px;">${escapeHtml(h.species)}${h.sex ? ` (${escapeHtml(h.sex)})` : ''}</h3>
+                <div style="font-size:0.75rem;color:#94a3b8;">${'★'.repeat(h.stars || 0)} ${h.score ? `· Score ${escapeHtml(String(h.score))}` : ''} ${h.fitness ? `· Fitness ${escapeHtml(String(h.fitness))}%` : ''}</div>
+                <div style="font-size:0.8rem;color:#e2e8f0;">+${fmtNum(h.credits)} credits · +${fmtNum(h.xp)} XP ${h.notes ? `· ${escapeHtml(h.notes)}` : ''}</div>
+                <div style="font-size:0.7rem;color:#64748b;">${escapeHtml(h.date || '')}</div></div>
+                <button type="button" class="uni-search-btn" onclick="appState.deleteHarvest('${escapeHtml(h.id)}')" title="Remove and take the credits/XP back off">Remove</button>
+            </div></div>`).join('') : '<p style="color:#94a3b8;font-size:0.85rem;">No harvests logged yet.</p>';
+    }
+    const wl = document.getElementById('wishlistList');
+    if (wl) {
+        wl.innerHTML = appState.wishlist.map(it => `
+            <div class="trophy-card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;">
+                <div style="flex:1"><h3 style="color:#fff;font-size:0.95rem;">${escapeHtml(it.name)}</h3>
+                <div class="price-meter" data-price="${Number(it.price) || 0}"></div></div>
+                <button type="button" class="uni-search-btn" onclick="appState.removeWish('${escapeHtml(it.id)}')">Remove</button>
+            </div></div>`).join('');
+        wl.querySelectorAll('.price-meter').forEach(el => { const p = Number(el.dataset.price); el.innerHTML = 'Credits needed: ' + meterHtml(p - (w.credits || 0), p, ''); });
+    }
+}
+window.appState.applyLevelUps = function() {
+    const w = this.wallet;
+    let next = w.xpNext || xpNeededFor(w.level);
+    while (next && w.xp >= next) {
+        w.xp -= next; w.level += 1; w.xpNext = null;
+        next = xpNeededFor(w.level);
+        this.updateStatus(`Level up! Now level ${w.level}.`);
+    }
+};
+window.appState.setWallet = function(field, value) {
+    const n = Math.max(0, Math.floor(Number(value) || 0));
+    if (field === 'level') { this.wallet.level = Math.max(1, n); this.wallet.xpNext = null; }
+    else if (field === 'xpNext') this.wallet.xpNext = n || null;
+    else this.wallet[field] = n;
+    if (field === 'xp') this.applyLevelUps();
+    this.applyStateToUI(); this.saveProgress();
+};
+window.appState.addHarvest = function(form) {
+    const f = new FormData(form);
+    const h = {
+        id: 'h' + Date.now(), species: f.get('species') || 'Unknown', sex: f.get('sex') || '',
+        credits: Math.max(0, Math.floor(Number(f.get('credits')) || 0)), xp: Math.max(0, Math.floor(Number(f.get('xp')) || 0)),
+        fitness: f.get('fitness') || '', score: f.get('score') || '', stars: Number(f.get('stars')) || 0,
+        huntRating: f.get('huntRating') || '', notes: f.get('notes') || '', date: new Date().toLocaleString()
+    };
+    this.harvestLog.push(h);
+    this.wallet.credits = (this.wallet.credits || 0) + h.credits;
+    this.wallet.xp = (this.wallet.xp || 0) + h.xp;
+    this.applyLevelUps();
+    form.reset();
+    this.applyStateToUI(); this.saveProgress();
+    this.updateStatus(`Harvest saved: +${fmtNum(h.credits)} credits, +${fmtNum(h.xp)} XP.`);
+    return false;
+};
+window.appState.deleteHarvest = function(id) {
+    const i = this.harvestLog.findIndex(h => h.id === id); if (i < 0) return;
+    const h = this.harvestLog.splice(i, 1)[0];
+    this.wallet.credits = Math.max(0, (this.wallet.credits || 0) - (h.credits || 0));
+    this.wallet.xp = Math.max(0, (this.wallet.xp || 0) - (h.xp || 0));
+    this.applyStateToUI(); this.saveProgress();
+};
+window.appState.addWish = function(form) {
+    const f = new FormData(form);
+    const price = Math.max(0, Math.floor(Number(f.get('price')) || 0));
+    if (!f.get('name') || !price) return false;
+    this.wishlist.push({ id: 'w' + Date.now(), name: f.get('name'), price });
+    form.reset(); this.applyStateToUI(); this.saveProgress(); return false;
+};
+window.appState.removeWish = function(id) {
+    this.wishlist = this.wishlist.filter(w => w.id !== id); this.applyStateToUI(); this.saveProgress();
+};
+function walletPanelHtml(data) {
+    const speciesOpts = toArr(data.species).map(s => s && s.name).filter(Boolean).sort().map(n => `<option>${escapeHtml(n)}</option>`).join('');
+    const inp = 'class="uni-search-input" style="flex:1 1 120px;padding:8px 10px;"';
+    return `
+    <section class="category-section">
+        <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')"><h2>💰 Hunter Wallet & Harvest Log</h2><span class="sec-progress"></span><span>▾</span></div>
+        <div class="section-content">
+            <div class="mission-detail">
+                <div><h4>Credits</h4><input id="walletCredits" type="number" min="0" ${inp} onchange="appState.setWallet('credits', this.value)"></div>
+                <div><h4>Level</h4><input id="walletLevel" type="number" min="1" ${inp} onchange="appState.setWallet('level', this.value)"></div>
+                <div><h4>Current XP</h4><input id="walletXp" type="number" min="0" ${inp} onchange="appState.setWallet('xp', this.value)"></div>
+                <div><h4>XP needed for next level</h4><input id="walletXpNext" type="number" min="0" ${inp} onchange="appState.setWallet('xpNext', this.value)"></div>
+            </div>
+            <div id="walletLevelMeter" class="wallet-meter" style="margin:10px 0;"></div>
+            ${buildFolder('➕ Log a Harvest', `
+            <form class="harvest-form" onsubmit="event.preventDefault(); appState.addHarvest(this);">
+                <select name="species" ${inp}>${speciesOpts}</select>
+                <select name="sex" ${inp}><option value="">Sex</option><option>Male</option><option>Female</option></select>
+                <input name="credits" type="number" min="0" placeholder="Credits earned (sell price)" required ${inp}>
+                <input name="xp" type="number" min="0" placeholder="XP earned" ${inp}>
+                <input name="fitness" type="number" step="0.1" min="0" max="100" placeholder="Fitness %" ${inp}>
+                <input name="score" type="number" step="0.1" placeholder="Total trophy score" ${inp}>
+                <select name="stars" ${inp}><option value="0">Trophy stars</option><option value="1">★</option><option value="2">★★</option><option value="3">★★★</option><option value="4">★★★★</option><option value="5">★★★★★</option></select>
+                <input name="huntRating" placeholder="Hunt rating (e.g. S++)" ${inp}>
+                <input name="notes" placeholder="Notes (weapon, distance...)" ${inp}>
+                <button type="submit" class="uni-search-btn">Save harvest</button>
+            </form>`)}
+            ${buildFolder('📒 Harvest History', '<div id="harvestLogList" class="trophy-grid"></div>')}
+            ${buildFolder('🛒 Wishlist (weapons, gear...)', `
+            <form class="harvest-form" onsubmit="event.preventDefault(); appState.addWish(this);">
+                <input name="name" placeholder="Item (e.g. Primacy Superior 7700)" required ${inp}>
+                <input name="price" type="number" min="1" placeholder="Price in credits" required ${inp}>
+                <button type="submit" class="uni-search-btn">Add</button>
+            </form><div id="wishlistList" class="trophy-grid" style="margin-top:10px;"></div>`)}
+        </div>
+    </section>`;
+}
+
 // Hunting games (e.g. Way of the Hunter 2): reserves, species, quests, challenges
 function renderHuntingSchema(data) {
     const byName = {};
@@ -1311,6 +1472,7 @@ function renderHuntingSchema(data) {
     if (data.crossplay) chips.push(`<span class="game-chip${data.crossplay.supported ? ' on' : ''}" title="${escapeHtml(data.crossplay.note || '')}">${data.crossplay.supported ? '✔ Cross-play' : '✖ No cross-play'}</span>`);
     if (data.multiplayer) chips.push(`<span class="game-chip">${escapeHtml(data.multiplayer)}</span>`);
     if (chips.length) html += `<div class="game-overview">${chips.join('')}</div>`;
+    html += walletPanelHtml(data);
 
     const listed = new Set();
     toArr(data.reserves).forEach(r => {
@@ -1389,7 +1551,7 @@ function renderHuntingSchema(data) {
         const g = data.gear;
         const cards = [...toArr(g.firearms).map((f, i) => textCard(`fa_${i}`, 'Firearm', f.name, f.caliber, `Ammo: ${f.ammo_brand || ''} ${f.recommended_ammo_type || ''}`)),
             ...toArr(g.optics).map((o, i) => textCard(`op_${i}`, 'Optic', o.name, o.magnification, o.description)),
-            ...toArr(g.scents).map((sc, i) => textCard(`sc_${i}`, 'Scent', sc.name, sc.required_level ? `Level ${sc.required_level}` : '', toArr(sc.target_animals).join(', ')))];
+            ...toArr(g.scents).map((sc, i) => buildItemCard({ id: `sc_${i}`, type: 'mission', badge: 'Scent', badgeClass: 'rank-silver', title: sc.name, sub: [sc.required_level ? `Level ${sc.required_level}` : '', sc.price ? `${sc.price} credits` : ''].filter(Boolean).join(' · '), body: toArr(sc.target_animals).join(', '), ctx: 'gear', price: sc.price }))];
         html += buildFolder('🎒 Gear' + unv(g), gridOf(cards));
     }
     if (data.controls) {
@@ -1398,7 +1560,7 @@ function renderHuntingSchema(data) {
     if (toArr(data.land_management).length) {
         html += buildFolder('🌿 Land Management', gridOf(toArr(data.land_management).map((l, i) => buildItemCard({
             id: `land_${i}`, type: 'mission', badge: [l.type, l.impact, l.verified === false ? '⚠' : ''].filter(Boolean).join(' · '), badgeClass: 'rank-silver', title: `${l.name} — ${l.area}`,
-            sub: `${l.reserve} · Cost ${l.cost}`, body: [l.description, toArr(l.affects).length ? `Affects: ${toArr(l.affects).join(', ')}.` : ''].filter(Boolean).join(' '), img: l.image_url, ctx: 'land'
+            sub: `${l.reserve} · Cost ${l.cost}`, body: [l.description, toArr(l.affects).length ? `Affects: ${toArr(l.affects).join(', ')}.` : ''].filter(Boolean).join(' '), img: l.image_url, ctx: 'land', price: l.cost
         }))));
     }
     return html;
