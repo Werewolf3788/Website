@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Werewolf Project",
   "short_name": "Werewolf",
-  "description": "Game companions, trophies, movies and more from the Werewolf Project.",
+  "description": "Track game collectibles, trophies and progress with your friends, plus movies and more from the Werewolf Project.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -10,12 +10,74 @@
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
   "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "shortcuts": [
-    { "name": "Game Companion", "url": "./game/all.html" },
-    { "name": "Movies", "url": "./Movies.html" }
+    {
+      "name": "Game Companion",
+      "url": "./game/all.html"
+    },
+    {
+      "name": "Movies",
+      "url": "./Movies.html"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "icons/screenshots/snresistance-narrow.jpg",
+      "sizes": "824x1830",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Sniper Elite: Resistance — every collectible with location photos"
+    },
+    {
+      "src": "icons/screenshots/sniperelite5-narrow.jpg",
+      "sizes": "824x1830",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Sniper Elite 5 — missions, kill list and collectibles"
+    },
+    {
+      "src": "icons/screenshots/woth2-narrow.jpg",
+      "sizes": "824x1830",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Way of the Hunter 2 — wallet, kills and trophy room"
+    },
+    {
+      "src": "icons/screenshots/snresistance-wide.jpg",
+      "sizes": "1920x1080",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Track missions, collectibles and ribbons with your squad"
+    },
+    {
+      "src": "icons/screenshots/woth2-wide.jpg",
+      "sizes": "1920x1080",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Way of the Hunter 2 new player guide"
+    }
+  ],
+  "categories": [
+    "games",
+    "entertainment"
   ]
 }
