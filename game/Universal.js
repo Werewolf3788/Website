@@ -1282,11 +1282,96 @@ function runUniversalSearch(raw) {
     if (countEl) countEl.innerText = matches ? `${matches} result${matches === 1 ? '' : 's'}` : 'No results';
 }
 
+// Hunting games (e.g. Way of the Hunter 2): reserves, species, quests, challenges
+function renderHuntingSchema(data) {
+    const byName = {};
+    toArr(data.species).forEach(sp => { if (sp && sp.name) byName[sp.name.toLowerCase()] = sp; });
+    const speciesCard = (sp, ctx) => {
+        const parts = [];
+        if (sp.class) parts.push(`Class ${sp.class}`);
+        if (sp.trophy && sp.trophy.type) parts.push(`Trophy: ${sp.trophy.type}${sp.trophy.estimated_range ? ` (${sp.trophy.estimated_range})` : ''}`);
+        if (sp.daily_routine) parts.push(`${sp.daily_routine.type}: ${sp.daily_routine.detail || ''}`);
+        if (sp.senses) parts.push(`Vision ${sp.senses.vision} · Smell ${sp.senses.smell} · Hearing ${sp.senses.hearing}`);
+        const rh = sp.recommended_hit;
+        if (rh) parts.push(`Bullet ${rh.bullet} · Slug ${rh.slug} · Arrow ${rh.arrow_bolt}`);
+        if (toArr(sp.recommended_equipment).length) parts.push(`Calls: ${toArr(sp.recommended_equipment).join(', ')}`);
+        return buildItemCard({
+            id: `species_${sp.id}`, type: 'mission', badge: sp.class ? `Class ${sp.class}` : 'Species', badgeClass: 'rank-silver',
+            title: sp.name, sub: sp.scientific_name || '', body: parts.join(' | '), img: sp.image_url, ctx: `species ${ctx || ''} ${sp.preferred_biomes || ''}`
+        });
+    };
+    let html = `
+        <div class="uni-search-wrap">
+            <input type="search" id="universalSearchInput" class="uni-search-input" autocomplete="off" placeholder="Search animals, quests, challenges...">
+            <button type="button" class="uni-search-btn" id="uniExpandAll">Expand all</button>
+            <button type="button" class="uni-search-btn" id="uniCollapseAll">Collapse all</button>
+            <div class="uni-search-count" id="universalSearchCount"></div>
+        </div>`;
+    const chips = [];
+    if (data.crossplay) chips.push(`<span class="game-chip${data.crossplay.supported ? ' on' : ''}" title="${escapeHtml(data.crossplay.note || '')}">${data.crossplay.supported ? '✔ Cross-play' : '✖ No cross-play'}</span>`);
+    if (data.multiplayer) chips.push(`<span class="game-chip">${escapeHtml(data.multiplayer)}</span>`);
+    if (chips.length) html += `<div class="game-overview">${chips.join('')}</div>`;
+
+    const listed = new Set();
+    toArr(data.reserves).forEach(r => {
+        if (!r) return;
+        let inner = r.map_image_url ? `<img class="mission-hero" src="${toSecureUrl(r.map_image_url)}" alt="" loading="lazy" onerror="this.remove()">` : '';
+        if (toArr(r.areas).length) inner += `<div class="mission-detail"><div><h4>Areas</h4><p>${toArr(r.areas).map(escapeHtml).join(', ')}</p></div></div>`;
+        const cards = toArr(r.species).map(n => { const sp = byName[String(n).toLowerCase()]; if (sp) { listed.add(sp.id); return speciesCard(sp, r.name); }
+            return buildItemCard({ id: `species_${String(n).toLowerCase().replace(/\W+/g, '_')}`, type: 'mission', badge: 'Species', badgeClass: 'rank-bronze', title: n, sub: 'Details not captured yet', ctx: r.name }); });
+        if (cards.length) inner += buildFolder('🦌 Species', gridOf(cards));
+        html += buildFolder(`🗺️ ${escapeHtml(r.name)}${r.region ? `<span class="mission-region">${escapeHtml(r.region)}</span>` : ''}`, inner);
+    });
+    const rest = toArr(data.species).filter(sp => sp && !listed.has(sp.id));
+    if (rest.length) html += buildFolder('🦌 Other Species', gridOf(rest.map(sp => speciesCard(sp, ''))));
+
+    const hr = data.harvest_ranking;
+    if (hr) {
+        const ex = toArr(hr.examples).map((e, i) => buildItemCard({
+            id: `harvest_ex_${i}`, type: 'mission', badge: e.hunt_rating || 'Harvest', badgeClass: 'rank-gold',
+            title: `${e.species} (${e.sex})`, sub: `${'★'.repeat(e.trophy_rating_stars || 0)} · Score ${e.total_trophy_score} · $${e.sell_price}`,
+            body: toArr(e.measurements).map(m => `${m.name}: ${m.value} (${m.points} pts)`).join(' | '), ctx: 'harvest ranking'
+        }));
+        html += buildFolder('🏆 How Harvests Are Ranked', `<div class="mission-detail"><div><p>${escapeHtml(hr.explanation || '')}</p></div></div>` + gridOf(ex));
+    }
+    if (toArr(data.quests).length) {
+        html += buildFolder('📜 Quests', gridOf(toArr(data.quests).map((q, i) => buildItemCard({
+            id: `quest_${i}`, type: 'mission', badge: q.type || 'Quest', badgeClass: 'rank-gold', title: q.name,
+            sub: [q.giver, q.reserve].filter(Boolean).join(' · '), body: [q.summary, ...toArr(q.objectives).map(o => `• ${o}`), q.rewards ? `Rewards: $${q.rewards.money} · ${q.rewards.xp} XP` : ''].filter(Boolean).join(' '), ctx: 'quest'
+        }))));
+    }
+    if (data.challenges) {
+        let ch = '';
+        Object.entries(data.challenges).forEach(([cat, list]) => {
+            if (!Array.isArray(list)) return;
+            ch += buildFolder(escapeHtml(humanize(cat)), gridOf(list.map((c, i) => buildItemCard({
+                id: `challenge_${cat}_${i}`, type: 'mission', badge: humanize(cat), badgeClass: 'rank-bronze', title: c.name,
+                sub: toArr(c.tier_xp).filter(x => x).length ? `Tier XP: ${toArr(c.tier_xp).filter(x => x).join(' / ')}` : '', ctx: 'challenge'
+            }))));
+        });
+        if (ch) html += buildFolder('🎯 Challenges', ch);
+    }
+    if (toArr(data.land_management).length) {
+        html += buildFolder('🌿 Land Management', gridOf(toArr(data.land_management).map((l, i) => buildItemCard({
+            id: `land_${i}`, type: 'mission', badge: `${l.type} · ${l.impact}`, badgeClass: 'rank-silver', title: `${l.name} — ${l.area}`,
+            sub: `${l.reserve} · Cost ${l.cost}`, body: `${l.description} Affects: ${toArr(l.affects).join(', ')}.`, img: l.image_url, ctx: 'land'
+        }))));
+    }
+    return html;
+}
+
 function renderUniversalCompanion(data) {
     const container = document.getElementById('section-container');
     if (!container || !data) return;
 
     ensureUniversalStyles();
+
+    if (!isMissionSchema(data) && Array.isArray(data.species)) {
+        container.innerHTML = renderHuntingSchema(data);
+        appState.applyStateToUI();
+        setupUniversalSearch();
+        return;
+    }
 
     if (isMissionSchema(data)) {
         container.innerHTML = renderMissionSchema(data);
