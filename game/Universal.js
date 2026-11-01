@@ -662,6 +662,12 @@ window.appState.applyStateToUI = function() {
     this.recalculateMetrics();
     if (typeof renderWalletUI === 'function') renderWalletUI();
     if (typeof renderRankUI === 'function') renderRankUI();
+    Object.entries((this.gameData && this.gameData.missions) || {}).forEach(([mk, mm]) => {
+        if (!mm || mm.completion_trophy === undefined) return;
+        const t = this.trophies[`trophy_${this.gameId}_${mm.completion_trophy}`];
+        if (t && t.earned) { this.missions[mk] = this.missions[mk] || {}; if (!this.missions[mk].completed) { this.missions[mk].completed = true; this.missions[mk].auto = true; } }
+        else if (this.missions[mk]?.auto) { this.missions[mk].completed = false; delete this.missions[mk].auto; }
+    });
     Object.values((this.gameData && this.gameData.missions) || {}).forEach(mm => {
         const g = mm && mm.gnomes; if (!g || !g.medal_id) return;
         const all = toArr(g.items).length && toArr(g.items).every(it => this.missions[it.id]?.completed);
@@ -767,7 +773,14 @@ function updateGameMetrics() {
         const missions = of('mission');
         const crk = data.campaign_rank;
         if (crk) boxes.push(`<div class="metric-card" role="button" tabindex="0" style="cursor:pointer" onclick="openRankPanel()" title="Open Campaign Rank & Arsenal"><span class="metric-label">Campaign Rank</span><span class="metric-value">${st.campaignRank || '—'}/${crk.max}</span><span class="metric-sub">${st.campaignRankSource === 'psn' ? 'Synced from PSN' : (st.campaignRank ? 'Tap to update' : 'Tap to set your rank')}</span></div>`);
-        if (missions.length) boxes.push(box('Missions', `${doneOf(missions)}/${missions.length}`));
+        if (missions.length) {
+            const mkeys = new Set(Object.keys(data.missions || {}));
+            const story = missions.filter(c => mkeys.has(c.getAttribute('data-id')));
+            const kills = missions.filter(c => /^kill_/.test(c.getAttribute('data-id')));
+            const props = missions.filter(c => /^prop_/.test(c.getAttribute('data-id')));
+            if (story.length) boxes.push(box('Missions', `${doneOf(story)}/${story.length}`, [kills.length ? `Kill challenges ${doneOf(kills)}/${kills.length}` : '', props.length ? `Propaganda ${doneOf(props)}/${props.length}` : ''].filter(Boolean).join(' · ')));
+            else boxes.push(box('Missions', `${doneOf(missions)}/${missions.length}`));
+        }
         const coll = of('collectible');
         if (coll.length) {
             const groups = {};

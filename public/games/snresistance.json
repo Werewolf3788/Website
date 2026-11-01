@@ -85,7 +85,8 @@
             "label": "Workbench 1/1 – Pistol"
           }
         ]
-      }
+      },
+      "completion_trophy": 1
     },
     "mission_2": {
       "number": 2,
@@ -513,7 +514,8 @@
           "name": "Citadel Apartments",
           "video_time": 482
         }
-      ]
+      ],
+      "completion_trophy": 2
     },
     "mission_3": {
       "number": 3,
@@ -944,7 +946,8 @@
           "name": "Parkview Apartments",
           "video_time": 658
         }
-      ]
+      ],
+      "completion_trophy": 3
     },
     "mission_4": {
       "number": 4,
@@ -1381,7 +1384,8 @@
           "name": "Pump House",
           "video_time": 433
         }
-      ]
+      ],
+      "completion_trophy": 4
     },
     "mission_5": {
       "number": 5,
@@ -1809,7 +1813,8 @@
           "name": "Quarry Lake",
           "video_time": 483
         }
-      ]
+      ],
+      "completion_trophy": 5
     },
     "mission_6": {
       "number": 6,
@@ -2294,7 +2299,8 @@
           "miscellaneous": 5
         }
       },
-      "collectible_order_note": "Cards follow the in-game Collectibles screen order. Personal letters 4 and 5 (Fools Everywhere, Beautiful Views) were still undiscovered on the screenshot, so their order is a best guess."
+      "collectible_order_note": "Cards follow the in-game Collectibles screen order. Personal letters 4 and 5 (Fools Everywhere, Beautiful Views) were still undiscovered on the screenshot, so their order is a best guess.",
+      "completion_trophy": 6
     },
     "mission_7": {
       "number": 7,
@@ -2807,7 +2813,8 @@
         "Destroy the V1 Launch Site — Sabotage the Site (2)"
       ],
       "kill_target": "Aldo Riese",
-      "objectives_source": "In-game pause map (user screenshot); main objective list grows as the mission goes on."
+      "objectives_source": "In-game pause map (user screenshot); main objective list grows as the mission goes on.",
+      "completion_trophy": 7
     },
     "mission_8": {
       "number": 8,
@@ -3246,7 +3253,8 @@
           "name": "Eastern Rail Yard",
           "video_time": 578
         }
-      ]
+      ],
+      "completion_trophy": 8
     },
     "mission_9": {
       "number": 9,
