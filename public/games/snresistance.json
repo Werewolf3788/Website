@@ -1967,7 +1967,7 @@
           },
           {
             "id": "item_m6_03",
-            "name": "Prende Le Maquis",
+            "name": "Prendre Le Maquis",
             "location": "Exterior building wall; unlocks Prendre Le Maquis.",
             "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
             "headline": "Join Us to Reclaim Your Land and Lost Freedom!",
@@ -5017,7 +5017,11 @@
       "trophyId": 18,
       "name": "Tactician",
       "rank": "BRONZE",
-      "description": "Make a Tank shoot and destroy another enemy Vehicle."
+      "description": "Make a Tank shoot and destroy another enemy Vehicle.",
+      "video_time": 648,
+      "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=648s",
+      "best_mission": "mission_6",
+      "tip": "In Mission 6 (Assault on Fort Rouge), get the tank to fire on another enemy vehicle, as shown in Trophy Tom's guide."
     },
     {
       "trophyId": 19,
@@ -5101,7 +5105,11 @@
       "trophyId": 32,
       "name": "Three Birds One Stone",
       "rank": "BRONZE",
-      "description": "Kill 3 on-foot soldiers with one Grenade."
+      "description": "Kill 3 on-foot soldiers with one Grenade.",
+      "video_time": 676,
+      "video_url": "https://www.youtube.com/watch?v=li-jkWVLGYM&t=676s",
+      "tip": "Easiest in Mission 5 (Devil's Cauldron): start at Coastal Landing and throw a grenade into the group of soldiers shown in Trophy Tom's guide.",
+      "best_mission": "mission_5"
     },
     {
       "trophyId": 33,

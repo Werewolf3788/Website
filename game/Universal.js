@@ -1278,9 +1278,17 @@ function trophyCardFor(tKey, ctx) {
     if (tType.includes('PLATINUM')) badgeClass = 'rank-platinum';
     else if (tType.includes('GOLD')) badgeClass = 'rank-gold';
     else if (tType.includes('SILVER')) badgeClass = 'rank-silver';
+    // Pull guide extras (video link, tip) from the game JSON for this trophy.
+    const tid = String(t.trophyId ?? tKey.split('_').pop());
+    const data = appState.gameData || {};
+    const raw = [...toArr(data.trophies), ...toArr(data.general_trophies), ...Object.values(data.missions || {}).flatMap(m => toArr(m && m.trophies))]
+        .find(x => x && String(x.trophyId) === tid) || {};
+    const bestM = raw.best_mission && data.missions && data.missions[raw.best_mission];
     return buildItemCard({
         id: tKey, type: 'trophy', badge: tType, badgeClass,
-        title: t.name, body: t.description, img: t.icon, ctx: `trophy ${ctx || ''}`
+        title: t.name, sub: bestM ? `Best done in Mission ${bestM.number}: ${bestM.title}` : '',
+        body: [t.description, raw.tip ? `Tip: ${raw.tip}` : ''].filter(Boolean).join(' '), img: t.icon, ctx: `trophy ${ctx || ''}`,
+        link: raw.video_url, linkLabel: raw.video_url ? 'Watch guide' : ''
     });
 }
 
