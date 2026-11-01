@@ -1834,14 +1834,15 @@
           {
             "id": "let_m6_02",
             "name": "I Am Fed Up",
-            "location": "Stone table inside church in front of safe.",
+            "location": "Inside the church, on the secondary altar near the safe.",
             "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
             "headline": "Our Newborn Daughter Behaves Better Than My Boss.",
             "author": "Friedrich",
             "summary": "A soldier complains to his wife that his doctor boss barks orders and burns project paperwork.",
             "video_time": 289,
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=289s",
-            "emoji": "✉️"
+            "emoji": "✉️",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/let_m6_02.jpg"
           },
           {
             "id": "let_m6_03",
@@ -1871,14 +1872,15 @@
           {
             "id": "let_m6_05",
             "name": "Fools Everywhere",
-            "location": "Bench in corner on upper-left perimeter of village.",
+            "location": "On a bench next to a yellow container by the road.",
             "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
             "headline": "Brother, Have You Ever Worked with Imbeciles? I Have.",
             "author": "Gunter Schmidt",
             "summary": "A mechanic vents to his brother that nobody else can maintain the vehicles.",
             "video_time": 161,
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=161s",
-            "emoji": "✉️"
+            "emoji": "✉️",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/let_m6_05.jpg"
           }
         ],
         "classified_documents": [
@@ -1970,13 +1972,15 @@
           {
             "id": "item_m6_03",
             "name": "Prendre Le Maquis",
-            "location": "Exterior building wall; unlocks Prendre Le Maquis.",
+            "location": "On the wall of the house on the southwestern side of the village.",
             "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
             "headline": "Join Us to Reclaim Your Land and Lost Freedom!",
             "summary": "A Resistance poster that reminds the narrator of Corneille Noir, a fiery Resistance fighter.",
             "video_time": 137,
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=137s",
-            "emoji": "🏷️"
+            "emoji": "🏷️",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/item_m6_03.jpg",
+            "unlocks": "Propaganda Mission 5"
           }
         ],
         "stone_eagles": [
@@ -2035,13 +2039,14 @@
           {
             "id": "wb_m6_pistol",
             "name": "Pistol Workbench",
-            "location": "Locked house requiring lockpick or bolt cutters.",
+            "location": "In the small shed in the courtyard behind the church.",
             "image_url": "/public/games/snresistance/images/icons/workbench.png",
             "description": "This workbench contained the Pistol Weight Reduction kit.",
             "unlocks": "Pistol Weight Reduction kit",
             "video_time": 364,
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=364s",
-            "emoji": "⚙️"
+            "emoji": "⚙️",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/wb_m6_pistol.jpg"
           }
         ]
       },
