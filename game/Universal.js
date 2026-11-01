@@ -711,7 +711,7 @@ function updateGameMetrics() {
         const species = new Set(toArr(st.harvestLog).map(h => h.species));
         const totalSpecies = toArr(data.species).length;
         const trophies = toArr(st.harvestLog).filter(h => h.taxidermy).length;
-        boxes.push(box('Harvests Logged', fmtNum(toArr(st.harvestLog).length), trophies ? `${trophies} taxidermy trophies` : ''));
+        boxes.push(box('Total Kills', fmtNum(toArr(st.harvestLog).length), `🏆 ${trophies} in Trophy Room`));
         boxes.push(box('Species Harvested', `${species.size}/${totalSpecies}`, `${toArr(st.watchlist).length} on watchlist`));
         boxes.push(box(`Level ${w.level || 1}`, `${fmtNum(w.credits)} cr`, (w.xpNext || xpNeededFor(w.level)) ? `${fmtNum(w.xp)}/${fmtNum(w.xpNext || xpNeededFor(w.level))} XP` : `${fmtNum(w.xp)} XP`));
     } else {
@@ -1093,6 +1093,36 @@ function ensureUniversalStyles() {
         .harvest-form { display: flex; flex-wrap: wrap; gap: 8px; }
         .hunt-input { flex: 1 1 140px; padding: 8px 10px; }
         .ctl-wrap { overflow-x: auto; }
+        .kill-tally { grid-column: 1 / -1; margin-bottom: 10px; font-size: 0.85rem; color: #cbd5e1; }
+        .kt-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+        .ts-frame { position: relative; aspect-ratio: 16 / 9; max-height: 420px; width: 100%; border-radius: 12px; overflow: hidden; background: #020617; margin-bottom: 8px; }
+        .ts-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s ease; cursor: pointer; }
+        .ts-slide.active { opacity: 1; z-index: 1; }
+        .ts-slide img { width: 100%; height: 100%; object-fit: cover; }
+        .ts-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 14px; background: linear-gradient(transparent, rgba(2,6,23,0.9)); color: #fff; font-size: 0.9rem; }
+        .ts-cap span { color: #facc15; }
+        .ts-nav { position: absolute; top: 50%; transform: translateY(-50%); z-index: 2; background: rgba(2,6,23,0.6); color: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.4rem; cursor: pointer; }
+        .ts-prev { left: 8px; } .ts-next { right: 8px; }
+        .ts-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 12px; }
+        .ts-dot { width: 8px; height: 8px; border-radius: 50%; border: none; background: #475569; cursor: pointer; padding: 0; }
+        .ts-dot.active { background: var(--user-theme-accent, #f97316); }
+        .ts-empty { color: #94a3b8; font-size: 0.85rem; margin-bottom: 10px; }
+        .trophy-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+        .trophy-tile { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px; border-radius: 10px; background: var(--bg-card, #1e293b); border: 1px solid rgba(255,255,255,0.08); color: #fff; cursor: pointer; text-align: center; }
+        .trophy-tile img, .tt-nophoto { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; background: #0f172a; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+        .tt-name { font-size: 0.82rem; font-weight: 700; } .tt-stars { color: #facc15; font-size: 0.8rem; } .tt-score { font-size: 0.72rem; color: #94a3b8; }
+        .tm-overlay { position: fixed; inset: 0; z-index: 9999; background: rgba(2,6,23,0.8); display: flex; align-items: center; justify-content: center; padding: 16px; }
+        .tm-card { position: relative; width: min(560px, 100%); max-height: 92vh; overflow-y: auto; background: #131d31; border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 16px; color: #e2e8f0; }
+        .tm-close { position: absolute; top: 10px; right: 10px; z-index: 2; background: rgba(2,6,23,0.7); color: #fff; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; }
+        .tm-photo { width: 100%; max-height: 340px; object-fit: cover; border-radius: 10px; background: #0f172a; }
+        .tm-nophoto { height: 140px; display: flex; align-items: center; justify-content: center; color: #64748b; }
+        .tm-card h3 { color: #fff; margin: 10px 0 2px; }
+        .tm-stars { color: #facc15; font-size: 1.1rem; margin-bottom: 8px; }
+        .tm-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 12px; font-size: 0.82rem; }
+        .tm-grid div { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 4px 0; }
+        .tm-grid span { color: #94a3b8; }
+        .tm-notes { margin-top: 8px; font-size: 0.82rem; color: #cbd5e1; }
+        .tm-upload { display: inline-block; margin-top: 12px; cursor: pointer; }
         .guide-sec { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.06); color: #cbd5e1; font-size: 0.85rem; line-height: 1.5; }
         .guide-sec h3 { color: #fff; font-size: 1rem; margin-bottom: 6px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
         .guide-sec ul { margin: 6px 0 8px 18px; } .guide-sec li { margin: 3px 0; }
@@ -1480,6 +1510,73 @@ async function loadTrophyPhoto(id) {
     catch (e) { console.warn('[Trophy photo]', e); }
 }
 
+// ---- trophy room: slideshow + bookmarked mounts + detail card
+const starStr = (n) => n ? '★'.repeat(n) + '☆'.repeat(Math.max(0, 5 - n)) : 'Not rated';
+let trophySlideIdx = 0, trophySlideTimer = null, trophyRoomSig = '';
+function trophyMounts() { return toArr(appState.harvestLog).filter(h => h.taxidermy).slice().reverse(); }
+function trophyDetailHtml(h) {
+    const photo = h.photoId && trophyPhotoCache[h.photoId];
+    const row = (k, v) => (v || v === 0) && v !== '' ? `<div><span>${k}</span><b>${escapeHtml(String(v))}</b></div>` : '';
+    return `${photo ? `<img class="tm-photo" src="${photo}" alt="${escapeHtml(h.species)} trophy">` : '<div class="tm-photo tm-nophoto">No photo yet</div>'}
+        <h3>${escapeHtml(h.species)}${h.sex ? ` (${escapeHtml(h.sex)})` : ''}</h3>
+        <div class="tm-stars">${starStr(h.stars)}</div>
+        <div class="tm-grid">
+            ${row('Trophy score', h.score)}${row('Hunt rating', h.huntRating)}${row('Fitness', h.fitness ? h.fitness + '%' : '')}
+            ${row('Age', h.age ? h.age + ' yrs' : '')}${row('Weight', h.weight ? h.weight + ' lb' : '')}${row('Shot placement', h.hitOrgan)}
+            ${row('Shot distance', h.shotDistance ? h.shotDistance + ' yd' : '')}${row('Credits', h.credits ? fmtNum(h.credits) : '')}${row('XP', h.xp ? fmtNum(h.xp) : '')}
+            ${row('In-game day', h.gameDay ? `Day ${h.gameDay} ${h.gameTime || ''}` : '')}${row('Logged', h.date)}
+        </div>
+        ${h.notes ? `<p class="tm-notes">${escapeHtml(h.notes)}</p>` : ''}
+        <label class="uni-search-btn tm-upload">📷 ${photo ? 'Replace photo' : 'Add photo'}<input type="file" accept="image/*" hidden onchange="appState.setTrophyPhoto('${escapeHtml(h.id)}', this)"></label>`;
+}
+function openTrophy(id) {
+    const h = toArr(appState.harvestLog).find(x => x.id === id); if (!h) return;
+    if (h.photoId) loadTrophyPhoto(h.photoId);
+    let m = document.getElementById('trophyModal');
+    if (!m) {
+        m = document.createElement('div'); m.id = 'trophyModal'; m.className = 'tm-overlay';
+        m.addEventListener('click', (e) => { if (e.target === m) closeTrophy(); });
+        document.body.appendChild(m);
+    }
+    m.dataset.id = id;
+    m.innerHTML = `<div class="tm-card" role="dialog" aria-label="Trophy details"><button type="button" class="tm-close" onclick="closeTrophy()" aria-label="Close">✕</button>${trophyDetailHtml(h)}</div>`;
+}
+function closeTrophy() { const m = document.getElementById('trophyModal'); if (m) m.remove(); }
+window.openTrophy = openTrophy; window.closeTrophy = closeTrophy;
+function showTrophySlide(i) {
+    const slides = document.querySelectorAll('#trophySlideshow .ts-slide'); if (!slides.length) return;
+    trophySlideIdx = (i + slides.length) % slides.length;
+    slides.forEach((el, k) => el.classList.toggle('active', k === trophySlideIdx));
+    document.querySelectorAll('#trophySlideshow .ts-dot').forEach((el, k) => el.classList.toggle('active', k === trophySlideIdx));
+}
+window.showTrophySlide = showTrophySlide;
+function renderTrophyRoom() {
+    const show = document.getElementById('trophySlideshow'), grid = document.getElementById('trophyGrid');
+    if (!show || !grid) return;
+    const mounts = trophyMounts();
+    mounts.forEach(h => { if (h.photoId) loadTrophyPhoto(h.photoId); });
+    const sig = mounts.map(h => `${h.id}:${h.photoId && trophyPhotoCache[h.photoId] ? 1 : 0}:${h.stars}:${h.score}`).join('|');
+    if (sig === trophyRoomSig) return;
+    trophyRoomSig = sig;
+    const withPhoto = mounts.filter(h => h.photoId && trophyPhotoCache[h.photoId]);
+    show.innerHTML = withPhoto.length ? `<div class="ts-frame">
+        ${withPhoto.map((h, k) => `<div class="ts-slide${k === 0 ? ' active' : ''}" onclick="openTrophy('${escapeHtml(h.id)}')"><img src="${trophyPhotoCache[h.photoId]}" alt="${escapeHtml(h.species)}"><div class="ts-cap"><b>${escapeHtml(h.species)}</b> <span>${starStr(h.stars)}</span>${h.score ? ` · ${escapeHtml(String(h.score))}` : ''}</div></div>`).join('')}
+        ${withPhoto.length > 1 ? `<button type="button" class="ts-nav ts-prev" onclick="showTrophySlide(trophySlideIdxGet()-1)" aria-label="Previous">‹</button><button type="button" class="ts-nav ts-next" onclick="showTrophySlide(trophySlideIdxGet()+1)" aria-label="Next">›</button>` : ''}
+        </div>${withPhoto.length > 1 ? `<div class="ts-dots">${withPhoto.map((_, k) => `<button type="button" class="ts-dot${k === 0 ? ' active' : ''}" onclick="showTrophySlide(${k})" aria-label="Slide ${k + 1}"></button>`).join('')}</div>` : ''}`
+        : (mounts.length ? '<p class="ts-empty">Add a photo to a mount below and it will show up in the slideshow.</p>' : '');
+    trophySlideIdx = 0;
+    clearInterval(trophySlideTimer);
+    if (withPhoto.length > 1) trophySlideTimer = setInterval(() => { if (!document.getElementById('trophyModal')) showTrophySlide(trophySlideIdx + 1); }, 5000);
+    grid.innerHTML = mounts.length ? mounts.map(h => {
+        const photo = h.photoId && trophyPhotoCache[h.photoId];
+        return `<button type="button" class="trophy-tile" onclick="openTrophy('${escapeHtml(h.id)}')">
+            ${photo ? `<img src="${photo}" alt="">` : '<span class="tt-nophoto">🏆</span>'}
+            <span class="tt-name">${escapeHtml(h.species)}</span><span class="tt-stars">${starStr(h.stars)}</span>
+            ${h.score ? `<span class="tt-score">Score ${escapeHtml(String(h.score))}</span>` : ''}</button>`;
+    }).join('') : '<p style="color:#94a3b8;font-size:0.85rem;">No mounts yet. Tick "Taxidermy" when you log a harvest, or press "Mount" on a harvest card.</p>';
+}
+window.trophySlideIdxGet = () => trophySlideIdx;
+
 // ---- rendering
 function renderWalletUI() {
     const w = appState.wallet || {};
@@ -1494,6 +1591,14 @@ function renderWalletUI() {
         + (reward ? `<span class="game-chip">Level ${(w.level || 1) + 1} reward: ${fmtNum(reward.credits)} credits${reward.skill_points ? ` + ${reward.skill_points} skill point` : ''}${reward.unlocks ? ` + ${escapeHtml(reward.unlocks)}` : ''}${reward.inferred ? ' (estimated)' : ''}</span>` : '');
     document.querySelectorAll('.price-meter').forEach(el => { const p = Number(el.dataset.price || 0); el.innerHTML = 'Credits needed: ' + meterHtml(p - (w.credits || 0), p, ''); });
 
+    const tally = document.getElementById('killTally');
+    if (tally) {
+        const counts = {};
+        toArr(appState.harvestLog).forEach(h => { counts[h.species] = (counts[h.species] || 0) + 1; });
+        const list = Object.entries(counts).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+        tally.innerHTML = list.length ? `<div class="kt-head">Total kills: <b>${fmtNum(appState.harvestLog.length)}</b> · ${list.length} species</div><div class="kt-chips">${list.map(([sp, n]) => `<span class="game-chip">${escapeHtml(sp)} × ${n}</span>`).join('')}</div>` : '';
+    }
+    renderTrophyRoom();
     const log = document.getElementById('harvestLogList');
     if (log) {
         log.innerHTML = appState.harvestLog.length ? appState.harvestLog.slice().reverse().map(h => {
@@ -1505,9 +1610,11 @@ function renderWalletUI() {
                 <span class="trophy-rank rank-gold">${escapeHtml(h.huntRating || 'Harvest')}</span> ${h.taxidermy ? '<span class="trophy-rank rank-silver">Taxidermy</span>' : ''}
                 <h3 style="color:#fff;font-size:0.95rem;margin-top:4px;">${escapeHtml(h.species)}${h.sex ? ` (${escapeHtml(h.sex)})` : ''}</h3>
                 <div style="font-size:0.75rem;color:#94a3b8;">${'★'.repeat(h.stars || 0)} ${h.score ? `· Score ${escapeHtml(String(h.score))}` : ''} ${h.fitness ? `· Fitness ${escapeHtml(String(h.fitness))}%` : ''} ${h.age ? `· ${escapeHtml(String(h.age))} yrs` : ''} ${h.weight ? `· ${escapeHtml(String(h.weight))} lb` : ''}</div>
-                <div style="font-size:0.8rem;color:#e2e8f0;">+${fmtNum(h.credits)} credits · +${fmtNum(h.xp)} XP ${h.notes ? `· ${escapeHtml(h.notes)}` : ''}</div>
+                <div style="font-size:0.8rem;color:#e2e8f0;">+${fmtNum(h.credits)} credits · +${fmtNum(h.xp)} XP ${h.hitOrgan ? `· ${escapeHtml(h.hitOrgan)}` : ''} ${h.shotDistance ? `· ${escapeHtml(String(h.shotDistance))} yd` : ''} ${h.notes ? `· ${escapeHtml(h.notes)}` : ''}</div>
                 <div style="font-size:0.7rem;color:#64748b;">${h.gameDay ? `Game day ${escapeHtml(String(h.gameDay))} ${escapeHtml(h.gameTime || '')} · ` : ''}${escapeHtml(h.date || '')}</div></div>
-                <button type="button" class="uni-search-btn" onclick="appState.deleteHarvest('${escapeHtml(h.id)}')" title="Remove and take the credits/XP back off">Remove</button>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                <button type="button" class="uni-search-btn" onclick="appState.toggleTaxidermy('${escapeHtml(h.id)}')" title="${h.taxidermy ? 'Remove from Trophy Room' : 'Add to Trophy Room'}">${h.taxidermy ? 'Unmount' : '🏆 Mount'}</button>
+                <button type="button" class="uni-search-btn" onclick="appState.deleteHarvest('${escapeHtml(h.id)}')" title="Remove and take the credits/XP back off">Remove</button></div>
             </div></div>`; }).join('') : '<p style="color:#94a3b8;font-size:0.85rem;">No harvests logged yet.</p>';
     }
 
@@ -1570,25 +1677,17 @@ window.appState.addHarvest = async function(form) {
         credits: Math.max(0, Math.floor(Number(f.get('credits')) || 0)), xp: Math.max(0, Math.floor(Number(f.get('xp')) || 0)),
         fitness: f.get('fitness') || '', score: f.get('score') || '', stars: Number(f.get('stars')) || 0, age: f.get('age') || '', weight: f.get('weight') || '',
         huntRating: f.get('huntRating') || '', notes: f.get('notes') || '', taxidermy: !!f.get('taxidermy'),
+        hitOrgan: f.get('hitOrgan') || '', shotDistance: f.get('shotDistance') || '',
         gameDay: this.wallet.gameDay, gameTime: this.wallet.gameTime, date: new Date().toLocaleString()
     };
     const file = f.get('photo');
-    if (file && file.size) {
-        const ref = photoDocRef(h.id);
-        if (!ref) { this.updateStatus('Sign in to save trophy photos. The harvest was saved without the photo.'); }
-        else {
-            try {
-                const data = await compressImage(file);
-                await ref.set({ data, species: h.species, harvestId: h.id, createdAt: new Date().toISOString() });
-                h.photoId = h.id; trophyPhotoCache[h.id] = data;
-            } catch (e) { console.warn('[Trophy photo]', e); this.updateStatus(`Photo not saved: ${e.message}`); }
-        }
-    }
+    if (h.taxidermy && file && file.size) await uploadTrophyPhoto(h, file);
     this.harvestLog.push(h);
     this.wallet.credits = (this.wallet.credits || 0) + h.credits;
     this.wallet.xp = (this.wallet.xp || 0) + h.xp;
     this.applyLevelUps();
     form.reset();
+    const pf = form.querySelector('.harvest-photo-field'); if (pf) pf.hidden = true;
     this.applyStateToUI(); this.saveProgress();
     this.updateStatus(`Harvest saved: +${fmtNum(h.credits)} credits, +${fmtNum(h.xp)} XP.`);
 };
@@ -1599,6 +1698,30 @@ window.appState.deleteHarvest = function(id) {
     this.wallet.xp = Math.max(0, (this.wallet.xp || 0) - (h.xp || 0));
     if (h.photoId) { const ref = photoDocRef(h.photoId); if (ref) ref.delete().catch(() => {}); delete trophyPhotoCache[h.photoId]; }
     this.applyStateToUI(); this.saveProgress();
+};
+async function uploadTrophyPhoto(h, file) {
+    const ref = photoDocRef(h.id);
+    if (!ref) { appState.updateStatus('Sign in to save trophy photos (they are stored with your account).'); return false; }
+    try {
+        const data = await compressImage(file);
+        await ref.set({ data, species: h.species, harvestId: h.id, createdAt: new Date().toISOString() });
+        h.photoId = h.id; trophyPhotoCache[h.id] = data;
+        return true;
+    } catch (e) { console.warn('[Trophy photo]', e); appState.updateStatus(`Photo not saved: ${e.message}`); return false; }
+}
+window.appState.toggleTaxidermy = function(id) {
+    const h = this.harvestLog.find(x => x.id === id); if (!h) return;
+    h.taxidermy = !h.taxidermy;
+    if (!h.taxidermy && h.photoId) { const ref = photoDocRef(h.photoId); if (ref) ref.delete().catch(() => {}); delete trophyPhotoCache[h.photoId]; delete h.photoId; }
+    this.applyStateToUI(); this.saveProgress();
+};
+window.appState.setTrophyPhoto = async function(id, input) {
+    const h = this.harvestLog.find(x => x.id === id); const file = input.files && input.files[0];
+    if (!h || !h.taxidermy || !file) return;
+    this.updateStatus('Uploading trophy photo...');
+    if (await uploadTrophyPhoto(h, file)) { this.updateStatus('Trophy photo saved.'); this.saveProgress(); }
+    this.applyStateToUI();
+    if (document.getElementById('trophyModal')) openTrophy(id);
 };
 window.appState.saveWatch = function(form) {
     const f = new FormData(form);
@@ -1683,7 +1806,7 @@ function walletPanelHtml(data) {
             <div id="watchLifeHint" style="font-size:0.72rem;color:#94a3b8;flex-basis:100%;"></div>
             <button type="submit" class="uni-search-btn">Add to watchlist</button>
         </form>`, '<div id="watchlistList" class="hunt-card-list"></div>'))}
-    ${buildFolder('📒 Harvest Log & Trophy Photos', two(`
+    ${buildFolder('📒 Harvest Log & Kill Tally', two(`
         <form id="harvestForm" class="harvest-form" onsubmit="event.preventDefault(); appState.addHarvest(this);">
             <select name="species" ${inp}>${speciesOpts}</select>
             <select name="sex" ${inp}><option value="">Sex</option><option>Male</option><option>Female</option></select>
@@ -1695,11 +1818,14 @@ function walletPanelHtml(data) {
             <input name="score" type="number" step="0.1" placeholder="Total trophy score" ${inp}>
             <select name="stars" ${inp}><option value="0">Trophy stars</option><option value="1">★</option><option value="2">★★</option><option value="3">★★★</option><option value="4">★★★★</option><option value="5">★★★★★</option></select>
             <input name="huntRating" placeholder="Hunt rating (e.g. S++)" ${inp}>
-            <input name="notes" placeholder="Notes (weapon, distance...)" ${inp}>
-            <label class="hunt-check"><input type="checkbox" name="taxidermy"> Taxidermy</label>
-            <label class="hunt-file">📷 Trophy photo <input type="file" name="photo" accept="image/*"></label>
+            <select name="hitOrgan" ${inp}><option value="">Shot placement</option><option>Heart</option><option>Lungs</option><option>Heart & lungs</option><option>Liver</option><option>Neck / spine</option><option>Head</option><option>Other</option></select>
+            <input name="shotDistance" type="number" min="0" placeholder="Shot distance (yd)" ${inp}>
+            <input name="notes" placeholder="Notes" ${inp}>
+            <label class="hunt-check"><input type="checkbox" name="taxidermy" onchange="this.form.querySelector('.harvest-photo-field').hidden = !this.checked"> 🏆 Taxidermy (adds to Trophy Room)</label>
+            <label class="hunt-file harvest-photo-field" hidden>📷 Trophy photo <input type="file" name="photo" accept="image/*"></label>
             <button type="submit" class="uni-search-btn">Save harvest</button>
-        </form>`, '<div id="harvestLogList" class="hunt-card-list"></div>'))}
+        </form>`, '<div id="killTally" class="kill-tally"></div><div id="harvestLogList" class="hunt-card-list"></div>'))}
+    ${buildFolder('🏆 Trophy Room (Taxidermy)', '<div id="trophySlideshow"></div><div id="trophyGrid" class="trophy-grid"></div>')}
     ${buildFolder('🛒 Wishlist (weapons, gear...)', two(`
         <form class="harvest-form" onsubmit="event.preventDefault(); appState.addWish(this);">
             <input name="name" placeholder="Item (e.g. Primacy Superior 7700)" required ${inp}>
