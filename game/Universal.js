@@ -123,9 +123,10 @@ window.appState = {
     trophies: {},
     medals: {},
     ribbons: {},
-    wallet: { credits: 0, level: 1, xp: 0, xpNext: null },
+    wallet: { credits: 0, level: 1, xp: 0, xpNext: null, gameDay: 1, gameTime: '06:00' },
     harvestLog: [],
     wishlist: [],
+    watchlist: [],
     ranks: {},
 
     getUserKey: function() {
@@ -160,9 +161,10 @@ window.appState = {
         this.trophies = {};
         this.medals = {};
         this.ribbons = {};
-        this.wallet = { credits: 0, level: 1, xp: 0, xpNext: null };
+        this.wallet = { credits: 0, level: 1, xp: 0, xpNext: null, gameDay: 1, gameTime: '06:00' };
         this.harvestLog = [];
         this.wishlist = [];
+        this.watchlist = [];
         this.ranks = {};
 
         document.querySelectorAll('.game-pill').forEach(pill => {
@@ -461,15 +463,17 @@ window.appState = {
             wallet: this.wallet,
             harvestLog: this.harvestLog,
             wishlist: this.wishlist,
+            watchlist: this.watchlist,
             trophies: this.trophies
         };
     },
 
     applyPayload: function(payload) {
         if (!payload || typeof payload !== 'object') return;
-        if (payload.wallet && typeof payload.wallet === 'object') this.wallet = Object.assign({ credits: 0, level: 1, xp: 0, xpNext: null }, payload.wallet);
+        if (payload.wallet && typeof payload.wallet === 'object') this.wallet = Object.assign({ credits: 0, level: 1, xp: 0, xpNext: null, gameDay: 1, gameTime: '06:00' }, payload.wallet);
         if (Array.isArray(payload.harvestLog)) this.harvestLog = payload.harvestLog;
         if (Array.isArray(payload.wishlist)) this.wishlist = payload.wishlist;
+        if (Array.isArray(payload.watchlist)) this.watchlist = payload.watchlist;
         this.trophies_earned = payload.trophies_earned || 0;
         this.trophies_total = payload.trophies_total || this.trophies_total;
         this.trophies_percent = payload.trophies_percent || 0;
@@ -1017,6 +1021,16 @@ function ensureUniversalStyles() {
         .wm-bar { flex: 1 1 120px; height: 6px; border-radius: 999px; background: #0f172a; overflow: hidden; min-width: 80px; }
         .wm-bar > span { display: block; height: 100%; background: linear-gradient(90deg, #f59e0b, #22c55e); }
         .harvest-form { display: flex; flex-wrap: wrap; gap: 8px; }
+        .hunt-input { flex: 1 1 140px; padding: 8px 10px; }
+        .hunt-2col { display: grid; grid-template-columns: minmax(280px, 420px) 1fr; gap: 16px; align-items: start; }
+        @media (max-width: 900px) { .hunt-2col { grid-template-columns: 1fr; } }
+        .hunt-form-col { background: rgba(2,6,23,0.35); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; }
+        .hunt-card-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; max-height: 760px; overflow-y: auto; }
+        .hunt-card { display: flex; flex-direction: column; gap: 6px; }
+        .hunt-photo { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; background: #0f172a; }
+        .hunt-photo-empty { height: 80px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 0.75rem; }
+        .hunt-check, .hunt-file { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; color: #cbd5e1; flex: 1 1 140px; }
+        .hunt-file input { max-width: 100%; color: #cbd5e1; font-size: 0.75rem; }
     `;
     document.head.appendChild(style);
 }
@@ -1303,82 +1317,192 @@ function runUniversalSearch(raw) {
 }
 
 // ---------------------------------------------------------------------------
-// Hunter wallet: credits, level/XP, harvest log, wishlist and "needed/total"
-// price meters on anything that costs credits (hunting games)
+// Hunter tools (hunting games): wallet (credits, level/XP, level rewards),
+// in-game clock, harvest log with trophy photos, watchlist countdowns,
+// wishlist, and "credits needed/total" meters on anything with a price.
 // ---------------------------------------------------------------------------
 const fmtNum = (n) => Number(n || 0).toLocaleString('en-US');
-function xpNeededFor(level) {
-    const table = appState.gameData?.player_levels?.xp_to_next_level || {};
-    const v = table[String(level)];
-    return v ? Number(v) : null;
-}
+const levelsData = () => appState.gameData?.player_levels || {};
+function xpNeededFor(level) { const v = (levelsData().xp_to_next_level || {})[String(level)]; return v ? Number(v) : null; }
+function levelReward(level) { return (levelsData().rewards || {})[String(level)] || null; }
 function meterHtml(needed, total, unit) {
     const pct = total ? Math.min(100, Math.round(((total - needed) / total) * 100)) : 0;
     return `<span class="wm-num${needed <= 0 ? ' ok' : ''}">${needed <= 0 ? '✔ ' : ''}${fmtNum(Math.max(0, needed))}/${fmtNum(total)}${unit ? ' ' + unit : ''}</span><span class="wm-bar"><span style="width:${pct}%"></span></span>`;
 }
+const setVal = (id, v) => { const el = document.getElementById(id); if (el && document.activeElement !== el) el.value = v; };
+
+// ---- in-game clock & lifecycles
+function gameNowDays() {
+    const w = appState.wallet || {};
+    const [h, m] = String(w.gameTime || '00:00').split(':').map(Number);
+    return (Number(w.gameDay) || 1) + ((h || 0) + (m || 0) / 60) / 24;
+}
+function lifecycleFor(species) {
+    const key = String(species || '').toLowerCase().replace(/[^a-z]/g, '');
+    const list = toArr(appState.gameData?.lifecycles?.species);
+    const e = list.find(x => String(x.species).toLowerCase().replace(/[^a-z]/g, '') === key);
+    if (!e) return null;
+    if (e.max_age_years) return { max: e.max_age_years, young: e.young_years, adult: e.adult_years, mature: e.mature_years, conflict: false };
+    const opts = toArr(e.stages_by_source);
+    const pick = opts.slice().sort((x, y) => x.max - y.max)[0];
+    return pick ? { max: pick.max, young: pick.young, adult: pick.adult, mature: pick.mature, conflict: true, reported: toArr(e.max_age_years_reported) } : null;
+}
+function stageForAge(lc, age) {
+    if (!lc) return '';
+    const inRange = (r) => { const [a, b] = String(r || '').split('-').map(Number); return age >= a && age <= (b || a); };
+    if (inRange(lc.young)) return 'Young'; if (inRange(lc.adult)) return 'Adult'; if (inRange(lc.mature)) return 'Mature';
+    return age > lc.max ? 'Past max age' : '';
+}
+function watchStatus(w) {
+    const elapsed = Math.max(0, gameNowDays() - (Number(w.sightedDay) + (Number(String(w.sightedTime || '0:0').split(':')[0]) || 0) / 24));
+    const ageNow = Number(w.age) + Math.floor(elapsed / 3);
+    const daysLeft = (Number(w.maxAge) - Number(w.age)) * 3 - elapsed;
+    const fit = parseFloat(w.fitness);
+    let urgency = 'MONITOR', color = '#38bdf8', msg = 'Average genetics. Watch how its trophy develops.';
+    if (daysLeft <= 0) { urgency = 'GONE?'; color = '#64748b'; msg = 'Past its max age; it has probably died of old age.'; }
+    else if (daysLeft <= 3) { urgency = 'CRITICAL'; color = '#ef4444'; msg = 'Final year: harvest it before it dies of old age.'; }
+    else if (fit >= 85) { urgency = 'PROTECT / GROW'; color = '#f59e0b'; msg = '5-star potential. Let it age further.'; }
+    else if (fit < 55) { urgency = 'CULL'; color = '#ef4444'; msg = 'Low fitness. Remove before the year rolls over.'; }
+    return { elapsed, ageNow, daysLeft, urgency, color, msg, dieDay: Number(w.sightedDay) + (Number(w.maxAge) - Number(w.age)) * 3 };
+}
+function fmtGameSpan(days) {
+    if (days <= 0) return '0 days';
+    const d = Math.floor(days), h = Math.round((days - d) * 24);
+    return `${d} day${d === 1 ? '' : 's'}${h ? ` ${h} h` : ''}`;
+}
+
+// ---- trophy photos (compressed and stored in Firestore, one doc per photo)
+const trophyPhotoCache = {};
+function photoDocRef(id) {
+    const key = appState.getUserKey(); if (!key || !firestore) return null;
+    return firestore.collection('user').doc(key).collection('platform').doc(appState.platform)
+        .collection('game').doc(appState.getCanonicalGameName()).collection('trophy_photos').doc(id);
+}
+function compressImage(file, maxSide = 1024, quality = 0.72) {
+    return new Promise((resolve, reject) => {
+        const img = new Image(); const url = URL.createObjectURL(file);
+        img.onload = () => {
+            const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+            const c = document.createElement('canvas'); c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+            c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+            let q = quality, data = c.toDataURL('image/jpeg', q);
+            while (data.length > 700000 && q > 0.35) { q -= 0.1; data = c.toDataURL('image/jpeg', q); }
+            resolve(data);
+        };
+        img.onerror = () => reject(new Error('Could not read that image'));
+        img.src = url;
+    });
+}
+async function loadTrophyPhoto(id) {
+    if (trophyPhotoCache[id] !== undefined) return;
+    trophyPhotoCache[id] = null;
+    try { const ref = photoDocRef(id); if (!ref) return; const doc = await ref.get(); if (doc.exists) { trophyPhotoCache[id] = doc.data().data; renderWalletUI(); } }
+    catch (e) { console.warn('[Trophy photo]', e); }
+}
+
+// ---- rendering
 function renderWalletUI() {
     const w = appState.wallet || {};
-    const c = document.getElementById('walletCredits'); if (!c) return;
-    if (document.activeElement !== c) c.value = w.credits || 0;
-    const lv = document.getElementById('walletLevel'); if (document.activeElement !== lv) lv.value = w.level || 1;
-    const xp = document.getElementById('walletXp'); if (document.activeElement !== xp) xp.value = w.xp || 0;
-    const nx = document.getElementById('walletXpNext');
-    const next = w.xpNext || xpNeededFor(w.level);
-    if (document.activeElement !== nx) nx.value = next || '';
+    if (!document.getElementById('walletCredits')) return;
+    setVal('walletCredits', w.credits || 0); setVal('walletLevel', w.level || 1); setVal('walletXp', w.xp || 0);
+    const next = w.xpNext || xpNeededFor(w.level); setVal('walletXpNext', next || '');
+    setVal('gameDay', w.gameDay || 1); setVal('gameTime', w.gameTime || '06:00');
+    const reward = levelReward((w.level || 1) + 1);
     const lvMeter = document.getElementById('walletLevelMeter');
-    if (lvMeter) lvMeter.innerHTML = next ? `XP needed for level ${(w.level || 1) + 1}: ` + meterHtml(next - (w.xp || 0), next, 'XP') : 'Enter the XP needed for the next level (shown on the pause menu).';
-    document.querySelectorAll('.price-meter').forEach(el => {
-        const price = Number(el.dataset.price || 0);
-        el.innerHTML = 'Credits needed: ' + meterHtml(price - (w.credits || 0), price, '');
-    });
+    if (lvMeter) lvMeter.innerHTML = (next ? `XP needed for level ${(w.level || 1) + 1}: ` + meterHtml(next - (w.xp || 0), next, 'XP') : 'Enter the XP needed for the next level (from the pause menu).')
+        + (reward ? `<span class="game-chip">Level ${(w.level || 1) + 1} reward: ${fmtNum(reward.credits)} credits${reward.skill_points ? ` + ${reward.skill_points} skill point` : ''}${reward.unlocks ? ` + ${escapeHtml(reward.unlocks)}` : ''}${reward.inferred ? ' (estimated)' : ''}</span>` : '');
+    document.querySelectorAll('.price-meter').forEach(el => { const p = Number(el.dataset.price || 0); el.innerHTML = 'Credits needed: ' + meterHtml(p - (w.credits || 0), p, ''); });
+
     const log = document.getElementById('harvestLogList');
     if (log) {
-        log.innerHTML = appState.harvestLog.length ? appState.harvestLog.slice().reverse().map(h => `
-            <div class="trophy-card"><div style="display:flex;justify-content:space-between;gap:8px;">
-                <div><span class="trophy-rank rank-gold">${escapeHtml(h.huntRating || 'Harvest')}</span>
+        log.innerHTML = appState.harvestLog.length ? appState.harvestLog.slice().reverse().map(h => {
+            if (h.photoId) loadTrophyPhoto(h.photoId);
+            const photo = h.photoId && trophyPhotoCache[h.photoId];
+            return `<div class="trophy-card hunt-card">
+                ${photo ? `<img class="hunt-photo" src="${photo}" alt="Trophy photo">` : (h.photoId ? '<div class="hunt-photo hunt-photo-empty">Loading photo…</div>' : '')}
+                <div style="display:flex;justify-content:space-between;gap:8px;"><div>
+                <span class="trophy-rank rank-gold">${escapeHtml(h.huntRating || 'Harvest')}</span> ${h.taxidermy ? '<span class="trophy-rank rank-silver">Taxidermy</span>' : ''}
                 <h3 style="color:#fff;font-size:0.95rem;margin-top:4px;">${escapeHtml(h.species)}${h.sex ? ` (${escapeHtml(h.sex)})` : ''}</h3>
-                <div style="font-size:0.75rem;color:#94a3b8;">${'★'.repeat(h.stars || 0)} ${h.score ? `· Score ${escapeHtml(String(h.score))}` : ''} ${h.fitness ? `· Fitness ${escapeHtml(String(h.fitness))}%` : ''}</div>
+                <div style="font-size:0.75rem;color:#94a3b8;">${'★'.repeat(h.stars || 0)} ${h.score ? `· Score ${escapeHtml(String(h.score))}` : ''} ${h.fitness ? `· Fitness ${escapeHtml(String(h.fitness))}%` : ''} ${h.age ? `· ${escapeHtml(String(h.age))} yrs` : ''} ${h.weight ? `· ${escapeHtml(String(h.weight))} lb` : ''}</div>
                 <div style="font-size:0.8rem;color:#e2e8f0;">+${fmtNum(h.credits)} credits · +${fmtNum(h.xp)} XP ${h.notes ? `· ${escapeHtml(h.notes)}` : ''}</div>
-                <div style="font-size:0.7rem;color:#64748b;">${escapeHtml(h.date || '')}</div></div>
+                <div style="font-size:0.7rem;color:#64748b;">${h.gameDay ? `Game day ${escapeHtml(String(h.gameDay))} ${escapeHtml(h.gameTime || '')} · ` : ''}${escapeHtml(h.date || '')}</div></div>
                 <button type="button" class="uni-search-btn" onclick="appState.deleteHarvest('${escapeHtml(h.id)}')" title="Remove and take the credits/XP back off">Remove</button>
-            </div></div>`).join('') : '<p style="color:#94a3b8;font-size:0.85rem;">No harvests logged yet.</p>';
+            </div></div>`; }).join('') : '<p style="color:#94a3b8;font-size:0.85rem;">No harvests logged yet.</p>';
     }
-    const wl = document.getElementById('wishlistList');
+
+    const wl = document.getElementById('watchlistList');
     if (wl) {
-        wl.innerHTML = appState.wishlist.map(it => `
-            <div class="trophy-card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;">
-                <div style="flex:1"><h3 style="color:#fff;font-size:0.95rem;">${escapeHtml(it.name)}</h3>
-                <div class="price-meter" data-price="${Number(it.price) || 0}"></div></div>
-                <button type="button" class="uni-search-btn" onclick="appState.removeWish('${escapeHtml(it.id)}')">Remove</button>
-            </div></div>`).join('');
-        wl.querySelectorAll('.price-meter').forEach(el => { const p = Number(el.dataset.price); el.innerHTML = 'Credits needed: ' + meterHtml(p - (w.credits || 0), p, ''); });
+        wl.innerHTML = appState.watchlist.length ? appState.watchlist.map(x => {
+            const st = watchStatus(x); const lc = lifecycleFor(x.species); const stage = stageForAge(lc, st.ageNow);
+            const pct = Math.max(0, Math.min(100, Math.round((st.daysLeft / Math.max(1, (x.maxAge - x.age) * 3)) * 100)));
+            return `<div class="trophy-card hunt-card" style="border-left:4px solid ${st.color}">
+                <div style="display:flex;justify-content:space-between;gap:8px;"><div style="flex:1">
+                <span class="trophy-rank" style="background:${st.color};color:#020617">${st.urgency}</span>
+                <h3 style="color:#fff;font-size:0.95rem;margin-top:4px;">${escapeHtml(x.name || 'Tracked animal')} — ${escapeHtml(x.species)}${x.sex ? ` (${escapeHtml(x.sex)})` : ''}</h3>
+                <div style="font-size:0.78rem;color:#cbd5e1;">Age now ~${st.ageNow}/${escapeHtml(String(x.maxAge))} yrs${stage ? ` · ${stage}` : ''} · Fitness ${escapeHtml(String(x.fitness || '?'))}%${x.location ? ` · ${escapeHtml(x.location)}` : ''}</div>
+                <div class="wallet-meter"><span class="wm-num">${st.daysLeft > 0 ? `${fmtGameSpan(st.daysLeft)} left` : 'Time is up'}</span><span class="wm-bar"><span style="width:${pct}%;background:${st.color}"></span></span></div>
+                <div style="font-size:0.72rem;color:#94a3b8;">Seen game day ${escapeHtml(String(x.sightedDay))} ${escapeHtml(x.sightedTime || '')} · Dies around game day ${Math.floor(st.dieDay)}${lc && lc.conflict ? ' · lifecycle notes disagree, using the shorter max age' : ''}</div>
+                <div style="font-size:0.78rem;color:#e2e8f0;margin-top:4px;">${st.msg}${x.notes ? ` · ${escapeHtml(x.notes)}` : ''}</div></div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    <button type="button" class="uni-search-btn" onclick="appState.editWatch('${escapeHtml(x.id)}')">Edit</button>
+                    <button type="button" class="uni-search-btn" onclick="appState.harvestWatch('${escapeHtml(x.id)}')">Harvested</button>
+                    <button type="button" class="uni-search-btn" onclick="appState.removeWatch('${escapeHtml(x.id)}')">Remove</button>
+                </div></div></div>`; }).join('') : '<p style="color:#94a3b8;font-size:0.85rem;">No animals on your watchlist.</p>';
+    }
+
+    const wish = document.getElementById('wishlistList');
+    if (wish) {
+        wish.innerHTML = appState.wishlist.map(it => `<div class="trophy-card hunt-card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;">
+            <div style="flex:1"><h3 style="color:#fff;font-size:0.95rem;">${escapeHtml(it.name)}</h3><div class="wallet-meter">Credits needed: ${meterHtml(Number(it.price) - (w.credits || 0), Number(it.price), '')}</div></div>
+            <button type="button" class="uni-search-btn" onclick="appState.removeWish('${escapeHtml(it.id)}')">Remove</button></div></div>`).join('') || '<p style="color:#94a3b8;font-size:0.85rem;">Nothing on your wishlist.</p>';
     }
 }
+
+// ---- actions
 window.appState.applyLevelUps = function() {
     const w = this.wallet;
     let next = w.xpNext || xpNeededFor(w.level);
     while (next && w.xp >= next) {
         w.xp -= next; w.level += 1; w.xpNext = null;
+        const r = levelReward(w.level);
+        if (r && r.credits) w.credits = (w.credits || 0) + Number(r.credits);
+        this.updateStatus(`Level up! Now level ${w.level}${r && r.credits ? ` (+${fmtNum(r.credits)} credits${r.inferred ? ', estimated' : ''})` : ''}.`);
         next = xpNeededFor(w.level);
-        this.updateStatus(`Level up! Now level ${w.level}.`);
     }
 };
 window.appState.setWallet = function(field, value) {
-    const n = Math.max(0, Math.floor(Number(value) || 0));
-    if (field === 'level') { this.wallet.level = Math.max(1, n); this.wallet.xpNext = null; }
-    else if (field === 'xpNext') this.wallet.xpNext = n || null;
-    else this.wallet[field] = n;
-    if (field === 'xp') this.applyLevelUps();
+    if (field === 'gameTime') this.wallet.gameTime = value || '00:00';
+    else {
+        const n = Math.max(0, Math.floor(Number(value) || 0));
+        if (field === 'level') { this.wallet.level = Math.max(1, n); this.wallet.xpNext = null; }
+        else if (field === 'xpNext') this.wallet.xpNext = n || null;
+        else if (field === 'gameDay') this.wallet.gameDay = Math.max(1, n);
+        else this.wallet[field] = n;
+        if (field === 'xp') this.applyLevelUps();
+    }
     this.applyStateToUI(); this.saveProgress();
 };
-window.appState.addHarvest = function(form) {
+window.appState.addHarvest = async function(form) {
     const f = new FormData(form);
     const h = {
         id: 'h' + Date.now(), species: f.get('species') || 'Unknown', sex: f.get('sex') || '',
         credits: Math.max(0, Math.floor(Number(f.get('credits')) || 0)), xp: Math.max(0, Math.floor(Number(f.get('xp')) || 0)),
-        fitness: f.get('fitness') || '', score: f.get('score') || '', stars: Number(f.get('stars')) || 0,
-        huntRating: f.get('huntRating') || '', notes: f.get('notes') || '', date: new Date().toLocaleString()
+        fitness: f.get('fitness') || '', score: f.get('score') || '', stars: Number(f.get('stars')) || 0, age: f.get('age') || '', weight: f.get('weight') || '',
+        huntRating: f.get('huntRating') || '', notes: f.get('notes') || '', taxidermy: !!f.get('taxidermy'),
+        gameDay: this.wallet.gameDay, gameTime: this.wallet.gameTime, date: new Date().toLocaleString()
     };
+    const file = f.get('photo');
+    if (file && file.size) {
+        const ref = photoDocRef(h.id);
+        if (!ref) { this.updateStatus('Sign in to save trophy photos. The harvest was saved without the photo.'); }
+        else {
+            try {
+                const data = await compressImage(file);
+                await ref.set({ data, species: h.species, harvestId: h.id, createdAt: new Date().toISOString() });
+                h.photoId = h.id; trophyPhotoCache[h.id] = data;
+            } catch (e) { console.warn('[Trophy photo]', e); this.updateStatus(`Photo not saved: ${e.message}`); }
+        }
+    }
     this.harvestLog.push(h);
     this.wallet.credits = (this.wallet.credits || 0) + h.credits;
     this.wallet.xp = (this.wallet.xp || 0) + h.xp;
@@ -1386,61 +1510,121 @@ window.appState.addHarvest = function(form) {
     form.reset();
     this.applyStateToUI(); this.saveProgress();
     this.updateStatus(`Harvest saved: +${fmtNum(h.credits)} credits, +${fmtNum(h.xp)} XP.`);
-    return false;
 };
 window.appState.deleteHarvest = function(id) {
     const i = this.harvestLog.findIndex(h => h.id === id); if (i < 0) return;
     const h = this.harvestLog.splice(i, 1)[0];
     this.wallet.credits = Math.max(0, (this.wallet.credits || 0) - (h.credits || 0));
     this.wallet.xp = Math.max(0, (this.wallet.xp || 0) - (h.xp || 0));
+    if (h.photoId) { const ref = photoDocRef(h.photoId); if (ref) ref.delete().catch(() => {}); delete trophyPhotoCache[h.photoId]; }
     this.applyStateToUI(); this.saveProgress();
 };
-window.appState.addWish = function(form) {
+window.appState.saveWatch = function(form) {
     const f = new FormData(form);
-    const price = Math.max(0, Math.floor(Number(f.get('price')) || 0));
-    if (!f.get('name') || !price) return false;
-    this.wishlist.push({ id: 'w' + Date.now(), name: f.get('name'), price });
-    form.reset(); this.applyStateToUI(); this.saveProgress(); return false;
+    const id = f.get('id') || ('w' + Date.now());
+    const entry = {
+        id, name: f.get('name') || '', species: f.get('species') || '', sex: f.get('sex') || '',
+        fitness: f.get('fitness') || '', age: Math.max(1, Math.floor(Number(f.get('age')) || 1)),
+        maxAge: Math.max(1, Math.floor(Number(f.get('maxAge')) || 1)), location: f.get('location') || '', notes: f.get('notes') || '',
+        sightedDay: Math.max(1, Math.floor(Number(f.get('sightedDay')) || this.wallet.gameDay || 1)), sightedTime: f.get('sightedTime') || this.wallet.gameTime || '06:00'
+    };
+    const i = this.watchlist.findIndex(x => x.id === id);
+    if (i >= 0) this.watchlist[i] = entry; else this.watchlist.push(entry);
+    form.reset(); form.id.value = ''; form.querySelector('[type=submit]').textContent = 'Add to watchlist';
+    fillWatchDefaults(form);
+    this.applyStateToUI(); this.saveProgress();
 };
-window.appState.removeWish = function(id) {
-    this.wishlist = this.wishlist.filter(w => w.id !== id); this.applyStateToUI(); this.saveProgress();
+window.appState.editWatch = function(id) {
+    const x = this.watchlist.find(w => w.id === id); const form = document.getElementById('watchForm'); if (!x || !form) return;
+    ['id', 'name', 'species', 'sex', 'fitness', 'age', 'maxAge', 'location', 'notes', 'sightedDay', 'sightedTime'].forEach(k => { if (form[k]) form[k].value = x[k] ?? ''; });
+    form.querySelector('[type=submit]').textContent = 'Save changes';
+    form.closest('.category-section')?.classList.remove('section-collapsed');
+    form.scrollIntoView({ behavior: 'smooth', block: 'center' });
 };
+window.appState.harvestWatch = function(id) {
+    const x = this.watchlist.find(w => w.id === id); const form = document.getElementById('harvestForm'); if (!x || !form) return;
+    form.species.value = x.species; form.sex.value = x.sex || ''; form.fitness.value = x.fitness || ''; form.age.value = watchStatus(x).ageNow;
+    form.notes.value = x.name ? `Watchlist: ${x.name}` : '';
+    this.watchlist = this.watchlist.filter(w => w.id !== id);
+    this.applyStateToUI(); this.saveProgress();
+    form.closest('.category-section')?.classList.remove('section-collapsed');
+    form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    this.updateStatus('Fill in the credits and XP from the harvest screen, then save.');
+};
+window.appState.removeWatch = function(id) { this.watchlist = this.watchlist.filter(w => w.id !== id); this.applyStateToUI(); this.saveProgress(); };
+window.appState.addWish = function(form) {
+    const f = new FormData(form); const price = Math.max(0, Math.floor(Number(f.get('price')) || 0));
+    if (!f.get('name') || !price) return;
+    this.wishlist.push({ id: 'w' + Date.now(), name: f.get('name'), price }); form.reset(); this.applyStateToUI(); this.saveProgress();
+};
+window.appState.removeWish = function(id) { this.wishlist = this.wishlist.filter(w => w.id !== id); this.applyStateToUI(); this.saveProgress(); };
+function fillWatchDefaults(form) {
+    const lc = lifecycleFor(form.species.value);
+    if (lc && !form.maxAge.value) form.maxAge.value = lc.max;
+    const hint = document.getElementById('watchLifeHint');
+    if (hint) hint.textContent = lc ? `Lifecycle: max ${lc.max} yrs · Young ${lc.young} · Adult ${lc.adult} · Mature ${lc.mature}${lc.conflict ? ` (notes disagree: ${lc.reported.join(' or ')} yrs)` : ''}` : 'No lifecycle data for this species yet; enter its max age.';
+}
+window.fillWatchDefaults = fillWatchDefaults;
+
 function walletPanelHtml(data) {
     const speciesOpts = toArr(data.species).map(s => s && s.name).filter(Boolean).sort().map(n => `<option>${escapeHtml(n)}</option>`).join('');
-    const inp = 'class="uni-search-input" style="flex:1 1 120px;padding:8px 10px;"';
+    const inp = 'class="uni-search-input hunt-input"';
+    const two = (formHtml, cardsHtml) => `<div class="hunt-2col"><div class="hunt-form-col">${formHtml}</div><div class="hunt-cards-col">${cardsHtml}</div></div>`;
     return `
     <section class="category-section">
-        <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')"><h2>💰 Hunter Wallet & Harvest Log</h2><span class="sec-progress"></span><span>▾</span></div>
+        <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')"><h2>💰 Hunter Wallet & Clock</h2><span class="sec-progress"></span><span>▾</span></div>
         <div class="section-content">
             <div class="mission-detail">
                 <div><h4>Credits</h4><input id="walletCredits" type="number" min="0" ${inp} onchange="appState.setWallet('credits', this.value)"></div>
                 <div><h4>Level</h4><input id="walletLevel" type="number" min="1" ${inp} onchange="appState.setWallet('level', this.value)"></div>
                 <div><h4>Current XP</h4><input id="walletXp" type="number" min="0" ${inp} onchange="appState.setWallet('xp', this.value)"></div>
                 <div><h4>XP needed for next level</h4><input id="walletXpNext" type="number" min="0" ${inp} onchange="appState.setWallet('xpNext', this.value)"></div>
+                <div><h4>In-game day</h4><input id="gameDay" type="number" min="1" ${inp} onchange="appState.setWallet('gameDay', this.value)"></div>
+                <div><h4>In-game time</h4><input id="gameTime" type="time" ${inp} onchange="appState.setWallet('gameTime', this.value)"></div>
             </div>
             <div id="walletLevelMeter" class="wallet-meter" style="margin:10px 0;"></div>
-            ${buildFolder('➕ Log a Harvest', `
-            <form class="harvest-form" onsubmit="event.preventDefault(); appState.addHarvest(this);">
-                <select name="species" ${inp}>${speciesOpts}</select>
-                <select name="sex" ${inp}><option value="">Sex</option><option>Male</option><option>Female</option></select>
-                <input name="credits" type="number" min="0" placeholder="Credits earned (sell price)" required ${inp}>
-                <input name="xp" type="number" min="0" placeholder="XP earned" ${inp}>
-                <input name="fitness" type="number" step="0.1" min="0" max="100" placeholder="Fitness %" ${inp}>
-                <input name="score" type="number" step="0.1" placeholder="Total trophy score" ${inp}>
-                <select name="stars" ${inp}><option value="0">Trophy stars</option><option value="1">★</option><option value="2">★★</option><option value="3">★★★</option><option value="4">★★★★</option><option value="5">★★★★★</option></select>
-                <input name="huntRating" placeholder="Hunt rating (e.g. S++)" ${inp}>
-                <input name="notes" placeholder="Notes (weapon, distance...)" ${inp}>
-                <button type="submit" class="uni-search-btn">Save harvest</button>
-            </form>`)}
-            ${buildFolder('📒 Harvest History', '<div id="harvestLogList" class="trophy-grid"></div>')}
-            ${buildFolder('🛒 Wishlist (weapons, gear...)', `
-            <form class="harvest-form" onsubmit="event.preventDefault(); appState.addWish(this);">
-                <input name="name" placeholder="Item (e.g. Primacy Superior 7700)" required ${inp}>
-                <input name="price" type="number" min="1" placeholder="Price in credits" required ${inp}>
-                <button type="submit" class="uni-search-btn">Add</button>
-            </form><div id="wishlistList" class="trophy-grid" style="margin-top:10px;"></div>`)}
+            <p style="font-size:0.75rem;color:#94a3b8;">Update the in-game day and time when you play; watchlist countdowns use it (3 in-game days = 1 year).</p>
         </div>
-    </section>`;
+    </section>
+    ${buildFolder('🎯 Watchlist (countdown to old age)', two(`
+        <form id="watchForm" class="harvest-form" onsubmit="event.preventDefault(); appState.saveWatch(this);">
+            <input type="hidden" name="id">
+            <input name="name" placeholder="Name / label (e.g. Big 10-point)" ${inp}>
+            <select name="species" ${inp} onchange="this.form.maxAge.value=''; fillWatchDefaults(this.form)">${speciesOpts}</select>
+            <select name="sex" ${inp}><option value="">Sex</option><option>Male</option><option>Female</option></select>
+            <input name="fitness" type="number" step="0.1" min="0" max="100" placeholder="Fitness %" ${inp}>
+            <input name="age" type="number" min="1" placeholder="Age now (yrs)" required ${inp}>
+            <input name="maxAge" type="number" min="1" placeholder="Max age (yrs)" required ${inp}>
+            <input name="sightedDay" type="number" min="1" placeholder="Seen on game day (blank = now)" title="Leave blank to use the current in-game day/time" ${inp}>
+            <input name="sightedTime" type="time" ${inp}>
+            <input name="location" placeholder="Where (region / need zone)" ${inp}>
+            <input name="notes" placeholder="Notes" ${inp}>
+            <div id="watchLifeHint" style="font-size:0.72rem;color:#94a3b8;flex-basis:100%;"></div>
+            <button type="submit" class="uni-search-btn">Add to watchlist</button>
+        </form>`, '<div id="watchlistList" class="hunt-card-list"></div>'))}
+    ${buildFolder('📒 Harvest Log & Trophy Photos', two(`
+        <form id="harvestForm" class="harvest-form" onsubmit="event.preventDefault(); appState.addHarvest(this);">
+            <select name="species" ${inp}>${speciesOpts}</select>
+            <select name="sex" ${inp}><option value="">Sex</option><option>Male</option><option>Female</option></select>
+            <input name="credits" type="number" min="0" placeholder="Credits earned (sell price)" required ${inp}>
+            <input name="xp" type="number" min="0" placeholder="XP earned" ${inp}>
+            <input name="fitness" type="number" step="0.1" min="0" max="100" placeholder="Fitness %" ${inp}>
+            <input name="age" type="number" min="1" placeholder="Age (yrs)" ${inp}>
+            <input name="weight" type="number" step="0.1" placeholder="Weight (lb)" ${inp}>
+            <input name="score" type="number" step="0.1" placeholder="Total trophy score" ${inp}>
+            <select name="stars" ${inp}><option value="0">Trophy stars</option><option value="1">★</option><option value="2">★★</option><option value="3">★★★</option><option value="4">★★★★</option><option value="5">★★★★★</option></select>
+            <input name="huntRating" placeholder="Hunt rating (e.g. S++)" ${inp}>
+            <input name="notes" placeholder="Notes (weapon, distance...)" ${inp}>
+            <label class="hunt-check"><input type="checkbox" name="taxidermy"> Taxidermy</label>
+            <label class="hunt-file">📷 Trophy photo <input type="file" name="photo" accept="image/*"></label>
+            <button type="submit" class="uni-search-btn">Save harvest</button>
+        </form>`, '<div id="harvestLogList" class="hunt-card-list"></div>'))}
+    ${buildFolder('🛒 Wishlist (weapons, gear...)', two(`
+        <form class="harvest-form" onsubmit="event.preventDefault(); appState.addWish(this);">
+            <input name="name" placeholder="Item (e.g. Primacy Superior 7700)" required ${inp}>
+            <input name="price" type="number" min="1" placeholder="Price in credits" required ${inp}>
+            <button type="submit" class="uni-search-btn">Add</button>
+        </form>`, '<div id="wishlistList" class="hunt-card-list"></div>'))}`;
 }
 
 // Hunting games (e.g. Way of the Hunter 2): reserves, species, quests, challenges
@@ -1574,6 +1758,7 @@ function renderUniversalCompanion(data) {
 
     if (!isMissionSchema(data) && Array.isArray(data.species)) {
         container.innerHTML = renderHuntingSchema(data);
+        const wf = document.getElementById('watchForm'); if (wf) fillWatchDefaults(wf);
         appState.applyStateToUI();
         setupUniversalSearch();
         return;

@@ -3673,14 +3673,39 @@
       "2": 200,
       "13": 1500,
       "14": 1650,
+      "15": 1800,
       "16": 1950
     },
-    "verified_levels": [
-      "13",
-      "14",
-      "16"
+    "xp_inferred": [
+      "15"
     ],
-    "note": "XP needed to reach the next level, read from the pause-menu XP bar (level 2 from earlier notes). Add more as you see them."
+    "rewards": {
+      "14": {
+        "credits": 800,
+        "unlocks": "4 items (ammo, ammo, caller, scope)"
+      },
+      "15": {
+        "credits": 850,
+        "skill_points": 1,
+        "unlocks": "1 rifle"
+      },
+      "16": {
+        "credits": 900,
+        "inferred": true,
+        "unlocks": null
+      },
+      "17": {
+        "credits": 950,
+        "unlocks": "5 items (3 arrow types, scope, rifle)"
+      }
+    },
+    "titles": {
+      "13": "Aspiring Hunter",
+      "14": "Aspiring Hunter",
+      "16": "Promising Hunter"
+    },
+    "pattern": "From the screens seen: each level needs 150 more XP than the last (1,500 / 1,650 / ... / 1,950) and pays 50 more credits (800 / 850 / ... / 950). Values marked inferred follow that pattern but were not seen on screen.",
+    "note": "Read from the pause menu ('Unlocked at level N' row and XP bar)."
   },
   "currency": {
     "name": "Credits",
