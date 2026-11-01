@@ -2,7 +2,7 @@
 <!-- ==========================================================================
      FILE: Movies.html
      PROJECT: Werewolf Cinema Library
-     TIMESTAMP (24-hr NY Time): 2026-10-31 19:51:08 EDT
+     TIMESTAMP (24-hr NY Time): 2026-10-31 20:00:30 EDT
      VERSION: 5.1.1
      CHANGELOG 5.1.1:
        - iPhone in Safari: alerts button now shows Add to Home Screen steps
@@ -1277,7 +1277,7 @@ function openAlerts() {
   const st = $('#alerts-status');
   st.className = 'status-line' + (alertsOn() ? ' ok' : '');
   st.textContent = alertsOn() ? 'Alerts are on for this device.' : (isIOS && !isStandalone() ? 'On iPhone and iPad, alerts only work from the Home Screen app. Tap below to see how to add it.' : '');
-  $('#alerts-on').textContent = isIOS && !isStandalone() ? 'Add to Home Screen' : 'Turn on alerts';
+  $('#alerts-on').textContent = isIOS && !isStandalone() ? 'Add to Home Screen' : alertsOn() ? 'Save' : 'Turn on alerts';
   $('#alerts-off').style.display = alertsOn() ? '' : 'none';
   openModal('alerts-modal');
 }
@@ -1319,6 +1319,7 @@ async function enableAlerts() {
     st.className = 'status-line ok';
     st.textContent = PUSH_READY ? 'Alerts are on. You will get a notification when a title is added.' : 'Alerts are on. You will be notified about titles added today when you open the app.';
     paintAlertState();
+    $('#alerts-off').style.display = '';
     const reg = await navigator.serviceWorker.ready;
     reg.showNotification('🎬 Werewolf Cinema', { body: 'Alerts are on' + (store ? ' for ' + STORE[store].label : '') + '.', icon: 'icons/movies-192.png', badge: 'icons/movies-badge-96.png', tag: 'ww-alerts-on' });
   } catch (e) {
@@ -1333,6 +1334,7 @@ async function disableAlerts() {
   track('notification_unsubscribe');
   paintAlertState();
   $('#alerts-status').className = 'status-line'; $('#alerts-status').textContent = 'Alerts are off for this device.';
+  $('#alerts-off').style.display = 'none'; $('#alerts-on').textContent = 'Turn on alerts';
 }
 $('#alerts-on').onclick = enableAlerts;
 $('#alerts-off').onclick = disableAlerts;
