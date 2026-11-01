@@ -500,7 +500,14 @@
                 transform: scale(0.98);
             }
         }
-    </style>
+    
+        /* Game poster wallpaper */
+        #gameBgLayer { position: fixed; inset: 0; z-index: -1; background-size: cover; background-position: center top; background-repeat: no-repeat; opacity: 0; transition: opacity 0.6s ease; pointer-events: none; }
+        #gameBgLayer::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,15,25,0.55) 0%, rgba(11,15,25,0.7) 60%, rgba(11,15,25,0.85) 100%); }
+        body.has-game-bg #gameBgLayer { opacity: 1; }
+        body.has-game-bg { background-color: transparent; --bg-surface: rgba(19, 29, 49, 0.75); --bg-card: rgba(30, 41, 59, 0.75); --bg-card-hover: rgba(39, 53, 77, 0.8); }
+        html { background-color: #0b0f19; }
+</style>
 
     <script src="//www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="//www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>

@@ -2270,5 +2270,10 @@
       "support": 8
     },
     "note": "Multiplayer: Tactics 12, Performance 12 and Support 8 are complete. \"combat\" is a placeholder name for the first category (header not captured); 11 of its ribbons recorded so far. multiplayer_unverified holds older entries not seen in game."
+  },
+  "art": {
+    "poster": "https://cdn.cloudflare.steamstatic.com/steam/apps/1029690/library_600x900_2x.jpg",
+    "wallpaper": "https://cdn.cloudflare.steamstatic.com/steam/apps/1029690/library_hero.jpg",
+    "note": "Page background: poster on phones, wallpaper on wide screens. Falls back to image_url if these fail to load."
   }
 }

@@ -6848,5 +6848,10 @@
         "image": "/public/games/snresistance/images/medals/multiplayer.jpg"
       }
     ]
+  },
+  "art": {
+    "poster": "https://cdn.cloudflare.steamstatic.com/steam/apps/2169200/library_600x900_2x.jpg",
+    "wallpaper": "https://cdn.cloudflare.steamstatic.com/steam/apps/2169200/library_hero.jpg",
+    "note": "Page background: poster on phones, wallpaper on wide screens. Falls back to image_url if these fail to load."
   }
 }

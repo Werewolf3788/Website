@@ -218,6 +218,7 @@ window.appState = {
     hydrateFromRawJson: function(data) {
         if (!data || typeof data !== 'object') return;
         this.gameData = data;
+        applyGameBackground(data);
         this.gameTitle = data.game || data.title || "Game Companion";
         this.gameId = data.gameId ? data.gameId.toLowerCase() : CURRENT_GAME_KEY;
 
@@ -673,6 +674,27 @@ window.appState.applyStateToUI = function() {
     });
     updateGameMetrics();
 };
+
+// Game poster art as the page wallpaper (cards stay 75% opaque on top).
+function applyGameBackground(data) {
+    let layer = document.getElementById('gameBgLayer');
+    if (!layer) {
+        layer = document.createElement('div'); layer.id = 'gameBgLayer'; layer.setAttribute('aria-hidden', 'true');
+        document.body.prepend(layer);
+    }
+    const art = data && data.art || {};
+    const wide = window.matchMedia('(min-width: 900px)').matches;
+    const candidates = [wide ? art.wallpaper : art.poster, wide ? art.poster : art.wallpaper, data && data.image_url].filter(Boolean).map(toSecureUrl);
+    const token = String(Date.now()); layer.dataset.token = token;
+    const tryNext = (i) => {
+        if (i >= candidates.length) { layer.style.backgroundImage = ''; document.body.classList.remove('has-game-bg'); return; }
+        const img = new Image();
+        img.onload = () => { if (layer.dataset.token !== token) return; layer.style.backgroundImage = `url("${candidates[i]}")`; document.body.classList.add('has-game-bg'); };
+        img.onerror = () => tryNext(i + 1);
+        img.src = candidates[i];
+    };
+    tryNext(0);
+}
 
 // The three summary boxes under the game pills: built from whatever the
 // selected game actually tracks (Far Cry keeps its original boxes).
