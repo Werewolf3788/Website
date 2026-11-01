@@ -131,6 +131,8 @@ window.appState = {
     loadouts: [],
     activeLoadout: null,
     carrySlots: 6,
+    weaponSetups: [],
+    carry: { primary: null, secondary: null, pack: [] },
     ranks: {},
 
     getUserKey: function() {
@@ -173,6 +175,8 @@ window.appState = {
         this.loadouts = [];
         this.activeLoadout = null;
         this.carrySlots = 6;
+        this.weaponSetups = [];
+        this.carry = { primary: null, secondary: null, pack: [] };
         this.ranks = {};
 
         document.querySelectorAll('.game-pill').forEach(pill => {
@@ -477,6 +481,8 @@ window.appState = {
             loadouts: this.loadouts,
             activeLoadout: this.activeLoadout,
             carrySlots: this.carrySlots,
+            weaponSetups: this.weaponSetups,
+            carry: this.carry,
             trophies: this.trophies
         };
     },
@@ -491,6 +497,9 @@ window.appState = {
         if (Array.isArray(payload.loadouts)) this.loadouts = payload.loadouts;
         if (payload.activeLoadout !== undefined) this.activeLoadout = payload.activeLoadout;
         if (payload.carrySlots) this.carrySlots = payload.carrySlots;
+        if (Array.isArray(payload.weaponSetups)) this.weaponSetups = payload.weaponSetups;
+        if (payload.carry && typeof payload.carry === 'object') this.carry = Object.assign({ primary: null, secondary: null, pack: [] }, payload.carry);
+        migrateLoadouts(this);
         this.trophies_earned = payload.trophies_earned || 0;
         this.trophies_total = payload.trophies_total || this.trophies_total;
         this.trophies_percent = payload.trophies_percent || 0;
@@ -1119,6 +1128,13 @@ function ensureUniversalStyles() {
         .carry-slot.filled { border-style: solid; border-color: var(--user-theme-accent, #f97316); color: #fff; background: rgba(249,115,22,0.08); }
         .cs-cat { font-size: 0.62rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.04em; }
         .lo-active { outline: 2px solid #10b981; }
+        .wslots { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; }
+        .wslot { border: 1px solid var(--user-theme-accent, #f97316); background: rgba(249,115,22,0.08); border-radius: 10px; padding: 8px 10px; font-size: 0.8rem; color: #fff; display: flex; flex-direction: column; gap: 2px; }
+        .wslot.empty { border-style: dashed; border-color: #334155; background: none; color: #64748b; }
+        .wslot small, .ws-sub { color: #94a3b8; font-size: 0.74rem; }
+        .pack-btn { background: #1e293b; border: 1px solid #334155; color: #cbd5e1; border-radius: 6px; font-size: 0.7rem; padding: 2px 6px; cursor: pointer; white-space: nowrap; }
+        .pack-btn.on { border-color: #10b981; color: #10b981; }
+        .carry-slot.filled { cursor: pointer; }
         .lo-slots.over, .game-chip.over { background: #7f1d1d; }
         .storage-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
         .stor-group { background: var(--bg-card, #1e293b); border-radius: 10px; padding: 10px; }
@@ -1610,12 +1626,23 @@ function renderTrophyRoom() {
 }
 window.trophySlideIdxGet = () => trophySlideIdx;
 
-// ---- Hunter Locker: storage (everything owned), loadouts (what's carried), shop
+// ---- Hunter Locker: storage (everything owned), two weapon slots (primary /
+// secondary: weapon + attachments + ammo) and a 6-slot gear pack, plus the shop.
 const WEAPON_CATS = ['Rifle', 'Shotgun', 'Bow', 'Crossbow', 'Handgun', 'Weapon'];
 const AMMO_CATS = ['Ammo', 'Arrow', 'Bolt', 'Shell'];
-const ITEM_CATS = ['Rifle', 'Shotgun', 'Bow', 'Crossbow', 'Handgun', 'Ammo', 'Arrow', 'Bolt', 'Optic', 'Binoculars', 'Rangefinder', 'Caller', 'Scent', 'Decoy', 'Blind / Stand', 'Gear', 'Other'];
+const ATTACH_CATS = ['Optic', 'Scope', 'Sight', 'Suppressor', 'Bipod', 'Sling', 'Attachment'];
+const ITEM_CATS = ['Rifle', 'Shotgun', 'Bow', 'Crossbow', 'Handgun', 'Ammo', 'Arrow', 'Bolt', 'Optic', 'Suppressor', 'Bipod', 'Sling', 'Attachment', 'Binoculars', 'Rangefinder', 'Caller', 'Scent', 'Spray', 'Decoy', 'Tent / Blind', 'Gear', 'Other'];
 const isWeapon = (it) => it && WEAPON_CATS.includes(it.category);
 const isAmmo = (it) => it && AMMO_CATS.includes(it.category);
+const isAttachment = (it) => it && ATTACH_CATS.includes(it.category);
+const isPackItem = (it) => it && !isWeapon(it) && !isAmmo(it) && !isAttachment(it);
+function migrateLoadouts(st) {
+    if (!toArr(st.loadouts).length || toArr(st.weaponSetups).length) return;
+    st.weaponSetups = st.loadouts.filter(lo => lo.weapon).map(lo => ({ id: lo.id, name: lo.name, weapon: lo.weapon, ammo: lo.ammo || '', attachments: toArr(lo.gear).filter(u => isAttachment(toArr(st.inventory).find(i => i.uid === u))) }));
+    const act = st.loadouts.find(lo => lo.id === st.activeLoadout) || st.loadouts[0];
+    st.carry = { primary: st.weaponSetups[0]?.id || null, secondary: st.weaponSetups[1]?.id || null, pack: act ? toArr(act.gear).filter(u => isPackItem(toArr(st.inventory).find(i => i.uid === u))) : [] };
+    st.loadouts = []; st.activeLoadout = null;
+}
 function catalogItems() {
     const d = appState.gameData || {};
     if (toArr(d.shop?.items).length) return toArr(d.shop.items);
@@ -1630,9 +1657,10 @@ function catalogItems() {
 }
 const invItem = (uid) => toArr(appState.inventory).find(i => i.uid === uid);
 const ownedCount = (id) => toArr(appState.inventory).filter(i => i.id === id).length;
-function loadoutSlots(lo) { return (lo.weapon ? 1 : 0) + (lo.ammo ? 1 : 0) + toArr(lo.gear).length; }
-function loadoutLabel(lo) {
-    const w = invItem(lo.weapon), a = invItem(lo.ammo);
+const setupById = (id) => toArr(appState.weaponSetups).find(x => x.id === id);
+function setupLabel(su) {
+    if (!su) return 'Empty';
+    const w = invItem(su.weapon), a = invItem(su.ammo);
     return [w && w.name, a && a.name].filter(Boolean).join(' + ') || 'No weapon';
 }
 function addToInventory(src) {
@@ -1640,57 +1668,76 @@ function addToInventory(src) {
     appState.inventory.push(item);
     return item;
 }
+function spendCredits(price) {
+    if (!price) return true;
+    if ((appState.wallet.credits || 0) < price) { appState.updateStatus(`Not enough credits: need ${fmtNum(price - (appState.wallet.credits || 0))} more.`); return false; }
+    appState.wallet.credits -= price; return true;
+}
 window.appState.buyItem = function(id, pay) {
     const it = catalogItems().find(c => c.id === id); if (!it) return;
-    const price = Number(it.price) || 0;
-    if (pay && price) {
-        if ((this.wallet.credits || 0) < price) { this.updateStatus(`Not enough credits: need ${fmtNum(price - (this.wallet.credits || 0))} more.`); return; }
-        this.wallet.credits -= price;
-    }
+    if (pay && !spendCredits(Number(it.price) || 0)) return;
     addToInventory(it);
     this.applyStateToUI(); this.saveProgress();
-    this.updateStatus(`${it.name} added to your storage${pay && price ? ` (-${fmtNum(price)} credits)` : ''}.`);
+    this.updateStatus(`${it.name} added to your storage${pay && it.price ? ` (-${fmtNum(it.price)} credits)` : ''}.`);
 };
 window.appState.addStorageItem = function(form) {
     const f = new FormData(form);
     const pick = f.get('catalog');
-    let src;
-    if (pick && pick !== '__custom') src = catalogItems().find(c => c.id === pick);
-    else src = { name: (f.get('name') || '').trim(), category: f.get('category'), caliber: (f.get('caliber') || '').trim(), price: f.get('price') };
+    const src = (pick && pick !== '__custom') ? catalogItems().find(c => c.id === pick)
+        : { name: (f.get('name') || '').trim(), category: f.get('category'), caliber: (f.get('caliber') || '').trim(), price: f.get('price') };
     if (!src || !src.name) { this.updateStatus('Pick an item or type its name.'); return; }
-    if (f.get('pay') && Number(src.price)) {
-        if ((this.wallet.credits || 0) < Number(src.price)) { this.updateStatus(`Not enough credits: need ${fmtNum(Number(src.price) - (this.wallet.credits || 0))} more.`); return; }
-        this.wallet.credits -= Number(src.price);
-    }
+    if (f.get('pay') && !spendCredits(Number(src.price) || 0)) return;
     addToInventory(src); form.reset(); toggleCustomItem(form);
     this.applyStateToUI(); this.saveProgress();
 };
 window.appState.removeStorageItem = function(uid) {
     this.inventory = this.inventory.filter(i => i.uid !== uid);
-    this.loadouts.forEach(lo => { if (lo.weapon === uid) lo.weapon = ''; if (lo.ammo === uid) lo.ammo = ''; lo.gear = toArr(lo.gear).filter(g => g !== uid); });
+    this.weaponSetups.forEach(su => { if (su.weapon === uid) su.weapon = ''; if (su.ammo === uid) su.ammo = ''; su.attachments = toArr(su.attachments).filter(x => x !== uid); });
+    this.carry.pack = toArr(this.carry.pack).filter(x => x !== uid);
     this.applyStateToUI(); this.saveProgress();
 };
 window.appState.setCarrySlots = function(v) { this.carrySlots = Math.max(1, Math.min(30, Math.floor(Number(v) || 6))); this.applyStateToUI(); this.saveProgress(); };
-window.appState.saveLoadout = function(form) {
-    const f = new FormData(form);
-    const lo = { id: f.get('id') || ('l' + Date.now()), name: (f.get('name') || '').trim() || 'Loadout', weapon: f.get('weapon') || '', ammo: f.get('ammo') || '', gear: f.getAll('gear') };
-    if (loadoutSlots(lo) > this.carrySlots) { this.updateStatus(`Too many items: ${loadoutSlots(lo)} of ${this.carrySlots} slots. Remove some gear.`); return; }
-    const i = this.loadouts.findIndex(x => x.id === lo.id);
-    if (i >= 0) this.loadouts[i] = lo; else this.loadouts.push(lo);
-    if (!this.activeLoadout) this.activeLoadout = lo.id;
-    form.reset(); form.id.value = ''; form.querySelector('[type=submit]').textContent = 'Save loadout';
+window.appState.togglePack = function(uid) {
+    const pack = toArr(this.carry.pack);
+    if (pack.includes(uid)) this.carry.pack = pack.filter(x => x !== uid);
+    else {
+        if (pack.length >= this.carrySlots) { this.updateStatus(`Gear pack is full (${this.carrySlots}/${this.carrySlots}). Take something out first.`); return; }
+        this.carry.pack = [...pack, uid];
+    }
     this.applyStateToUI(); this.saveProgress();
 };
-window.appState.editLoadout = function(id) {
-    const lo = this.loadouts.find(x => x.id === id); const form = document.getElementById('loadoutForm'); if (!lo || !form) return;
-    form.id.value = lo.id; form.name.value = lo.name; renderLockerSelects(); form.weapon.value = lo.weapon || ''; fillAmmoSelect(form.ammo, lo.weapon, lo.ammo);
-    form.querySelectorAll('input[name=gear]').forEach(cb => { cb.checked = toArr(lo.gear).includes(cb.value); });
-    updateLoadoutSlotCount(form);
+window.appState.saveSetup = function(form) {
+    const f = new FormData(form);
+    if (!f.get('weapon')) { this.updateStatus('Pick a weapon for this setup.'); return; }
+    const su = { id: f.get('id') || ('s' + Date.now()), name: (f.get('name') || '').trim() || (invItem(f.get('weapon')) || {}).name || 'Weapon setup', weapon: f.get('weapon'), ammo: f.get('ammo') || '', attachments: f.getAll('attachments') };
+    const i = this.weaponSetups.findIndex(x => x.id === su.id);
+    if (i >= 0) this.weaponSetups[i] = su; else this.weaponSetups.push(su);
+    const slot = f.get('slot');
+    if (slot === 'primary' || slot === 'secondary') { this.carry[slot] = su.id; if (this.carry[slot === 'primary' ? 'secondary' : 'primary'] === su.id) this.carry[slot === 'primary' ? 'secondary' : 'primary'] = null; }
+    else if (!this.carry.primary) this.carry.primary = su.id;
+    form.reset(); form.id.value = ''; form.querySelector('[type=submit]').textContent = 'Save weapon setup';
+    this.applyStateToUI(); this.saveProgress();
+};
+window.appState.editSetup = function(id) {
+    const su = setupById(id); const form = document.getElementById('setupForm'); if (!su || !form) return;
+    renderLockerSelects();
+    form.id.value = su.id; form.name.value = su.name; form.weapon.value = su.weapon || '';
+    fillAmmoSelect(form.ammo, su.weapon, su.ammo || ''); fillAttachments(form, su.weapon, su.attachments);
+    form.slot.value = this.carry.primary === id ? 'primary' : this.carry.secondary === id ? 'secondary' : '';
     form.querySelector('[type=submit]').textContent = 'Save changes';
     form.scrollIntoView({ behavior: 'smooth', block: 'center' });
 };
-window.appState.deleteLoadout = function(id) { this.loadouts = this.loadouts.filter(x => x.id !== id); if (this.activeLoadout === id) this.activeLoadout = this.loadouts[0]?.id || null; this.applyStateToUI(); this.saveProgress(); };
-window.appState.useLoadout = function(id) { this.activeLoadout = id; this.applyStateToUI(); this.saveProgress(); const hf = document.getElementById('harvestForm'); if (hf) applyLoadoutToHarvest(hf, id); };
+window.appState.deleteSetup = function(id) {
+    this.weaponSetups = this.weaponSetups.filter(x => x.id !== id);
+    ['primary', 'secondary'].forEach(k => { if (this.carry[k] === id) this.carry[k] = null; });
+    this.applyStateToUI(); this.saveProgress();
+};
+window.appState.equipSetup = function(id, slot) {
+    const other = slot === 'primary' ? 'secondary' : 'primary';
+    if (this.carry[other] === id) this.carry[other] = this.carry[slot] || null;
+    this.carry[slot] = id;
+    this.applyStateToUI(); this.saveProgress();
+};
 function fillAmmoSelect(sel, weaponUid, value) {
     if (!sel) return;
     const w = invItem(weaponUid);
@@ -1702,82 +1749,91 @@ function fillAmmoSelect(sel, weaponUid, value) {
     else if (list.length === 1) sel.value = list[0].uid;
 }
 window.fillAmmoSelect = fillAmmoSelect;
-function updateLoadoutSlotCount(form) {
-    const n = (form.weapon.value ? 1 : 0) + (form.ammo.value ? 1 : 0) + form.querySelectorAll('input[name=gear]:checked').length;
-    const el = form.querySelector('.lo-slots'); if (el) { el.textContent = `${n}/${appState.carrySlots} slots`; el.classList.toggle('over', n > appState.carrySlots); }
+function fillAttachments(form, weaponUid, checked) {
+    const box = form.querySelector('.su-attach'); if (!box) return;
+    const keep = new Set(checked || [...box.querySelectorAll('input:checked')].map(c => c.value));
+    const list = toArr(appState.inventory).filter(isAttachment);
+    box.innerHTML = list.length ? list.map(o => `<label class="hunt-check"><input type="checkbox" name="attachments" value="${escapeHtml(o.uid)}"${keep.has(o.uid) ? ' checked' : ''}> ${escapeHtml(o.name)} <small>${escapeHtml(o.category)}</small></label>`).join('')
+        : '<span style="font-size:0.75rem;color:#64748b;">Scopes, suppressors and other attachments you own show up here.</span>';
+    box.dataset.sig = list.map(o => o.uid).join(',');
 }
-window.updateLoadoutSlotCount = updateLoadoutSlotCount;
+window.fillAttachments = fillAttachments;
 function toggleCustomItem(form) { const custom = form.catalog.value === '__custom' || form.catalog.options.length <= 2; form.querySelectorAll('.custom-item').forEach(el => { el.hidden = !custom; }); }
 window.toggleCustomItem = toggleCustomItem;
-function applyLoadoutToHarvest(form, loId) {
-    const lo = appState.loadouts.find(x => x.id === loId);
-    if (form.loadout) form.loadout.value = lo ? lo.id : '';
-    if (!lo) return;
-    form.weapon.value = lo.weapon || '';
-    fillAmmoSelect(form.ammo, lo.weapon, lo.ammo || '');
+function applyLoadoutToHarvest(form, key) {
+    const id = key === 'primary' || key === 'secondary' ? appState.carry[key] : key;
+    const su = setupById(id);
+    if (form.loadout) form.loadout.value = su ? key : '';
+    if (!su) return;
+    form.weapon.value = su.weapon || '';
+    fillAmmoSelect(form.ammo, su.weapon, su.ammo || '');
 }
 window.applyLoadoutToHarvest = applyLoadoutToHarvest;
-function setOptions(sel, html, keep = true) {
-    if (!sel) return; const v = sel.value;
-    if (sel.innerHTML !== html) { sel.innerHTML = html; if (keep) sel.value = v; }
-}
+function setOptions(sel, html) { if (!sel) return; const v = sel.value; if (sel.innerHTML !== html) { sel.innerHTML = html; sel.value = v; } }
 function renderLockerSelects() {
-    const inv = toArr(appState.inventory);
+    const inv = toArr(appState.inventory), st = appState;
     const weaponOpts = '<option value="">Weapon</option>' + inv.filter(isWeapon).map(w => `<option value="${escapeHtml(w.uid)}">${escapeHtml(w.name)}${w.caliber ? ` (${escapeHtml(w.caliber)})` : ''}</option>`).join('');
-    const lf = document.getElementById('loadoutForm');
-    if (lf) {
-        setOptions(lf.weapon, weaponOpts);
-        const gearBox = lf.querySelector('.lo-gear');
-        const others = inv.filter(i => !isWeapon(i) && !isAmmo(i));
-        const sig = others.map(o => o.uid).join(',');
-        if (gearBox && gearBox.dataset.sig !== sig) {
-            const checked = new Set([...gearBox.querySelectorAll('input:checked')].map(c => c.value));
-            gearBox.dataset.sig = sig;
-            gearBox.innerHTML = others.length ? others.map(o => `<label class="hunt-check"><input type="checkbox" name="gear" value="${escapeHtml(o.uid)}"${checked.has(o.uid) ? ' checked' : ''} onchange="updateLoadoutSlotCount(this.form)"> ${escapeHtml(o.name)} <small>${escapeHtml(o.category)}</small></label>`).join('') : '<span style="font-size:0.75rem;color:#64748b;">Optics, callers, scents and other gear you own show up here.</span>';
-        }
-        if (!lf.ammo.options.length || lf.ammo.dataset.sig !== inv.filter(isAmmo).map(a => a.uid).join(',') + lf.weapon.value) {
-            lf.ammo.dataset.sig = inv.filter(isAmmo).map(a => a.uid).join(',') + lf.weapon.value;
-            fillAmmoSelect(lf.ammo, lf.weapon.value, lf.ammo.value);
-        }
-        updateLoadoutSlotCount(lf);
+    const ammoSig = (f) => inv.filter(isAmmo).map(a => a.uid).join(',') + '|' + f.weapon.value;
+    const sf = document.getElementById('setupForm');
+    if (sf) {
+        setOptions(sf.weapon, weaponOpts);
+        if (sf.ammo.dataset.sig !== ammoSig(sf)) { sf.ammo.dataset.sig = ammoSig(sf); fillAmmoSelect(sf.ammo, sf.weapon.value, sf.ammo.value); }
+        const box = sf.querySelector('.su-attach');
+        if (box && box.dataset.sig !== inv.filter(isAttachment).map(o => o.uid).join(',')) fillAttachments(sf, sf.weapon.value);
     }
     const hf = document.getElementById('harvestForm');
     if (hf && hf.weapon) {
-        setOptions(hf.loadout, '<option value="">Loadout used</option>' + appState.loadouts.map(lo => `<option value="${escapeHtml(lo.id)}">${escapeHtml(lo.name)}</option>`).join(''));
+        const p = setupById(st.carry.primary), s2 = setupById(st.carry.secondary);
+        const others = toArr(st.weaponSetups).filter(x => x.id !== st.carry.primary && x.id !== st.carry.secondary);
+        setOptions(hf.loadout, '<option value="">Weapon slot used</option>'
+            + (p ? `<option value="primary">Primary: ${escapeHtml(p.name)}</option>` : '')
+            + (s2 ? `<option value="secondary">Secondary: ${escapeHtml(s2.name)}</option>` : '')
+            + others.map(o => `<option value="${escapeHtml(o.id)}">${escapeHtml(o.name)}</option>`).join(''));
         setOptions(hf.weapon, weaponOpts);
-        if (!hf.dataset.touched && appState.activeLoadout && hf.loadout.value !== appState.activeLoadout) applyLoadoutToHarvest(hf, appState.activeLoadout);
-        else if (hf.ammo.dataset.sig !== inv.filter(isAmmo).map(a => a.uid).join(',') + hf.weapon.value) { hf.ammo.dataset.sig = inv.filter(isAmmo).map(a => a.uid).join(',') + hf.weapon.value; fillAmmoSelect(hf.ammo, hf.weapon.value, hf.ammo.value); }
+        if (!hf.dataset.touched && p && hf.loadout.value !== 'primary') applyLoadoutToHarvest(hf, 'primary');
+        else if (hf.ammo.dataset.sig !== ammoSig(hf)) { hf.ammo.dataset.sig = ammoSig(hf); fillAmmoSelect(hf.ammo, hf.weapon.value, hf.ammo.value); }
     }
 }
 function renderLocker() {
     renderLockerSelects();
     const st = appState, inv = toArr(st.inventory);
     setVal('carrySlots', st.carrySlots);
-    const active = st.loadouts.find(x => x.id === st.activeLoadout);
+    const pack = toArr(st.carry.pack).map(invItem).filter(Boolean);
+    const weaponSlot = (key, label) => {
+        const su = setupById(st.carry[key]);
+        if (!su) return `<div class="wslot empty"><span class="cs-cat">${label}</span>Empty — pick a setup below</div>`;
+        const att = toArr(su.attachments).map(invItem).filter(Boolean).map(x => x.name);
+        const w = invItem(su.weapon), a = invItem(su.ammo);
+        return `<div class="wslot"><span class="cs-cat">${label}</span><b>${escapeHtml(su.name)}</b>
+            <div>${escapeHtml(w ? w.name : 'No weapon')}${w && w.caliber ? ` <small>${escapeHtml(w.caliber)}</small>` : ''}</div>
+            <div class="ws-sub">🎯 ${escapeHtml(a ? a.name : 'No ammo')}</div>
+            ${att.length ? `<div class="ws-sub">🔧 ${att.map(escapeHtml).join(' · ')}</div>` : ''}</div>`;
+    };
     const carry = document.getElementById('carryPanel');
-    if (carry) {
-        if (!active) carry.innerHTML = '<p style="color:#94a3b8;font-size:0.85rem;">No loadout selected. Build one on the left, then press "Use".</p>';
-        else {
-            const items = [invItem(active.weapon), invItem(active.ammo), ...toArr(active.gear).map(invItem)].filter(Boolean);
-            const used = loadoutSlots(active);
-            carry.innerHTML = `<div class="carry-head"><b>On your person:</b> ${escapeHtml(active.name)} <span class="game-chip${used > st.carrySlots ? ' over' : ''}">${used}/${st.carrySlots} slots</span></div>
-                <div class="carry-slots">${Array.from({ length: st.carrySlots }, (_, k) => items[k] ? `<div class="carry-slot filled"><span class="cs-cat">${escapeHtml(items[k].category)}</span>${escapeHtml(items[k].name)}</div>` : '<div class="carry-slot">Empty</div>').join('')}</div>`;
-        }
-    }
-    const los = document.getElementById('loadoutList');
-    if (los) los.innerHTML = st.loadouts.map(lo => `<div class="trophy-card hunt-card${lo.id === st.activeLoadout ? ' lo-active' : ''}">
-        <div style="display:flex;justify-content:space-between;gap:8px;"><div style="flex:1"><h3 style="color:#fff;font-size:0.95rem;">${lo.id === st.activeLoadout ? '✅ ' : ''}${escapeHtml(lo.name)}</h3>
-        <div style="font-size:0.78rem;color:#cbd5e1;">${escapeHtml(loadoutLabel(lo))}</div>
-        <div style="font-size:0.72rem;color:#94a3b8;">${toArr(lo.gear).map(invItem).filter(Boolean).map(g => escapeHtml(g.name)).join(' · ') || 'No extra gear'} · ${loadoutSlots(lo)}/${st.carrySlots} slots</div></div>
-        <div style="display:flex;flex-direction:column;gap:6px;">${lo.id === st.activeLoadout ? '' : `<button type="button" class="uni-search-btn" onclick="appState.useLoadout('${escapeHtml(lo.id)}')">Use</button>`}
-        <button type="button" class="uni-search-btn" onclick="appState.editLoadout('${escapeHtml(lo.id)}')">Edit</button>
-        <button type="button" class="uni-search-btn" onclick="appState.deleteLoadout('${escapeHtml(lo.id)}')">Delete</button></div></div></div>`).join('');
+    if (carry) carry.innerHTML = `<div class="carry-head"><b>On your person</b></div>
+        <div class="wslots">${weaponSlot('primary', 'Primary')}${weaponSlot('secondary', 'Secondary')}</div>
+        <div class="carry-head" style="margin-top:10px;"><b>Gear pack</b> <span class="game-chip${pack.length > st.carrySlots ? ' over' : ''}">${pack.length}/${st.carrySlots} slots</span></div>
+        <div class="carry-slots">${Array.from({ length: st.carrySlots }, (_, k) => pack[k] ? `<div class="carry-slot filled" onclick="appState.togglePack('${escapeHtml(pack[k].uid)}')" title="Take out of pack"><span class="cs-cat">${escapeHtml(pack[k].category)}</span>${escapeHtml(pack[k].name)}</div>` : '<div class="carry-slot">Empty</div>').join('')}</div>`;
+    const los = document.getElementById('setupList');
+    if (los) los.innerHTML = toArr(st.weaponSetups).map(su => {
+        const tag = st.carry.primary === su.id ? 'Primary' : st.carry.secondary === su.id ? 'Secondary' : '';
+        const att = toArr(su.attachments).map(invItem).filter(Boolean).map(x => x.name);
+        return `<div class="trophy-card hunt-card${tag ? ' lo-active' : ''}"><div style="display:flex;justify-content:space-between;gap:8px;"><div style="flex:1">
+            ${tag ? `<span class="trophy-rank rank-gold">${tag}</span>` : ''}<h3 style="color:#fff;font-size:0.95rem;">${escapeHtml(su.name)}</h3>
+            <div style="font-size:0.78rem;color:#cbd5e1;">${escapeHtml(setupLabel(su))}</div>
+            ${att.length ? `<div style="font-size:0.72rem;color:#94a3b8;">🔧 ${att.map(escapeHtml).join(' · ')}</div>` : ''}</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+            ${tag !== 'Primary' ? `<button type="button" class="uni-search-btn" onclick="appState.equipSetup('${escapeHtml(su.id)}','primary')">Primary</button>` : ''}
+            ${tag !== 'Secondary' ? `<button type="button" class="uni-search-btn" onclick="appState.equipSetup('${escapeHtml(su.id)}','secondary')">Secondary</button>` : ''}
+            <button type="button" class="uni-search-btn" onclick="appState.editSetup('${escapeHtml(su.id)}')">Edit</button>
+            <button type="button" class="uni-search-btn" onclick="appState.deleteSetup('${escapeHtml(su.id)}')">Delete</button></div></div></div>`;
+    }).join('');
     const stor = document.getElementById('storageList');
     if (stor) {
         const groups = {};
         inv.forEach(i => { (groups[i.category] = groups[i.category] || []).push(i); });
-        const carried = new Set(active ? [active.weapon, active.ammo, ...toArr(active.gear)] : []);
-        stor.innerHTML = inv.length ? Object.keys(groups).sort((a, b) => ITEM_CATS.indexOf(a) - ITEM_CATS.indexOf(b)).map(cat => `<div class="stor-group"><h4>${escapeHtml(cat)} (${groups[cat].length})</h4>${groups[cat].map(i => `<div class="stor-item"><span>${carried.has(i.uid) ? '🎒 ' : ''}${escapeHtml(i.name)}${i.caliber ? ` <small>${escapeHtml(i.caliber)}</small>` : ''}</span><button type="button" class="stor-x" title="Remove from storage" onclick="appState.removeStorageItem('${escapeHtml(i.uid)}')">✕</button></div>`).join('')}</div>`).join('')
+        const inPack = new Set(toArr(st.carry.pack));
+        stor.innerHTML = inv.length ? Object.keys(groups).sort((a, b) => ITEM_CATS.indexOf(a) - ITEM_CATS.indexOf(b)).map(cat => `<div class="stor-group"><h4>${escapeHtml(cat)} (${groups[cat].length})</h4>${groups[cat].map(i => `<div class="stor-item"><span>${escapeHtml(i.name)}${i.caliber ? ` <small>${escapeHtml(i.caliber)}</small>` : ''}</span><span style="display:flex;gap:4px;align-items:center;">${isPackItem(i) ? `<button type="button" class="pack-btn${inPack.has(i.uid) ? ' on' : ''}" onclick="appState.togglePack('${escapeHtml(i.uid)}')">${inPack.has(i.uid) ? '🎒 In pack' : '+ Pack'}</button>` : ''}<button type="button" class="stor-x" title="Remove from storage" onclick="appState.removeStorageItem('${escapeHtml(i.uid)}')">✕</button></span></div>`).join('')}</div>`).join('')
             : '<p style="color:#94a3b8;font-size:0.85rem;">Storage is empty. Add what you own, or buy it from the Shop.</p>';
     }
     document.querySelectorAll('[data-owned-for]').forEach(el => { const n = ownedCount(el.dataset.ownedFor); el.textContent = n ? `Owned ×${n}` : ''; });
@@ -1787,32 +1843,33 @@ function lockerPanelHtml(data) {
     const cat = catalogItems();
     const byCat = {}; cat.forEach(c => { (byCat[c.category] = byCat[c.category] || []).push(c); });
     const catOpts = Object.keys(byCat).map(k => `<optgroup label="${escapeHtml(k)}">${byCat[k].map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}${c.price ? ` — ${fmtNum(c.price)} cr` : ''}</option>`).join('')}</optgroup>`).join('');
+    const hid = cat.length ? ' hidden' : '';
     const two = (a, b) => `<div class="hunt-2col"><div class="hunt-form-col">${a}</div><div class="hunt-cards-col">${b}</div></div>`;
     const left = `
         <h4 class="form-title">Add to storage</h4>
         <form class="harvest-form" onsubmit="event.preventDefault(); appState.addStorageItem(this);">
             <select name="catalog" ${inp} onchange="toggleCustomItem(this.form)"><option value="">Pick an item…</option>${catOpts}<option value="__custom">Other (type it in)</option></select>
-            <input name="name" placeholder="Item name" class="uni-search-input hunt-input custom-item"${cat.length ? ' hidden' : ''}>
-            <select name="category" class="uni-search-input hunt-input custom-item"${cat.length ? ' hidden' : ''}>${ITEM_CATS.map(c => `<option>${c}</option>`).join('')}</select>
-            <input name="caliber" placeholder="Caliber / gauge (weapons & ammo)" class="uni-search-input hunt-input custom-item"${cat.length ? ' hidden' : ''}>
-            <input name="price" type="number" min="0" placeholder="Price (credits)" class="uni-search-input hunt-input custom-item"${cat.length ? ' hidden' : ''}>
+            <input name="name" placeholder="Item name" class="uni-search-input hunt-input custom-item"${hid}>
+            <select name="category" class="uni-search-input hunt-input custom-item"${hid}>${ITEM_CATS.map(c => `<option>${c}</option>`).join('')}</select>
+            <input name="caliber" placeholder="Caliber / gauge (weapons & ammo)" class="uni-search-input hunt-input custom-item"${hid}>
+            <input name="price" type="number" min="0" placeholder="Price (credits)" class="uni-search-input hunt-input custom-item"${hid}>
             <label class="hunt-check"><input type="checkbox" name="pay"> Bought it now (take credits off)</label>
             <button type="submit" class="uni-search-btn">Add to storage</button>
         </form>
-        <h4 class="form-title">Carry slots</h4>
-        <div class="harvest-form"><input id="carrySlots" type="number" min="1" max="30" ${inp} onchange="appState.setCarrySlots(this.value)"><span style="font-size:0.75rem;color:#94a3b8;flex-basis:100%;">6 without a backpack. Raise it if you carry a backpack.</span></div>
-        <h4 class="form-title">Build a loadout</h4>
-        <form id="loadoutForm" class="harvest-form" onsubmit="event.preventDefault(); appState.saveLoadout(this);">
+        <h4 class="form-title">Weapon setup (gun + attachments + ammo)</h4>
+        <form id="setupForm" class="harvest-form" onsubmit="event.preventDefault(); appState.saveSetup(this);">
             <input type="hidden" name="id">
-            <input name="name" placeholder="Loadout name (e.g. Big game)" ${inp}>
-            <select name="weapon" ${inp} onchange="fillAmmoSelect(this.form.ammo, this.value); updateLoadoutSlotCount(this.form)"></select>
-            <select name="ammo" ${inp} onchange="updateLoadoutSlotCount(this.form)"></select>
-            <div class="lo-gear" style="flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px;"></div>
-            <span class="lo-slots game-chip"></span>
-            <button type="submit" class="uni-search-btn">Save loadout</button>
-        </form>`;
-    const right = `<div id="carryPanel" class="carry-panel"></div><div id="loadoutList" class="hunt-card-list" style="margin:10px 0;"></div><h4 class="form-title">Storage</h4><div id="storageList" class="storage-list"></div>`;
-    let html = buildFolder('🎒 Hunter Locker (Storage & Loadouts)', two(left, right));
+            <input name="name" placeholder="Setup name (e.g. Big game .308)" ${inp}>
+            <select name="weapon" ${inp} onchange="fillAmmoSelect(this.form.ammo, this.value)"></select>
+            <select name="ammo" ${inp}></select>
+            <div class="su-attach" style="flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px;"></div>
+            <select name="slot" ${inp}><option value="">Don't equip yet</option><option value="primary">Put in Primary slot</option><option value="secondary">Put in Secondary slot</option></select>
+            <button type="submit" class="uni-search-btn">Save weapon setup</button>
+        </form>
+        <h4 class="form-title">Gear pack slots</h4>
+        <div class="harvest-form"><input id="carrySlots" type="number" min="1" max="30" ${inp} onchange="appState.setCarrySlots(this.value)"><span style="font-size:0.75rem;color:#94a3b8;flex-basis:100%;">6 without a backpack. Sprays, scents, callers and other gear go in the pack with "+ Pack" in Storage; they stay there whatever gun you swap to.</span></div>`;
+    const right = `<div id="carryPanel" class="carry-panel"></div><h4 class="form-title">Weapon setups</h4><div id="setupList" class="hunt-card-list" style="margin-bottom:10px;"></div><h4 class="form-title">Storage</h4><div id="storageList" class="storage-list"></div>`;
+    let html = buildFolder('🎒 Hunter Locker (Storage & Loadout)', two(left, right));
     if (cat.length) {
         html += buildFolder('🏪 Shop' + (data.shop && data.shop.verified === false ? ' <span class="game-chip">Not confirmed yet</span>' : ''), gridOf(cat.map(c => `
             <div class="trophy-card hunt-card"><span class="trophy-rank rank-silver">${escapeHtml(c.category)}</span>
@@ -1861,7 +1918,7 @@ function renderWalletUI() {
                 <span class="trophy-rank rank-gold">${escapeHtml(h.huntRating || 'Harvest')}</span> ${h.taxidermy ? '<span class="trophy-rank rank-silver">Taxidermy</span>' : ''}
                 <h3 style="color:#fff;font-size:0.95rem;margin-top:4px;">${escapeHtml(h.species)}${h.sex ? ` (${escapeHtml(h.sex)})` : ''}</h3>
                 <div style="font-size:0.75rem;color:#94a3b8;">${'★'.repeat(h.stars || 0)} ${h.score ? `· Score ${escapeHtml(String(h.score))}` : ''} ${h.fitness ? `· Fitness ${escapeHtml(String(h.fitness))}%` : ''} ${h.age ? `· ${escapeHtml(String(h.age))} yrs` : ''} ${h.weight ? `· ${escapeHtml(String(h.weight))} lb` : ''}</div>
-                <div style="font-size:0.8rem;color:#e2e8f0;">+${fmtNum(h.credits)} credits · +${fmtNum(h.xp)} XP ${h.weapon ? `· ${escapeHtml(h.weapon)}${h.ammo ? ` / ${escapeHtml(h.ammo)}` : ''}` : ''} ${h.hitOrgan ? `· ${escapeHtml(h.hitOrgan)}` : ''} ${h.shotDistance ? `· ${escapeHtml(String(h.shotDistance))} yd` : ''} ${h.notes ? `· ${escapeHtml(h.notes)}` : ''}</div>
+                <div style="font-size:0.8rem;color:#e2e8f0;">+${fmtNum(h.credits)} credits · +${fmtNum(h.xp)} XP ${h.weapon ? `· ${escapeHtml(h.weapon)}${h.ammo ? ` / ${escapeHtml(h.ammo)}` : ''}${toArr(h.attachments).length ? ` (${toArr(h.attachments).map(escapeHtml).join(', ')})` : ''}` : ''} ${h.hitOrgan ? `· ${escapeHtml(h.hitOrgan)}` : ''} ${h.shotDistance ? `· ${escapeHtml(String(h.shotDistance))} yd` : ''} ${h.notes ? `· ${escapeHtml(h.notes)}` : ''}</div>
                 <div style="font-size:0.7rem;color:#64748b;">${h.gameDay ? `Game day ${escapeHtml(String(h.gameDay))} ${escapeHtml(h.gameTime || '')} · ` : ''}${escapeHtml(h.date || '')}</div></div>
                 <div style="display:flex;flex-direction:column;gap:6px;">
                 <button type="button" class="uni-search-btn" onclick="appState.toggleTaxidermy('${escapeHtml(h.id)}')" title="${h.taxidermy ? 'Remove from Trophy Room' : 'Add to Trophy Room'}">${h.taxidermy ? 'Unmount' : '🏆 Mount'}</button>
@@ -1929,7 +1986,8 @@ window.appState.addHarvest = async function(form) {
         fitness: f.get('fitness') || '', score: f.get('score') || '', stars: Number(f.get('stars')) || 0, age: f.get('age') || '', weight: f.get('weight') || '',
         huntRating: f.get('huntRating') || '', notes: f.get('notes') || '', taxidermy: !!f.get('taxidermy'),
         hitOrgan: f.get('hitOrgan') || '', shotDistance: f.get('shotDistance') || '',
-        loadout: (appState.loadouts.find(l => l.id === f.get('loadout')) || {}).name || '',
+        loadout: (() => { const k = f.get('loadout'); const su = setupById(k === 'primary' || k === 'secondary' ? appState.carry[k] : k); return su ? `${k === 'primary' ? 'Primary: ' : k === 'secondary' ? 'Secondary: ' : ''}${su.name}` : ''; })(),
+        attachments: (() => { const k = f.get('loadout'); const su = setupById(k === 'primary' || k === 'secondary' ? appState.carry[k] : k); return su ? toArr(su.attachments).map(invItem).filter(Boolean).map(x => x.name) : []; })(),
         weapon: (invItem(f.get('weapon')) || {}).name || '', ammo: (invItem(f.get('ammo')) || {}).name || '',
         gameDay: this.wallet.gameDay, gameTime: this.wallet.gameTime, date: new Date().toLocaleString()
     };
@@ -1941,7 +1999,7 @@ window.appState.addHarvest = async function(form) {
     this.applyLevelUps();
     form.reset();
     const pf = form.querySelector('.harvest-photo-field'); if (pf) pf.hidden = true;
-    delete form.dataset.touched; if (this.activeLoadout) applyLoadoutToHarvest(form, this.activeLoadout);
+    delete form.dataset.touched; if (this.carry.primary) applyLoadoutToHarvest(form, 'primary');
     this.applyStateToUI(); this.saveProgress();
     this.updateStatus(`Harvest saved: +${fmtNum(h.credits)} credits, +${fmtNum(h.xp)} XP.`);
 };
