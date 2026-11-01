@@ -87,6 +87,18 @@ function ribbonKeys(data) {
     return Object.keys(data || {}).filter(k => /_ribbons$/.test(k));
 }
 
+// All ribbons as a tree: supports "campaign_ribbons": [...] keys and a
+// nested "ribbons": { campaign: [...], multiplayer: { combat: [...] } } object.
+// Lists named *_unverified are skipped.
+function ribbonTreeOf(data) {
+    const tree = {};
+    ribbonKeys(data).forEach(k => { tree[k.replace(/_ribbons$/, '')] = data[k]; });
+    if (data && data.ribbons && typeof data.ribbons === 'object' && !Array.isArray(data.ribbons)) {
+        Object.entries(data.ribbons).forEach(([k, v]) => { if (!/_unverified$/.test(k)) tree[k] = v; });
+    }
+    return tree;
+}
+
 // Section 3: Authoritative Global State Engine
 window.appState = {
     activeUser: 'Guest',
@@ -354,7 +366,7 @@ window.appState = {
         });
 
         walkLeaves(data.medals, it => this.registerMedal(it));
-        ribbonKeys(data).forEach(k => toArr(data[k]).forEach(r => this.registerRibbon(r)));
+        walkLeaves(ribbonTreeOf(data), r => this.registerRibbon(r));
     },
 
     hydrateTrophiesFromSkeleton: function(skeleton) {
@@ -1128,8 +1140,7 @@ function renderMissionSchema(data) {
         .sort((a, b) => (a[1].number || 0) - (b[1].number || 0))
         .forEach(([mKey, m]) => { html += renderMissionBlock(mKey, m, placedTrophyKeys); });
 
-    const ribbonTree = {};
-    ribbonKeys(data).forEach(k => { ribbonTree[k.replace(/_ribbons$/, '')] = data[k]; });
+    const ribbonTree = ribbonTreeOf(data);
     const ribbonHtml = renderTree(ribbonTree, ribbonCard, []);
     if (ribbonHtml) html += buildFolder('🎗️ Ribbons', ribbonHtml);
 
