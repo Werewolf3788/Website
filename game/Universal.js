@@ -133,6 +133,8 @@ window.appState = {
     carrySlots: 6,
     weaponSetups: [],
     carry: { primary: null, secondary: null, pack: [] },
+    campaignRank: null,
+    campaignRankSource: null,
     ranks: {},
 
     getUserKey: function() {
@@ -177,6 +179,8 @@ window.appState = {
         this.carrySlots = 6;
         this.weaponSetups = [];
         this.carry = { primary: null, secondary: null, pack: [] };
+        this.campaignRank = null;
+        this.campaignRankSource = null;
         this.ranks = {};
 
         document.querySelectorAll('.game-pill').forEach(pill => {
@@ -485,6 +489,8 @@ window.appState = {
             carrySlots: this.carrySlots,
             weaponSetups: this.weaponSetups,
             carry: this.carry,
+            campaignRank: this.campaignRank,
+            campaignRankSource: this.campaignRankSource,
             trophies: this.trophies
         };
     },
@@ -502,6 +508,9 @@ window.appState = {
         if (Array.isArray(payload.weaponSetups)) this.weaponSetups = payload.weaponSetups;
         if (payload.carry && typeof payload.carry === 'object') this.carry = Object.assign({ primary: null, secondary: null, pack: [] }, payload.carry);
         migrateLoadouts(this);
+        if (payload.campaignRank !== undefined && payload.campaignRank !== null && !(this.campaignRankSource === 'psn' && payload.campaignRankSource !== 'psn')) {
+            this.campaignRank = payload.campaignRank; this.campaignRankSource = payload.campaignRankSource || 'manual';
+        }
         this.trophies_earned = payload.trophies_earned || 0;
         this.trophies_total = payload.trophies_total || this.trophies_total;
         this.trophies_percent = payload.trophies_percent || 0;
@@ -652,6 +661,7 @@ function applyUserProfileStyling(uData) {
 window.appState.applyStateToUI = function() {
     this.recalculateMetrics();
     if (typeof renderWalletUI === 'function') renderWalletUI();
+    if (typeof renderRankUI === 'function') renderRankUI();
 
     document.querySelectorAll('.game-item-card').forEach(card => {
         const id = card.getAttribute('data-id');
@@ -743,7 +753,7 @@ function updateGameMetrics() {
         boxes.push(box('Species Harvested', `${species.size}/${totalSpecies}`, `${toArr(st.watchlist).length} on watchlist`));
         boxes.push(box(`Level ${w.level || 1}`, `${fmtNum(w.credits)} cr`, (w.xpNext || xpNeededFor(w.level)) ? `${fmtNum(w.xp)}/${fmtNum(w.xpNext || xpNeededFor(w.level))} XP` : `${fmtNum(w.xp)} XP`));
     } else {
-        const cards = [...document.querySelectorAll('#section-container .game-item-card')];
+        const cards = [...document.querySelectorAll('#section-container .game-item-card')].filter(c => !String(c.getAttribute('data-id')).startsWith('wpn_'));
         if (!cards.length) { if (grid.innerHTML !== grid.dataset.original) grid.innerHTML = grid.dataset.original; return; }
         const of = (type) => cards.filter(c => c.getAttribute('data-type') === type);
         const doneOf = (list) => list.filter(c => c.classList.contains('completed')).length;
@@ -898,15 +908,23 @@ window.appState.syncFriendsProgress = async function() {
             const save = await readFriendSave([...new Set([code, userKey].filter(Boolean))], plats, gameName);
             const psnTag = profile.psn_username || fObj.psn_username || '';
             const psnEarned = [];
+            let psnRank = null;
             if (psnTag && ACTIVE_COMM_ID) {
                 try {
                     const live = (await rtdb.ref(`/psn/gamertags/${psnTag}/liveTrophyProgress/${ACTIVE_COMM_ID}`).once('value')).val();
                     const entries = Array.isArray(live) ? [...live.entries()] : Object.entries(live || {});
-                    entries.forEach(([tId, t]) => { if (t && (t.earned === true || t.isEarned === true)) psnEarned.push(`trophy_${this.gameId}_${t.trophyId !== undefined ? t.trophyId : tId}`); });
+                    const crf = this.gameData && this.gameData.campaign_rank;
+                    entries.forEach(([tId, t]) => {
+                        if (!t) return;
+                        const id = t.trophyId !== undefined ? t.trophyId : tId;
+                        if (t.earned === true || t.isEarned === true) psnEarned.push(`trophy_${this.gameId}_${id}`);
+                        if (crf && String(id) === String(crf.trophyId)) psnRank = (t.earned === true || t.isEarned === true) ? crf.max : Number(t.currentValue ?? t.trophyProgress ?? 0) || null;
+                    });
                 } catch (e) {}
             }
             const { done, ribbons } = friendDoneSet(save && save.data, psnEarned);
-            return { code, userKey, name, avatar, plats, platform: save ? save.platform : (plats[0] || ''), hasSave: !!save, psnTag, psnCount: psnEarned.length, done, ribbons, save: save && save.data };
+            const rank = psnRank || (save && save.data && save.data.campaignRank) || null;
+            return { code, userKey, name, avatar, plats, platform: save ? save.platform : (plats[0] || ''), hasSave: !!save, psnTag, psnCount: psnEarned.length, done, ribbons, rank, save: save && save.data };
         }));
         if (token !== friendSyncToken) return;
         this.friendsProgress = results;
@@ -925,7 +943,7 @@ function friendBadge(f, extra) {
 function renderSquadRoster() {
     const el = document.getElementById('friendsRosterContainer'); if (!el) return;
     const list = toArr(appState.friendsProgress);
-    const cards = [...document.querySelectorAll('#section-container .game-item-card')];
+    const cards = [...document.querySelectorAll('#section-container .game-item-card')].filter(c => !String(c.getAttribute('data-id')).startsWith('wpn_'));
     const total = cards.filter(c => c.getAttribute('data-type') !== 'ribbon').length;
     const data = appState.gameData || {};
     const hunting = !isMissionSchema(data) && Array.isArray(data.species);
@@ -937,7 +955,7 @@ function renderSquadRoster() {
         const sv = f.save || {};
         const stats = hunting
             ? `<span>Level <strong>${escapeHtml(String(sv.wallet?.level || '?'))}</strong></span><span>Kills <strong>${toArr(sv.harvestLog).length}</strong></span><span>🏆 <strong>${toArr(sv.harvestLog).filter(h => h.taxidermy).length}</strong></span>`
-            : `<span>Checklist <strong>${doneHere}/${total}</strong></span>${trophies.length ? `<span>Trophies <strong>${tDone}/${trophies.length}</strong></span>` : ''}${ribbonTotal ? `<span>Ribbons <strong>${fmtNum(ribbonTotal)}</strong></span>` : ''}`;
+            : `${f.rank ? `<span>Rank <strong>${f.rank}</strong></span>` : ''}<span>Checklist <strong>${doneHere}/${total}</strong></span>${trophies.length ? `<span>Trophies <strong>${tDone}/${trophies.length}</strong></span>` : ''}${ribbonTotal ? `<span>Ribbons <strong>${fmtNum(ribbonTotal)}</strong></span>` : ''}`;
         if (f.hidden) return `<div class="squad-card">${f.avatar ? `<img src="${toSecureUrl(f.avatar)}" class="squad-av" onerror="this.style.display='none'">` : `<div class="squad-av squad-ini">${escapeHtml(friendInitials(f.name))}</div>`}
             <div style="flex:1;"><div style="font-weight:900;color:#fff;font-size:0.95rem;">${escapeHtml(f.name)}</div><div style="font-size:0.72rem;color:#94a3b8;">🔒 ${f.hidden === 'close' ? 'Shares tracking with close friends only' : 'Keeps game tracking private'}</div></div></div>`;
         const note = !f.hasSave && !f.psnCount ? 'No save for this game yet' : [f.hasSave ? `Save on ${f.platform.toUpperCase()}` : 'No site save', f.psnTag ? (f.psnCount ? `PSN ${f.psnTag}: ${f.psnCount} trophies` : `PSN ${f.psnTag}`) : ''].filter(Boolean).join(' · ');
@@ -1159,6 +1177,11 @@ async function autoCheckUserPsnTrophies() {
                 const parsedId = tObj.trophyId !== undefined ? tObj.trophyId : tId;
                 const cardKey = `trophy_${appState.gameId}_${parsedId}`;
                 const isEarnedInPsn = (tObj.earned === true || tObj.isEarned === true);
+                const cr = appState.gameData && appState.gameData.campaign_rank;
+                if (cr && String(parsedId) === String(cr.trophyId)) {
+                    const v = isEarnedInPsn ? cr.max : Number(tObj.currentValue ?? tObj.trophyProgress ?? tObj.progress);
+                    if (v && v !== appState.campaignRank) { appState.campaignRank = Math.min(cr.max, v); appState.campaignRankSource = 'psn'; stateModified = true; }
+                }
 
                 if (appState.trophies[cardKey]) {
                     const card = appState.trophies[cardKey];
@@ -1230,6 +1253,8 @@ function ensureUniversalStyles() {
         .hunt-input { flex: 1 1 140px; padding: 8px 10px; min-width: 0; max-width: 100%; box-sizing: border-box; }
         select.hunt-input { text-overflow: ellipsis; }
         .ctl-wrap { overflow-x: auto; }
+        .wpn-status { font-size: 0.72rem; color: #f59e0b; margin-top: 2px; }
+        .wpn-status.ok { color: #10b981; }
         .mark-all-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
         .loc-photo { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; margin-top: 4px; display: block; }
         .friend-marks { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; padding-top: 6px; border-top: 1px dashed rgba(255,255,255,0.1); width: 100%; }
@@ -1527,6 +1552,7 @@ function renderMissionSchema(data) {
     if (data.crossplay && data.crossplay.supported) chips.push(`<span class="game-chip on" title="${escapeHtml(data.crossplay.toggle || '')}">✔ Cross-play</span>`);
     toArr(data.play_modes).forEach(pm => chips.push(`<span class="game-chip">${escapeHtml(pm)}</span>`));
     if (chips.length) html += `<div class="game-overview">${chips.join('')}</div>`;
+    if (data.campaign_rank) html += rankPanelHtml(data);
 
     Object.entries(data.missions)
         .filter(([, m]) => m && typeof m === 'object')
@@ -2025,6 +2051,91 @@ function lockerPanelHtml(data) {
             <span class="game-chip" data-owned-for="${escapeHtml(c.id)}"></span></div></div>`)));
     }
     return html;
+}
+
+// ---- Campaign rank (from the "Climbing the Ranks" PSN trophy or typed in) + arsenal unlocks
+const slugify = (t) => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+function arsenalList(data) {
+    const w = data.weapons || {}, roster = data.weapon_roster || {};
+    const out = [], seen = new Set();
+    const add = (cat, x) => { const name = typeof x === 'string' ? x : x.name; const k = slugify(name).replace(/_/g, ''); if (seen.has(k)) return; seen.add(k); out.push({ cat, name, ...(typeof x === 'object' ? x : {}) }); };
+    toArr(w.rifles).forEach(x => add('Rifle', x));
+    toArr(w.pistols).forEach(x => add('Pistol', x));
+    toArr(w.secondaries).forEach(x => add('Secondary', x));
+    toArr(roster.rifles).forEach(x => add('Rifle', x));
+    toArr(roster.secondaries).forEach(x => add('Secondary', x));
+    toArr(roster.pistols).forEach(x => add('Pistol', x));
+    return out;
+}
+function weaponUnlockStatus(wp) {
+    const st = appState, data = st.gameData || {};
+    if (wp.unlocked_by_default) return { ok: true, text: 'Available from the start' };
+    const req = String(wp.unlockRequirement || '');
+    if (!req) return { ok: null, text: 'Unlock requirement not recorded yet' };
+    const missionKey = (n) => Object.keys(data.missions || {}).find(k => data.missions[k] && Number(data.missions[k].number) === Number(n));
+    let m;
+    if ((m = req.match(/rank\s*(\d+)/i))) { const n = +m[1]; return { ok: (st.campaignRank || 0) >= n, text: `Rank ${st.campaignRank || 0}/${n}` }; }
+    if ((m = req.match(/Kill Challenge in Mission\s*(\d+)/i))) { const k = missionKey(m[1]); const done = !!(k && st.missions[`kill_${k}`]?.completed); return { ok: done, text: done ? 'Kill challenge done' : 'Kill challenge not done yet' }; }
+    if ((m = req.match(/Complete Mission\s*(\d+)/i))) { const k = missionKey(m[1]); const done = !!(k && st.missions[k]?.completed); return { ok: done, text: done ? 'Mission complete' : 'Mission not complete yet' }; }
+    if (/propaganda/i.test(req)) {
+        const ids = Object.values(data.missions || {}).map(x => x && x.propaganda_mission && x.propaganda_mission.id).filter(Boolean);
+        const done = ids.filter(id => st.missions[id]?.completed).length;
+        // The data doesn't say which propaganda missions are which type, so this is a guide; tick it when the game unlocks it.
+        return { ok: null, text: `${done} propaganda mission${done === 1 ? '' : 's'} ticked so far · tick the weapon when it unlocks` };
+    }
+    return { ok: null, text: 'Tick it when you have it' };
+}
+function rankPanelHtml(data) {
+    const cr = data.campaign_rank;
+    const groups = {};
+    arsenalList(data).forEach(wp => { (groups[wp.cat] = groups[wp.cat] || []).push(wp); });
+    const cards = Object.entries(groups).map(([cat, list]) => `<h4 class="form-title">${escapeHtml(cat)}s</h4>` + gridOf(list.map(wp => buildItemCard({
+        id: `wpn_${slugify(wp.name)}`, type: 'mission', badge: cat, badgeClass: 'rank-silver', title: wp.name,
+        sub: wp.unlockRequirement || (wp.unlocked_by_default ? 'Available from the start' : ''),
+        body: [wp.description, wp.audibleRange ? `Audible ${wp.audibleRange}` : '', wp.magazineSize ? `Mag ${wp.magazineSize}` : '', toArr(wp.pros).length ? `Pros: ${toArr(wp.pros).join(', ')}` : '', toArr(wp.cons).length ? `Cons: ${toArr(wp.cons).join(', ')}` : ''].filter(Boolean).join(' · '),
+        ctx: 'weapon arsenal'
+    }).replace("</h3>", `</h3><div class="wpn-status" data-wpn="${escapeHtml(slugify(wp.name))}"></div>`)))).join('');
+    return buildFolder(`🎖️ Campaign Rank & Arsenal`, `
+        <div class="rank-panel">
+            <div><h4 class="form-title">Campaign rank</h4>
+            <div class="harvest-form"><input id="campaignRankInput" type="number" min="1" max="${cr.max}" class="uni-search-input hunt-input" placeholder="Rank" onchange="appState.setCampaignRank(this.value)"></div>
+            <div id="campaignRankMeter" class="wallet-meter"></div>
+            <p id="campaignRankSource" style="font-size:0.72rem;color:#94a3b8;"></p>
+            <p style="font-size:0.72rem;color:#64748b;">${escapeHtml(cr.note || '')}</p></div>
+        </div>
+        <p style="font-size:0.78rem;color:#cbd5e1;margin:8px 0;">Weapons unlock automatically here as you tick missions, kill challenges and propaganda missions, or as your rank goes up. Tick any weapon you already have.</p>
+        ${cards}`);
+}
+window.appState.setCampaignRank = function(v) {
+    const max = (this.gameData && this.gameData.campaign_rank && this.gameData.campaign_rank.max) || 40;
+    const n = Math.max(0, Math.min(max, Math.floor(Number(v) || 0)));
+    this.campaignRank = n || null; this.campaignRankSource = 'manual';
+    this.applyStateToUI(); this.saveProgress();
+};
+function renderRankUI() {
+    const data = appState.gameData || {}, cr = data.campaign_rank;
+    if (!cr) return;
+    const r = appState.campaignRank || 0;
+    setVal('campaignRankInput', r || '');
+    const meter = document.getElementById('campaignRankMeter');
+    if (meter) meter.innerHTML = `Rank ${r}/${cr.max} ` + meterHtml(cr.max - r, cr.max, '').replace(/^<span class="wm-num[^>]*>.*?<\/span>/, '');
+    const src = document.getElementById('campaignRankSource');
+    if (src) src.textContent = appState.campaignRankSource === 'psn' ? 'Synced from your PlayStation trophy "Climbing the Ranks".' : (r ? 'Entered by hand. Link your PSN in Settings to sync it.' : 'Type your rank or link your PSN in Settings.');
+    // Climbing the Ranks medal follows the rank
+    if (cr.medal_id && appState.medals) {
+        if (!appState.medals[cr.medal_id]) appState.medals[cr.medal_id] = { earned: false };
+        appState.medals[cr.medal_id].earned = r >= cr.max;
+        const mc = document.querySelector(`[data-id="${cr.medal_id}"]`);
+        if (mc) { let el = mc.querySelector('.rank-progress'); if (!el) { el = document.createElement('div'); el.className = 'rank-progress wallet-meter'; mc.appendChild(el); } el.innerHTML = `Rank ${r}/${cr.max}`; }
+    }
+    // weapons: derived unlocks + manual ticks
+    arsenalList(data).forEach(wp => {
+        const id = `wpn_${slugify(wp.name)}`; const stt = weaponUnlockStatus(wp);
+        if (stt.ok === true) { appState.missions[id] = appState.missions[id] || {}; appState.missions[id].completed = true; appState.missions[id].auto = true; }
+        else if (appState.missions[id]?.auto) { appState.missions[id].completed = false; delete appState.missions[id].auto; }
+        const el = document.querySelector(`.wpn-status[data-wpn="${slugify(wp.name)}"]`);
+        if (el) { el.textContent = (stt.ok ? '🔓 ' : stt.ok === false ? '🔒 ' : '') + stt.text; el.className = 'wpn-status' + (stt.ok ? ' ok' : ''); }
+    });
 }
 
 // ---- rendering

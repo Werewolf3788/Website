@@ -6726,7 +6726,59 @@
       "sprintMovementSpeed": "%",
       "aimedMovementSpeed": "%"
     },
-    "detailedStatsNote": "From the in-game Toggle Stats view. Lower is better for aim stability, recoil, spread, recoil recovery, reload, time to aim and equip time. Lebel values are from a customized rifle."
+    "detailedStatsNote": "From the in-game Toggle Stats view. Lower is better for aim stability, recoil, spread, recoil recovery, reload, time to aim and equip time. Lebel values are from a customized rifle.",
+    "pistols": [
+      {
+        "name": "Nagant M1895",
+        "description": "A Russian-made revolver featuring a gas seal system, which boosts stopping power and allows for the use of a suppressor.",
+        "audibleRange": "75 m (+33)",
+        "zoom": "1x",
+        "magazineSize": 7,
+        "magazineNote": "7 (-1) on the screen",
+        "pros": [
+          "Extremely High Damage"
+        ],
+        "cons": [
+          "Very Loud"
+        ],
+        "unlockRequirement": "Complete the Kill Challenge in Mission 2: Dead Drop",
+        "source": "In-game screenshot (campaign rank 24 save)"
+      },
+      {
+        "name": "M1912",
+        "description": "A semi-automatic pistol, more accurate at long-range than typical sidearms, but slow to reload.",
+        "audibleRange": "70 m (+28)",
+        "zoom": "1x",
+        "magazineSize": 8,
+        "pros": [
+          "Good Aim Stability",
+          "Minimal Recoil Kick"
+        ],
+        "cons": [
+          "Slow to Reload"
+        ],
+        "unlockRequirement": "Complete all of the propaganda missions types (base campaign only)",
+        "unlockProgressTarget": 3,
+        "source": "In-game screenshot (campaign rank 24 save)"
+      },
+      {
+        "name": "Star Ruby",
+        "unlocked_by_default": true
+      },
+      {
+        "name": "Hi-Power 9MM",
+        "unlocked_by_default": true
+      },
+      {
+        "name": "Modèle 1935A",
+        "unlocked_by_default": true
+      },
+      {
+        "name": "Welrod",
+        "unlocked_by_default": true
+      }
+    ],
+    "pistolsNote": "In-game pistol list order: Star Ruby, Hi-Power 9MM, Modèle 1935A, Welrod, Nagant M1895, M1912. Locks shown only on Nagant M1895 and M1912 on a rank-24 save."
   },
   "weapon_roster": {
     "note": "Full weapon list from outside guides (not from in-game screenshots). Rifles with full data are under weapons.rifles.",
@@ -6905,5 +6957,12 @@
     "poster": "https://cdn.cloudflare.steamstatic.com/steam/apps/2169200/library_600x900_2x.jpg",
     "wallpaper": "https://cdn.cloudflare.steamstatic.com/steam/apps/2169200/library_hero.jpg",
     "note": "Page background: poster on phones, wallpaper on wide screens. Falls back to image_url if these fail to load."
+  },
+  "campaign_rank": {
+    "max": 40,
+    "trophy_name": "Climbing the Ranks",
+    "trophyId": 9,
+    "medal_id": "med_general_climbing_the_ranks",
+    "note": "Campaign rank only (not multiplayer or survival). The PS5 trophy 'Climbing the Ranks' shows the same number (e.g. 24/40), so the site reads it from PSN when available."
   }
 }
