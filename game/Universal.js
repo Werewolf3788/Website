@@ -671,7 +671,55 @@ window.appState.applyStateToUI = function() {
         const done = sec.querySelectorAll('.game-item-card.completed').length;
         badge.innerText = total ? `${done}/${total}` : '';
     });
+    updateGameMetrics();
 };
+
+// The three summary boxes under the game pills: built from whatever the
+// selected game actually tracks (Far Cry keeps its original boxes).
+function updateGameMetrics() {
+    const grid = document.querySelector('.metrics-grid');
+    if (!grid) return;
+    if (grid.dataset.original === undefined) grid.dataset.original = grid.innerHTML;
+    const st = window.appState, data = st.gameData || {};
+    const box = (label, value, sub) => `<div class="metric-card"><span class="metric-label">${escapeHtml(label)}</span><span class="metric-value">${value}</span>${sub ? `<span class="metric-sub">${sub}</span>` : ''}</div>`;
+    const boxes = [];
+
+    if (!isMissionSchema(data) && Array.isArray(data.species)) {
+        const w = st.wallet || {};
+        const species = new Set(toArr(st.harvestLog).map(h => h.species));
+        const totalSpecies = toArr(data.species).length;
+        const trophies = toArr(st.harvestLog).filter(h => h.taxidermy).length;
+        boxes.push(box('Harvests Logged', fmtNum(toArr(st.harvestLog).length), trophies ? `${trophies} taxidermy trophies` : ''));
+        boxes.push(box('Species Harvested', `${species.size}/${totalSpecies}`, `${toArr(st.watchlist).length} on watchlist`));
+        boxes.push(box(`Level ${w.level || 1}`, `${fmtNum(w.credits)} cr`, (w.xpNext || xpNeededFor(w.level)) ? `${fmtNum(w.xp)}/${fmtNum(w.xpNext || xpNeededFor(w.level))} XP` : `${fmtNum(w.xp)} XP`));
+    } else {
+        const cards = [...document.querySelectorAll('#section-container .game-item-card')];
+        if (!cards.length) { if (grid.innerHTML !== grid.dataset.original) grid.innerHTML = grid.dataset.original; return; }
+        const of = (type) => cards.filter(c => c.getAttribute('data-type') === type);
+        const doneOf = (list) => list.filter(c => c.classList.contains('completed')).length;
+        const missions = of('mission');
+        if (missions.length) boxes.push(box('Missions', `${doneOf(missions)}/${missions.length}`));
+        const coll = of('collectible');
+        if (coll.length) {
+            const groups = {};
+            coll.forEach(c => { const g = (c.getAttribute('data-group') || 'other').split('__').pop(); (groups[g] = groups[g] || []).push(c); });
+            const sub = Object.entries(groups).map(([g, list]) => `${escapeHtml((COLLECTIBLE_LABELS[g] || humanize(g)).split(' ')[0])} ${doneOf(list)}/${list.length}`).join(' · ');
+            boxes.push(box('Collectibles', `${doneOf(coll)}/${coll.length}`, sub));
+        }
+        const ribbons = of('ribbon');
+        if (ribbons.length) {
+            const earned = ribbons.reduce((n, c) => n + (st.ribbons[c.getAttribute('data-id')]?.count || 0), 0);
+            boxes.push(box('Ribbons Earned', fmtNum(earned), `${doneOf(ribbons)}/${ribbons.length} types`));
+        }
+        const trophies = of('trophy');
+        if (trophies.length && boxes.length < 3) boxes.push(box('Trophies', `${doneOf(trophies)}/${trophies.length}`));
+        const medals = of('medal');
+        if (medals.length && boxes.length < 3) boxes.push(box('Medals', `${doneOf(medals)}/${medals.length}`));
+        if (!boxes.length) { if (grid.innerHTML !== grid.dataset.original) grid.innerHTML = grid.dataset.original; return; }
+    }
+    const html = boxes.slice(0, 3).join('');
+    if (grid.innerHTML !== html) grid.innerHTML = html;
+}
 
 // Ribbons can be earned many times: store the number shown in game.
 window.appState.setRibbonCount = function(itemId, value) {
