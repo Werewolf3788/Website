@@ -2250,7 +2250,29 @@
           "name": "Checkpoint Cabin",
           "video_time": 391
         }
-      ]
+      ],
+      "interactive_map": {
+        "source": "MapMaster",
+        "url": "https://mapmaster.io/games/sniper-elite-resistance/maps/mission-6-assault-on-fort-rouge",
+        "marker_counts": {
+          "starting_points": 3,
+          "exfiltration_points": 2,
+          "primary_objectives": 3,
+          "optional_objectives": 2,
+          "kill_list": 1,
+          "personal_letters": 5,
+          "classified_documents": 5,
+          "hidden_items": 3,
+          "stone_eagles": 3,
+          "workbenches": 3,
+          "bolt_cutters": 6,
+          "crowbar": 8,
+          "satchel_charges": 13,
+          "coal_torpedoes": 3,
+          "keys": 3,
+          "miscellaneous": 5
+        }
+      }
     },
     "mission_7": {
       "number": 7,

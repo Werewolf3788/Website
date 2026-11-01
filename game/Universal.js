@@ -1331,6 +1331,11 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
     });
     const detail = [];
     if (m.description) detail.push(`<div><h4>Description</h4><p>${escapeHtml(m.description)}</p></div>`);
+    if (m.interactive_map && m.interactive_map.url) {
+        const mc = m.interactive_map.marker_counts || {};
+        const tools = [['bolt_cutters', 'Bolt cutters'], ['crowbar', 'Crowbars'], ['satchel_charges', 'Satchel charges'], ['coal_torpedoes', 'Coal torpedoes'], ['keys', 'Keys']].filter(([k]) => mc[k]).map(([k, l]) => `${l} ${mc[k]}`).join(' · ');
+        detail.push(`<div><h4>🗺️ Collectible Map</h4><p><a href="${escapeHtml(m.interactive_map.url)}" target="_blank" rel="noopener" class="uni-search-btn" style="display:inline-block;">Open interactive map (${escapeHtml(m.interactive_map.source || 'map')})</a></p>${mc.starting_points ? `<p style="font-size:0.78rem;color:#94a3b8;">Starting points ${mc.starting_points} · Exfil ${mc.exfiltration_points || '?'}${tools ? ` · ${tools}` : ''}</p>` : ''}</div>`);
+    }
     if (toArr(m.optional_objectives).length) detail.push(`<div><h4>Optional Objectives (${toArr(m.optional_objectives).length})</h4><ul>${toArr(m.optional_objectives).map(o => `<li>${escapeHtml(o)}</li>`).join('')}</ul></div>`);
     if (m.kill_target || (typeof m.kill_challenge === 'string' && m.kill_challenge)) {
         detail.push(`<div><h4>Kill List</h4>${m.kill_target ? `<p><strong>${escapeHtml(m.kill_target)}</strong></p>` : ''}${typeof m.kill_challenge === 'string' && m.kill_challenge ? `<p>Kill challenge: ${escapeHtml(m.kill_challenge)}</p>` : ''}</div>`);
@@ -1338,7 +1343,7 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
     const tot = m.collectible_totals;
     if (tot || m.starting_locations) {
         const rows = tot ? Object.entries(tot).filter(([k]) => k !== 'total').map(([k, v]) => `<li>${escapeHtml(COLLECTIBLE_LABELS[k] || humanize(k))}: ${v}</li>`).join('') : '';
-        detail.push(`<div><h4>Collectibles${tot && tot.total ? ` (${tot.total})` : ''}</h4>${rows ? `<ul>${rows}</ul>` : ''}${m.starting_locations ? `<p>Starting locations: ${escapeHtml(String(m.starting_locations))}</p>` : ''}</div>`);
+        detail.push(`<div><h4>Collectibles${tot && tot.total ? ` (${tot.total})` : ''}</h4>${rows ? `<ul>${rows}</ul>` : ''}${m.starting_locations ? `<p>Starting locations: ${typeof m.starting_locations === 'string' || typeof m.starting_locations === 'number' ? escapeHtml(String(m.starting_locations)) : toArr(m.starting_locations).map(sl => { const n = escapeHtml(sl.name || String(sl)); const v = m.guide_video && m.guide_video.video_id && sl.video_time !== undefined ? `https://www.youtube.com/watch?v=${m.guide_video.video_id}&t=${sl.video_time}s` : ''; return v ? `<a href="${escapeHtml(v)}" target="_blank" rel="noopener">${n}</a>` : n; }).join(', ')}</p>` : ''}</div>`);
     }
     if (detail.length) inner = (m.image_url ? `<img class="mission-hero" src="${toSecureUrl(m.image_url)}" alt="" loading="lazy" onerror="this.remove()">` : '') + `<div class="mission-detail">${detail.join('')}</div>` + inner;
 
