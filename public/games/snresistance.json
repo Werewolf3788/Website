@@ -1860,14 +1860,15 @@
           {
             "id": "let_m6_04",
             "name": "Beautiful Views",
-            "location": "Wooden box at top entrance heading underground.",
+            "location": "On a crate on top of the fort, behind the sniper nest.",
             "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
             "headline": "Do Not Worry, Victory Is Coming!",
             "author": "Karl Klein Jr",
             "summary": "A proud lookout writes home about the tower views and his hoped-for promotion.",
             "video_time": 483,
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=483s",
-            "emoji": "✉️"
+            "emoji": "✉️",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/let_m6_04.jpg"
           },
           {
             "id": "let_m6_05",
@@ -1887,62 +1888,68 @@
           {
             "id": "doc_m6_01",
             "name": "Roof Weakness Found",
-            "location": "First-floor bureau office table.",
+            "location": "On a desk in the southern room of the building where you must kill Uwe Schoene.",
             "image_url": "/public/games/snresistance/images/icons/classified-document.png",
             "headline": "The Roof Is Weak, Use the Ladder to Inspect the Problem.",
             "author": "Ingenieur Luis Bärbel",
             "summary": "The fortress roof is structurally weak and could collapse under bombardment.",
             "video_time": 184,
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=184s",
-            "emoji": "📜"
+            "emoji": "📜",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/doc_m6_01.jpg"
           },
           {
             "id": "doc_m6_02",
             "name": "Defend Our Skies",
-            "location": "Wooden bench inside estate greenhouse.",
+            "location": "On a table inside the greenhouse.",
             "image_url": "/public/games/snresistance/images/icons/classified-document.png",
             "headline": "Prepare for the Worst",
             "author": "Oberst Hans Müller",
             "summary": "AA gun crews are put on high alert for an imminent Allied air attack.",
             "video_time": 316,
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=316s",
-            "emoji": "📜"
+            "emoji": "📜",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/doc_m6_02.jpg"
           },
           {
             "id": "doc_m6_03",
             "name": "Ready on Your Order",
-            "location": "Table inside building housing Gestapo officers.",
+            "location": "On a table inside the bunker on top of the hill.",
             "image_url": "/public/games/snresistance/images/icons/classified-document.png",
             "headline": "We Are Preparing Our Defences",
             "author": "Hauptmann Ernst Schäfer",
             "summary": "The Resistance is evacuating civilians, so AA crews have been readied for an Allied attack.",
             "video_time": 413,
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=413s",
-            "emoji": "📜"
+            "emoji": "📜",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/doc_m6_03.jpg"
           },
           {
             "id": "doc_m6_04",
             "name": "No Retreat",
-            "location": "Top floor safe (satchel charge or key from watchtower patrol).",
+            "location": "Inside the Bridge Building Safe on the top floor of the Fort Rouge gate. Open it with the Bridge Building Safe Key or blow it up.",
             "image_url": "/public/games/snresistance/images/icons/classified-document.png",
             "headline": "Stand Firm, or Be Prepared to Fall",
             "author": "Obergruppenführer Otto Kruger",
             "summary": "Orders to defend the fortress to the last man with no evacuation.",
             "video_time": 444,
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=444s",
-            "emoji": "📜"
+            "emoji": "📜",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/doc_m6_04.jpg",
+            "key_map_url": "https://mapmaster.io/games/sniper-elite-resistance/maps/mission-6-assault-on-fort-rouge?locationId=41949"
           },
           {
             "id": "doc_m6_05",
             "name": "Schoene's Notes",
-            "location": "Shelf inside bottom-right room of underground chamber.",
+            "location": "On a shelf in a side room of the underground Kleine Blume facility.",
             "image_url": "/public/games/snresistance/images/icons/classified-document.png",
             "headline": "Kleine Blume - Applications and Weaknesses",
             "author": "Doctor Uwe Schoene",
             "summary": "Notes on the Kleine Blume nerve agent, its delivery methods, and incendiary bombs as the only defence.",
             "video_time": 622,
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=622s",
-            "emoji": "📜"
+            "emoji": "📜",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/doc_m6_05.jpg"
           }
         ],
         "hidden_items": [
@@ -1961,13 +1968,14 @@
           {
             "id": "item_m6_02",
             "name": "Committee C Map",
-            "location": "Pinned to wall in center room of underground chamber.",
+            "location": "In the container in the central area of the Kleine Blume underground facility. Collecting it is one of the main objectives.",
             "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
             "headline": "A Map. Who Knows Where It Might Lead?",
             "summary": "A map of the French rail network that may lead to the Kleine Blume.",
             "video_time": 596,
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=596s",
-            "emoji": "🏷️"
+            "emoji": "🏷️",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/item_m6_02.jpg"
           },
           {
             "id": "item_m6_03",
@@ -1997,44 +2005,48 @@
           {
             "id": "eagle_m6_02",
             "name": "Dead-Eye Target 2",
-            "location": "Spire ridge atop village church.",
+            "location": "On the eastern wall around the Kleine Blume facility. You can shoot it the moment the mission starts (about 585 m).",
             "image_url": "/public/games/snresistance/images/icons/eagle.png",
             "video_time": 0,
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=0s",
-            "emoji": "🦅"
+            "emoji": "🦅",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/eagle_m6_02.jpg"
           },
           {
             "id": "eagle_m6_03",
             "name": "Dead-Eye Target 3",
-            "location": "Corner parapet of outer castle wall along boundary.",
+            "location": "On the southern roof of the building where Uwe Schoene (the kill target) is. You can shoot it the moment the mission starts (about 211 m).",
             "image_url": "/public/games/snresistance/images/icons/eagle.png",
             "video_time": 0,
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=0s",
-            "emoji": "🦅"
+            "emoji": "🦅",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/eagle_m6_03.jpg"
           }
         ],
         "workbenches": [
           {
             "id": "wb_m6_rifle",
             "name": "Rifle Workbench",
-            "location": "Underground chamber (turn left inside entrance; requires satchel charge).",
+            "location": "Behind a black door you must blow open with a satchel charge, in the corridor leading to the underground facility.",
             "image_url": "/public/games/snresistance/images/icons/workbench.png",
             "description": "This workbench contained the Rifle Caliber Conversion kit.",
             "unlocks": "Rifle Caliber Conversion kit",
             "video_time": 532,
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=532s",
-            "emoji": "⚙️"
+            "emoji": "⚙️",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/wb_m6_rifle.jpg"
           },
           {
             "id": "wb_m6_smg",
             "name": "SMG Workbench",
-            "location": "Basement cellar beneath house in center of village.",
+            "location": "In the tunnel under the street. Get in by blowing up the wooden door of the house a few steps north of the icon, or pull down the wooden planks blocking the entrance behind the southern house.",
             "image_url": "/public/games/snresistance/images/icons/workbench.png",
             "description": "This workbench contained the Secondary Assault kit.",
             "unlocks": "Secondary Assault kit",
             "video_time": 240,
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=240s",
-            "emoji": "⚙️"
+            "emoji": "⚙️",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/wb_m6_smg.jpg"
           },
           {
             "id": "wb_m6_pistol",
