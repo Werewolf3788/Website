@@ -1508,7 +1508,7 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
 
     if (m.gnomes && toArr(m.gnomes.items).length) {
         const g = m.gnomes;
-        inner += buildFolder(`🧙 Gnomes — ${escapeHtml(g.medal_name || 'medal')}`, `<p style="font-size:0.8rem;color:#cbd5e1;margin-bottom:8px;">${escapeHtml(g.description || '')} Ticking all ${toArr(g.items).length} earns the medal. ${g.guide_video ? `<a href="${escapeHtml(g.guide_video.url)}" target="_blank" rel="noopener" style="color:var(--user-theme-accent,#ff5500);font-weight:800;">▶ Full gnome video (${escapeHtml(g.guide_video.creator || 'YouTube')})</a>` : ''}</p>`
+        inner += buildFolder(`🧙 Gnomes — ${escapeHtml(g.medal_name || 'medal')}`, `<p style="font-size:0.8rem;color:#cbd5e1;margin-bottom:8px;">${escapeHtml(g.description || '')} Ticking all ${toArr(g.items).length} earns the medal. ${g.numbering_note ? escapeHtml(g.numbering_note) + ' ' : ''}${g.guide_video ? `<a href="${escapeHtml(g.guide_video.url)}" target="_blank" rel="noopener" style="color:var(--user-theme-accent,#ff5500);font-weight:800;">▶ Full gnome video (${escapeHtml(g.guide_video.creator || 'YouTube')})</a>` : ''}</p>`
             + gridOf(toArr(g.items).map(it => buildItemCard({ id: it.id, type: 'mission', badge: '🧙 Gnome', badgeClass: 'rank-bronze', title: it.name, sub: it.location || '', body: it.description || '', ctx: `${ctx} gnome`, link: it.video_url, linkLabel: 'Watch guide', locImg: it.location_image_url }))));
     }
     if (colCards.length) inner += buildFolder('🗂️ Collectibles', `<div class="mark-all-bar" data-mission="${escapeHtml(mKey)}">

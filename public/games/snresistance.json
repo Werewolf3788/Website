@@ -2307,14 +2307,15 @@
           {
             "id": "let_m7_01",
             "name": "What Do They Want?",
-            "location": "",
+            "location": "On the table inside the house.",
             "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
             "headline": "Will the Nazis Destroy What We Have Built?",
             "author": "Marie-Anne",
             "summary": "Marie-Anne worries to her father about why the Nazis have come to their vineyard, Château de la Vigne.",
             "video_time": 0,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=0s",
-            "emoji": "✉️"
+            "emoji": "✉️",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/let_m7_01.jpg"
           },
           {
             "id": "let_m7_02",
@@ -2439,13 +2440,15 @@
           {
             "id": "item_m7_02",
             "name": "La Voix Du Maquis",
-            "location": "",
+            "location": "On the eastern wall of the Vallée Des Dieux watermill.",
             "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
             "headline": "Hear Our Voice as We Strike at the Heart of Tyranny!",
             "summary": "A Resistance poster that fills the narrator with pride in the Maquis fighters.",
             "video_time": 19,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=19s",
-            "emoji": "🏷️"
+            "emoji": "🏷️",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/item_m7_02.jpg",
+            "unlocks": "Propaganda Mission 6 (La Voix Du Maquis)"
           },
           {
             "id": "item_m7_03",
@@ -2492,13 +2495,14 @@
           {
             "id": "wb_m7_rifle",
             "name": "Rifle Workbench",
-            "location": "First-floor room accessed by climbing exterior rear lattice.",
+            "location": "On the first floor of the western building. Climb the vines on the eastern wall to get in.",
             "image_url": "/public/games/snresistance/images/icons/workbench.png",
             "description": "This workbench contained the Rifle Muzzle Upgrade kit.",
             "unlocks": "Rifle Muzzle Upgrade kit",
             "video_time": 19,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=19s",
-            "emoji": "⚙️"
+            "emoji": "⚙️",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/wb_m7_rifle.jpg"
           },
           {
             "id": "wb_m7_smg",
@@ -2535,14 +2539,14 @@
         "image_url": ""
       },
       "propaganda_mission": {
-        "id": "prop_m8",
-        "number": 8,
-        "title": "Debout La France",
-        "unlock_poster": "item_m7_03",
-        "target_score": 25000,
-        "briefing": "Heavy weapons trial. Defend the launch tunnel entrance from mechanized infantry waves.",
-        "unconfirmed": true,
-        "image_url": ""
+        "id": "prop_m6",
+        "number": 6,
+        "title": "La Voix Du Maquis",
+        "unlock_poster": "item_m7_02",
+        "target_score": null,
+        "briefing": null,
+        "image_url": "",
+        "source": "La Voix Du Maquis poster in Mission 7 (user + MapMaster)"
       },
       "medals": {
         "objective": [
@@ -2594,7 +2598,7 @@
             "notes": "350 m confirmed from MapMaster's 'Long Shot Gold Medal Sniping Spot'.",
             "tip": "Stand near the tree by the road and shoot the Elite Sniper on top of the western windmill (about 368 m).",
             "map_url": "https://mapmaster.io/games/sniper-elite-resistance/maps/mission-7-lock-stock-and-barrels?locationId=42248",
-            "location_image_url": "/public/games/snresistance/images/locations/med_longshot_mission_7.jpg"
+            "location_image_url": "/public/games/snresistance/images/locations/m7/med_longshot_mission_7.jpg"
           },
           {
             "id": "med_longshot_mission_7_authentic_long_shot",
@@ -2734,7 +2738,7 @@
             "video_time": 0,
             "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=0s",
             "location": "On the small hill near the stone wall.",
-            "location_image_url": "/public/games/snresistance/images/locations/gnome_m7_01.jpg"
+            "location_image_url": "/public/games/snresistance/images/locations/m7/gnome_m7_01.jpg"
           },
           {
             "id": "gnome_m7_02",
@@ -2752,7 +2756,9 @@
             "id": "gnome_m7_04",
             "name": "Gnome 4/10",
             "video_time": 68,
-            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=68s"
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=68s",
+            "location": "On a barrel near the large wheel of the watermill.",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/gnome_m7_04.jpg"
           },
           {
             "id": "gnome_m7_05",
@@ -2790,7 +2796,8 @@
             "video_time": 196,
             "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=196s"
           }
-        ]
+        ],
+        "numbering_note": "Gnome numbers follow MapMaster. Trophy Tom's video may find them in a different order, so a card's 'Watch guide' timestamp can show a different gnome."
       }
     },
     "mission_8": {
@@ -5066,13 +5073,15 @@
   },
   "unassigned_propaganda_missions": [
     {
-      "id": "prop_m6",
-      "number": 6,
-      "title": "La Voix Du Maquis",
+      "id": "prop_m8",
+      "number": 8,
+      "title": "Debout La France",
       "unlock_poster": null,
-      "target_score": null,
-      "briefing": null,
-      "image_url": ""
+      "target_score": 25000,
+      "briefing": "Heavy weapons trial. Defend the launch tunnel entrance from mechanized infantry waves.",
+      "unconfirmed": true,
+      "image_url": "",
+      "note": "Was wrongly listed under Mission 7 (its poster is La Voix Du Maquis, which unlocks Propaganda Mission 6). Which mission's poster unlocks this one is not confirmed."
     }
   ],
   "general_trophies": [
