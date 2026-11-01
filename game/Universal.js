@@ -782,6 +782,26 @@ window.appState.setRibbonCount = function(itemId, value) {
     this._ribbonSaveTimer = setTimeout(() => this.saveProgress(), 600);
 };
 
+// Mark (or clear) every collectible in one mission, with a one-step undo.
+let markAllUndo = null;
+window.appState.markAllCollectibles = function(missionKey, value) {
+    const groups = Object.keys(this.collectibles).filter(g => g.startsWith(missionKey + '__'));
+    const before = {};
+    groups.forEach(g => Object.entries(this.collectibles[g].items || {}).forEach(([id, it]) => { before[g + '|' + id] = !!it.collected; it.collected = value; }));
+    if (!groups.length) return;
+    markAllUndo = { missionKey, before };
+    document.querySelectorAll('.mark-all-bar .mark-undo').forEach(b => { b.hidden = b.closest('.mark-all-bar').dataset.mission !== missionKey; });
+    this.applyStateToUI(); this.saveProgress();
+    this.updateStatus(`${value ? 'Marked' : 'Cleared'} all collectibles in ${missionKey.replace(/_/g, ' ')}.`);
+};
+window.appState.undoMarkAll = function() {
+    if (!markAllUndo) return;
+    Object.entries(markAllUndo.before).forEach(([k, v]) => { const [g, id] = k.split('|'); const it = this.collectibles[g]?.items?.[id]; if (it) it.collected = v; });
+    markAllUndo = null;
+    document.querySelectorAll('.mark-all-bar .mark-undo').forEach(b => { b.hidden = true; });
+    this.applyStateToUI(); this.saveProgress();
+    this.updateStatus('Undone.');
+};
 window.appState.toggleItem = function(itemId, type, group) {
     if (type === 'collectible') {
         if (group && this.collectibles[group]?.items?.[itemId]) {
@@ -1210,6 +1230,7 @@ function ensureUniversalStyles() {
         .hunt-input { flex: 1 1 140px; padding: 8px 10px; min-width: 0; max-width: 100%; box-sizing: border-box; }
         select.hunt-input { text-overflow: ellipsis; }
         .ctl-wrap { overflow-x: auto; }
+        .mark-all-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
         .loc-photo { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; margin-top: 4px; display: block; }
         .friend-marks { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; padding-top: 6px; border-top: 1px dashed rgba(255,255,255,0.1); width: 100%; }
         .fm-chip { display: inline-flex; align-items: center; gap: 3px; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.5); border-radius: 999px; padding: 1px 6px 1px 1px; font-size: 0.65rem; color: #a7f3d0; }
@@ -1452,7 +1473,11 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
     }
     if (detail.length) inner = (m.image_url ? `<img class="mission-hero" src="${toSecureUrl(m.image_url)}" alt="" loading="lazy" onerror="this.remove()">` : '') + `<div class="mission-detail">${detail.join('')}</div>` + inner;
 
-    if (colCards.length) inner += buildFolder('🗂️ Collectibles', gridOf(colCards));
+    if (colCards.length) inner += buildFolder('🗂️ Collectibles', `<div class="mark-all-bar" data-mission="${escapeHtml(mKey)}">
+        <button type="button" class="uni-search-btn" onclick="appState.markAllCollectibles('${escapeHtml(mKey)}', true)">✓ Mark all collected</button>
+        <button type="button" class="uni-search-btn" onclick="appState.markAllCollectibles('${escapeHtml(mKey)}', false)">Clear all</button>
+        <button type="button" class="uni-search-btn mark-undo" hidden onclick="appState.undoMarkAll()">↶ Undo</button>
+    </div>` + gridOf(colCards));
 
     const chCards = [];
     const kc = m.kill_challenge;
