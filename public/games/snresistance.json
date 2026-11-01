@@ -2712,7 +2712,81 @@
           "name": "Western Farmhouse",
           "video_time": 269
         }
-      ]
+      ],
+      "gnomes": {
+        "medal_id": "med_mission_oh_gnome_you_don_t",
+        "medal_name": "Oh Gnome You Don't",
+        "description": "Destroy 10 gnomes in Lock, Stock and Barrels.",
+        "guide_video": {
+          "creator": "Trophy Tom",
+          "channel": "https://www.youtube.com/@TrophyTom",
+          "video_id": "0aqjyWIT4uA",
+          "url": "https://www.youtube.com/watch?v=0aqjyWIT4uA",
+          "title": "Sniper Elite: Resistance - All 10 Gnome Locations 🏆 Oh Gnome you don't Medal"
+        },
+        "items": [
+          {
+            "id": "gnome_m7_01",
+            "name": "Gnome 1/10",
+            "video_time": 0,
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=0s"
+          },
+          {
+            "id": "gnome_m7_02",
+            "name": "Gnome 2/10",
+            "video_time": 20,
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=20s"
+          },
+          {
+            "id": "gnome_m7_03",
+            "name": "Gnome 3/10",
+            "video_time": 46,
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=46s"
+          },
+          {
+            "id": "gnome_m7_04",
+            "name": "Gnome 4/10",
+            "video_time": 68,
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=68s"
+          },
+          {
+            "id": "gnome_m7_05",
+            "name": "Gnome 5/10",
+            "video_time": 87,
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=87s"
+          },
+          {
+            "id": "gnome_m7_06",
+            "name": "Gnome 6/10",
+            "video_time": 107,
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=107s"
+          },
+          {
+            "id": "gnome_m7_07",
+            "name": "Gnome 7/10",
+            "video_time": 129,
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=129s"
+          },
+          {
+            "id": "gnome_m7_08",
+            "name": "Gnome 8/10",
+            "video_time": 150,
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=150s"
+          },
+          {
+            "id": "gnome_m7_09",
+            "name": "Gnome 9/10",
+            "video_time": 172,
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=172s"
+          },
+          {
+            "id": "gnome_m7_10",
+            "name": "Gnome 10/10",
+            "video_time": 196,
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=196s"
+          }
+        ]
+      }
     },
     "mission_8": {
       "number": 8,

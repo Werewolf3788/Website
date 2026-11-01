@@ -662,6 +662,13 @@ window.appState.applyStateToUI = function() {
     this.recalculateMetrics();
     if (typeof renderWalletUI === 'function') renderWalletUI();
     if (typeof renderRankUI === 'function') renderRankUI();
+    Object.values((this.gameData && this.gameData.missions) || {}).forEach(mm => {
+        const g = mm && mm.gnomes; if (!g || !g.medal_id) return;
+        const all = toArr(g.items).length && toArr(g.items).every(it => this.missions[it.id]?.completed);
+        if (!this.medals[g.medal_id]) this.medals[g.medal_id] = { earned: false };
+        if (all) { this.medals[g.medal_id].earned = true; this.medals[g.medal_id].auto = true; }
+        else if (this.medals[g.medal_id].auto) { this.medals[g.medal_id].earned = false; delete this.medals[g.medal_id].auto; }
+    });
 
     document.querySelectorAll('.game-item-card').forEach(card => {
         const id = card.getAttribute('data-id');
@@ -753,7 +760,7 @@ function updateGameMetrics() {
         boxes.push(box('Species Harvested', `${species.size}/${totalSpecies}`, `${toArr(st.watchlist).length} on watchlist`));
         boxes.push(box(`Level ${w.level || 1}`, `${fmtNum(w.credits)} cr`, (w.xpNext || xpNeededFor(w.level)) ? `${fmtNum(w.xp)}/${fmtNum(w.xpNext || xpNeededFor(w.level))} XP` : `${fmtNum(w.xp)} XP`));
     } else {
-        const cards = [...document.querySelectorAll('#section-container .game-item-card')].filter(c => !String(c.getAttribute('data-id')).startsWith('wpn_'));
+        const cards = [...document.querySelectorAll('#section-container .game-item-card')].filter(c => !/^(wpn_|gnome_)/.test(String(c.getAttribute('data-id'))));
         if (!cards.length) { if (grid.innerHTML !== grid.dataset.original) grid.innerHTML = grid.dataset.original; return; }
         const of = (type) => cards.filter(c => c.getAttribute('data-type') === type);
         const doneOf = (list) => list.filter(c => c.classList.contains('completed')).length;
@@ -1498,6 +1505,11 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
     }
     if (detail.length) inner = (m.image_url ? `<img class="mission-hero" src="${toSecureUrl(m.image_url)}" alt="" loading="lazy" onerror="this.remove()">` : '') + `<div class="mission-detail">${detail.join('')}</div>` + inner;
 
+    if (m.gnomes && toArr(m.gnomes.items).length) {
+        const g = m.gnomes;
+        inner += buildFolder(`🧙 Gnomes — ${escapeHtml(g.medal_name || 'medal')}`, `<p style="font-size:0.8rem;color:#cbd5e1;margin-bottom:8px;">${escapeHtml(g.description || '')} Ticking all ${toArr(g.items).length} earns the medal. ${g.guide_video ? `<a href="${escapeHtml(g.guide_video.url)}" target="_blank" rel="noopener" style="color:var(--user-theme-accent,#ff5500);font-weight:800;">▶ Full gnome video (${escapeHtml(g.guide_video.creator || 'YouTube')})</a>` : ''}</p>`
+            + gridOf(toArr(g.items).map(it => buildItemCard({ id: it.id, type: 'mission', badge: '🧙 Gnome', badgeClass: 'rank-bronze', title: it.name, sub: it.location || '', body: it.description || '', ctx: `${ctx} gnome`, link: it.video_url, linkLabel: 'Watch guide', locImg: it.location_image_url }))));
+    }
     if (colCards.length) inner += buildFolder('🗂️ Collectibles', `<div class="mark-all-bar" data-mission="${escapeHtml(mKey)}">
         <button type="button" class="uni-search-btn" onclick="appState.markAllCollectibles('${escapeHtml(mKey)}', true)">✓ Mark all collected</button>
         <button type="button" class="uni-search-btn" onclick="appState.markAllCollectibles('${escapeHtml(mKey)}', false)">Clear all</button>
@@ -1521,6 +1533,10 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
         }));
     }
     if (chCards.length) inner += buildFolder('🎯 Challenges', gridOf(chCards));
+    if (m.medals && typeof m.medals === 'object') {
+        const mh = renderTree(m.medals, medalCard, []);
+        if (mh) inner += buildFolder('🏅 Medals', mh);
+    }
 
     const trophyCards = [];
     toArr(m.trophies).forEach(t => {
