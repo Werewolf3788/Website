@@ -3636,7 +3636,8 @@
         "xbox_input": "D-Pad Right",
         "xbox_trigger_type": "Press"
       }
-    ]
+    ],
+    "purpose": "Reference only: explains what each controller button (or keyboard key) does. Not a checklist."
   },
   "extras_unverified": {
     "verified": false,
@@ -3705,7 +3706,23 @@
       "16": "Promising Hunter"
     },
     "pattern": "From the screens seen: each level needs 150 more XP than the last (1,500 / 1,650 / ... / 1,950) and pays 50 more credits (800 / 850 / ... / 950). Values marked inferred follow that pattern but were not seen on screen.",
-    "note": "Read from the pause menu ('Unlocked at level N' row and XP bar)."
+    "note": "Read from the pause menu ('Unlocked at level N' row and XP bar).",
+    "max_level": 32,
+    "max_level_verified": false,
+    "xp_sources": {
+      "verified": false,
+      "source": "Community summary provided by user (Steam discussions / Reddit / YouTube), not yet checked in game",
+      "harvest_xp_typical": "about 70-100 XP per standard animal harvest",
+      "one_time_bonuses": "NPC objectives, campsite missions and challenges give larger one-time XP, from several hundred up to about 2,000 XP"
+    },
+    "skill_points": {
+      "verified": false,
+      "claim": "Skill points are earned every two levels (community claim)",
+      "seen_in_game": {
+        "15": 1
+      },
+      "note": "Level 15 reward screen shows +1 skill point; the level 14 and 17 reward screens show none, which fits odd levels only if 17 is an exception, so this is still unconfirmed."
+    }
   },
   "currency": {
     "name": "Credits",

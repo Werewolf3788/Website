@@ -1022,6 +1022,12 @@ function ensureUniversalStyles() {
         .wm-bar > span { display: block; height: 100%; background: linear-gradient(90deg, #f59e0b, #22c55e); }
         .harvest-form { display: flex; flex-wrap: wrap; gap: 8px; }
         .hunt-input { flex: 1 1 140px; padding: 8px 10px; }
+        .ctl-wrap { overflow-x: auto; }
+        .ctl-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; color: #e2e8f0; }
+        .ctl-table th { text-align: left; color: #94a3b8; font-weight: 600; padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+        .ctl-table td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); vertical-align: top; }
+        .ctl-table kbd { display: inline-block; background: #1e293b; border: 1px solid #334155; border-radius: 6px; padding: 2px 7px; font-family: inherit; font-size: 0.78rem; color: #fff; }
+        .ctl-how { display: block; font-size: 0.7rem; color: #64748b; margin-top: 2px; }
         .hunt-2col { display: grid; grid-template-columns: minmax(280px, 420px) 1fr; gap: 16px; align-items: start; }
         @media (max-width: 900px) { .hunt-2col { grid-template-columns: 1fr; } }
         .hunt-form-col { background: rgba(2,6,23,0.35); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; }
@@ -1410,6 +1416,7 @@ function renderWalletUI() {
     const reward = levelReward((w.level || 1) + 1);
     const lvMeter = document.getElementById('walletLevelMeter');
     if (lvMeter) lvMeter.innerHTML = (next ? `XP needed for level ${(w.level || 1) + 1}: ` + meterHtml(next - (w.xp || 0), next, 'XP') : 'Enter the XP needed for the next level (from the pause menu).')
+        + (levelsData().max_level ? `<span class="game-chip">Max level ${levelsData().max_level}${levelsData().max_level_verified === false ? ' (unconfirmed)' : ''}</span>` : '')
         + (reward ? `<span class="game-chip">Level ${(w.level || 1) + 1} reward: ${fmtNum(reward.credits)} credits${reward.skill_points ? ` + ${reward.skill_points} skill point` : ''}${reward.unlocks ? ` + ${escapeHtml(reward.unlocks)}` : ''}${reward.inferred ? ' (estimated)' : ''}</span>` : '');
     document.querySelectorAll('.price-meter').forEach(el => { const p = Number(el.dataset.price || 0); el.innerHTML = 'Credits needed: ' + meterHtml(p - (w.credits || 0), p, ''); });
 
@@ -1739,7 +1746,13 @@ function renderHuntingSchema(data) {
         html += buildFolder('🎒 Gear' + unv(g), gridOf(cards));
     }
     if (data.controls) {
-        html += buildFolder('🎮 Controls' + unv(data.controls), gridOf(toArr(data.controls.bindings).map((b, i) => textCard(`ctl_${i}`, `PS ${b.ps5_input} · Xbox ${b.xbox_input}`, b.action, b.ps5_trigger_type, ''))));
+        // Reference only: what each button/key does (nothing to tick off).
+        const binds = toArr(data.controls.bindings);
+        const kb = (b) => b.keyboard_input || b.pc_input || '';
+        const hasKb = binds.some(kb);
+        const how = (t) => t ? `<span class="ctl-how">${escapeHtml(t)}</span>` : '';
+        const rows = binds.map(b => `<tr><td>${escapeHtml(b.action)}</td><td><kbd>${escapeHtml(b.ps5_input || '')}</kbd>${how(b.ps5_trigger_type)}</td><td><kbd>${escapeHtml(b.xbox_input || '')}</kbd>${how(b.xbox_trigger_type)}</td>${hasKb ? `<td>${kb(b) ? `<kbd>${escapeHtml(kb(b))}</kbd>${how(b.keyboard_trigger_type)}` : '—'}</td>` : ''}</tr>`).join('');
+        html += buildFolder('🎮 Controls' + unv(data.controls), `<div class="ctl-wrap"><table class="ctl-table"><thead><tr><th>What it does</th><th>PlayStation</th><th>Xbox</th>${hasKb ? '<th>Keyboard / Mouse</th>' : ''}</tr></thead><tbody>${rows}</tbody></table></div>${data.controls.source ? `<p style="font-size:0.72rem;color:#64748b;margin-top:6px;">Source: ${escapeHtml(data.controls.source)}</p>` : ''}`);
     }
     if (toArr(data.land_management).length) {
         html += buildFolder('🌿 Land Management', gridOf(toArr(data.land_management).map((l, i) => buildItemCard({
