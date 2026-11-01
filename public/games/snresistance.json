@@ -1846,14 +1846,15 @@
           {
             "id": "let_m6_03",
             "name": "Something Is Strange",
-            "location": "Lying on ground inside ruins.",
+            "location": "On the ground on the upper floor of a ruined building, in front of a brown cabinet.",
             "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
             "headline": "I Have a Feeling Something Bad Is Going to Happen.",
             "author": "Jean-Eric",
             "summary": "A market trader tells his daughter Amélie that the town has gone eerily quiet.",
             "video_time": 216,
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=216s",
-            "emoji": "✉️"
+            "emoji": "✉️",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/let_m6_03.jpg"
           },
           {
             "id": "let_m6_04",
@@ -1946,13 +1947,14 @@
           {
             "id": "item_m6_01",
             "name": "Todt Uniform Badge",
-            "location": "Basement cellar reached via stairs behind house.",
+            "location": "In the basement of the house; get in through the entrance on the southern back alley.",
             "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
             "headline": "Todt Boys Are a Nasty Bunch.",
             "summary": "A Todt construction-crew badge; the narrator recalls their brutal treatment of prisoners.",
             "video_time": 77,
             "video_url": "https://www.youtube.com/watch?v=DhYVOpTrGIU&t=77s",
-            "emoji": "🏷️"
+            "emoji": "🏷️",
+            "location_image_url": "/public/games/snresistance/images/locations/m6/item_m6_01.jpg"
           },
           {
             "id": "item_m6_02",

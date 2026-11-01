@@ -188,7 +188,9 @@ window.appState = {
             }
         });
 
+        this.friendsProgress = [];
         await loadAndHydrateGame(CURRENT_GAME_KEY);
+        if (this.currentUser) this.syncFriendsProgress();
     },
 
     switchPlatform: async function(newPlatform, persistPin = true) {
@@ -697,6 +699,7 @@ window.appState.applyStateToUI = function() {
         const done = sec.querySelectorAll('.game-item-card.completed').length;
         badge.innerText = total ? `${done}/${total}` : '';
     });
+    applyFriendMarks();
     updateGameMetrics();
 };
 
@@ -808,77 +811,123 @@ window.appState.updateStatus = function(msg) {
 };
 
 // Section 7: Squad Co-Op Ledger with Clean Avatar Cards & Friend Data
+// Squad progress: load every friend's save for this game (and their PSN
+// trophies), then mark on each card which friends have it done.
+const normPlatform = (p) => { const v = String(p || '').toLowerCase(); if (v.startsWith('play') || v === 'psn' || v === 'ps5' || v === 'ps4') return 'ps'; return ['ps', 'xbox', 'steam', 'pc'].includes(v) ? v : ''; };
+window.appState.friendsProgress = [];
+let friendSyncToken = 0;
+async function readFriendSave(keys, platforms, gameName) {
+    if (!firestore) return null;
+    for (const key of keys) {
+        for (const plat of platforms) {
+            try {
+                const doc = await firestore.collection('user').doc(key).collection('platform').doc(plat).collection('game').doc(gameName).get();
+                if (doc.exists) return { data: doc.data(), key, platform: plat };
+            } catch (err) { console.warn('[Squad] could not read', key, plat, err && err.message); }
+        }
+    }
+    return null;
+}
+function friendDoneSet(save, psnEarned) {
+    const done = new Set(), ribbons = {};
+    const d = save || {};
+    Object.values(d.collectibles || {}).forEach(g => Object.entries((g && g.items) || {}).forEach(([id, it]) => { if (it && it.collected) done.add(id); }));
+    Object.entries(d.missions || {}).forEach(([id, m]) => { if (m && m.completed) done.add(id); });
+    Object.entries(d.trophies || {}).forEach(([id, t]) => { if (t && t.earned) done.add(id); });
+    Object.entries(d.medals || {}).forEach(([id, m]) => { if (m && m.earned) done.add(id); });
+    Object.entries(d.ribbons || {}).forEach(([id, r]) => { const n = Number(r && r.count) || (r && r.earned ? 1 : 0); if (n) { ribbons[id] = n; done.add(id); } });
+    (psnEarned || []).forEach(id => done.add(id));
+    return { done, ribbons };
+}
 window.appState.syncFriendsProgress = async function() {
     const rosterContainer = document.getElementById('friendsRosterContainer');
-    if (!rosterContainer) return;
-
+    const token = ++friendSyncToken;
     if (!this.currentUser || !this.currentUser.email || !rtdb) {
-        rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">Sign in to view your Squad Co-Op Ledger.</div>';
+        this.friendsProgress = []; this.applyStateToUI();
+        if (rosterContainer) rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">Sign in to see your squad\'s progress.</div>';
         return;
     }
-
     const emailKey = this.currentUser.email.replace(/@/g, '_at_').replace(/\./g, '_');
     const gameName = this.getCanonicalGameName();
-
     try {
-        const friendsSnap = await rtdb.ref(`/users/${emailKey}/friends`).once('value');
-        const friendsData = friendsSnap.val();
-
-        if (!friendsData || Object.keys(friendsData).length === 0) {
-            rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">No squad members linked. Add friend codes to share progress.</div>';
+        const friendsData = (await rtdb.ref(`/users/${emailKey}/friends`).once('value')).val();
+        if (!friendsData || !Object.keys(friendsData).length) {
+            this.friendsProgress = []; this.applyStateToUI();
+            if (rosterContainer) rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">No squad members linked. Add friend codes to share progress.</div>';
             return;
         }
-
-        let cardsHtml = '';
-        for (const [fKey, fObj] of Object.entries(friendsData)) {
-            const friendUsername = fObj.username || fKey;
-            const friendTargetCode = fObj.friend_code || fKey;
-            const friendPlatform = fObj.primary_platform || this.platform;
-            const friendAvatar = fObj.avatar_url || '';
-
-            let friendData = null;
-            if (firestore) {
+        if (rosterContainer) rosterContainer.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">Loading squad progress…</div>';
+        const results = await Promise.all(Object.entries(friendsData).map(async ([fKey, fObj]) => {
+            fObj = fObj || {};
+            const code = fObj.friend_code || fKey;
+            let userKey = null, profile = {};
+            try { const k = (await rtdb.ref(`/friend_codes/${code}`).once('value')).val(); if (typeof k === 'string') userKey = k; } catch (e) {}
+            if (userKey) { try { profile = (await rtdb.ref(`/users/${userKey}`).once('value')).val() || {}; } catch (e) {} }
+            const name = fObj.username || profile.username || profile.display_name || code;
+            const avatar = fObj.avatar_url || profile.avatar_url || '';
+            const plats = [...new Set([normPlatform(profile.primary_platform), normPlatform(fObj.primary_platform), this.platform, 'ps', 'xbox', 'steam', 'pc'].filter(Boolean))];
+            const save = await readFriendSave([...new Set([code, userKey].filter(Boolean))], plats, gameName);
+            const psnTag = profile.psn_username || fObj.psn_username || '';
+            const psnEarned = [];
+            if (psnTag && ACTIVE_COMM_ID) {
                 try {
-                    const fDoc = await firestore
-                        .collection("user")
-                        .doc(friendTargetCode)
-                        .collection("platform")
-                        .doc(friendPlatform)
-                        .collection("game")
-                        .doc(gameName)
-                        .get();
-
-                    if (fDoc.exists) friendData = fDoc.data();
-                } catch (err) {}
+                    const live = (await rtdb.ref(`/psn/gamertags/${psnTag}/liveTrophyProgress/${ACTIVE_COMM_ID}`).once('value')).val();
+                    const entries = Array.isArray(live) ? [...live.entries()] : Object.entries(live || {});
+                    entries.forEach(([tId, t]) => { if (t && (t.earned === true || t.isEarned === true)) psnEarned.push(`trophy_${this.gameId}_${t.trophyId !== undefined ? t.trophyId : tId}`); });
+                } catch (e) {}
             }
-
-            const colVal = friendData?.ranks?.collectibles || 0;
-            const trophyPercent = friendData?.trophies_percent || 0;
-
-            cardsHtml += `
-                <div style="background:#1e293b; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:12px; display:flex; align-items:center; gap:12px;">
-                    ${friendAvatar ? `<img src="${toSecureUrl(friendAvatar)}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid var(--border-highlight);" onerror="this.style.display='none'">` : '<div style="width:40px; height:40px; border-radius:50%; background:#334155; display:flex; align-items:center; justify-content:center;"><i class="fas fa-user"></i></div>'}
-                    <div style="flex:1;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                            <div style="font-weight:900; color:#fff; font-size:0.95rem;">${escapeHtml(friendUsername)}</div>
-                            <span style="font-size:0.65rem; font-weight:800; background:rgba(255,85,0,0.2); color:var(--user-theme-accent); padding:2px 6px; border-radius:4px; text-transform:uppercase;">
-                                ${escapeHtml(friendPlatform)}
-                            </span>
-                        </div>
-                        <div style="font-size:0.75rem; color:#cbd5e1; display:flex; gap:10px;">
-                            <span>Collectibles: <strong>${colVal}</strong></span>
-                            <span>Trophies: <strong>${trophyPercent}%</strong></span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        rosterContainer.innerHTML = cardsHtml;
+            const { done, ribbons } = friendDoneSet(save && save.data, psnEarned);
+            return { code, name, avatar, platform: save ? save.platform : (plats[0] || ''), hasSave: !!save, psnTag, psnCount: psnEarned.length, done, ribbons, save: save && save.data };
+        }));
+        if (token !== friendSyncToken) return;
+        this.friendsProgress = results;
+        this.applyStateToUI();
+        renderSquadRoster();
     } catch (e) {
-        console.warn("[Friends Roster Error]:", e);
+        console.warn('[Friends Roster Error]:', e);
+        if (rosterContainer) rosterContainer.innerHTML = `<div style="font-size:0.8rem; color:#f87171;">Couldn't load squad progress: ${escapeHtml(e.message || String(e))}</div>`;
     }
 };
+function friendInitials(n) { return String(n || '?').trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase(); }
+function friendBadge(f, extra) {
+    const first = String(f.name || '').trim().split(/\s+/)[0];
+    return `<span class="fm-chip" title="${escapeHtml(f.name)}${extra ? ' — ' + escapeHtml(extra) : ' has this'}">${f.avatar ? `<img src="${toSecureUrl(f.avatar)}" alt="" onerror="this.remove()">` : `<b>${escapeHtml(friendInitials(f.name))}</b>`}✓ ${escapeHtml(first)}${extra ? ` <i>${escapeHtml(extra)}</i>` : ''}</span>`;
+}
+function renderSquadRoster() {
+    const el = document.getElementById('friendsRosterContainer'); if (!el) return;
+    const list = toArr(appState.friendsProgress);
+    const cards = [...document.querySelectorAll('#section-container .game-item-card')];
+    const total = cards.filter(c => c.getAttribute('data-type') !== 'ribbon').length;
+    const data = appState.gameData || {};
+    const hunting = !isMissionSchema(data) && Array.isArray(data.species);
+    el.innerHTML = list.map(f => {
+        const doneHere = cards.filter(c => c.getAttribute('data-type') !== 'ribbon' && f.done.has(c.getAttribute('data-id'))).length;
+        const trophies = cards.filter(c => c.getAttribute('data-type') === 'trophy');
+        const tDone = trophies.filter(c => f.done.has(c.getAttribute('data-id'))).length;
+        const ribbonTotal = Object.values(f.ribbons).reduce((a, b) => a + b, 0);
+        const sv = f.save || {};
+        const stats = hunting
+            ? `<span>Level <strong>${escapeHtml(String(sv.wallet?.level || '?'))}</strong></span><span>Kills <strong>${toArr(sv.harvestLog).length}</strong></span><span>🏆 <strong>${toArr(sv.harvestLog).filter(h => h.taxidermy).length}</strong></span>`
+            : `<span>Checklist <strong>${doneHere}/${total}</strong></span>${trophies.length ? `<span>Trophies <strong>${tDone}/${trophies.length}</strong></span>` : ''}${ribbonTotal ? `<span>Ribbons <strong>${fmtNum(ribbonTotal)}</strong></span>` : ''}`;
+        const note = !f.hasSave && !f.psnCount ? 'No save for this game yet' : [f.hasSave ? `Save on ${f.platform.toUpperCase()}` : 'No site save', f.psnTag ? (f.psnCount ? `PSN ${f.psnTag}: ${f.psnCount} trophies` : `PSN ${f.psnTag}`) : ''].filter(Boolean).join(' · ');
+        return `<div class="squad-card">
+            ${f.avatar ? `<img src="${toSecureUrl(f.avatar)}" class="squad-av" onerror="this.style.display='none'">` : `<div class="squad-av squad-ini">${escapeHtml(friendInitials(f.name))}</div>`}
+            <div style="flex:1;min-width:0;"><div style="font-weight:900;color:#fff;font-size:0.95rem;">${escapeHtml(f.name)}</div>
+            <div class="squad-stats">${stats}</div><div style="font-size:0.68rem;color:#64748b;">${escapeHtml(note)}</div></div></div>`;
+    }).join('') || '<div style="font-size:0.8rem; color:#94a3b8;">No squad members linked.</div>';
+}
+function applyFriendMarks() {
+    const list = toArr(appState.friendsProgress);
+    document.querySelectorAll('#section-container .game-item-card').forEach(card => {
+        const id = card.getAttribute('data-id');
+        const isRibbon = card.getAttribute('data-type') === 'ribbon';
+        const html = list.filter(f => f.done.has(id)).map(f => friendBadge(f, isRibbon ? `×${f.ribbons[id] || 0}` : '')).join('');
+        let row = card.querySelector(':scope > .friend-marks');
+        if (!html) { if (row) row.remove(); return; }
+        if (!row) { row = document.createElement('div'); row.className = 'friend-marks'; card.appendChild(row); }
+        if (row.innerHTML !== html) row.innerHTML = html;
+    });
+}
 
 // Section 8: Dynamic Poster Art Lookup via /psn/games
 async function searchGamePosterArt(commId, gameName) {
@@ -1119,6 +1168,15 @@ function ensureUniversalStyles() {
         .hunt-input { flex: 1 1 140px; padding: 8px 10px; min-width: 0; max-width: 100%; box-sizing: border-box; }
         select.hunt-input { text-overflow: ellipsis; }
         .ctl-wrap { overflow-x: auto; }
+        .loc-photo { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; margin-top: 4px; display: block; }
+        .friend-marks { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; padding-top: 6px; border-top: 1px dashed rgba(255,255,255,0.1); width: 100%; }
+        .fm-chip { display: inline-flex; align-items: center; gap: 3px; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.5); border-radius: 999px; padding: 1px 6px 1px 1px; font-size: 0.65rem; color: #a7f3d0; }
+        .fm-chip img, .fm-chip b { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; display: inline-flex; align-items: center; justify-content: center; background: #065f46; color: #fff; font-size: 0.55rem; }
+        .fm-chip i { font-style: normal; font-weight: 700; }
+        .squad-card { background: var(--bg-card, #1e293b); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 12px; }
+        .squad-av { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+        .squad-ini { background: #334155; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; }
+        .squad-stats { font-size: 0.75rem; color: #cbd5e1; display: flex; flex-wrap: wrap; gap: 10px; }
         .form-title { color: #fff; font-size: 0.85rem; margin: 12px 0 6px; }
         .form-title:first-child { margin-top: 0; }
         .carry-panel { background: rgba(2,6,23,0.35); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; }
@@ -1247,6 +1305,7 @@ function buildItemCard(o) {
                 : `<button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(o.id)}', '${o.type}'${groupArg})" aria-label="Toggle"></button>`}
         </div>
         ${o.body ? `<p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(o.body)}</p>` : ''}
+        ${o.locImg ? `<a href="${escapeHtml(toSecureUrl(o.locImg))}" target="_blank" rel="noopener" title="Open full-size location photo"><img src="${escapeHtml(toSecureUrl(o.locImg))}" alt="Where to find ${escapeHtml(o.title || '')}" loading="lazy" class="loc-photo" onerror="this.closest('a').remove()"></a>` : ''}
         ${o.price ? `<div class="price-meter wallet-meter" data-price="${Number(o.price) || 0}"></div>` : ''}
         ${o.link ? `<a href="${escapeHtml(o.link)}" target="_blank" rel="noopener" style="font-size:0.75rem; font-weight:800; color:var(--user-theme-accent, #ff5500); text-decoration:none;">▶ ${escapeHtml(o.linkLabel || 'Watch')}</a>` : ''}
     </div>`;
@@ -1324,7 +1383,7 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
                 badge: COLLECTIBLE_LABELS[cat] || humanize(cat), badgeClass: 'rank-bronze',
                 title: it.name, sub: it.location,
                 body: [it.headline, it.author ? `— ${it.author}` : '', it.summary, it.unlocks ? `Unlocks: ${it.unlocks}` : ''].filter(Boolean).join(' '),
-                img: it.image_url, ctx,
+                img: it.image_url, ctx, locImg: it.location_image_url,
                 link: it.video_url, linkLabel: 'Watch guide'
             }));
         });
