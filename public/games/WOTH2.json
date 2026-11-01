@@ -1,0 +1,1410 @@
+{
+  "schema_version": "1.0.0",
+  "game": "Way of the Hunter 2",
+  "gameId": "WOTH2",
+  "commId": "NPWR52231_00",
+  "image_url": "https://image.api.playstation.com/vulcan/ap/rnd/202602/2617/cd05896e5a75c506dff3f1e5cdd90c59f12b72d9f1474e33.png",
+  "platforms": {
+    "playstation": {
+      "commId": "NPWR52231_00",
+      "titleId": "PPSA17911_00",
+      "productId": "EP4389-PPSA17911_00-WAYOFTHEHUNTER02",
+      "conceptId": 10008946,
+      "store_url": "https://store.playstation.com/en-us/concept/10008946"
+    },
+    "steam": {
+      "appId": 2543830,
+      "store_url": "https://store.steampowered.com/app/2543830/Way_of_the_Hunter_2/"
+    },
+    "xbox": {
+      "productId": "9plgb8q7jz91",
+      "store_url": "https://www.xbox.com/en-US/games/store/way-of-the-hunter-2/9plgb8q7jz91"
+    }
+  },
+  "crossplay": {
+    "supported": false,
+    "note": "Multiplayer only works within the same platform family (PC with PC, PS5 with PS5, Xbox Series X|S with Xbox Series X|S).",
+    "developer_status": "Not supported at launch; the developers have said they are looking into it for future updates."
+  },
+  "multiplayer": "Online multiplayer (up to 8 players)",
+  "reserves": [
+    {
+      "id": "kilimaya_reserve",
+      "name": "Kilimaya Reserve",
+      "region": "Africa",
+      "map_image_url": "/public/games/woth2/images/maps/kilimaya_reserve.jpg",
+      "areas": [
+        "Kaggen Karoo",
+        "Mamlambo Heath",
+        "Popobawa Vlei",
+        "Impundulu Lowveld",
+        "Tikoloshe Thickets",
+        "Kinyonga Highveld"
+      ],
+      "species": [
+        "Southern yellow-billed duck",
+        "Blue wildebeest",
+        "Spotted hyena",
+        "Cape mountain zebra",
+        "Common hippopotamus",
+        "Cape honey badger",
+        "Southern lion",
+        "Southern warthog",
+        "South African ostrich",
+        "Cape buffalo",
+        "Greater kudu",
+        "Nile crocodile",
+        "Blesbok"
+      ]
+    },
+    {
+      "id": "new_laurentia",
+      "name": "New Laurentia",
+      "region": "North America",
+      "map_image_url": "/public/games/woth2/images/maps/new_laurentia.jpg",
+      "areas": [
+        "Thunderbird Muskeg",
+        "Mishipeshu Swamp",
+        "Wetiko Foothills",
+        "Kermode Plateau",
+        "Lake Sasquatch",
+        "Jackalope Cordillera",
+        "Qalakum Shore"
+      ],
+      "species": [
+        "Wood bison",
+        "Northwestern wolf",
+        "Rocky Mountain elk",
+        "American wolverine",
+        "White-tailed ptarmigan",
+        "Rocky Mountain mule deer",
+        "Dall sheep",
+        "Grizzly bear"
+      ]
+    },
+    {
+      "id": "hearth_and_hunt_estate",
+      "name": "Hearth & Hunt Headquarters",
+      "map_image_url": "/public/games/woth2/images/maps/hearth_and_hunt_estate.jpg",
+      "note": "Home base (Hearth & Hunt Estate)."
+    }
+  ],
+  "species_list_encyclopedia": [
+    "Cape honey badger",
+    "Snowshoe hare",
+    "American wolverine",
+    "Eastern wild turkey",
+    "White-tailed ptarmigan",
+    "Southern yellow-billed duck",
+    "Mallard",
+    "Grizzly bear",
+    "Greater kudu",
+    "Cape buffalo",
+    "Central European boar",
+    "South African ostrich",
+    "Southern warthog",
+    "Southern lion",
+    "Dall sheep",
+    "Northwestern white-tailed deer",
+    "Rocky Mountain mule deer",
+    "Common hippopotamus",
+    "Cape mountain zebra",
+    "Blesbok",
+    "Spotted hyena",
+    "Nile crocodile",
+    "Blue wildebeest",
+    "Rocky Mountain elk",
+    "Northwestern wolf",
+    "Wood bison",
+    "Rocky Mountain pronghorn",
+    "Western moose"
+  ],
+  "species": [
+    {
+      "id": "cape_honey_badger",
+      "name": "Cape Honey Badger",
+      "scientific_name": "Mellivora capensis capensis",
+      "class": 2,
+      "description": "Average-sized subspecies found across southern and southwestern Africa.",
+      "daily_routine": {
+        "type": "Cathemeral",
+        "detail": "Active at random times both day and night"
+      },
+      "senses": {
+        "vision": "Poor",
+        "smell": "Excellent",
+        "hearing": "Good"
+      },
+      "preferred_biomes": "Forests, grasslands, steppes, rocky hills and deserts (almost anywhere)",
+      "trophy": {
+        "type": "Weight",
+        "estimated_range": "100 - 320"
+      },
+      "recommended_hit": {
+        "bullet": "100 - 1500 J",
+        "birdshot": "Inappropriate",
+        "buckshot": "22 - 49 yd",
+        "slug": "Inappropriate",
+        "arrow_bolt": "35 - 300 J"
+      },
+      "sex_differences": {
+        "size_and_weight": "Males are larger and weigh almost twice as much as females.",
+        "other": "Males are more aggressive."
+      },
+      "variations": {
+        "age": "Young animals are more playful and less aggressive.",
+        "coat_colors": "Grayish upperparts, black underparts"
+      },
+      "strengths": [
+        "Thick skin and resilience"
+      ],
+      "weaknesses": [
+        "Prefers to be solitary"
+      ],
+      "alternative_names": [
+        "Cape ratel"
+      ],
+      "behavior": {
+        "type": "Residential",
+        "detail": "Non-migratory, lives in a smaller range"
+      },
+      "social_structure": [
+        "Solitary"
+      ],
+      "max": {
+        "height": "12 in",
+        "length": "39 in",
+        "weight": "35.3 lb",
+        "speed": "19 yps"
+      },
+      "trivia": "Honey badgers raid beehives for honey and larvae, shrugging off stings from aggressive bee swarms.",
+      "image_url": ""
+    },
+    {
+      "id": "common_hippopotamus",
+      "name": "Common Hippopotamus",
+      "scientific_name": "Hippopotamus amphibius amphibius",
+      "class": 9,
+      "description": "Wide-ranging subspecies, from northern Africa to Gambia and Ethiopia; its skull has a somewhat shorter preorbital region than other subspecies.",
+      "daily_routine": {
+        "type": "Nocturnal",
+        "detail": "Active at dusk, night and dawn"
+      },
+      "senses": {
+        "vision": "Poor",
+        "smell": "Poor",
+        "hearing": "Poor"
+      },
+      "preferred_biomes": "Shallow lakes, rivers, swamps",
+      "trophy": {
+        "type": "Tusks",
+        "estimated_range": "25 - 65"
+      },
+      "recommended_hit": {
+        "bullet": "3500 - 9000 J",
+        "birdshot": "Inappropriate",
+        "buckshot": "Inappropriate",
+        "slug": "2000 - 8000 J",
+        "arrow_bolt": "110 - 300 J"
+      },
+      "sex_differences": {
+        "size_and_weight": "Bulls have slightly bigger bodies and tusks, and much heavier jaws.",
+        "other": "Apart from slight size differences, bulls and cows look alike."
+      },
+      "variations": {
+        "age": "Adults are more aggressive.",
+        "coat_colors": "Grayish-brown to blue-black"
+      },
+      "strengths": [
+        "Size and aggression",
+        "Tough body"
+      ],
+      "weaknesses": [
+        "Predictable life cycle"
+      ],
+      "alternative_names": [
+        "Common hippo",
+        "Nile hippopotamus",
+        "River hippopotamus"
+      ],
+      "behavior": {
+        "type": "Territorial",
+        "detail": "Non-migratory, focused on protecting its territory"
+      },
+      "social_structure": [
+        "Solitary"
+      ],
+      "max": {
+        "height": "65 in",
+        "length": "197 in",
+        "weight": "9920.8 lb",
+        "speed": "19 yps"
+      },
+      "trivia": "Turtles and young crocodiles sometimes bask on top of hippos.",
+      "image_url": ""
+    },
+    {
+      "id": "cape_mountain_zebra",
+      "name": "Cape Mountain Zebra",
+      "scientific_name": "Equus zebra zebra",
+      "class": 7,
+      "description": "The smallest zebra subspecies, found in some mountainous regions of eastern and southern Africa.",
+      "daily_routine": {
+        "type": "Diurnal",
+        "detail": "Active during the day"
+      },
+      "senses": {
+        "vision": "Average",
+        "smell": "Good",
+        "hearing": "Good"
+      },
+      "preferred_biomes": "Slopes and plateaus of mountainous areas",
+      "trophy": {
+        "type": "Weight",
+        "estimated_range": "285 - 660"
+      },
+      "recommended_hit": {
+        "bullet": "1500 - 4000 J",
+        "birdshot": "Inappropriate",
+        "buckshot": "Inappropriate",
+        "slug": "700 - 3000 J",
+        "arrow_bolt": "70 - 300 J"
+      },
+      "sex_differences": {
+        "size_and_weight": "Size differences are inconsistent; either sex can be larger.",
+        "other": "Stallions have a more prominent dewlap (loose skin under the neck)."
+      },
+      "variations": {
+        "age": "Adults behave more assertively.",
+        "coat_colors": "Black and white stripes"
+      },
+      "strengths": [
+        "Limited curiosity",
+        "Inhabiting challenging terrain",
+        "High speed and agility"
+      ],
+      "weaknesses": [
+        "Predictable water sources"
+      ],
+      "alternative_names": [],
+      "behavior": {
+        "type": "Altitudinal",
+        "detail": "Moves between higher and lower altitudes"
+      },
+      "social_structure": [
+        "Solitary"
+      ],
+      "max": {
+        "height": "50 in",
+        "length": "83 in",
+        "weight": "881.8 lb",
+        "speed": "43 yps"
+      },
+      "trivia": "Zebras see well both by day and at night.",
+      "image_url": ""
+    },
+    {
+      "id": "northwestern_white_tailed_deer",
+      "name": "Northwestern White-tailed Deer",
+      "scientific_name": "Odocoileus virginianus borealis",
+      "class": 4,
+      "description": "The biggest and darkest White-tailed deer subspecies.",
+      "daily_routine": {
+        "type": "Crepuscular",
+        "detail": "Active at dawn and dusk"
+      },
+      "senses": {
+        "vision": "Good",
+        "smell": "Good",
+        "hearing": "Good"
+      },
+      "preferred_biomes": "Forests, grasslands, swamps and arid areas with dense thickets",
+      "trophy": {
+        "type": "Antlers",
+        "estimated_range": "175 - 1,095"
+      },
+      "recommended_hit": {
+        "bullet": "1200 - 3500 J",
+        "birdshot": "Inappropriate",
+        "buckshot": "22 - 44 yd",
+        "slug": "500 - 2000 J",
+        "arrow_bolt": "65 - 300 J"
+      },
+      "sex_differences": {
+        "size_and_weight": "Bucks are noticeably larger and about half again as heavy as does.",
+        "other": "Bucks have antlers and are more often solitary."
+      },
+      "variations": {
+        "age": "Younger deer can have spotted coats.",
+        "coat_colors": "Light reddish brown to dark grayish-brown, depending on season and environment"
+      },
+      "strengths": [
+        "Effective camouflage"
+      ],
+      "weaknesses": [
+        "Vulnerable to callers and scents during the rut"
+      ],
+      "alternative_names": [
+        "Northern Rocky Mountain deer",
+        "Northwestern whitetail"
+      ],
+      "recommended_equipment": [
+        "Primos The Great Big Can Doe Bleat",
+        "Primos Big Bucks Rattling Bag",
+        "Primos Revolver Adjustable Grunt Call"
+      ],
+      "behavior": {
+        "type": "Migratory",
+        "detail": "Does not stay in one territory"
+      },
+      "social_structure": [
+        "Solitary"
+      ],
+      "max": {
+        "height": "43 in",
+        "length": "75 in",
+        "weight": "302.0 lb",
+        "speed": "30 yps"
+      },
+      "trivia": "White-tailed deer swim well and use wide streams and lakes to escape predators.",
+      "image_url": ""
+    },
+    {
+      "id": "rocky_mountain_mule_deer",
+      "name": "Rocky Mountain Mule Deer",
+      "scientific_name": "Odocoileus hemionus hemionus",
+      "class": 6,
+      "description": "The most widespread Mule deer subspecies, from the northern US Southwest up to northern Canada.",
+      "daily_routine": {
+        "type": "Crepuscular",
+        "detail": "Active at dawn and dusk"
+      },
+      "senses": {
+        "vision": "Good",
+        "smell": "Good",
+        "hearing": "Good"
+      },
+      "preferred_biomes": "Forests, grasslands, arid areas and mountains (highly adaptable)",
+      "trophy": {
+        "type": "Antlers",
+        "estimated_range": "115 - 610"
+      },
+      "recommended_hit": {
+        "bullet": "1500 - 4000 J",
+        "birdshot": "Inappropriate",
+        "buckshot": "11 - 33 yd",
+        "slug": "700 - 3000 J",
+        "arrow_bolt": "70 - 300 J"
+      },
+      "sex_differences": {
+        "size_and_weight": "Bucks are much larger than does.",
+        "other": "Bucks grow antlers for competition and display."
+      },
+      "variations": {
+        "age": "Older animals carry their heads low with hackles raised.",
+        "coat_colors": "Grayish-brown to reddish-brown, lighter underneath"
+      },
+      "strengths": [
+        "Agile, capable of quick, erratic and swift movements",
+        "Navigating diverse terrains with ease",
+        "Good camouflage with their coat",
+        "Inactive during day"
+      ],
+      "weaknesses": [
+        "Predictable movements",
+        "Habitual and seasonal patterns"
+      ],
+      "alternative_names": [
+        "Rocky Mountain black-tailed deer"
+      ],
+      "recommended_equipment": [
+        "Primos The Great Big Can Doe Bleat",
+        "Primos Big Bucks Rattling Bag",
+        "Primos Revolver Adjustable Grunt Call"
+      ],
+      "behavior": {
+        "type": "Altitudinal",
+        "detail": "Moves between higher and lower altitudes"
+      },
+      "social_structure": [
+        "Solitary"
+      ],
+      "max": {
+        "height": "43 in",
+        "length": "83 in",
+        "weight": "463.0 lb",
+        "speed": "30 yps"
+      },
+      "trivia": "Mule deer can sense water about two feet below ground.",
+      "image_url": ""
+    },
+    {
+      "id": "blesbok",
+      "name": "Blesbok",
+      "scientific_name": "Damaliscus pygargus phillipsi",
+      "class": 5,
+      "description": "A bontebok subspecies of South Africa, Namibia and Eswatini that sticks to open grasslands close to water.",
+      "daily_routine": {
+        "type": "Crepuscular",
+        "detail": "Active at dawn and dusk"
+      },
+      "senses": {
+        "vision": "Good",
+        "smell": "Good",
+        "hearing": "Average"
+      },
+      "preferred_biomes": "Grasslands of southern Africa",
+      "trophy": {
+        "type": "Horns",
+        "estimated_range": "12 - 108"
+      },
+      "recommended_hit": {
+        "bullet": "1200 - 3500 J",
+        "birdshot": "Inappropriate",
+        "buckshot": "22 - 44 yd",
+        "slug": "500 - 2000 J",
+        "arrow_bolt": "65 - 300 J"
+      },
+      "sex_differences": {
+        "size_and_weight": "Males are larger and sturdier, with longer, thicker horns.",
+        "other": "Males have paler horns."
+      },
+      "variations": {
+        "age": "Adults develop a white blaze.",
+        "coat_colors": "Brown body with white facial blaze, belly and legs"
+      },
+      "strengths": [
+        "Phenomenal runner"
+      ],
+      "weaknesses": [
+        "Dependence on water sources and herd instincts make them predictable"
+      ],
+      "alternative_names": [
+        "Blesbuck"
+      ],
+      "behavior": {
+        "type": "Migratory",
+        "detail": "Does not stay in one territory"
+      },
+      "social_structure": [
+        "Solitary"
+      ],
+      "max": {
+        "height": "39 in",
+        "length": "63 in",
+        "weight": "330.7 lb",
+        "speed": "43 yps"
+      },
+      "trivia": "Heavy hunting once left only 17 wild bontebok.",
+      "image_url": ""
+    },
+    {
+      "id": "spotted_hyena",
+      "name": "Spotted Hyena",
+      "scientific_name": "Crocuta crocuta",
+      "class": 4,
+      "description": "An African hyena with an unusually complex, female-led social hierarchy and fierce competition within the species.",
+      "daily_routine": {
+        "type": "Nocturnal",
+        "detail": "Active at dusk, night and dawn"
+      },
+      "senses": {
+        "vision": "Average",
+        "smell": "Excellent",
+        "hearing": "Average"
+      },
+      "preferred_biomes": "Semi-deserts, savannas and mountain forests; avoids dense and coastal rainforests",
+      "trophy": {
+        "type": "Skull",
+        "estimated_range": "330 - 550"
+      },
+      "recommended_hit": {
+        "bullet": "1000 - 3000 J",
+        "birdshot": "Inappropriate",
+        "buckshot": "22 - 49 yd",
+        "slug": "400 - 1500 J",
+        "arrow_bolt": "50 - 300 J"
+      },
+      "sex_differences": {
+        "size_and_weight": "Females are larger than males.",
+        "other": "Females are dominant and more aggressive."
+      },
+      "variations": {
+        "age": "Adults are more muscular.",
+        "coat_colors": "Light brown with dark spots"
+      },
+      "strengths": [
+        "Strong social bonds",
+        "Fast and agile"
+      ],
+      "weaknesses": [
+        "Highly territorial and predictable",
+        "Curiosity can be exploited",
+        "Vulnerable when feeding"
+      ],
+      "alternative_names": [
+        "Laughing hyena"
+      ],
+      "recommended_equipment": [
+        "Primos Double Jackrabbit Predator Call"
+      ],
+      "behavior": {
+        "type": "Territorial",
+        "detail": "Non-migratory, focused on protecting its territory"
+      },
+      "social_structure": [
+        "Solitary"
+      ],
+      "max": {
+        "height": "36 in",
+        "length": "65 in",
+        "weight": "198.4 lb",
+        "speed": "37 yps"
+      },
+      "trivia": "Hyena fossils exist on four continents, but spotted hyenas have lived only in Africa for about the last 8,000 years.",
+      "image_url": ""
+    },
+    {
+      "id": "nile_crocodile",
+      "name": "Nile Crocodile",
+      "scientific_name": "Crocodylus niloticus",
+      "class": 8,
+      "description": "One of Africa's largest freshwater apex predators: very aggressive, agile and responsible for many human deaths each year.",
+      "daily_routine": {
+        "type": "Nocturnal",
+        "detail": "Active at dusk, night and dawn"
+      },
+      "senses": {
+        "vision": "Poor",
+        "smell": "Poor",
+        "hearing": "Poor"
+      },
+      "preferred_biomes": "Broad rivers, lakes and marshes next to open savanna, semi-desert and woodland",
+      "trophy": {
+        "type": "Body length",
+        "estimated_range": "150 - 640"
+      },
+      "recommended_hit": {
+        "bullet": "2500 - 7000 J",
+        "birdshot": "Inappropriate",
+        "buckshot": "Inappropriate",
+        "slug": "1400 - 8000 J",
+        "arrow_bolt": "90 - 300 J"
+      },
+      "sex_differences": {
+        "size_and_weight": "Males are 20-33% larger and much heavier than females.",
+        "other": "Apart from size, males and females look alike."
+      },
+      "variations": {
+        "age": "Body banding fades in adults.",
+        "coat_colors": "Olive green to dark brown with darker bands on back and tail"
+      },
+      "strengths": [
+        "Powerful jaws",
+        "Stealthy ambush hunting"
+      ],
+      "weaknesses": [
+        "Relatively low speed and agility on land",
+        "Vulnerable when basking"
+      ],
+      "alternative_names": [],
+      "behavior": {
+        "type": "Residential",
+        "detail": "Non-migratory, lives in a smaller range"
+      },
+      "social_structure": [
+        "Solitary"
+      ],
+      "max": {
+        "height": "20 in",
+        "length": "252 in",
+        "weight": "1653.5 lb",
+        "speed": "22 yps"
+      },
+      "trivia": "Adult crocodiles help their young hatch out of their eggs.",
+      "image_url": ""
+    },
+    {
+      "id": "blue_wildebeest",
+      "name": "Blue Wildebeest",
+      "scientific_name": "Connochaetes taurinus taurinus",
+      "class": 7,
+      "description": "The more common wildebeest subspecies, ranging north beyond South Africa; often interbreeds with the smaller Black wildebeest.",
+      "daily_routine": {
+        "type": "Crepuscular",
+        "detail": "Active at dawn and dusk"
+      },
+      "senses": {
+        "vision": "Average",
+        "smell": "Good",
+        "hearing": "Good"
+      },
+      "preferred_biomes": "Savannas and open woodlands with fast-regrowing grass and moderate moisture",
+      "trophy": {
+        "type": "Horns",
+        "estimated_range": "100 - 175"
+      },
+      "recommended_hit": {
+        "bullet": "2000 - 6500 J",
+        "birdshot": "Inappropriate",
+        "buckshot": "Inappropriate",
+        "slug": "1000 - 4000 J",
+        "arrow_bolt": "75 - 300 J"
+      },
+      "sex_differences": {
+        "size_and_weight": "Males are larger with thicker horns.",
+        "other": "Otherwise the sexes differ only in size and coloring."
+      },
+      "variations": {
+        "age": "Adults usually have darker coats with stronger stripes.",
+        "coat_colors": "Blue-gray or dark brown to black"
+      },
+      "strengths": [
+        "Powerful frame"
+      ],
+      "weaknesses": [
+        "Restricted mobility"
+      ],
+      "alternative_names": [
+        "Brindled gnu",
+        "Common wildebeest",
+        "White-bearded gnu"
+      ],
+      "recommended_equipment": [
+        "Primos Big Bucks Rattling Bag"
+      ],
+      "behavior": {
+        "type": "Migratory/Territorial",
+        "detail": "Moves between territories and defends each one"
+      },
+      "social_structure": [
+        "Solitary"
+      ],
+      "max": {
+        "height": "59 in",
+        "length": "94 in",
+        "weight": "903.9 lb",
+        "speed": "50 yps"
+      },
+      "trivia": "Some wildebeest have been seen chasing predators.",
+      "image_url": ""
+    },
+    {
+      "id": "rocky_mountain_elk",
+      "name": "Rocky Mountain Elk",
+      "scientific_name": "Cervus canadensis nelsoni",
+      "class": 7,
+      "description": "Found only in the Rocky Mountains and nearby mountain areas; chronic wasting disease is one of its biggest threats.",
+      "daily_routine": {
+        "type": "Crepuscular",
+        "detail": "Active at dawn and dusk"
+      },
+      "senses": {
+        "vision": "Good",
+        "smell": "Good",
+        "hearing": "Excellent"
+      },
+      "preferred_biomes": "Open woodland at any elevation and swamps; avoids dense forest",
+      "trophy": {
+        "type": "Antlers",
+        "estimated_range": "165 - 1,655"
+      },
+      "recommended_hit": {
+        "bullet": "2000 - 6500 J",
+        "birdshot": "Inappropriate",
+        "buckshot": "Inappropriate",
+        "slug": "1000 - 4000 J",
+        "arrow_bolt": "75 - 300 J"
+      },
+      "sex_differences": {
+        "size_and_weight": "Bulls are larger and much heavier than cows.",
+        "other": "Bulls have antlers and are more often solitary."
+      },
+      "variations": {
+        "age": "Adults lose their spots.",
+        "coat_colors": "Reddish-brown to dark brown or gray"
+      },
+      "strengths": [
+        "Able to traverse rugged terrain"
+      ],
+      "weaknesses": [
+        "Reliance on open areas for feeding"
+      ],
+      "alternative_names": [
+        "Rocky Mountain wapiti"
+      ],
+      "recommended_equipment": [
+        "Primos Bull Horn Elk Call"
+      ],
+      "behavior": {
+        "type": "Altitudinal",
+        "detail": "Moves between higher and lower altitudes"
+      },
+      "social_structure": [
+        "Solitary"
+      ],
+      "max": {
+        "height": "65 in",
+        "length": "98 in",
+        "weight": "1102.3 lb",
+        "speed": "45 yps"
+      },
+      "trivia": "In hot weather elk stay near water and wade or lie in it to cool off and avoid biting insects.",
+      "image_url": ""
+    },
+    {
+      "id": "northwestern_wolf",
+      "name": "Northwestern Wolf",
+      "scientific_name": "Canis lupus occidentalis",
+      "class": 4,
+      "description": "Western North American subspecies, considered the world's largest Gray wolf.",
+      "daily_routine": {
+        "type": "Crepuscular",
+        "detail": "Active at dawn and dusk"
+      },
+      "senses": {
+        "vision": "Good",
+        "smell": "Excellent",
+        "hearing": "Excellent"
+      },
+      "preferred_biomes": "Forests, prairies, arid areas, tundra",
+      "trophy": {
+        "type": "Skull",
+        "estimated_range": "300 - 480"
+      },
+      "recommended_hit": {
+        "bullet": "1000 - 3000 J",
+        "birdshot": "Inappropriate",
+        "buckshot": "22 - 49 yd",
+        "slug": "400 - 1500 J",
+        "arrow_bolt": "50 - 300 J"
+      },
+      "sex_differences": {
+        "size_and_weight": "Males have thicker necks, bigger foreheads and shoulders, and slightly longer legs.",
+        "other": "Males tend to be more aggressive."
+      },
+      "variations": {
+        "age": "Pack discipline gets better with age.",
+        "coat_colors": "White, gray, shades of brown, black"
+      },
+      "strengths": [
+        "Highly intelligent",
+        "Difficult to outmaneuver",
+        "Difficult to isolate from strong packs"
+      ],
+      "weaknesses": [
+        "Pack behaviors are often predictable",
+        "Likely to investigate baits and calls"
+      ],
+      "alternative_names": [
+        "Canadian timber wolf",
+        "Alaskan timber wolf",
+        "Mackenzie Valley wolf"
+      ],
+      "recommended_equipment": [
+        "Primos Double Jackrabbit Predator Call"
+      ],
+      "behavior": {
+        "type": "Nomadic/Territorial",
+        "detail": "Covers wide ranges and defends its territory"
+      },
+      "social_structure": [
+        "Solitary"
+      ],
+      "max": {
+        "height": "36 in",
+        "length": "84 in",
+        "weight": "176.4 lb",
+        "speed": "37 yps"
+      },
+      "trivia": "Gray wolves feed pups by bringing swallowed food back up for them.",
+      "image_url": ""
+    },
+    {
+      "id": "wood_bison",
+      "name": "Wood Bison",
+      "scientific_name": "Bison bison athabascae",
+      "class": 8,
+      "description": "The bigger American Bison subspecies, with a taller, squarer hump.",
+      "daily_routine": {
+        "type": "Crepuscular",
+        "detail": "Active at dawn and dusk"
+      },
+      "senses": {
+        "vision": "Average",
+        "smell": "Good",
+        "hearing": "Average"
+      },
+      "preferred_biomes": "Grasslands at low and high elevations",
+      "trophy": {
+        "type": "Horns",
+        "estimated_range": "170 - 320"
+      },
+      "recommended_hit": {
+        "bullet": "2500 - 7000 J",
+        "birdshot": "Inappropriate",
+        "buckshot": "Inappropriate",
+        "slug": "1400 - 8000 J",
+        "arrow_bolt": "90 - 300 J"
+      },
+      "sex_differences": {
+        "size_and_weight": "Bulls are 33-50% larger than cows, with bigger horns, blockier heads, thicker necks and larger humps.",
+        "other": "Bull horns curve outward; cow horns curve inward."
+      },
+      "variations": {
+        "age": "Adults develop a bigger hump and larger horns.",
+        "coat_colors": "Dark brown to black, lighter on the hindquarters"
+      },
+      "strengths": [
+        "Massive size, with the ability to charge",
+        "Navigates remote areas"
+      ],
+      "weaknesses": [
+        "Predictable grazing and drinking",
+        "Difficulty moving due to its size"
+      ],
+      "alternative_names": [
+        "Mountain bison",
+        "Mountain buffalo",
+        "Wood buffalo"
+      ],
+      "behavior": {
+        "type": "Nomadic",
+        "detail": "Migrates now and then over wide ranges"
+      },
+      "social_structure": [
+        "Solitary"
+      ],
+      "max": {
+        "height": "79 in",
+        "length": "132 in",
+        "weight": "2601.5 lb",
+        "speed": "35 yps"
+      },
+      "trivia": "A bison's coat insulates so well that snow can sit on its back without melting.",
+      "image_url": ""
+    },
+    {
+      "id": "rocky_mountain_pronghorn",
+      "name": "Rocky Mountain Pronghorn",
+      "scientific_name": "Antilocapra americana americana",
+      "class": 4,
+      "description": "Lives in the Rocky Mountain foothills, even though it generally dislikes rugged terrain.",
+      "daily_routine": {
+        "type": "Crepuscular",
+        "detail": "Active at dawn and dusk"
+      },
+      "senses": {
+        "vision": "Excellent",
+        "smell": "Good",
+        "hearing": "Average"
+      },
+      "preferred_biomes": "Grasslands, shrublands, deserts",
+      "trophy": {
+        "type": "Horns",
+        "estimated_range": "135 - 237"
+      },
+      "recommended_hit": {
+        "bullet": "1000 - 3000 J",
+        "birdshot": "Inappropriate",
+        "buckshot": "22 - 49 yd",
+        "slug": "400 - 1500 J",
+        "arrow_bolt": "50 - 300 J"
+      },
+      "sex_differences": {
+        "size_and_weight": "Males are slightly larger and heavier.",
+        "other": "Females have small, sometimes barely visible horns; males have larger lyre-shaped horns, a black face mask and black neck patches."
+      },
+      "variations": {
+        "age": "Adults are faster and have more stamina."
+      },
+      "strengths": [
+        "High alertness"
+      ],
+      "weaknesses": [
+        "Preference for open habitats"
+      ],
+      "alternative_names": [
+        "Rocky Mountain American antelope",
+        "Rocky Mountain Prong buck antelope"
+      ],
+      "recommended_equipment": [
+        "Primos Big Bucks Rattling Bag"
+      ],
+      "behavior": {
+        "type": "Migratory/Territorial",
+        "detail": "Moves between territories and defends each one"
+      },
+      "social_structure": [
+        "Solitary"
+      ],
+      "max": {
+        "height": "41 in",
+        "length": "55 in",
+        "weight": "154.3 lb",
+        "speed": "60 yps"
+      },
+      "trivia": "Pronghorns can spot movement about 3 miles (4.8 km) away.",
+      "image_url": ""
+    },
+    {
+      "id": "western_moose",
+      "name": "Western Moose",
+      "scientific_name": "Alces alces andersoni",
+      "class": 8,
+      "description": "The second-largest moose subspecies, found in western Canada, the sub-Arctic and some northern US states.",
+      "daily_routine": {
+        "type": "Crepuscular",
+        "detail": "Active at dawn and dusk"
+      },
+      "senses": {
+        "vision": "Average",
+        "smell": "Good",
+        "hearing": "Excellent"
+      },
+      "preferred_biomes": "Moist forests, in swamps or near lakes and ponds",
+      "trophy": {
+        "type": "Antlers",
+        "estimated_range": "155 - 340"
+      },
+      "recommended_hit": {
+        "bullet": "2500 - 7000 J",
+        "birdshot": "Inappropriate",
+        "buckshot": "Inappropriate",
+        "slug": "1400 - 8000 J",
+        "arrow_bolt": "90 - 300 J"
+      },
+      "trivia": "Moose are usually slow and calm but can turn aggressive and fast when angered or startled.",
+      "note": "Overview page (sex differences, strengths, max size) not captured yet.",
+      "image_url": ""
+    },
+    {
+      "id": "southern_warthog",
+      "name": "Southern Warthog",
+      "scientific_name": "Phacochoerus africanus sundevallii",
+      "class": 5,
+      "image_url": "/public/games/woth2/images/animals/southern_warthog.jpg",
+      "trophy": {
+        "type": "Tusks",
+        "score_fields": [
+          "Length of main beam",
+          "Circumference at base"
+        ]
+      },
+      "note": "Encyclopedia page not captured yet; trophy fields from a harvest report."
+    },
+    {
+      "id": "southern_lion",
+      "name": "Southern Lion",
+      "scientific_name": "Panthera leo melanochaita",
+      "class": 6,
+      "image_url": "/public/games/woth2/images/animals/southern_lion_male.jpg",
+      "image_female_url": "/public/games/woth2/images/animals/southern_lion_female.jpg",
+      "trophy": {
+        "type": "Skull",
+        "score_fields": [
+          "Skull length",
+          "Skull width"
+        ]
+      },
+      "note": "Encyclopedia page not captured yet; trophy fields from harvest reports."
+    }
+  ],
+  "harvest_ranking": {
+    "explanation": "Each species is scored on its own trophy type (antlers, horns, tusks, skull, weight or body length). A harvest report shows the measurements, each with points, adding up to a Total Trophy Score. It also gives a Hunt Rating (letter grade for shot quality, e.g. S++), a 1-5 star Trophy Rating, and a sell price based on dressed weight.",
+    "hunt_rating_scale_seen": [
+      "S++",
+      "S+"
+    ],
+    "examples": [
+      {
+        "species": "Southern Warthog",
+        "sex": "Male",
+        "age": "16 yrs",
+        "fitness": "51.2%",
+        "weight": "222.4 lb",
+        "rarity": "Common",
+        "measurements": [
+          {
+            "name": "Length of main beam",
+            "value": "26 in",
+            "points": 66
+          },
+          {
+            "name": "Circumference at base",
+            "value": "4 in",
+            "points": 11
+          }
+        ],
+        "total_trophy_score": 77,
+        "hunt_rating": "S++",
+        "trophy_rating_stars": 1,
+        "sell_price": 259,
+        "weight_and_price": {
+          "raw_weight": "222.4 lb",
+          "shot_degradation": "9.0 lb",
+          "dressing_waste": "89.0 lb",
+          "dressed_weight": "124.5 lb",
+          "price_per_unit": "2.1 / lb"
+        }
+      },
+      {
+        "species": "Southern Lion",
+        "sex": "Female",
+        "age": "13 yrs",
+        "fitness": "89.4%",
+        "weight": "285.6 lb",
+        "rarity": "Common",
+        "measurements": [
+          {
+            "name": "Skull length",
+            "value": "14 in",
+            "points": 360
+          },
+          {
+            "name": "Skull width",
+            "value": "9 in",
+            "points": 240
+          }
+        ],
+        "total_trophy_score": 600,
+        "hunt_rating": "S++",
+        "trophy_rating_stars": 4,
+        "sell_price": 241,
+        "weight_and_price": {
+          "raw_weight": "285.6 lb",
+          "shot_degradation": "10.3 lb",
+          "dressing_waste": "114.2 lb",
+          "dressed_weight": "161.1 lb",
+          "price_per_unit": "1.5 / lb"
+        }
+      },
+      {
+        "species": "Southern Lion",
+        "sex": "Male",
+        "age": "15 yrs",
+        "fitness": "93.5%",
+        "weight": "571.9 lb",
+        "rarity": "Common",
+        "measurements": [
+          {
+            "name": "Skull length",
+            "value": "15 in",
+            "points": 390
+          },
+          {
+            "name": "Skull width",
+            "value": "10 in",
+            "points": 260
+          }
+        ],
+        "total_trophy_score": 650,
+        "hunt_rating": "S+",
+        "trophy_rating_stars": 5,
+        "sell_price": 455,
+        "weight_and_price": {
+          "raw_weight": "571.9 lb",
+          "shot_degradation": "38.9 lb",
+          "dressing_waste": "228.8 lb",
+          "dressed_weight": "304.2 lb",
+          "price_per_unit": "1.5 / lb"
+        }
+      }
+    ]
+  },
+  "skills": {
+    "categories": [
+      {
+        "name": "Ambusher",
+        "total": 24
+      },
+      {
+        "name": "Naturalist",
+        "total": 23
+      },
+      {
+        "name": "Scout",
+        "total": 23
+      },
+      {
+        "name": "Sharpshooter",
+        "total": 18
+      },
+      {
+        "name": "Stalker",
+        "total": 12
+      }
+    ]
+  },
+  "challenges": {
+    "note": "Challenges have tiers; XP shown is the reward per tier. Progress numbers are from the player's own save.",
+    "scout": [
+      {
+        "name": "Drive any vehicle.",
+        "tier_xp": [
+          null,
+          null,
+          260,
+          1010
+        ]
+      },
+      {
+        "name": "Discover any place in Kilimaya Reserve."
+      },
+      {
+        "name": "Discover any place in New Laurentia."
+      },
+      {
+        "name": "Place any tent.",
+        "tier_xp": [
+          null,
+          null,
+          130
+        ]
+      },
+      {
+        "name": "Discover an animal Species in Kilimaya Reserve."
+      },
+      {
+        "name": "Discover an animal Species in New Laurentia."
+      },
+      {
+        "name": "Improve navigation in Kilimaya Reserve.",
+        "tier_xp": [
+          80,
+          260,
+          780
+        ]
+      },
+      {
+        "name": "Improve navigation in New Laurentia.",
+        "tier_xp": [
+          80,
+          260,
+          780
+        ]
+      }
+    ],
+    "sharpshooter": [
+      {
+        "name": "Harvest an animal shot with any shotgun.",
+        "tier_xp": [
+          10,
+          50,
+          260
+        ]
+      },
+      {
+        "name": "Harvest an animal shot with any rifle.",
+        "tier_xp": [
+          null,
+          null,
+          260
+        ]
+      },
+      {
+        "name": "Harvest an animal shot with any crossbow.",
+        "tier_xp": [
+          10,
+          50,
+          260
+        ]
+      },
+      {
+        "name": "Harvest an animal shot with any bow.",
+        "tier_xp": [
+          10,
+          50,
+          260
+        ]
+      },
+      {
+        "name": "Harvest an animal after hitting its heart or both lungs.",
+        "tier_xp": [
+          null,
+          null,
+          260
+        ]
+      },
+      {
+        "name": "Harvest an animal shot with any firearm that has a suppressor installed.",
+        "tier_xp": [
+          null,
+          null,
+          130
+        ]
+      }
+    ],
+    "stalker": [
+      {
+        "name": "Harvest an animal without being seen.",
+        "tier_xp": [
+          null,
+          null,
+          155,
+          520
+        ]
+      },
+      {
+        "name": "Harvest an animal without it catching your scent.",
+        "tier_xp": [
+          null,
+          null,
+          null,
+          520
+        ]
+      },
+      {
+        "name": "Harvest an animal without being heard.",
+        "tier_xp": [
+          null,
+          null,
+          155,
+          520
+        ]
+      }
+    ]
+  },
+  "quests": [
+    {
+      "name": "Knives Out",
+      "type": "Story",
+      "giver": "Pandora / Naomi",
+      "summary": "Win back Naomi, a former Hearth & Hunt member who left without explanation.",
+      "objectives": [
+        "Wait for a day and then talk to Naomi again."
+      ],
+      "rewards": {
+        "money": 1800,
+        "xp": 310
+      }
+    },
+    {
+      "name": "Marketing Matters",
+      "type": "Story",
+      "giver": "Malachi",
+      "summary": "Take over making a new promotional video for Kilimaya Reserve.",
+      "objectives": [
+        "Place the camera to film a promotional video for Malachi."
+      ],
+      "rewards": {
+        "money": 1050,
+        "xp": 235
+      }
+    },
+    {
+      "name": "Chalk and Talk",
+      "type": "Story",
+      "giver": "Damian",
+      "summary": "Test the advanced bow-hunting assignments Damian wrote for his students.",
+      "objectives": [
+        "(Optional) Deliver the fatal shot at a distance of 164 yd or more.",
+        "(Optional) Use a single arrow for the harvest.",
+        "Harvest a male Mountain zebra using Skye Ferran Wonder bow."
+      ],
+      "rewards": {
+        "money": 1050,
+        "xp": 235,
+        "optional_money": 600,
+        "optional_xp": 170
+      }
+    },
+    {
+      "name": "Loudest Deer",
+      "type": "Story",
+      "giver": "Mikael",
+      "reserve": "New Laurentia",
+      "summary": "Mikael wants you to see a high-fitness elk from the herd he has looked after for years.",
+      "objectives": [
+        "Harvest a male Rocky Mountain elk. Its Fitness must be 70.0% or higher."
+      ],
+      "rewards": {
+        "money": 1050,
+        "xp": 235
+      }
+    },
+    {
+      "name": "Bison Bank",
+      "type": "Mission",
+      "reserve": "New Laurentia",
+      "summary": "Help researchers check on the New Laurentia bison herds.",
+      "objectives": [
+        "Harvest a male Bison with its Fitness at 40.0% or higher."
+      ],
+      "rewards": {
+        "money": 300,
+        "xp": 100
+      }
+    }
+  ],
+  "land_management": [
+    {
+      "name": "Dry Lake",
+      "type": "Environmental Hazard",
+      "impact": "High",
+      "reserve": "Kilimaya Reserve",
+      "area": "Popobawa Vlei",
+      "image_url": "/public/games/woth2/images/hazards/dry_lake.jpg",
+      "description": "A pan dried out by drought and over-extraction of water. Cleaning up the water, soil and surroundings improves local animal populations.",
+      "affects": [
+        "Southern yellow-billed duck",
+        "Nile crocodile",
+        "Common hippopotamus",
+        "Cape honey badger",
+        "Southern warthog",
+        "Cape buffalo"
+      ],
+      "cost": 5570,
+      "effect": "Lowers the fitness potential of affected species until cleaned up"
+    },
+    {
+      "name": "Habitat Enhancement",
+      "type": "Habitat Enhancement",
+      "impact": "Low",
+      "reserve": "New Laurentia",
+      "area": "Lake Sasquatch",
+      "description": "Build an enhancement to improve the quality of local animal populations.",
+      "affects": [
+        "Snowshoe hare",
+        "Northwestern white-tailed deer",
+        "Dall sheep"
+      ],
+      "cost": 2355,
+      "effect": "Raises the fitness potential of affected species"
+    }
+  ],
+  "trophy_lodge": {
+    "diorama_poses": [
+      "Mid-size Herbivores, Eating",
+      "Mid-size Herbivores, Fleeing",
+      "Big Predators, Fighting",
+      "Big Predators, Calm",
+      "Big Herbivores, Calm",
+      "Big Herbivores, Eating",
+      "Big Herbivores, Fleeing",
+      "Big Male Herbivores, Fighting",
+      "Big Herbivores, Laying",
+      "Big Herbivore; Small game animals, Curious",
+      "Mid-size Herbivores; Small game animal, Curious",
+      "Big Herbivore, Curious, Small Predator, Snarling",
+      "Small Predator, Snarling over Mid-size Herbivores",
+      "Big Herbivore, Fighting Big Predator",
+      "Big Predator, over Big Herbivore, Dead",
+      "Big Predator, Attacking Mid Herbivores",
+      "Big Herbivore, Spooked by Small Predators",
+      "Mid-size Herbivores, Spooked by Small Predator",
+      "Big Predator, Small Predator, Fighting over Mid-size Herbivore",
+      "Flightless Birds, Fleeing",
+      "Flightless Birds, Calm",
+      "Big Predator, Attacking Flightless Birds",
+      "Big Predator, Calm"
+    ]
+  },
+  "brands_seen": [
+    "Primacy Firearms",
+    "Primos",
+    "Overgaard",
+    "WildHeart",
+    "Lewellings"
+  ]
+}
