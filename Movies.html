@@ -2,8 +2,10 @@
 <!-- ==========================================================================
      FILE: Movies.html
      PROJECT: Werewolf Cinema Library
-     TIMESTAMP (24-hr NY Time): 2026-10-31 20:00:30 EDT
-     VERSION: 5.1.1
+     TIMESTAMP (24-hr NY Time): 2026-10-31 21:00:42 EDT
+     VERSION: 5.1.2
+     CHANGELOG 5.1.2:
+       - Alerts sign-up also sends the device's time zone and language to the sheet
      CHANGELOG 5.1.1:
        - iPhone in Safari: alerts button now shows Add to Home Screen steps
      CHANGELOG 5.1.0:
@@ -462,7 +464,7 @@ footer .fl{display:flex;flex-wrap:wrap;gap:18px}
     <span id="sync"><i></i><span id="sync-text">Loading library…</span></span>
   </div>
   <p>As an Amazon Associate, Werewolf3788 earns from qualifying purchases. Amazon links on this site are affiliate links; links to other stores are not.</p>
-  <p>Poster art and metadata courtesy of TMDb, TheTVDB and OMDb. Werewolf Cinema v5.1.1</p>
+  <p>Poster art and metadata courtesy of TMDb, TheTVDB and OMDb. Werewolf Cinema v5.1.2</p>
 </footer>
 
 <!-- Phone tab bar -->
@@ -1293,6 +1295,11 @@ async function getMessaging() {
   return messaging;
 }
 async function sendToSheet(body) {
+  // Rough, non-personal location hints: the device's time zone and language (no permission prompt)
+  if (body.action === 'subscribe') {
+    try { body.tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { body.tz = ''; }
+    body.lang = navigator.language || '';
+  }
   // text/plain keeps this a "simple" request, so Apps Script doesn't need CORS preflight
   await fetch(CFG.pushEndpoint, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
 }
