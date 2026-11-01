@@ -302,7 +302,7 @@ window.appState = {
     registerRibbon: function(it) {
         if (!it || !it.id) return;
         if (!this.ribbons[it.id]) {
-            this.ribbons[it.id] = { earned: false, name: it.name || '', requirement: it.requirement || '' };
+            this.ribbons[it.id] = { earned: false, count: 0, name: it.name || '', requirement: it.requirement || '' };
         } else {
             this.ribbons[it.id].name = it.name || this.ribbons[it.id].name;
             this.ribbons[it.id].requirement = it.requirement || this.ribbons[it.id].requirement;
@@ -494,7 +494,12 @@ window.appState = {
 
         if (payload.ribbons) {
             for (const rbId in payload.ribbons) {
-                if (this.ribbons[rbId]) this.ribbons[rbId].earned = !!payload.ribbons[rbId].earned;
+                if (this.ribbons[rbId]) {
+                    const saved = payload.ribbons[rbId] || {};
+                    const n = Number.isFinite(+saved.count) ? Math.max(0, Math.floor(+saved.count)) : (saved.earned ? 1 : 0);
+                    this.ribbons[rbId].count = n;
+                    this.ribbons[rbId].earned = n > 0;
+                }
             }
         }
 
@@ -618,7 +623,9 @@ window.appState.applyStateToUI = function() {
         } else if (type === 'medal') {
             isDone = !!(this.medals[id]?.earned);
         } else if (type === 'ribbon') {
-            isDone = !!(this.ribbons[id]?.earned);
+            isDone = (this.ribbons[id]?.count || 0) > 0;
+            const inp = card.querySelector('.ribbon-count');
+            if (inp && document.activeElement !== inp) inp.value = this.ribbons[id]?.count || 0;
         } else {
             isDone = !!(this.missions[id]?.completed);
         }
@@ -636,10 +643,28 @@ window.appState.applyStateToUI = function() {
     document.querySelectorAll('.category-section').forEach(sec => {
         const badge = sec.querySelector(':scope > .category-header .sec-progress');
         if (!badge) return;
-        const total = sec.querySelectorAll('.game-item-card').length;
+        const cards = sec.querySelectorAll('.game-item-card');
+        const total = cards.length;
+        const onlyRibbons = total && [...cards].every(c => c.getAttribute('data-type') === 'ribbon');
+        if (onlyRibbons) {
+            const earned = [...cards].reduce((n, c) => n + (this.ribbons[c.getAttribute('data-id')]?.count || 0), 0);
+            badge.innerText = `${earned} earned`;
+            return;
+        }
         const done = sec.querySelectorAll('.game-item-card.completed').length;
         badge.innerText = total ? `${done}/${total}` : '';
     });
+};
+
+// Ribbons can be earned many times: store the number shown in game.
+window.appState.setRibbonCount = function(itemId, value) {
+    const n = Math.max(0, Math.min(999999, Math.floor(Number(value) || 0)));
+    if (!this.ribbons[itemId]) this.ribbons[itemId] = { earned: false, count: 0 };
+    this.ribbons[itemId].count = n;
+    this.ribbons[itemId].earned = n > 0;
+    this.applyStateToUI();
+    clearTimeout(this._ribbonSaveTimer);
+    this._ribbonSaveTimer = setTimeout(() => this.saveProgress(), 600);
 };
 
 window.appState.toggleItem = function(itemId, type, group) {
@@ -961,6 +986,18 @@ function ensureUniversalStyles() {
         .uni-search-btn:hover { border-color: var(--user-theme-accent, #ff5500); color: #fff; }
         .uni-search-count { flex-basis: 100%; font-size: 0.75rem; color: #94a3b8; min-height: 1em; }
         .mission-region { font-size: 0.7rem; font-weight: 700; color: #94a3b8; margin-left: 8px; }
+        .ribbon-count-wrap { display: inline-flex; align-items: center; gap: 4px; flex: 0 0 auto; color: #94a3b8; font-weight: 800; }
+        .ribbon-count { width: 68px; min-height: 40px; padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18);
+            background: #0f172a; color: #fff; font-size: 1rem; font-weight: 800; text-align: center; }
+        .ribbon-count:focus { outline: none; border-color: var(--user-theme-accent, #ff5500); }
+        .mission-detail { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); margin-top: 10px; }
+        .mission-detail h4 { margin: 0 0 4px; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; color: #94a3b8; }
+        .mission-detail p, .mission-detail li { margin: 0; font-size: 0.82rem; line-height: 1.45; color: #e2e8f0; }
+        .mission-detail ul { margin: 0; padding-left: 18px; }
+        .mission-hero { width: 100%; max-width: 560px; display: block; max-height: 220px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; }
+        .game-overview { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+        .game-chip { padding: 6px 12px; border-radius: 999px; background: #1e293b; border: 1px solid rgba(255,255,255,0.12); color: #e2e8f0; font-size: 0.78rem; font-weight: 700; }
+        .game-chip.on { border-color: #22c55e; color: #86efac; }
     `;
     document.head.appendChild(style);
 }
@@ -1006,14 +1043,16 @@ function buildItemCard(o) {
     <div class="trophy-card game-item-card" data-id="${escapeHtml(o.id)}" data-type="${o.type}"${groupAttr} data-search="${escapeHtml(search)}">
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <div style="display:flex; gap:10px; align-items:center;">
-                ${img ? `<img src="${img}" style="width:40px; height:40px; border-radius:6px; object-fit:cover;" onerror="this.style.display='none'">` : ''}
+                ${img ? `<img src="${img}" alt="" loading="lazy" style="${o.wideImg ? 'width:96px; height:40px; object-fit:contain; background:#0f172a;' : 'width:40px; height:40px; object-fit:cover;'} border-radius:6px; flex:0 0 auto;" onerror="this.style.display='none'">` : ''}
                 <div>
                     <span class="trophy-rank ${o.badgeClass || 'rank-bronze'}">${escapeHtml(o.badge || '')}</span>
                     <h3 style="color:#fff; font-size:0.95rem; margin-top:4px;">${escapeHtml(o.title || '')}</h3>
                     ${o.sub ? `<div style="font-size:0.75rem; color:#94a3b8;">${escapeHtml(o.sub)}</div>` : ''}
                 </div>
             </div>
-            <button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(o.id)}', '${o.type}'${groupArg})" aria-label="Toggle"></button>
+            ${o.counter
+                ? `<label class="ribbon-count-wrap" title="Times earned"><span>×</span><input type="number" min="0" step="1" inputmode="numeric" class="ribbon-count" value="0" aria-label="Times earned: ${escapeHtml(o.title || '')}" onchange="appState.setRibbonCount('${escapeHtml(o.id)}', this.value)"></label>`
+                : `<button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(o.id)}', '${o.type}'${groupArg})" aria-label="Toggle"></button>`}
         </div>
         ${o.body ? `<p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(o.body)}</p>` : ''}
         ${o.link ? `<a href="${escapeHtml(o.link)}" target="_blank" rel="noopener" style="font-size:0.75rem; font-weight:800; color:var(--user-theme-accent, #ff5500); text-decoration:none;">▶ ${escapeHtml(o.linkLabel || 'Watch')}</a>` : ''}
@@ -1034,7 +1073,7 @@ function medalCard(m, ctx) {
 function ribbonCard(r, ctx) {
     return buildItemCard({
         id: r.id, type: 'ribbon', badge: 'Ribbon', badgeClass: 'rank-silver',
-        title: r.name, sub: r.requirement, img: r.image_url, ctx: `ribbon ${ctx || ''}`
+        title: r.name, sub: r.requirement, img: r.image_url, ctx: `ribbon ${ctx || ''}`, counter: true, wideImg: true
     });
 }
 
@@ -1089,6 +1128,19 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
             }));
         });
     });
+    const detail = [];
+    if (m.description) detail.push(`<div><h4>Description</h4><p>${escapeHtml(m.description)}</p></div>`);
+    if (toArr(m.optional_objectives).length) detail.push(`<div><h4>Optional Objectives (${toArr(m.optional_objectives).length})</h4><ul>${toArr(m.optional_objectives).map(o => `<li>${escapeHtml(o)}</li>`).join('')}</ul></div>`);
+    if (m.kill_target || (typeof m.kill_challenge === 'string' && m.kill_challenge)) {
+        detail.push(`<div><h4>Kill List</h4>${m.kill_target ? `<p><strong>${escapeHtml(m.kill_target)}</strong></p>` : ''}${typeof m.kill_challenge === 'string' && m.kill_challenge ? `<p>Kill challenge: ${escapeHtml(m.kill_challenge)}</p>` : ''}</div>`);
+    }
+    const tot = m.collectible_totals;
+    if (tot || m.starting_locations) {
+        const rows = tot ? Object.entries(tot).filter(([k]) => k !== 'total').map(([k, v]) => `<li>${escapeHtml(COLLECTIBLE_LABELS[k] || humanize(k))}: ${v}</li>`).join('') : '';
+        detail.push(`<div><h4>Collectibles${tot && tot.total ? ` (${tot.total})` : ''}</h4>${rows ? `<ul>${rows}</ul>` : ''}${m.starting_locations ? `<p>Starting locations: ${escapeHtml(String(m.starting_locations))}</p>` : ''}</div>`);
+    }
+    if (detail.length) inner = (m.image_url ? `<img class="mission-hero" src="${toSecureUrl(m.image_url)}" alt="" loading="lazy" onerror="this.remove()">` : '') + `<div class="mission-detail">${detail.join('')}</div>` + inner;
+
     if (colCards.length) inner += buildFolder('🗂️ Collectibles', gridOf(colCards));
 
     const chCards = [];
@@ -1134,6 +1186,11 @@ function renderMissionSchema(data) {
             <button type="button" class="uni-search-btn" id="uniCollapseAll">Collapse all</button>
             <div class="uni-search-count" id="universalSearchCount"></div>
         </div>`;
+
+    const chips = [];
+    if (data.crossplay && data.crossplay.supported) chips.push(`<span class="game-chip on" title="${escapeHtml(data.crossplay.toggle || '')}">✔ Cross-play</span>`);
+    toArr(data.play_modes).forEach(pm => chips.push(`<span class="game-chip">${escapeHtml(pm)}</span>`));
+    if (chips.length) html += `<div class="game-overview">${chips.join('')}</div>`;
 
     Object.entries(data.missions)
         .filter(([, m]) => m && typeof m === 'object')
