@@ -127,6 +127,10 @@ window.appState = {
     harvestLog: [],
     wishlist: [],
     watchlist: [],
+    inventory: [],
+    loadouts: [],
+    activeLoadout: null,
+    carrySlots: 6,
     ranks: {},
 
     getUserKey: function() {
@@ -165,6 +169,10 @@ window.appState = {
         this.harvestLog = [];
         this.wishlist = [];
         this.watchlist = [];
+        this.inventory = [];
+        this.loadouts = [];
+        this.activeLoadout = null;
+        this.carrySlots = 6;
         this.ranks = {};
 
         document.querySelectorAll('.game-pill').forEach(pill => {
@@ -465,6 +473,10 @@ window.appState = {
             harvestLog: this.harvestLog,
             wishlist: this.wishlist,
             watchlist: this.watchlist,
+            inventory: this.inventory,
+            loadouts: this.loadouts,
+            activeLoadout: this.activeLoadout,
+            carrySlots: this.carrySlots,
             trophies: this.trophies
         };
     },
@@ -475,6 +487,10 @@ window.appState = {
         if (Array.isArray(payload.harvestLog)) this.harvestLog = payload.harvestLog;
         if (Array.isArray(payload.wishlist)) this.wishlist = payload.wishlist;
         if (Array.isArray(payload.watchlist)) this.watchlist = payload.watchlist;
+        if (Array.isArray(payload.inventory)) this.inventory = payload.inventory;
+        if (Array.isArray(payload.loadouts)) this.loadouts = payload.loadouts;
+        if (payload.activeLoadout !== undefined) this.activeLoadout = payload.activeLoadout;
+        if (payload.carrySlots) this.carrySlots = payload.carrySlots;
         this.trophies_earned = payload.trophies_earned || 0;
         this.trophies_total = payload.trophies_total || this.trophies_total;
         this.trophies_percent = payload.trophies_percent || 0;
@@ -1091,8 +1107,25 @@ function ensureUniversalStyles() {
         .wm-bar { flex: 1 1 120px; height: 6px; border-radius: 999px; background: #0f172a; overflow: hidden; min-width: 80px; }
         .wm-bar > span { display: block; height: 100%; background: linear-gradient(90deg, #f59e0b, #22c55e); }
         .harvest-form { display: flex; flex-wrap: wrap; gap: 8px; }
-        .hunt-input { flex: 1 1 140px; padding: 8px 10px; }
+        .hunt-input { flex: 1 1 140px; padding: 8px 10px; min-width: 0; max-width: 100%; box-sizing: border-box; }
+        select.hunt-input { text-overflow: ellipsis; }
         .ctl-wrap { overflow-x: auto; }
+        .form-title { color: #fff; font-size: 0.85rem; margin: 12px 0 6px; }
+        .form-title:first-child { margin-top: 0; }
+        .carry-panel { background: rgba(2,6,23,0.35); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; }
+        .carry-head { font-size: 0.85rem; color: #e2e8f0; margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .carry-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 6px; }
+        .carry-slot { min-height: 54px; border: 1px dashed #334155; border-radius: 8px; padding: 6px; font-size: 0.75rem; color: #64748b; display: flex; flex-direction: column; justify-content: center; }
+        .carry-slot.filled { border-style: solid; border-color: var(--user-theme-accent, #f97316); color: #fff; background: rgba(249,115,22,0.08); }
+        .cs-cat { font-size: 0.62rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.04em; }
+        .lo-active { outline: 2px solid #10b981; }
+        .lo-slots.over, .game-chip.over { background: #7f1d1d; }
+        .storage-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+        .stor-group { background: var(--bg-card, #1e293b); border-radius: 10px; padding: 10px; }
+        .stor-group h4 { color: #94a3b8; font-size: 0.72rem; text-transform: uppercase; margin-bottom: 6px; }
+        .stor-item { display: flex; justify-content: space-between; gap: 6px; font-size: 0.82rem; color: #e2e8f0; padding: 3px 0; }
+        .stor-item small { color: #94a3b8; }
+        .stor-x { background: none; border: none; color: #64748b; cursor: pointer; }
         .kill-tally { grid-column: 1 / -1; margin-bottom: 10px; font-size: 0.85rem; color: #cbd5e1; }
         .kt-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
         .ts-frame { position: relative; aspect-ratio: 16 / 9; max-height: 420px; width: 100%; border-radius: 12px; overflow: hidden; background: #020617; margin-bottom: 8px; }
@@ -1577,6 +1610,223 @@ function renderTrophyRoom() {
 }
 window.trophySlideIdxGet = () => trophySlideIdx;
 
+// ---- Hunter Locker: storage (everything owned), loadouts (what's carried), shop
+const WEAPON_CATS = ['Rifle', 'Shotgun', 'Bow', 'Crossbow', 'Handgun', 'Weapon'];
+const AMMO_CATS = ['Ammo', 'Arrow', 'Bolt', 'Shell'];
+const ITEM_CATS = ['Rifle', 'Shotgun', 'Bow', 'Crossbow', 'Handgun', 'Ammo', 'Arrow', 'Bolt', 'Optic', 'Binoculars', 'Rangefinder', 'Caller', 'Scent', 'Decoy', 'Blind / Stand', 'Gear', 'Other'];
+const isWeapon = (it) => it && WEAPON_CATS.includes(it.category);
+const isAmmo = (it) => it && AMMO_CATS.includes(it.category);
+function catalogItems() {
+    const d = appState.gameData || {};
+    if (toArr(d.shop?.items).length) return toArr(d.shop.items);
+    const g = d.gear || {}, out = [];
+    toArr(g.firearms).forEach(f => {
+        out.push({ id: f.id, name: f.name, category: 'Rifle', caliber: f.caliber || '', price: f.price, level: f.required_level });
+        if (f.ammo_brand) out.push({ id: `${f.id}_ammo`, name: `${f.ammo_brand}${f.recommended_ammo_type ? ` (${f.recommended_ammo_type})` : ''}`, category: 'Ammo', caliber: f.caliber || '' });
+    });
+    toArr(g.optics).forEach(o => out.push({ id: o.id, name: o.name, category: 'Optic', desc: o.description }));
+    toArr(g.scents).forEach(sc => out.push({ id: sc.id || sc.name, name: sc.name, category: 'Scent', price: sc.price, level: sc.required_level, desc: toArr(sc.target_animals).join(', ') }));
+    return out;
+}
+const invItem = (uid) => toArr(appState.inventory).find(i => i.uid === uid);
+const ownedCount = (id) => toArr(appState.inventory).filter(i => i.id === id).length;
+function loadoutSlots(lo) { return (lo.weapon ? 1 : 0) + (lo.ammo ? 1 : 0) + toArr(lo.gear).length; }
+function loadoutLabel(lo) {
+    const w = invItem(lo.weapon), a = invItem(lo.ammo);
+    return [w && w.name, a && a.name].filter(Boolean).join(' + ') || 'No weapon';
+}
+function addToInventory(src) {
+    const item = { uid: 'i' + Date.now() + Math.floor(Math.random() * 1000), id: src.id || ('custom_' + Date.now()), name: src.name, category: src.category || 'Other', caliber: src.caliber || '', price: Number(src.price) || 0, level: src.level || '', notes: src.notes || '' };
+    appState.inventory.push(item);
+    return item;
+}
+window.appState.buyItem = function(id, pay) {
+    const it = catalogItems().find(c => c.id === id); if (!it) return;
+    const price = Number(it.price) || 0;
+    if (pay && price) {
+        if ((this.wallet.credits || 0) < price) { this.updateStatus(`Not enough credits: need ${fmtNum(price - (this.wallet.credits || 0))} more.`); return; }
+        this.wallet.credits -= price;
+    }
+    addToInventory(it);
+    this.applyStateToUI(); this.saveProgress();
+    this.updateStatus(`${it.name} added to your storage${pay && price ? ` (-${fmtNum(price)} credits)` : ''}.`);
+};
+window.appState.addStorageItem = function(form) {
+    const f = new FormData(form);
+    const pick = f.get('catalog');
+    let src;
+    if (pick && pick !== '__custom') src = catalogItems().find(c => c.id === pick);
+    else src = { name: (f.get('name') || '').trim(), category: f.get('category'), caliber: (f.get('caliber') || '').trim(), price: f.get('price') };
+    if (!src || !src.name) { this.updateStatus('Pick an item or type its name.'); return; }
+    if (f.get('pay') && Number(src.price)) {
+        if ((this.wallet.credits || 0) < Number(src.price)) { this.updateStatus(`Not enough credits: need ${fmtNum(Number(src.price) - (this.wallet.credits || 0))} more.`); return; }
+        this.wallet.credits -= Number(src.price);
+    }
+    addToInventory(src); form.reset(); toggleCustomItem(form);
+    this.applyStateToUI(); this.saveProgress();
+};
+window.appState.removeStorageItem = function(uid) {
+    this.inventory = this.inventory.filter(i => i.uid !== uid);
+    this.loadouts.forEach(lo => { if (lo.weapon === uid) lo.weapon = ''; if (lo.ammo === uid) lo.ammo = ''; lo.gear = toArr(lo.gear).filter(g => g !== uid); });
+    this.applyStateToUI(); this.saveProgress();
+};
+window.appState.setCarrySlots = function(v) { this.carrySlots = Math.max(1, Math.min(30, Math.floor(Number(v) || 6))); this.applyStateToUI(); this.saveProgress(); };
+window.appState.saveLoadout = function(form) {
+    const f = new FormData(form);
+    const lo = { id: f.get('id') || ('l' + Date.now()), name: (f.get('name') || '').trim() || 'Loadout', weapon: f.get('weapon') || '', ammo: f.get('ammo') || '', gear: f.getAll('gear') };
+    if (loadoutSlots(lo) > this.carrySlots) { this.updateStatus(`Too many items: ${loadoutSlots(lo)} of ${this.carrySlots} slots. Remove some gear.`); return; }
+    const i = this.loadouts.findIndex(x => x.id === lo.id);
+    if (i >= 0) this.loadouts[i] = lo; else this.loadouts.push(lo);
+    if (!this.activeLoadout) this.activeLoadout = lo.id;
+    form.reset(); form.id.value = ''; form.querySelector('[type=submit]').textContent = 'Save loadout';
+    this.applyStateToUI(); this.saveProgress();
+};
+window.appState.editLoadout = function(id) {
+    const lo = this.loadouts.find(x => x.id === id); const form = document.getElementById('loadoutForm'); if (!lo || !form) return;
+    form.id.value = lo.id; form.name.value = lo.name; renderLockerSelects(); form.weapon.value = lo.weapon || ''; fillAmmoSelect(form.ammo, lo.weapon, lo.ammo);
+    form.querySelectorAll('input[name=gear]').forEach(cb => { cb.checked = toArr(lo.gear).includes(cb.value); });
+    updateLoadoutSlotCount(form);
+    form.querySelector('[type=submit]').textContent = 'Save changes';
+    form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
+window.appState.deleteLoadout = function(id) { this.loadouts = this.loadouts.filter(x => x.id !== id); if (this.activeLoadout === id) this.activeLoadout = this.loadouts[0]?.id || null; this.applyStateToUI(); this.saveProgress(); };
+window.appState.useLoadout = function(id) { this.activeLoadout = id; this.applyStateToUI(); this.saveProgress(); const hf = document.getElementById('harvestForm'); if (hf) applyLoadoutToHarvest(hf, id); };
+function fillAmmoSelect(sel, weaponUid, value) {
+    if (!sel) return;
+    const w = invItem(weaponUid);
+    const ammo = toArr(appState.inventory).filter(isAmmo);
+    const match = w && w.caliber ? ammo.filter(a => !a.caliber || a.caliber === w.caliber) : ammo;
+    const list = match.length ? match : ammo;
+    sel.innerHTML = '<option value="">Ammo</option>' + list.map(a => `<option value="${escapeHtml(a.uid)}">${escapeHtml(a.name)}${a.caliber ? ` (${escapeHtml(a.caliber)})` : ''}</option>`).join('');
+    if (value !== undefined) sel.value = value;
+    else if (list.length === 1) sel.value = list[0].uid;
+}
+window.fillAmmoSelect = fillAmmoSelect;
+function updateLoadoutSlotCount(form) {
+    const n = (form.weapon.value ? 1 : 0) + (form.ammo.value ? 1 : 0) + form.querySelectorAll('input[name=gear]:checked').length;
+    const el = form.querySelector('.lo-slots'); if (el) { el.textContent = `${n}/${appState.carrySlots} slots`; el.classList.toggle('over', n > appState.carrySlots); }
+}
+window.updateLoadoutSlotCount = updateLoadoutSlotCount;
+function toggleCustomItem(form) { const custom = form.catalog.value === '__custom' || form.catalog.options.length <= 2; form.querySelectorAll('.custom-item').forEach(el => { el.hidden = !custom; }); }
+window.toggleCustomItem = toggleCustomItem;
+function applyLoadoutToHarvest(form, loId) {
+    const lo = appState.loadouts.find(x => x.id === loId);
+    if (form.loadout) form.loadout.value = lo ? lo.id : '';
+    if (!lo) return;
+    form.weapon.value = lo.weapon || '';
+    fillAmmoSelect(form.ammo, lo.weapon, lo.ammo || '');
+}
+window.applyLoadoutToHarvest = applyLoadoutToHarvest;
+function setOptions(sel, html, keep = true) {
+    if (!sel) return; const v = sel.value;
+    if (sel.innerHTML !== html) { sel.innerHTML = html; if (keep) sel.value = v; }
+}
+function renderLockerSelects() {
+    const inv = toArr(appState.inventory);
+    const weaponOpts = '<option value="">Weapon</option>' + inv.filter(isWeapon).map(w => `<option value="${escapeHtml(w.uid)}">${escapeHtml(w.name)}${w.caliber ? ` (${escapeHtml(w.caliber)})` : ''}</option>`).join('');
+    const lf = document.getElementById('loadoutForm');
+    if (lf) {
+        setOptions(lf.weapon, weaponOpts);
+        const gearBox = lf.querySelector('.lo-gear');
+        const others = inv.filter(i => !isWeapon(i) && !isAmmo(i));
+        const sig = others.map(o => o.uid).join(',');
+        if (gearBox && gearBox.dataset.sig !== sig) {
+            const checked = new Set([...gearBox.querySelectorAll('input:checked')].map(c => c.value));
+            gearBox.dataset.sig = sig;
+            gearBox.innerHTML = others.length ? others.map(o => `<label class="hunt-check"><input type="checkbox" name="gear" value="${escapeHtml(o.uid)}"${checked.has(o.uid) ? ' checked' : ''} onchange="updateLoadoutSlotCount(this.form)"> ${escapeHtml(o.name)} <small>${escapeHtml(o.category)}</small></label>`).join('') : '<span style="font-size:0.75rem;color:#64748b;">Optics, callers, scents and other gear you own show up here.</span>';
+        }
+        if (!lf.ammo.options.length || lf.ammo.dataset.sig !== inv.filter(isAmmo).map(a => a.uid).join(',') + lf.weapon.value) {
+            lf.ammo.dataset.sig = inv.filter(isAmmo).map(a => a.uid).join(',') + lf.weapon.value;
+            fillAmmoSelect(lf.ammo, lf.weapon.value, lf.ammo.value);
+        }
+        updateLoadoutSlotCount(lf);
+    }
+    const hf = document.getElementById('harvestForm');
+    if (hf && hf.weapon) {
+        setOptions(hf.loadout, '<option value="">Loadout used</option>' + appState.loadouts.map(lo => `<option value="${escapeHtml(lo.id)}">${escapeHtml(lo.name)}</option>`).join(''));
+        setOptions(hf.weapon, weaponOpts);
+        if (!hf.dataset.touched && appState.activeLoadout && hf.loadout.value !== appState.activeLoadout) applyLoadoutToHarvest(hf, appState.activeLoadout);
+        else if (hf.ammo.dataset.sig !== inv.filter(isAmmo).map(a => a.uid).join(',') + hf.weapon.value) { hf.ammo.dataset.sig = inv.filter(isAmmo).map(a => a.uid).join(',') + hf.weapon.value; fillAmmoSelect(hf.ammo, hf.weapon.value, hf.ammo.value); }
+    }
+}
+function renderLocker() {
+    renderLockerSelects();
+    const st = appState, inv = toArr(st.inventory);
+    setVal('carrySlots', st.carrySlots);
+    const active = st.loadouts.find(x => x.id === st.activeLoadout);
+    const carry = document.getElementById('carryPanel');
+    if (carry) {
+        if (!active) carry.innerHTML = '<p style="color:#94a3b8;font-size:0.85rem;">No loadout selected. Build one on the left, then press "Use".</p>';
+        else {
+            const items = [invItem(active.weapon), invItem(active.ammo), ...toArr(active.gear).map(invItem)].filter(Boolean);
+            const used = loadoutSlots(active);
+            carry.innerHTML = `<div class="carry-head"><b>On your person:</b> ${escapeHtml(active.name)} <span class="game-chip${used > st.carrySlots ? ' over' : ''}">${used}/${st.carrySlots} slots</span></div>
+                <div class="carry-slots">${Array.from({ length: st.carrySlots }, (_, k) => items[k] ? `<div class="carry-slot filled"><span class="cs-cat">${escapeHtml(items[k].category)}</span>${escapeHtml(items[k].name)}</div>` : '<div class="carry-slot">Empty</div>').join('')}</div>`;
+        }
+    }
+    const los = document.getElementById('loadoutList');
+    if (los) los.innerHTML = st.loadouts.map(lo => `<div class="trophy-card hunt-card${lo.id === st.activeLoadout ? ' lo-active' : ''}">
+        <div style="display:flex;justify-content:space-between;gap:8px;"><div style="flex:1"><h3 style="color:#fff;font-size:0.95rem;">${lo.id === st.activeLoadout ? '✅ ' : ''}${escapeHtml(lo.name)}</h3>
+        <div style="font-size:0.78rem;color:#cbd5e1;">${escapeHtml(loadoutLabel(lo))}</div>
+        <div style="font-size:0.72rem;color:#94a3b8;">${toArr(lo.gear).map(invItem).filter(Boolean).map(g => escapeHtml(g.name)).join(' · ') || 'No extra gear'} · ${loadoutSlots(lo)}/${st.carrySlots} slots</div></div>
+        <div style="display:flex;flex-direction:column;gap:6px;">${lo.id === st.activeLoadout ? '' : `<button type="button" class="uni-search-btn" onclick="appState.useLoadout('${escapeHtml(lo.id)}')">Use</button>`}
+        <button type="button" class="uni-search-btn" onclick="appState.editLoadout('${escapeHtml(lo.id)}')">Edit</button>
+        <button type="button" class="uni-search-btn" onclick="appState.deleteLoadout('${escapeHtml(lo.id)}')">Delete</button></div></div></div>`).join('');
+    const stor = document.getElementById('storageList');
+    if (stor) {
+        const groups = {};
+        inv.forEach(i => { (groups[i.category] = groups[i.category] || []).push(i); });
+        const carried = new Set(active ? [active.weapon, active.ammo, ...toArr(active.gear)] : []);
+        stor.innerHTML = inv.length ? Object.keys(groups).sort((a, b) => ITEM_CATS.indexOf(a) - ITEM_CATS.indexOf(b)).map(cat => `<div class="stor-group"><h4>${escapeHtml(cat)} (${groups[cat].length})</h4>${groups[cat].map(i => `<div class="stor-item"><span>${carried.has(i.uid) ? '🎒 ' : ''}${escapeHtml(i.name)}${i.caliber ? ` <small>${escapeHtml(i.caliber)}</small>` : ''}</span><button type="button" class="stor-x" title="Remove from storage" onclick="appState.removeStorageItem('${escapeHtml(i.uid)}')">✕</button></div>`).join('')}</div>`).join('')
+            : '<p style="color:#94a3b8;font-size:0.85rem;">Storage is empty. Add what you own, or buy it from the Shop.</p>';
+    }
+    document.querySelectorAll('[data-owned-for]').forEach(el => { const n = ownedCount(el.dataset.ownedFor); el.textContent = n ? `Owned ×${n}` : ''; });
+}
+function lockerPanelHtml(data) {
+    const inp = 'class="uni-search-input hunt-input"';
+    const cat = catalogItems();
+    const byCat = {}; cat.forEach(c => { (byCat[c.category] = byCat[c.category] || []).push(c); });
+    const catOpts = Object.keys(byCat).map(k => `<optgroup label="${escapeHtml(k)}">${byCat[k].map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}${c.price ? ` — ${fmtNum(c.price)} cr` : ''}</option>`).join('')}</optgroup>`).join('');
+    const two = (a, b) => `<div class="hunt-2col"><div class="hunt-form-col">${a}</div><div class="hunt-cards-col">${b}</div></div>`;
+    const left = `
+        <h4 class="form-title">Add to storage</h4>
+        <form class="harvest-form" onsubmit="event.preventDefault(); appState.addStorageItem(this);">
+            <select name="catalog" ${inp} onchange="toggleCustomItem(this.form)"><option value="">Pick an item…</option>${catOpts}<option value="__custom">Other (type it in)</option></select>
+            <input name="name" placeholder="Item name" class="uni-search-input hunt-input custom-item"${cat.length ? ' hidden' : ''}>
+            <select name="category" class="uni-search-input hunt-input custom-item"${cat.length ? ' hidden' : ''}>${ITEM_CATS.map(c => `<option>${c}</option>`).join('')}</select>
+            <input name="caliber" placeholder="Caliber / gauge (weapons & ammo)" class="uni-search-input hunt-input custom-item"${cat.length ? ' hidden' : ''}>
+            <input name="price" type="number" min="0" placeholder="Price (credits)" class="uni-search-input hunt-input custom-item"${cat.length ? ' hidden' : ''}>
+            <label class="hunt-check"><input type="checkbox" name="pay"> Bought it now (take credits off)</label>
+            <button type="submit" class="uni-search-btn">Add to storage</button>
+        </form>
+        <h4 class="form-title">Carry slots</h4>
+        <div class="harvest-form"><input id="carrySlots" type="number" min="1" max="30" ${inp} onchange="appState.setCarrySlots(this.value)"><span style="font-size:0.75rem;color:#94a3b8;flex-basis:100%;">6 without a backpack. Raise it if you carry a backpack.</span></div>
+        <h4 class="form-title">Build a loadout</h4>
+        <form id="loadoutForm" class="harvest-form" onsubmit="event.preventDefault(); appState.saveLoadout(this);">
+            <input type="hidden" name="id">
+            <input name="name" placeholder="Loadout name (e.g. Big game)" ${inp}>
+            <select name="weapon" ${inp} onchange="fillAmmoSelect(this.form.ammo, this.value); updateLoadoutSlotCount(this.form)"></select>
+            <select name="ammo" ${inp} onchange="updateLoadoutSlotCount(this.form)"></select>
+            <div class="lo-gear" style="flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px;"></div>
+            <span class="lo-slots game-chip"></span>
+            <button type="submit" class="uni-search-btn">Save loadout</button>
+        </form>`;
+    const right = `<div id="carryPanel" class="carry-panel"></div><div id="loadoutList" class="hunt-card-list" style="margin:10px 0;"></div><h4 class="form-title">Storage</h4><div id="storageList" class="storage-list"></div>`;
+    let html = buildFolder('🎒 Hunter Locker (Storage & Loadouts)', two(left, right));
+    if (cat.length) {
+        html += buildFolder('🏪 Shop' + (data.shop && data.shop.verified === false ? ' <span class="game-chip">Not confirmed yet</span>' : ''), gridOf(cat.map(c => `
+            <div class="trophy-card hunt-card"><span class="trophy-rank rank-silver">${escapeHtml(c.category)}</span>
+            <h3 style="color:#fff;font-size:0.95rem;">${escapeHtml(c.name)}</h3>
+            <div style="font-size:0.75rem;color:#94a3b8;">${[c.caliber, c.level ? `Level ${c.level}` : '', c.price ? `${fmtNum(c.price)} credits` : 'Price not recorded yet'].filter(Boolean).map(escapeHtml).join(' · ')}</div>
+            ${c.desc ? `<div style="font-size:0.75rem;color:#cbd5e1;">${escapeHtml(c.desc)}</div>` : ''}
+            ${c.price ? `<div class="price-meter wallet-meter" data-price="${Number(c.price)}"></div>` : ''}
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">${c.price ? `<button type="button" class="uni-search-btn" onclick="appState.buyItem('${escapeHtml(c.id)}', true)">Buy</button>` : ''}
+            <button type="button" class="uni-search-btn" onclick="appState.buyItem('${escapeHtml(c.id)}', false)">I own this</button>
+            <span class="game-chip" data-owned-for="${escapeHtml(c.id)}"></span></div></div>`)));
+    }
+    return html;
+}
+
 // ---- rendering
 function renderWalletUI() {
     const w = appState.wallet || {};
@@ -1599,6 +1849,7 @@ function renderWalletUI() {
         tally.innerHTML = list.length ? `<div class="kt-head">Total kills: <b>${fmtNum(appState.harvestLog.length)}</b> · ${list.length} species</div><div class="kt-chips">${list.map(([sp, n]) => `<span class="game-chip">${escapeHtml(sp)} × ${n}</span>`).join('')}</div>` : '';
     }
     renderTrophyRoom();
+    renderLocker();
     const log = document.getElementById('harvestLogList');
     if (log) {
         log.innerHTML = appState.harvestLog.length ? appState.harvestLog.slice().reverse().map(h => {
@@ -1610,7 +1861,7 @@ function renderWalletUI() {
                 <span class="trophy-rank rank-gold">${escapeHtml(h.huntRating || 'Harvest')}</span> ${h.taxidermy ? '<span class="trophy-rank rank-silver">Taxidermy</span>' : ''}
                 <h3 style="color:#fff;font-size:0.95rem;margin-top:4px;">${escapeHtml(h.species)}${h.sex ? ` (${escapeHtml(h.sex)})` : ''}</h3>
                 <div style="font-size:0.75rem;color:#94a3b8;">${'★'.repeat(h.stars || 0)} ${h.score ? `· Score ${escapeHtml(String(h.score))}` : ''} ${h.fitness ? `· Fitness ${escapeHtml(String(h.fitness))}%` : ''} ${h.age ? `· ${escapeHtml(String(h.age))} yrs` : ''} ${h.weight ? `· ${escapeHtml(String(h.weight))} lb` : ''}</div>
-                <div style="font-size:0.8rem;color:#e2e8f0;">+${fmtNum(h.credits)} credits · +${fmtNum(h.xp)} XP ${h.hitOrgan ? `· ${escapeHtml(h.hitOrgan)}` : ''} ${h.shotDistance ? `· ${escapeHtml(String(h.shotDistance))} yd` : ''} ${h.notes ? `· ${escapeHtml(h.notes)}` : ''}</div>
+                <div style="font-size:0.8rem;color:#e2e8f0;">+${fmtNum(h.credits)} credits · +${fmtNum(h.xp)} XP ${h.weapon ? `· ${escapeHtml(h.weapon)}${h.ammo ? ` / ${escapeHtml(h.ammo)}` : ''}` : ''} ${h.hitOrgan ? `· ${escapeHtml(h.hitOrgan)}` : ''} ${h.shotDistance ? `· ${escapeHtml(String(h.shotDistance))} yd` : ''} ${h.notes ? `· ${escapeHtml(h.notes)}` : ''}</div>
                 <div style="font-size:0.7rem;color:#64748b;">${h.gameDay ? `Game day ${escapeHtml(String(h.gameDay))} ${escapeHtml(h.gameTime || '')} · ` : ''}${escapeHtml(h.date || '')}</div></div>
                 <div style="display:flex;flex-direction:column;gap:6px;">
                 <button type="button" class="uni-search-btn" onclick="appState.toggleTaxidermy('${escapeHtml(h.id)}')" title="${h.taxidermy ? 'Remove from Trophy Room' : 'Add to Trophy Room'}">${h.taxidermy ? 'Unmount' : '🏆 Mount'}</button>
@@ -1678,6 +1929,8 @@ window.appState.addHarvest = async function(form) {
         fitness: f.get('fitness') || '', score: f.get('score') || '', stars: Number(f.get('stars')) || 0, age: f.get('age') || '', weight: f.get('weight') || '',
         huntRating: f.get('huntRating') || '', notes: f.get('notes') || '', taxidermy: !!f.get('taxidermy'),
         hitOrgan: f.get('hitOrgan') || '', shotDistance: f.get('shotDistance') || '',
+        loadout: (appState.loadouts.find(l => l.id === f.get('loadout')) || {}).name || '',
+        weapon: (invItem(f.get('weapon')) || {}).name || '', ammo: (invItem(f.get('ammo')) || {}).name || '',
         gameDay: this.wallet.gameDay, gameTime: this.wallet.gameTime, date: new Date().toLocaleString()
     };
     const file = f.get('photo');
@@ -1688,6 +1941,7 @@ window.appState.addHarvest = async function(form) {
     this.applyLevelUps();
     form.reset();
     const pf = form.querySelector('.harvest-photo-field'); if (pf) pf.hidden = true;
+    delete form.dataset.touched; if (this.activeLoadout) applyLoadoutToHarvest(form, this.activeLoadout);
     this.applyStateToUI(); this.saveProgress();
     this.updateStatus(`Harvest saved: +${fmtNum(h.credits)} credits, +${fmtNum(h.xp)} XP.`);
 };
@@ -1808,6 +2062,9 @@ function walletPanelHtml(data) {
         </form>`, '<div id="watchlistList" class="hunt-card-list"></div>'))}
     ${buildFolder('📒 Harvest Log & Kill Tally', two(`
         <form id="harvestForm" class="harvest-form" onsubmit="event.preventDefault(); appState.addHarvest(this);">
+            <select name="loadout" ${inp} onchange="this.form.dataset.touched='1'; applyLoadoutToHarvest(this.form, this.value)"></select>
+            <select name="weapon" ${inp} onchange="this.form.dataset.touched='1'; fillAmmoSelect(this.form.ammo, this.value)"></select>
+            <select name="ammo" ${inp} onchange="this.form.dataset.touched='1'"></select>
             <select name="species" ${inp}>${speciesOpts}</select>
             <select name="sex" ${inp}><option value="">Sex</option><option>Male</option><option>Female</option></select>
             <input name="credits" type="number" min="0" placeholder="Credits earned (sell price)" required ${inp}>
@@ -1887,6 +2144,7 @@ function renderHuntingSchema(data) {
     if (chips.length) html += `<div class="game-overview">${chips.join('')}</div>`;
     html += newPlayerGuideHtml(data);
     html += walletPanelHtml(data);
+    html += lockerPanelHtml(data);
 
     const listed = new Set();
     toArr(data.reserves).forEach(r => {
