@@ -3365,8 +3365,8 @@
     "mission_9": {
       "number": 9,
       "title": "All or Nothing",
-      "region": "Final Stronghold",
-      "walkthrough": "Climactic final encounter. Infiltrate command center, eliminate Colonel Kruger, dismantle superweapon apparatus.",
+      "region": "Amiens",
+      "walkthrough": "Final mission. Stop Generalmajor Otto Kruger, head of Special Committee C and mastermind of the Kleine Blume program, before he escapes with the nerve agent's formula and its last samples.",
       "image_url": "",
       "collectibles": {
         "personal_letters": [],
@@ -3457,7 +3457,30 @@
           "trophyId": 51,
           "name": "Mastermind",
           "rank": "BRONZE",
-          "description": "Headshot Kruger."
+          "description": "Headshot Kruger.",
+          "tip": "Make the Final Shot a headshot on Kruger."
+        }
+      ],
+      "primary_objectives": [
+        "The Final Shot — kill Otto Kruger as he tries to escape with the Kleine Blume formula and the last samples."
+      ],
+      "kill_target": "Generalmajor Otto Kruger",
+      "starting_locations": [
+        {
+          "name": "Train Crash Site",
+          "default": true,
+          "description": "South side of the Amiens area. The only starting location for this mission; unlocked automatically.",
+          "location_image_url": "/public/games/snresistance/images/locations/m9/start_train_crash_site.jpg"
+        }
+      ],
+      "collectibles_note": "Mission 9 has no collectibles.",
+      "points_of_interest": [
+        {
+          "id": "poi_m9_kruger",
+          "type": "Main objective",
+          "name": "The Final Shot: Otto Kruger",
+          "location": "Kill Kruger as he escapes (about 202 m in the photo). Headshot him for the Mastermind trophy.",
+          "location_image_url": "/public/games/snresistance/images/locations/m9/kruger_shot.jpg"
         }
       ]
     },
