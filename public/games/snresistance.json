@@ -3790,10 +3790,354 @@
       "kill_challenge": null,
       "propaganda_mission": null,
       "medals": {
-        "objective": [],
-        "mission": [],
-        "long_shot": [],
-        "propaganda": []
+        "objective": [
+          {
+            "id": "med_objective_b_movie",
+            "name": "B-Movie",
+            "description": "Complete Lights, Camera, ACHTUNG! with a 1 Star rating.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_objective_b_movie.jpg",
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          },
+          {
+            "id": "med_objective_thats_a_wrap",
+            "name": "That's a Wrap!",
+            "description": "Lights, Camera, Achtung! - Complete the campaign mission on any difficulty (Bronze), on Sharpshooter difficulty (Silver), and on Sniper Elite difficulty (Gold).",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_objective_thats_a_wrap.jpg",
+            "tier_conditions": {
+              "bronze": "Any difficulty",
+              "silver": "Sharpshooter difficulty",
+              "gold": "Sniper Elite difficulty"
+            },
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          },
+          {
+            "id": "med_objective_blockbuster",
+            "name": "Blockbuster",
+            "description": "Lights, Camera, ACHTUNG! - Complete the mission on Authentic difficulty.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_objective_blockbuster.jpg",
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          }
+        ],
+        "mission": [
+          {
+            "id": "med_mission_in_the_dead_of_reich",
+            "name": "In the Dead of Reich",
+            "description": "Lights, Camera, ACHTUNG! - Kill Hitler and exfiltrate without ever being detected.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_mission_in_the_dead_of_reich.jpg",
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          },
+          {
+            "id": "med_mission_das_spook",
+            "name": "Das Spook",
+            "description": "Perform a Ghost Takedown on Hitler.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_mission_das_spook.jpg",
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          },
+          {
+            "id": "med_mission_mein_juewel",
+            "name": "Mein Juewel!",
+            "description": "Lights, Camera, ACHTUNG! - Kill Hitler with a testicle shot.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_mission_mein_juewel.jpg",
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          },
+          {
+            "id": "med_mission_fast_and_fuhrer_less",
+            "name": "Fast and Fuhrer-less",
+            "description": "Lights, Camera, ACHTUNG! - Kill only Hitler and exfiltrate.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_mission_fast_and_fuhrer_less.jpg",
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          },
+          {
+            "id": "med_mission_take_5_and_achtung",
+            "name": "Take 5, and... ACHTUNG!",
+            "description": "Kill Hitler 2 times.",
+            "goal": 2,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_mission_take_5_and_achtung.jpg",
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 2
+            },
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          },
+          {
+            "id": "med_mission_movie_memorabilia",
+            "name": "Movie Memorabilia",
+            "description": "Obtain 2 collectibles.",
+            "goal": 2,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_mission_movie_memorabilia.jpg",
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 2
+            },
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          },
+          {
+            "id": "med_mission_he_did_nazi_it_coming",
+            "name": "He Did Nazi-It Coming",
+            "description": "Kill Hitler at a distance of 250 meters or more.",
+            "goal": 250,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_mission_he_did_nazi_it_coming.jpg",
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 250
+            },
+            "unit": "m",
+            "best_shot": true,
+            "distance_m": 250,
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          },
+          {
+            "id": "med_mission_apocalypse_chow",
+            "name": "Apocalypse Chow",
+            "description": "Kill Hitler by poisoning his sandwich.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_mission_apocalypse_chow.jpg",
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          },
+          {
+            "id": "med_mission_dictator_tots",
+            "name": "Dictator Tots",
+            "description": "Kill Hitler by sabotaging the market stall.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_mission_dictator_tots.jpg",
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          },
+          {
+            "id": "med_mission_lights_out",
+            "name": "Lights Out",
+            "description": "Kill Hitler by sabotaging the mountain film set.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_mission_lights_out.jpg",
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          },
+          {
+            "id": "med_mission_the_deer_punter",
+            "name": "The Deer Punter",
+            "description": "Kill Hitler by sabotaging the taxidermy deer prop.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_mission_the_deer_punter.jpg",
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          },
+          {
+            "id": "med_mission_as_gouda_it_gets",
+            "name": "As Gouda It Gets",
+            "description": "Kill Hitler by poisoning his cheese.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_mission_as_gouda_it_gets.jpg",
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          },
+          {
+            "id": "med_mission_cask_away",
+            "name": "Cask Away",
+            "description": "Kill Hitler by sabotaging the wine barrel.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_mission_cask_away.jpg",
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          },
+          {
+            "id": "med_mission_flush_gordon",
+            "name": "Flush Gordon",
+            "description": "Kill Hitler by sabotaging the toilet.",
+            "goal": 1,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_mission_flush_gordon.jpg",
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          }
+        ],
+        "long_shot": [
+          {
+            "id": "med_longshot_fuhrer_long_shot",
+            "name": "Führer Long Shot",
+            "description": "Take a 220 metres shot in Lights, Camera, ACHTUNG!",
+            "goal": 220,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_longshot_fuhrer_long_shot.jpg",
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 220
+            },
+            "unit": "m",
+            "best_shot": true,
+            "distance_m": 220,
+            "authentic": false,
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          },
+          {
+            "id": "med_longshot_fuhrer_authentic_long_shot",
+            "name": "Führer Authentic Long Shot",
+            "description": "Take a 220 meters shot in Lights, Camera, ACHTUNG! in authentic difficulty.",
+            "goal": 220,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_longshot_fuhrer_authentic_long_shot.jpg",
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 220
+            },
+            "unit": "m",
+            "best_shot": true,
+            "distance_m": 220,
+            "authentic": true,
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          }
+        ],
+        "propaganda": [
+          {
+            "id": "med_propaganda_un_de_trop",
+            "name": "Propaganda: Un De Trop",
+            "description": "Earn a score of 2000 in the Un De Trop propaganda mission.",
+            "goal": 2000,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_propaganda_un_de_trop.jpg",
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 2000
+            },
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          },
+          {
+            "id": "med_propaganda_un_de_trop_authentic",
+            "name": "Propaganda: Un De Trop Authentic",
+            "description": "Earn a score of 3000 in the Un De Trop propaganda mission on Authentic difficulty.",
+            "goal": 3000,
+            "goal_tier": null,
+            "tiers": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "image_url": "/public/games/snresistance/images/medals/med_propaganda_un_de_trop_authentic.jpg",
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+          }
+        ]
       },
       "trophies": []
     }
