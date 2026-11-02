@@ -9,11 +9,11 @@
     "price": 4050.0,
     "farmId": 2,
     "propertyState": "OWNED",
-    "operatingTime": 15426.193359,
+    "operatingTime": 16775.964844,
     "component": {
      "index": 1,
-     "position": "23.987 34.558 106.278",
-     "rotation": "4.92 27.88 0.80"
+     "position": "384.781 33.216 673.570",
+     "rotation": "-179.63 -0.02 178.88"
     },
     "configuration": [
      {
@@ -59,7 +59,7 @@
      }
     },
     "wearable": {
-     "damage": 0.082532,
+     "damage": 0.09062,
      "wearNode": {
       "amount": 1.0
      }
@@ -153,11 +153,11 @@
     "price": 4050.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 7680.334961,
+    "operatingTime": 7768.222168,
     "component": {
      "index": 1,
-     "position": "733.323 26.012 108.893",
-     "rotation": "4.42 34.42 -1.10"
+     "position": "731.382 23.814 -158.899",
+     "rotation": "178.30 71.96 170.48"
     },
     "configuration": [
      {
@@ -203,9 +203,9 @@
      }
     },
     "wearable": {
-     "damage": 0.012732,
+     "damage": 0.013105,
      "wearNode": {
-      "amount": 0.161542
+      "amount": 0.162131
      }
     },
     "attachable": {
@@ -215,7 +215,7 @@
      "comboDirection": -1
     },
     "foldable": {
-     "foldAnimTime": 0.0,
+     "foldAnimTime": 1.0,
      "isAllowed": true
     }
    },
@@ -312,7 +312,7 @@
      }
     },
     "wearable": {
-     "damage": 0.031369,
+     "damage": 0.031378,
      "wearNode": {
       "amount": 0.495284
      }
@@ -336,7 +336,7 @@
     "price": 200250.0,
     "farmId": 2,
     "propertyState": "OWNED",
-    "operatingTime": 2729.579346,
+    "operatingTime": 2732.544678,
     "selectedObjectIndex": 1,
     "subSelectedObjectIndex": 1,
     "component": [
@@ -482,7 +482,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.003666,
+     "damage": 0.003675,
      "wearNode": {
       "amount": 0.001567
      }
@@ -538,7 +538,7 @@
     "drivable": {
      "cruiseControl": 213,
      "cruiseControlReverse": 80,
-     "odometerMilage": 6.019919
+     "odometerMilage": 6.020859
     },
     "aiFieldWorker": {
      "isActive": false
@@ -1194,11 +1194,11 @@
     "price": 20000.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 12961.276367,
+    "operatingTime": 13966.148438,
     "component": {
      "index": 1,
-     "position": "729.139 27.985 178.293",
-     "rotation": "-179.12 -20.80 174.75"
+     "position": "507.460 33.404 602.241",
+     "rotation": "177.57 55.99 178.99"
     },
     "configuration": [
      {
@@ -1314,9 +1314,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.06312,
+     "damage": 0.067464,
      "wearNode": {
-      "amount": 0.14978
+      "amount": 0.160031
      }
     },
     "wheels": {
@@ -1336,11 +1336,11 @@
      "unit": {
       "index": 1,
       "fillType": "LIME",
-      "fillLevel": 100000.0
+      "fillLevel": 99691.9375
      }
     },
     "cover": {
-     "state": 1
+     "state": 0
     },
     "dischargeable": {
      "isAllowed": true
@@ -1360,13 +1360,13 @@
     "price": 21000.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 9433.606445,
+    "operatingTime": 10219.436523,
     "selectedObjectIndex": 1,
     "subSelectedObjectIndex": 1,
     "component": {
      "index": 1,
-     "position": "730.921 35.173 550.612",
-     "rotation": "-179.70 69.01 -179.00"
+     "position": "744.169 26.134 133.075",
+     "rotation": "-0.36 -55.64 -1.11"
     },
     "configuration": [
      {
@@ -1487,9 +1487,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.054078,
+     "damage": 0.059999,
      "wearNode": {
-      "amount": 0.093787
+      "amount": 0.110393
      }
     },
     "wheels": {
@@ -1509,7 +1509,7 @@
      "unit": {
       "index": 1,
       "fillType": "LIME",
-      "fillLevel": 67618.945312
+      "fillLevel": 59489.707031
      }
     },
     "cover": {
@@ -1533,11 +1533,11 @@
     "price": 21500.0,
     "farmId": 2,
     "propertyState": "OWNED",
-    "operatingTime": 19086.361328,
+    "operatingTime": 21510.798828,
     "component": {
      "index": 1,
-     "position": "-54.777 33.008 177.783",
-     "rotation": "1.39 -15.97 -2.02"
+     "position": "15.823 24.545 -606.546",
+     "rotation": "179.98 -0.33 -176.15"
     },
     "configuration": [
      {
@@ -1663,9 +1663,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.132768,
+     "damage": 0.153829,
      "wearNode": {
-      "amount": 0.372401
+      "amount": 0.420597
      }
     },
     "licensePlates": {
@@ -1715,11 +1715,11 @@
     "price": 22000.0,
     "farmId": 2,
     "propertyState": "OWNED",
-    "operatingTime": 9366.332031,
+    "operatingTime": 9439.291992,
     "component": {
      "index": 1,
-     "position": "835.531 52.567 903.424",
-     "rotation": "-21.16 -86.61 31.47"
+     "position": "469.367 32.123 655.614",
+     "rotation": "179.78 -1.73 180.00"
     },
     "configuration": [
      {
@@ -1850,9 +1850,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.060859,
+     "damage": 0.061341,
      "wearNode": {
-      "amount": 0.186532
+      "amount": 0.187173
      }
     },
     "licensePlates": {
@@ -1906,33 +1906,33 @@
     "component": [
      {
       "index": 1,
-      "position": "503.391 22.964 919.545",
-      "rotation": "-29.59 -83.73 6.99"
+      "position": "503.376 22.962 919.548",
+      "rotation": "-29.13 -83.47 6.47"
      },
      {
       "index": 2,
-      "position": "503.915 23.889 924.870",
-      "rotation": "-29.73 -83.73 7.07"
+      "position": "503.926 23.888 924.870",
+      "rotation": "-29.72 -83.46 6.94"
      },
      {
       "index": 3,
-      "position": "502.753 23.747 914.210",
-      "rotation": "-29.39 -83.74 6.69"
+      "position": "502.714 23.747 914.216",
+      "rotation": "-29.07 -83.48 6.33"
      },
      {
       "index": 4,
-      "position": "504.336 23.594 919.434",
-      "rotation": "-24.63 -83.73 6.97"
+      "position": "504.321 23.592 919.432",
+      "rotation": "-24.15 -83.47 6.45"
      },
      {
       "index": 5,
-      "position": "504.275 23.035 924.529",
-      "rotation": "-0.68 2.16 0.04"
+      "position": "504.283 23.035 924.529",
+      "rotation": "-0.86 2.07 -0.04"
      },
      {
       "index": 6,
-      "position": "504.330 22.923 925.993",
-      "rotation": "-3.03 2.16 0.03"
+      "position": "504.336 22.924 925.992",
+      "rotation": "-3.02 2.07 -0.09"
      }
     ],
     "configuration": [
@@ -2145,7 +2145,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.00096,
+     "damage": 0.00097,
      "wearNode": {
       "amount": 0.000976
      }
@@ -2201,37 +2201,37 @@
     "price": 77650.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 173.044632,
+    "operatingTime": 395.866028,
     "component": [
      {
       "index": 1,
-      "position": "920.253 33.368 501.134",
-      "rotation": "-23.34 -1.83 -2.77"
+      "position": "738.571 34.691 473.763",
+      "rotation": "-23.47 4.93 2.23"
      },
      {
       "index": 2,
-      "position": "925.646 33.962 501.351",
-      "rotation": "-23.40 -1.83 -2.77"
+      "position": "743.880 35.752 473.346",
+      "rotation": "-23.52 4.93 2.24"
      },
      {
       "index": 3,
-      "position": "914.940 34.482 501.008",
-      "rotation": "-23.44 -1.83 -2.81"
+      "position": "733.203 35.339 474.267",
+      "rotation": "-23.58 4.93 2.19"
      },
      {
       "index": 4,
-      "position": "920.314 33.984 500.175",
-      "rotation": "-18.40 -1.83 -2.78"
+      "position": "738.465 35.303 472.806",
+      "rotation": "-18.52 4.93 2.23"
      },
      {
       "index": 5,
-      "position": "925.306 33.124 500.957",
-      "rotation": "-172.77 85.42 -175.68"
+      "position": "743.571 34.885 472.992",
+      "rotation": "-164.48 86.99 -162.19"
      },
      {
       "index": 6,
-      "position": "926.756 32.910 500.843",
-      "rotation": "-174.55 85.42 -175.51"
+      "position": "745.039 34.776 472.920",
+      "rotation": "-165.65 86.99 -162.63"
      }
     ],
     "configuration": [
@@ -2419,30 +2419,30 @@
      ]
     },
     "wearable": {
-     "damage": 0.001272,
+     "damage": 0.002717,
      "wearNode": {
-      "amount": 0.002215
+      "amount": 0.004509
      }
     },
     "cylindered": {
      "movingTool": [
       {
-       "rotation": -20.0
+       "rotation": -19.917343
       },
       {
-       "rotation": -20.0
+       "rotation": -19.917343
       },
       {
-       "rotation": -20.0
+       "rotation": -19.917343
       },
       {
-       "translation": -0.1
+       "translation": -0.10044
       },
       {
-       "translation": -0.1
+       "translation": -0.10044
       },
       {
-       "translation": -0.1
+       "translation": -0.10044
       }
      ]
     },
@@ -2461,7 +2461,7 @@
      "isAllowed": true
     },
     "fruitExtraObjects": {
-     "lastFruitType": "UNKNOWN"
+     "lastFruitType": "TRITICALE"
     },
     "cutter": {
      "cutHeight": 0.15
@@ -2474,19 +2474,19 @@
     "price": 312450.0,
     "farmId": 2,
     "propertyState": "OWNED",
-    "operatingTime": 48580.886719,
+    "operatingTime": 50004.652344,
     "selectedObjectIndex": 1,
     "subSelectedObjectIndex": 1,
     "component": [
      {
       "index": 1,
-      "position": "-145.110 16.583 -661.576",
-      "rotation": "174.06 -39.74 -174.88"
+      "position": "-217.182 17.761 -650.636",
+      "rotation": "-175.64 -0.15 175.61"
      },
      {
       "index": 2,
-      "position": "-146.034 17.495 -662.586",
-      "rotation": "174.11 -39.74 -174.98"
+      "position": "-217.127 18.534 -652.107",
+      "rotation": "-175.64 -0.16 175.66"
      }
     ],
     "configuration": [
@@ -2616,9 +2616,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.056323,
+     "damage": 0.073607,
      "wearNode": {
-      "amount": 0.072566
+      "amount": 0.095235
      }
     },
     "licensePlates": {
@@ -2654,7 +2654,7 @@
       {
        "index": 1,
        "fillType": "DIESEL",
-       "fillLevel": 433.983032
+       "fillLevel": 432.982819
       },
       {
        "index": 2,
@@ -2664,22 +2664,22 @@
       {
        "index": 3,
        "fillType": "AIR",
-       "fillLevel": 3657.272949
+       "fillLevel": 2300.0
       }
      ]
     },
     "drivable": {
      "cruiseControl": 53,
      "cruiseControlReverse": 22,
-     "odometerMilage": 192.176834
+     "odometerMilage": 197.370514
     },
     "aiFieldWorker": {
-     "isActive": false,
+     "isActive": true,
      "strategyFieldCourse": {
-      "lastPosition": "559.980712890625 -36.80849075317383",
+      "lastPosition": "-217.1707763671875 -649.2800903320312",
       "field": {
        "boundary": {
-        "positions": "3.25 58.25 8.25 58.25 11.75 61.75 17.25 64.25 36.75 118.75 46.75 132.75 60.25 144.25 80.25 157.25 91.25 163.25 96.25 167.25 98.25 172.25 114.75 185.75 121.25 198.25 125.75 203.75 143.25 217.25 154.75 220.75 163.25 222.25 180.75 219.25 193.25 211.25 207.25 199.75 228.25 180.25 240.75 170.75 244.75 165.25 252.25 151.75 255.75 135.75 257.25 124.75 257.25 115.75 253.75 98.25 249.25 82.75 247.25 59.75 251.25 38.75 258.25 18.75 273.25 -3.75 293.25 -27.75 304.75 -43.25 318.75 -59.25 333.25 -81.75 335.75 -92.75 332.75 -102.75 329.25 -107.25 328.75 -111.75 334.25 -116.25 355.75 -128.25 370.75 -141.25 392.75 -167.25 396.25 -165.75 409.75 -149.25 432.25 -135.75 446.25 -125.75 452.75 -118.25 455.75 -108.25 455.25 -96.75 457.25 -79.75 467.25 -48.75 472.25 -40.75 486.75 -47.25 515.25 -62.25 532.25 -73.75 539.25 -64.75 540.75 -64.25 579.75 -24.25 582.25 -19.75 581.25 -13.25 576.75 -7.75 531.75 18.25 526.25 19.75 518.75 19.25 505.75 7.75 498.25 10.75 436.75 62.25 431.75 68.75 435.75 78.75 448.75 105.75 458.75 106.75 464.75 104.75 466.75 106.75 477.25 134.25 472.25 145.25 448.25 161.75 443.75 166.75 444.75 177.75 439.25 193.25 439.25 200.25 435.25 213.75 434.25 224.25 429.75 234.75 426.25 249.25 422.25 273.25 420.75 302.75 415.75 312.25 408.75 341.75 402.25 348.25 386.75 356.25 381.25 362.25 382.25 376.25 373.25 378.25 363.75 374.75 355.75 366.75 346.75 368.75 331.25 376.25 320.75 385.25 318.25 392.25 318.25 400.75 320.75 408.25 325.25 413.75 335.75 420.25 335.75 426.75 331.25 430.25 327.75 430.75 302.75 424.75 295.75 418.75 282.75 415.75 270.25 406.25 256.75 406.75 215.25 420.25 194.25 425.25 176.25 425.25 158.25 423.25 147.75 420.75 129.75 412.75 113.25 403.25 98.25 393.25 76.25 380.25 67.75 380.75 61.75 374.75 55.75 372.75 57.25 366.25 53.25 357.25 48.25 342.25 41.25 316.25 31.75 270.75 25.75 237.75 13.25 180.25 3.75 142.25 -5.75 97.75 -7.25 83.25 -7.25 74.25 -2.75 50.75 3.25 58.25"
+        "positions": "-496.75 12.75 -496.25 -701.25 -492.75 -707.25 -482.25 -709.75 -297.75 -708.25 -288.25 -704.75 -272.25 -693.75 -231.25 -670.75 -179.25 -635.75 -156.75 -617.25 -151.75 -604.25 -143.75 -13.25 -150.75 -0.25 -169.75 9.75 -430.75 19.75 -445.75 19.25 -479.75 21.75 -492.25 19.25 -496.75 12.75"
        }
       },
       "fieldCourseSettings": {
@@ -2702,8 +2702,8 @@
        "rowSnapAngle": 0.0,
        "rowOffset": 0.0,
        "cornerCutOutSupported": false,
-       "toolFrontOffset": -8.417084,
-       "toolBackOffset": -8.667084,
+       "toolFrontOffset": -8.249931,
+       "toolBackOffset": -8.499931,
        "hasStaticTools": true,
        "toolFullOverlap": false,
        "toolFullOverlapInside": false,
@@ -2719,10 +2719,10 @@
        "segmentSplitDistance": 10.0,
        "segmentValidityCheckOffset": 0.0,
        "toolAlwaysActive": false,
-       "toolStraighteningSegmentLength": 17.334167,
+       "toolStraighteningSegmentLength": 16.999863,
        "toolStraighteningAlwaysActive": false,
        "agentFrontOffset": 3.909612,
-       "agentBackOffset": 12.010109,
+       "agentBackOffset": 12.861633,
        "agentHeight": 3.32
       },
       "segments": {
@@ -2730,224 +2730,131 @@
         {
          "segmentId": 1,
          "used": false,
-         "lineGroupIndex": 3
+         "lineGroupIndex": 1
         },
         {
          "segmentId": 2,
-         "used": true,
-         "lineGroupIndex": 3
+         "used": false,
+         "lineGroupIndex": 1
         },
         {
          "segmentId": 3,
-         "used": true,
-         "lineGroupIndex": 3
+         "used": false,
+         "lineGroupIndex": 1
         },
         {
          "segmentId": 4,
-         "used": true,
-         "lineGroupIndex": 3
+         "used": false,
+         "lineGroupIndex": 1
         },
         {
          "segmentId": 5,
-         "used": true,
-         "lineGroupIndex": 3
+         "used": false,
+         "lineGroupIndex": 1
         },
         {
          "segmentId": 6,
-         "used": true,
-         "lineGroupIndex": 3
+         "used": false,
+         "lineGroupIndex": 1
         },
         {
          "segmentId": 7,
-         "used": true,
-         "lineGroupIndex": 3
+         "used": false,
+         "lineGroupIndex": 1
         },
         {
          "segmentId": 8,
-         "used": true,
-         "lineGroupIndex": 3
+         "used": false,
+         "lineGroupIndex": 1
         },
         {
          "segmentId": 9,
-         "used": true,
-         "lineGroupIndex": 3
+         "used": false,
+         "lineGroupIndex": 1
         },
         {
          "segmentId": 10,
-         "used": true,
-         "lineGroupIndex": 3
+         "used": false,
+         "lineGroupIndex": 1
         },
         {
          "segmentId": 11,
-         "used": true,
-         "lineGroupIndex": 3
+         "used": false,
+         "lineGroupIndex": 1
         },
         {
          "segmentId": 12,
-         "used": true,
-         "lineGroupIndex": 3
+         "used": false,
+         "lineGroupIndex": 1
         },
         {
          "segmentId": 13,
-         "used": true,
-         "lineGroupIndex": 3
+         "used": false,
+         "lineGroupIndex": 1
         },
         {
          "segmentId": 14,
+         "used": false,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 15,
          "used": true,
-         "lineGroupIndex": 3
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 16,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 17,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 18,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 19,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 20,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 21,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 22,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
         },
         {
          "segmentId": 23,
          "used": true,
-         "lineGroupIndex": 3
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
         },
         {
-         "segmentId": 40,
+         "segmentId": 24,
          "used": true,
          "isHeadlandSegment": true,
          "headlandIndex": 1
         },
         {
-         "segmentId": 45,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 46,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 47,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 50,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 50,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 51,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 52,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 53,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 53,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 53,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 54,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 54,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 57,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 59,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 61,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 61,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 62,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 63,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 64,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 66,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 67,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 67,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 67,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 67,
+         "segmentId": 25,
          "used": true,
          "isHeadlandSegment": true,
          "headlandIndex": 1
@@ -2967,9 +2874,9 @@
        },
        {
         "name": "positionAngle",
-        "x": 390.636566,
-        "z": 126.770996,
-        "angle": 0.195015
+        "x": -168.289993,
+        "z": -625.039978,
+        "angle": 6.091199
        }
       ]
      }
@@ -3017,13 +2924,13 @@
     "price": 157200.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 9702.852539,
+    "operatingTime": 10707.724609,
     "selectedObjectIndex": 2,
     "subSelectedObjectIndex": 1,
     "component": {
      "index": 1,
-     "position": "725.662 27.780 169.360",
-     "rotation": "-179.02 -21.13 173.55"
+     "position": "515.410 33.285 596.884",
+     "rotation": "177.99 56.03 179.78"
     },
     "configuration": [
      {
@@ -3295,9 +3202,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.067885,
+     "damage": 0.07552,
      "wearNode": {
-      "amount": 0.059193
+      "amount": 0.067582
      }
     },
     "cylindered": {
@@ -3358,22 +3265,122 @@
       {
        "index": 1,
        "fillType": "DIESEL",
-       "fillLevel": 803.968323
+       "fillLevel": 798.964844
       },
       {
        "index": 2,
        "fillType": "AIR",
-       "fillLevel": 3046.770752
+       "fillLevel": 5000.0
       }
      ]
     },
     "drivable": {
      "cruiseControl": 160,
      "cruiseControlReverse": 30,
-     "odometerMilage": 42.145206
+     "odometerMilage": 45.211025
     },
     "aiFieldWorker": {
-     "isActive": false
+     "isActive": false,
+     "strategyFieldCourse": {
+      "lastPosition": "512.2142333984375 599.03662109375",
+      "field": {
+       "boundary": {
+        "positions": "727.75 394.25 727.25 400.75 678.75 539.75 670.25 569.25 661.75 618.75 655.75 624.75 646.25 626.25 454.75 622.75 451.75 619.75 452.75 613.75 478.75 596.25 490.25 581.25 495.75 569.75 506.25 539.25 508.25 530.25 509.25 499.25 511.75 494.25 517.25 490.75 717.75 390.25 725.75 390.25 727.75 394.25"
+       }
+      },
+      "fieldCourseSettings": {
+       "implementWidth": 42.0,
+       "numHeadlands": 1,
+       "headlandsFirst": false,
+       "skipNumLines": 0,
+       "workHeadlands": true,
+       "workDirection": -1.0,
+       "workDirectionForceStraightLines": false,
+       "workInitialSegment": false,
+       "minTurnRadius": 7.500568,
+       "initialTurnRadiusFactor": 1.0,
+       "canTurnBackward": false,
+       "allowStraightReversing": true,
+       "isVineyardTool": false,
+       "isVineyardRowTool": false,
+       "headlandTailAvoidance": false,
+       "rowSpacing": 0.0,
+       "rowSnapAngle": 0.0,
+       "rowOffset": 0.0,
+       "cornerCutOutSupported": false,
+       "toolFrontOffset": -13.14303,
+       "toolBackOffset": -13.39303,
+       "hasStaticTools": true,
+       "toolFullOverlap": false,
+       "toolFullOverlapInside": false,
+       "segmentExtendedToBoundary": false,
+       "segmentHeadlandReverseLines": false,
+       "segmentMinOffset": 0.0,
+       "segmentMinLength": 0.0,
+       "sideOffset": 0.0,
+       "variableSideOffset": false,
+       "sideOffsetHeadlandAlternate": false,
+       "headlandForcedDirection": 1.0,
+       "segmentSplitAngle": 25.0,
+       "segmentSplitDistance": 10.0,
+       "segmentValidityCheckOffset": 0.0,
+       "toolAlwaysActive": false,
+       "toolStraighteningSegmentLength": 26.78606,
+       "toolStraighteningAlwaysActive": false,
+       "agentFrontOffset": 4.159,
+       "agentBackOffset": 5.841,
+       "agentHeight": 4.0
+      },
+      "segments": {
+       "segment": [
+        {
+         "segmentId": 1,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 2,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 3,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 4,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 5,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 6,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 7,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 8,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        }
+       ]
+      }
+     }
     },
     "aiJobVehicle": {
      "isAIStartAllowed": true,
@@ -3386,9 +3393,9 @@
        },
        {
         "name": "positionAngle",
-        "x": 611.745422,
-        "z": -102.090424,
-        "angle": 0.0
+        "x": 720.93689,
+        "z": 408.699982,
+        "angle": 5.201081
        }
       ]
      }
@@ -3413,7 +3420,7 @@
      }
     },
     "foldable": {
-     "foldAnimTime": 1.0,
+     "foldAnimTime": 0.0,
      "isAllowed": true
     },
     "dischargeable": {
@@ -3433,7 +3440,7 @@
     "subSelectedObjectIndex": 1,
     "component": {
      "index": 1,
-     "position": "493.485 21.259 842.182",
+     "position": "493.484 21.259 842.182",
      "rotation": "-1.30 0.27 -0.25"
     },
     "configuration": [
@@ -3696,7 +3703,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.103374,
+     "damage": 0.103391,
      "wearNode": {
       "amount": 0.060307
      }
@@ -3777,7 +3784,7 @@
     "drivable": {
      "cruiseControl": 160,
      "cruiseControlReverse": 30,
-     "odometerMilage": 55.714138
+     "odometerMilage": 55.714142
     },
     "aiFieldWorker": {
      "isActive": false
@@ -4092,7 +4099,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.003151,
+     "damage": 0.003172,
      "wearNode": {
       "amount": 0.003086
      }
@@ -4173,7 +4180,7 @@
     "drivable": {
      "cruiseControl": 160,
      "cruiseControlReverse": 30,
-     "odometerMilage": 3.426129
+     "odometerMilage": 3.426132
     },
     "aiFieldWorker": {
      "isActive": false
@@ -4769,39 +4776,39 @@
     "price": 769800.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 12962.854492,
+    "operatingTime": 15232.261719,
     "selectedObjectIndex": 1,
     "subSelectedObjectIndex": 1,
     "component": [
      {
       "index": 1,
-      "position": "841.786 53.497 909.910",
-      "rotation": "-178.21 -14.08 -169.68"
+      "position": "902.207 35.248 557.031",
+      "rotation": "-2.38 -5.93 -2.69"
      },
      {
       "index": 2,
-      "position": "841.790 53.498 909.909",
-      "rotation": "-178.30 -14.09 -169.33"
+      "position": "902.208 35.248 557.031",
+      "rotation": "-2.38 -4.97 -2.65"
      },
      {
       "index": 3,
-      "position": "840.062 54.279 908.317",
-      "rotation": "-178.48 -14.08 -169.68"
+      "position": "903.189 36.418 558.977",
+      "rotation": "-2.61 -5.93 -2.69"
      },
      {
       "index": 4,
-      "position": "842.203 54.668 907.772",
-      "rotation": "-178.29 -14.08 -169.68"
+      "position": "900.959 36.522 558.745",
+      "rotation": "-2.49 -5.93 -2.69"
      },
      {
       "index": 5,
-      "position": "840.975 54.562 912.112",
-      "rotation": "-178.42 -14.09 -169.33"
+      "position": "903.552 36.239 555.066",
+      "rotation": "-2.21 -4.97 -2.65"
      },
      {
       "index": 6,
-      "position": "843.114 54.965 911.566",
-      "rotation": "-177.98 -14.09 -169.33"
+      "position": "901.319 36.342 554.872",
+      "rotation": "-2.30 -4.97 -2.65"
      }
     ],
     "configuration": [
@@ -4921,9 +4928,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.09337,
+     "damage": 0.11148,
      "wearNode": {
-      "amount": 0.177337
+      "amount": 0.201521
      }
     },
     "wheels": {
@@ -4970,13 +4977,12 @@
     "drivable": {
      "cruiseControl": 40,
      "cruiseControlReverse": 15,
-     "odometerMilage": 46.615551
+     "odometerMilage": 52.224892
     },
     "aiFieldWorker": {
-     "isActive": true,
+     "isActive": false,
      "strategyFieldCourse": {
-      "lastPosition": "842.4026489257812 912.4442749023438",
-      "activeSegmentId": 6,
+      "lastPosition": "902.2201538085938 556.8414306640625",
       "field": {
        "boundary": {
         "positions": "974.25 519.25 978.75 591.75 964.25 681.25 974.75 720.75 995.75 770.75 997.25 787.25 988.75 815.25 976.25 835.25 962.75 864.75 963.25 924.25 955.75 933.75 941.25 944.75 935.25 955.25 933.25 969.25 922.25 975.25 901.25 977.25 850.25 970.25 791.75 966.25 769.25 961.75 742.75 951.25 694.25 936.75 685.75 928.25 683.25 917.75 681.75 759.25 682.75 695.25 687.75 648.25 691.75 643.25 704.25 638.25 744.25 631.25 772.25 620.25 806.75 603.75 816.75 601.75 870.75 570.75 880.75 561.25 891.25 544.75 892.25 533.75 907.75 509.75 915.25 508.25 966.25 511.25 974.25 519.25"
@@ -5059,42 +5065,42 @@
         },
         {
          "segmentId": 6,
-         "used": false,
+         "used": true,
          "lineGroupIndex": 1
         },
         {
          "segmentId": 7,
-         "used": false,
+         "used": true,
          "lineGroupIndex": 1
         },
         {
          "segmentId": 8,
-         "used": false,
+         "used": true,
          "lineGroupIndex": 1
         },
         {
          "segmentId": 9,
-         "used": false,
+         "used": true,
          "lineGroupIndex": 1
         },
         {
          "segmentId": 10,
-         "used": false,
+         "used": true,
          "lineGroupIndex": 1
         },
         {
          "segmentId": 11,
-         "used": false,
+         "used": true,
          "lineGroupIndex": 1
         },
         {
          "segmentId": 12,
-         "used": false,
+         "used": true,
          "lineGroupIndex": 1
         },
         {
          "segmentId": 13,
-         "used": false,
+         "used": true,
          "isHeadlandSegment": true,
          "headlandIndex": 1
         },
@@ -5106,55 +5112,55 @@
         },
         {
          "segmentId": 15,
-         "used": false,
+         "used": true,
          "isHeadlandSegment": true,
          "headlandIndex": 1
         },
         {
          "segmentId": 16,
-         "used": false,
+         "used": true,
          "isHeadlandSegment": true,
          "headlandIndex": 1
         },
         {
          "segmentId": 17,
-         "used": false,
+         "used": true,
          "isHeadlandSegment": true,
          "headlandIndex": 1
         },
         {
          "segmentId": 18,
-         "used": false,
+         "used": true,
          "isHeadlandSegment": true,
          "headlandIndex": 1
         },
         {
          "segmentId": 19,
-         "used": false,
+         "used": true,
          "isHeadlandSegment": true,
          "headlandIndex": 1
         },
         {
          "segmentId": 20,
-         "used": false,
+         "used": true,
          "isHeadlandSegment": true,
          "headlandIndex": 1
         },
         {
          "segmentId": 21,
-         "used": false,
+         "used": true,
          "isHeadlandSegment": true,
          "headlandIndex": 1
         },
         {
          "segmentId": 22,
-         "used": false,
+         "used": true,
          "isHeadlandSegment": true,
          "headlandIndex": 1
         },
         {
          "segmentId": 23,
-         "used": false,
+         "used": true,
          "isHeadlandSegment": true,
          "headlandIndex": 1
         }
@@ -5228,33 +5234,33 @@
     "component": [
      {
       "index": 1,
-      "position": "517.631 21.696 837.620",
-      "rotation": "-1.28 4.82 2.84"
+      "position": "517.631 21.697 837.620",
+      "rotation": "-1.27 4.83 2.84"
      },
      {
       "index": 2,
-      "position": "517.625 21.696 837.620",
-      "rotation": "-1.32 4.82 2.38"
+      "position": "517.626 21.697 837.620",
+      "rotation": "-1.31 4.82 2.38"
      },
      {
       "index": 3,
-      "position": "518.845 22.937 839.382",
-      "rotation": "-1.30 4.82 2.84"
+      "position": "518.846 22.937 839.382",
+      "rotation": "-1.32 4.83 2.84"
      },
      {
       "index": 4,
-      "position": "516.612 22.826 839.571",
-      "rotation": "-1.46 4.82 2.84"
+      "position": "516.613 22.826 839.571",
+      "rotation": "-1.47 4.83 2.84"
      },
      {
       "index": 5,
-      "position": "518.525 22.825 835.484",
-      "rotation": "-0.95 4.81 2.36"
+      "position": "518.526 22.826 835.484",
+      "rotation": "-0.99 4.81 2.36"
      },
      {
       "index": 6,
       "position": "516.291 22.733 835.672",
-      "rotation": "-1.20 4.81 2.36"
+      "rotation": "-1.16 4.82 2.38"
      }
     ],
     "configuration": [
@@ -5374,7 +5380,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.159729,
+     "damage": 0.159769,
      "wearNode": {
       "amount": 0.206549
      }
@@ -5429,7 +5435,7 @@
     "drivable": {
      "cruiseControl": 40,
      "cruiseControlReverse": 15,
-     "odometerMilage": 161.009537
+     "odometerMilage": 161.009552
     },
     "aiFieldWorker": {
      "isActive": false
@@ -5500,7 +5506,7 @@
      {
       "index": 1,
       "position": "512.824 21.442 821.421",
-      "rotation": "0.02 -3.73 0.00"
+      "rotation": "0.02 -3.73 -0.01"
      },
      {
       "index": 2,
@@ -5509,13 +5515,13 @@
      },
      {
       "index": 3,
-      "position": "513.821 22.579 823.380",
-      "rotation": "-0.11 -3.73 0.00"
+      "position": "513.820 22.579 823.380",
+      "rotation": "-0.09 -3.73 -0.01"
      },
      {
       "index": 4,
-      "position": "511.582 22.579 823.234",
-      "rotation": "-0.03 -3.73 0.00"
+      "position": "511.581 22.579 823.234",
+      "rotation": "-0.03 -3.73 -0.01"
      },
      {
       "index": 5,
@@ -5645,7 +5651,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.119354,
+     "damage": 0.119388,
      "wearNode": {
       "amount": 0.26218
      }
@@ -5700,7 +5706,7 @@
     "drivable": {
      "cruiseControl": 40,
      "cruiseControlReverse": 15,
-     "odometerMilage": 69.30513
+     "odometerMilage": 69.305145
     },
     "aiFieldWorker": {
      "isActive": false
@@ -5783,7 +5789,7 @@
      }
     },
     "wearable": {
-     "damage": 0.001986,
+     "damage": 0.002007,
      "wearNode": {
       "amount": 0.001101
      }
@@ -5811,19 +5817,19 @@
     "price": 385950.0,
     "farmId": 2,
     "propertyState": "OWNED",
-    "operatingTime": 78247.09375,
+    "operatingTime": 80357.1875,
     "selectedObjectIndex": 1,
     "subSelectedObjectIndex": 1,
     "component": [
      {
       "index": 1,
-      "position": "326.869 24.351 949.663",
-      "rotation": "178.50 -7.86 -179.42"
+      "position": "108.877 32.833 604.188",
+      "rotation": "1.63 -2.86 -1.71"
      },
      {
       "index": 2,
-      "position": "326.688 25.179 948.418",
-      "rotation": "178.46 -7.86 -179.55"
+      "position": "108.835 33.597 605.486",
+      "rotation": "1.57 -2.86 -1.73"
      }
     ],
     "configuration": [
@@ -5923,9 +5929,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.213117,
+     "damage": 0.245812,
      "wearNode": {
-      "amount": 0.220621
+      "amount": 0.253939
      }
     },
     "licensePlates": {
@@ -5961,12 +5967,12 @@
       {
        "index": 1,
        "fillType": "DIESEL",
-       "fillLevel": 617.977417
+       "fillLevel": 614.973999
       },
       {
        "index": 2,
        "fillType": "DEF",
-       "fillLevel": 99.0
+       "fillLevel": 97.999954
       },
       {
        "index": 3,
@@ -5978,16 +5984,16 @@
     "drivable": {
      "cruiseControl": 53,
      "cruiseControlReverse": 32,
-     "odometerMilage": 131.45903
+     "odometerMilage": 140.118179
     },
     "aiFieldWorker": {
      "isActive": true,
      "strategyFieldCourse": {
-      "lastPosition": "327.1261291503906 951.521484375",
-      "activeSegmentId": 7,
+      "lastPosition": "108.97205352783203 602.3140258789062",
+      "activeSegmentId": 9,
       "field": {
        "boundary": {
-        "positions": "428.75 639.25 431.75 642.25 429.25 651.75 431.25 661.75 431.75 686.25 430.25 700.75 432.25 737.75 429.75 745.25 430.25 753.75 433.25 762.75 429.75 780.25 434.25 802.75 434.75 812.25 433.25 827.25 434.25 833.75 428.25 854.75 428.25 860.75 424.25 871.75 425.25 878.75 428.25 884.75 426.75 913.25 429.75 926.25 429.75 933.25 426.75 947.25 430.25 966.25 423.25 969.75 424.25 989.75 343.25 985.75 322.75 987.25 276.75 983.75 280.75 928.25 280.25 887.25 285.25 855.25 283.25 849.25 279.25 846.25 279.75 830.75 281.75 823.25 284.75 819.75 285.25 806.25 287.75 795.25 291.25 715.25 293.75 699.75 289.75 632.75 400.25 623.75 412.75 619.25 427.75 618.25 428.75 639.25"
+        "positions": "106.25 450.25 146.75 476.75 154.25 503.25 162.25 521.25 188.25 561.25 212.25 580.25 243.75 598.75 261.25 611.25 274.75 624.75 278.75 630.75 260.75 982.25 251.25 987.75 242.75 987.25 196.25 976.75 187.25 969.75 180.75 957.25 166.25 942.75 151.25 934.75 115.25 906.75 101.25 900.75 84.75 899.25 61.25 900.75 53.75 896.25 44.75 882.25 23.75 861.25 5.75 850.25 -3.75 841.75 -11.25 830.25 -14.75 816.75 -8.75 787.75 -9.25 774.25 -19.25 758.25 -32.25 744.25 -72.25 721.25 -88.25 704.25 -93.25 692.75 -89.25 680.75 -78.25 673.75 -66.75 668.25 -49.25 664.25 -13.75 645.25 14.25 633.25 29.75 620.75 36.25 611.75 48.75 576.75 52.25 562.75 57.25 538.75 67.25 462.75 73.25 449.75 84.25 440.25 106.25 450.25"
        }
       },
       "fieldCourseSettings": {
@@ -6010,8 +6016,8 @@
        "rowSnapAngle": 0.0,
        "rowOffset": 0.0,
        "cornerCutOutSupported": false,
-       "toolFrontOffset": -8.377373,
-       "toolBackOffset": -8.627373,
+       "toolFrontOffset": -8.377434,
+       "toolBackOffset": -8.627434,
        "hasStaticTools": true,
        "toolFullOverlap": false,
        "toolFullOverlapInside": false,
@@ -6027,117 +6033,108 @@
        "segmentSplitDistance": 10.0,
        "segmentValidityCheckOffset": 0.0,
        "toolAlwaysActive": false,
-       "toolStraighteningSegmentLength": 17.254745,
+       "toolStraighteningSegmentLength": 17.254868,
        "toolStraighteningAlwaysActive": false,
        "agentFrontOffset": 5.025,
-       "agentBackOffset": 12.666016,
+       "agentBackOffset": 12.900574,
        "agentHeight": 3.65
       },
       "segments": {
        "segment": [
         {
          "segmentId": 1,
-         "used": false,
-         "lineGroupIndex": 4
+         "used": true,
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 2,
-         "used": false,
-         "lineGroupIndex": 4
+         "used": true,
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 3,
-         "used": false,
-         "lineGroupIndex": 4
+         "used": true,
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 4,
-         "used": false,
-         "lineGroupIndex": 4
+         "used": true,
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 5,
-         "used": false,
-         "lineGroupIndex": 4
+         "used": true,
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 6,
-         "used": false,
-         "lineGroupIndex": 4
+         "used": true,
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 7,
-         "used": false,
-         "lineGroupIndex": 4
+         "used": true,
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 8,
          "used": true,
-         "lineGroupIndex": 4
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 9,
-         "used": true,
-         "lineGroupIndex": 4
+         "used": false,
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 10,
-         "used": true,
-         "lineGroupIndex": 4
+         "used": false,
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 11,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
+         "used": false,
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 12,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
+         "used": false,
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 13,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
+         "used": false,
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 14,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
+         "used": false,
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 15,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
+         "used": false,
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 16,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
+         "used": false,
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 17,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
+         "used": false,
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 18,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
+         "used": false,
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 19,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
+         "used": false,
+         "lineGroupIndex": 3
         },
         {
          "segmentId": 20,
@@ -6186,6 +6183,30 @@
          "used": true,
          "isHeadlandSegment": true,
          "headlandIndex": 1
+        },
+        {
+         "segmentId": 28,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 29,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 30,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 31,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
         }
        ]
       }
@@ -6202,9 +6223,9 @@
        },
        {
         "name": "positionAngle",
-        "x": 309.910004,
-        "z": 636.969971,
-        "angle": 0.680678
+        "x": 273.600006,
+        "z": 633.215027,
+        "angle": 4.415683
        }
       ]
      }
@@ -6251,19 +6272,19 @@
     "price": 397450.0,
     "farmId": 2,
     "propertyState": "OWNED",
-    "operatingTime": 15508.699219,
+    "operatingTime": 16858.470703,
     "selectedObjectIndex": 1,
     "subSelectedObjectIndex": 1,
     "component": [
      {
       "index": 1,
-      "position": "25.944 34.229 109.971",
-      "rotation": "0.21 27.88 0.80"
+      "position": "384.783 33.352 669.429",
+      "rotation": "178.52 -0.04 178.91"
      },
      {
       "index": 2,
-      "position": "26.532 35.037 111.102",
-      "rotation": "0.27 27.88 0.93"
+      "position": "384.798 34.185 668.172",
+      "rotation": "178.52 -0.04 178.89"
      }
     ],
     "configuration": [
@@ -6363,9 +6384,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.046582,
+     "damage": 0.057526,
      "wearNode": {
-      "amount": 0.087486
+      "amount": 0.107024
      }
     },
     "licensePlates": {
@@ -6401,7 +6422,7 @@
       {
        "index": 1,
        "fillType": "DIESEL",
-       "fillLevel": 582.986572
+       "fillLevel": 580.985535
       },
       {
        "index": 2,
@@ -6411,22 +6432,22 @@
       {
        "index": 3,
        "fillType": "AIR",
-       "fillLevel": 2583.002441
+       "fillLevel": 3000.0
       }
      ]
     },
     "drivable": {
      "cruiseControl": 43,
      "cruiseControlReverse": 32,
-     "odometerMilage": 86.198135
+     "odometerMilage": 92.0989
     },
     "aiFieldWorker": {
-     "isActive": true,
+     "isActive": false,
      "strategyFieldCourse": {
-      "lastPosition": "24.644987106323242 107.51537322998047",
+      "lastPosition": "384.7821960449219 672.4362182617188",
       "field": {
        "boundary": {
-        "positions": "57.75 366.25 54.75 361.25 50.25 348.75 40.75 314.25 32.75 276.25 27.25 244.75 13.75 182.25 3.75 142.25 -5.75 97.75 -7.25 83.25 -7.25 74.25 -2.75 50.75 3.25 58.25 8.25 58.25 11.75 61.75 17.25 64.25 36.75 118.75 46.75 132.75 60.25 144.25 80.25 157.25 91.25 163.25 96.25 167.25 98.25 172.25 114.75 185.75 121.25 198.25 125.75 203.75 143.25 217.25 154.75 220.75 163.25 222.25 180.75 219.25 193.25 211.25 207.25 199.75 228.25 180.25 240.75 170.75 244.75 165.25 252.25 151.75 255.75 135.75 257.25 124.75 257.25 115.75 253.75 98.25 249.25 82.75 247.25 59.75 251.25 38.75 258.25 18.75 273.25 -3.75 293.25 -27.75 304.75 -43.25 318.75 -59.25 333.25 -81.75 335.75 -92.75 332.75 -102.75 329.25 -107.25 328.75 -111.75 334.25 -116.25 355.75 -128.25 370.75 -141.25 392.75 -167.25 396.25 -165.75 409.75 -149.25 432.25 -135.75 446.25 -125.75 452.75 -118.25 455.75 -108.25 455.25 -96.75 457.25 -79.75 467.25 -48.75 472.25 -40.75 486.75 -47.25 515.25 -62.25 532.25 -73.75 539.25 -64.75 540.75 -64.25 579.75 -24.25 582.25 -19.75 581.25 -13.25 576.75 -7.75 531.75 18.25 526.25 19.75 518.75 19.25 505.75 7.75 498.25 10.75 436.75 62.25 431.75 68.75 435.75 78.75 448.75 105.75 458.75 106.75 464.75 104.75 466.75 106.75 477.25 134.25 472.25 145.25 448.25 161.75 443.75 166.75 444.75 177.75 439.25 193.25 439.25 200.25 435.25 213.75 434.25 224.25 429.75 234.75 426.25 249.25 422.25 273.25 420.75 302.75 415.75 312.25 408.75 341.75 402.25 348.25 386.75 356.25 381.25 362.25 382.25 376.25 373.25 378.25 363.75 374.75 355.75 366.75 346.75 368.75 331.25 376.25 320.75 385.25 318.25 392.25 318.25 400.75 320.75 408.25 325.25 413.75 335.75 420.25 335.75 426.75 329.75 430.75 302.75 424.75 295.75 418.75 282.75 415.75 270.25 406.25 257.25 406.25 218.75 419.25 194.75 425.25 175.75 425.25 152.75 422.25 138.75 417.25 114.75 404.25 99.75 394.25 81.25 383.75 77.75 380.75 67.25 380.75 62.25 374.75 55.75 373.25 57.75 366.25"
+        "positions": "428.75 639.25 431.75 642.25 429.25 651.75 431.25 661.75 431.75 686.25 430.25 700.75 432.25 737.75 429.75 745.25 430.25 753.75 433.25 762.75 429.75 780.25 434.25 802.75 434.75 812.25 433.25 827.25 434.25 833.75 428.25 854.75 428.25 860.75 424.25 871.75 425.25 878.75 428.25 884.75 426.75 913.25 429.75 926.25 429.75 933.25 426.75 947.25 430.25 966.25 423.25 969.75 424.25 989.75 342.75 985.75 322.25 987.25 276.75 983.75 280.75 928.25 280.25 887.25 285.25 855.25 283.25 849.25 279.25 846.25 279.75 830.75 281.75 823.25 284.75 819.75 285.25 806.25 287.75 795.25 291.25 715.25 293.75 699.75 289.75 632.75 400.25 623.75 412.75 619.25 427.75 618.25 428.75 639.25"
        }
       },
       "fieldCourseSettings": {
@@ -6449,8 +6470,8 @@
        "rowSnapAngle": 0.0,
        "rowOffset": 0.0,
        "cornerCutOutSupported": false,
-       "toolFrontOffset": -2.491252,
-       "toolBackOffset": -2.741252,
+       "toolFrontOffset": -2.528392,
+       "toolBackOffset": -2.778392,
        "hasStaticTools": true,
        "toolFullOverlap": false,
        "toolFullOverlapInside": false,
@@ -6466,10 +6487,10 @@
        "segmentSplitDistance": 10.0,
        "segmentValidityCheckOffset": 0.0,
        "toolAlwaysActive": false,
-       "toolStraighteningSegmentLength": 5.482505,
+       "toolStraighteningSegmentLength": 5.556785,
        "toolStraighteningAlwaysActive": false,
        "agentFrontOffset": 5.895,
-       "agentBackOffset": 2.82196,
+       "agentBackOffset": 2.895203,
        "agentHeight": 3.65
       },
       "segments": {
@@ -6477,71 +6498,27 @@
         {
          "segmentId": 1,
          "used": false,
-         "lineGroupIndex": 1
+         "lineGroupIndex": 4
         },
         {
          "segmentId": 2,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 3,
-         "used": false,
-         "lineGroupIndex": 1
+         "used": true,
+         "lineGroupIndex": 4
         },
         {
          "segmentId": 4,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 5,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 6,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 7,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 8,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 9,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 10,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 11,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 12,
-         "used": false,
-         "lineGroupIndex": 17
-        },
-        {
-         "segmentId": 13,
          "used": true,
          "isHeadlandSegment": true,
          "headlandIndex": 1
         },
         {
-         "segmentId": 14,
+         "segmentId": 12,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 15,
          "used": true,
          "isHeadlandSegment": true,
          "headlandIndex": 1
@@ -6554,126 +6531,6 @@
         },
         {
          "segmentId": 16,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 17,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 18,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 19,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 20,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 21,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 22,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 23,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 24,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 25,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 26,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 27,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 28,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 29,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 30,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 30,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 32,
-         "used": false,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 33,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 34,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 35,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 36,
          "used": true,
          "isHeadlandSegment": true,
          "headlandIndex": 1
@@ -6693,9 +6550,9 @@
        },
        {
         "name": "positionAngle",
-        "x": 250.794998,
-        "z": 387.165009,
-        "angle": 1.762783
+        "x": 369.880005,
+        "z": 624.085022,
+        "angle": 0.10472
        }
       ]
      }
@@ -6743,19 +6600,19 @@
     "price": 450000.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 20066.982422,
+    "operatingTime": 20896.65625,
     "selectedObjectIndex": 1,
     "subSelectedObjectIndex": 1,
     "component": [
      {
       "index": 1,
-      "position": "669.268 36.276 308.608",
-      "rotation": "-0.36 -37.77 -0.30"
+      "position": "729.382 26.424 143.357",
+      "rotation": "-2.65 -42.00 -3.05"
      },
      {
       "index": 2,
-      "position": "668.494 37.106 309.614",
-      "rotation": "-0.52 -37.77 -0.03"
+      "position": "728.604 27.373 144.276",
+      "rotation": "-2.54 -42.00 -3.20"
      }
     ],
     "configuration": [
@@ -6930,9 +6787,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.092663,
+     "damage": 0.097205,
      "wearNode": {
-      "amount": 0.078621
+      "amount": 0.086223
      }
     },
     "wheels": {
@@ -6962,17 +6819,17 @@
       {
        "index": 1,
        "fillType": "DIESEL",
-       "fillLevel": 558.952881
+       "fillLevel": 535.937683
       },
       {
        "index": 2,
        "fillType": "DEF",
-       "fillLevel": 99.0
+       "fillLevel": 95.999535
       },
       {
        "index": 3,
        "fillType": "AIR",
-       "fillLevel": 2331.114258
+       "fillLevel": 1532.717407
       },
       {
        "index": 4,
@@ -6984,10 +6841,196 @@
     "drivable": {
      "cruiseControl": 43,
      "cruiseControlReverse": 32,
-     "odometerMilage": 45.399742
+     "odometerMilage": 51.139103
     },
     "aiFieldWorker": {
-     "isActive": false
+     "isActive": false,
+     "strategyFieldCourse": {
+      "lastPosition": "986.75146484375 48.52056884765625",
+      "field": {
+       "boundary": {
+        "positions": "795.75 150.75 801.75 146.25 802.25 143.75 799.25 136.75 769.75 94.25 757.25 96.75 726.75 109.25 713.25 111.75 711.25 114.25 705.25 110.75 678.75 65.25 679.75 59.25 684.25 54.75 953.75 -106.25 955.75 -107.25 965.75 -105.25 971.25 -94.75 976.75 -21.25 974.25 17.25 976.25 107.25 976.25 155.25 977.75 188.75 981.25 227.25 981.25 233.25 973.75 273.25 968.75 306.75 969.25 331.25 970.25 341.25 976.25 372.25 978.75 419.75 974.75 441.75 972.75 483.75 967.75 488.75 902.75 493.75 890.75 478.25 886.75 474.25 880.75 461.25 873.75 449.25 866.25 442.75 865.75 433.25 855.75 433.25 849.75 429.25 821.25 425.75 811.25 426.75 773.75 426.25 774.75 395.25 771.75 373.25 772.25 349.75 774.25 336.25 774.75 308.25 768.25 271.75 760.75 247.25 754.25 219.25 768.25 219.25 768.25 171.75 746.25 171.75 795.75 150.75"
+       }
+      },
+      "fieldCourseSettings": {
+       "implementWidth": 42.0,
+       "numHeadlands": 1,
+       "headlandsFirst": false,
+       "skipNumLines": 0,
+       "workHeadlands": true,
+       "workDirection": -1.0,
+       "workDirectionForceStraightLines": false,
+       "workInitialSegment": false,
+       "minTurnRadius": 6.54901,
+       "initialTurnRadiusFactor": 1.0,
+       "canTurnBackward": false,
+       "allowStraightReversing": true,
+       "isVineyardTool": false,
+       "isVineyardRowTool": false,
+       "headlandTailAvoidance": false,
+       "rowSpacing": 0.0,
+       "rowSnapAngle": 0.0,
+       "rowOffset": 0.0,
+       "cornerCutOutSupported": false,
+       "toolFrontOffset": 10.416235,
+       "toolBackOffset": 10.816236,
+       "hasStaticTools": true,
+       "toolFullOverlap": false,
+       "toolFullOverlapInside": false,
+       "segmentExtendedToBoundary": false,
+       "segmentHeadlandReverseLines": false,
+       "segmentMinOffset": 0.0,
+       "segmentMinLength": 0.0,
+       "sideOffset": 0.0,
+       "variableSideOffset": false,
+       "sideOffsetHeadlandAlternate": false,
+       "headlandForcedDirection": 1.0,
+       "segmentSplitAngle": 25.0,
+       "segmentSplitDistance": 10.0,
+       "segmentValidityCheckOffset": 0.0,
+       "toolAlwaysActive": false,
+       "toolStraighteningSegmentLength": 21.632473,
+       "toolStraighteningAlwaysActive": false,
+       "agentFrontOffset": 5.895,
+       "agentBackOffset": 0.455,
+       "agentHeight": 3.65
+      },
+      "segments": {
+       "segment": [
+        {
+         "segmentId": 1,
+         "used": false,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 2,
+         "used": true,
+         "lineGroupIndex": 8
+        },
+        {
+         "segmentId": 3,
+         "used": false,
+         "lineGroupIndex": 8
+        },
+        {
+         "segmentId": 4,
+         "used": false,
+         "lineGroupIndex": 8
+        },
+        {
+         "segmentId": 5,
+         "used": false,
+         "lineGroupIndex": 8
+        },
+        {
+         "segmentId": 6,
+         "used": false,
+         "lineGroupIndex": 8
+        },
+        {
+         "segmentId": 7,
+         "used": false,
+         "lineGroupIndex": 8
+        },
+        {
+         "segmentId": 8,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 9,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 10,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 11,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 12,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 13,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 14,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 15,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 16,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 17,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 18,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 19,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 20,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 21,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 22,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 23,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        }
+       ]
+      }
+     }
     },
     "aiJobVehicle": {
      "isAIStartAllowed": true,
@@ -6995,13 +7038,14 @@
       "type": "FIELDWORK",
       "parameter": [
        {
-        "name": "vehicle"
+        "name": "vehicle",
+        "vehicleUniqueId": "vehicle44d163c7ede2b8de8e776bcfde327dca"
        },
        {
         "name": "positionAngle",
-        "x": 829.034973,
-        "z": 480.174988,
-        "angle": 1.675516
+        "x": 893.697998,
+        "z": 463.390564,
+        "angle": 2.356194
        }
       ]
      }
@@ -7014,13 +7058,7 @@
      "currentMode": "WORKER"
     },
     "attacherJoints": {
-     "comboDirection": -1,
-     "attachedImplement": {
-      "jointIndex": 4,
-      "moveDown": false,
-      "attachedVehicleUniqueId": "vehicle2d841779dfcabc12318817742a908234",
-      "inputJointIndex": 1
-     }
+     "comboDirection": -1
     }
    },
    {
@@ -7117,10 +7155,12 @@
     "farmId": 1,
     "propertyState": "OWNED",
     "operatingTime": 884.207581,
+    "selectedObjectIndex": 1,
+    "subSelectedObjectIndex": 1,
     "component": {
      "index": 1,
-     "position": "666.570 36.882 312.094",
-     "rotation": "-165.71 37.77 179.70"
+     "position": "664.653 36.380 312.214",
+     "rotation": "-0.11 55.70 0.00"
     },
     "configuration": [
      {
@@ -7166,9 +7206,9 @@
      }
     },
     "wearable": {
-     "damage": 0.004305,
+     "damage": 0.004348,
      "wearNode": {
-      "amount": 0.047517
+      "amount": 0.047529
      }
     },
     "attachable": {
@@ -7199,27 +7239,27 @@
     "price": 146250.0,
     "farmId": 2,
     "propertyState": "OWNED",
-    "operatingTime": 75115.578125,
+    "operatingTime": 76539.351562,
     "component": [
      {
       "index": 1,
-      "position": "-140.675 16.992 -655.349",
-      "rotation": "173.14 -33.39 -177.81"
+      "position": "-217.097 18.759 -643.118",
+      "rotation": "177.50 -0.04 175.50"
      },
      {
       "index": 2,
-      "position": "-143.244 18.047 -659.183",
-      "rotation": "171.26 -39.74 -174.88"
+      "position": "-217.037 19.556 -647.784",
+      "rotation": "177.49 -0.15 175.61"
      },
      {
       "index": 3,
-      "position": "-140.936 18.292 -655.043",
-      "rotation": "177.63 56.58 179.37"
+      "position": "-223.223 20.463 -641.524",
+      "rotation": "177.50 -0.06 175.11"
      },
      {
       "index": 4,
-      "position": "-140.498 18.354 -655.619",
-      "rotation": "2.80 -56.57 -1.18"
+      "position": "-210.777 19.494 -641.532",
+      "rotation": "177.51 -0.01 176.07"
      }
     ],
     "configuration": [
@@ -7350,9 +7390,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.066473,
+     "damage": 0.087292,
      "wearNode": {
-      "amount": 0.14426
+      "amount": 0.200233
      }
     },
     "wheels": {
@@ -7365,7 +7405,7 @@
      "comboDirection": -1
     },
     "foldable": {
-     "foldAnimTime": 1.0,
+     "foldAnimTime": 0.125,
      "isAllowed": true
     },
     "fillUnit": {
@@ -7394,27 +7434,27 @@
     "price": 144500.0,
     "farmId": 2,
     "propertyState": "OWNED",
-    "operatingTime": 37718.878906,
+    "operatingTime": 39828.96875,
     "component": [
      {
       "index": 1,
-      "position": "325.680 24.067 957.716",
-      "rotation": "173.30 21.59 179.48"
+      "position": "109.313 33.017 595.778",
+      "rotation": "-3.12 -2.88 -1.21"
      },
      {
       "index": 2,
-      "position": "327.381 25.191 953.444",
-      "rotation": "173.35 -7.82 -179.39"
+      "position": "109.097 33.871 600.429",
+      "rotation": "-3.24 -2.87 -1.72"
      },
      {
       "index": 3,
-      "position": "319.266 25.172 956.970",
-      "rotation": "173.55 21.63 -179.96"
+      "position": "115.653 34.061 594.493",
+      "rotation": "-3.13 -2.88 -1.25"
      },
      {
       "index": 4,
-      "position": "330.879 25.109 961.570",
-      "rotation": "173.37 21.61 179.69"
+      "position": "103.185 34.336 593.864",
+      "rotation": "-3.13 -2.89 -1.38"
      }
     ],
     "configuration": [
@@ -7535,9 +7575,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.138891,
+     "damage": 0.161384,
      "wearNode": {
-      "amount": 0.515356
+      "amount": 0.596027
      }
     },
     "wheels": {
@@ -7708,7 +7748,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.003364,
+     "damage": 0.003385,
      "wearNode": {
       "amount": 0.001245
      }
@@ -7763,7 +7803,7 @@
     "drivable": {
      "cruiseControl": 65,
      "cruiseControlReverse": 35,
-     "odometerMilage": 1.924103
+     "odometerMilage": 1.924163
     },
     "aiFieldWorker": {
      "isActive": false
@@ -7811,13 +7851,13 @@
     "price": 388950.0,
     "farmId": 2,
     "propertyState": "OWNED",
-    "operatingTime": 33571.988281,
+    "operatingTime": 35996.425781,
     "selectedObjectIndex": 1,
     "subSelectedObjectIndex": 1,
     "component": {
      "index": 1,
-     "position": "-56.654 32.519 184.304",
-     "rotation": "2.09 -15.88 -1.76"
+     "position": "15.803 24.172 -613.341",
+     "rotation": "-179.56 -0.30 -176.84"
     },
     "configuration": [
      {
@@ -7926,9 +7966,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.082574,
+     "damage": 0.107783,
      "wearNode": {
-      "amount": 0.082566
+      "amount": 0.122984
      }
     },
     "licensePlates": {
@@ -7964,7 +8004,7 @@
       {
        "index": 1,
        "fillType": "DIESEL",
-       "fillLevel": 653.966736
+       "fillLevel": 648.963196
       },
       {
        "index": 2,
@@ -7974,17 +8014,216 @@
       {
        "index": 3,
        "fillType": "AIR",
-       "fillLevel": 2705.816162
+       "fillLevel": 3000.0
       }
      ]
     },
     "drivable": {
      "cruiseControl": 53,
      "cruiseControlReverse": 22,
-     "odometerMilage": 160.620911
+     "odometerMilage": 172.11908
     },
     "aiFieldWorker": {
-     "isActive": false
+     "isActive": false,
+     "strategyFieldCourse": {
+      "lastPosition": "15.814139366149902 -610.9732666015625",
+      "field": {
+       "boundary": {
+        "positions": "-130.75 -545.25 -134.75 -550.25 -131.25 -566.75 -131.25 -594.75 -126.25 -599.75 -112.75 -596.25 -80.25 -595.75 -76.25 -590.75 -58.25 -595.25 -9.25 -622.75 93.25 -674.25 102.25 -677.25 108.25 -670.25 110.75 -661.75 115.25 -655.25 123.75 -635.75 166.75 -566.75 157.75 -562.75 128.75 -542.75 111.25 -521.25 102.25 -518.75 90.75 -524.25 82.25 -524.75 47.25 -516.75 23.75 -504.25 11.25 -489.75 3.25 -476.25 -1.25 -462.75 -1.75 -439.25 3.75 -409.75 7.25 -400.25 8.25 -390.25 7.25 -367.25 10.75 -348.75 21.75 -324.75 32.25 -310.25 51.75 -297.75 69.25 -293.25 122.75 -295.25 153.25 -300.75 213.75 -320.25 219.25 -307.25 227.75 -294.75 231.25 -286.25 247.75 -211.75 266.25 -161.25 266.75 -127.75 272.75 -113.75 270.75 -103.25 223.25 -93.75 215.25 -93.75 94.75 -68.25 64.75 -59.25 46.75 -50.25 30.75 -38.25 12.75 -20.25 -3.25 1.75 -16.25 25.75 -24.75 52.75 -49.75 45.75 -126.75 46.75 -130.75 -545.25"
+       }
+      },
+      "fieldCourseSettings": {
+       "implementWidth": 42.0,
+       "numHeadlands": 1,
+       "headlandsFirst": true,
+       "skipNumLines": 0,
+       "workHeadlands": true,
+       "workDirection": -0.994838,
+       "workDirectionForceStraightLines": false,
+       "workInitialSegment": false,
+       "minTurnRadius": 5.607086,
+       "initialTurnRadiusFactor": 1.0,
+       "canTurnBackward": false,
+       "allowStraightReversing": true,
+       "isVineyardTool": false,
+       "isVineyardRowTool": false,
+       "headlandTailAvoidance": false,
+       "rowSpacing": 0.0,
+       "rowSnapAngle": 0.0,
+       "rowOffset": 0.0,
+       "cornerCutOutSupported": false,
+       "toolFrontOffset": -11.727371,
+       "toolBackOffset": -11.977371,
+       "hasStaticTools": true,
+       "toolFullOverlap": false,
+       "toolFullOverlapInside": false,
+       "segmentExtendedToBoundary": false,
+       "segmentHeadlandReverseLines": false,
+       "segmentMinOffset": 0.0,
+       "segmentMinLength": 0.0,
+       "sideOffset": 0.0,
+       "variableSideOffset": false,
+       "sideOffsetHeadlandAlternate": false,
+       "headlandForcedDirection": 1.0,
+       "segmentSplitAngle": 25.0,
+       "segmentSplitDistance": 10.0,
+       "segmentValidityCheckOffset": 0.0,
+       "toolAlwaysActive": false,
+       "toolStraighteningSegmentLength": 23.954742,
+       "toolStraighteningAlwaysActive": false,
+       "agentFrontOffset": 4.867848,
+       "agentBackOffset": 1.132152,
+       "agentHeight": 3.55
+      },
+      "segments": {
+       "segment": [
+        {
+         "segmentId": 1,
+         "used": true,
+         "lineGroupIndex": 3
+        },
+        {
+         "segmentId": 2,
+         "used": true,
+         "lineGroupIndex": 3
+        },
+        {
+         "segmentId": 3,
+         "used": true,
+         "lineGroupIndex": 3
+        },
+        {
+         "segmentId": 4,
+         "used": false,
+         "lineGroupIndex": 3
+        },
+        {
+         "segmentId": 5,
+         "used": true,
+         "lineGroupIndex": 3
+        },
+        {
+         "segmentId": 6,
+         "used": true,
+         "lineGroupIndex": 3
+        },
+        {
+         "segmentId": 7,
+         "used": true,
+         "lineGroupIndex": 3
+        },
+        {
+         "segmentId": 8,
+         "used": true,
+         "lineGroupIndex": 3
+        },
+        {
+         "segmentId": 9,
+         "used": true,
+         "lineGroupIndex": 3
+        },
+        {
+         "segmentId": 10,
+         "used": true,
+         "lineGroupIndex": 3
+        },
+        {
+         "segmentId": 11,
+         "used": true,
+         "lineGroupIndex": 3
+        },
+        {
+         "segmentId": 12,
+         "used": true,
+         "lineGroupIndex": 3
+        },
+        {
+         "segmentId": 13,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 14,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 15,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 16,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 17,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 18,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 19,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 20,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 21,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 22,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 23,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 24,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 25,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 26,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        }
+       ]
+      }
+     }
     },
     "aiJobVehicle": {
      "isAIStartAllowed": true,
@@ -7997,9 +8236,9 @@
        },
        {
         "name": "positionAngle",
-        "x": -30.815001,
-        "z": 101.315002,
-        "angle": 5.009095
+        "x": -25.014999,
+        "z": 38.099998,
+        "angle": 4.118977
        }
       ]
      }
@@ -8050,8 +8289,8 @@
     "operatingTime": 5352.804199,
     "component": {
      "index": 1,
-     "position": "481.997 23.194 934.054",
-     "rotation": "-11.06 6.52 0.06"
+     "position": "481.997 23.195 934.055",
+     "rotation": "-11.09 6.52 0.06"
     },
     "configuration": [
      {
@@ -8127,7 +8366,7 @@
      }
     },
     "wearable": {
-     "damage": 0.031755,
+     "damage": 0.031766,
      "wearNode": {
       "amount": 0.088281
      }
@@ -8170,8 +8409,8 @@
     "component": [
      {
       "index": 1,
-      "position": "481.100 22.537 925.879",
-      "rotation": "0.25 6.15 -0.00"
+      "position": "481.100 22.536 925.879",
+      "rotation": "0.24 6.15 -0.00"
      },
      {
       "index": 2,
@@ -8369,7 +8608,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.036292,
+     "damage": 0.036304,
      "wearNode": {
       "amount": 0.089881
      }
@@ -8453,7 +8692,7 @@
     "drivable": {
      "cruiseControl": 242,
      "cruiseControlReverse": 45,
-     "odometerMilage": 30.192142
+     "odometerMilage": 30.192144
     },
     "aiFieldWorker": {
      "isActive": false
@@ -8587,7 +8826,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.003226,
+     "damage": 0.003236,
      "wearNode": {
       "amount": 0.002808
      }
@@ -8641,7 +8880,7 @@
     "drivable": {
      "cruiseControl": 12,
      "cruiseControlReverse": 12,
-     "odometerMilage": 1.053219
+     "odometerMilage": 1.053223
     },
     "aiFieldWorker": {
      "isActive": false
@@ -9298,27 +9537,27 @@
     "price": 206500.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 5732.642578,
+    "operatingTime": 6378.044434,
     "component": [
      {
       "index": 1,
-      "position": "875.531 34.312 516.271",
-      "rotation": "-11.56 88.98 -11.35"
+      "position": "894.945 39.222 614.820",
+      "rotation": "-175.60 6.25 177.67"
      },
      {
       "index": 2,
-      "position": "881.386 34.958 516.340",
-      "rotation": "-161.70 86.58 -163.00"
+      "position": "895.592 39.359 608.966",
+      "rotation": "-173.69 6.25 177.59"
      },
      {
       "index": 3,
-      "position": "874.984 36.666 515.397",
-      "rotation": "89.79 -1.00 0.20"
+      "position": "890.688 40.324 619.350",
+      "rotation": "-175.59 6.24 177.70"
      },
      {
       "index": 4,
-      "position": "874.953 36.672 517.109",
-      "rotation": "-89.80 1.00 -179.79"
+      "position": "898.199 40.026 620.172",
+      "rotation": "-175.58 6.24 177.78"
      }
     ],
     "configuration": [
@@ -9411,9 +9650,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.034622,
+     "damage": 0.039119,
      "wearNode": {
-      "amount": 0.196427
+      "amount": 0.226883
      }
     },
     "wheels": {
@@ -9426,7 +9665,7 @@
      "comboDirection": -1
     },
     "foldable": {
-     "foldAnimTime": 1.0,
+     "foldAnimTime": 0.0,
      "isAllowed": true
     },
     "fillUnit": {
@@ -9465,37 +9704,37 @@
     "price": 177600.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 12780.716797,
+    "operatingTime": 13775.287109,
     "component": [
      {
       "index": 1,
-      "position": "576.828 31.772 -105.530",
-      "rotation": "177.78 59.13 177.02"
+      "position": "807.600 23.770 -349.919",
+      "rotation": "-2.15 -61.31 -0.02"
      },
      {
       "index": 2,
-      "position": "579.812 32.603 -107.286",
-      "rotation": "177.67 59.13 176.89"
+      "position": "804.598 24.752 -348.276",
+      "rotation": "-2.21 -61.30 0.04"
      },
      {
       "index": 3,
-      "position": "571.993 32.853 -109.669",
-      "rotation": "178.76 59.15 178.16"
+      "position": "812.323 24.630 -345.601",
+      "rotation": "-2.19 -61.30 0.02"
      },
      {
       "index": 4,
-      "position": "578.202 32.524 -99.268",
-      "rotation": "176.63 59.10 175.69"
+      "position": "806.509 24.640 -356.223",
+      "rotation": "-1.85 -61.32 -0.39"
      },
      {
       "index": 5,
-      "position": "571.940 34.116 -110.947",
-      "rotation": "179.91 -59.16 -0.28"
+      "position": "812.386 25.900 -344.331",
+      "rotation": "0.75 61.33 178.35"
      },
      {
       "index": 6,
-      "position": "579.336 33.723 -98.557",
-      "rotation": "-175.30 -59.04 -5.86"
+      "position": "805.476 25.914 -356.958",
+      "rotation": "3.32 61.27 -178.73"
      }
     ],
     "configuration": [
@@ -9670,9 +9909,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.071896,
+     "damage": 0.079597,
      "wearNode": {
-      "amount": 0.315369
+      "amount": 0.348057
      }
     },
     "licensePlates": {
@@ -9692,7 +9931,7 @@
      "comboDirection": -1
     },
     "foldable": {
-     "foldAnimTime": 0.1,
+     "foldAnimTime": 0.0,
      "isAllowed": true
     },
     "fillUnit": {
@@ -9716,7 +9955,7 @@
      "state": 0
     },
     "sowingMachine": {
-     "selectedSeedFruitType": "SOYBEAN",
+     "selectedSeedFruitType": "SILAGEMAIZE",
      "allowsSeedChanging": true
     },
     "FS25_precisionFarming": {
@@ -9970,7 +10209,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.038763,
+     "damage": 0.038777,
      "wearNode": {
       "amount": 0.078666
      }
@@ -10293,7 +10532,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.002264,
+     "damage": 0.002284,
      "wearNode": {
       "amount": 0.003009
      }
@@ -12319,19 +12558,19 @@
     "price": 314000.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 2997.099854,
+    "operatingTime": 3309.379883,
     "selectedObjectIndex": 2,
     "subSelectedObjectIndex": 1,
     "component": [
      {
       "index": 1,
-      "position": "934.268 31.923 500.036",
-      "rotation": "-175.98 81.96 179.25"
+      "position": "752.647 34.349 472.563",
+      "rotation": "-179.47 87.57 -179.69"
      },
      {
       "index": 2,
-      "position": "932.188 32.882 500.332",
-      "rotation": "-176.10 81.96 179.15"
+      "position": "750.479 35.138 472.655",
+      "rotation": "-179.21 87.57 -179.45"
      }
     ],
     "configuration": [
@@ -12491,9 +12730,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.020174,
+     "damage": 0.022317,
      "wearNode": {
-      "amount": 0.12247
+      "amount": 0.127438
      }
     },
     "licensePlates": {
@@ -12514,10 +12753,10 @@
        "animationTime": 0.333
       },
       {
-       "rotation": 0.0
+       "rotation": 40.0
       },
       {
-       "rotation": 0.0
+       "rotation": 40.0
       }
      ]
     },
@@ -12553,19 +12792,19 @@
       {
        "index": 2,
        "fillType": "DIESEL",
-       "fillLevel": 1387.864746
+       "fillLevel": 1365.817749
       },
       {
        "index": 3,
        "fillType": "DEF",
-       "fillLevel": 163.0
+       "fillLevel": 160.999741
       }
      ]
     },
     "drivable": {
      "cruiseControl": 142,
      "cruiseControlReverse": 32,
-     "odometerMilage": 19.106392
+     "odometerMilage": 21.702496
     },
     "aiFieldWorker": {
      "isActive": false
@@ -12573,16 +12812,17 @@
     "aiJobVehicle": {
      "isAIStartAllowed": true,
      "lastJob": {
-      "type": "GOTO",
+      "type": "FIELDWORK",
       "parameter": [
        {
-        "name": "vehicle"
+        "name": "vehicle",
+        "vehicleUniqueId": "vehicle212fe7f80a7268153cf913e3972f3efb"
        },
        {
         "name": "positionAngle",
-        "x": 918.731201,
-        "z": 500.502533,
-        "angle": 1.570796
+        "x": 379.484985,
+        "z": 400.359985,
+        "angle": 0.10472
        }
       ]
      }
@@ -12607,12 +12847,12 @@
      "isAllowed": true
     },
     "foldable": {
-     "foldAnimTime": 0.0,
+     "foldAnimTime": 1.0,
      "isAllowed": true
     },
     "combine": {
-     "isSwathActive": false,
-     "workedHectars": 26.033474,
+     "isSwathActive": true,
+     "workedHectars": 26.091774,
      "numAttachedCutters": 0
     },
     "pipe": {
@@ -12855,9 +13095,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.013441,
+     "damage": 0.013449,
      "wearNode": {
-      "amount": 0.096827
+      "amount": 0.096858
      }
     },
     "licensePlates": {
@@ -12929,7 +13169,7 @@
     "drivable": {
      "cruiseControl": 242,
      "cruiseControlReverse": 41,
-     "odometerMilage": 9.021093
+     "odometerMilage": 9.021094
     },
     "aiFieldWorker": {
      "isActive": false
@@ -13003,7 +13243,7 @@
      },
      {
       "index": 2,
-      "position": "504.536 23.294 931.434",
+      "position": "504.536 23.293 931.434",
       "rotation": "-0.02 2.25 0.01"
      }
     ],
@@ -13214,9 +13454,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.001146,
+     "damage": 0.001156,
      "wearNode": {
-      "amount": 0.001788
+      "amount": 0.001818
      }
     },
     "licensePlates": {
@@ -13288,7 +13528,7 @@
     "drivable": {
      "cruiseControl": 242,
      "cruiseControlReverse": 41,
-     "odometerMilage": 1.03311
+     "odometerMilage": 1.033111
     },
     "aiFieldWorker": {
      "isActive": false
@@ -13336,19 +13576,19 @@
     "price": 292450.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 26454.619141,
+    "operatingTime": 27100.021484,
     "selectedObjectIndex": 1,
     "subSelectedObjectIndex": 1,
     "component": [
      {
       "index": 1,
-      "position": "884.188 34.341 516.191",
-      "rotation": "-165.02 86.58 -163.00"
+      "position": "895.855 38.486 606.242",
+      "rotation": "-176.94 6.25 177.59"
      },
      {
       "index": 2,
-      "position": "885.650 35.127 516.094",
-      "rotation": "-164.44 86.57 -162.43"
+      "position": "896.049 39.149 604.721",
+      "rotation": "-176.93 6.26 177.57"
      }
     ],
     "configuration": [
@@ -13453,9 +13693,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.203741,
+     "damage": 0.209793,
      "wearNode": {
-      "amount": 0.19316
+      "amount": 0.20375
      }
     },
     "licensePlates": {
@@ -13508,24 +13748,213 @@
     "drivable": {
      "cruiseControl": 63,
      "cruiseControlReverse": 33,
-     "odometerMilage": 89.561562
+     "odometerMilage": 91.486229
     },
     "aiFieldWorker": {
-     "isActive": false
+     "isActive": true,
+     "strategyFieldCourse": {
+      "lastPosition": "895.7011108398438 607.6747436523438",
+      "activeSegmentId": 12,
+      "field": {
+       "boundary": {
+        "positions": "974.25 519.25 978.75 591.75 964.25 681.25 974.75 720.75 995.75 770.75 997.25 787.25 988.75 815.25 976.25 835.25 962.75 864.75 963.25 924.25 955.75 933.75 941.25 944.75 935.25 955.25 933.25 969.25 922.25 975.25 901.75 977.25 846.25 969.75 791.75 966.25 769.25 961.75 742.75 951.25 694.25 936.75 685.75 928.25 683.25 917.75 681.75 759.25 682.75 695.25 687.75 648.25 691.75 643.25 704.25 638.25 744.25 631.25 772.25 620.25 806.75 603.75 816.75 601.75 870.75 570.75 880.75 561.25 891.25 544.75 892.25 533.75 907.75 509.75 915.25 508.25 966.25 511.25 974.25 519.25"
+       }
+      },
+      "fieldCourseSettings": {
+       "implementWidth": 15.0,
+       "numHeadlands": 2,
+       "headlandsFirst": false,
+       "skipNumLines": 0,
+       "workHeadlands": true,
+       "workDirection": -1.0,
+       "workDirectionForceStraightLines": false,
+       "workInitialSegment": false,
+       "minTurnRadius": 8.930749,
+       "initialTurnRadiusFactor": 1.0,
+       "canTurnBackward": false,
+       "allowStraightReversing": true,
+       "isVineyardTool": false,
+       "isVineyardRowTool": false,
+       "headlandTailAvoidance": false,
+       "rowSpacing": 0.0,
+       "rowSnapAngle": 0.0,
+       "rowOffset": 0.0,
+       "cornerCutOutSupported": false,
+       "toolFrontOffset": -12.028284,
+       "toolBackOffset": -12.278284,
+       "hasStaticTools": false,
+       "toolFullOverlap": false,
+       "toolFullOverlapInside": false,
+       "segmentExtendedToBoundary": false,
+       "segmentHeadlandReverseLines": false,
+       "segmentMinOffset": 0.0,
+       "segmentMinLength": 0.0,
+       "sideOffset": 0.0,
+       "variableSideOffset": false,
+       "sideOffsetHeadlandAlternate": false,
+       "headlandForcedDirection": 1.0,
+       "segmentSplitAngle": 45.0,
+       "segmentSplitDistance": 10.0,
+       "segmentValidityCheckOffset": 0.0,
+       "toolAlwaysActive": false,
+       "toolStraighteningSegmentLength": 24.556568,
+       "toolStraighteningAlwaysActive": false,
+       "agentFrontOffset": 3.88861,
+       "agentBackOffset": 1.06139,
+       "agentHeight": 3.55
+      },
+      "segments": {
+       "segment": [
+        {
+         "segmentId": 1,
+         "used": false,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 2,
+         "used": false,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 3,
+         "used": false,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 4,
+         "used": false,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 5,
+         "used": false,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 6,
+         "used": false,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 7,
+         "used": false,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 8,
+         "used": false,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 9,
+         "used": false,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 10,
+         "used": false,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 11,
+         "used": false,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 12,
+         "used": false,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 13,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 14,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 15,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 16,
+         "used": false,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 17,
+         "used": false,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 18,
+         "used": false,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 19,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 20,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 21,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 2
+        },
+        {
+         "segmentId": 22,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 2
+        },
+        {
+         "segmentId": 23,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 2
+        },
+        {
+         "segmentId": 24,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 2
+        },
+        {
+         "segmentId": 25,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 2
+        }
+       ]
+      }
+     }
     },
     "aiJobVehicle": {
      "isAIStartAllowed": true,
      "lastJob": {
-      "type": "GOTO",
+      "type": "FIELDWORK",
       "parameter": [
        {
-        "name": "vehicle"
+        "name": "vehicle",
+        "vehicleUniqueId": "vehicle88b935bc4a6dac3eb8ea372e4efeb4a3"
        },
        {
         "name": "positionAngle",
-        "x": 742.99176,
-        "z": 572.856506,
-        "angle": 1.570796
+        "x": 907.029297,
+        "z": 517.122986,
+        "angle": 1.466077
        }
       ]
      }
@@ -13791,19 +14220,19 @@
     "price": 293450.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 7501.757324,
+    "operatingTime": 8496.328125,
     "selectedObjectIndex": 1,
     "subSelectedObjectIndex": 1,
     "component": [
      {
       "index": 1,
-      "position": "583.659 31.245 -109.626",
-      "rotation": "177.00 59.37 175.00"
+      "position": "800.702 23.983 -346.142",
+      "rotation": "-1.43 -61.31 0.01"
      },
      {
       "index": 2,
-      "position": "584.976 31.998 -110.364",
-      "rotation": "177.12 59.37 175.13"
+      "position": "799.411 24.809 -345.436",
+      "rotation": "-1.48 -61.31 0.07"
      }
     ],
     "configuration": [
@@ -13908,9 +14337,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.048976,
+     "damage": 0.056011,
      "wearNode": {
-      "amount": 0.087838
+      "amount": 0.1039
      }
     },
     "licensePlates": {
@@ -13946,7 +14375,7 @@
       {
        "index": 1,
        "fillType": "DIESEL",
-       "fillLevel": 495.997864
+       "fillLevel": 494.997528
       },
       {
        "index": 2,
@@ -13963,15 +14392,16 @@
     "drivable": {
      "cruiseControl": 63,
      "cruiseControlReverse": 33,
-     "odometerMilage": 23.956511
+     "odometerMilage": 27.593197
     },
     "aiFieldWorker": {
-     "isActive": false,
+     "isActive": true,
      "strategyFieldCourse": {
-      "lastPosition": "582.3312377929688 -108.84151458740234",
+      "lastPosition": "801.9675903320312 -346.8351135253906",
+      "activeSegmentId": 7,
       "field": {
        "boundary": {
-        "positions": "966.75 -366.25 971.25 -143.75 967.75 -136.25 672.25 39.75 665.25 38.75 651.75 20.25 644.25 7.75 645.75 -1.25 718.25 -49.75 722.75 -54.75 724.75 -61.75 719.25 -73.25 654.25 -136.25 648.25 -140.25 640.75 -142.75 633.75 -142.75 623.25 -135.75 582.25 -99.25 577.75 -93.25 569.75 -78.25 562.75 -76.75 554.25 -80.25 544.25 -92.25 523.75 -119.75 524.75 -126.25 530.25 -130.25 944.25 -376.25 961.25 -376.75 966.75 -366.25"
+        "positions": "453.25 -244.75 437.75 -297.25 440.25 -302.25 443.75 -304.75 942.75 -577.75 957.75 -577.75 969.75 -569.75 969.75 -530.75 966.25 -420.25 965.75 -416.25 960.25 -407.75 948.75 -400.25 520.75 -140.75 513.75 -140.75 507.25 -144.75 491.75 -175.25 494.75 -179.75 527.25 -198.25 530.75 -203.25 529.25 -210.75 510.25 -249.75 504.25 -257.75 492.25 -255.75 460.25 -239.75 457.75 -239.25 453.25 -244.75"
        }
       },
       "fieldCourseSettings": {
@@ -13980,7 +14410,7 @@
        "headlandsFirst": true,
        "skipNumLines": 0,
        "workHeadlands": true,
-       "workDirection": -1.0,
+       "workDirection": -0.994838,
        "workDirectionForceStraightLines": false,
        "workInitialSegment": false,
        "minTurnRadius": 4.590634,
@@ -13994,8 +14424,8 @@
        "rowSnapAngle": 0.0,
        "rowOffset": 0.0,
        "cornerCutOutSupported": false,
-       "toolFrontOffset": -8.681179,
-       "toolBackOffset": -9.348921,
+       "toolFrontOffset": -8.68124,
+       "toolBackOffset": -9.348982,
        "hasStaticTools": true,
        "toolFullOverlap": false,
        "toolFullOverlapInside": false,
@@ -14011,7 +14441,7 @@
        "segmentSplitDistance": 10.0,
        "segmentValidityCheckOffset": 0.0,
        "toolAlwaysActive": false,
-       "toolStraighteningSegmentLength": 18.697842,
+       "toolStraighteningSegmentLength": 18.697964,
        "toolStraighteningAlwaysActive": false,
        "agentFrontOffset": 3.88861,
        "agentBackOffset": 1.06139,
@@ -14021,7 +14451,7 @@
        "segment": [
         {
          "segmentId": 1,
-         "used": true,
+         "used": false,
          "lineGroupIndex": 1
         },
         {
@@ -14031,27 +14461,27 @@
         },
         {
          "segmentId": 3,
-         "used": true,
+         "used": false,
          "lineGroupIndex": 1
         },
         {
          "segmentId": 4,
-         "used": true,
+         "used": false,
          "lineGroupIndex": 1
         },
         {
          "segmentId": 5,
-         "used": true,
+         "used": false,
          "lineGroupIndex": 1
         },
         {
          "segmentId": 6,
-         "used": true,
+         "used": false,
          "lineGroupIndex": 1
         },
         {
          "segmentId": 7,
-         "used": true,
+         "used": false,
          "lineGroupIndex": 1
         },
         {
@@ -14067,17 +14497,20 @@
         {
          "segmentId": 10,
          "used": true,
-         "lineGroupIndex": 1
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
         },
         {
          "segmentId": 11,
          "used": true,
-         "lineGroupIndex": 1
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
         },
         {
          "segmentId": 12,
          "used": true,
-         "lineGroupIndex": 1
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
         },
         {
          "segmentId": 13,
@@ -14098,6 +14531,12 @@
          "headlandIndex": 1
         },
         {
+         "segmentId": 15,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
          "segmentId": 16,
          "used": true,
          "isHeadlandSegment": true,
@@ -14105,12 +14544,6 @@
         },
         {
          "segmentId": 17,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 18,
          "used": true,
          "isHeadlandSegment": true,
          "headlandIndex": 1
@@ -14144,30 +14577,6 @@
          "used": true,
          "isHeadlandSegment": true,
          "headlandIndex": 1
-        },
-        {
-         "segmentId": 23,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 24,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 25,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 26,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
         }
        ]
       }
@@ -14184,9 +14593,9 @@
        },
        {
         "name": "positionAngle",
-        "x": 830.168457,
-        "z": -61.872398,
-        "angle": 1.089205
+        "x": 672.960388,
+        "z": -237.300308,
+        "angle": 3.246312
        }
       ]
      }
@@ -14708,7 +15117,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.008045,
+     "damage": 0.008056,
      "wearNode": {
       "amount": 0.045212
      }
@@ -15288,19 +15697,19 @@
     "price": 191450.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 5641.29541,
+    "operatingTime": 5729.182617,
     "selectedObjectIndex": 1,
     "subSelectedObjectIndex": 1,
     "component": [
      {
       "index": 1,
-      "position": "735.209 25.565 111.658",
-      "rotation": "-0.41 34.42 -1.10"
+      "position": "734.540 23.233 -159.944",
+      "rotation": "173.47 71.96 170.48"
      },
      {
       "index": 2,
-      "position": "735.869 26.441 112.596",
-      "rotation": "-0.39 34.42 -1.07"
+      "position": "735.677 24.062 -160.265",
+      "rotation": "173.57 71.97 170.59"
      }
     ],
     "configuration": [
@@ -15395,9 +15804,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.036945,
+     "damage": 0.037603,
      "wearNode": {
-      "amount": 0.024131
+      "amount": 0.024872
      }
     },
     "licensePlates": {
@@ -15433,7 +15842,7 @@
       {
        "index": 1,
        "fillType": "DIESEL",
-       "fillLevel": 236.998489
+       "fillLevel": 235.998474
       },
       {
        "index": 2,
@@ -15450,197 +15859,10 @@
     "drivable": {
      "cruiseControl": 53,
      "cruiseControlReverse": 22,
-     "odometerMilage": 9.253877
+     "odometerMilage": 9.549618
     },
     "aiFieldWorker": {
-     "isActive": false,
-     "strategyFieldCourse": {
-      "lastPosition": "711.9786987304688 72.74126434326172",
-      "field": {
-       "boundary": {
-        "positions": "768.25 219.25 768.25 171.75 746.25 171.75 795.75 150.75 801.75 146.25 802.25 143.75 799.25 136.75 769.75 94.25 757.25 96.75 726.75 109.25 713.25 111.75 711.25 114.25 705.25 110.75 678.75 65.25 679.75 59.25 684.25 54.75 953.75 -106.25 955.75 -107.25 965.75 -105.25 971.25 -94.75 976.75 -21.25 974.25 17.25 976.25 107.25 976.25 155.25 977.75 188.75 981.25 233.25 973.75 273.25 968.75 306.75 969.25 331.25 970.25 341.25 976.25 372.25 978.75 416.75 974.75 441.75 973.75 452.75 972.75 483.75 967.75 488.75 902.75 493.75 892.25 481.25 890.25 477.25 886.25 474.25 881.25 461.25 872.75 448.75 866.75 442.75 866.25 433.25 856.25 433.25 849.25 429.25 823.75 425.75 811.75 426.75 773.25 426.25 774.75 394.75 771.75 373.75 772.25 350.25 774.75 327.75 774.25 307.25 770.75 283.75 766.75 266.75 762.25 252.75 753.75 219.25 768.25 219.25"
-       }
-      },
-      "fieldCourseSettings": {
-       "implementWidth": 49.900002,
-       "numHeadlands": 1,
-       "headlandsFirst": false,
-       "skipNumLines": 0,
-       "workHeadlands": true,
-       "workDirection": -1.0,
-       "workDirectionForceStraightLines": false,
-       "workInitialSegment": false,
-       "minTurnRadius": 4.246187,
-       "initialTurnRadiusFactor": 1.0,
-       "canTurnBackward": true,
-       "allowStraightReversing": false,
-       "isVineyardTool": false,
-       "isVineyardRowTool": false,
-       "headlandTailAvoidance": false,
-       "rowSpacing": 0.0,
-       "rowSnapAngle": 0.0,
-       "rowOffset": 0.0,
-       "cornerCutOutSupported": false,
-       "toolFrontOffset": -3.054454,
-       "toolBackOffset": -3.304454,
-       "hasStaticTools": true,
-       "toolFullOverlap": false,
-       "toolFullOverlapInside": false,
-       "segmentExtendedToBoundary": false,
-       "segmentHeadlandReverseLines": false,
-       "segmentMinOffset": 0.0,
-       "segmentMinLength": 0.0,
-       "sideOffset": 0.0,
-       "variableSideOffset": false,
-       "sideOffsetHeadlandAlternate": false,
-       "headlandForcedDirection": 1.0,
-       "segmentSplitAngle": 25.0,
-       "segmentSplitDistance": 10.0,
-       "segmentValidityCheckOffset": 0.0,
-       "toolAlwaysActive": false,
-       "toolStraighteningSegmentLength": 6.608909,
-       "toolStraighteningAlwaysActive": false,
-       "agentFrontOffset": 3.695828,
-       "agentBackOffset": 3.421936,
-       "agentHeight": 3.2
-      },
-      "segments": {
-       "segment": [
-        {
-         "segmentId": 1,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 2,
-         "used": true,
-         "lineGroupIndex": 8
-        },
-        {
-         "segmentId": 3,
-         "used": true,
-         "lineGroupIndex": 8
-        },
-        {
-         "segmentId": 4,
-         "used": true,
-         "lineGroupIndex": 8
-        },
-        {
-         "segmentId": 5,
-         "used": true,
-         "lineGroupIndex": 8
-        },
-        {
-         "segmentId": 6,
-         "used": true,
-         "lineGroupIndex": 8
-        },
-        {
-         "segmentId": 7,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 8,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 9,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 10,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 11,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 12,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 13,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 14,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 15,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 16,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 17,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 18,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 19,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 20,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 21,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 22,
-         "used": false,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 23,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        }
-       ]
-      }
-     }
+     "isActive": false
     },
     "aiJobVehicle": {
      "isAIStartAllowed": true,
@@ -15653,9 +15875,9 @@
        },
        {
         "name": "positionAngle",
-        "x": 764.90509,
-        "z": 236.880066,
-        "angle": 0.890118
+        "x": 733.499146,
+        "z": -159.24762,
+        "angle": 1.867502
        }
       ]
      }
@@ -15665,7 +15887,25 @@
      "isOnField": false
     },
     "aiModeSelection": {
-     "currentMode": "WORKER"
+     "currentMode": "WORKER",
+     "settings": {
+      "worker": {
+       "implementWidth": 499.0,
+       "numHeadlands": 1,
+       "workDirection": -57,
+       "workHeadlands": true,
+       "headlandFirst": true,
+       "skipNumLines": 0
+      },
+      "steering_assist": {
+       "implementWidth": 499.0,
+       "numHeadlands": 1,
+       "workDirection": -57,
+       "sideOffset": 0.0,
+       "showLines": true,
+       "cruiseControl": false
+      }
+     }
     },
     "attacherJoints": {
      "comboDirection": -1,
@@ -15730,7 +15970,7 @@
      {
       "index": 2,
       "position": "497.472 23.088 927.503",
-      "rotation": "-0.14 0.66 -0.00"
+      "rotation": "-0.14 0.66 -0.01"
      },
      {
       "index": 3,
@@ -15820,7 +16060,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.001023,
+     "damage": 0.001031,
      "wearNode": {
       "amount": 0.001
      }
@@ -15854,8 +16094,8 @@
     "subSelectedObjectIndex": 1,
     "component": {
      "index": 1,
-     "position": "497.093 23.403 918.841",
-     "rotation": "-25.88 -87.36 2.72"
+     "position": "497.091 23.399 918.842",
+     "rotation": "-26.00 -87.33 2.90"
     },
     "configuration": [
      {
@@ -15936,7 +16176,7 @@
      }
     },
     "wearable": {
-     "damage": 0.010735,
+     "damage": 0.010744,
      "wearNode": {
       "amount": 0.031895
      }
@@ -16077,19 +16317,19 @@
     "price": 296150.0,
     "farmId": 2,
     "propertyState": "OWNED",
-    "operatingTime": 9376.554688,
+    "operatingTime": 9449.514648,
     "selectedObjectIndex": 1,
     "subSelectedObjectIndex": 1,
     "component": [
      {
       "index": 1,
-      "position": "829.800 51.020 903.824",
-      "rotation": "-8.68 -85.09 18.83"
+      "position": "469.176 31.655 649.682",
+      "rotation": "179.42 -2.02 -179.99"
      },
      {
       "index": 2,
-      "position": "828.261 51.610 903.933",
-      "rotation": "-8.63 -85.09 18.79"
+      "position": "469.127 32.519 648.277",
+      "rotation": "179.42 -2.02 179.98"
      }
     ],
     "configuration": [
@@ -16219,9 +16459,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.062838,
+     "damage": 0.063399,
      "wearNode": {
-      "amount": 0.150067
+      "amount": 0.150705
      }
     },
     "licensePlates": {
@@ -16257,7 +16497,7 @@
       {
        "index": 1,
        "fillType": "DIESEL",
-       "fillLevel": 367.992676
+       "fillLevel": 366.992218
       },
       {
        "index": 2,
@@ -16267,14 +16507,14 @@
       {
        "index": 3,
        "fillType": "AIR",
-       "fillLevel": 3495.351074
+       "fillLevel": 3275.228027
       }
      ]
     },
     "drivable": {
      "cruiseControl": 53,
      "cruiseControlReverse": 33,
-     "odometerMilage": 45.824261
+     "odometerMilage": 46.400486
     },
     "aiFieldWorker": {
      "isActive": false,
@@ -16620,7 +16860,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.019547,
+     "damage": 0.019557,
      "wearNode": {
       "amount": 0.038726
      }
@@ -17262,42 +17502,42 @@
     "price": 197000.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 7601.265137,
+    "operatingTime": 9870.672852,
     "component": [
      {
       "index": 1,
-      "position": "843.978 54.029 918.888",
-      "rotation": "-178.60 -14.04 -169.33"
+      "position": "903.032 35.007 547.778",
+      "rotation": "0.57 -5.25 -2.65"
      },
      {
       "index": 2,
-      "position": "839.533 54.673 919.720",
-      "rotation": "-178.42 -14.02 -170.08"
+      "position": "907.402 36.194 548.377",
+      "rotation": "0.72 -5.26 -4.24"
      },
      {
       "index": 3,
-      "position": "836.732 53.497 920.477",
-      "rotation": "-178.76 -14.02 -168.72"
+      "position": "910.393 35.347 548.649",
+      "rotation": "0.62 -5.28 -3.10"
      },
      {
       "index": 4,
-      "position": "833.955 52.826 921.650",
-      "rotation": "-179.23 -14.04 -166.84"
+      "position": "913.475 35.145 548.488",
+      "rotation": "0.51 -5.29 -2.03"
      },
      {
       "index": 5,
-      "position": "847.778 56.224 917.623",
-      "rotation": "-178.77 -14.06 -168.65"
+      "position": "898.753 36.593 547.581",
+      "rotation": "0.42 -5.26 -1.00"
      },
      {
       "index": 6,
-      "position": "850.821 56.144 916.895",
-      "rotation": "-178.42 -14.02 -170.08"
+      "position": "895.698 36.024 547.297",
+      "rotation": "0.54 -5.23 -2.23"
      },
      {
       "index": 7,
-      "position": "853.861 56.610 916.587",
-      "rotation": "-178.37 -14.01 -170.28"
+      "position": "892.691 36.106 546.575",
+      "rotation": "0.64 -5.22 -3.31"
      }
     ],
     "configuration": [
@@ -17524,9 +17764,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.008416,
+     "damage": 0.010454,
      "wearNode": {
-      "amount": 0.073246
+      "amount": 0.090874
      }
     },
     "wheels": {
@@ -17539,7 +17779,7 @@
      "comboDirection": -1
     },
     "foldable": {
-     "foldAnimTime": 0.0,
+     "foldAnimTime": 0.0625,
      "isAllowed": true
     },
     "plow": {
@@ -17559,27 +17799,27 @@
      {
       "index": 1,
       "position": "512.557 21.601 812.159",
-      "rotation": "2.71 4.55 0.05"
+      "rotation": "2.72 4.55 0.05"
      },
      {
       "index": 2,
       "position": "515.322 24.281 812.255",
-      "rotation": "5.27 -0.60 65.41"
+      "rotation": "5.27 -0.60 65.42"
      },
      {
       "index": 3,
-      "position": "515.412 25.921 812.326",
-      "rotation": "-2.04 -4.94 171.18"
+      "position": "515.412 25.922 812.327",
+      "rotation": "-2.04 -4.94 171.22"
      },
      {
       "index": 4,
-      "position": "513.779 24.473 811.940",
+      "position": "513.778 24.474 811.940",
       "rotation": "-4.66 2.64 -91.97"
      },
      {
       "index": 5,
       "position": "509.838 24.276 812.691",
-      "rotation": "-3.01 4.38 -65.74"
+      "rotation": "-3.01 4.38 -65.73"
      },
      {
       "index": 6,
@@ -17588,7 +17828,7 @@
      },
      {
       "index": 7,
-      "position": "511.313 24.472 812.136",
+      "position": "511.312 24.472 812.136",
       "rotation": "4.46 -2.92 91.64"
      }
     ],
@@ -17831,7 +18071,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.006187,
+     "damage": 0.006192,
      "wearNode": {
       "amount": 0.066936
      }
@@ -17866,37 +18106,37 @@
      {
       "index": 1,
       "position": "516.707 21.669 828.370",
-      "rotation": "2.02 6.14 2.41"
+      "rotation": "2.03 6.15 2.41"
      },
      {
       "index": 2,
       "position": "519.357 24.464 828.357",
-      "rotation": "6.43 0.69 67.84"
+      "rotation": "6.44 0.69 67.83"
      },
      {
       "index": 3,
-      "position": "519.379 26.107 828.407",
-      "rotation": "-1.12 -6.41 173.53"
+      "position": "519.380 26.107 828.407",
+      "rotation": "-1.12 -6.41 173.55"
      },
      {
       "index": 4,
       "position": "517.799 24.587 828.083",
-      "rotation": "-6.23 1.90 -89.59"
+      "rotation": "-6.24 1.90 -89.61"
      },
      {
       "index": 5,
       "position": "513.892 24.235 828.947",
-      "rotation": "-4.72 4.45 -63.45"
+      "rotation": "-4.73 4.44 -63.45"
      },
      {
       "index": 6,
-      "position": "513.745 25.871 829.016",
-      "rotation": "-3.02 -5.73 -168.71"
+      "position": "513.744 25.871 829.015",
+      "rotation": "-3.02 -5.73 -168.70"
      },
      {
       "index": 7,
-      "position": "515.341 24.484 828.350",
-      "rotation": "6.05 -2.29 93.98"
+      "position": "515.341 24.484 828.349",
+      "rotation": "6.06 -2.29 93.99"
      }
     ],
     "configuration": [
@@ -18138,7 +18378,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.003035,
+     "damage": 0.003039,
      "wearNode": {
       "amount": 0.026838
      }
@@ -18175,37 +18415,37 @@
      {
       "index": 1,
       "position": "734.576 26.911 166.548",
-      "rotation": "-0.34 56.28 -8.09"
+      "rotation": "-0.34 56.29 -8.09"
      },
      {
       "index": 2,
-      "position": "736.609 29.340 164.356",
-      "rotation": "53.70 20.35 67.96"
+      "position": "736.608 29.340 164.356",
+      "rotation": "53.73 20.31 67.98"
      },
      {
       "index": 3,
-      "position": "736.880 30.960 164.280",
-      "rotation": "13.25 -55.25 156.25"
+      "position": "736.879 30.961 164.279",
+      "rotation": "13.25 -55.26 156.24"
      },
      {
       "index": 4,
-      "position": "735.433 29.679 165.367",
-      "rotation": "-56.29 -1.65 -98.87"
+      "position": "735.433 29.680 165.367",
+      "rotation": "-56.30 -1.65 -98.88"
      },
      {
       "index": 5,
       "position": "733.585 29.770 168.932",
-      "rotation": "-53.80 19.97 -83.69"
+      "rotation": "-53.81 20.01 -83.66"
      },
      {
       "index": 6,
-      "position": "733.762 31.404 168.998",
-      "rotation": "-12.67 -55.32 -172.46"
+      "position": "733.763 31.404 168.998",
+      "rotation": "-12.67 -55.33 -172.46"
      },
      {
       "index": 7,
-      "position": "734.074 29.873 167.424",
-      "rotation": "56.27 -1.36 83.14"
+      "position": "734.074 29.873 167.425",
+      "rotation": "56.28 -1.36 83.14"
      }
     ],
     "configuration": [
@@ -18462,11 +18702,11 @@
     "price": 21500.0,
     "farmId": 2,
     "propertyState": "OWNED",
-    "operatingTime": 126.696701,
+    "operatingTime": 1415.066772,
     "component": {
      "index": 1,
-     "position": "-54.069 32.585 213.290",
-     "rotation": "179.88 -44.21 179.33"
+     "position": "-191.839 17.308 -705.145",
+     "rotation": "6.59 74.25 7.64"
     },
     "configuration": [
      {
@@ -18622,9 +18862,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.00063,
+     "damage": 0.008559,
      "wearNode": {
-      "amount": 0.001249
+      "amount": 0.025359
      }
     },
     "licensePlates": {
@@ -18673,19 +18913,19 @@
     "price": 295150.0,
     "farmId": 2,
     "propertyState": "OWNED",
-    "operatingTime": 149.795883,
+    "operatingTime": 1438.165894,
     "selectedObjectIndex": 1,
     "subSelectedObjectIndex": 1,
     "component": [
      {
       "index": 1,
-      "position": "-58.226 32.163 209.047",
-      "rotation": "179.75 -44.48 178.68"
+      "position": "-186.115 16.900 -703.560",
+      "rotation": "6.35 74.23 7.87"
      },
      {
       "index": 2,
-      "position": "-59.195 33.043 208.040",
-      "rotation": "179.33 -44.47 179.28"
+      "position": "-184.779 17.778 -703.153",
+      "rotation": "6.30 74.23 7.81"
      }
     ],
     "configuration": [
@@ -18815,9 +19055,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.000936,
+     "damage": 0.008904,
      "wearNode": {
-      "amount": 0.001389
+      "amount": 0.023206
      }
     },
     "licensePlates": {
@@ -18853,37 +19093,196 @@
       {
        "index": 1,
        "fillType": "DIESEL",
-       "fillLevel": 386.998138
+       "fillLevel": 384.996918
       },
       {
        "index": 2,
        "fillType": "DEF",
-       "fillLevel": 48.0
+       "fillLevel": 46.999886
       },
       {
        "index": 3,
        "fillType": "AIR",
-       "fillLevel": 3480.496094
+       "fillLevel": 2674.766846
       }
      ]
     },
     "drivable": {
      "cruiseControl": 53,
      "cruiseControlReverse": 33,
-     "odometerMilage": 1.288926
+     "odometerMilage": 9.022121
     },
     "aiFieldWorker": {
-     "isActive": false
+     "isActive": false,
+     "strategyFieldCourse": {
+      "lastPosition": "-433.2554016113281 -682.9189453125",
+      "field": {
+       "boundary": {
+        "positions": "-496.75 12.75 -496.25 -701.25 -492.75 -707.25 -482.25 -709.75 -297.75 -708.25 -288.25 -704.75 -272.25 -693.75 -231.25 -670.75 -179.25 -635.75 -156.75 -617.25 -151.75 -604.25 -143.75 -13.25 -150.75 -0.25 -169.75 9.75 -430.75 19.75 -445.75 19.25 -479.75 21.75 -492.25 19.25 -496.75 12.75"
+       }
+      },
+      "fieldCourseSettings": {
+       "implementWidth": 42.0,
+       "numHeadlands": 1,
+       "headlandsFirst": true,
+       "skipNumLines": 0,
+       "workHeadlands": true,
+       "workDirection": -1.0,
+       "workDirectionForceStraightLines": false,
+       "workInitialSegment": false,
+       "minTurnRadius": 5.928071,
+       "initialTurnRadiusFactor": 1.0,
+       "canTurnBackward": false,
+       "allowStraightReversing": true,
+       "isVineyardTool": false,
+       "isVineyardRowTool": false,
+       "headlandTailAvoidance": false,
+       "rowSpacing": 0.0,
+       "rowSnapAngle": 0.0,
+       "rowOffset": 0.0,
+       "cornerCutOutSupported": false,
+       "toolFrontOffset": -11.334635,
+       "toolBackOffset": -11.584635,
+       "hasStaticTools": true,
+       "toolFullOverlap": false,
+       "toolFullOverlapInside": false,
+       "segmentExtendedToBoundary": false,
+       "segmentHeadlandReverseLines": false,
+       "segmentMinOffset": 0.0,
+       "segmentMinLength": 0.0,
+       "sideOffset": 0.0,
+       "variableSideOffset": false,
+       "sideOffsetHeadlandAlternate": false,
+       "headlandForcedDirection": 1.0,
+       "segmentSplitAngle": 25.0,
+       "segmentSplitDistance": 10.0,
+       "segmentValidityCheckOffset": 0.0,
+       "toolAlwaysActive": false,
+       "toolStraighteningSegmentLength": 23.16927,
+       "toolStraighteningAlwaysActive": false,
+       "agentFrontOffset": 3.893745,
+       "agentBackOffset": 1.056255,
+       "agentHeight": 3.4
+      },
+      "segments": {
+       "segment": [
+        {
+         "segmentId": 1,
+         "used": false,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 2,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 3,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 4,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 5,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 6,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 7,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 8,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 9,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 10,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 11,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 12,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 13,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        }
+       ]
+      }
+     }
     },
     "aiJobVehicle": {
-     "isAIStartAllowed": true
+     "isAIStartAllowed": true,
+     "lastJob": {
+      "type": "FIELDWORK",
+      "parameter": [
+       {
+        "name": "vehicle",
+        "vehicleUniqueId": "vehicle93c348e5ea879aa871514f949f0d8937"
+       },
+       {
+        "name": "positionAngle",
+        "x": -163.505005,
+        "z": 4.185,
+        "angle": 2.75762
+       }
+      ]
+     }
     },
     "aiAutomaticSteering": {
      "courseWasActive": true,
      "isOnField": false
     },
     "aiModeSelection": {
-     "currentMode": "WORKER"
+     "currentMode": "WORKER",
+     "settings": {
+      "worker": {
+       "implementWidth": 420.0,
+       "numHeadlands": 1,
+       "workDirection": -57,
+       "workHeadlands": true,
+       "headlandFirst": true,
+       "skipNumLines": 0
+      },
+      "steering_assist": {
+       "implementWidth": 420.0,
+       "numHeadlands": 1,
+       "workDirection": -57,
+       "sideOffset": 0.0,
+       "showLines": true,
+       "cruiseControl": false
+      }
+     }
     },
     "attacherJoints": {
      "comboDirection": -1,

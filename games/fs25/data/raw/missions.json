@@ -162,6 +162,34 @@
     "field": {
      "id": 24
     }
+   },
+   {
+    "uniqueId": "mission5b91cc0b6d383e4d009c58dce9826a30",
+    "status": "CREATED",
+    "finishState": "NONE",
+    "harvest": {
+     "fruitType": "BEETROOT",
+     "expectedLiters": 0.0,
+     "depositedLiters": 0.0,
+     "sellingStationPlaceableUniqueId": "preplaced_groceryStore_c64b45fc4c42f5a86c70770d5fc31a2f",
+     "unloadingStationIndex": 1
+    },
+    "info": {
+     "reward": 0,
+     "reimbursement": 0.0,
+     "completion": 0.0
+    },
+    "vehicles": {
+     "spawned": false,
+     "group": 12
+    },
+    "endDate": {
+     "endDay": 81,
+     "endDayTime": 86399999
+    },
+    "field": {
+     "id": 25
+    }
    }
   ],
   "plowMission": [

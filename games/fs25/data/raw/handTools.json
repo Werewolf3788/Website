@@ -13,20 +13,14 @@
     "filename": "$moddir$FS25_SpeedOfLight/xml/flashlight_100.xml",
     "uniqueId": "HandTool5281c61018595df99345aff8c7adcf90",
     "farmId": 2,
-    "age": 47.0,
-    "holder": {
-     "uniqueId": "NE0DifHeTEE3XiAha2XqNE99mfJhUP5lNhHcjUe16qw="
-    }
+    "age": 47.0
    },
    {
     "modName": "FS25_SpeedOfLight",
     "filename": "$moddir$FS25_SpeedOfLight/xml/ms261.xml",
     "uniqueId": "HandTool98505d2a35f7e97afdbf7231346487ef",
     "farmId": 2,
-    "age": 47.0,
-    "holder": {
-     "uniqueId": "NE0DifHeTEE3XiAha2XqNE99mfJhUP5lNhHcjUe16qw="
-    }
+    "age": 47.0
    },
    {
     "modName": "FS25_SpeedOfLight",

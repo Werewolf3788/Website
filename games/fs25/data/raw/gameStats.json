@@ -6,25 +6,16 @@
   "mapSize": 2048,
   "mapName": "The Rural Farmlands Of Ohio",
   "name": "OneLIVIDMAN and werewolf 618",
-  "dayTime": 59342612,
+  "dayTime": 61598481,
   "Slots": {
    "capacity": 6,
-   "numUsed": 2,
+   "numUsed": 0,
    "Player": [
     {
-     "isUsed": true,
-     "isAdmin": true,
-     "uptime": 55,
-     "x": 624.567871,
-     "y": 30.845423,
-     "z": -121.512177,
-     "#text": "OneLIVIDMAN"
+     "isUsed": false
     },
     {
-     "isUsed": true,
-     "isAdmin": true,
-     "uptime": 55,
-     "#text": "wildhorse_spirit"
+     "isUsed": false
     },
     {
      "isUsed": false
@@ -1288,9 +1279,9 @@
      "name": "Invisible Roller",
      "category": "ROLLERS",
      "type": "roller",
-     "x": 389.487854,
-     "y": 33.458004,
-     "z": 612.145569
+     "x": 384.780975,
+     "y": 33.216228,
+     "z": 673.570374
     },
     {
      "name": "Seeds",
@@ -1316,9 +1307,9 @@
      "name": "Invisible Roller",
      "category": "ROLLERS",
      "type": "roller",
-     "x": 733.323486,
-     "y": 26.012047,
-     "z": 108.893387
+     "x": 731.382202,
+     "y": 23.814249,
+     "z": -158.898834
     },
     {
      "name": "Seeds",
@@ -1373,9 +1364,9 @@
      "name": "Colossus FLM 726",
      "category": "FERTILIZERSPREADERS",
      "type": "spreader",
-     "x": 636.539429,
-     "y": 30.533426,
-     "z": -128.740921,
+     "x": 507.4599,
+     "y": 33.404362,
+     "z": 602.240723,
      "fillTypes": "LIME",
      "fillLevels": 99691.935
     },
@@ -1383,19 +1374,19 @@
      "name": "Colossus FLM 726",
      "category": "FERTILIZERSPREADERS",
      "type": "spreader",
-     "x": 730.920837,
-     "y": 35.173016,
-     "z": 550.612122,
+     "x": 744.169006,
+     "y": 26.133772,
+     "z": 133.074554,
      "fillTypes": "LIME",
-     "fillLevels": 67618.945
+     "fillLevels": 59489.708
     },
     {
      "name": "Colossus FLM 726",
      "category": "FERTILIZERSPREADERS",
      "type": "spreader",
-     "x": 16.102179,
-     "y": 28.462097,
-     "z": 682.909424,
+     "x": 15.822981,
+     "y": 24.544632,
+     "z": -606.545593,
      "fillTypes": "LIME",
      "fillLevels": 85974.487
     },
@@ -1403,9 +1394,9 @@
      "name": "Colossus FLM 726",
      "category": "FERTILIZERSPREADERS",
      "type": "spreader",
-     "x": 835.531433,
-     "y": 52.567047,
-     "z": 903.42395,
+     "x": 469.367096,
+     "y": 32.123226,
+     "z": 655.613831,
      "fillTypes": "FERTILIZER",
      "fillLevels": 99974.398
     },
@@ -1413,46 +1404,46 @@
      "name": "Titan Header",
      "category": "CUTTERS",
      "type": "cutter",
-     "x": 503.384705,
-     "y": 22.962368,
-     "z": 919.547119
+     "x": 503.376099,
+     "y": 22.962486,
+     "z": 919.547546
     },
     {
      "name": "Titan Header",
      "category": "CUTTERS",
      "type": "cutter",
-     "x": 913.624939,
-     "y": 32.789986,
-     "z": 442.416626
+     "x": 738.571045,
+     "y": 34.691101,
+     "z": 473.763184
     },
     {
      "name": "6R Series (230-250)",
      "category": "TRACTORSM",
      "type": "tractor",
-     "x": -155.659195,
-     "y": 16.267824,
-     "z": -664.807312,
+     "x": -235.195953,
+     "y": 26.224468,
+     "z": -563.077087,
      "fillTypes": "DIESEL DEF AIR",
-     "fillLevels": "433.983 25.000 3657.273",
-     "isAIActive": false
+     "fillLevels": "432.983 25.000 4000.000",
+     "isAIActive": true
     },
     {
      "name": "Roadrunner+",
      "category": "TRUCKS",
      "type": "FS25_RoadrunnerPlus.roadrunnerTruck",
-     "x": 643.208679,
-     "y": 29.650471,
-     "z": -135.562866,
+     "x": 515.409607,
+     "y": 33.285095,
+     "z": 596.883667,
      "fillTypes": "DIESEL AIR",
-     "fillLevels": "800.967 5000.000",
+     "fillLevels": "798.965 5000.000",
      "isAIActive": false
     },
     {
      "name": "Roadrunner+",
      "category": "TRUCKS",
      "type": "FS25_RoadrunnerPlus.roadrunnerTruck",
-     "x": 493.484528,
-     "y": 21.259081,
+     "x": 493.484497,
+     "y": 21.259064,
      "z": 842.181885,
      "fillTypes": "DIESEL AIR",
      "fillLevels": "797.941 4184.027",
@@ -1462,8 +1453,8 @@
      "name": "Roadrunner+",
      "category": "TRUCKS",
      "type": "FS25_RoadrunnerPlus.roadrunnerTruck",
-     "x": 497.500916,
-     "y": 21.262857,
+     "x": 497.500946,
+     "y": 21.262814,
      "z": 842.00824,
      "fillTypes": "DIESEL AIR",
      "fillLevels": "874.999 4444.485",
@@ -1493,19 +1484,19 @@
      "name": "Steiger Series",
      "category": "TRACTORSL",
      "type": "tractor",
-     "x": 841.785583,
-     "y": 53.496887,
-     "z": 909.910461,
+     "x": 902.207031,
+     "y": 35.247707,
+     "z": 557.030518,
      "fillTypes": "DIESEL DEF AIR",
      "fillLevels": "1927.967 322.000 4000.000",
-     "isAIActive": true
+     "isAIActive": false
     },
     {
      "name": "Steiger Series",
      "category": "TRACTORSL",
      "type": "tractor",
-     "x": 517.630615,
-     "y": 21.696489,
+     "x": 517.63147,
+     "y": 21.696571,
      "z": 837.619873,
      "fillTypes": "DIESEL DEF AIR",
      "fillLevels": "1741.820 322.000 2372.098",
@@ -1515,9 +1506,9 @@
      "name": "Steiger Series",
      "category": "TRACTORSL",
      "type": "tractor",
-     "x": 512.824036,
-     "y": 21.44239,
-     "z": 821.421265,
+     "x": 512.823792,
+     "y": 21.442371,
+     "z": 821.421204,
      "fillTypes": "DIESEL DEF AIR",
      "fillLevels": "1838.868 322.000 3725.551",
      "isAIActive": false
@@ -1527,41 +1518,40 @@
      "category": "MISC",
      "type": "FS25_precisionFarming.soilSampler",
      "x": 538.413086,
-     "y": 31.904091,
-     "z": 681.43634
+     "y": 31.90411,
+     "z": 681.436218
     },
     {
      "name": "Magnum Series",
      "category": "TRACTORSL",
      "type": "tractor",
-     "x": 294.463654,
-     "y": 33.762115,
-     "z": 640.189514,
+     "x": 94.176033,
+     "y": 21.848284,
+     "z": 892.187805,
      "fillTypes": "DIESEL DEF AIR",
-     "fillLevels": "614.974 98.000 2788.273",
-     "isAIActive": false
+     "fillLevels": "614.974 98.000 1560.000",
+     "isAIActive": true
     },
     {
      "name": "Magnum Series",
      "category": "TRACTORSL",
      "type": "tractor",
-     "x": 390.16864,
-     "y": 33.159157,
-     "z": 616.270813,
-     "controller": "OneLIVIDMAN",
+     "x": 384.782745,
+     "y": 33.352169,
+     "z": 669.428711,
      "fillTypes": "DIESEL DEF AIR",
-     "fillLevels": "580.986 98.000 2744.807",
+     "fillLevels": "580.986 98.000 3000.000",
      "isAIActive": false
     },
     {
      "name": "Case IH Magnum 340 - 400 Series Special Edition FL",
      "category": "TRACTORSL",
      "type": "tractor",
-     "x": 669.268127,
-     "y": 36.275681,
-     "z": 308.60788,
+     "x": 729.382385,
+     "y": 26.424473,
+     "z": 143.357056,
      "fillTypes": "DIESEL DEF AIR LIQUIDFERTILIZER",
-     "fillLevels": "558.953 99.000 2331.114 25000.000",
+     "fillLevels": "535.938 96.000 1532.717 25000.000",
      "isAIActive": false
     },
     {
@@ -1578,9 +1568,9 @@
      "name": "Tree-B-Gone",
      "category": "FORESTRYMISC",
      "type": "FS25_TreeBGone.treeBGone",
-     "x": 666.570129,
-     "y": 36.882401,
-     "z": 312.093933,
+     "x": 664.653381,
+     "y": 36.380375,
+     "z": 312.214111,
      "fillTypes": "WOODCHIPS",
      "fillLevels": 97695.18
     },
@@ -1588,9 +1578,9 @@
      "name": "1775NT Multi-planter",
      "category": "PLANTERS",
      "type": "sowingMachine",
-     "x": -149.044342,
-     "y": 16.842821,
-     "z": -661.356384,
+     "x": -235.182495,
+     "y": 25.535009,
+     "z": -570.143738,
      "fillTypes": "SEEDS",
      "fillLevels": 16163.885
     },
@@ -1598,9 +1588,9 @@
      "name": "1775NT Multi-planter",
      "category": "PLANTERS",
      "type": "sowingMachine",
-     "x": 297.670685,
-     "y": 34.066708,
-     "z": 647.74646,
+     "x": 94.554634,
+     "y": 23.650389,
+     "z": 884.034546,
      "fillTypes": "SEEDS",
      "fillLevels": 25000.0
     },
@@ -1609,7 +1599,7 @@
      "category": "CARS",
      "type": "carFillable",
      "x": 537.924011,
-     "y": 31.735073,
+     "y": 31.735104,
      "z": 679.385071,
      "fillTypes": "UNKNOWN DIESEL",
      "fillLevels": "0.000 33.000",
@@ -1619,19 +1609,19 @@
      "name": "8R Series",
      "category": "TRACTORSL",
      "type": "tractor",
-     "x": 9.536395,
-     "y": 28.069729,
-     "z": 679.939087,
+     "x": 15.803354,
+     "y": 24.171684,
+     "z": -613.341492,
      "fillTypes": "DIESEL DEF AIR",
-     "fillLevels": "651.965 36.000 2065.198",
-     "isAIActive": true
+     "fillLevels": "648.963 36.000 3000.000",
+     "isAIActive": false
     },
     {
      "name": "Vegetable Header",
      "category": "VEGETABLEHARVESTERS",
      "type": "cutter",
      "x": 481.997101,
-     "y": 23.195251,
+     "y": 23.195255,
      "z": 934.054504
     },
     {
@@ -1639,7 +1629,7 @@
      "category": "BEETHARVESTERS",
      "type": "combineDrivable",
      "x": 481.100037,
-     "y": 22.535954,
+     "y": 22.535948,
      "z": 925.878906,
      "fillTypes": "UNKNOWN DIESEL DEF",
      "fillLevels": "0.000 1214.850 95.000",
@@ -1692,9 +1682,9 @@
      "name": "Citan 15001-C",
      "category": "SEEDERS",
      "type": "fertilizingSowingMachine",
-     "x": 875.549011,
-     "y": 34.312431,
-     "z": 516.270935,
+     "x": 899.264771,
+     "y": 36.24596,
+     "z": 574.264893,
      "fillTypes": "SEEDS FERTILIZER",
      "fillLevels": "3000.000 4800.000"
     },
@@ -1702,9 +1692,9 @@
      "name": "4905 Multi-Fruit Planter",
      "category": "PLANTERS",
      "type": "fertilizingSowingMachine",
-     "x": 576.827942,
-     "y": 31.772097,
-     "z": -105.530243,
+     "x": 550.243469,
+     "y": 31.78282,
+     "z": -209.11084,
      "fillTypes": "SEEDS LIQUIDFERTILIZER",
      "fillLevels": "149989.156 74923.930"
     },
@@ -1712,8 +1702,8 @@
      "name": "40' Flatbed Autoloading Bale Trailer",
      "category": "TRAILERS",
      "type": "trailer",
-     "x": 493.158081,
-     "y": 21.181866,
+     "x": 493.158051,
+     "y": 21.18187,
      "z": 831.806885,
      "fillTypes": "UNKNOWN",
      "fillLevels": 0.0
@@ -1722,8 +1712,8 @@
      "name": "40' Flatbed Autoloading Bale Trailer",
      "category": "TRAILERS",
      "type": "FS25_LizardComboTrailer.baleAutoLoad",
-     "x": 497.814911,
-     "y": 21.167599,
+     "x": 497.814941,
+     "y": 21.167665,
      "z": 829.902039,
      "fillTypes": "UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN",
      "fillLevels": "0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000"
@@ -2152,19 +2142,18 @@
      "name": "Colossus 9000 Harvester",
      "category": "HARVESTERS",
      "type": "combineDrivable",
-     "x": 901.909973,
-     "y": 32.385651,
-     "z": 425.847168,
-     "controller": "wildhorse_spirit",
+     "x": 752.6474,
+     "y": 34.348877,
+     "z": 472.562744,
      "fillTypes": "UNKNOWN DIESEL DEF",
-     "fillLevels": "0.000 1385.863 163.000",
+     "fillLevels": "0.000 1365.818 161.000",
      "isAIActive": false
     },
     {
      "name": "Colossus 9000 Harvester",
      "category": "HARVESTERS",
      "type": "combineDrivable",
-     "x": 497.541992,
+     "x": 497.542023,
      "y": 22.512316,
      "z": 933.727234,
      "fillTypes": "UNKNOWN DIESEL DEF",
@@ -2176,7 +2165,7 @@
      "category": "HARVESTERS",
      "type": "combineDrivable",
      "x": 504.621155,
-     "y": 22.512564,
+     "y": 22.512552,
      "z": 933.605286,
      "fillTypes": "UNKNOWN DIESEL DEF",
      "fillLevels": "0.000 1492.995 163.000",
@@ -2186,12 +2175,12 @@
      "name": "Series 8 TTV",
      "category": "TRACTORSM",
      "type": "tractor",
-     "x": 884.205688,
-     "y": 34.341072,
-     "z": 516.19104,
+     "x": 900.185547,
+     "y": 35.770351,
+     "z": 565.669983,
      "fillTypes": "DIESEL DEF AIR",
      "fillLevels": "213.904 35.000 3000.000",
-     "isAIActive": false
+     "isAIActive": true
     },
     {
      "name": "Profi Liner",
@@ -2207,12 +2196,12 @@
      "name": "Series 8 TTV",
      "category": "TRACTORSM",
      "type": "tractor",
-     "x": 583.659058,
-     "y": 31.244671,
-     "z": -109.625519,
+     "x": 543.905823,
+     "y": 31.778591,
+     "z": -205.636917,
      "fillTypes": "DIESEL DEF AIR",
-     "fillLevels": "495.998 35.000 3000.000",
-     "isAIActive": false
+     "fillLevels": "494.998 35.000 3000.000",
+     "isAIActive": true
     },
     {
      "name": "Titan Super Collect 533",
@@ -2228,7 +2217,7 @@
      "name": "Colossus 7000 Cotton Harvester",
      "category": "COTTONHARVESTERS",
      "type": "cottonHarvester",
-     "x": 475.130035,
+     "x": 475.130066,
      "y": 22.495222,
      "z": 933.236755,
      "fillTypes": "UNKNOWN COTTON DIESEL DEF",
@@ -2309,11 +2298,11 @@
      "name": "ARION 570-530",
      "category": "TRACTORSS",
      "type": "tractor",
-     "x": 735.20929,
-     "y": 25.564981,
-     "z": 111.65786,
+     "x": 734.539612,
+     "y": 23.233198,
+     "z": -159.943924,
      "fillTypes": "DIESEL DEF AIR",
-     "fillLevels": "236.998 16.000 3900.079",
+     "fillLevels": "235.998 16.000 3900.079",
      "isAIActive": false
     },
     {
@@ -2330,7 +2319,7 @@
      "name": "N60-45",
      "category": "CUTTERTRAILERS",
      "type": "dynamicMountAttacherTrailer",
-     "x": 497.171234,
+     "x": 497.171265,
      "y": 22.475292,
      "z": 920.869995,
      "fillTypes": "",
@@ -2340,9 +2329,9 @@
      "name": "Titan Corn Header",
      "category": "CORNHEADERS",
      "type": "cutter",
-     "x": 497.09436,
-     "y": 23.404202,
-     "z": 918.841797
+     "x": 497.090668,
+     "y": 23.398623,
+     "z": 918.841675
     },
     {
      "name": "Titan Corn Header",
@@ -2356,11 +2345,11 @@
      "name": "Puma Series",
      "category": "TRACTORSM",
      "type": "tractor",
-     "x": 829.799683,
-     "y": 51.020069,
-     "z": 903.823792,
+     "x": 469.176483,
+     "y": 31.654867,
+     "z": 649.682373,
      "fillTypes": "DIESEL DEF AIR",
-     "fillLevels": "367.993 48.000 3495.351",
+     "fillLevels": "366.992 48.000 3275.228",
      "isAIActive": false
     },
     {
@@ -2478,25 +2467,25 @@
      "name": "ST820 MultiFunction",
      "category": "CULTIVATORS",
      "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
-     "x": 843.977661,
-     "y": 54.02882,
-     "z": 918.888245
+     "x": 903.031799,
+     "y": 35.00666,
+     "z": 547.777893
     },
     {
      "name": "ST820 MultiFunction",
      "category": "CULTIVATORS",
      "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
      "x": 512.557007,
-     "y": 21.600847,
-     "z": 812.158569
+     "y": 21.600857,
+     "z": 812.158508
     },
     {
      "name": "ST820 MultiFunction",
      "category": "CULTIVATORS",
      "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
      "x": 516.706726,
-     "y": 21.668863,
-     "z": 828.369995
+     "y": 21.668793,
+     "z": 828.370117
     },
     {
      "name": "ST820 MultiFunction",
@@ -2510,9 +2499,9 @@
      "name": "Colossus FLM 726",
      "category": "FERTILIZERSPREADERS",
      "type": "spreader",
-     "x": -223.555099,
-     "y": 28.100515,
-     "z": -216.017654,
+     "x": -191.839478,
+     "y": 17.307608,
+     "z": -705.145142,
      "fillTypes": "FERTILIZER",
      "fillLevels": 100000.0
     },
@@ -2520,12 +2509,12 @@
      "name": "Puma Series",
      "category": "TRACTORSM",
      "type": "tractor",
-     "x": -223.576172,
-     "y": 27.830194,
-     "z": -209.931076,
+     "x": -186.114883,
+     "y": 16.899508,
+     "z": -703.560364,
      "fillTypes": "DIESEL DEF AIR",
-     "fillLevels": "385.998 48.000 2997.618",
-     "isAIActive": true
+     "fillLevels": "384.997 47.000 2674.767",
+     "isAIActive": false
     }
    ]
   }
