@@ -263,6 +263,7 @@ window.appState = {
 
     hydrateFromRawJson: function(data) {
         if (!data || typeof data !== 'object') return;
+        this._loadedKey = null; // state is blank again until the save is read back in
         this.gameData = data;
         applyGameBackground(data);
         this.gameTitle = data.game || data.title || "Game Companion";
@@ -596,10 +597,19 @@ window.appState = {
 };
 
 // Section 4: Authoritative Storage Gate
-window.appState.saveProgress = function() {
-    const payload = this.buildPayload();
+window.appState.saveKey = function() { return [this.getUserKey(), this.platform, this.getCanonicalGameName()].join('|'); };
+window.appState.saveProgress = function(onlyFields) {
+    let payload = this.buildPayload();
     const userKey = this.getUserKey();
     const gameName = this.getCanonicalGameName();
+    // Never write until this user's save for this game/platform has been read back in.
+    // (Writing earlier would overwrite real progress with a blank checklist.)
+    if (this.currentUser && userKey && this._loadedKey !== this.saveKey()) {
+        console.warn('[Save blocked] progress not loaded yet for', this.saveKey());
+        this.updateStatus('Waiting for your saved progress to load before saving…');
+        return;
+    }
+    if (Array.isArray(onlyFields)) { const p = { updatedAt: payload.updatedAt }; onlyFields.forEach(k => { if (payload[k] !== undefined) p[k] = payload[k]; }); payload = p; }
 
     if (!this.currentUser || !userKey) {
         const guestKey = `guest_progress_${this.gameId}_${this.platform}`;
@@ -649,6 +659,8 @@ window.appState.loadProgress = async function() {
     }
 
     if (firestore) {
+        const wantKey = this.saveKey();
+        this._loadedKey = null;
         try {
             const docRef = firestore
                 .collection("user")
@@ -658,15 +670,18 @@ window.appState.loadProgress = async function() {
                 .collection("game")
                 .doc(gameName);
 
-            const doc = await docRef.get();
+            const doc = await docRef.get({ source: 'server' }).catch(() => docRef.get());
+            if (wantKey !== this.saveKey()) return; // user/game/platform changed while loading
             if (doc.exists) {
                 this.applyPayload(doc.data());
                 this.updateStatus(`[Cloud Synced] Loaded progress data.`);
             } else {
                 this.applyStateToUI();
             }
+            this._loadedKey = wantKey;
         } catch (err) {
             console.warn("[Firestore Fetch Warning]:", err);
+            this.updateStatus(`Couldn't load your saved progress (${err.message}). Changes won't be saved until it loads — refresh to retry.`);
             this.applyStateToUI();
         }
     }
@@ -1429,7 +1444,7 @@ async function autoCheckUserPsnTrophies() {
             if (applyPsnToMedals(byId)) stateModified = true;
             if (stateModified) {
                 appState.applyStateToUI();
-                appState.saveProgress();
+                appState.saveProgress(['trophies', 'medals', 'trophies_earned', 'trophies_total', 'trophies_percent', 'campaignRank', 'campaignRankSource']);
                 appState.updateStatus(`[PSN Telemetry Synced] Visual assets mapped for ${gamertag}`);
             }
         }
@@ -3102,10 +3117,12 @@ function watchGameData(gameKey, loadedSync) {
             const open = new Set([...document.querySelectorAll('#section-container .category-section:not(.section-collapsed) > .category-header h2')].map(h => h.innerText));
             const y = window.scrollY;
             const keep = appState.buildPayload();
+            const wasLoaded = appState._loadedKey;
             const friends = appState.friendsProgress;
             appState.hydrateFromRawJson(data);
             renderUniversalCompanion(data);
             appState.applyPayload(keep);
+            appState._loadedKey = wasLoaded;
             appState.friendsProgress = friends;
             document.querySelectorAll('#section-container .category-section > .category-header h2').forEach(h => { if (open.has(h.innerText)) h.closest('.category-section').classList.remove('section-collapsed'); });
             appState.applyStateToUI();
