@@ -13,6 +13,10 @@
       {
         "source": "/fc5",
         "destination": "/game/index.html"
+      },
+      {
+        "source": "/fs25",
+        "destination": "/games/fs25/index.html"
       }
     ],
     "headers": [
