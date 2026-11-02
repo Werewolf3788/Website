@@ -150,6 +150,17 @@ footer{margin-top:26px;color:var(--dim);font-size:12px;text-align:center}
 .split{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(240px,1fr);gap:14px}
 @media(max-width:900px){.split{grid-template-columns:1fr}}
 input.search{background:var(--panel2);border:1px solid var(--line2);color:var(--text);border-radius:8px;padding:6px 9px;font:600 12px var(--mono);width:170px}
+.farmbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.farmbar .lbl{font:700 11px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-right:4px}
+.fview{cursor:pointer;font:700 12.5px var(--head);letter-spacing:.4px;text-transform:uppercase;padding:8px 14px;border-radius:10px;border:2px solid var(--line2);background:var(--panel);color:var(--muted)}
+.fview.on{color:#fff;box-shadow:0 0 14px var(--glow,rgba(34,197,94,.3))}
+.fview .you{font:700 9.5px var(--mono);margin-left:6px;padding:1px 5px;border-radius:5px;background:#ffffff22}
+.signin{margin-left:auto;cursor:pointer;font:700 11.5px var(--mono);padding:7px 11px;border-radius:8px;border:1px solid var(--line2);background:var(--panel2);color:var(--muted)}
+.youcard{margin-top:12px;border-radius:14px;padding:14px 16px;border:2px solid var(--c2,var(--line2));background:linear-gradient(120deg,var(--c1t,rgba(34,197,94,.12)),rgba(11,21,16,.92) 60%);display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+.youcard h2{font:700 18px var(--head);text-transform:uppercase;letter-spacing:.5px}
+.youcard .stats{display:flex;flex-wrap:wrap;gap:18px}
+.youcard .stats div{min-width:80px}.youcard .stats b{display:block;font:700 19px var(--head)}
+.youcard .stats span{font:700 10.5px var(--mono);color:var(--muted);text-transform:uppercase}
 .blur{filter:blur(6px);cursor:pointer;user-select:none;transition:filter .2s}
 .blur.show{filter:none;user-select:text}
 .fin{display:flex;justify-content:space-between;font:600 11.5px var(--mono);padding:2px 0}
@@ -176,6 +187,8 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     </div>
   </header>
   <div id="banner"></div>
+  <div id="youCard"></div>
+  <div class="farmbar" id="farmBar"></div>
 
   <section class="kpis" id="kpis"></section>
 
@@ -306,6 +319,37 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
 
   let DATA = null, HIST = [], DATA_BASE = REPO_RAW;
   let fieldFilter = 'owned', fleetTab = 'vehicle', fleetFarm = 'all', fleetSort = {k:'damage', d:-1};
+  // Farm view: 'all' or a farm id. Signed-in players who are on a farm start on their own farm.
+  let viewFarm = 'all', viewChosen = false, ME = null;
+  try { const v = sessionStorage.getItem('fs25_view'); if (v) { viewFarm = v; viewChosen = true; } } catch (e) {}
+  const inView = id => viewFarm === 'all' || String(id) === String(viewFarm);
+  const setView = (id, byUser) => {
+    viewFarm = String(id); fleetFarm = viewFarm;
+    if (byUser) { viewChosen = true; try { sessionStorage.setItem('fs25_view', viewFarm); } catch (e) {} }
+    if (DATA) render();
+  };
+  const norm = n => String(n || '').trim().toLowerCase();
+  // Which farm is the signed-in viewer on? Matches their profile names to the farm members in the save.
+  function myFarm() {
+    if (!ME || !ME.names.length) return null;
+    const names = new Set(ME.names.map(norm).filter(Boolean));
+    for (const f of (DATA?.farms || [])) {
+      const m = (f.players || []).find(p => names.has(norm(p.name)));
+      if (m && f.id) return { farm: f, member: m };
+    }
+    return null;
+  }
+  window.FS25 = {
+    setViewer(info) {
+      ME = info;
+      if (DATA) {
+        const mine = myFarm();
+        if (!viewChosen) { viewFarm = mine ? String(mine.farm.id) : 'all'; fleetFarm = viewFarm; }   // non-players get the public view
+        render();
+      }
+    },
+    signIn: null,
+  };
   let mapLayers = { image:true, fields:true, land:true, fleet:true, players:true };
 
   const $ = id => document.getElementById(id);
@@ -388,6 +432,8 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     const [ov, hist] = await Promise.all([getJSON('overview.json'), getJSON('history.json')]);
     if (!ov) { banner('Waiting for the first server sync. Run "FS25 Server Sync" in GitHub Actions to pull the savegame.'); return; }
     DATA = ov; HIST = Array.isArray(hist) ? hist : [];
+    const mine = myFarm(); if (mine && !viewChosen) { viewFarm = String(mine.farm.id); fleetFarm = viewFarm; }
+    if (viewFarm !== 'all' && !(DATA.farms || []).some(f => String(f.id) === viewFarm)) viewFarm = 'all';
     $('banner').style.display = 'none';
     try { render(); } catch (e) { console.error(e); banner('Some data could not be shown: ' + e.message); }
   }
@@ -409,7 +455,8 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     $('pSync').title = `Last check ${s.lastCheck || '-'} (${s.mode || '-'} pull)`;
 
     const farms = (d.farms || []).filter(f => f.id);
-    const kp = [
+    renderFarmBar(farms); renderYou();
+    const kp = viewFarm !== 'all' ? farmKpis(farms.find(f => String(f.id) === viewFarm)) : [
       ...farms.slice(0, 2).map((f, i) => [f.name || 'Farm ' + f.id, short$(f.money), f.loan ? 'Loan ' + short$(f.loan) : (f.players || []).map(p => p.name).join(', '), farmColor(f.id), farmColor2(f.id)]),
       ['Owned Land', (sum.ownedHectares ?? '--') + ' ha', `${n0(sum.ownedFields)} fields · ${n0(sum.ownedFarmlands)} farmlands`, 'var(--lime)'],
       ['Ready to Harvest', n0(sum.readyToHarvest), `${n0(sum.growing)} growing`, 'var(--amber)'],
@@ -418,11 +465,69 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
       ['Helpers Working', n0(sum.helpersActive), `${n0(sum.vehicles)} vehicles owned`, 'var(--violet)'],
       ['Collectibles', sum.collectibles || '--', `${n0(sum.mods)} mods`, 'var(--orange)'],
     ];
-    $('kpis').innerHTML = kp.map(([l, v, f, col, col2]) => `<div class="kpi" style="--c:${col}${col2 ? `;border-color:${col2}` : ''}"><div class="lbl"${col2 ? ` style="color:${col}"` : ''}>${esc(l)}</div><div class="val">${esc(v)}</div><div class="foot">${esc(f)}</div></div>`).join('');
+    $('kpis').innerHTML = (kp || []).map(([l, v, f, col, col2]) => `<div class="kpi" style="--c:${col}${col2 ? `;border-color:${col2}` : ''}"><div class="lbl"${col2 ? ` style="color:${col}"` : ''}>${esc(l)}</div><div class="val">${esc(v)}</div><div class="foot">${esc(f)}</div></div>`).join('');
 
     [renderMap, renderFields, renderFleet, renderPlaceables, renderStock, renderSales, renderMarket,
      renderPlayers, renderWorking, renderWeather, renderDemands, renderFarms, renderTrend, renderPF, renderMissions, renderMods, renderServer, renderSync].forEach(safe);
   }
+
+  // ---- farm views
+  function renderFarmBar(farms) {
+    const mine = myFarm();
+    const btn = (id, label, c1, c2) => `<button class="fview ${viewFarm === String(id) ? 'on' : ''}" data-v="${id}" style="${viewFarm === String(id) ? `background:${c1}33;border-color:${c2};--glow:${c1}55` : ''}">${esc(label)}${mine && String(mine.farm.id) === String(id) ? '<span class="you">YOU</span>' : ''}</button>`;
+    $('farmBar').innerHTML = `<span class="lbl">View</span>` + btn('all', 'All farms', '#22c55e', '#22c55e') +
+      farms.map(f => btn(f.id, f.name || 'Farm ' + f.id, farmColor(f.id), farmColor2(f.id))).join('') +
+      (ME ? `<span class="dim" style="margin-left:auto;font-size:12px">Signed in${ME.label ? ' as ' + esc(ME.label) : ''}</span>` : `<button class="signin" id="signinBtn"><i class="fa-brands fa-google"></i> Sign in to see your farm</button>`);
+    $('farmBar').querySelectorAll('.fview').forEach(b => b.onclick = () => setView(b.dataset.v, true));
+    const sb = $('signinBtn'); if (sb) sb.onclick = () => window.FS25.signIn ? window.FS25.signIn() : alert('Sign-in is still loading, try again in a moment.');
+  }
+  function farmStats(f) {
+    const fields = (DATA.fields || []).filter(x => x.farmId === f.id);
+    const land = (DATA.farmlands || []).filter(x => x.farmId === f.id);
+    const veh = (DATA.vehicles || []).filter(v => v.farmId === f.id);
+    return {
+      fields, ha: land.reduce((a, b) => a + (+b.area || 0), 0), farmlands: land.length,
+      ready: fields.filter(x => x.status === 'ready').length, growing: fields.filter(x => x.status === 'growing').length,
+      lime: fields.filter(x => x.needs.includes('lime')).length, fert: fields.filter(x => x.needs.includes('fertilizer')).length,
+      vehicles: veh.filter(v => v.kind === 'vehicle').length, pallets: veh.filter(v => v.kind === 'pallet').length,
+      helpers: veh.filter(v => v.isAIActive).length,
+      today: (f.finances || []).find(d => +d.day === 0) || (f.finances || [])[0],
+    };
+  }
+  function farmKpis(f) {
+    if (!f) return [];
+    const st = farmStats(f), c1 = farmColor(f.id), c2 = farmColor2(f.id);
+    return [
+      [f.name || 'Farm ' + f.id, short$(f.money), f.loan ? 'Loan ' + short$(f.loan) : (f.players || []).map(p => p.name).join(', '), c1, c2],
+      ['Today', st.today ? short$(st.today.income + st.today.expenses) : '--', st.today ? `+${short$(st.today.income)} in · ${short$(st.today.expenses)} out` : '', c1, c2],
+      ['Land', st.ha.toFixed(1) + ' ha', `${st.fields.length} fields · ${st.farmlands} farmlands`, c1, c2],
+      ['Ready to Harvest', n0(st.ready), `${n0(st.growing)} growing`, 'var(--amber)'],
+      ['Need Lime', n0(st.lime), 'fields at 0% lime', '#eab308'],
+      ['Need Fertilizer', n0(st.fert), 'fields under 100% fertilized', 'var(--sky)'],
+      ['Helpers Working', n0(st.helpers), `${n0(st.vehicles)} vehicles · ${n0(st.pallets)} pallets`, 'var(--violet)'],
+      ['Members', n0((f.players || []).length), (f.players || []).map(p => p.name).join(', '), c1, c2],
+    ];
+  }
+  function renderYou() {
+    const mine = myFarm(), box = $('youCard');
+    if (!mine) { box.innerHTML = ''; return; }
+    const f = mine.farm, st = farmStats(f), c1 = farmColor(f.id), c2 = farmColor2(f.id);
+    const online = new Set((DATA.live?.players || []).map(p => norm(p.name)));
+    box.innerHTML = `<div class="youcard" style="--c2:${c2};--c1t:${c1}2e">
+      <div><div class="dim mono" style="font-size:11px;text-transform:uppercase">Welcome back${online.has(norm(mine.member.name)) ? ' · you are online now' : ''}</div>
+        <h2 style="color:${c1}">${esc(mine.member.name)} · ${esc(f.name || 'Farm ' + f.id)}</h2>
+        <div class="dim" style="font-size:12px">${mine.member.farmManager ? 'Farm manager · ' : ''}Last played ${esc(mine.member.lastConnected || '-')}</div></div>
+      <div class="stats">
+        <div><b style="color:${c1}">${short$(f.money)}</b><span>Balance</span></div>
+        <div><b>${st.ha.toFixed(1)} ha</b><span>${st.fields.length} fields</span></div>
+        <div><b style="color:var(--amber)">${st.ready}</b><span>Ready</span></div>
+        <div><b style="color:#eab308">${st.lime}</b><span>Need lime</span></div>
+        <div><b style="color:var(--sky)">${st.fert}</b><span>Need fertilizer</span></div>
+        <div><b style="color:var(--violet)">${st.helpers}</b><span>Helpers on</span></div>
+      </div>
+      ${viewFarm !== String(f.id) ? `<button class="fview" style="border-color:${c2}" onclick="window.FS25.show('${f.id}')">Show my farm</button>` : ''}</div>`;
+  }
+  window.FS25.show = id => setView(id, true);
 
   // ---- tactical map
   function renderMap() {
@@ -439,13 +544,13 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     if (mapLayers.land) (DATA.farmlands || []).forEach(f => {
       if (f.x == null) return;
       const [x, y] = P(f.x, f.z), r = Math.max(6, Math.sqrt(+f.area || 1) * 6);
-      svg += `<circle cx="${x}" cy="${y}" r="${r.toFixed(1)}" fill="${f.farmId ? farmColor(f.farmId) : '#1f3a2a'}" fill-opacity="${f.farmId ? .25 : .12}" stroke="${f.farmId ? farmColor2(f.farmId) : '#2b4a37'}" stroke-opacity=".9" stroke-width="${f.farmId ? 2.5 : 1.2}" data-tip="Farmland ${esc(f.id)} · ${f.farmId ? esc(farmName(f.farmId)) : 'For sale ' + money(f.price)} · ${(+f.area || 0).toFixed(2)} ha"/>`;
+      svg += `<circle cx="${x}" cy="${y}" r="${r.toFixed(1)}" fill="${f.farmId ? farmColor(f.farmId) : '#1f3a2a'}" fill-opacity="${f.farmId ? (inView(f.farmId) ? .25 : .06) : .12}" stroke="${f.farmId ? farmColor2(f.farmId) : '#2b4a37'}" stroke-opacity=".9" stroke-width="${f.farmId ? 2.5 : 1.2}" data-tip="Farmland ${esc(f.id)} · ${f.farmId ? esc(farmName(f.farmId)) : 'For sale ' + money(f.price)} · ${(+f.area || 0).toFixed(2)} ha"/>`;
     });
     if (mapLayers.fields) (DATA.fields || []).forEach(f => {
       if (f.x == null) return;
       const [x, y] = P(f.x, f.z), col = STATUS_COLOR[f.status] || '#64748b';
       svg += `<g data-tip="Field ${esc(f.id)} · ${nice(f.fruit === 'UNKNOWN' ? f.groundType : f.fruit)} · ${nice(f.status)} · Lime ${limePct(f)}% · Fertilizer ${fertPct(f)}%${f.isOwned ? ' · ' + esc(farmName(f.farmId)) : ''}" data-field="${esc(f.id)}" style="cursor:pointer">
-        <rect x="${x - 17}" y="${y - 12}" width="34" height="24" rx="5" fill="${col}" fill-opacity="${f.isOwned ? .9 : .35}" stroke="${f.isOwned ? farmColor2(f.farmId) : 'none'}" stroke-width="2.5"/>
+        <rect x="${x - 17}" y="${y - 12}" width="34" height="24" rx="5" fill="${col}" fill-opacity="${f.isOwned ? (inView(f.farmId) ? .9 : .25) : .35}" stroke="${f.isOwned ? farmColor2(f.farmId) : 'none'}" stroke-width="2.5"/>
         <text x="${x}" y="${+y + 5}" font-size="15" font-weight="700" text-anchor="middle" fill="#04110a" font-family="JetBrains Mono">${esc(f.id)}</text></g>`;
     });
     if (mapLayers.fleet) (DATA.liveVehicles || []).forEach(v => {
@@ -487,10 +592,13 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
   ];
   function renderFields() {
     const fields = DATA.fields || [];
-    $('fFilters').innerHTML = FILTERS.filter(([k, l, fn]) => k === 'owned' || k === 'all' || fields.some(fn))
-      .map(([k, l, fn]) => `<button class="fbtn ${fieldFilter === k ? 'on' : ''}" data-f="${k}">${l}<span class="n">${fields.filter(fn).length}</span></button>`).join('');
+    // In a farm view every filter except "All" only counts that farm's fields
+    const scoped = (k, fn) => f => fn(f) && (k === 'all' || inView(f.farmId));
+    $('fFilters').innerHTML = FILTERS.filter(([k, l, fn]) => k === 'owned' || k === 'all' || fields.some(scoped(k, fn)))
+      .map(([k, l, fn]) => `<button class="fbtn ${fieldFilter === k ? 'on' : ''}" data-f="${k}">${k === 'owned' && viewFarm !== 'all' ? esc(farmName(+viewFarm)) : l}<span class="n">${fields.filter(scoped(k, fn)).length}</span></button>`).join('');
     $('fFilters').querySelectorAll('button').forEach(b => b.onclick = () => { fieldFilter = b.dataset.f; renderFields(); });
-    const list = fields.filter((FILTERS.find(x => x[0] === fieldFilter) || FILTERS[1])[2]);
+    const cur = FILTERS.find(x => x[0] === fieldFilter) || FILTERS[1];
+    const list = fields.filter(scoped(cur[0], cur[2]));
     if (!list.length) { $('board').innerHTML = `<div class="empty" style="grid-column:1/-1">No fields match this filter.</div>`; return; }
     $('board').innerHTML = list.map(f => {
       const chips = [];
@@ -574,7 +682,7 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
 
   // ---- placeables
   function renderPlaceables() {
-    const list = (DATA.placeables || []).filter(p => p.farmId >= 1 && p.farmId <= 8 && (p.storage.length || p.animals || p.productions.length))
+    const list = (DATA.placeables || []).filter(p => p.farmId >= 1 && p.farmId <= 8 && inView(p.farmId) && (p.storage.length || p.animals || p.productions.length))
       .sort((a, b) => (b.animals - a.animals) || (b.storage.reduce((s, x) => s + x.level, 0) - a.storage.reduce((s, x) => s + x.level, 0)));
     $('plTag').textContent = `${list.length} with stock`;
     if (!list.length) { $('placeables').innerHTML = '<div class="empty" style="grid-column:1/-1">No storage, production or animal buildings found yet.</div>'; return; }
@@ -588,7 +696,14 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
 
   // ---- stock / sales
   function renderStock() {
-    const st = DATA.stock || [], items = DATA.items || [];
+    const items = (DATA.items || []).filter(i => inView(i.farmId));
+    let st = DATA.stock || [];
+    if (viewFarm !== 'all') {   // live pallet list has no owner: use this farm's saved pallets
+      const g = {};
+      (DATA.vehicles || []).filter(v => v.kind === 'pallet' && inView(v.farmId)).forEach(v => v.fills.forEach(f => {
+        const x = g[f.type] = g[f.type] || { fillType: f.type, pallets: 0, level: 0 }; x.pallets++; x.level += f.level; }));
+      st = Object.values(g).sort((a, b) => b.level - a.level);
+    }
     $('stTag').textContent = `${st.reduce((a, b) => a + b.pallets, 0)} pallets · ${items.reduce((a, b) => a + b.count, 0)} bales/items`;
     let html = st.length ? `<table><thead><tr><th>Pallets (live)</th><th class="num">Count</th><th class="num">Total</th></tr></thead><tbody>${
       st.map(s => `<tr><td><b>${nice(s.fillType)}</b></td><td class="num">${n0(s.pallets)}</td><td class="num">${n0(s.level)} L</td></tr>`).join('')}</tbody></table>` : '';
@@ -644,7 +759,8 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     $('players').innerHTML = html;
   }
   function renderWorking() {
-    const w = DATA.working || [];
+    const w = viewFarm === 'all' ? (DATA.working || [])
+      : (DATA.vehicles || []).filter(v => inView(v.farmId) && (v.isAIActive || v.controller)).map(v => ({ name: v.name, isAIActive: v.isAIActive, controller: v.controller }));
     $('wkTag').textContent = w.length;
     $('working').innerHTML = w.length ? w.map(v => `<div class="row"><span><b>${esc(v.name)}</b></span><span>${v.isAIActive ? '<span class="chip" style="background:rgba(167,139,250,.18);color:#c4b5fd">Helper working</span>' : `<span class="chip" style="background:rgba(56,189,248,.15);color:var(--sky)">${esc(v.controller)}</span>`}</span></div>`).join('')
       : '<div class="dim">No helpers or drivers right now.</div>';
@@ -669,7 +785,7 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
       : '<div class="dim">No great demands scheduled.</div>';
   }
   function renderFarms() {
-    const list = (DATA.farms || []).filter(f => f.id);
+    const list = (DATA.farms || []).filter(f => f.id && inView(f.id));
     $('farms').innerHTML = list.length ? list.map(f => {
       const fields = (DATA.fields || []).filter(x => x.farmId === f.id), ha = (DATA.farmlands || []).filter(x => x.farmId === f.id).reduce((a, b) => a + (+b.area || 0), 0);
       const today = (f.finances || []).find(d => +d.day === 0) || (f.finances || [])[0];
@@ -683,7 +799,8 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     }).join('') : '<div class="dim">Farm data arrives with the next full pull.</div>';
   }
   function renderTrend() {
-    const pts = HIST.filter(h => h.money != null).slice(-120);
+    const val = h => viewFarm === 'all' ? h.money : (h.farms || {})[viewFarm];
+    const pts = HIST.filter(h => val(h) != null).map(h => ({ ...h, money: val(h) })).slice(-120);
     if (pts.length < 2) { $('trend').innerHTML = '<div class="dim">Trend builds up as the server syncs.</div>'; $('trendTag').textContent = '--'; return; }
     const v = pts.map(p => +p.money), min = Math.min(...v), max = Math.max(...v), W = 300, H = 70, r = max - min || 1;
     const xy = v.map((y, i) => `${(i / (v.length - 1) * W).toFixed(1)},${(H - 4 - (y - min) / r * (H - 8)).toFixed(1)}`);
@@ -698,7 +815,7 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     if (!rows.length) { $('pfPanel').style.display = 'none'; return; }
     $('pfPanel').style.display = '';
     const owner = Object.fromEntries((DATA.farmlands || []).map(f => [String(f.id), f.farmId]));
-    const list = rows.slice().sort((a, b) => (owner[b.farmlandId] ? 1 : 0) - (owner[a.farmlandId] ? 1 : 0) || a.farmlandId - b.farmlandId);
+    const list = rows.filter(r => viewFarm === 'all' || String(owner[String(r.farmlandId)]) === viewFarm).sort((a, b) => (owner[b.farmlandId] ? 1 : 0) - (owner[a.farmlandId] ? 1 : 0) || a.farmlandId - b.farmlandId);
     $('pfTag').textContent = `${list.length} farmlands`;
     $('pf').innerHTML = `<table><thead><tr><th>Land</th><th class="num">Lime (L)</th><th class="num">Fertilizer (L)</th><th class="num">Seeds (L)</th><th class="num">Harvested (L)</th></tr></thead><tbody>${
       list.map(r => { const t = r.totalCounter || {}; const o = owner[String(r.farmlandId)];
@@ -707,7 +824,7 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
       <div class="dim" style="font-size:11px;margin-top:6px">Totals spread / harvested on each piece of land since Precision Farming started. Coloured land numbers are owned.</div>`;
   }
   function renderMissions() {
-    const list = (DATA.missions || []).filter(m => String(m.status).toUpperCase() !== 'FINISHED');
+    const list = (DATA.missions || []).filter(m => String(m.status).toUpperCase() !== 'FINISHED' && (!m.farmId || inView(m.farmId)));
     const done = (DATA.missions || []).length - list.length;
     $('msTag').textContent = `${list.length} open${done ? ' · ' + done + ' done' : ''}`;
     $('missions').innerHTML = list.length ? list.map(m => `<div class="row"><span><b>${nice(m.type)}</b>${m.fruit ? ' · ' + nice(m.fruit) : ''}${m.fieldId ? ` <span class="dim">· Field ${esc(m.fieldId)}</span>` : ''}
@@ -758,6 +875,33 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
   setInterval(load, REFRESH_MS);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
 })();
+</script>
+
+<!-- Sign-in (same Google login as the rest of the site). Only used to find the viewer's own farm:
+     the viewer's profile names (PSN / Xbox / Twitch / username / fs25_name) are compared with the farm
+     members in the save. Nothing is written anywhere. -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  const app = initializeApp({
+    apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc", authDomain: "entertainment-71888.firebaseapp.com",
+    databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com", projectId: "entertainment-71888",
+    storageBucket: "entertainment-71888.firebasestorage.app", messagingSenderId: "660524340277",
+    appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c"
+  });   // default app name on purpose: shares the saved login with the other pages
+  const auth = getAuth(app), db = getDatabase(app);
+  const keyOf = u => u.email ? u.email.toLowerCase().replace(/\./g, "_").replace("@", "_at_") : u.uid;   // same as settings page
+  const ready = () => new Promise(r => { const t = () => window.FS25 ? r() : setTimeout(t, 50); t(); });
+  await ready();
+  window.FS25.signIn = () => signInWithPopup(auth, new GoogleAuthProvider()).catch(e => alert("Sign-in failed: " + e.message));
+  onAuthStateChanged(auth, async u => {
+    if (!u) { window.FS25.setViewer(null); return; }
+    let d = {};
+    try { d = (await get(ref(db, "users/" + keyOf(u)))).val() || {}; } catch (e) { console.warn("profile", e); }
+    const names = [d.fs25_name, d.psn_username, d.xbox_gamertag, d.twitch_username, d.username, u.displayName].filter(Boolean);
+    window.FS25.setViewer({ names, label: d.username || d.psn_username || u.displayName || "" });
+  });
 </script>
 </body>
 </html>
