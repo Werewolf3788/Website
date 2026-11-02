@@ -138,6 +138,21 @@ svg.spark{width:100%;height:70px;display:block}
 #modal h3{font:700 18px var(--head);margin-bottom:8px}
 #banner{display:none;margin-top:12px;padding:10px 14px;border-radius:10px;border:1px solid rgba(245,166,35,.5);background:rgba(245,166,35,.08);color:var(--amber);font-size:13px}
 footer{margin-top:26px;color:var(--dim);font-size:12px;text-align:center}
+/* ---------- map */
+.mapwrap{position:relative;width:100%;max-width:760px;aspect-ratio:1/1;margin:0 auto;border-radius:12px;overflow:hidden;
+  background:radial-gradient(circle at 50% 50%,#0d2016,#060d09);border:1px solid var(--line2)}
+.mapwrap svg{width:100%;height:100%;display:block}
+.maplegend{display:flex;flex-wrap:wrap;gap:12px;font:600 11px var(--mono);color:var(--muted);margin-top:8px}
+.maplegend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.maptip{position:absolute;pointer-events:none;background:#0b1510ee;border:1px solid var(--line2);border-radius:8px;padding:6px 9px;font-size:12px;display:none;z-index:5;max-width:240px}
+.split{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(240px,1fr);gap:14px}
+@media(max-width:900px){.split{grid-template-columns:1fr}}
+input.search{background:var(--panel2);border:1px solid var(--line2);color:var(--text);border-radius:8px;padding:6px 9px;font:600 12px var(--mono);width:170px}
+.blur{filter:blur(6px);cursor:pointer;user-select:none;transition:filter .2s}
+.blur.show{filter:none;user-select:text}
+.fin{display:flex;justify-content:space-between;font:600 11.5px var(--mono);padding:2px 0}
+.fin .p{color:var(--green2)} .fin .n{color:#fca5a5}
+details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text-transform:uppercase;margin-top:6px}
 </style>
 </head>
 <body>
@@ -155,7 +170,7 @@ footer{margin-top:26px;color:var(--dim);font-size:12px;text-align:center}
       <span class="pill" id="pStatus"><span class="dot"></span><span>Loading</span></span>
       <span class="pill" id="pDate"><i class="fa-regular fa-calendar"></i><span>--</span></span>
       <span class="pill" id="pClock" style="color:var(--sky)"><i class="fa-regular fa-clock"></i><span>--:--</span></span>
-      <span class="pill" id="pSync" title=""><i class="fa-solid fa-satellite-dish"></i><span>--</span></span>
+      <span class="pill" id="pSync"><i class="fa-solid fa-satellite-dish"></i><span>--</span></span>
     </div>
   </header>
   <div id="banner"></div>
@@ -165,7 +180,17 @@ footer{margin-top:26px;color:var(--dim);font-size:12px;text-align:center}
   <div class="grid">
     <div class="stack">
 
-      <!-- FIELD OPS -->
+      <div class="panel">
+        <div class="hd">
+          <h2><i class="fa-solid fa-map-location-dot"></i> Tactical Map</h2>
+          <div class="filters" id="mapFilters"></div>
+        </div>
+        <div class="bd">
+          <div class="mapwrap" id="mapwrap"><svg id="map" viewBox="0 0 1000 1000"></svg><div class="maptip" id="maptip"></div></div>
+          <div class="maplegend" id="mapLegend"></div>
+        </div>
+      </div>
+
       <div class="panel">
         <div class="hd">
           <h2><i class="fa-solid fa-seedling"></i> Field Ops Board</h2>
@@ -174,25 +199,34 @@ footer{margin-top:26px;color:var(--dim);font-size:12px;text-align:center}
         <div class="bd"><div class="board scroll" id="board" style="max-height:560px"></div></div>
       </div>
 
-      <!-- FLEET -->
       <div class="panel">
         <div class="hd">
           <h2><i class="fa-solid fa-truck-monster"></i> Fleet &amp; Equipment</h2>
           <div class="tabs" id="fleetTabs"></div>
         </div>
-        <div class="bd"><div class="scroll" id="fleet"></div></div>
+        <div class="bd"><div class="scroll" id="fleet" style="max-height:520px"></div></div>
       </div>
 
-      <!-- PRODUCTION -->
       <div class="panel">
-        <div class="hd"><h2><i class="fa-solid fa-industry"></i> Buildings, Production &amp; Animals</h2><span class="tag" id="plTag">0</span></div>
-        <div class="bd"><div class="cards scroll" id="placeables"></div></div>
+        <div class="hd"><h2><i class="fa-solid fa-industry"></i> Productions, Silos &amp; Storage</h2><span class="tag" id="plTag">0</span></div>
+        <div class="bd"><div class="cards scroll" id="placeables" style="max-height:520px"></div></div>
       </div>
 
-      <!-- MARKET -->
+      <div class="split">
+        <div class="panel">
+          <div class="hd"><h2><i class="fa-solid fa-pallet"></i> Pallets &amp; Bales</h2><span class="tag" id="stTag">0</span></div>
+          <div class="bd scroll" id="stock" style="max-height:340px"></div>
+        </div>
+        <div class="panel">
+          <div class="hd"><h2><i class="fa-solid fa-tags"></i> Used Equipment</h2><span class="tag" id="slTag">0</span></div>
+          <div class="bd scroll" id="sales" style="max-height:340px"></div>
+        </div>
+      </div>
+
       <div class="panel">
-        <div class="hd"><h2><i class="fa-solid fa-chart-line"></i> Market Prices by Period</h2><span class="tag" id="mkTag">per 1000 L</span></div>
-        <div class="bd"><div class="scroll" id="market"></div></div>
+        <div class="hd"><h2><i class="fa-solid fa-chart-line"></i> Market Prices by Month</h2>
+          <input class="search" id="mkSearch" placeholder="Search product…"></div>
+        <div class="bd"><div class="scroll" id="market" style="max-height:420px"></div></div>
       </div>
     </div>
 
@@ -203,8 +237,13 @@ footer{margin-top:26px;color:var(--dim);font-size:12px;text-align:center}
       </div>
 
       <div class="panel">
+        <div class="hd"><h2><i class="fa-solid fa-robot"></i> Working Now</h2><span class="tag" id="wkTag">0</span></div>
+        <div class="bd" id="working"></div>
+      </div>
+
+      <div class="panel">
         <div class="hd"><h2><i class="fa-solid fa-cloud-sun"></i> Forecast</h2><span class="tag" id="seasonTag">--</span></div>
-        <div class="bd"><div class="wx" id="weather"></div></div>
+        <div class="bd"><div class="wx" id="weather"></div><div class="dim" id="wxFoot" style="font-size:11.5px;margin-top:8px"></div></div>
       </div>
 
       <div class="panel">
@@ -222,9 +261,24 @@ footer{margin-top:26px;color:var(--dim);font-size:12px;text-align:center}
         <div class="bd" id="trend"></div>
       </div>
 
+      <div class="panel" id="pfPanel" style="display:none">
+        <div class="hd"><h2><i class="fa-solid fa-flask"></i> Precision Farming</h2><span class="tag" id="pfTag">--</span></div>
+        <div class="bd scroll" id="pf" style="max-height:340px"></div>
+      </div>
+
       <div class="panel">
         <div class="hd"><h2><i class="fa-solid fa-clipboard-list"></i> Contracts</h2><span class="tag" id="msTag">0</span></div>
-        <div class="bd scroll" id="missions" style="max-height:260px"></div>
+        <div class="bd scroll" id="missions" style="max-height:300px"></div>
+      </div>
+
+      <div class="panel">
+        <div class="hd"><h2><i class="fa-solid fa-puzzle-piece"></i> Mods</h2><span class="tag" id="modTag">0</span></div>
+        <div class="bd scroll" id="mods" style="max-height:260px"></div>
+      </div>
+
+      <div class="panel">
+        <div class="hd"><h2><i class="fa-solid fa-sliders"></i> Server Settings</h2></div>
+        <div class="bd" id="server"></div>
       </div>
 
       <div class="panel">
@@ -234,7 +288,7 @@ footer{margin-top:26px;color:var(--dim);font-size:12px;text-align:center}
     </div>
   </div>
 
-  <footer>Read-only overview. All data comes from the G-Portal server savegame and updates automatically (full pull when someone is on, light pull when it's empty).</footer>
+  <footer>Read-only overview. Data comes only from the G-Portal server (savegame + live server stats). Full pull when someone is on, light pull (date, field growth, lime &amp; fertilizer) when it's empty.</footer>
 </div>
 
 <div id="modal"><div class="box" id="modalBox"></div></div>
@@ -244,20 +298,20 @@ footer{margin-top:26px;color:var(--dim);font-size:12px;text-align:center}
   const REPO_RAW = 'https://raw.githubusercontent.com/Werewolf3788/Website/main/games/fs25/data/';
   const LOCAL = './data/';
   const REFRESH_MS = 120000;
-
-  // Approximate harvest-ready growth stage per crop (FS25 base game). Edit if a crop shows wrong.
-  const READY_STAGE = { WHEAT:8, BARLEY:8, OAT:5, CANOLA:9, SORGHUM:5, SOYBEAN:7, SUNFLOWER:8, MAIZE:7,
-    POTATO:6, SUGARBEET:6, SUGARCANE:8, COTTON:9, GRASS:4, OILSEEDRADISH:2, POPLAR:14, RICE:8, RICELONGGRAIN:8,
-    SPINACH:6, PEA:6, GREENBEAN:6, CARROT:6, PARSNIP:6, REDBEET:6, ONION:6, RYE:8, SPELT:8, DEFAULT:8 };
   const FARM_COLORS = ['#64748b','#3b82f6','#22c55e','#f59e0b','#ef4444','#a855f7','#06b6d4','#ec4899','#84cc16'];
   const WX_ICON = { SUN:'fa-sun', CLOUDY:'fa-cloud', RAIN:'fa-cloud-rain', SNOW:'fa-snowflake', TWISTER:'fa-tornado', FOG:'fa-smog' };
+  const STATUS_COLOR = { ready:'#f5a623', growing:'#22c55e', grass:'#84cc16', harvested:'#a78bfa', empty:'#64748b' };
 
-  let DATA = null, HIST = [], fieldFilter = 'owned', fleetTab = 'vehicle', fleetSort = {k:'damage', d:-1};
+  let DATA = null, HIST = [];
+  let fieldFilter = 'owned', fleetTab = 'vehicle', fleetFarm = 'all', fleetSort = {k:'damage', d:-1};
+  let mapLayers = { fields:true, land:true, fleet:true, players:true };
 
   const $ = id => document.getElementById(id);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const nice = s => esc(String(s ?? '').replace(/_/g,' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase()));
-  const money = v => v == null ? '--' : '$' + Math.round(+v).toLocaleString('en-US');
+  const money = v => v == null ? '--' : (v < 0 ? '-$' : '$') + Math.abs(Math.round(+v)).toLocaleString('en-US');
+  const short$ = v => { v = +v || 0; const a = Math.abs(v), s = v < 0 ? '-$' : '$';
+    return a >= 1e9 ? s + (a/1e9).toFixed(2) + 'B' : a >= 1e6 ? s + (a/1e6).toFixed(1) + 'M' : a >= 1e4 ? s + Math.round(a/1e3) + 'K' : s + Math.round(a).toLocaleString('en-US'); };
   const n0 = v => v == null ? '--' : Math.round(+v).toLocaleString('en-US');
   const ago = iso => {
     if (!iso) return 'never';
@@ -266,217 +320,305 @@ footer{margin-top:26px;color:var(--dim);font-size:12px;text-align:center}
     const h = Math.floor(m / 60); if (h < 48) return h + 'h ' + (m % 60) + 'm ago';
     return Math.floor(h / 24) + 'd ago';
   };
-  const farmBadge = id => id ? `<span class="tag" style="color:${FARM_COLORS[id % FARM_COLORS.length]}">F${id}</span>` : '<span class="tag">—</span>';
+  const farmColor = id => FARM_COLORS[(+id || 0) % FARM_COLORS.length];
   const farmName = id => { const f = (DATA?.farms || []).find(x => x.id === id); return f?.name || (id ? 'Farm ' + id : 'Unowned'); };
+  const farmBadge = id => id ? `<span class="tag" style="color:${farmColor(id)}" title="${esc(farmName(id))}">${esc(farmName(id))}</span>` : '<span class="tag">—</span>';
 
   async function getJSON(name) {
     const bust = '?t=' + Math.floor(Date.now() / 60000);
-    const urls = location.protocol === 'file:' || /localhost|127\.0\.0\.1/.test(location.host)
-      ? [LOCAL + name + bust, REPO_RAW + name + bust] : [REPO_RAW + name + bust, LOCAL + name + bust];
-    for (const u of urls) {
+    const local = location.protocol === 'file:' || /localhost|127\.0\.0\.1/.test(location.host);
+    for (const u of (local ? [LOCAL + name + bust, REPO_RAW + name + bust] : [REPO_RAW + name + bust, LOCAL + name + bust])) {
       try { const r = await fetch(u, {cache:'no-store'}); if (r.ok) return await r.json(); } catch (e) {}
     }
     return null;
   }
-
   async function load() {
     const [ov, hist] = await Promise.all([getJSON('overview.json'), getJSON('history.json')]);
     if (!ov) { banner('Waiting for the first server sync. Run "FS25 Server Sync" in GitHub Actions to pull the savegame.'); return; }
     DATA = ov; HIST = Array.isArray(hist) ? hist : [];
-    if (!ov.fields?.length && !ov.career?.mapTitle) banner('No savegame data yet. The first sync has not finished.');
-    else $('banner').style.display = 'none';
-    render();
+    $('banner').style.display = 'none';
+    try { render(); } catch (e) { console.error(e); banner('Some data could not be shown: ' + e.message); }
   }
   function banner(t) { const b = $('banner'); b.textContent = t; b.style.display = 'block'; }
+  function safe(fn) { try { fn(); } catch (e) { console.error(fn.name, e); } }
 
-  // ------------------------------------------------------------------ render
+  // ================================================================== render
   function render() {
-    const d = DATA, s = d.sync || {}, c = d.career || {}, e = d.environment || {}, sum = d.summary || {};
-    $('hTitle').textContent = s.serverName || c.savegameName || 'FS25 Tactical Overview';
-    $('hSub').textContent = [c.mapTitle, c.economicDifficulty && ('Economy ' + c.economicDifficulty), s.serverVersion && ('v' + s.serverVersion)].filter(Boolean).join(' • ') || 'Farming Simulator 25';
+    const d = DATA, s = d.sync || {}, c = d.career || {}, e = d.environment || {}, sum = d.summary || {}, live = d.live || {};
+    $('hTitle').textContent = live.serverName || s.serverName || c.savegameName || 'FS25 Tactical Overview';
+    $('hSub').textContent = [c.mapTitle || live.mapName, c.economicDifficulty && ('Economy ' + c.economicDifficulty), live.version && ('v' + live.version)].filter(Boolean).join(' • ');
 
-    const st = $('pStatus'), online = s.players?.online || 0;
+    const online = s.players?.online || 0, st = $('pStatus');
     st.className = 'pill ' + (s.active ? 'live' : 'idle');
     st.innerHTML = `<span class="dot"></span><span>${s.active ? (online ? online + ' Online · Live' : 'Active · Live') : 'Empty · Light sync'}</span>`;
-    $('pDate').querySelector('span').textContent = e.day ? `Y${e.year} · ${e.month} D${e.dayInPeriod}/${e.daysPerPeriod}` : '--';
-    $('pClock').querySelector('span').textContent = e.time || '--:--';
-    $('pSync').querySelector('span').textContent = 'Changed ' + ago(s.lastChange || s.lastCheck);
-    $('pSync').title = `Last check ${s.lastCheck || '-'} (${s.mode || '-'})`;
+    $('pDate').querySelector('span').textContent = e.day ? `Year ${e.year} · ${e.month}${e.daysPerPeriod > 1 ? ` D${e.dayInPeriod}/${e.daysPerPeriod}` : ''}` : '--';
+    $('pClock').querySelector('span').textContent = live.time || e.time || '--:--';
+    $('pSync').querySelector('span').textContent = 'Updated ' + ago(s.lastChange || s.lastCheck);
+    $('pSync').title = `Last check ${s.lastCheck || '-'} (${s.mode || '-'} pull)`;
 
-    const mainFarm = (d.farms || []).find(f => f.id === 1) || (d.farms || [])[0];
+    const farms = (d.farms || []).filter(f => f.id);
     const kp = [
-      ['Farm Balance', money(mainFarm?.money ?? c.money), mainFarm?.loan ? 'Loan ' + money(mainFarm.loan) : 'No loan', 'var(--green)'],
-      ['Owned Fields', n0(sum.ownedFields), `${n0(sum.ownedFarmlands)} farmlands · ${n0(sum.fields)} total`, 'var(--lime)'],
-      ['Need Lime', n0(sum.needLime), 'owned fields', 'var(--amber)'],
-      ['Need Fertilizer', n0(sum.needFertilizer), 'below 2/2 spray level', 'var(--sky)'],
-      ['Weeds / Plow', `${n0(sum.weeds)} / ${n0(sum.needPlow)}`, 'owned fields', 'var(--red)'],
-      ['Fleet', n0(sum.vehicles), `${n0(sum.pallets)} pallets`, 'var(--violet)'],
-      ['Animals', n0(sum.animals), `${n0(sum.placeables)} buildings`, 'var(--orange)'],
-      ['Play Time', c.playTimeHours != null ? c.playTimeHours + 'h' : '--', c.slotUsage ? 'Slots ' + c.slotUsage : (c.saveDate || ''), 'var(--sky)'],
+      ...farms.slice(0, 2).map((f, i) => [f.name || 'Farm ' + f.id, short$(f.money), f.loan ? 'Loan ' + short$(f.loan) : (f.players || []).map(p => p.name).join(', '), farmColor(f.id)]),
+      ['Owned Land', (sum.ownedHectares ?? '--') + ' ha', `${n0(sum.ownedFields)} fields · ${n0(sum.ownedFarmlands)} farmlands`, 'var(--lime)'],
+      ['Ready to Harvest', n0(sum.readyToHarvest), `${n0(sum.growing)} growing`, 'var(--amber)'],
+      ['Need Lime', n0(sum.needLime), 'owned fields', '#eab308'],
+      ['Need Fertilizer', n0(sum.needFertilizer), 'fields below 2/2', 'var(--sky)'],
+      ['Helpers Working', n0(sum.helpersActive), `${n0(sum.vehicles)} vehicles owned`, 'var(--violet)'],
+      ['Collectibles', sum.collectibles || '--', `${n0(sum.mods)} mods`, 'var(--orange)'],
     ];
-    $('kpis').innerHTML = kp.map(([l, v, f, col]) => `<div class="kpi" style="--c:${col}"><div class="lbl">${l}</div><div class="val">${esc(v)}</div><div class="foot">${esc(f)}</div></div>`).join('');
+    $('kpis').innerHTML = kp.map(([l, v, f, col]) => `<div class="kpi" style="--c:${col}"><div class="lbl">${esc(l)}</div><div class="val">${esc(v)}</div><div class="foot">${esc(f)}</div></div>`).join('');
 
-    renderFields(); renderFleet(); renderPlaceables(); renderMarket();
-    renderPlayers(); renderWeather(); renderDemands(); renderFarms(); renderTrend(); renderMissions(); renderSync();
+    [renderMap, renderFields, renderFleet, renderPlaceables, renderStock, renderSales, renderMarket,
+     renderPlayers, renderWorking, renderWeather, renderDemands, renderFarms, renderTrend, renderPF, renderMissions, renderMods, renderServer, renderSync].forEach(safe);
+  }
+
+  // ---- tactical map
+  function renderMap() {
+    const size = +(DATA.live?.mapSize) || 2048, half = size / 2;
+    const P = (x, z) => [((+x + half) / size * 1000).toFixed(1), ((+z + half) / size * 1000).toFixed(1)];
+    const layers = [['fields', 'Fields'], ['land', 'Farmland'], ['fleet', 'Vehicles'], ['players', 'Players']];
+    $('mapFilters').innerHTML = layers.map(([k, l]) => `<button class="fbtn ${mapLayers[k] ? 'on' : ''}" data-l="${k}">${l}</button>`).join('');
+    $('mapFilters').querySelectorAll('button').forEach(b => b.onclick = () => { mapLayers[b.dataset.l] = !mapLayers[b.dataset.l]; renderMap(); });
+    let svg = '';
+    for (let i = 1; i < 8; i++) { const p = i * 125; svg += `<line x1="${p}" y1="0" x2="${p}" y2="1000" stroke="#16301f" stroke-width="1"/><line x1="0" y1="${p}" x2="1000" y2="${p}" stroke="#16301f" stroke-width="1"/>`; }
+    svg += `<text x="500" y="18" fill="#35553f" font-size="14" text-anchor="middle" font-family="JetBrains Mono">N</text>`;
+    if (mapLayers.land) (DATA.farmlands || []).forEach(f => {
+      if (f.x == null) return;
+      const [x, y] = P(f.x, f.z), r = Math.max(6, Math.sqrt(+f.area || 1) * 6);
+      svg += `<circle cx="${x}" cy="${y}" r="${r.toFixed(1)}" fill="${f.farmId ? farmColor(f.farmId) : '#1f3a2a'}" fill-opacity="${f.farmId ? .22 : .12}" stroke="${f.farmId ? farmColor(f.farmId) : '#2b4a37'}" stroke-opacity=".7" stroke-width="1.2" data-tip="Farmland ${esc(f.id)} · ${f.farmId ? esc(farmName(f.farmId)) : 'For sale ' + money(f.price)} · ${(+f.area || 0).toFixed(2)} ha"/>`;
+    });
+    if (mapLayers.fields) (DATA.fields || []).forEach(f => {
+      if (f.x == null) return;
+      const [x, y] = P(f.x, f.z), col = STATUS_COLOR[f.status] || '#64748b';
+      svg += `<g data-tip="Field ${esc(f.id)} · ${nice(f.fruit === 'UNKNOWN' ? f.groundType : f.fruit)} · ${nice(f.status)}${f.needs.includes('lime') ? ' · needs lime' : ''}${f.isOwned ? ' · ' + esc(farmName(f.farmId)) : ''}" data-field="${esc(f.id)}" style="cursor:pointer">
+        <rect x="${x - 17}" y="${y - 12}" width="34" height="24" rx="5" fill="${col}" fill-opacity="${f.isOwned ? .9 : .35}" stroke="${f.isOwned ? '#fff' : 'none'}" stroke-opacity=".35"/>
+        <text x="${x}" y="${+y + 5}" font-size="15" font-weight="700" text-anchor="middle" fill="#04110a" font-family="JetBrains Mono">${esc(f.id)}</text></g>`;
+    });
+    if (mapLayers.fleet) (DATA.liveVehicles || []).forEach(v => {
+      if (v.x == null || /PALLETS$/i.test(v.category || '')) return;
+      const [x, y] = P(v.x, v.z), busy = v.isAIActive || v.controller;
+      svg += `<rect x="${x - 5}" y="${y - 5}" width="10" height="10" transform="rotate(45 ${x} ${y})" fill="${v.isAIActive ? '#a78bfa' : v.controller ? '#38bdf8' : '#cbd5e1'}" fill-opacity="${busy ? 1 : .55}" data-tip="${esc(v.name)} · ${nice(v.category)}${v.isAIActive ? ' · helper working' : ''}${v.controller ? ' · driven by ' + esc(v.controller) : ''}"/>`;
+    });
+    if (mapLayers.players) (DATA.live?.players || []).forEach(p => {
+      if (p.x == null) return;
+      const [x, y] = P(p.x, p.z);
+      svg += `<g data-tip="${esc(p.name)} (on foot)"><circle cx="${x}" cy="${y}" r="9" fill="#38bdf8" fill-opacity=".25"/><circle cx="${x}" cy="${y}" r="4.5" fill="#38bdf8" stroke="#fff" stroke-width="1.5"/>
+        <text x="${+x + 9}" y="${+y - 7}" font-size="17" fill="#bae6fd" font-family="Inter" font-weight="700">${esc(p.name)}</text></g>`;
+    });
+    $('map').innerHTML = svg;
+    $('mapLegend').innerHTML = [['#f5a623', 'Ready'], ['#22c55e', 'Growing'], ['#84cc16', 'Grass'], ['#64748b', 'Empty'],
+      ['#a78bfa', 'Helper working'], ['#38bdf8', 'Driven / player'], ...((DATA.farms || []).filter(f => f.id).map(f => [farmColor(f.id), esc(f.name) + ' land']))]
+      .map(([c, l]) => `<span><i style="background:${c}"></i>${l}</span>`).join('');
+    const tip = $('maptip'), wrap = $('mapwrap');
+    $('map').onmousemove = ev => {
+      const t = ev.target.closest('[data-tip]');
+      if (!t) { tip.style.display = 'none'; return; }
+      const r = wrap.getBoundingClientRect();
+      tip.innerHTML = t.getAttribute('data-tip'); tip.style.display = 'block';
+      tip.style.left = Math.min(ev.clientX - r.left + 12, r.width - 250) + 'px'; tip.style.top = (ev.clientY - r.top + 12) + 'px';
+    };
+    $('map').onmouseleave = () => tip.style.display = 'none';
+    $('map').onclick = ev => { const t = ev.target.closest('[data-field]'); if (t) fieldModal(t.dataset.field); };
   }
 
   // ---- fields
-  function fieldInfo(f) {
-    const ready = READY_STAGE[f.fruit] ?? READY_STAGE.DEFAULT;
-    const g = f.growthState || 0;
-    let status = 'empty';
-    if (f.fruit && f.fruit !== 'UNKNOWN' && g > 0) status = g === ready ? 'ready' : (g > ready ? 'harvested' : 'growing');
-    return { ready, g, status, pct: status === 'growing' ? Math.min(100, Math.round(g / ready * 100)) : (status === 'ready' || status === 'harvested' ? 100 : 0) };
-  }
   const FILTERS = [
     ['owned', 'Owned', f => f.isOwned], ['all', 'All', () => true],
-    ['ready', 'Ready', f => fieldInfo(f).status === 'ready'],
+    ['ready', 'Ready', f => f.isOwned && f.status === 'ready'],
+    ['growing', 'Growing', f => f.isOwned && f.status === 'growing'],
     ['lime', 'Lime', f => f.isOwned && f.needs.includes('lime')],
     ['fertilizer', 'Fertilize', f => f.isOwned && f.needs.includes('fertilizer')],
     ['weeds', 'Weeds', f => f.isOwned && f.needs.includes('weeds')],
-    ['plow', 'Plow', f => f.isOwned && f.needs.includes('plow')],
-    ['empty', 'Empty', f => f.isOwned && fieldInfo(f).status !== 'growing' && fieldInfo(f).status !== 'ready'],
+    ['empty', 'Empty', f => f.isOwned && f.status === 'empty'],
   ];
   function renderFields() {
     const fields = DATA.fields || [];
-    $('fFilters').innerHTML = FILTERS.map(([k, l, fn]) =>
-      `<button class="fbtn ${fieldFilter === k ? 'on' : ''}" data-f="${k}">${l}<span class="n">${fields.filter(fn).length}</span></button>`).join('');
+    $('fFilters').innerHTML = FILTERS.filter(([k, l, fn]) => k === 'owned' || k === 'all' || fields.some(fn))
+      .map(([k, l, fn]) => `<button class="fbtn ${fieldFilter === k ? 'on' : ''}" data-f="${k}">${l}<span class="n">${fields.filter(fn).length}</span></button>`).join('');
     $('fFilters').querySelectorAll('button').forEach(b => b.onclick = () => { fieldFilter = b.dataset.f; renderFields(); });
-    const fn = (FILTERS.find(x => x[0] === fieldFilter) || FILTERS[1])[2];
-    const list = fields.filter(fn);
+    const list = fields.filter((FILTERS.find(x => x[0] === fieldFilter) || FILTERS[1])[2]);
     if (!list.length) { $('board').innerHTML = `<div class="empty" style="grid-column:1/-1">No fields match this filter.</div>`; return; }
     $('board').innerHTML = list.map(f => {
-      const i = fieldInfo(f);
       const chips = [];
-      if (i.status === 'ready') chips.push('<span class="chip c-ready">Harvest</span>');
+      if (f.status === 'ready') chips.push('<span class="chip c-ready">Harvest</span>');
       if (f.needs.includes('lime')) chips.push('<span class="chip c-lime">Lime</span>');
-      if (f.isOwned && f.needs.includes('fertilizer')) chips.push(`<span class="chip c-fert">Fert ${f.sprayLevel}/2</span>`);
+      if (f.needs.includes('fertilizer')) chips.push(`<span class="chip c-fert">Fert ${f.sprayLevel}/2</span>`);
       if (f.needs.includes('weeds')) chips.push('<span class="chip c-weeds">Weeds</span>');
       if (f.needs.includes('plow')) chips.push('<span class="chip c-plow">Plow</span>');
       if (f.needs.includes('stones')) chips.push('<span class="chip c-stones">Stones</span>');
       if (!chips.length && f.isOwned) chips.push('<span class="chip c-ok">OK</span>');
+      const pct = f.status === 'ready' || f.status === 'grass' ? 100 : f.status === 'growing' ? Math.min(92, f.growthState * 9) : 0;
+      const label = f.fruit && f.fruit !== 'UNKNOWN' ? nice(f.fruit) : nice(f.groundType || 'Empty');
       const dots = [0, 1].map(k => `<i class="${f.sprayLevel > k ? 'on' : ''}"></i>`).join('');
-      return `<div class="ftile ${f.isOwned ? '' : 'unowned'} ${i.status === 'ready' ? 'ready' : ''}" data-id="${esc(f.id)}">
-        <div class="fid">#${esc(f.id)}</div>${f.isOwned ? `<span class="farm" style="color:${FARM_COLORS[f.farmId % FARM_COLORS.length]}">F${f.farmId}</span>` : ''}
-        <div class="crop">${i.status === 'empty' ? nice(f.groundType || 'Empty') : nice(f.fruit)}</div>
-        <div class="bar"><span style="width:${i.pct}%;${i.status === 'ready' ? 'background:var(--amber)' : ''}"></span></div>
-        <div class="meta"><span>${i.status === 'growing' ? `Stage ${i.g}/≈${i.ready}` : nice(i.status)}</span><span title="Fertilizer ${f.sprayLevel}/2">N <span class="ndots">${dots}</span></span></div>
+      return `<div class="ftile ${f.isOwned ? '' : 'unowned'} ${f.status === 'ready' ? 'ready' : ''}" data-id="${esc(f.id)}">
+        <div class="fid">#${esc(f.id)}</div>${f.isOwned ? `<span class="farm" style="color:${farmColor(f.farmId)}">${esc((farmName(f.farmId) || '').slice(0, 10))}</span>` : ''}
+        <div class="crop">${label}</div>
+        <div class="bar"><span style="width:${pct}%;background:${STATUS_COLOR[f.status]}"></span></div>
+        <div class="meta"><span>${nice(f.status)}${f.status === 'growing' ? ' · st ' + f.growthState : ''}</span><span>${f.area ? (+f.area).toFixed(1) + ' ha' : ''}</span></div>
+        <div class="meta"><span>Lime ${f.limeLevel}</span><span title="Fertilizer ${f.sprayLevel}/2">N <span class="ndots">${dots}</span></span></div>
         <div class="chips">${chips.join('')}</div></div>`;
     }).join('');
     $('board').querySelectorAll('.ftile').forEach(t => t.onclick = () => fieldModal(t.dataset.id));
   }
   function fieldModal(id) {
     const f = (DATA.fields || []).find(x => String(x.id) === String(id)); if (!f) return;
-    const i = fieldInfo(f);
+    const pf = (DATA.precisionFarming?.farmlandStats || []).find(r => String(r.farmlandId) === String(id));
+    const ms = (DATA.missions || []).filter(m => String(m.fieldId) === String(id) && String(m.status).toUpperCase() !== 'FINISHED');
     const rows = [
-      ['Owner', farmName(f.farmId)], ['Crop', nice(f.fruit)], ['Planned', nice(f.plannedFruit)],
-      ['Growth stage', `${f.growthState} (≈ ready at ${i.ready})`], ['Ground', nice(f.groundType)],
-      ['Fertilizer', `${f.sprayLevel}/2 ${f.sprayType && f.sprayType !== 'NONE' ? '· ' + nice(f.sprayType) : ''}`],
-      ['Lime level', f.limeLevel + (f.limeLevel === 0 ? ' · needs lime' : '')], ['Plow level', f.plowLevel],
-      ['Roller', f.rollerLevel], ['Weeds', f.weedState], ['Stones', f.stoneLevel], ['Mulched', f.stubbleShredLevel],
+      ['Owner', f.isOwned ? farmName(f.farmId) : 'Not owned' + (f.price ? ' · ' + money(f.price) : '')], ['Size', f.area ? (+f.area).toFixed(2) + ' ha' : '-'],
+      ['Crop', nice(f.fruit)], ['Status', nice(f.status)], ['Growth stage', f.growthState], ['Ground', nice(f.groundType)],
+      ['Fertilizer', `${f.sprayLevel}/2${f.sprayType && f.sprayType !== 'NONE' ? ' · last ' + nice(f.sprayType) : ''}`],
+      ['Lime level', f.limeLevel + (f.needs.includes('lime') ? ' · needs lime' : '')], ['Plow level', f.plowLevel], ['Rolled', f.rollerLevel], ['Mulched', f.stubbleShredLevel],
     ];
-    $('modalBox').innerHTML = `<h3>Field #${esc(f.id)}</h3>${rows.map(([k, v]) => `<div class="row"><span class="muted">${k}</span><b class="mono">${esc(v ?? '-')}</b></div>`).join('')}
+    if (pf) rows.push(['PF lime used', n0(pf.totalCounter.usedLime) + ' L'], ['PF fertilizer used', n0((pf.totalCounter.usedMineralFertilizer || 0) + (pf.totalCounter.usedLiquidFertilizer || 0)) + ' L']);
+    ms.forEach(m => rows.push(['Contract', `${nice(m.type)}${m.fruit ? ' · ' + nice(m.fruit) : ''} · ends day ${m.endDay}`]));
+    $('modalBox').innerHTML = `<h3>Field #${esc(f.id)}</h3>${rows.map(([k, v]) => `<div class="row"><span class="muted">${k}</span><b class="mono" style="text-align:right">${esc(v ?? '-')}</b></div>`).join('')}
       <div style="text-align:right;margin-top:12px"><button class="fbtn on" id="mClose">Close</button></div>`;
     $('modal').classList.add('on'); $('mClose').onclick = () => $('modal').classList.remove('on');
   }
   $('modal').onclick = e => { if (e.target.id === 'modal') $('modal').classList.remove('on'); };
 
   // ---- fleet
-  function meter(pct, invert) {
+  function meter(pct) {
     if (pct == null) return '<span class="dim">--</span>';
     const p = Math.max(0, Math.min(100, pct));
-    const bad = invert ? p : 100 - p;
-    const col = bad <= 15 ? 'var(--green)' : bad <= 50 ? '#eab308' : bad <= 75 ? 'var(--orange)' : 'var(--red)';
-    return `<span class="meter"><span style="width:${p}%;background:${col}"></span></span><span class="mono">${p.toFixed(0)}%</span>`;
+    const col = p <= 15 ? 'var(--green)' : p <= 50 ? '#eab308' : p <= 75 ? 'var(--orange)' : 'var(--red)';
+    return `<span class="meter"><span style="width:${Math.max(p, 2)}%;background:${col}"></span></span><span class="mono">${p.toFixed(0)}%</span>`;
   }
   function renderFleet() {
     const all = DATA.vehicles || [];
-    const tabs = [['vehicle', 'Vehicles'], ['pallet', 'Pallets']];
-    $('fleetTabs').innerHTML = tabs.map(([k, l]) => `<button class="fbtn ${fleetTab === k ? 'on' : ''}" data-t="${k}">${l}<span class="n">${all.filter(v => v.kind === k).length}</span></button>`).join('');
-    $('fleetTabs').querySelectorAll('button').forEach(b => b.onclick = () => { fleetTab = b.dataset.t; renderFleet(); });
-    let list = all.filter(v => v.kind === fleetTab);
-    if (!list.length) { $('fleet').innerHTML = '<div class="empty">Nothing here yet (fleet updates on full pulls while someone is online).</div>'; return; }
-    const val = (v, k) => k === 'fuel' ? (v.fuel?.level ?? -1) : k === 'fills' ? (v.fills[0]?.level ?? 0) : (v[k] ?? -1);
-    list = list.slice().sort((a, b) => { const x = val(a, fleetSort.k), y = val(b, fleetSort.k); return (x > y ? 1 : x < y ? -1 : 0) * fleetSort.d; });
+    const farmIds = [...new Set(all.map(v => v.farmId).filter(Boolean))].sort();
+    $('fleetTabs').innerHTML = [['vehicle', 'Vehicles'], ['pallet', 'Pallets']].map(([k, l]) => `<button class="fbtn ${fleetTab === k ? 'on' : ''}" data-t="${k}">${l}<span class="n">${all.filter(v => v.kind === k).length}</span></button>`).join('')
+      + ['all', ...farmIds].map(id => `<button class="fbtn ${String(fleetFarm) === String(id) ? 'on' : ''}" data-f="${id}">${id === 'all' ? 'All farms' : esc(farmName(id))}</button>`).join('');
+    $('fleetTabs').querySelectorAll('button[data-t]').forEach(b => b.onclick = () => { fleetTab = b.dataset.t; renderFleet(); });
+    $('fleetTabs').querySelectorAll('button[data-f]').forEach(b => b.onclick = () => { fleetFarm = b.dataset.f; renderFleet(); });
+    let list = all.filter(v => v.kind === fleetTab && (fleetFarm === 'all' || String(v.farmId) === String(fleetFarm)));
+    if (!list.length) { $('fleet').innerHTML = '<div class="empty">Nothing here.</div>'; return; }
+    const val = (v, k) => k === 'fuel' ? (v.fuel?.level ?? -1) : k === 'fills' ? (v.fills[0]?.level ?? 0) : k === 'live' ? (v.isAIActive ? 2 : v.controller ? 1 : 0) : (v[k] ?? -1);
+    list = list.slice().sort((a, b) => { const x = val(a, fleetSort.k), y = val(b, fleetSort.k); return (x > y ? 1 : x < y ? -1 : typeof x === 'string' ? 0 : 0) * fleetSort.d; });
     const cols = fleetTab === 'vehicle'
-      ? [['name', 'Unit'], ['farmId', 'Farm'], ['operatingHours', 'Hours', 1], ['fuel', 'Fuel', 1], ['damage', 'Damage'], ['wear', 'Paint wear'], ['fills', 'Load']]
+      ? [['name', 'Unit'], ['farmId', 'Farm'], ['live', 'Now'], ['operatingHours', 'Hours', 1], ['fuel', 'Fuel', 1], ['damage', 'Damage'], ['wear', 'Wear'], ['fills', 'Load']]
       : [['name', 'Pallet'], ['farmId', 'Farm'], ['fills', 'Contents']];
     $('fleet').innerHTML = `<table><thead><tr>${cols.map(([k, l, nm]) => `<th class="${nm ? 'num' : ''}" data-k="${k}">${l}${fleetSort.k === k ? (fleetSort.d > 0 ? ' ▲' : ' ▼') : ''}</th>`).join('')}</tr></thead><tbody>${
       list.map(v => {
-        const fills = v.fills.length ? v.fills.map(f => `<span class="tag" style="margin:1px">${nice(f.type)} ${n0(f.level)} L</span>`).join('') : '<span class="dim">empty</span>';
+        const fills = v.fills.length ? v.fills.map(f => `<span class="tag" style="margin:1px;display:inline-block">${nice(f.type)} ${n0(f.level)} L</span>`).join('') : '<span class="dim">empty</span>';
         if (fleetTab === 'pallet') return `<tr><td>${esc(v.name)}</td><td>${farmBadge(v.farmId)}</td><td>${fills}</td></tr>`;
-        return `<tr><td><b>${esc(v.name)}</b>${v.brand ? `<div class="dim mono" style="font-size:10.5px">${esc(v.brand)}${v.isMod ? ' · MOD' : ''}</div>` : ''}</td>
-          <td>${farmBadge(v.farmId)}</td><td class="num">${v.operatingHours ?? '--'}</td>
+        const now = v.isAIActive ? '<span class="chip" style="background:rgba(167,139,250,.18);color:#c4b5fd">Helper</span>' : v.controller ? `<span class="chip" style="background:rgba(56,189,248,.15);color:var(--sky)">${esc(v.controller)}</span>` : '';
+        return `<tr><td><b>${esc(v.name)}</b><div class="dim mono" style="font-size:10.5px">${esc([v.category && nice(v.category), v.brand].filter(Boolean).join(' · '))}</div></td>
+          <td>${farmBadge(v.farmId)}</td><td>${now}</td><td class="num">${v.operatingHours ?? '--'}</td>
           <td class="num">${v.fuel ? `${n0(v.fuel.level)} ${v.fuel.type === 'ELECTRICCHARGE' ? 'kWh' : 'L'}` : '--'}</td>
-          <td>${meter(v.damage, true)}</td><td>${meter(v.wear, true)}</td><td>${fills}</td></tr>`;
+          <td>${meter(v.damage)}</td><td>${meter(v.wear)}</td><td>${fills}</td></tr>`;
       }).join('')}</tbody></table>`;
-    $('fleet').querySelectorAll('th').forEach(th => th.onclick = () => {
-      const k = th.dataset.k; fleetSort = { k, d: fleetSort.k === k ? -fleetSort.d : -1 }; renderFleet();
-    });
+    $('fleet').querySelectorAll('th').forEach(th => th.onclick = () => { const k = th.dataset.k; fleetSort = { k, d: fleetSort.k === k ? -fleetSort.d : -1 }; renderFleet(); });
   }
 
   // ---- placeables
   function renderPlaceables() {
-    const list = (DATA.placeables || []).filter(p => p.storage.length || p.animals || p.productions.length)
-      .sort((a, b) => (b.animals - a.animals) || (b.storage.length - a.storage.length));
-    $('plTag').textContent = `${list.length} active / ${(DATA.placeables || []).length}`;
+    const list = (DATA.placeables || []).filter(p => p.farmId >= 1 && p.farmId <= 8 && (p.storage.length || p.animals || p.productions.length))
+      .sort((a, b) => (b.animals - a.animals) || (b.storage.reduce((s, x) => s + x.level, 0) - a.storage.reduce((s, x) => s + x.level, 0)));
+    $('plTag').textContent = `${list.length} with stock`;
     if (!list.length) { $('placeables').innerHTML = '<div class="empty" style="grid-column:1/-1">No storage, production or animal buildings found yet.</div>'; return; }
     $('placeables').innerHTML = list.map(p => `<div class="pcard"><h3><span>${esc(p.name)}</span>${farmBadge(p.farmId)}</h3>
+      <div class="dim mono" style="font-size:10.5px;margin-bottom:4px">${esc(p.kinds.map(k => k.replace(/([A-Z])/g, ' $1').toLowerCase()).join(' · '))}</div>
       ${p.animals ? `<div class="store" style="color:var(--orange)"><span><i class="fa-solid fa-cow"></i> Animals</span><span>${n0(p.animals)}</span></div>` : ''}
-      ${p.productions.length ? `<div class="store"><span>Production lines</span><span>${p.productions.filter(x => x.enabled !== false).length}/${p.productions.length} on</span></div>` : ''}
+      ${p.productions.length ? `<div class="store"><span>Production lines</span><span>${p.productions.filter(x => x.enabled).length}/${p.productions.length} on</span></div>` : ''}
       ${p.storage.slice(0, 8).map(s => `<div class="store"><span>${nice(s.type)}</span><span>${n0(s.level)} L</span></div>`).join('')}
-      ${p.storage.length > 8 ? `<div class="dim" style="font-size:11px">+${p.storage.length - 8} more</div>` : ''}</div>`).join('');
+      ${p.storage.length > 8 ? `<details><summary>+${p.storage.length - 8} more</summary>${p.storage.slice(8).map(s => `<div class="store"><span>${nice(s.type)}</span><span>${n0(s.level)} L</span></div>`).join('')}</details>` : ''}</div>`).join('');
+  }
+
+  // ---- stock / sales
+  function renderStock() {
+    const st = DATA.stock || [], items = DATA.items || [];
+    $('stTag').textContent = `${st.reduce((a, b) => a + b.pallets, 0)} pallets · ${items.reduce((a, b) => a + b.count, 0)} bales/items`;
+    let html = st.length ? `<table><thead><tr><th>Pallets (live)</th><th class="num">Count</th><th class="num">Total</th></tr></thead><tbody>${
+      st.map(s => `<tr><td><b>${nice(s.fillType)}</b></td><td class="num">${n0(s.pallets)}</td><td class="num">${n0(s.level)} L</td></tr>`).join('')}</tbody></table>` : '';
+    html += items.length ? `<table style="margin-top:10px"><thead><tr><th>Bales &amp; items</th><th>Farm</th><th class="num">Count</th><th class="num">Total</th></tr></thead><tbody>${
+      items.map(i => `<tr><td><b>${esc(i.name)}</b> <span class="dim">${i.fillType ? nice(i.fillType) : ''}</span></td><td>${farmBadge(i.farmId)}</td><td class="num">${n0(i.count)}</td><td class="num">${i.level ? n0(i.level) + ' L' : '-'}</td></tr>`).join('')}</tbody></table>`
+      : '<div class="dim" style="margin-top:8px">No loose bales or items on the map.</div>';
+    $('stock').innerHTML = html || '<div class="empty">Nothing in stock.</div>';
+  }
+  function renderSales() {
+    const list = DATA.sales || [];
+    $('slTag').textContent = list.length;
+    $('sales').innerHTML = list.length ? `<table><thead><tr><th>Unit</th><th class="num">Price</th><th class="num">Hrs</th><th>Damage</th><th class="num">Left</th></tr></thead><tbody>${
+      list.map(v => `<tr><td><b>${esc(v.name)}</b><div class="dim mono" style="font-size:10.5px">${esc(v.brand || '')}${v.isMod ? ' · MOD' : ''}</div></td>
+        <td class="num" style="color:var(--green2)">${short$(v.price)}</td><td class="num">${v.hours ?? '--'}</td><td>${meter(v.damage)}</td>
+        <td class="num dim">${v.daysLeft != null ? esc(v.daysLeft) + 'd' : ''}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">No used equipment listed.</div>';
   }
 
   // ---- market
   const PERIODS = ['EARLY_SPRING','MID_SPRING','LATE_SPRING','EARLY_SUMMER','MID_SUMMER','LATE_SUMMER','EARLY_AUTUMN','MID_AUTUMN','LATE_AUTUMN','EARLY_WINTER','MID_WINTER','LATE_WINTER'];
   const PSHORT = ['Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb'];
   function renderMarket() {
-    const prices = (DATA.economy?.prices || []).filter(p => Object.keys(p.history || {}).length);
-    if (!prices.length) { $('market').innerHTML = '<div class="empty">Market history arrives with the next full pull.</div>'; return; }
+    const q = ($('mkSearch').value || '').trim().toUpperCase().replace(/\s+/g, '_');
+    let prices = (DATA.economy?.prices || []).filter(p => Object.keys(p.history || {}).length);
+    const owned = new Set([...(DATA.fields || []).filter(f => f.isOwned).map(f => f.fruit), ...(DATA.stock || []).map(s => s.fillType),
+      ...(DATA.placeables || []).filter(p => p.farmId >= 1 && p.farmId <= 8).flatMap(p => p.storage.map(s => s.type))]);
+    prices = q ? prices.filter(p => p.fillType.includes(q)) : prices.filter(p => owned.has(p.fillType) || +p.totalAmount > 0);
+    prices.sort((a, b) => (owned.has(b.fillType) - owned.has(a.fillType)) || ((+b.totalAmount || 0) - (+a.totalAmount || 0)));
+    if (!prices.length) { $('market').innerHTML = '<div class="empty">No matching products.</div>'; return; }
     const cur = DATA.environment?.period;
-    const demand = new Set((DATA.economy?.greatDemands || []).filter(g => g.isRunning).map(g => g.fillType));
+    const demand = new Set((DATA.economy?.greatDemands || []).map(g => g.fillType));
     $('market').innerHTML = `<table><thead><tr><th>Product</th>${PERIODS.map((p, i) => `<th class="num" style="${p === cur ? 'color:var(--green2)' : ''}">${PSHORT[i]}</th>`).join('')}<th class="num">Best</th></tr></thead><tbody>${
-      prices.map(p => {
+      prices.slice(0, 80).map(p => {
         const vals = PERIODS.map(k => +p.history[k] || 0); const max = Math.max(...vals), min = Math.min(...vals.filter(Boolean));
-        const best = PSHORT[vals.indexOf(max)];
-        return `<tr><td><b>${nice(p.fillType)}</b>${demand.has(p.fillType) ? ' <span class="chip c-ready">Demand</span>' : ''}</td>${vals.map((v, i) =>
-          `<td class="num" style="${PERIODS[i] === cur ? 'background:rgba(34,197,94,.08);' : ''}${v === max ? 'color:var(--green2);font-weight:700' : v === min ? 'color:#fca5a5' : ''}">${v ? n0(v) : '-'}</td>`).join('')}<td class="num" style="color:var(--green2)">${best}</td></tr>`;
-      }).join('')}</tbody></table>`;
+        return `<tr><td><b>${nice(p.fillType)}</b>${owned.has(p.fillType) ? ' <span class="chip c-ok">yours</span>' : ''}${demand.has(p.fillType) ? ' <span class="chip c-ready">Demand</span>' : ''}</td>${vals.map((v, i) =>
+          `<td class="num" style="${PERIODS[i] === cur ? 'background:rgba(34,197,94,.08);' : ''}${v === max ? 'color:var(--green2);font-weight:700' : v === min ? 'color:#fca5a5' : ''}">${v ? n0(v) : '-'}</td>`).join('')}<td class="num" style="color:var(--green2)">${PSHORT[vals.indexOf(max)]}</td></tr>`;
+      }).join('')}</tbody></table><div class="dim" style="font-size:11px;margin-top:6px">Price per 1000 L by month. Shows your crops and stock first; search for anything else.</div>`;
   }
+  $('mkSearch').oninput = () => DATA && safe(renderMarket);
 
-  // ---- side
+  // ---- side panels
   function renderPlayers() {
-    const p = DATA.sync?.players || {}; const names = p.names || [];
-    $('plyTag').textContent = `${p.online || 0}${p.capacity ? ' / ' + p.capacity : ''} online`;
-    const roster = (DATA.farms || []).flatMap(f => (f.players || []).map(m => ({ ...m, farm: f.id })));
-    const onlineSet = new Set(names.map(n => (n.name || '').toLowerCase()));
-    let html = names.length ? names.map(n => `<div class="row"><span><span class="dot" style="display:inline-block;background:var(--green);margin-right:7px"></span><b>${esc(n.name)}</b>${n.isAdmin ? ' <span class="tag">ADMIN</span>' : ''}</span><span class="mono dim">${n.uptimeMin ? n.uptimeMin + 'm' : 'online'}</span></div>`).join('')
+    const live = DATA.live?.players || DATA.sync?.players?.names || [];
+    const p = DATA.sync?.players || {};
+    $('plyTag').textContent = `${live.length || p.online || 0}${DATA.live?.capacity ? ' / ' + DATA.live.capacity : ''} online`;
+    const on = new Set(live.map(n => (n.name || '').toLowerCase()));
+    const driving = {}; (DATA.working || []).forEach(w => { if (w.controller) driving[w.controller.toLowerCase()] = w.name; });
+    let html = live.length ? live.map(n => `<div class="row"><span><span class="dot" style="display:inline-block;background:var(--green);margin-right:7px"></span><b>${esc(n.name)}</b>${n.isAdmin ? ' <span class="tag">ADMIN</span>' : ''}
+      <div class="dim" style="font-size:11px;margin-left:15px">${driving[(n.name || '').toLowerCase()] ? 'Driving ' + esc(driving[n.name.toLowerCase()]) : n.x != null ? 'On foot' : 'In a vehicle'}</div></span><span class="mono dim">${n.uptimeMin != null ? n.uptimeMin + ' min' : ''}</span></div>`).join('')
       : `<div class="dim" style="padding:4px 0 8px">${DATA.sync?.active ? 'Activity detected on the server.' : 'Nobody on the server right now.'}</div>`;
-    const off = roster.filter(r => !onlineSet.has((r.name || '').toLowerCase()));
-    if (off.length) html += `<div class="dim mono" style="font-size:10.5px;margin:8px 0 2px;text-transform:uppercase">Farm members</div>` +
-      off.map(r => `<div class="row"><span class="muted">${esc(r.name)}${r.farmManager ? ' <span class="tag">MGR</span>' : ''}</span>${farmBadge(r.farm)}</div>`).join('');
+    const roster = (DATA.farms || []).flatMap(f => (f.players || []).map(m => ({ ...m, farm: f.id }))).filter(r => !on.has((r.name || '').toLowerCase()));
+    if (roster.length) html += `<div class="dim mono" style="font-size:10.5px;margin:8px 0 2px;text-transform:uppercase">Farm members</div>` +
+      roster.map(r => `<div class="row"><span class="muted">${esc(r.name)}${r.farmManager ? ' <span class="tag">MGR</span>' : ''}<div class="dim" style="font-size:11px">Last on ${esc(r.lastConnected || '-')}</div></span>${farmBadge(r.farm)}</div>`).join('');
     $('players').innerHTML = html;
+  }
+  function renderWorking() {
+    const w = DATA.working || [];
+    $('wkTag').textContent = w.length;
+    $('working').innerHTML = w.length ? w.map(v => `<div class="row"><span><b>${esc(v.name)}</b></span><span>${v.isAIActive ? '<span class="chip" style="background:rgba(167,139,250,.18);color:#c4b5fd">Helper working</span>' : `<span class="chip" style="background:rgba(56,189,248,.15);color:var(--sky)">${esc(v.controller)}</span>`}</span></div>`).join('')
+      : '<div class="dim">No helpers or drivers right now.</div>';
   }
   function renderWeather() {
     const e = DATA.environment || {};
-    $('seasonTag').textContent = e.season ? `${e.season} · ${nice(e.period)}` : '--';
-    const fc = e.forecast || [];
-    $('weather').innerHTML = fc.length ? fc.slice(0, 8).map(w => `<div><div class="mono dim">Day ${esc(w.startDay ?? '-')}</div><i class="fa-solid ${WX_ICON[w.type] || 'fa-cloud-sun'}"></i><b>${nice(w.type)}</b><div class="dim">${esc(w.startTime || '')}${w.durationH ? ' · ' + w.durationH + 'h' : ''}</div></div>`).join('')
-      : '<div class="empty" style="grid-column:1/-1">No forecast in savegame.</div>';
+    $('seasonTag').textContent = e.season ? `${e.season} · ${e.month}` : '--';
+    const days = {};
+    (e.forecast || []).forEach(w => { (days[w.startDay] = days[w.startDay] || []).push(w); });
+    const keys = Object.keys(days).slice(0, 8);
+    $('weather').innerHTML = keys.length ? keys.map(k => {
+      const ws = days[k], main = ws.some(w => w.type === 'RAIN') ? 'RAIN' : ws.some(w => w.type === 'SNOW') ? 'SNOW' : ws.filter(w => w.type === 'SUN').length >= ws.length / 2 ? 'SUN' : 'CLOUDY';
+      return `<div title="${esc(ws.map(w => `${w.startTime} ${w.type} ${w.durationH}h`).join(', '))}"><div class="mono dim">Day ${esc(k)}</div><i class="fa-solid ${WX_ICON[main]}"></i><b>${nice(main)}</b><div class="dim">${nice(ws[0].season)}</div></div>`;
+    }).join('') : '<div class="empty" style="grid-column:1/-1">No forecast in savegame.</div>';
+    $('wxFoot').textContent = e.minutesSinceRain != null ? `Last rain ${Math.round(e.minutesSinceRain / 60)}h ago (game time) · ground wetness ${Math.round((e.groundWetness || 0) * 100)}%` : '';
   }
   function renderDemands() {
     const list = (DATA.economy?.greatDemands || []).filter(g => g.isValid !== false && g.fillType);
     $('demands').innerHTML = list.length ? list.map(g => `<div class="demand"><div style="display:flex;justify-content:space-between"><b>${nice(g.fillType)}</b><span class="mono" style="color:var(--orange)">x${(+g.multiplier || 1).toFixed(2)}</span></div>
-      <div class="dim" style="font-size:12px">${g.isRunning ? '<b style="color:var(--orange)">RUNNING</b> · ' : ''}Day ${esc(g.startDay ?? '-')} ${g.startHour != null ? '@ ' + g.startHour + ':00' : ''} · ${esc(g.durationH ?? '-')}h${g.station ? ' · ' + esc(g.station) : ''}</div></div>`).join('')
+      <div class="dim" style="font-size:12px">${g.isRunning ? '<b style="color:var(--orange)">RUNNING</b> · ' : ''}${g.station ? esc(g.station) + ' · ' : ''}Day ${esc(g.startDay ?? '-')}${g.startHour != null ? ' @ ' + g.startHour + ':00' : ''} · ${esc(g.durationH ?? '-')}h</div></div>`).join('')
       : '<div class="dim">No great demands scheduled.</div>';
   }
   function renderFarms() {
-    const list = DATA.farms || [];
-    $('farms').innerHTML = list.length ? list.filter(f => f.id).map(f => {
-      const fields = (DATA.fields || []).filter(x => x.farmId === f.id).length;
-      return `<div class="row"><span>${farmBadge(f.id)} <b>${esc(f.name || 'Farm ' + f.id)}</b><div class="dim" style="font-size:11.5px">${fields} fields · ${(f.players || []).length} members</div></span>
-        <span style="text-align:right"><b class="mono" style="color:var(--green2)">${money(f.money)}</b>${f.loan ? `<div class="mono" style="font-size:11px;color:#fca5a5">-${money(f.loan)}</div>` : ''}</span></div>`;
+    const list = (DATA.farms || []).filter(f => f.id);
+    $('farms').innerHTML = list.length ? list.map(f => {
+      const fields = (DATA.fields || []).filter(x => x.farmId === f.id), ha = (DATA.farmlands || []).filter(x => x.farmId === f.id).reduce((a, b) => a + (+b.area || 0), 0);
+      const today = (f.finances || []).find(d => +d.day === 0) || (f.finances || [])[0];
+      return `<div style="padding:8px 0;border-bottom:1px dashed var(--line)">
+        <div class="row" style="border:0;padding:0"><span>${farmBadge(f.id)}<div class="dim" style="font-size:11.5px;margin-top:3px">${fields.length} fields · ${ha.toFixed(1)} ha · ${(f.players || []).map(p => esc(p.name)).join(', ')}</div></span>
+        <span style="text-align:right"><b class="mono" style="color:var(--green2)">${short$(f.money)}</b>${f.loan ? `<div class="mono" style="font-size:11px;color:#fca5a5">Loan ${short$(f.loan)}</div>` : ''}</span></div>
+        ${today ? `<details><summary>Today: <span style="color:var(--green2)">+${short$(today.income)}</span> / <span style="color:#fca5a5">${short$(today.expenses)}</span></summary>
+          ${today.items.map(i => `<div class="fin"><span class="muted">${esc(i.label)}</span><span class="${i.value >= 0 ? 'p' : 'n'}">${short$(i.value)}</span></div>`).join('')}</details>` : ''}
+        ${f.stats ? `<details><summary>Farm statistics</summary>${[['workedHectares', 'Worked ha'], ['sownHectares', 'Sown ha'], ['threshedHectares', 'Harvested ha'], ['baleCount', 'Bales made'], ['cutTreeCount', 'Trees cut'], ['missionCount', 'Contracts done'], ['fuelUsage', 'Fuel used L'], ['repairVehicleCount', 'Repairs']]
+          .filter(([k]) => f.stats[k] != null).map(([k, l]) => `<div class="fin"><span class="muted">${l}</span><span>${n0(f.stats[k])}</span></div>`).join('')}</details>` : ''}</div>`;
     }).join('') : '<div class="dim">Farm data arrives with the next full pull.</div>';
   }
   function renderTrend() {
@@ -485,30 +627,67 @@ footer{margin-top:26px;color:var(--dim);font-size:12px;text-align:center}
     const v = pts.map(p => +p.money), min = Math.min(...v), max = Math.max(...v), W = 300, H = 70, r = max - min || 1;
     const xy = v.map((y, i) => `${(i / (v.length - 1) * W).toFixed(1)},${(H - 4 - (y - min) / r * (H - 8)).toFixed(1)}`);
     const delta = v[v.length - 1] - v[0];
-    $('trendTag').innerHTML = `<span style="color:${delta >= 0 ? 'var(--green2)' : '#fca5a5'}">${delta >= 0 ? '+' : ''}${money(delta)}</span>`;
+    $('trendTag').innerHTML = `<span style="color:${delta >= 0 ? 'var(--green2)' : '#fca5a5'}">${delta >= 0 ? '+' : ''}${short$(delta)}</span>`;
     $('trend').innerHTML = `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><polyline fill="none" stroke="var(--green)" stroke-width="2" points="${xy.join(' ')}"/>
       <polygon fill="rgba(34,197,94,.12)" points="0,${H} ${xy.join(' ')} ${W},${H}"/></svg>
       <div class="row"><span class="dim mono">Day ${esc(pts[0].day)}</span><span class="dim mono">Day ${esc(pts[pts.length - 1].day)}</span></div>`;
   }
-  const MSTATUS = { 0: 'Available', 1: 'In progress', 2: 'Completed', 3: 'Failed' };
-  const mtype = t => nice(String(t || 'Contract').replace(/Mission$/i, ''));
-  function renderMissions() {
-    const list = DATA.missions || [];
-    $('msTag').textContent = list.length;
-    $('missions').innerHTML = list.length ? list.map(m => `<div class="row"><span><b>${mtype(m.type)}</b>${m.fieldId ? ` <span class="dim">· Field ${esc(m.fieldId)}</span>` : ''}<div class="dim" style="font-size:11px">${esc(MSTATUS[m.status] ?? nice(m.status ?? 'Available'))}${m.farmId ? ' · ' + esc(farmName(m.farmId)) : ''}</div></span><span class="mono" style="color:var(--green2)">${m.reward ? money(m.reward) : ''}</span></div>`).join('')
-      : '<div class="dim">No contracts in savegame.</div>';
+  function renderPF() {
+    const pf = DATA.precisionFarming || {}, rows = pf.farmlandStats || [];
+    if (!rows.length) { $('pfPanel').style.display = 'none'; return; }
+    $('pfPanel').style.display = '';
+    const owner = Object.fromEntries((DATA.farmlands || []).map(f => [String(f.id), f.farmId]));
+    const list = rows.slice().sort((a, b) => (owner[b.farmlandId] ? 1 : 0) - (owner[a.farmlandId] ? 1 : 0) || a.farmlandId - b.farmlandId);
+    $('pfTag').textContent = `${list.length} farmlands`;
+    $('pf').innerHTML = `<table><thead><tr><th>Land</th><th class="num">Lime</th><th class="num">Fert.</th><th class="num">Seeds</th><th class="num">Yield</th></tr></thead><tbody>${
+      list.map(r => { const t = r.totalCounter || {}; const o = owner[String(r.farmlandId)];
+        return `<tr><td class="mono" style="color:${o ? farmColor(o) : 'var(--dim)'}">#${esc(r.farmlandId)}</td><td class="num">${n0(t.usedLime)}</td>
+          <td class="num">${n0((t.usedMineralFertilizer || 0) + (t.usedLiquidFertilizer || 0))}</td><td class="num">${n0(t.usedSeeds)}</td><td class="num">${n0(t.yield)}</td></tr>`; }).join('')}</tbody></table>
+      <div class="dim" style="font-size:11px;margin-top:6px">Precision Farming totals per farmland (litres; yield in litres). Coloured = owned.</div>`;
   }
+  function renderMissions() {
+    const list = (DATA.missions || []).filter(m => String(m.status).toUpperCase() !== 'FINISHED');
+    const done = (DATA.missions || []).length - list.length;
+    $('msTag').textContent = `${list.length} open${done ? ' · ' + done + ' done' : ''}`;
+    $('missions').innerHTML = list.length ? list.map(m => `<div class="row"><span><b>${nice(m.type)}</b>${m.fruit ? ' · ' + nice(m.fruit) : ''}${m.fieldId ? ` <span class="dim">· Field ${esc(m.fieldId)}</span>` : ''}
+      <div class="dim" style="font-size:11px">${nice(m.status)}${m.farmId ? ' · ' + esc(farmName(m.farmId)) : ''}${m.endDay ? ' · ends day ' + esc(m.endDay) : ''}${m.deliverTo ? ' · to ' + esc(m.deliverTo) : ''}${m.completion ? ' · ' + m.completion + '%' : ''}</div></span>
+      <span class="mono" style="color:var(--green2)">${+m.reward ? short$(m.reward) : ''}</span></div>`).join('') : '<div class="dim">No open contracts.</div>';
+  }
+  function renderMods() {
+    const mods = DATA.live?.mods || [];
+    $('modTag').textContent = mods.length;
+    $('mods').innerHTML = mods.length ? mods.map(m => `<div class="row"><span><b>${esc(m.title || m.name)}</b><div class="dim" style="font-size:11px">${esc(m.author || '')}</div></span><span class="mono dim">${esc(m.version || '')}</span></div>`).join('')
+      : '<div class="dim">Mod list arrives with the live server stats.</div>';
+  }
+  const SRV_LABELS = { game_name: 'Server name', game_password: 'Game password', savegame_index: 'Save slot', max_player: 'Max players',
+    language: 'Language', auto_save_interval: 'Autosave (min)', stats_interval: 'Stats update (s)', crossplay_allowed: 'Crossplay',
+    initialMoney: 'Starting money', initialLoan: 'Starting loan', economicDifficulty: 'Economy', pause_game_if_empty: 'Pause when empty',
+    mapID: 'Map ID', mapFilename: 'Map file' };
+  function renderServer() {
+    const srv = DATA.server || {}, st = srv.settings || {};
+    if (!Object.keys(st).length) { $('server').innerHTML = '<div class="dim">Server settings arrive with the next sync.</div>'; return; }
+    const fmt = (k, v) => {
+      if (k === 'game_password') return v ? `<span class="mono blur" title="Click to show" onclick="this.classList.toggle('show')">${esc(v)}</span>` : '<span class="dim">None (open server)</span>';
+      if (v === true || v === 1 && /pause|crossplay/.test(k)) return 'Yes';
+      if (v === false || v === 0 && /pause|crossplay/.test(k)) return 'No';
+      if (/initial(Money|Loan)/.test(k)) return money(v);
+      return esc(v);
+    };
+    const keys = Object.keys(SRV_LABELS).filter(k => k in st).concat(Object.keys(st).filter(k => !(k in SRV_LABELS)));
+    $('server').innerHTML = keys.map(k => `<div class="row"><span class="muted">${esc(SRV_LABELS[k] || k)}</span><span style="text-align:right">${fmt(k, st[k])}</span></div>`).join('') +
+      (srv.mods?.length ? `<details><summary>${srv.mods.length} mods enabled in config</summary>${srv.mods.map(m => `<div class="fin"><span>${esc(m.name)}</span><span class="dim">${m.isDlc ? 'DLC' : ''}</span></div>`).join('')}</details>` : '');
+  }
+
   function renderSync() {
     const s = DATA.sync || {};
     const rows = [
       ['Server state', s.active ? '<b style="color:var(--green2)">ACTIVE · full pulls</b>' : '<b style="color:var(--amber)">EMPTY · light pulls</b>'],
-      ['Why', esc(s.reason || '-')], ['Player source', esc(s.players?.source || '-')],
-      ['Last data change', `${ago(s.lastChange)}`], ['Last full pull', ago(s.lastFull)], ['Last light pull', ago(s.lastLight)],
-      ['Savegame written', s.saveAgeMin != null ? Math.round(s.saveAgeMin) + ' min before check' : '-'],
+      ['Why', esc(s.reason || '-')], ['Last data change', ago(s.lastChange)], ['Last full pull', ago(s.lastFull)], ['Last light pull', ago(s.lastLight)],
+      ['Savegame', esc((s.saveDir || '').split('/').pop() || '-') + (s.saveAgeMin != null ? ` · saved ${Math.round(s.saveAgeMin)} min before check` : '')],
       ['Files', `${(s.files || []).length} XML → JSON`],
     ];
     $('sync').innerHTML = rows.map(([k, v]) => `<div class="row"><span class="muted">${k}</span><span style="text-align:right">${v}</span></div>`).join('') +
-      `<div class="dim" style="font-size:11px;margin-top:8px">Checks every 16 min. Raw JSON: <a href="${REPO_RAW.replace('raw.githubusercontent.com/Werewolf3788/Website/main', 'github.com/Werewolf3788/Website/tree/main')}raw" target="_blank" rel="noopener">games/fs25/data/raw</a></div>`;
+      `<div class="dim" style="font-size:11px;margin-top:8px">Checks every 16 min. Raw JSON: <a href="https://github.com/Werewolf3788/Website/tree/main/games/fs25/data/raw" target="_blank" rel="noopener">games/fs25/data/raw</a></div>`;
   }
 
   load();
