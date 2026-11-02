@@ -3922,7 +3922,7 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_general_brothers_in_arms.jpg"
         },
         {
           "id": "med_general_going_the_distance",
@@ -3935,14 +3935,14 @@
             "silver": null,
             "gold": null
           },
-          "image_url": "",
+          "image_url": "/public/games/snresistance/images/medals/med_general_going_the_distance.jpg",
           "tier_goals": {
             "bronze": 20000,
             "silver": 60000,
             "gold": 100000
           },
           "psn_trophy": 26,
-          "notes": "Silver target 60,000 confirmed in game (screen showed 25,554/60,000 with bronze earned). Gold 100,000 matches the Going The Distance trophy; not yet seen in game."
+          "notes": "Bronze (20,000) earned; silver target 60,000 confirmed in game (27,981/60,000 on Nov 1). Gold 100,000 matches the Going The Distance trophy."
         },
         {
           "id": "med_general_climbing_the_ranks",
@@ -3955,12 +3955,19 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_general_climbing_the_ranks.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 40
+          },
+          "psn_trophy": 9,
+          "notes": "Three tiers; bronze and silver shown earned at rank 33, gold is rank 40 (same as the Climbing the Ranks trophy, which the site reads from PSN)."
         },
         {
           "id": "med_general_hold_the_line",
           "name": "Hold the Line",
-          "description": "Defeat an invading Sniper Jäger.",
+          "description": "Defeat an invading Sniper Jager.",
           "goal": 1,
           "goal_tier": null,
           "tiers": {
@@ -3968,7 +3975,7 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_general_hold_the_line.jpg"
         },
         {
           "id": "med_general_hostile_takeover",
@@ -3981,12 +3988,12 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_general_hostile_takeover.jpg"
         },
         {
           "id": "med_general_ultimate_longshot",
           "name": "Ultimate Longshot",
-          "description": "Hit the target at the furthest distance in the shooting range.",
+          "description": "Hit the target at the furthest distance, in the Shooting Range.",
           "goal": 1,
           "goal_tier": null,
           "tiers": {
@@ -3994,12 +4001,12 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_general_ultimate_longshot.jpg"
         },
         {
           "id": "med_general_prolific_person",
-          "name": "Prolific Person",
-          "description": "Shoot the Dead-Eye target in the shooting range.",
+          "name": "Prolific Precision",
+          "description": "Shoot the Dead Eye target in the Shooting Range.",
           "goal": 1,
           "goal_tier": null,
           "tiers": {
@@ -4007,7 +4014,8 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_general_prolific_precision.jpg",
+          "notes": "In-game name is Prolific Precision (id kept so saved progress carries over)."
         }
       ],
       "combat": [
