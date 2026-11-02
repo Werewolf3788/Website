@@ -416,6 +416,7 @@ footer .fl{display:flex;flex-wrap:wrap;gap:18px}
 @media (prefers-reduced-motion:reduce){ *{animation:none !important;transition:none !important;scroll-behavior:auto !important} }
 </style>
     <link rel="stylesheet" href="assets/ww-shell.css">
+    <script src="assets/menu-sheet.js"></script>
     <script defer src="assets/ww-shell.js"></script>
 </head>
 <body>
@@ -829,7 +830,7 @@ async function loadMenu() {
   if (cached && cached.data) renderMenu(cached.data);
   if (cached && Date.now() - cached.at < CFG.menuTtlMs) return; // fresh enough: no Firebase read
   try {
-    const r = await fetch(CFG.menuUrl);
+    const r = await window.wwMenuFetch();   // menu from the published Google Sheet (assets/menu-sheet.js)
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const data = await r.json();
     if (data && typeof data === 'object') { lsSet(LS.menu, JSON.stringify({ at: Date.now(), data })); renderMenu(data); }

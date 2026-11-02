@@ -3,7 +3,7 @@
    File: assets/ww-shell.js   (include on every page with <script defer>)
 
    What it does on every page:
-     1. Site menu from Firebase /utm_links (cached on the device for 6 hours,
+     1. Site menu from the published Google Sheet via assets/menu-sheet.js (cached on the device,
         so pages don't re-download it on every visit)
           - wide desktop:            top menu with dropdown folders
           - narrow desktop / tablet: sandwich button + slide-in drawer
@@ -213,10 +213,18 @@
     function writeCache(menu) {
         try { localStorage.setItem(MENU_CACHE_KEY, JSON.stringify({ at: Date.now(), menu })); } catch (e) { /* private mode */ }
     }
+    // Menu comes from the published Google Sheet (assets/menu-sheet.js), not Firebase
+    function loadMenuSheet() {
+        if (window.wwMenuData) return Promise.resolve();
+        return new Promise((ok, bad) => {
+            const sc = document.createElement('script');
+            sc.src = rootUrl('assets/menu-sheet.js'); sc.onload = ok; sc.onerror = () => bad(new Error('menu-sheet.js not found'));
+            document.head.appendChild(sc);
+        });
+    }
     async function fetchMenu() {
-        const res = await fetch(`${RTDB}/utm_links.json`, { cache: 'no-store' });
-        if (!res.ok) throw new Error('menu HTTP ' + res.status);
-        const menu = parseMenu(await res.json());
+        await loadMenuSheet();
+        const menu = parseMenu(await window.wwMenuData());
         if (menu.length) writeCache(menu);
         return menu;
     }
@@ -513,7 +521,7 @@ ${OWN_PWA ? '' : `<li><button type="button" class="ww-row" data-ww-install hidde
         MENU = cached ? cached.menu : [];
         render();
         // Show the saved menu instantly, then always fetch the latest so row
-        // order / group changes in /utm_links show on the very next page load.
+        // order / group changes in the menu sheet show on the very next page load.
         try {
             const fresh = await fetchMenu();
             if (JSON.stringify(fresh) !== JSON.stringify(MENU)) { MENU = fresh; render(); }
