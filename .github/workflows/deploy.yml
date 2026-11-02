@@ -37,6 +37,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Free Hosting storage (keep last 5 releases)
+        run: |
+          pip install --quiet google-auth requests
+          python scripts/hosting-cleanup.py
+        env:
+          GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
+          HOSTING_KEEP_RELEASES: '5'
+        continue-on-error: true
+
       - name: Deploy to Firebase Hosting
         uses: w9jds/firebase-action@master
         with:
