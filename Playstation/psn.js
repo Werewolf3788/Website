@@ -81,7 +81,7 @@ const PROGRESS_REFRESH_MS = 15 * 60 * 1000;
 
 const PULL_CONFIG = {
     SKELETON_REFRESH_RECENT_TITLES: 20,
-    PROGRESS_REFRESH_RECENT_TITLES: 0,
+    PROGRESS_REFRESH_RECENT_TITLES: 3,      // re-read trophy progress (22/150, 25%) for your 3 most recent games every full pull
     LIVE_PROGRESS_BACKFILL_PER_RUN: 12,   // games active this year get filled into liveTrophyProgress a few per run
     HEAVY_REFRESH_MS: 6 * 3600 * 1000,
     SKELETON_STALE_MS: 24 * 3600 * 1000,

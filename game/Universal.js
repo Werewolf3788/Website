@@ -698,6 +698,14 @@ window.appState.applyStateToUI = function() {
     if (typeof renderRankUI === 'function') renderRankUI();
     if (typeof renderMedalProgress === 'function') setTimeout(renderMedalProgress, 0);
     if (typeof renderActiveMission === 'function') renderActiveMission();
+    // PS5 trophy progress (22/150, 25%) on every game's trophy cards
+    document.querySelectorAll('.trophy-psn[data-trophy]').forEach(el => {
+        const t = this.trophies[el.dataset.trophy];
+        if (!t || t.earned || !(t.progressTarget || t.progressRate != null)) { el.hidden = true; return; }
+        const max = t.progressTarget || 100, v = t.progressTarget ? (t.progressValue || 0) : Math.round(t.progressRate || 0);
+        el.innerHTML = `🎮 PSN progress: ${t.progressTarget ? `${fmtNum(v)}/${fmtNum(max)}` : `${v}%`}` + meterHtml(max - v, max, '').replace(/^<span class="wm-num[^>]*>.*?<\/span>/, '');
+        el.hidden = false;
+    });
     Object.entries((this.gameData && this.gameData.missions) || {}).forEach(([mk, mm]) => {
         if (!mm || mm.completion_trophy === undefined) return;
         const t = this.trophies[`trophy_${this.gameId}_${mm.completion_trophy}`];
@@ -1323,6 +1331,13 @@ async function autoCheckUserPsnTrophies() {
 
                 if (appState.trophies[cardKey]) {
                     const card = appState.trophies[cardKey];
+                    // PS5 trophy progress (22/150 or 25%) for any game that has it
+                    const pv = Number(tObj.currentValue ?? tObj.trophyProgress ?? 0) || 0;
+                    const pt = Number(tObj.targetValue ?? tObj.trophyProgressTargetValue ?? 0) || 0;
+                    const pr = tObj.progressRate != null ? parseFloat(tObj.progressRate) : null;
+                    if ((pt && card.progressTarget !== pt) || card.progressValue !== pv || card.progressRate !== pr) {
+                        card.progressValue = pv; card.progressTarget = pt; card.progressRate = (pr === null || isNaN(pr)) ? null : pr; stateModified = true;
+                    }
                     // Sync PlayStation visual metadata across all platforms
                     if (tObj.name) card.name = tObj.name;
                     if (tObj.description) card.description = tObj.description;
@@ -1547,6 +1562,7 @@ function buildItemCard(o) {
         </div>
         ${o.body ? `<p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(o.body)}</p>` : ''}
         ${o.progressGoal ? `<div class="medal-meter wallet-meter" data-medal="${escapeHtml(o.id)}"></div>` : ''}
+        ${o.type === 'trophy' ? `<div class="wallet-meter trophy-psn" data-trophy="${escapeHtml(o.id)}" hidden></div>` : ''}
         ${o.locImg ? `<img src="${escapeHtml(toSecureUrl(o.locImg))}" alt="Where to find ${escapeHtml(o.title || '')}" loading="lazy" class="loc-photo" title="Tap to enlarge" onerror="this.remove()">` : ''}
         ${o.price ? `<div class="price-meter wallet-meter" data-price="${Number(o.price) || 0}"></div>` : ''}
         ${o.link ? `<a href="${escapeHtml(o.link)}" target="_blank" rel="noopener" style="font-size:0.75rem; font-weight:800; color:var(--user-theme-accent, #ff5500); text-decoration:none;">▶ ${escapeHtml(o.linkLabel || 'Watch')}</a>` : ''}
