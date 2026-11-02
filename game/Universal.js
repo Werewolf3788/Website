@@ -912,13 +912,16 @@ function applyPsnToMedals(entries) {
     walk(data.medals); walk(data.missions);
     let changed = false;
     medals.forEach(md => {
-        const t = md.psn_trophy !== undefined ? toArr(data.general_trophies).find(x => String(x.trophyId) === String(md.psn_trophy)) : trophyByName[norm(md.name)];
+        const t = psnTrophyForMedal(md);
         if (!t) return;
         const e = entries[String(t.trophyId)]; if (!e) return;
         const target = Number(e.targetValue || e.trophyProgressTargetValue) || Number((String(t.description).replace(/,/g, '').match(/\d+/) || [])[0]) || 0;
         let v = Number(e.currentValue ?? e.trophyProgress ?? e.progress);
         if (!v && e.progressRate && target) v = Math.round(parseFloat(e.progressRate) / 100 * target);
-        if ((e.earned === true || e.isEarned === true) && target) v = Math.max(v || 0, target);
+        if (e.earned === true || e.isEarned === true) {
+            const top = Math.max(0, ...medalTiers(md).map(x => x.goal));
+            v = Math.max(v || 0, target || 0, top || 1);
+        }
         if (!v) return;
         const cur = appState.medals[md.id] || (appState.medals[md.id] = { earned: false });
         if ((cur.progress || 0) < v || cur.progressSource !== 'psn') { cur.progress = Math.max(cur.progressSource === 'manual' ? (cur.progress || 0) : 0, v); cur.progressSource = 'psn'; updateMedalFromProgress(md.id); changed = true; }
@@ -1611,17 +1614,26 @@ function buildItemCard(o) {
     </div>`;
 }
 
+// Medals and PSN trophies with the same name (or "psn_trophy" in the JSON) are the same goal.
+function psnTrophyForMedal(md) {
+    const data = appState.gameData || {};
+    const norm = (t) => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+    const all = [...toArr(data.general_trophies), ...toArr(data.trophies), ...Object.values(data.missions || {}).flatMap(x => toArr(x && x.trophies))];
+    if (md.psn_trophy !== undefined) return all.find(x => String(x.trophyId) === String(md.psn_trophy)) || null;
+    return all.find(x => norm(x.name) === norm(md.name)) || null;
+}
 function medalCard(m, ctx) {
     const tierClass = { bronze: 'rank-bronze', silver: 'rank-silver', gold: 'rank-gold' }[m.goal_tier] || 'rank-silver';
     const parts = [];
     if (m.goal !== undefined && m.goal !== null) parts.push(`Goal: ${m.goal}`);
     if (m.distance_m) parts.push(`Distance: ${m.distance_m} m`);
     const tiers = m.tier_goals ? Object.values(m.tier_goals).filter(Number) : [];
+    const linkedTrophy = psnTrophyForMedal(m);
     const progressGoal = Number(m.goal) > 1 || tiers.length || m.psn_trophy ? (tiers.length ? Math.max(...tiers) : Number(m.goal) || 1) : 0;
     return buildItemCard({
         progressGoal,
         id: m.id, type: 'medal', badge: (m.goal_tier || 'Medal'), badgeClass: tierClass,
-        title: m.name, sub: m.description, body: [parts.join(' | '), m.tip ? `Tip: ${m.tip}` : ''].filter(Boolean).join(' — '), img: m.image_url, ctx: `medal ${ctx || ''}`,
+        title: m.name, sub: m.description, body: [linkedTrophy ? `🔗 Synced with PSN trophy "${linkedTrophy.name}"` : '', parts.join(' | '), m.tip ? `Tip: ${m.tip}` : ''].filter(Boolean).join(' — '), img: m.image_url, ctx: `medal ${ctx || ''}`,
         locImg: m.location_image_url, link: m.map_url || m.video_url, linkLabel: m.map_url ? 'Open on map' : (m.video_url ? 'Watch guide' : '')
     });
 }
