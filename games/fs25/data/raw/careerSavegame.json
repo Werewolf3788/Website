@@ -63,8 +63,8 @@
    "shownHints": null
   },
   "statistics": {
-   "money": 2189850304,
-   "playTime": 86633.09375
+   "money": 2189911241,
+   "playTime": 86648.09375
   },
   "mapsSplitShapeFileIds": {
    "count": 1,
@@ -73,7 +73,7 @@
    }
   },
   "slotSystem": {
-   "slotUsage": 2267
+   "slotUsage": 2259
   },
   "mod": [
    {

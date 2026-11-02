@@ -2,7 +2,7 @@
  "sales": {
   "item": [
    {
-    "timeLeft": 30,
+    "timeLeft": 29,
     "isGenerated": true,
     "xmlFilename": "data/vehicles/poettinger/servoT6000Plus/servoT6000Plus.xml",
     "age": 21,
@@ -16,7 +16,7 @@
     }
    },
    {
-    "timeLeft": 40,
+    "timeLeft": 39,
     "isGenerated": false,
     "xmlFilename": "D:/home/sid_2065238/farmingSim_2025/profile/mods/FS25_Flexicoil_ST820_MultiFunction/xml/ST_820.xml",
     "age": 47,
@@ -64,7 +64,7 @@
     ]
    },
    {
-    "timeLeft": 30,
+    "timeLeft": 29,
     "isGenerated": false,
     "xmlFilename": "D:/home/sid_2065238/farmingSim_2025/profile/mods/FS25_KuhnAxis402/kuhnAxis402.xml",
     "age": 14,
@@ -124,7 +124,7 @@
     ]
    },
    {
-    "timeLeft": 20,
+    "timeLeft": 19,
     "isGenerated": false,
     "xmlFilename": "D:/home/sid_2065238/farmingSim_2025/profile/mods/FS25_colossusPack/tools/stationaryBaler/baleMaster.xml",
     "age": 17,
@@ -208,7 +208,7 @@
     ]
    },
    {
-    "timeLeft": 23,
+    "timeLeft": 22,
     "isGenerated": false,
     "xmlFilename": "data/vehicles/kubota/seriesM8/seriesM8.xml",
     "age": 48,
@@ -264,7 +264,7 @@
     ]
    },
    {
-    "timeLeft": 31,
+    "timeLeft": 30,
     "isGenerated": false,
     "xmlFilename": "data/vehicles/kubota/seriesM8/seriesM8.xml",
     "age": 48,
@@ -308,6 +308,208 @@
      {
       "name": "wheel",
       "id": "DEFAULT_TRELLEBORG_TM600"
+     }
+    ]
+   },
+   {
+    "timeLeft": 28,
+    "isGenerated": true,
+    "xmlFilename": "data/vehicles/krone/xDisc620Trailer/xDisc620Trailer.xml",
+    "age": 14,
+    "price": 6970,
+    "damage": 0.275273,
+    "wear": 0.835275,
+    "operatingTime": 33799.144531
+   },
+   {
+    "timeLeft": 26,
+    "isGenerated": false,
+    "xmlFilename": "D:/home/sid_2065238/farmingSim_2025/profile/mods/FS25_colossusPack/tools/fert/fertSpreadUnreal.xml",
+    "age": 48,
+    "price": 13774,
+    "damage": 0.002187,
+    "wear": 0.001333,
+    "operatingTime": 37802.820312,
+    "boughtConfiguration": [
+     {
+      "name": "fillUnit",
+      "id": 1
+     },
+     {
+      "name": "fillUnit",
+      "id": 4
+     },
+     {
+      "name": "baseColor",
+      "id": 1
+     },
+     {
+      "name": "designColor7",
+      "id": 2
+     },
+     {
+      "name": "designColor2",
+      "id": 2
+     },
+     {
+      "name": "designColor4",
+      "id": 3
+     },
+     {
+      "name": "designColor6",
+      "id": 2
+     },
+     {
+      "name": "designColor",
+      "id": 2
+     },
+     {
+      "name": "design16",
+      "id": 1
+     },
+     {
+      "name": "design16",
+      "id": 4
+     },
+     {
+      "name": "designColor5",
+      "id": 39
+     },
+     {
+      "name": "designColor3",
+      "id": 1
+     },
+     {
+      "name": "cover",
+      "id": 1
+     },
+     {
+      "name": "fillVolume",
+      "id": 1
+     },
+     {
+      "name": "design2",
+      "id": 1
+     },
+     {
+      "name": "design3",
+      "id": 1
+     },
+     {
+      "name": "design3",
+      "id": 2
+     },
+     {
+      "name": "wheel",
+      "id": "DEFAULT_TRELLEBORG_TM600"
+     },
+     {
+      "name": "wheel",
+      "id": "BROAD_CONTINENTAL_combineMaster"
+     }
+    ]
+   },
+   {
+    "timeLeft": 28,
+    "isGenerated": false,
+    "xmlFilename": "D:/home/sid_2065238/farmingSim_2025/profile/mods/FS25_colossusPack/trailers/titanTrailer/titanTrailer.xml",
+    "age": 21,
+    "price": 15197,
+    "damage": 0.003836,
+    "wear": 0.005077,
+    "operatingTime": 2867.196045,
+    "boughtConfiguration": [
+     {
+      "name": "fillUnit",
+      "id": 1
+     },
+     {
+      "name": "fillUnit",
+      "id": 5
+     },
+     {
+      "name": "designColor4",
+      "id": 9
+     },
+     {
+      "name": "designColor",
+      "id": 1
+     },
+     {
+      "name": "designColor5",
+      "id": 2
+     },
+     {
+      "name": "designColor3",
+      "id": 2
+     },
+     {
+      "name": "cover",
+      "id": 1
+     },
+     {
+      "name": "design6",
+      "id": 1
+     },
+     {
+      "name": "design6",
+      "id": 2
+     },
+     {
+      "name": "designColor2",
+      "id": 1
+     },
+     {
+      "name": "trailer",
+      "id": 1
+     },
+     {
+      "name": "wheel",
+      "id": "NARROW_CONTINENTAL_tractorMaster"
+     },
+     {
+      "name": "wheel",
+      "id": "DEFAULT_TRELLEBORG_TwinRadial"
+     },
+     {
+      "name": "fillVolume",
+      "id": 1
+     },
+     {
+      "name": "design",
+      "id": 1
+     },
+     {
+      "name": "design2",
+      "id": 1
+     },
+     {
+      "name": "design2",
+      "id": 4
+     },
+     {
+      "name": "designColor6",
+      "id": 2
+     },
+     {
+      "name": "dischargeable",
+      "id": 1
+     },
+     {
+      "name": "dischargeable",
+      "id": 3
+     },
+     {
+      "name": "design3",
+      "id": 1
+     },
+     {
+      "name": "design3",
+      "id": 2
+     },
+     {
+      "name": "baseColor",
+      "id": 1
      }
     ]
    }

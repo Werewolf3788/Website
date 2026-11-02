@@ -50,57 +50,6 @@
     }
    }
   ],
-  "deadwoodMission": {
-   "uniqueId": "missionaa429025ddbe1013d3dbe366d7157141",
-   "status": "CREATED",
-   "finishState": "NONE",
-   "spotIndex": 3,
-   "info": {
-    "reward": 900,
-    "reimbursement": 0.0,
-    "completion": 0.0
-   },
-   "vehicles": {
-    "spawned": false,
-    "group": 2
-   },
-   "endDate": {
-    "endDay": 80,
-    "endDayTime": 50400000
-   },
-   "originalTree": [
-    {
-     "splitShapePart1": 1,
-     "splitShapePart2": 7642,
-     "splitShapePart3": 0
-    },
-    {
-     "splitShapePart1": 1,
-     "splitShapePart2": 7861,
-     "splitShapePart3": 0
-    },
-    {
-     "splitShapePart1": 1,
-     "splitShapePart2": 7381,
-     "splitShapePart3": 0
-    },
-    {
-     "splitShapePart1": 1,
-     "splitShapePart2": 7597,
-     "splitShapePart3": 0
-    },
-    {
-     "splitShapePart1": 1,
-     "splitShapePart2": 7898,
-     "splitShapePart3": 0
-    },
-    {
-     "splitShapePart1": 1,
-     "splitShapePart2": 7643,
-     "splitShapePart3": 0
-    }
-   ]
-  },
   "harvestMission": [
    {
     "uniqueId": "mission4246a38b388490c2055cec65c0311f2b",

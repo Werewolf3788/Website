@@ -1,9 +1,9 @@
 {
  "environment": {
-  "dayTime": 834.566406,
+  "dayTime": 849.566528,
   "currentDay": 107,
   "currentMonotonicDay": 80,
-  "realHourTimer": 338242,
+  "realHourTimer": 3038266,
   "daysPerPeriod": 2,
   "lighting": {
    "toneMapping": {
@@ -18,14 +18,6 @@
    "timeSinceLastRain": 0,
    "forecast": {
     "instance": [
-     {
-      "typeName": "RAIN",
-      "season": "SUMMER",
-      "variationIndex": 2,
-      "startDay": 80,
-      "startDayTime": 39600000,
-      "duration": 10800000
-     },
      {
       "typeName": "SUN",
       "season": "SUMMER",

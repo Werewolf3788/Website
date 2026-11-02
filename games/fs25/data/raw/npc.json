@@ -2,19 +2,24 @@
  "npcs": {
   "npc": [
    {
-    "name": "GRANDPA"
+    "name": "GRANDPA",
+    "spotUniqueId": "GRANDPA_FARMHOUSE"
    },
    {
-    "name": "FORESTER"
+    "name": "FORESTER",
+    "spotUniqueId": "FORESTER_SHED"
    },
    {
-    "name": "FARMER"
+    "name": "FARMER",
+    "spotUniqueId": "FARMER_HOUSE"
    },
    {
-    "name": "HELPER"
+    "name": "HELPER",
+    "spotUniqueId": "HELPER_HOUSE"
    },
    {
-    "name": "ANIMAL_DEALER"
+    "name": "ANIMAL_DEALER",
+    "spotUniqueId": "ANIMAL_DEALER_SHOP"
    }
   ]
  }
