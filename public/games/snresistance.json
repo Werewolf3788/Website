@@ -3381,17 +3381,19 @@
         "objective": [
           {
             "id": "med_objective_so_long_kruger",
-            "name": "So Long Kruger",
-            "description": "Kill Kruger with a rifle at a distance of 200 meters or more.",
-            "goal": 300,
+            "name": "So Long, Kruger",
+            "description": "Kill Kruger with a rifle at a distance of 600 meters or more.",
+            "goal": 600,
             "goal_tier": null,
             "tiers": {
               "bronze": null,
               "silver": null,
               "gold": null
             },
-            "image_url": "",
-            "notes": "Typed as 0/300 with a 200 m distance; one of these may be a typo."
+            "image_url": "/public/games/snresistance/images/medals/med_objective_so_long_kruger.jpg",
+            "notes": "Tiered medal (bronze, silver, gold). The in-game screen shows 600 m as the current target, with a best shot of 535 m on the screenshot. Earlier notes listed 200 m (and 300), which are probably the lower tiers.",
+            "verified": true,
+            "source": "In-game Medals > Missions > Objective screen"
           }
         ],
         "mission": [
