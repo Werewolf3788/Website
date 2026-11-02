@@ -2451,7 +2451,8 @@
             "summary": "A lighter engraved '14.02.42', a reminder of what the fight is for.",
             "video_time": 250,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=250s",
-            "emoji": "🏷️"
+            "emoji": "🏷️",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/item_m7_01.jpg"
           },
           {
             "id": "item_m7_02",
@@ -2503,11 +2504,12 @@
           {
             "id": "eagle_m7_03",
             "name": "Dead-Eye Target 3",
-            "location": "On top of the wooden building on the north side of Vallée Des Dieux. Reachable after going through the underground facility.",
+            "location": "On top of the wooden building on the north side of Vallée Des Dieux. Reachable after going through the underground facility. (about 107 m in the photo).",
             "image_url": "/public/games/snresistance/images/icons/eagle.png",
             "video_time": 441,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=441s",
-            "emoji": "🦅"
+            "emoji": "🦅",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/eagle_m7_03.jpg"
           }
         ],
         "workbenches": [
@@ -2532,7 +2534,8 @@
             "unlocks": "Secondary Recoil pack",
             "video_time": 281,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=281s",
-            "emoji": "⚙️"
+            "emoji": "⚙️",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/wb_m7_smg.jpg"
           },
           {
             "id": "wb_m7_pistol",
@@ -2554,7 +2557,7 @@
         "target_name": "Aldo Riese",
         "location": "Farmhouse on the western edge of the facility.",
         "challenge": "Kill Aldo Riese with poison.",
-        "strategy": "Grab the Poison from the table inside the barn, then poison Riese's drink (the cup on the round table in his house) and wait for him to drink it.",
+        "strategy": "Take the Poison from the barn without being seen. Pour it into Riese's cup, ring the dinner bell nearby, then hide and wait for him to drink it.",
         "reward": "M1918",
         "image_url": "/public/games/snresistance/images/locations/m7/kill_m7_drink.jpg",
         "description": "Hauptmann Aldo Riese, among the cruellest captains this side of the Rhine, infamous for slowly poisoning his prisoners."
@@ -2839,16 +2842,25 @@
         "numbering_note": "Gnome numbers follow MapMaster. Trophy Tom's video may find them in a different order, so a card's 'Watch guide' timestamp can show a different gnome."
       },
       "primary_objectives": [
-        "Locate the last remaining Kleine Blume warheads — Locate the underground facility"
+        "Locate the last remaining Kleine Blume warheads — London believes they were moved by rail to the Vallée des Dieux vineyard, which may once have been a V1 launch site.",
+        "Tasks: locate the underground facility → gain access → search it → destroy the Zugwerfer Carriage.",
+        "How: in the facility, open the Control Room with the Control Room Key (or a Satchel Charge) and pull the switch. Follow the marker to the Zugwerfer Carriage, plant a Satchel Charge and light the fuse."
       ],
       "optional_objectives": [
         "Eliminate the Elite Snipers — an elite sniper unit guards the vineyard. Neutralize Elite Snipers (3).",
-        "Destroy the V1 Launch Site — a fully working V1 launch site is hidden in the vineyard. Sabotage the Site (2)."
+        "Destroy the V1 Launch Site — sabotage the V1 and sabotage the ramp (2), then leave the area before it blows."
       ],
       "kill_target": "Aldo Riese",
       "objectives_source": "In-game pause map (user screenshot); main objective list grows as the mission goes on.",
       "completion_trophy": 7,
       "points_of_interest": [
+        {
+          "id": "poi_m7_zugwerfer",
+          "type": "Main objective",
+          "name": "Zugwerfer Carriage",
+          "location": "Final main task: plant a Satchel Charge on the Zugwerfer Carriage and light the fuse.",
+          "location_image_url": "/public/games/snresistance/images/locations/m7/poi_m7_zugwerfer.jpg"
+        },
         {
           "id": "poi_m7_elite_sniper_1",
           "type": "Elite Sniper",
@@ -2872,13 +2884,14 @@
           "id": "poi_m7_sabotage_v1_1",
           "type": "Objective",
           "name": "Sabotage V1 (1/2)",
-          "location": "Interact with the V1 to sabotage it (Destroy the V1 Launch Site)."
+          "location": "Interact with the V1 rocket to sabotage it. Do this and the ramp, then get clear before it blows."
         },
         {
           "id": "poi_m7_sabotage_v1_2",
           "type": "Objective",
-          "name": "Sabotage V1 (2/2)",
-          "location": "Second sabotage point. Location not recorded yet."
+          "name": "Sabotage Ramp (2/2)",
+          "location": "The valve on the V1 launch ramp. Interact with it to sabotage the ramp.",
+          "location_image_url": "/public/games/snresistance/images/locations/m7/poi_m7_sabotage_v1_2.jpg"
         },
         {
           "id": "poi_m7_poison",
