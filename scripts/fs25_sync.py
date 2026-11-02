@@ -765,6 +765,7 @@ def build_fields(fd, farmlands, career, live):
             "growthState": int(num(f.get("growthState"))), "lastGrowthState": f.get("lastGrowthState"),
             "groundType": f.get("groundType"), "sprayType": f.get("sprayType"),
             "sprayLevel": spray, "limeLevel": lime, "plowLevel": plow,
+            "fertilizerPercent": round(min(spray, 2) / 2 * 100), "limePercent": round(min(lime, 3) / 3 * 100),
             "rollerLevel": f.get("rollerLevel"), "stubbleShredLevel": f.get("stubbleShredLevel"),
             "weedState": weeds, "stoneLevel": stones, "waterLevel": f.get("waterLevel"),
             "area": fl.get("area"), "price": fl.get("price"),

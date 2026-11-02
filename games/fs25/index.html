@@ -84,7 +84,9 @@ header.top{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-conte
 .fbtn .n{opacity:.7;margin-left:4px}
 
 /* ---------- field board */
-.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px}
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.ftile .meta b{font-family:var(--mono);min-width:34px;display:inline-block;text-align:right}
+.ftile .meta>span:last-child{white-space:nowrap}
 .ftile{border:1px solid var(--line2);border-radius:10px;padding:9px 10px;background:var(--panel2);position:relative;cursor:pointer;transition:.15s}
 .ftile:hover{border-color:var(--green);transform:translateY(-1px)}
 .ftile.unowned{opacity:.55}
@@ -113,7 +115,7 @@ table{width:100%;border-collapse:collapse;font-size:12.5px}
 th{font:700 10.5px var(--mono);text-transform:uppercase;color:var(--dim);text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel);cursor:pointer;white-space:nowrap}
 td{padding:7px 8px;border-bottom:1px solid rgba(27,46,35,.6);vertical-align:middle}
 tr:hover td{background:rgba(34,197,94,.04)}
-td.num,th.num{text-align:right;font-family:var(--mono)}
+td.num,th.num{text-align:right;font-family:var(--mono);white-space:nowrap}
 .meter{display:inline-block;width:56px;height:6px;border-radius:4px;background:#13261b;overflow:hidden;vertical-align:middle;margin-right:6px}
 .meter>span{display:block;height:100%}
 
@@ -308,7 +310,54 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
 
   const $ = id => document.getElementById(id);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const nice = s => esc(String(s ?? '').replace(/_/g,' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase()));
+  const plain = s => { const k = String(s ?? '').toUpperCase(); if (NAMES[k]) return NAMES[k];
+    return String(s ?? '').replace(/_/g,' ').replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase().replace(/\b\w/g, c => c.toUpperCase()); };
+  const nice = s => esc(plain(s));
+  const BRANDS = { JOHNDEERE:'John Deere', CASEIH:'Case IH', NEWHOLLAND:'New Holland', DEUTZFAHR:'Deutz-Fahr', POETTINGER:'Pöttinger', MASSEYFERGUSON:'Massey Ferguson',
+    CLAAS:'CLAAS', FENDT:'Fendt', KUBOTA:'Kubota', VALTRA:'Valtra', KRONE:'Krone', KUHN:'Kuhn', LEMKEN:'Lemken', AMAZONE:'Amazone', HORSCH:'Horsch', VAEDERSTAD:'Väderstad',
+    BREDAL:'Bredal', KINZE:'Kinze', GREATPLAINS:'Great Plains', BRANDT:'Brandt', MACK:'Mack', INTERNATIONAL:'International', PALADIN:'Paladin', HAWE:'Hawe',
+    EINBOECK:'Einböck', SCHWARZMUELLER:'Schwarzmüller', KRAMPE:'Krampe', JCB:'JCB', MANITOU:'Manitou', BOBCAT:'Bobcat', LIZARD:'Lizard', CHALLENGER:'Challenger', STEIGER:'Steiger' };
+  const brand = v => v.isMod ? 'Mod' : (v.brand ? (BRANDS[String(v.brand).toUpperCase()] || plain(v.brand)) : '');
+  // ---- Human-readable names for the game's internal codes (anything not listed is tidied automatically)
+  const NAMES = {
+    // crops & products
+    WINTERWHEAT:'Winter Wheat', WINTERBARLEY:'Winter Barley', SUGARBEET:'Sugar Beet', SUGARBEET_CUT:'Sugar Beet (cut)', SUGARCANE:'Sugar Cane',
+    GREENBEAN:'Green Beans', PEA:'Peas', SOYBEAN:'Soybeans', MAIZE:'Corn', FIELDGRASS:'Field Grass', MEADOW:'Meadow', OILSEEDRADISH:'Oilseed Radish',
+    RICELONGGRAIN:'Long-grain Rice', RICEFLOUR:'Rice Flour', NAPACABBAGE:'Napa Cabbage', SPRING_ONION:'Spring Onion', BEETROOT:'Beetroot', CANOLA:'Canola',
+    MILK_BOTTLED:'Bottled Milk', GOATMILK:'Goat Milk', GOATMILK_BOTTLED:'Bottled Goat Milk', BUFFALOMILK:'Buffalo Milk', BUFFALOMILK_BOTTLED:'Bottled Buffalo Milk',
+    BUFFALOMOZZARELLA:'Buffalo Mozzarella', GOATCHEESE:'Goat Cheese', DRYGRASS_WINDROW:'Hay', GRASS_WINDROW:'Cut Grass', DRYALFALFA_WINDROW:'Alfalfa Hay',
+    ALFALFA_WINDROW:'Cut Alfalfa', STRAW:'Straw', SILAGE:'Silage', CHAFF:'Chaff', FORAGE:'Mixed Ration (TMR)', WOODCHIPS:'Wood Chips',
+    LIQUIDFERTILIZER:'Liquid Fertilizer', FERTILIZER:'Fertilizer', LIME:'Lime', HERBICIDE:'Herbicide', LIQUIDMANURE:'Slurry', MANURE:'Manure',
+    DIGESTATE:'Digestate', DIESEL:'Diesel', DEF:'DEF', ELECTRICCHARGE:'Electric Charge', METHANE:'Methane', HAY_PELLETS:'Hay Pellets',
+    STRAW_PELLETS:'Straw Pellets', MINERAL_FEED:'Mineral Feed', PIGFOOD:'Pig Feed', ROADSALT:'Road Salt', BALE_TWINE:'Bale Twine', UNKNOWN:'Nothing planted',
+    // ground / field states
+    HARVEST_READY:'Ready to harvest', HARVEST_READY_OTHER:'Ready to harvest', SOWN:'Sown', RIDGE_SOWN:'Sown (ridges)', RIDGE:'Ridged',
+    CULTIVATED:'Cultivated', PLOWED:'Plowed', SEEDBED:'Seedbed ready', STUBBLE_TILLAGE:'Stubble tilled', ROLLED_SEEDBED:'Rolled seedbed',
+    GRASS:'Grass', GRASS_CUT:'Grass (cut)', HARVESTED:'Harvested', DIRECT_SOWN:'Direct sown', NONE:'None',
+    // vehicle categories
+    TRACTORSS:'Small Tractors', TRACTORSM:'Medium Tractors', TRACTORSL:'Large Tractors', TRUCKS:'Trucks', CARS:'Cars & Pickups',
+    HARVESTERS:'Combines', BEETHARVESTERS:'Beet Harvesters', COTTONHARVESTERS:'Cotton Harvesters', VEGETABLEHARVESTERS:'Vegetable Harvesters',
+    POTATOHARVESTERS:'Potato Harvesters', FORAGEHARVESTERS:'Forage Harvesters', CUTTERS:'Headers', CORNHEADERS:'Corn Headers', CUTTERTRAILERS:'Header Trailers',
+    FERTILIZERSPREADERS:'Fertilizer & Lime Spreaders', SPRAYERS:'Sprayers', SEEDERS:'Seed Drills', PLANTERS:'Planters', PLOWS:'Plows',
+    CULTIVATORS:'Cultivators', DISCHARROWS:'Disc Harrows', ROLLERS:'Rollers', MOWERS:'Mowers', TEDDERS:'Tedders', WINDROWERS:'Rakes',
+    BALERSSQUARE:'Square Balers', BALERSROUND:'Round Balers', LOADERWAGONS:'Loader Wagons', TRAILERS:'Trailers', TRAILERSSEMI:'Semi Trailers',
+    BARRELS:'Tankers', SLURRYTANKS:'Slurry Tankers', SKIDSTEERVEHICLES:'Skid Steers', SKIDSTEERTOOLS:'Skid Steer Tools', FORESTRYMISC:'Forestry',
+    PALLETS:'Pallets', BIGBAGPALLETS:'Big Bags', MISC:'Misc. Equipment', WHEELLOADERS:'Wheel Loaders', TELELOADERS:'Telehandlers', FRONTLOADERS:'Front Loaders',
+    // contracts
+    SOW:'Sowing', HARVEST:'Harvesting', PLOW:'Plowing', CULTIVATE:'Cultivating', FERTILIZE:'Fertilizing', SPRAY:'Spraying', HERBICIDE_MISSION:'Weed spraying',
+    WEED:'Weeding', MOW:'Mowing', BALE:'Baling', TEDDER:'Tedding', DEADWOOD:'Deadwood cleanup', TREETRANSPORT:'Tree transport', TRANSPORT:'Transport',
+    STONE:'Stone picking', DESTRUCTIBLEROCKS:'Rock clearing', ROLL:'Rolling', MULCH:'Mulching',
+    CREATED:'Available', RUNNING:'In progress', FINISHED:'Finished', FAILED:'Failed',
+    // weather
+    SUN:'Sunny', CLOUDY:'Cloudy', RAIN:'Rain', SNOW:'Snow', TWISTER:'Tornado', FOG:'Fog',
+  };
+  const LANGS = { en:'English', de:'German', fr:'French', es:'Spanish', it:'Italian', pl:'Polish', nl:'Dutch', pt:'Portuguese', br:'Portuguese (BR)', cz:'Czech', ru:'Russian' };
+  const pctBar = (pct, col) => `<span class="meter" style="width:44px;height:5px"><span style="width:${Math.max(pct, 3)}%;background:${col}"></span></span>`;
+  const limePct = f => Math.round(Math.min(3, +f.limeLevel || 0) / 3 * 100);
+  const fertPct = f => Math.round(Math.min(2, +f.sprayLevel || 0) / 2 * 100);
+  const lvlColor = p => p >= 100 ? 'var(--green2)' : p >= 50 ? '#eab308' : p > 0 ? 'var(--orange)' : '#f87171';
+  const yesNo = v => v ? 'Yes' : 'No';
+
   const money = v => v == null ? '--' : (v < 0 ? '-$' : '$') + Math.abs(Math.round(+v)).toLocaleString('en-US');
   const short$ = v => { v = +v || 0; const a = Math.abs(v), s = v < 0 ? '-$' : '$';
     return a >= 1e9 ? s + (a/1e9).toFixed(2) + 'B' : a >= 1e6 ? s + (a/1e6).toFixed(1) + 'M' : a >= 1e4 ? s + Math.round(a/1e3) + 'K' : s + Math.round(a).toLocaleString('en-US'); };
@@ -364,8 +413,8 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
       ...farms.slice(0, 2).map((f, i) => [f.name || 'Farm ' + f.id, short$(f.money), f.loan ? 'Loan ' + short$(f.loan) : (f.players || []).map(p => p.name).join(', '), farmColor(f.id), farmColor2(f.id)]),
       ['Owned Land', (sum.ownedHectares ?? '--') + ' ha', `${n0(sum.ownedFields)} fields · ${n0(sum.ownedFarmlands)} farmlands`, 'var(--lime)'],
       ['Ready to Harvest', n0(sum.readyToHarvest), `${n0(sum.growing)} growing`, 'var(--amber)'],
-      ['Need Lime', n0(sum.needLime), 'owned fields', '#eab308'],
-      ['Need Fertilizer', n0(sum.needFertilizer), 'fields below 2/2', 'var(--sky)'],
+      ['Need Lime', n0(sum.needLime), 'owned fields at 0% lime', '#eab308'],
+      ['Need Fertilizer', n0(sum.needFertilizer), 'owned fields under 100% fertilized', 'var(--sky)'],
       ['Helpers Working', n0(sum.helpersActive), `${n0(sum.vehicles)} vehicles owned`, 'var(--violet)'],
       ['Collectibles', sum.collectibles || '--', `${n0(sum.mods)} mods`, 'var(--orange)'],
     ];
@@ -395,7 +444,7 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     if (mapLayers.fields) (DATA.fields || []).forEach(f => {
       if (f.x == null) return;
       const [x, y] = P(f.x, f.z), col = STATUS_COLOR[f.status] || '#64748b';
-      svg += `<g data-tip="Field ${esc(f.id)} · ${nice(f.fruit === 'UNKNOWN' ? f.groundType : f.fruit)} · ${nice(f.status)}${f.needs.includes('lime') ? ' · needs lime' : ''}${f.isOwned ? ' · ' + esc(farmName(f.farmId)) : ''}" data-field="${esc(f.id)}" style="cursor:pointer">
+      svg += `<g data-tip="Field ${esc(f.id)} · ${nice(f.fruit === 'UNKNOWN' ? f.groundType : f.fruit)} · ${nice(f.status)} · Lime ${limePct(f)}% · Fertilizer ${fertPct(f)}%${f.isOwned ? ' · ' + esc(farmName(f.farmId)) : ''}" data-field="${esc(f.id)}" style="cursor:pointer">
         <rect x="${x - 17}" y="${y - 12}" width="34" height="24" rx="5" fill="${col}" fill-opacity="${f.isOwned ? .9 : .35}" stroke="${f.isOwned ? farmColor2(f.farmId) : 'none'}" stroke-width="2.5"/>
         <text x="${x}" y="${+y + 5}" font-size="15" font-weight="700" text-anchor="middle" fill="#04110a" font-family="JetBrains Mono">${esc(f.id)}</text></g>`;
     });
@@ -429,10 +478,10 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
   // ---- fields
   const FILTERS = [
     ['owned', 'Owned', f => f.isOwned], ['all', 'All', () => true],
-    ['ready', 'Ready', f => f.isOwned && f.status === 'ready'],
+    ['ready', 'Ready to harvest', f => f.isOwned && f.status === 'ready'],
     ['growing', 'Growing', f => f.isOwned && f.status === 'growing'],
-    ['lime', 'Lime', f => f.isOwned && f.needs.includes('lime')],
-    ['fertilizer', 'Fertilize', f => f.isOwned && f.needs.includes('fertilizer')],
+    ['lime', 'Needs lime', f => f.isOwned && f.needs.includes('lime')],
+    ['fertilizer', 'Needs fertilizer', f => f.isOwned && f.needs.includes('fertilizer')],
     ['weeds', 'Weeds', f => f.isOwned && f.needs.includes('weeds')],
     ['empty', 'Empty', f => f.isOwned && f.status === 'empty'],
   ];
@@ -446,21 +495,22 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     $('board').innerHTML = list.map(f => {
       const chips = [];
       if (f.status === 'ready') chips.push('<span class="chip c-ready">Harvest</span>');
-      if (f.needs.includes('lime')) chips.push('<span class="chip c-lime">Lime</span>');
-      if (f.needs.includes('fertilizer')) chips.push(`<span class="chip c-fert">Fert ${f.sprayLevel}/2</span>`);
+      if (f.needs.includes('lime')) chips.push('<span class="chip c-lime">Needs lime</span>');
+      if (f.needs.includes('fertilizer')) chips.push(`<span class="chip c-fert">Needs fertilizer</span>`);
       if (f.needs.includes('weeds')) chips.push('<span class="chip c-weeds">Weeds</span>');
       if (f.needs.includes('plow')) chips.push('<span class="chip c-plow">Plow</span>');
       if (f.needs.includes('stones')) chips.push('<span class="chip c-stones">Stones</span>');
-      if (!chips.length && f.isOwned) chips.push('<span class="chip c-ok">OK</span>');
+      if (!chips.length && f.isOwned) chips.push('<span class="chip c-ok">All good</span>');
       const pct = f.status === 'ready' || f.status === 'grass' ? 100 : f.status === 'growing' ? Math.min(92, f.growthState * 9) : 0;
       const label = f.fruit && f.fruit !== 'UNKNOWN' ? nice(f.fruit) : nice(f.groundType || 'Empty');
-      const dots = [0, 1].map(k => `<i class="${f.sprayLevel > k ? 'on' : ''}"></i>`).join('');
+      const lp = limePct(f), fp = fertPct(f);
       return `<div class="ftile ${f.isOwned ? '' : 'unowned'} ${f.status === 'ready' ? 'ready' : ''}" data-id="${esc(f.id)}"${f.isOwned ? ` style="border-left:4px solid ${farmColor(f.farmId)}"` : ''}>
         <div class="fid">#${esc(f.id)}</div>${f.isOwned ? `<span class="farm" style="color:${farmColor(f.farmId)};background:${farmColor2(f.farmId)}26;border:1px solid ${farmColor2(f.farmId)}">${esc((farmName(f.farmId) || '').slice(0, 10))}</span>` : ''}
         <div class="crop">${label}</div>
         <div class="bar"><span style="width:${pct}%;background:${STATUS_COLOR[f.status]}"></span></div>
-        <div class="meta"><span>${nice(f.status)}${f.status === 'growing' ? ' · st ' + f.growthState : ''}</span><span>${f.area ? (+f.area).toFixed(1) + ' ha' : ''}</span></div>
-        <div class="meta"><span>Lime ${f.limeLevel}</span><span title="Fertilizer ${f.sprayLevel}/2">N <span class="ndots">${dots}</span></span></div>
+        <div class="meta"><span>${nice(f.status)}${f.status === 'growing' ? ' · stage ' + f.growthState : ''}</span><span>${f.area ? (+f.area).toFixed(1) + ' ha' : ''}</span></div>
+        <div class="meta" title="Lime ${lp}%"><span>Lime</span><span>${pctBar(lp, lvlColor(lp))} <b style="color:${lvlColor(lp)}">${lp}%</b></span></div>
+        <div class="meta" title="Fertilizer ${fp}%"><span>Fertilizer</span><span>${pctBar(fp, lvlColor(fp))} <b style="color:${lvlColor(fp)}">${fp}%</b></span></div>
         <div class="chips">${chips.join('')}</div></div>`;
     }).join('');
     $('board').querySelectorAll('.ftile').forEach(t => t.onclick = () => fieldModal(t.dataset.id));
@@ -471,12 +521,17 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     const ms = (DATA.missions || []).filter(m => String(m.fieldId) === String(id) && String(m.status).toUpperCase() !== 'FINISHED');
     const rows = [
       ['Owner', f.isOwned ? farmName(f.farmId) : 'Not owned' + (f.price ? ' · ' + money(f.price) : '')], ['Size', f.area ? (+f.area).toFixed(2) + ' ha' : '-'],
-      ['Crop', nice(f.fruit)], ['Status', nice(f.status)], ['Growth stage', f.growthState], ['Ground', nice(f.groundType)],
-      ['Fertilizer', `${f.sprayLevel}/2${f.sprayType && f.sprayType !== 'NONE' ? ' · last ' + nice(f.sprayType) : ''}`],
-      ['Lime level', f.limeLevel + (f.needs.includes('lime') ? ' · needs lime' : '')], ['Plow level', f.plowLevel], ['Rolled', f.rollerLevel], ['Mulched', f.stubbleShredLevel],
+      ['Crop', nice(f.fruit)], ['Planned next', f.plannedFruit && f.plannedFruit !== 'FALLOW' ? nice(f.plannedFruit) : 'Nothing planned'],
+      ['Status', nice(f.status)], ['Growth stage', f.status === 'growing' ? 'Stage ' + f.growthState : nice(f.status)], ['Ground', nice(f.groundType)],
+      ['Fertilizer', `${fertPct(f)}% (${f.sprayLevel} of 2 applications)${f.sprayType && f.sprayType !== 'NONE' ? ' · last: ' + nice(f.sprayType) : ''}`],
+      ['Lime', `${limePct(f)}%${f.needs.includes('lime') ? ' · needs lime' : limePct(f) < 100 ? ' · will need lime soon' : ' · fully limed'}`],
+      ['Plowed (yield bonus)', yesNo(+f.plowLevel > 0)], ['Rolled', yesNo(+f.rollerLevel > 0)], ['Mulched', yesNo(+f.stubbleShredLevel > 0)],
     ];
-    if (pf) rows.push(['PF lime used', n0(pf.totalCounter.usedLime) + ' L'], ['PF fertilizer used', n0((pf.totalCounter.usedMineralFertilizer || 0) + (pf.totalCounter.usedLiquidFertilizer || 0)) + ' L']);
-    ms.forEach(m => rows.push(['Contract', `${nice(m.type)}${m.fruit ? ' · ' + nice(m.fruit) : ''} · ends day ${m.endDay}`]));
+    const st = (DATA.career || {}).settings || {};
+    rows.push(['Weeds', st.weedsEnabled === false ? 'Turned off in this save' : (+f.weedState ? 'Present' : 'None')]);
+    rows.push(['Stones', st.stonesEnabled === false ? 'Turned off in this save' : (+f.stoneLevel ? 'Present' : 'None')]);
+    if (pf) rows.push(['Lime spread (Precision Farming)', n0(pf.totalCounter.usedLime) + ' L'], ['Fertilizer spread (Precision Farming)', n0((pf.totalCounter.usedMineralFertilizer || 0) + (pf.totalCounter.usedLiquidFertilizer || 0)) + ' L']);
+    ms.forEach(m => rows.push(['Contract', `${nice(m.type)}${m.fruit ? ' · ' + nice(m.fruit) : ''} · ends on day ${m.endDay}`]));
     $('modalBox').innerHTML = `<h3>Field #${esc(f.id)}</h3>${rows.map(([k, v]) => `<div class="row"><span class="muted">${k}</span><b class="mono" style="text-align:right">${esc(v ?? '-')}</b></div>`).join('')}
       <div style="text-align:right;margin-top:12px"><button class="fbtn on" id="mClose">Close</button></div>`;
     $('modal').classList.add('on'); $('mClose').onclick = () => $('modal').classList.remove('on');
@@ -509,7 +564,7 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
         const fills = v.fills.length ? v.fills.map(f => `<span class="tag" style="margin:1px;display:inline-block">${nice(f.type)} ${n0(f.level)} L</span>`).join('') : '<span class="dim">empty</span>';
         if (fleetTab === 'pallet') return `<tr><td>${esc(v.name)}</td><td>${farmBadge(v.farmId)}</td><td>${fills}</td></tr>`;
         const now = v.isAIActive ? '<span class="chip" style="background:rgba(167,139,250,.18);color:#c4b5fd">Helper</span>' : v.controller ? `<span class="chip" style="background:rgba(56,189,248,.15);color:var(--sky)">${esc(v.controller)}</span>` : '';
-        return `<tr><td><b>${esc(v.name)}</b><div class="dim mono" style="font-size:10.5px">${esc([v.category && nice(v.category), v.brand].filter(Boolean).join(' · '))}</div></td>
+        return `<tr><td><b>${esc(v.name)}</b><div class="dim mono" style="font-size:10.5px">${esc([v.category && plain(v.category), brand(v)].filter(Boolean).join(' · '))}</div></td>
           <td>${farmBadge(v.farmId)}</td><td>${now}</td><td class="num">${v.operatingHours ?? '--'}</td>
           <td class="num">${v.fuel ? `${n0(v.fuel.level)} ${v.fuel.type === 'ELECTRICCHARGE' ? 'kWh' : 'L'}` : '--'}</td>
           <td>${meter(v.damage)}</td><td>${meter(v.wear)}</td><td>${fills}</td></tr>`;
@@ -546,7 +601,7 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     const list = DATA.sales || [];
     $('slTag').textContent = list.length;
     $('sales').innerHTML = list.length ? `<table><thead><tr><th>Unit</th><th class="num">Price</th><th class="num">Hrs</th><th>Damage</th><th class="num">Left</th></tr></thead><tbody>${
-      list.map(v => `<tr><td><b>${esc(v.name)}</b><div class="dim mono" style="font-size:10.5px">${esc(v.brand || '')}${v.isMod ? ' · MOD' : ''}</div></td>
+      list.map(v => `<tr><td><b>${esc(v.name)}</b><div class="dim mono" style="font-size:10.5px">${esc(brand(v))}</div></td>
         <td class="num" style="color:var(--green2)">${short$(v.price)}</td><td class="num">${v.hours ?? '--'}</td><td>${meter(v.damage)}</td>
         <td class="num dim">${v.daysLeft != null ? esc(v.daysLeft) + 'd' : ''}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">No used equipment listed.</div>';
   }
@@ -604,7 +659,8 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
       const ws = days[k], main = ws.some(w => w.type === 'RAIN') ? 'RAIN' : ws.some(w => w.type === 'SNOW') ? 'SNOW' : ws.filter(w => w.type === 'SUN').length >= ws.length / 2 ? 'SUN' : 'CLOUDY';
       return `<div title="${esc(ws.map(w => `${w.startTime} ${w.type} ${w.durationH}h`).join(', '))}"><div class="mono dim">Day ${esc(k)}</div><i class="fa-solid ${WX_ICON[main]}"></i><b>${nice(main)}</b><div class="dim">${nice(ws[0].season)}</div></div>`;
     }).join('') : '<div class="empty" style="grid-column:1/-1">No forecast in savegame.</div>';
-    $('wxFoot').textContent = e.minutesSinceRain != null ? `Last rain ${Math.round(e.minutesSinceRain / 60)}h ago (game time) · ground wetness ${Math.round((e.groundWetness || 0) * 100)}%` : '';
+    const mr = e.minutesSinceRain;
+    $('wxFoot').textContent = mr != null ? `${mr < 60 ? 'Rained in the last hour' : `Last rain ${Math.round(mr / 60)} hours ago`} (game time) · ground ${Math.round((e.groundWetness || 0) * 100)}% wet` : '';
   }
   function renderDemands() {
     const list = (DATA.economy?.greatDemands || []).filter(g => g.isValid !== false && g.fillType);
@@ -644,18 +700,18 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     const owner = Object.fromEntries((DATA.farmlands || []).map(f => [String(f.id), f.farmId]));
     const list = rows.slice().sort((a, b) => (owner[b.farmlandId] ? 1 : 0) - (owner[a.farmlandId] ? 1 : 0) || a.farmlandId - b.farmlandId);
     $('pfTag').textContent = `${list.length} farmlands`;
-    $('pf').innerHTML = `<table><thead><tr><th>Land</th><th class="num">Lime</th><th class="num">Fert.</th><th class="num">Seeds</th><th class="num">Yield</th></tr></thead><tbody>${
+    $('pf').innerHTML = `<table><thead><tr><th>Land</th><th class="num">Lime (L)</th><th class="num">Fertilizer (L)</th><th class="num">Seeds (L)</th><th class="num">Harvested (L)</th></tr></thead><tbody>${
       list.map(r => { const t = r.totalCounter || {}; const o = owner[String(r.farmlandId)];
         return `<tr><td class="mono" style="color:${o ? farmColor(o) : 'var(--dim)'}${o ? `;border-left:3px solid ${farmColor2(o)}` : ''}">#${esc(r.farmlandId)}</td><td class="num">${n0(t.usedLime)}</td>
           <td class="num">${n0((t.usedMineralFertilizer || 0) + (t.usedLiquidFertilizer || 0))}</td><td class="num">${n0(t.usedSeeds)}</td><td class="num">${n0(t.yield)}</td></tr>`; }).join('')}</tbody></table>
-      <div class="dim" style="font-size:11px;margin-top:6px">Precision Farming totals per farmland (litres; yield in litres). Coloured = owned.</div>`;
+      <div class="dim" style="font-size:11px;margin-top:6px">Totals spread / harvested on each piece of land since Precision Farming started. Coloured land numbers are owned.</div>`;
   }
   function renderMissions() {
     const list = (DATA.missions || []).filter(m => String(m.status).toUpperCase() !== 'FINISHED');
     const done = (DATA.missions || []).length - list.length;
     $('msTag').textContent = `${list.length} open${done ? ' · ' + done + ' done' : ''}`;
     $('missions').innerHTML = list.length ? list.map(m => `<div class="row"><span><b>${nice(m.type)}</b>${m.fruit ? ' · ' + nice(m.fruit) : ''}${m.fieldId ? ` <span class="dim">· Field ${esc(m.fieldId)}</span>` : ''}
-      <div class="dim" style="font-size:11px">${nice(m.status)}${m.farmId ? ' · ' + esc(farmName(m.farmId)) : ''}${m.endDay ? ' · ends day ' + esc(m.endDay) : ''}${m.deliverTo ? ' · to ' + esc(m.deliverTo) : ''}${m.completion ? ' · ' + m.completion + '%' : ''}</div></span>
+      <div class="dim" style="font-size:11px">${nice(m.status)}${m.farmId ? ' · ' + esc(farmName(m.farmId)) : ''}${m.endDay ? ' · ends on day ' + esc(m.endDay) : ''}${m.deliverTo ? ' · deliver to ' + esc(m.deliverTo) : ''}${m.completion ? ' · ' + m.completion + '% done' : ''}</div></span>
       <span class="mono" style="color:var(--green2)">${+m.reward ? short$(m.reward) : ''}</span></div>`).join('') : '<div class="dim">No open contracts.</div>';
   }
   function renderMods() {
@@ -676,6 +732,9 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
       if (v === true || v === 1 && /pause|crossplay/.test(k)) return 'Yes';
       if (v === false || v === 0 && /pause|crossplay/.test(k)) return 'No';
       if (/initial(Money|Loan)/.test(k)) return money(v);
+      if (k === 'language') return esc(LANGS[v] || v);
+      if (k === 'auto_save_interval') return `Every ${+v} min`;
+      if (k === 'stats_interval') return `Every ${+v} sec`;
       return esc(v);
     };
     const keys = Object.keys(SRV_LABELS).filter(k => k in st).concat(Object.keys(st).filter(k => !(k in SRV_LABELS)));
