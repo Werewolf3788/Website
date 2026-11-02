@@ -106,6 +106,18 @@ header.top{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-conte
 .c-weeds{background:rgba(239,68,68,.15);color:#fca5a5}
 .c-stones{background:rgba(148,163,184,.15);color:#cbd5e1}
 .c-ok{background:rgba(34,197,94,.12);color:var(--green2)}
+.ftot{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px;margin-bottom:12px}
+.ftot>div{border:1px solid var(--line);border-left:4px solid var(--fc);border-radius:10px;padding:9px 11px;background:var(--panel2);cursor:pointer}
+.ftot>div.on{border-color:var(--fc2);box-shadow:0 0 0 1px var(--fc2) inset}
+.ftot h4{font:700 13px var(--head);text-transform:uppercase;letter-spacing:.4px;color:var(--fc);margin-bottom:5px}
+.ftot .g{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 10px}
+.ftot .g b{display:block;font:700 16px var(--head);color:var(--text)}.ftot .g span{font:600 10px var(--mono);color:var(--muted);text-transform:uppercase}
+.job{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 9px;border-radius:9px;border:1px solid var(--line);margin-bottom:6px;cursor:pointer;background:var(--panel2)}
+.job:hover{border-color:var(--line2)}.job.on{border-color:var(--jc);box-shadow:0 0 0 1px var(--jc) inset}
+.job .jl{display:flex;gap:9px;align-items:center}.job .jl i{width:18px;text-align:center;color:var(--jc)}
+.job .jf{font:600 11px var(--mono);color:var(--muted);margin-top:2px}
+.job .jn{font:700 18px var(--head);color:var(--jc)}
+.job.off{opacity:.45;cursor:default}
 .c-ready{background:rgba(245,166,35,.22);color:#fde68a}
 .ndots{display:inline-flex;gap:2px;vertical-align:middle}
 .ndots i{width:6px;height:6px;border-radius:50%;background:#1e3a2a;display:inline-block}
@@ -221,7 +233,7 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
           <h2><i class="fa-solid fa-truck-monster"></i> Fleet &amp; Equipment</h2>
           <div class="tabs" id="fleetTabs"></div>
         </div>
-        <div class="bd"><div class="scroll" id="fleet" style="max-height:520px"></div></div>
+        <div class="bd"><div class="ftot" id="fleetTotals"></div><div class="scroll" id="fleet" style="max-height:520px"></div></div>
       </div>
 
       <div class="panel">
@@ -248,6 +260,11 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     </div>
 
     <div class="stack">
+      <div class="panel">
+        <div class="hd"><h2><i class="fa-solid fa-list-check"></i> Field Jobs</h2><span class="tag" id="jobTag">--</span></div>
+        <div class="bd" id="jobs"></div>
+      </div>
+
       <div class="panel">
         <div class="hd"><h2><i class="fa-solid fa-users"></i> Players</h2><span class="tag" id="plyTag">0 online</span></div>
         <div class="bd" id="players"></div>
@@ -469,7 +486,7 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     ];
     $('kpis').innerHTML = (kp || []).map(([l, v, f, col, col2]) => `<div class="kpi" style="--c:${col}${col2 ? `;border-color:${col2}` : ''}"><div class="lbl"${col2 ? ` style="color:${col}"` : ''}>${esc(l)}</div><div class="val">${esc(v)}</div><div class="foot">${esc(f)}</div></div>`).join('');
 
-    [renderMap, renderFields, renderFleet, renderPlaceables, renderStock, renderSales, renderMarket,
+    [renderJobs, renderMap, renderFields, renderFleet, renderPlaceables, renderStock, renderSales, renderMarket,
      renderPlayers, renderWorking, renderWeather, renderDemands, renderFarms, renderTrend, renderPF, renderMissions, renderMods, renderServer, renderSync].forEach(safe);
   }
 
@@ -545,8 +562,10 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     const size = +(DATA.live?.mapSize) || 2048, half = size / 2;
     const P = (x, z) => [((+x + half) / size * 1000).toFixed(1), ((+z + half) / size * 1000).toFixed(1)];
     const layers = [['image', 'Map'], ['fields', 'Fields'], ['land', 'Farmland'], ['fleet', 'Vehicles'], ['stock', 'Pallets & bales'], ['players', 'Players']];
-    $('mapFilters').innerHTML = layers.map(([k, l]) => `<button class="fbtn ${mapLayers[k] ? 'on' : ''}" data-l="${k}">${l}</button>`).join('');
-    $('mapFilters').querySelectorAll('button').forEach(b => b.onclick = () => { mapLayers[b.dataset.l] = !mapLayers[b.dataset.l]; renderMap(); });
+    const jobBtn = mapJob ? `<button class="fbtn on" id="clearJob" style="border-color:${JOB[mapJob][3]};color:${JOB[mapJob][3]}">Showing: ${esc(JOB[mapJob][1])} ✕</button>` : '';
+    $('mapFilters').innerHTML = jobBtn + layers.map(([k, l]) => `<button class="fbtn ${mapLayers[k] ? 'on' : ''}" data-l="${k}">${l}</button>`).join('');
+    $('mapFilters').querySelectorAll('button[data-l]').forEach(b => b.onclick = () => { mapLayers[b.dataset.l] = !mapLayers[b.dataset.l]; renderMap(); });
+    const cj = $('clearJob'); if (cj) cj.onclick = () => { mapJob = null; safe(renderJobs); renderMap(); };
     let svg = '';
     const img = mapImageUrl();
     if (img && mapLayers.image !== false) svg += `<image href="${esc(img)}" x="0" y="0" width="1000" height="1000" preserveAspectRatio="none" opacity=".9"/><rect width="1000" height="1000" fill="#04110a" opacity=".2"/>`;
@@ -560,7 +579,13 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     if (mapLayers.fields) (DATA.fields || []).forEach(f => {
       if (f.x == null) return;
       const [x, y] = P(f.x, f.z), col = STATUS_COLOR[f.status] || '#64748b';
-      svg += `<g data-tip="Field ${esc(f.id)} · ${nice(f.fruit === 'UNKNOWN' ? f.groundType : f.fruit)} · ${nice(f.status)} · Lime ${limePct(f)}% · Fertilizer ${fertPct(f)}%${f.isOwned ? ' · ' + esc(farmName(f.farmId)) : ''}" data-field="${esc(f.id)}" style="cursor:pointer">
+      const jobs = f.isOwned ? jobList(f) : [];
+      const hit = mapJob && f.isOwned && f.needs.includes(mapJob), dim = mapJob && !hit;
+      const tip = `<b>Field ${esc(f.id)}</b> · ${nice(f.fruit === 'UNKNOWN' ? f.groundType : f.fruit)} · ${nice(f.status)}${f.isOwned ? ' · ' + esc(farmName(f.farmId)) : ''}`
+        + `<div class="tl">Lime ${limePct(f)}% · Fertilizer ${fertPct(f)}% · Rolled ${+f.rollerLevel ? 'yes' : 'no'}${f.area ? ' · ' + (+f.area).toFixed(1) + ' ha' : ''}</div>`
+        + (jobs.length ? `<div>To do: ${jobs.filter(k => k !== 'herbicide' && k !== 'weeder').map(k => '<b style="color:' + JOB[k][3] + '">' + esc(JOB[k][1]) + '</b>').join(', ')}</div>` : (f.isOwned ? '<div style="color:var(--green2)">Nothing to do</div>' : ''));
+      if (hit) svg += `<circle cx="${x}" cy="${y}" r="24" fill="none" stroke="${JOB[mapJob][3]}" stroke-width="4" opacity=".95"/>`;
+      svg += `<g data-tip="${esc(tip)}" data-field="${esc(f.id)}" style="cursor:pointer" opacity="${dim ? .3 : 1}">
         <rect x="${x - 17}" y="${y - 12}" width="34" height="24" rx="5" fill="${col}" fill-opacity="${f.isOwned ? (inView(f.farmId) ? .9 : .25) : .35}" stroke="${f.isOwned ? farmColor2(f.farmId) : 'none'}" stroke-width="2.5"/>
         <text x="${x}" y="${+y + 5}" font-size="15" font-weight="700" text-anchor="middle" fill="#04110a" font-family="JetBrains Mono">${esc(f.id)}</text></g>`;
     });
@@ -622,13 +647,59 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
   }
 
   // ---- fields
+  // Field jobs (computed by the sync from fields.xml + the save's settings)
+  const JOBS = [
+    ['harvest',    'Harvest',            'fa-wheat-awn',        '#f5a623', 'Crop is ready'],
+    ['mulch',      'Mulch stubble',      'fa-scissors',         '#a3e635', 'Harvested, stubble not mulched'],
+    ['cultivate',  'Cultivate',          'fa-tractor',          '#c4a484', 'Harvested / stubble, needs working'],
+    ['sow',        'Sow',                'fa-seedling',         '#22c55e', 'Worked and ready to plant'],
+    ['roll',       'Roll',               'fa-circle-dot',       '#94a3b8', 'Sown but not rolled (yield bonus)'],
+    ['lime',       'Lime',               'fa-mountain',         '#eab308', 'Lime at 0%'],
+    ['fertilizer', 'Fertilize',          'fa-flask',            '#38bdf8', 'Under 100% fertilized'],
+    ['weeds',      'Weeds',              'fa-spa',              '#f87171', 'Weeder for small weeds, herbicide for big ones'],
+    ['stones',     'Pick stones',        'fa-gem',              '#cbd5e1', 'Stones on the field'],
+    ['plow',       'Plow',               'fa-grip-lines',       '#a78bfa', 'Not plowed recently'],
+  ];
+  const JOB = Object.fromEntries(JOBS.map(j => [j[0], j]));
+  let mapJob = null;   // highlight one job's fields on the map
+  const jobChip = (k, f) => { const j = JOB[k]; if (!j) return '';
+    const extra = k === 'weeds' ? (f.needs.includes('herbicide') ? ' (herbicide)' : ' (weeder)') : k === 'sow' && f.plannedFruit && f.plannedFruit !== 'FALLOW' ? ' ' + plain(f.plannedFruit) : '';
+    return `<span class="chip" style="background:${j[3]}26;color:${j[3]}">${esc(j[1] + extra)}</span>`; };
+  const jobList = f => (f.needs || []).filter(k => JOB[k]);
+
+  function renderJobs() {
+    const owned = (DATA.fields || []).filter(f => f.isOwned && inView(f.farmId));
+    const off = new Set((DATA.summary || {}).jobsOff || []);
+    let total = 0;
+    $('jobs').innerHTML = JOBS.map(([k, label, icon, col, desc]) => {
+      if (off.has(k)) return `<div class="job off" style="--jc:${col}"><div class="jl"><i class="fa-solid ${icon}"></i><div><b>${esc(label)}</b><div class="jf">Turned off in this save</div></div></div><span class="jn">–</span></div>`;
+      const fl = owned.filter(f => f.needs.includes(k));
+      total += fl.length;
+      if (!fl.length) return '';
+      return `<div class="job ${mapJob === k ? 'on' : ''}" data-job="${k}" style="--jc:${col}" title="${esc(desc)} · click to show on the map">
+        <div class="jl"><i class="fa-solid ${icon}"></i><div><b>${esc(label)}</b><div class="jf">Fields ${fl.map(f => esc(f.id)).join(', ')}</div></div></div><span class="jn">${fl.length}</span></div>`;
+    }).join('') || '<div class="dim">Nothing to do on your fields right now.</div>';
+    $('jobTag').textContent = total ? `${total} jobs` : 'all done';
+    $('jobs').querySelectorAll('.job[data-job]').forEach(el => el.onclick = () => {
+      mapJob = mapJob === el.dataset.job ? null : el.dataset.job;
+      safe(renderJobs); safe(renderMap);
+      if (mapJob) $('mapwrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+
   const FILTERS = [
     ['owned', 'Owned', f => f.isOwned], ['all', 'All', () => true],
     ['ready', 'Ready to harvest', f => f.isOwned && f.status === 'ready'],
     ['growing', 'Growing', f => f.isOwned && f.status === 'growing'],
     ['lime', 'Needs lime', f => f.isOwned && f.needs.includes('lime')],
     ['fertilizer', 'Needs fertilizer', f => f.isOwned && f.needs.includes('fertilizer')],
+    ['roll', 'Needs rolling', f => f.isOwned && f.needs.includes('roll')],
+    ['mulch', 'Needs mulching', f => f.isOwned && f.needs.includes('mulch')],
+    ['cultivate', 'Needs cultivating', f => f.isOwned && f.needs.includes('cultivate')],
+    ['sow', 'Ready to sow', f => f.isOwned && f.needs.includes('sow')],
     ['weeds', 'Weeds', f => f.isOwned && f.needs.includes('weeds')],
+    ['stones', 'Stones', f => f.isOwned && f.needs.includes('stones')],
+    ['plow', 'Needs plowing', f => f.isOwned && f.needs.includes('plow')],
     ['empty', 'Empty', f => f.isOwned && f.status === 'empty'],
   ];
   function renderFields() {
@@ -642,13 +713,7 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     const list = fields.filter(scoped(cur[0], cur[2]));
     if (!list.length) { $('board').innerHTML = `<div class="empty" style="grid-column:1/-1">No fields match this filter.</div>`; return; }
     $('board').innerHTML = list.map(f => {
-      const chips = [];
-      if (f.status === 'ready') chips.push('<span class="chip c-ready">Harvest</span>');
-      if (f.needs.includes('lime')) chips.push('<span class="chip c-lime">Needs lime</span>');
-      if (f.needs.includes('fertilizer')) chips.push(`<span class="chip c-fert">Needs fertilizer</span>`);
-      if (f.needs.includes('weeds')) chips.push('<span class="chip c-weeds">Weeds</span>');
-      if (f.needs.includes('plow')) chips.push('<span class="chip c-plow">Plow</span>');
-      if (f.needs.includes('stones')) chips.push('<span class="chip c-stones">Stones</span>');
+      const chips = jobList(f).map(k => jobChip(k, f));
       if (!chips.length && f.isOwned) chips.push('<span class="chip c-ok">All good</span>');
       const pct = f.status === 'ready' || f.status === 'grass' ? 100 : f.status === 'growing' ? Math.min(92, f.growthState * 9) : 0;
       const label = f.fruit && f.fruit !== 'UNKNOWN' ? nice(f.fruit) : nice(f.groundType || 'Empty');
@@ -674,7 +739,8 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
       ['Status', nice(f.status)], ['Growth stage', f.status === 'growing' ? 'Stage ' + f.growthState : nice(f.status)], ['Ground', nice(f.groundType)],
       ['Fertilizer', `${fertPct(f)}% (${f.sprayLevel} of 2 applications)${f.sprayType && f.sprayType !== 'NONE' ? ' · last: ' + nice(f.sprayType) : ''}`],
       ['Lime', `${limePct(f)}%${f.needs.includes('lime') ? ' · needs lime' : limePct(f) < 100 ? ' · will need lime soon' : ' · fully limed'}`],
-      ['Plowed (yield bonus)', yesNo(+f.plowLevel > 0)], ['Rolled', yesNo(+f.rollerLevel > 0)], ['Mulched', yesNo(+f.stubbleShredLevel > 0)],
+      ['To do', f.isOwned ? (jobList(f).filter(k => k !== 'herbicide' && k !== 'weeder').map(k => JOB[k][1]).join(', ') || 'Nothing') : '-'],
+      ['Plowed (yield bonus)', yesNo(+f.plowLevel > 0)], ['Rolled (yield bonus)', yesNo(+f.rollerLevel > 0)], ['Mulched', yesNo(+f.stubbleShredLevel > 0)],
     ];
     const st = (DATA.career || {}).settings || {};
     rows.push(['Weeds', st.weedsEnabled === false ? 'Turned off in this save' : (+f.weedState ? 'Present' : 'None')]);
@@ -694,8 +760,38 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     const col = p <= 15 ? 'var(--green)' : p <= 50 ? '#eab308' : p <= 75 ? 'var(--orange)' : 'var(--red)';
     return `<span class="meter"><span style="width:${Math.max(p, 2)}%;background:${col}"></span></span><span class="mono">${p.toFixed(0)}%</span>`;
   }
+  function renderFleetTotals(all) {
+    const farms = (DATA.farms || []).filter(f => f.id && inView(f.id));
+    const card = (id, name, c1, c2, list) => {
+      const veh = list.filter(v => v.kind === 'vehicle'), pal = list.filter(v => v.kind === 'pallet');
+      const drivable = veh.filter(v => !v.attachedToName && !/(trailer|header|cutter|plow|cultivator|seeder|planter|spreader|mower|tedder|rake|baler|roller|wagon|barrel|tank)/i.test((v.category || '') + ' ' + v.name)).length;
+      const value = veh.reduce((a, v) => a + (+v.price || 0), 0);
+      const dmg = veh.filter(v => v.damage != null);
+      const avgDmg = dmg.length ? dmg.reduce((a, v) => a + v.damage, 0) / dmg.length : null;
+      const litres = pal.reduce((a, v) => a + v.fills.reduce((b, f) => b + (+f.level || 0), 0), 0);
+      const types = {}; pal.forEach(v => v.fills.forEach(f => { types[f.type] = (types[f.type] || 0) + 1; }));
+      const topTypes = Object.entries(types).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([t, n]) => `${n} ${plain(t)}`).join(' · ');
+      return `<div class="${String(fleetFarm) === String(id) ? 'on' : ''}" data-ff="${id}" style="--fc:${c1};--fc2:${c2}">
+        <h4>${esc(name)}</h4>
+        <div class="g">
+          <div><b>${n0(veh.length)}</b><span>Vehicles &amp; tools</span></div>
+          <div><b>${n0(drivable)}</b><span>Drivable</span></div>
+          <div><b>${n0(veh.filter(v => (v.implements || []).length).length)}</b><span>Hooked up</span></div>
+          <div><b>${n0(pal.length)}</b><span>Pallets</span></div>
+          <div><b>${n0(litres)} L</b><span>On pallets</span></div>
+          <div><b>${short$(value)}</b><span>Fleet value</span></div>
+          <div><b style="color:${avgDmg == null ? 'inherit' : avgDmg > 50 ? '#f87171' : avgDmg > 15 ? '#eab308' : 'var(--green2)'}">${avgDmg == null ? '--' : avgDmg.toFixed(0) + '%'}</b><span>Avg damage</span></div>
+          <div><b>${n0(veh.filter(v => v.damage > 50).length)}</b><span>Need repair</span></div>
+          <div><b>${n0(veh.filter(v => v.isAIActive).length)}</b><span>Helpers on</span></div>
+        </div>
+        ${topTypes ? `<div class="dim mono" style="font-size:10.5px;margin-top:6px">Pallets: ${esc(topTypes)}</div>` : ''}</div>`;
+    };
+    $('fleetTotals').innerHTML = farms.map(f => card(f.id, f.name || 'Farm ' + f.id, farmColor(f.id), farmColor2(f.id), all.filter(v => v.farmId === f.id))).join('');
+    $('fleetTotals').querySelectorAll('[data-ff]').forEach(el => el.onclick = () => { fleetFarm = String(fleetFarm) === el.dataset.ff ? 'all' : el.dataset.ff; renderFleet(); });
+  }
   function renderFleet() {
     const all = DATA.vehicles || [];
+    renderFleetTotals(all);
     const farmIds = [...new Set(all.map(v => v.farmId).filter(Boolean))].sort();
     $('fleetTabs').innerHTML = [['vehicle', 'Vehicles'], ['pallet', 'Pallets']].map(([k, l]) => `<button class="fbtn ${fleetTab === k ? 'on' : ''}" data-t="${k}">${l}<span class="n">${all.filter(v => v.kind === k).length}</span></button>`).join('')
       + ['all', ...farmIds].map(id => `<button class="fbtn ${String(fleetFarm) === String(id) ? 'on' : ''}" data-f="${id}">${id === 'all' ? 'All farms' : esc(farmName(id))}</button>`).join('');
