@@ -4022,7 +4022,7 @@
         {
           "id": "med_combat_le_fantome",
           "name": "Le Fantôme",
-          "description": "Achieve 250 Ghost Kills.",
+          "description": "Achieve 250 ghost kills.",
           "goal": 250,
           "goal_tier": null,
           "tiers": {
@@ -4030,7 +4030,12 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_combat_le_fantome.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 250
+          }
         },
         {
           "id": "med_combat_knives_for_a_pro",
@@ -4043,7 +4048,12 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_combat_knives_for_a_pro.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 100
+          }
         },
         {
           "id": "med_combat_das_nuts",
@@ -4056,21 +4066,20 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_combat_das_nuts.jpg"
         },
         {
           "id": "med_combat_tactician",
           "name": "Tactician",
-          "description": "Make a tank shoot and destroy another enemy vehicle.",
-          "goal": 12,
+          "description": "Make a tank destroy another enemy vehicle.",
+          "goal": 1,
           "goal_tier": null,
           "tiers": {
             "bronze": null,
             "silver": null,
             "gold": null
           },
-          "image_url": "",
-          "notes": "Goal typed as 0/12; the trophy version only needs one."
+          "image_url": "/public/games/snresistance/images/medals/med_combat_tactician.jpg"
         },
         {
           "id": "med_combat_open_surgery",
@@ -4083,12 +4092,12 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_combat_open_surgery.jpg"
         },
         {
           "id": "med_combat_silent_but_deadly",
           "name": "Silent but Deadly",
-          "description": "Kill 50 enemies during a sound mask.",
+          "description": "Kill 50 enemies during a Sound Mask.",
           "goal": 50,
           "goal_tier": null,
           "tiers": {
@@ -4096,25 +4105,35 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_combat_silent_but_deadly.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 50
+          }
         },
         {
           "id": "med_combat_always_greener",
           "name": "Always Greener",
-          "description": "While in tall grass, kill 20 soldiers.",
-          "goal": 12,
+          "description": "While in Tall Grass, kill 10 soldiers.",
+          "goal": 10,
           "goal_tier": null,
           "tiers": {
             "bronze": null,
             "silver": null,
             "gold": null
           },
-          "image_url": "",
-          "notes": "Goal typed as 0/12 but description says 20; trophy version says 50."
+          "image_url": "/public/games/snresistance/images/medals/med_combat_always_greener.jpg",
+          "notes": "Trophy version (Always Greener) asks for 50.",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 10
+          }
         },
         {
           "id": "med_combat_three_birds_one_stone",
-          "name": "Three Birds One Stone",
+          "name": "Three Birds, One Stone",
           "description": "Kill 3 on-foot soldiers with one grenade.",
           "goal": 1,
           "goal_tier": null,
@@ -4123,14 +4142,14 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_combat_three_birds_one_stone.jpg"
         }
       ],
       "collectibles_and_unlockables": [
         {
           "id": "med_collect_spread_your_wings",
           "name": "Spread Your Wings",
-          "description": "Destroy 21 Dead-Eye targets.",
+          "description": "Destroy 21 Dead-eye targets.",
           "goal": 21,
           "goal_tier": null,
           "tiers": {
@@ -4138,7 +4157,12 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_collect_spread_your_wings.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 21
+          }
         },
         {
           "id": "med_collect_pen_pal",
@@ -4151,13 +4175,17 @@
             "silver": null,
             "gold": null
           },
-          "image_url": "",
-          "notes": "Typed as 'collect 25' with goal 35."
+          "image_url": "/public/games/snresistance/images/medals/med_collect_pen_pal.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 35
+          }
         },
         {
           "id": "med_collect_treasure_hunter",
           "name": "Treasure Hunter",
-          "description": "Collect 22 hidden items.",
+          "description": "Collect 22 Personal Items.",
           "goal": 22,
           "goal_tier": null,
           "tiers": {
@@ -4165,8 +4193,13 @@
             "silver": null,
             "gold": null
           },
-          "image_url": "",
-          "notes": "Typed as 'personal items'; treated as hidden items."
+          "image_url": "/public/games/snresistance/images/medals/med_collect_treasure_hunter.jpg",
+          "notes": "In-game wording is Personal Items (the hidden items collectible).",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 22
+          }
         },
         {
           "id": "med_collect_innovator",
@@ -4179,13 +4212,18 @@
             "silver": null,
             "gold": null
           },
-          "image_url": "",
-          "notes": "Trophy version says 21."
+          "image_url": "/public/games/snresistance/images/medals/med_collect_innovator.jpg",
+          "notes": "Trophy version says 21.",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 22
+          }
         },
         {
           "id": "med_collect_top_secret",
           "name": "Top Secret",
-          "description": "Collect 35 classified documents.",
+          "description": "Collect 35 Classified Documents.",
           "goal": 35,
           "goal_tier": null,
           "tiers": {
@@ -4193,7 +4231,12 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_collect_top_secret.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 35
+          }
         }
       ]
     },
