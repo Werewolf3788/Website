@@ -62,3 +62,14 @@ The top tactical bar tracks progress across these categories:
 2. In your companion script, set the game name to match:
    `progress/{game_name}` (like `COTW`, `sniper-elite-5`, `woth2`, `FarCry5`).
 3. Add a row in your Google Sheet with the game name, poster picture, and URL path (`/fc5`).
+
+## Game JSON conventions (game tracker)
+
+Every game in `public/games/*.json` is cross-referenced with PlayStation trophies automatically by `game/Universal.js`:
+
+- **Medals ↔ trophies:** a medal with the same name as a PSN trophy is synced (progress like 22/150 or 25%, and earned). Use `"psn_trophy": <trophyId>` on a medal to link it when the names differ.
+- **Trophies → missions:** a trophy whose description is "Complete <mission title>" (or "Complete Mission N") ticks that mission when earned; trophies that mention a mission title, "Mission N" or a mission's region show "Happens in …".
+- **Trophies → collectibles:** "Collect N personal letters / classified documents / hidden items", "Destroy N Dead-eye targets", "Interact with N workbenches" show the tracker's count on the trophy card.
+- **Rank:** `"campaign_rank": { "max": 40, "trophyId": 9, "trophyIds": [9] }` fills the rank from the matching PSN trophies.
+- **Hunting games:** trophies come from the PSN skeleton (playstation-stats); species names and "harvest N" trophies show your harvest counts.
+- Trophy icons and progress always come from the playstation-stats project (PSN engine).
