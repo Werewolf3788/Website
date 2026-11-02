@@ -446,7 +446,12 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_propaganda_propaganda_la_resistance.jpg",
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 2000
+            }
           }
         ]
       },
@@ -888,7 +893,12 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_propaganda_propaganda_le_sniper.jpg",
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 2000
+            }
           }
         ]
       },
@@ -1341,8 +1351,13 @@
               "silver": null,
               "gold": null
             },
-            "image_url": "",
-            "notes": "Typed as 20000; treated as 2000."
+            "image_url": "/public/games/snresistance/images/medals/med_propaganda_propaganda_liberation.jpg",
+            "notes": "Typed as 20000; treated as 2000.",
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 2000
+            }
           }
         ]
       },
@@ -1795,7 +1810,12 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_propaganda_propaganda_le_maquis_voit_tout.jpg",
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 2000
+            }
           }
         ]
       },
@@ -2275,7 +2295,12 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_propaganda_propaganda_prendre_le_maquis.jpg",
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 2000
+            }
           }
         ]
       },
@@ -3403,7 +3428,12 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_propaganda_propaganda_pour_une_france_libre.jpg",
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 2000
+            }
           }
         ]
       },
@@ -5758,12 +5788,17 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_propaganda_propaganda_la_voix_du_maquis.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 2000
+          }
         },
         {
           "id": "med_propaganda_propagandist",
           "name": "Propagandist",
-          "description": "Complete all propaganda missions with a 3 star rating.",
+          "description": "Complete all Propaganda missions with a 3 star rating.",
           "goal": 7,
           "goal_tier": null,
           "tiers": {
@@ -5771,12 +5806,12 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_propaganda_propagandist.jpg"
         },
         {
           "id": "med_propaganda_propaganda_machine",
           "name": "Propaganda Machine",
-          "description": "Complete all propaganda missions with a 3 star rating on Authentic difficulty.",
+          "description": "Complete all Propaganda missions with a 3 star rating on authentic difficulty.",
           "goal": 7,
           "goal_tier": null,
           "tiers": {
@@ -5784,7 +5819,7 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_propaganda_propaganda_machine.jpg"
         }
       ]
     }
