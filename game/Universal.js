@@ -1419,7 +1419,7 @@ function buildItemCard(o) {
                 : `<button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(o.id)}', '${o.type}'${groupArg})" aria-label="Toggle"></button>`}
         </div>
         ${o.body ? `<p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(o.body)}</p>` : ''}
-        ${o.locImg ? `<a href="${escapeHtml(toSecureUrl(o.locImg))}" target="_blank" rel="noopener" title="Open full-size location photo"><img src="${escapeHtml(toSecureUrl(o.locImg))}" alt="Where to find ${escapeHtml(o.title || '')}" loading="lazy" class="loc-photo" onerror="this.closest('a').remove()"></a>` : ''}
+        ${o.locImg ? `<img src="${escapeHtml(toSecureUrl(o.locImg))}" alt="Where to find ${escapeHtml(o.title || '')}" loading="lazy" class="loc-photo" title="Tap to enlarge" onerror="this.remove()">` : ''}
         ${o.price ? `<div class="price-meter wallet-meter" data-price="${Number(o.price) || 0}"></div>` : ''}
         ${o.link ? `<a href="${escapeHtml(o.link)}" target="_blank" rel="noopener" style="font-size:0.75rem; font-weight:800; color:var(--user-theme-accent, #ff5500); text-decoration:none;">▶ ${escapeHtml(o.linkLabel || 'Watch')}</a>` : ''}
     </div>`;
@@ -2916,3 +2916,91 @@ if (document.readyState === 'link' || document.readyState === 'loading') {
 } else {
     initUniversalEngine();
 }
+
+// ---------------------------------------------------------------------------
+// Lightbox: tap any picture on the page to see it full size, with the card's
+// details beside it (where it is, what to do). Arrows/swipe move through the
+// pictures in the same section.
+// ---------------------------------------------------------------------------
+(function setupLightbox() {
+    if (window.__wwLightbox) return; window.__wwLightbox = true;
+    let list = [], idx = 0, box = null, touchX = null;
+    const usable = (img) => img && img.naturalWidth !== 0 && (img.classList.contains('loc-photo') || img.classList.contains('mission-hero') || img.clientWidth >= 90) && !img.closest('.trophy-tile, .ts-slide, .tm-card, .user-badge, header, .squad-card, .fm-chip, #ww-drawer, #ww-bottom-nav');
+    function infoFor(img) {
+        const card = img.closest('.game-item-card, .trophy-card');
+        const parts = [];
+        if (card) {
+            const badge = card.querySelector('.trophy-rank'); const h = card.querySelector('h3');
+            if (badge) parts.push(`<span class="trophy-rank ${badge.className.replace('trophy-rank', '')}">${badge.innerHTML}</span>`);
+            if (h) parts.push(`<h3>${escapeHtml(h.innerText)}</h3>`);
+            card.querySelectorAll(':scope > div > div > div > div, :scope > div > div > div[style*="font-size:0.75rem"], .wpn-status').forEach(el => { if (el.innerText.trim()) parts.push(`<p class="lb-sub">${escapeHtml(el.innerText.trim())}</p>`); });
+            card.querySelectorAll(':scope > p, :scope > div > p').forEach(el => { if (el.innerText.trim()) parts.push(`<p>${escapeHtml(el.innerText.trim())}</p>`); });
+            const link = card.querySelector('a[href]');
+            if (link) parts.push(`<a class="lb-link" href="${escapeHtml(link.href)}" target="_blank" rel="noopener">${escapeHtml(link.innerText.trim() || 'Open')}</a>`);
+        } else {
+            const li = img.closest('li');
+            const sec = img.closest('.category-section');
+            const head = sec && sec.querySelector(':scope > .category-header h2');
+            if (head) parts.push(`<h3>${escapeHtml(head.innerText.trim())}</h3>`);
+            if (li) parts.push(`<p>${escapeHtml(li.innerText.trim())}</p>`);
+            else if (img.alt) parts.push(`<p>${escapeHtml(img.alt)}</p>`);
+        }
+        return parts.join('') || `<p>${escapeHtml(img.alt || '')}</p>`;
+    }
+    function show(i) {
+        if (!list.length) return;
+        idx = (i + list.length) % list.length;
+        const img = list[idx];
+        box.querySelector('.lb-img').src = img.currentSrc || img.src;
+        box.querySelector('.lb-info').innerHTML = infoFor(img) + (list.length > 1 ? `<p class="lb-count">${idx + 1} / ${list.length}</p>` : '');
+        box.querySelectorAll('.lb-nav').forEach(b => { b.hidden = list.length < 2; });
+    }
+    function open(img) {
+        const scope = img.closest('.category-section') || document.getElementById('section-container') || document.body;
+        list = [...scope.querySelectorAll('img')].filter(usable);
+        if (!list.includes(img)) list = [img];
+        if (!box) {
+            box = document.createElement('div'); box.id = 'wwLightbox'; box.className = 'lb-overlay'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true');
+            box.innerHTML = `<div class="lb-wrap"><button type="button" class="lb-close" aria-label="Close">✕</button>
+                <div class="lb-media"><button type="button" class="lb-nav lb-prev" aria-label="Previous picture">‹</button><img class="lb-img" alt=""><button type="button" class="lb-nav lb-next" aria-label="Next picture">›</button></div>
+                <div class="lb-info"></div></div>`;
+            box.addEventListener('click', (e) => {
+                if (e.target === box || e.target.closest('.lb-close')) close();
+                else if (e.target.closest('.lb-prev')) show(idx - 1);
+                else if (e.target.closest('.lb-next')) show(idx + 1);
+            });
+            box.addEventListener('touchstart', (e) => { touchX = e.touches[0].clientX; }, { passive: true });
+            box.addEventListener('touchend', (e) => { if (touchX === null) return; const dx = e.changedTouches[0].clientX - touchX; touchX = null; if (Math.abs(dx) > 50) show(idx + (dx < 0 ? 1 : -1)); });
+            document.body.appendChild(box);
+        }
+        box.hidden = false; document.documentElement.classList.add('lb-open');
+        show(list.indexOf(img));
+    }
+    function close() { if (box) box.hidden = true; document.documentElement.classList.remove('lb-open'); }
+    document.addEventListener('click', (e) => {
+        const img = e.target.closest && e.target.closest('#section-container img');
+        if (!img || !usable(img)) return;
+        e.preventDefault(); e.stopPropagation(); open(img);
+    }, true);
+    document.addEventListener('keydown', (e) => {
+        if (!box || box.hidden) return;
+        if (e.key === 'Escape') close(); else if (e.key === 'ArrowRight') show(idx + 1); else if (e.key === 'ArrowLeft') show(idx - 1);
+    });
+    const css = document.createElement('style');
+    css.textContent = `#section-container .loc-photo,#section-container .mission-hero{cursor:zoom-in}
+        .lb-overlay{position:fixed;inset:0;z-index:10000;background:rgba(2,6,23,.92);display:flex;align-items:center;justify-content:center;padding:12px}
+        .lb-overlay[hidden]{display:none}
+        html.lb-open{overflow:hidden}
+        .lb-wrap{position:relative;display:flex;gap:16px;width:min(1400px,100%);max-height:100%;align-items:stretch}
+        .lb-media{position:relative;flex:1 1 auto;display:flex;align-items:center;justify-content:center;min-width:0}
+        .lb-img{max-width:100%;max-height:calc(100vh - 40px);object-fit:contain;border-radius:10px;background:#000}
+        .lb-info{flex:0 0 340px;max-height:calc(100vh - 40px);overflow:auto;background:#131d31;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px;color:#e2e8f0;font-size:.9rem;line-height:1.5}
+        .lb-info h3{color:#fff;font-size:1.1rem;margin:6px 0}
+        .lb-info p{margin:6px 0}.lb-sub{color:#94a3b8;font-size:.82rem}.lb-count{color:#64748b;font-size:.75rem}
+        .lb-link{display:inline-block;margin-top:8px;color:var(--user-theme-accent,#ff5500);font-weight:800;text-decoration:none}
+        .lb-close{position:absolute;top:-4px;right:-4px;z-index:3;width:38px;height:38px;border-radius:50%;border:none;background:#0f172a;color:#fff;font-size:1.1rem;cursor:pointer}
+        .lb-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:44px;height:44px;border-radius:50%;border:none;background:rgba(15,23,42,.75);color:#fff;font-size:1.6rem;cursor:pointer}
+        .lb-prev{left:8px}.lb-next{right:8px}
+        @media (max-width:900px){.lb-wrap{flex-direction:column}.lb-info{flex:0 0 auto;max-height:38vh}.lb-img{max-height:55vh}.lb-close{top:4px;right:4px}}`;
+    document.head.appendChild(css);
+})();
