@@ -902,6 +902,13 @@ function renderMedalProgress() {
         const p = m.progress || 0;
         const next = tiers.find(t => p < t.goal) || tiers[tiers.length - 1];
         const done = tiers.filter(t => p >= t.goal).map(t => t.tier).filter(Boolean);
+        if (def && def.unit === 'm') {
+            const goal = tiers[tiers.length - 1].goal;
+            el.innerHTML = (p ? `Your longest shot: <strong>${fmtNum(p)} m</strong> · goal ${fmtNum(goal)} m${p >= goal ? ' · ✓ earned' : ` · ${fmtNum(goal - p)} m to go`}` : `Goal ${fmtNum(goal)} m — no shot logged yet`) + meterHtml(Math.max(0, goal - p), goal, '').replace(/^<span class="wm-num[^>]*>.*?<\/span>/, '');
+            const inp = el.closest('.game-item-card')?.querySelector('.medal-count');
+            if (inp && document.activeElement !== inp) inp.value = p || '';
+            return;
+        }
         el.innerHTML = `${fmtNum(p)}/${fmtNum(next.goal)}${next.tier ? ` (${next.tier})` : ''}${done.length ? ` · earned ${done.join(', ')}` : ''}${m.progressSource === 'psn' ? ' · from PSN' : ''}` + meterHtml(next.goal - p, next.goal, '').replace(/^<span class="wm-num[^>]*>.*?<\/span>/, '');
         const inp = el.closest('.game-item-card')?.querySelector('.medal-count');
         if (inp && document.activeElement !== inp) inp.value = p;
@@ -1013,15 +1020,16 @@ async function readFriendSave(keys, platforms, gameName) {
     return null;
 }
 function friendDoneSet(save, psnEarned) {
-    const done = new Set(), ribbons = {};
+    const done = new Set(), ribbons = {}, medalProg = {};
     const d = save || {};
+    Object.entries(d.medals || {}).forEach(([id, m]) => { const v = Number(m && m.progress) || 0; if (v) medalProg[id] = v; });
     Object.values(d.collectibles || {}).forEach(g => Object.entries((g && g.items) || {}).forEach(([id, it]) => { if (it && it.collected) done.add(id); }));
     Object.entries(d.missions || {}).forEach(([id, m]) => { if (m && m.completed) done.add(id); });
     Object.entries(d.trophies || {}).forEach(([id, t]) => { if (t && t.earned) done.add(id); });
     Object.entries(d.medals || {}).forEach(([id, m]) => { if (m && m.earned) done.add(id); });
     Object.entries(d.ribbons || {}).forEach(([id, r]) => { const n = Number(r && r.count) || (r && r.earned ? 1 : 0); if (n) { ribbons[id] = n; done.add(id); } });
     (psnEarned || []).forEach(id => done.add(id));
-    return { done, ribbons };
+    return { done, ribbons, medalProg };
 }
 window.appState.syncFriendsProgress = async function() {
     const rosterContainer = document.getElementById('friendsRosterContainer');
@@ -1076,9 +1084,9 @@ window.appState.syncFriendsProgress = async function() {
                     });
                 } catch (e) {}
             }
-            const { done, ribbons } = friendDoneSet(save && save.data, psnEarned);
+            const { done, ribbons, medalProg } = friendDoneSet(save && save.data, psnEarned);
             const rank = psnRank || (save && save.data && save.data.campaignRank) || null;
-            return { code, userKey, name, avatar, plats, platform: save ? save.platform : (plats[0] || ''), hasSave: !!save, psnTag, psnCount: psnEarned.length, done, ribbons, rank, save: save && save.data };
+            return { code, userKey, name, avatar, plats, platform: save ? save.platform : (plats[0] || ''), hasSave: !!save, psnTag, psnCount: psnEarned.length, done, ribbons, medalProg, rank, save: save && save.data };
         }));
         if (token !== friendSyncToken) return;
         this.friendsProgress = results;
@@ -1090,9 +1098,9 @@ window.appState.syncFriendsProgress = async function() {
     }
 };
 function friendInitials(n) { return String(n || '?').trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase(); }
-function friendBadge(f, extra) {
+function friendBadge(f, extra, notDone) {
     const first = String(f.name || '').trim().split(/\s+/)[0];
-    return `<span class="fm-chip" title="${escapeHtml(f.name)}${extra ? ' — ' + escapeHtml(extra) : ' has this'}">${f.avatar ? `<img src="${toSecureUrl(f.avatar)}" alt="" onerror="this.remove()">` : `<b>${escapeHtml(friendInitials(f.name))}</b>`}✓ ${escapeHtml(first)}${extra ? ` <i>${escapeHtml(extra)}</i>` : ''}</span>`;
+    return `<span class="fm-chip" title="${escapeHtml(f.name)}${extra ? ' — ' + escapeHtml(extra) : ' has this'}">${f.avatar ? `<img src="${toSecureUrl(f.avatar)}" alt="" onerror="this.remove()">` : `<b>${escapeHtml(friendInitials(f.name))}</b>`}${notDone ? '' : '✓ '}${escapeHtml(first)}${extra ? ` <i>${escapeHtml(extra)}</i>` : ''}</span>`;
 }
 function renderSquadRoster() {
     const el = document.getElementById('friendsRosterContainer'); if (!el) return;
@@ -1155,7 +1163,14 @@ function applyFriendMarks() {
     document.querySelectorAll('#section-container .game-item-card').forEach(card => {
         const id = card.getAttribute('data-id');
         const isRibbon = card.getAttribute('data-type') === 'ribbon';
-        const html = list.filter(f => f.done.has(id)).map(f => friendBadge(f, isRibbon ? `×${f.ribbons[id] || 0}` : '')).join('');
+        const shot = card.getAttribute('data-unit') === 'm';
+        let html;
+        if (shot) {
+            // Long shots: everyone's best distance, longest first, so the squad can compare.
+            const goal = Number(card.getAttribute('data-goal')) || 0;
+            html = list.filter(f => f.medalProg && f.medalProg[id]).sort((a, b) => b.medalProg[id] - a.medalProg[id])
+                .map(f => friendBadge(f, `${fmtNum(f.medalProg[id])} m`, goal && f.medalProg[id] < goal)).join('');
+        } else html = list.filter(f => f.done.has(id)).map(f => friendBadge(f, isRibbon ? `×${f.ribbons[id] || 0}` : '')).join('');
         let row = card.querySelector(':scope > .friend-marks');
         if (!html) { if (row) row.remove(); return; }
         if (!row) { row = document.createElement('div'); row.className = 'friend-marks'; card.appendChild(row); }
@@ -1470,6 +1485,7 @@ function ensureUniversalStyles() {
         .col-group-title { color: #fff; font-size: 0.9rem; margin: 14px 0 8px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .step-btn { width: 26px; height: 26px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #fff; font-weight: 900; cursor: pointer; line-height: 1; }
         .step-btn:active { transform: scale(0.94); }
+        .unit-lbl { font-size: 0.75rem; color: #94a3b8; font-weight: 800; }
         .medal-count { width: 74px; text-align: center; background: #0f172a; color: #fff; border: 1px solid #334155; border-radius: 6px; padding: 3px 4px; }
         .active-mission-bar { margin-bottom: 10px; }
         .active-mission-btn.on { background: #7c3aed; border-color: #a78bfa; color: #fff; }
@@ -1601,7 +1617,7 @@ function buildItemCard(o) {
     const groupAttr = o.group ? ` data-group="${escapeHtml(o.group)}"` : '';
     const groupArg = o.group ? `, '${escapeHtml(o.group)}'` : '';
     return `
-    <div class="trophy-card game-item-card" data-id="${escapeHtml(o.id)}" data-type="${o.type}"${groupAttr} data-search="${escapeHtml(search)}">
+    <div class="trophy-card game-item-card" data-id="${escapeHtml(o.id)}" data-type="${o.type}"${groupAttr}${o.unit ? ` data-unit="${escapeHtml(o.unit)}" data-goal="${Number(o.progressGoal) || 0}"` : ''} data-search="${escapeHtml(search)}">
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <div style="display:flex; gap:10px; align-items:center;">
                 ${img ? `<img src="${img}" alt="" loading="lazy" style="${o.wideImg ? 'width:96px; height:40px; object-fit:contain; background:#0f172a;' : 'width:40px; height:40px; object-fit:cover;'} border-radius:6px; flex:0 0 auto;" onerror="this.style.display='none'">` : ''}
@@ -1614,7 +1630,7 @@ function buildItemCard(o) {
             ${o.counter
                 ? `<div class="ribbon-count-wrap" title="Times earned"><button type="button" class="step-btn" aria-label="Take one away" onclick="appState.stepRibbon('${escapeHtml(o.id)}', -1)">−</button><span>×</span><input type="number" min="0" step="1" inputmode="numeric" class="ribbon-count" value="0" aria-label="Times earned: ${escapeHtml(o.title || '')}" onchange="appState.setRibbonCount('${escapeHtml(o.id)}', this.value)"><button type="button" class="step-btn" aria-label="Add one" onclick="appState.stepRibbon('${escapeHtml(o.id)}', 1)">+</button></div>`
                 : o.progressGoal
-                ? `<div class="ribbon-count-wrap medal-progress-wrap" title="Progress"><button type="button" class="step-btn" aria-label="Take one away" onclick="appState.stepMedal('${escapeHtml(o.id)}', -1)">−</button><input type="number" min="0" step="1" inputmode="numeric" class="medal-count" value="0" aria-label="Progress: ${escapeHtml(o.title || '')}" onchange="appState.setMedalProgress('${escapeHtml(o.id)}', this.value)"><button type="button" class="step-btn" aria-label="Add one" onclick="appState.stepMedal('${escapeHtml(o.id)}', 1)">+</button></div>`
+                ? `<div class="ribbon-count-wrap medal-progress-wrap" title="Progress"><button type="button" class="step-btn" aria-label="Take one away" onclick="appState.stepMedal('${escapeHtml(o.id)}', -1)">−</button><input type="number" min="0" step="1" inputmode="numeric" class="medal-count" value="0" ${o.unit ? `placeholder="${escapeHtml(o.unit)}" title="Type your longest shot in meters"` : ''} aria-label="${o.unit ? 'Your longest shot (meters)' : 'Progress'}: ${escapeHtml(o.title || '')}" onchange="appState.setMedalProgress('${escapeHtml(o.id)}', this.value)">${o.unit ? `<span class="unit-lbl">${escapeHtml(o.unit)}</span>` : ''}<button type="button" class="step-btn" aria-label="Add one" onclick="appState.stepMedal('${escapeHtml(o.id)}', 1)">+</button></div>`
                 : `<button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(o.id)}', '${o.type}'${groupArg})" aria-label="Toggle"></button>`}
         </div>
         ${o.body ? `<p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(o.body)}</p>` : ''}
@@ -1708,13 +1724,13 @@ function psnTrophyForMedal(md) {
 function medalCard(m, ctx) {
     const tierClass = { bronze: 'rank-bronze', silver: 'rank-silver', gold: 'rank-gold' }[m.goal_tier] || 'rank-silver';
     const parts = [];
-    if (m.goal !== undefined && m.goal !== null) parts.push(`Goal: ${m.goal}`);
-    if (m.distance_m) parts.push(`Distance: ${m.distance_m} m`);
+    if (m.unit === 'm') parts.push(`Goal: ${m.goal} m — type your longest shot from the mission screen (it can be more than the goal)`);
+    else { if (m.goal !== undefined && m.goal !== null) parts.push(`Goal: ${m.goal}`); if (m.distance_m) parts.push(`Distance: ${m.distance_m} m`); }
     const tiers = m.tier_goals ? Object.values(m.tier_goals).filter(Number) : [];
     const linkedTrophy = psnTrophyForMedal(m);
     const progressGoal = Number(m.goal) > 1 || tiers.length || m.psn_trophy ? (tiers.length ? Math.max(...tiers) : Number(m.goal) || 1) : 0;
     return buildItemCard({
-        progressGoal,
+        progressGoal, unit: m.unit,
         id: m.id, type: 'medal', badge: (m.goal_tier || 'Medal'), badgeClass: tierClass,
         title: m.name, sub: m.description, body: [linkedTrophy ? `🔗 Synced with PSN trophy "${linkedTrophy.name}"` : '', parts.join(' | '), m.tip ? `Tip: ${m.tip}` : ''].filter(Boolean).join(' — '), img: m.image_url, ctx: `medal ${ctx || ''}`,
         locImg: m.location_image_url, link: m.map_url || m.video_url, linkLabel: m.map_url ? 'Open on map' : (m.video_url ? 'Watch guide' : '')

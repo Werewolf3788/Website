@@ -390,34 +390,48 @@
           {
             "id": "med_longshot_mission_2_long_shot",
             "name": "Mission 2 Long Shot",
-            "description": "Make a 250 meter shot in Dead Drop.",
-            "goal": 1,
+            "description": "Make a 250 meters shot in Dead Drop.",
+            "goal": 250,
             "goal_tier": null,
             "tiers": {
               "bronze": null,
               "silver": null,
               "gold": null
             },
-            "image_url": "",
+            "image_url": "/public/games/snresistance/images/medals/med_longshot_mission_2_long_shot.jpg",
             "mission_number": 2,
             "distance_m": 250,
-            "authentic": false
+            "authentic": false,
+            "unit": "m",
+            "best_shot": true,
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 250
+            }
           },
           {
             "id": "med_longshot_mission_2_authentic_long_shot",
             "name": "Mission 2 Authentic Long Shot",
-            "description": "Make a 250 meter shot in Dead Drop on Authentic difficulty.",
-            "goal": 1,
+            "description": "Take a 250 meters shot in Dead Drop, in authentic difficulty.",
+            "goal": 250,
             "goal_tier": null,
             "tiers": {
               "bronze": null,
               "silver": null,
               "gold": null
             },
-            "image_url": "",
+            "image_url": "/public/games/snresistance/images/medals/med_longshot_mission_2_authentic_long_shot.jpg",
             "mission_number": 2,
             "distance_m": 250,
-            "authentic": true
+            "authentic": true,
+            "unit": "m",
+            "best_shot": true,
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 250
+            }
           }
         ],
         "propaganda": [
@@ -817,35 +831,49 @@
           {
             "id": "med_longshot_mission_3_long_shot",
             "name": "Mission 3 Long Shot",
-            "description": "Make a 200 meter shot in Sonderzüge Sabotage.",
-            "goal": 1,
+            "description": "Make a 200 meters shot in Sonderzüge Sabotage.",
+            "goal": 200,
             "goal_tier": null,
             "tiers": {
               "bronze": null,
               "silver": null,
               "gold": null
             },
-            "image_url": "",
+            "image_url": "/public/games/snresistance/images/medals/med_longshot_mission_3_long_shot.jpg",
             "mission_number": 3,
             "distance_m": 200,
-            "authentic": false
+            "authentic": false,
+            "unit": "m",
+            "best_shot": true,
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 200
+            }
           },
           {
             "id": "med_longshot_mission_3_authentic_long_shot",
             "name": "Mission 3 Authentic Long Shot",
-            "description": "Make a 80 meter shot in Sonderzüge Sabotage on Authentic difficulty.",
-            "goal": 1,
+            "description": "Take a 80 meters shot in Sonderzüge Sabotage, in authentic difficulty.",
+            "goal": 80,
             "goal_tier": null,
             "tiers": {
               "bronze": null,
               "silver": null,
               "gold": null
             },
-            "image_url": "",
+            "image_url": "/public/games/snresistance/images/medals/med_longshot_mission_3_authentic_long_shot.jpg",
             "mission_number": 3,
             "distance_m": 80,
             "authentic": true,
-            "notes": "80 m is far below the normal 200 m; may be a typo."
+            "notes": "80 m is far below the normal 200 m; may be a typo.",
+            "unit": "m",
+            "best_shot": true,
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 80
+            }
           }
         ],
         "propaganda": [
@@ -1257,34 +1285,48 @@
           {
             "id": "med_longshot_mission_4_long_shot",
             "name": "Mission 4 Long Shot",
-            "description": "Make a 400 meter shot in Collision Course.",
-            "goal": 1,
+            "description": "Make a 400 meters shot in Collision Course.",
+            "goal": 400,
             "goal_tier": null,
             "tiers": {
               "bronze": null,
               "silver": null,
               "gold": null
             },
-            "image_url": "",
+            "image_url": "/public/games/snresistance/images/medals/med_longshot_mission_4_long_shot.jpg",
             "mission_number": 4,
             "distance_m": 400,
-            "authentic": false
+            "authentic": false,
+            "unit": "m",
+            "best_shot": true,
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 400
+            }
           },
           {
             "id": "med_longshot_mission_4_authentic_long_shot",
             "name": "Mission 4 Authentic Long Shot",
-            "description": "Make a 300 meter shot in Collision Course on Authentic difficulty.",
-            "goal": 1,
+            "description": "Take a 300 meters shot in Collision Course, in authentic difficulty.",
+            "goal": 300,
             "goal_tier": null,
             "tiers": {
               "bronze": null,
               "silver": null,
               "gold": null
             },
-            "image_url": "",
+            "image_url": "/public/games/snresistance/images/medals/med_longshot_mission_4_authentic_long_shot.jpg",
             "mission_number": 4,
             "distance_m": 300,
-            "authentic": true
+            "authentic": true,
+            "unit": "m",
+            "best_shot": true,
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 300
+            }
           }
         ],
         "propaganda": [
@@ -1697,34 +1739,48 @@
           {
             "id": "med_longshot_mission_5_long_shot",
             "name": "Mission 5 Long Shot",
-            "description": "Make a 485 meter shot in Devil's Cauldron.",
-            "goal": 1,
+            "description": "Make a 280 meters shot in Devil's Cauldron.",
+            "goal": 280,
             "goal_tier": null,
             "tiers": {
               "bronze": null,
               "silver": null,
               "gold": null
             },
-            "image_url": "",
+            "image_url": "/public/games/snresistance/images/medals/med_longshot_mission_5_long_shot.jpg",
             "mission_number": 5,
-            "distance_m": 485,
-            "authentic": false
+            "distance_m": 280,
+            "authentic": false,
+            "unit": "m",
+            "best_shot": true,
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 280
+            }
           },
           {
             "id": "med_longshot_mission_5_authentic_long_shot",
             "name": "Mission 5 Authentic Long Shot",
-            "description": "Make a 280 meter shot in Devil's Cauldron on Authentic difficulty.",
-            "goal": 1,
+            "description": "Take a 280 meters shot in Devil's Cauldron, in authentic difficulty.",
+            "goal": 280,
             "goal_tier": null,
             "tiers": {
               "bronze": null,
               "silver": null,
               "gold": null
             },
-            "image_url": "",
+            "image_url": "/public/games/snresistance/images/medals/med_longshot_mission_5_authentic_long_shot.jpg",
             "mission_number": 5,
             "distance_m": 280,
-            "authentic": true
+            "authentic": true,
+            "unit": "m",
+            "best_shot": true,
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 280
+            }
           }
         ],
         "propaganda": [
@@ -2163,34 +2219,48 @@
           {
             "id": "med_longshot_mission_6_long_shot",
             "name": "Mission 6 Long Shot",
-            "description": "Make a 300 meter shot in Assault on Fort Rouge.",
-            "goal": 1,
+            "description": "Make a 200 meters shot in Assault on Fort Rouge.",
+            "goal": 200,
             "goal_tier": null,
             "tiers": {
               "bronze": null,
               "silver": null,
               "gold": null
             },
-            "image_url": "",
+            "image_url": "/public/games/snresistance/images/medals/med_longshot_mission_6_long_shot.jpg",
             "mission_number": 6,
-            "distance_m": 300,
-            "authentic": false
+            "distance_m": 200,
+            "authentic": false,
+            "unit": "m",
+            "best_shot": true,
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 200
+            }
           },
           {
             "id": "med_longshot_mission_6_authentic_long_shot",
             "name": "Mission 6 Authentic Long Shot",
-            "description": "Make a 200 meter shot in Assault on Fort Rouge on Authentic difficulty.",
-            "goal": 1,
+            "description": "Take a 200 meters shot in Assault on Fort Rouge, in authentic difficulty.",
+            "goal": 200,
             "goal_tier": null,
             "tiers": {
               "bronze": null,
               "silver": null,
               "gold": null
             },
-            "image_url": "",
+            "image_url": "/public/games/snresistance/images/medals/med_longshot_mission_6_authentic_long_shot.jpg",
             "mission_number": 6,
             "distance_m": 200,
-            "authentic": true
+            "authentic": true,
+            "unit": "m",
+            "best_shot": true,
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 200
+            }
           }
         ],
         "propaganda": [
@@ -2658,39 +2728,53 @@
           {
             "id": "med_longshot_mission_7_long_shot",
             "name": "Mission 7 Long Shot",
-            "description": "Make a 350 meter shot in Lock, Stock and Barrels.",
-            "goal": 1,
+            "description": "Make a 350 meters shot in Lock, Stock and Barrels.",
+            "goal": 350,
             "goal_tier": "gold",
             "tiers": {
               "bronze": null,
               "silver": null,
               "gold": null
             },
-            "image_url": "",
+            "image_url": "/public/games/snresistance/images/medals/med_longshot_mission_7_long_shot.jpg",
             "mission_number": 7,
             "distance_m": 350,
             "authentic": false,
             "notes": "350 m confirmed from MapMaster's 'Long Shot Gold Medal Sniping Spot'.",
             "tip": "Stand near the tree by the road and shoot the Elite Sniper on top of the western windmill (about 368 m).",
             "map_url": "https://mapmaster.io/games/sniper-elite-resistance/maps/mission-7-lock-stock-and-barrels?locationId=42248",
-            "location_image_url": "/public/games/snresistance/images/locations/m7/med_longshot_mission_7.jpg"
+            "location_image_url": "/public/games/snresistance/images/locations/m7/med_longshot_mission_7.jpg",
+            "unit": "m",
+            "best_shot": true,
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 350
+            }
           },
           {
             "id": "med_longshot_mission_7_authentic_long_shot",
             "name": "Mission 7 Authentic Long Shot",
-            "description": "Make a 200 meter shot in Lock, Stock and Barrels on Authentic difficulty.",
-            "goal": 1,
+            "description": "Take a 200 meters shot in Lock, Stock and Barrels, in authentic difficulty.",
+            "goal": 200,
             "goal_tier": null,
             "tiers": {
               "bronze": null,
               "silver": null,
               "gold": null
             },
-            "image_url": "",
+            "image_url": "/public/games/snresistance/images/medals/med_longshot_mission_7_authentic_long_shot.jpg",
             "mission_number": 7,
             "distance_m": 200,
             "authentic": true,
-            "notes": "Distance not confirmed yet (the normal Long Shot is 350 m)."
+            "notes": "Distance not confirmed yet (the normal Long Shot is 350 m).",
+            "unit": "m",
+            "best_shot": true,
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 200
+            }
           }
         ],
         "propaganda": []
@@ -3263,34 +3347,48 @@
           {
             "id": "med_longshot_mission_8_long_shot",
             "name": "Mission 8 Long Shot",
-            "description": "Make a 425 meter shot in End of the Line.",
-            "goal": 1,
+            "description": "Make a 425 meters shot in End of the Line.",
+            "goal": 425,
             "goal_tier": null,
             "tiers": {
               "bronze": null,
               "silver": null,
               "gold": null
             },
-            "image_url": "",
+            "image_url": "/public/games/snresistance/images/medals/med_longshot_mission_8_long_shot.jpg",
             "mission_number": 8,
             "distance_m": 425,
-            "authentic": false
+            "authentic": false,
+            "unit": "m",
+            "best_shot": true,
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 425
+            }
           },
           {
             "id": "med_longshot_mission_8_authentic_long_shot",
             "name": "Mission 8 Authentic Long Shot",
-            "description": "Make a 200 meter shot in End of the Line on Authentic difficulty.",
-            "goal": 1,
+            "description": "Take a 200 meters shot in End of the Line, in authentic difficulty.",
+            "goal": 200,
             "goal_tier": null,
             "tiers": {
               "bronze": null,
               "silver": null,
               "gold": null
             },
-            "image_url": "",
+            "image_url": "/public/games/snresistance/images/medals/med_longshot_mission_8_authentic_long_shot.jpg",
             "mission_number": 8,
             "distance_m": 200,
-            "authentic": true
+            "authentic": true,
+            "unit": "m",
+            "best_shot": true,
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 200
+            }
           }
         ],
         "propaganda": [
