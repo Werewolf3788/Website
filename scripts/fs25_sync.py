@@ -155,42 +155,106 @@ def parse_mdtm(s):
         return None
 
 
+LIST_RE = re.compile(
+    r"^(?P<perm>[dl\-][rwxsStT\-]{9})\S*\s+\d+\s+\S+\s+\S+\s+(?P<size>\d+)\s+"
+    r"(?P<date>\w{3}\s+\d{1,2}\s+(?:\d{1,2}:\d{2}|\d{4}))\s+(?P<name>.+)$")
+DOS_RE = re.compile(r"^\d{2}-\d{2}-\d{2,4}\s+\d{1,2}:\d{2}[AP]M\s+(?P<size><DIR>|\d+)\s+(?P<name>.+)$", re.I)
+
+
+def _mdtm(ftp, p):
+    try:
+        return parse_mdtm(ftp.sendcmd(f"MDTM {p}").split()[-1])
+    except ftplib.all_errors:
+        return None
+
+
 def list_dir(ftp, path):
-    """Return {name: {"type": "file"|"dir", "size": int, "mtime": epoch|None}}."""
+    """Return {name: {"type": "file"|"dir", "size": int, "mtime": epoch|None}}.
+    Tries MLSD, then LIST (unix + windows formats), then NLST + CWD probing."""
+    path = path or "/"
     out = {}
+    # 1) MLSD
     try:
         for name, facts in ftp.mlsd(path, facts=["type", "size", "modify"]):
             if name in (".", ".."):
                 continue
-            t = facts.get("type", "file")
+            t = (facts.get("type") or "file").lower()
+            if t in ("cdir", "pdir"):
+                continue
             out[name] = {
-                "type": "dir" if t in ("dir", "cdir", "pdir") else "file",
+                "type": "dir" if t == "dir" or t.startswith("os.unix=slink") else "file",
                 "size": int(facts.get("size", 0) or 0),
                 "mtime": parse_mdtm(facts["modify"]) if facts.get("modify") else None,
             }
-        return out
+        if out:
+            return out
     except ftplib.all_errors:
         pass
-    # Fallback: NLST + SIZE/MDTM probes
+    # 2) LIST
+    lines = []
+    try:
+        ftp.retrlines(f"LIST {path}", lines.append)
+    except ftplib.all_errors:
+        try:
+            cur = ftp.pwd()
+            ftp.cwd(path)
+            ftp.retrlines("LIST", lines.append)
+            ftp.cwd(cur)
+        except ftplib.all_errors:
+            lines = []
+    for line in lines:
+        m = LIST_RE.match(line.strip())
+        if m:
+            name = m.group("name").split(" -> ")[0]
+            if name in (".", ".."):
+                continue
+            is_dir = m.group("perm")[0] in "dl"
+            out[name] = {"type": "dir" if is_dir else "file", "size": int(m.group("size")), "mtime": None}
+            continue
+        m = DOS_RE.match(line.strip())
+        if m:
+            d = m.group("size").upper() == "<DIR>"
+            out[m.group("name")] = {"type": "dir" if d else "file", "size": 0 if d else int(m.group("size")), "mtime": None}
+    if out:
+        for name, info in out.items():
+            if info["type"] == "file" and name.lower().endswith(".xml"):
+                info["mtime"] = _mdtm(ftp, f"{path.rstrip('/')}/{name}")
+        return out
+    # 3) NLST + CWD probe
     try:
         names = ftp.nlst(path)
     except ftplib.all_errors:
         return out
+    cur = ftp.pwd()
     for full in names:
         name = full.rstrip("/").split("/")[-1]
         if name in (".", ".."):
             continue
         p = f"{path.rstrip('/')}/{name}"
-        info = {"type": "dir", "size": 0, "mtime": None}
+        info = {"type": "file", "size": 0, "mtime": None}
         try:
-            info["size"] = ftp.size(p) or 0
-            info["type"] = "file"
-            resp = ftp.sendcmd(f"MDTM {p}")
-            info["mtime"] = parse_mdtm(resp.split()[-1])
+            ftp.cwd(p)
+            info["type"] = "dir"
+            ftp.cwd(cur)
         except ftplib.all_errors:
-            pass
+            try:
+                info["size"] = ftp.size(p) or 0
+            except ftplib.all_errors:
+                pass
+            info["mtime"] = _mdtm(ftp, p)
         out[name] = info
     return out
+
+
+SAVE_MARKERS = ("careersavegame.xml", "fields.xml", "environment.xml", "farmland.xml")
+
+
+def find_name(entries, wanted):
+    """Case-insensitive lookup of a file name in a listing."""
+    for n in entries:
+        if n.lower() == wanted.lower():
+            return n
+    return None
 
 
 def download(ftp, path, offset=0):
@@ -204,30 +268,44 @@ def find_save_dir(ftp, state):
     if forced:
         return forced.rstrip("/") or "/"
     cached = state.get("saveDir")
-    if cached and "careerSavegame.xml" in list_dir(ftp, cached):
+    if cached and find_name(list_dir(ftp, cached), "careerSavegame.xml"):
         return cached
     log("Searching the FTP for the savegame folder ...")
-    start = ftp.pwd() or "/"
-    queue, seen, found = [(start, 0)], set(), []
-    skip = re.compile(r"^(mods|cache|shader_cache|screenshots|music|pdlc|dlc|logs?)$", re.I)
-    while queue and len(seen) < 120:
+    try:
+        start = ftp.pwd() or "/"
+    except ftplib.all_errors:
+        start = "/"
+    starts = [start] + ([] if start == "/" else ["/"])
+    queue, seen, found, tree = [(p, 0) for p in starts], set(), [], []
+    skip = re.compile(r"^(mods|cache|shader_?cache|screenshots|music|pdlc|dlc|\.\w+)$", re.I)
+    while queue and len(seen) < 250:
         path, depth = queue.pop(0)
         if path in seen:
             continue
         seen.add(path)
         entries = list_dir(ftp, path)
-        if "careerSavegame.xml" in entries:
-            found.append((entries["careerSavegame.xml"].get("mtime") or 0, path))
-        if depth >= 4:
+        dirs = sorted(n for n, i in entries.items() if i["type"] == "dir")
+        files = sorted(n for n, i in entries.items() if i["type"] == "file")
+        if len(tree) < 60:
+            tree.append(f"  {path}  dirs={dirs[:15]}{'...' if len(dirs) > 15 else ''}  "
+                        f"files={files[:8]}{'...' if len(files) > 8 else ''}")
+        hits = [n for n in files if n.lower() in SAVE_MARKERS]
+        if hits:
+            career = find_name(entries, "careerSavegame.xml")
+            score = (1 if career else 0, len(hits), (entries[career].get("mtime") or 0) if career else 0)
+            found.append((score, path))
+        if depth >= 6:
             continue
-        for name, info in sorted(entries.items()):
-            if info["type"] == "dir" and not skip.match(name):
+        for name in dirs:
+            if not skip.match(name):
                 queue.append((f"{path.rstrip('/')}/{name}", depth + 1))
     if not found:
-        sys.exit("No careerSavegame.xml found on the FTP. Set the FS25_SAVE_DIR variable "
-                 "(for example /profile/savegame1).")
+        log("FTP folders seen:")
+        for t in tree:
+            log(t)
+        return None
     found.sort(reverse=True)
-    log(f"Savegame folder: {found[0][1]}")
+    log(f"Savegame folder: {found[0][1]}  (candidates: {[p for _, p in found[:5]]})")
     return found[0][1]
 
 
@@ -735,10 +813,18 @@ def main():
 
     ftp = connect()
     save_dir = find_save_dir(ftp, state)
+    if not save_dir:
+        print("::warning title=FS25 sync::No savegame found on the FTP. Open this run's log to see the "
+              "folders it found, then set the FS25_SAVE_DIR repository variable to the savegame folder "
+              "(e.g. /profile/savegame1). The server may also need to save once.")
+        return
     files = list_dir(ftp, save_dir)
     xml_files = {n: i for n, i in files.items() if i["type"] == "file" and n.lower().endswith(".xml")}
-    if "careerSavegame.xml" not in xml_files:
-        sys.exit(f"careerSavegame.xml not found in {save_dir}")
+    career_name = find_name(xml_files, "careerSavegame.xml")
+    if not career_name:
+        print(f"::warning title=FS25 sync::No careerSavegame.xml in {save_dir}. Files there: {sorted(files)[:30]}")
+        return
+
 
     # ---- who is online?
     presence = players_from_stats_url()
@@ -746,7 +832,7 @@ def main():
         presence = players_from_log(ftp, save_dir) or {"source": "none", "names": [], "count": 0}
     autosave = num(g(read_json(os.path.join(RAW_DIR, "careerSavegame.json"), {}),
                      "careerSavegame", "settings", "autoSaveInterval"), 15) or 15
-    save_mtime = xml_files["careerSavegame.xml"].get("mtime")
+    save_mtime = xml_files[career_name].get("mtime")
     save_age = (time.time() - save_mtime) / 60 if save_mtime else None
     fresh = save_age is not None and save_age <= autosave * 2 + 5
 
@@ -766,7 +852,8 @@ def main():
         wanted = sorted(xml_files)
     else:
         mode = "light"
-        wanted = [f for f in LIGHT_FILES if f in xml_files]
+        light = {f.lower() for f in LIGHT_FILES}
+        wanted = [f for f in xml_files if f.lower() in light]
     log(f"Mode: {mode.upper()}  ({reason}{'; first run' if first_run and not active else ''})")
 
     # ---- download only what changed
@@ -774,7 +861,7 @@ def main():
     changed = []
     for name in wanted:
         info = xml_files[name]
-        stem = name[:-4]
+        stem = next((lf[:-4] for lf in LIGHT_FILES if lf.lower() == name.lower()), name[:-4])
         raw_path = os.path.join(RAW_DIR, f"{stem}.json")
         if info.get("mtime") and mtimes.get(name) == info["mtime"] and os.path.exists(raw_path):
             continue
