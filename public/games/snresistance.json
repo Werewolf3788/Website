@@ -219,8 +219,8 @@
         "hidden_items": [
           {
             "id": "item_m2_01",
-            "name": "La Résistance",
-            "location": "Back alley brick wall; unlocks Propaganda Mission.",
+            "name": "La Résistance Propaganda Poster",
+            "location": "On the wall by the stairs leading up to the city wall. Unlocks the first Propaganda Mission (La Résistance).",
             "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
             "headline": "Fight for Your Freedom!",
             "summary": "A Resistance propaganda poster; the narrator admits the Resistance has a talent for eye-catching posters.",
@@ -298,13 +298,14 @@
           {
             "id": "wb_m2_rifle",
             "name": "Rifle Workbench",
-            "location": "First-floor locked apartment via rear exterior stairs.",
+            "location": "On the second floor of the house. Reach it via the stairs at the back of the house (southern side).",
             "image_url": "/public/games/snresistance/images/icons/workbench.png",
             "description": "This workbench contained the Rifle Marksmanship package.",
             "unlocks": "Rifle Marksmanship package",
             "video_time": 66,
             "video_url": "https://www.youtube.com/watch?v=0MJ9Tcpv4Tg&t=66s",
-            "emoji": "⚙️"
+            "emoji": "⚙️",
+            "location_image_url": "/public/games/snresistance/images/locations/m2/wb_m2_rifle.jpg"
           },
           {
             "id": "wb_m2_pistol",
@@ -532,15 +533,34 @@
       },
       "starting_locations": [
         {
+          "name": "West Gate",
+          "default": true,
+          "description": "Default start on the southern side of St. Raymond; unlocked automatically at the start of the mission.",
+          "location_image_url": "/public/games/snresistance/images/locations/m2/start_west_gate.jpg"
+        },
+        {
           "name": "Scaffold Yard",
+          "description": "On the southwestern side of St. Raymond. Unlock the blue door at the bottom of the wall to use this start on future runs.",
+          "location_image_url": "/public/games/snresistance/images/locations/m2/start_scaffold_yard.jpg",
           "video_time": 43
         },
         {
           "name": "Citadel Apartments",
+          "description": "On the northern side of St. Raymond. Unlock the door of the house with blue blinds to use this start on future runs.",
+          "location_image_url": "/public/games/snresistance/images/locations/m2/start_citadel_apartments.jpg",
           "video_time": 482
         }
       ],
-      "completion_trophy": 2
+      "completion_trophy": 2,
+      "map_image_url": "/public/games/snresistance/images/locations/m2/map.jpg",
+      "map_legend": "Orange pins are starting points.",
+      "primary_objectives": [
+        {
+          "text": "Collect Vertigo's Dead Drop — the Abwehr mole 'Vertigo' has gone into hiding after discovering a serious threat against the Allied Forces. Find him before the Gestapo does, and extract him.",
+          "tip": "Find the dead drop at the Basilica: interact with the portrait at the top of the Basilica's tower.",
+          "location_image_url": "/public/games/snresistance/images/locations/m2/obj_vertigo_dead_drop.jpg"
+        }
+      ]
     },
     "mission_3": {
       "number": 3,

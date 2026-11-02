@@ -1734,7 +1734,7 @@ function objectiveHtml(o) {
         const md = medalDef(mid); const st = appState.medals[mid];
         if (md) chips.push(`🏅 ${escapeHtml(md.name)}${st && st.earned ? ' ✓' : ''}`);
     });
-    return `${escapeHtml(o.text || '')}${o.tip ? `<br><small style="color:#94a3b8;">${escapeHtml(o.tip)}</small>` : ''}${chips.length ? `<br><small class="obj-links">${chips.join(' · ')}</small>` : ''}`;
+    return `${escapeHtml(o.text || '')}${o.tip ? `<br><small style="color:#94a3b8;">${escapeHtml(o.tip)}</small>` : ''}${chips.length ? `<br><small class="obj-links">${chips.join(' · ')}</small>` : ''}${o.location_image_url ? `<br><img src="${escapeHtml(toSecureUrl(o.location_image_url))}" class="loc-photo" style="max-width:420px" loading="lazy" alt="">` : ''}`;
 }
 function trophyLinkHtml(id) {
     const data = appState.gameData || {}; const L = trophyLinks(data)[String(id)]; if (!L) return '';
@@ -1857,6 +1857,7 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
     });
     const detail = [];
     if (m.description) detail.push(`<div><h4>Description</h4><p>${escapeHtml(m.description)}</p></div>`);
+    if (m.map_image_url) detail.push(`<div><h4>🗺️ Mission Map</h4><img src="${escapeHtml(toSecureUrl(m.map_image_url))}" class="loc-photo" style="max-width:520px" loading="lazy" alt="Mission map" title="Tap to enlarge">${m.map_legend ? `<p style="font-size:0.75rem;color:#94a3b8;">${escapeHtml(m.map_legend)}</p>` : ''}</div>`);
     if (m.interactive_map && m.interactive_map.url) {
         const mc = m.interactive_map.marker_counts || {};
         const tools = [['bolt_cutters', 'Bolt cutters'], ['crowbar', 'Crowbars'], ['satchel_charges', 'Satchel charges'], ['coal_torpedoes', 'Coal torpedoes'], ['keys', 'Keys']].filter(([k]) => mc[k]).map(([k, l]) => `${l} ${mc[k]}`).join(' · ');
