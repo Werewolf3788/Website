@@ -134,6 +134,34 @@
     "field": {
      "id": 4
     }
+   },
+   {
+    "uniqueId": "missiona155f1b71a67630511f05251b2338499",
+    "status": "CREATED",
+    "finishState": "NONE",
+    "harvest": {
+     "fruitType": "SUGARBEET",
+     "expectedLiters": 0.0,
+     "depositedLiters": 0.0,
+     "sellingStationPlaceableUniqueId": "placeable7f5f56fdc7fcd228b80348554d4cda8f",
+     "unloadingStationIndex": 1
+    },
+    "info": {
+     "reward": 0,
+     "reimbursement": 0.0,
+     "completion": 0.0
+    },
+    "vehicles": {
+     "spawned": false,
+     "group": 7
+    },
+    "endDate": {
+     "endDay": 81,
+     "endDayTime": 86399999
+    },
+    "field": {
+     "id": 24
+    }
    }
   ],
   "plowMission": [
