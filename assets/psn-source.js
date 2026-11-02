@@ -58,10 +58,30 @@
         return PSN_DB + p + (parts.length ? '?' + parts.join('&') : '');
     }
 
-    // Read a /psn/... path; tries the exact key, then the lowercase key (cards are stored either way).
+    // Gamer tags are stored under the real PSN ID (e.g. "WildHorse_Spirit"). Old pages ask for
+    // "wildhorse_spirit": look the real spelling up once (psn/usersByGamerTag) and use that.
+    var realIdsPromise = null;
+    function realIds(token) {
+        if (!realIdsPromise) {
+            realIdsPromise = nativeFetch(psnUrl('/psn/usersByGamerTag', 'shallow=true', token))
+                .then(function (r) { return r.ok ? r.json() : null; })
+                .then(function (m) { var out = {}; Object.keys(m || {}).forEach(function (k) { out[k.toLowerCase()] = k; }); return out; })
+                .catch(function () { return {}; });
+        }
+        return realIdsPromise;
+    }
+    function canonical(path, token) {
+        var m = path.match(/^(\/psn\/gamertags\/)([^\/.]+)(.*)$/i);
+        if (!m) return Promise.resolve(path);
+        return realIds(token).then(function (ids) { var real = ids[m[2].toLowerCase()]; return real ? m[1] + real + m[3] : path; });
+    }
+
+    // Read a /psn/... path; real PSN ID first, then the exact key, then the lowercase key.
     function get(path) {
-        return getToken().then(function (token) {
-            var tries = [path];
+        return getToken().then(function (token) { return canonical(path, token).then(function (real) { return [token, real]; }); })
+        .then(function (tp) {
+            var token = tp[0], tries = [tp[1]];
+            if (tp[1] !== path) tries.push(path);
             var lower = path.replace(/(\/psn\/gamertags\/)([^\/.]+)/i, function (m, a, b) { return a + b.toLowerCase(); });
             if (lower !== path) tries.push(lower);
             var i = 0;
@@ -78,9 +98,10 @@
         var url = typeof input === 'string' ? input : (input && input.url) || '';
         var m = url.match(OLD_RE);
         if (!m || (init && init.method && init.method.toUpperCase() !== 'GET')) return nativeFetch(input, init);
-        var path = m[2].replace(/\.json$/i, '');
+        var asked = m[2].replace(/\.json$/i, '');
         return getToken().then(function (token) {
             if (!token) return nativeFetch(input, init);
+            return canonical(asked, token).then(function (path) {
             var lower = path.replace(/(\/psn\/gamertags\/)([^\/.]+)/i, function (x, a, b) { return a + b.toLowerCase(); });
             return nativeFetch(psnUrl(path, m[3], token), init).then(function (r) {
                 if (!r.ok) return nativeFetch(input, init);
@@ -89,6 +110,7 @@
                     if (lower !== path) return nativeFetch(psnUrl(lower, m[3], token), init).then(function (r2) { return r2.ok ? r2.clone().json().then(function (v2) { return v2 != null ? r2 : nativeFetch(input, init); }) : nativeFetch(input, init); });
                     return nativeFetch(input, init);
                 });
+            });
             });
         }).catch(function () { return nativeFetch(input, init); });
     };
