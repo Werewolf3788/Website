@@ -524,25 +524,5 @@ ${OWN_PWA ? '' : `<li><button type="button" class="ww-row" data-ww-install hidde
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
     else boot();
 
-    // ---------------------------------------------------------------- game routes
-    // Menu links like "#/games/fs25" (from /utm_links) open the game's own page.
-    // Add a line here when another game gets its own folder under /games/.
-    const GAME_ROUTES = {
-        'games/fs25': 'games/fs25/'
-    };
-    function routeFromHash() {
-        const key = decodeURIComponent(location.hash || '').replace(/^#\/?/, '').replace(/\/+$/, '').toLowerCase();
-        const target = GAME_ROUTES[key];
-        if (target) location.assign(rootUrl(target));
-    }
-    window.addEventListener('hashchange', routeFromHash);
-    routeFromHash();
-    document.addEventListener('click', (e) => {
-        const a = e.target.closest && e.target.closest('a[href^="#/"]');
-        if (!a) return;
-        const key = a.getAttribute('href').replace(/^#\/?/, '').replace(/\/+$/, '').toLowerCase();
-        if (GAME_ROUTES[key]) { e.preventDefault(); location.assign(rootUrl(GAME_ROUTES[key])); }
-    }, true);
-
     window.wwShell = { refreshMenu: async () => { MENU = await fetchMenu(); render(); }, openMenu: openDrawer, togglePush, promptInstall };
 })();
