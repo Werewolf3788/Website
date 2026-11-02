@@ -31,6 +31,7 @@ try {
         storageBucket: "playstation-stats.firebasestorage.app", messagingSenderId: "748816703249", appId: "1:748816703249:web:3413fac9800148aa42b6b0"
     }, 'psnstats');
     psnRtdb = firebase.database(appP);
+    window.__psnFs = firebase.firestore ? firebase.firestore(appP) : null;
     psnReady = firebase.auth(appP).signInAnonymously().catch(() => {});
 } catch (e) { console.warn('[PSN project]', e); }
 // Read a player's trophy progress for one game; tries the exact name, then any case.
@@ -1305,6 +1306,47 @@ async function buildUtmNavigation() {
 }
 
 // Section 10: Universal PSN Trophy Telemetry Auto-Check (Cross-Platform Visual Sync)
+// Full PSN trophy list for a game (every trophy's icon, name, rank, rarity) from the
+// playstation-stats skeleton: meta/gameIndex -> games/{key}.trophies. Works for any game.
+const psnSkeletonCache = {};
+async function loadPsnTrophySkeleton(commId) {
+    if (!commId || !window.__psnFs) return null;
+    const id = String(commId).toUpperCase();
+    if (psnSkeletonCache[id] !== undefined) return psnSkeletonCache[id];
+    psnSkeletonCache[id] = null;
+    try {
+        await psnReady;
+        const idx = await window.__psnFs.collection('meta').doc('gameIndex').get();
+        const entry = idx.exists && (idx.data().entries || {})[id];
+        if (!entry || !entry.key) return null;
+        const doc = await window.__psnFs.collection('games').doc(entry.key).get();
+        psnSkeletonCache[id] = doc.exists ? doc.data() : null;
+    } catch (e) { console.warn('[PSN skeleton]', e && e.message); }
+    return psnSkeletonCache[id];
+}
+async function applyPsnTrophyIcons() {
+    const sk = await loadPsnTrophySkeleton(ACTIVE_COMM_ID);
+    const list = sk && (Array.isArray(sk.trophies) ? sk.trophies : Object.values(sk.trophies || {}));
+    if (!list || !list.length) return;
+    let changed = false;
+    list.forEach(t => {
+        if (!t || t.trophyId === undefined) return;
+        const card = appState.trophies[`trophy_${appState.gameId}_${t.trophyId}`];
+        if (!card) return;
+        if (t.icon && card.icon !== toSecureUrl(t.icon)) { card.icon = toSecureUrl(t.icon); changed = true; }
+        if (t.name && !card.name) { card.name = t.name; changed = true; }
+        if (t.rarity && card.rarity !== t.rarity) { card.rarity = t.rarity; changed = true; }
+    });
+    if (changed) {
+        document.querySelectorAll('[data-type="trophy"]').forEach(el => {
+            const c = appState.trophies[el.dataset.id]; if (!c || !c.icon) return;
+            let img = el.querySelector('img');
+            if (!img) { const wrap = el.querySelector(':scope > div > div'); if (!wrap) return; img = document.createElement('img'); img.alt = ''; img.loading = 'lazy'; img.style.cssText = 'width:40px; height:40px; object-fit:cover; border-radius:6px; flex:0 0 auto;'; wrap.prepend(img); }
+            if (img.src !== c.icon) img.src = c.icon;
+        });
+    }
+}
+
 async function autoCheckUserPsnTrophies() {
     if (!rtdb || !appState.psnGamertag || !ACTIVE_COMM_ID) return;
     const commId = ACTIVE_COMM_ID;
@@ -2928,6 +2970,7 @@ function watchGameData(gameKey, loadedSync) {
             appState.friendsProgress = friends;
             document.querySelectorAll('#section-container .category-section > .category-header h2').forEach(h => { if (open.has(h.innerText)) h.closest('.category-section').classList.remove('section-collapsed'); });
             appState.applyStateToUI();
+            applyPsnTrophyIcons();
             window.scrollTo(0, y);
             appState.updateStatus(`[Live update] New game data synced ${new Date(v).toLocaleTimeString()}`);
         } catch (e) { console.warn('[Live game update]', e); }
@@ -2948,6 +2991,7 @@ async function loadAndHydrateGame(gameKey) {
                 renderUniversalCompanion(data);
                 await appState.loadProgress();
                 watchGameData(gameKey, data && data._meta && data._meta.synced_at);
+                applyPsnTrophyIcons();
 
                 if (appState.psnGamertag) {
                     await autoCheckUserPsnTrophies();
