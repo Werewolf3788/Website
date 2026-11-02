@@ -756,6 +756,7 @@ async function readKevinCredentials() {
 
     const coreNpssos = {};
     const coreIds = {};
+    const coreTags = {};          // exact spelling from /users/{email}/psn_username
     const cookieUpdated = {};
     for (const m of CORE_PACK) {
         coreNpssos[m.key] = normalizeNpsso(process.env[m.env] || "");
@@ -780,13 +781,14 @@ async function readKevinCredentials() {
             (m.emailMatch && emailKey.toLowerCase().includes(m.emailMatch)));
         if (core) {
             if (idStr) coreIds[core.key] = idStr;
+            if (tag) coreTags[core.key] = tag;
             if (cookie) { coreNpssos[core.key] = cookie; cookieUpdated[core.key] = updatedAt; }
         } else if (idStr || cookie) {
             guests.push({ emailKey, accountId: idStr || null, tag, npsso: cookie, updatedAt });
         }
     }
     console.log(`[KEVIN DB] Cookies: ${CORE_PACK.map((m) => `${m.tag}=${!!coreNpssos[m.key]}`).join(", ")}; guests=${guests.length}`);
-    return { coreNpssos, coreIds, cookieUpdated, guests, usersReadOk: ok };
+    return { coreNpssos, coreIds, coreTags, cookieUpdated, guests, usersReadOk: ok };
 }
 
 /* ============================================================================
@@ -2101,8 +2103,9 @@ async function executeSyncPass() {
             const own = auths[m.key];
             const issue = own ? null : (creds.coreNpssos[m.key] ? "EXPIRED_NPSSO" : "NO_COOKIE");
             diag.members[m.key] = { tag: m.tag, ownCookie: !!own, issue, cookieUpdatedAt: creds.cookieUpdated[m.key] || null };
-            await syncOne({ auth: own || masterAuth, key: m.key, tag: m.tag, accountId: creds.coreIds[m.key] || m.id, hasOwn: !!own, issue, label: m.tag });
-            active.add(m.tag);
+            const tag = (creds.coreTags && creds.coreTags[m.key]) || m.tag;   // profile's psn_username spelling
+            await syncOne({ auth: own || masterAuth, key: m.key, tag, accountId: creds.coreIds[m.key] || m.id, hasOwn: !!own, issue, label: tag });
+            active.add(tag);
         }
 
         /* Guests */
@@ -2132,16 +2135,19 @@ async function executeSyncPass() {
             console.warn("[PRUNE] Skipped: could not read Kevin's users this run.");
         }
 
-        /* Remove duplicate cards that only differ in upper/lower case from a real PSN ID
-           (e.g. an old "wildhorse_spirit" next to the real "WildHorse_Spirit") */
+        /* Remove duplicate cards that only differ in upper/lower case.
+           The spelling PSN itself returned for the account this run (card.onlineId) is the real one;
+           the card written this run is never removed. */
         try {
+            const written = new Map();
+            for (const c of Object.values(cards)) {
+                if (c && c.onlineId) written.set(String(c.onlineId).toLowerCase(), safeKey(c.onlineId));
+            }
             const allTags = (await rtdbRef("gamertags").once("value")).val() || {};
-            const real = new Map();
-            for (const id of active) real.set(String(id).toLowerCase(), safeKey(id));
             for (const k of Object.keys(allTags)) {
-                const canon = real.get(k.toLowerCase());
-                if (canon && canon !== k) {
-                    console.log(`[DEDUPE] Removing duplicate card '${k}' (real PSN ID '${canon}').`);
+                const real = written.get(k.toLowerCase());
+                if (real && real !== k && allTags[real]) {
+                    console.log(`[DEDUPE] Removing duplicate card '${k}' (PSN spelling '${real}').`);
                     await rtdbRef(`gamertags/${k}`).remove();
                     delete usersByGamerTag[k];
                     changed++;
