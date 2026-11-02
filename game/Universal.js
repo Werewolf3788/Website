@@ -160,6 +160,7 @@ window.appState = {
     carry: { primary: null, secondary: null, pack: [] },
     campaignRank: null,
     campaignRankSource: null,
+    activeMission: null,
     ranks: {},
 
     getUserKey: function() {
@@ -206,6 +207,7 @@ window.appState = {
         this.carry = { primary: null, secondary: null, pack: [] };
         this.campaignRank = null;
         this.campaignRankSource = null;
+        this.activeMission = null;
         this.ranks = {};
 
         document.querySelectorAll('.game-pill').forEach(pill => {
@@ -517,6 +519,7 @@ window.appState = {
             carry: this.carry,
             campaignRank: this.campaignRank,
             campaignRankSource: this.campaignRankSource,
+            activeMission: this.activeMission || null,
             trophies: this.trophies
         };
     },
@@ -534,6 +537,7 @@ window.appState = {
         if (Array.isArray(payload.weaponSetups)) this.weaponSetups = payload.weaponSetups;
         if (payload.carry && typeof payload.carry === 'object') this.carry = Object.assign({ primary: null, secondary: null, pack: [] }, payload.carry);
         migrateLoadouts(this);
+        if (payload.activeMission !== undefined) this.activeMission = payload.activeMission;
         if (payload.campaignRank !== undefined && payload.campaignRank !== null && !(this.campaignRankSource === 'psn' && payload.campaignRankSource !== 'psn')) {
             this.campaignRank = payload.campaignRank; this.campaignRankSource = payload.campaignRankSource || 'manual';
         }
@@ -693,6 +697,7 @@ window.appState.applyStateToUI = function() {
     if (typeof renderWalletUI === 'function') renderWalletUI();
     if (typeof renderRankUI === 'function') renderRankUI();
     if (typeof renderMedalProgress === 'function') setTimeout(renderMedalProgress, 0);
+    if (typeof renderActiveMission === 'function') renderActiveMission();
     Object.entries((this.gameData && this.gameData.missions) || {}).forEach(([mk, mm]) => {
         if (!mm || mm.completion_trophy === undefined) return;
         const t = this.trophies[`trophy_${this.gameId}_${mm.completion_trophy}`];
@@ -832,6 +837,19 @@ function updateGameMetrics() {
     }
     const html = boxes.slice(0, 4).join('');
     if (grid.innerHTML !== html) grid.innerHTML = html;
+}
+
+// The mission picked here shows on the stream overlay's tracker panel.
+window.appState.setActiveMission = function(key) {
+    this.activeMission = this.activeMission === key ? null : key;
+    this.applyStateToUI(); this.saveProgress();
+    this.updateStatus(this.activeMission ? `Stream overlay now shows ${key.replace(/_/g, ' ')}.` : 'Stream overlay mission cleared.');
+};
+function renderActiveMission() {
+    document.querySelectorAll('.active-mission-btn').forEach(b => {
+        const on = b.dataset.mission === appState.activeMission;
+        b.classList.toggle('on', on); b.textContent = on ? '📺 On stream now (tap to clear)' : '📺 Show on stream overlay';
+    });
 }
 
 // Medal progress (counts like 234/350); PSN trophy progress fills it automatically.
@@ -1382,6 +1400,8 @@ function ensureUniversalStyles() {
         .step-btn { width: 26px; height: 26px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #fff; font-weight: 900; cursor: pointer; line-height: 1; }
         .step-btn:active { transform: scale(0.94); }
         .medal-count { width: 74px; text-align: center; background: #0f172a; color: #fff; border: 1px solid #334155; border-radius: 6px; padding: 3px 4px; }
+        .active-mission-bar { margin-bottom: 10px; }
+        .active-mission-btn.on { background: #7c3aed; border-color: #a78bfa; color: #fff; }
         .mark-all-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
         .loc-photo { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; margin-top: 4px; display: block; }
         .friend-marks { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; padding-top: 6px; border-top: 1px dashed rgba(255,255,255,0.1); width: 100%; }
@@ -1593,7 +1613,7 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
     const mLabel = `Mission ${m.number} ${m.title || ''}`;
     const ctx = `${mLabel} ${m.region || ''}`;
 
-    let inner = gridOf([buildItemCard({
+    let inner = `<div class="active-mission-bar"><button type="button" class="uni-search-btn active-mission-btn" data-mission="${escapeHtml(mKey)}" onclick="appState.setActiveMission('${escapeHtml(mKey)}')">📺 Show on stream overlay</button></div>` + gridOf([buildItemCard({
         id: mKey, type: 'mission', badge: m.region || 'Campaign', badgeClass: 'rank-gold',
         title: m.title || mLabel, sub: [`Mission ${m.number}`, m.date].filter(Boolean).join(' · '),
         body: m.walkthrough || '', img: m.image_url, ctx,

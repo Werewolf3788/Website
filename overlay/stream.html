@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <!--
-  Werewolf3788 smart stream overlay (1600x900 canvas, transparent)
+  Werewolf3788 smart stream overlay (1280x720 canvas, transparent)
   Live from the playstation-stats PSN engine + the site's game tracker.
 
   URL options (all optional):
-    ?psn=wildhorse_spirit     PSN gamertag key in /psn/gamertags
-    &twitch=werewolf3788      Twitch name for the avatar / fallback game
+    ?psn=wildhorse_spirit     PSN gamertag key in /psn/gamertags (data only, never shown)
+    &user=raykevin71888_at_gmail_com   site account -> avatar_url (profile image)
+    &twitch=werewolf3788      Twitch name for the fallback game
     &code=FRIENDCODE          your site friend code -> shows game-tracker stats
     &accent=9333ea            accent colour (hex, no #)
     &toast=0                  turn off the trophy pop-up
+    &toastsec=8               seconds each trophy pop-up stays on screen
     &tracker=0                hide the game-tracker panel
 -->
 <html lang="en">
@@ -28,21 +30,21 @@
 *{box-sizing:border-box}
 html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!important;overflow:hidden}
 :root{--accent:#9333ea;--glow:rgba(147,51,234,.8);--panel:rgba(10,13,25,.72)}
-#wrap{height:100vh;width:100vw;max-width:1600px;max-height:900px;position:relative;font-family:'Roboto',sans-serif;color:#fff;overflow:hidden}
+#wrap{height:100vh;width:100vw;max-width:1280px;max-height:720px;position:relative;font-family:'Roboto',sans-serif;color:#fff;overflow:hidden}
 .shadow{text-shadow:2px 2px 3px rgba(0,0,0,.95),0 0 8px rgba(0,0,0,.9)}
 
 /* lower-left: avatar + PSN chip */
-#left{position:absolute;bottom:16px;left:16px;display:flex;align-items:flex-end;gap:10px;z-index:900}
-#pfp{height:71px;width:71px;border-radius:50%;border:3px solid var(--accent);object-fit:cover;box-shadow:0 0 24px var(--glow);display:none}
+#left{position:absolute;bottom:14px;left:14px;display:flex;align-items:flex-end;gap:10px;z-index:900}
+#pfp{height:62px;width:62px;border-radius:50%;border:3px solid var(--accent);object-fit:cover;box-shadow:0 0 24px var(--glow);display:none}
 #psnchip{display:none;flex-direction:column;gap:2px;background:var(--panel);border:1px solid rgba(255,255,255,.12);border-left:3px solid var(--accent);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;backdrop-filter:blur(4px)}
 #psnchip .row{display:flex;gap:8px;align-items:center}
 .dot{width:8px;height:8px;border-radius:50%;background:#64748b}.dot.on{background:#22c55e;box-shadow:0 0 8px #22c55e}
 .cups b{color:#fff}.cups span{margin-right:6px}
 
 /* lower-right: game card */
-#right{position:absolute;bottom:16px;right:16px;display:flex;align-items:flex-end;gap:13px;z-index:900;max-width:80vw}
-#meta{display:flex;flex-direction:column;align-items:flex-end;gap:5px;max-width:520px}
-#title{font-size:clamp(12px,1.4vw,18px);font-weight:900;text-transform:uppercase;font-style:italic;letter-spacing:-.2px;text-shadow:0 0 12px var(--glow),2px 2px 3px rgba(0,0,0,.95);text-align:right;line-height:1.15}
+#right{position:absolute;bottom:14px;right:14px;display:flex;align-items:flex-end;gap:13px;z-index:900;max-width:80vw}
+#meta{display:flex;flex-direction:column;align-items:flex-end;gap:5px;max-width:460px}
+#title{font-size:17px;font-weight:900;text-transform:uppercase;font-style:italic;letter-spacing:-.2px;text-shadow:0 0 12px var(--glow),2px 2px 3px rgba(0,0,0,.95);text-align:right;line-height:1.15}
 #status{display:none;font-size:13px;font-style:italic;color:#e9d5ff;background:var(--panel);border-radius:6px;padding:4px 9px;max-width:520px;text-align:right;line-height:1.3;transition:opacity .4s}
 #chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .chip{font-size:11px;font-weight:700;background:var(--panel);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:3px 9px;white-space:nowrap}
@@ -50,18 +52,21 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
 #tbar .lbl{display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-bottom:3px}
 #tbar .bar{height:6px;border-radius:4px;background:rgba(255,255,255,.18);overflow:hidden}
 #tbar .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#f0abfc);transition:width 1s ease}
-#art{height:129px;width:92px;border-radius:7px;border:2.5px solid var(--accent);box-shadow:0 0 20px var(--glow);object-fit:cover;background:#0b0f19;transition:opacity .5s}
+#art{height:120px;width:86px;border-radius:7px;border:2.5px solid var(--accent);box-shadow:0 0 20px var(--glow);object-fit:cover;background:#0b0f19;transition:opacity .5s}
 
 /* top-right: game tracker panel */
-#tracker{position:absolute;top:16px;right:16px;display:none;min-width:230px;max-width:300px;background:var(--panel);border:1px solid rgba(255,255,255,.12);border-top:3px solid var(--accent);border-radius:10px;padding:10px 12px;z-index:900;backdrop-filter:blur(4px)}
+#tracker{position:absolute;top:50%;left:14px;transform:translateY(-50%);display:none;min-width:220px;max-width:270px;background:var(--panel);border:1px solid rgba(255,255,255,.12);border-top:3px solid var(--accent);border-radius:10px;padding:10px 12px;z-index:900;backdrop-filter:blur(4px)}
 #tracker h4{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#d8b4fe}
+.tsec{margin-top:6px;padding-top:5px;border-top:1px solid rgba(255,255,255,.12);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:#e9d5ff}
+.tbar{height:4px;border-radius:3px;background:rgba(255,255,255,.15);overflow:hidden;margin:1px 0 3px}.tbar i{display:block;height:100%;background:var(--accent)}
+.trow.done{color:#86efac}
 .trow{display:flex;justify-content:space-between;gap:10px;font-size:13px;font-weight:700;padding:2px 0}
 .trow span{color:#cbd5e1;font-weight:400}
 
 /* trophy toast */
-#toast{position:absolute;top:24px;left:50%;transform:translate(-50%,-160%);display:flex;gap:12px;align-items:center;background:linear-gradient(135deg,rgba(15,23,42,.95),rgba(49,16,77,.95));border:2px solid var(--accent);box-shadow:0 0 30px var(--glow);border-radius:14px;padding:10px 16px 10px 10px;min-width:360px;max-width:640px;z-index:1000;transition:transform .7s cubic-bezier(.2,1.4,.4,1)}
+#toast{position:absolute;top:18px;left:50%;transform:translate(-50%,-160%);display:flex;gap:12px;align-items:center;background:linear-gradient(135deg,rgba(15,23,42,.95),rgba(49,16,77,.95));border:2px solid var(--accent);box-shadow:0 0 30px var(--glow);border-radius:14px;padding:9px 14px 9px 9px;min-width:320px;max-width:560px;z-index:1000;transition:transform .7s cubic-bezier(.2,1.4,.4,1)}
 #toast.show{transform:translate(-50%,0)}
-#toast img{width:64px;height:64px;border-radius:8px;object-fit:cover;background:#000}
+#toast img{width:56px;height:56px;border-radius:8px;object-fit:cover;background:#000}
 #toast .t1{font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#d8b4fe}
 #toast .t2{font-size:18px;font-weight:900}
 #toast .t3{font-size:12px;color:#cbd5e1;margin-top:2px}
@@ -74,10 +79,6 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
 <div id="wrap">
   <div id="left" class="shadow">
     <img id="pfp" alt="">
-    <div id="psnchip">
-      <div class="row"><span class="dot" id="dot"></span><span id="psnname">PSN</span><span id="psnlvl"></span></div>
-      <div class="row cups" id="cups"></div>
-    </div>
   </div>
 
   <div id="tracker"><h4 id="trkTitle">Game Tracker</h4><div id="trkRows"></div></div>
@@ -93,7 +94,7 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
     </div>
     <img id="art" alt="" referrerpolicy="no-referrer">
   </div>
-  <div class="stamp">ww-overlay v7 · PSN live</div>
+  <div class="stamp">ww-overlay v7.1 · 720p</div>
 </div>
 
 <script>
@@ -102,6 +103,8 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
   const qs = new URLSearchParams(location.search);
   const CFG = {
     psn: qs.get('psn') || 'wildhorse_spirit',
+    user: qs.get('user') || 'raykevin71888_at_gmail_com',
+    toastMs: Math.max(3, Number(qs.get('toastsec')) || 8) * 1000,
     twitch: qs.get('twitch') || 'werewolf3788',
     code: qs.get('code') || '',
     toast: qs.get('toast') !== '0',
@@ -135,15 +138,23 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
   async function twitch() {
     const v = Date.now();
     try {
-      const p = (await (await fetch(`https://decapi.me/twitch/avatar/${CFG.twitch}?v=${v}`)).text()).trim();
-      if (/^https?:\/\//.test(p)) { if ($('pfp').src !== p) $('pfp').src = p; $('pfp').style.display = 'block'; }
-    } catch (e) {}
-    try {
       const g = (await (await fetch(`https://decapi.me/twitch/game/${CFG.twitch}?v=${v}`)).text()).trim();
       twitchGame = /error|not found|could not|rate limit/i.test(g) ? '' : g;
       if (!card || !card.online || /dashboard/i.test(card.currentGame || '')) paintGame();
     } catch (e) {}
   }
+
+  // ---- profile image + accent colour from the site account (users/{key})
+  siteDb.ref(`users/${CFG.user}`).on('value', (snap) => {
+    const u = snap.val() || {};
+    const av = secure(u.avatar_url || '');
+    if (av) { const img = $('pfp'); if (img.dataset.src !== av) { img.dataset.src = av; img.src = av; } img.style.display = 'block'; }
+    if (!qs.get('accent') && /^#[0-9a-f]{6}$/i.test(u.primary_color || '')) {
+      document.documentElement.style.setProperty('--accent', u.primary_color);
+      document.documentElement.style.setProperty('--glow', u.primary_color + 'cc');
+    }
+    if (!CFG.code && u.friend_code) { CFG.code = u.friend_code; trackerKey = null; if (card) updateTracker(card); }
+  }, () => {});
 
   // ---- PSN card (live)
   let card = null, lastToastKey = null, firstCard = true, sessionTimer = null, catalog = null, trackerUnsub = null, trackerKey = null;
@@ -160,7 +171,10 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
     const playing = c.online && c.currentGame && !/dashboard/i.test(c.currentGame);
     const title = playing ? c.currentGame : (twitchGame || c.lastPlayedGame || CFG.twitch);
     $('title').innerText = String(title).toUpperCase();
-    if (playing) setArt(c.currentGameArt || c.art || c.posterArt);
+    // always the game's poster (site game file first, then PSN), never a mission picture
+    const mg = playing ? matchGame(c) : null;
+    const sitePoster = mg && mg[1] && ((mg[1].art && mg[1].art.poster) || mg[1].image_url);
+    if (playing) setArt(sitePoster || c.currentGameArt || c.art || c.posterArt);
     else if (twitchGame) setArt(`https://static-cdn.jtvnw.net/ttv-boxart/${encodeURIComponent(twitchGame)}-285x380.jpg`);
     else setArt(c.art || '');
 
@@ -171,7 +185,6 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
 
     // chips: platform, hours, session clock
     const chips = [];
-    if (playing && c.displayPlatform) chips.push(c.displayPlatform);
     if (playing && c.currentGameHours) chips.push(`⏱ ${c.currentGameHours} played`);
     if (playing && c.sessionStartedAtMs) chips.push(`<span id="sess">● LIVE ${fmtDur((Date.now() - c.sessionStartedAtMs) / 1000)}</span>`);
     $('chips').innerHTML = chips.map(x => `<span class="chip">${x.startsWith('<span') ? x : esc(x)}</span>`).join('');
@@ -187,7 +200,7 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
       $('tbarF').style.width = Math.min(100, pct) + '%'; tb.style.display = 'block';
     } else tb.style.display = 'none';
   }
-  function paintChip() {
+  function paintChip() { return;
     const c = card || {}; const ts = c.trophySummary || {};
     $('psnchip').style.display = 'flex';
     $('dot').className = 'dot' + (c.online ? ' on' : '');
@@ -204,7 +217,7 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
     $('tName').innerHTML = `<span class="rank-${rank}">●</span> ${esc(t.name || t.title || 'Trophy')}`;
     $('tDesc').textContent = [t.description || t.detail, t.rarity ? `${t.rarity} of players` : '', t.gameTitle].filter(Boolean).join(' · ');
     $('toast').classList.add('show');
-    setTimeout(() => { $('toast').classList.remove('show'); setTimeout(() => { toasting = false; showNextToast(); }, 900); }, 8000);
+    setTimeout(() => { $('toast').classList.remove('show'); setTimeout(() => { toasting = false; showNextToast(); }, 900); }, CFG.toastMs);
   }
   function checkTrophies(c) {
     const list = Array.isArray(c.mostRecentTrophies) ? c.mostRecentTrophies : Object.values(c.mostRecentTrophies || {});
@@ -240,6 +253,25 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
       if ((d.watchlist || []).length) rows.push(['Watchlist', d.watchlist.length]);
       return rows;
     }
+    const am = d.activeMission && g.missions && g.missions[d.activeMission];
+    if (am) {
+      rows.push({ section: `Mission ${am.number || ''}: ${am.title || ''}`.trim() });
+      if (d.missions && d.missions[d.activeMission] && d.missions[d.activeMission].completed) rows.push({ k: 'Mission', v: '✓ Complete', done: true });
+      const label = { personal_letters: '✉️ Letters', classified_documents: '📜 Documents', hidden_items: '🏷️ Hidden items', stone_eagles: '🦅 Stone Eagles', workbenches: '⚙️ Workbenches' };
+      const order = ['personal_letters', 'classified_documents', 'hidden_items', 'stone_eagles', 'workbenches'];
+      Object.keys(am.collectibles || {}).sort((a, b) => order.indexOf(a) - order.indexOf(b)).forEach(cat => {
+        const list = am.collectibles[cat] || []; if (!list.length) return;
+        const items = (d.collectibles && d.collectibles[`${d.activeMission}__${cat}`] && d.collectibles[`${d.activeMission}__${cat}`].items) || {};
+        const n = list.filter(it => items[it.id] && items[it.id].collected).length;
+        rows.push({ k: label[cat] || cat, v: `${n}/${list.length}`, done: n === list.length, bar: n / list.length });
+      });
+      if (am.gnomes && am.gnomes.items) { const n = am.gnomes.items.filter(it => d.missions && d.missions[it.id] && d.missions[it.id].completed).length; rows.push({ k: '🧙 Gnomes', v: `${n}/${am.gnomes.items.length}`, done: n === am.gnomes.items.length, bar: n / am.gnomes.items.length }); }
+      const kc = am.kill_challenge && typeof am.kill_challenge === 'object' ? am.kill_challenge : null;
+      if (kc) { const done = !!(d.missions && d.missions[`kill_${d.activeMission}`] && d.missions[`kill_${d.activeMission}`].completed); rows.push({ k: `🎯 ${kc.target_name || 'Kill List'}`, v: done ? '✓' : (kc.challenge ? '—' : ''), done }); }
+      const pm = am.propaganda_mission && am.propaganda_mission.id ? am.propaganda_mission : null;
+      if (pm) { const done = !!(d.missions && d.missions[pm.id] && d.missions[pm.id].completed); rows.push({ k: `📣 ${pm.title}`, v: done ? '✓' : '—', done }); }
+      rows.push({ section: 'Overall' });
+    }
     if (d.campaignRank) rows.push(['Campaign rank', `${d.campaignRank}/${(g.campaign_rank && g.campaign_rank.max) || 40}`]);
     let col = 0, colTot = 0; Object.values(d.collectibles || {}).forEach(gr => Object.values((gr && gr.items) || {}).forEach(it => { colTot++; if (it && it.collected) col++; }));
     if (colTot) rows.push(['Collectibles', `${col}/${colTot}`]);
@@ -257,16 +289,21 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
     const [k, g] = m; if (trackerKey === k) return;
     if (trackerUnsub) trackerUnsub();
     trackerKey = k;
-    $('trkTitle').textContent = `${g.game || k} · Tracker`;
+    $('trkTitle').textContent = g.game || k;
     trackerUnsub = siteFs.collection('user').doc(CFG.code).collection('platform').doc('ps').collection('game').doc(canonical(k, g))
       .onSnapshot(doc => {
         if (!doc.exists) { box.style.display = 'none'; return; }
         const rows = trackerRows(g, doc.data());
-        $('trkRows').innerHTML = rows.map(([a, b]) => `<div class="trow"><span>${esc(a)}</span>${esc(b)}</div>`).join('');
+        $('trkRows').innerHTML = rows.map(r => {
+          if (r.section) return `<div class="tsec">${esc(r.section)}</div>`;
+          const [a, b] = Array.isArray(r) ? r : [r.k, r.v];
+          return `<div class="trow${r.done ? ' done' : ''}"><span>${esc(a)}</span>${esc(b)}</div>${r.bar != null ? `<div class="tbar"><i style="width:${Math.round(r.bar * 100)}%"></i></div>` : ''}`;
+        }).join('');
         box.style.display = rows.length ? 'block' : 'none';
       }, () => { box.style.display = 'none'; });
   }
 
+  loadCatalog().then(() => { if (card) paintGame(); });
   function onCard(snap) {
     const c = snap.val(); if (!c) return false;
     card = c; paintChip(); paintGame(); checkTrophies(c); updateTracker(c); firstCard = false; return true;
