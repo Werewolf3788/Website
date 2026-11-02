@@ -73,8 +73,11 @@ const RTDB_CARD_KEYS = new Set([
     "currentSessionSeconds", "amazonAffiliateUrl", "platform", "gameBuildVersion",
     "isStreamingRemotePlay", "displayPlatform", "activeHunt", "playSessions", "recentGames",
     "mostRecentTrophies", "liveTrophyProgress", "friendsCount", "purchasedCount", "rawPresence",
-    "npssoValid", "npssoStatus", "handshakeText", "handshakeState", "lastUpdated"
+    "npssoValid", "npssoStatus", "handshakeText", "handshakeState", "lastUpdated", "progressPulledAtMs"
 ]);
+
+// While a player is in a game, trophy progress (22/150, 25%) is re-read this often even if no trophy popped.
+const PROGRESS_REFRESH_MS = 15 * 60 * 1000;
 
 const PULL_CONFIG = {
     SKELETON_REFRESH_RECENT_TITLES: 20,
@@ -238,7 +241,7 @@ function gameActiveRecently(map, lastActivity, isActiveNow) {
 function earnedOrInProgress(map) {
     const out = {};
     for (const [k, t] of Object.entries(asObjectMap(map))) {
-        if (t && (t.earned || (t.currentValue || 0) > 0)) out[k] = t;
+        if (t && (t.earned || (t.currentValue || 0) > 0 || parseFloat(t.progressRate) > 0 || t.progressedDateTime)) out[k] = t;
     }
     return out;
 }
@@ -1275,6 +1278,19 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
             }
         }
 
+        // PS5 progress (22/150, 25%) is only returned by the "trophy2" service. If this set has
+        // progress trophies but the reply carried no progress at all, ask trophy2 again.
+        const hasProgressDefs = (skeleton?.trophies || []).some((t) => (t.targetValue || 0) > 0);
+        const gotProgress = (earnedRes?.trophies || []).some((t) => t.progress !== undefined || t.progressRate !== undefined);
+        if (hasProgressDefs && !gotProgress && opt.npServiceName !== "trophy2") {
+            const t2 = await callPsn("getUserTrophiesEarnedForTitle(trophy2)", () => getUserTrophiesEarnedForTitle(auth, targetId, id, "all", { npServiceName: "trophy2" }), {}, true);
+            if (t2 && t2.trophies && t2.trophies.length) {
+                opt = { npServiceName: "trophy2" };
+                earnedRes = t2;
+                groupRes = await callPsn("getUserTrophyGroupEarningsForTitle(trophy2)", () => getUserTrophyGroupEarningsForTitle(auth, targetId, id, opt), {}, true);
+            }
+        }
+
         const earnedStatus = [...(earnedRes?.trophies || [])];
         if (earnedRes?.totalItemCount && earnedRes.totalItemCount > earnedStatus.length) {
             let off = earnedStatus.length;
@@ -1293,7 +1309,7 @@ async function ingestTrophySubtreeForTitle(auth, targetId, commId, titleName, pl
 
         earnedStatus.forEach((s) => {
             const sk = skelTrophies.find((t) => t.trophyId === s.trophyId);
-            const cur = s.progress !== undefined ? parseInt(s.progress, 10) : (s.trophyProgress !== undefined ? parseInt(s.trophyProgress, 10) : 0);
+            const cur = s.progress !== undefined ? (parseInt(s.progress, 10) || 0) : (s.trophyProgress !== undefined ? (parseInt(s.trophyProgress, 10) || 0) : 0);
             const target = sk?.targetValue || (s.trophyProgressTargetValue ? parseInt(s.trophyProgressTargetValue, 10) : 0);
             const rateStr = s.progressRate !== undefined ? `${s.progressRate}%` : null;
             let ratio = null;
@@ -1410,6 +1426,8 @@ async function evaluateUserActivityDelta(auth, targetId, scope, existing, force)
             if (liveTotal !== storedTotal) return { hasDelta: true, reason: `NEW_TROPHY (${storedTotal} -> ${liveTotal})`, ...base };
             if ((stats.trophyLevel || 0) !== (existing.level || 0)) return { hasDelta: true, reason: "LEVEL_DELTA", ...base };
         }
+        const lastProg = Number(existing.progressPulledAtMs) || 0;
+        if (Date.now() - lastProg > PROGRESS_REFRESH_MS) return { hasDelta: true, reason: "TROPHY_PROGRESS_REFRESH", ...base };
         const storedStatus = existing.gameStatus || null;
         if (storedStatus !== liveStatus) {
             return { hasDelta: true, statusOnly: true, reason: `GAME_STATUS_CHANGE ("${storedStatus || "none"}" -> "${liveStatus || "none"}")`, ...base };
@@ -1927,6 +1945,7 @@ async function getFullUserData(ctx) {
             recentGames: recentSlim.length ? recentSlim : (existing?.recentGames || []),
             mostRecentTrophies: recentTrophies,
             liveTrophyProgress: Object.keys(liveProgress).length ? liveProgress : null,
+            progressPulledAtMs: Date.now(),
             lastUpdated: nowEt()
         };
         return { card };
