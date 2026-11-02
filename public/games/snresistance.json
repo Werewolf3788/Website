@@ -3786,11 +3786,12 @@
           {
             "id": "doc_m10_03",
             "name": "I found a Vulnerability!",
-            "location": "Shown in the guide video at 1:57.",
+            "location": "On a small wooden table inside the church.",
             "image_url": "/public/games/snresistance/images/icons/classified-document.png",
             "video_time": 117,
             "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=117s",
-            "emoji": "📜"
+            "emoji": "📜",
+            "location_image_url": "/public/games/snresistance/images/locations/m10/doc_m10_03.jpg"
           },
           {
             "id": "doc_m10_04",
@@ -3886,11 +3887,12 @@
           {
             "id": "wb_m10_smg",
             "name": "SMG Workbench",
-            "location": "Shown in the guide video at 1:57.",
+            "location": "On top of the church tower. Reach it by climbing the ladders inside or outside the church.",
             "image_url": "/public/games/snresistance/images/icons/workbench.png",
             "video_time": 117,
             "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=117s",
-            "emoji": "⚙️"
+            "emoji": "⚙️",
+            "location_image_url": "/public/games/snresistance/images/locations/m10/wb_m10_smg.jpg"
           },
           {
             "id": "wb_m10_pistol",
