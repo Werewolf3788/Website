@@ -269,9 +269,21 @@ def download(ftp, path, offset=0):
     return buf.getvalue()
 
 
+CONFIG_DROP = {"ip", "port", "admin_password"}   # never synced
+
+
+def save_server_config(root):
+    """Store dedicatedServerConfig.xml WITHOUT ip, port and admin_password (game_password is kept)."""
+    for parent in list(root.iter()):
+        for child in list(parent):
+            if child.tag.lower() in CONFIG_DROP or ("password" in child.tag.lower() and child.tag.lower() != "game_password"):
+                parent.remove(child)
+    write_if_changed(os.path.join(RAW_DIR, "dedicatedServerConfig.json"), {root.tag: element_to_obj(root)})
+
+
 def save_dir_from_config(ftp):
-    """Read <savegame_index> from profile/dedicated_server/dedicatedServerConfig.xml.
-    Only that one value is used; the file (which holds passwords) is never stored."""
+    """Read <savegame_index> from profile/dedicated_server/dedicatedServerConfig.xml and store
+    a cleaned copy of the settings (no ip / port / admin password)."""
     for folder in ("/profile/dedicated_server", "profile/dedicated_server"):
         entries = list_dir(ftp, folder)
         name = find_name(entries, "dedicatedServerConfig.xml")
@@ -284,6 +296,10 @@ def save_dir_from_config(ftp):
             return None
         el = next((e for e in root.iter() if e.tag.lower() == "savegame_index"), None)
         idx = (el.text or "").strip() if el is not None else ""
+        try:
+            save_server_config(root)
+        except Exception as e:
+            log(f"could not store server settings: {e}")
         if idx.isdigit():
             profile = folder.rsplit("/", 1)[0] or "/"
             path = f"{profile}/savegame{idx}"
@@ -397,6 +413,13 @@ def players_from_gamestats(ftp, save_dir):
     mtime = entries[name].get("mtime") or _mdtm(ftp, path)
     age = (time.time() - mtime) / 60 if mtime else None
 
+    # keep the live data (positions, vehicles, farmland owners, mods) for the overview
+    live = {root.tag: element_to_obj(root)}
+    for m in as_list(g(live, root.tag, "Mods", "Mod")):
+        if isinstance(m, dict):
+            m.pop("hash", None)
+    raw_changed = write_if_changed(os.path.join(RAW_DIR, "gameStats.json"), live)
+
     names, count, capacity = [], None, None
     slots = next((el for el in root.iter() if el.tag.lower() == "slots"), None)
     if slots is not None:
@@ -433,6 +456,7 @@ def players_from_gamestats(ftp, save_dir):
         else f"gameStats.xml: {count} online")
     return {
         "source": "gameStats",
+        "rawChanged": raw_changed,
         "reachable": True,
         "stale": stale,
         "serverName": srv.get("name"),
@@ -543,16 +567,18 @@ def build_environment(env):
     dpp = int(num(e.get("daysPerPeriod"), 1)) or 1
     period = ((day - 1) // dpp) % 12
     year = (day - 1) // (dpp * 12) + 1
+    w = g(e, "weather", default={}) or {}
     forecast = []
-    for inst in as_list(g(e, "weather", "forecast", "instance"))[:10]:
+    for inst in as_list(g(w, "forecast", "instance")):
         if isinstance(inst, dict):
             forecast.append({
                 "type": inst.get("typeName"),
-                "season": inst.get("seasonName"),
+                "season": inst.get("season") or inst.get("seasonName"),
                 "startDay": inst.get("startDay"),
                 "startTime": fmt_daytime(inst.get("startDayTime")),
                 "durationH": round(num(inst.get("duration")) / 3600000, 1) if inst.get("duration") else None,
             })
+    since_rain = w.get("timeSinceLastRain") if isinstance(w, dict) else None
     return {
         "day": day,
         "monotonicDay": e.get("currentMonotonicDay"),
@@ -563,20 +589,95 @@ def build_environment(env):
         "season": PERIODS[period].split("_")[1].title(),
         "year": year,
         "time": fmt_daytime(e.get("dayTime")),
-        "forecast": forecast,
+        "minutesSinceRain": since_rain,
+        "groundWetness": g(w, "ground", "wetness"),
+        "snowHeight": g(e, "snow", "height"),
+        "forecast": forecast[:24],
     }
 
 
-def build_farmlands(fl):
-    out = []
-    for f in as_list(g(fl, "farmlands", "farmland")):
+# --------------------------------------------------------------------------- live server data (gameStats.xml)
+def _floats(s):
+    return [num(x) for x in str(s or "").split()]
+
+
+def build_live(gs):
+    """profile/dedicated_server/gameStats.xml - written by the running server every ~45 s."""
+    srv = g(gs, "Server", default=None)
+    if not isinstance(srv, dict):
+        return {}
+    slots = srv.get("Slots") or {}
+    players = []
+    for p in as_list(slots.get("Player")):
+        if isinstance(p, dict) and p.get("isUsed") is True:
+            players.append({"name": p.get("#text"), "isAdmin": p.get("isAdmin") is True,
+                            "uptimeMin": p.get("uptime"), "x": p.get("x"), "z": p.get("z")})
+    farmlands = []
+    for f in as_list(g(srv, "Farmlands", "Farmland")):
         if isinstance(f, dict):
-            out.append({"id": f.get("id"), "farmId": f.get("farmId", 0)})
+            farmlands.append({"id": f.get("id"), "owner": f.get("owner", 0), "area": f.get("area"),
+                              "price": f.get("price"), "x": f.get("x"), "z": f.get("z")})
+    fields = []
+    for f in as_list(g(srv, "Fields", "Field")):
+        if isinstance(f, dict):
+            fields.append({"id": f.get("id"), "x": f.get("x"), "z": f.get("z"), "isOwned": f.get("isOwned") is True})
+    vehicles = []
+    for v in as_list(g(srv, "Vehicles", "Vehicle")):
+        if not isinstance(v, dict):
+            continue
+        types = str(v.get("fillTypes") or "").split()
+        levels = _floats(v.get("fillLevels"))
+        fills = [{"type": t, "level": round(l, 1)} for t, l in zip(types, levels)
+                 if t not in ("UNKNOWN",) and l > 0.01]
+        vehicles.append({
+            "name": v.get("name"), "category": v.get("category"), "type": v.get("type"),
+            "x": v.get("x"), "z": v.get("z"), "fills": fills,
+            "isAIActive": v.get("isAIActive") is True, "controller": v.get("controller"),
+        })
+    mods = []
+    for m in as_list(g(srv, "Mods", "Mod")):
+        if isinstance(m, dict):
+            mods.append({"name": m.get("name"), "title": m.get("#text"), "author": m.get("author"),
+                         "version": m.get("version")})
+    return {
+        "serverName": srv.get("name"), "game": srv.get("game"), "version": srv.get("version"),
+        "mapName": srv.get("mapName"), "mapSize": srv.get("mapSize") or 2048,
+        "time": fmt_daytime(srv.get("dayTime")),
+        "capacity": slots.get("capacity"), "numUsed": slots.get("numUsed"),
+        "players": players, "farmlands": farmlands, "fields": fields, "vehicles": vehicles, "mods": mods,
+    }
+
+
+def build_farmlands(fl, live):
+    """Ownership: live gameStats first (current), then farmland.xml (last save)."""
+    saved = {f.get("id"): f.get("farmId", 0) for f in as_list(g(fl, "farmlands", "farmland")) if isinstance(f, dict)}
+    out = []
+    if live.get("farmlands"):
+        for f in live["farmlands"]:
+            out.append({"id": f["id"], "farmId": f.get("owner", saved.get(f["id"], 0)) or 0,
+                        "area": f.get("area"), "price": f.get("price"), "x": f.get("x"), "z": f.get("z")})
+    else:
+        out = [{"id": i, "farmId": fid or 0} for i, fid in saved.items() if i is not None]
     return out
 
 
-def build_fields(fd, farmlands, career):
-    owner = {f["id"]: f["farmId"] for f in farmlands}
+def field_status(f):
+    gt = str(f.get("groundType") or "").upper()
+    fruit = str(f.get("fruitType") or "UNKNOWN").upper()
+    if gt.startswith("HARVEST_READY"):
+        return "ready"
+    if gt == "GRASS" or fruit in ("MEADOW", "GRASS"):
+        return "grass"
+    if fruit != "UNKNOWN" and num(f.get("growthState")) > 0:
+        if gt in ("HARVESTED", "STUBBLE_TILLAGE") or "HARVESTED" in gt:
+            return "harvested"
+        return "growing"
+    return "empty"
+
+
+def build_fields(fd, farmlands, career, live):
+    owner = {f["id"]: f for f in farmlands}
+    pos = {f["id"]: f for f in live.get("fields", [])}
     settings = (career or {}).get("settings", {})
     lime_on = settings.get("limeRequired", True) is not False
     plow_on = settings.get("plowingRequiredEnabled", True) is not False
@@ -587,18 +688,19 @@ def build_fields(fd, farmlands, career):
         if not isinstance(f, dict):
             continue
         fid = f.get("id")
-        fruit = f.get("fruitType") or "UNKNOWN"
-        growth = int(num(f.get("growthState")))
+        fl = owner.get(fid, {})
+        lv = pos.get(fid, {})
+        farm = fl.get("farmId", 0) or 0
         lime = int(num(f.get("limeLevel")))
         spray = int(num(f.get("sprayLevel")))
         plow = int(num(f.get("plowLevel")))
         weeds = int(num(f.get("weedState")))
         stones = int(num(f.get("stoneLevel")))
-        farm = owner.get(fid, f.get("farmId", 0)) or 0
+        status = field_status(f)
         needs = []
         if lime_on and lime == 0:
             needs.append("lime")
-        if spray < 2:
+        if spray < 2 and status in ("growing", "empty"):
             needs.append("fertilizer")
         if plow_on and plow == 0:
             needs.append("plow")
@@ -607,35 +709,40 @@ def build_fields(fd, farmlands, career):
         if stones_on and stones > 0:
             needs.append("stones")
         out.append({
-            "id": fid,
-            "farmId": farm,
-            "isOwned": farm not in (0, None),
-            "fruit": fruit,
-            "plannedFruit": f.get("plannedFruit"),
-            "growthState": growth,
-            "lastGrowthState": f.get("lastGrowthState"),
-            "groundType": f.get("groundType"),
-            "sprayType": f.get("sprayType"),
-            "sprayLevel": spray,
-            "limeLevel": lime,
-            "plowLevel": plow,
-            "rollerLevel": f.get("rollerLevel"),
-            "stubbleShredLevel": f.get("stubbleShredLevel"),
-            "weedState": weeds,
-            "stoneLevel": stones,
-            "waterLevel": f.get("waterLevel"),
+            "id": fid, "farmId": farm,
+            "isOwned": bool(farm) or lv.get("isOwned", False),
+            "fruit": f.get("fruitType") or "UNKNOWN", "plannedFruit": f.get("plannedFruit"),
+            "status": status,
+            "growthState": int(num(f.get("growthState"))), "lastGrowthState": f.get("lastGrowthState"),
+            "groundType": f.get("groundType"), "sprayType": f.get("sprayType"),
+            "sprayLevel": spray, "limeLevel": lime, "plowLevel": plow,
+            "rollerLevel": f.get("rollerLevel"), "stubbleShredLevel": f.get("stubbleShredLevel"),
+            "weedState": weeds, "stoneLevel": stones, "waterLevel": f.get("waterLevel"),
+            "area": fl.get("area"), "price": fl.get("price"),
+            "x": lv.get("x", fl.get("x")), "z": lv.get("z", fl.get("z")),
             "needs": needs,
-            "grew": growth != int(num(f.get("lastGrowthState"), growth)),
+            "grew": int(num(f.get("growthState"))) != int(num(f.get("lastGrowthState"), num(f.get("growthState")))),
         })
     out.sort(key=lambda x: num(x["id"]))
     return out
 
 
+FIN_LABELS = {
+    "newVehiclesCost": "New vehicles", "soldVehicles": "Sold vehicles", "constructionCost": "Construction",
+    "soldBuildings": "Sold buildings", "fieldPurchase": "Land bought", "fieldSelling": "Land sold",
+    "vehicleRunningCost": "Vehicle running", "vehicleLeasingCost": "Leasing", "propertyMaintenance": "Maintenance",
+    "propertyIncome": "Property income", "productionCosts": "Production costs", "soldWood": "Wood",
+    "soldBales": "Bales", "soldWool": "Wool", "soldMilk": "Milk", "soldProducts": "Products",
+    "purchaseFuel": "Fuel", "purchaseSeeds": "Seeds", "purchaseFertilizer": "Fertilizer",
+    "purchaseSaplings": "Saplings", "purchaseWater": "Water", "purchaseBales": "Bales bought",
+    "purchasePallets": "Pallets bought", "harvestIncome": "Harvest", "incomeBga": "Biogas",
+    "missionIncome": "Contracts", "wagePayment": "Helper wages", "other": "Other", "loanInterest": "Loan interest",
+    "newAnimalsCost": "Animals bought", "soldAnimals": "Animals sold", "newHandtoolsCost": "Hand tools",
+    "soldHandtools": "Hand tools sold",
+}
+
+
 def build_farms(fm, players_raw):
-    nick = {}
-    for p in as_list(g(players_raw, "players", "player")):
-        if isinstance(p, dict) and p.get("uniqueUserId"):
-            nick[p["uniqueUserId"]] = p.get("lastNickname") or p.get("nickname")
     out = []
     for f in as_list(g(fm, "farms", "farm")):
         if not isinstance(f, dict):
@@ -643,54 +750,73 @@ def build_farms(fm, players_raw):
         members = []
         for p in as_list(g(f, "players", "player")):
             if isinstance(p, dict):
-                uid = p.get("uniqueUserId")
-                members.append({
-                    "name": p.get("lastNickname") or nick.get(uid) or "Player",
-                    "farmManager": bool(p.get("farmManager")),
-                })
+                members.append({"name": p.get("lastNickname") or "Player",
+                                "farmManager": p.get("farmManager") is True,
+                                "lastConnected": p.get("timeLastConnected")})
         stats = g(f, "statistics", default={}) or {}
+        days = []
+        for st in as_list(g(f, "finances", "stats")):
+            if not isinstance(st, dict):
+                continue
+            items = {k: round(num(v)) for k, v in st.items() if k != "day" and isinstance(v, (int, float)) and abs(num(v)) >= 1}
+            days.append({
+                "day": st.get("day"),
+                "income": sum(v for v in items.values() if v > 0),
+                "expenses": sum(v for v in items.values() if v < 0),
+                "items": sorted(({"key": k, "label": FIN_LABELS.get(k, k), "value": v} for k, v in items.items()),
+                                key=lambda x: -abs(x["value"]))[:12],
+            })
+        days.sort(key=lambda d: num(d["day"]))
         out.append({
-            "id": f.get("farmId"),
-            "name": f.get("name"),
-            "color": f.get("color"),
-            "money": f.get("money"),
-            "loan": f.get("loan"),
+            "id": f.get("farmId"), "name": f.get("name"), "color": f.get("color"),
+            "money": f.get("money"), "loan": f.get("loan"),
             "players": members,
+            "contractingFor": [x.get("farmId") for x in as_list(g(f, "contracting", "farm")) if isinstance(x, dict)],
             "stats": {k: v for k, v in stats.items() if not isinstance(v, (dict, list))},
+            "finances": days,
         })
     return out
 
 
 FUEL_TYPES = {"DIESEL", "ELECTRICCHARGE", "METHANE"}
-AUX_TYPES = {"DEF", "AIR"}
+AUX_TYPES = {"DEF", "AIR", "BALE_TWINE", "BALE_NET", "SILAGE_ADDITIVE"}
 
 
 def base_name(filename):
     if not filename:
         return "Unknown"
     stem = str(filename).replace("\\", "/").split("/")[-1].rsplit(".", 1)[0]
-    return re.sub(r"(?<=[a-z])(?=[A-Z])", " ", stem).replace("_", " ").strip().title()
+    return re.sub(r"(?<=[a-z])(?=[A-Z0-9])", " ", stem).replace("_", " ").strip().title()
 
 
-def brand_of(filename):
-    parts = str(filename or "").replace("\\", "/").split("/")
+def name_from_unique(uid):
+    s = re.sub(r"^preplaced_", "", str(uid or ""))
+    s = re.sub(r"_[0-9a-f]{16,}$", "", s)
+    s = re.sub(r"(Placeable|US|EU|AS)$", "", s)
+    return re.sub(r"(?<=[a-z])(?=[A-Z0-9])", " ", s).replace("_", " ").strip().title() or "Building"
+
+
+def brand_of(v):
+    mod = v.get("modName") if isinstance(v, dict) else None
+    if mod:
+        return re.sub(r"^FS25_", "", mod).replace("_", " ")
+    parts = str(v.get("filename") if isinstance(v, dict) else v or "").replace("\\", "/").split("/")
     if "vehicles" in parts:
         i = parts.index("vehicles")
         if i + 1 < len(parts) - 1:
             return parts[i + 1].upper()
-    if parts and parts[0].startswith("$moddir$"):
-        return parts[0].replace("$moddir$", "").split("/")[0][:30]
     return None
 
 
-def build_vehicles(vh):
+def build_vehicles(vh, live):
+    lv = [dict(x, _used=False) for x in live.get("vehicles", [])]
     out = []
     for v in as_list(g(vh, "vehicles", "vehicle")):
         if not isinstance(v, dict):
             continue
         fn = v.get("filename") or ""
         low = fn.lower()
-        kind = "pallet" if any(k in low for k in ("pallet", "bigbag", "boxpallet")) else "vehicle"
+        is_pallet = "pallet" in v or any(k in low for k in ("pallet", "bigbag"))
         wear = g(v, "wearable", default={}) or {}
         nodes = [num(n.get("amount")) for n in as_list(wear.get("wearNode")) if isinstance(n, dict)]
         fills, fuel = [], None
@@ -704,26 +830,43 @@ def build_vehicles(vh):
                 fuel = {"type": ft, "level": round(lvl, 1)}
             elif ft not in AUX_TYPES and lvl > 0.01:
                 fills.append({"type": ft, "level": round(lvl, 1)})
-        comp = g(v, "component", default=None)
-        comp = as_list(comp)[0] if comp else {}
-        pos = comp.get("position") if isinstance(comp, dict) else None
+        comp = as_list(v.get("component"))
+        comp = comp[0] if comp and isinstance(comp[0], dict) else {}
+        p = _floats(comp.get("position"))
+        x, z = (p[0], p[2]) if len(p) >= 3 else (None, None)
+        # cross-reference with live gameStats vehicle at the same spot (proper name, AI, driver)
+        match = None
+        if x is not None:
+            best = 3.0
+            for c in lv:
+                if c["_used"] or c.get("x") is None:
+                    continue
+                d = ((num(c["x"]) - x) ** 2 + (num(c["z"]) - z) ** 2) ** 0.5
+                if d < best:
+                    best, match = d, c
+            if match:
+                match["_used"] = True
         out.append({
             "id": v.get("uniqueId") or v.get("id"),
-            "name": base_name(fn),
-            "brand": brand_of(fn),
+            "name": (match or {}).get("name") or base_name(fn),
+            "category": (match or {}).get("category"),
+            "brand": brand_of(v),
             "filename": fn,
-            "kind": kind,
+            "kind": "pallet" if is_pallet else "vehicle",
             "farmId": v.get("farmId", 0),
             "age": v.get("age"),
             "price": v.get("price"),
             "propertyState": v.get("propertyState"),
             "operatingHours": round(num(v.get("operatingTime")) / 3600, 1),
-            "damage": round(num(wear.get("damage")) * 100, 1),
+            "damage": round(num(wear.get("damage")) * 100, 1) if wear else None,
             "wear": round(sum(nodes) / len(nodes) * 100, 1) if nodes else None,
             "fuel": fuel,
             "fills": fills,
-            "position": pos,
-            "isMod": low.startswith("$moddir$") or "/mods/" in low,
+            "x": round(x, 1) if x is not None else None,
+            "z": round(z, 1) if z is not None else None,
+            "isAIActive": (match or {}).get("isAIActive", False),
+            "controller": (match or {}).get("controller"),
+            "isMod": bool(v.get("modName")) or low.startswith("$moddir$"),
         })
     return out
 
@@ -738,7 +881,7 @@ def build_placeables(pl):
         if pp:
             for pr in as_list(pp.get("production")):
                 if isinstance(pr, dict):
-                    prods.append({"id": pr.get("id"), "enabled": pr.get("isEnabled", True)})
+                    prods.append({"id": pr.get("id"), "enabled": pr.get("isEnabled", True) is not False})
         storage = []
 
         def walk(d, depth=0):
@@ -748,44 +891,49 @@ def build_placeables(pl):
                 if "fillType" in d and "fillLevel" in d and num(d.get("fillLevel")) > 0.01:
                     storage.append({"type": d["fillType"], "level": round(num(d["fillLevel"]), 1)})
                 for k, val in d.items():
-                    if k not in ("fillType", "fillLevel"):
+                    if k not in ("sellingStation",):
                         walk(val, depth + 1)
             elif isinstance(d, list):
                 for i in d:
                     walk(i, depth + 1)
         walk(p)
-        animals = 0
-        for key in ("husbandryAnimals", "husbandry"):
-            def count_animals(d, depth=0):
-                c = 0
-                if depth > 6:
-                    return 0
-                if isinstance(d, dict):
-                    if "numAnimals" in d:
-                        c += int(num(d["numAnimals"]))
-                    for val in d.values():
-                        c += count_animals(val, depth + 1)
-                elif isinstance(d, list):
-                    for i in d:
-                        c += count_animals(i, depth + 1)
-                return c
-            if key in p:
-                animals += count_animals(p[key])
+
+        def count_animals(d, depth=0):
+            c = 0
+            if depth > 6:
+                return 0
+            if isinstance(d, dict):
+                if "numAnimals" in d:
+                    c += int(num(d["numAnimals"]))
+                for val in d.values():
+                    c += count_animals(val, depth + 1)
+            elif isinstance(d, list):
+                for i in d:
+                    c += count_animals(i, depth + 1)
+            return c
+        animals = count_animals(p.get("husbandryAnimals")) + count_animals(p.get("husbandry"))
         merged = {}
         for s in storage:
             merged[s["type"]] = round(merged.get(s["type"], 0) + s["level"], 1)
         fn = p.get("filename") or ""
+        kinds = [k for k in ("productionPoint", "silo", "siloExtension", "husbandry", "sellingStation",
+                             "windTurbine", "solarPanels", "farmhouse", "manureHeap", "buyingStation") if k in p]
+        pos = _floats(p.get("position"))
         out.append({
             "id": p.get("uniqueId") or p.get("id"),
-            "name": base_name(fn),
+            "name": base_name(fn) if fn else name_from_unique(p.get("uniqueId")),
             "filename": fn,
             "farmId": p.get("farmId", 0),
             "price": p.get("price"),
             "age": p.get("age"),
+            "kinds": kinds,
+            "isPreplaced": p.get("isPreplaced") is True,
             "productions": prods,
-            "storage": [{"type": k, "level": v} for k, v in sorted(merged.items(), key=lambda x: -x[1])][:20],
+            "storage": [{"type": k, "level": v} for k, v in sorted(merged.items(), key=lambda x: -x[1])][:24],
             "animals": animals,
-            "isMod": fn.lower().startswith("$moddir$"),
+            "x": round(pos[0], 1) if len(pos) >= 3 else None,
+            "z": round(pos[2], 1) if len(pos) >= 3 else None,
+            "isMod": bool(p.get("modName")) or fn.lower().startswith("$moddir$"),
         })
     return out
 
@@ -800,19 +948,20 @@ def build_economy(ec):
         for p in as_list(g(ft, "history", "period")):
             if isinstance(p, dict) and "period" in p:
                 hist[p["period"]] = p.get("#text")
-        prices.append({"fillType": ft.get("fillType"), "totalAmount": ft.get("totalAmount"), "history": hist})
+        if hist:
+            prices.append({"fillType": ft.get("fillType"), "totalAmount": ft.get("totalAmount"), "history": hist})
     demands = []
     for d in as_list(g(e, "greatDemands", "greatDemand")):
         if isinstance(d, dict):
             demands.append({
                 "fillType": d.get("fillTypeName"),
-                "station": d.get("stationName") or d.get("uniqueId"),
+                "station": name_from_unique(d.get("uniqueId")) if d.get("uniqueId") else None,
                 "multiplier": d.get("demandMultiplier"),
                 "startDay": d.get("demandStartDay"),
                 "startHour": d.get("demandStartHour"),
                 "durationH": d.get("demandDuration"),
-                "isRunning": d.get("isRunning"),
-                "isValid": d.get("isValid"),
+                "isRunning": d.get("isRunning") is True,
+                "isValid": d.get("isValid") is not False,
             })
     return {"prices": prices, "greatDemands": demands}
 
@@ -824,14 +973,23 @@ def build_missions(ms):
         for m in as_list(items):
             if not isinstance(m, dict):
                 continue
-            field = g(m, "field", "id") or m.get("fieldId")
+            info = m.get("info") if isinstance(m.get("info"), dict) else {}
+            fruit = m.get("fruitType") or g(m, "harvest", "fruitType")
+            station = g(m, "harvest", "sellingStationPlaceableUniqueId")
             out.append({
-                "type": m.get("type") or key,
+                "type": re.sub(r"Mission$", "", m.get("type") or key),
                 "status": m.get("status"),
-                "reward": m.get("reward") or g(m, "info", "reward"),
-                "farmId": m.get("farmId") or g(m, "info", "farmId"),
-                "fieldId": field,
+                "finishState": m.get("finishState"),
+                "fruit": fruit,
+                "reward": info.get("reward"),
+                "completion": round(num(info.get("completion")) * 100, 1),
+                "farmId": m.get("farmId"),
+                "fieldId": g(m, "field", "id"),
+                "endDay": g(m, "endDate", "endDay"),
+                "deliverTo": name_from_unique(station) if station else None,
             })
+    order = {"RUNNING": 0, "CREATED": 1, "FINISHED": 2}
+    out.sort(key=lambda m: (order.get(str(m["status"]).upper(), 1), num(m["endDay"])))
     return out
 
 
@@ -845,13 +1003,15 @@ def build_sales(sl):
         if not isinstance(it, dict):
             continue
         fn = it.get("xmlFilename") or it.get("filename") or ""
+        mod = re.search(r"/mods/(FS25_[^/]+)/", fn)
         out.append({
-            "name": base_name(fn), "brand": brand_of(fn), "filename": fn,
+            "name": base_name(fn), "brand": re.sub(r"^FS25_", "", mod.group(1)) if mod else brand_of(fn),
             "price": it.get("price"), "age": it.get("age"),
             "hours": round(num(it.get("operatingTime")) / 3600, 1) if it.get("operatingTime") is not None else None,
             "damage": round(num(it.get("damage")) * 100, 1) if it.get("damage") is not None else None,
             "wear": round(num(it.get("wear")) * 100, 1) if it.get("wear") is not None else None,
-            "hoursLeft": it.get("timeLeft"),
+            "daysLeft": it.get("timeLeft"),
+            "isMod": bool(mod) or fn.startswith("$moddir$"),
         })
     out.sort(key=lambda x: num(x["price"]))
     return out
@@ -872,11 +1032,8 @@ def build_items(itx):
                     break
         lvl = num(it.get("fillLevel"))
         kind = "Bale" if "bale" in (cls + fn).lower() else cls
-        if kind == "Bale":
-            shape = "Round" if "round" in fn.lower() else ("Square" if "square" in fn.lower() else "")
-            label = f"{shape} bale".strip()
-        else:
-            label = base_name(fn) if fn else cls
+        label = (("Round" if "round" in fn.lower() else "Square" if "square" in fn.lower() else "") + " bale").strip() \
+            if kind == "Bale" else (base_name(fn) if fn else cls)
         key = (kind, label, ft or "", it.get("farmId", 0))
         grp = groups.setdefault(key, {"kind": kind, "name": label.title(), "fillType": ft, "farmId": it.get("farmId", 0),
                                       "count": 0, "level": 0.0})
@@ -887,58 +1044,67 @@ def build_items(itx):
 
 def build_collectibles(co):
     root = g(co, "collectibles", default={}) or {}
-    items = []
-    for v in root.values():
-        if isinstance(v, (dict, list)):
-            items += [x for x in as_list(v) if isinstance(x, dict)]
-    found = 0
-    for x in items:
-        if any(x.get(k) is True for k in ("collected", "isCollected", "found")):
-            found += 1
-    total = len(items)
-    attr_total = num(root.get("total") if isinstance(root, dict) else None, 0)
-    return {"found": found, "total": int(attr_total) or total, "raw": _attrs(root)}
+    items = [x for x in as_list(root.get("collectible")) if isinstance(x, dict)] if isinstance(root, dict) else []
+    found = sorted(int(num(x.get("index"))) for x in items if x.get("collected") is True)
+    return {"found": len(found), "total": len(items), "foundIndexes": found,
+            "isComplete": root.get("isComplete") is True if isinstance(root, dict) else False}
+
+
+PF_KEYS = ["usedLime", "usedMineralFertilizer", "usedLiquidFertilizer", "usedManure", "usedLiquidManure",
+           "usedSeeds", "usedHerbicide", "yield", "yieldBestPrice", "numSoilSamples", "soilSampleCosts",
+           "usedFuel", "vehicleCosts", "helperCosts", "subsidies",
+           "usedLimeRegular", "usedMineralFertilizerRegular", "usedSeedsRegular", "yieldRegular"]
 
 
 def build_precision(pf):
-    """Precision Farming: collect per-farmland statistics (tolerant of format changes)."""
     root = g(pf, "precisionFarming", default=None)
-    if root is None and isinstance(pf, dict) and pf:
-        root = next(iter(pf.values()))
     if not isinstance(root, dict):
         return {}
-    farmlands, misc = [], {}
+    stats = []
+    for s in as_list(g(root, "farmlandStatistics", "farmlandStatistic")):
+        if not isinstance(s, dict):
+            continue
+        row = {"farmlandId": s.get("farmlandId")}
+        for part in ("totalCounter", "periodCounter"):
+            c = s.get(part) if isinstance(s.get(part), dict) else {}
+            row[part] = {k: round(num(c.get(k)), 1) for k in PF_KEYS if k in c}
+        if any(v for v in row["totalCounter"].values()) or any(v for v in row["periodCounter"].values()):
+            stats.append(row)
+    env = {}
+    es = root.get("environmentalScore") if isinstance(root.get("environmentalScore"), dict) else {}
+    for cat, block in es.items():
+        for f in as_list(block.get("farmland") if isinstance(block, dict) else None):
+            if isinstance(f, dict) and f.get("farmlandId") is not None:
+                env.setdefault(str(f["farmlandId"]), {})[cat] = {k: v for k, v in f.items()
+                                                                 if k != "farmlandId" and isinstance(v, (int, float))}
+    tram = [x.get("farmlandId") for x in as_list(g(root, "tramlineMap", "farmland")) if isinstance(x, dict)]
+    return {"farmlandStats": stats, "environment": env, "tramlineFarmlands": tram}
 
-    def walk(d, path, depth=0):
-        if depth > 6:
-            return
-        if isinstance(d, dict):
-            fid = d.get("farmlandId", d.get("farmland"))
-            nums = {k: v for k, v in d.items() if isinstance(v, (int, float)) and not isinstance(v, bool)}
-            if fid is not None and len(nums) > 1:
-                farmlands.append({"path": path, **nums})
-            for k, v in d.items():
-                walk(v, f"{path}/{k}", depth + 1)
-        elif isinstance(d, list):
-            for i in d:
-                walk(i, path, depth + 1)
-    walk(root, "")
-    for k, v in root.items():
-        if isinstance(v, dict):
-            a = _attrs(v)
-            if a:
-                misc[k] = a
-    return {"farmlandStats": farmlands[:300], "settings": misc}
+
+ECON = {"1": "EASY", "2": "NORMAL", "3": "HARD"}
+
+
+def build_server(cfg):
+    st = g(cfg, "gameserver", "settings", default={}) or {}
+    st = {k: v for k, v in st.items() if k.lower() not in CONFIG_DROP and not isinstance(v, (dict, list))}
+    if "economicDifficulty" in st:
+        st["economicDifficulty"] = ECON.get(str(st["economicDifficulty"]), st["economicDifficulty"])
+    mods = [{"name": m.get("filename"), "isDlc": m.get("isDlc") is True}
+            for m in as_list(g(cfg, "gameserver", "mods", "mod")) if isinstance(m, dict)]
+    pw = st.get("game_password")
+    st["game_password"] = "" if pw is None else str(pw)
+    return {"settings": st, "mods": mods}
 
 
 def build_overview(meta):
+    live = build_live(load_raw("gameStats"))
     cs = load_raw("careerSavegame")
     career = build_career(cs) if cs else {}
     env = load_raw("environment")
-    farmlands = build_farmlands(load_raw("farmland"))
-    fields = build_fields(load_raw("fields"), farmlands, career)
+    farmlands = build_farmlands(load_raw("farmland"), live)
+    fields = build_fields(load_raw("fields"), farmlands, career, live)
     farms = build_farms(load_raw("farms"), load_raw("players"))
-    vehicles = build_vehicles(load_raw("vehicles"))
+    vehicles = build_vehicles(load_raw("vehicles"), live)
     placeables = build_placeables(load_raw("placeables"))
     economy = build_economy(load_raw("economy"))
     missions = build_missions(load_raw("missions"))
@@ -946,23 +1112,42 @@ def build_overview(meta):
     items = build_items(load_raw("items"))
     collectibles = build_collectibles(load_raw("collectibles"))
     precision = build_precision(load_raw("precisionFarming"))
+
+    # pallets / stock as reported live by the server
+    stock = {}
+    for v in live.get("vehicles", []):
+        if str(v.get("category") or "").upper().endswith("PALLETS") or v.get("type") == "pallet":
+            for f in v["fills"]:
+                s = stock.setdefault(f["type"], {"fillType": f["type"], "pallets": 0, "level": 0.0})
+                s["pallets"] += 1
+                s["level"] = round(s["level"] + f["level"], 1)
+    working = [{"name": v["name"], "controller": v.get("controller"), "isAIActive": v["isAIActive"],
+                "x": v.get("x"), "z": v.get("z")}
+               for v in live.get("vehicles", []) if v.get("isAIActive") or v.get("controller")]
+
     owned = [f for f in fields if f["isOwned"]]
+    own_fl = [f for f in farmlands if f.get("farmId")]
     summary = {
         "fields": len(fields),
         "ownedFields": len(owned),
-        "ownedFarmlands": sum(1 for f in farmlands if f["farmId"]),
+        "ownedFarmlands": len(own_fl),
+        "ownedHectares": round(sum(num(f.get("area")) for f in own_fl), 1),
+        "readyToHarvest": sum(1 for f in owned if f["status"] == "ready"),
+        "growing": sum(1 for f in owned if f["status"] == "growing"),
         "needLime": sum(1 for f in owned if "lime" in f["needs"]),
         "needFertilizer": sum(1 for f in owned if "fertilizer" in f["needs"]),
         "needPlow": sum(1 for f in owned if "plow" in f["needs"]),
         "weeds": sum(1 for f in owned if "weeds" in f["needs"]),
         "vehicles": sum(1 for v in vehicles if v["kind"] == "vehicle"),
         "pallets": sum(1 for v in vehicles if v["kind"] == "pallet"),
-        "placeables": len(placeables),
+        "helpersActive": sum(1 for v in live.get("vehicles", []) if v.get("isAIActive")),
+        "placeables": sum(1 for p in placeables if p["farmId"] in range(1, 9)),
         "animals": sum(p["animals"] for p in placeables),
-        "activeMissions": len(missions),
+        "openContracts": sum(1 for m in missions if str(m["status"]).upper() != "FINISHED"),
         "bales": sum(i["count"] for i in items if i["kind"] == "Bale"),
         "usedForSale": len(sales),
         "collectibles": f"{collectibles['found']}/{collectibles['total']}" if collectibles["total"] else None,
+        "mods": len(live.get("mods", [])),
         "precisionFarming": bool(precision),
     }
     return {
@@ -972,6 +1157,11 @@ def build_overview(meta):
         "summary": summary,
         "career": career,
         "environment": build_environment(env) if env else {},
+        "live": {k: v for k, v in live.items() if k not in ("vehicles", "farmlands", "fields")},
+        "server": build_server(load_raw("dedicatedServerConfig")),
+        "liveVehicles": live.get("vehicles", []),
+        "working": working,
+        "stock": sorted(stock.values(), key=lambda s: -s["level"]),
         "farms": farms,
         "farmlands": farmlands,
         "fields": fields,
@@ -1098,6 +1288,8 @@ def main():
         ftp.quit()
     except Exception:
         pass
+    if presence.get("rawChanged"):
+        changed.append("gameStats.xml")
     log(f"Changed files: {', '.join(changed) if changed else 'none'}")
 
     ts = now_iso()
