@@ -344,6 +344,7 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
     <link rel="stylesheet" href="../assets/ww-shell.css">
+    <script src="../assets/menu-sheet.js"></script>
     <script defer src="../assets/ww-shell.js"></script>
 </head>
 <body class="min-h-screen flex flex-col pt-16">
@@ -859,7 +860,7 @@
             if (!container) return;
 
             try {
-                const res = await fetch(`${UTM_LINKS_RTDB_URL}?t=${Date.now()}`);
+                const res = await window.wwMenuFetch();   // menu from the published Google Sheet (assets/menu-sheet.js)
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
                 if (!data) return;

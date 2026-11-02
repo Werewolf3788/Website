@@ -1239,11 +1239,10 @@ async function searchGamePosterArt(commId, gameName) {
 // Section 9: Programmatic Navbar & Sorting (/utm_links)
 async function buildUtmNavigation() {
     const navContainer = document.getElementById('dynamicNavLinks');
-    if (!rtdb || !navContainer) return;
+    if (!navContainer) return;
 
     try {
-        const snap = await rtdb.ref('/utm_links').once('value');
-        const data = snap.val();
+        const data = await window.wwMenuData();   // menu from the published Google Sheet (assets/menu-sheet.js)
         if (!data) return;
 
         const linksList = [];

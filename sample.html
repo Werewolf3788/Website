@@ -166,6 +166,7 @@ a.chip:hover{border-color:var(--accent)}
 img.lb-able{cursor:zoom-in}
 </style>
     <link rel="stylesheet" href="assets/ww-shell.css">
+    <script src="assets/menu-sheet.js"></script>
     <script defer src="assets/ww-shell.js"></script>
 </head>
 <body>
@@ -381,11 +382,11 @@ function startMenu() {
   const sigOf = (d) => hash(JSON.stringify(collectAndSig(d)));
   const collectAndSig = (d) => { const l = []; collectLinks(d, "", "", l); return l.map((x) => [x.name, x.url, x.image, x.group, x.row, x.updatedAt]); };
   const first = cacheGet("wp_menu_v2"); if (first && first.data) renderMenu(buildMenu(first.data));
-  onValue(ref(dbE, "utm_links"), (snap) => {
-    const data = snap.val(); if (!data) return;
+  window.wwMenuData().then((data) => {   // menu from the published Google Sheet (assets/menu-sheet.js)
+    if (!data) return;
     const c = cacheGet("wp_menu_v2");
     if (!c || c.sig !== sigOf(data)) { cacheSet("wp_menu_v2", { sig: sigOf(data), data }); renderMenu(buildMenu(data)); }
-  }, (err) => console.warn("[menu]", err.message));
+  }).catch((err) => console.warn("[menu]", err.message));
 }
 
 /* ============================================================================

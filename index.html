@@ -370,6 +370,7 @@
         }
     </style>
     <link rel="stylesheet" href="assets/ww-shell.css">
+    <script src="assets/menu-sheet.js"></script>
     <script defer src="assets/ww-shell.js"></script>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -967,11 +968,9 @@
            ------------------------------------------------------------- */
         function listenToUtmLinks() {
             try {
-                const utmRef = ref(rtdbEntertainment, 'utm_links');
-                onValue(utmRef, (snapshot) => {
-                    if (!snapshot.exists()) return;
-
-                    const data = snapshot.val();
+                // Menu now comes from the published Google Sheet (assets/menu-sheet.js)
+                const apply = (data) => {
+                    if (!data) return;
                     cachedUtmData = data;
                     localStorage.setItem('werewolf_utm_cache', JSON.stringify(data));
 
@@ -980,9 +979,10 @@
                     buildNavigationFromUtm(data);
                     bindProfileCardLinks(data);
                     syncAllAvatars();
-                }, (error) => {
-                    console.error("Failed to read /utm_links:", error);
-                });
+                };
+                const cached = window.wwMenuCached && window.wwMenuCached();
+                if (cached) apply(cached);
+                window.wwMenuData().then(apply).catch((error) => console.error("Failed to read the menu sheet:", error));
             } catch (err) {
                 console.error("listenToUtmLinks Exception:", err);
             }
