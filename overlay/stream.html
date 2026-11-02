@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<!--
+  Werewolf3788 smart stream overlay (1600x900 canvas, transparent)
+  Live from the playstation-stats PSN engine + the site's game tracker.
+
+  URL options (all optional):
+    ?psn=wildhorse_spirit     PSN gamertag key in /psn/gamertags
+    &twitch=werewolf3788      Twitch name for the avatar / fallback game
+    &code=FRIENDCODE          your site friend code -> shows game-tracker stats
+    &accent=9333ea            accent colour (hex, no #)
+    &toast=0                  turn off the trophy pop-up
+    &tracker=0                hide the game-tracker panel
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Werewolf3788 Stream Overlay</title>
+<script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-CTYHDF4MSD');</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+@import url(//fonts.googleapis.com/css?family=Roboto:400,700,900);
+*{box-sizing:border-box}
+html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!important;overflow:hidden}
+:root{--accent:#9333ea;--glow:rgba(147,51,234,.8);--panel:rgba(10,13,25,.72)}
+#wrap{height:100vh;width:100vw;max-width:1600px;max-height:900px;position:relative;font-family:'Roboto',sans-serif;color:#fff;overflow:hidden}
+.shadow{text-shadow:2px 2px 3px rgba(0,0,0,.95),0 0 8px rgba(0,0,0,.9)}
+
+/* lower-left: avatar + PSN chip */
+#left{position:absolute;bottom:16px;left:16px;display:flex;align-items:flex-end;gap:10px;z-index:900}
+#pfp{height:71px;width:71px;border-radius:50%;border:3px solid var(--accent);object-fit:cover;box-shadow:0 0 24px var(--glow);display:none}
+#psnchip{display:none;flex-direction:column;gap:2px;background:var(--panel);border:1px solid rgba(255,255,255,.12);border-left:3px solid var(--accent);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;backdrop-filter:blur(4px)}
+#psnchip .row{display:flex;gap:8px;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:#64748b}.dot.on{background:#22c55e;box-shadow:0 0 8px #22c55e}
+.cups b{color:#fff}.cups span{margin-right:6px}
+
+/* lower-right: game card */
+#right{position:absolute;bottom:16px;right:16px;display:flex;align-items:flex-end;gap:13px;z-index:900;max-width:80vw}
+#meta{display:flex;flex-direction:column;align-items:flex-end;gap:5px;max-width:520px}
+#title{font-size:clamp(12px,1.4vw,18px);font-weight:900;text-transform:uppercase;font-style:italic;letter-spacing:-.2px;text-shadow:0 0 12px var(--glow),2px 2px 3px rgba(0,0,0,.95);text-align:right;line-height:1.15}
+#status{display:none;font-size:13px;font-style:italic;color:#e9d5ff;background:var(--panel);border-radius:6px;padding:4px 9px;max-width:520px;text-align:right;line-height:1.3;transition:opacity .4s}
+#chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.chip{font-size:11px;font-weight:700;background:var(--panel);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:3px 9px;white-space:nowrap}
+#tbar{display:none;width:220px}
+#tbar .lbl{display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-bottom:3px}
+#tbar .bar{height:6px;border-radius:4px;background:rgba(255,255,255,.18);overflow:hidden}
+#tbar .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#f0abfc);transition:width 1s ease}
+#art{height:129px;width:92px;border-radius:7px;border:2.5px solid var(--accent);box-shadow:0 0 20px var(--glow);object-fit:cover;background:#0b0f19;transition:opacity .5s}
+
+/* top-right: game tracker panel */
+#tracker{position:absolute;top:16px;right:16px;display:none;min-width:230px;max-width:300px;background:var(--panel);border:1px solid rgba(255,255,255,.12);border-top:3px solid var(--accent);border-radius:10px;padding:10px 12px;z-index:900;backdrop-filter:blur(4px)}
+#tracker h4{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#d8b4fe}
+.trow{display:flex;justify-content:space-between;gap:10px;font-size:13px;font-weight:700;padding:2px 0}
+.trow span{color:#cbd5e1;font-weight:400}
+
+/* trophy toast */
+#toast{position:absolute;top:24px;left:50%;transform:translate(-50%,-160%);display:flex;gap:12px;align-items:center;background:linear-gradient(135deg,rgba(15,23,42,.95),rgba(49,16,77,.95));border:2px solid var(--accent);box-shadow:0 0 30px var(--glow);border-radius:14px;padding:10px 16px 10px 10px;min-width:360px;max-width:640px;z-index:1000;transition:transform .7s cubic-bezier(.2,1.4,.4,1)}
+#toast.show{transform:translate(-50%,0)}
+#toast img{width:64px;height:64px;border-radius:8px;object-fit:cover;background:#000}
+#toast .t1{font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#d8b4fe}
+#toast .t2{font-size:18px;font-weight:900}
+#toast .t3{font-size:12px;color:#cbd5e1;margin-top:2px}
+.rank-PLATINUM{color:#7dd3fc}.rank-GOLD{color:#facc15}.rank-SILVER{color:#e2e8f0}.rank-BRONZE{color:#f59e0b}
+
+.stamp{position:absolute;bottom:3px;right:8px;font-size:8px;font-weight:700;color:rgba(255,255,255,.3);font-family:monospace;z-index:9999}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="left" class="shadow">
+    <img id="pfp" alt="">
+    <div id="psnchip">
+      <div class="row"><span class="dot" id="dot"></span><span id="psnname">PSN</span><span id="psnlvl"></span></div>
+      <div class="row cups" id="cups"></div>
+    </div>
+  </div>
+
+  <div id="tracker"><h4 id="trkTitle">Game Tracker</h4><div id="trkRows"></div></div>
+
+  <div id="toast"><img id="tImg" alt=""><div><div class="t1">🏆 Trophy unlocked</div><div class="t2" id="tName"></div><div class="t3" id="tDesc"></div></div></div>
+
+  <div id="right">
+    <div id="meta" class="shadow">
+      <div id="status"></div>
+      <div id="title">SCANNING...</div>
+      <div id="chips"></div>
+      <div id="tbar"><div class="lbl"><span id="tbarL"></span><span id="tbarR"></span></div><div class="bar"><div class="fill" id="tbarF"></div></div></div>
+    </div>
+    <img id="art" alt="" referrerpolicy="no-referrer">
+  </div>
+  <div class="stamp">ww-overlay v7 · PSN live</div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  const qs = new URLSearchParams(location.search);
+  const CFG = {
+    psn: qs.get('psn') || 'wildhorse_spirit',
+    twitch: qs.get('twitch') || 'werewolf3788',
+    code: qs.get('code') || '',
+    toast: qs.get('toast') !== '0',
+    tracker: qs.get('tracker') !== '0',
+    fallbackArt: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='92' height='129'><rect width='100%' height='100%' fill='%230f172a'/><text x='50%' y='50%' fill='%2394a3b8' font-family='sans-serif' font-size='9' font-weight='bold' text-anchor='middle'>NO GAME ART</text></svg>"
+  };
+  if (qs.get('accent')) {
+    const a = '#' + qs.get('accent').replace(/[^0-9a-f]/gi, '').slice(0, 6);
+    document.documentElement.style.setProperty('--accent', a);
+    document.documentElement.style.setProperty('--glow', a + 'cc');
+  }
+  const $ = (id) => document.getElementById(id);
+  const secure = (u) => typeof u === 'string' ? (u.startsWith('//') ? 'https:' + u : u.replace(/^http:\/\//, 'https://')) : '';
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  // ---- Firebase: PSN engine project + the site's project (game tracker)
+  const psnApp = firebase.initializeApp({
+    apiKey: "AIzaSyBT3RHrZQCcBdcoPpM9hMjuzSB0KBtu5UI", authDomain: "playstation-stats.firebaseapp.com",
+    databaseURL: "https://playstation-stats-default-rtdb.firebaseio.com", projectId: "playstation-stats",
+    storageBucket: "playstation-stats.firebasestorage.app", messagingSenderId: "748816703249", appId: "1:748816703249:web:3413fac9800148aa42b6b0"
+  }, 'psn');
+  const siteApp = firebase.initializeApp({
+    apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc", authDomain: "entertainment-71888.firebaseapp.com",
+    databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com", projectId: "entertainment-71888",
+    storageBucket: "entertainment-71888.firebasestorage.app", messagingSenderId: "660524340277", appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c"
+  }, 'site');
+  const psnDb = psnApp.database(), siteDb = siteApp.database(), siteFs = siteApp.firestore();
+
+  // ---- Twitch avatar (left) + fallback game from Twitch
+  let twitchGame = '';
+  async function twitch() {
+    const v = Date.now();
+    try {
+      const p = (await (await fetch(`https://decapi.me/twitch/avatar/${CFG.twitch}?v=${v}`)).text()).trim();
+      if (/^https?:\/\//.test(p)) { if ($('pfp').src !== p) $('pfp').src = p; $('pfp').style.display = 'block'; }
+    } catch (e) {}
+    try {
+      const g = (await (await fetch(`https://decapi.me/twitch/game/${CFG.twitch}?v=${v}`)).text()).trim();
+      twitchGame = /error|not found|could not|rate limit/i.test(g) ? '' : g;
+      if (!card || !card.online || /dashboard/i.test(card.currentGame || '')) paintGame();
+    } catch (e) {}
+  }
+
+  // ---- PSN card (live)
+  let card = null, lastToastKey = null, firstCard = true, sessionTimer = null, catalog = null, trackerUnsub = null, trackerKey = null;
+  function setArt(url) {
+    const a = $('art'); const u = secure(url) || CFG.fallbackArt;
+    if (a.dataset.src === u) return;
+    a.dataset.src = u; a.style.opacity = 0;
+    a.onload = () => { a.style.opacity = 1; }; a.onerror = () => { a.onerror = null; a.src = CFG.fallbackArt; a.style.opacity = 1; };
+    a.src = u;
+  }
+  function fmtDur(sec) { sec = Math.max(0, Math.floor(sec)); const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60); return h ? `${h}h ${String(m).padStart(2, '0')}m` : `${m}m`; }
+  function paintGame() {
+    const c = card || {};
+    const playing = c.online && c.currentGame && !/dashboard/i.test(c.currentGame);
+    const title = playing ? c.currentGame : (twitchGame || c.lastPlayedGame || CFG.twitch);
+    $('title').innerText = String(title).toUpperCase();
+    if (playing) setArt(c.currentGameArt || c.art || c.posterArt);
+    else if (twitchGame) setArt(`https://static-cdn.jtvnw.net/ttv-boxart/${encodeURIComponent(twitchGame)}-285x380.jpg`);
+    else setArt(c.art || '');
+
+    // rich presence ("Staring off into space...")
+    const st = $('status'); const gs = playing ? (c.gameStatus || '').trim() : '';
+    if (gs) { if (st.innerText !== gs) { st.style.opacity = 0; setTimeout(() => { st.innerText = gs; st.style.opacity = 1; }, 250); } st.style.display = 'block'; }
+    else st.style.display = 'none';
+
+    // chips: platform, hours, session clock
+    const chips = [];
+    if (playing && c.displayPlatform) chips.push(c.displayPlatform);
+    if (playing && c.currentGameHours) chips.push(`⏱ ${c.currentGameHours} played`);
+    if (playing && c.sessionStartedAtMs) chips.push(`<span id="sess">● LIVE ${fmtDur((Date.now() - c.sessionStartedAtMs) / 1000)}</span>`);
+    $('chips').innerHTML = chips.map(x => `<span class="chip">${x.startsWith('<span') ? x : esc(x)}</span>`).join('');
+    clearInterval(sessionTimer);
+    if (playing && c.sessionStartedAtMs) sessionTimer = setInterval(() => { const s = document.getElementById('sess'); if (s) s.textContent = `● LIVE ${fmtDur((Date.now() - c.sessionStartedAtMs) / 1000)}`; }, 30000);
+
+    // trophy progress for the current game
+    const g = playing ? (c.recentGames || []).find(x => x && (x.npCommunicationId === c.commId || (x.name || '').toLowerCase() === (c.currentGame || '').toLowerCase())) : null;
+    const tb = $('tbar');
+    if (g && g.definedTotal) {
+      const pct = g.progress != null ? Number(g.progress) : Math.round(100 * (g.earnedTotal || 0) / g.definedTotal);
+      $('tbarL').textContent = `🏆 ${g.earnedTotal || 0}/${g.definedTotal}`; $('tbarR').textContent = `${pct}%`;
+      $('tbarF').style.width = Math.min(100, pct) + '%'; tb.style.display = 'block';
+    } else tb.style.display = 'none';
+  }
+  function paintChip() {
+    const c = card || {}; const ts = c.trophySummary || {};
+    $('psnchip').style.display = 'flex';
+    $('dot').className = 'dot' + (c.online ? ' on' : '');
+    $('psnname').textContent = c.onlineId || CFG.psn;
+    $('psnlvl').textContent = c.level ? `Lv ${c.level}` : '';
+    $('cups').innerHTML = `<span class="rank-PLATINUM">◆ <b>${ts.platinum || 0}</b></span><span class="rank-GOLD">● <b>${ts.gold || 0}</b></span><span class="rank-SILVER">● <b>${ts.silver || 0}</b></span><span class="rank-BRONZE">● <b>${ts.bronze || 0}</b></span>`;
+  }
+  // new-trophy pop-up
+  const toastQueue = []; let toasting = false;
+  function showNextToast() {
+    if (toasting || !toastQueue.length) return;
+    toasting = true; const t = toastQueue.shift(); const rank = String(t.rank || t.type || 'BRONZE').toUpperCase();
+    $('tImg').src = secure(t.icon || t.trophyIconUrl || '') || CFG.fallbackArt;
+    $('tName').innerHTML = `<span class="rank-${rank}">●</span> ${esc(t.name || t.title || 'Trophy')}`;
+    $('tDesc').textContent = [t.description || t.detail, t.rarity ? `${t.rarity} of players` : '', t.gameTitle].filter(Boolean).join(' · ');
+    $('toast').classList.add('show');
+    setTimeout(() => { $('toast').classList.remove('show'); setTimeout(() => { toasting = false; showNextToast(); }, 900); }, 8000);
+  }
+  function checkTrophies(c) {
+    const list = Array.isArray(c.mostRecentTrophies) ? c.mostRecentTrophies : Object.values(c.mostRecentTrophies || {});
+    const sorted = list.filter(Boolean).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    if (!sorted.length) return;
+    const key = (t) => `${t.commId || t.npCommunicationId || ''}:${t.trophyId}:${t.timestamp || ''}`;
+    if (firstCard || lastToastKey === null) { lastToastKey = key(sorted[0]); return; }
+    const fresh = [];
+    for (const t of sorted) { if (key(t) === lastToastKey) break; fresh.push(t); }
+    if (fresh.length) { lastToastKey = key(sorted[0]); if (CFG.toast) { fresh.reverse().forEach(t => toastQueue.push(t)); showNextToast(); } }
+  }
+
+  // ---- game tracker panel (site saves)
+  const canonical = (k, g) => ({ farcry5: 'FarCry5', farcry6: 'FarCry6', sniperelite5: 'SniperElite5', snresistance: 'SniperEliteResistance' }[k] || (g && g.gameId) || k);
+  async function loadCatalog() { if (!catalog) { try { catalog = (await siteDb.ref('games').once('value')).val() || {}; } catch (e) { catalog = {}; } } return catalog; }
+  function matchGame(c) {
+    if (!catalog || !c || !c.online) return null;
+    const name = (c.currentGame || '').toLowerCase().replace(/[®™:]/g, '').trim();
+    for (const [k, g] of Object.entries(catalog)) {
+      if (!g || typeof g !== 'object') continue;
+      const ids = [g.commId, g.platforms && g.platforms.playstation && g.platforms.playstation.commId].filter(Boolean);
+      if (c.commId && ids.includes(c.commId)) return [k, g];
+      if (name && String(g.game || '').toLowerCase().replace(/[®™:]/g, '').trim() === name) return [k, g];
+    }
+    return null;
+  }
+  function trackerRows(g, d) {
+    const rows = [];
+    if (Array.isArray(d.harvestLog) || d.wallet) {
+      const w = d.wallet || {}; const h = d.harvestLog || [];
+      rows.push(['Level', w.level || 1], ['Credits', (w.credits || 0).toLocaleString()], ['Kills', h.length], ['Trophy mounts', h.filter(x => x.taxidermy).length]);
+      const last = h[h.length - 1]; if (last) rows.push(['Last harvest', `${last.species}${last.stars ? ' ' + '★'.repeat(last.stars) : ''}`]);
+      if ((d.watchlist || []).length) rows.push(['Watchlist', d.watchlist.length]);
+      return rows;
+    }
+    if (d.campaignRank) rows.push(['Campaign rank', `${d.campaignRank}/${(g.campaign_rank && g.campaign_rank.max) || 40}`]);
+    let col = 0, colTot = 0; Object.values(d.collectibles || {}).forEach(gr => Object.values((gr && gr.items) || {}).forEach(it => { colTot++; if (it && it.collected) col++; }));
+    if (colTot) rows.push(['Collectibles', `${col}/${colTot}`]);
+    const mk = Object.keys(g.missions || {}); if (mk.length) rows.push(['Missions', `${mk.filter(k => d.missions && d.missions[k] && d.missions[k].completed).length}/${mk.length}`]);
+    const rib = Object.values(d.ribbons || {}).reduce((a, r) => a + (Number(r && r.count) || 0), 0); if (rib) rows.push(['Ribbons earned', rib.toLocaleString()]);
+    if (d.trophies_total) rows.push(['Trophies', `${d.trophies_percent || 0}%`]);
+    return rows;
+  }
+  async function updateTracker(c) {
+    const box = $('tracker');
+    if (!CFG.tracker || !CFG.code) { box.style.display = 'none'; return; }
+    await loadCatalog();
+    const m = matchGame(c);
+    if (!m) { box.style.display = 'none'; if (trackerUnsub) { trackerUnsub(); trackerUnsub = null; trackerKey = null; } return; }
+    const [k, g] = m; if (trackerKey === k) return;
+    if (trackerUnsub) trackerUnsub();
+    trackerKey = k;
+    $('trkTitle').textContent = `${g.game || k} · Tracker`;
+    trackerUnsub = siteFs.collection('user').doc(CFG.code).collection('platform').doc('ps').collection('game').doc(canonical(k, g))
+      .onSnapshot(doc => {
+        if (!doc.exists) { box.style.display = 'none'; return; }
+        const rows = trackerRows(g, doc.data());
+        $('trkRows').innerHTML = rows.map(([a, b]) => `<div class="trow"><span>${esc(a)}</span>${esc(b)}</div>`).join('');
+        box.style.display = rows.length ? 'block' : 'none';
+      }, () => { box.style.display = 'none'; });
+  }
+
+  function onCard(snap) {
+    const c = snap.val(); if (!c) return false;
+    card = c; paintChip(); paintGame(); checkTrophies(c); updateTracker(c); firstCard = false; return true;
+  }
+  function listen(key, fallbackKey) {
+    psnDb.ref(`psn/gamertags/${key}`).on('value', (s) => {
+      if (!onCard(s) && fallbackKey) { psnDb.ref(`psn/gamertags/${key}`).off(); listen(fallbackKey, null); }
+    }, (e) => {
+      console.warn('[overlay] PSN read failed, using site mirror:', e && e.message);
+      siteDb.ref(`psn/gamertags/${CFG.psn}`).on('value', onCard);
+    });
+  }
+
+  firebase.auth(psnApp).signInAnonymously().catch(() => {}).finally(() => {
+    const lower = CFG.psn.toLowerCase();
+    listen(CFG.psn, lower !== CFG.psn ? lower : null);
+  });
+  twitch(); setInterval(twitch, 60000);
+})();
+</script>
+</body>
+</html>
