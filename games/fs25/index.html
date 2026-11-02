@@ -531,15 +531,24 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
   window.FS25.show = id => setView(id, true);
 
   // ---- tactical map
+  // Map picture: the site's own image of The Rural Farmlands Of Ohio (Images/ folder, lines up with the
+  // game coordinates). If the map is ever changed on the server, the image the sync pulls from the
+  // server (data/map.jpg) is used instead when its map name doesn't match this one.
+  const SITE_MAP = { name: 'The Rural Farmlands Of Ohio', url: '../../Images/FS25_The_Rural_Farmlands_Of_Ohio_map.JPG' };
+  function mapImageUrl() {
+    const mapName = (DATA.live && DATA.live.mapName) || (DATA.career && DATA.career.mapTitle) || '';
+    if (!mapName || mapName === SITE_MAP.name) return SITE_MAP.url;
+    return DATA.map && DATA.map.image ? DATA_BASE + DATA.map.image + '?d=' + encodeURIComponent((DATA.sync || {}).lastFull || '') : '';
+  }
   function renderMap() {
     const size = +(DATA.live?.mapSize) || 2048, half = size / 2;
     const P = (x, z) => [((+x + half) / size * 1000).toFixed(1), ((+z + half) / size * 1000).toFixed(1)];
-    const layers = [...(DATA.map && DATA.map.image ? [['image', 'Map']] : []), ['fields', 'Fields'], ['land', 'Farmland'], ['fleet', 'Vehicles'], ['players', 'Players']];
+    const layers = [['image', 'Map'], ['fields', 'Fields'], ['land', 'Farmland'], ['fleet', 'Vehicles'], ['players', 'Players']];
     $('mapFilters').innerHTML = layers.map(([k, l]) => `<button class="fbtn ${mapLayers[k] ? 'on' : ''}" data-l="${k}">${l}</button>`).join('');
     $('mapFilters').querySelectorAll('button').forEach(b => b.onclick = () => { mapLayers[b.dataset.l] = !mapLayers[b.dataset.l]; renderMap(); });
     let svg = '';
-    const img = DATA.map && DATA.map.image;
-    if (img && mapLayers.image !== false) svg += `<image href="${esc(DATA_BASE + img)}?d=${encodeURIComponent((DATA.sync || {}).lastFull || '')}" x="0" y="0" width="1000" height="1000" preserveAspectRatio="none" opacity=".85"/><rect width="1000" height="1000" fill="#04110a" opacity=".25"/>`;
+    const img = mapImageUrl();
+    if (img && mapLayers.image !== false) svg += `<image href="${esc(img)}" x="0" y="0" width="1000" height="1000" preserveAspectRatio="none" opacity=".9"/><rect width="1000" height="1000" fill="#04110a" opacity=".2"/>`;
     for (let i = 1; i < 8; i++) { const p = i * 125; svg += `<line x1="${p}" y1="0" x2="${p}" y2="1000" stroke="#16301f" stroke-width="1"/><line x1="0" y1="${p}" x2="1000" y2="${p}" stroke="#16301f" stroke-width="1"/>`; }
     svg += `<text x="500" y="18" fill="#35553f" font-size="14" text-anchor="middle" font-family="JetBrains Mono">N</text>`;
     if (mapLayers.land) (DATA.farmlands || []).forEach(f => {
