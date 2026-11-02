@@ -914,7 +914,7 @@ function renderMedalProgress() {
     document.querySelectorAll('.medal-meter[data-medal]').forEach(el => {
         const id = el.dataset.medal, m = appState.medals[id] || {}, def = medalDef(id);
         const tiers = medalTiers(def); if (!tiers.length) return;
-        const p = m.progress || 0;
+        const p = Math.max(m.progress || 0, m.earned && tiers.length === 1 ? tiers[0].goal : 0);
         const next = tiers.find(t => p < t.goal) || tiers[tiers.length - 1];
         const done = tiers.filter(t => p >= t.goal).map(t => t.tier).filter(Boolean);
         if (def && def.unit === 'm') {
@@ -1694,6 +1694,11 @@ function trophyLinks(data) {
             const byRegion = !byNum && missions.find(([, m]) => m.region && xnorm(m.region).length > 4 && dx.includes(xnorm(m.region)));
             if (byNum) L.mission = byNum[0]; else if (byRegion) L.mission = byRegion[0];
         }
+        if (!L.completes && !L.mission) { const own = missions.find(([, m]) => toArr(m.trophies).some(x => x && String(x.trophyId) === String(t.trophyId))); if (own) L.mission = own[0]; }
+        for (const [k, m] of missions) {
+            const ob = toArr(m.primary_objectives).find(o => o && typeof o === 'object' && [].concat(o.trophy !== undefined ? o.trophy : []).map(String).includes(String(t.trophyId)));
+            if (ob) { L.objective = ob.text; L.mission = L.mission || k; break; }
+        }
         const raw = String(t.description || '');
         for (const [re, cat] of COLLECT_WORDS) { if (re.test(raw) && /collect|destroy|interact|find/i.test(raw)) { L.collect = cat; const n = raw.replace(/,/g, '').match(/\d+/); if (n) L.collectTarget = Number(n[0]); break; } }
         const rk = raw.match(/reach rank (\d+)/i); if (rk) L.rank = Number(rk[1]);
@@ -1715,12 +1720,30 @@ function collectibleCount(cat) {
     });
     return { got, total };
 }
+// Objectives can be plain text or { text, trophy, medal, tip }: linked ones show the trophy/medal and whether it's earned.
+function objectiveHtml(o) {
+    if (!o || typeof o !== 'object') return escapeHtml(o);
+    const data = appState.gameData || {};
+    const chips = [];
+    [].concat(o.trophy !== undefined ? o.trophy : []).forEach(tid => {
+        const t = allGameTrophies(data).find(x => String(x.trophyId) === String(tid));
+        const st = appState.trophies[`trophy_${appState.gameId}_${tid}`];
+        if (t) chips.push(`🏆 ${escapeHtml(t.name)}${st && st.earned ? ' ✓' : ''}`);
+    });
+    [].concat(o.medal !== undefined ? o.medal : []).forEach(mid => {
+        const md = medalDef(mid); const st = appState.medals[mid];
+        if (md) chips.push(`🏅 ${escapeHtml(md.name)}${st && st.earned ? ' ✓' : ''}`);
+    });
+    return `${escapeHtml(o.text || '')}${o.tip ? `<br><small style="color:#94a3b8;">${escapeHtml(o.tip)}</small>` : ''}${chips.length ? `<br><small class="obj-links">${chips.join(' · ')}</small>` : ''}`;
+}
 function trophyLinkHtml(id) {
     const data = appState.gameData || {}; const L = trophyLinks(data)[String(id)]; if (!L) return '';
     const parts = [];
     const mt = (k) => { const m = data.missions && data.missions[k]; return m ? `Mission ${m.number || ''} ${m.title || ''}`.replace(/\s+/g, ' ').trim() : k; };
     if (L.completes) parts.push(`🔗 Completes ${escapeHtml(mt(L.completes))}${appState.missions[L.completes]?.completed ? ' ✓' : ''}`);
     if (L.mission) parts.push(`📍 Happens in ${escapeHtml(mt(L.mission))}`);
+    if (L.objective) parts.push(`🎯 Main objective: ${escapeHtml(String(L.objective).split(' — ')[0])}`);
+    { const t = allGameTrophies(data).find(x => String(x.trophyId) === String(id)); const md = t && sameNameMedal(t); if (md) parts.push(`🏅 Same as medal ${escapeHtml(md.name)}${appState.medals[md.id]?.earned ? ' ✓' : ''}`); }
     if (L.collect) { const c = collectibleCount(L.collect); parts.push(`🗂️ Tracker: ${c.got}/${L.collectTarget || c.total} ${escapeHtml(humanize(L.collect).toLowerCase())}${c.total && L.collectTarget && c.total !== L.collectTarget ? ` (${c.total} listed)` : ''}`); }
     if (L.rank && appState.campaignRank) parts.push(`🎖️ Your rank: ${appState.campaignRank}/${L.rank}`);
     if (L.species) { const n = toArr(appState.harvestLog).filter(h => xnorm(h.species) === xnorm(L.species)).length; parts.push(`🦌 ${escapeHtml(L.species)} harvested: ${n}`); }
@@ -1736,6 +1759,13 @@ function psnTrophyForMedal(md) {
     if (md.psn_trophy !== undefined) return all.find(x => String(x.trophyId) === String(md.psn_trophy)) || null;
     return all.find(x => norm(x.name) === norm(md.name)) || null;
 }
+function sameNameMedal(t) {
+    const want = String(t.trophyId);
+    let hit = null;
+    const walk = (o) => { if (hit || !o || typeof o !== 'object') return; if (Array.isArray(o)) { o.forEach(walk); return; } if (typeof o.id === 'string' && /^med_/.test(o.id)) { const lt = psnTrophyForMedal(o); if (lt && String(lt.trophyId) === want) hit = o; return; } Object.values(o).forEach(walk); };
+    const d = appState.gameData || {}; walk(d.missions); walk(d.medals);
+    return hit;
+}
 function medalCard(m, ctx) {
     const tierClass = { bronze: 'rank-bronze', silver: 'rank-silver', gold: 'rank-gold' }[m.goal_tier] || 'rank-silver';
     const parts = [];
@@ -1747,7 +1777,7 @@ function medalCard(m, ctx) {
     return buildItemCard({
         progressGoal, unit: m.unit,
         id: m.id, type: 'medal', badge: (m.goal_tier || 'Medal'), badgeClass: tierClass,
-        title: m.name, sub: m.description, body: [linkedTrophy ? `🔗 Synced with PSN trophy "${linkedTrophy.name}"` : '', parts.join(' | '), m.tip ? `Tip: ${m.tip}` : ''].filter(Boolean).join(' — '), img: m.image_url, ctx: `medal ${ctx || ''}`,
+        title: m.name, sub: m.description, body: [linkedTrophy ? `🔗 Synced with PSN trophy "${linkedTrophy.name}"` : '', m.objective ? `🎯 Main objective: ${m.objective}` : '', parts.join(' | '), m.tip ? `Tip: ${m.tip}` : ''].filter(Boolean).join(' — '), img: m.image_url, ctx: `medal ${ctx || ''}`,
         locImg: m.location_image_url, link: m.map_url || m.video_url, linkLabel: m.map_url ? 'Open on map' : (m.video_url ? 'Watch guide' : '')
     });
 }
@@ -1832,7 +1862,7 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
         const tools = [['bolt_cutters', 'Bolt cutters'], ['crowbar', 'Crowbars'], ['satchel_charges', 'Satchel charges'], ['coal_torpedoes', 'Coal torpedoes'], ['keys', 'Keys']].filter(([k]) => mc[k]).map(([k, l]) => `${l} ${mc[k]}`).join(' · ');
         detail.push(`<div><h4>🗺️ Collectible Map</h4><p><a href="${escapeHtml(m.interactive_map.url)}" target="_blank" rel="noopener" class="uni-search-btn" style="display:inline-block;">Open interactive map (${escapeHtml(m.interactive_map.source || 'map')})</a></p>${mc.starting_points ? `<p style="font-size:0.78rem;color:#94a3b8;">Starting points ${mc.starting_points} · Exfil ${mc.exfiltration_points || '?'}${tools ? ` · ${tools}` : ''}</p>` : ''}</div>`);
     }
-    if (toArr(m.primary_objectives).length) detail.push(`<div><h4>Main Objectives</h4><ul>${toArr(m.primary_objectives).map(o => `<li>${escapeHtml(o)}</li>`).join('')}</ul></div>`);
+    if (toArr(m.primary_objectives).length) detail.push(`<div><h4>Main Objectives</h4><ul>${toArr(m.primary_objectives).map(o => `<li>${objectiveHtml(o)}</li>`).join('')}</ul></div>`);
     if (toArr(m.optional_objectives).length) detail.push(`<div><h4>Optional Objectives (${toArr(m.optional_objectives).length})</h4><ul>${toArr(m.optional_objectives).map(o => `<li>${escapeHtml(o)}</li>`).join('')}</ul></div>`);
     if (m.kill_target || (typeof m.kill_challenge === 'string' && m.kill_challenge)) {
         detail.push(`<div><h4>Kill List</h4>${m.kill_target ? `<p><strong>${escapeHtml(m.kill_target)}</strong></p>` : ''}${typeof m.kill_challenge === 'string' && m.kill_challenge ? `<p>Kill challenge: ${escapeHtml(m.kill_challenge)}</p>` : ''}</div>`);

@@ -3595,7 +3595,9 @@
             },
             "image_url": "/public/games/snresistance/images/medals/med_mission_mastermind.jpg",
             "verified": true,
-            "source": "In-game Medals > Missions screen"
+            "source": "In-game Medals > Missions screen",
+            "psn_trophy": 51,
+            "objective": "The Final Shot: Otto Kruger (headshot him)"
           },
           {
             "id": "med_mission_eyes_of_a_hawk_er",
@@ -3653,11 +3655,18 @@
           "name": "Mastermind",
           "rank": "BRONZE",
           "description": "Headshot Kruger.",
-          "tip": "Make the Final Shot a headshot on Kruger."
+          "tip": "Make the Final Shot a headshot on Kruger.",
+          "objective": "The Final Shot: Otto Kruger",
+          "medal": "med_mission_mastermind"
         }
       ],
       "primary_objectives": [
-        "The Final Shot — kill Otto Kruger as he tries to escape with the Kleine Blume formula and the last samples."
+        {
+          "text": "The Final Shot: Otto Kruger — kill Otto Kruger as he tries to escape with the Kleine Blume formula and the last samples.",
+          "tip": "Make the final shot a headshot to earn the Mastermind trophy and medal at the same time.",
+          "trophy": 51,
+          "medal": "med_mission_mastermind"
+        }
       ],
       "kill_target": "Generalmajor Otto Kruger",
       "starting_locations": [
@@ -4969,7 +4978,7 @@
         {
           "id": "med_pistol_pistol_perfectionist",
           "name": "Pistol Perfectionist",
-          "description": "Obtain 6 pistol-related mastery medals.",
+          "description": "Obtain 6 pistol-related mastery medals. (Gold)",
           "goal": 6,
           "goal_tier": "gold",
           "tiers": {
@@ -4977,13 +4986,13 @@
             "silver": null,
             "gold": 6
           },
-          "image_url": "",
+          "image_url": "/public/games/snresistance/images/medals/med_pistol_pistol_perfectionist.jpg",
           "notes": "7 pistol masters are listed; only 6 are needed."
         },
         {
           "id": "med_pistol_m1935a_master",
           "name": "M1935A Master",
-          "description": "Ghost kill 5 enemies with the M1935A.",
+          "description": "Ghost Kill 5 enemies with the M1935A.",
           "goal": 5,
           "goal_tier": "bronze",
           "tiers": {
@@ -4991,12 +5000,18 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_pistol_m1935a_master.jpg",
+          "tier_goals": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "notes": "Three tiers; bronze is shown in game. Silver and gold counts not seen yet."
         },
         {
           "id": "med_pistol_welrod_master",
           "name": "Welrod Master",
-          "description": "Ghost kill 5 enemies with the Welrod.",
+          "description": "Ghost Kill 5 enemies with the Welrod.",
           "goal": 5,
           "goal_tier": "bronze",
           "tiers": {
@@ -5004,12 +5019,18 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_pistol_welrod_master.jpg",
+          "tier_goals": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "notes": "Three tiers; bronze is shown in game. Silver and gold counts not seen yet."
         },
         {
           "id": "med_pistol_nagant_m1895_master",
           "name": "Nagant M1895 Master",
-          "description": "Ghost kill 5 enemies with the Nagant M1895.",
+          "description": "Ghost Kill 5 enemies with the M1895.",
           "goal": 5,
           "goal_tier": "bronze",
           "tiers": {
@@ -5017,12 +5038,18 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_pistol_nagant_m1895_master.jpg",
+          "tier_goals": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "notes": "Three tiers; bronze is shown in game. Silver and gold counts not seen yet."
         },
         {
           "id": "med_pistol_hp_9mm_master",
           "name": "HP 9mm Master",
-          "description": "Ghost kill 5 enemies with the HP 9mm.",
+          "description": "Ghost Kill 5 enemies with the HP 9mm.",
           "goal": 5,
           "goal_tier": "bronze",
           "tiers": {
@@ -5030,12 +5057,18 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_pistol_hp_9mm_master.jpg",
+          "tier_goals": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "notes": "Three tiers; bronze is shown in game. Silver and gold counts not seen yet."
         },
         {
           "id": "med_pistol_32_ruby_master",
           "name": ".32 Ruby Master",
-          "description": "Ghost kill 5 enemies with the .32 Ruby.",
+          "description": "Ghost Kill 5 enemies with the .32 Ruby.",
           "goal": 5,
           "goal_tier": "bronze",
           "tiers": {
@@ -5043,12 +5076,18 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_pistol_32_ruby_master.jpg",
+          "tier_goals": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "notes": "Three tiers; bronze is shown in game. Silver and gold counts not seen yet."
         },
         {
           "id": "med_pistol_semi_auto_m1912_master",
           "name": "Semi-Auto M1912 Master",
-          "description": "Ghost kill 5 enemies with the Semi-Auto M1912.",
+          "description": "Ghost Kill 5 enemies with the Semi-Auto M1912.",
           "goal": 5,
           "goal_tier": "bronze",
           "tiers": {
@@ -5056,7 +5095,13 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_pistol_semi_auto_m1912_master.jpg",
+          "tier_goals": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "notes": "Three tiers; bronze is shown in game. Silver and gold counts not seen yet."
         },
         {
           "id": "med_pistol_mod_712_master",
@@ -5076,7 +5121,7 @@
         {
           "id": "med_secondary_secondary_supremacy",
           "name": "Secondary Supremacy",
-          "description": "Obtain 8 secondary-related mastery medals.",
+          "description": "Obtain 8 secondary-related mastery medals. (Gold)",
           "goal": 8,
           "goal_tier": "gold",
           "tiers": {
@@ -5084,34 +5129,46 @@
             "silver": null,
             "gold": 8
           },
-          "image_url": "",
+          "image_url": "/public/games/snresistance/images/medals/med_secondary_secondary_supremacy.jpg",
           "notes": "9 secondary masters are listed; only 8 are needed."
         },
         {
           "id": "med_secondary_m_38_master",
           "name": "M.38 Master",
-          "description": "Kill 100 enemies with the M.38.",
-          "goal": 100,
+          "description": "Kill 5 enemies with the M.38.",
+          "goal": 5,
           "goal_tier": "bronze",
           "tiers": {
             "bronze": 100,
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_secondary_m_38_master.jpg",
+          "tier_goals": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "notes": "Three tiers; bronze is shown in game. Silver and gold counts not seen yet."
         },
         {
           "id": "med_secondary_sten_mk2_master",
           "name": "Sten Mk2 Master",
-          "description": "Kill 100 enemies with the Sten Mk2.",
-          "goal": 100,
+          "description": "Kill 5 enemies with a Stengun Mk2.",
+          "goal": 5,
           "goal_tier": "bronze",
           "tiers": {
             "bronze": 100,
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_secondary_sten_mk2_master.jpg",
+          "tier_goals": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "notes": "Three tiers; bronze is shown in game. Silver and gold counts not seen yet."
         },
         {
           "id": "med_secondary_m1907_master",
@@ -5124,12 +5181,18 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_secondary_m1907_master.jpg",
+          "tier_goals": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "notes": "Three tiers; bronze is shown in game. Silver and gold counts not seen yet."
         },
         {
           "id": "med_secondary_erma_36_master",
           "name": "ERMA.36 Master",
-          "description": "Kill 5 enemies with the ERMA.36 SMG.",
+          "description": "Kill 5 enemies with a ERMA.36 SMG.",
           "goal": 5,
           "goal_tier": null,
           "tiers": {
@@ -5137,7 +5200,13 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_secondary_erma_36_master.jpg",
+          "tier_goals": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "notes": "Three tiers; bronze is shown in game. Silver and gold counts not seen yet."
         },
         {
           "id": "med_secondary_mkms_master",
@@ -5150,7 +5219,13 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_secondary_mkms_master.jpg",
+          "tier_goals": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "notes": "Three tiers; bronze is shown in game. Silver and gold counts not seen yet."
         },
         {
           "id": "med_secondary_ud_42_master",
@@ -5163,7 +5238,13 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_secondary_ud_42_master.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": 100,
+            "gold": null
+          },
+          "notes": "Bronze already earned; the game shows 100 as the next tier. Gold count not seen yet."
         },
         {
           "id": "med_secondary_trench_gun_master",
@@ -5176,7 +5257,13 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_secondary_trench_gun_master.jpg",
+          "tier_goals": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "notes": "Three tiers; bronze is shown in game. Silver and gold counts not seen yet."
         },
         {
           "id": "med_secondary_m1918_bar_master",
@@ -5189,7 +5276,13 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_secondary_m1918_bar_master.jpg",
+          "tier_goals": {
+            "bronze": 5,
+            "silver": null,
+            "gold": null
+          },
+          "notes": "Three tiers; bronze is shown in game. Silver and gold counts not seen yet."
         },
         {
           "id": "med_secondary_m1a1_gov_master",
