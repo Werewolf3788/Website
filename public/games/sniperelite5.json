@@ -2275,5 +2275,14 @@
     "poster": "https://cdn.cloudflare.steamstatic.com/steam/apps/1029690/library_600x900_2x.jpg",
     "wallpaper": "https://cdn.cloudflare.steamstatic.com/steam/apps/1029690/library_hero.jpg",
     "note": "Page background: poster on phones, wallpaper on wide screens. Falls back to image_url if these fail to load."
+  },
+  "campaign_rank": {
+    "max": 50,
+    "trophyId": 52,
+    "trophyIds": [
+      50,
+      52
+    ],
+    "note": "Campaign/XP rank. Filled from the PSN trophies Climbing the Ranks (rank 40) and Sniper Veteran (rank 50)."
   }
 }

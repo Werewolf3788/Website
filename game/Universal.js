@@ -707,11 +707,17 @@ window.appState.applyStateToUI = function() {
         el.innerHTML = `🎮 PSN progress: ${t.progressTarget ? `${fmtNum(v)}/${fmtNum(max)}` : `${v}%`}` + meterHtml(max - v, max, '').replace(/^<span class="wm-num[^>]*>.*?<\/span>/, '');
         el.hidden = false;
     });
-    Object.entries((this.gameData && this.gameData.missions) || {}).forEach(([mk, mm]) => {
-        if (!mm || mm.completion_trophy === undefined) return;
-        const t = this.trophies[`trophy_${this.gameId}_${mm.completion_trophy}`];
-        if (t && t.earned) { this.missions[mk] = this.missions[mk] || {}; if (!this.missions[mk].completed) { this.missions[mk].completed = true; this.missions[mk].auto = true; } }
+    // trophies that complete a mission (any game) tick that mission
+    const tl = this.gameData ? trophyLinks(this.gameData) : {};
+    const doneBy = {};
+    Object.entries(tl).forEach(([tid, L]) => { if (L.completes) { const t = this.trophies[`trophy_${this.gameId}_${tid}`]; doneBy[L.completes] = doneBy[L.completes] || !!(t && t.earned); } });
+    Object.entries(doneBy).forEach(([mk, earned]) => {
+        if (earned) { this.missions[mk] = this.missions[mk] || {}; if (!this.missions[mk].completed) { this.missions[mk].completed = true; this.missions[mk].auto = true; } }
         else if (this.missions[mk]?.auto) { this.missions[mk].completed = false; delete this.missions[mk].auto; }
+    });
+    document.querySelectorAll('.trophy-link[data-trophy]').forEach(el => {
+        const id = String(el.dataset.trophy).split('_').pop(); const h = trophyLinkHtml(id);
+        if (el.innerHTML !== h) el.innerHTML = h; el.hidden = !h;
     });
     Object.values((this.gameData && this.gameData.missions) || {}).forEach(mm => {
         const g = mm && mm.gnomes; if (!g || !g.medal_id) return;
@@ -1369,6 +1375,10 @@ async function autoCheckUserPsnTrophies() {
                 const cardKey = `trophy_${appState.gameId}_${parsedId}`;
                 const isEarnedInPsn = (tObj.earned === true || tObj.isEarned === true);
                 const cr = appState.gameData && appState.gameData.campaign_rank;
+                if (cr && cr.trophyIds && cr.trophyIds.map(String).includes(String(parsedId)) && !isEarnedInPsn) {
+                    const v = Number(tObj.currentValue ?? tObj.trophyProgress ?? tObj.progress);
+                    if (v && v > (appState.campaignRank || 0)) { appState.campaignRank = Math.min(cr.max, v); appState.campaignRankSource = 'psn'; stateModified = true; }
+                }
                 if (cr && String(parsedId) === String(cr.trophyId)) {
                     const v = isEarnedInPsn ? cr.max : Number(tObj.currentValue ?? tObj.trophyProgress ?? tObj.progress);
                     if (v && v !== appState.campaignRank) { appState.campaignRank = Math.min(cr.max, v); appState.campaignRankSource = 'psn'; stateModified = true; }
@@ -1462,6 +1472,7 @@ function ensureUniversalStyles() {
         .medal-count { width: 74px; text-align: center; background: #0f172a; color: #fff; border: 1px solid #334155; border-radius: 6px; padding: 3px 4px; }
         .active-mission-bar { margin-bottom: 10px; }
         .active-mission-btn.on { background: #7c3aed; border-color: #a78bfa; color: #fff; }
+        .trophy-link { font-size: 0.75rem; color: #c4b5fd; line-height: 1.5; margin-top: 4px; }
         .mark-all-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
         .loc-photo { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; margin-top: 4px; display: block; }
         .friend-marks { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; padding-top: 6px; border-top: 1px dashed rgba(255,255,255,0.1); width: 100%; }
@@ -1607,11 +1618,81 @@ function buildItemCard(o) {
         </div>
         ${o.body ? `<p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(o.body)}</p>` : ''}
         ${o.progressGoal ? `<div class="medal-meter wallet-meter" data-medal="${escapeHtml(o.id)}"></div>` : ''}
-        ${o.type === 'trophy' ? `<div class="wallet-meter trophy-psn" data-trophy="${escapeHtml(o.id)}" hidden></div>` : ''}
+        ${o.type === 'trophy' ? `<div class="wallet-meter trophy-psn" data-trophy="${escapeHtml(o.id)}" hidden></div><div class="trophy-link" data-trophy="${escapeHtml(o.id)}" hidden></div>` : ''}
         ${o.locImg ? `<img src="${escapeHtml(toSecureUrl(o.locImg))}" alt="Where to find ${escapeHtml(o.title || '')}" loading="lazy" class="loc-photo" title="Tap to enlarge" onerror="this.remove()">` : ''}
         ${o.price ? `<div class="price-meter wallet-meter" data-price="${Number(o.price) || 0}"></div>` : ''}
         ${o.link ? `<a href="${escapeHtml(o.link)}" target="_blank" rel="noopener" style="font-size:0.75rem; font-weight:800; color:var(--user-theme-accent, #ff5500); text-decoration:none;">▶ ${escapeHtml(o.linkLabel || 'Watch')}</a>` : ''}
     </div>`;
+}
+
+// ---------------------------------------------------------------------------
+// Cross-reference engine (every game): reads each PSN trophy's description and
+// links it to what the tracker knows — the mission it completes, the mission it
+// happens in, the collectible type it counts, the campaign rank, or (hunting
+// games) the species/harvest count. Built from the game JSON, no per-game code.
+// ---------------------------------------------------------------------------
+const COLLECT_WORDS = [
+    [/personal letters?/i, 'personal_letters'], [/classified documents?/i, 'classified_documents'],
+    [/hidden items?/i, 'hidden_items'], [/dead-?eye targets?|stone eagles?/i, 'stone_eagles'], [/workbench(es)?/i, 'workbenches']
+];
+const xnorm = (t) => String(t || '').replace(/&/g, ' and ').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+let trophyLinkCache = { data: null, links: {} };
+function allGameTrophies(data) {
+    const out = [...toArr(data.trophies), ...toArr(data.general_trophies), ...Object.values(data.missions || {}).flatMap(m => toArr(m && m.trophies))];
+    const seen = new Set(); return out.filter(t => t && t.trophyId !== undefined && !seen.has(String(t.trophyId)) && seen.add(String(t.trophyId)));
+}
+function trophyLinks(data) {
+    if (trophyLinkCache.data === data) return trophyLinkCache.links;
+    const links = {};
+    const missions = Object.entries(data.missions || {}).filter(([, m]) => m && m.title).map(([k, m]) => [k, m, xnorm(m.title)]).sort((a, b) => b[2].length - a[2].length);
+    allGameTrophies(data).forEach(t => {
+        const d = xnorm(t.description || t.detail);
+        const L = {};
+        for (const [k, m, title] of missions) {
+            if (!title || title.length < 4) continue;
+            if (d === `complete ${title}` || d === `complete mission ${m.number} ${title}` || (m.completion_trophy !== undefined && String(m.completion_trophy) === String(t.trophyId))) { L.completes = k; break; }
+            if (d.includes(title)) { L.mission = k; break; }
+        }
+        if (!L.completes) {
+            const mm = d.match(/^complete mission (\d+)$/); if (mm) { const hit = missions.find(([, m]) => String(m.number) === mm[1]); if (hit) L.completes = hit[0]; }
+        }
+        if (!L.completes && !L.mission) {
+            const mn = d.match(/\bmission (\d+)\b/); const byNum = mn && missions.find(([, m]) => String(m.number) === mn[1]);
+            const byRegion = !byNum && missions.find(([, m]) => m.region && xnorm(m.region).length > 4 && d.includes(xnorm(m.region)));
+            if (byNum) L.mission = byNum[0]; else if (byRegion) L.mission = byRegion[0];
+        }
+        const raw = String(t.description || '');
+        for (const [re, cat] of COLLECT_WORDS) { if (re.test(raw) && /collect|destroy|interact|find/i.test(raw)) { L.collect = cat; const n = raw.replace(/,/g, '').match(/\d+/); if (n) L.collectTarget = Number(n[0]); break; } }
+        const rk = raw.match(/reach rank (\d+)/i); if (rk) L.rank = Number(rk[1]);
+        if (Array.isArray(data.species)) {
+            const sp = data.species.find(x => x && x.name && d.includes(xnorm(x.name)));
+            if (sp) L.species = sp.name;
+            if (/harvest|hunt|kill/i.test(raw) && /\d/.test(raw)) { const n = raw.replace(/,/g, '').match(/\d+/); L.harvestTarget = Number(n[0]); }
+        }
+        if (Object.keys(L).length) links[String(t.trophyId)] = L;
+    });
+    trophyLinkCache = { data, links };
+    return links;
+}
+function collectibleCount(cat) {
+    let got = 0, total = 0;
+    Object.entries(appState.collectibles || {}).forEach(([g, grp]) => {
+        if (!g.endsWith('__' + cat)) return;
+        Object.values((grp && grp.items) || {}).forEach(it => { total++; if (it && it.collected) got++; });
+    });
+    return { got, total };
+}
+function trophyLinkHtml(id) {
+    const data = appState.gameData || {}; const L = trophyLinks(data)[String(id)]; if (!L) return '';
+    const parts = [];
+    const mt = (k) => { const m = data.missions && data.missions[k]; return m ? `Mission ${m.number || ''} ${m.title || ''}`.replace(/\s+/g, ' ').trim() : k; };
+    if (L.completes) parts.push(`🔗 Completes ${escapeHtml(mt(L.completes))}${appState.missions[L.completes]?.completed ? ' ✓' : ''}`);
+    if (L.mission) parts.push(`📍 Happens in ${escapeHtml(mt(L.mission))}`);
+    if (L.collect) { const c = collectibleCount(L.collect); parts.push(`🗂️ Tracker: ${c.got}/${L.collectTarget || c.total} ${escapeHtml(humanize(L.collect).toLowerCase())}${c.total && L.collectTarget && c.total !== L.collectTarget ? ` (${c.total} listed)` : ''}`); }
+    if (L.rank && appState.campaignRank) parts.push(`🎖️ Your rank: ${appState.campaignRank}/${L.rank}`);
+    if (L.species) { const n = toArr(appState.harvestLog).filter(h => xnorm(h.species) === xnorm(L.species)).length; parts.push(`🦌 ${escapeHtml(L.species)} harvested: ${n}`); }
+    else if (L.harvestTarget && Array.isArray(data.species)) parts.push(`🦌 Kills logged: ${toArr(appState.harvestLog).length}/${L.harvestTarget}`);
+    return parts.join('<br>');
 }
 
 // Medals and PSN trophies with the same name (or "psn_trophy" in the JSON) are the same goal.
@@ -2655,6 +2736,32 @@ function walletPanelHtml(data) {
         </form>`, '<div id="wishlistList" class="hunt-card-list"></div>'))}`;
 }
 
+// Hunting games keep no trophy list in their JSON: build it from the PSN skeleton,
+// with live progress and cross-references (species / harvest counts).
+async function renderPsnTrophyList(data) {
+    const box = document.getElementById('psnTrophyList'); if (!box) return;
+    const sk = await loadPsnTrophySkeleton(ACTIVE_COMM_ID);
+    const list = sk && (Array.isArray(sk.trophies) ? sk.trophies : Object.values(sk.trophies || {})).filter(Boolean);
+    if (!list || !list.length) { box.innerHTML = '<p style="color:#94a3b8;font-size:0.85rem;">The PlayStation sync has not saved this game\'s trophy list yet. It appears after you play it with PSN linked.</p>'; return; }
+    // make them real trophy cards so progress, friends and search all work
+    data.trophies = list.map(t => ({ trophyId: t.trophyId, name: t.name, rank: t.rank || t.type, description: t.description || t.detail, icon: t.icon }));
+    trophyLinkCache = { data: null, links: {} };
+    list.forEach(t => {
+        const key = `trophy_${appState.gameId}_${t.trophyId}`;
+        if (!appState.trophies[key]) appState.trophies[key] = { earned: false };
+        Object.assign(appState.trophies[key], { name: t.name, rank: String(t.rank || t.type || 'BRONZE').toUpperCase(), description: t.description || t.detail || '', icon: toSecureUrl(t.icon || ''), trophyId: t.trophyId });
+    });
+    const live = appState.psnGamertag ? await readPsnProgress(appState.psnGamertag, ACTIVE_COMM_ID) : null;
+    if (live) Object.entries(Array.isArray(live) ? { ...live } : live).forEach(([tid, t]) => {
+        if (!t) return; const key = `trophy_${appState.gameId}_${t.trophyId !== undefined ? t.trophyId : tid}`; const c = appState.trophies[key]; if (!c) return;
+        if (t.earned || t.isEarned) c.earned = true;
+        c.progressValue = Number(t.currentValue ?? t.trophyProgress ?? 0) || 0; c.progressTarget = Number(t.targetValue ?? 0) || 0;
+        c.progressRate = t.progressRate != null ? parseFloat(t.progressRate) : null;
+    });
+    box.innerHTML = gridOf(list.map(t => trophyCardFor(`trophy_${appState.gameId}_${t.trophyId}`, 'psn trophy')).filter(Boolean));
+    appState.applyStateToUI();
+}
+
 // Hunting games (e.g. Way of the Hunter 2): reserves, species, quests, challenges
 function newPlayerGuideHtml(data) {
     const g = data.new_player_guide; if (!g) return '';
@@ -2707,6 +2814,7 @@ function renderHuntingSchema(data) {
     if (data.multiplayer) chips.push(`<span class="game-chip">${escapeHtml(data.multiplayer)}</span>`);
     if (chips.length) html += `<div class="game-overview">${chips.join('')}</div>`;
     html += newPlayerGuideHtml(data);
+    html += buildFolder('🏆 PlayStation Trophies', '<div id="psnTrophyList"><p style="color:#94a3b8;font-size:0.85rem;">Loading the trophy list from PlayStation…</p></div>');
     html += walletPanelHtml(data);
     html += lockerPanelHtml(data);
 
@@ -2817,6 +2925,7 @@ function renderUniversalCompanion(data) {
     if (!isMissionSchema(data) && Array.isArray(data.species)) {
         container.innerHTML = renderHuntingSchema(data);
         const wf = document.getElementById('watchForm'); if (wf) fillWatchDefaults(wf);
+        renderPsnTrophyList(data);
         appState.applyStateToUI();
         setupUniversalSearch();
         return;
