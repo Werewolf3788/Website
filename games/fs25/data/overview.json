@@ -11,12 +11,12 @@
     {
      "name": "OneLIVIDMAN",
      "isAdmin": true,
-     "uptimeMin": 73
+     "uptimeMin": 91
     },
     {
      "name": "wildhorse_spirit",
      "isAdmin": true,
-     "uptimeMin": 71
+     "uptimeMin": 90
     }
    ],
    "capacity": 6,
@@ -26,9 +26,9 @@
   "serverVersion": "1.25.0.0",
   "saveDir": "/profile/savegame3",
   "saveAgeMin": null,
-  "lastCheck": "2026-11-02T07:35:33Z",
-  "lastChange": "2026-11-02T07:35:33Z",
-  "lastFull": "2026-11-02T07:35:33Z",
+  "lastCheck": "2026-11-02T07:53:54Z",
+  "lastChange": "2026-11-02T07:53:54Z",
+  "lastFull": "2026-11-02T07:53:54Z",
   "lastLight": null,
   "files": [
    "careerSavegame",
@@ -61,16 +61,9 @@
   ],
   "changedFiles": [
    "careerSavegame.xml",
-   "collectibles.xml",
    "economy.xml",
    "environment.xml",
-   "farmland.xml",
    "farms.xml",
-   "fields.xml",
-   "handTools.xml",
-   "items.xml",
-   "missions.xml",
-   "npc.xml",
    "placeables.xml",
    "players.xml",
    "precisionFarming.xml",
@@ -90,14 +83,14 @@
   "needFertilizer": 2,
   "needPlow": 0,
   "weeds": 0,
-  "vehicles": 69,
+  "vehicles": 66,
   "pallets": 62,
-  "helpersActive": 2,
+  "helpersActive": 4,
   "placeables": 165,
   "animals": 0,
   "openContracts": 11,
   "bales": 11,
-  "usedForSale": 1,
+  "usedForSale": 6,
   "collectibles": "8/50",
   "mods": 69,
   "precisionFarming": true
@@ -111,9 +104,9 @@
   "economicDifficulty": "NORMAL",
   "timeScale": 1.0,
   "autoSaveInterval": 15.0,
-  "money": 2189847103,
-  "playTimeHours": 1443.4,
-  "slotUsage": 2294,
+  "money": 2189850304,
+  "playTimeHours": 1443.9,
+  "slotUsage": 2267,
   "settings": {
    "savegameName": "Keep Rolling rollin rollin",
    "creationDate": "2026-08-30",
@@ -176,7 +169,7 @@
   "month": "August",
   "season": "Summer",
   "year": 5,
-  "time": "13:24",
+  "time": "13:54",
   "minutesSinceRain": 0,
   "groundWetness": 1.0,
   "snowHeight": 0.0,
@@ -357,21 +350,21 @@
   "version": "1.25.0.0",
   "mapName": "The Rural Farmlands Of Ohio",
   "mapSize": 2048,
-  "time": "13:37",
+  "time": "13:56",
   "capacity": 6,
   "numUsed": 2,
   "players": [
    {
     "name": "OneLIVIDMAN",
     "isAdmin": true,
-    "uptimeMin": 73,
-    "x": null,
-    "z": null
+    "uptimeMin": 91,
+    "x": 382.401123,
+    "z": 615.887024
    },
    {
     "name": "wildhorse_spirit",
     "isAdmin": true,
-    "uptimeMin": 71,
+    "uptimeMin": 90,
     "x": null,
     "z": null
    }
@@ -1164,8 +1157,8 @@
    "name": "Invisible Roller",
    "category": "ROLLERS",
    "type": "roller",
-   "x": 735.603821,
-   "z": 149.021973,
+   "x": 743.301025,
+   "z": 141.900101,
    "fills": [],
    "isAIActive": false,
    "controller": null
@@ -1189,8 +1182,8 @@
    "name": "Invisible Roller",
    "category": "ROLLERS",
    "type": "roller",
-   "x": 368.465454,
-   "z": 593.093201,
+   "x": 448.862244,
+   "z": 684.609619,
    "fills": [],
    "isAIActive": false,
    "controller": null
@@ -1205,52 +1198,6 @@
     {
      "type": "DIESEL",
      "level": 80.0
-    }
-   ],
-   "isAIActive": false,
-   "controller": null
-  },
-  {
-   "name": "M8 SERIES",
-   "category": "TRACTORSM",
-   "type": "tractor",
-   "x": 703.628418,
-   "z": 536.624878,
-   "fills": [
-    {
-     "type": "DIESEL",
-     "level": 311.0
-    },
-    {
-     "type": "DEF",
-     "level": 32.0
-    },
-    {
-     "type": "AIR",
-     "level": 3370.9
-    }
-   ],
-   "isAIActive": false,
-   "controller": "wildhorse_spirit"
-  },
-  {
-   "name": "M8 SERIES",
-   "category": "TRACTORSM",
-   "type": "tractor",
-   "x": 340.48584,
-   "z": 454.147766,
-   "fills": [
-    {
-     "type": "DIESEL",
-     "level": 375.0
-    },
-    {
-     "type": "DEF",
-     "level": 35.0
-    },
-    {
-     "type": "AIR",
-     "level": 4000.0
     }
    ],
    "isAIActive": false,
@@ -1358,12 +1305,12 @@
    "name": "Colossus FLM 726",
    "category": "FERTILIZERSPREADERS",
    "type": "spreader",
-   "x": -163.058258,
-   "z": 334.898071,
+   "x": -265.340546,
+   "z": -493.493622,
    "fills": [
     {
      "type": "FERTILIZER",
-     "level": 100000.0
+     "level": 99974.4
     }
    ],
    "isAIActive": false,
@@ -1373,8 +1320,8 @@
    "name": "Titan Header",
    "category": "CUTTERS",
    "type": "cutter",
-   "x": 499.512543,
-   "z": 919.840881,
+   "x": 503.455627,
+   "z": 919.528809,
    "fills": [],
    "isAIActive": false,
    "controller": null
@@ -1383,8 +1330,8 @@
    "name": "6R Series (230-250)",
    "category": "TRACTORSM",
    "type": "tractor",
-   "x": -386.550385,
-   "z": 334.308044,
+   "x": 302.802429,
+   "z": 704.128296,
    "fills": [
     {
      "type": "DIESEL",
@@ -1406,7 +1353,7 @@
    "name": "6R Series (230-250)",
    "category": "TRACTORSM",
    "type": "tractor",
-   "x": 453.098267,
+   "x": 453.098297,
    "z": 688.252014,
    "fills": [
     {
@@ -1429,8 +1376,8 @@
    "name": "6R Series (230-250)",
    "category": "TRACTORSM",
    "type": "tractor",
-   "x": 368.043671,
-   "z": 589.593384,
+   "x": 452.38089,
+   "z": 684.408447,
    "fills": [
     {
      "type": "DIESEL",
@@ -1442,7 +1389,7 @@
     },
     {
      "type": "AIR",
-     "level": 3435.8
+     "level": 2817.4
     }
    ],
    "isAIActive": false,
@@ -1452,8 +1399,8 @@
    "name": "Roadrunner+",
    "category": "TRUCKS",
    "type": "FS25_RoadrunnerPlus.roadrunnerTruck",
-   "x": 772.454285,
-   "z": 446.131042,
+   "x": 772.453979,
+   "z": 446.131073,
    "fills": [
     {
      "type": "DIESEL",
@@ -1534,8 +1481,8 @@
    "name": "Steiger Series",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": 797.711243,
-   "z": 192.050995,
+   "x": 783.984985,
+   "z": 363.063873,
    "fills": [
     {
      "type": "DIESEL",
@@ -1547,7 +1494,7 @@
     },
     {
      "type": "AIR",
-     "level": 2735.8
+     "level": 4000.0
     }
    ],
    "isAIActive": true,
@@ -1580,20 +1527,20 @@
    "name": "Steiger Series",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": 520.506897,
-   "z": 829.213135,
+   "x": 380.165039,
+   "z": 616.012024,
    "fills": [
     {
      "type": "DIESEL",
-     "level": 1897.9
+     "level": 1885.9
     },
     {
      "type": "DEF",
-     "level": 322.0
+     "level": 320.0
     },
     {
      "type": "AIR",
-     "level": 2057.3
+     "level": 3176.8
     }
    ],
    "isAIActive": false,
@@ -1604,7 +1551,7 @@
    "category": "MISC",
    "type": "FS25_precisionFarming.soilSampler",
    "x": 538.413086,
-   "z": 681.436218,
+   "z": 681.436157,
    "fills": [],
    "isAIActive": false,
    "controller": null
@@ -1613,12 +1560,12 @@
    "name": "Magnum Series",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": -466.980713,
-   "z": 263.652649,
+   "x": 544.496887,
+   "z": 836.726074,
    "fills": [
     {
      "type": "DIESEL",
-     "level": 636.0
+     "level": 634.0
     },
     {
      "type": "DEF",
@@ -1626,7 +1573,7 @@
     },
     {
      "type": "AIR",
-     "level": 3000.0
+     "level": 2441.7
     }
    ],
    "isAIActive": false,
@@ -1659,17 +1606,7 @@
    "name": "Titan Vineyard Plow",
    "category": "PLOWS",
    "type": "plow",
-   "x": 721.573914,
-   "z": 553.862183,
-   "fills": [],
-   "isAIActive": false,
-   "controller": null
-  },
-  {
-   "name": "Titan Vineyard Plow",
-   "category": "PLOWS",
-   "type": "plow",
-   "x": 449.441406,
+   "x": 449.441437,
    "z": 688.374451,
    "fills": [],
    "isAIActive": false,
@@ -1731,8 +1668,8 @@
    "name": "1775NT Multi-planter",
    "category": "PLANTERS",
    "type": "sowingMachine",
-   "x": -378.790039,
-   "z": 334.383698,
+   "x": 306.037689,
+   "z": 697.721313,
    "fills": [
     {
      "type": "SEEDS",
@@ -1746,8 +1683,8 @@
    "name": "1775NT Multi-planter",
    "category": "PLANTERS",
    "type": "sowingMachine",
-   "x": -458.577271,
-   "z": 262.983124,
+   "x": 543.481018,
+   "z": 828.497803,
    "fills": [
     {
      "type": "SEEDS",
@@ -1776,12 +1713,12 @@
    "name": "8R Series",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": 472.706207,
-   "z": 711.21283,
+   "x": 450.802917,
+   "z": 651.289307,
    "fills": [
     {
      "type": "DIESEL",
-     "level": 692.0
+     "level": 691.0
     },
     {
      "type": "DEF",
@@ -1789,7 +1726,7 @@
     },
     {
      "type": "AIR",
-     "level": 2847.2
+     "level": 2479.0
     }
    ],
    "isAIActive": false,
@@ -1799,8 +1736,8 @@
    "name": "Vegetable Header",
    "category": "VEGETABLEHARVESTERS",
    "type": "cutter",
-   "x": -422.401154,
-   "z": -31.003748,
+   "x": 481.996277,
+   "z": 934.051514,
    "fills": [],
    "isAIActive": false,
    "controller": null
@@ -1809,16 +1746,16 @@
    "name": "Colossus 8000 Root Harvester",
    "category": "BEETHARVESTERS",
    "type": "combineDrivable",
-   "x": -421.122925,
-   "z": -39.149738,
+   "x": 481.09967,
+   "z": 925.879456,
    "fills": [
     {
      "type": "DIESEL",
-     "level": 1220.9
+     "level": 1214.8
     },
     {
      "type": "DEF",
-     "level": 94.0
+     "level": 93.0
     }
    ],
    "isAIActive": false,
@@ -1847,7 +1784,7 @@
    "name": "Colossus Quick Mow",
    "category": "MOWERS",
    "type": "mower",
-   "x": 448.964813,
+   "x": 448.964844,
    "z": 681.464966,
    "fills": [],
    "isAIActive": false,
@@ -1906,8 +1843,8 @@
    "name": "4905 Multi-Fruit Planter",
    "category": "PLANTERS",
    "type": "fertilizingSowingMachine",
-   "x": 750.35144,
-   "z": 145.651505,
+   "x": 750.356079,
+   "z": 145.619598,
    "fills": [
     {
      "type": "SEEDS",
@@ -2575,8 +2512,8 @@
    "name": "Colossus 9000 Harvester",
    "category": "HARVESTERS",
    "type": "combineDrivable",
-   "x": 934.263428,
-   "z": 500.039185,
+   "x": 934.263367,
+   "z": 500.039551,
    "fills": [
     {
      "type": "DIESEL",
@@ -2594,16 +2531,16 @@
    "name": "Colossus 9000 Harvester",
    "category": "HARVESTERS",
    "type": "combineDrivable",
-   "x": 312.28714,
-   "z": 674.638672,
+   "x": 497.542084,
+   "z": 933.727478,
    "fills": [
     {
      "type": "DIESEL",
-     "level": 1469.0
+     "level": 1460.9
     },
     {
      "type": "DEF",
-     "level": 162.0
+     "level": 161.0
     }
    ],
    "isAIActive": false,
@@ -2613,12 +2550,12 @@
    "name": "Colossus 9000 Harvester",
    "category": "HARVESTERS",
    "type": "combineDrivable",
-   "x": 501.932068,
-   "z": 933.690247,
+   "x": 504.621338,
+   "z": 933.604614,
    "fills": [
     {
      "type": "DIESEL",
-     "level": 1495.0
+     "level": 1493.0
     },
     {
      "type": "DEF",
@@ -2662,40 +2599,12 @@
    "controller": null
   },
   {
-   "name": "Colossus Bale Master",
-   "category": "BALERSROUND",
-   "type": "balerStationary",
-   "x": 808.975098,
-   "z": 448.548004,
-   "fills": [
-    {
-     "type": "GRASS_WINDROW",
-     "level": 1035.4
-    },
-    {
-     "type": "BALE_WRAP",
-     "level": 8.0
-    },
-    {
-     "type": "SILAGE_ADDITIVE",
-     "level": 450.0
-    }
-   ],
-   "isAIActive": false,
-   "controller": null
-  },
-  {
    "name": "Titan Super Collect 533",
    "category": "LOADERWAGONS",
    "type": "forageWagon",
-   "x": 702.878662,
-   "z": 543.506165,
-   "fills": [
-    {
-     "type": "CLOVER_WINDROW",
-     "level": 613713.6
-    }
-   ],
+   "x": 702.844177,
+   "z": 543.544006,
+   "fills": [],
    "isAIActive": false,
    "controller": null
   },
@@ -2823,26 +2732,11 @@
    "controller": null
   },
   {
-   "name": "Axis 402",
-   "category": "FERTILIZERSPREADERS",
-   "type": "spreader",
-   "x": 339.023376,
-   "z": 457.10849,
-   "fills": [
-    {
-     "type": "LIME",
-     "level": 3200.0
-    }
-   ],
-   "isAIActive": false,
-   "controller": null
-  },
-  {
    "name": "ARION 570-530",
    "category": "TRACTORSS",
    "type": "tractor",
-   "x": 732.527039,
-   "z": 147.659393,
+   "x": 740.20813,
+   "z": 143.220352,
    "fills": [
     {
      "type": "DIESEL",
@@ -2854,7 +2748,7 @@
     },
     {
      "type": "AIR",
-     "level": 3721.2
+     "level": 3589.0
     }
    ],
    "isAIActive": false,
@@ -2879,8 +2773,8 @@
    "name": "N60-45",
    "category": "CUTTERTRAILERS",
    "type": "dynamicMountAttacherTrailer",
-   "x": 451.395599,
-   "z": 957.758911,
+   "x": 497.150391,
+   "z": 920.872131,
    "fills": [],
    "isAIActive": false,
    "controller": null
@@ -2889,8 +2783,8 @@
    "name": "Titan Corn Header",
    "category": "CORNHEADERS",
    "type": "cutter",
-   "x": 313.350128,
-   "z": 669.445068,
+   "x": 497.075165,
+   "z": 918.842346,
    "fills": [],
    "isAIActive": false,
    "controller": null
@@ -2909,24 +2803,24 @@
    "name": "Puma Series",
    "category": "TRACTORSM",
    "type": "tractor",
-   "x": -162.042618,
-   "z": 328.082367,
+   "x": -265.362732,
+   "z": -503.459686,
    "fills": [
     {
      "type": "DIESEL",
-     "level": 377.0
+     "level": 375.0
     },
     {
      "type": "DEF",
-     "level": 48.0
+     "level": 47.0
     },
     {
      "type": "AIR",
-     "level": 3463.9
+     "level": 4000.0
     }
    ],
-   "isAIActive": false,
-   "controller": "OneLIVIDMAN"
+   "isAIActive": true,
+   "controller": null
   },
   {
    "name": "Cake Pallet",
@@ -3082,8 +2976,8 @@
    "name": "Titan Header",
    "category": "CUTTERS",
    "type": "cutter",
-   "x": 920.553101,
-   "z": 499.246857,
+   "x": 920.291199,
+   "z": 500.195709,
    "fills": [],
    "isAIActive": false,
    "controller": null
@@ -3092,8 +2986,8 @@
    "name": "ST820 MultiFunction",
    "category": "CULTIVATORS",
    "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
-   "x": 797.743713,
-   "z": 184.6819,
+   "x": 784.182678,
+   "z": 356.576019,
    "fills": [],
    "isAIActive": false,
    "controller": null
@@ -3102,8 +2996,8 @@
    "name": "ST820 MultiFunction",
    "category": "CULTIVATORS",
    "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
-   "x": 561.25769,
-   "z": 305.950775,
+   "x": 377.547943,
+   "z": 607.102905,
    "fills": [],
    "isAIActive": false,
    "controller": null
@@ -3112,27 +3006,53 @@
    "name": "ST820 MultiFunction",
    "category": "CULTIVATORS",
    "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
-   "x": 571.243042,
+   "x": 571.24292,
    "z": 301.336212,
    "fills": [],
    "isAIActive": false,
    "controller": null
+  },
+  {
+   "name": "ST820 MultiFunction",
+   "category": "CULTIVATORS",
+   "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
+   "x": 844.0578,
+   "z": -79.450226,
+   "fills": [],
+   "isAIActive": false,
+   "controller": null
+  },
+  {
+   "name": "Series 8 TTV",
+   "category": "TRACTORSM",
+   "type": "tractor",
+   "x": 837.112061,
+   "z": -75.244141,
+   "fills": [
+    {
+     "type": "DIESEL",
+     "level": 503.0
+    },
+    {
+     "type": "DEF",
+     "level": 35.0
+    },
+    {
+     "type": "AIR",
+     "level": 3000.0
+    }
+   ],
+   "isAIActive": true,
+   "controller": "wildhorse_spirit"
   }
  ],
  "working": [
   {
-   "name": "M8 SERIES",
-   "controller": "wildhorse_spirit",
-   "isAIActive": false,
-   "x": 703.628418,
-   "z": 536.624878
-  },
-  {
    "name": "Steiger Series",
    "controller": null,
    "isAIActive": true,
-   "x": 797.711243,
-   "z": 192.050995
+   "x": 783.984985,
+   "z": 363.063873
   },
   {
    "name": "Series 8 TTV",
@@ -3143,10 +3063,17 @@
   },
   {
    "name": "Puma Series",
-   "controller": "OneLIVIDMAN",
-   "isAIActive": false,
-   "x": -162.042618,
-   "z": 328.082367
+   "controller": null,
+   "isAIActive": true,
+   "x": -265.362732,
+   "z": -503.459686
+  },
+  {
+   "name": "Series 8 TTV",
+   "controller": "wildhorse_spirit",
+   "isAIActive": true,
+   "x": 837.112061,
+   "z": -75.244141
   }
  ],
  "stock": [
@@ -3206,7 +3133,7 @@
    "id": 1,
    "name": "My farm",
    "color": 1,
-   "money": 1248001664.0,
+   "money": 1247703296.0,
    "loan": 0.0,
    "players": [
     {
@@ -3222,24 +3149,24 @@
    ],
    "contractingFor": [],
    "stats": {
-    "traveledDistance": 176.485153,
-    "fuelUsage": 8130.568848,
+    "traveledDistance": 180.850204,
+    "fuelUsage": 8256.623047,
     "seedUsage": 1467.855957,
     "sprayUsage": 361124.84375,
-    "workedHectares": 180.272095,
-    "cultivatedHectares": 30.801149,
+    "workedHectares": 222.429077,
+    "cultivatedHectares": 71.394226,
     "sownHectares": 25.31365,
     "sprayedHectares": 85.377151,
     "threshedHectares": 38.477226,
-    "plowedHectares": 44.632324,
+    "plowedHectares": 85.179047,
     "harvestedGrapes": 0.0,
     "harvestedOlives": 0.0,
-    "workedTime": 327.597046,
-    "cultivatedTime": 72.373299,
+    "workedTime": 341.838409,
+    "cultivatedTime": 86.515182,
     "sownTime": 76.837799,
     "sprayedTime": 243.365936,
     "threshedTime": 40.32011,
-    "plowedTime": 36.342129,
+    "plowedTime": 50.484016,
     "baleCount": 175,
     "breedCowsCount": 0,
     "breedSheepCount": 0,
@@ -3250,8 +3177,8 @@
     "breedWaterBuffaloCount": 0,
     "missionCount": 9,
     "revenue": 0.0,
-    "expenses": 108700.101562,
-    "playTime": 86603.09375,
+    "expenses": 108834.039062,
+    "playTime": 86633.09375,
     "plantedTreeCount": 0,
     "cutTreeCount": 23,
     "woodTonsSold": 0.0,
@@ -3262,7 +3189,7 @@
     "horseJumpCount": 0,
     "soldCottonBales": 0,
     "wrappedBales": 82,
-    "tractorDistance": 138.095047,
+    "tractorDistance": 142.460098,
     "carDistance": 0.0,
     "truckDistance": 38.390091,
     "horseDistance": 0.0
@@ -3270,13 +3197,13 @@
    "finances": [
     {
      "day": 0,
-     "income": 171985,
-     "expenses": -292151,
+     "income": 365079,
+     "expenses": -783640,
      "items": [
       {
        "key": "newVehiclesCost",
        "label": "New vehicles",
-       "value": -274650
+       "value": -765100
       },
       {
        "key": "propertyIncome",
@@ -3284,9 +3211,14 @@
        "value": 133229
       },
       {
+       "key": "soldVehicles",
+       "label": "Sold vehicles",
+       "value": 128423
+      },
+      {
        "key": "harvestIncome",
        "label": "Harvest",
-       "value": 29474
+       "value": 91546
       },
       {
        "key": "constructionCost",
@@ -3301,17 +3233,17 @@
       {
        "key": "other",
        "label": "Other",
-       "value": 1204
+       "value": 3803
       },
       {
        "key": "wagePayment",
        "label": "Helper wages",
-       "value": -848
+       "value": -1753
       },
       {
        "key": "purchaseFuel",
        "label": "Fuel",
-       "value": -153
+       "value": -287
       }
      ]
     },
@@ -3389,7 +3321,7 @@
    "id": 2,
    "name": "Dumbace",
    "color": 7,
-   "money": 941845440.0,
+   "money": 942147008.0,
    "loan": 0.0,
    "players": [
     {
@@ -3407,22 +3339,22 @@
     1
    ],
    "stats": {
-    "traveledDistance": 608.209412,
-    "fuelUsage": 8710.446289,
+    "traveledDistance": 618.205444,
+    "fuelUsage": 8836.535156,
     "seedUsage": 28519.972656,
-    "sprayUsage": 574093.6875,
-    "workedHectares": 1315.015381,
+    "sprayUsage": 582968.4375,
+    "workedHectares": 1333.877319,
     "cultivatedHectares": 245.979324,
     "sownHectares": 239.383713,
-    "sprayedHectares": 338.727509,
+    "sprayedHectares": 357.589417,
     "threshedHectares": 195.363358,
     "plowedHectares": 295.561523,
     "harvestedGrapes": 0.0,
     "harvestedOlives": 0.0,
-    "workedTime": 2530.166992,
+    "workedTime": 2560.44043,
     "cultivatedTime": 505.69754,
     "sownTime": 535.369995,
-    "sprayedTime": 266.916656,
+    "sprayedTime": 278.377838,
     "threshedTime": 251.126816,
     "plowedTime": 192.657547,
     "baleCount": 433,
@@ -3435,8 +3367,8 @@
     "breedWaterBuffaloCount": 0,
     "missionCount": 6,
     "revenue": 0.0,
-    "expenses": 465967.625,
-    "playTime": 86603.070312,
+    "expenses": 487293.90625,
+    "playTime": 86633.070312,
     "plantedTreeCount": 0,
     "cutTreeCount": 128,
     "woodTonsSold": 0.0,
@@ -3447,21 +3379,31 @@
     "horseJumpCount": 0,
     "soldCottonBales": 0,
     "wrappedBales": 0,
-    "tractorDistance": 499.946136,
+    "tractorDistance": 504.859955,
     "carDistance": 6.438923,
-    "truckDistance": 101.824356,
+    "truckDistance": 106.906631,
     "horseDistance": 0.0
    },
    "finances": [
     {
      "day": 0,
-     "income": 1139636,
-     "expenses": -29297,
+     "income": 1857230,
+     "expenses": -445294,
      "items": [
       {
        "key": "harvestIncome",
        "label": "Harvest",
-       "value": 847751
+       "value": 1298161
+      },
+      {
+       "key": "newVehiclesCost",
+       "label": "New vehicles",
+       "value": -394000
+      },
+      {
+       "key": "soldVehicles",
+       "label": "Sold vehicles",
+       "value": 222756
       },
       {
        "key": "propertyIncome",
@@ -3471,17 +3413,17 @@
       {
        "key": "other",
        "label": "Other",
-       "value": 83620
+       "value": 128048
       },
       {
        "key": "purchaseFertilizer",
        "label": "Fertilizer",
-       "value": -24570
+       "value": -45808
       },
       {
        "key": "wagePayment",
        "label": "Helper wages",
-       "value": -2839
+       "value": -3509
       },
       {
        "key": "purchaseSeeds",
@@ -3491,7 +3433,7 @@
       {
        "key": "purchaseFuel",
        "label": "Fuel",
-       "value": -556
+       "value": -645
       },
       {
        "key": "productionCosts",
@@ -5178,12 +5120,12 @@
    "price": 4050.0,
    "propertyState": "OWNED",
    "operatingHours": 1.9,
-   "damage": 0.7,
+   "damage": 0.8,
    "wear": 9.0,
    "fuel": null,
    "fills": [],
-   "x": 735.6,
-   "z": 149.0,
+   "x": 743.3,
+   "z": 141.9,
    "isAIActive": false,
    "controller": null,
    "isMod": true
@@ -5231,8 +5173,8 @@
    "wear": 35.1,
    "fuel": null,
    "fills": [],
-   "x": 368.5,
-   "z": 593.1,
+   "x": 448.9,
+   "z": 684.6,
    "isAIActive": false,
    "controller": null,
    "isMod": true
@@ -5261,56 +5203,6 @@
    "isAIActive": false,
    "controller": null,
    "isMod": true
-  },
-  {
-   "id": "vehicled9ab6784da2aab395aaec64dd8e1a982",
-   "name": "Series M8",
-   "category": null,
-   "brand": "KUBOTA",
-   "filename": "data/vehicles/kubota/seriesM8/seriesM8.xml",
-   "kind": "vehicle",
-   "farmId": 1,
-   "age": 48.0,
-   "price": 182950.0,
-   "propertyState": "OWNED",
-   "operatingHours": 614.3,
-   "damage": 17.1,
-   "wear": 19.4,
-   "fuel": {
-    "type": "DIESEL",
-    "level": 328.0
-   },
-   "fills": [],
-   "x": 711.7,
-   "z": 642.4,
-   "isAIActive": false,
-   "controller": null,
-   "isMod": false
-  },
-  {
-   "id": "vehicle84a1920e9f621b598dbd91953e0bcf85",
-   "name": "M8 SERIES",
-   "category": "TRACTORSM",
-   "brand": "KUBOTA",
-   "filename": "data/vehicles/kubota/seriesM8/seriesM8.xml",
-   "kind": "vehicle",
-   "farmId": 1,
-   "age": 48.0,
-   "price": 185450.0,
-   "propertyState": "OWNED",
-   "operatingHours": 15.7,
-   "damage": 45.0,
-   "wear": 3.1,
-   "fuel": {
-    "type": "DIESEL",
-    "level": 375.0
-   },
-   "fills": [],
-   "x": 340.5,
-   "z": 454.1,
-   "isAIActive": false,
-   "controller": null,
-   "isMod": false
   },
   {
    "id": "vehicle0b88d3c76ac0a5fdb1b4842501c8fb66",
@@ -5485,18 +5377,18 @@
    "age": 6.0,
    "price": 22000.0,
    "propertyState": "OWNED",
-   "operatingHours": 1.1,
-   "damage": 2.4,
-   "wear": 7.8,
+   "operatingHours": 1.4,
+   "damage": 3.2,
+   "wear": 10.5,
    "fuel": null,
    "fills": [
     {
      "type": "FERTILIZER",
-     "level": 100000.0
+     "level": 99974.4
     }
    ],
-   "x": -39.4,
-   "z": 684.2,
+   "x": -308.9,
+   "z": -7.8,
    "isAIActive": false,
    "controller": null,
    "isMod": true
@@ -5517,8 +5409,8 @@
    "wear": 0.1,
    "fuel": null,
    "fills": [],
-   "x": 499.5,
-   "z": 919.8,
+   "x": 503.5,
+   "z": 919.5,
    "isAIActive": false,
    "controller": null,
    "isMod": true
@@ -5534,16 +5426,16 @@
    "age": 48.0,
    "price": 312450.0,
    "propertyState": "OWNED",
-   "operatingHours": 12.0,
-   "damage": 12.5,
-   "wear": 19.3,
+   "operatingHours": 12.1,
+   "damage": 13.0,
+   "wear": 19.5,
    "fuel": {
     "type": "DIESEL",
     "level": 450.0
    },
    "fills": [],
-   "x": -386.6,
-   "z": 334.3,
+   "x": 302.8,
+   "z": 704.1,
    "isAIActive": false,
    "controller": null,
    "isMod": false
@@ -5585,15 +5477,15 @@
    "price": 312450.0,
    "propertyState": "OWNED",
    "operatingHours": 12.1,
-   "damage": 8.2,
-   "wear": 11.1,
+   "damage": 8.3,
+   "wear": 11.2,
    "fuel": {
     "type": "DIESEL",
     "level": 432.0
    },
    "fills": [],
-   "x": 368.0,
-   "z": 589.6,
+   "x": 452.4,
+   "z": 684.4,
    "isAIActive": false,
    "controller": null,
    "isMod": false
@@ -5625,8 +5517,8 @@
   },
   {
    "id": "vehicle8d71be59f8f6c6dd2a6ba59b67610687",
-   "name": "Roadrunner Plus",
-   "category": null,
+   "name": "Roadrunner+",
+   "category": "TRUCKS",
    "brand": "RoadrunnerPlus",
    "filename": "$moddir$FS25_RoadrunnerPlus/RoadrunnerPlus.xml",
    "kind": "vehicle",
@@ -5634,16 +5526,16 @@
    "age": 21.0,
    "price": 158900.0,
    "propertyState": "OWNED",
-   "operatingHours": 3.9,
-   "damage": 9.9,
-   "wear": 5.4,
+   "operatingHours": 4.1,
+   "damage": 10.3,
+   "wear": 6.0,
    "fuel": {
     "type": "DIESEL",
-    "level": 823.0
+    "level": 798.9
    },
    "fills": [],
-   "x": -371.9,
-   "z": -74.9,
+   "x": 493.5,
+   "z": 842.2,
    "isAIActive": false,
    "controller": null,
    "isMod": true
@@ -5733,16 +5625,16 @@
    "age": 47.0,
    "price": 769800.0,
    "propertyState": "OWNED",
-   "operatingHours": 1.7,
-   "damage": 4.3,
-   "wear": 8.6,
+   "operatingHours": 2.2,
+   "damage": 5.6,
+   "wear": 11.2,
    "fuel": {
     "type": "DIESEL",
-    "level": 1945.0
+    "level": 1943.0
    },
    "fills": [],
-   "x": 672.4,
-   "z": 521.6,
+   "x": 782.1,
+   "z": 246.6,
    "isAIActive": false,
    "controller": null,
    "isMod": false
@@ -5784,15 +5676,15 @@
    "price": 769800.0,
    "propertyState": "OWNED",
    "operatingHours": 3.2,
-   "damage": 7.8,
-   "wear": 18.3,
+   "damage": 7.9,
+   "wear": 18.5,
    "fuel": {
     "type": "DIESEL",
-    "level": 1897.9
+    "level": 1885.9
    },
    "fills": [],
-   "x": 520.5,
-   "z": 829.2,
+   "x": 380.1,
+   "z": 616.0,
    "isAIActive": false,
    "controller": null,
    "isMod": false
@@ -5830,16 +5722,16 @@
    "age": 47.0,
    "price": 385950.0,
    "propertyState": "OWNED",
-   "operatingHours": 20.2,
-   "damage": 13.2,
-   "wear": 14.5,
+   "operatingHours": 20.4,
+   "damage": 14.1,
+   "wear": 14.8,
    "fuel": {
     "type": "DIESEL",
-    "level": 636.0
+    "level": 634.0
    },
    "fills": [],
-   "x": -467.0,
-   "z": 263.7,
+   "x": 544.5,
+   "z": 836.7,
    "isAIActive": false,
    "controller": null,
    "isMod": false
@@ -5868,28 +5760,6 @@
    "isAIActive": false,
    "controller": null,
    "isMod": false
-  },
-  {
-   "id": "vehicle1024cf32ed92f49fe9cfc1ed67c31eec",
-   "name": "Titan Vineyard Plow",
-   "category": "PLOWS",
-   "brand": "colossusPack",
-   "filename": "$moddir$FS25_colossusPack/tools/cultivator/vineyardPlowUnreal.xml",
-   "kind": "vehicle",
-   "farmId": 1,
-   "age": 47.0,
-   "price": 13000.0,
-   "propertyState": "OWNED",
-   "operatingHours": 1.2,
-   "damage": 2.7,
-   "wear": 10.6,
-   "fuel": null,
-   "fills": [],
-   "x": 721.6,
-   "z": 553.9,
-   "isAIActive": false,
-   "controller": null,
-   "isMod": true
   },
   {
    "id": "vehiclee653f123c2a88f08982d0dacec953679",
@@ -5993,50 +5863,6 @@
    "isMod": true
   },
   {
-   "id": "vehicle65d2933c9bf3bbabf677d22e76813da3",
-   "name": "St 820",
-   "category": null,
-   "brand": "Flexicoil ST820 MultiFunction",
-   "filename": "$moddir$FS25_Flexicoil_ST820_MultiFunction/xml/ST_820.xml",
-   "kind": "vehicle",
-   "farmId": 2,
-   "age": 47.0,
-   "price": 197000.0,
-   "propertyState": "OWNED",
-   "operatingHours": 14.3,
-   "damage": 8.8,
-   "wear": 34.3,
-   "fuel": null,
-   "fills": [],
-   "x": 471.2,
-   "z": 834.2,
-   "isAIActive": false,
-   "controller": null,
-   "isMod": true
-  },
-  {
-   "id": "vehicle18694d4810fee8ff5f309052569aad19",
-   "name": "St 820",
-   "category": null,
-   "brand": "Flexicoil ST820 MultiFunction",
-   "filename": "$moddir$FS25_Flexicoil_ST820_MultiFunction/xml/ST_820.xml",
-   "kind": "vehicle",
-   "farmId": 2,
-   "age": 14.0,
-   "price": 197000.0,
-   "propertyState": "OWNED",
-   "operatingHours": 3.2,
-   "damage": 1.5,
-   "wear": 8.9,
-   "fuel": null,
-   "fills": [],
-   "x": 518.7,
-   "z": 820.2,
-   "isAIActive": false,
-   "controller": null,
-   "isMod": true
-  },
-  {
    "id": "vehicle24e455f91b2688636b1a6c336410fd07",
    "name": "1775NT Multi-planter",
    "category": "PLANTERS",
@@ -6047,8 +5873,8 @@
    "age": 47.0,
    "price": 146250.0,
    "propertyState": "OWNED",
-   "operatingHours": 19.4,
-   "damage": 26.1,
+   "operatingHours": 19.5,
+   "damage": 26.4,
    "wear": 100.0,
    "fuel": null,
    "fills": [
@@ -6057,8 +5883,8 @@
      "level": 16167.8
     }
    ],
-   "x": -378.8,
-   "z": 334.4,
+   "x": 306.0,
+   "z": 697.7,
    "isAIActive": false,
    "controller": null,
    "isMod": true
@@ -6074,9 +5900,9 @@
    "age": 40.0,
    "price": 144500.0,
    "propertyState": "OWNED",
-   "operatingHours": 9.0,
-   "damage": 8.7,
-   "wear": 35.8,
+   "operatingHours": 9.1,
+   "damage": 9.0,
+   "wear": 36.1,
    "fuel": null,
    "fills": [
     {
@@ -6084,8 +5910,8 @@
      "level": 19999.4
     }
    ],
-   "x": -458.6,
-   "z": 263.0,
+   "x": 543.5,
+   "z": 828.5,
    "isAIActive": false,
    "controller": null,
    "isMod": true
@@ -6126,16 +5952,16 @@
    "age": 47.0,
    "price": 388950.0,
    "propertyState": "OWNED",
-   "operatingHours": 8.2,
-   "damage": 4.3,
+   "operatingHours": 8.3,
+   "damage": 4.4,
    "wear": 2.3,
    "fuel": {
     "type": "DIESEL",
-    "level": 692.0
+    "level": 691.0
    },
    "fills": [],
-   "x": 472.7,
-   "z": 711.2,
+   "x": 450.8,
+   "z": 651.3,
    "isAIActive": false,
    "controller": null,
    "isMod": false
@@ -6151,13 +5977,13 @@
    "age": 40.0,
    "price": 43600.0,
    "propertyState": "OWNED",
-   "operatingHours": 1.4,
-   "damage": 3.0,
-   "wear": 8.6,
+   "operatingHours": 1.5,
+   "damage": 3.2,
+   "wear": 8.8,
    "fuel": null,
    "fills": [],
-   "x": -421.9,
-   "z": -31.1,
+   "x": 482.0,
+   "z": 934.1,
    "isAIActive": false,
    "controller": null,
    "isMod": true
@@ -6173,21 +5999,16 @@
    "age": 40.0,
    "price": 364000.0,
    "propertyState": "OWNED",
-   "operatingHours": 1.4,
-   "damage": 3.4,
-   "wear": 8.7,
+   "operatingHours": 1.5,
+   "damage": 3.6,
+   "wear": 9.0,
    "fuel": {
     "type": "DIESEL",
-    "level": 1220.9
+    "level": 1214.8
    },
-   "fills": [
-    {
-     "type": "BEETROOT",
-     "level": 1392377.9
-    }
-   ],
-   "x": -421.9,
-   "z": -39.4,
+   "fills": [],
+   "x": 481.1,
+   "z": 925.9,
    "isAIActive": false,
    "controller": null,
    "isMod": true
@@ -6241,8 +6062,8 @@
   },
   {
    "id": "vehiclea3b06d67482bdbe4a4912ed681e0ad3c",
-   "name": "Colossus Front Mower Unreal",
-   "category": null,
+   "name": "Colossus Quick Mow",
+   "category": "MOWERS",
    "brand": "colossusPack",
    "filename": "$moddir$FS25_colossusPack/tools/frontMower/colossusFrontMowerUnreal.xml",
    "kind": "vehicle",
@@ -6250,13 +6071,13 @@
    "age": 17.0,
    "price": 10050.0,
    "propertyState": "OWNED",
-   "operatingHours": 4.2,
-   "damage": 7.6,
-   "wear": 26.7,
+   "operatingHours": 4.5,
+   "damage": 7.7,
+   "wear": 26.8,
    "fuel": null,
    "fills": [],
-   "x": 969.7,
-   "z": 819.2,
+   "x": 709.1,
+   "z": 563.6,
    "isAIActive": false,
    "controller": null,
    "isMod": true
@@ -6362,15 +6183,15 @@
     }
    ],
    "x": 750.4,
-   "z": 145.7,
+   "z": 145.6,
    "isAIActive": false,
    "controller": null,
    "isMod": true
   },
   {
    "id": "vehicle59c52497caedcf69f4a42b1d5f7b6d34",
-   "name": "Lizard Combo Trailer",
-   "category": null,
+   "name": "40' Flatbed Autoloading Bale Trailer",
+   "category": "TRAILERS",
    "brand": "LizardComboTrailer",
    "filename": "$moddir$FS25_LizardComboTrailer/lizardComboTrailer.xml",
    "kind": "vehicle",
@@ -6378,13 +6199,13 @@
    "age": 21.0,
    "price": 69700.0,
    "propertyState": "OWNED",
-   "operatingHours": 3.5,
-   "damage": 3.5,
-   "wear": 7.1,
+   "operatingHours": 3.7,
+   "damage": 3.9,
+   "wear": 7.9,
    "fuel": null,
    "fills": [],
-   "x": -363.9,
-   "z": -76.1,
+   "x": 493.2,
+   "z": 831.8,
    "isAIActive": false,
    "controller": null,
    "isMod": true
@@ -7559,8 +7380,8 @@
   },
   {
    "id": "vehicle212fe7f80a7268153cf913e3972f3efb",
-   "name": "Colossus 9000",
-   "category": null,
+   "name": "Colossus 9000 Harvester",
+   "category": "HARVESTERS",
    "brand": "colossusPack",
    "filename": "$moddir$FS25_colossusPack/colossus9000/colossus9000.xml",
    "kind": "vehicle",
@@ -7573,11 +7394,11 @@
    "wear": 12.2,
    "fuel": {
     "type": "DIESEL",
-    "level": 1390.9
+    "level": 1389.9
    },
    "fills": [],
-   "x": 916.5,
-   "z": 500.6,
+   "x": 934.3,
+   "z": 500.0,
    "isAIActive": false,
    "controller": null,
    "isMod": true
@@ -7593,16 +7414,16 @@
    "age": 6.0,
    "price": 619500.0,
    "propertyState": "OWNED",
-   "operatingHours": 0.5,
-   "damage": 1.2,
-   "wear": 9.2,
+   "operatingHours": 0.6,
+   "damage": 1.3,
+   "wear": 9.7,
    "fuel": {
     "type": "DIESEL",
-    "level": 1469.0
+    "level": 1460.9
    },
    "fills": [],
-   "x": 312.3,
-   "z": 674.6,
+   "x": 497.5,
+   "z": 933.7,
    "isAIActive": false,
    "controller": null,
    "isMod": true
@@ -7620,22 +7441,22 @@
    "propertyState": "OWNED",
    "operatingHours": 0.0,
    "damage": 0.1,
-   "wear": 0.1,
+   "wear": 0.2,
    "fuel": {
     "type": "DIESEL",
-    "level": 1495.0
+    "level": 1493.0
    },
    "fills": [],
-   "x": 501.9,
-   "z": 933.7,
+   "x": 504.6,
+   "z": 933.6,
    "isAIActive": false,
    "controller": null,
    "isMod": true
   },
   {
    "id": "vehicle88b935bc4a6dac3eb8ea372e4efeb4a3",
-   "name": "Series 8",
-   "category": null,
+   "name": "Series 8 TTV",
+   "category": "TRACTORSM",
    "brand": "DEUTZFAHR",
    "filename": "data/vehicles/deutzFahr/series8/series8.xml",
    "kind": "vehicle",
@@ -7643,17 +7464,17 @@
    "age": 17.0,
    "price": 292450.0,
    "propertyState": "OWNED",
-   "operatingHours": 6.3,
-   "damage": 16.9,
-   "wear": 18.4,
+   "operatingHours": 6.6,
+   "damage": 17.9,
+   "wear": 18.6,
    "fuel": {
     "type": "DIESEL",
-    "level": 259.9
+    "level": 258.9
    },
    "fills": [],
-   "x": 969.7,
-   "z": 815.8,
-   "isAIActive": false,
+   "x": 705.7,
+   "z": 562.8,
+   "isAIActive": true,
    "controller": null,
    "isMod": false
   },
@@ -7680,40 +7501,9 @@
    "isMod": true
   },
   {
-   "id": "vehicle02dffbd16323246b7507ee5cce16efa3",
-   "name": "Colossus Bale Master",
-   "category": "BALERSROUND",
-   "brand": "colossusPack",
-   "filename": "$moddir$FS25_colossusPack/tools/stationaryBaler/baleMaster.xml",
-   "kind": "vehicle",
-   "farmId": 1,
-   "age": 17.0,
-   "price": 108480.0,
-   "propertyState": "OWNED",
-   "operatingHours": 609.7,
-   "damage": 1.3,
-   "wear": 0.2,
-   "fuel": null,
-   "fills": [
-    {
-     "type": "GRASS_WINDROW",
-     "level": 1035.4
-    },
-    {
-     "type": "BALE_WRAP",
-     "level": 8.0
-    }
-   ],
-   "x": 809.0,
-   "z": 448.5,
-   "isAIActive": false,
-   "controller": null,
-   "isMod": true
-  },
-  {
    "id": "vehicle577532af6f01ac57cf8f9fa245123b90",
-   "name": "Super Collect Unreal",
-   "category": null,
+   "name": "Titan Super Collect 533",
+   "category": "LOADERWAGONS",
    "brand": "colossusPack",
    "filename": "$moddir$FS25_colossusPack/trailers/titanForageTrailer/superCollectUnreal.xml",
    "kind": "vehicle",
@@ -7721,18 +7511,13 @@
    "age": 17.0,
    "price": 117450.0,
    "propertyState": "OWNED",
-   "operatingHours": 4.5,
-   "damage": 5.9,
-   "wear": 13.2,
+   "operatingHours": 4.7,
+   "damage": 6.2,
+   "wear": 14.0,
    "fuel": null,
-   "fills": [
-    {
-     "type": "CLOVER_WINDROW",
-     "level": 248566.4
-    }
-   ],
-   "x": 710.6,
-   "z": 649.2,
+   "fills": [],
+   "x": 702.8,
+   "z": 543.5,
    "isAIActive": false,
    "controller": null,
    "isMod": true
@@ -7952,33 +7737,6 @@
    "isMod": true
   },
   {
-   "id": "vehicle40a666f8c558bca505e0fea3c72999da",
-   "name": "Axis 402",
-   "category": "FERTILIZERSPREADERS",
-   "brand": "KuhnAxis402",
-   "filename": "$moddir$FS25_KuhnAxis402/kuhnAxis402.xml",
-   "kind": "vehicle",
-   "farmId": 1,
-   "age": 14.0,
-   "price": 20800.0,
-   "propertyState": "OWNED",
-   "operatingHours": 11.9,
-   "damage": 1.2,
-   "wear": 3.8,
-   "fuel": null,
-   "fills": [
-    {
-     "type": "LIME",
-     "level": 3200.0
-    }
-   ],
-   "x": 339.0,
-   "z": 457.1,
-   "isAIActive": false,
-   "controller": null,
-   "isMod": true
-  },
-  {
    "id": "vehicle2e4c4b3eee0112c90fe6598afb8f26a4",
    "name": "ARION 570-530",
    "category": "TRACTORSS",
@@ -7990,15 +7748,15 @@
    "price": 191450.0,
    "propertyState": "OWNED",
    "operatingHours": 1.3,
-   "damage": 3.0,
+   "damage": 3.1,
    "wear": 1.0,
    "fuel": {
     "type": "DIESEL",
     "level": 237.0
    },
    "fills": [],
-   "x": 732.5,
-   "z": 147.7,
+   "x": 740.2,
+   "z": 143.2,
    "isAIActive": false,
    "controller": null,
    "isMod": false
@@ -8046,8 +7804,8 @@
    "wear": 0.1,
    "fuel": null,
    "fills": [],
-   "x": 451.4,
-   "z": 957.8,
+   "x": 497.1,
+   "z": 920.9,
    "isAIActive": false,
    "controller": null,
    "isMod": true
@@ -8064,12 +7822,12 @@
    "price": 77650.0,
    "propertyState": "OWNED",
    "operatingHours": 0.4,
-   "damage": 1.0,
-   "wear": 3.1,
+   "damage": 1.1,
+   "wear": 3.2,
    "fuel": null,
    "fills": [],
-   "x": 313.4,
-   "z": 669.4,
+   "x": 497.1,
+   "z": 918.8,
    "isAIActive": false,
    "controller": null,
    "isMod": true
@@ -8107,16 +7865,16 @@
    "age": 6.0,
    "price": 296150.0,
    "propertyState": "OWNED",
-   "operatingHours": 1.1,
-   "damage": 2.5,
-   "wear": 6.2,
+   "operatingHours": 1.4,
+   "damage": 3.3,
+   "wear": 8.0,
    "fuel": {
     "type": "DIESEL",
-    "level": 380.0
+    "level": 375.0
    },
    "fills": [],
-   "x": -39.1,
-   "z": 678.3,
+   "x": -312.9,
+   "z": -3.6,
    "isAIActive": false,
    "controller": null,
    "isMod": false
@@ -8393,8 +8151,8 @@
   },
   {
    "id": "vehicle2921018aeb1f0b3f530fa2fc70ac3311",
-   "name": "Titan Header Unreal",
-   "category": null,
+   "name": "Titan Header",
+   "category": "CUTTERS",
    "brand": "colossusPack",
    "filename": "$moddir$FS25_colossusPack/colossus9000/headers/titanHeaderUnreal.xml",
    "kind": "vehicle",
@@ -8407,8 +8165,8 @@
    "wear": 0.2,
    "fuel": null,
    "fills": [],
-   "x": 908.6,
-   "z": 490.7,
+   "x": 920.3,
+   "z": 500.2,
    "isAIActive": false,
    "controller": null,
    "isMod": true
@@ -8424,16 +8182,107 @@
    "age": 0.0,
    "price": 197000.0,
    "propertyState": "OWNED",
-   "operatingHours": 0.2,
-   "damage": 0.1,
-   "wear": 0.9,
+   "operatingHours": 0.7,
+   "damage": 0.3,
+   "wear": 2.8,
    "fuel": null,
    "fills": [],
-   "x": 675.5,
-   "z": 512.9,
+   "x": 778.1,
+   "z": 239.0,
    "isAIActive": false,
    "controller": null,
    "isMod": true
+  },
+  {
+   "id": "vehicle76205a8e92b24804c37fe87cecadcbdd",
+   "name": "ST820 MultiFunction",
+   "category": "CULTIVATORS",
+   "brand": "Flexicoil ST820 MultiFunction",
+   "filename": "$moddir$FS25_Flexicoil_ST820_MultiFunction/xml/ST_820.xml",
+   "kind": "vehicle",
+   "farmId": 2,
+   "age": 0.0,
+   "price": 197000.0,
+   "propertyState": "OWNED",
+   "operatingHours": 0.0,
+   "damage": 0.0,
+   "wear": 0.0,
+   "fuel": null,
+   "fills": [],
+   "x": 377.5,
+   "z": 607.1,
+   "isAIActive": false,
+   "controller": null,
+   "isMod": true
+  },
+  {
+   "id": "vehicle12e32f27bac381efd43318f5b4a862ed",
+   "name": "ST820 MultiFunction",
+   "category": "CULTIVATORS",
+   "brand": "Flexicoil ST820 MultiFunction",
+   "filename": "$moddir$FS25_Flexicoil_ST820_MultiFunction/xml/ST_820.xml",
+   "kind": "vehicle",
+   "farmId": 2,
+   "age": 0.0,
+   "price": 197000.0,
+   "propertyState": "OWNED",
+   "operatingHours": 0.0,
+   "damage": 0.0,
+   "wear": 0.0,
+   "fuel": null,
+   "fills": [],
+   "x": 571.2,
+   "z": 301.3,
+   "isAIActive": false,
+   "controller": null,
+   "isMod": true
+  },
+  {
+   "id": "vehicle6e5ff42ca66292e9548637cfc5f136ff",
+   "name": "St 820",
+   "category": null,
+   "brand": "Flexicoil ST820 MultiFunction",
+   "filename": "$moddir$FS25_Flexicoil_ST820_MultiFunction/xml/ST_820.xml",
+   "kind": "vehicle",
+   "farmId": 1,
+   "age": 0.0,
+   "price": 197000.0,
+   "propertyState": "OWNED",
+   "operatingHours": 0.0,
+   "damage": 0.0,
+   "wear": 0.0,
+   "fuel": null,
+   "fills": [],
+   "x": 857.2,
+   "z": -87.1,
+   "isAIActive": false,
+   "controller": null,
+   "isMod": true
+  },
+  {
+   "id": "vehicleaf43c475eb24a627dd360815b3270414",
+   "name": "Series 8",
+   "category": null,
+   "brand": "DEUTZFAHR",
+   "filename": "data/vehicles/deutzFahr/series8/series8.xml",
+   "kind": "vehicle",
+   "farmId": 1,
+   "age": 0.0,
+   "price": 293450.0,
+   "propertyState": "OWNED",
+   "operatingHours": 0.0,
+   "damage": 0.1,
+   "wear": 0.2,
+   "fuel": {
+    "type": "DIESEL",
+    "level": 503.0
+   },
+   "fills": [],
+   "x": 864.2,
+   "z": -91.3,
+   "isAIActive": false,
+   "controller": null,
+   "isMod": false
   }
  ],
  "placeables": [
@@ -8557,51 +8406,51 @@
    "storage": [
     {
      "type": "MILK",
-     "level": 277526.9
+     "level": 277506.9
     },
     {
      "type": "GOATMILK",
-     "level": 191993.9
+     "level": 191986.8
     },
     {
      "type": "BUFFALOMILK",
-     "level": 171207.6
+     "level": 171204.3
     },
     {
      "type": "SUGAR",
-     "level": 123050.4
+     "level": 123047.8
     },
     {
      "type": "BUTTER",
-     "level": 16939.2
+     "level": 16961.8
     },
     {
      "type": "GOATCHEESE",
-     "level": 6741.9
+     "level": 6747.9
     },
     {
      "type": "CHEESE",
-     "level": 4635.1
+     "level": 4639.2
     },
     {
      "type": "BUFFALOMILK_BOTTLED",
-     "level": 4213.8
+     "level": 4217.5
     },
     {
      "type": "GOATMILK_BOTTLED",
-     "level": 4213.7
+     "level": 4217.5
     },
     {
      "type": "CHOCOLATE",
-     "level": 2949.6
+     "level": 2952.2
     },
     {
      "type": "MILK_BOTTLED",
-     "level": 2626.5
+     "level": 2639.0
     },
     {
      "type": "BUFFALOMOZZARELLA",
-     "level": 1685.5
+     "level": 1687.0
     }
    ],
    "animals": 0,
@@ -8641,11 +8490,11 @@
    "storage": [
     {
      "type": "FLOUR",
-     "level": 106154.6
+     "level": 106150.6
     },
     {
      "type": "RICEFLOUR",
-     "level": 88386.4
+     "level": 88383.4
     },
     {
      "type": "BREAD",
@@ -8653,27 +8502,27 @@
     },
     {
      "type": "BUTTER",
-     "level": 14993.4
+     "level": 14985.4
     },
     {
      "type": "MILK_BOTTLED",
-     "level": 14993.4
+     "level": 14985.4
     },
     {
      "type": "STRAWBERRY",
-     "level": 10359.8
+     "level": 10351.8
     },
     {
      "type": "SUGAR",
-     "level": 10359.6
+     "level": 10351.6
     },
     {
      "type": "EGG",
-     "level": 10358.4
+     "level": 10350.4
     },
     {
      "type": "CAKE",
-     "level": 2286.6
+     "level": 2307.6
     }
    ],
    "animals": 0,
@@ -8784,35 +8633,35 @@
     },
     {
      "type": "RICE",
-     "level": 89123.0
+     "level": 89055.5
     },
     {
      "type": "RICELONGGRAIN",
-     "level": 81538.4
+     "level": 81425.9
     },
     {
      "type": "WINTERWHEAT",
-     "level": 78462.0
+     "level": 78330.7
     },
     {
      "type": "WHEAT",
-     "level": 78461.5
+     "level": 78330.3
     },
     {
      "type": "WINTERBARLEY",
-     "level": 75385.1
+     "level": 75235.1
     },
     {
      "type": "BARLEY",
-     "level": 75384.3
+     "level": 75234.3
     },
     {
      "type": "OAT",
-     "level": 69230.5
+     "level": 69043.0
     },
     {
      "type": "TRITICALE",
-     "level": 46321.6
+     "level": 46171.6
     },
     {
      "type": "RICEFLOUR",
@@ -12603,7 +12452,7 @@
    },
    {
     "fillType": "BEETROOT",
-    "totalAmount": 7727653,
+    "totalAmount": 9120031,
     "history": {
      "EARLY_SPRING": 183,
      "MID_SPRING": 175,
@@ -15933,7 +15782,7 @@
    },
    {
     "fillType": "CLOVER_WINDROW",
-    "totalAmount": 2430762,
+    "totalAmount": 3277549,
     "history": {
      "EARLY_SPRING": 46,
      "MID_SPRING": 43,
@@ -16543,6 +16392,39 @@
  ],
  "sales": [
   {
+   "name": "Bale Master",
+   "brand": "colossusPack",
+   "price": 3580,
+   "age": 17,
+   "hours": 609.7,
+   "damage": 1.3,
+   "wear": 0.2,
+   "daysLeft": 20,
+   "isMod": true
+  },
+  {
+   "name": "Series M8",
+   "brand": "KUBOTA",
+   "price": 6037,
+   "age": 48,
+   "hours": 614.4,
+   "damage": 18.7,
+   "wear": 18.8,
+   "daysLeft": 31,
+   "isMod": false
+  },
+  {
+   "name": "Kuhn Axis 402",
+   "brand": "KuhnAxis402",
+   "price": 15209,
+   "age": 14,
+   "hours": 11.9,
+   "damage": 1.2,
+   "wear": 3.8,
+   "daysLeft": 30,
+   "isMod": true
+  },
+  {
    "name": "Servo T6000Plus",
    "brand": "POETTINGER",
    "price": 22027,
@@ -16551,6 +16433,28 @@
    "damage": 55.0,
    "wear": 51.4,
    "daysLeft": 30,
+   "isMod": false
+  },
+  {
+   "name": "St 820",
+   "brand": "Flexicoil_ST820_MultiFunction",
+   "price": 100035,
+   "age": 47,
+   "hours": 14.3,
+   "damage": 8.8,
+   "wear": 34.3,
+   "daysLeft": 40,
+   "isMod": true
+  },
+  {
+   "name": "Series M8",
+   "brand": "KUBOTA",
+   "price": 108623,
+   "age": 48,
+   "hours": 15.7,
+   "damage": 45.2,
+   "wear": 3.1,
+   "daysLeft": 23,
    "isMod": false
   }
  ],
@@ -16593,7 +16497,7 @@
     "farmlandId": 12,
     "totalCounter": {
      "usedLime": 84790.5,
-     "usedMineralFertilizer": 46698.2,
+     "usedMineralFertilizer": 55547.4,
      "usedLiquidFertilizer": 0.0,
      "usedManure": 0.0,
      "usedLiquidManure": 0.0,
@@ -16603,18 +16507,18 @@
      "yieldBestPrice": 2907099.8,
      "numSoilSamples": 128.0,
      "soilSampleCosts": 22400.0,
-     "usedFuel": 1141.4,
-     "vehicleCosts": 7872.2,
-     "helperCosts": 12620.0,
+     "usedFuel": 1180.7,
+     "vehicleCosts": 7930.0,
+     "helperCosts": 12940.5,
      "subsidies": 0.0,
      "usedLimeRegular": 87210.1,
-     "usedMineralFertilizerRegular": 44238.1,
+     "usedMineralFertilizerRegular": 54854.2,
      "usedSeedsRegular": 9210.1,
      "yieldRegular": 6758725.5
     },
     "periodCounter": {
      "usedLime": 0.0,
-     "usedMineralFertilizer": 11954.3,
+     "usedMineralFertilizer": 20803.5,
      "usedLiquidFertilizer": 0.0,
      "usedManure": 0.0,
      "usedLiquidManure": 0.0,
@@ -16624,12 +16528,12 @@
      "yieldBestPrice": 1157534.8,
      "numSoilSamples": 0.0,
      "soilSampleCosts": 0.0,
-     "usedFuel": 501.9,
-     "vehicleCosts": 1870.8,
-     "helperCosts": 3726.2,
+     "usedFuel": 541.2,
+     "vehicleCosts": 1928.6,
+     "helperCosts": 4046.7,
      "subsidies": 0.0,
      "usedLimeRegular": 0.0,
-     "usedMineralFertilizerRegular": 14742.0,
+     "usedMineralFertilizerRegular": 25358.1,
      "usedSeedsRegular": 981.3,
      "yieldRegular": 3181750.0
     }
@@ -16648,8 +16552,8 @@
      "yieldBestPrice": 665413.6,
      "numSoilSamples": 84.0,
      "soilSampleCosts": 14700.0,
-     "usedFuel": 1195.8,
-     "vehicleCosts": 9247.2,
+     "usedFuel": 1204.5,
+     "vehicleCosts": 9252.3,
      "helperCosts": 15517.4,
      "subsidies": 0.0,
      "usedLimeRegular": 131564.5,
@@ -16669,8 +16573,8 @@
      "yieldBestPrice": 0.0,
      "numSoilSamples": 0.0,
      "soilSampleCosts": 0.0,
-     "usedFuel": 312.9,
-     "vehicleCosts": 1395.8,
+     "usedFuel": 321.7,
+     "vehicleCosts": 1401.0,
      "helperCosts": 2714.6,
      "subsidies": 0.0,
      "usedLimeRegular": 0.0,
@@ -16693,9 +16597,9 @@
      "yieldBestPrice": 255019.3,
      "numSoilSamples": 108.0,
      "soilSampleCosts": 18900.0,
-     "usedFuel": 292.9,
-     "vehicleCosts": 1462.0,
-     "helperCosts": 1437.9,
+     "usedFuel": 296.7,
+     "vehicleCosts": 1512.1,
+     "helperCosts": 1438.1,
      "subsidies": 0.0,
      "usedLimeRegular": 62419.5,
      "usedMineralFertilizerRegular": 9819.5,
@@ -16714,9 +16618,9 @@
      "yieldBestPrice": 0.0,
      "numSoilSamples": 0.0,
      "soilSampleCosts": 0.0,
-     "usedFuel": 106.6,
-     "vehicleCosts": 500.7,
-     "helperCosts": 494.4,
+     "usedFuel": 110.4,
+     "vehicleCosts": 550.8,
+     "helperCosts": 494.5,
      "subsidies": 0.0,
      "usedLimeRegular": 0.0,
      "usedMineralFertilizerRegular": 0.0,
@@ -16773,7 +16677,7 @@
     "farmlandId": 23,
     "totalCounter": {
      "usedLime": 35530.6,
-     "usedMineralFertilizer": 15067.4,
+     "usedMineralFertilizer": 15093.0,
      "usedLiquidFertilizer": 0.0,
      "usedManure": 0.0,
      "usedLiquidManure": 0.0,
@@ -16783,18 +16687,18 @@
      "yieldBestPrice": 180882.5,
      "numSoilSamples": 153.0,
      "soilSampleCosts": 26775.0,
-     "usedFuel": 551.1,
-     "vehicleCosts": 2857.0,
+     "usedFuel": 558.2,
+     "vehicleCosts": 2923.8,
      "helperCosts": 6428.1,
      "subsidies": 0.0,
      "usedLimeRegular": 36114.1,
-     "usedMineralFertilizerRegular": 12474.1,
+     "usedMineralFertilizerRegular": 12594.3,
      "usedSeedsRegular": 3105.9,
      "yieldRegular": 461114.2
     },
     "periodCounter": {
      "usedLime": 0.0,
-     "usedMineralFertilizer": 0.0,
+     "usedMineralFertilizer": 25.6,
      "usedLiquidFertilizer": 0.0,
      "usedManure": 0.0,
      "usedLiquidManure": 0.0,
@@ -16804,12 +16708,12 @@
      "yieldBestPrice": 0.0,
      "numSoilSamples": 0.0,
      "soilSampleCosts": 0.0,
-     "usedFuel": 138.5,
-     "vehicleCosts": 750.3,
+     "usedFuel": 145.6,
+     "vehicleCosts": 817.1,
      "helperCosts": 1173.9,
      "subsidies": 0.0,
      "usedLimeRegular": 0.0,
-     "usedMineralFertilizerRegular": 0.0,
+     "usedMineralFertilizerRegular": 120.2,
      "usedSeedsRegular": 517.7,
      "yieldRegular": 0.0
     }
@@ -16963,8 +16867,8 @@
      "yieldBestPrice": 1317033.8,
      "numSoilSamples": 116.0,
      "soilSampleCosts": 20300.0,
-     "usedFuel": 1318.8,
-     "vehicleCosts": 4367.1,
+     "usedFuel": 1328.7,
+     "vehicleCosts": 4371.5,
      "helperCosts": 12688.6,
      "subsidies": 0.0,
      "usedLimeRegular": 41336.5,
@@ -16984,8 +16888,8 @@
      "yieldBestPrice": 1317033.8,
      "numSoilSamples": 0.0,
      "soilSampleCosts": 0.0,
-     "usedFuel": 875.8,
-     "vehicleCosts": 3504.0,
+     "usedFuel": 885.7,
+     "vehicleCosts": 3508.3,
      "helperCosts": 7459.6,
      "subsidies": 0.0,
      "usedLimeRegular": 0.0,
@@ -17053,8 +16957,8 @@
      "yieldBestPrice": 470463.9,
      "numSoilSamples": 53.0,
      "soilSampleCosts": 9275.0,
-     "usedFuel": 817.5,
-     "vehicleCosts": 2444.6,
+     "usedFuel": 830.1,
+     "vehicleCosts": 2466.0,
      "helperCosts": 7110.6,
      "subsidies": 0.0,
      "usedLimeRegular": 22016.3,
@@ -17074,8 +16978,8 @@
      "yieldBestPrice": 389398.1,
      "numSoilSamples": 0.0,
      "soilSampleCosts": 0.0,
-     "usedFuel": 373.5,
-     "vehicleCosts": 1160.6,
+     "usedFuel": 386.2,
+     "vehicleCosts": 1182.0,
      "helperCosts": 2447.0,
      "subsidies": 0.0,
      "usedLimeRegular": 0.0,
@@ -17098,9 +17002,9 @@
      "yieldBestPrice": 101213.5,
      "numSoilSamples": 36.0,
      "soilSampleCosts": 6300.0,
-     "usedFuel": 451.1,
-     "vehicleCosts": 981.5,
-     "helperCosts": 4411.3,
+     "usedFuel": 464.6,
+     "vehicleCosts": 1023.4,
+     "helperCosts": 4431.7,
      "subsidies": 0.0,
      "usedLimeRegular": 14043.1,
      "usedMineralFertilizerRegular": 2294.1,
@@ -17119,9 +17023,9 @@
      "yieldBestPrice": 68792.6,
      "numSoilSamples": 0.0,
      "soilSampleCosts": 0.0,
-     "usedFuel": 130.9,
-     "vehicleCosts": 385.5,
-     "helperCosts": 605.4,
+     "usedFuel": 144.4,
+     "vehicleCosts": 427.4,
+     "helperCosts": 625.8,
      "subsidies": 0.0,
      "usedLimeRegular": 0.0,
      "usedMineralFertilizerRegular": 0.0,
@@ -17143,8 +17047,8 @@
      "yieldBestPrice": 345052.8,
      "numSoilSamples": 146.0,
      "soilSampleCosts": 25550.0,
-     "usedFuel": 1436.0,
-     "vehicleCosts": 14323.0,
+     "usedFuel": 1441.6,
+     "vehicleCosts": 14325.4,
      "helperCosts": 25500.5,
      "subsidies": 0.0,
      "usedLimeRegular": 57344.6,
@@ -17164,8 +17068,8 @@
      "yieldBestPrice": 0.0,
      "numSoilSamples": 0.0,
      "soilSampleCosts": 0.0,
-     "usedFuel": 433.1,
-     "vehicleCosts": 1142.9,
+     "usedFuel": 438.7,
+     "vehicleCosts": 1145.4,
      "helperCosts": 2582.7,
      "subsidies": 0.0,
      "usedLimeRegular": 0.0,
@@ -17184,18 +17088,18 @@
      "usedLiquidManure": 166126.9,
      "usedSeeds": 715.9,
      "usedHerbicide": 0.0,
-     "yield": 3322855.2,
-     "yieldBestPrice": 276631.3,
+     "yield": 3323074.5,
+     "yieldBestPrice": 276647.9,
      "numSoilSamples": 116.0,
      "soilSampleCosts": 20300.0,
-     "usedFuel": 503.8,
-     "vehicleCosts": 1475.7,
-     "helperCosts": 6286.3,
+     "usedFuel": 534.5,
+     "vehicleCosts": 1624.2,
+     "helperCosts": 6287.1,
      "subsidies": 0.0,
      "usedLimeRegular": 31162.0,
      "usedMineralFertilizerRegular": 9937.9,
      "usedSeedsRegular": 1314.6,
-     "yieldRegular": 3312650.2
+     "yieldRegular": 3312869.5
     },
     "periodCounter": {
      "usedLime": 0.0,
@@ -17205,18 +17109,18 @@
      "usedLiquidManure": 0.0,
      "usedSeeds": 0.0,
      "usedHerbicide": 0.0,
-     "yield": 1781719.6,
-     "yieldBestPrice": 150058.1,
+     "yield": 1781938.9,
+     "yieldBestPrice": 150074.7,
      "numSoilSamples": 0.0,
      "soilSampleCosts": 0.0,
-     "usedFuel": 116.3,
-     "vehicleCosts": 446.1,
-     "helperCosts": 788.6,
+     "usedFuel": 147.0,
+     "vehicleCosts": 594.6,
+     "helperCosts": 789.4,
      "subsidies": 0.0,
      "usedLimeRegular": 0.0,
      "usedMineralFertilizerRegular": 0.0,
      "usedSeedsRegular": 0.0,
-     "yieldRegular": 1779813.0
+     "yieldRegular": 1780032.2
     }
    },
    {
@@ -17278,9 +17182,9 @@
      "yieldBestPrice": 261720.2,
      "numSoilSamples": 116.0,
      "soilSampleCosts": 20300.0,
-     "usedFuel": 249.5,
-     "vehicleCosts": 637.9,
-     "helperCosts": 3817.5,
+     "usedFuel": 324.4,
+     "vehicleCosts": 898.8,
+     "helperCosts": 4362.0,
      "subsidies": 0.0,
      "usedLimeRegular": 40697.6,
      "usedMineralFertilizerRegular": 6939.1,
@@ -17299,9 +17203,9 @@
      "yieldBestPrice": 261689.0,
      "numSoilSamples": 0.0,
      "soilSampleCosts": 0.0,
-     "usedFuel": 92.2,
-     "vehicleCosts": 62.6,
-     "helperCosts": 294.8,
+     "usedFuel": 167.2,
+     "vehicleCosts": 323.5,
+     "helperCosts": 839.4,
      "subsidies": 0.0,
      "usedLimeRegular": 0.0,
      "usedMineralFertilizerRegular": 0.0,
@@ -17323,9 +17227,9 @@
      "yieldBestPrice": 103442.6,
      "numSoilSamples": 86.0,
      "soilSampleCosts": 15050.0,
-     "usedFuel": 81.1,
-     "vehicleCosts": 550.2,
-     "helperCosts": 467.2,
+     "usedFuel": 82.0,
+     "vehicleCosts": 550.4,
+     "helperCosts": 481.9,
      "subsidies": 0.0,
      "usedLimeRegular": 37.9,
      "usedMineralFertilizerRegular": 906.2,
@@ -17344,9 +17248,9 @@
      "yieldBestPrice": 0.0,
      "numSoilSamples": 0.0,
      "soilSampleCosts": 0.0,
-     "usedFuel": 2.2,
-     "vehicleCosts": 11.5,
-     "helperCosts": 0.0,
+     "usedFuel": 3.1,
+     "vehicleCosts": 11.8,
+     "helperCosts": 14.6,
      "subsidies": 0.0,
      "usedLimeRegular": 0.0,
      "usedMineralFertilizerRegular": 0.0,
@@ -17550,7 +17454,7 @@
      "soilSampleCosts": 0.0,
      "usedFuel": 0.0,
      "vehicleCosts": 0.0,
-     "helperCosts": 49.4,
+     "helperCosts": 54.9,
      "subsidies": 0.0,
      "usedLimeRegular": 0.0,
      "usedMineralFertilizerRegular": 0.0,
@@ -17571,7 +17475,7 @@
      "soilSampleCosts": 0.0,
      "usedFuel": 0.0,
      "vehicleCosts": 0.0,
-     "helperCosts": 49.4,
+     "helperCosts": 54.9,
      "subsidies": 0.0,
      "usedLimeRegular": 0.0,
      "usedMineralFertilizerRegular": 0.0,
@@ -18314,13 +18218,13 @@
    },
    "39": {
     "nitrogen": {
-     "harvestedArea": 437.785004,
-     "nOffsetSum": -4.221053,
+     "harvestedArea": 437.897003,
+     "nOffsetSum": -4.222269,
      "pendingReset": false
     },
     "ph": {
-     "harvestedArea": 437.785004,
-     "phOffsetSum": -1.809955,
+     "harvestedArea": 437.897003,
+     "phOffsetSum": -1.810291,
      "pendingReset": false
     },
     "herbicide": {
@@ -18405,9 +18309,9 @@
     },
     "tillage": {
      "totalFieldArea": 110236.0,
-     "workedAreaNone": 152.274994,
+     "workedAreaNone": 0.0,
      "workedAreaDeep": 0.0,
-     "workedAreaFlat": 0.0,
+     "workedAreaFlat": 157.875,
      "workedAreaDirect": 110083.726562
     }
    },
@@ -18653,5 +18557,15 @@
    30,
    16
   ]
+ },
+ "farmColors": {
+  "1": {
+   "primary": "#6eda16",
+   "secondary": "#bd5b00"
+  },
+  "2": {
+   "primary": "#37ff00",
+   "secondary": "#f52424"
+  }
  }
 }

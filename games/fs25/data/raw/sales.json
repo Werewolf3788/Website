@@ -1,18 +1,316 @@
 {
  "sales": {
-  "item": {
-   "timeLeft": 30,
-   "isGenerated": true,
-   "xmlFilename": "data/vehicles/poettinger/servoT6000Plus/servoT6000Plus.xml",
-   "age": 21,
-   "price": 22027,
-   "damage": 0.550209,
-   "wear": 0.514334,
-   "operatingTime": 91577.375,
-   "boughtConfiguration": {
-    "name": "design",
-    "id": 2
+  "item": [
+   {
+    "timeLeft": 30,
+    "isGenerated": true,
+    "xmlFilename": "data/vehicles/poettinger/servoT6000Plus/servoT6000Plus.xml",
+    "age": 21,
+    "price": 22027,
+    "damage": 0.550209,
+    "wear": 0.514334,
+    "operatingTime": 91577.375,
+    "boughtConfiguration": {
+     "name": "design",
+     "id": 2
+    }
+   },
+   {
+    "timeLeft": 40,
+    "isGenerated": false,
+    "xmlFilename": "D:/home/sid_2065238/farmingSim_2025/profile/mods/FS25_Flexicoil_ST820_MultiFunction/xml/ST_820.xml",
+    "age": 47,
+    "price": 100035,
+    "damage": 0.088242,
+    "wear": 0.342525,
+    "operatingTime": 51429.941406,
+    "boughtConfiguration": [
+     {
+      "name": "folding",
+      "id": 1
+     },
+     {
+      "name": "designColor",
+      "id": 1
+     },
+     {
+      "name": "designColor",
+      "id": "SHARED_GREY"
+     },
+     {
+      "name": "wheel",
+      "id": 1
+     },
+     {
+      "name": "workArea",
+      "id": 1
+     },
+     {
+      "name": "rimColor",
+      "id": 1
+     },
+     {
+      "name": "rimColor",
+      "id": 2
+     },
+     {
+      "name": "baseColor",
+      "id": 1
+     },
+     {
+      "name": "baseColor",
+      "id": "CASEIH_RED1"
+     }
+    ]
+   },
+   {
+    "timeLeft": 30,
+    "isGenerated": false,
+    "xmlFilename": "D:/home/sid_2065238/farmingSim_2025/profile/mods/FS25_KuhnAxis402/kuhnAxis402.xml",
+    "age": 14,
+    "price": 15209,
+    "damage": 0.012022,
+    "wear": 0.038133,
+    "operatingTime": 42896.757812,
+    "boughtConfiguration": [
+     {
+      "name": "fillUnit",
+      "id": 1
+     },
+     {
+      "name": "fillUnit",
+      "id": 4
+     },
+     {
+      "name": "designColor2",
+      "id": 1
+     },
+     {
+      "name": "designColor",
+      "id": 1
+     },
+     {
+      "name": "design",
+      "id": 1
+     },
+     {
+      "name": "fillVolume",
+      "id": 1
+     },
+     {
+      "name": "fillVolume",
+      "id": 4
+     },
+     {
+      "name": "wheel",
+      "id": 1
+     },
+     {
+      "name": "attacherJoint",
+      "id": 1
+     },
+     {
+      "name": "attacherJoint",
+      "id": 2
+     },
+     {
+      "name": "cover",
+      "id": 1
+     },
+     {
+      "name": "baseColor",
+      "id": 1
+     }
+    ]
+   },
+   {
+    "timeLeft": 20,
+    "isGenerated": false,
+    "xmlFilename": "D:/home/sid_2065238/farmingSim_2025/profile/mods/FS25_colossusPack/tools/stationaryBaler/baleMaster.xml",
+    "age": 17,
+    "price": 3580,
+    "damage": 0.012618,
+    "wear": 0.002069,
+    "operatingTime": 2195014.0,
+    "boughtConfiguration": [
+     {
+      "name": "fillUnit",
+      "id": 1
+     },
+     {
+      "name": "fillUnit",
+      "id": 3
+     },
+     {
+      "name": "wrappingAnimation",
+      "id": 1
+     },
+     {
+      "name": "wrappingAnimation",
+      "id": 2
+     },
+     {
+      "name": "consumable2",
+      "id": 1
+     },
+     {
+      "name": "designColor2",
+      "id": 2
+     },
+     {
+      "name": "designColor4",
+      "id": 2
+     },
+     {
+      "name": "baseColor",
+      "id": 1
+     },
+     {
+      "name": "designColor",
+      "id": 1
+     },
+     {
+      "name": "consumable",
+      "id": 1
+     },
+     {
+      "name": "designColor5",
+      "id": 2
+     },
+     {
+      "name": "designColor3",
+      "id": "SHARED_WHITE2"
+     },
+     {
+      "name": "fillVolume",
+      "id": 1
+     },
+     {
+      "name": "designColor6",
+      "id": 2
+     },
+     {
+      "name": "design7",
+      "id": 1
+     },
+     {
+      "name": "design2",
+      "id": 1
+     },
+     {
+      "name": "wheel",
+      "id": "CONTINENTAL_DEFAULT"
+     },
+     {
+      "name": "wheel",
+      "id": "CONTINENTAL_DEFAULT2"
+     }
+    ]
+   },
+   {
+    "timeLeft": 23,
+    "isGenerated": false,
+    "xmlFilename": "data/vehicles/kubota/seriesM8/seriesM8.xml",
+    "age": 48,
+    "price": 108623,
+    "damage": 0.452368,
+    "wear": 0.031475,
+    "operatingTime": 56625.050781,
+    "boughtConfiguration": [
+     {
+      "name": "fillUnit",
+      "id": 1
+     },
+     {
+      "name": "frontloader",
+      "id": 1
+     },
+     {
+      "name": "frontloader",
+      "id": 2
+     },
+     {
+      "name": "attacherJoint",
+      "id": 12
+     },
+     {
+      "name": "cropSensor",
+      "id": 1
+     },
+     {
+      "name": "cropSensor",
+      "id": 2
+     },
+     {
+      "name": "motor",
+      "id": 1
+     },
+     {
+      "name": "motor",
+      "id": 2
+     },
+     {
+      "name": "wheel",
+      "id": "WEIGHTS_TRELLEBORG_TM600"
+     },
+     {
+      "name": "wheel",
+      "id": "DEFAULT_TRELLEBORG_TM600"
+     },
+     {
+      "name": "wheel",
+      "id": "DEFAULT_MITAS_HC2000"
+     }
+    ]
+   },
+   {
+    "timeLeft": 31,
+    "isGenerated": false,
+    "xmlFilename": "data/vehicles/kubota/seriesM8/seriesM8.xml",
+    "age": 48,
+    "price": 6037,
+    "damage": 0.186573,
+    "wear": 0.188408,
+    "operatingTime": 2211862.75,
+    "boughtConfiguration": [
+     {
+      "name": "fillUnit",
+      "id": 1
+     },
+     {
+      "name": "frontloader",
+      "id": 1
+     },
+     {
+      "name": "frontloader",
+      "id": 2
+     },
+     {
+      "name": "cropSensor",
+      "id": 1
+     },
+     {
+      "name": "cropSensor",
+      "id": 2
+     },
+     {
+      "name": "attacherJoint",
+      "id": 12
+     },
+     {
+      "name": "motor",
+      "id": 1
+     },
+     {
+      "name": "wheel",
+      "id": "TWIN_ALL_TRELLEBORG_TM600"
+     },
+     {
+      "name": "wheel",
+      "id": "DEFAULT_TRELLEBORG_TM600"
+     }
+    ]
    }
-  }
+  ]
  }
 }

@@ -730,8 +730,8 @@
       "soilSampleCosts": 0.0,
       "usedLime": 0.0,
       "usedLimeRegular": 0.0,
-      "usedMineralFertilizer": 11954.335938,
-      "usedMineralFertilizerRegular": 14742.045898,
+      "usedMineralFertilizer": 20803.496094,
+      "usedMineralFertilizerRegular": 25358.115234,
       "usedLiquidFertilizer": 0.0,
       "usedLiquidFertilizerRegular": 0.0,
       "usedManure": 0.0,
@@ -746,9 +746,9 @@
       "yieldRegular": 3181750.0,
       "yieldWeight": 1764.036499,
       "yieldBestPrice": 1157534.75,
-      "usedFuel": 501.892944,
-      "vehicleCosts": 1870.840942,
-      "helperCosts": 3726.177002,
+      "usedFuel": 541.179504,
+      "vehicleCosts": 1928.622803,
+      "helperCosts": 4046.665283,
       "subsidies": 0.0
      },
      "totalCounter": {
@@ -756,8 +756,8 @@
       "soilSampleCosts": 22400.0,
       "usedLime": 84790.484375,
       "usedLimeRegular": 87210.140625,
-      "usedMineralFertilizer": 46698.25,
-      "usedMineralFertilizerRegular": 44238.097656,
+      "usedMineralFertilizer": 55547.410156,
+      "usedMineralFertilizerRegular": 54854.167969,
       "usedLiquidFertilizer": 0.0,
       "usedLiquidFertilizerRegular": 0.0,
       "usedManure": 0.0,
@@ -772,9 +772,9 @@
       "yieldRegular": 6758725.5,
       "yieldWeight": 3741.917236,
       "yieldBestPrice": 2907099.75,
-      "usedFuel": 1141.420532,
-      "vehicleCosts": 7872.238281,
-      "helperCosts": 12619.976562,
+      "usedFuel": 1180.707153,
+      "vehicleCosts": 7930.02002,
+      "helperCosts": 12940.464844,
       "subsidies": 0.0
      }
     },
@@ -801,8 +801,8 @@
       "yieldRegular": 0.0,
       "yieldWeight": 0.0,
       "yieldBestPrice": 0.0,
-      "usedFuel": 312.942596,
-      "vehicleCosts": 1395.849365,
+      "usedFuel": 321.689392,
+      "vehicleCosts": 1400.994385,
       "helperCosts": 2714.579102,
       "subsidies": 0.0
      },
@@ -827,8 +827,8 @@
       "yieldRegular": 544218.5625,
       "yieldWeight": 395.927856,
       "yieldBestPrice": 665413.5625,
-      "usedFuel": 1195.778076,
-      "vehicleCosts": 9247.18457,
+      "usedFuel": 1204.524902,
+      "vehicleCosts": 9252.330078,
       "helperCosts": 15517.427734,
       "subsidies": 0.0
      }
@@ -1241,9 +1241,9 @@
       "yieldRegular": 0.0,
       "yieldWeight": 0.0,
       "yieldBestPrice": 0.0,
-      "usedFuel": 106.600601,
-      "vehicleCosts": 500.668488,
-      "helperCosts": 494.384369,
+      "usedFuel": 110.402351,
+      "vehicleCosts": 550.832153,
+      "helperCosts": 494.539001,
       "subsidies": 0.0
      },
      "totalCounter": {
@@ -1267,9 +1267,9 @@
       "yieldRegular": 75378.609375,
       "yieldWeight": 55.692879,
       "yieldBestPrice": 255019.28125,
-      "usedFuel": 292.924133,
-      "vehicleCosts": 1461.950928,
-      "helperCosts": 1437.929688,
+      "usedFuel": 296.725891,
+      "vehicleCosts": 1512.114624,
+      "helperCosts": 1438.084351,
       "subsidies": 0.0
      }
     },
@@ -1335,8 +1335,8 @@
       "soilSampleCosts": 0.0,
       "usedLime": 0.0,
       "usedLimeRegular": 0.0,
-      "usedMineralFertilizer": 0.0,
-      "usedMineralFertilizerRegular": 0.0,
+      "usedMineralFertilizer": 25.60018,
+      "usedMineralFertilizerRegular": 120.206856,
       "usedLiquidFertilizer": 0.0,
       "usedLiquidFertilizerRegular": 0.0,
       "usedManure": 0.0,
@@ -1351,8 +1351,8 @@
       "yieldRegular": 0.0,
       "yieldWeight": 0.0,
       "yieldBestPrice": 0.0,
-      "usedFuel": 138.468735,
-      "vehicleCosts": 750.280884,
+      "usedFuel": 145.550735,
+      "vehicleCosts": 817.132141,
       "helperCosts": 1173.88208,
       "subsidies": 0.0
      },
@@ -1361,8 +1361,8 @@
       "soilSampleCosts": 26775.0,
       "usedLime": 35530.628906,
       "usedLimeRegular": 36114.117188,
-      "usedMineralFertilizer": 15067.447266,
-      "usedMineralFertilizerRegular": 12474.09375,
+      "usedMineralFertilizer": 15093.047852,
+      "usedMineralFertilizerRegular": 12594.300781,
       "usedLiquidFertilizer": 0.0,
       "usedLiquidFertilizerRegular": 0.0,
       "usedManure": 0.0,
@@ -1377,8 +1377,8 @@
       "yieldRegular": 461114.15625,
       "yieldWeight": 263.380157,
       "yieldBestPrice": 180882.53125,
-      "usedFuel": 551.072266,
-      "vehicleCosts": 2856.953125,
+      "usedFuel": 558.154236,
+      "vehicleCosts": 2923.804199,
       "helperCosts": 6428.070312,
       "subsidies": 0.0
      }
@@ -1846,8 +1846,8 @@
       "yieldRegular": 1873807.75,
       "yieldWeight": 1141.955933,
       "yieldBestPrice": 1317033.75,
-      "usedFuel": 875.814941,
-      "vehicleCosts": 3503.999268,
+      "usedFuel": 885.711121,
+      "vehicleCosts": 3508.344727,
       "helperCosts": 7459.556152,
       "subsidies": 0.0
      },
@@ -1872,8 +1872,8 @@
       "yieldRegular": 1873807.75,
       "yieldWeight": 1141.955933,
       "yieldBestPrice": 1317033.75,
-      "usedFuel": 1318.774048,
-      "vehicleCosts": 4367.133789,
+      "usedFuel": 1328.670288,
+      "vehicleCosts": 4371.479492,
       "helperCosts": 12688.600586,
       "subsidies": 0.0
      }
@@ -2066,8 +2066,8 @@
       "yieldRegular": 783475.8125,
       "yieldWeight": 468.793793,
       "yieldBestPrice": 389398.125,
-      "usedFuel": 373.533752,
-      "vehicleCosts": 1160.615112,
+      "usedFuel": 386.191162,
+      "vehicleCosts": 1182.025391,
       "helperCosts": 2446.966064,
       "subsidies": 0.0
      },
@@ -2092,8 +2092,8 @@
       "yieldRegular": 919539.1875,
       "yieldWeight": 582.867432,
       "yieldBestPrice": 470463.875,
-      "usedFuel": 817.483704,
-      "vehicleCosts": 2444.568359,
+      "usedFuel": 830.141113,
+      "vehicleCosts": 2465.97876,
       "helperCosts": 7110.553223,
       "subsidies": 0.0
      }
@@ -2121,9 +2121,9 @@
       "yieldRegular": 820127.125,
       "yieldWeight": 248.272308,
       "yieldBestPrice": 68792.632812,
-      "usedFuel": 130.935913,
-      "vehicleCosts": 385.451935,
-      "helperCosts": 605.375732,
+      "usedFuel": 144.441574,
+      "vehicleCosts": 427.378723,
+      "helperCosts": 625.750793,
       "subsidies": 0.0
      },
      "totalCounter": {
@@ -2147,9 +2147,9 @@
       "yieldRegular": 1242472.625,
       "yieldWeight": 375.694916,
       "yieldBestPrice": 101213.523438,
-      "usedFuel": 451.100494,
-      "vehicleCosts": 981.450134,
-      "helperCosts": 4411.34668,
+      "usedFuel": 464.60614,
+      "vehicleCosts": 1023.376953,
+      "helperCosts": 4431.72168,
       "subsidies": 0.0
      }
     },
@@ -2176,8 +2176,8 @@
       "yieldRegular": 0.0,
       "yieldWeight": 0.0,
       "yieldBestPrice": 0.0,
-      "usedFuel": 433.051575,
-      "vehicleCosts": 1142.906128,
+      "usedFuel": 438.713806,
+      "vehicleCosts": 1145.359985,
       "helperCosts": 2582.686523,
       "subsidies": 0.0
      },
@@ -2202,8 +2202,8 @@
       "yieldRegular": 312711.6875,
       "yieldWeight": 282.136963,
       "yieldBestPrice": 345052.78125,
-      "usedFuel": 1435.962769,
-      "vehicleCosts": 14322.96875,
+      "usedFuel": 1441.625,
+      "vehicleCosts": 14325.421875,
       "helperCosts": 25500.505859,
       "subsidies": 0.0
      }
@@ -2227,13 +2227,13 @@
       "usedSeedsRegular": 0.0,
       "usedHerbicide": 0.0,
       "usedHerbicideRegular": 0.0,
-      "yield": 1781719.625,
-      "yieldRegular": 1779813.0,
-      "yieldWeight": 534.51593,
-      "yieldBestPrice": 150058.078125,
-      "usedFuel": 116.305862,
-      "vehicleCosts": 446.102448,
-      "helperCosts": 788.59729,
+      "yield": 1781938.875,
+      "yieldRegular": 1780032.25,
+      "yieldWeight": 534.581665,
+      "yieldBestPrice": 150074.71875,
+      "usedFuel": 147.015991,
+      "vehicleCosts": 594.624878,
+      "helperCosts": 789.370361,
       "subsidies": 0.0
      },
      "totalCounter": {
@@ -2253,13 +2253,13 @@
       "usedSeedsRegular": 1314.572998,
       "usedHerbicide": 0.0,
       "usedHerbicideRegular": 0.0,
-      "yield": 3322855.25,
-      "yieldRegular": 3312650.25,
-      "yieldWeight": 996.856567,
-      "yieldBestPrice": 276631.28125,
-      "usedFuel": 503.791412,
-      "vehicleCosts": 1475.7229,
-      "helperCosts": 6286.3125,
+      "yield": 3323074.5,
+      "yieldRegular": 3312869.5,
+      "yieldWeight": 996.922302,
+      "yieldBestPrice": 276647.90625,
+      "usedFuel": 534.501526,
+      "vehicleCosts": 1624.245361,
+      "helperCosts": 6287.085449,
       "subsidies": 0.0
      }
     },
@@ -2396,9 +2396,9 @@
       "yieldRegular": 232587.84375,
       "yieldWeight": 197.912506,
       "yieldBestPrice": 261689.03125,
-      "usedFuel": 92.205559,
-      "vehicleCosts": 62.645718,
-      "helperCosts": 294.794495,
+      "usedFuel": 167.168793,
+      "vehicleCosts": 323.546722,
+      "helperCosts": 839.365601,
       "subsidies": 0.0
      },
      "totalCounter": {
@@ -2422,9 +2422,9 @@
       "yieldRegular": 232989.171875,
       "yieldWeight": 198.03363,
       "yieldBestPrice": 261720.203125,
-      "usedFuel": 249.456284,
-      "vehicleCosts": 637.930725,
-      "helperCosts": 3817.467041,
+      "usedFuel": 324.419525,
+      "vehicleCosts": 898.831726,
+      "helperCosts": 4362.038086,
       "subsidies": 0.0
      }
     },
@@ -2451,9 +2451,9 @@
       "yieldRegular": 0.0,
       "yieldWeight": 0.0,
       "yieldBestPrice": 0.0,
-      "usedFuel": 2.167984,
-      "vehicleCosts": 11.506597,
-      "helperCosts": 0.0,
+      "usedFuel": 3.076063,
+      "vehicleCosts": 11.788765,
+      "helperCosts": 14.633905,
       "subsidies": 0.0
      },
      "totalCounter": {
@@ -2477,9 +2477,9 @@
       "yieldRegular": 165073.875,
       "yieldWeight": 117.971542,
       "yieldBestPrice": 103442.617188,
-      "usedFuel": 81.121956,
-      "vehicleCosts": 550.15863,
-      "helperCosts": 467.216644,
+      "usedFuel": 82.030037,
+      "vehicleCosts": 550.440796,
+      "helperCosts": 481.850555,
       "subsidies": 0.0
      }
     },
@@ -3718,7 +3718,7 @@
       "yieldBestPrice": 73.658302,
       "usedFuel": 0.0,
       "vehicleCosts": 0.0,
-      "helperCosts": 49.353252,
+      "helperCosts": 54.855404,
       "subsidies": 0.0
      },
      "totalCounter": {
@@ -3744,7 +3744,7 @@
       "yieldBestPrice": 73.658302,
       "usedFuel": 0.0,
       "vehicleCosts": 0.0,
-      "helperCosts": 49.353252,
+      "helperCosts": 54.855404,
       "subsidies": 0.0
      }
     },
@@ -4045,8 +4045,8 @@
      },
      {
       "farmlandId": 39,
-      "harvestedArea": 437.785004,
-      "nOffsetSum": -4.221053,
+      "harvestedArea": 437.897003,
+      "nOffsetSum": -4.222269,
       "pendingReset": false
      },
      {
@@ -4313,8 +4313,8 @@
      },
      {
       "farmlandId": 39,
-      "harvestedArea": 437.785004,
-      "phOffsetSum": -1.809955,
+      "harvestedArea": 437.897003,
+      "phOffsetSum": -1.810291,
       "pendingReset": false
      },
      {
@@ -5052,9 +5052,9 @@
      {
       "farmlandId": 42,
       "totalFieldArea": 110236.0,
-      "workedAreaNone": 152.274994,
+      "workedAreaNone": 0.0,
       "workedAreaDeep": 0.0,
-      "workedAreaFlat": 0.0,
+      "workedAreaFlat": 157.875,
       "workedAreaDirect": 110083.726562
      },
      {
