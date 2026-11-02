@@ -6,7 +6,7 @@
   "mapSize": 2048,
   "mapName": "The Rural Farmlands Of Ohio",
   "name": "OneLIVIDMAN and werewolf 618",
-  "dayTime": 62707281,
+  "dayTime": 7934481,
   "Slots": {
    "capacity": 6,
    "numUsed": 0,
@@ -1420,12 +1420,12 @@
      "name": "6R Series (230-250)",
      "category": "TRACTORSM",
      "type": "tractor",
-     "x": -253.097794,
-     "y": 18.086718,
-     "z": -675.932007,
+     "x": -469.067444,
+     "y": 19.715624,
+     "z": -703.113403,
      "fillTypes": "DIESEL DEF AIR",
-     "fillLevels": "432.983 25.000 2350.000",
-     "isAIActive": true
+     "fillLevels": "432.983 25.000 4000.000",
+     "isAIActive": false
     },
     {
      "name": "Roadrunner+",
@@ -1525,12 +1525,12 @@
      "name": "Magnum Series",
      "category": "TRACTORSL",
      "type": "tractor",
-     "x": 53.511345,
-     "y": 32.858589,
-     "z": 629.566406,
+     "x": -76.798912,
+     "y": 25.973801,
+     "z": 710.396973,
      "fillTypes": "DIESEL DEF AIR",
      "fillLevels": "614.974 98.000 3000.000",
-     "isAIActive": true
+     "isAIActive": false
     },
     {
      "name": "Magnum Series",
@@ -1578,9 +1578,9 @@
      "name": "1775NT Multi-planter",
      "category": "PLANTERS",
      "type": "sowingMachine",
-     "x": -253.098557,
-     "y": 18.939014,
-     "z": -667.829224,
+     "x": -469.046753,
+     "y": 20.163847,
+     "z": -695.54657,
      "fillTypes": "SEEDS",
      "fillLevels": 16163.885
     },
@@ -1588,9 +1588,9 @@
      "name": "1775NT Multi-planter",
      "category": "PLANTERS",
      "type": "sowingMachine",
-     "x": 53.094101,
-     "y": 32.195534,
-     "z": 637.713318,
+     "x": -76.383049,
+     "y": 26.404919,
+     "z": 702.162476,
      "fillTypes": "SEEDS",
      "fillLevels": 25000.0
     },
@@ -1692,9 +1692,9 @@
      "name": "4905 Multi-Fruit Planter",
      "category": "PLANTERS",
      "type": "fertilizingSowingMachine",
-     "x": 855.356567,
-     "y": 22.727959,
-     "z": -437.595245,
+     "x": 456.732635,
+     "y": 31.416883,
+     "z": -281.088623,
      "fillTypes": "SEEDS LIQUIDFERTILIZER",
      "fillLevels": "149989.156 74923.930"
     },
@@ -2196,12 +2196,12 @@
      "name": "Series 8 TTV",
      "category": "TRACTORSM",
      "type": "tractor",
-     "x": 866.199463,
-     "y": 22.469019,
-     "z": -443.522186,
+     "x": 449.742706,
+     "y": 31.60548,
+     "z": -277.247681,
      "fillTypes": "DIESEL DEF AIR",
      "fillLevels": "494.998 35.000 3000.000",
-     "isAIActive": true
+     "isAIActive": false
     },
     {
      "name": "Titan Super Collect 533",
