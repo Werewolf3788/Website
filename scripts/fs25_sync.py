@@ -264,11 +264,40 @@ def download(ftp, path, offset=0):
     return buf.getvalue()
 
 
+def save_dir_from_config(ftp):
+    """Read <savegame_index> from profile/dedicated_server/dedicatedServerConfig.xml.
+    Only that one value is used; the file (which holds passwords) is never stored."""
+    for folder in ("/profile/dedicated_server", "profile/dedicated_server"):
+        entries = list_dir(ftp, folder)
+        name = find_name(entries, "dedicatedServerConfig.xml")
+        if not name:
+            continue
+        try:
+            root = ET.fromstring(download(ftp, f"{folder}/{name}"))
+        except Exception as e:
+            log(f"dedicatedServerConfig.xml unreadable: {e}")
+            return None
+        el = next((e for e in root.iter() if e.tag.lower() == "savegame_index"), None)
+        idx = (el.text or "").strip() if el is not None else ""
+        if idx.isdigit():
+            profile = folder.rsplit("/", 1)[0] or "/"
+            path = f"{profile}/savegame{idx}"
+            log(f"dedicatedServerConfig.xml: savegame_index={idx} -> {path}")
+            return path
+        return None
+    return None
+
+
 def find_save_dir(ftp, state):
     forced = os.environ.get("FS25_SAVE_DIR", "").strip()
     if forced:
         return forced.rstrip("/") or "/"
-    for cand in [state.get("saveDir")] + DEFAULT_SAVE_DIRS:
+    try:
+        from_cfg = save_dir_from_config(ftp)
+    except ftplib.all_errors as e:
+        log(f"dedicatedServerConfig.xml: {e}")
+        from_cfg = None
+    for cand in [from_cfg, state.get("saveDir")] + DEFAULT_SAVE_DIRS:
         if cand and find_name(list_dir(ftp, cand), "careerSavegame.xml"):
             return cand
     log("Searching the FTP for the savegame folder ...")
