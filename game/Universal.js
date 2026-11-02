@@ -1277,6 +1277,7 @@ function ensureUniversalStyles() {
         .ctl-wrap { overflow-x: auto; }
         .wpn-status { font-size: 0.72rem; color: #f59e0b; margin-top: 2px; }
         .wpn-status.ok { color: #10b981; }
+        .col-group-title { color: #fff; font-size: 0.9rem; margin: 14px 0 8px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .mark-all-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
         .loc-photo { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; margin-top: 4px; display: block; }
         .friend-marks { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; padding-top: 6px; border-top: 1px dashed rgba(255,255,255,0.1); width: 100%; }
@@ -1490,7 +1491,12 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
     })]);
 
     const colCards = [];
-    Object.entries(m.collectibles || {}).forEach(([cat, list]) => {
+    const colGroups = [];
+    const COL_ORDER = ['personal_letters', 'classified_documents', 'hidden_items', 'stone_eagles', 'workbenches'];
+    Object.entries(m.collectibles || {})
+        .sort((a, b) => { const ia = COL_ORDER.indexOf(a[0]), ib = COL_ORDER.indexOf(b[0]); return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib); })
+        .forEach(([cat, list]) => {
+        const groupCards = [];
         toArr(list).forEach(it => {
             if (!it || !it.id) return;
             colCards.push(buildItemCard({
@@ -1501,7 +1507,9 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
                 img: it.image_url, ctx, locImg: it.location_image_url,
                 link: it.video_url, linkLabel: 'Watch guide'
             }));
+            groupCards.push(colCards[colCards.length - 1]);
         });
+        if (groupCards.length) colGroups.push(`<h4 class="col-group-title">${escapeHtml(({ workbenches: "⚙️ Workbenches" })[cat] || (COLLECTIBLE_LABELS[cat] || humanize(cat)) + "s")} (${groupCards.length})</h4>` + gridOf(groupCards));
     });
     const detail = [];
     if (m.description) detail.push(`<div><h4>Description</h4><p>${escapeHtml(m.description)}</p></div>`);
@@ -1531,7 +1539,7 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
         <button type="button" class="uni-search-btn" onclick="appState.markAllCollectibles('${escapeHtml(mKey)}', true)">✓ Mark all collected</button>
         <button type="button" class="uni-search-btn" onclick="appState.markAllCollectibles('${escapeHtml(mKey)}', false)">Clear all</button>
         <button type="button" class="uni-search-btn mark-undo" hidden onclick="appState.undoMarkAll()">↶ Undo</button>
-    </div>` + gridOf(colCards));
+    </div>` + colGroups.join(''));
 
     const chCards = [];
     const kc = m.kill_challenge;
