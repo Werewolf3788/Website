@@ -3927,15 +3927,22 @@
         {
           "id": "med_general_going_the_distance",
           "name": "Going the Distance",
-          "description": "Achieve a total kill distance of 20,000 meters.",
-          "goal": 20000,
+          "description": "Achieve a total kill distance (meters). Tiered: bronze 20,000, silver 60,000, gold 100,000.",
+          "goal": 100000,
           "goal_tier": null,
           "tiers": {
             "bronze": null,
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "",
+          "tier_goals": {
+            "bronze": 20000,
+            "silver": 60000,
+            "gold": 100000
+          },
+          "psn_trophy": 26,
+          "notes": "Silver target 60,000 confirmed in game (screen showed 25,554/60,000 with bronze earned). Gold 100,000 matches the Going The Distance trophy; not yet seen in game."
         },
         {
           "id": "med_general_climbing_the_ranks",

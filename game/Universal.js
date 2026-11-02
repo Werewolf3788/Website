@@ -345,6 +345,7 @@ window.appState = {
         if (!it || !it.id) return;
         if (!this.medals[it.id]) {
             this.medals[it.id] = { earned: false, name: it.name || '', description: it.description || '' };
+            if (Number(it.goal) > 1 || it.psn_trophy) this.medals[it.id].progress = 0;
         } else {
             this.medals[it.id].name = it.name || this.medals[it.id].name;
             this.medals[it.id].description = it.description || this.medals[it.id].description;
@@ -566,7 +567,11 @@ window.appState = {
 
         if (payload.medals) {
             for (const medId in payload.medals) {
-                if (this.medals[medId]) this.medals[medId].earned = !!payload.medals[medId].earned;
+                if (this.medals[medId]) {
+                    this.medals[medId].earned = !!payload.medals[medId].earned;
+                    if (payload.medals[medId].progress !== undefined) this.medals[medId].progress = Number(payload.medals[medId].progress) || 0;
+                    if (payload.medals[medId].progressSource) this.medals[medId].progressSource = payload.medals[medId].progressSource;
+                }
             }
         }
 
@@ -687,6 +692,7 @@ window.appState.applyStateToUI = function() {
     this.recalculateMetrics();
     if (typeof renderWalletUI === 'function') renderWalletUI();
     if (typeof renderRankUI === 'function') renderRankUI();
+    if (typeof renderMedalProgress === 'function') setTimeout(renderMedalProgress, 0);
     Object.entries((this.gameData && this.gameData.missions) || {}).forEach(([mk, mm]) => {
         if (!mm || mm.completion_trophy === undefined) return;
         const t = this.trophies[`trophy_${this.gameId}_${mm.completion_trophy}`];
@@ -826,6 +832,71 @@ function updateGameMetrics() {
     }
     const html = boxes.slice(0, 4).join('');
     if (grid.innerHTML !== html) grid.innerHTML = html;
+}
+
+// Medal progress (counts like 234/350); PSN trophy progress fills it automatically.
+function medalDef(id) {
+    let found = null;
+    const walk = (o) => { if (found || !o || typeof o !== 'object') return; if (Array.isArray(o)) { o.forEach(walk); return; } if (o.id === id && /^med_/.test(id)) { found = o; return; } Object.values(o).forEach(walk); };
+    const d = appState.gameData || {}; walk(d.medals); walk(d.missions);
+    return found;
+}
+function medalTiers(def) {
+    if (!def) return [];
+    const t = def.tier_goals ? Object.entries(def.tier_goals).filter(([, v]) => Number(v)).map(([k, v]) => ({ tier: k, goal: Number(v) })) : [];
+    if (t.length) return t.sort((a, b) => a.goal - b.goal);
+    return Number(def.goal) > 0 ? [{ tier: '', goal: Number(def.goal) }] : [];
+}
+function updateMedalFromProgress(id) {
+    const m = appState.medals[id]; const def = medalDef(id); if (!m || !def) return;
+    const tiers = medalTiers(def); if (!tiers.length) return;
+    m.earned = (m.progress || 0) >= tiers[0].goal;
+}
+window.appState.setMedalProgress = function(id, value, source) {
+    if (!this.medals[id]) this.medals[id] = { earned: false };
+    this.medals[id].progress = Math.max(0, Math.floor(Number(value) || 0));
+    this.medals[id].progressSource = source || 'manual';
+    updateMedalFromProgress(id);
+    this.applyStateToUI();
+    clearTimeout(this._medalSaveTimer); this._medalSaveTimer = setTimeout(() => this.saveProgress(), 600);
+};
+window.appState.stepMedal = function(id, d) { this.setMedalProgress(id, (this.medals[id]?.progress || 0) + d); };
+window.appState.stepRibbon = function(id, d) { this.setRibbonCount(id, (this.ribbons[id]?.count || 0) + d); };
+function renderMedalProgress() {
+    document.querySelectorAll('.medal-meter[data-medal]').forEach(el => {
+        const id = el.dataset.medal, m = appState.medals[id] || {}, def = medalDef(id);
+        const tiers = medalTiers(def); if (!tiers.length) return;
+        const p = m.progress || 0;
+        const next = tiers.find(t => p < t.goal) || tiers[tiers.length - 1];
+        const done = tiers.filter(t => p >= t.goal).map(t => t.tier).filter(Boolean);
+        el.innerHTML = `${fmtNum(p)}/${fmtNum(next.goal)}${next.tier ? ` (${next.tier})` : ''}${done.length ? ` · earned ${done.join(', ')}` : ''}${m.progressSource === 'psn' ? ' · from PSN' : ''}` + meterHtml(next.goal - p, next.goal, '').replace(/^<span class="wm-num[^>]*>.*?<\/span>/, '');
+        const inp = el.closest('.game-item-card')?.querySelector('.medal-count');
+        if (inp && document.activeElement !== inp) inp.value = p;
+    });
+}
+// Link medals to PSN trophies by name (or "psn_trophy" in the JSON) and copy the trophy's counter.
+function applyPsnToMedals(entries) {
+    const data = appState.gameData || {};
+    const norm = (t) => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+    const trophyByName = {};
+    [...toArr(data.general_trophies), ...toArr(data.trophies)].forEach(t => { trophyByName[norm(t.name)] = t; });
+    const medals = [];
+    const walk = (o) => { if (!o || typeof o !== 'object') return; if (Array.isArray(o)) { o.forEach(walk); return; } if (typeof o.id === 'string' && /^med_/.test(o.id)) { medals.push(o); return; } Object.values(o).forEach(walk); };
+    walk(data.medals); walk(data.missions);
+    let changed = false;
+    medals.forEach(md => {
+        const t = md.psn_trophy !== undefined ? toArr(data.general_trophies).find(x => String(x.trophyId) === String(md.psn_trophy)) : trophyByName[norm(md.name)];
+        if (!t) return;
+        const e = entries[String(t.trophyId)]; if (!e) return;
+        const target = Number(e.targetValue || e.trophyProgressTargetValue) || Number((String(t.description).replace(/,/g, '').match(/\d+/) || [])[0]) || 0;
+        let v = Number(e.currentValue ?? e.trophyProgress ?? e.progress);
+        if (!v && e.progressRate && target) v = Math.round(parseFloat(e.progressRate) / 100 * target);
+        if ((e.earned === true || e.isEarned === true) && target) v = Math.max(v || 0, target);
+        if (!v) return;
+        const cur = appState.medals[md.id] || (appState.medals[md.id] = { earned: false });
+        if ((cur.progress || 0) < v || cur.progressSource !== 'psn') { cur.progress = Math.max(cur.progressSource === 'manual' ? (cur.progress || 0) : 0, v); cur.progressSource = 'psn'; updateMedalFromProgress(md.id); changed = true; }
+    });
+    return changed;
 }
 
 // Ribbons can be earned many times: store the number shown in game.
@@ -1249,6 +1320,9 @@ async function autoCheckUserPsnTrophies() {
                 }
             }
 
+            const byId = {};
+            for (const [tId, tObj] of (Array.isArray(liveTrophies) ? liveTrophies.entries() : Object.entries(liveTrophies))) { if (tObj) byId[String(tObj.trophyId !== undefined ? tObj.trophyId : tId)] = tObj; }
+            if (applyPsnToMedals(byId)) stateModified = true;
             if (stateModified) {
                 appState.applyStateToUI();
                 appState.saveProgress();
@@ -1305,6 +1379,9 @@ function ensureUniversalStyles() {
         .wpn-status { font-size: 0.72rem; color: #f59e0b; margin-top: 2px; }
         .wpn-status.ok { color: #10b981; }
         .col-group-title { color: #fff; font-size: 0.9rem; margin: 14px 0 8px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .step-btn { width: 26px; height: 26px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #fff; font-weight: 900; cursor: pointer; line-height: 1; }
+        .step-btn:active { transform: scale(0.94); }
+        .medal-count { width: 74px; text-align: center; background: #0f172a; color: #fff; border: 1px solid #334155; border-radius: 6px; padding: 3px 4px; }
         .mark-all-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
         .loc-photo { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; margin-top: 4px; display: block; }
         .friend-marks { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; padding-top: 6px; border-top: 1px dashed rgba(255,255,255,0.1); width: 100%; }
@@ -1443,10 +1520,13 @@ function buildItemCard(o) {
                 </div>
             </div>
             ${o.counter
-                ? `<label class="ribbon-count-wrap" title="Times earned"><span>×</span><input type="number" min="0" step="1" inputmode="numeric" class="ribbon-count" value="0" aria-label="Times earned: ${escapeHtml(o.title || '')}" onchange="appState.setRibbonCount('${escapeHtml(o.id)}', this.value)"></label>`
+                ? `<div class="ribbon-count-wrap" title="Times earned"><button type="button" class="step-btn" aria-label="Take one away" onclick="appState.stepRibbon('${escapeHtml(o.id)}', -1)">−</button><span>×</span><input type="number" min="0" step="1" inputmode="numeric" class="ribbon-count" value="0" aria-label="Times earned: ${escapeHtml(o.title || '')}" onchange="appState.setRibbonCount('${escapeHtml(o.id)}', this.value)"><button type="button" class="step-btn" aria-label="Add one" onclick="appState.stepRibbon('${escapeHtml(o.id)}', 1)">+</button></div>`
+                : o.progressGoal
+                ? `<div class="ribbon-count-wrap medal-progress-wrap" title="Progress"><button type="button" class="step-btn" aria-label="Take one away" onclick="appState.stepMedal('${escapeHtml(o.id)}', -1)">−</button><input type="number" min="0" step="1" inputmode="numeric" class="medal-count" value="0" aria-label="Progress: ${escapeHtml(o.title || '')}" onchange="appState.setMedalProgress('${escapeHtml(o.id)}', this.value)"><button type="button" class="step-btn" aria-label="Add one" onclick="appState.stepMedal('${escapeHtml(o.id)}', 1)">+</button></div>`
                 : `<button type="button" class="check-btn" onclick="appState.toggleItem('${escapeHtml(o.id)}', '${o.type}'${groupArg})" aria-label="Toggle"></button>`}
         </div>
         ${o.body ? `<p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(o.body)}</p>` : ''}
+        ${o.progressGoal ? `<div class="medal-meter wallet-meter" data-medal="${escapeHtml(o.id)}"></div>` : ''}
         ${o.locImg ? `<img src="${escapeHtml(toSecureUrl(o.locImg))}" alt="Where to find ${escapeHtml(o.title || '')}" loading="lazy" class="loc-photo" title="Tap to enlarge" onerror="this.remove()">` : ''}
         ${o.price ? `<div class="price-meter wallet-meter" data-price="${Number(o.price) || 0}"></div>` : ''}
         ${o.link ? `<a href="${escapeHtml(o.link)}" target="_blank" rel="noopener" style="font-size:0.75rem; font-weight:800; color:var(--user-theme-accent, #ff5500); text-decoration:none;">▶ ${escapeHtml(o.linkLabel || 'Watch')}</a>` : ''}
@@ -1458,7 +1538,10 @@ function medalCard(m, ctx) {
     const parts = [];
     if (m.goal !== undefined && m.goal !== null) parts.push(`Goal: ${m.goal}`);
     if (m.distance_m) parts.push(`Distance: ${m.distance_m} m`);
+    const tiers = m.tier_goals ? Object.values(m.tier_goals).filter(Number) : [];
+    const progressGoal = Number(m.goal) > 1 || tiers.length || m.psn_trophy ? (tiers.length ? Math.max(...tiers) : Number(m.goal) || 1) : 0;
     return buildItemCard({
+        progressGoal,
         id: m.id, type: 'medal', badge: (m.goal_tier || 'Medal'), badgeClass: tierClass,
         title: m.name, sub: m.description, body: [parts.join(' | '), m.tip ? `Tip: ${m.tip}` : ''].filter(Boolean).join(' — '), img: m.image_url, ctx: `medal ${ctx || ''}`,
         locImg: m.location_image_url, link: m.map_url || m.video_url, linkLabel: m.map_url ? 'Open on map' : (m.video_url ? 'Watch guide' : '')
