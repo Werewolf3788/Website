@@ -5,8 +5,11 @@
 
   URL options (all optional):
     ?psn=wildhorse_spirit     PSN gamertag key in /psn/gamertags (data only, never shown)
-    &user=raykevin71888_at_gmail_com   site account -> avatar_url (profile image)
-    &twitch=werewolf3788      Twitch name for the fallback game
+    &user=raykevin71888_at_gmail_com   site account (friend code, colour, backup picture)
+    &twitch=werewolf3788      Twitch name: profile picture (decapi) + fallback game
+
+  StreamElements: paste this whole file into a Custom Widget's HTML tab
+  (leave CSS/JS empty). No URL needed; the defaults above are used.
     &code=FRIENDCODE          your site friend code -> shows game-tracker stats
     &accent=9333ea            accent colour (hex, no #)
     &toast=0                  turn off the trophy pop-up
@@ -94,7 +97,7 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
     </div>
     <img id="art" alt="" referrerpolicy="no-referrer">
   </div>
-  <div class="stamp">ww-overlay v7.1 · 720p</div>
+  <div class="stamp">ww-overlay v7.2 · 720p</div>
 </div>
 
 <script>
@@ -134,9 +137,14 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
   const psnDb = psnApp.database(), siteDb = siteApp.database(), siteFs = siteApp.firestore();
 
   // ---- Twitch avatar (left) + fallback game from Twitch
-  let twitchGame = '';
+  let twitchGame = '', twitchAvatar = '', siteAvatar = '';
+  function setAvatar(u) { const img = $('pfp'); if (!u) return; if (img.dataset.src !== u) { img.dataset.src = u; img.src = u; } img.style.display = 'block'; }
   async function twitch() {
     const v = Date.now();
+    try {
+      const a = (await (await fetch(`https://decapi.me/twitch/avatar/${CFG.twitch}?v=${v}`)).text()).trim();
+      if (/^https?:\/\//.test(a) && !/error|not found/i.test(a)) { twitchAvatar = a; setAvatar(a); }
+    } catch (e) {}
     try {
       const g = (await (await fetch(`https://decapi.me/twitch/game/${CFG.twitch}?v=${v}`)).text()).trim();
       twitchGame = /error|not found|could not|rate limit/i.test(g) ? '' : g;
@@ -147,8 +155,8 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
   // ---- profile image + accent colour from the site account (users/{key})
   siteDb.ref(`users/${CFG.user}`).on('value', (snap) => {
     const u = snap.val() || {};
-    const av = secure(u.avatar_url || '');
-    if (av) { const img = $('pfp'); if (img.dataset.src !== av) { img.dataset.src = av; img.src = av; } img.style.display = 'block'; }
+    siteAvatar = secure(u.avatar_url || '');
+    if (!twitchAvatar && siteAvatar) setAvatar(siteAvatar);   // Twitch picture wins; site picture is the backup
     if (!qs.get('accent') && /^#[0-9a-f]{6}$/i.test(u.primary_color || '')) {
       document.documentElement.style.setProperty('--accent', u.primary_color);
       document.documentElement.style.setProperty('--glow', u.primary_color + 'cc');
