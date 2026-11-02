@@ -40,6 +40,7 @@ STATE_FILE = os.path.join(OUT_DIR, "state.json")
 OVERVIEW_FILE = os.path.join(OUT_DIR, "overview.json")
 HISTORY_FILE = os.path.join(OUT_DIR, "history.json")
 
+DEFAULT_SAVE_DIRS = ["/profile/savegame3"]   # G-Portal layout for this server
 LIGHT_FILES = ["careerSavegame.xml", "environment.xml", "fields.xml", "farmland.xml"]
 MAX_XML_BYTES = 40 * 1024 * 1024
 LOG_TAIL_BYTES = 256 * 1024
@@ -267,9 +268,9 @@ def find_save_dir(ftp, state):
     forced = os.environ.get("FS25_SAVE_DIR", "").strip()
     if forced:
         return forced.rstrip("/") or "/"
-    cached = state.get("saveDir")
-    if cached and find_name(list_dir(ftp, cached), "careerSavegame.xml"):
-        return cached
+    for cand in [state.get("saveDir")] + DEFAULT_SAVE_DIRS:
+        if cand and find_name(list_dir(ftp, cand), "careerSavegame.xml"):
+            return cand
     log("Searching the FTP for the savegame folder ...")
     try:
         start = ftp.pwd() or "/"
@@ -345,6 +346,70 @@ def players_from_stats_url():
 
 
 _NAME = r"['\"]?(?P<name>[^'\"\s][^'\"]{0,38}?)['\"]?"
+def players_from_gamestats(ftp, save_dir):
+    """Read profile/dedicated_server/gameStats.xml (written by the running server)."""
+    parent = save_dir.rstrip("/").rsplit("/", 1)[0] or "/"
+    folder = f"{parent.rstrip('/')}/dedicated_server"
+    entries = list_dir(ftp, folder)
+    name = find_name(entries, "gameStats.xml")
+    if not name:
+        return None
+    path = f"{folder}/{name}"
+    try:
+        root = ET.fromstring(download(ftp, path))
+    except Exception as e:
+        log(f"gameStats.xml unreadable: {e}")
+        return None
+    mtime = entries[name].get("mtime") or _mdtm(ftp, path)
+    age = (time.time() - mtime) / 60 if mtime else None
+
+    names, count, capacity = [], None, None
+    slots = next((el for el in root.iter() if el.tag.lower() == "slots"), None)
+    if slots is not None:
+        capacity = int(num(slots.get("capacity"))) or None
+        if slots.get("numUsed") is not None:
+            count = int(num(slots.get("numUsed")))
+    for el in root.iter():
+        if el.tag.lower() != "player":
+            continue
+        used = el.get("isUsed")
+        nm = (el.text or el.get("name") or el.get("nickname") or "").strip()
+        if used == "true" or (used is None and nm):
+            names.append({"name": nm or "Player", "isAdmin": el.get("isAdmin") == "true",
+                          "uptimeMin": int(num(el.get("uptime")))})
+    if count is None:
+        for el in root.iter():
+            for k in ("numUsed", "numPlayers", "playerCount", "activePlayers"):
+                if el.get(k) is not None:
+                    count = int(num(el.get(k)))
+                    break
+            if count is not None:
+                break
+    if count is None and slots is None and not names:
+        log(f"gameStats.xml has no player slots (root <{root.tag}>, children "
+            f"{sorted({c.tag for c in root})[:12]}) - using other checks")
+        return None
+    if count is None:
+        count = len(names)
+    srv = root if root.tag.lower() == "server" else next((el for el in root.iter() if el.tag.lower() == "server"), root)
+    stale = age is not None and age > 30
+    if stale:
+        count, names = 0, []
+    log(f"gameStats.xml: {count} online (file {age:.0f} min old{', stale' if stale else ''})" if age is not None
+        else f"gameStats.xml: {count} online")
+    return {
+        "source": "gameStats",
+        "reachable": True,
+        "stale": stale,
+        "serverName": srv.get("name"),
+        "mapName": srv.get("mapName"),
+        "version": srv.get("version"),
+        "capacity": capacity,
+        "count": count,
+        "names": names,
+    }
+
+
 JOIN_RES = [re.compile(r"\b(?:player|user|client)\s+" + _NAME + r"\s+(?:has\s+)?(?:joined|connected)", re.I),
             re.compile(r"['\"](?P<name>[^'\"]{1,40})['\"]\s+(?:has\s+)?(?:joined|connected)", re.I)]
 LEAVE_RES = [re.compile(r"\b(?:player|user|client)\s+" + _NAME + r"\s+(?:has\s+)?(?:left|disconnected|quit|timed out|was kicked)", re.I),
@@ -829,6 +894,12 @@ def main():
     # ---- who is online?
     presence = players_from_stats_url()
     if presence is None:
+        try:
+            presence = players_from_gamestats(ftp, save_dir)
+        except ftplib.all_errors as e:
+            log(f"gameStats.xml: {e}")
+            presence = None
+    if presence is None:
         presence = players_from_log(ftp, save_dir) or {"source": "none", "names": [], "count": 0}
     autosave = num(g(read_json(os.path.join(RAW_DIR, "careerSavegame.json"), {}),
                      "careerSavegame", "settings", "autoSaveInterval"), 15) or 15
@@ -838,6 +909,10 @@ def main():
 
     if presence["source"] == "stats" and presence.get("reachable"):
         active, reason = presence["count"] > 0, f"stats feed: {presence['count']} online"
+    elif presence["source"] == "gameStats" and not presence.get("stale"):
+        active = presence["count"] > 0 or fresh
+        reason = f"gameStats.xml: {presence['count']} online" + ("" if presence["count"] or not fresh
+                                                                else f"; savegame written {save_age:.0f} min ago")
     elif presence["count"] > 0:
         active, reason = True, f"server log: {presence['count']} online"
     elif fresh:
