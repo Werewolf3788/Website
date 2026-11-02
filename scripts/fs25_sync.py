@@ -981,7 +981,7 @@ def brand_of(v):
 
 
 def build_vehicles(vh, live):
-    lv = [dict(x, _used=False) for x in live.get("vehicles", [])]
+    lv = [dict(x, _used=False, _i=i) for i, x in enumerate(live.get("vehicles", []))]
     out = []
     for v in as_list(g(vh, "vehicles", "vehicle")):
         if not isinstance(v, dict):
@@ -1018,6 +1018,9 @@ def build_vehicles(vh, live):
                     best, match = d, c
             if match:
                 match["_used"] = True
+                live["vehicles"][match["_i"]]["savedId"] = v.get("uniqueId") or v.get("id")
+        attached_ids = [a.get("attachedVehicleUniqueId") for a in as_list(g(v, "attacherJoints", "attachedImplement"))
+                        if isinstance(a, dict) and a.get("attachedVehicleUniqueId")]
         out.append({
             "id": v.get("uniqueId") or v.get("id"),
             "name": (match or {}).get("name") or base_name(fn),
@@ -1039,7 +1042,26 @@ def build_vehicles(vh, live):
             "isAIActive": (match or {}).get("isAIActive", False),
             "controller": (match or {}).get("controller"),
             "isMod": bool(v.get("modName")) or low.startswith("$moddir$"),
+            "liveIndex": match["_i"] if match else None,
+            "attachedIds": attached_ids,
         })
+    # what is hooked to what (tractor -> implement -> trailer ...)
+    by_id = {e["id"]: e for e in out}
+    for e in out:
+        for cid in e["attachedIds"]:
+            if cid in by_id:
+                by_id[cid]["attachedTo"] = e["id"]
+                by_id[cid]["attachedToName"] = e["name"]
+    for e in out:
+        chain, seen, todo = [], set(), list(e["attachedIds"])
+        while todo:
+            cid = todo.pop(0)
+            if cid in seen or cid not in by_id:
+                continue
+            seen.add(cid)
+            chain.append(by_id[cid]["name"])
+            todo.extend(by_id[cid]["attachedIds"])
+        e["implements"] = chain
     return out
 
 
@@ -1268,6 +1290,106 @@ def build_server(cfg):
     return {"settings": st, "mods": mods}
 
 
+def _near_field(fields, x, z):
+    """Nearest field whose centre is close enough that the point is probably on/next to it."""
+    best, best_d = None, None
+    for f in fields:
+        if f.get("x") is None:
+            continue
+        d = ((num(f["x"]) - x) ** 2 + (num(f["z"]) - z) ** 2) ** 0.5
+        reach = max(60.0, (num(f.get("area"), 4) * 10000) ** 0.5 * 0.75)
+        if d <= reach and (best_d is None or d < best_d):
+            best, best_d = f["id"], d
+    return best
+
+
+def _cluster(points, cell=8.0):
+    """Group objects of the same kind stacked within a few metres (e.g. 40 flour pallets) into one map marker."""
+    groups = []
+    for p in points:
+        for gr in groups:
+            if gr["name"] == p.get("name") and gr["fillType"] == p.get("fillType") and \
+                    ((gr["xs"] / gr["count"] - p["x"]) ** 2 + (gr["zs"] / gr["count"] - p["z"]) ** 2) ** 0.5 <= cell:
+                break
+        else:
+            gr = {"name": p.get("name"), "fillType": p.get("fillType"), "count": 0, "level": 0.0,
+                  "xs": 0.0, "zs": 0.0, "farmId": p.get("farmId")}
+            groups.append(gr)
+        gr["count"] += 1
+        gr["level"] = round(gr["level"] + num(p.get("level")), 1)
+        gr["xs"] += p["x"]
+        gr["zs"] += p["z"]
+    for gr in groups:
+        gr["x"], gr["z"] = round(gr.pop("xs") / gr["count"], 1), round(gr.pop("zs") / gr["count"], 1)
+    return groups
+
+
+def build_map_objects(live, vehicles, items_raw, fields):
+    """Everything placed on the tactical map: vehicle rigs (with attached implements and their loads),
+    pallet stacks and bales - each with fill type / amount and the field it is on or next to."""
+    lv = live.get("vehicles", [])
+    by_id = {v["id"]: v for v in vehicles}
+
+    def live_of(saved):
+        i = saved.get("liveIndex")
+        return lv[i] if i is not None and i < len(lv) else None
+
+    def fills_of(saved):
+        l = live_of(saved)
+        return (l or {}).get("fills") or saved.get("fills") or []
+
+    rigs, pallets = [], []
+    for v in lv:
+        cat = str(v.get("category") or "").upper()
+        if v.get("x") is None:
+            continue
+        if cat.endswith("PALLETS") or v.get("type") == "pallet":
+            for f in (v.get("fills") or [{"type": None, "level": 0}]):
+                pallets.append({"name": v.get("name"), "fillType": f["type"], "level": f["level"],
+                                "x": num(v["x"]), "z": num(v["z"])})
+            continue
+        saved = by_id.get(v.get("savedId")) or {}
+        root = by_id.get(saved.get("attachedTo"))
+        if root and live_of(root) is not None:
+            continue                      # drawn as part of the vehicle it is hooked to
+        attached, todo, seen = [], list(saved.get("attachedIds") or []), set()
+        while todo:
+            cid = todo.pop(0)
+            if cid in seen or cid not in by_id:
+                continue
+            seen.add(cid)
+            imp = by_id[cid]
+            attached.append({"name": imp["name"], "category": imp.get("category"), "fills": fills_of(imp)})
+            todo.extend(imp.get("attachedIds") or [])
+        rigs.append({
+            "name": v.get("name"), "category": v.get("category"), "farmId": saved.get("farmId"),
+            "x": round(num(v["x"]), 1), "z": round(num(v["z"]), 1),
+            "isAIActive": v.get("isAIActive"), "controller": v.get("controller"),
+            "fuel": saved.get("fuel"),
+            "fills": [f for f in (v.get("fills") or []) if f["type"] not in FUEL_TYPES and f["type"] not in AUX_TYPES],
+            "attached": attached,
+            "attachedTo": saved.get("attachedToName") if saved.get("attachedTo") else None,
+            "nearField": _near_field(fields, num(v["x"]), num(v["z"])),
+        })
+    bales = []
+    for it in as_list(g(items_raw, "items", "item")):
+        if not isinstance(it, dict):
+            continue
+        pos = _floats(it.get("position"))
+        if len(pos) < 3:
+            continue
+        fn = str(it.get("filename") or "")
+        name = (("Round " if "round" in fn.lower() else "Square " if "square" in fn.lower() else "") + "bale") \
+            if "bale" in (str(it.get("className")) + fn).lower() else base_name(fn)
+        bales.append({"name": name.strip().capitalize(), "fillType": it.get("fillType"), "level": it.get("fillLevel"),
+                      "x": pos[0], "z": pos[2], "farmId": it.get("farmId")})
+    stacks = _cluster(pallets)
+    bale_stacks = _cluster(bales, cell=10.0)
+    for o in stacks + bale_stacks:
+        o["nearField"] = _near_field(fields, o["x"], o["z"])
+    return {"rigs": rigs, "pallets": stacks, "bales": bale_stacks}
+
+
 def build_overview(meta):
     live = build_live(load_raw("gameStats"))
     cs = load_raw("careerSavegame")
@@ -1293,6 +1415,7 @@ def build_overview(meta):
                 s = stock.setdefault(f["type"], {"fillType": f["type"], "pallets": 0, "level": 0.0})
                 s["pallets"] += 1
                 s["level"] = round(s["level"] + f["level"], 1)
+    map_objects = build_map_objects(live, vehicles, load_raw("items"), fields)
     working = [{"name": v["name"], "controller": v.get("controller"), "isAIActive": v["isAIActive"],
                 "x": v.get("x"), "z": v.get("z")}
                for v in live.get("vehicles", []) if v.get("isAIActive") or v.get("controller")]
@@ -1332,6 +1455,7 @@ def build_overview(meta):
         "live": {k: v for k, v in live.items() if k not in ("vehicles", "farmlands", "fields")},
         "server": build_server(load_raw("dedicatedServerConfig")),
         "liveVehicles": live.get("vehicles", []),
+        "mapObjects": map_objects,
         "working": working,
         "stock": sorted(stock.values(), key=lambda s: -s["level"]),
         "farms": farms,

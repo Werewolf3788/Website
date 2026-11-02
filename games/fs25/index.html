@@ -147,7 +147,8 @@ footer{margin-top:26px;color:var(--dim);font-size:12px;text-align:center}
 .mapwrap svg{width:100%;height:100%;display:block}
 .maplegend{display:flex;flex-wrap:wrap;gap:12px;font:600 11px var(--mono);color:var(--muted);margin-top:8px}
 .maplegend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
-.maptip{position:absolute;pointer-events:none;background:#0b1510ee;border:1px solid var(--line2);border-radius:8px;padding:6px 9px;font-size:12px;display:none;z-index:5;max-width:240px}
+.maptip{position:absolute;pointer-events:none;background:#0b1510f2;border:1px solid var(--line2);border-radius:8px;padding:7px 10px;font-size:12px;line-height:1.5;display:none;z-index:5;max-width:300px}
+.maptip b{color:#fff}.maptip .tl{color:var(--muted);font:600 11px var(--mono)}.maptip .att{border-left:2px solid var(--line2);padding-left:7px;margin-top:4px}
 .split{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(240px,1fr);gap:14px}
 @media(max-width:900px){.split{grid-template-columns:1fr}}
 input.search{background:var(--panel2);border:1px solid var(--line2);color:var(--text);border-radius:8px;padding:6px 9px;font:600 12px var(--mono);width:170px}
@@ -351,7 +352,7 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     },
     signIn: null,
   };
-  let mapLayers = { image:true, fields:true, land:true, fleet:true, players:true };
+  let mapLayers = { image:true, fields:true, land:true, fleet:true, stock:true, players:true };
 
   const $ = id => document.getElementById(id);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -543,7 +544,7 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
   function renderMap() {
     const size = +(DATA.live?.mapSize) || 2048, half = size / 2;
     const P = (x, z) => [((+x + half) / size * 1000).toFixed(1), ((+z + half) / size * 1000).toFixed(1)];
-    const layers = [['image', 'Map'], ['fields', 'Fields'], ['land', 'Farmland'], ['fleet', 'Vehicles'], ['players', 'Players']];
+    const layers = [['image', 'Map'], ['fields', 'Fields'], ['land', 'Farmland'], ['fleet', 'Vehicles'], ['stock', 'Pallets & bales'], ['players', 'Players']];
     $('mapFilters').innerHTML = layers.map(([k, l]) => `<button class="fbtn ${mapLayers[k] ? 'on' : ''}" data-l="${k}">${l}</button>`).join('');
     $('mapFilters').querySelectorAll('button').forEach(b => b.onclick = () => { mapLayers[b.dataset.l] = !mapLayers[b.dataset.l]; renderMap(); });
     let svg = '';
@@ -563,11 +564,41 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
         <rect x="${x - 17}" y="${y - 12}" width="34" height="24" rx="5" fill="${col}" fill-opacity="${f.isOwned ? (inView(f.farmId) ? .9 : .25) : .35}" stroke="${f.isOwned ? farmColor2(f.farmId) : 'none'}" stroke-width="2.5"/>
         <text x="${x}" y="${+y + 5}" font-size="15" font-weight="700" text-anchor="middle" fill="#04110a" font-family="JetBrains Mono">${esc(f.id)}</text></g>`;
     });
-    if (mapLayers.fleet) (DATA.liveVehicles || []).forEach(v => {
-      if (v.x == null || /PALLETS$/i.test(v.category || '')) return;
-      const [x, y] = P(v.x, v.z), busy = v.isAIActive || v.controller;
-      svg += `<rect x="${x - 5}" y="${y - 5}" width="10" height="10" transform="rotate(45 ${x} ${y})" fill="${v.isAIActive ? '#a78bfa' : v.controller ? '#38bdf8' : '#cbd5e1'}" fill-opacity="${busy ? 1 : .55}" data-tip="${esc(v.name)} · ${nice(v.category)}${v.isAIActive ? ' · helper working' : ''}${v.controller ? ' · driven by ' + esc(v.controller) : ''}"/>`;
-    });
+    // what a tooltip says about loads: "Seeds 16,035 L"
+    const loads = fills => (fills || []).filter(f => f && f.type).map(f => `${nice(f.type)} <b>${n0(f.level)} L</b>`).join(' · ');
+    const near = id => id != null ? `<div class="tl">In / next to Field ${esc(id)}</div>` : '';
+    const mo = DATA.mapObjects;
+    if (mapLayers.fleet) {
+      const rigs = mo ? mo.rigs : (DATA.liveVehicles || []).filter(v => v.x != null && !/PALLETS$/i.test(v.category || '')).map(v => ({ ...v, attached: [] }));
+      rigs.forEach(v => {
+        if (v.x == null || (viewFarm !== 'all' && v.farmId && !inView(v.farmId))) return;
+        const [x, y] = P(v.x, v.z), busy = v.isAIActive || v.controller, n = (v.attached || []).length;
+        const col = v.isAIActive ? '#a78bfa' : v.controller ? '#38bdf8' : '#e2e8f0';
+        const tip = `<b>${esc(v.name)}</b> <span class="tl">${nice(v.category)}</span>${v.farmId ? ' · ' + esc(farmName(v.farmId)) : ''}`
+          + (v.isAIActive ? '<div style="color:#c4b5fd">Helper working</div>' : v.controller ? `<div style="color:var(--sky)">Driven by ${esc(v.controller)}</div>` : '')
+          + (v.fuel ? `<div class="tl">Fuel ${n0(v.fuel.level)} ${v.fuel.type === 'ELECTRICCHARGE' ? 'kWh' : 'L'}</div>` : '')
+          + (v.fills && v.fills.length ? `<div>Carrying: ${loads(v.fills)}</div>` : '')
+          + (v.attachedTo ? `<div class="tl">Hooked to ${esc(v.attachedTo)}</div>` : '')
+          + (n ? (v.attached.map(a => `<div class="att">+ <b>${esc(a.name)}</b>${a.category ? ` <span class="tl">${nice(a.category)}</span>` : ''}${a.fills && a.fills.length ? `<br>${loads(a.fills)}` : '<br><span class="tl">empty</span>'}</div>`).join('')) : '')
+          + near(v.nearField);
+        svg += `<g data-tip="${esc(tip)}"><rect x="${x - 6}" y="${y - 6}" width="12" height="12" transform="rotate(45 ${x} ${y})" fill="${col}" fill-opacity="${busy ? 1 : .7}" stroke="${v.farmId ? farmColor2(v.farmId) : '#0b1510'}" stroke-width="2"/>`
+          + (n ? `<circle cx="${+x + 8}" cy="${y - 8}" r="6.5" fill="#f5a623" stroke="#0b1510" stroke-width="1.5"/><text x="${+x + 8}" y="${y - 4.5}" font-size="9" font-weight="700" text-anchor="middle" fill="#0b1510" font-family="JetBrains Mono">${n}</text>` : '') + `</g>`;
+      });
+    }
+    if (mapLayers.stock && mo) {
+      (mo.pallets || []).forEach(p => {
+        const [x, y] = P(p.x, p.z);
+        const full = /pallet/i.test(p.name || '') && p.count ? Math.round(p.level / (p.count * 1000) * 100) : null;
+        const tip = `<b>${p.count > 1 ? p.count + ' × ' : ''}${esc(p.name)}</b><div>${p.fillType ? nice(p.fillType) + ' <b>' + n0(p.level) + ' L</b>' : 'Empty'}${full != null && full <= 100 ? ` <span class="tl">(${full}% of ${p.count > 1 ? 'pallets' : 'pallet'})</span>` : ''}</div>` + near(p.nearField);
+        svg += `<g data-tip="${esc(tip)}"><rect x="${x - 5.5}" y="${y - 5.5}" width="11" height="11" rx="1.5" fill="#f5a623" stroke="#0b1510" stroke-width="1.5"/>${p.count > 1 ? `<text x="${+x + 9}" y="${+y + 4}" font-size="11" font-weight="700" fill="#fde68a" font-family="JetBrains Mono">${p.count}</text>` : ''}</g>`;
+      });
+      (mo.bales || []).forEach(b => {
+        if (viewFarm !== 'all' && b.farmId && !inView(b.farmId)) return;
+        const [x, y] = P(b.x, b.z);
+        const tip = `<b>${b.count > 1 ? b.count + ' × ' : ''}${esc(b.name)}</b>${b.farmId ? ' · ' + esc(farmName(b.farmId)) : ''}<div>${b.fillType ? nice(b.fillType) + ' <b>' + n0(b.level) + ' L</b>' : ''}</div>` + near(b.nearField);
+        svg += `<g data-tip="${esc(tip)}"><circle cx="${x}" cy="${y}" r="5.5" fill="#fde047" stroke="#0b1510" stroke-width="1.5"/>${b.count > 1 ? `<text x="${+x + 8}" y="${+y + 4}" font-size="11" font-weight="700" fill="#fef08a" font-family="JetBrains Mono">${b.count}</text>` : ''}</g>`;
+      });
+    }
     if (mapLayers.players) (DATA.live?.players || []).forEach(p => {
       if (p.x == null) return;
       const [x, y] = P(p.x, p.z);
@@ -576,7 +607,7 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     });
     $('map').innerHTML = svg;
     $('mapLegend').innerHTML = [['#f5a623', 'Ready'], ['#22c55e', 'Growing'], ['#84cc16', 'Grass'], ['#64748b', 'Empty'],
-      ['#a78bfa', 'Helper working'], ['#38bdf8', 'Driven / player'], ...((DATA.farms || []).filter(f => f.id).map(f => [farmColor(f.id), esc(f.name) + ' land', farmColor2(f.id)]))]
+      ['#a78bfa', 'Helper working'], ['#38bdf8', 'Driven / player'], ['#e2e8f0', 'Parked vehicle (orange number = implements hooked on)'], ['#f5a623', 'Pallets'], ['#fde047', 'Bales'], ...((DATA.farms || []).filter(f => f.id).map(f => [farmColor(f.id), esc(f.name) + ' land', farmColor2(f.id)]))]
       .map(([c, l, c2]) => `<span><i style="background:${c}${c2 ? `;box-shadow:0 0 0 2px ${c2}` : ''}"></i>${l}</span>`).join('');
     const tip = $('maptip'), wrap = $('mapwrap');
     $('map').onmousemove = ev => {
@@ -682,7 +713,9 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
         const fills = v.fills.length ? v.fills.map(f => `<span class="tag" style="margin:1px;display:inline-block">${nice(f.type)} ${n0(f.level)} L</span>`).join('') : '<span class="dim">empty</span>';
         if (fleetTab === 'pallet') return `<tr><td>${esc(v.name)}</td><td>${farmBadge(v.farmId)}</td><td>${fills}</td></tr>`;
         const now = v.isAIActive ? '<span class="chip" style="background:rgba(167,139,250,.18);color:#c4b5fd">Helper</span>' : v.controller ? `<span class="chip" style="background:rgba(56,189,248,.15);color:var(--sky)">${esc(v.controller)}</span>` : '';
-        return `<tr><td><b>${esc(v.name)}</b><div class="dim mono" style="font-size:10.5px">${esc([v.category && plain(v.category), brand(v)].filter(Boolean).join(' · '))}</div></td>
+        const hook = (v.implements && v.implements.length) ? `<div style="font-size:11px;color:var(--amber)">+ ${esc(v.implements.join(' + '))}</div>`
+          : v.attachedToName ? `<div style="font-size:11px;color:var(--muted)">Hooked to ${esc(v.attachedToName)}</div>` : '';
+        return `<tr><td><b>${esc(v.name)}</b><div class="dim mono" style="font-size:10.5px">${esc([v.category && plain(v.category), brand(v)].filter(Boolean).join(' · '))}</div>${hook}</td>
           <td>${farmBadge(v.farmId)}</td><td>${now}</td><td class="num">${v.operatingHours ?? '--'}</td>
           <td class="num">${v.fuel ? `${n0(v.fuel.level)} ${v.fuel.type === 'ELECTRICCHARGE' ? 'kWh' : 'L'}` : '--'}</td>
           <td>${meter(v.damage)}</td><td>${meter(v.wear)}</td><td>${fills}</td></tr>`;
