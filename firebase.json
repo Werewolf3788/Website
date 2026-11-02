@@ -5,7 +5,14 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**",
-      ".github/**"
+      ".github/**",
+      "psn.json",
+      "Playstation/**",
+      "scripts/**",
+      "games/fs25/data/raw/**",
+      "**/*.md",
+      "database.rules.json",
+      "**/__pycache__/**"
     ],
     "cleanUrls": true,
     "trailingSlash": false,
