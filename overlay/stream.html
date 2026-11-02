@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <!--
   Werewolf3788 smart stream overlay (1280x720 canvas, transparent)
-  Live from the playstation-stats PSN engine + the site's game tracker.
+  PSN (poster, game name, game status, trophies) -> playstation-stats ONLY.
+  entertainment-71888 is used ONLY for the game tracker (your saved progress).
 
   URL options (all optional):
     ?psn=wildhorse_spirit     PSN gamertag key in /psn/gamertags (data only, never shown)
@@ -97,7 +98,7 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
     </div>
     <img id="art" alt="" referrerpolicy="no-referrer">
   </div>
-  <div class="stamp">ww-overlay v7.2 · 720p</div>
+  <div class="stamp">ww-overlay v7.3 · 720p</div>
 </div>
 
 <script>
@@ -106,6 +107,7 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
   const qs = new URLSearchParams(location.search);
   const CFG = {
     psn: qs.get('psn') || 'wildhorse_spirit',
+    psnAlt: ['WildHorse_Spirit'],
     user: qs.get('user') || 'raykevin71888_at_gmail_com',
     toastMs: Math.max(3, Number(qs.get('toastsec')) || 8) * 1000,
     twitch: qs.get('twitch') || 'werewolf3788',
@@ -123,7 +125,7 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
   const secure = (u) => typeof u === 'string' ? (u.startsWith('//') ? 'https:' + u : u.replace(/^http:\/\//, 'https://')) : '';
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-  // ---- Firebase: PSN engine project + the site's project (game tracker)
+  // ---- Firebase: playstation-stats = all PSN info; entertainment-71888 = game tracker only
   const psnApp = firebase.initializeApp({
     apiKey: "AIzaSyBT3RHrZQCcBdcoPpM9hMjuzSB0KBtu5UI", authDomain: "playstation-stats.firebaseapp.com",
     databaseURL: "https://playstation-stats-default-rtdb.firebaseio.com", projectId: "playstation-stats",
@@ -148,21 +150,14 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
     try {
       const g = (await (await fetch(`https://decapi.me/twitch/game/${CFG.twitch}?v=${v}`)).text()).trim();
       twitchGame = /error|not found|could not|rate limit/i.test(g) ? '' : g;
-      if (!card || !card.online || /dashboard/i.test(card.currentGame || '')) paintGame();
+      if (!card) paintGame();
     } catch (e) {}
   }
 
-  // ---- profile image + accent colour from the site account (users/{key})
-  siteDb.ref(`users/${CFG.user}`).on('value', (snap) => {
-    const u = snap.val() || {};
-    siteAvatar = secure(u.avatar_url || '');
-    if (!twitchAvatar && siteAvatar) setAvatar(siteAvatar);   // Twitch picture wins; site picture is the backup
-    if (!qs.get('accent') && /^#[0-9a-f]{6}$/i.test(u.primary_color || '')) {
-      document.documentElement.style.setProperty('--accent', u.primary_color);
-      document.documentElement.style.setProperty('--glow', u.primary_color + 'cc');
-    }
-    if (!CFG.code && u.friend_code) { CFG.code = u.friend_code; trackerKey = null; if (card) updateTracker(card); }
-  }, () => {});
+  // ---- game tracker: your friend code (site account) -> which save to read
+  if (!CFG.code) siteDb.ref(`users/${CFG.user}/friend_code`).once('value').then((snap) => {
+    const fc = snap.val(); if (fc) { CFG.code = fc; trackerKey = null; if (card) updateTracker(card); }
+  }).catch(() => {});
 
   // ---- PSN card (live)
   let card = null, lastToastKey = null, firstCard = true, sessionTimer = null, catalog = null, trackerUnsub = null, trackerKey = null;
@@ -177,17 +172,17 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
   function paintGame() {
     const c = card || {};
     const playing = c.online && c.currentGame && !/dashboard/i.test(c.currentGame);
-    const title = playing ? c.currentGame : (twitchGame || c.lastPlayedGame || CFG.twitch);
+    // game name + poster straight from PSN (playstation-stats); Twitch only if PSN has nothing
+    const psnTitle = playing ? c.currentGame : (c.lastPlayedGame || '');
+    const psnArt = c.currentGameArt || c.posterArt || c.art || c.image || (c.activeHunt && (c.activeHunt.art || c.activeHunt.posterArt)) || '';
+    const title = psnTitle || twitchGame || CFG.twitch;
     $('title').innerText = String(title).toUpperCase();
-    // always the game's poster (site game file first, then PSN), never a mission picture
-    const mg = playing ? matchGame(c) : null;
-    const sitePoster = mg && mg[1] && ((mg[1].art && mg[1].art.poster) || mg[1].image_url);
-    if (playing) setArt(sitePoster || c.currentGameArt || c.art || c.posterArt);
+    if (psnArt) setArt(psnArt);
     else if (twitchGame) setArt(`https://static-cdn.jtvnw.net/ttv-boxart/${encodeURIComponent(twitchGame)}-285x380.jpg`);
-    else setArt(c.art || '');
+    else setArt('');
 
     // rich presence ("Staring off into space...")
-    const st = $('status'); const gs = playing ? (c.gameStatus || '').trim() : '';
+    const st = $('status'); const gs = playing ? String(c.gameStatus || (c.activeHunt && c.activeHunt.gameStatus) || '').trim() : '';
     if (gs) { if (st.innerText !== gs) { st.style.opacity = 0; setTimeout(() => { st.innerText = gs; st.style.opacity = 1; }, 250); } st.style.display = 'block'; }
     else st.style.display = 'none';
 
@@ -316,18 +311,19 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:transparent!impor
     const c = snap.val(); if (!c) return false;
     card = c; paintChip(); paintGame(); checkTrophies(c); updateTracker(c); firstCard = false; return true;
   }
-  function listen(key, fallbackKey) {
-    psnDb.ref(`psn/gamertags/${key}`).on('value', (s) => {
-      if (!onCard(s) && fallbackKey) { psnDb.ref(`psn/gamertags/${key}`).off(); listen(fallbackKey, null); }
+  function listen(keys) {
+    const key = keys[0]; if (!key) return;
+    const ref = psnDb.ref(`psn/gamertags/${key}`);
+    ref.on('value', (s) => {
+      if (!onCard(s) && keys.length > 1) { ref.off(); listen(keys.slice(1)); }
     }, (e) => {
-      console.warn('[overlay] PSN read failed, using site mirror:', e && e.message);
-      siteDb.ref(`psn/gamertags/${CFG.psn}`).on('value', onCard);
+      console.warn('[overlay] playstation-stats read failed:', e && e.message);
+      $('title').innerText = (twitchGame || CFG.twitch).toUpperCase();
     });
   }
 
   firebase.auth(psnApp).signInAnonymously().catch(() => {}).finally(() => {
-    const lower = CFG.psn.toLowerCase();
-    listen(CFG.psn, lower !== CFG.psn ? lower : null);
+    listen([...new Set([CFG.psn, CFG.psn.toLowerCase(), ...CFG.psnAlt])]);
   });
   twitch(); setInterval(twitch, 60000);
 })();
