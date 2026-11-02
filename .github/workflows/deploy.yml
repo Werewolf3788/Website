@@ -8,6 +8,8 @@ on:
       - 'public/games/**'
       - 'Playstation/**'
       - 'game/data/**'
+      - 'games/fs25/data/**'
+      - '.github/workflows/fs25-sync.yml'
       - 'psn.json'
       - 'README.md'
       - '.github/workflows/psn.yml'

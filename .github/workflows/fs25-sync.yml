@@ -1,0 +1,74 @@
+# File: .github/workflows/fs25-sync.yml
+# FS25 G-Portal server -> games/fs25/data/*.json  (read by games/fs25/index.html)
+#
+# Runs every 16 minutes. The script decides how much to pull:
+#   - someone on the server  -> FULL pull (every savegame XML -> JSON)
+#   - nobody on the server   -> LIGHT pull (date/time, field growth, lime, fertilizer only)
+# Files are only downloaded when they changed on the server, and nothing is committed
+# when the data did not change, so an empty, paused server costs almost nothing.
+#
+# Secrets used: FTP_HOST, FTP_PORT, FTP_USER, FTP_PASS
+# Optional secret: FS25_STATS_URL  (server "dedicated-server-stats.xml?code=..." link = exact player list)
+# Optional variable: FS25_SAVE_DIR (e.g. /profile/savegame1; auto-detected when not set)
+name: FS25 Server Sync
+
+on:
+  schedule:
+    - cron: '*/16 * * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Pull mode'
+        type: choice
+        options: [auto, full, light]
+        default: auto
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/fs25_sync.py'
+      - '.github/workflows/fs25-sync.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fs25-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Pull savegame from G-Portal
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_PORT: ${{ secrets.FTP_PORT }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASS: ${{ secrets.FTP_PASS }}
+          FS25_STATS_URL: ${{ secrets.FS25_STATS_URL }}
+          FS25_SAVE_DIR: ${{ vars.FS25_SAVE_DIR }}
+          FORCE_MODE: ${{ github.event.inputs.mode || (github.event_name == 'push' && 'full') || 'auto' }}
+        run: python scripts/fs25_sync.py
+
+      - name: Commit changes
+        run: |
+          git config user.name "fs25-sync[bot]"
+          git config user.email "fs25-sync@users.noreply.github.com"
+          git add games/fs25/data
+          if git diff --cached --quiet; then
+            echo "No FS25 changes."
+            exit 0
+          fi
+          git commit -m "FS25 sync: $(date -u +'%Y-%m-%d %H:%M UTC')"
+          for i in 1 2 3; do
+            git pull --rebase --autostash origin main && git push origin HEAD:main && exit 0
+            sleep 5
+          done
+          exit 1

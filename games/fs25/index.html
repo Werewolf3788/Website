@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<!-- ============================================================================
+ * Project: Werewolf Project - Farming Simulator 25 Tactical Overview
+ * File: index.html
+ * Location: /games/fs25/index.html
+ * Data: /games/fs25/data/overview.json + history.json
+ *       written ONLY by .github/workflows/fs25-sync.yml (G-Portal FTP -> XML -> JSON)
+ * ============================================================================ -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>FS25 Tactical Overview | Werewolf Project</title>
+<meta name="theme-color" content="#06100a">
+<link rel="icon" href="//werewolf3788.github.io/Website/favicon.ico">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="preconnect" href="//fonts.googleapis.com">
+<link rel="preconnect" href="//fonts.gstatic.com" crossorigin>
+<link href="//fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050b08; --panel:#0b1510; --panel2:#0f1d16; --line:#1b2e23; --line2:#25402f;
+  --text:#e6f2ea; --muted:#8aa597; --dim:#5c7668;
+  --green:#22c55e; --green2:#4ade80; --lime:#d9f99d; --amber:#f5a623; --red:#ef4444;
+  --sky:#38bdf8; --violet:#a78bfa; --orange:#fb923c;
+  --mono:'JetBrains Mono',ui-monospace,monospace; --head:'Chakra Petch',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font:14px/1.45 Inter,system-ui,sans-serif}
+body{background-image:radial-gradient(circle at 15% -10%,rgba(34,197,94,.10),transparent 45%),
+  linear-gradient(rgba(34,197,94,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(34,197,94,.035) 1px,transparent 1px);
+  background-size:auto,32px 32px,32px 32px;min-height:100vh}
+a{color:var(--green2);text-decoration:none}
+.wrap{max-width:1500px;margin:0 auto;padding:18px clamp(12px,2.5vw,28px) 60px}
+.mono{font-family:var(--mono)}
+.muted{color:var(--muted)} .dim{color:var(--dim)}
+
+/* ---------- header */
+header.top{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;
+  padding:16px 18px;border:1px solid var(--line2);border-radius:14px;
+  background:linear-gradient(135deg,rgba(34,197,94,.10),rgba(11,21,16,.9) 55%)}
+.brand{display:flex;gap:14px;align-items:center}
+.brand .logo{width:46px;height:46px;border-radius:10px;display:grid;place-items:center;
+  background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.45);color:var(--green2);font-size:22px}
+.brand h1{font:700 22px/1.1 var(--head);letter-spacing:.5px;text-transform:uppercase}
+.brand .sub{color:var(--muted);font-size:12.5px;margin-top:3px}
+.hud{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:999px;
+  border:1px solid var(--line2);background:var(--panel);font:700 11.5px var(--mono);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--dim)}
+.pill.live{border-color:rgba(34,197,94,.6);color:var(--green2);box-shadow:0 0 14px rgba(34,197,94,.25)}
+.pill.live .dot{background:var(--green);animation:pulse 1.6s infinite}
+.pill.idle{color:var(--amber);border-color:rgba(245,166,35,.45)} .pill.idle .dot{background:var(--amber)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.7)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+
+/* ---------- kpis */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,var(--green))}
+.kpi .lbl{font:700 10.5px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.kpi .val{font:700 22px/1.2 var(--head);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi .foot{font-size:11.5px;color:var(--dim);margin-top:2px}
+
+/* ---------- layout */
+.grid{display:grid;grid-template-columns:minmax(0,2.1fr) minmax(300px,1fr);gap:14px}
+@media(max-width:1050px){.grid{grid-template-columns:1fr}}
+.stack{display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;min-width:0}
+.panel>.hd{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
+.panel>.hd h2{font:700 14px var(--head);text-transform:uppercase;letter-spacing:.7px;display:flex;gap:9px;align-items:center}
+.panel>.hd h2 i{color:var(--green2)}
+.panel>.bd{padding:12px 14px}
+.tag{font:700 10.5px var(--mono);padding:3px 7px;border-radius:6px;background:var(--panel2);border:1px solid var(--line2);color:var(--muted);white-space:nowrap}
+.scroll{max-height:440px;overflow:auto;scrollbar-width:thin;scrollbar-color:var(--line2) transparent}
+.empty{padding:22px;text-align:center;color:var(--dim);font-style:italic}
+
+/* ---------- filters */
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.fbtn{cursor:pointer;font:700 11px var(--mono);text-transform:uppercase;padding:6px 9px;border-radius:8px;
+  border:1px solid var(--line2);background:var(--panel2);color:var(--muted)}
+.fbtn.on{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.6);color:var(--green2)}
+.fbtn .n{opacity:.7;margin-left:4px}
+
+/* ---------- field board */
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px}
+.ftile{border:1px solid var(--line2);border-radius:10px;padding:9px 10px;background:var(--panel2);position:relative;cursor:pointer;transition:.15s}
+.ftile:hover{border-color:var(--green);transform:translateY(-1px)}
+.ftile.unowned{opacity:.55}
+.ftile.ready{border-color:rgba(245,166,35,.75);box-shadow:inset 0 0 0 1px rgba(245,166,35,.25)}
+.ftile .fid{font:700 15px var(--head)}
+.ftile .farm{position:absolute;top:8px;right:8px;font:700 9.5px var(--mono);padding:2px 5px;border-radius:5px;background:#0c1e33;color:#93c5fd}
+.ftile .crop{font:700 11px var(--mono);color:var(--lime);text-transform:uppercase;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar{height:6px;border-radius:4px;background:#13261b;overflow:hidden;margin-top:6px}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,#15803d,var(--green2))}
+.ftile .meta{display:flex;justify-content:space-between;font:600 10px var(--mono);color:var(--dim);margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px;min-height:18px}
+.chip{font:700 9.5px var(--mono);padding:2px 5px;border-radius:5px;text-transform:uppercase}
+.c-lime{background:rgba(245,166,35,.15);color:var(--amber)}
+.c-fert{background:rgba(56,189,248,.14);color:var(--sky)}
+.c-plow{background:rgba(167,139,250,.15);color:var(--violet)}
+.c-weeds{background:rgba(239,68,68,.15);color:#fca5a5}
+.c-stones{background:rgba(148,163,184,.15);color:#cbd5e1}
+.c-ok{background:rgba(34,197,94,.12);color:var(--green2)}
+.c-ready{background:rgba(245,166,35,.22);color:#fde68a}
+.ndots{display:inline-flex;gap:2px;vertical-align:middle}
+.ndots i{width:6px;height:6px;border-radius:50%;background:#1e3a2a;display:inline-block}
+.ndots i.on{background:var(--sky)}
+
+/* ---------- tables */
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{font:700 10.5px var(--mono);text-transform:uppercase;color:var(--dim);text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel);cursor:pointer;white-space:nowrap}
+td{padding:7px 8px;border-bottom:1px solid rgba(27,46,35,.6);vertical-align:middle}
+tr:hover td{background:rgba(34,197,94,.04)}
+td.num,th.num{text-align:right;font-family:var(--mono)}
+.meter{display:inline-block;width:56px;height:6px;border-radius:4px;background:#13261b;overflow:hidden;vertical-align:middle;margin-right:6px}
+.meter>span{display:block;height:100%}
+
+/* ---------- side widgets */
+.row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.row:last-child{border:0}
+.wx{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:6px}
+.wx>div{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:7px;text-align:center;font-size:11px}
+.wx i{font-size:18px;display:block;margin:3px 0;color:var(--sky)}
+.demand{border:1px solid rgba(251,146,60,.5);background:linear-gradient(90deg,rgba(251,146,60,.12),transparent);border-radius:10px;padding:9px 11px;margin-bottom:7px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px}
+.pcard{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 11px}
+.pcard h3{font:700 13px var(--head);display:flex;justify-content:space-between;gap:6px}
+.store{display:flex;justify-content:space-between;font:600 11px var(--mono);color:var(--muted);padding:2px 0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+svg.spark{width:100%;height:70px;display:block}
+
+/* ---------- modal */
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+#modal.on{display:flex}
+#modal .box{background:var(--panel);border:1px solid var(--line2);border-radius:14px;max-width:440px;width:100%;padding:16px}
+#modal h3{font:700 18px var(--head);margin-bottom:8px}
+#banner{display:none;margin-top:12px;padding:10px 14px;border-radius:10px;border:1px solid rgba(245,166,35,.5);background:rgba(245,166,35,.08);color:var(--amber);font-size:13px}
+footer{margin-top:26px;color:var(--dim);font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="logo"><i class="fa-solid fa-tractor"></i></div>
+      <div>
+        <h1 id="hTitle">FS25 Tactical Overview</h1>
+        <div class="sub" id="hSub">Connecting to farm data…</div>
+      </div>
+    </div>
+    <div class="hud">
+      <span class="pill" id="pStatus"><span class="dot"></span><span>Loading</span></span>
+      <span class="pill" id="pDate"><i class="fa-regular fa-calendar"></i><span>--</span></span>
+      <span class="pill" id="pClock" style="color:var(--sky)"><i class="fa-regular fa-clock"></i><span>--:--</span></span>
+      <span class="pill" id="pSync" title=""><i class="fa-solid fa-satellite-dish"></i><span>--</span></span>
+    </div>
+  </header>
+  <div id="banner"></div>
+
+  <section class="kpis" id="kpis"></section>
+
+  <div class="grid">
+    <div class="stack">
+
+      <!-- FIELD OPS -->
+      <div class="panel">
+        <div class="hd">
+          <h2><i class="fa-solid fa-seedling"></i> Field Ops Board</h2>
+          <div class="filters" id="fFilters"></div>
+        </div>
+        <div class="bd"><div class="board scroll" id="board" style="max-height:560px"></div></div>
+      </div>
+
+      <!-- FLEET -->
+      <div class="panel">
+        <div class="hd">
+          <h2><i class="fa-solid fa-truck-monster"></i> Fleet &amp; Equipment</h2>
+          <div class="tabs" id="fleetTabs"></div>
+        </div>
+        <div class="bd"><div class="scroll" id="fleet"></div></div>
+      </div>
+
+      <!-- PRODUCTION -->
+      <div class="panel">
+        <div class="hd"><h2><i class="fa-solid fa-industry"></i> Buildings, Production &amp; Animals</h2><span class="tag" id="plTag">0</span></div>
+        <div class="bd"><div class="cards scroll" id="placeables"></div></div>
+      </div>
+
+      <!-- MARKET -->
+      <div class="panel">
+        <div class="hd"><h2><i class="fa-solid fa-chart-line"></i> Market Prices by Period</h2><span class="tag" id="mkTag">per 1000 L</span></div>
+        <div class="bd"><div class="scroll" id="market"></div></div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="panel">
+        <div class="hd"><h2><i class="fa-solid fa-users"></i> Players</h2><span class="tag" id="plyTag">0 online</span></div>
+        <div class="bd" id="players"></div>
+      </div>
+
+      <div class="panel">
+        <div class="hd"><h2><i class="fa-solid fa-cloud-sun"></i> Forecast</h2><span class="tag" id="seasonTag">--</span></div>
+        <div class="bd"><div class="wx" id="weather"></div></div>
+      </div>
+
+      <div class="panel">
+        <div class="hd"><h2><i class="fa-solid fa-fire-flame-curved"></i> Great Demands</h2></div>
+        <div class="bd" id="demands"></div>
+      </div>
+
+      <div class="panel">
+        <div class="hd"><h2><i class="fa-solid fa-warehouse"></i> Farms</h2></div>
+        <div class="bd" id="farms"></div>
+      </div>
+
+      <div class="panel">
+        <div class="hd"><h2><i class="fa-solid fa-sack-dollar"></i> Balance Trend</h2><span class="tag" id="trendTag">--</span></div>
+        <div class="bd" id="trend"></div>
+      </div>
+
+      <div class="panel">
+        <div class="hd"><h2><i class="fa-solid fa-clipboard-list"></i> Contracts</h2><span class="tag" id="msTag">0</span></div>
+        <div class="bd scroll" id="missions" style="max-height:260px"></div>
+      </div>
+
+      <div class="panel">
+        <div class="hd"><h2><i class="fa-solid fa-server"></i> Server Sync</h2></div>
+        <div class="bd" id="sync"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Read-only overview. All data comes from the G-Portal server savegame and updates automatically (full pull when someone is on, light pull when it's empty).</footer>
+</div>
+
+<div id="modal"><div class="box" id="modalBox"></div></div>
+
+<script>
+(() => {
+  const REPO_RAW = 'https://raw.githubusercontent.com/Werewolf3788/Website/main/games/fs25/data/';
+  const LOCAL = './data/';
+  const REFRESH_MS = 120000;
+
+  // Approximate harvest-ready growth stage per crop (FS25 base game). Edit if a crop shows wrong.
+  const READY_STAGE = { WHEAT:8, BARLEY:8, OAT:5, CANOLA:9, SORGHUM:5, SOYBEAN:7, SUNFLOWER:8, MAIZE:7,
+    POTATO:6, SUGARBEET:6, SUGARCANE:8, COTTON:9, GRASS:4, OILSEEDRADISH:2, POPLAR:14, RICE:8, RICELONGGRAIN:8,
+    SPINACH:6, PEA:6, GREENBEAN:6, CARROT:6, PARSNIP:6, REDBEET:6, ONION:6, RYE:8, SPELT:8, DEFAULT:8 };
+  const FARM_COLORS = ['#64748b','#3b82f6','#22c55e','#f59e0b','#ef4444','#a855f7','#06b6d4','#ec4899','#84cc16'];
+  const WX_ICON = { SUN:'fa-sun', CLOUDY:'fa-cloud', RAIN:'fa-cloud-rain', SNOW:'fa-snowflake', TWISTER:'fa-tornado', FOG:'fa-smog' };
+
+  let DATA = null, HIST = [], fieldFilter = 'owned', fleetTab = 'vehicle', fleetSort = {k:'damage', d:-1};
+
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const nice = s => esc(String(s ?? '').replace(/_/g,' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase()));
+  const money = v => v == null ? '--' : '$' + Math.round(+v).toLocaleString('en-US');
+  const n0 = v => v == null ? '--' : Math.round(+v).toLocaleString('en-US');
+  const ago = iso => {
+    if (!iso) return 'never';
+    const m = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+    if (m < 1) return 'just now'; if (m < 60) return m + 'm ago';
+    const h = Math.floor(m / 60); if (h < 48) return h + 'h ' + (m % 60) + 'm ago';
+    return Math.floor(h / 24) + 'd ago';
+  };
+  const farmBadge = id => id ? `<span class="tag" style="color:${FARM_COLORS[id % FARM_COLORS.length]}">F${id}</span>` : '<span class="tag">—</span>';
+  const farmName = id => { const f = (DATA?.farms || []).find(x => x.id === id); return f?.name || (id ? 'Farm ' + id : 'Unowned'); };
+
+  async function getJSON(name) {
+    const bust = '?t=' + Math.floor(Date.now() / 60000);
+    const urls = location.protocol === 'file:' || /localhost|127\.0\.0\.1/.test(location.host)
+      ? [LOCAL + name + bust, REPO_RAW + name + bust] : [REPO_RAW + name + bust, LOCAL + name + bust];
+    for (const u of urls) {
+      try { const r = await fetch(u, {cache:'no-store'}); if (r.ok) return await r.json(); } catch (e) {}
+    }
+    return null;
+  }
+
+  async function load() {
+    const [ov, hist] = await Promise.all([getJSON('overview.json'), getJSON('history.json')]);
+    if (!ov) { banner('Waiting for the first server sync. Run "FS25 Server Sync" in GitHub Actions to pull the savegame.'); return; }
+    DATA = ov; HIST = Array.isArray(hist) ? hist : [];
+    if (!ov.fields?.length && !ov.career?.mapTitle) banner('No savegame data yet. The first sync has not finished.');
+    else $('banner').style.display = 'none';
+    render();
+  }
+  function banner(t) { const b = $('banner'); b.textContent = t; b.style.display = 'block'; }
+
+  // ------------------------------------------------------------------ render
+  function render() {
+    const d = DATA, s = d.sync || {}, c = d.career || {}, e = d.environment || {}, sum = d.summary || {};
+    $('hTitle').textContent = s.serverName || c.savegameName || 'FS25 Tactical Overview';
+    $('hSub').textContent = [c.mapTitle, c.economicDifficulty && ('Economy ' + c.economicDifficulty), s.serverVersion && ('v' + s.serverVersion)].filter(Boolean).join(' • ') || 'Farming Simulator 25';
+
+    const st = $('pStatus'), online = s.players?.online || 0;
+    st.className = 'pill ' + (s.active ? 'live' : 'idle');
+    st.innerHTML = `<span class="dot"></span><span>${s.active ? (online ? online + ' Online · Live' : 'Active · Live') : 'Empty · Light sync'}</span>`;
+    $('pDate').querySelector('span').textContent = e.day ? `Y${e.year} · ${e.month} D${e.dayInPeriod}/${e.daysPerPeriod}` : '--';
+    $('pClock').querySelector('span').textContent = e.time || '--:--';
+    $('pSync').querySelector('span').textContent = 'Changed ' + ago(s.lastChange || s.lastCheck);
+    $('pSync').title = `Last check ${s.lastCheck || '-'} (${s.mode || '-'})`;
+
+    const mainFarm = (d.farms || []).find(f => f.id === 1) || (d.farms || [])[0];
+    const kp = [
+      ['Farm Balance', money(mainFarm?.money ?? c.money), mainFarm?.loan ? 'Loan ' + money(mainFarm.loan) : 'No loan', 'var(--green)'],
+      ['Owned Fields', n0(sum.ownedFields), `${n0(sum.ownedFarmlands)} farmlands · ${n0(sum.fields)} total`, 'var(--lime)'],
+      ['Need Lime', n0(sum.needLime), 'owned fields', 'var(--amber)'],
+      ['Need Fertilizer', n0(sum.needFertilizer), 'below 2/2 spray level', 'var(--sky)'],
+      ['Weeds / Plow', `${n0(sum.weeds)} / ${n0(sum.needPlow)}`, 'owned fields', 'var(--red)'],
+      ['Fleet', n0(sum.vehicles), `${n0(sum.pallets)} pallets`, 'var(--violet)'],
+      ['Animals', n0(sum.animals), `${n0(sum.placeables)} buildings`, 'var(--orange)'],
+      ['Play Time', c.playTimeHours != null ? c.playTimeHours + 'h' : '--', c.slotUsage ? 'Slots ' + c.slotUsage : (c.saveDate || ''), 'var(--sky)'],
+    ];
+    $('kpis').innerHTML = kp.map(([l, v, f, col]) => `<div class="kpi" style="--c:${col}"><div class="lbl">${l}</div><div class="val">${esc(v)}</div><div class="foot">${esc(f)}</div></div>`).join('');
+
+    renderFields(); renderFleet(); renderPlaceables(); renderMarket();
+    renderPlayers(); renderWeather(); renderDemands(); renderFarms(); renderTrend(); renderMissions(); renderSync();
+  }
+
+  // ---- fields
+  function fieldInfo(f) {
+    const ready = READY_STAGE[f.fruit] ?? READY_STAGE.DEFAULT;
+    const g = f.growthState || 0;
+    let status = 'empty';
+    if (f.fruit && f.fruit !== 'UNKNOWN' && g > 0) status = g === ready ? 'ready' : (g > ready ? 'harvested' : 'growing');
+    return { ready, g, status, pct: status === 'growing' ? Math.min(100, Math.round(g / ready * 100)) : (status === 'ready' || status === 'harvested' ? 100 : 0) };
+  }
+  const FILTERS = [
+    ['owned', 'Owned', f => f.isOwned], ['all', 'All', () => true],
+    ['ready', 'Ready', f => fieldInfo(f).status === 'ready'],
+    ['lime', 'Lime', f => f.isOwned && f.needs.includes('lime')],
+    ['fertilizer', 'Fertilize', f => f.isOwned && f.needs.includes('fertilizer')],
+    ['weeds', 'Weeds', f => f.isOwned && f.needs.includes('weeds')],
+    ['plow', 'Plow', f => f.isOwned && f.needs.includes('plow')],
+    ['empty', 'Empty', f => f.isOwned && fieldInfo(f).status !== 'growing' && fieldInfo(f).status !== 'ready'],
+  ];
+  function renderFields() {
+    const fields = DATA.fields || [];
+    $('fFilters').innerHTML = FILTERS.map(([k, l, fn]) =>
+      `<button class="fbtn ${fieldFilter === k ? 'on' : ''}" data-f="${k}">${l}<span class="n">${fields.filter(fn).length}</span></button>`).join('');
+    $('fFilters').querySelectorAll('button').forEach(b => b.onclick = () => { fieldFilter = b.dataset.f; renderFields(); });
+    const fn = (FILTERS.find(x => x[0] === fieldFilter) || FILTERS[1])[2];
+    const list = fields.filter(fn);
+    if (!list.length) { $('board').innerHTML = `<div class="empty" style="grid-column:1/-1">No fields match this filter.</div>`; return; }
+    $('board').innerHTML = list.map(f => {
+      const i = fieldInfo(f);
+      const chips = [];
+      if (i.status === 'ready') chips.push('<span class="chip c-ready">Harvest</span>');
+      if (f.needs.includes('lime')) chips.push('<span class="chip c-lime">Lime</span>');
+      if (f.isOwned && f.needs.includes('fertilizer')) chips.push(`<span class="chip c-fert">Fert ${f.sprayLevel}/2</span>`);
+      if (f.needs.includes('weeds')) chips.push('<span class="chip c-weeds">Weeds</span>');
+      if (f.needs.includes('plow')) chips.push('<span class="chip c-plow">Plow</span>');
+      if (f.needs.includes('stones')) chips.push('<span class="chip c-stones">Stones</span>');
+      if (!chips.length && f.isOwned) chips.push('<span class="chip c-ok">OK</span>');
+      const dots = [0, 1].map(k => `<i class="${f.sprayLevel > k ? 'on' : ''}"></i>`).join('');
+      return `<div class="ftile ${f.isOwned ? '' : 'unowned'} ${i.status === 'ready' ? 'ready' : ''}" data-id="${esc(f.id)}">
+        <div class="fid">#${esc(f.id)}</div>${f.isOwned ? `<span class="farm" style="color:${FARM_COLORS[f.farmId % FARM_COLORS.length]}">F${f.farmId}</span>` : ''}
+        <div class="crop">${i.status === 'empty' ? nice(f.groundType || 'Empty') : nice(f.fruit)}</div>
+        <div class="bar"><span style="width:${i.pct}%;${i.status === 'ready' ? 'background:var(--amber)' : ''}"></span></div>
+        <div class="meta"><span>${i.status === 'growing' ? `Stage ${i.g}/≈${i.ready}` : nice(i.status)}</span><span title="Fertilizer ${f.sprayLevel}/2">N <span class="ndots">${dots}</span></span></div>
+        <div class="chips">${chips.join('')}</div></div>`;
+    }).join('');
+    $('board').querySelectorAll('.ftile').forEach(t => t.onclick = () => fieldModal(t.dataset.id));
+  }
+  function fieldModal(id) {
+    const f = (DATA.fields || []).find(x => String(x.id) === String(id)); if (!f) return;
+    const i = fieldInfo(f);
+    const rows = [
+      ['Owner', farmName(f.farmId)], ['Crop', nice(f.fruit)], ['Planned', nice(f.plannedFruit)],
+      ['Growth stage', `${f.growthState} (≈ ready at ${i.ready})`], ['Ground', nice(f.groundType)],
+      ['Fertilizer', `${f.sprayLevel}/2 ${f.sprayType && f.sprayType !== 'NONE' ? '· ' + nice(f.sprayType) : ''}`],
+      ['Lime level', f.limeLevel + (f.limeLevel === 0 ? ' · needs lime' : '')], ['Plow level', f.plowLevel],
+      ['Roller', f.rollerLevel], ['Weeds', f.weedState], ['Stones', f.stoneLevel], ['Mulched', f.stubbleShredLevel],
+    ];
+    $('modalBox').innerHTML = `<h3>Field #${esc(f.id)}</h3>${rows.map(([k, v]) => `<div class="row"><span class="muted">${k}</span><b class="mono">${esc(v ?? '-')}</b></div>`).join('')}
+      <div style="text-align:right;margin-top:12px"><button class="fbtn on" id="mClose">Close</button></div>`;
+    $('modal').classList.add('on'); $('mClose').onclick = () => $('modal').classList.remove('on');
+  }
+  $('modal').onclick = e => { if (e.target.id === 'modal') $('modal').classList.remove('on'); };
+
+  // ---- fleet
+  function meter(pct, invert) {
+    if (pct == null) return '<span class="dim">--</span>';
+    const p = Math.max(0, Math.min(100, pct));
+    const bad = invert ? p : 100 - p;
+    const col = bad <= 15 ? 'var(--green)' : bad <= 50 ? '#eab308' : bad <= 75 ? 'var(--orange)' : 'var(--red)';
+    return `<span class="meter"><span style="width:${p}%;background:${col}"></span></span><span class="mono">${p.toFixed(0)}%</span>`;
+  }
+  function renderFleet() {
+    const all = DATA.vehicles || [];
+    const tabs = [['vehicle', 'Vehicles'], ['pallet', 'Pallets']];
+    $('fleetTabs').innerHTML = tabs.map(([k, l]) => `<button class="fbtn ${fleetTab === k ? 'on' : ''}" data-t="${k}">${l}<span class="n">${all.filter(v => v.kind === k).length}</span></button>`).join('');
+    $('fleetTabs').querySelectorAll('button').forEach(b => b.onclick = () => { fleetTab = b.dataset.t; renderFleet(); });
+    let list = all.filter(v => v.kind === fleetTab);
+    if (!list.length) { $('fleet').innerHTML = '<div class="empty">Nothing here yet (fleet updates on full pulls while someone is online).</div>'; return; }
+    const val = (v, k) => k === 'fuel' ? (v.fuel?.level ?? -1) : k === 'fills' ? (v.fills[0]?.level ?? 0) : (v[k] ?? -1);
+    list = list.slice().sort((a, b) => { const x = val(a, fleetSort.k), y = val(b, fleetSort.k); return (x > y ? 1 : x < y ? -1 : 0) * fleetSort.d; });
+    const cols = fleetTab === 'vehicle'
+      ? [['name', 'Unit'], ['farmId', 'Farm'], ['operatingHours', 'Hours', 1], ['fuel', 'Fuel', 1], ['damage', 'Damage'], ['wear', 'Paint wear'], ['fills', 'Load']]
+      : [['name', 'Pallet'], ['farmId', 'Farm'], ['fills', 'Contents']];
+    $('fleet').innerHTML = `<table><thead><tr>${cols.map(([k, l, nm]) => `<th class="${nm ? 'num' : ''}" data-k="${k}">${l}${fleetSort.k === k ? (fleetSort.d > 0 ? ' ▲' : ' ▼') : ''}</th>`).join('')}</tr></thead><tbody>${
+      list.map(v => {
+        const fills = v.fills.length ? v.fills.map(f => `<span class="tag" style="margin:1px">${nice(f.type)} ${n0(f.level)} L</span>`).join('') : '<span class="dim">empty</span>';
+        if (fleetTab === 'pallet') return `<tr><td>${esc(v.name)}</td><td>${farmBadge(v.farmId)}</td><td>${fills}</td></tr>`;
+        return `<tr><td><b>${esc(v.name)}</b>${v.brand ? `<div class="dim mono" style="font-size:10.5px">${esc(v.brand)}${v.isMod ? ' · MOD' : ''}</div>` : ''}</td>
+          <td>${farmBadge(v.farmId)}</td><td class="num">${v.operatingHours ?? '--'}</td>
+          <td class="num">${v.fuel ? `${n0(v.fuel.level)} ${v.fuel.type === 'ELECTRICCHARGE' ? 'kWh' : 'L'}` : '--'}</td>
+          <td>${meter(v.damage, true)}</td><td>${meter(v.wear, true)}</td><td>${fills}</td></tr>`;
+      }).join('')}</tbody></table>`;
+    $('fleet').querySelectorAll('th').forEach(th => th.onclick = () => {
+      const k = th.dataset.k; fleetSort = { k, d: fleetSort.k === k ? -fleetSort.d : -1 }; renderFleet();
+    });
+  }
+
+  // ---- placeables
+  function renderPlaceables() {
+    const list = (DATA.placeables || []).filter(p => p.storage.length || p.animals || p.productions.length)
+      .sort((a, b) => (b.animals - a.animals) || (b.storage.length - a.storage.length));
+    $('plTag').textContent = `${list.length} active / ${(DATA.placeables || []).length}`;
+    if (!list.length) { $('placeables').innerHTML = '<div class="empty" style="grid-column:1/-1">No storage, production or animal buildings found yet.</div>'; return; }
+    $('placeables').innerHTML = list.map(p => `<div class="pcard"><h3><span>${esc(p.name)}</span>${farmBadge(p.farmId)}</h3>
+      ${p.animals ? `<div class="store" style="color:var(--orange)"><span><i class="fa-solid fa-cow"></i> Animals</span><span>${n0(p.animals)}</span></div>` : ''}
+      ${p.productions.length ? `<div class="store"><span>Production lines</span><span>${p.productions.filter(x => x.enabled !== false).length}/${p.productions.length} on</span></div>` : ''}
+      ${p.storage.slice(0, 8).map(s => `<div class="store"><span>${nice(s.type)}</span><span>${n0(s.level)} L</span></div>`).join('')}
+      ${p.storage.length > 8 ? `<div class="dim" style="font-size:11px">+${p.storage.length - 8} more</div>` : ''}</div>`).join('');
+  }
+
+  // ---- market
+  const PERIODS = ['EARLY_SPRING','MID_SPRING','LATE_SPRING','EARLY_SUMMER','MID_SUMMER','LATE_SUMMER','EARLY_AUTUMN','MID_AUTUMN','LATE_AUTUMN','EARLY_WINTER','MID_WINTER','LATE_WINTER'];
+  const PSHORT = ['Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb'];
+  function renderMarket() {
+    const prices = (DATA.economy?.prices || []).filter(p => Object.keys(p.history || {}).length);
+    if (!prices.length) { $('market').innerHTML = '<div class="empty">Market history arrives with the next full pull.</div>'; return; }
+    const cur = DATA.environment?.period;
+    const demand = new Set((DATA.economy?.greatDemands || []).filter(g => g.isRunning).map(g => g.fillType));
+    $('market').innerHTML = `<table><thead><tr><th>Product</th>${PERIODS.map((p, i) => `<th class="num" style="${p === cur ? 'color:var(--green2)' : ''}">${PSHORT[i]}</th>`).join('')}<th class="num">Best</th></tr></thead><tbody>${
+      prices.map(p => {
+        const vals = PERIODS.map(k => +p.history[k] || 0); const max = Math.max(...vals), min = Math.min(...vals.filter(Boolean));
+        const best = PSHORT[vals.indexOf(max)];
+        return `<tr><td><b>${nice(p.fillType)}</b>${demand.has(p.fillType) ? ' <span class="chip c-ready">Demand</span>' : ''}</td>${vals.map((v, i) =>
+          `<td class="num" style="${PERIODS[i] === cur ? 'background:rgba(34,197,94,.08);' : ''}${v === max ? 'color:var(--green2);font-weight:700' : v === min ? 'color:#fca5a5' : ''}">${v ? n0(v) : '-'}</td>`).join('')}<td class="num" style="color:var(--green2)">${best}</td></tr>`;
+      }).join('')}</tbody></table>`;
+  }
+
+  // ---- side
+  function renderPlayers() {
+    const p = DATA.sync?.players || {}; const names = p.names || [];
+    $('plyTag').textContent = `${p.online || 0}${p.capacity ? ' / ' + p.capacity : ''} online`;
+    const roster = (DATA.farms || []).flatMap(f => (f.players || []).map(m => ({ ...m, farm: f.id })));
+    const onlineSet = new Set(names.map(n => (n.name || '').toLowerCase()));
+    let html = names.length ? names.map(n => `<div class="row"><span><span class="dot" style="display:inline-block;background:var(--green);margin-right:7px"></span><b>${esc(n.name)}</b>${n.isAdmin ? ' <span class="tag">ADMIN</span>' : ''}</span><span class="mono dim">${n.uptimeMin ? n.uptimeMin + 'm' : 'online'}</span></div>`).join('')
+      : `<div class="dim" style="padding:4px 0 8px">${DATA.sync?.active ? 'Activity detected on the server.' : 'Nobody on the server right now.'}</div>`;
+    const off = roster.filter(r => !onlineSet.has((r.name || '').toLowerCase()));
+    if (off.length) html += `<div class="dim mono" style="font-size:10.5px;margin:8px 0 2px;text-transform:uppercase">Farm members</div>` +
+      off.map(r => `<div class="row"><span class="muted">${esc(r.name)}${r.farmManager ? ' <span class="tag">MGR</span>' : ''}</span>${farmBadge(r.farm)}</div>`).join('');
+    $('players').innerHTML = html;
+  }
+  function renderWeather() {
+    const e = DATA.environment || {};
+    $('seasonTag').textContent = e.season ? `${e.season} · ${nice(e.period)}` : '--';
+    const fc = e.forecast || [];
+    $('weather').innerHTML = fc.length ? fc.slice(0, 8).map(w => `<div><div class="mono dim">Day ${esc(w.startDay ?? '-')}</div><i class="fa-solid ${WX_ICON[w.type] || 'fa-cloud-sun'}"></i><b>${nice(w.type)}</b><div class="dim">${esc(w.startTime || '')}${w.durationH ? ' · ' + w.durationH + 'h' : ''}</div></div>`).join('')
+      : '<div class="empty" style="grid-column:1/-1">No forecast in savegame.</div>';
+  }
+  function renderDemands() {
+    const list = (DATA.economy?.greatDemands || []).filter(g => g.isValid !== false && g.fillType);
+    $('demands').innerHTML = list.length ? list.map(g => `<div class="demand"><div style="display:flex;justify-content:space-between"><b>${nice(g.fillType)}</b><span class="mono" style="color:var(--orange)">x${(+g.multiplier || 1).toFixed(2)}</span></div>
+      <div class="dim" style="font-size:12px">${g.isRunning ? '<b style="color:var(--orange)">RUNNING</b> · ' : ''}Day ${esc(g.startDay ?? '-')} ${g.startHour != null ? '@ ' + g.startHour + ':00' : ''} · ${esc(g.durationH ?? '-')}h${g.station ? ' · ' + esc(g.station) : ''}</div></div>`).join('')
+      : '<div class="dim">No great demands scheduled.</div>';
+  }
+  function renderFarms() {
+    const list = DATA.farms || [];
+    $('farms').innerHTML = list.length ? list.filter(f => f.id).map(f => {
+      const fields = (DATA.fields || []).filter(x => x.farmId === f.id).length;
+      return `<div class="row"><span>${farmBadge(f.id)} <b>${esc(f.name || 'Farm ' + f.id)}</b><div class="dim" style="font-size:11.5px">${fields} fields · ${(f.players || []).length} members</div></span>
+        <span style="text-align:right"><b class="mono" style="color:var(--green2)">${money(f.money)}</b>${f.loan ? `<div class="mono" style="font-size:11px;color:#fca5a5">-${money(f.loan)}</div>` : ''}</span></div>`;
+    }).join('') : '<div class="dim">Farm data arrives with the next full pull.</div>';
+  }
+  function renderTrend() {
+    const pts = HIST.filter(h => h.money != null).slice(-120);
+    if (pts.length < 2) { $('trend').innerHTML = '<div class="dim">Trend builds up as the server syncs.</div>'; $('trendTag').textContent = '--'; return; }
+    const v = pts.map(p => +p.money), min = Math.min(...v), max = Math.max(...v), W = 300, H = 70, r = max - min || 1;
+    const xy = v.map((y, i) => `${(i / (v.length - 1) * W).toFixed(1)},${(H - 4 - (y - min) / r * (H - 8)).toFixed(1)}`);
+    const delta = v[v.length - 1] - v[0];
+    $('trendTag').innerHTML = `<span style="color:${delta >= 0 ? 'var(--green2)' : '#fca5a5'}">${delta >= 0 ? '+' : ''}${money(delta)}</span>`;
+    $('trend').innerHTML = `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><polyline fill="none" stroke="var(--green)" stroke-width="2" points="${xy.join(' ')}"/>
+      <polygon fill="rgba(34,197,94,.12)" points="0,${H} ${xy.join(' ')} ${W},${H}"/></svg>
+      <div class="row"><span class="dim mono">Day ${esc(pts[0].day)}</span><span class="dim mono">Day ${esc(pts[pts.length - 1].day)}</span></div>`;
+  }
+  const MSTATUS = { 0: 'Available', 1: 'In progress', 2: 'Completed', 3: 'Failed' };
+  const mtype = t => nice(String(t || 'Contract').replace(/Mission$/i, ''));
+  function renderMissions() {
+    const list = DATA.missions || [];
+    $('msTag').textContent = list.length;
+    $('missions').innerHTML = list.length ? list.map(m => `<div class="row"><span><b>${mtype(m.type)}</b>${m.fieldId ? ` <span class="dim">· Field ${esc(m.fieldId)}</span>` : ''}<div class="dim" style="font-size:11px">${esc(MSTATUS[m.status] ?? nice(m.status ?? 'Available'))}${m.farmId ? ' · ' + esc(farmName(m.farmId)) : ''}</div></span><span class="mono" style="color:var(--green2)">${m.reward ? money(m.reward) : ''}</span></div>`).join('')
+      : '<div class="dim">No contracts in savegame.</div>';
+  }
+  function renderSync() {
+    const s = DATA.sync || {};
+    const rows = [
+      ['Server state', s.active ? '<b style="color:var(--green2)">ACTIVE · full pulls</b>' : '<b style="color:var(--amber)">EMPTY · light pulls</b>'],
+      ['Why', esc(s.reason || '-')], ['Player source', esc(s.players?.source || '-')],
+      ['Last data change', `${ago(s.lastChange)}`], ['Last full pull', ago(s.lastFull)], ['Last light pull', ago(s.lastLight)],
+      ['Savegame written', s.saveAgeMin != null ? Math.round(s.saveAgeMin) + ' min before check' : '-'],
+      ['Files', `${(s.files || []).length} XML → JSON`],
+    ];
+    $('sync').innerHTML = rows.map(([k, v]) => `<div class="row"><span class="muted">${k}</span><span style="text-align:right">${v}</span></div>`).join('') +
+      `<div class="dim" style="font-size:11px;margin-top:8px">Checks every 16 min. Raw JSON: <a href="${REPO_RAW.replace('raw.githubusercontent.com/Werewolf3788/Website/main', 'github.com/Werewolf3788/Website/tree/main')}raw" target="_blank" rel="noopener">games/fs25/data/raw</a></div>`;
+  }
+
+  load();
+  setInterval(load, REFRESH_MS);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+})();
+</script>
+</body>
+</html>
