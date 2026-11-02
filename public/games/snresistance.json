@@ -2343,7 +2343,8 @@
             "summary": "A worker tells Emily the château's new owners are hiding a secret from the staff.",
             "video_time": 299,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=299s",
-            "emoji": "✉️"
+            "emoji": "✉️",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/let_m7_03.jpg"
           },
           {
             "id": "let_m7_04",
@@ -2396,7 +2397,8 @@
             "summary": "The control room key must stay with the on-duty commanding officer at all times.",
             "video_time": 403,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=403s",
-            "emoji": "📜"
+            "emoji": "📜",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/doc_m7_02.jpg"
           },
           {
             "id": "doc_m7_03",
@@ -2435,7 +2437,8 @@
             "summary": "A defective armor plate has left a side vent on the Zugwerfer exposed until replacements arrive.",
             "video_time": 403,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=403s",
-            "emoji": "📜"
+            "emoji": "📜",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/doc_m7_05.jpg"
           }
         ],
         "hidden_items": [
