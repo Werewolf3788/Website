@@ -4774,7 +4774,7 @@
         {
           "id": "med_weapons_sharpshooter",
           "name": "Sharpshooter",
-          "description": "Kill 350 enemies with a rifle.",
+          "description": "Kill 350 enemies with a Rifle.",
           "goal": 350,
           "goal_tier": "silver",
           "tiers": {
@@ -4782,12 +4782,17 @@
             "silver": 350,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_weapons_sharpshooter.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 350
+          }
         },
         {
           "id": "med_weapons_eyes_on_the_prize",
           "name": "Eyes on the Prize",
-          "description": "Kill 200 enemies with any weapon while in iron sights.",
+          "description": "Kill 200 enemies with any weapon while in Iron Sights.",
           "goal": 200,
           "goal_tier": "bronze",
           "tiers": {
@@ -4795,27 +4800,35 @@
             "silver": null,
             "gold": null
           },
-          "image_url": "",
-          "notes": "Trophy version says 150."
+          "image_url": "/public/games/snresistance/images/medals/med_weapons_eyes_on_the_prize.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 200
+          }
         },
         {
           "id": "med_weapons_set_to_blow",
           "name": "Set to Blow",
-          "description": "Kill 10 soldiers by sabotaging bodies, objects and vehicles.",
-          "goal": 10,
+          "description": "Kill 5 soldiers by sabotaging bodies, objects and vehicles.",
+          "goal": 5,
           "goal_tier": "bronze",
           "tiers": {
             "bronze": 10,
             "silver": null,
             "gold": null
           },
-          "image_url": "",
-          "notes": "Trophy version says booby traps."
+          "image_url": "/public/games/snresistance/images/medals/med_weapons_set_to_blow.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 5
+          }
         },
         {
           "id": "med_weapons_scoping_mechanism",
           "name": "Scoping Mechanism",
-          "description": "Kill 50 enemies with a rifle while in iron sights.",
+          "description": "Kill 50 enemies with a rifle while in Iron Sights.",
           "goal": 50,
           "goal_tier": "bronze",
           "tiers": {
@@ -4823,25 +4836,35 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_weapons_scoping_mechanism.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 50
+          }
         },
         {
           "id": "med_weapons_blaze_of_gory",
           "name": "Blaze of Gory",
-          "description": "Kill 25 enemies with traps.",
-          "goal": 25,
+          "description": "Kill 50 enemies with traps.",
+          "goal": 50,
           "goal_tier": "bronze",
           "tiers": {
             "bronze": 25,
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_weapons_blaze_of_gory.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 50
+          }
         },
         {
           "id": "med_weapons_gunslinger",
           "name": "Gunslinger",
-          "description": "Kill 75 enemies with pistols.",
+          "description": "Kill 75 enemies with Pistols.",
           "goal": 75,
           "goal_tier": "bronze",
           "tiers": {
@@ -4849,12 +4872,17 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_weapons_gunslinger.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 75
+          }
         },
         {
           "id": "med_weapons_the_big_guns",
           "name": "The Big Guns",
-          "description": "Kill 20 soldiers with heavy weapons.",
+          "description": "Kill 20 soldiers with Heavy Weapons.",
           "goal": 20,
           "goal_tier": "bronze",
           "tiers": {
@@ -4862,12 +4890,17 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_weapons_the_big_guns.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 20
+          }
         },
         {
           "id": "med_weapons_skirmisher",
           "name": "Skirmisher",
-          "description": "Kill 50 enemies with secondary weapons.",
+          "description": "Kill 50 enemies with a Secondary Weapon.",
           "goal": 50,
           "goal_tier": "bronze",
           "tiers": {
@@ -4875,12 +4908,17 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_weapons_skirmisher.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 50
+          }
         },
         {
           "id": "med_weapons_finders_keepers",
           "name": "Finders Keepers",
-          "description": "Kill 50 enemy soldiers with found weapons.",
+          "description": "Kill 50 enemy soldiers with Found Weapons.",
           "goal": 50,
           "goal_tier": "silver",
           "tiers": {
@@ -4888,7 +4926,12 @@
             "silver": 50,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_weapons_finders_keepers.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 50
+          }
         },
         {
           "id": "med_weapons_jack_of_all_trades",
@@ -4901,12 +4944,17 @@
             "silver": null,
             "gold": 20
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_weapons_jack_of_all_trades.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 20
+          }
         },
         {
           "id": "med_weapons_master_at_arms",
           "name": "Master-at-Arms",
-          "description": "Become the master of each weapon type.",
+          "description": "Become the Master of each weapon type.",
           "goal": 3,
           "goal_tier": null,
           "tiers": {
@@ -4914,8 +4962,7 @@
             "silver": null,
             "gold": null
           },
-          "image_url": "",
-          "notes": "Single badge with no tiers."
+          "image_url": "/public/games/snresistance/images/medals/med_weapons_master_at_arms.jpg"
         }
       ],
       "pistol_perfectionist": [
