@@ -41,7 +41,12 @@ OVERVIEW_FILE = os.path.join(OUT_DIR, "overview.json")
 HISTORY_FILE = os.path.join(OUT_DIR, "history.json")
 
 DEFAULT_SAVE_DIRS = ["/profile/savegame3"]   # G-Portal layout for this server
-LIGHT_FILES = ["careerSavegame.xml", "environment.xml", "fields.xml", "farmland.xml"]
+# Light pull (nobody online): date/time, field growth, lime + fertilizer (incl. Precision Farming)
+LIGHT_FILES = ["careerSavegame.xml", "environment.xml", "fields.xml", "farmland.xml", "precisionFarming.xml"]
+# Savegame XMLs with nothing useful for the overview (map internals, tutorial, cosmetics)
+SKIP_FILES = re.compile(
+    r"^(densityMap.*|destructibleMapObjectSystem|guidedTour|navigationSystem|onCreateObjects|"
+    r"snow_state|stone_growthState|weed_growthState|treeMarker|treePlant)\.xml$", re.I)
 MAX_XML_BYTES = 40 * 1024 * 1024
 LOG_TAIL_BYTES = 256 * 1024
 PERIODS = ["EARLY_SPRING", "MID_SPRING", "LATE_SPRING", "EARLY_SUMMER", "MID_SUMMER", "LATE_SUMMER",
@@ -830,6 +835,102 @@ def build_missions(ms):
     return out
 
 
+def _attrs(d):
+    return {k: v for k, v in d.items() if not isinstance(v, (dict, list))} if isinstance(d, dict) else {}
+
+
+def build_sales(sl):
+    out = []
+    for it in as_list(g(sl, "sales", "item")):
+        if not isinstance(it, dict):
+            continue
+        fn = it.get("xmlFilename") or it.get("filename") or ""
+        out.append({
+            "name": base_name(fn), "brand": brand_of(fn), "filename": fn,
+            "price": it.get("price"), "age": it.get("age"),
+            "hours": round(num(it.get("operatingTime")) / 3600, 1) if it.get("operatingTime") is not None else None,
+            "damage": round(num(it.get("damage")) * 100, 1) if it.get("damage") is not None else None,
+            "wear": round(num(it.get("wear")) * 100, 1) if it.get("wear") is not None else None,
+            "hoursLeft": it.get("timeLeft"),
+        })
+    out.sort(key=lambda x: num(x["price"]))
+    return out
+
+
+def build_items(itx):
+    groups = {}
+    for it in as_list(g(itx, "items", "item")):
+        if not isinstance(it, dict):
+            continue
+        cls = it.get("className") or "Item"
+        fn = it.get("filename") or ""
+        ft = it.get("fillType")
+        if not ft:
+            for v in it.values():
+                if isinstance(v, dict) and v.get("fillType"):
+                    ft = v.get("fillType")
+                    break
+        lvl = num(it.get("fillLevel"))
+        kind = "Bale" if "bale" in (cls + fn).lower() else cls
+        if kind == "Bale":
+            shape = "Round" if "round" in fn.lower() else ("Square" if "square" in fn.lower() else "")
+            label = f"{shape} bale".strip()
+        else:
+            label = base_name(fn) if fn else cls
+        key = (kind, label, ft or "", it.get("farmId", 0))
+        grp = groups.setdefault(key, {"kind": kind, "name": label.title(), "fillType": ft, "farmId": it.get("farmId", 0),
+                                      "count": 0, "level": 0.0})
+        grp["count"] += 1
+        grp["level"] = round(grp["level"] + lvl, 1)
+    return sorted(groups.values(), key=lambda x: (-x["count"], x["name"]))
+
+
+def build_collectibles(co):
+    root = g(co, "collectibles", default={}) or {}
+    items = []
+    for v in root.values():
+        if isinstance(v, (dict, list)):
+            items += [x for x in as_list(v) if isinstance(x, dict)]
+    found = 0
+    for x in items:
+        if any(x.get(k) is True for k in ("collected", "isCollected", "found")):
+            found += 1
+    total = len(items)
+    attr_total = num(root.get("total") if isinstance(root, dict) else None, 0)
+    return {"found": found, "total": int(attr_total) or total, "raw": _attrs(root)}
+
+
+def build_precision(pf):
+    """Precision Farming: collect per-farmland statistics (tolerant of format changes)."""
+    root = g(pf, "precisionFarming", default=None)
+    if root is None and isinstance(pf, dict) and pf:
+        root = next(iter(pf.values()))
+    if not isinstance(root, dict):
+        return {}
+    farmlands, misc = [], {}
+
+    def walk(d, path, depth=0):
+        if depth > 6:
+            return
+        if isinstance(d, dict):
+            fid = d.get("farmlandId", d.get("farmland"))
+            nums = {k: v for k, v in d.items() if isinstance(v, (int, float)) and not isinstance(v, bool)}
+            if fid is not None and len(nums) > 1:
+                farmlands.append({"path": path, **nums})
+            for k, v in d.items():
+                walk(v, f"{path}/{k}", depth + 1)
+        elif isinstance(d, list):
+            for i in d:
+                walk(i, path, depth + 1)
+    walk(root, "")
+    for k, v in root.items():
+        if isinstance(v, dict):
+            a = _attrs(v)
+            if a:
+                misc[k] = a
+    return {"farmlandStats": farmlands[:300], "settings": misc}
+
+
 def build_overview(meta):
     cs = load_raw("careerSavegame")
     career = build_career(cs) if cs else {}
@@ -841,6 +942,10 @@ def build_overview(meta):
     placeables = build_placeables(load_raw("placeables"))
     economy = build_economy(load_raw("economy"))
     missions = build_missions(load_raw("missions"))
+    sales = build_sales(load_raw("sales"))
+    items = build_items(load_raw("items"))
+    collectibles = build_collectibles(load_raw("collectibles"))
+    precision = build_precision(load_raw("precisionFarming"))
     owned = [f for f in fields if f["isOwned"]]
     summary = {
         "fields": len(fields),
@@ -855,6 +960,10 @@ def build_overview(meta):
         "placeables": len(placeables),
         "animals": sum(p["animals"] for p in placeables),
         "activeMissions": len(missions),
+        "bales": sum(i["count"] for i in items if i["kind"] == "Bale"),
+        "usedForSale": len(sales),
+        "collectibles": f"{collectibles['found']}/{collectibles['total']}" if collectibles["total"] else None,
+        "precisionFarming": bool(precision),
     }
     return {
         "game": "Farming Simulator 25",
@@ -870,6 +979,10 @@ def build_overview(meta):
         "placeables": placeables,
         "economy": economy,
         "missions": missions,
+        "sales": sales,
+        "items": items,
+        "collectibles": collectibles,
+        "precisionFarming": precision,
     }
 
 
@@ -953,7 +1066,7 @@ def main():
     first_run = not state.get("lastFull")
     if force == "full" or (force == "auto" and (active or first_run)):
         mode = "full"
-        wanted = sorted(xml_files)
+        wanted = sorted(f for f in xml_files if not SKIP_FILES.match(f))
     else:
         mode = "light"
         light = {f.lower() for f in LIGHT_FILES}
