@@ -1,0 +1,95 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "utm_links": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "movies_guide": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "music_releases": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+
+    "games": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "games_catalog": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+
+    "psn": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "steam_users": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "steam_games": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "steam_vanity": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+
+    "users": {
+      "$k": {
+        ".read": "auth != null",
+        ".write": "auth != null && ($k === auth.uid || (auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
+        "username": {
+          ".validate": "newData.isString() && newData.val().length <= 32"
+        },
+        "primary_color": {
+          ".validate": "newData.isString() && newData.val().matches(/^#[0-9a-fA-F]{6}$/)"
+        },
+        "secondary_color": {
+          ".validate": "newData.isString() && newData.val().matches(/^#[0-9a-fA-F]{6}$/)"
+        }
+      }
+    },
+
+    "user_secrets": {
+      "$k": {
+        ".read": "auth != null && ($k === auth.uid || (auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
+        ".write": "auth != null && ($k === auth.uid || (auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
+        "psn_npsso": {
+          ".validate": "newData.isString() && (newData.val() === '' || newData.val().matches(/^[A-Za-z0-9]{64}$/))"
+        }
+      }
+    },
+
+    "friend_codes": {
+      "$c": {
+        ".read": "auth != null",
+        ".write": "auth != null && ((!data.exists() && (newData.val() === auth.uid || (auth.token.email != null && newData.val() === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))) || (data.exists() && (data.val() === auth.uid || (auth.token.email != null && data.val() === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))))"
+      }
+    },
+
+    "friend_requests": {
+      "$k": {
+        ".read": "auth != null && ($k === auth.uid || (auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
+        "$code": {
+          ".read": "auth != null",
+          ".write": "auth != null && ($k === auth.uid || (auth.token.email != null && ($k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') || newData.child('from_key').val() === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_') || data.child('from_key').val() === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_'))) || newData.child('from_key').val() === auth.uid || data.child('from_key').val() === auth.uid)"
+        }
+      }
+    },
+
+    "push_subscriptions": {
+      "$id": {
+        ".write": "$id.matches(/^[0-9a-f]{32}$/)",
+        ".validate": "newData.hasChildren(['endpoint', 'keys']) && newData.child('endpoint').isString() && newData.child('endpoint').val().beginsWith('https://')"
+      }
+    }
+  }
+}

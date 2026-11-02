@@ -3,6 +3,7 @@
 // Run by .github/workflows/send-push.yml (Actions tab -> Send Push Notification)
 // Subscribers are stored in Firebase RTDB /push_subscriptions by assets/ww-shell.js
 // Needs secrets: VAPID_PRIVATE_KEY (and optionally VAPID_PUBLIC_KEY)
+// Logs in to Firebase with GCP_SA_KEY_WEBSITE (or FIREBASE_AUTH_SECRET): /push_subscriptions is not public
 // ============================================================================
 const webpush = require('web-push');
 
@@ -10,6 +11,20 @@ const RTDB = 'https://entertainment-71888-default-rtdb.firebaseio.com';
 // Must match VAPID_PUBLIC_KEY in assets/ww-shell.js
 const PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || 'BImzeWS4nMqlBy1hSI2wO2h01QrcgFDTLgeIZgLlL2wLhuQjZv3hjiOH00NNfveG662KozG6s87gtfByPS7zgqA';
 const PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY;
+
+// Firebase login (the database rules keep /push_subscriptions private)
+async function authQuery() {
+    const secret = (process.env.FIREBASE_AUTH_SECRET || '').trim();
+    if (secret) return `?auth=${encodeURIComponent(secret)}`;
+    const raw = (process.env.GCP_SA_KEY_WEBSITE || '').trim();
+    if (!raw) { console.warn('No GCP_SA_KEY_WEBSITE / FIREBASE_AUTH_SECRET: reading without login'); return ''; }
+    const { JWT } = require('google-auth-library');
+    const creds = raw.startsWith('{') ? JSON.parse(raw) : JSON.parse(Buffer.from(raw, 'base64').toString('utf-8'));
+    const client = new JWT({ email: creds.client_email, key: String(creds.private_key).replace(/\\n/g, '\n'),
+        scopes: ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/firebase.database'] });
+    const { access_token } = await client.authorize();
+    return `?access_token=${encodeURIComponent(access_token)}`;
+}
 
 async function main() {
     if (!PRIVATE_KEY) {
@@ -26,7 +41,8 @@ async function main() {
         tag: process.env.PUSH_TAG || undefined
     });
 
-    const res = await fetch(`${RTDB}/push_subscriptions.json`);
+    const AUTH = await authQuery();
+    const res = await fetch(`${RTDB}/push_subscriptions.json${AUTH}`);
     if (!res.ok) throw new Error(`Could not read /push_subscriptions (HTTP ${res.status})`);
     const subs = (await res.json()) || {};
     const ids = Object.keys(subs);
@@ -42,7 +58,7 @@ async function main() {
         } catch (err) {
             if (err.statusCode === 404 || err.statusCode === 410) {
                 // The person turned notifications off or uninstalled: clean up
-                await fetch(`${RTDB}/push_subscriptions/${id}.json`, { method: 'DELETE' });
+                await fetch(`${RTDB}/push_subscriptions/${id}.json${AUTH}`, { method: 'DELETE' });
                 removed++;
             } else {
                 failed++;
