@@ -3406,7 +3406,9 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_mission_mastermind.jpg",
+            "verified": true,
+            "source": "In-game Medals > Missions screen"
           },
           {
             "id": "med_mission_eyes_of_a_hawk_er",
@@ -3419,11 +3421,13 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_mission_eyes_of_a_hawk_er.jpg",
+            "verified": true,
+            "source": "In-game Medals > Missions screen"
           },
           {
-            "id": "med_mission_destucktion",
-            "name": "Destucktion",
+            "id": "med_mission_destrucktion",
+            "name": "Destrucktion",
             "description": "Kill Kruger by destroying the passing truck.",
             "goal": 1,
             "goal_tier": null,
@@ -3432,21 +3436,25 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_mission_destrucktion.jpg",
+            "verified": true,
+            "source": "In-game Medals > Missions screen"
           },
           {
             "id": "med_mission_flameout",
             "name": "Flameout",
             "description": "Kill Kruger with explosive barrels before he escapes.",
-            "goal": null,
+            "goal": 1,
             "goal_tier": null,
             "tiers": {
               "bronze": null,
               "silver": null,
               "gold": null
             },
-            "image_url": "",
-            "notes": "Goal number was missing after '0/'."
+            "image_url": "/public/games/snresistance/images/medals/med_mission_flameout.jpg",
+            "notes": "Goal number was missing after '0/'.",
+            "verified": true,
+            "source": "In-game Medals > Missions screen"
           }
         ],
         "long_shot": [],
