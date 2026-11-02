@@ -22,6 +22,31 @@ const auth = firebase.auth(app);
 const rtdb = firebase.database(app);
 const firestore = firebase.firestore(app);
 
+// PlayStation data lives in its own project (written by Playstation/psn.js).
+let psnRtdb = null, psnReady = Promise.resolve();
+try {
+    const appP = firebase.apps.find(a => a.name === 'psnstats') || firebase.initializeApp({
+        apiKey: "AIzaSyBT3RHrZQCcBdcoPpM9hMjuzSB0KBtu5UI", authDomain: "playstation-stats.firebaseapp.com",
+        databaseURL: "https://playstation-stats-default-rtdb.firebaseio.com", projectId: "playstation-stats",
+        storageBucket: "playstation-stats.firebasestorage.app", messagingSenderId: "748816703249", appId: "1:748816703249:web:3413fac9800148aa42b6b0"
+    }, 'psnstats');
+    psnRtdb = firebase.database(appP);
+    psnReady = firebase.auth(appP).signInAnonymously().catch(() => {});
+} catch (e) { console.warn('[PSN project]', e); }
+// Read a player's trophy progress for one game; tries the exact name, then any case.
+async function readPsnProgress(tag, commId) {
+    if (!tag || !commId) return null;
+    const dbs = [psnRtdb, rtdb].filter(Boolean);
+    await psnReady;
+    for (const db of dbs) {
+        try {
+            const v = (await db.ref(`/psn/gamertags/${tag}/liveTrophyProgress/${commId}`).once('value')).val();
+            if (v) return v;
+        } catch (e) { console.warn('[PSN read]', e && e.message); }
+    }
+    return null;
+}
+
 try {
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 } catch (e) {
@@ -933,7 +958,7 @@ window.appState.syncFriendsProgress = async function() {
             let psnRank = null;
             if (psnTag && ACTIVE_COMM_ID) {
                 try {
-                    const live = (await rtdb.ref(`/psn/gamertags/${psnTag}/liveTrophyProgress/${ACTIVE_COMM_ID}`).once('value')).val();
+                    const live = await readPsnProgress(psnTag, ACTIVE_COMM_ID);
                     const entries = Array.isArray(live) ? [...live.entries()] : Object.entries(live || {});
                     const crf = this.gameData && this.gameData.campaign_rank;
                     entries.forEach(([tId, t]) => {
@@ -1036,7 +1061,9 @@ async function searchGamePosterArt(commId, gameName) {
     if (!rtdb) return;
 
     try {
-        const snap = await rtdb.ref('/psn/games').once('value');
+        await psnReady;
+        let snap = psnRtdb ? await psnRtdb.ref('/psn/games').once('value').catch(() => null) : null;
+        if (!snap || !snap.val()) snap = await rtdb.ref('/psn/games').once('value');
         const psnGames = snap.val();
         if (!psnGames || typeof psnGames !== 'object') return;
 
@@ -1187,8 +1214,8 @@ async function autoCheckUserPsnTrophies() {
     const gamertag = appState.psnGamertag;
 
     try {
-        const liveTrophiesSnap = await rtdb.ref(`/psn/gamertags/${gamertag}/liveTrophyProgress/${commId}`).once('value');
-        const liveTrophies = liveTrophiesSnap.val();
+        const liveTrophies = await readPsnProgress(gamertag, commId);
+        appState.psnStatus = liveTrophies ? 'ok' : 'none';
 
         if (liveTrophies && (Array.isArray(liveTrophies) || typeof liveTrophies === 'object')) {
             let stateModified = false;
@@ -2172,7 +2199,7 @@ function renderRankUI() {
     const meter = document.getElementById('campaignRankMeter');
     if (meter) meter.innerHTML = `Rank ${r}/${cr.max} ` + meterHtml(cr.max - r, cr.max, '').replace(/^<span class="wm-num[^>]*>.*?<\/span>/, '');
     const src = document.getElementById('campaignRankSource');
-    if (src) src.textContent = appState.campaignRankSource === 'psn' ? 'Synced from your PlayStation trophy "Climbing the Ranks".' : (r ? 'Entered by hand. Link your PSN in Settings to sync it.' : 'Type your rank or link your PSN in Settings.');
+    if (src) src.textContent = appState.campaignRankSource === 'psn' ? 'Synced from your PlayStation trophy "Climbing the Ranks".' : (appState.psnStatus === 'none' ? `No PlayStation progress found for this game yet${appState.psnGamertag ? ` (${appState.psnGamertag})` : ''}. It appears after the PSN sync sees you play it.` : (r ? 'Entered by hand. Link your PSN in Settings to sync it.' : 'Type your rank or link your PSN in Settings.'));
     // Climbing the Ranks medal follows the rank
     if (cr.medal_id && appState.medals) {
         if (!appState.medals[cr.medal_id]) appState.medals[cr.medal_id] = { earned: false };
