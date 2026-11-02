@@ -3718,131 +3718,192 @@
         "personal_letters": [
           {
             "id": "let_m10_01",
-            "name": "Director's Grievance",
-            "location": "Production trailer office desk beside soundstage entrance.",
-            "image_url": ""
+            "name": "Be more Organized",
+            "location": "Shown in the guide video at 5:37.",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "video_time": 337,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=337s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m10_02",
-            "name": "Double Trouble",
-            "location": "Dressing room vanity table behind main studio set.",
-            "image_url": ""
+            "name": "Thank you!",
+            "location": "Shown in the guide video at 5:37.",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "video_time": 337,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=337s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m10_03",
-            "name": "Prop Master Memo",
-            "location": "Storage loft crate accessible via exterior scaffold ladder.",
-            "image_url": ""
+            "name": "I'm Contagious",
+            "location": "Shown in the guide video at 6:49.",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "video_time": 409,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=409s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m10_04",
-            "name": "Film Stock Shortage",
-            "location": "Editing booth bench on upper balcony overlooking studio.",
-            "image_url": ""
+            "name": "All Due Respect",
+            "location": "Shown in the guide video at 7:14.",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "video_time": 434,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=434s",
+            "emoji": "✉️"
           },
           {
             "id": "let_m10_05",
-            "name": "Security Alert: Lookalikes",
-            "location": "Estate gatehouse table beside vehicle checkpoint barrier.",
-            "image_url": ""
+            "name": "Our VIP's Demands",
+            "location": "Shown in the guide video at 7:34.",
+            "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
+            "video_time": 454,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=454s",
+            "emoji": "✉️"
           }
         ],
         "classified_documents": [
           {
             "id": "doc_m10_01",
-            "name": "Shooting Schedule",
-            "location": "Soundstage control booth desk overlooking fake alpine set.",
-            "image_url": ""
+            "name": "Set Inspections",
+            "location": "Shown in the guide video at 0:00.",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "video_time": 0,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=0s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m10_02",
-            "name": "Pyrotechnic Safety Protocols",
-            "location": "Armory workbench table inside film equipment bunker.",
-            "image_url": ""
+            "name": "Food to die for!",
+            "location": "Shown in the guide video at 0:53.",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "video_time": 53,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=53s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m10_03",
-            "name": "Führer Itinerary",
-            "location": "Château private study safe (requires studio manager key).",
-            "image_url": ""
+            "name": "I found a Vulnerability!",
+            "location": "Shown in the guide video at 1:57.",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "video_time": 117,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=117s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m10_04",
-            "name": "Prop Weapons Manifest",
-            "location": "Cargo loading dock office clipboard table.",
-            "image_url": ""
+            "name": "Morning Collection",
+            "location": "Shown in the guide video at 4:02.",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "video_time": 242,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=242s",
+            "emoji": "📜"
           },
           {
             "id": "doc_m10_05",
-            "name": "Evacuation Contingency",
-            "location": "Underground emergency bunker desk beside rail spur.",
-            "image_url": ""
+            "name": "Silence Has A Price",
+            "location": "Shown in the guide video at 6:16.",
+            "image_url": "/public/games/snresistance/images/icons/classified-document.png",
+            "video_time": 376,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=376s",
+            "emoji": "📜"
           }
         ],
         "hidden_items": [
           {
             "id": "item_m10_01",
-            "name": "Clapperboard: Take 88",
-            "location": "Resting on director's chair in central studio soundstage.",
-            "image_url": ""
+            "name": "Un De Trop Propaganda Poster",
+            "location": "Shown in the guide video at 1:38.",
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "video_time": 98,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=98s",
+            "emoji": "🏷️",
+            "description": "Unlocks the Un De Trop propaganda mission."
           },
           {
             "id": "item_m10_02",
-            "name": "Hitler Mustache Wax",
-            "location": "Dressing room makeup mirror counter.",
-            "image_url": ""
+            "name": "Hitler's Day Off",
+            "location": "Shown in the guide video at 2:47.",
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "video_time": 167,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=167s",
+            "emoji": "🏷️"
           },
           {
             "id": "item_m10_03",
-            "name": "Prop Luger (Rubber)",
-            "location": "Costume storage room shelf near studio canteen.",
-            "image_url": ""
+            "name": "Cooking with Hitler",
+            "location": "Shown in the guide video at 2:47.",
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "video_time": 167,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=167s",
+            "emoji": "🏷️"
           },
           {
             "id": "item_m10_04",
-            "name": "Signed Film Reel",
-            "location": "Private screening room projection booth table.",
-            "image_url": ""
+            "name": "The Big Win",
+            "location": "Shown in the guide video at 2:47.",
+            "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
+            "video_time": 167,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=167s",
+            "emoji": "🏷️"
           }
         ],
         "stone_eagles": [
           {
             "id": "eagle_m10_01",
-            "name": "Dead-Eye Target 1",
-            "location": "Studio arch sign pediment above main vehicle gate.",
-            "image_url": ""
+            "name": "Stone Eagle 1",
+            "location": "Shown in the guide video at 7:55.",
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 475,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=475s",
+            "emoji": "🦅"
           },
           {
             "id": "eagle_m10_02",
-            "name": "Dead-Eye Target 2",
-            "location": "Château estate roof balustrade between stone urns.",
-            "image_url": ""
+            "name": "Stone Eagle 2",
+            "location": "Shown in the guide video at 7:55.",
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 475,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=475s",
+            "emoji": "🦅"
           },
           {
             "id": "eagle_m10_03",
-            "name": "Dead-Eye Target 3",
-            "location": "Water tower apex behind studio electrical generator.",
-            "image_url": ""
+            "name": "Stone Eagle 3",
+            "location": "Shown in the guide video at 7:55.",
+            "image_url": "/public/games/snresistance/images/icons/eagle.png",
+            "video_time": 475,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=475s",
+            "emoji": "🦅"
           }
         ],
         "workbenches": [
           {
-            "id": "wb_m10_rifle",
-            "name": "Rifle Workbench",
-            "location": "Stage workshop storeroom beside film set carpenters' bay.",
-            "image_url": ""
-          },
-          {
             "id": "wb_m10_smg",
             "name": "SMG Workbench",
-            "location": "Armory locker room inside guard barracks compound.",
-            "image_url": ""
+            "location": "Shown in the guide video at 1:57.",
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "video_time": 117,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=117s",
+            "emoji": "⚙️"
           },
           {
             "id": "wb_m10_pistol",
             "name": "Pistol Workbench",
-            "location": "Cellar vault beneath château wine tasting room.",
-            "image_url": ""
+            "location": "Shown in the guide video at 4:40.",
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "video_time": 280,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=280s",
+            "emoji": "⚙️"
+          },
+          {
+            "id": "wb_m10_rifle",
+            "name": "Rifle Workbench",
+            "location": "Shown in the guide video at 9:24.",
+            "image_url": "/public/games/snresistance/images/icons/workbench.png",
+            "video_time": 564,
+            "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=564s",
+            "emoji": "⚙️"
           }
         ]
       },
@@ -4198,7 +4259,93 @@
           }
         ]
       },
-      "trophies": []
+      "trophies": [],
+      "starting_locations": [
+        {
+          "name": "Lookout Tower",
+          "video_time": 71,
+          "description": "Unlockable start (guide video 1:11)."
+        },
+        {
+          "name": "Vittoria's View",
+          "video_time": 315,
+          "description": "Unlockable start (guide video 5:15)."
+        }
+      ],
+      "guide_video": {
+        "creator": "Trophy Tom",
+        "channel": "https://www.youtube.com/@TrophyTom",
+        "video_id": "sZKnv8UU41M",
+        "url": "https://www.youtube.com/watch?v=sZKnv8UU41M",
+        "title": "Sniper Elite: Resistance - DLC 1 - All Collectibles & Trophies 🏆 Lights, Camera, Achtung!",
+        "chapters": [
+          {
+            "time": 0,
+            "label": "Classified Document 1/5 – Set Inspections"
+          },
+          {
+            "time": 53,
+            "label": "Classified Document 2/5 – Food to die for!"
+          },
+          {
+            "time": 71,
+            "label": "Starting Location 1/2 – Lookout Tower"
+          },
+          {
+            "time": 98,
+            "label": "Hidden Item 1/4 – Un de Trop – Propaganda Poster"
+          },
+          {
+            "time": 117,
+            "label": "Classified Document 3/5 – I found a Vulnerability! + Workbench 1/3 – SMG"
+          },
+          {
+            "time": 167,
+            "label": "Hidden Item 2-4/4 – Hitler's Day Off, Cooking with Hitler, The Big Win"
+          },
+          {
+            "time": 242,
+            "label": "Classified Document 4/5 – Morning Collection"
+          },
+          {
+            "time": 280,
+            "label": "Workbench 2/3 – Pistol"
+          },
+          {
+            "time": 315,
+            "label": "Starting Location 2/2 – Vittoria's View"
+          },
+          {
+            "time": 337,
+            "label": "Personal Letter 1+2/5 – Be more Organized, Thank you!"
+          },
+          {
+            "time": 376,
+            "label": "Classified Document 5/5 – Silence Has A Price"
+          },
+          {
+            "time": 409,
+            "label": "Personal Letter 3/5 – I'm Contagious"
+          },
+          {
+            "time": 434,
+            "label": "Personal Letter 4/5 – All Due Respect"
+          },
+          {
+            "time": 454,
+            "label": "Personal Letter 5/5 – Our VIP's Demands"
+          },
+          {
+            "time": 475,
+            "label": "Stone Eagle 1-3/3"
+          },
+          {
+            "time": 564,
+            "label": "Workbench 3/3 – Rifle"
+          }
+        ]
+      },
+      "collectibles_note": "Names and video times from Trophy Tom's guide. Location text and photos still to be added from in-game screenshots."
     }
   },
   "campaign_ribbons": [
