@@ -1349,7 +1349,8 @@ async function applyPsnTrophyIcons() {
     if (changed) {
         document.querySelectorAll('[data-type="trophy"]').forEach(el => {
             const c = appState.trophies[el.dataset.id]; if (!c || !c.icon) return;
-            let img = el.querySelector('img');
+            // only the card's own icon (never a friend's avatar chip or a location photo)
+            let img = el.querySelector(':scope > div > div > img');
             if (!img) { const wrap = el.querySelector(':scope > div > div'); if (!wrap) return; img = document.createElement('img'); img.alt = ''; img.loading = 'lazy'; img.style.cssText = 'width:40px; height:40px; object-fit:cover; border-radius:6px; flex:0 0 auto;'; wrap.prepend(img); }
             if (img.src !== c.icon) img.src = c.icon;
         });
@@ -1651,14 +1652,15 @@ function trophyLinks(data) {
         for (const [k, m, title] of missions) {
             if (!title || title.length < 4) continue;
             if (d === `complete ${title}` || d === `complete mission ${m.number} ${title}` || (m.completion_trophy !== undefined && String(m.completion_trophy) === String(t.trophyId))) { L.completes = k; break; }
-            if (d.includes(title)) { L.mission = k; break; }
+            if (d.replace(/\bexcluding\b.*$/, '').includes(title)) { L.mission = k; break; }
         }
         if (!L.completes) {
             const mm = d.match(/^complete mission (\d+)$/); if (mm) { const hit = missions.find(([, m]) => String(m.number) === mm[1]); if (hit) L.completes = hit[0]; }
         }
         if (!L.completes && !L.mission) {
-            const mn = d.match(/\bmission (\d+)\b/); const byNum = mn && missions.find(([, m]) => String(m.number) === mn[1]);
-            const byRegion = !byNum && missions.find(([, m]) => m.region && xnorm(m.region).length > 4 && d.includes(xnorm(m.region)));
+            const dx = d.replace(/\bexcluding\b.*$/, '');   // "excluding Mission 1 and Mission 9" is not a location
+            const mn = dx.match(/\bmission (\d+)\b/); const byNum = mn && missions.find(([, m]) => String(m.number) === mn[1]);
+            const byRegion = !byNum && missions.find(([, m]) => m.region && xnorm(m.region).length > 4 && dx.includes(xnorm(m.region)));
             if (byNum) L.mission = byNum[0]; else if (byRegion) L.mission = byRegion[0];
         }
         const raw = String(t.description || '');
