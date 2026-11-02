@@ -1,0 +1,335 @@
+{
+ "environment": {
+  "dayTime": 804.566345,
+  "currentDay": 107,
+  "currentMonotonicDay": 80,
+  "realHourTimer": 2138248,
+  "daysPerPeriod": 2,
+  "lighting": {
+   "toneMapping": {
+    "slope": 1.2,
+    "toe": 0.4,
+    "shoulder": 1.0,
+    "blackClip": 0.0,
+    "whiteClip": 0.04
+   }
+  },
+  "weather": {
+   "timeSinceLastRain": 0,
+   "forecast": {
+    "instance": [
+     {
+      "typeName": "RAIN",
+      "season": "SUMMER",
+      "variationIndex": 2,
+      "startDay": 80,
+      "startDayTime": 39600000,
+      "duration": 10800000
+     },
+     {
+      "typeName": "SUN",
+      "season": "SUMMER",
+      "variationIndex": 2,
+      "startDay": 80,
+      "startDayTime": 50400000,
+      "duration": 32400000
+     },
+     {
+      "typeName": "SUN",
+      "season": "SUMMER",
+      "variationIndex": 1,
+      "startDay": 80,
+      "startDayTime": 82800000,
+      "duration": 39600000
+     },
+     {
+      "typeName": "SUN",
+      "season": "SUMMER",
+      "variationIndex": 1,
+      "startDay": 81,
+      "startDayTime": 36000000,
+      "duration": 50400000
+     },
+     {
+      "typeName": "RAIN",
+      "season": "AUTUMN",
+      "variationIndex": 3,
+      "startDay": 82,
+      "startDayTime": 0,
+      "duration": 3600000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "AUTUMN",
+      "variationIndex": 3,
+      "startDay": 82,
+      "startDayTime": 3600000,
+      "duration": 25200000
+     },
+     {
+      "typeName": "SUN",
+      "season": "AUTUMN",
+      "variationIndex": 4,
+      "startDay": 82,
+      "startDayTime": 28800000,
+      "duration": 39600000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "AUTUMN",
+      "variationIndex": 1,
+      "startDay": 82,
+      "startDayTime": 68400000,
+      "duration": 36000000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "AUTUMN",
+      "variationIndex": 3,
+      "startDay": 83,
+      "startDayTime": 18000000,
+      "duration": 21600000
+     },
+     {
+      "typeName": "RAIN",
+      "season": "AUTUMN",
+      "variationIndex": 4,
+      "startDay": 83,
+      "startDayTime": 39600000,
+      "duration": 7200000
+     },
+     {
+      "typeName": "RAIN",
+      "season": "AUTUMN",
+      "variationIndex": 1,
+      "startDay": 83,
+      "startDayTime": 46800000,
+      "duration": 3600000
+     },
+     {
+      "typeName": "SUN",
+      "season": "AUTUMN",
+      "variationIndex": 4,
+      "startDay": 83,
+      "startDayTime": 50400000,
+      "duration": 43200000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "AUTUMN",
+      "variationIndex": 1,
+      "startDay": 84,
+      "startDayTime": 7200000,
+      "duration": 36000000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "AUTUMN",
+      "variationIndex": 3,
+      "startDay": 84,
+      "startDayTime": 43200000,
+      "duration": 28800000
+     },
+     {
+      "typeName": "SUN",
+      "season": "AUTUMN",
+      "variationIndex": 1,
+      "startDay": 84,
+      "startDayTime": 72000000,
+      "duration": 28800000
+     },
+     {
+      "typeName": "SUN",
+      "season": "AUTUMN",
+      "variationIndex": 3,
+      "startDay": 85,
+      "startDayTime": 14400000,
+      "duration": 28800000
+     },
+     {
+      "typeName": "RAIN",
+      "season": "AUTUMN",
+      "variationIndex": 2,
+      "startDay": 85,
+      "startDayTime": 43200000,
+      "duration": 7200000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "AUTUMN",
+      "variationIndex": 2,
+      "startDay": 85,
+      "startDayTime": 50400000,
+      "duration": 36000000
+     },
+     {
+      "typeName": "SUN",
+      "season": "AUTUMN",
+      "variationIndex": 2,
+      "startDay": 86,
+      "startDayTime": 0,
+      "duration": 36000000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "AUTUMN",
+      "variationIndex": 1,
+      "startDay": 86,
+      "startDayTime": 36000000,
+      "duration": 18000000
+     },
+     {
+      "typeName": "RAIN",
+      "season": "AUTUMN",
+      "variationIndex": 3,
+      "startDay": 86,
+      "startDayTime": 54000000,
+      "duration": 7200000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "AUTUMN",
+      "variationIndex": 3,
+      "startDay": 86,
+      "startDayTime": 61200000,
+      "duration": 32400000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "AUTUMN",
+      "variationIndex": 4,
+      "startDay": 87,
+      "startDayTime": 7200000,
+      "duration": 28800000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "AUTUMN",
+      "variationIndex": 1,
+      "startDay": 87,
+      "startDayTime": 36000000,
+      "duration": 36000000
+     },
+     {
+      "typeName": "SUN",
+      "season": "AUTUMN",
+      "variationIndex": 2,
+      "startDay": 87,
+      "startDayTime": 72000000,
+      "duration": 14400000
+     },
+     {
+      "typeName": "SNOW",
+      "season": "WINTER",
+      "variationIndex": 4,
+      "startDay": 88,
+      "startDayTime": 0,
+      "duration": 7200000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "WINTER",
+      "variationIndex": 4,
+      "startDay": 88,
+      "startDayTime": 7200000,
+      "duration": 21600000
+     },
+     {
+      "typeName": "SNOW",
+      "season": "WINTER",
+      "variationIndex": 3,
+      "startDay": 88,
+      "startDayTime": 28800000,
+      "duration": 18000000
+     },
+     {
+      "typeName": "SNOW",
+      "season": "WINTER",
+      "variationIndex": 2,
+      "startDay": 88,
+      "startDayTime": 46800000,
+      "duration": 14400000
+     },
+     {
+      "typeName": "SUN",
+      "season": "WINTER",
+      "variationIndex": 1,
+      "startDay": 88,
+      "startDayTime": 61200000,
+      "duration": 21600000
+     },
+     {
+      "typeName": "SNOW",
+      "season": "WINTER",
+      "variationIndex": 1,
+      "startDay": 88,
+      "startDayTime": 82800000,
+      "duration": 21600000
+     },
+     {
+      "typeName": "SUN",
+      "season": "WINTER",
+      "variationIndex": 3,
+      "startDay": 89,
+      "startDayTime": 18000000,
+      "duration": 36000000
+     }
+    ]
+   },
+   "fog": {
+    "alpha": 1.0,
+    "visibilityAlpha": 0.0,
+    "duration": 3600000.0,
+    "target": {
+     "groundFog": {
+      "coverageEdge0": 0.232208,
+      "coverageEdge1": 0.887241,
+      "extraHeight": 7.864205,
+      "groundLevelDensity": 0.035739,
+      "minValleyDepth": 4.684445,
+      "startDayTimeMinutes": 234,
+      "endDayTimeMinutes": 580,
+      "weatherTypes": "SUN CLOUDY"
+     },
+     "heightFog": {
+      "maxHeight": 588.284729,
+      "groundLevelDensity": 0.175381
+     }
+    },
+    "last": {
+     "groundFog": {
+      "coverageEdge0": 0.127991,
+      "coverageEdge1": 0.6773,
+      "extraHeight": 8.664264,
+      "groundLevelDensity": 0.016312,
+      "minValleyDepth": 5.939353,
+      "startDayTimeMinutes": 203,
+      "endDayTimeMinutes": 566,
+      "weatherTypes": "SUN CLOUDY"
+     },
+     "heightFog": {
+      "maxHeight": 590.555054,
+      "groundLevelDensity": 0.127234
+     }
+    }
+   },
+   "snow": {
+    "height": 0.0
+   },
+   "ground": {
+    "wetness": 1.0
+   },
+   "twister": {
+    "position": "0.00 0.00 0.00",
+    "isSpawned": false,
+    "fadeDirection": 0,
+    "fadeValue": 0.0,
+    "metersPerHour": 0.0
+   }
+  },
+  "snow": {
+   "physicalHeight": 0.0,
+   "height": 0.0
+  }
+ }
+}

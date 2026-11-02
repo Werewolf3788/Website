@@ -1,0 +1,18 @@
+{
+ "sales": {
+  "item": {
+   "timeLeft": 30,
+   "isGenerated": true,
+   "xmlFilename": "data/vehicles/poettinger/servoT6000Plus/servoT6000Plus.xml",
+   "age": 21,
+   "price": 22027,
+   "damage": 0.550209,
+   "wear": 0.514334,
+   "operatingTime": 91577.375,
+   "boughtConfiguration": {
+    "name": "design",
+    "id": 2
+   }
+  }
+ }
+}

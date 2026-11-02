@@ -1,0 +1,21 @@
+{
+ "npcs": {
+  "npc": [
+   {
+    "name": "GRANDPA"
+   },
+   {
+    "name": "FORESTER"
+   },
+   {
+    "name": "FARMER"
+   },
+   {
+    "name": "HELPER"
+   },
+   {
+    "name": "ANIMAL_DEALER"
+   }
+  ]
+ }
+}

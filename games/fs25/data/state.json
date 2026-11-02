@@ -1,0 +1,26 @@
+{
+ "saveDir": "/profile/savegame3",
+ "mtimes": {
+  "careerSavegame.xml": null,
+  "collectibles.xml": null,
+  "economy.xml": null,
+  "environment.xml": null,
+  "farmland.xml": null,
+  "farms.xml": null,
+  "fields.xml": null,
+  "handTools.xml": null,
+  "items.xml": null,
+  "missions.xml": null,
+  "npc.xml": null,
+  "placeables.xml": null,
+  "players.xml": null,
+  "precisionFarming.xml": null,
+  "sales.xml": null,
+  "vehicles.xml": null
+ },
+ "lastCheck": "2026-11-02T07:35:33Z",
+ "lastMode": "full",
+ "lastFull": "2026-11-02T07:35:33Z",
+ "lastLight": null,
+ "lastChange": "2026-11-02T07:35:33Z"
+}

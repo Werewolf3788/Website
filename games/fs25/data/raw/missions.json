@@ -1,0 +1,332 @@
+{
+ "missions": {
+  "version": 0,
+  "sowMission": [
+   {
+    "uniqueId": "mission14f9d1663f0e61c874e376dbbd930aa2",
+    "status": "FINISHED",
+    "finishState": "SUCCESS",
+    "farmId": 1,
+    "activeId": 1,
+    "fruitType": "PARSNIP",
+    "info": {
+     "reward": 0,
+     "reimbursement": 0.0,
+     "completion": 0.995244,
+     "stealingCost": 0.0
+    },
+    "vehicles": {
+     "spawned": false,
+     "group": 7
+    },
+    "endDate": {
+     "endDay": 32,
+     "endDayTime": 86399999
+    },
+    "field": {
+     "id": 30
+    }
+   },
+   {
+    "uniqueId": "mission8d2d82ec832378bde90387a8c7af1e1f",
+    "status": "CREATED",
+    "finishState": "NONE",
+    "fruitType": "WHEAT",
+    "info": {
+     "reward": 0,
+     "reimbursement": 0.0,
+     "completion": 0.0
+    },
+    "vehicles": {
+     "spawned": false,
+     "group": 3
+    },
+    "endDate": {
+     "endDay": 81,
+     "endDayTime": 86399999
+    },
+    "field": {
+     "id": 19
+    }
+   }
+  ],
+  "deadwoodMission": {
+   "uniqueId": "missionaa429025ddbe1013d3dbe366d7157141",
+   "status": "CREATED",
+   "finishState": "NONE",
+   "spotIndex": 3,
+   "info": {
+    "reward": 900,
+    "reimbursement": 0.0,
+    "completion": 0.0
+   },
+   "vehicles": {
+    "spawned": false,
+    "group": 2
+   },
+   "endDate": {
+    "endDay": 80,
+    "endDayTime": 50400000
+   },
+   "originalTree": [
+    {
+     "splitShapePart1": 1,
+     "splitShapePart2": 7642,
+     "splitShapePart3": 0
+    },
+    {
+     "splitShapePart1": 1,
+     "splitShapePart2": 7861,
+     "splitShapePart3": 0
+    },
+    {
+     "splitShapePart1": 1,
+     "splitShapePart2": 7381,
+     "splitShapePart3": 0
+    },
+    {
+     "splitShapePart1": 1,
+     "splitShapePart2": 7597,
+     "splitShapePart3": 0
+    },
+    {
+     "splitShapePart1": 1,
+     "splitShapePart2": 7898,
+     "splitShapePart3": 0
+    },
+    {
+     "splitShapePart1": 1,
+     "splitShapePart2": 7643,
+     "splitShapePart3": 0
+    }
+   ]
+  },
+  "harvestMission": [
+   {
+    "uniqueId": "mission4246a38b388490c2055cec65c0311f2b",
+    "status": "CREATED",
+    "finishState": "NONE",
+    "harvest": {
+     "fruitType": "TRITICALE",
+     "expectedLiters": 0.0,
+     "depositedLiters": 0.0,
+     "sellingStationPlaceableUniqueId": "placeablef7ffed8fe0791d301ac08e2e879bd104",
+     "unloadingStationIndex": 1
+    },
+    "info": {
+     "reward": 0,
+     "reimbursement": 0.0,
+     "completion": 0.0
+    },
+    "vehicles": {
+     "spawned": false,
+     "group": 3
+    },
+    "endDate": {
+     "endDay": 81,
+     "endDayTime": 86399999
+    },
+    "field": {
+     "id": 8
+    }
+   },
+   {
+    "uniqueId": "missioneeac089a4fb19caddffa4188dc3f7bc1",
+    "status": "CREATED",
+    "finishState": "NONE",
+    "harvest": {
+     "fruitType": "CANOLA",
+     "expectedLiters": 0.0,
+     "depositedLiters": 0.0,
+     "sellingStationPlaceableUniqueId": "preplaced_grainElevatorTriggers_798d64add8c4165dc5472f2f520b50c4",
+     "unloadingStationIndex": 1
+    },
+    "info": {
+     "reward": 0,
+     "reimbursement": 0.0,
+     "completion": 0.0
+    },
+    "vehicles": {
+     "spawned": false,
+     "group": 1
+    },
+    "endDate": {
+     "endDay": 81,
+     "endDayTime": 86399999
+    },
+    "field": {
+     "id": 16
+    }
+   },
+   {
+    "uniqueId": "mission46dfde33e73cc7aefd5a23cced91cad5",
+    "status": "CREATED",
+    "finishState": "NONE",
+    "harvest": {
+     "fruitType": "POTATO",
+     "expectedLiters": 0.0,
+     "depositedLiters": 0.0,
+     "sellingStationPlaceableUniqueId": "placeable7f5f56fdc7fcd228b80348554d4cda8f",
+     "unloadingStationIndex": 1
+    },
+    "info": {
+     "reward": 0,
+     "reimbursement": 0.0,
+     "completion": 0.0
+    },
+    "vehicles": {
+     "spawned": false,
+     "group": 10
+    },
+    "endDate": {
+     "endDay": 81,
+     "endDayTime": 86399999
+    },
+    "field": {
+     "id": 11
+    }
+   },
+   {
+    "uniqueId": "missionf2542e6ebb87cda91a27f3472fcf55b4",
+    "status": "CREATED",
+    "finishState": "NONE",
+    "harvest": {
+     "fruitType": "SUGARBEET",
+     "expectedLiters": 0.0,
+     "depositedLiters": 0.0,
+     "sellingStationPlaceableUniqueId": "placeable7f5f56fdc7fcd228b80348554d4cda8f",
+     "unloadingStationIndex": 1
+    },
+    "info": {
+     "reward": 0,
+     "reimbursement": 0.0,
+     "completion": 0.0
+    },
+    "vehicles": {
+     "spawned": false,
+     "group": 24
+    },
+    "endDate": {
+     "endDay": 81,
+     "endDayTime": 86399999
+    },
+    "field": {
+     "id": 4
+    }
+   }
+  ],
+  "plowMission": [
+   {
+    "uniqueId": "mission26705cfcf31334cea6486bfe8b953601",
+    "status": "CREATED",
+    "finishState": "NONE",
+    "info": {
+     "reward": 0,
+     "reimbursement": 0.0,
+     "completion": 0.0
+    },
+    "vehicles": {
+     "spawned": false,
+     "group": 2
+    },
+    "endDate": {
+     "endDay": 81,
+     "endDayTime": 86399999
+    },
+    "field": {
+     "id": 17
+    }
+   },
+   {
+    "uniqueId": "mission2d1d1631dc2c8a225947dc150af330f6",
+    "status": "CREATED",
+    "finishState": "NONE",
+    "info": {
+     "reward": 0,
+     "reimbursement": 0.0,
+     "completion": 0.0
+    },
+    "vehicles": {
+     "spawned": false,
+     "group": 1
+    },
+    "endDate": {
+     "endDay": 81,
+     "endDayTime": 86399999
+    },
+    "field": {
+     "id": 26
+    }
+   }
+  ],
+  "cultivateMission": [
+   {
+    "uniqueId": "mission098a4f7be9807faa7718b623255f52a1",
+    "status": "CREATED",
+    "finishState": "NONE",
+    "info": {
+     "reward": 0,
+     "reimbursement": 0.0,
+     "completion": 0.0
+    },
+    "vehicles": {
+     "spawned": false,
+     "group": 3
+    },
+    "endDate": {
+     "endDay": 81,
+     "endDayTime": 86399999
+    },
+    "field": {
+     "id": 5
+    }
+   },
+   {
+    "uniqueId": "mission377a8a56068911a3ae3f490c86022c27",
+    "status": "CREATED",
+    "finishState": "NONE",
+    "info": {
+     "reward": 0,
+     "reimbursement": 0.0,
+     "completion": 0.0
+    },
+    "vehicles": {
+     "spawned": false,
+     "group": 2
+    },
+    "endDate": {
+     "endDay": 81,
+     "endDayTime": 86399999
+    },
+    "field": {
+     "id": 28
+    }
+   }
+  ],
+  "baleMission": {
+   "uniqueId": "missionc569082a5d975c36c1a6e38efcebb87f",
+   "status": "CREATED",
+   "finishState": "NONE",
+   "fruitType": "SPELT",
+   "needRoundbaler": true,
+   "spawnedLiters": 0.0,
+   "finishedSwathSpawning": false,
+   "info": {
+    "reward": 0,
+    "reimbursement": 0.0,
+    "completion": 0.0
+   },
+   "vehicles": {
+    "spawned": false,
+    "group": 5
+   },
+   "endDate": {
+    "endDay": 81,
+    "endDayTime": 86399999
+   },
+   "field": {
+    "id": 46
+   }
+  }
+ }
+}

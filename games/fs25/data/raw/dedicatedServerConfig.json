@@ -1,0 +1,320 @@
+{
+ "gameserver": {
+  "settings": {
+   "game_name": "OneLIVIDMAN and werewolf 618",
+   "game_password": null,
+   "savegame_index": 3,
+   "max_player": 6,
+   "language": "en",
+   "auto_save_interval": 15.0,
+   "stats_interval": 45.0,
+   "crossplay_allowed": true,
+   "initialMoney": 0,
+   "initialLoan": 0,
+   "economicDifficulty": 2,
+   "pause_game_if_empty": 1,
+   "mapID": "mountain",
+   "mapFilename": "FS25_The_Rural_Farmlands_Of_Ohio.zip"
+  },
+  "mods": {
+   "mod": [
+    {
+     "filename": "FS25_precisionFarming",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_2160_Series",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_colossusPack",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_Balers_pack",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_The_Rural_Farmlands_Of_Ohio",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_TigerMate255",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_CaseIH_340_400TSE_FL",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_DropdeckTrailer53Ft_Auto",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_Grape_olive_Storage",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_JD_8R_2018_crossplay",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_LizardComboTrailer",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_ML_StLawrence",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_New_American",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_RoadrunnerPlus",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_cyl",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_AddableTriggers (1)",
+     "isDlc": false
+    },
+    {
+     "filename": "strawHarvestPack",
+     "isDlc": true
+    },
+    {
+     "filename": "FS25_ASM_ChristmasCutouts",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_AdditionalFilltypes",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_Agrospol_Map",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_All_In_One_Production",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_AmericanMidwestShop",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_AmericanMidwestTruckshop",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_AmericanSimplePack",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_AutomaticWater_Animals_Greenhouses",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_BigHorn",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_Christmas_Package_Decorative",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_Deck",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_Doubleroundhall",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_FlagOldBarn",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_Flexicoil_ST820_MultiFunction",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_John_Deere_Workshop",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_KuhnAxis402",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_Lizard1775NT_multiplanter",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_Lizard_SM72_SM82",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_Lizard_Silver_3500",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_LowCostFarmSilos",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_MidwestShouse",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_MultiFarmStorage",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_Multifruit_Buying_Station",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_OldSkoolPack",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_Pack_Autoload",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_Pack_Halloween",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_PlaceableGasStationPump",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_Production_Points_Pack",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_R3_HarvestProfit",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_Rangler_Unlimited_4x4",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_RoadKit",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_Shed_Storage_And_Shed",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_SpeedOfLight",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_Superduty",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_TreeBGone",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_USpack1",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_USpack2",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_UtiliTrailer",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_WindTurbinePack",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_WindTurbinePackage",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_Wood_autoload",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_baleAutoloadPack",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_buyableBales_pack_crossplay",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_caseIHAxialFlowSeries",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_harvestgiant",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_kinzeMultiFruitPlanterPack",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_lizardTardis",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_mrhCowBarns",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_naturalWaterRiversAndPondsPack",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_oldGrainSilo",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_oldUSshed",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_palletSilo",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_potatoHallLarge",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_sellEverything",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_usWorkshopHall",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_zLiftablePalletsBales",
+     "isDlc": false
+    },
+    {
+     "filename": "FS25_zzLazydistribution",
+     "isDlc": false
+    }
+   ]
+  }
+ }
+}

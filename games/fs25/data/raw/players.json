@@ -1,0 +1,266 @@
+{
+ "players": {
+  "player": [
+   {
+    "uniqueUserId": "DjvSk93f8pVsl0Cp8SyYkvB9zxtVj8aPTmzNFD7Y4W0=",
+    "timeLastConnected": "2026/11/02 02:22",
+    "style": {
+     "filename": "dataS/character/playerM/playerM.xml",
+     "facegear": {
+      "color": 1
+     },
+     "onepiece": {
+      "color": 1,
+      "name": "empty"
+     },
+     "bottom": {
+      "color": 1,
+      "name": "jeans"
+     },
+     "face": {
+      "color": 1,
+      "name": "head01"
+     },
+     "top": {
+      "color": 1,
+      "name": "collaredShirt"
+     },
+     "gloves": {
+      "color": 1,
+      "name": "empty"
+     },
+     "headgear": {
+      "color": 1,
+      "name": "empty"
+     },
+     "glasses": {
+      "color": 1,
+      "name": "empty"
+     },
+     "footwear": {
+      "color": 1,
+      "name": "workBoots2"
+     },
+     "hairStyle": {
+      "color": 6,
+      "name": "hair02"
+     },
+     "beard": {
+      "color": 6,
+      "name": "empty"
+     }
+    }
+   },
+   {
+    "uniqueUserId": "NE0DifHeTEE3XiAha2XqNE99mfJhUP5lNhHcjUe16qw=",
+    "timeLastConnected": "2026/11/02 02:22",
+    "style": {
+     "filename": "dataS/character/playerM/playerM.xml",
+     "facegear": {
+      "color": 1
+     },
+     "onepiece": {
+      "color": 1,
+      "name": "empty"
+     },
+     "bottom": {
+      "color": 5,
+      "name": "jeans"
+     },
+     "face": {
+      "color": 1,
+      "name": "head02"
+     },
+     "top": {
+      "color": 1,
+      "name": "tankTop"
+     },
+     "gloves": {
+      "color": 1,
+      "name": "mccullochGloves"
+     },
+     "headgear": {
+      "color": 12,
+      "name": "ballcap"
+     },
+     "glasses": {
+      "color": 1,
+      "name": "sports1"
+     },
+     "footwear": {
+      "color": 1,
+      "name": "workBoots2"
+     },
+     "hairStyle": {
+      "color": 6,
+      "name": "hair05"
+     },
+     "beard": {
+      "color": 6,
+      "name": "goatee01_head02"
+     }
+    },
+    "handTools": {
+     "handTool": [
+      {
+       "uniqueId": "HandTool5281c61018595df99345aff8c7adcf90"
+      },
+      {
+       "uniqueId": "HandTool98505d2a35f7e97afdbf7231346487ef"
+      }
+     ]
+    }
+   },
+   {
+    "uniqueUserId": "dlE6ViCtDFNgV6gvEVWLrXGXhWTAF3b6HA/Cu1zRRhM=",
+    "timeLastConnected": "2026/11/02 02:22",
+    "style": {
+     "filename": "dataS/character/playerM/playerM.xml",
+     "facegear": {
+      "color": 1
+     },
+     "onepiece": {
+      "color": 1,
+      "name": "empty"
+     },
+     "bottom": {
+      "color": 1,
+      "name": "jeans"
+     },
+     "face": {
+      "color": 1,
+      "name": "head01"
+     },
+     "top": {
+      "color": 1,
+      "name": "collaredShirt"
+     },
+     "gloves": {
+      "color": 1,
+      "name": "empty"
+     },
+     "headgear": {
+      "color": 1,
+      "name": "empty"
+     },
+     "glasses": {
+      "color": 1,
+      "name": "empty"
+     },
+     "footwear": {
+      "color": 1,
+      "name": "workBoots2"
+     },
+     "hairStyle": {
+      "color": 6,
+      "name": "hair02"
+     },
+     "beard": {
+      "color": 6,
+      "name": "empty"
+     }
+    }
+   },
+   {
+    "uniqueUserId": "pCAP7iOD86BtPKnjruvQ55B45wWQRkqV2psYGz0DfGw=",
+    "timeLastConnected": "2026/08/30 17:25",
+    "style": {
+     "filename": "dataS/character/playerM/playerM.xml",
+     "facegear": {
+      "color": 1
+     },
+     "onepiece": {
+      "color": 1,
+      "name": "empty"
+     },
+     "bottom": {
+      "color": 6,
+      "name": "cargo"
+     },
+     "face": {
+      "color": 1,
+      "name": "head05"
+     },
+     "top": {
+      "color": 16,
+      "name": "topPlaidShirt"
+     },
+     "gloves": {
+      "color": 2,
+      "name": "riding"
+     },
+     "headgear": {
+      "color": 5,
+      "name": "cowboy"
+     },
+     "glasses": {
+      "color": 1,
+      "name": "reading"
+     },
+     "footwear": {
+      "color": 1,
+      "name": "riding"
+     },
+     "hairStyle": {
+      "color": 6,
+      "name": "hair06"
+     },
+     "beard": {
+      "color": 6,
+      "name": "muttonChops03_head05"
+     }
+    }
+   },
+   {
+    "uniqueUserId": "RLiLKTq6eiwOAptpzLIxewM3Nf9iYruHT1RZnF6ULxA=",
+    "timeLastConnected": "2026/09/12 10:09",
+    "style": {
+     "filename": "dataS/character/playerM/playerM.xml",
+     "facegear": {
+      "color": 1
+     },
+     "onepiece": {
+      "color": 1,
+      "name": "empty"
+     },
+     "bottom": {
+      "color": 1,
+      "name": "jeans"
+     },
+     "face": {
+      "color": 1,
+      "name": "head01"
+     },
+     "top": {
+      "color": 1,
+      "name": "collaredShirt"
+     },
+     "gloves": {
+      "color": 1,
+      "name": "empty"
+     },
+     "headgear": {
+      "color": 1,
+      "name": "empty"
+     },
+     "glasses": {
+      "color": 1,
+      "name": "empty"
+     },
+     "footwear": {
+      "color": 1,
+      "name": "workBoots2"
+     },
+     "hairStyle": {
+      "color": 6,
+      "name": "hair02"
+     },
+     "beard": {
+      "color": 6,
+      "name": "empty"
+     }
+    }
+   }
+  ]
+ }
+}
