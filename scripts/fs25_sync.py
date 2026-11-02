@@ -125,7 +125,7 @@ def num(x, default=0):
 
 
 # --------------------------------------------------------------------------- FTP
-def connect():
+def connect(quiet=False):
     host = os.environ.get("FTP_HOST", "").strip()
     port = int(os.environ.get("FTP_PORT", "21").strip() or 21)
     user = os.environ.get("FTP_USER", "").strip()
@@ -146,11 +146,13 @@ def connect():
                 ftp.prot_p()
             ftp.set_pasv(True)
             ftp.encoding = "utf-8"
-            log(f"Connected to {host}:{port} via {cls.__name__}")
+            if not quiet:
+                log(f"Connected to {host}:{port} via {cls.__name__}")
             return ftp
         except Exception as e:  # try TLS next
             last = e
-            log(f"{cls.__name__} failed: {e}")
+            if not quiet:
+                log(f"{cls.__name__} failed: {e}")
     sys.exit(f"Could not log in to FTP: {last}")
 
 
@@ -424,12 +426,132 @@ def players_from_stats_url():
     }
 
 
-def fetch_map_image(state):
-    """Download the server's map overview once a day into games/fs25/data/map.jpg."""
+class FtpRangeFile(io.RawIOBase):
+    """Read-only, seekable view of one big FTP file using ranged downloads (REST + RETR),
+    so zipfile can pull a single image out of a map mod without downloading the whole zip."""
+    BLOCK = 512 * 1024
+
+    def __init__(self, path, size):
+        self.path, self.size, self.pos, self.cache = path, size, 0, {}
+
+    def readable(self):
+        return True
+
+    def seekable(self):
+        return True
+
+    def tell(self):
+        return self.pos
+
+    def seek(self, off, whence=0):
+        self.pos = off if whence == 0 else self.pos + off if whence == 1 else self.size + off
+        return self.pos
+
+    def _block(self, n):
+        if n not in self.cache:
+            start = n * self.BLOCK
+            want = min(self.BLOCK, self.size - start)
+            ftp = connect(quiet=True)
+            try:
+                ftp.voidcmd("TYPE I")   # binary mode, needed to resume at an offset
+                conn = ftp.transfercmd(f"RETR {self.path}", rest=start)
+                buf = bytearray()
+                while len(buf) < want:
+                    chunk = conn.recv(min(65536, want - len(buf)))
+                    if not chunk:
+                        break
+                    buf += chunk
+                conn.close()
+            finally:
+                try:
+                    ftp.close()
+                except Exception:
+                    pass
+            self.cache[n] = bytes(buf)
+        return self.cache[n]
+
+    def read(self, n=-1):
+        if n is None or n < 0:
+            n = self.size - self.pos
+        out = bytearray()
+        while n > 0 and self.pos < self.size:
+            b = self._block(self.pos // self.BLOCK)
+            off = self.pos % self.BLOCK
+            take = b[off:off + n]
+            if not take:
+                break
+            out += take
+            self.pos += len(take)
+            n -= len(take)
+        return bytes(out)
+
+    def readinto(self, b):
+        data = self.read(len(b))
+        b[:len(data)] = data
+        return len(data)
+
+
+def map_from_mod_zip(ftp, save_dir, state, path):
+    """Pull the map's own overview image (e.g. mapAS/overview.png / .dds) out of the map mod zip
+    in profile/mods on the server. Runs once, and again only if the map mod file changes."""
+    live = g(load_raw("gameStats"), "Server", default={}) or {}
+    overview = str(live.get("mapOverviewFilename") or "")
+    m = re.match(r"^\$moddir\$([^/]+)/(.+)$", overview)
+    if not m:
+        return os.path.exists(path)
+    mod, inner = m.group(1), m.group(2)
+    profile = save_dir.rstrip("/").rsplit("/", 1)[0] or "/"
+    mods_dir = f"{profile.rstrip('/')}/mods"
+    entries = list_dir(ftp, mods_dir)
+    zname = find_name(entries, mod + ".zip")
+    if not zname:
+        log(f"Map mod {mod}.zip not found in {mods_dir}")
+        return os.path.exists(path)
+    info = entries[zname]
+    size = info.get("size") or ftp.size(f"{mods_dir}/{zname}")
+    sig = f"{zname}:{size}:{info.get('mtime')}"
+    if os.path.exists(path) and state.get("mapSource") == sig:
+        return True
+    import zipfile
+    from PIL import Image
+    with zipfile.ZipFile(io.BufferedReader(FtpRangeFile(f"{mods_dir}/{zname}", int(size)), 1024 * 1024)) as z:
+        names = z.namelist()
+        stem = inner.rsplit(".", 1)[0].lower()
+        cands = [n for n in names if n.lower().rsplit(".", 1)[0] == stem] or \
+                [n for n in names if re.search(r"(^|/)overview\.(png|dds|jpg)$", n, re.I)]
+        if not cands:
+            log("No overview image inside the map mod")
+            return os.path.exists(path)
+        cands.sort(key=lambda n: (not n.lower().endswith(".png"), not n.lower().endswith(".dds")))
+        raw = z.read(cands[0])
+    img = Image.open(io.BytesIO(raw)).convert("RGB")
+    if img.size != (1024, 1024):
+        img = img.resize((1024, 1024), Image.LANCZOS)
+    out = io.BytesIO()
+    img.save(out, "JPEG", quality=85, optimize=True)
+    with open(path, "wb") as f:
+        f.write(out.getvalue())
+    state["mapSource"] = sig
+    state["mapFetchedAt"] = time.time()
+    log(f"Map image taken from {zname} ({cands[0]}, {len(out.getvalue()) // 1024} KB)")
+    return True
+
+
+def fetch_map_image(state, ftp=None, save_dir=None):
+    """Map background for the tactical map -> games/fs25/data/map.jpg.
+    1) the server web feed (FS25_MAP_URL secret), refreshed once a day, or
+    2) the map's own overview image inside the map mod on the server (over FTP)."""
     url = _feed_url("map")
     path = os.path.join(OUT_DIR, "map.jpg")
     if not url:
-        return os.path.exists(path)
+        if ftp is None or not save_dir:
+            return os.path.exists(path)
+        try:
+            return map_from_mod_zip(ftp, save_dir, state, path)
+        except Exception as e:
+            log(f"Map image not taken from the map mod ({type(e).__name__}: {e})")
+            return os.path.exists(path)
+
     if os.path.exists(path) and time.time() - num(state.get("mapFetchedAt")) < 24 * 3600:
         return True
     try:
@@ -1390,6 +1512,7 @@ def main():
         if write_if_changed(raw_path, obj):
             changed.append(name)
         mtimes[name] = info.get("mtime")
+    has_map = fetch_map_image(state, ftp, save_dir)
     try:
         ftp.quit()
     except Exception:
@@ -1434,7 +1557,7 @@ def main():
     }
     overview = build_overview(meta)
     overview["farmColors"] = fetch_farm_colors(state)
-    if fetch_map_image(state):
+    if has_map:
         overview["map"] = {"image": "map.jpg", "size": (overview.get("live") or {}).get("mapSize") or 2048}
 
     # Only rewrite when something other than the timestamps changed (keeps idle runs commit-free)

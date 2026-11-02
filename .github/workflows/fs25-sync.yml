@@ -16,7 +16,8 @@ name: FS25 Server Sync
 
 on:
   schedule:
-    - cron: '*/16 * * * *'
+    # Off the top of the hour: GitHub drops/delays busy-minute schedules. Same 16-min spacing.
+    - cron: '3,19,35,51 * * * *'
   workflow_dispatch:
     inputs:
       mode:
@@ -49,7 +50,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install Firebase login helper
-        run: pip install --quiet google-auth requests
+        run: pip install --quiet google-auth requests pillow
 
       - name: Pull savegame from G-Portal
         env:
