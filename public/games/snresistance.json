@@ -49,7 +49,7 @@
           {
             "id": "med_objective_dam_buster",
             "name": "Dam Buster",
-            "description": "Complete Mission 1: Behind Enemy Lines with a 1 star rating.",
+            "description": "Complete Mission 1: Behind Enemy Lines with a 1 Star rating.",
             "goal": 1,
             "goal_tier": null,
             "tiers": {
@@ -57,7 +57,7 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_objective_dam_buster.jpg"
           }
         ],
         "mission": [],
@@ -354,7 +354,7 @@
           {
             "id": "med_objective_welcome_to_the_resistance",
             "name": "Welcome to the Resistance",
-            "description": "Complete Mission 2: Dead Drop with a 3 star rating.",
+            "description": "Complete Mission 2: Dead Drop with a 3 Star rating.",
             "goal": 3,
             "goal_tier": null,
             "tiers": {
@@ -362,7 +362,13 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_objective_welcome_to_the_resistance.jpg",
+            "tier_goals": {
+              "bronze": 1,
+              "silver": 2,
+              "gold": 3
+            },
+            "notes": "1 star = bronze, 2 stars = silver, 3 stars = gold."
           }
         ],
         "mission": [
@@ -769,7 +775,7 @@
           {
             "id": "med_objective_trainwreck",
             "name": "Trainwreck",
-            "description": "Complete Mission 3: Sonderzüge Sabotage with a 3 star rating.",
+            "description": "Complete Mission 3: Sonderzüge Sabotage with a 3 Star rating.",
             "goal": 3,
             "goal_tier": null,
             "tiers": {
@@ -777,7 +783,13 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_objective_trainwreck.jpg",
+            "tier_goals": {
+              "bronze": 1,
+              "silver": 2,
+              "gold": 3
+            },
+            "notes": "1 star = bronze, 2 stars = silver, 3 stars = gold."
           }
         ],
         "mission": [
@@ -1209,15 +1221,21 @@
           {
             "id": "med_objective_bomb_squad",
             "name": "Bomb Squad",
-            "description": "Complete Mission 4: Collision Course with a 1 star rating.",
-            "goal": 1,
+            "description": "Complete Mission 4: Collision Course with a 3 Star rating.",
+            "goal": 3,
             "goal_tier": null,
             "tiers": {
               "bronze": null,
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_objective_bomb_squad.jpg",
+            "tier_goals": {
+              "bronze": 1,
+              "silver": 2,
+              "gold": 3
+            },
+            "notes": "1 star = bronze, 2 stars = silver, 3 stars = gold."
           }
         ],
         "mission": [
@@ -1643,7 +1661,7 @@
           {
             "id": "med_objective_industrial_action",
             "name": "Industrial Action",
-            "description": "Complete Mission 5: Devil's Cauldron with a 3 star rating.",
+            "description": "Complete Mission 5: Devil's Cauldron with a 3 Star rating.",
             "goal": 3,
             "goal_tier": null,
             "tiers": {
@@ -1651,7 +1669,13 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_objective_industrial_action.jpg",
+            "tier_goals": {
+              "bronze": 1,
+              "silver": 2,
+              "gold": 3
+            },
+            "notes": "1 star = bronze, 2 stars = silver, 3 stars = gold."
           }
         ],
         "mission": [
@@ -2097,7 +2121,7 @@
           {
             "id": "med_objective_blast_from_the_past",
             "name": "Blast from the Past",
-            "description": "Complete Mission 6: Assault on Fort Rouge with a 3 star rating.",
+            "description": "Complete Mission 6: Assault on Fort Rouge with a 3 Star rating.",
             "goal": 3,
             "goal_tier": null,
             "tiers": {
@@ -2105,8 +2129,13 @@
               "silver": null,
               "gold": null
             },
-            "image_url": "",
-            "notes": "Typed as 'Mission 5'; corrected to Mission 6."
+            "image_url": "/public/games/snresistance/images/medals/med_objective_blast_from_the_past.jpg",
+            "notes": "1 star = bronze, 2 stars = silver, 3 stars = gold.",
+            "tier_goals": {
+              "bronze": 1,
+              "silver": 2,
+              "gold": 3
+            }
           }
         ],
         "mission": [
@@ -2588,7 +2617,7 @@
           {
             "id": "med_objective_grapes_of_wrath",
             "name": "Grapes of Wrath",
-            "description": "Complete Mission 7: Lock, Stock and Barrels with a 3 star rating.",
+            "description": "Complete Mission 7: Lock, Stock and Barrels with a 3 Star rating.",
             "goal": 3,
             "goal_tier": null,
             "tiers": {
@@ -2596,7 +2625,13 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_objective_grapes_of_wrath.jpg",
+            "tier_goals": {
+              "bronze": 1,
+              "silver": 2,
+              "gold": 3
+            },
+            "notes": "1 star = bronze, 2 stars = silver, 3 stars = gold."
           }
         ],
         "mission": [
@@ -3192,7 +3227,7 @@
           {
             "id": "med_objective_whatever_it_takes",
             "name": "Whatever it Takes",
-            "description": "Complete Mission 8: End of the Line with a 3 star rating.",
+            "description": "Complete Mission 8: End of the Line with a 3 Star rating.",
             "goal": 3,
             "goal_tier": null,
             "tiers": {
@@ -3200,7 +3235,13 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_objective_whatever_it_takes.jpg",
+            "tier_goals": {
+              "bronze": 1,
+              "silver": 2,
+              "gold": 3
+            },
+            "notes": "1 star = bronze, 2 stars = silver, 3 stars = gold."
           }
         ],
         "mission": [
@@ -5216,7 +5257,7 @@
         {
           "id": "med_objective_liberte",
           "name": "Liberté",
-          "description": "Complete the campaign: Bronze on any difficulty, Silver on Sharpshooter, Gold on Sniper Elite.",
+          "description": "Complete the campaign on any difficulty (Bronze), on Sharpshooter difficulty (Silver), and on Sniper Elite difficulty (Gold).",
           "goal": 1,
           "goal_tier": null,
           "tiers": {
@@ -5224,7 +5265,7 @@
             "silver": null,
             "gold": null
           },
-          "image_url": "",
+          "image_url": "/public/games/snresistance/images/medals/med_objective_liberte.jpg",
           "tier_conditions": {
             "bronze": "Any difficulty",
             "silver": "Sharpshooter difficulty",
@@ -5234,7 +5275,7 @@
         {
           "id": "med_objective_cr_me_de_la_cr_me",
           "name": "Crème de la Crème",
-          "description": "Complete the entire campaign on Authentic difficulty.",
+          "description": "Complete the entire Campaign on authentic difficulty.",
           "goal": 1,
           "goal_tier": null,
           "tiers": {
@@ -5242,7 +5283,7 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_objective_cr_me_de_la_cr_me.jpg"
         },
         {
           "id": "med_objective_full_english",
@@ -5255,7 +5296,12 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_objective_full_english.jpg",
+          "tier_goals": {
+            "bronze": null,
+            "silver": null,
+            "gold": 11
+          }
         }
       ],
       "propaganda": [
