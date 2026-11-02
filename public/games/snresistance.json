@@ -3711,7 +3711,7 @@
     "mission_10_dlc": {
       "number": 10,
       "title": "Target Führer: Lights, Camera, ACHTUNG!",
-      "region": "Bavarian Film Compound (DLC)",
+      "region": "Ville du Lac Film Studios (DLC)",
       "walkthrough": "Infiltrate movie set estate, identify real Führer among doubles, eliminate Hitler, exfiltrate undetected.",
       "image_url": "",
       "collectibles": {
@@ -3766,20 +3766,22 @@
           {
             "id": "doc_m10_01",
             "name": "Set Inspections",
-            "location": "Shown in the guide video at 0:00.",
+            "location": "In the safe on top of the west lookout tower. Open it with the West Lookout Tower Safe Key, or blow it up.",
             "image_url": "/public/games/snresistance/images/icons/classified-document.png",
             "video_time": 0,
             "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=0s",
-            "emoji": "📜"
+            "emoji": "📜",
+            "location_image_url": "/public/games/snresistance/images/locations/m10/doc_m10_01.jpg"
           },
           {
             "id": "doc_m10_02",
             "name": "Food to die for!",
-            "location": "Shown in the guide video at 0:53.",
+            "location": "On a chair inside the small warehouse.",
             "image_url": "/public/games/snresistance/images/icons/classified-document.png",
             "video_time": 53,
             "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=53s",
-            "emoji": "📜"
+            "emoji": "📜",
+            "location_image_url": "/public/games/snresistance/images/locations/m10/doc_m10_02.jpg"
           },
           {
             "id": "doc_m10_03",
@@ -3852,29 +3854,32 @@
           {
             "id": "eagle_m10_01",
             "name": "Stone Eagle 1",
-            "location": "Shown in the guide video at 7:55.",
+            "location": "On the roof of the large building east of the train station.",
             "image_url": "/public/games/snresistance/images/icons/eagle.png",
             "video_time": 475,
             "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=475s",
-            "emoji": "🦅"
+            "emoji": "🦅",
+            "location_image_url": "/public/games/snresistance/images/locations/m10/eagle_m10_01.jpg"
           },
           {
             "id": "eagle_m10_02",
             "name": "Stone Eagle 2",
-            "location": "Shown in the guide video at 7:55.",
+            "location": "Sitting on the gargoyle on top of the church, facing northeast.",
             "image_url": "/public/games/snresistance/images/icons/eagle.png",
             "video_time": 475,
             "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=475s",
-            "emoji": "🦅"
+            "emoji": "🦅",
+            "location_image_url": "/public/games/snresistance/images/locations/m10/eagle_m10_02.jpg"
           },
           {
             "id": "eagle_m10_03",
             "name": "Stone Eagle 3",
-            "location": "Shown in the guide video at 7:55.",
+            "location": "On a shelf inside the large warehouse.",
             "image_url": "/public/games/snresistance/images/icons/eagle.png",
             "video_time": 475,
             "video_url": "https://www.youtube.com/watch?v=sZKnv8UU41M&t=475s",
-            "emoji": "🦅"
+            "emoji": "🦅",
+            "location_image_url": "/public/games/snresistance/images/locations/m10/eagle_m10_03.jpg"
           }
         ],
         "workbenches": [
@@ -4179,8 +4184,8 @@
           {
             "id": "med_longshot_fuhrer_long_shot",
             "name": "Führer Long Shot",
-            "description": "Take a 220 metres shot in Lights, Camera, ACHTUNG!",
-            "goal": 220,
+            "description": "Take a 300 meters shot in Lights, Camera, ACHTUNG! (the game showed 220 m for the first tier).",
+            "goal": 300,
             "goal_tier": null,
             "tiers": {
               "bronze": null,
@@ -4189,15 +4194,17 @@
             },
             "image_url": "/public/games/snresistance/images/medals/med_longshot_fuhrer_long_shot.jpg",
             "tier_goals": {
-              "bronze": null,
+              "bronze": 220,
               "silver": null,
-              "gold": 220
+              "gold": 300
             },
             "unit": "m",
             "best_shot": true,
-            "distance_m": 220,
+            "distance_m": 300,
             "authentic": false,
-            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!"
+            "source": "In-game Medals > Missions > Lights, Camera, ACHTUNG!",
+            "tip": "Gold spot: from the top of the tower, shoot the soldier patrolling around the northeastern tower on the coast (east of the \"Our VIP's Demands\" letter).",
+            "location_image_url": "/public/games/snresistance/images/locations/m10/longshot_gold.jpg"
           },
           {
             "id": "med_longshot_fuhrer_authentic_long_shot",
@@ -4261,6 +4268,12 @@
       },
       "trophies": [],
       "starting_locations": [
+        {
+          "name": "Lighthouse",
+          "default": true,
+          "description": "Default start on the southern side of Ville du Lac Film Studios; unlocked automatically.",
+          "location_image_url": "/public/games/snresistance/images/locations/m10/start_lighthouse.jpg"
+        },
         {
           "name": "Lookout Tower",
           "video_time": 71,
