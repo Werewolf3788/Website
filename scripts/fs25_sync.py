@@ -29,6 +29,7 @@ import os
 import re
 import sys
 import time
+import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
@@ -1176,6 +1177,62 @@ def build_overview(meta):
     }
 
 
+# --------------------------------------------------------------------------- farm colours (Firebase /users)
+RTDB_URL = os.environ.get("FS25_RTDB_URL") or "https://entertainment-71888-default-rtdb.firebaseio.com"
+HEX_RE = re.compile(r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
+
+
+def _rtdb_auth_query():
+    secret = (os.environ.get("FIREBASE_AUTH_SECRET") or "").strip()
+    if secret:
+        return "?auth=" + urllib.parse.quote(secret)
+    raw = (os.environ.get("GCP_SA_KEY_WEBSITE") or "").strip()
+    if raw:
+        try:
+            import base64
+            from google.oauth2 import service_account
+            from google.auth.transport.requests import Request
+            info = json.loads(raw if raw.startswith("{") else base64.b64decode(raw).decode())
+            cred = service_account.Credentials.from_service_account_info(info, scopes=[
+                "https://www.googleapis.com/auth/userinfo.email",
+                "https://www.googleapis.com/auth/firebase.database"])
+            cred.refresh(Request())
+            return "?access_token=" + urllib.parse.quote(cred.token)
+        except Exception as e:
+            log(f"Firebase service account login failed: {e}")
+    return ""
+
+
+def fetch_farm_colors(state):
+    """FS25_FARM_OPERATORS = "1=userKey,2=userKey" -> farm colours from /users/{key}/primary_color + secondary_color.
+    Only the colours are kept; the user keys are never written to the site data."""
+    spec = (os.environ.get("FS25_FARM_OPERATORS") or "").strip()
+    colors = dict(state.get("farmColors") or {})
+    if not spec:
+        return colors
+    q = _rtdb_auth_query()
+    for part in spec.split(","):
+        if "=" not in part:
+            continue
+        farm, key = (x.strip() for x in part.split("=", 1))
+        if not farm or not key:
+            continue
+        got = {}
+        for field in ("primary_color", "secondary_color"):
+            try:
+                with urllib.request.urlopen(f"{RTDB_URL}/users/{urllib.parse.quote(key)}/{field}.json{q}", timeout=15) as r:
+                    val = json.loads(r.read().decode() or "null")
+                if isinstance(val, str) and HEX_RE.match(val.strip()):
+                    got[field.split("_")[0]] = val.strip()
+            except Exception as e:
+                log(f"Farm {farm} {field}: {e}")
+        if got:
+            colors[farm] = {**colors.get(farm, {}), **got}
+            log(f"Farm {farm} colours: {colors[farm]}")
+    state["farmColors"] = colors
+    return colors
+
+
 # --------------------------------------------------------------------------- io helpers
 def read_json(path, default):
     try:
@@ -1327,6 +1384,7 @@ def main():
         "changedFiles": changed,
     }
     overview = build_overview(meta)
+    overview["farmColors"] = fetch_farm_colors(state)
 
     # Only rewrite when something other than the timestamps changed (keeps idle runs commit-free)
     volatile = ("lastCheck", "lastFull", "lastLight", "mode", "saveAgeMin", "changedFiles", "reason")

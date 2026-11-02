@@ -320,9 +320,12 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     const h = Math.floor(m / 60); if (h < 48) return h + 'h ' + (m % 60) + 'm ago';
     return Math.floor(h / 24) + 'd ago';
   };
-  const farmColor = id => FARM_COLORS[(+id || 0) % FARM_COLORS.length];
+  // Farm colours = the farm operator's profile colours (Firebase /users primary_color + secondary_color, synced by the workflow)
+  const farmTheme = id => (DATA && DATA.farmColors && DATA.farmColors[String(id)]) || {};
+  const farmColor = id => farmTheme(id).primary || FARM_COLORS[(+id || 0) % FARM_COLORS.length];
+  const farmColor2 = id => farmTheme(id).secondary || farmColor(id);
   const farmName = id => { const f = (DATA?.farms || []).find(x => x.id === id); return f?.name || (id ? 'Farm ' + id : 'Unowned'); };
-  const farmBadge = id => id ? `<span class="tag" style="color:${farmColor(id)}" title="${esc(farmName(id))}">${esc(farmName(id))}</span>` : '<span class="tag">—</span>';
+  const farmBadge = id => id ? `<span class="tag" style="color:${farmColor(id)};border-color:${farmColor2(id)};background:${farmColor2(id)}1f" title="${esc(farmName(id))}">${esc(farmName(id))}</span>` : '<span class="tag">—</span>';
 
   async function getJSON(name) {
     const bust = '?t=' + Math.floor(Date.now() / 60000);
@@ -358,7 +361,7 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
 
     const farms = (d.farms || []).filter(f => f.id);
     const kp = [
-      ...farms.slice(0, 2).map((f, i) => [f.name || 'Farm ' + f.id, short$(f.money), f.loan ? 'Loan ' + short$(f.loan) : (f.players || []).map(p => p.name).join(', '), farmColor(f.id)]),
+      ...farms.slice(0, 2).map((f, i) => [f.name || 'Farm ' + f.id, short$(f.money), f.loan ? 'Loan ' + short$(f.loan) : (f.players || []).map(p => p.name).join(', '), farmColor(f.id), farmColor2(f.id)]),
       ['Owned Land', (sum.ownedHectares ?? '--') + ' ha', `${n0(sum.ownedFields)} fields · ${n0(sum.ownedFarmlands)} farmlands`, 'var(--lime)'],
       ['Ready to Harvest', n0(sum.readyToHarvest), `${n0(sum.growing)} growing`, 'var(--amber)'],
       ['Need Lime', n0(sum.needLime), 'owned fields', '#eab308'],
@@ -366,7 +369,7 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
       ['Helpers Working', n0(sum.helpersActive), `${n0(sum.vehicles)} vehicles owned`, 'var(--violet)'],
       ['Collectibles', sum.collectibles || '--', `${n0(sum.mods)} mods`, 'var(--orange)'],
     ];
-    $('kpis').innerHTML = kp.map(([l, v, f, col]) => `<div class="kpi" style="--c:${col}"><div class="lbl">${esc(l)}</div><div class="val">${esc(v)}</div><div class="foot">${esc(f)}</div></div>`).join('');
+    $('kpis').innerHTML = kp.map(([l, v, f, col, col2]) => `<div class="kpi" style="--c:${col}${col2 ? `;border-color:${col2}` : ''}"><div class="lbl"${col2 ? ` style="color:${col}"` : ''}>${esc(l)}</div><div class="val">${esc(v)}</div><div class="foot">${esc(f)}</div></div>`).join('');
 
     [renderMap, renderFields, renderFleet, renderPlaceables, renderStock, renderSales, renderMarket,
      renderPlayers, renderWorking, renderWeather, renderDemands, renderFarms, renderTrend, renderPF, renderMissions, renderMods, renderServer, renderSync].forEach(safe);
@@ -385,13 +388,13 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     if (mapLayers.land) (DATA.farmlands || []).forEach(f => {
       if (f.x == null) return;
       const [x, y] = P(f.x, f.z), r = Math.max(6, Math.sqrt(+f.area || 1) * 6);
-      svg += `<circle cx="${x}" cy="${y}" r="${r.toFixed(1)}" fill="${f.farmId ? farmColor(f.farmId) : '#1f3a2a'}" fill-opacity="${f.farmId ? .22 : .12}" stroke="${f.farmId ? farmColor(f.farmId) : '#2b4a37'}" stroke-opacity=".7" stroke-width="1.2" data-tip="Farmland ${esc(f.id)} · ${f.farmId ? esc(farmName(f.farmId)) : 'For sale ' + money(f.price)} · ${(+f.area || 0).toFixed(2)} ha"/>`;
+      svg += `<circle cx="${x}" cy="${y}" r="${r.toFixed(1)}" fill="${f.farmId ? farmColor(f.farmId) : '#1f3a2a'}" fill-opacity="${f.farmId ? .25 : .12}" stroke="${f.farmId ? farmColor2(f.farmId) : '#2b4a37'}" stroke-opacity=".9" stroke-width="${f.farmId ? 2.5 : 1.2}" data-tip="Farmland ${esc(f.id)} · ${f.farmId ? esc(farmName(f.farmId)) : 'For sale ' + money(f.price)} · ${(+f.area || 0).toFixed(2)} ha"/>`;
     });
     if (mapLayers.fields) (DATA.fields || []).forEach(f => {
       if (f.x == null) return;
       const [x, y] = P(f.x, f.z), col = STATUS_COLOR[f.status] || '#64748b';
       svg += `<g data-tip="Field ${esc(f.id)} · ${nice(f.fruit === 'UNKNOWN' ? f.groundType : f.fruit)} · ${nice(f.status)}${f.needs.includes('lime') ? ' · needs lime' : ''}${f.isOwned ? ' · ' + esc(farmName(f.farmId)) : ''}" data-field="${esc(f.id)}" style="cursor:pointer">
-        <rect x="${x - 17}" y="${y - 12}" width="34" height="24" rx="5" fill="${col}" fill-opacity="${f.isOwned ? .9 : .35}" stroke="${f.isOwned ? '#fff' : 'none'}" stroke-opacity=".35"/>
+        <rect x="${x - 17}" y="${y - 12}" width="34" height="24" rx="5" fill="${col}" fill-opacity="${f.isOwned ? .9 : .35}" stroke="${f.isOwned ? farmColor2(f.farmId) : 'none'}" stroke-width="2.5"/>
         <text x="${x}" y="${+y + 5}" font-size="15" font-weight="700" text-anchor="middle" fill="#04110a" font-family="JetBrains Mono">${esc(f.id)}</text></g>`;
     });
     if (mapLayers.fleet) (DATA.liveVehicles || []).forEach(v => {
@@ -407,8 +410,8 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     });
     $('map').innerHTML = svg;
     $('mapLegend').innerHTML = [['#f5a623', 'Ready'], ['#22c55e', 'Growing'], ['#84cc16', 'Grass'], ['#64748b', 'Empty'],
-      ['#a78bfa', 'Helper working'], ['#38bdf8', 'Driven / player'], ...((DATA.farms || []).filter(f => f.id).map(f => [farmColor(f.id), esc(f.name) + ' land']))]
-      .map(([c, l]) => `<span><i style="background:${c}"></i>${l}</span>`).join('');
+      ['#a78bfa', 'Helper working'], ['#38bdf8', 'Driven / player'], ...((DATA.farms || []).filter(f => f.id).map(f => [farmColor(f.id), esc(f.name) + ' land', farmColor2(f.id)]))]
+      .map(([c, l, c2]) => `<span><i style="background:${c}${c2 ? `;box-shadow:0 0 0 2px ${c2}` : ''}"></i>${l}</span>`).join('');
     const tip = $('maptip'), wrap = $('mapwrap');
     $('map').onmousemove = ev => {
       const t = ev.target.closest('[data-tip]');
@@ -450,8 +453,8 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
       const pct = f.status === 'ready' || f.status === 'grass' ? 100 : f.status === 'growing' ? Math.min(92, f.growthState * 9) : 0;
       const label = f.fruit && f.fruit !== 'UNKNOWN' ? nice(f.fruit) : nice(f.groundType || 'Empty');
       const dots = [0, 1].map(k => `<i class="${f.sprayLevel > k ? 'on' : ''}"></i>`).join('');
-      return `<div class="ftile ${f.isOwned ? '' : 'unowned'} ${f.status === 'ready' ? 'ready' : ''}" data-id="${esc(f.id)}">
-        <div class="fid">#${esc(f.id)}</div>${f.isOwned ? `<span class="farm" style="color:${farmColor(f.farmId)}">${esc((farmName(f.farmId) || '').slice(0, 10))}</span>` : ''}
+      return `<div class="ftile ${f.isOwned ? '' : 'unowned'} ${f.status === 'ready' ? 'ready' : ''}" data-id="${esc(f.id)}"${f.isOwned ? ` style="border-left:4px solid ${farmColor(f.farmId)}"` : ''}>
+        <div class="fid">#${esc(f.id)}</div>${f.isOwned ? `<span class="farm" style="color:${farmColor(f.farmId)};background:${farmColor2(f.farmId)}26;border:1px solid ${farmColor2(f.farmId)}">${esc((farmName(f.farmId) || '').slice(0, 10))}</span>` : ''}
         <div class="crop">${label}</div>
         <div class="bar"><span style="width:${pct}%;background:${STATUS_COLOR[f.status]}"></span></div>
         <div class="meta"><span>${nice(f.status)}${f.status === 'growing' ? ' · st ' + f.growthState : ''}</span><span>${f.area ? (+f.area).toFixed(1) + ' ha' : ''}</span></div>
@@ -641,7 +644,7 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     $('pfTag').textContent = `${list.length} farmlands`;
     $('pf').innerHTML = `<table><thead><tr><th>Land</th><th class="num">Lime</th><th class="num">Fert.</th><th class="num">Seeds</th><th class="num">Yield</th></tr></thead><tbody>${
       list.map(r => { const t = r.totalCounter || {}; const o = owner[String(r.farmlandId)];
-        return `<tr><td class="mono" style="color:${o ? farmColor(o) : 'var(--dim)'}">#${esc(r.farmlandId)}</td><td class="num">${n0(t.usedLime)}</td>
+        return `<tr><td class="mono" style="color:${o ? farmColor(o) : 'var(--dim)'}${o ? `;border-left:3px solid ${farmColor2(o)}` : ''}">#${esc(r.farmlandId)}</td><td class="num">${n0(t.usedLime)}</td>
           <td class="num">${n0((t.usedMineralFertilizer || 0) + (t.usedLiquidFertilizer || 0))}</td><td class="num">${n0(t.usedSeeds)}</td><td class="num">${n0(t.yield)}</td></tr>`; }).join('')}</tbody></table>
       <div class="dim" style="font-size:11px;margin-top:6px">Precision Farming totals per farmland (litres; yield in litres). Coloured = owned.</div>`;
   }

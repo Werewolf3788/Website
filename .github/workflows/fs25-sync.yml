@@ -9,6 +9,7 @@
 #
 # Secrets used: FTP_HOST, FTP_PORT, FTP_USER, FTP_PASS
 # Optional secret: FS25_STATS_URL  (server "dedicated-server-stats.xml?code=..." link = exact player list)
+# Farm colours come from Firebase /users/{key}/primary_color + secondary_color (FS25_FARM_OPERATORS)
 # Optional variable: FS25_SAVE_DIR (e.g. /profile/savegame1; auto-detected when not set)
 name: FS25 Server Sync
 
@@ -46,6 +47,9 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install Firebase login helper
+        run: pip install --quiet google-auth requests
+
       - name: Pull savegame from G-Portal
         env:
           FTP_HOST: ${{ secrets.FTP_HOST }}
@@ -54,6 +58,10 @@ jobs:
           FTP_PASS: ${{ secrets.FTP_PASS }}
           FS25_STATS_URL: ${{ secrets.FS25_STATS_URL }}
           FS25_SAVE_DIR: ${{ vars.FS25_SAVE_DIR }}
+          # Farm colours: farm number = Firebase /users key of that farm's operator
+          FS25_FARM_OPERATORS: ${{ vars.FS25_FARM_OPERATORS || '1=raykevin71888_at_gmail_com,2=cartnalray9_at_gmail_com' }}
+          FIREBASE_AUTH_SECRET: ${{ secrets.FIREBASE_AUTH_SECRET }}
+          GCP_SA_KEY_WEBSITE: ${{ secrets.GCP_SA_KEY_WEBSITE }}
           FORCE_MODE: ${{ github.event.inputs.mode || (github.event_name == 'push' && 'full') || 'auto' }}
         run: python scripts/fs25_sync.py
 
