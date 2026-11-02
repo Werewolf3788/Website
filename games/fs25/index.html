@@ -879,7 +879,7 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
 </script>
 
 <!-- Sign-in (same Google login as the rest of the site). Only used to find the viewer's own farm:
-     the viewer's profile names (PSN / Xbox / Twitch / username / fs25_name) are compared with the farm
+     the viewer's profile names (PSN / Xbox / Steam name / Twitch / username / fs25_name) are compared with the farm
      members in the save. Nothing is written anywhere. -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -901,6 +901,16 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     let d = {};
     try { d = (await get(ref(db, "users/" + keyOf(u)))).val() || {}; } catch (e) { console.warn("profile", e); }
     const names = [d.fs25_name, d.psn_username, d.xbox_gamertag, d.twitch_username, d.username, u.displayName].filter(Boolean);
+    // Steam: profile stores a Steam ID / profile link -> Steam display name (what PC players show as in game)
+    try {
+      const sid = String(d.steam_id || "").trim();
+      let id64 = (sid.match(/7656119\d{10}/) || [])[0];
+      if (!id64 && sid) {
+        const custom = (sid.match(/steamcommunity\.com\/id\/([^\/?#\s]+)/i) || [])[1] || sid;
+        if (/^[A-Za-z0-9_-]{2,32}$/.test(custom)) id64 = (await get(ref(db, "steam_vanity/" + custom.toLowerCase()))).val();
+      }
+      if (id64) { const nm = (await get(ref(db, "steam_users/" + id64 + "/profile/name"))).val(); if (nm) names.push(nm); }
+    } catch (e) { /* no Steam name */ }
     window.FS25.setViewer({ names, label: d.username || d.psn_username || u.displayName || "" });
   });
 </script>

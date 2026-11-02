@@ -49,7 +49,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install Firebase login helper
-        run: pip install --quiet google-auth requests
+        run: pip install --quiet google-auth requests pillow
 
       - name: Pull savegame from G-Portal
         env:
