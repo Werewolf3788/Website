@@ -362,16 +362,41 @@ def find_save_dir(ftp, state):
 
 
 # --------------------------------------------------------------------------- player detection
+def _feed_url(kind):
+    """Build the server web-feed URL from the FS25_MAP_URL / FS25_STATS_URL secrets (never logged)."""
+    base = (os.environ.get("FS25_STATS_URL") or os.environ.get("FS25_MAP_URL") or "").strip()
+    if not base:
+        return None
+    u = urllib.parse.urlparse(base)
+    code = urllib.parse.parse_qs(u.query).get("code", [""])[0]
+    if not code:
+        return None
+    if kind == "stats":
+        return urllib.parse.urlunparse(u._replace(path="/feed/dedicated-server-stats.xml",
+                                                  query=urllib.parse.urlencode({"code": code})))
+    return urllib.parse.urlunparse(u._replace(path="/feed/dedicated-server-stats-map.jpg",
+                                              query=urllib.parse.urlencode({"code": code, "quality": 85, "size": 1024})))
+
+
+def store_live(root):
+    """Keep the live server data (players, vehicles, farmland, mods) as raw/gameStats.json."""
+    live = {root.tag: element_to_obj(root)}
+    for m in as_list(g(live, root.tag, "Mods", "Mod")):
+        if isinstance(m, dict):
+            m.pop("hash", None)
+    return write_if_changed(os.path.join(RAW_DIR, "gameStats.json"), live)
+
+
 def players_from_stats_url():
-    url = os.environ.get("FS25_STATS_URL", "").strip()
+    url = _feed_url("stats")
     if not url:
         return None
     try:
         with urllib.request.urlopen(url, timeout=20) as r:
             root = ET.fromstring(r.read())
     except Exception as e:
-        log(f"Stats feed unreachable: {e}")
-        return {"source": "stats", "reachable": False, "online": False, "names": [], "count": 0}
+        log(f"Server stats feed unreachable ({type(e).__name__}) - using FTP files instead")
+        return None
     slots = root.find("Slots")
     names = []
     if slots is not None:
@@ -383,8 +408,11 @@ def players_from_stats_url():
                     "uptimeMin": int(num(p.get("uptime"))),
                 })
     count = int(num(slots.get("numUsed"))) if slots is not None else len(names)
+    raw_changed = store_live(root)
+    log(f"Server stats feed: {count} online")
     return {
         "source": "stats",
+        "rawChanged": raw_changed,
         "reachable": True,
         "online": True,
         "serverName": root.get("name"),
@@ -394,6 +422,30 @@ def players_from_stats_url():
         "count": count,
         "names": names,
     }
+
+
+def fetch_map_image(state):
+    """Download the server's map overview once a day into games/fs25/data/map.jpg."""
+    url = _feed_url("map")
+    path = os.path.join(OUT_DIR, "map.jpg")
+    if not url:
+        return os.path.exists(path)
+    if os.path.exists(path) and time.time() - num(state.get("mapFetchedAt")) < 24 * 3600:
+        return True
+    try:
+        with urllib.request.urlopen(url, timeout=30) as r:
+            data = r.read()
+        if data[:3] != b"\xff\xd8\xff" or len(data) < 5000:
+            raise ValueError("not a JPEG")
+        old = open(path, "rb").read() if os.path.exists(path) else b""
+        if data != old:
+            with open(path, "wb") as f:
+                f.write(data)
+            log(f"Map image updated ({len(data) // 1024} KB)")
+        state["mapFetchedAt"] = time.time()
+    except Exception as e:
+        log(f"Map image not downloaded ({type(e).__name__}: {e})")
+    return os.path.exists(path)
 
 
 _NAME = r"['\"]?(?P<name>[^'\"\s][^'\"]{0,38}?)['\"]?"
@@ -415,11 +467,7 @@ def players_from_gamestats(ftp, save_dir):
     age = (time.time() - mtime) / 60 if mtime else None
 
     # keep the live data (positions, vehicles, farmland owners, mods) for the overview
-    live = {root.tag: element_to_obj(root)}
-    for m in as_list(g(live, root.tag, "Mods", "Mod")):
-        if isinstance(m, dict):
-            m.pop("hash", None)
-    raw_changed = write_if_changed(os.path.join(RAW_DIR, "gameStats.json"), live)
+    raw_changed = store_live(root)
 
     names, count, capacity = [], None, None
     slots = next((el for el in root.iter() if el.tag.lower() == "slots"), None)
@@ -1385,6 +1433,8 @@ def main():
     }
     overview = build_overview(meta)
     overview["farmColors"] = fetch_farm_colors(state)
+    if fetch_map_image(state):
+        overview["map"] = {"image": "map.jpg", "size": (overview.get("live") or {}).get("mapSize") or 2048}
 
     # Only rewrite when something other than the timestamps changed (keeps idle runs commit-free)
     volatile = ("lastCheck", "lastFull", "lastLight", "mode", "saveAgeMin", "changedFiles", "reason")

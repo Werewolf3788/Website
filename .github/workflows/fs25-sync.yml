@@ -8,6 +8,7 @@
 # when the data did not change, so an empty, paused server costs almost nothing.
 #
 # Secrets used: FTP_HOST, FTP_PORT, FTP_USER, FTP_PASS
+# Optional secret: FS25_MAP_URL   (server "dedicated-server-stats-map.jpg?code=..." link = map background + live stats feed)
 # Optional secret: FS25_STATS_URL  (server "dedicated-server-stats.xml?code=..." link = exact player list)
 # Farm colours come from Firebase /users/{key}/primary_color + secondary_color (FS25_FARM_OPERATORS)
 # Optional variable: FS25_SAVE_DIR (e.g. /profile/savegame1; auto-detected when not set)
@@ -57,6 +58,7 @@ jobs:
           FTP_USER: ${{ secrets.FTP_USER }}
           FTP_PASS: ${{ secrets.FTP_PASS }}
           FS25_STATS_URL: ${{ secrets.FS25_STATS_URL }}
+          FS25_MAP_URL: ${{ secrets.FS25_MAP_URL }}
           FS25_SAVE_DIR: ${{ vars.FS25_SAVE_DIR }}
           # Farm colours: farm number = Firebase /users key of that farm's operator
           FS25_FARM_OPERATORS: ${{ vars.FS25_FARM_OPERATORS || '1=raykevin71888_at_gmail_com,2=cartnalray9_at_gmail_com' }}
