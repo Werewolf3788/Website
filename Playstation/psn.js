@@ -688,11 +688,14 @@ async function mirrorToKevinDb() {
         for (const [id, card] of Object.entries(src)) {
             if (!card || typeof card !== "object") continue;
             const hash = crypto.createHash("sha1").update(JSON.stringify(card)).digest("hex").slice(0, 16);
-            // write to the key the site already uses (e.g. "wildhorse_spirit"), plus the exact PSN id
-            const keys = new Set([id, ...dstKeys.filter((k) => k.toLowerCase() === id.toLowerCase())]);
-            for (const k of keys) {
-                if (dst[k] && dst[k]._mirrorHash === hash) continue;
-                await kdb.ref(`psn/gamertags/${k}`).set({ ...card, _mirrorHash: hash, _mirroredAt: nowEt() });
+            // one card per player, under the real PSN id; remove old copies that only differ in case
+            for (const k of dstKeys.filter((k) => k !== id && k.toLowerCase() === id.toLowerCase())) {
+                await kdb.ref(`psn/gamertags/${k}`).remove();
+                console.log(`[MIRROR] Removed duplicate '${k}' (real PSN ID '${id}').`);
+                wrote++;
+            }
+            if (!(dst[id] && dst[id]._mirrorHash === hash)) {
+                await kdb.ref(`psn/gamertags/${id}`).set({ ...card, _mirrorHash: hash, _mirroredAt: nowEt() });
                 wrote++;
             }
         }
@@ -2128,6 +2131,23 @@ async function executeSyncPass() {
         } else {
             console.warn("[PRUNE] Skipped: could not read Kevin's users this run.");
         }
+
+        /* Remove duplicate cards that only differ in upper/lower case from a real PSN ID
+           (e.g. an old "wildhorse_spirit" next to the real "WildHorse_Spirit") */
+        try {
+            const allTags = (await rtdbRef("gamertags").once("value")).val() || {};
+            const real = new Map();
+            for (const id of active) real.set(String(id).toLowerCase(), safeKey(id));
+            for (const k of Object.keys(allTags)) {
+                const canon = real.get(k.toLowerCase());
+                if (canon && canon !== k) {
+                    console.log(`[DEDUPE] Removing duplicate card '${k}' (real PSN ID '${canon}').`);
+                    await rtdbRef(`gamertags/${k}`).remove();
+                    delete usersByGamerTag[k];
+                    changed++;
+                }
+            }
+        } catch (e) { console.warn("[DEDUPE] skipped:", e.message); }
 
         await rtdbSet("usersByGamerTag", usersByGamerTag);
 
