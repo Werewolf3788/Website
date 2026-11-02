@@ -369,7 +369,7 @@
           {
             "id": "med_mission_file_o_facts",
             "name": "File O' Facts",
-            "description": "Recover evidence implicating Resistance members within the Library in Dead Drop.",
+            "description": "Recover Evidence implicating Resistance members within the Library in Dead Drop.",
             "goal": 1,
             "goal_tier": null,
             "tiers": {
@@ -377,7 +377,7 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_mission_file_o_facts.jpg"
           }
         ],
         "long_shot": [
@@ -792,8 +792,13 @@
               "silver": null,
               "gold": null
             },
-            "image_url": "",
-            "notes": "Typed as 0/10 but description said 109."
+            "image_url": "/public/games/snresistance/images/medals/med_mission_wing_wing_situation.jpg",
+            "notes": "Typed as 0/10 but description said 109.",
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 10
+            }
           }
         ],
         "long_shot": [
@@ -1227,7 +1232,7 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_mission_sprung_a_leak.jpg"
           }
         ],
         "long_shot": [
@@ -1653,7 +1658,7 @@
           {
             "id": "med_mission_stopping_traffic",
             "name": "Stopping Traffic",
-            "description": "Destroy trucks carrying Kleine Blume ingredients in Devil's Cauldron.",
+            "description": "Destroy Trucks carrying Kleine Blume ingredients in Devil's Cauldron.",
             "goal": 1,
             "goal_tier": null,
             "tiers": {
@@ -1661,7 +1666,7 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_mission_stopping_traffic.jpg"
           }
         ],
         "long_shot": [
@@ -2107,8 +2112,8 @@
         "mission": [
           {
             "id": "med_mission_sniper_not_so_elite",
-            "name": "Sniper Not-So-Elite",
-            "description": "Melee takedown 1 sniper in Assault on Fort Rouge.",
+            "name": "Snipers Not-So-Elite",
+            "description": "Melee takedown snipers in Assault on Fort Rouge (bronze shows 1).",
             "goal": 1,
             "goal_tier": null,
             "tiers": {
@@ -2116,7 +2121,13 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_mission_sniper_not_so_elite.jpg",
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": null
+            },
+            "notes": "Three tiers; bronze is 1 sniper. Silver and gold counts not seen yet."
           }
         ],
         "long_shot": [
@@ -2592,7 +2603,7 @@
           {
             "id": "med_mission_oh_gnome_you_don_t",
             "name": "Oh Gnome You Don't",
-            "description": "Destroy 10 gnomes in Lock, Stock and Barrels.",
+            "description": "Destroy 10 gnome(s) in Lock, Stock and Barrels.",
             "goal": 10,
             "goal_tier": null,
             "tiers": {
@@ -2600,7 +2611,12 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_mission_oh_gnome_you_don_t.jpg",
+            "tier_goals": {
+              "bronze": null,
+              "silver": null,
+              "gold": 10
+            }
           }
         ],
         "long_shot": [
@@ -3199,7 +3215,7 @@
               "silver": null,
               "gold": null
             },
-            "image_url": ""
+            "image_url": "/public/games/snresistance/images/medals/med_mission_tanks_for_nothing.jpg"
           }
         ],
         "long_shot": [
@@ -5193,7 +5209,7 @@
             "silver": null,
             "gold": null
           },
-          "image_url": ""
+          "image_url": "/public/games/snresistance/images/medals/med_mission_just_a_scratch.jpg"
         }
       ],
       "general_objective": [
