@@ -2326,16 +2326,17 @@
           {
             "id": "let_m7_02",
             "name": "Do Not Worry, Mother",
-            "location": "",
+            "location": "On the cabinet by the door in Aldo Riese's office.",
             "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
             "video_time": 80,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=80s",
-            "emoji": "✉️"
+            "emoji": "✉️",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/let_m7_02.jpg"
           },
           {
             "id": "let_m7_03",
             "name": "I Feel Uneasy",
-            "location": "Second-floor table positioned beside window.",
+            "location": "On a wooden crate by the window in the attic of the building.",
             "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
             "headline": "Something Is Going On and I Don't Know What.",
             "author": "Thomas",
@@ -2347,45 +2348,48 @@
           {
             "id": "let_m7_04",
             "name": "Everything Is Fine!",
-            "location": "",
+            "location": "In front of a large wheel inside the barn.",
             "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
             "headline": "I Love My Job, the Wine, and, with Luck, the Owner's Daughter.",
             "author": "Pierre",
             "summary": "A new vineyard worker tells his sister he's settling in and has a crush on the owner's daughter.",
             "video_time": 107,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=107s",
-            "emoji": "✉️"
+            "emoji": "✉️",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/let_m7_04.jpg"
           },
           {
             "id": "let_m7_05",
             "name": "Lying Is Necessary",
-            "location": "",
+            "location": "On a table inside the power control building.",
             "image_url": "/public/games/snresistance/images/icons/personal-letter.png",
             "headline": "Focus on Your Job, That's All We Can Do.",
             "author": "Aldric Candide",
             "summary": "A father tells his daughter Marie to keep the Nazi involvement hidden from the workers.",
             "video_time": 228,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=228s",
-            "emoji": "✉️"
+            "emoji": "✉️",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/let_m7_05.jpg"
           }
         ],
         "classified_documents": [
           {
             "id": "doc_m7_01",
             "name": "A Service Hatch",
-            "location": "Ground-floor corridor with pink walls, first door on right.",
+            "location": "On a table on the ground floor of the mansion, before you enter the underground facility.",
             "image_url": "/public/games/snresistance/images/icons/classified-document.png",
             "headline": "A New Addition to Enhance Security.",
             "author": "Hauptmann Otto Klein",
             "summary": "The dining room floor was covered over to hide access to the facility hatch.",
             "video_time": 378,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=378s",
-            "emoji": "📜"
+            "emoji": "📜",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/doc_m7_01.jpg"
           },
           {
             "id": "doc_m7_02",
             "name": "Control Room Key",
-            "location": "Subterranean basement room following downstairs path.",
+            "location": "On a table in the communication room of the underground facility (lower level).",
             "image_url": "/public/games/snresistance/images/icons/classified-document.png",
             "headline": "The Control Room's Security Is Top Priority.",
             "author": "Hochrangiger Offizier Andreas Wagner",
@@ -2397,31 +2401,34 @@
           {
             "id": "doc_m7_03",
             "name": "Rocket Fuse Setup",
-            "location": "Safe inside secondary objective bunker (satchel charge or officer key).",
+            "location": "Inside a green safe in the V1 Launch Site bunker. Blow it open or use the V1 Bunker Safe Key.",
             "image_url": "/public/games/snresistance/images/icons/classified-document.png",
             "headline": "Adjust the Rocket Fuse Properly.",
             "author": "Chefingenieur Heinrich Müller",
             "summary": "A warning that incorrectly set rocket fuses risk premature detonation.",
             "video_time": 171,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=171s",
-            "emoji": "📜"
+            "emoji": "📜",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/doc_m7_03.jpg",
+            "key_note": "Needs the V1 Bunker Safe Key (or explosives)."
           },
           {
             "id": "doc_m7_04",
             "name": "Hydraulics Concerns",
-            "location": "Bunker supply box in small utility vault.",
+            "location": "On a crate inside the bunker by the road.",
             "image_url": "/public/games/snresistance/images/icons/classified-document.png",
             "headline": "Routine Inspections Must Be Maintained",
             "author": "Chefingenieur Heinrich Müller",
             "summary": "Misset launch-ramp hydraulics could leave rockets stuck and exploding on the pad.",
             "video_time": 126,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=126s",
-            "emoji": "📜"
+            "emoji": "📜",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/doc_m7_04.jpg"
           },
           {
             "id": "doc_m7_05",
             "name": "Vulnerability Found",
-            "location": "Desk in bunker reached immediately after unlocking control room.",
+            "location": "In the second section of the underground facility, past the big metal doors you open with a lever. Go deeper; it's on a table in the room with the German officer.",
             "image_url": "/public/games/snresistance/images/icons/classified-document.png",
             "headline": "A Weak Spot Has Been Identified on the Zugwerfer.",
             "author": "Chefingenieur Heinrich Müller",
@@ -2435,7 +2442,7 @@
           {
             "id": "item_m7_01",
             "name": "Engraved Lighter",
-            "location": "Table immediately inside entrance of house.",
+            "location": "On a table in front of a radio inside the house.",
             "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
             "headline": "Choosing to Live Is Just as Important as Refusing to Die.",
             "summary": "A lighter engraved '14.02.42', a reminder of what the fight is for.",
@@ -2459,38 +2466,41 @@
           {
             "id": "item_m7_03",
             "name": "Gold Pocket Watch",
-            "location": "",
+            "location": "On a wooden table inside the house.",
             "image_url": "/public/games/snresistance/images/icons/hidden-item.png",
             "headline": "A Lost Family Heirloom, Memory, and Life.",
             "summary": "An ornate, worn pocket watch, likely a family heirloom lost to the war.",
             "video_time": 149,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=149s",
-            "emoji": "🏷️"
+            "emoji": "🏷️",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/item_m7_03.jpg"
           }
         ],
         "stone_eagles": [
           {
             "id": "eagle_m7_01",
             "name": "Dead-Eye Target 1",
-            "location": "Silo elevator tower pinnacle on north plateau.",
+            "location": "On the central roof of the main building in the vineyard. You can shoot it right at the mission start.",
             "image_url": "/public/games/snresistance/images/icons/eagle.png",
             "video_time": 329,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=329s",
-            "emoji": "🦅"
+            "emoji": "🦅",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/eagle_m7_01.jpg"
           },
           {
             "id": "eagle_m7_02",
             "name": "Dead-Eye Target 2",
-            "location": "Gable peak of transformer substation building.",
+            "location": "On the roof of the western windmill (about 291 m).",
             "image_url": "/public/games/snresistance/images/icons/eagle.png",
             "video_time": 329,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=329s",
-            "emoji": "🦅"
+            "emoji": "🦅",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/eagle_m7_02.jpg"
           },
           {
             "id": "eagle_m7_03",
             "name": "Dead-Eye Target 3",
-            "location": "Chimney of house located near final main objective.",
+            "location": "On top of the wooden building on the north side of Vallée Des Dieux. Reachable after going through the underground facility.",
             "image_url": "/public/games/snresistance/images/icons/eagle.png",
             "video_time": 441,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=441s",
@@ -2513,7 +2523,7 @@
           {
             "id": "wb_m7_smg",
             "name": "SMG Workbench",
-            "location": "Loft level reached via interior ladder inside storage building.",
+            "location": "In the attic of the small building. Climb the ladder inside.",
             "image_url": "/public/games/snresistance/images/icons/workbench.png",
             "description": "This workbench contained the Secondary Recoil pack.",
             "unlocks": "Secondary Recoil pack",
@@ -2524,13 +2534,14 @@
           {
             "id": "wb_m7_pistol",
             "name": "Pistol Workbench",
-            "location": "Balcony space situated directly above main bunker entrance.",
+            "location": "Upper floor of the bunker. Use the ladders outside.",
             "image_url": "/public/games/snresistance/images/icons/workbench.png",
             "description": "This workbench contained the Pistol Caliber Conversion kit.",
             "unlocks": "Pistol Caliber Conversion kit",
             "video_time": 201,
             "video_url": "https://www.youtube.com/watch?v=yV9qaBhxCuM&t=201s",
-            "emoji": "⚙️"
+            "emoji": "⚙️",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/wb_m7_pistol.jpg"
           }
         ]
       },
@@ -2540,9 +2551,10 @@
         "target_name": "Aldo Riese",
         "location": "Farmhouse on the western edge of the facility.",
         "challenge": "Kill Aldo Riese with poison.",
-        "strategy": "Acquire the poison bottle from the laboratory shelf, tamper with his designated drink cup/flask on the kitchen counter, and wait for him to drink.",
-        "reward": "M1918 BAR",
-        "image_url": ""
+        "strategy": "Grab the Poison from the table inside the barn, then poison Riese's drink (the cup on the round table in his house) and wait for him to drink it.",
+        "reward": "M1918",
+        "image_url": "/public/games/snresistance/images/locations/m7/kill_m7_drink.jpg",
+        "description": "Hauptmann Aldo Riese, among the cruellest captains this side of the Rhine, infamous for slowly poisoning his prisoners."
       },
       "propaganda_mission": {
         "id": "prop_m6",
@@ -2718,12 +2730,20 @@
       },
       "starting_locations": [
         {
+          "name": "Derelict Barn",
+          "default": true,
+          "description": "Default start on the south side of Vallée Des Dieux; unlocked automatically.",
+          "location_image_url": "/public/games/snresistance/images/locations/m7/start_derelict_barn.jpg"
+        },
+        {
           "name": "Windmill",
-          "video_time": 52
+          "video_time": 52,
+          "description": "Inside the windmill on the west side. Light the campfire at the base of the ladder to unlock it."
         },
         {
           "name": "Western Farmhouse",
-          "video_time": 269
+          "video_time": 269,
+          "description": "Behind a house on the east side of Vallée Des Dieux. Open the locked gate to unlock it."
         }
       ],
       "gnomes": {
@@ -2750,13 +2770,15 @@
             "id": "gnome_m7_02",
             "name": "Gnome 2/10",
             "video_time": 20,
-            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=20s"
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=20s",
+            "location": "Standing on a rock on a small island in the river."
           },
           {
             "id": "gnome_m7_03",
             "name": "Gnome 3/10",
             "video_time": 46,
-            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=46s"
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=46s",
+            "location": "Sitting on a rock in the pond."
           },
           {
             "id": "gnome_m7_04",
@@ -2770,37 +2792,45 @@
             "id": "gnome_m7_05",
             "name": "Gnome 5/10",
             "video_time": 87,
-            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=87s"
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=87s",
+            "location": "On the wheelbarrow near the wooden shack.",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/gnome_m7_05.jpg"
           },
           {
             "id": "gnome_m7_06",
             "name": "Gnome 6/10",
             "video_time": 107,
-            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=107s"
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=107s",
+            "location": "Watching the road through a hole in the roof of the building near the Kill List target (about 49 m).",
+            "location_image_url": "/public/games/snresistance/images/locations/m7/gnome_m7_06.jpg"
           },
           {
             "id": "gnome_m7_07",
             "name": "Gnome 7/10",
             "video_time": 129,
-            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=129s"
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=129s",
+            "location": "On a barrel under an apple tree."
           },
           {
             "id": "gnome_m7_08",
             "name": "Gnome 8/10",
             "video_time": 150,
-            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=150s"
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=150s",
+            "location": "Hiding between the flowers in the small garden behind the big vineyard villa."
           },
           {
             "id": "gnome_m7_09",
             "name": "Gnome 9/10",
             "video_time": 172,
-            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=172s"
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=172s",
+            "location": "In the split tree in the middle of the round garden southeast of the vineyard villa."
           },
           {
             "id": "gnome_m7_10",
             "name": "Gnome 10/10",
             "video_time": 196,
-            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=196s"
+            "video_url": "https://www.youtube.com/watch?v=0aqjyWIT4uA&t=196s",
+            "location": "In the corner of a tomato planter, north of the SMG Workbench."
           }
         ],
         "numbering_note": "Gnome numbers follow MapMaster. Trophy Tom's video may find them in a different order, so a card's 'Watch guide' timestamp can show a different gnome."
@@ -2809,12 +2839,72 @@
         "Locate the last remaining Kleine Blume warheads — Locate the underground facility"
       ],
       "optional_objectives": [
-        "Eliminate the Elite Snipers — Neutralize Elite Snipers (3)",
-        "Destroy the V1 Launch Site — Sabotage the Site (2)"
+        "Eliminate the Elite Snipers — an elite sniper unit guards the vineyard. Neutralize Elite Snipers (3).",
+        "Destroy the V1 Launch Site — a fully working V1 launch site is hidden in the vineyard. Sabotage the Site (2)."
       ],
       "kill_target": "Aldo Riese",
       "objectives_source": "In-game pause map (user screenshot); main objective list grows as the mission goes on.",
-      "completion_trophy": 7
+      "completion_trophy": 7,
+      "points_of_interest": [
+        {
+          "id": "poi_m7_elite_sniper_1",
+          "type": "Elite Sniper",
+          "name": "Elite Sniper #1",
+          "location": "Top of the windmill. Counts toward Eliminate the Elite Snipers.",
+          "location_image_url": "/public/games/snresistance/images/locations/m7/extra_m7_elite_sniper_1.jpg"
+        },
+        {
+          "id": "poi_m7_elite_sniper_2",
+          "type": "Elite Sniper",
+          "name": "Elite Sniper #2",
+          "location": "Location not recorded yet."
+        },
+        {
+          "id": "poi_m7_elite_sniper_3",
+          "type": "Elite Sniper",
+          "name": "Elite Sniper #3",
+          "location": "Top of the watchtower. Counts toward Eliminate the Elite Snipers."
+        },
+        {
+          "id": "poi_m7_sabotage_v1_1",
+          "type": "Objective",
+          "name": "Sabotage V1 (1/2)",
+          "location": "Interact with the V1 to sabotage it (Destroy the V1 Launch Site)."
+        },
+        {
+          "id": "poi_m7_sabotage_v1_2",
+          "type": "Objective",
+          "name": "Sabotage V1 (2/2)",
+          "location": "Second sabotage point. Location not recorded yet."
+        },
+        {
+          "id": "poi_m7_poison",
+          "type": "Kill challenge item",
+          "name": "Poison",
+          "location": "On the table inside the barn. Used for Aldo Riese's kill challenge.",
+          "location_image_url": "/public/games/snresistance/images/locations/m7/extra_m7_poison.jpg"
+        },
+        {
+          "id": "poi_m7_v1_safe_key",
+          "type": "Key",
+          "name": "V1 Bunker Safe Key",
+          "location": "Loot it from the Nazi officer patrolling in and around the V1 Bunker. Opens the safe with Rocket Fuse Setup.",
+          "location_image_url": "/public/games/snresistance/images/locations/m7/extra_m7_v1_safe_key.jpg"
+        },
+        {
+          "id": "poi_m7_control_room_key",
+          "type": "Key",
+          "name": "Control Room Key",
+          "location": "Carried by a Nazi officer patrolling inside the mansion. Opens the Control Room in the underground facility.",
+          "location_image_url": "/public/games/snresistance/images/locations/m7/extra_m7_control_room_key.jpg"
+        },
+        {
+          "id": "poi_m7_bolt_cutters",
+          "type": "Tool",
+          "name": "Bolt Cutters",
+          "location": "Ground floor of the windmill, right next to the campfire."
+        }
+      ]
     },
     "mission_8": {
       "number": 8,

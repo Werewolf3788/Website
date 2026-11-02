@@ -766,7 +766,7 @@ function updateGameMetrics() {
         boxes.push(box('Species Harvested', `${species.size}/${totalSpecies}`, `${toArr(st.watchlist).length} on watchlist`));
         boxes.push(box(`Level ${w.level || 1}`, `${fmtNum(w.credits)} cr`, (w.xpNext || xpNeededFor(w.level)) ? `${fmtNum(w.xp)}/${fmtNum(w.xpNext || xpNeededFor(w.level))} XP` : `${fmtNum(w.xp)} XP`));
     } else {
-        const cards = [...document.querySelectorAll('#section-container .game-item-card')].filter(c => !/^(wpn_|gnome_)/.test(String(c.getAttribute('data-id'))));
+        const cards = [...document.querySelectorAll('#section-container .game-item-card')].filter(c => !/^(wpn_|gnome_|poi_)/.test(String(c.getAttribute('data-id'))));
         if (!cards.length) { if (grid.innerHTML !== grid.dataset.original) grid.innerHTML = grid.dataset.original; return; }
         const of = (type) => cards.filter(c => c.getAttribute('data-type') === type);
         const doneOf = (list) => list.filter(c => c.classList.contains('completed')).length;
@@ -1518,7 +1518,7 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
     const tot = m.collectible_totals;
     if (tot || m.starting_locations) {
         const rows = tot ? Object.entries(tot).filter(([k]) => k !== 'total').map(([k, v]) => `<li>${escapeHtml(COLLECTIBLE_LABELS[k] || humanize(k))}: ${v}</li>`).join('') : '';
-        detail.push(`<div><h4>Collectibles${tot && tot.total ? ` (${tot.total})` : ''}</h4>${rows ? `<ul>${rows}</ul>` : ''}${m.starting_locations ? `<p>Starting locations: ${typeof m.starting_locations === 'string' || typeof m.starting_locations === 'number' ? escapeHtml(String(m.starting_locations)) : toArr(m.starting_locations).map(sl => { const n = escapeHtml(sl.name || String(sl)); const v = m.guide_video && m.guide_video.video_id && sl.video_time !== undefined ? `https://www.youtube.com/watch?v=${m.guide_video.video_id}&t=${sl.video_time}s` : ''; return v ? `<a href="${escapeHtml(v)}" target="_blank" rel="noopener">${n}</a>` : n; }).join(', ')}</p>` : ''}</div>`);
+        detail.push(`<div><h4>Collectibles${tot && tot.total ? ` (${tot.total})` : ''}</h4>${rows ? `<ul>${rows}</ul>` : ''}${m.starting_locations ? (toArr(m.starting_locations).some(sl => sl && sl.description) ? `<h4 style="margin-top:8px;">Starting Locations</h4><ul>${toArr(m.starting_locations).map(sl => { const v = m.guide_video && m.guide_video.video_id && sl.video_time !== undefined ? `https://www.youtube.com/watch?v=${m.guide_video.video_id}&t=${sl.video_time}s` : ''; return `<li><strong>${v ? `<a href="${escapeHtml(v)}" target="_blank" rel="noopener">${escapeHtml(sl.name)}</a>` : escapeHtml(sl.name)}</strong>${sl.default ? ' (default)' : ''}${sl.description ? ` — ${escapeHtml(sl.description)}` : ''}${sl.location_image_url ? `<br><img src="${escapeHtml(toSecureUrl(sl.location_image_url))}" class="loc-photo" style="max-width:420px" loading="lazy" alt="">` : ''}</li>`; }).join('')}</ul>` : `<p>Starting locations: ${typeof m.starting_locations === 'string' || typeof m.starting_locations === 'number' ? escapeHtml(String(m.starting_locations)) : toArr(m.starting_locations).map(sl => { const n = escapeHtml(sl.name || String(sl)); const v = m.guide_video && m.guide_video.video_id && sl.video_time !== undefined ? `https://www.youtube.com/watch?v=${m.guide_video.video_id}&t=${sl.video_time}s` : ''; return v ? `<a href="${escapeHtml(v)}" target="_blank" rel="noopener">${n}</a>` : n; }).join(', ')}</p>`) : ''}</div>`);
     }
     if (detail.length) inner = (m.image_url ? `<img class="mission-hero" src="${toSecureUrl(m.image_url)}" alt="" loading="lazy" onerror="this.remove()">` : '') + `<div class="mission-detail">${detail.join('')}</div>` + inner;
 
@@ -1539,7 +1539,7 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
         const body = [kc.location, kc.strategy, kc.reward ? `Reward: ${kc.reward}` : ''].filter(Boolean).join(' ');
         chCards.push(buildItemCard({
             id: `kill_${mKey}`, type: 'mission', badge: 'Kill List', badgeClass: 'rank-silver',
-            title: kc.target_name, sub: kc.challenge, body, img: kc.image_url, ctx
+            title: kc.target_name, sub: kc.challenge, body: [kc.description, body].filter(Boolean).join(' '), locImg: kc.image_url, ctx
         }));
     }
     const pm = m.propaganda_mission;
@@ -1550,6 +1550,9 @@ function renderMissionBlock(mKey, m, placedTrophyKeys) {
         }));
     }
     if (chCards.length) inner += buildFolder('🎯 Challenges', gridOf(chCards));
+    if (toArr(m.points_of_interest).length) inner += buildFolder('📍 Other Spots (snipers, keys, tools)', gridOf(toArr(m.points_of_interest).map(pt => buildItemCard({
+        id: pt.id, type: 'mission', badge: pt.type || 'Spot', badgeClass: 'rank-silver', title: pt.name, sub: pt.location || '', ctx: `${ctx} spot`, locImg: pt.location_image_url
+    }))));
     if (m.medals && typeof m.medals === 'object') {
         const mh = renderTree(m.medals, medalCard, []);
         if (mh) inner += buildFolder('🏅 Medals', mh);
