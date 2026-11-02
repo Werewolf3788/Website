@@ -840,10 +840,14 @@ def field_status(f):
     if gt == "GRASS" or fruit in ("MEADOW", "GRASS"):
         return "grass"
     if fruit != "UNKNOWN" and num(f.get("growthState")) > 0:
-        if gt in ("HARVESTED", "STUBBLE_TILLAGE") or "HARVESTED" in gt:
+        if "HARVESTED" in gt or gt in ("STUBBLE_TILLAGE", "STUBBLE"):
             return "harvested"
         return "growing"
     return "empty"
+
+
+SOWN_GROUND = ("SOWN", "DIRECT_SOWN", "RIDGE_SOWN", "PLANTED", "ROLLER_LINES")
+READY_TO_SOW_GROUND = ("CULTIVATED", "PLOWED", "SEEDBED", "ROLLED_SEEDBED", "RIDGE")
 
 
 def build_fields(fd, farmlands, career, live):
@@ -868,7 +872,22 @@ def build_fields(fd, farmlands, career, live):
         weeds = int(num(f.get("weedState")))
         stones = int(num(f.get("stoneLevel")))
         status = field_status(f)
+        gt = str(f.get("groundType") or "").upper()
+        roller = int(num(f.get("rollerLevel")))
+        mulch = int(num(f.get("stubbleShredLevel")))
+        # Field jobs, in the order they're usually done
         needs = []
+        if status == "ready":
+            needs.append("harvest")
+        if status == "harvested" and mulch == 0:
+            needs.append("mulch")
+        if status == "harvested" or (status == "empty" and gt not in READY_TO_SOW_GROUND):
+            needs.append("cultivate")
+        if status == "empty" and gt in READY_TO_SOW_GROUND:
+            needs.append("sow")
+        if roller == 0 and (gt in SOWN_GROUND or (status == "growing" and int(num(f.get("growthState"))) <= 2)) \
+                and status not in ("ready", "grass"):
+            needs.append("roll")
         if lime_on and lime == 0:
             needs.append("lime")
         if spray < 2 and status in ("growing", "empty"):
@@ -877,6 +896,7 @@ def build_fields(fd, farmlands, career, live):
             needs.append("plow")
         if weeds_on and weeds > 0:
             needs.append("weeds")
+            needs.append("weeder" if weeds <= 2 else "herbicide")
         if stones_on and stones > 0:
             needs.append("stones")
         out.append({
@@ -1430,6 +1450,12 @@ def build_overview(meta):
         "readyToHarvest": sum(1 for f in owned if f["status"] == "ready"),
         "growing": sum(1 for f in owned if f["status"] == "growing"),
         "needLime": sum(1 for f in owned if "lime" in f["needs"]),
+        "jobs": {k: sum(1 for f in owned if k in f["needs"]) for k in
+                 ("harvest", "mulch", "cultivate", "sow", "roll", "lime", "fertilizer", "plow", "weeds", "stones")},
+        "jobsOff": [k for k, on in (("weeds", (career.get("settings") or {}).get("weedsEnabled", True) is not False),
+                                    ("stones", (career.get("settings") or {}).get("stonesEnabled", True) is not False),
+                                    ("plow", (career.get("settings") or {}).get("plowingRequiredEnabled", True) is not False),
+                                    ("lime", (career.get("settings") or {}).get("limeRequired", True) is not False)) if not on],
         "needFertilizer": sum(1 for f in owned if "fertilizer" in f["needs"]),
         "needPlow": sum(1 for f in owned if "plow" in f["needs"]),
         "weeds": sum(1 for f in owned if "weeds" in f["needs"]),
