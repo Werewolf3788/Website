@@ -1,20 +1,16 @@
 {
  "economy": {
   "greatDemands": {
-   "greatDemand": [
-    null,
-    null,
-    {
-     "uniqueId": "preplaced_farmersMarketUS_9dba29add72dedb3e0bdaf3ef9d90ad9",
-     "fillTypeName": "HAY_PELLETS",
-     "demandMultiplier": 1.3,
-     "demandStartDay": 81,
-     "demandStartHour": 10,
-     "demandDuration": 18,
-     "isRunning": false,
-     "isValid": true
-    }
-   ]
+   "greatDemand": {
+    "uniqueId": "preplaced_farmersMarketUS_9dba29add72dedb3e0bdaf3ef9d90ad9",
+    "fillTypeName": "HAY_PELLETS",
+    "demandMultiplier": 1.3,
+    "demandStartDay": 81,
+    "demandStartHour": 10,
+    "demandDuration": 18,
+    "isRunning": false,
+    "isValid": true
+   }
   },
   "fillTypes": {
    "fillType": [
@@ -215,7 +211,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 784
+        "#text": 785
        },
        {
         "period": "EARLY_AUTUMN",
@@ -326,7 +322,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1006
+        "#text": 1010
        },
        {
         "period": "EARLY_AUTUMN",
@@ -382,7 +378,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1268
+        "#text": 1261
        },
        {
         "period": "EARLY_AUTUMN",
@@ -438,7 +434,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 550
+        "#text": 548
        },
        {
         "period": "EARLY_AUTUMN",
@@ -769,7 +765,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1673
+        "#text": 1671
        },
        {
         "period": "EARLY_AUTUMN",
@@ -825,7 +821,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 692
+        "#text": 691
        },
        {
         "period": "EARLY_AUTUMN",
@@ -881,7 +877,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1437
+        "#text": 1436
        },
        {
         "period": "EARLY_AUTUMN",
@@ -1046,7 +1042,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 287
+        "#text": 286
        },
        {
         "period": "EARLY_AUTUMN",
@@ -1211,7 +1207,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 172
+        "#text": 173
        },
        {
         "period": "EARLY_AUTUMN",
@@ -1462,6 +1458,7 @@
     },
     {
      "fillType": "GRASS_WINDROW",
+     "totalAmount": 73618,
      "history": {
       "period": [
        {
@@ -1983,7 +1980,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 691
+        "#text": 689
        },
        {
         "period": "EARLY_AUTUMN",
@@ -2038,7 +2035,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 757
+        "#text": 755
        },
        {
         "period": "EARLY_AUTUMN",
@@ -2094,7 +2091,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 677
+        "#text": 676
        },
        {
         "period": "EARLY_AUTUMN",
@@ -2150,7 +2147,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 2698
+        "#text": 2700
        },
        {
         "period": "EARLY_AUTUMN",
@@ -2206,7 +2203,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 3392
+        "#text": 3397
        },
        {
         "period": "EARLY_AUTUMN",
@@ -2261,7 +2258,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 840
+        "#text": 838
        },
        {
         "period": "EARLY_AUTUMN",
@@ -2317,7 +2314,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1052
+        "#text": 1051
        },
        {
         "period": "EARLY_AUTUMN",
@@ -2372,7 +2369,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 779
+        "#text": 780
        },
        {
         "period": "EARLY_AUTUMN",
@@ -2482,7 +2479,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 973
+        "#text": 971
        },
        {
         "period": "EARLY_AUTUMN",
@@ -2537,7 +2534,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 487
+        "#text": 486
        },
        {
         "period": "EARLY_AUTUMN",
@@ -2703,7 +2700,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 347
+        "#text": 346
        },
        {
         "period": "EARLY_AUTUMN",
@@ -2813,7 +2810,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 444
+        "#text": 443
        },
        {
         "period": "EARLY_AUTUMN",
@@ -2923,7 +2920,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 851
+        "#text": 849
        },
        {
         "period": "EARLY_AUTUMN",
@@ -2978,7 +2975,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1338
+        "#text": 1337
        },
        {
         "period": "EARLY_AUTUMN",
@@ -3033,7 +3030,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1945
+        "#text": 1947
        },
        {
         "period": "EARLY_AUTUMN",
@@ -3088,7 +3085,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 2911
+        "#text": 2906
        },
        {
         "period": "EARLY_AUTUMN",
@@ -3143,7 +3140,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 4957
+        "#text": 4963
        },
        {
         "period": "EARLY_AUTUMN",
@@ -3199,7 +3196,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 554
+        "#text": 556
        },
        {
         "period": "EARLY_AUTUMN",
@@ -3310,7 +3307,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1355
+        "#text": 1353
        },
        {
         "period": "EARLY_AUTUMN",
@@ -3366,7 +3363,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 3134
+        "#text": 3144
        },
        {
         "period": "EARLY_AUTUMN",
@@ -3422,7 +3419,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 551
+        "#text": 552
        },
        {
         "period": "EARLY_AUTUMN",
@@ -3477,7 +3474,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 2023
+        "#text": 2025
        },
        {
         "period": "EARLY_AUTUMN",
@@ -3532,7 +3529,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 2406
+        "#text": 2410
        },
        {
         "period": "EARLY_AUTUMN",
@@ -3588,7 +3585,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1074
+        "#text": 1077
        },
        {
         "period": "EARLY_AUTUMN",
@@ -3643,7 +3640,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1732
+        "#text": 1736
        },
        {
         "period": "EARLY_AUTUMN",
@@ -3698,7 +3695,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 7157
+        "#text": 7171
        },
        {
         "period": "EARLY_AUTUMN",
@@ -3753,7 +3750,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1680
+        "#text": 1684
        },
        {
         "period": "EARLY_AUTUMN",
@@ -3808,7 +3805,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1824
+        "#text": 1828
        },
        {
         "period": "EARLY_AUTUMN",
@@ -3918,7 +3915,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1553
+        "#text": 1552
        },
        {
         "period": "EARLY_AUTUMN",
@@ -3973,7 +3970,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 655
+        "#text": 653
        },
        {
         "period": "EARLY_AUTUMN",
@@ -4193,7 +4190,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1553
+        "#text": 1555
        },
        {
         "period": "EARLY_AUTUMN",
@@ -4248,7 +4245,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 944
+        "#text": 945
        },
        {
         "period": "EARLY_AUTUMN",
@@ -4303,7 +4300,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 882
+        "#text": 883
        },
        {
         "period": "EARLY_AUTUMN",
@@ -4524,7 +4521,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 3581
+        "#text": 3570
        },
        {
         "period": "EARLY_AUTUMN",
@@ -4579,7 +4576,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 7707
+        "#text": 7679
        },
        {
         "period": "EARLY_AUTUMN",
@@ -4690,7 +4687,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 3864
+        "#text": 3851
        },
        {
         "period": "EARLY_AUTUMN",
@@ -4800,7 +4797,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 2897
+        "#text": 2898
        },
        {
         "period": "EARLY_AUTUMN",
@@ -4855,7 +4852,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 3176
+        "#text": 3174
        },
        {
         "period": "EARLY_AUTUMN",
@@ -5075,7 +5072,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1782
+        "#text": 1788
        },
        {
         "period": "EARLY_AUTUMN",
@@ -5130,7 +5127,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1440
+        "#text": 1444
        },
        {
         "period": "EARLY_AUTUMN",
@@ -5185,7 +5182,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 2505
+        "#text": 2501
        },
        {
         "period": "EARLY_AUTUMN",
@@ -5240,7 +5237,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1800
+        "#text": 1798
        },
        {
         "period": "EARLY_AUTUMN",
@@ -5295,7 +5292,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1639
+        "#text": 1643
        },
        {
         "period": "EARLY_AUTUMN",
@@ -5350,7 +5347,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1641
+        "#text": 1643
        },
        {
         "period": "EARLY_AUTUMN",
@@ -5460,7 +5457,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1797
+        "#text": 1795
        },
        {
         "period": "EARLY_AUTUMN",
@@ -5515,7 +5512,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1703
+        "#text": 1702
        },
        {
         "period": "EARLY_AUTUMN",
@@ -5625,7 +5622,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1587
+        "#text": 1585
        },
        {
         "period": "EARLY_AUTUMN",
@@ -5680,7 +5677,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 5082
+        "#text": 5079
        },
        {
         "period": "EARLY_AUTUMN",
@@ -5790,7 +5787,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1580
+        "#text": 1579
        },
        {
         "period": "EARLY_AUTUMN",
@@ -5900,7 +5897,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1892
+        "#text": 1894
        },
        {
         "period": "EARLY_AUTUMN",
@@ -5955,7 +5952,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1466
+        "#text": 1464
        },
        {
         "period": "EARLY_AUTUMN",
@@ -6010,7 +6007,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 2742
+        "#text": 2743
        },
        {
         "period": "EARLY_AUTUMN",
@@ -6041,7 +6038,7 @@
     },
     {
      "fillType": "SEEDS",
-     "totalAmount": 100627,
+     "totalAmount": 120626,
      "history": {
       "period": [
        {
@@ -6066,7 +6063,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 638
+        "#text": 637
        },
        {
         "period": "EARLY_AUTUMN",
@@ -6782,7 +6779,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1505
+        "#text": 1503
        },
        {
         "period": "EARLY_AUTUMN",
@@ -6947,7 +6944,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 353
+        "#text": 352
        },
        {
         "period": "EARLY_AUTUMN",
@@ -7717,7 +7714,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1000
+        "#text": 998
        },
        {
         "period": "EARLY_AUTUMN",
@@ -7772,7 +7769,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1013
+        "#text": 1014
        },
        {
         "period": "EARLY_AUTUMN",
@@ -7827,7 +7824,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1008
+        "#text": 1010
        },
        {
         "period": "EARLY_AUTUMN",
@@ -7882,7 +7879,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 3316
+        "#text": 3317
        },
        {
         "period": "EARLY_AUTUMN",
@@ -7993,7 +7990,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1202
+        "#text": 1203
        },
        {
         "period": "EARLY_AUTUMN",
@@ -8048,7 +8045,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1403
+        "#text": 1404
        },
        {
         "period": "EARLY_AUTUMN",
@@ -8213,7 +8210,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1206
+        "#text": 1208
        },
        {
         "period": "EARLY_AUTUMN",
@@ -8323,7 +8320,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 1206
+        "#text": 1207
        },
        {
         "period": "EARLY_AUTUMN",
@@ -8873,7 +8870,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 4892221
+        "#text": 4888966
        },
        {
         "period": "EARLY_AUTUMN",
@@ -8928,7 +8925,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 4956429
+        "#text": 4971645
        },
        {
         "period": "EARLY_AUTUMN",
@@ -8983,7 +8980,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 4916760
+        "#text": 4922776
        },
        {
         "period": "EARLY_AUTUMN",
@@ -9038,7 +9035,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 4940628
+        "#text": 4943783
        },
        {
         "period": "EARLY_AUTUMN",
@@ -9258,7 +9255,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 3994744
+        "#text": 4001720
        },
        {
         "period": "EARLY_AUTUMN",
@@ -9313,7 +9310,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 4051413
+        "#text": 4050938
        },
        {
         "period": "EARLY_AUTUMN",
@@ -9368,7 +9365,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 3966971
+        "#text": 3974353
        },
        {
         "period": "EARLY_AUTUMN",
@@ -9423,7 +9420,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 3962549
+        "#text": 3965269
        },
        {
         "period": "EARLY_AUTUMN",
@@ -9478,7 +9475,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 2972175
+        "#text": 2973198
        },
        {
         "period": "EARLY_AUTUMN",
@@ -9533,7 +9530,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 2974558
+        "#text": 2977863
        },
        {
         "period": "EARLY_AUTUMN",
@@ -9588,7 +9585,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 3049803
+        "#text": 3050977
        },
        {
         "period": "EARLY_AUTUMN",
@@ -10582,7 +10579,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 117
+        "#text": 116
        },
        {
         "period": "EARLY_AUTUMN",
@@ -12071,7 +12068,7 @@
        },
        {
         "period": "LATE_SUMMER",
-        "#text": 381
+        "#text": 380
        },
        {
         "period": "EARLY_AUTUMN",

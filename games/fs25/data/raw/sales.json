@@ -2,7 +2,7 @@
  "sales": {
   "item": [
    {
-    "timeLeft": 29,
+    "timeLeft": 27,
     "isGenerated": true,
     "xmlFilename": "data/vehicles/poettinger/servoT6000Plus/servoT6000Plus.xml",
     "age": 21,
@@ -16,7 +16,7 @@
     }
    },
    {
-    "timeLeft": 39,
+    "timeLeft": 37,
     "isGenerated": false,
     "xmlFilename": "D:/home/sid_2065238/farmingSim_2025/profile/mods/FS25_Flexicoil_ST820_MultiFunction/xml/ST_820.xml",
     "age": 47,
@@ -30,20 +30,12 @@
       "id": 1
      },
      {
-      "name": "designColor",
+      "name": "baseColor",
       "id": 1
      },
      {
-      "name": "designColor",
-      "id": "SHARED_GREY"
-     },
-     {
-      "name": "wheel",
-      "id": 1
-     },
-     {
-      "name": "workArea",
-      "id": 1
+      "name": "baseColor",
+      "id": "CASEIH_RED1"
      },
      {
       "name": "rimColor",
@@ -54,17 +46,25 @@
       "id": 2
      },
      {
-      "name": "baseColor",
+      "name": "workArea",
       "id": 1
      },
      {
-      "name": "baseColor",
-      "id": "CASEIH_RED1"
+      "name": "wheel",
+      "id": 1
+     },
+     {
+      "name": "designColor",
+      "id": 1
+     },
+     {
+      "name": "designColor",
+      "id": "SHARED_GREY"
      }
     ]
    },
    {
-    "timeLeft": 29,
+    "timeLeft": 27,
     "isGenerated": false,
     "xmlFilename": "D:/home/sid_2065238/farmingSim_2025/profile/mods/FS25_KuhnAxis402/kuhnAxis402.xml",
     "age": 14,
@@ -102,7 +102,7 @@
       "id": 4
      },
      {
-      "name": "wheel",
+      "name": "baseColor",
       "id": 1
      },
      {
@@ -118,13 +118,13 @@
       "id": 1
      },
      {
-      "name": "baseColor",
+      "name": "wheel",
       "id": 1
      }
     ]
    },
    {
-    "timeLeft": 19,
+    "timeLeft": 17,
     "isGenerated": false,
     "xmlFilename": "D:/home/sid_2065238/farmingSim_2025/profile/mods/FS25_colossusPack/tools/stationaryBaler/baleMaster.xml",
     "age": 17,
@@ -162,20 +162,24 @@
       "id": 2
      },
      {
-      "name": "baseColor",
-      "id": 1
+      "name": "wheel",
+      "id": "CONTINENTAL_DEFAULT"
+     },
+     {
+      "name": "wheel",
+      "id": "CONTINENTAL_DEFAULT2"
      },
      {
       "name": "designColor",
       "id": 1
      },
      {
-      "name": "consumable",
+      "name": "design2",
       "id": 1
      },
      {
-      "name": "designColor5",
-      "id": 2
+      "name": "consumable",
+      "id": 1
      },
      {
       "name": "designColor3",
@@ -194,21 +198,17 @@
       "id": 1
      },
      {
-      "name": "design2",
+      "name": "designColor5",
+      "id": 2
+     },
+     {
+      "name": "baseColor",
       "id": 1
-     },
-     {
-      "name": "wheel",
-      "id": "CONTINENTAL_DEFAULT"
-     },
-     {
-      "name": "wheel",
-      "id": "CONTINENTAL_DEFAULT2"
      }
     ]
    },
    {
-    "timeLeft": 22,
+    "timeLeft": 20,
     "isGenerated": false,
     "xmlFilename": "data/vehicles/kubota/seriesM8/seriesM8.xml",
     "age": 48,
@@ -230,16 +230,16 @@
       "id": 2
      },
      {
-      "name": "attacherJoint",
-      "id": 12
-     },
-     {
       "name": "cropSensor",
       "id": 1
      },
      {
       "name": "cropSensor",
       "id": 2
+     },
+     {
+      "name": "attacherJoint",
+      "id": 12
      },
      {
       "name": "motor",
@@ -264,7 +264,7 @@
     ]
    },
    {
-    "timeLeft": 30,
+    "timeLeft": 28,
     "isGenerated": false,
     "xmlFilename": "data/vehicles/kubota/seriesM8/seriesM8.xml",
     "age": 48,
@@ -286,16 +286,16 @@
       "id": 2
      },
      {
+      "name": "attacherJoint",
+      "id": 12
+     },
+     {
       "name": "cropSensor",
       "id": 1
      },
      {
       "name": "cropSensor",
       "id": 2
-     },
-     {
-      "name": "attacherJoint",
-      "id": 12
      },
      {
       "name": "motor",
@@ -312,7 +312,7 @@
     ]
    },
    {
-    "timeLeft": 28,
+    "timeLeft": 26,
     "isGenerated": true,
     "xmlFilename": "data/vehicles/krone/xDisc620Trailer/xDisc620Trailer.xml",
     "age": 14,
@@ -322,7 +322,7 @@
     "operatingTime": 33799.144531
    },
    {
-    "timeLeft": 26,
+    "timeLeft": 24,
     "isGenerated": false,
     "xmlFilename": "D:/home/sid_2065238/farmingSim_2025/profile/mods/FS25_colossusPack/tools/fert/fertSpreadUnreal.xml",
     "age": 48,
@@ -340,8 +340,12 @@
       "id": 4
      },
      {
-      "name": "baseColor",
-      "id": 1
+      "name": "wheel",
+      "id": "DEFAULT_TRELLEBORG_TM600"
+     },
+     {
+      "name": "wheel",
+      "id": "BROAD_CONTINENTAL_combineMaster"
      },
      {
       "name": "designColor7",
@@ -356,20 +360,16 @@
       "id": 3
      },
      {
+      "name": "design2",
+      "id": 1
+     },
+     {
       "name": "designColor6",
       "id": 2
      },
      {
-      "name": "designColor",
-      "id": 2
-     },
-     {
-      "name": "design16",
+      "name": "fillVolume",
       "id": 1
-     },
-     {
-      "name": "design16",
-      "id": 4
      },
      {
       "name": "designColor5",
@@ -384,12 +384,16 @@
       "id": 1
      },
      {
-      "name": "fillVolume",
+      "name": "design16",
       "id": 1
      },
      {
-      "name": "design2",
-      "id": 1
+      "name": "design16",
+      "id": 4
+     },
+     {
+      "name": "designColor",
+      "id": 2
      },
      {
       "name": "design3",
@@ -400,17 +404,13 @@
       "id": 2
      },
      {
-      "name": "wheel",
-      "id": "DEFAULT_TRELLEBORG_TM600"
-     },
-     {
-      "name": "wheel",
-      "id": "BROAD_CONTINENTAL_combineMaster"
+      "name": "baseColor",
+      "id": 1
      }
     ]
    },
    {
-    "timeLeft": 28,
+    "timeLeft": 26,
     "isGenerated": false,
     "xmlFilename": "D:/home/sid_2065238/farmingSim_2025/profile/mods/FS25_colossusPack/trailers/titanTrailer/titanTrailer.xml",
     "age": 21,
@@ -464,32 +464,8 @@
       "id": 1
      },
      {
-      "name": "wheel",
-      "id": "NARROW_CONTINENTAL_tractorMaster"
-     },
-     {
-      "name": "wheel",
-      "id": "DEFAULT_TRELLEBORG_TwinRadial"
-     },
-     {
-      "name": "fillVolume",
+      "name": "baseColor",
       "id": 1
-     },
-     {
-      "name": "design",
-      "id": 1
-     },
-     {
-      "name": "design2",
-      "id": 1
-     },
-     {
-      "name": "design2",
-      "id": 4
-     },
-     {
-      "name": "designColor6",
-      "id": 2
      },
      {
       "name": "dischargeable",
@@ -500,6 +476,26 @@
       "id": 3
      },
      {
+      "name": "design",
+      "id": 1
+     },
+     {
+      "name": "fillVolume",
+      "id": 1
+     },
+     {
+      "name": "designColor6",
+      "id": 2
+     },
+     {
+      "name": "design2",
+      "id": 1
+     },
+     {
+      "name": "design2",
+      "id": 4
+     },
+     {
       "name": "design3",
       "id": 1
      },
@@ -508,7 +504,355 @@
       "id": 2
      },
      {
+      "name": "wheel",
+      "id": "DEFAULT_TRELLEBORG_TwinRadial"
+     },
+     {
+      "name": "wheel",
+      "id": "NARROW_CONTINENTAL_tractorMaster"
+     }
+    ]
+   },
+   {
+    "timeLeft": 30,
+    "isGenerated": false,
+    "xmlFilename": "data/vehicles/johnDeere/series6R/series6RExtraLarge.xml",
+    "age": 40,
+    "price": 188568,
+    "damage": 0.082615,
+    "wear": 0.109213,
+    "operatingTime": 43649.136719,
+    "boughtConfiguration": [
+     {
+      "name": "fillUnit",
+      "id": 1
+     },
+     {
+      "name": "frontloader",
+      "id": 1
+     },
+     {
+      "name": "frontloader",
+      "id": 2
+     },
+     {
+      "name": "motor",
+      "id": 1
+     },
+     {
+      "name": "motor",
+      "id": 2
+     },
+     {
+      "name": "design",
+      "id": 1
+     },
+     {
+      "name": "design",
+      "id": 2
+     },
+     {
+      "name": "design2",
+      "id": 1
+     },
+     {
+      "name": "design2",
+      "id": 2
+     },
+     {
+      "name": "cropSensor",
+      "id": 1
+     },
+     {
+      "name": "cropSensor",
+      "id": 2
+     },
+     {
+      "name": "attacherJoint",
+      "id": 7
+     },
+     {
+      "name": "design3",
+      "id": 1
+     },
+     {
+      "name": "design3",
+      "id": 2
+     },
+     {
+      "name": "wheel",
+      "id": "DEFAULT_TRELLEBORG_TM1000"
+     },
+     {
+      "name": "wheel",
+      "id": "BROAD_WEIGHTS_MITAS_SFT"
+     }
+    ]
+   },
+   {
+    "timeLeft": 31,
+    "isGenerated": false,
+    "xmlFilename": "data/vehicles/johnDeere/series6R/series6RExtraLarge.xml",
+    "age": 40,
+    "price": 203346,
+    "damage": 0.013802,
+    "wear": 0.018621,
+    "operatingTime": 36089.683594,
+    "boughtConfiguration": [
+     {
+      "name": "fillUnit",
+      "id": 1
+     },
+     {
+      "name": "frontloader",
+      "id": 1
+     },
+     {
+      "name": "frontloader",
+      "id": 2
+     },
+     {
+      "name": "motor",
+      "id": 1
+     },
+     {
+      "name": "motor",
+      "id": 2
+     },
+     {
+      "name": "design",
+      "id": 1
+     },
+     {
+      "name": "design",
+      "id": 2
+     },
+     {
+      "name": "design2",
+      "id": 1
+     },
+     {
+      "name": "design2",
+      "id": 2
+     },
+     {
+      "name": "cropSensor",
+      "id": 1
+     },
+     {
+      "name": "cropSensor",
+      "id": 2
+     },
+     {
+      "name": "attacherJoint",
+      "id": 7
+     },
+     {
+      "name": "design3",
+      "id": 1
+     },
+     {
+      "name": "design3",
+      "id": 2
+     },
+     {
+      "name": "wheel",
+      "id": "DEFAULT_TRELLEBORG_TM1000"
+     },
+     {
+      "name": "wheel",
+      "id": "BROAD_WEIGHTS_MITAS_SFT"
+     }
+    ]
+   },
+   {
+    "timeLeft": 24,
+    "isGenerated": false,
+    "xmlFilename": "D:/home/sid_2065238/farmingSim_2025/profile/mods/FS25_Wood_autoload/xml/vehicles/timberTrailer3A_autoload.xml",
+    "age": 0,
+    "price": 70125,
+    "damage": 0.0002,
+    "wear": 0.0,
+    "operatingTime": 42.419338,
+    "boughtConfiguration": [
+     {
+      "name": "fillUnit",
+      "id": 1
+     },
+     {
+      "name": "fillUnit",
+      "id": 2
+     },
+     {
       "name": "baseColor",
+      "id": 1
+     },
+     {
+      "name": "designColor2",
+      "id": 1
+     },
+     {
+      "name": "designColor4",
+      "id": 1
+     },
+     {
+      "name": "woodContainer",
+      "id": 5
+     },
+     {
+      "name": "designColor",
+      "id": 1
+     },
+     {
+      "name": "folding",
+      "id": 1
+     },
+     {
+      "name": "design",
+      "id": 1
+     },
+     {
+      "name": "designColor3",
+      "id": 1
+     },
+     {
+      "name": "design2",
+      "id": 4
+     },
+     {
+      "name": "rimColor",
+      "id": 1
+     },
+     {
+      "name": "trailer",
+      "id": 1
+     },
+     {
+      "name": "design3",
+      "id": 2
+     },
+     {
+      "name": "wheel",
+      "id": "1_CONTINENTAL_contiHybridHD3"
+     }
+    ]
+   },
+   {
+    "timeLeft": 33,
+    "isGenerated": false,
+    "xmlFilename": "data/vehicles/johnDeere/fellerBuncher843L/fellerBuncher843L.xml",
+    "age": 0,
+    "price": 290317,
+    "damage": 4.2e-05,
+    "wear": 0.0,
+    "operatingTime": 0.0,
+    "boughtConfiguration": [
+     {
+      "name": "fillUnit",
+      "id": 1
+     },
+     {
+      "name": "motor",
+      "id": 1
+     },
+     {
+      "name": "design",
+      "id": 1
+     },
+     {
+      "name": "wheel",
+      "id": "DEFAULT_TRELLEBORG_t418"
+     }
+    ]
+   },
+   {
+    "timeLeft": 32,
+    "isGenerated": false,
+    "xmlFilename": "data/vehicles/johnDeere/harvester1270G/harvester1270G.xml",
+    "age": 0,
+    "price": 421115,
+    "damage": 0.003043,
+    "wear": 0.0,
+    "operatingTime": 489.238556,
+    "boughtConfiguration": [
+     {
+      "name": "fillUnit",
+      "id": 1
+     },
+     {
+      "name": "folding",
+      "id": 1
+     },
+     {
+      "name": "motor",
+      "id": 1
+     },
+     {
+      "name": "wheel",
+      "id": "NOKIAN_DEFAULT"
+     }
+    ]
+   },
+   {
+    "timeLeft": 26,
+    "isGenerated": false,
+    "xmlFilename": "data/vehicles/johnDeere/fellerBuncher843L/fellerBuncher843L.xml",
+    "age": 0,
+    "price": 290290,
+    "damage": 0.001208,
+    "wear": 0.0,
+    "operatingTime": 192.004333,
+    "boughtConfiguration": [
+     {
+      "name": "fillUnit",
+      "id": 1
+     },
+     {
+      "name": "motor",
+      "id": 1
+     },
+     {
+      "name": "design",
+      "id": 1
+     },
+     {
+      "name": "wheel",
+      "id": "DEFAULT_TRELLEBORG_t418"
+     }
+    ]
+   },
+   {
+    "timeLeft": 19,
+    "isGenerated": false,
+    "xmlFilename": "data/vehicles/krampe/hp20/hp20.xml",
+    "age": 0,
+    "price": 33660,
+    "damage": 0.000241,
+    "wear": 0.0,
+    "operatingTime": 37.694641,
+    "boughtConfiguration": [
+     {
+      "name": "fillUnit",
+      "id": 1
+     },
+     {
+      "name": "fillVolume",
+      "id": 1
+     },
+     {
+      "name": "baseColor",
+      "id": 1
+     },
+     {
+      "name": "trailer",
+      "id": 1
+     },
+     {
+      "name": "wheel",
+      "id": "DEFAULT_TRELLEBORG_TwinRadial"
+     },
+     {
+      "name": "designColor",
       "id": 1
      }
     ]

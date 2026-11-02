@@ -1,9 +1,9 @@
 {
  "environment": {
-  "dayTime": 849.566528,
+  "dayTime": 960.33728,
   "currentDay": 107,
   "currentMonotonicDay": 80,
-  "realHourTimer": 3038266,
+  "realHourTimer": 3592038,
   "daysPerPeriod": 2,
   "lighting": {
    "toneMapping": {
@@ -15,7 +15,7 @@
    }
   },
   "weather": {
-   "timeSinceLastRain": 0,
+   "timeSinceLastRain": 93,
    "forecast": {
     "instance": [
      {
@@ -309,7 +309,7 @@
     "height": 0.0
    },
    "ground": {
-    "wetness": 1.0
+    "wetness": 0.0
    },
    "twister": {
     "position": "0.00 0.00 0.00",

@@ -52,34 +52,6 @@
   ],
   "harvestMission": [
    {
-    "uniqueId": "mission4246a38b388490c2055cec65c0311f2b",
-    "status": "CREATED",
-    "finishState": "NONE",
-    "harvest": {
-     "fruitType": "TRITICALE",
-     "expectedLiters": 0.0,
-     "depositedLiters": 0.0,
-     "sellingStationPlaceableUniqueId": "placeablef7ffed8fe0791d301ac08e2e879bd104",
-     "unloadingStationIndex": 1
-    },
-    "info": {
-     "reward": 0,
-     "reimbursement": 0.0,
-     "completion": 0.0
-    },
-    "vehicles": {
-     "spawned": false,
-     "group": 3
-    },
-    "endDate": {
-     "endDay": 81,
-     "endDayTime": 86399999
-    },
-    "field": {
-     "id": 8
-    }
-   },
-   {
     "uniqueId": "missioneeac089a4fb19caddffa4188dc3f7bc1",
     "status": "CREATED",
     "finishState": "NONE",
@@ -276,6 +248,52 @@
    "field": {
     "id": 46
    }
+  },
+  "deadwoodMission": {
+   "uniqueId": "mission56759abd1e27900796b07407703b64b7",
+   "status": "CREATED",
+   "finishState": "NONE",
+   "spotIndex": 12,
+   "info": {
+    "reward": 750,
+    "reimbursement": 0.0,
+    "completion": 0.0
+   },
+   "vehicles": {
+    "spawned": false,
+    "group": 2
+   },
+   "endDate": {
+    "endDay": 82,
+    "endDayTime": 43200000
+   },
+   "originalTree": [
+    {
+     "splitShapePart1": 1,
+     "splitShapePart2": 2591,
+     "splitShapePart3": 0
+    },
+    {
+     "splitShapePart1": 1,
+     "splitShapePart2": 2771,
+     "splitShapePart3": 0
+    },
+    {
+     "splitShapePart1": 1,
+     "splitShapePart2": 2645,
+     "splitShapePart3": 0
+    },
+    {
+     "splitShapePart1": 1,
+     "splitShapePart2": 3074,
+     "splitShapePart3": 0
+    },
+    {
+     "splitShapePart1": 1,
+     "splitShapePart2": 2821,
+     "splitShapePart3": 0
+    }
+   ]
   }
  }
 }

@@ -18,11 +18,11 @@
   "sales.xml": null,
   "vehicles.xml": null
  },
- "lastCheck": "2026-11-02T08:15:40Z",
+ "lastCheck": "2026-11-02T10:10:58Z",
  "lastMode": "full",
- "lastFull": "2026-11-02T08:15:40Z",
+ "lastFull": "2026-11-02T10:10:58Z",
  "lastLight": null,
- "lastChange": "2026-11-02T08:15:40Z",
+ "lastChange": "2026-11-02T10:10:58Z",
  "farmColors": {
   "1": {
    "primary": "#6eda16",
@@ -32,5 +32,7 @@
    "primary": "#37ff00",
    "secondary": "#f52424"
   }
- }
+ },
+ "mapSource": "FS25_The_Rural_Farmlands_Of_Ohio.zip:440668893:None",
+ "mapFetchedAt": 1793614258.341616
 }
