@@ -2,7 +2,7 @@
  "game": "Farming Simulator 25",
  "key": "fs25",
  "sync": {
-  "mode": "full",
+  "mode": "light",
   "active": false,
   "reason": "gameStats.xml: 0 online",
   "players": {
@@ -15,10 +15,10 @@
   "serverVersion": "1.25.0.0",
   "saveDir": "/profile/savegame3",
   "saveAgeMin": null,
-  "lastCheck": "2026-11-02T11:15:07Z",
-  "lastChange": "2026-11-02T11:15:07Z",
+  "lastCheck": "2026-11-02T11:33:30Z",
+  "lastChange": "2026-11-02T11:33:30Z",
   "lastFull": "2026-11-02T11:15:07Z",
-  "lastLight": null,
+  "lastLight": "2026-11-02T11:33:30Z",
   "files": [
    "careerSavegame",
    "collectibles",
@@ -50,16 +50,8 @@
   ],
   "changedFiles": [
    "careerSavegame.xml",
-   "economy.xml",
    "environment.xml",
-   "farms.xml",
-   "handTools.xml",
-   "missions.xml",
-   "placeables.xml",
-   "players.xml",
    "precisionFarming.xml",
-   "sales.xml",
-   "vehicles.xml",
    "gameStats.xml"
   ]
  },
@@ -112,8 +104,8 @@
   "economicDifficulty": "NORMAL",
   "timeScale": 1.0,
   "autoSaveInterval": 15.0,
-  "money": 2191176129,
-  "playTimeHours": 1447.0,
+  "money": 2191174067,
+  "playTimeHours": 1447.3,
   "slotUsage": 2179,
   "settings": {
    "savegameName": "Keep Rolling rollin rollin",
@@ -177,8 +169,8 @@
   "month": "August",
   "season": "Summer",
   "year": 5,
-  "time": "17:03",
-  "minutesSinceRain": 156,
+  "time": "17:18",
+  "minutesSinceRain": 171,
   "groundWetness": 0.0,
   "snowHeight": 0.0,
   "forecast": [
@@ -358,7 +350,7 @@
   "version": "1.25.0.0",
   "mapName": "The Rural Farmlands Of Ohio",
   "mapSize": 2048,
-  "time": "17:06",
+  "time": "17:25",
   "capacity": 6,
   "numUsed": 0,
   "players": [],
@@ -1323,8 +1315,8 @@
    "name": "6R Series (230-250)",
    "category": "TRACTORSM",
    "type": "tractor",
-   "x": -235.195953,
-   "z": -563.077087,
+   "x": -253.097794,
+   "z": -675.932007,
    "fills": [
     {
      "type": "DIESEL",
@@ -1336,7 +1328,7 @@
     },
     {
      "type": "AIR",
-     "level": 4000.0
+     "level": 2350.0
     }
    ],
    "isAIActive": true,
@@ -1516,8 +1508,8 @@
    "name": "Magnum Series",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": 94.176033,
-   "z": 892.187805,
+   "x": 53.511345,
+   "z": 629.566406,
    "fills": [
     {
      "type": "DIESEL",
@@ -1529,7 +1521,7 @@
     },
     {
      "type": "AIR",
-     "level": 1560.0
+     "level": 3000.0
     }
    ],
    "isAIActive": true,
@@ -1623,8 +1615,8 @@
    "name": "1775NT Multi-planter",
    "category": "PLANTERS",
    "type": "sowingMachine",
-   "x": -235.182495,
-   "z": -570.143738,
+   "x": -253.098557,
+   "z": -667.829224,
    "fills": [
     {
      "type": "SEEDS",
@@ -1638,8 +1630,8 @@
    "name": "1775NT Multi-planter",
    "category": "PLANTERS",
    "type": "sowingMachine",
-   "x": 94.554634,
-   "z": 884.034546,
+   "x": 53.094101,
+   "z": 637.713318,
    "fills": [
     {
      "type": "SEEDS",
@@ -1807,8 +1799,8 @@
    "name": "4905 Multi-Fruit Planter",
    "category": "PLANTERS",
    "type": "fertilizingSowingMachine",
-   "x": 550.243469,
-   "z": -209.11084,
+   "x": 855.356567,
+   "z": -437.595245,
    "fills": [
     {
      "type": "SEEDS",
@@ -2604,8 +2596,8 @@
    "name": "Series 8 TTV",
    "category": "TRACTORSM",
    "type": "tractor",
-   "x": 543.905823,
-   "z": -205.636917,
+   "x": 866.199463,
+   "z": -443.522186,
    "fills": [
     {
      "type": "DIESEL",
@@ -3216,15 +3208,15 @@
     "name": "6R Series (230-250)",
     "category": "TRACTORSM",
     "farmId": null,
-    "x": -235.2,
-    "z": -563.1,
+    "x": -253.1,
+    "z": -675.9,
     "isAIActive": true,
     "controller": null,
     "fuel": null,
     "fills": [],
     "attached": [],
     "attachedTo": null,
-    "nearField": null
+    "nearField": 11
    },
    {
     "name": "Roadrunner+",
@@ -3406,8 +3398,8 @@
     "name": "Magnum Series",
     "category": "TRACTORSL",
     "farmId": null,
-    "x": 94.2,
-    "z": 892.2,
+    "x": 53.5,
+    "z": 629.6,
     "isAIActive": true,
     "controller": null,
     "fuel": null,
@@ -3503,8 +3495,8 @@
     "name": "1775NT Multi-planter",
     "category": "PLANTERS",
     "farmId": null,
-    "x": -235.2,
-    "z": -570.1,
+    "x": -253.1,
+    "z": -667.8,
     "isAIActive": false,
     "controller": null,
     "fuel": null,
@@ -3516,14 +3508,14 @@
     ],
     "attached": [],
     "attachedTo": null,
-    "nearField": null
+    "nearField": 11
    },
    {
     "name": "1775NT Multi-planter",
     "category": "PLANTERS",
     "farmId": null,
-    "x": 94.6,
-    "z": 884.0,
+    "x": 53.1,
+    "z": 637.7,
     "isAIActive": false,
     "controller": null,
     "fuel": null,
@@ -3711,8 +3703,8 @@
     "name": "4905 Multi-Fruit Planter",
     "category": "PLANTERS",
     "farmId": null,
-    "x": 550.2,
-    "z": -209.1,
+    "x": 855.4,
+    "z": -437.6,
     "isAIActive": false,
     "controller": null,
     "fuel": null,
@@ -3728,7 +3720,7 @@
     ],
     "attached": [],
     "attachedTo": null,
-    "nearField": 44
+    "nearField": 45
    },
    {
     "name": "Titan Trailer",
@@ -3859,15 +3851,15 @@
     "name": "Series 8 TTV",
     "category": "TRACTORSM",
     "farmId": null,
-    "x": 543.9,
-    "z": -205.6,
+    "x": 866.2,
+    "z": -443.5,
     "isAIActive": true,
     "controller": null,
     "fuel": null,
     "fills": [],
     "attached": [],
     "attachedTo": null,
-    "nearField": 44
+    "nearField": 45
    },
    {
     "name": "Titan Super Collect 533",
@@ -4299,15 +4291,15 @@
    "name": "6R Series (230-250)",
    "controller": null,
    "isAIActive": true,
-   "x": -235.195953,
-   "z": -563.077087
+   "x": -253.097794,
+   "z": -675.932007
   },
   {
    "name": "Magnum Series",
    "controller": null,
    "isAIActive": true,
-   "x": 94.176033,
-   "z": 892.187805
+   "x": 53.511345,
+   "z": 629.566406
   },
   {
    "name": "Series 8 TTV",
@@ -4320,8 +4312,8 @@
    "name": "Series 8 TTV",
    "controller": null,
    "isAIActive": true,
-   "x": 543.905823,
-   "z": -205.636917
+   "x": 866.199463,
+   "z": -443.522186
   }
  ],
  "stock": [
@@ -18153,19 +18145,19 @@
      "usedLiquidFertilizer": 0.0,
      "usedManure": 0.0,
      "usedLiquidManure": 0.0,
-     "usedSeeds": 8943.3,
+     "usedSeeds": 9003.3,
      "usedHerbicide": 0.0,
      "yield": 7210676.5,
      "yieldBestPrice": 2907099.8,
      "numSoilSamples": 256.0,
      "soilSampleCosts": 44800.0,
-     "usedFuel": 1534.3,
-     "vehicleCosts": 9404.3,
-     "helperCosts": 15514.5,
+     "usedFuel": 1583.0,
+     "vehicleCosts": 9617.0,
+     "helperCosts": 15829.6,
      "subsidies": 0.0,
      "usedLimeRegular": 174766.0,
      "usedMineralFertilizerRegular": 61865.1,
-     "usedSeedsRegular": 9600.7,
+     "usedSeedsRegular": 9675.6,
      "yieldRegular": 6758725.5
     },
     "periodCounter": {
@@ -18174,19 +18166,19 @@
      "usedLiquidFertilizer": 0.0,
      "usedManure": 0.0,
      "usedLiquidManure": 0.0,
-     "usedSeeds": 1238.0,
+     "usedSeeds": 1298.0,
      "usedHerbicide": 0.0,
      "yield": 3392378.0,
      "yieldBestPrice": 1157534.8,
      "numSoilSamples": 128.0,
      "soilSampleCosts": 22400.0,
-     "usedFuel": 894.8,
-     "vehicleCosts": 3402.9,
-     "helperCosts": 6620.7,
+     "usedFuel": 943.5,
+     "vehicleCosts": 3615.6,
+     "helperCosts": 6935.8,
      "subsidies": 0.0,
      "usedLimeRegular": 87555.8,
      "usedMineralFertilizerRegular": 32369.0,
-     "usedSeedsRegular": 1371.9,
+     "usedSeedsRegular": 1446.8,
      "yieldRegular": 3181750.0
     }
    },
@@ -18378,19 +18370,19 @@
      "usedLiquidFertilizer": 0.0,
      "usedManure": 0.0,
      "usedLiquidManure": 0.0,
-     "usedSeeds": 6675.9,
+     "usedSeeds": 6994.8,
      "usedHerbicide": 0.0,
      "yield": 1998389.2,
      "yieldBestPrice": 1317033.8,
      "numSoilSamples": 174.0,
      "soilSampleCosts": 30450.0,
-     "usedFuel": 1620.4,
-     "vehicleCosts": 6418.5,
-     "helperCosts": 14739.7,
+     "usedFuel": 1674.3,
+     "vehicleCosts": 6865.7,
+     "helperCosts": 15054.7,
      "subsidies": 0.0,
      "usedLimeRegular": 82624.5,
      "usedMineralFertilizerRegular": 24730.3,
-     "usedSeedsRegular": 6066.4,
+     "usedSeedsRegular": 6347.8,
      "yieldRegular": 1873807.8
     },
     "periodCounter": {
@@ -18399,19 +18391,19 @@
      "usedLiquidFertilizer": 0.0,
      "usedManure": 0.0,
      "usedLiquidManure": 0.0,
-     "usedSeeds": 2415.9,
+     "usedSeeds": 2734.8,
      "usedHerbicide": 0.0,
      "yield": 1998389.2,
      "yieldBestPrice": 1317033.8,
      "numSoilSamples": 58.0,
      "soilSampleCosts": 10150.0,
-     "usedFuel": 1177.4,
-     "vehicleCosts": 5555.4,
-     "helperCosts": 9510.6,
+     "usedFuel": 1231.3,
+     "vehicleCosts": 6002.5,
+     "helperCosts": 9825.7,
      "subsidies": 0.0,
      "usedLimeRegular": 41288.0,
      "usedMineralFertilizerRegular": 15472.7,
-     "usedSeedsRegular": 2344.6,
+     "usedSeedsRegular": 2625.9,
      "yieldRegular": 1873807.8
     }
    },
@@ -18599,44 +18591,44 @@
     "farmlandId": 39,
     "totalCounter": {
      "usedLime": 15338.6,
-     "usedMineralFertilizer": 16078.9,
+     "usedMineralFertilizer": 16084.3,
      "usedLiquidFertilizer": 0.0,
      "usedManure": 0.0,
      "usedLiquidManure": 166126.9,
-     "usedSeeds": 1346.7,
+     "usedSeeds": 1362.2,
      "usedHerbicide": 0.0,
      "yield": 3323074.5,
      "yieldBestPrice": 276647.9,
      "numSoilSamples": 174.0,
      "soilSampleCosts": 30450.0,
-     "usedFuel": 751.2,
-     "vehicleCosts": 2891.1,
-     "helperCosts": 8262.3,
+     "usedFuel": 756.1,
+     "vehicleCosts": 3046.5,
+     "helperCosts": 8577.4,
      "subsidies": 0.0,
      "usedLimeRegular": 31162.0,
-     "usedMineralFertilizerRegular": 18116.7,
-     "usedSeedsRegular": 1772.7,
+     "usedMineralFertilizerRegular": 18230.8,
+     "usedSeedsRegular": 1784.4,
      "yieldRegular": 3312869.5
     },
     "periodCounter": {
      "usedLime": 0.0,
-     "usedMineralFertilizer": 10191.4,
+     "usedMineralFertilizer": 10196.8,
      "usedLiquidFertilizer": 0.0,
      "usedManure": 0.0,
      "usedLiquidManure": 0.0,
-     "usedSeeds": 630.7,
+     "usedSeeds": 646.3,
      "usedHerbicide": 0.0,
      "yield": 1781938.9,
      "yieldBestPrice": 150074.7,
      "numSoilSamples": 58.0,
      "soilSampleCosts": 10150.0,
-     "usedFuel": 363.7,
-     "vehicleCosts": 1861.5,
-     "helperCosts": 2764.6,
+     "usedFuel": 368.6,
+     "vehicleCosts": 2016.8,
+     "helperCosts": 3079.7,
      "subsidies": 0.0,
      "usedLimeRegular": 0.0,
-     "usedMineralFertilizerRegular": 8178.8,
-     "usedSeedsRegular": 458.1,
+     "usedMineralFertilizerRegular": 8292.9,
+     "usedSeedsRegular": 469.8,
      "yieldRegular": 1780032.2
     }
    },
@@ -18825,43 +18817,43 @@
     "totalCounter": {
      "usedLime": 0.0,
      "usedMineralFertilizer": 7087.3,
-     "usedLiquidFertilizer": 9.8,
+     "usedLiquidFertilizer": 12.7,
      "usedManure": 0.0,
      "usedLiquidManure": 0.0,
-     "usedSeeds": 187.6,
+     "usedSeeds": 299.3,
      "usedHerbicide": 0.0,
      "yield": 0.0,
      "yieldBestPrice": 0.0,
      "numSoilSamples": 144.0,
      "soilSampleCosts": 25200.0,
-     "usedFuel": 47.7,
-     "vehicleCosts": 170.9,
-     "helperCosts": 791.3,
+     "usedFuel": 86.0,
+     "vehicleCosts": 281.3,
+     "helperCosts": 1106.4,
      "subsidies": 0.0,
      "usedLimeRegular": 0.0,
      "usedMineralFertilizerRegular": 5880.2,
-     "usedSeedsRegular": 84.9,
+     "usedSeedsRegular": 136.3,
      "yieldRegular": 0.0
     },
     "periodCounter": {
      "usedLime": 0.0,
      "usedMineralFertilizer": 0.0,
-     "usedLiquidFertilizer": 9.8,
+     "usedLiquidFertilizer": 12.7,
      "usedManure": 0.0,
      "usedLiquidManure": 0.0,
-     "usedSeeds": 187.6,
+     "usedSeeds": 299.3,
      "usedHerbicide": 0.0,
      "yield": 0.0,
      "yieldBestPrice": 0.0,
      "numSoilSamples": 48.0,
      "soilSampleCosts": 8400.0,
-     "usedFuel": 31.4,
-     "vehicleCosts": 109.4,
-     "helperCosts": 332.1,
+     "usedFuel": 69.7,
+     "vehicleCosts": 219.9,
+     "helperCosts": 647.2,
      "subsidies": 0.0,
      "usedLimeRegular": 0.0,
      "usedMineralFertilizerRegular": 0.0,
-     "usedSeedsRegular": 84.9,
+     "usedSeedsRegular": 136.3,
      "yieldRegular": 0.0
     }
    },
@@ -19966,10 +19958,10 @@
     },
     "tillage": {
      "totalFieldArea": 92084.0,
-     "workedAreaNone": 59056.25,
+     "workedAreaNone": 39063.0,
      "workedAreaDeep": 0.0,
      "workedAreaFlat": 0.0,
-     "workedAreaDirect": 33027.75
+     "workedAreaDirect": 53021.0
     }
    },
    "45": {
