@@ -12,13 +12,13 @@
    "source": "gameStats"
   },
   "serverName": "OneLIVIDMAN and werewolf 618",
-  "serverVersion": "1.25.0.0",
+  "serverVersion": "1.25.1.0",
   "saveDir": "/profile/savegame3",
   "saveAgeMin": null,
-  "lastCheck": "2026-11-03T17:37:17Z",
-  "lastChange": "2026-11-03T17:37:17Z",
+  "lastCheck": "2026-11-03T22:34:42Z",
+  "lastChange": "2026-11-03T22:34:42Z",
   "lastFull": "2026-11-02T11:15:07Z",
-  "lastLight": "2026-11-03T17:37:17Z",
+  "lastLight": "2026-11-03T22:34:42Z",
   "files": [
    "careerSavegame",
    "collectibles",
@@ -51,6 +51,7 @@
   "changedFiles": [
    "careerSavegame.xml",
    "environment.xml",
+   "fields.xml",
    "precisionFarming.xml",
    "gameStats.xml"
   ]
@@ -104,8 +105,8 @@
   "economicDifficulty": "NORMAL",
   "timeScale": 1.0,
   "autoSaveInterval": 15.0,
-  "money": 2191468672,
-  "playTimeHours": 1477.0,
+  "money": 2191554161,
+  "playTimeHours": 1481.5,
   "slotUsage": 2176,
   "settings": {
    "savegameName": "Keep Rolling rollin rollin",
@@ -161,33 +162,19 @@
   }
  },
  "environment": {
-  "day": 108,
-  "monotonicDay": 81,
+  "day": 109,
+  "monotonicDay": 82,
   "daysPerPeriod": 2,
-  "dayInPeriod": 2,
-  "period": "LATE_SUMMER",
-  "month": "August",
-  "season": "Summer",
+  "dayInPeriod": 1,
+  "period": "EARLY_AUTUMN",
+  "month": "September",
+  "season": "Autumn",
   "year": 5,
-  "time": "23:03",
-  "minutesSinceRain": 1957,
+  "time": "03:32",
+  "minutesSinceRain": 125,
   "groundWetness": 0.0,
   "snowHeight": 0.0,
   "forecast": [
-   {
-    "type": "SUN",
-    "season": "SUMMER",
-    "startDay": 81,
-    "startTime": "10:00",
-    "durationH": 14.0
-   },
-   {
-    "type": "RAIN",
-    "season": "AUTUMN",
-    "startDay": 82,
-    "startTime": "00:00",
-    "durationH": 1.0
-   },
    {
     "type": "CLOUDY",
     "season": "AUTUMN",
@@ -341,16 +328,30 @@
     "startDay": 88,
     "startTime": "02:00",
     "durationH": 6.0
+   },
+   {
+    "type": "SNOW",
+    "season": "WINTER",
+    "startDay": 88,
+    "startTime": "08:00",
+    "durationH": 5.0
+   },
+   {
+    "type": "SNOW",
+    "season": "WINTER",
+    "startDay": 88,
+    "startTime": "13:00",
+    "durationH": 4.0
    }
   ]
  },
  "live": {
   "serverName": "OneLIVIDMAN and werewolf 618",
   "game": "Farming Simulator 25",
-  "version": "1.25.0.0",
+  "version": "1.25.1.0",
   "mapName": "The Rural Farmlands Of Ohio",
   "mapSize": 2048,
-  "time": "23:05",
+  "time": "03:47",
   "capacity": 6,
   "numUsed": 0,
   "players": [],
@@ -1092,8 +1093,8 @@
    "name": "Invisible Roller",
    "category": "ROLLERS",
    "type": "roller",
-   "x": 384.789856,
-   "z": 673.614502,
+   "x": 384.790649,
+   "z": 673.612671,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1104,7 +1105,7 @@
    "category": "BIGBAGPALLETS",
    "type": "pallet",
    "x": 580.669983,
-   "z": 659.994934,
+   "z": 659.994995,
    "fills": [
     {
      "type": "SEEDS",
@@ -1119,8 +1120,8 @@
    "name": "Seeds",
    "category": "BIGBAGPALLETS",
    "type": "pallet",
-   "x": 572.830811,
-   "z": 649.535217,
+   "x": 572.831177,
+   "z": 649.534851,
    "fills": [
     {
      "type": "SEEDS",
@@ -1135,8 +1136,8 @@
    "name": "Invisible Roller",
    "category": "ROLLERS",
    "type": "roller",
-   "x": 731.382019,
-   "z": -158.898819,
+   "x": 731.38269,
+   "z": -158.900772,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1146,8 +1147,8 @@
    "name": "Seeds",
    "category": "BIGBAGPALLETS",
    "type": "pallet",
-   "x": 572.83197,
-   "z": 657.539978,
+   "x": 572.832031,
+   "z": 657.539917,
    "fills": [
     {
      "type": "SEEDS",
@@ -1162,8 +1163,8 @@
    "name": "Invisible Roller",
    "category": "ROLLERS",
    "type": "roller",
-   "x": -116.819313,
-   "z": -625.653992,
+   "x": -116.81929,
+   "z": -625.654053,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1174,7 +1175,7 @@
    "category": "CARS",
    "type": "woodTruck",
    "x": 535.535645,
-   "z": 682.570984,
+   "z": 682.571045,
    "fills": [
     {
      "type": "DIESEL",
@@ -1190,7 +1191,7 @@
    "category": "BALERSSQUARE",
    "type": "FS25_colossusPack.balerAI",
    "x": 513.026062,
-   "z": 928.544922,
+   "z": 928.544861,
    "fills": [
     {
      "type": "STRAW",
@@ -1209,7 +1210,7 @@
    "name": "Colossus Ultimate Pro Bale",
    "category": "BALERSSQUARE",
    "type": "FS25_colossusPack.balerAI",
-   "x": 517.148071,
+   "x": 517.147888,
    "z": 926.765198,
    "fills": [
     {
@@ -1229,8 +1230,8 @@
    "name": "Colossus FLM 726",
    "category": "FERTILIZERSPREADERS",
    "type": "spreader",
-   "x": 507.459595,
-   "z": 602.241333,
+   "x": 507.462952,
+   "z": 602.23822,
    "fills": [
     {
      "type": "LIME",
@@ -1245,8 +1246,8 @@
    "name": "Colossus FLM 726",
    "category": "FERTILIZERSPREADERS",
    "type": "spreader",
-   "x": 744.166565,
-   "z": 133.075546,
+   "x": 744.166931,
+   "z": 133.076035,
    "fills": [
     {
      "type": "LIME",
@@ -1261,8 +1262,8 @@
    "name": "Colossus FLM 726",
    "category": "FERTILIZERSPREADERS",
    "type": "spreader",
-   "x": 15.822789,
-   "z": -606.545776,
+   "x": 15.823771,
+   "z": -606.543579,
    "fills": [
     {
      "type": "LIME",
@@ -1278,7 +1279,7 @@
    "category": "FERTILIZERSPREADERS",
    "type": "spreader",
    "x": 469.366974,
-   "z": 655.614502,
+   "z": 655.614746,
    "fills": [
     {
      "type": "FERTILIZER",
@@ -1293,8 +1294,8 @@
    "name": "Colossus FLM 726",
    "category": "FERTILIZERSPREADERS",
    "type": "spreader",
-   "x": -191.840012,
-   "z": -705.145447,
+   "x": -191.835068,
+   "z": -705.145935,
    "fills": [
     {
      "type": "FERTILIZER",
@@ -1309,8 +1310,8 @@
    "name": "Titan Header",
    "category": "CUTTERS",
    "type": "cutter",
-   "x": 503.357635,
-   "z": 919.55249,
+   "x": 503.337158,
+   "z": 919.557007,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1320,8 +1321,8 @@
    "name": "Titan Header",
    "category": "CUTTERS",
    "type": "cutter",
-   "x": 738.662903,
-   "z": 474.440552,
+   "x": 739.024048,
+   "z": 475.524567,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1331,8 +1332,8 @@
    "name": "6R Series (230-250)",
    "category": "TRACTORSM",
    "type": "tractor",
-   "x": -469.067047,
-   "z": -703.113342,
+   "x": -469.067932,
+   "z": -703.111877,
    "fills": [
     {
      "type": "DIESEL",
@@ -1354,8 +1355,8 @@
    "name": "Roadrunner+",
    "category": "TRUCKS",
    "type": "FS25_RoadrunnerPlus.roadrunnerTruck",
-   "x": 515.409058,
-   "z": 596.884644,
+   "x": 515.409973,
+   "z": 596.884216,
    "fills": [
     {
      "type": "DIESEL",
@@ -1374,8 +1375,8 @@
    "name": "Roadrunner+",
    "category": "TRUCKS",
    "type": "FS25_RoadrunnerPlus.roadrunnerTruck",
-   "x": 493.484039,
-   "z": 842.181396,
+   "x": 493.4841,
+   "z": 842.180908,
    "fills": [
     {
      "type": "DIESEL",
@@ -1394,8 +1395,8 @@
    "name": "Roadrunner+",
    "category": "TRUCKS",
    "type": "FS25_RoadrunnerPlus.roadrunnerTruck",
-   "x": 497.501038,
-   "z": 842.00769,
+   "x": 497.500885,
+   "z": 842.007385,
    "fills": [
     {
      "type": "DIESEL",
@@ -1414,8 +1415,8 @@
    "name": "53' Dropdeck Trailer Autoload Bales",
    "category": "TRAILERS",
    "type": "trailer",
-   "x": 775.752319,
-   "z": 453.168793,
+   "x": 775.751892,
+   "z": 453.169006,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1425,8 +1426,8 @@
    "name": "53' Dropdeck Trailer Autoload Bales",
    "category": "TRAILERS",
    "type": "FS25_DropdeckTrailer53Ft_Auto.manureBarrelBelts",
-   "x": 721.145264,
-   "z": 570.591553,
+   "x": 721.147644,
+   "z": 570.5849,
    "fills": [
     {
      "type": "DIGESTATE",
@@ -1441,8 +1442,8 @@
    "name": "Steiger Series",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": 902.188904,
-   "z": 557.027649,
+   "x": 902.189209,
+   "z": 557.027588,
    "fills": [
     {
      "type": "DIESEL",
@@ -1465,7 +1466,7 @@
    "name": "Steiger Series",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": 517.631592,
+   "x": 517.631653,
    "z": 837.61969,
    "fills": [
     {
@@ -1489,8 +1490,8 @@
    "name": "Steiger Series",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": 512.823425,
-   "z": 821.421509,
+   "x": 512.823486,
+   "z": 821.421631,
    "fills": [
     {
      "type": "DIESEL",
@@ -1524,8 +1525,8 @@
    "name": "Magnum Series",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": -76.798943,
-   "z": 710.396362,
+   "x": -76.801628,
+   "z": 710.396423,
    "fills": [
     {
      "type": "DIESEL",
@@ -1547,8 +1548,8 @@
    "name": "Magnum Series",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": 384.782562,
-   "z": 669.429382,
+   "x": 384.784973,
+   "z": 669.428833,
    "fills": [
     {
      "type": "DIESEL",
@@ -1571,8 +1572,8 @@
    "name": "Case IH Magnum 340 - 400 Series Special Edition FL",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": 729.38147,
-   "z": 143.355515,
+   "x": 729.380859,
+   "z": 143.355362,
    "fills": [
     {
      "type": "DIESEL",
@@ -1599,8 +1600,8 @@
    "name": "Tree-B-Gone",
    "category": "FORESTRYMISC",
    "type": "FS25_TreeBGone.treeBGone",
-   "x": 448.825989,
-   "z": 685.705933,
+   "x": 448.826019,
+   "z": 685.706055,
    "fills": [
     {
      "type": "WOODCHIPS",
@@ -1631,8 +1632,8 @@
    "name": "1775NT Multi-planter",
    "category": "PLANTERS",
    "type": "sowingMachine",
-   "x": -469.041656,
-   "z": -695.546143,
+   "x": -469.037628,
+   "z": -695.546326,
    "fills": [
     {
      "type": "SEEDS",
@@ -1646,8 +1647,8 @@
    "name": "1775NT Multi-planter",
    "category": "PLANTERS",
    "type": "sowingMachine",
-   "x": -76.387947,
-   "z": 702.162476,
+   "x": -76.394844,
+   "z": 702.164124,
    "fills": [
     {
      "type": "SEEDS",
@@ -1677,8 +1678,8 @@
    "name": "8R Series",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": 15.802937,
-   "z": -613.341309,
+   "x": 15.803861,
+   "z": -613.340698,
    "fills": [
     {
      "type": "DIESEL",
@@ -1702,7 +1703,7 @@
    "category": "VEGETABLEHARVESTERS",
    "type": "cutter",
    "x": 481.997192,
-   "z": 934.05481,
+   "z": 934.054565,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1712,8 +1713,8 @@
    "name": "Colossus 8000 Root Harvester",
    "category": "BEETHARVESTERS",
    "type": "combineDrivable",
-   "x": 481.100006,
-   "z": 925.879028,
+   "x": 481.099976,
+   "z": 925.878845,
    "fills": [
     {
      "type": "DIESEL",
@@ -1733,7 +1734,7 @@
    "category": "SKIDSTEERVEHICLES",
    "type": "teleHandler",
    "x": 539.881958,
-   "z": 682.776855,
+   "z": 682.776794,
    "fills": [
     {
      "type": "DIESEL",
@@ -1752,7 +1753,7 @@
    "name": "Colossus Quick Mow",
    "category": "MOWERS",
    "type": "mower",
-   "x": 448.964996,
+   "x": 448.964966,
    "z": 681.460876,
    "fills": [],
    "isAIActive": false,
@@ -1763,8 +1764,8 @@
    "name": "Colossus Quick Mow",
    "category": "MOWERS",
    "type": "mower",
-   "x": 757.688354,
-   "z": 251.734497,
+   "x": 757.687683,
+   "z": 251.730362,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1774,8 +1775,8 @@
    "name": "Colossus 73DD3-R",
    "category": "TEDDERS",
    "type": "tedder",
-   "x": 520.532288,
-   "z": 921.953003,
+   "x": 520.532104,
+   "z": 921.953552,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1785,7 +1786,7 @@
    "name": "TOP 1403 C",
    "category": "WINDROWERS",
    "type": "windrower",
-   "x": 524.275818,
+   "x": 524.276123,
    "z": 927.859131,
    "fills": [],
    "isAIActive": false,
@@ -1796,8 +1797,8 @@
    "name": "Citan 15001-C",
    "category": "SEEDERS",
    "type": "fertilizingSowingMachine",
-   "x": 899.266113,
-   "z": 574.253784,
+   "x": 899.266052,
+   "z": 574.24115,
    "fills": [
     {
      "type": "SEEDS",
@@ -1815,8 +1816,8 @@
    "name": "4905 Multi-Fruit Planter",
    "category": "PLANTERS",
    "type": "fertilizingSowingMachine",
-   "x": 456.726227,
-   "z": -281.102081,
+   "x": 456.721588,
+   "z": -281.118835,
    "fills": [
     {
      "type": "SEEDS",
@@ -1834,8 +1835,8 @@
    "name": "40' Flatbed Autoloading Bale Trailer",
    "category": "TRAILERS",
    "type": "trailer",
-   "x": 493.157745,
-   "z": 831.806519,
+   "x": 493.157349,
+   "z": 831.807556,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1845,8 +1846,8 @@
    "name": "40' Flatbed Autoloading Bale Trailer",
    "category": "TRAILERS",
    "type": "FS25_LizardComboTrailer.baleAutoLoad",
-   "x": 497.81488,
-   "z": 829.901611,
+   "x": 497.815033,
+   "z": 829.903259,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1867,8 +1868,8 @@
    "name": "Colossus Liqui-Trans 5508",
    "category": "BARRELS",
    "type": "waterTrailer",
-   "x": 489.957458,
-   "z": 834.419861,
+   "x": 489.957245,
+   "z": 834.420715,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1894,8 +1895,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 106.57103,
-   "z": -397.569,
+   "x": 106.571007,
+   "z": -397.56897,
    "fills": [
     {
      "type": "FLOUR",
@@ -1910,7 +1911,7 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 107.412033,
+   "x": 107.412018,
    "z": -396.449005,
    "fills": [
     {
@@ -1926,8 +1927,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 107.407898,
-   "z": -396.449097,
+   "x": 107.407951,
+   "z": -396.448975,
    "fills": [
     {
      "type": "FLOUR",
@@ -1942,8 +1943,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 108.251984,
-   "z": -395.32373,
+   "x": 108.252014,
+   "z": -395.324005,
    "fills": [
     {
      "type": "FLOUR",
@@ -1958,8 +1959,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 108.251259,
-   "z": -395.321289,
+   "x": 108.251114,
+   "z": -395.321228,
    "fills": [
     {
      "type": "FLOUR",
@@ -1974,7 +1975,7 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 109.09201,
+   "x": 109.092018,
    "z": -394.208008,
    "fills": [
     {
@@ -1990,8 +1991,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 109.089836,
-   "z": -394.212158,
+   "x": 109.090179,
+   "z": -394.211945,
    "fills": [
     {
      "type": "FLOUR",
@@ -2022,8 +2023,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 109.932137,
-   "z": -393.088959,
+   "x": 109.931976,
+   "z": -393.089081,
    "fills": [
     {
      "type": "FLOUR",
@@ -2038,8 +2039,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 110.773018,
-   "z": -391.974426,
+   "x": 110.772949,
+   "z": -391.974304,
    "fills": [
     {
      "type": "FLOUR",
@@ -2054,8 +2055,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 110.772636,
-   "z": -391.97052,
+   "x": 110.772568,
+   "z": -391.970062,
    "fills": [
     {
      "type": "FLOUR",
@@ -2070,8 +2071,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 111.612999,
-   "z": -390.851013,
+   "x": 111.612984,
+   "z": -390.850983,
    "fills": [
     {
      "type": "FLOUR",
@@ -2086,8 +2087,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 111.61422,
-   "z": -390.850006,
+   "x": 111.613998,
+   "z": -390.849976,
    "fills": [
     {
      "type": "FLOUR",
@@ -2102,7 +2103,7 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 112.452888,
+   "x": 112.452965,
    "z": -389.72998,
    "fills": [
     {
@@ -2118,8 +2119,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 112.453766,
-   "z": -389.73291,
+   "x": 112.454102,
+   "z": -389.733185,
    "fills": [
     {
      "type": "FLOUR",
@@ -2135,7 +2136,7 @@
    "category": "PALLETS",
    "type": "pallet",
    "x": 113.295021,
-   "z": -388.610962,
+   "z": -388.610992,
    "fills": [
     {
      "type": "FLOUR",
@@ -2150,8 +2151,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 113.296013,
-   "z": -388.605804,
+   "x": 113.295982,
+   "z": -388.605957,
    "fills": [
     {
      "type": "FLOUR",
@@ -2166,8 +2167,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 114.133904,
-   "z": -387.492065,
+   "x": 114.134018,
+   "z": -387.492035,
    "fills": [
     {
      "type": "FLOUR",
@@ -2182,8 +2183,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 114.130997,
-   "z": -387.492065,
+   "x": 114.131889,
+   "z": -387.491943,
    "fills": [
     {
      "type": "FLOUR",
@@ -2198,7 +2199,7 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 104.969978,
+   "x": 104.970039,
    "z": -396.367859,
    "fills": [
     {
@@ -2214,8 +2215,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 104.971153,
-   "z": -396.36911,
+   "x": 104.971123,
+   "z": -396.369019,
    "fills": [
     {
      "type": "FLOUR",
@@ -2230,8 +2231,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 105.810928,
-   "z": -395.25412,
+   "x": 105.810944,
+   "z": -395.254395,
    "fills": [
     {
      "type": "FLOUR",
@@ -2246,8 +2247,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 105.811859,
-   "z": -395.255951,
+   "x": 105.811768,
+   "z": -395.256195,
    "fills": [
     {
      "type": "FLOUR",
@@ -2262,7 +2263,7 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 106.650948,
+   "x": 106.650955,
    "z": -394.127991,
    "fills": [
     {
@@ -2278,7 +2279,7 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 106.652885,
+   "x": 106.652863,
    "z": -394.128784,
    "fills": [
     {
@@ -2294,8 +2295,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 107.491928,
-   "z": -393.008026,
+   "x": 107.491936,
+   "z": -393.007996,
    "fills": [
     {
      "type": "FLOUR",
@@ -2310,7 +2311,7 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 107.491974,
+   "x": 107.492065,
    "z": -393.01001,
    "fills": [
     {
@@ -2326,8 +2327,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 108.332977,
-   "z": -391.887817,
+   "x": 108.333031,
+   "z": -391.887787,
    "fills": [
     {
      "type": "FLOUR",
@@ -2342,8 +2343,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 108.335167,
-   "z": -391.886536,
+   "x": 108.334984,
+   "z": -391.887085,
    "fills": [
     {
      "type": "FLOUR",
@@ -2358,8 +2359,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 109.172958,
-   "z": -390.769958,
+   "x": 109.173088,
+   "z": -390.769897,
    "fills": [
     {
      "type": "FLOUR",
@@ -2374,8 +2375,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 109.172485,
-   "z": -390.773102,
+   "x": 109.1717,
+   "z": -390.772003,
    "fills": [
     {
      "type": "FLOUR",
@@ -2390,8 +2391,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 110.012978,
-   "z": -389.644806,
+   "x": 110.01297,
+   "z": -389.644623,
    "fills": [
     {
      "type": "FLOUR",
@@ -2406,8 +2407,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 110.014435,
-   "z": -389.651154,
+   "x": 110.013672,
+   "z": -389.650696,
    "fills": [
     {
      "type": "FLOUR",
@@ -2422,8 +2423,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 110.853981,
-   "z": -388.53009,
+   "x": 110.854019,
+   "z": -388.530151,
    "fills": [
     {
      "type": "FLOUR",
@@ -2438,8 +2439,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 110.857124,
-   "z": -388.531006,
+   "x": 110.857155,
+   "z": -388.531189,
    "fills": [
     {
      "type": "FLOUR",
@@ -2454,8 +2455,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 111.697166,
-   "z": -387.408813,
+   "x": 111.696991,
+   "z": -387.408875,
    "fills": [
     {
      "type": "FLOUR",
@@ -2470,8 +2471,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 111.696495,
-   "z": -387.413574,
+   "x": 111.695801,
+   "z": -387.414429,
    "fills": [
     {
      "type": "FLOUR",
@@ -2486,8 +2487,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 112.535027,
-   "z": -386.292419,
+   "x": 112.534966,
+   "z": -386.292084,
    "fills": [
     {
      "type": "FLOUR",
@@ -2502,8 +2503,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 112.535812,
-   "z": -386.295227,
+   "x": 112.535904,
+   "z": -386.295135,
    "fills": [
     {
      "type": "FLOUR",
@@ -2518,7 +2519,7 @@
    "name": "Colossus 9000 Harvester",
    "category": "HARVESTERS",
    "type": "combineDrivable",
-   "x": 752.647278,
+   "x": 752.645203,
    "z": 472.562988,
    "fills": [
     {
@@ -2558,8 +2559,8 @@
    "name": "Colossus 9000 Harvester",
    "category": "HARVESTERS",
    "type": "combineDrivable",
-   "x": 504.621063,
-   "z": 933.605225,
+   "x": 504.621033,
+   "z": 933.605164,
    "fills": [
     {
      "type": "DIESEL",
@@ -2578,8 +2579,8 @@
    "name": "Series 8 TTV",
    "category": "TRACTORSM",
    "type": "tractor",
-   "x": 900.18634,
-   "z": 565.65802,
+   "x": 900.186646,
+   "z": 565.645569,
    "fills": [
     {
      "type": "DIESEL",
@@ -2601,8 +2602,8 @@
    "name": "Series 8 TTV",
    "category": "TRACTORSM",
    "type": "tractor",
-   "x": 449.743835,
-   "z": -277.247986,
+   "x": 449.744843,
+   "z": -277.247681,
    "fills": [
     {
      "type": "DIESEL",
@@ -2635,8 +2636,8 @@
    "name": "Titan Super Collect 533",
    "category": "LOADERWAGONS",
    "type": "forageWagon",
-   "x": 752.226013,
-   "z": 236.638016,
+   "x": 752.225769,
+   "z": 236.638046,
    "fills": [
     {
      "type": "GRASS_WINDROW",
@@ -2676,7 +2677,7 @@
    "category": "PALLETS",
    "type": "pallet",
    "x": 648.64801,
-   "z": 860.381165,
+   "z": 860.381042,
    "fills": [
     {
      "type": "GARLIC",
@@ -2707,8 +2708,8 @@
    "name": "Tomatoes Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 645.848999,
-   "z": 860.432007,
+   "x": 645.848877,
+   "z": 860.432068,
    "fills": [
     {
      "type": "TOMATO",
@@ -2739,8 +2740,8 @@
    "name": "Napa Cabbage Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 643.049011,
-   "z": 860.483154,
+   "x": 643.048889,
+   "z": 860.482971,
    "fills": [
     {
      "type": "NAPACABBAGE",
@@ -2755,7 +2756,7 @@
    "name": "Spring Onion Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 641.648987,
+   "x": 641.648865,
    "z": 860.508057,
    "fills": [
     {
@@ -2771,7 +2772,7 @@
    "name": "TRIUS",
    "category": "MISC",
    "type": "trailer",
-   "x": 450.678955,
+   "x": 450.679016,
    "z": 671.955994,
    "fills": [],
    "isAIActive": false,
@@ -2782,8 +2783,8 @@
    "name": "ARION 570-530",
    "category": "TRACTORSS",
    "type": "tractor",
-   "x": 734.539978,
-   "z": -159.94368,
+   "x": 734.53833,
+   "z": -159.943802,
    "fills": [
     {
      "type": "DIESEL",
@@ -2822,8 +2823,8 @@
    "name": "N60-45",
    "category": "CUTTERTRAILERS",
    "type": "dynamicMountAttacherTrailer",
-   "x": 497.189697,
-   "z": 920.86853,
+   "x": 497.212372,
+   "z": 920.867615,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -2833,8 +2834,8 @@
    "name": "Titan Corn Header",
    "category": "CORNHEADERS",
    "type": "cutter",
-   "x": 497.122742,
-   "z": 918.839661,
+   "x": 497.152039,
+   "z": 918.838989,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -2844,8 +2845,8 @@
    "name": "Titan Corn Header",
    "category": "CORNHEADERS",
    "type": "cutter",
-   "x": 813.347107,
-   "z": 466.963043,
+   "x": 813.347534,
+   "z": 466.962982,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -2855,8 +2856,8 @@
    "name": "Puma Series",
    "category": "TRACTORSM",
    "type": "tractor",
-   "x": 469.176056,
-   "z": 649.6828,
+   "x": 469.176178,
+   "z": 649.683044,
    "fills": [
     {
      "type": "DIESEL",
@@ -2879,8 +2880,8 @@
    "name": "Puma Series",
    "category": "TRACTORSM",
    "type": "tractor",
-   "x": -119.412956,
-   "z": -628.084961,
+   "x": -119.413109,
+   "z": -628.084595,
    "fills": [
     {
      "type": "DIESEL",
@@ -2903,8 +2904,8 @@
    "name": "Cake Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 315.800995,
-   "z": 475.98703,
+   "x": 315.800903,
+   "z": 475.987091,
    "fills": [
     {
      "type": "CAKE",
@@ -2920,7 +2921,7 @@
    "category": "PALLETS",
    "type": "pallet",
    "x": 315.452057,
-   "z": 477.33963,
+   "z": 477.339386,
    "fills": [
     {
      "type": "CAKE",
@@ -2935,8 +2936,8 @@
    "name": "Cake Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 315.103088,
-   "z": 478.698029,
+   "x": 315.102997,
+   "z": 478.697968,
    "fills": [
     {
      "type": "CAKE",
@@ -2951,7 +2952,7 @@
    "name": "Cake Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 314.753967,
+   "x": 314.754028,
    "z": 480.053986,
    "fills": [
     {
@@ -2967,8 +2968,8 @@
    "name": "Cake Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 314.404022,
-   "z": 481.410004,
+   "x": 314.403992,
+   "z": 481.409973,
    "fills": [
     {
      "type": "CAKE",
@@ -2983,8 +2984,8 @@
    "name": "Cake Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 317.253784,
-   "z": 476.35965,
+   "x": 317.254028,
+   "z": 476.359924,
    "fills": [
     {
      "type": "CAKE",
@@ -2999,8 +3000,8 @@
    "name": "Cake Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 316.902832,
-   "z": 477.717224,
+   "x": 316.90274,
+   "z": 477.717377,
    "fills": [
     {
      "type": "CAKE",
@@ -3031,8 +3032,8 @@
    "name": "Cake Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 316.205475,
-   "z": 480.42627,
+   "x": 316.204376,
+   "z": 480.425201,
    "fills": [
     {
      "type": "CAKE",
@@ -3048,7 +3049,7 @@
    "category": "PALLETS",
    "type": "pallet",
    "x": 315.856903,
-   "z": 481.783844,
+   "z": 481.783875,
    "fills": [
     {
      "type": "CAKE",
@@ -3063,8 +3064,8 @@
    "name": "Puma Series",
    "category": "TRACTORSM",
    "type": "tractor",
-   "x": -186.114685,
-   "z": -703.56012,
+   "x": -186.116547,
+   "z": -703.560669,
    "fills": [
     {
      "type": "DIESEL",
@@ -3098,8 +3099,8 @@
    "name": "ST820 MultiFunction",
    "category": "CULTIVATORS",
    "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
-   "x": 512.557007,
-   "z": 812.158569,
+   "x": 512.556946,
+   "z": 812.158752,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -3109,8 +3110,8 @@
    "name": "ST820 MultiFunction",
    "category": "CULTIVATORS",
    "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
-   "x": 516.706604,
-   "z": 828.369995,
+   "x": 516.706665,
+   "z": 828.370056,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -3121,7 +3122,7 @@
    "category": "CULTIVATORS",
    "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
    "x": 734.57605,
-   "z": 166.547989,
+   "z": 166.548004,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -3681,7 +3682,7 @@
     "category": "SEEDERS",
     "farmId": null,
     "x": 899.3,
-    "z": 574.3,
+    "z": 574.2,
     "isAIActive": false,
     "controller": null,
     "fuel": null,
@@ -3824,7 +3825,7 @@
     "category": "TRACTORSM",
     "farmId": null,
     "x": 900.2,
-    "z": 565.7,
+    "z": 565.6,
     "isAIActive": true,
     "controller": null,
     "fuel": null,
@@ -3943,7 +3944,7 @@
     "name": "Titan Corn Header",
     "category": "CORNHEADERS",
     "farmId": 2,
-    "x": 497.1,
+    "x": 497.2,
     "z": 918.8,
     "isAIActive": false,
     "controller": null,
@@ -4291,8 +4292,8 @@
    "name": "Series 8 TTV",
    "controller": null,
    "isAIActive": true,
-   "x": 900.18634,
-   "z": 565.65802
+   "x": 900.186646,
+   "z": 565.645569
   }
  ],
  "stock": [
@@ -5331,8 +5332,8 @@
    "fruit": "COTTON",
    "plannedFruit": "FALLOW",
    "status": "growing",
-   "growthState": 5,
-   "lastGrowthState": 4,
+   "growthState": 6,
+   "lastGrowthState": 5,
    "groundType": "SOWN",
    "sprayType": "NONE",
    "sprayLevel": 2,
@@ -5389,12 +5390,12 @@
    "id": 5,
    "farmId": 0,
    "isOwned": false,
-   "fruit": "SORGHUM",
+   "fruit": "UNKNOWN",
    "plannedFruit": "FALLOW",
-   "status": "growing",
-   "growthState": 8,
-   "lastGrowthState": 4,
-   "groundType": "SOWN",
+   "status": "empty",
+   "growthState": 0,
+   "lastGrowthState": 0,
+   "groundType": "CULTIVATED",
    "sprayType": "NONE",
    "sprayLevel": 2,
    "limeLevel": 0,
@@ -5411,10 +5412,10 @@
    "x": -210.545044,
    "z": -952.606873,
    "needs": [
-    "roll",
+    "sow",
     "lime"
    ],
-   "grew": true
+   "grew": false
   },
   {
    "id": 8,
@@ -5546,10 +5547,10 @@
    "isOwned": false,
    "fruit": "OAT",
    "plannedFruit": "FALLOW",
-   "status": "growing",
-   "growthState": 4,
-   "lastGrowthState": 3,
-   "groundType": "SOWN",
+   "status": "ready",
+   "growthState": 5,
+   "lastGrowthState": 4,
+   "groundType": "HARVEST_READY",
    "sprayType": "NONE",
    "sprayLevel": 2,
    "limeLevel": 1,
@@ -5566,7 +5567,7 @@
    "x": -37.449203,
    "z": -772.3526,
    "needs": [
-    "roll"
+    "harvest"
    ],
    "grew": true
   },
@@ -5604,12 +5605,12 @@
    "id": 17,
    "farmId": 0,
    "isOwned": false,
-   "fruit": "CARROT",
+   "fruit": "UNKNOWN",
    "plannedFruit": "FALLOW",
-   "status": "ready",
-   "growthState": 7,
-   "lastGrowthState": 5,
-   "groundType": "HARVEST_READY_OTHER",
+   "status": "empty",
+   "growthState": 0,
+   "lastGrowthState": 0,
+   "groundType": "CULTIVATED",
    "sprayType": "NONE",
    "sprayLevel": 2,
    "limeLevel": 0,
@@ -5626,10 +5627,10 @@
    "x": -893.394714,
    "z": -645.013184,
    "needs": [
-    "harvest",
+    "sow",
     "lime"
    ],
-   "grew": true
+   "grew": false
   },
   {
    "id": 18,
@@ -5665,12 +5666,12 @@
    "id": 19,
    "farmId": 0,
    "isOwned": false,
-   "fruit": "UNKNOWN",
-   "plannedFruit": "WHEAT",
-   "status": "empty",
-   "growthState": 0,
+   "fruit": "WHEAT",
+   "plannedFruit": "FALLOW",
+   "status": "growing",
+   "growthState": 1,
    "lastGrowthState": 0,
-   "groundType": "CULTIVATED",
+   "groundType": "SOWN",
    "sprayType": "NONE",
    "sprayLevel": 1,
    "limeLevel": 0,
@@ -5687,11 +5688,11 @@
    "x": -618.92572,
    "z": -406.886322,
    "needs": [
-    "sow",
+    "roll",
     "lime",
     "fertilizer"
    ],
-   "grew": false
+   "grew": true
   },
   {
    "id": 20,
@@ -5700,8 +5701,8 @@
    "fruit": "COTTON",
    "plannedFruit": "FALLOW",
    "status": "growing",
-   "growthState": 2,
-   "lastGrowthState": 1,
+   "growthState": 3,
+   "lastGrowthState": 2,
    "groundType": "SOWN",
    "sprayType": "NONE",
    "sprayLevel": 2,
@@ -5820,21 +5821,21 @@
    "id": 24,
    "farmId": 0,
    "isOwned": false,
-   "fruit": "SUGARBEET",
-   "plannedFruit": "FALLOW",
-   "status": "ready",
-   "growthState": 8,
-   "lastGrowthState": 8,
-   "groundType": "HARVEST_READY_OTHER",
+   "fruit": "UNKNOWN",
+   "plannedFruit": "WHEAT",
+   "status": "empty",
+   "growthState": 0,
+   "lastGrowthState": 0,
+   "groundType": "PLOWED",
    "sprayType": "NONE",
    "sprayLevel": 2,
    "limeLevel": 2,
-   "plowLevel": 0,
+   "plowLevel": 1,
    "fertilizerPercent": 100,
    "limePercent": 67,
    "rollerLevel": 0,
    "stubbleShredLevel": 0,
-   "weedState": 5,
+   "weedState": 0,
    "stoneLevel": 0,
    "waterLevel": 0,
    "area": 3.0144,
@@ -5842,7 +5843,7 @@
    "x": -482.53244,
    "z": 671.811279,
    "needs": [
-    "harvest"
+    "sow"
    ],
    "grew": false
   },
@@ -5854,7 +5855,7 @@
    "plannedFruit": "FALLOW",
    "status": "ready",
    "growthState": 5,
-   "lastGrowthState": 4,
+   "lastGrowthState": 5,
    "groundType": "HARVEST_READY_OTHER",
    "sprayType": "NONE",
    "sprayLevel": 2,
@@ -5874,7 +5875,7 @@
    "needs": [
     "harvest"
    ],
-   "grew": true
+   "grew": false
   },
   {
    "id": 26,
@@ -5914,8 +5915,8 @@
    "fruit": "MEADOW",
    "plannedFruit": "FALLOW",
    "status": "grass",
-   "growthState": 4,
-   "lastGrowthState": 9,
+   "growthState": 9,
+   "lastGrowthState": 7,
    "groundType": "GRASS",
    "sprayType": "NONE",
    "sprayLevel": 2,
@@ -5944,8 +5945,8 @@
    "fruit": "ALFALFA",
    "plannedFruit": "FALLOW",
    "status": "grass",
-   "growthState": 8,
-   "lastGrowthState": 4,
+   "growthState": 3,
+   "lastGrowthState": 8,
    "groundType": "GRASS",
    "sprayType": "NONE",
    "sprayLevel": 2,
@@ -5974,8 +5975,8 @@
    "fruit": "BEETROOT",
    "plannedFruit": "FALLOW",
    "status": "growing",
-   "growthState": 3,
-   "lastGrowthState": 2,
+   "growthState": 4,
+   "lastGrowthState": 3,
    "groundType": "SOWN",
    "sprayType": "NONE",
    "sprayLevel": 2,
@@ -6342,7 +6343,7 @@
    "plannedFruit": "FALLOW",
    "status": "ready",
    "growthState": 8,
-   "lastGrowthState": 7,
+   "lastGrowthState": 8,
    "groundType": "HARVEST_READY",
    "sprayType": "NONE",
    "sprayLevel": 2,
@@ -6362,7 +6363,7 @@
    "needs": [
     "harvest"
    ],
-   "grew": true
+   "grew": false
   }
  ],
  "vehicles": [
@@ -18580,9 +18581,9 @@
      "yieldBestPrice": 276647.9,
      "numSoilSamples": 174.0,
      "soilSampleCosts": 30450.0,
-     "usedFuel": 1263.4,
-     "vehicleCosts": 26685.2,
-     "helperCosts": 46061.6,
+     "usedFuel": 1346.5,
+     "vehicleCosts": 26686.5,
+     "helperCosts": 51723.7,
      "subsidies": 0.0,
      "usedLimeRegular": 31162.0,
      "usedMineralFertilizerRegular": 18230.8,
@@ -18601,9 +18602,9 @@
      "yieldBestPrice": 150074.7,
      "numSoilSamples": 58.0,
      "soilSampleCosts": 10150.0,
-     "usedFuel": 875.9,
-     "vehicleCosts": 25655.6,
-     "helperCosts": 40563.9,
+     "usedFuel": 959.0,
+     "vehicleCosts": 25656.9,
+     "helperCosts": 46226.0,
      "subsidies": 0.0,
      "usedLimeRegular": 0.0,
      "usedMineralFertilizerRegular": 8292.9,
@@ -20273,7 +20274,7 @@
    }
   },
   "tramlineFarmlands": [
-   17,
+   3,
    20,
    5,
    4,
@@ -20283,14 +20284,14 @@
    24,
    11,
    18,
-   16,
-   14,
-   3,
+   27,
+   30,
+   17,
    25,
    26,
    46,
-   30,
-   27
+   14,
+   16
   ]
  },
  "farmColors": {

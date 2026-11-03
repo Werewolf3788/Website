@@ -3,7 +3,7 @@
   "tramlineMap": {
    "farmland": [
     {
-     "farmlandId": 17,
+     "farmlandId": 3,
      "width": 27.0,
      "workDirection": -57.29578,
      "spacing": 2.0,
@@ -73,21 +73,21 @@
      "pendingUpdate": false
     },
     {
-     "farmlandId": 16,
+     "farmlandId": 27,
      "width": 27.0,
      "workDirection": -57.29578,
      "spacing": 2.0,
      "pendingUpdate": false
     },
     {
-     "farmlandId": 14,
+     "farmlandId": 30,
      "width": 27.0,
      "workDirection": -57.29578,
      "spacing": 2.0,
      "pendingUpdate": false
     },
     {
-     "farmlandId": 3,
+     "farmlandId": 17,
      "width": 27.0,
      "workDirection": -57.29578,
      "spacing": 2.0,
@@ -115,14 +115,14 @@
      "pendingUpdate": false
     },
     {
-     "farmlandId": 30,
+     "farmlandId": 14,
      "width": 27.0,
      "workDirection": -57.29578,
      "spacing": 2.0,
      "pendingUpdate": false
     },
     {
-     "farmlandId": 27,
+     "farmlandId": 16,
      "width": 27.0,
      "workDirection": -57.29578,
      "spacing": 2.0,
@@ -2245,9 +2245,9 @@
       "yieldRegular": 1780032.25,
       "yieldWeight": 534.581665,
       "yieldBestPrice": 150074.71875,
-      "usedFuel": 875.890137,
-      "vehicleCosts": 25655.623047,
-      "helperCosts": 40563.875,
+      "usedFuel": 959.039673,
+      "vehicleCosts": 25656.914062,
+      "helperCosts": 46225.988281,
       "subsidies": 0.0
      },
      "totalCounter": {
@@ -2271,9 +2271,9 @@
       "yieldRegular": 3312869.5,
       "yieldWeight": 996.922302,
       "yieldBestPrice": 276647.90625,
-      "usedFuel": 1263.37561,
-      "vehicleCosts": 26685.242188,
-      "helperCosts": 46061.589844,
+      "usedFuel": 1346.525146,
+      "vehicleCosts": 26686.533203,
+      "helperCosts": 51723.703125,
       "subsidies": 0.0
      }
     },
@@ -5348,15 +5348,15 @@
      },
      {
       "farmlandId": 36,
-      "state": 1
+      "state": 2
      },
      {
-      "farmlandId": 43,
-      "state": 1
+      "farmlandId": 32,
+      "state": 2
      },
      {
-      "farmlandId": 64,
-      "state": 1
+      "farmlandId": 60,
+      "state": 2
      },
      {
       "farmlandId": 54,
@@ -5364,7 +5364,7 @@
      },
      {
       "farmlandId": 66,
-      "state": 1
+      "state": 2
      },
      {
       "farmlandId": 41,
@@ -5372,11 +5372,11 @@
      },
      {
       "farmlandId": 12,
-      "state": 1
+      "state": 2
      },
      {
       "farmlandId": 63,
-      "state": 1
+      "state": 2
      },
      {
       "farmlandId": 23,
@@ -5384,23 +5384,23 @@
      },
      {
       "farmlandId": 57,
-      "state": 1
+      "state": 2
      },
      {
-      "farmlandId": 40,
-      "state": 1
+      "farmlandId": 34,
+      "state": 2
      },
      {
       "farmlandId": 38,
-      "state": 1
+      "state": 2
      },
      {
-      "farmlandId": 65,
-      "state": 1
+      "farmlandId": 39,
+      "state": 2
      },
      {
-      "farmlandId": 62,
-      "state": 1
+      "farmlandId": 35,
+      "state": 0
      },
      {
       "farmlandId": 28,
@@ -5411,60 +5411,60 @@
       "state": 0
      },
      {
-      "farmlandId": 55,
+      "farmlandId": 14,
       "state": 0
      },
      {
-      "farmlandId": 35,
-      "state": 0
+      "farmlandId": 62,
+      "state": 2
      },
      {
-      "farmlandId": 3,
-      "state": 0
+      "farmlandId": 13,
+      "state": 2
      },
      {
-      "farmlandId": 59,
-      "state": 1
+      "farmlandId": 68,
+      "state": 2
      },
      {
       "farmlandId": 22,
-      "state": 1
+      "state": 2
      },
      {
-      "farmlandId": 60,
-      "state": 1
+      "farmlandId": 2,
+      "state": 2
      },
      {
       "farmlandId": 58,
-      "state": 1
+      "state": 2
      },
      {
-      "farmlandId": 39,
-      "state": 1
+      "farmlandId": 33,
+      "state": 2
      },
      {
       "farmlandId": 29,
       "state": 0
      },
      {
-      "farmlandId": 32,
-      "state": 1
+      "farmlandId": 59,
+      "state": 2
      },
      {
-      "farmlandId": 8,
-      "state": 1
+      "farmlandId": 3,
+      "state": 0
      },
      {
-      "farmlandId": 34,
-      "state": 1
+      "farmlandId": 40,
+      "state": 2
      },
      {
       "farmlandId": 37,
-      "state": 1
+      "state": 2
      },
      {
       "farmlandId": 61,
-      "state": 1
+      "state": 2
      },
      {
       "farmlandId": 45,
@@ -5472,26 +5472,26 @@
      },
      {
       "farmlandId": 42,
-      "state": 1
+      "state": 2
      },
      {
-      "farmlandId": 33,
-      "state": 1
+      "farmlandId": 65,
+      "state": 2
      },
      {
-      "farmlandId": 2,
-      "state": 1
+      "farmlandId": 43,
+      "state": 2
      },
      {
-      "farmlandId": 68,
-      "state": 1
+      "farmlandId": 64,
+      "state": 2
      },
      {
-      "farmlandId": 13,
-      "state": 1
+      "farmlandId": 8,
+      "state": 2
      },
      {
-      "farmlandId": 14,
+      "farmlandId": 55,
       "state": 0
      },
      {
