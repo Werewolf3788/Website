@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en" data-ww-no-shell>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Game JSON Editor</title>
+<style>
+  :root{--bg:#0f172a;--panel:#111827;--panel2:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;--accent:#ff5500;--ok:#22c55e;--err:#f87171;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}
+  header{position:sticky;top:0;z-index:20;background:#0b1220;border-bottom:1px solid var(--border);padding:10px 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  header h1{font-size:16px;margin:0;color:#fff;flex:0 0 auto;}
+  header .spacer{flex:1;}
+  select,input[type=text],input[type=number],input[type=password],textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font:inherit;}
+  textarea{width:100%;min-height:54px;resize:vertical;}
+  button{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font:inherit;cursor:pointer;}
+  button:hover{border-color:var(--accent);}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;}
+  button.danger{color:var(--err);}
+  button:disabled{opacity:.4;cursor:not-allowed;}
+  #status{font-size:12px;color:var(--muted);min-width:160px;}
+  #status.ok{color:var(--ok);}
+  #status.err{color:var(--err);}
+  main{max-width:1100px;margin:0 auto;padding:16px;}
+  #gate{max-width:480px;margin:60px auto;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px;}
+  #gate p{color:var(--muted);font-size:13px;}
+  #gate input{width:100%;margin:8px 0;}
+  .field{margin-bottom:10px;}
+  .field > label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:3px;}
+  .field input, .field textarea{width:100%;}
+  .row{display:flex;gap:8px;align-items:flex-start;}
+  .row > *{flex:1;}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px;margin:10px 0;}
+  details.section{background:var(--panel);border:1px solid var(--border);border-radius:8px;margin:10px 0;}
+  details.section > summary{cursor:pointer;padding:10px 12px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px;list-style:none;}
+  details.section > summary::-webkit-details-marker{display:none;}
+  details.section > summary::before{content:'▸';color:var(--accent);transition:transform .15s;}
+  details.section[open] > summary::before{transform:rotate(90deg);}
+  .section-body{padding:0 12px 12px;}
+  .item-card{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px;margin:8px 0;position:relative;}
+  .item-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+  .item-head b{color:#fff;font-size:12px;}
+  .thumb-wrap{display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap;}
+  .thumb-wrap img{width:56px;height:56px;object-fit:cover;border-radius:6px;background:#0b1220;border:1px solid var(--border);}
+  .add-field-row{display:flex;gap:6px;margin-top:8px;}
+  .muted{color:var(--muted);font-size:12px;}
+  .pill{display:inline-block;background:#0b1220;border:1px solid var(--border);border-radius:999px;padding:1px 8px;font-size:11px;color:var(--muted);}
+  .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#0b1220;border:1px solid var(--border);color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50;}
+  .toast.on{opacity:1;}
+  .toast.err{border-color:var(--err);color:var(--err);}
+  .kv-key{font-weight:700;color:#fff;min-width:140px;font-size:12px;}
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1 style="color:#fff;margin-top:0;">Game JSON Editor</h1>
+  <p>Paste a GitHub token so this page can read and save <code>public/games/*.json</code> in <b>Werewolf3788/Website</b>. It's kept only in this browser (localStorage) — never sent anywhere else, never committed.</p>
+  <p>Create one at <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" style="color:var(--accent)">github.com/settings/personal-access-tokens</a> → "Fine-grained token" → Repository access: <b>Werewolf3788/Website</b> only → Permissions: <b>Contents: Read and write</b>.</p>
+  <input type="password" id="tokenInput" placeholder="github_pat_...">
+  <button class="primary" id="connectBtn" style="width:100%;margin-top:6px;">Connect</button>
+  <p id="gateMsg" style="color:var(--err);"></p>
+</div>
+
+<div id="app" class="hidden">
+<header>
+  <h1>Game JSON Editor</h1>
+  <select id="gameSelect"></select>
+  <button id="newGameBtn">+ New file…</button>
+  <div class="spacer"></div>
+  <span id="status"></span>
+  <button id="saveBtn" class="primary" disabled>Save to GitHub</button>
+  <button id="forgetBtn" title="Forget token on this device">Sign out</button>
+</header>
+<main id="main"><p class="muted">Pick a game above to start editing.</p></main>
+</div>
+
+<div class="toast" id="toast"></div>
+<input type="file" id="fileInput" accept="image/*" class="hidden">
+
+<script>
+(function(){
+'use strict';
+const OWNER='Werewolf3788', REPO='Website', BRANCH='main', GAMES_DIR='public/games';
+const TOK_KEY='ww_admin_gh_token';
+
+// ---------------------------------------------------------------- utilities
+const $ = (s,el)=> (el||document).querySelector(s);
+const esc = (s)=> String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function toast(msg, isErr){
+  const t=$('#toast'); t.textContent=msg; t.classList.toggle('err', !!isErr);
+  t.classList.add('on'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('on'), 3200);
+}
+function slug(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,48) || 'item'; }
+function humanize(k){ return String(k).replace(/_/g,' ').replace(/\b\w/g, c=>c.toUpperCase()); }
+function b64ToUtf8(b64){ return decodeURIComponent(escape(atob(String(b64||'').replace(/\n/g,'')))); }
+function utf8ToB64(str){ return btoa(unescape(encodeURIComponent(str))); }
+function getPath(obj, path){ return path.reduce((o,k)=> (o==null?undefined:o[k]), obj); }
+function setPath(obj, path, val){ let o=obj; for(let i=0;i<path.length-1;i++){ o=o[path[i]]; } o[path[path.length-1]]=val; }
+function fmtTime(sec){ sec=Number(sec)||0; const m=Math.floor(sec/60), s=Math.floor(sec%60); return m+':'+String(s).padStart(2,'0'); }
+
+// ------------------------------------------------------------- GitHub API
+function ghHeaders(){ return {Authorization:'token '+TOKEN, Accept:'application/vnd.github+json'}; }
+async function ghApi(path, opts){
+  const r = await fetch('https://api.github.com/repos/'+OWNER+'/'+REPO+'/'+path, Object.assign({headers:ghHeaders()}, opts||{}));
+  if (!r.ok){ let m=r.status+' '+r.statusText; try{ const j=await r.json(); if(j.message) m=j.message; }catch(e){} throw new Error(m); }
+  return r.json();
+}
+async function ghList(dir){ return ghApi('contents/'+encodeURIComponent(dir).replace(/%2F/g,'/')+'?ref='+BRANCH); }
+async function ghGetFile(path){
+  const j = await ghApi('contents/'+encodeURIComponent(path).replace(/%2F/g,'/')+'?ref='+BRANCH);
+  return { sha:j.sha, text:b64ToUtf8(j.content) };
+}
+async function ghPutFile(path, contentB64, sha, message){
+  const body = { message, content: contentB64, branch: BRANCH };
+  if (sha) body.sha = sha;
+  return ghApi('contents/'+encodeURIComponent(path).replace(/%2F/g,'/'), { method:'PUT', headers:Object.assign(ghHeaders(),{'Content-Type':'application/json'}), body:JSON.stringify(body) });
+}
+
+// --------------------------------------------------------------- state
+let TOKEN = null;
+let GAME_KEY = null;        // e.g. "snresistance"
+let DATA = null;            // the parsed JSON (mutated in place)
+let FILE_SHA = null;
+let DIRTY = false;
+
+function setDirty(v){ DIRTY = v; $('#saveBtn').disabled = !v; $('#status').textContent = v ? 'Unsaved changes' : 'Up to date'; $('#status').className = v ? '' : 'ok'; }
+window.addEventListener('beforeunload', (e)=>{ if (DIRTY){ e.preventDefault(); e.returnValue=''; } });
+
+// ------------------------------------------------------- skeleton for a brand-new game file
+function newGameSkeleton(title){
+  return {
+    schema_version: 1,
+    game: title,
+    gameId: title.replace(/[^a-zA-Z0-9]/g,''),
+    commId: "",
+    image_url: "",
+    platforms: {
+      playstation: { commId: "", titleId: "" },
+      xbox: { productId: "", url: "" },
+      steam: { appId: "", url: "" }
+    },
+    missions: {},
+    medals: {},
+    general_trophies: []
+  };
+}
+
+// ------------------------------------------------- "add new item" templates, keyed by the array/object's own key name
+const ITEM_TEMPLATES = {
+  personal_letters:      ()=>({ id:'', name:'', location:'', image_url:'', emoji:'✉️', video_time:0, video_url:'' }),
+  classified_documents:  ()=>({ id:'', name:'', location:'', image_url:'', emoji:'📜', video_time:0, video_url:'' }),
+  hidden_items:          ()=>({ id:'', name:'', location:'', image_url:'', emoji:'🏷️', video_time:0, video_url:'' }),
+  stone_eagles:          ()=>({ id:'', name:'', location:'', image_url:'', emoji:'🦅', video_time:0, video_url:'' }),
+  workbenches:           ()=>({ id:'', name:'', location:'', image_url:'', emoji:'⚙️', description:'', unlocks:'' }),
+  objective:             ()=>medalTemplate(),
+  mission:               ()=>medalTemplate(),
+  long_shot:             ()=>medalTemplate(),
+  propaganda:            ()=>medalTemplate(),
+  general:               ()=>medalTemplate(),
+  starting_locations:    ()=>({ name:'', description:'', location_image_url:'', video_time:0, default:false }),
+  primary_objectives:    ()=>({ text:'', tip:'', location_image_url:'', trophy:[], medal:[] }),
+  optional_objectives:   ()=>({ text:'', location_image_url:'' }),
+  trophies:              ()=>({ trophyId:null, name:'', rank:'BRONZE', description:'' }),
+  missions:              ()=>missionTemplate()
+};
+function medalTemplate(){ return { id:'', name:'', description:'', goal:1, goal_tier:null, tiers:{bronze:null,silver:null,gold:null}, image_url:'' }; }
+function missionTemplate(){
+  return {
+    number: null, title:'', region:'', image_url:'',
+    collectibles: { personal_letters:[], classified_documents:[], hidden_items:[], stone_eagles:[], workbenches:[] },
+    medals: { objective:[], mission:[], long_shot:[], propaganda:[] },
+    primary_objectives: [], starting_locations: [], trophies: []
+  };
+}
+function nextId(prefix, missionShort){
+  // prefix like "let" + missionShort like "m7" -> let_m7_01, let_m7_02, ...
+  const base = missionShort ? prefix+'_'+missionShort+'_' : prefix+'_';
+  // find current siblings count is done by caller; this just builds a candidate, caller checks uniqueness
+  return base;
+}
+
+// --------------------------------------------------------- image field path helper
+const CATEGORY_PREFIX = { personal_letters:'let', classified_documents:'doc', hidden_items:'item', stone_eagles:'eagle', workbenches:'wb' };
+function missionShortFromKey(missionKey){
+  const m = DATA.missions && DATA.missions[missionKey];
+  const n = (m && (m.number!==undefined && m.number!==null)) ? m.number : (String(missionKey).match(/\d+/)||[])[0];
+  return 'm'+(n!=null?n:missionKey);
+}
+function suggestImagePath(path){
+  // path points at the ...image_url leaf; walk it to find mission + item id + category
+  let missionKey=null, category=null, itemId=null, itemName=null, inMedals=false;
+  for (let i=0;i<path.length;i++){
+    if (path[i]==='missions' && typeof path[i+1]==='string') missionKey = path[i+1];
+    if (path[i]==='medals') inMedals = true;
+    if (path[i]==='collectibles' && typeof path[i+1]==='string') category = path[i+1];
+  }
+  const leafObj = getPath(DATA, path.slice(0,-1));
+  if (leafObj){ itemId = leafObj.id; itemName = leafObj.name || leafObj.title; }
+  const ext = 'jpg';
+  const fname = slug(itemId || itemName || ('img_'+Date.now())) + '.' + ext;
+  if (missionKey){
+    const short = missionShortFromKey(missionKey);
+    if (inMedals) return GAMES_DIR+'/'+GAME_KEY+'/images/medals/'+fname;
+    return GAMES_DIR+'/'+GAME_KEY+'/images/locations/'+short+'/'+fname;
+  }
+  if (inMedals) return GAMES_DIR+'/'+GAME_KEY+'/images/medals/'+fname;
+  return GAMES_DIR+'/'+GAME_KEY+'/images/misc/'+fname;
+}
+
+// --------------------------------------------------------------- rendering
+function labelFor(key){
+  if (/^\d+$/.test(String(key))) return '#'+(Number(key)+1);
+  return humanize(key);
+}
+const LONG_TEXT_KEYS = /^(description|summary|location|walkthrough|tip|notes|briefing|solution|collectibles_note|headline|text)$/i;
+const IMAGE_KEYS = /(^image_url$|^location_image_url$|^icon$|_image_url$)/i;
+
+function renderValue(val, path, keyLabel){
+  if (Array.isArray(val)) return renderArray(val, path, keyLabel);
+  if (val && typeof val === 'object') return renderObject(val, path, keyLabel);
+  return renderLeaf(val, path, keyLabel);
+}
+
+function renderLeaf(val, path, key){
+  const wrap = document.createElement('div'); wrap.className='field';
+  const lbl = document.createElement('label'); lbl.textContent = labelFor(key); wrap.appendChild(lbl);
+
+  if (IMAGE_KEYS.test(String(key))){
+    wrap.appendChild(buildImageField(val, path));
+    return wrap;
+  }
+  if (String(key)==='video_time'){
+    wrap.appendChild(buildVideoTimeField(val, path));
+    return wrap;
+  }
+  if (typeof val === 'boolean'){
+    const inp = document.createElement('input'); inp.type='checkbox'; inp.checked = !!val;
+    inp.onchange = ()=>{ setPath(DATA, path, inp.checked); setDirty(true); };
+    wrap.appendChild(inp); return wrap;
+  }
+  if (typeof val === 'number' || (val===null && /goal|rank|number|id|target|count|time|year/i.test(String(key))===false && /trophyId|targetValue/i.test(String(key)))){
+    const inp = document.createElement('input'); inp.type='number'; inp.step='any'; inp.value = val==null?'':val;
+    inp.oninput = ()=>{ const v = inp.value===''? null : Number(inp.value); setPath(DATA, path, v); setDirty(true); };
+    wrap.appendChild(inp); return wrap;
+  }
+  if (LONG_TEXT_KEYS.test(String(key)) || (typeof val==='string' && val.length>60)){
+    const ta = document.createElement('textarea'); ta.value = val==null?'':val;
+    ta.oninput = ()=>{ setPath(DATA, path, ta.value); setDirty(true); };
+    wrap.appendChild(ta); return wrap;
+  }
+  const inp = document.createElement('input'); inp.type='text'; inp.value = (val==null? '' : val);
+  inp.oninput = ()=>{ setPath(DATA, path, inp.value); setDirty(true); };
+  wrap.appendChild(inp); return wrap;
+}
+
+function buildImageField(val, path){
+  const box = document.createElement('div');
+  const row = document.createElement('div'); row.className='thumb-wrap';
+  const img = document.createElement('img'); img.src = val||''; img.alt=''; img.onerror=()=>{ img.style.visibility='hidden'; };
+  if (!val) img.style.visibility='hidden';
+  const urlInp = document.createElement('input'); urlInp.type='text'; urlInp.placeholder='Paste an image URL…'; urlInp.value = val||''; urlInp.style.flex='1';
+  urlInp.oninput = ()=>{ setPath(DATA, path, urlInp.value); setDirty(true); img.src = urlInp.value; img.style.visibility = urlInp.value ? 'visible':'hidden'; };
+  const upBtn = document.createElement('button'); upBtn.type='button'; upBtn.textContent='Upload image…';
+  upBtn.onclick = ()=> openUploadFor(path, urlInp, img);
+  row.appendChild(img); row.appendChild(urlInp); row.appendChild(upBtn);
+  box.appendChild(row);
+  return box;
+}
+
+function openUploadFor(path, urlInp, imgEl){
+  const fi = $('#fileInput');
+  fi.onchange = async ()=>{
+    const file = fi.files[0]; fi.value=''; if (!file) return;
+    const suggested = suggestImagePath(path);
+    const name = window.prompt('Save this image as (path in the repo):', suggested);
+    if (!name) return;
+    const reader = new FileReader();
+    reader.onload = async ()=>{
+      const dataUrl = reader.result; const b64 = dataUrl.split(',')[1];
+      try{
+        $('#status').textContent = 'Uploading image…';
+        const existing = await ghGetFile(name).catch(()=>null);
+        await ghPutFile(name, b64, existing && existing.sha, 'Upload image '+name);
+        const publicUrl = '/'+name.replace(/^\/+/, '');
+        urlInp.value = publicUrl; setPath(DATA, path, publicUrl); setDirty(true);
+        imgEl.src = publicUrl; imgEl.style.visibility='visible';
+        toast('Image uploaded.');
+        $('#status').textContent = 'Unsaved changes';
+      }catch(e){ toast('Upload failed: '+e.message, true); $('#status').textContent=''; }
+    };
+    reader.readAsDataURL(file);
+  };
+  fi.click();
+}
+
+function buildVideoTimeField(val, path){
+  const row = document.createElement('div'); row.className='row';
+  const inp = document.createElement('input'); inp.type='number'; inp.min='0'; inp.value = val==null?'':val;
+  const readout = document.createElement('span'); readout.className='pill'; readout.textContent = fmtTime(val);
+  inp.oninput = ()=>{ const v = inp.value===''?0:Number(inp.value); setPath(DATA, path, v); readout.textContent = fmtTime(v); setDirty(true); };
+  const fillBtn = document.createElement('button'); fillBtn.type='button'; fillBtn.textContent='↳ set video_url from mission guide';
+  fillBtn.style.flex='0 0 auto';
+  fillBtn.onclick = ()=>{
+    const missionKey = path.find((p,i)=> path[i-1]==='missions');
+    const mi = path.indexOf('missions');
+    const mKey = mi>=0 ? path[mi+1] : null;
+    const mission = mKey && DATA.missions && DATA.missions[mKey];
+    const vid = mission && mission.guide_video && mission.guide_video.video_id;
+    if (!vid){ toast('That mission has no guide_video.video_id set yet.', true); return; }
+    const urlPath = path.slice(0,-1).concat('video_url');
+    const url = 'https://www.youtube.com/watch?v='+vid+'&t='+(Number(inp.value)||0)+'s';
+    setPath(DATA, urlPath, url); setDirty(true); toast('video_url updated.');
+  };
+  row.appendChild(inp); row.appendChild(readout); row.appendChild(fillBtn);
+  return row;
+}
+
+function renderObject(obj, path, keyLabel){
+  const det = document.createElement('details'); det.className='section';
+  if (path.length<=1) det.open = true;
+  const sum = document.createElement('summary'); sum.textContent = keyLabel!==undefined ? labelFor(keyLabel) : '';
+  det.appendChild(sum);
+  const body = document.createElement('div'); body.className='section-body';
+  const keys = Object.keys(obj);
+  keys.forEach(k=>{
+    const childPath = path.concat(k);
+    const line = document.createElement('div');
+    const holder = document.createElement('div');
+    holder.appendChild(renderValue(obj[k], childPath, k));
+    const delBtn = document.createElement('button'); delBtn.type='button'; delBtn.textContent='× remove field'; delBtn.className='danger';
+    delBtn.style.fontSize='11px'; delBtn.style.marginBottom='6px';
+    delBtn.onclick = ()=>{ if(!confirm('Remove "'+k+'"?')) return; delete obj[k]; setDirty(true); rerenderCurrent(); };
+    const headRow=document.createElement('div'); headRow.style.display='flex'; headRow.style.justifyContent='space-between'; headRow.style.alignItems='center';
+    headRow.appendChild(document.createElement('span'));
+    headRow.appendChild(delBtn);
+    line.appendChild(headRow);
+    line.appendChild(holder);
+    body.appendChild(line);
+  });
+  const addRow = document.createElement('div'); addRow.className='add-field-row';
+  const addBtn = document.createElement('button'); addBtn.type='button'; addBtn.textContent='+ Add field';
+  addBtn.onclick = ()=>{
+    const k = window.prompt('New field name:'); if (!k) return;
+    if (obj[k]!==undefined){ toast('That field already exists.', true); return; }
+    obj[k] = '';
+    setDirty(true); rerenderCurrent();
+  };
+  addRow.appendChild(addBtn);
+  body.appendChild(addRow);
+  det.appendChild(body);
+  return det;
+}
+
+function renderArray(arr, path, keyLabel){
+  const det = document.createElement('details'); det.className='section';
+  if (path.length<=2) det.open = true;
+  const sum = document.createElement('summary'); sum.textContent = labelFor(keyLabel)+' ('+arr.length+')';
+  det.appendChild(sum);
+  const body = document.createElement('div'); body.className='section-body';
+  arr.forEach((item, idx)=>{
+    const card = document.createElement('div'); card.className='item-card';
+    const head = document.createElement('div'); head.className='item-head';
+    const b = document.createElement('b'); b.textContent = (item && (item.name||item.title||item.id)) || ('Item '+(idx+1));
+    const rm = document.createElement('button'); rm.type='button'; rm.className='danger'; rm.textContent='× Remove';
+    rm.onclick = ()=>{ if(!confirm('Remove this item?')) return; arr.splice(idx,1); setDirty(true); rerenderCurrent(); };
+    head.appendChild(b); head.appendChild(rm);
+    card.appendChild(head);
+    card.appendChild(renderValue(item, path.concat(idx), idx));
+    body.appendChild(card);
+  });
+  const addRow = document.createElement('div'); addRow.className='add-field-row';
+  const addBtn = document.createElement('button'); addBtn.type='button'; addBtn.textContent='+ Add '+(String(keyLabel).replace(/s$/,'')||'item');
+  addBtn.onclick = ()=>{
+    const factory = ITEM_TEMPLATES[keyLabel];
+    let nu = factory ? factory() : (arr.length ? JSON.parse(JSON.stringify(arr[arr.length-1])) : {});
+    if (nu && typeof nu==='object' && !Array.isArray(nu) && 'id' in nu && CATEGORY_PREFIX[keyLabel]){
+      const mi = path.indexOf('missions'); const mKey = mi>=0 ? path[mi+1] : null;
+      const short = mKey ? missionShortFromKey(mKey) : null;
+      let n=1, candidate;
+      do { candidate = CATEGORY_PREFIX[keyLabel]+'_'+(short||'x')+'_'+String(n).padStart(2,'0'); n++; } while (arr.some(it=>it && it.id===candidate));
+      nu.id = candidate;
+    }
+    arr.push(nu); setDirty(true); rerenderCurrent();
+  };
+  addRow.appendChild(addBtn);
+  body.appendChild(addRow);
+  det.appendChild(body);
+  return det;
+}
+
+// "Add mission" convenience at the top of the missions object
+function renderMissionsSpecial(missionsObj, path){
+  const wrap = document.createElement('div');
+  const addRow = document.createElement('div'); addRow.style.margin='8px 0';
+  const addBtn = document.createElement('button'); addBtn.type='button'; addBtn.textContent='+ Add new mission';
+  addBtn.className='primary';
+  addBtn.onclick = ()=>{
+    const key = window.prompt('New mission key (e.g. mission_11):'); if (!key) return;
+    if (missionsObj[key]){ toast('That mission key already exists.', true); return; }
+    const num = window.prompt('Mission number:', String(Object.keys(missionsObj).length+1));
+    const t = missionTemplate(); t.number = num? Number(num): null;
+    missionsObj[key] = t; setDirty(true); rerenderCurrent();
+  };
+  addRow.appendChild(addBtn);
+  wrap.appendChild(addRow);
+  wrap.appendChild(renderObject(missionsObj, path, 'missions'));
+  return wrap;
+}
+
+let lastRenderPath = [];
+function rerenderCurrent(){ buildUI(); }
+
+function buildUI(){
+  const main = $('#main'); main.innerHTML='';
+  if (!DATA) return;
+  const topKeys = Object.keys(DATA);
+  topKeys.forEach(k=>{
+    if (k==='missions' && DATA.missions && typeof DATA.missions==='object' && !Array.isArray(DATA.missions)){
+      main.appendChild(renderMissionsSpecial(DATA.missions, ['missions']));
+    } else {
+      main.appendChild(renderValue(DATA[k], [k], k));
+    }
+  });
+}
+
+// --------------------------------------------------------------- loading / saving
+async function loadGamesList(){
+  const sel = $('#gameSelect'); sel.innerHTML = '<option>Loading…</option>';
+  try{
+    const items = await ghList(GAMES_DIR);
+    const files = items.filter(i=> i.type==='file' && /\.json$/i.test(i.name));
+    sel.innerHTML = '<option value="">— choose a game —</option>' + files.map(f=>{
+      const key = f.name.replace(/\.json$/i,'');
+      return '<option value="'+esc(key)+'">'+esc(key)+'</option>';
+    }).join('');
+  }catch(e){ sel.innerHTML='<option>Error loading list</option>'; toast('Could not list games: '+e.message, true); }
+}
+
+async function loadGame(key){
+  $('#status').textContent = 'Loading '+key+'…'; $('#status').className='';
+  try{
+    const path = GAMES_DIR+'/'+key+'.json';
+    const { sha, text } = await ghGetFile(path);
+    DATA = JSON.parse(text);
+    FILE_SHA = sha; GAME_KEY = key;
+    buildUI();
+    setDirty(false);
+  }catch(e){ toast('Could not load '+key+': '+e.message, true); $('#status').textContent=''; }
+}
+
+async function saveGame(){
+  if (!DATA || !GAME_KEY) return;
+  const path = GAMES_DIR+'/'+GAME_KEY+'.json';
+  $('#status').textContent='Saving…'; $('#saveBtn').disabled=true;
+  try{
+    const text = JSON.stringify(DATA, null, 2) + '\n';
+    const res = await ghPutFile(path, utf8ToB64(text), FILE_SHA, 'Edit '+GAME_KEY+'.json via admin editor');
+    FILE_SHA = res.content && res.content.sha || FILE_SHA;
+    setDirty(false);
+    toast('Saved. The live site updates shortly.');
+  }catch(e){ toast('Save failed: '+e.message, true); $('#saveBtn').disabled=false; $('#status').textContent='Unsaved changes'; }
+}
+
+// --------------------------------------------------------------------- wiring
+$('#gameSelect').addEventListener('change', (e)=>{
+  if (DIRTY && !confirm('Discard unsaved changes?')) { e.target.value = GAME_KEY||''; return; }
+  const key = e.target.value; if (!key){ DATA=null; GAME_KEY=null; $('#main').innerHTML=''; setDirty(false); return; }
+  loadGame(key);
+});
+$('#newGameBtn').addEventListener('click', async ()=>{
+  const name = window.prompt('New file name (no .json needed), e.g. cotw:'); if (!name) return;
+  const key = name.replace(/\.json$/i,'').trim(); if (!key) return;
+  const path = GAMES_DIR+'/'+key+'.json';
+  const exists = await ghGetFile(path).catch(()=>null);
+  if (exists){ toast('That file already exists — pick it from the dropdown.', true); return; }
+  const title = window.prompt('Display name for this game:', key) || key;
+  DATA = newGameSkeleton(title); GAME_KEY = key; FILE_SHA = null;
+  buildUI(); setDirty(true);
+  toast('New file ready — fill it in, then Save to create it in GitHub.');
+  const sel=$('#gameSelect'); const opt=document.createElement('option'); opt.value=key; opt.textContent=key+' (new)'; opt.selected=true; sel.appendChild(opt);
+});
+$('#saveBtn').addEventListener('click', saveGame);
+$('#forgetBtn').addEventListener('click', ()=>{
+  if (DIRTY && !confirm('Discard unsaved changes and sign out?')) return;
+  localStorage.removeItem(TOK_KEY); location.reload();
+});
+$('#connectBtn').addEventListener('click', connect);
+$('#tokenInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') connect(); });
+
+async function connect(){
+  const t = $('#tokenInput').value.trim();
+  if (!t){ $('#gateMsg').textContent='Paste a token first.'; return; }
+  TOKEN = t;
+  $('#connectBtn').disabled = true; $('#gateMsg').textContent='';
+  try{
+    await ghApi(''); // confirms the token can see this repo
+    localStorage.setItem(TOK_KEY, t);
+    $('#gate').classList.add('hidden'); $('#app').classList.remove('hidden');
+    await loadGamesList();
+  }catch(e){ $('#gateMsg').textContent = "Couldn't access the repo with that token: "+e.message; TOKEN=null; }
+  $('#connectBtn').disabled = false;
+}
+
+(function init(){
+  const saved = localStorage.getItem(TOK_KEY);
+  if (saved){ $('#tokenInput').value = saved; connect(); }
+})();
+})();
+</script>
+</body>
+</html>
