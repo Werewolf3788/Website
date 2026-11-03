@@ -7,8 +7,8 @@
    "creationDate": "2026-08-30",
    "mapId": "FS25_The_Rural_Farmlands_Of_Ohio.mountain",
    "mapTitle": "The Rural Farmlands Of Ohio",
-   "saveDateFormatted": "2026-11-02",
-   "saveDate": "2026-11-02",
+   "saveDateFormatted": "2026-11-03",
+   "saveDate": "2026-11-03",
    "initialMoney": 1000000,
    "initialLoan": 0,
    "economicDifficulty": "NORMAL",
@@ -63,8 +63,8 @@
    "shownHints": null
   },
   "statistics": {
-   "money": 2191325504,
-   "playTime": 87737.109375
+   "money": 2191399982,
+   "playTime": 88156.773438
   },
   "mapsSplitShapeFileIds": {
    "count": 1,
@@ -73,7 +73,7 @@
    }
   },
   "slotSystem": {
-   "slotUsage": 2179
+   "slotUsage": 2176
   },
   "mod": [
    {
