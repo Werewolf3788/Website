@@ -217,7 +217,7 @@ function labelFor(key){
   return humanize(key);
 }
 const LONG_TEXT_KEYS = /^(description|summary|location|walkthrough|tip|notes|briefing|solution|collectibles_note|headline|text)$/i;
-const IMAGE_KEYS = /(^image_url$|^location_image_url$|^icon$|_image_url$)/i;
+const IMAGE_KEYS = /(^image_url$|^location_image_url$|_image_url$)/i;
 
 function renderValue(val, path, keyLabel){
   if (Array.isArray(val)) return renderArray(val, path, keyLabel);
