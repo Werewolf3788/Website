@@ -2245,9 +2245,9 @@
       "yieldRegular": 1780032.25,
       "yieldWeight": 534.581665,
       "yieldBestPrice": 150074.71875,
-      "usedFuel": 498.318817,
-      "vehicleCosts": 10694.761719,
-      "helperCosts": 14107.141602,
+      "usedFuel": 603.613098,
+      "vehicleCosts": 21545.0,
+      "helperCosts": 21983.892578,
       "subsidies": 0.0
      },
      "totalCounter": {
@@ -2271,9 +2271,9 @@
       "yieldRegular": 3312869.5,
       "yieldWeight": 996.922302,
       "yieldBestPrice": 276647.90625,
-      "usedFuel": 885.804321,
-      "vehicleCosts": 11724.382812,
-      "helperCosts": 19604.857422,
+      "usedFuel": 991.098633,
+      "vehicleCosts": 22574.621094,
+      "helperCosts": 27481.607422,
       "subsidies": 0.0
      }
     },
