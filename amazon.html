@@ -1029,6 +1029,7 @@
 
   <!-- Footer with Persistent 24-hr NY Timestamp & Version Number -->
   <footer>
+    <div id="affiliateDisclosure" style="font-size: 0.75rem; opacity: 0.8; margin-bottom: 6px;">As an Amazon Associate I earn from qualifying purchases. Amazon links on this page are affiliate links.</div>
     <div id="footerTimestamp">Version 2.5.0 | Deployed: 2026-10-03 15:10 EDT</div>
   </footer>
 
@@ -1426,23 +1427,100 @@
         }
       }
 
-      if (entertainmentDb) {
-        try {
-          const moviesRef = ref(entertainmentDb, "movies_guide");
-          onValue(moviesRef, (snapshot) => {
-            try {
-              const val = snapshot.val();
-              AppState.movies = parseMoviesTree(val);
-              renderCatalog();
-            } catch (err) {
-              console.error("Error processing movies update:", err);
-            }
-          }, (error) => {
-            console.error("Firebase movies listener failed:", error);
-          });
-        } catch (e) {
-          console.error("Failed to bind movies reference:", e);
+      loadMoviesFromCsv();
+    }
+
+
+    /**
+     * Movies now load from the published Movie Guide CSV (Discord tab) instead of Firebase.
+     * Only titles with an Amazon link (column D) are shown on this page.
+     */
+    const MOVIES_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbnwK6U18P1u1eAS8a_PqZzpOKxQ9AATL6RBH7CfxXQR10YPM63akRqxSDbNiXYJWs92tvobh6iqE7/pub?gid=1831790548&single=true&output=csv";
+
+    function parseCsvText(text) {
+      const rows = [];
+      let row = [], field = "", q = false, i = text.charCodeAt(0) === 0xFEFF ? 1 : 0;
+      for (const n = text.length; i < n; i++) {
+        const c = text[i];
+        if (q) {
+          if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else q = false; }
+          else field += c;
+          continue;
         }
+        if (c === '"') q = true;
+        else if (c === ",") { row.push(field); field = ""; }
+        else if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; }
+        else if (c !== "\r") field += c;
+      }
+      if (field !== "" || row.length) { row.push(field); rows.push(row); }
+      return rows;
+    }
+
+    function parseMoviesCsv(rows) {
+      const list = [];
+      const seen = new Set();
+      for (let r = 1; r < rows.length; r++) {
+        const row = rows[r];
+        const cell = (i) => String(row[i] == null ? "" : row[i]).trim();
+
+        let title = cell(2);
+        if (!title || /^loading/i.test(title) || title[0] === "#") continue;
+
+        let amazonUrl = cell(3);
+        if (!/^https?:\/\//i.test(amazonUrl)) continue;
+
+        let year = "";
+        const ym = title.match(/^(.*\S)\s*\((\d{4})\)\s*$/);
+        if (ym) { title = ym[1]; year = ym[2]; }
+
+        const id = cell(0) || title;
+        const edition = cell(10);
+        const dedupeKey = id + "|" + edition;
+        if (seen.has(dedupeKey)) continue;
+        seen.add(dedupeKey);
+
+        const genre = cell(16);
+        const typeRaw = cell(17);
+        const isTV = /tv/i.test(typeRaw);
+        const genreList = genre ? genre.split(/[,/|]/).map(g => g.trim()).filter(Boolean) : ["Feature"];
+
+        list.push({
+          id: id,
+          imdb_id: id,
+          isMovie: true,
+          title: title,
+          year: year,
+          rating: cell(18),
+          runtime: cell(15),
+          type: isTV ? "tv show" : "movie",
+          edition: /^standard$/i.test(edition) ? "" : edition,
+          collection: cell(11),
+          genre: genre,
+          holidays: "",
+          studio: "",
+          image_url: cell(13) || cell(1),
+          site_url: amazonUrl,
+          description: cell(19),
+          streaming: cell(20),
+          category: "Movies",
+          sub_category: isTV ? "TV Show" : (year || "Feature"),
+          placement: "deals_page",
+          isSaleActive: false,
+          isHolidayActive: false,
+          tags: genreList
+        });
+      }
+      return list;
+    }
+
+    async function loadMoviesFromCsv() {
+      try {
+        const res = await fetch(MOVIES_CSV_URL + "&_cb=" + Date.now(), { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        AppState.movies = parseMoviesCsv(parseCsvText(await res.text()));
+        renderCatalog();
+      } catch (err) {
+        console.error("Movie CSV load failed:", err);
       }
     }
 
