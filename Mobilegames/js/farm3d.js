@@ -549,7 +549,7 @@ function loop(ts) {
 // ------------------------------------------------------------ start / join
 $('shareBtn').onclick = function () {
   if (WW.mode !== 'cloud') { say('Sign in from the games hub to play with friends.'); return; }
-  if (!isMP) { say('This is your private solo farm. Open the games hub and tap Host multiplayer to play with friends.'); return; }
+  if (!isMP) { say('This is your solo farm. A friend can join you from the games hub (the hub shows them you are playing). You will both move to a multiplayer farm.'); return; }
   const url = location.origin + location.pathname + '?mp=' + hostCode;
   if (navigator.share) navigator.share({ title: 'Join my farm in Neighborly Acre', text: 'Farm code ' + hostCode, url: url }).catch(function () {});
   else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { say('Invite link copied!'); }); else say('Share this code: ' + hostCode);
@@ -565,7 +565,12 @@ async function begin(user, myCode) {
     const roomId = isMP ? 'MP-' + hostCode : myCode;
     try {
       roomRef = WW.roomRef('farm', roomId); WW.mode = 'cloud'; let meta = (await roomRef.child('meta').once('value')).val();
-      if (!meta) { if (!isMP || hostCode === myCode) { meta = { host: (user.displayName || 'Farmer').split(' ')[0], created: firebase.database.ServerValue.TIMESTAMP }; await roomRef.child('meta').set(meta); } else { gate('Multiplayer farm ' + hostCode + ' not found. Ask your friend to host it from the games hub first.', { back: true }); return; } }
+      if (!meta) { if (!isMP || hostCode === myCode) { meta = { host: (user.displayName || 'Farmer').split(' ')[0], created: firebase.database.ServerValue.TIMESTAMP }; await roomRef.child('meta').set(meta); } else {
+        // the host may be playing solo right now: their status (by friend code) says so, and joining turns it into a multiplayer farm
+        const pr = (await WW.db.ref('game_rooms/presence/' + hostCode).once('value')).val();
+        if (pr && pr.game === 'farm' && pr.t && nowMs() - pr.t < 150000) { meta = { host: pr.n || hostCode, created: firebase.database.ServerValue.TIMESTAMP }; await roomRef.child('meta').set(meta); }
+        else { gate('Multiplayer farm ' + hostCode + ' not found. Your friend is not playing right now. Ask them to open Neighborly Acre first.', { back: true }); return; }
+      } }
       hostName = meta.host || ''; me = user; cloudCode = hostCode || myCode;
       $('roomLabel').textContent = isMP ? 'Multiplayer · ' + (hostName ? hostName + '\u2019s farm' : hostCode) : 'Solo farm';
     } catch (e) { console.warn(e); gate('Your online farm could not be opened (' + (e.code || e.message || 'permission denied') + '). The game database rules need to be published in Firebase — nothing is saved to this device while you are signed in.', { back: true }); return; }
@@ -602,12 +607,22 @@ async function begin(user, myCode) {
   updateFieldVisuals(); renderPeers();
   setInterval(syncRemotes, 5000); setInterval(rainTick, 3000); setInterval(function () { if ($('shop').style.display === 'flex') renderShop(); }, 2000);
   roomRef.child('players/' + me.uid).onDisconnect().remove();
-  // let friends see on the games hub that someone is on this multiplayer farm (and join with one tap)
-  if (isMP && WW.mode === 'cloud' && WW.publishPlaying) {
-    const announce = function () { WW.publishPlaying({ game: 'farm', title: 'Neighborly Acre', room: hostCode, status: 'Level ' + level() + ' · ' + $('count').textContent + ' on the farm', open: 1 }); };
+  // friends see on the games hub that you are playing (solo or multiplayer) and can join with one tap
+  if (WW.mode === 'cloud' && WW.publishPlaying) {
+    const announce = function () { WW.publishPlaying({ game: 'farm', title: 'Neighborly Acre', room: hostCode || myCode, solo: isMP ? 0 : 1, status: isMP ? 'Multiplayer · level ' + level() + ' · ' + $('count').textContent + ' on the farm' : 'Playing solo · level ' + level() + ' · join to play together', open: 1 }); };
     announce(); setInterval(announce, 60000); window.addEventListener('pagehide', function () { WW.clearPlaying && WW.clearPlaying(); });
   }
-  say(isMP ? 'Multiplayer farm: you start fresh here. Work your own field; the animals are shared with everyone.' : (WW.mode === 'cloud' ? 'Your solo farm. Host a multiplayer farm from the games hub to play with friends.' : 'Welcome! Face grass, pick Plow, press E. Then Plant. Sign in from the hub for online saves and friends.'));
+  // solo -> multiplayer: when a friend joins this host's multiplayer farm, move this player there too (both start fresh together)
+  if (!isMP && WW.mode === 'cloud') {
+    let moving = false;
+    WW.roomRef('farm', 'MP-' + myCode).child('players').on('value', function (snap) {
+      const v = snap.val() || {}, now = nowMs(), others = Object.keys(v).filter(function (u) { return u !== me.uid && now - ((v[u] || {}).t || 0) < 45000; });
+      if (!others.length || moving) return; moving = true;
+      say('🤝 ' + ((v[others[0]] || {}).n || 'A friend') + ' is joining your farm! Moving you both to the multiplayer farm…'); flushSave();
+      setTimeout(function () { location.href = 'farm.html?mp=' + encodeURIComponent(myCode); }, 2200);
+    });
+  }
+  say(isMP ? 'Multiplayer farm: you start fresh here. Work your own field; the animals are shared with everyone.' : (WW.mode === 'cloud' ? 'Your solo farm. If a friend joins from the games hub, you both move to a multiplayer farm.' : 'Welcome! Face grass, pick Plow, press E. Then Plant. Sign in from the hub for online saves and friends.'));
   requestAnimationFrame(loop);
 }
 let started = false, startedAsUser = false;
