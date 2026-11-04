@@ -20,7 +20,7 @@
    "trailerFillLimit": false,
    "automaticMotorStartEnabled": true,
    "growthMode": 2,
-   "plannedDaysPerPeriod": 2,
+   "plannedDaysPerPeriod": 1,
    "fruitDestruction": false,
    "plowingRequiredEnabled": false,
    "stonesEnabled": false,
@@ -63,8 +63,8 @@
    "shownHints": null
   },
   "statistics": {
-   "money": 2191715264,
-   "playTime": 89311.046875
+   "money": 2192198411,
+   "playTime": 89401.046875
   },
   "mapsSplitShapeFileIds": {
    "count": 1,
@@ -73,7 +73,7 @@
    }
   },
   "slotSystem": {
-   "slotUsage": 2180
+   "slotUsage": 2182
   },
   "mod": [
    {
