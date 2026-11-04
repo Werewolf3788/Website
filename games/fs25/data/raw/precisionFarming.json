@@ -3,7 +3,7 @@
   "tramlineMap": {
    "farmland": [
     {
-     "farmlandId": 17,
+     "farmlandId": 3,
      "width": 27.0,
      "workDirection": -57.29578,
      "spacing": 2.0,
@@ -73,21 +73,21 @@
      "pendingUpdate": false
     },
     {
-     "farmlandId": 16,
+     "farmlandId": 27,
      "width": 27.0,
      "workDirection": -57.29578,
      "spacing": 2.0,
      "pendingUpdate": false
     },
     {
-     "farmlandId": 14,
+     "farmlandId": 30,
      "width": 27.0,
      "workDirection": -57.29578,
      "spacing": 2.0,
      "pendingUpdate": false
     },
     {
-     "farmlandId": 3,
+     "farmlandId": 17,
      "width": 27.0,
      "workDirection": -57.29578,
      "spacing": 2.0,
@@ -115,14 +115,14 @@
      "pendingUpdate": false
     },
     {
-     "farmlandId": 30,
+     "farmlandId": 14,
      "width": 27.0,
      "workDirection": -57.29578,
      "spacing": 2.0,
      "pendingUpdate": false
     },
     {
-     "farmlandId": 27,
+     "farmlandId": 16,
      "width": 27.0,
      "workDirection": -57.29578,
      "spacing": 2.0,
@@ -2227,8 +2227,8 @@
      "periodCounter": {
       "numSoilSamples": 58,
       "soilSampleCosts": 10150.0,
-      "usedLime": 49059.277344,
-      "usedLimeRegular": 47773.335938,
+      "usedLime": 51308.601562,
+      "usedLimeRegular": 48658.371094,
       "usedMineralFertilizer": 10410.478516,
       "usedMineralFertilizerRegular": 12770.634766,
       "usedLiquidFertilizer": 0.0,
@@ -2245,16 +2245,16 @@
       "yieldRegular": 1780032.25,
       "yieldWeight": 534.581665,
       "yieldBestPrice": 150074.71875,
-      "usedFuel": 1301.890747,
-      "vehicleCosts": 26285.8125,
-      "helperCosts": 56392.0625,
+      "usedFuel": 1302.554688,
+      "vehicleCosts": 26287.412109,
+      "helperCosts": 56402.007812,
       "subsidies": 0.0
      },
      "totalCounter": {
       "numSoilSamples": 174,
       "soilSampleCosts": 30450.0,
-      "usedLime": 64397.90625,
-      "usedLimeRegular": 78935.296875,
+      "usedLime": 66647.226562,
+      "usedLimeRegular": 79820.335938,
       "usedMineralFertilizer": 16297.947266,
       "usedMineralFertilizerRegular": 22708.578125,
       "usedLiquidFertilizer": 0.0,
@@ -2271,9 +2271,9 @@
       "yieldRegular": 3312869.5,
       "yieldWeight": 996.922302,
       "yieldBestPrice": 276647.90625,
-      "usedFuel": 1689.376343,
-      "vehicleCosts": 27315.431641,
-      "helperCosts": 61889.777344,
+      "usedFuel": 1690.040283,
+      "vehicleCosts": 27317.03125,
+      "helperCosts": 61899.722656,
       "subsidies": 0.0
      }
     },
@@ -2445,8 +2445,8 @@
     {
      "farmlandId": 43,
      "periodCounter": {
-      "numSoilSamples": 43,
-      "soilSampleCosts": 7525.0,
+      "numSoilSamples": 86,
+      "soilSampleCosts": 15050.0,
       "usedLime": 0.0,
       "usedLimeRegular": 0.0,
       "usedMineralFertilizer": 0.0,
@@ -2465,14 +2465,14 @@
       "yieldRegular": 0.0,
       "yieldWeight": 0.0,
       "yieldBestPrice": 0.0,
-      "usedFuel": 224.664612,
-      "vehicleCosts": 620.565979,
-      "helperCosts": 1696.841919,
+      "usedFuel": 226.517807,
+      "vehicleCosts": 621.127075,
+      "helperCosts": 1697.417236,
       "subsidies": 0.0
      },
      "totalCounter": {
-      "numSoilSamples": 129,
-      "soilSampleCosts": 22575.0,
+      "numSoilSamples": 172,
+      "soilSampleCosts": 30100.0,
       "usedLime": 42.156044,
       "usedLimeRegular": 37.940441,
       "usedMineralFertilizer": 33.342216,
@@ -2491,9 +2491,9 @@
       "yieldRegular": 165073.875,
       "yieldWeight": 117.971542,
       "yieldBestPrice": 103442.617188,
-      "usedFuel": 303.618591,
-      "vehicleCosts": 1159.218018,
-      "helperCosts": 2164.058594,
+      "usedFuel": 305.471771,
+      "vehicleCosts": 1159.779175,
+      "helperCosts": 2164.634033,
       "subsidies": 0.0
      }
     },
@@ -5356,7 +5356,7 @@
       "state": 2
      },
      {
-      "farmlandId": 32,
+      "farmlandId": 43,
       "state": 2
      },
      {
@@ -5392,7 +5392,7 @@
       "state": 2
      },
      {
-      "farmlandId": 40,
+      "farmlandId": 34,
       "state": 2
      },
      {
@@ -5400,12 +5400,12 @@
       "state": 2
      },
      {
-      "farmlandId": 39,
+      "farmlandId": 65,
       "state": 2
      },
      {
-      "farmlandId": 62,
-      "state": 2
+      "farmlandId": 35,
+      "state": 0
      },
      {
       "farmlandId": 28,
@@ -5416,19 +5416,19 @@
       "state": 0
      },
      {
-      "farmlandId": 55,
+      "farmlandId": 14,
       "state": 0
      },
      {
-      "farmlandId": 35,
-      "state": 0
-     },
-     {
-      "farmlandId": 8,
+      "farmlandId": 62,
       "state": 2
      },
      {
-      "farmlandId": 64,
+      "farmlandId": 2,
+      "state": 2
+     },
+     {
+      "farmlandId": 59,
       "state": 2
      },
      {
@@ -5436,7 +5436,7 @@
       "state": 2
      },
      {
-      "farmlandId": 43,
+      "farmlandId": 66,
       "state": 2
      },
      {
@@ -5444,23 +5444,23 @@
       "state": 2
      },
      {
-      "farmlandId": 65,
-      "state": 2
+      "farmlandId": 3,
+      "state": 0
      },
      {
       "farmlandId": 29,
       "state": 0
      },
      {
-      "farmlandId": 68,
+      "farmlandId": 64,
       "state": 2
      },
      {
-      "farmlandId": 13,
+      "farmlandId": 8,
       "state": 2
      },
      {
-      "farmlandId": 34,
+      "farmlandId": 40,
       "state": 2
      },
      {
@@ -5480,23 +5480,23 @@
       "state": 2
      },
      {
-      "farmlandId": 3,
-      "state": 0
-     },
-     {
-      "farmlandId": 66,
+      "farmlandId": 39,
       "state": 2
      },
      {
-      "farmlandId": 59,
+      "farmlandId": 32,
       "state": 2
      },
      {
-      "farmlandId": 2,
+      "farmlandId": 13,
       "state": 2
      },
      {
-      "farmlandId": 14,
+      "farmlandId": 68,
+      "state": 2
+     },
+     {
+      "farmlandId": 55,
       "state": 0
      },
      {
