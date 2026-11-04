@@ -321,10 +321,22 @@
 
   function mySeat() { if (!S || !me) return -1; for (var i = 0; i < 4; i++) { var st = seatOf(S, i); if (st && !st.bot && st.uid === me.uid) return i; } return -1; }
   function isHost() { return !!S && !!me && S.hostUid === me.uid; }
-  // A table only runs while a seated human is really here (tab visible and touched in the last 5 minutes).
+  // A table only runs while a seated human is really here (tab visible and touched in the last 2 minutes).
   var lastAct = Date.now(), wasPaused = false;
-  function iAmActive() { return !document.hidden && Date.now() - lastAct < 300000; }
-  function onActivity() { var was = !iAmActive(); lastAct = Date.now(); if (was || wasPaused) { wasPaused = false; if (typeof beat === 'function') beat(); if (S) { render(); tick(); } } }
+  function iAmActive() { return !document.hidden && Date.now() - lastAct < 120000; }
+  function onActivity() {
+    var wasIdle = !iAmActive(); lastAct = Date.now();
+    if (wasIdle && typeof beat === 'function') beat();
+    // Only redraw when the table actually leaves the paused state (redrawing on every tap would swallow button clicks).
+    if (S && wasPaused && !isPaused(S)) { wasPaused = false; render(); tick(); }
+  }
+  // Never rebuild the screen while a finger or mouse button is down, or the button being pressed disappears and the click is lost.
+  var pressing = false, renderPending = false, pressTimer = null;
+  document.addEventListener('pointerdown', function (e) {
+    if (e.target.closest && e.target.closest('#panel, #deeds, #board')) { pressing = true; clearTimeout(pressTimer); pressTimer = setTimeout(function () { pressing = false; }, 3000); }
+  }, true);
+  function endPress() { if (!pressing) return; setTimeout(function () { pressing = false; if (renderPending) { renderPending = false; render(); } }, 80); }
+  document.addEventListener('pointerup', endPress, true); document.addEventListener('pointercancel', endPress, true);
   ['pointerdown', 'keydown', 'touchstart', 'mousemove'].forEach(function (ev) { document.addEventListener(ev, onActivity, { passive: true }); });
   document.addEventListener('visibilitychange', function () { if (!document.hidden) onActivity(); else if (typeof beat === 'function') beat(); });
   function activeIds() {
@@ -562,6 +574,7 @@
 
   function render() {
     var s = S; if (!s) return;
+    if (pressing) { renderPending = true; return; }
     var ms = mySeat(), playing = s.status === 'playing', myTurn = playing && ms === s.turn, p, i;
     for (p = 0; p < 4; p++) {
       var q = plOf(s, p), g = tokEls[p];
