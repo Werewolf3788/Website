@@ -33,9 +33,10 @@ export const CROP_IDS = Object.keys(CROPS);
 export const FIELD_TILES = 240;
 export const PACKS = [20, 60, 240, 480, 720, 1440];
 export function packLabel(n) { return n >= 240 && n % 240 === 0 ? (n / 240) + ' field' + (n > 240 ? 's' : '') : '×' + n; }
-// land: the top row of three fields is open from the start; the other three are bought at the barn (shared by everyone on the farm)
+// land: every player gets one free field when they start (solo players get all three of the first row); more fields are bought at the barn
 export const FREE_FIELDS = [0, 1, 2];
-export const FIELD_SALE = { 3: { cost: 2000, level: 10 }, 4: { cost: 5000, level: 20 }, 5: { cost: 10000, level: 30 } };
+// Each player owns their own fields. The price (and level needed) of the NEXT field depends on how many fields you already own.
+export const LAND = [null, { cost: 500, level: 3 }, { cost: 1000, level: 6 }, { cost: 2000, level: 10 }, { cost: 5000, level: 20 }, { cost: 10000, level: 30 }];
 export function packPrice(id, n) { return Math.max(1, Math.round(CROPS[id].seed * n * (n >= 240 ? .8 : n >= 60 ? .9 : 1))); }
 
 // ---- animals (every = real minutes between products)

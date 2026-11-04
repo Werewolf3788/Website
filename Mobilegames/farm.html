@@ -14,7 +14,7 @@
   #top{top:0;left:0;right:0;padding:6px 12px;font-size:.82rem;background:linear-gradient(#000a,#0000);text-shadow:0 1px 3px #000}
   #top .r{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;line-height:1.5}
   #top a,#top button{color:#e2e8f0;text-decoration:none;background:none;border:0;font:inherit;padding:0 2px;cursor:pointer}
-  #toast{top:58px;left:0;right:0;text-align:center;color:#fde68a;font-size:.9rem;text-shadow:0 1px 3px #000;pointer-events:none;min-height:1.3em;padding:0 12px}
+  #toast{top:78px;left:0;right:0;text-align:center;color:#fde68a;font-size:.9rem;text-shadow:0 1px 3px #000;pointer-events:none;min-height:1.3em;padding:0 12px}
   #prompt{bottom:calc(var(--bh,120px) + 8px);left:0;right:0;text-align:center;pointer-events:none}
   #prompt span{background:#000a;color:#fff;padding:5px 12px;border-radius:14px;font-size:.88rem;display:inline-block;margin:2px}
   #prompt small{display:block;color:#cbd5e1;font-size:.78rem}
@@ -44,6 +44,7 @@
 <div id="top" class="hud">
   <div class="r"><span>🌾 <b id="roomLabel">Neighborly Acre</b> · 👥 <b id="count">1</b></span><span style="color:#fde68a;font-weight:700">$<span id="coins">0</span></span><span><button id="bagBtn">🎒 Bag</button> <button id="missionsBtn">📜 Missions</button> <button id="shareBtn">Invite</button> · <button id="gamesBtn">☰ Games</button></span></div>
   <div class="r"><span>⭐ Lv <b id="lvl">1</b> <small id="xpTxt"></small></span><span id="wx">--</span><span id="cropInfo"></span></div>
+  <div class="r" id="peers" style="display:none;font-size:.78rem"></div>
 </div>
 <div id="toast" class="hud"></div>
 <div id="prompt" class="hud"></div>

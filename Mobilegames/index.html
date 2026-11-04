@@ -23,8 +23,8 @@
 
 <div class="card">
   <h2 style="margin:0 0 4px">🌾 Neighborly Acre</h2>
-  <div class="muted">A 3D co-op farm: crops, animals, a tractor, missions and levels. Play solo any time; friends can drop in with your code.</div>
-  <div class="row"><button id="playFarm">Play</button></div>
+  <div class="muted">A 3D farm: crops, animals, a tractor, missions and levels. <b>Solo</b> is your private farm. In a <b>multiplayer</b> farm everyone starts fresh with their own field and progress, and only the animals are shared.</div>
+  <div class="row"><button id="playFarm">Play solo</button><button id="hostFarm" class="alt">Host multiplayer</button></div>
   <div class="row"><input id="joinCodeFarm" maxlength="8" placeholder="FRIEND'S CODE"><button id="joinFarm" class="alt">Join</button></div>
 </div>
 
@@ -54,7 +54,7 @@
   <div class="row"><input id="joinCodeTy" maxlength="8" placeholder="FRIEND'S CODE"><button id="joinTy" class="alt">Join</button></div>
 </div>
 <div class="card" id="nowCard" style="display:none">
-  <h2 style="margin:0 0 6px;font-size:1.1rem">🟢 Friends playing now</h2>
+  <h2 style="margin:0 0 6px;font-size:1.1rem"><span style="color:#22c55e">●</span> Friends playing now</h2>
   <div id="nowList" class="muted">Loading…</div>
 </div>
 <div class="card"><details id="hist"><summary style="cursor:pointer;font-weight:700">📜 Win / loss history</summary><div id="histBody" style="margin-top:8px" class="muted">Sign in or play a game to build your record.</div></details></div>
@@ -77,10 +77,11 @@
     location.href = 'wahoo.html?room=' + encodeURIComponent(c);
   };
   $('playFarm').onclick = function () { location.href = 'farm.html'; };
+  $('hostFarm').onclick = function () { var c = ($('myCode').textContent || '').trim(); if (!WW.user || c.length < 4 || c.indexOf('-') >= 0) { $('msg').textContent = 'Sign in with Google first (hosting uses your friend code).'; return; } location.href = 'farm.html?mp=' + encodeURIComponent(c); };
   $('joinFarm').onclick = function () {
     var c = $('joinCodeFarm').value.trim().toUpperCase();
     if (c.length < 4) { $('msg').textContent = 'Enter your friend\u2019s code.'; return; }
-    location.href = 'farm.html?room=' + encodeURIComponent(c);
+    location.href = 'farm.html?mp=' + encodeURIComponent(c);
   };
   $('playTy').onclick = function () { location.href = 'tycoon.html'; };
   $('joinTy').onclick = function () {
@@ -93,11 +94,14 @@
   var nowTimer = null;
   function loadNow() {
     if (!WW.user) return;
+    $('nowCard').style.display = '';
     WW.loadFriendsNow().then(function (list) {
-      $('nowCard').style.display = '';
-      var rows = '';
+      var rows = '', playing = 0;
+      list.sort(function (p, q) { return q.plays.length - p.plays.length; });
       list.forEach(function (f) {
-        if (!f.plays.length) return;
+        var avatar = '<div style="display:flex;align-items:center;gap:8px;color:#fff;font-weight:700">' + WW.avatarHtml(f.avatar, f.name, 26) + WW.esc(f.name) + '</div>';
+        if (!f.plays.length) { rows += '<div style="padding:8px 0;border-top:1px solid #334155">' + avatar + '<div class="muted">' + (f.note === 'private' ? 'keeps game status private' : f.note === 'not found' ? 'profile not found' : 'not playing right now') + '</div></div>'; return; }
+        playing++;
         var lines = f.plays.map(function (p) {
           if (p.kind === 'mobile') {
             var join = p.room ? '<a href="' + WW.esc(p.game) + '.html?room=' + encodeURIComponent(p.room) + '" style="background:#22c55e;color:#04210f;font-weight:700;border-radius:8px;padding:6px 12px;text-decoration:none;white-space:nowrap">' + (p.open ? 'Join' : 'Watch') + '</a>' : '';
@@ -105,10 +109,14 @@
           }
           return '<div style="margin-top:4px">🎮 <b>' + WW.esc(p.title) + '</b> <span class="muted">on ' + WW.esc(p.platform) + (p.status ? ' · ' + WW.esc(p.status) : '') + '</span></div>';
         }).join('');
-        rows += '<div style="padding:8px 0;border-top:1px solid #334155"><div style="display:flex;align-items:center;gap:8px;color:#fff;font-weight:700">' + WW.avatarHtml(f.avatar, f.name, 26) + WW.esc(f.name) + '</div>' + lines + '</div>';
+        rows += '<div style="padding:8px 0;border-top:1px solid #334155">' + avatar + lines + '</div>';
       });
-      $('nowList').innerHTML = rows || 'No friends are playing right now.';
-    }).catch(function (e) { $('nowList').textContent = 'Could not load friends right now.'; });
+      var d = new Date(), t = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      var head = list.length ? '<div class="muted" style="margin-bottom:4px">' + playing + ' of ' + list.length + ' friend' + (list.length === 1 ? '' : 's') + ' playing · updated ' + t + ' · <a href="#" id="nowRefresh" style="color:#86efac">refresh</a></div>' : '';
+      var warn = WW.presenceError ? '<div style="color:#fbbf24;font-size:.8rem;margin-top:6px">Your own status could not be shared with friends (' + WW.esc(WW.presenceError.code || WW.presenceError.message) + ').</div>' : '';
+      $('nowList').innerHTML = head + (rows || 'No friends linked yet. Add friend codes in the Game Tracker and they will show up here.') + warn;
+      var rf = $('nowRefresh'); if (rf) rf.onclick = function (e) { e.preventDefault(); $('nowList').textContent = 'Loading…'; loadNow(); };
+    }).catch(function (e) { console.warn('friends now', e); $('nowList').innerHTML = 'Could not load your friends (' + WW.esc((e && (e.code || e.message)) || 'unknown error') + '). <a href="#" id="nowRetry" style="color:#86efac">Try again</a>'; var rt = $('nowRetry'); if (rt) rt.onclick = function (ev) { ev.preventDefault(); loadNow(); }; });
   }
   WW.onReady(function (user, code) {
     clearInterval(nowTimer); if (user) { loadNow(); nowTimer = setInterval(loadNow, 30000); } else $('nowCard').style.display = 'none';

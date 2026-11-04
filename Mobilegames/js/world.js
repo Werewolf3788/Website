@@ -15,6 +15,7 @@ export const CHICKEN_PEN = { x0: 29, x1: 39, z0: -38, z1: -28 };
 export const COW_PASTURE = { x0: -43, x1: -29, z0: -44, z1: -30 };
 export const SHOP_POS = { x: 22, z: -2.5 };
 export const TRACTOR_HOME = { x: -9, z: -3, ry: .6 };
+export function parkFor(f) { const F = FIELDS[f] || FIELDS[0]; return { x: F.x0 + 6, z: F.z0 - 3.5, ry: .6 }; }
 export const COLLIDERS = [{ x: -24, z: -8, r: 6.2 }, { x: 22, z: -9, r: 8 }, { x: 30.5, z: -9, r: 3 }];
 
 const M = {}; // shared materials
@@ -81,13 +82,14 @@ export function buildWorld(scene) {
     const cx = F.x0 + COLS * TILE / 2, cz = F.z0 + ROWS * TILE / 2, fw = COLS * TILE + 1.4, fd = ROWS * TILE + 1.4, g = new THREE.Group(); scene.add(g);
     const base = new THREE.Mesh(new THREE.PlaneGeometry(fw, fd), mat(0x6f8f3a)); base.rotation.x = -Math.PI / 2; base.position.set(cx, .02, cz); base.receiveShadow = true; g.add(base);
     [[0, -fd / 2, fw, .5], [0, fd / 2, fw, .5], [-fw / 2, 0, .5, fd], [fw / 2, 0, .5, fd]].forEach(function (b) { box(g, b[2], .45, b[3], 0x8b5a2b, cx + b[0], .22, cz + b[1], false); });
-    const tag = makeLabel('Field ' + (idx + 1), '#ffffff'); tag.position.set(F.x0 + 2, 2.6, F.z0 - 1.4); tag.scale.set(4.4, 1.1, 1); g.add(tag);
-    let sign = null;
+    let tag = null, sign = null;
     return {
-      setLocked: function (locked, text) {
-        base.material = mat(locked ? 0x9aa86a : 0x6f8f3a);
+      // name: owner's name (null = nobody owns it yet); mine: it is the local player's; saleText: what the FOR SALE sign says
+      setOwner: function (name, mine, saleText) {
+        base.material = mat(name ? 0x6f8f3a : 0x9aa86a);
+        if (tag) g.remove(tag); tag = makeLabel(name ? name + '\u2019s field' : 'Field ' + (idx + 1), mine ? '#86efac' : (name ? '#bae6fd' : '#ffffff'), 384); tag.position.set(F.x0 + 3, 2.6, F.z0 - 1.4); tag.scale.set(7.2, 1.2, 1); g.add(tag);
         if (sign) { g.remove(sign); sign = null; }
-        if (locked) { sign = makeLabel(text || 'FOR SALE', '#ffe08a', 512); sign.position.set(cx, 3.8, F.z0 - 2.2); sign.scale.set(14, 1.75, 1); g.add(sign); }
+        if (!name) { sign = makeLabel(saleText || 'FOR SALE', '#ffe08a', 512); sign.position.set(cx, 3.8, F.z0 - 2.2); sign.scale.set(14, 1.75, 1); g.add(sign); }
       }
     };
   });
@@ -165,13 +167,13 @@ export function animateFarmer(g, speed, dt) {
   u.legL.rotation.x = a; u.legR.rotation.x = -a; u.armL.rotation.x = -a; u.armR.rotation.x = a;
 }
 
-export function makeTractor() {
-  const g = new THREE.Group();
-  box(g, 2, 1, 3.2, 0x2e8b3a, 0, 1.15, .2);                // body
-  box(g, 1.5, .9, 1.4, 0x2e8b3a, 0, 1.45, 1.6);            // hood
-  box(g, 1.9, 1.7, 1.6, 0x3aa84a, 0, 2.3, -.7);            // cab
+export function makeTractor(color) {
+  const g = new THREE.Group(), base = new THREE.Color(color || 0x2e8b3a), cabC = base.clone().lerp(new THREE.Color(0xffffff), .22).getHex(), roofC = base.clone().multiplyScalar(.7).getHex(), bodyC = base.getHex();
+  box(g, 2, 1, 3.2, bodyC, 0, 1.15, .2);                // body
+  box(g, 1.5, .9, 1.4, bodyC, 0, 1.45, 1.6);            // hood
+  box(g, 1.9, 1.7, 1.6, cabC, 0, 2.3, -.7);            // cab
   box(g, 1.7, 1.2, .08, 0x9fd4ff, 0, 2.45, .1).material = new THREE.MeshLambertMaterial({ color: 0x9fd4ff, transparent: true, opacity: .55 });
-  box(g, 2.2, .15, 1.9, 0x1f6b2b, 0, 3.2, -.7);            // roof
+  box(g, 2.2, .15, 1.9, roofC, 0, 3.2, -.7);            // roof
   cyl(g, .09, .09, 1.2, 0x222222, .5, 2.55, 1.9, 8);       // exhaust
   const wheel = (x, y, z, r, w) => { const c = cyl(g, r, r, w, 0x1a1a1a, x, y, z, 18); c.rotation.z = Math.PI / 2; const h = cyl(g, r * .5, r * .5, w + .04, 0xe6c200, x, y, z, 12); h.rotation.z = Math.PI / 2; return [c, h]; };
   g.userData.wheels = [].concat(wheel(-1.3, .95, -.9, .95, .6), wheel(1.3, .95, -.9, .95, .6), wheel(-1.1, .55, 1.6, .55, .45), wheel(1.1, .55, 1.6, .55, .45));

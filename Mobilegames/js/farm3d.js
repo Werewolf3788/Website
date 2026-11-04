@@ -10,7 +10,7 @@ const FORCE_WX = qs.get('weather');                                       // deb
 
 // ------------------------------------------------------------ state
 let me = null, myName = 'Farmer', myHue = Math.random(), roomRef = null, cloudCode = null;
-let tiles = {}, players = {}, animals = {}, tractorState = { holder: null, x: W.TRACTOR_HOME.x, z: W.TRACTOR_HOME.z, ry: W.TRACTOR_HOME.ry };
+let tiles = {}, players = {}, animals = {}, tractorState = { x: W.TRACTOR_HOME.x, z: W.TRACTOR_HOME.z, ry: W.TRACTOR_HOME.ry }, colors = {}, myColor = '', isMP = false, hostCode = '', saveKey = 'farm', ledger = {};
 let tool = 'hoe', saveTimer = null, toastTimer = null, lastDragAt = 0, avatars = {}, myAvatar = '';
 const save = { coins: 100, xp: 0, seeds: { wheat: 30, carrot: 30 }, bag: {}, up: {}, skip: {}, orders: { day: -1, done: [] }, harvested: 0, stats: {}, daily: { day: -1, base: {}, done: [] }, ms: {} };
 const player = { x: 0, z: -1, ry: 0, speed: 0, driving: false };
@@ -40,7 +40,8 @@ const field = W.makeCropField(scene, NT);
 function resize() { const w = window.innerWidth, h = window.innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
 window.addEventListener('resize', resize); resize();
 
-const tractor = W.makeTractor(); scene.add(tractor);
+let tractor = W.makeTractor(); scene.add(tractor);
+function paintTractor(hex) { const p = tractor.position.clone(), ry = tractor.rotation.y; scene.remove(tractor); tractor = W.makeTractor(hex); tractor.position.copy(p); tractor.rotation.y = ry; scene.add(tractor); applyImplement(); }
 const farmer = W.makeFarmer(myHue); scene.add(farmer);
 const pointer = new THREE.Mesh(new THREE.BoxGeometry(W.TILE - .2, .08, W.TILE - .2), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .35, depthTest: false })); pointer.renderOrder = 5; pointer.visible = false; scene.add(pointer);
 
@@ -80,9 +81,32 @@ function updateSky() {
 // ------------------------------------------------------------ tiles / crops
 const tilePos = W.tilePos, tileAt = W.tileAt;
 // land: three fields are open, three are bought at the barn; owned fields live in the room (shared by everyone)
+// fields: every player works their OWN fields (others can look but not touch). room/fields/{n} = { uid, n: name }
 let ownedFields = {};
-const fieldUnlocked = f => C.FREE_FIELDS.indexOf(f) >= 0 || !!ownedFields[f];
-function updateFieldVisuals() { world.fields.forEach(function (F, f) { const sale = C.FIELD_SALE[f]; F.setLocked(!fieldUnlocked(f), sale ? 'FOR SALE $' + sale.cost.toLocaleString() + ' · level ' + sale.level : ''); }); }
+const ownerOf = f => { const o = ownedFields[f]; return o ? (o.uid || o.by || null) : null; };
+const isMine = f => !!me && ownerOf(f) === me.uid;
+function myFieldCount() { let n = 0; for (let f = 0; f < W.FIELDS.length; f++) if (isMine(f)) n++; return n; }
+function firstMyField() { for (let f = 0; f < W.FIELDS.length; f++) if (isMine(f)) return f; return -1; }
+function nextLand() { return C.LAND[myFieldCount()] || null; }
+function updateFieldVisuals() {
+  const nl = nextLand();
+  world.fields.forEach(function (F, f) {
+    const o = ownedFields[f]; if (o) F.setOwner(o.n || 'Farmer', isMine(f)); else F.setOwner(null, false, nl ? 'FOR SALE · $' + nl.cost.toLocaleString() + ' for you · level ' + nl.level : 'FOR SALE');
+  });
+}
+function claimField(f) {
+  return new Promise(function (resolve) {
+    roomRef.child('fields/' + f).transaction(function (cur) { return cur ? undefined : { uid: me.uid, n: myName, t: nowMs() }; }, function (e, ok) { resolve(!!ok); });
+  });
+}
+// solo / guest: the three open fields are yours. Multiplayer: you get one free field when you arrive (first come, first served).
+async function autoClaim() {
+  if (!isMP) { for (let f = 0; f < 3; f++) if (!ownerOf(f)) await claimField(f); return; }
+  if (myFieldCount() > 0) return;
+  const order = C.FREE_FIELDS.concat([3, 4, 5]);
+  for (let k = 0; k < order.length; k++) { if (ownerOf(order[k])) continue; if (await claimField(order[k])) return; }
+  say('Every field on this farm is taken. Ask the host about land.');
+}
 function progress(t, now) { return (!t || t.k !== 'c' || !t.w) ? 0 : Math.min(1, ((now || nowMs()) - t.w) / C.CROPS[t.c].grow); }
 let drawn = {};
 function refreshField() {
@@ -110,7 +134,7 @@ function rainTick() {
 }
 
 // ------------------------------------------------------------ economy helpers
-function flushSave() { clearTimeout(saveTimer); if (me) WW.writeSave('farm', JSON.parse(JSON.stringify(save))); }
+function flushSave() { clearTimeout(saveTimer); if (me) WW.writeSave(saveKey, JSON.parse(JSON.stringify(save))); }
 function queueSave() { clearTimeout(saveTimer); saveTimer = setTimeout(flushSave, 1200); }
 document.addEventListener('visibilitychange', function () { if (document.hidden) flushSave(); }); window.addEventListener('pagehide', flushSave);
 function setCoins(d) { save.coins = Math.max(0, save.coins + d); hud(); queueSave(); }
@@ -124,6 +148,25 @@ function addXp(n) {
   }
   hud(); queueSave();
 }
+// ---- the joint herd: collecting animal products gives XP to EVERYONE on the farm, and selling them pays everyone the same amount.
+// Each client writes an entry to room/ledger and every other client applies it to their own save (once, tracked by save.ledKey).
+function ledgerKey() { return String(Math.round(nowMs())).padStart(13, '0') + '_' + Math.random().toString(36).slice(2, 6); }
+function pushLedger(entry) {
+  if (!isMP || !roomRef) return; entry.by = me.uid; entry.n = myName; roomRef.child('ledger/' + ledgerKey()).set(entry);
+  if (Math.random() < .03) { const old = String(Math.round(nowMs() - 3 * 86400000)).padStart(13, '0'); Object.keys(ledger).forEach(function (k) { if (k < old) roomRef.child('ledger/' + k).remove(); }); }
+}
+function applyLedger(v) {
+  ledger = v || {}; const keys = Object.keys(ledger).sort(); if (!me) return;
+  if (!save.ledKey) { save.ledKey = keys.length ? keys[keys.length - 1] : '0'; queueSave(); return; }   // first time on this farm: older entries are history
+  let changed = false;
+  keys.forEach(function (k) {
+    if (k <= save.ledKey) return; save.ledKey = k; changed = true; const e = ledger[k]; if (!e || e.by === me.uid) return;
+    if (e.k === 'xp') { addXp(e.amt | 0); say('🐾 ' + (e.n || 'A friend') + ' collected ' + (e.prod || 'a product') + ': +' + (e.amt | 0) + ' xp for everyone'); }
+    else if (e.k === 'sale') { setCoins(e.amt | 0); say('💰 ' + (e.n || 'A friend') + ' sold ' + (e.qty || 1) + ' ' + (e.item || 'goods') + ': +$' + (e.amt | 0) + ' for everyone'); }
+  });
+  if (changed) queueSave();
+}
+
 // Firebase drops empty lists/objects and turns sparse arrays into objects, so repair everything we loaded
 function arr(x) { if (Array.isArray(x)) return x; const out = []; if (x && typeof x === 'object') Object.keys(x).forEach(function (k) { out[+k] = x[k]; }); return out; }
 function normalizeSave() {
@@ -151,7 +194,7 @@ function mixText() { const l = plantables(); return l.length ? 'Planting mix: ' 
 let clearConfirm = { i: -1, until: 0 };
 function actTile(i, quiet) {
   if (i < 0 || !roomRef) return;
-  if (!fieldUnlocked(W.fieldOf(i))) { if (!quiet) say('This land is for sale. Buy it at the barn (Land tab).'); return; }
+  { const f = W.fieldOf(i); if (!isMine(f)) { if (!quiet) { const o = ownedFields[f]; say(o ? (o.n || 'Another farmer') + '\u2019s field. Work your own field.' : 'This land is for sale. Buy it at the barn (Land tab).'); } return; } }
   const cur = tiles[i], ref = roomRef.child('tiles/' + i), now = nowMs();
   if (tool === 'hoe') {
     if (!cur) ref.set({ k: 't' });
@@ -214,14 +257,14 @@ function nearestReadyAnimal() {
 function collect(id) {
   const a = animals[id]; if (!a) return; const def = C.ANIMALS[a.t];
   roomRef.child('animals/' + id + '/r').transaction(function (r) { return nowMs() >= (r || 0) ? nowMs() + def.every : undefined; }, function (e, ok) {
-    if (ok) { addItem(def.prod, 1); stat(def.prod); addXp(C.XP_PRODUCT[def.prod]); say(C.GOODS[def.prod].icon + ' Collected ' + def.prod + ' — in your bag.'); } else say('Not ready yet.');
+    if (ok) { addItem(def.prod, 1); stat(def.prod); addXp(C.XP_PRODUCT[def.prod]); pushLedger({ k: 'xp', amt: C.XP_PRODUCT[def.prod], prod: def.prod }); say(C.GOODS[def.prod].icon + ' Collected ' + def.prod + ' — in your bag.'); } else say('Not ready yet.');
   });
 }
 
 // ------------------------------------------------------------ barn: seeds / sell / kitchen / animals / orders / upgrades
 let shopTab = 'seeds';
 // only touch the page when the menu content really changed (a redraw between mouse-down and mouse-up would swallow a click)
-function ownedCount() { let n = 0; for (let f = 0; f < W.FIELDS.length; f++) if (fieldUnlocked(f)) n++; return n; }
+function ownedCount() { return Math.max(1, myFieldCount()); }
 function addHtml(box, html) { box.insertAdjacentHTML('beforeend', html); }   // never use innerHTML += here: it rebuilds the buttons already added and silently drops their click handlers
 function commitShop(n, id) { const cur = $(id); if (cur.innerHTML !== n.innerHTML) { cur.innerHTML = ''; while (n.firstChild) cur.appendChild(n.firstChild); } }
 const TABS = [['seeds', '🌱 Seeds'], ['sell', '💰 Sell'], ['kitchen', '🍳 Kitchen'], ['animals', '🐔 Animals'], ['orders', '📋 Orders'], ['missions', '📜 Missions'], ['land', '🏞️ Land'], ['upgrades', '🚜 Tractor']];
@@ -269,34 +312,35 @@ function renderShop() {
     if (save.orders.day !== d) { save.orders = { day: d, done: [] }; queueSave(); }
     C.ordersFor(d, l).forEach(function (o, k) {
       const g = C.GOODS[o.item], done = save.orders.done[k], have = (save.bag[o.item] || 0) >= o.qty;
-      box.appendChild(row('📋 <b>' + o.qty + '× ' + g.name + '</b> ' + g.icon + ' <small>reward $' + o.reward + ' + ' + o.xp + ' xp · you have ' + (save.bag[o.item] || 0) + '</small>',
-        [{ t: done ? '✅ Done' : 'Deliver', off: done || !have || !can, f: function () { addItem(o.item, -o.qty); setCoins(o.reward); stat('orders'); addXp(o.xp); save.orders.done[k] = true; say('Order complete! +$' + o.reward + ''); } }]));
+      box.appendChild(row('📋 <b>' + o.qty + '× ' + g.name + '</b> ' + g.icon + ' <small>reward $' + o.reward + ' · you have ' + (save.bag[o.item] || 0) + '</small>',
+        [{ t: done ? '✅ Done' : 'Deliver', off: done || !have || !can, f: function () { addItem(o.item, -o.qty); setCoins(o.reward); stat('orders'); save.orders.done[k] = true; say('Order complete! +$' + o.reward + ''); } }]));
     });
     addHtml(box, '<div class="item" style="border:0"><small>New orders arrive every day (UTC midnight). Big orders are where a tractor really pays off.</small></div>');
   } else if (shopTab === 'missions') {
     const lv = level(), daily = ensureDaily();
-    addHtml(box, '<div class="item" style="border:0"><small>XP: harvest +' + C.XP_HARVEST + ' · egg +' + C.XP_PRODUCT.egg + ' · wool +' + C.XP_PRODUCT.wool + ' · milk +' + C.XP_PRODUCT.milk + '. Missions pay extra XP and coins. Levels: 25 xp to reach level 2, then 50, 75 ... up to level ' + C.MAX_LEVEL + '.</small></div><div class="item" style="border:0;padding:4px 0"><b>Today\u2019s missions</b> <small>(reset at midnight)</small></div>');
+    addHtml(box, '<div class="item" style="border:0"><small>XP: harvest +' + C.XP_HARVEST + ' · egg +' + C.XP_PRODUCT.egg + ' · wool +' + C.XP_PRODUCT.wool + ' · milk +' + C.XP_PRODUCT.milk + '. XP only comes from harvesting your own crops and collecting animals (animal XP is shared by everyone on the farm). Missions and orders pay coins. Levels: 25 xp to reach level 2, then 50, 75 ... up to level ' + C.MAX_LEVEL + '.</small></div><div class="item" style="border:0;padding:4px 0"><b>Today\u2019s missions</b> <small>(reset at midnight)</small></div>');
     daily.forEach(function (m, k) {
       const p = Math.min(m.goal, dailyProgress(m)), ready = p >= m.goal, done = save.daily.done[k];
-      box.appendChild(row(C.STATS[m.stat].icon + ' <b>' + m.text + '</b> <small>' + p + '/' + m.goal + ' · reward +' + m.xp + ' xp and $' + m.coins + '</small>',
+      box.appendChild(row(C.STATS[m.stat].icon + ' <b>' + m.text + '</b> <small>' + p + '/' + m.goal + ' · reward $' + m.coins + '</small>',
         [{ t: done ? '✅ Claimed' : ready ? 'Claim' : p + '/' + m.goal, off: done || !ready, f: function () { save.daily.done[k] = true; reward({ xp: m.xp, coins: m.coins }, m.text); } }]));
     });
     addHtml(box, '<div class="item" style="border:0;padding:10px 0 4px"><b>Milestones</b> <small>(these never expire)</small></div>');
     Object.keys(C.STATS).forEach(function (st) {
       if (!C.statUnlocked(st, lv)) return; const t = nextTier(st), S = C.STATS[st], have = save.stats[st] || 0; if (!t) { box.appendChild(row(S.icon + ' <b>' + S.verb + ' ' + S.noun + '</b> <small>All milestones done!</small>', [])); return; }
-      box.appendChild(row(S.icon + ' <b>' + S.verb + ' ' + t.goal + ' ' + S.noun + '</b> <small>' + Math.min(have, t.goal) + '/' + t.goal + ' · reward +' + t.reward.xp + ' xp and $' + t.reward.coins + '</small>',
+      box.appendChild(row(S.icon + ' <b>' + S.verb + ' ' + t.goal + ' ' + S.noun + '</b> <small>' + Math.min(have, t.goal) + '/' + t.goal + ' · reward $' + t.reward.coins + '</small>',
         [{ t: have >= t.goal ? 'Claim' : Math.min(have, t.goal) + '/' + t.goal, off: have < t.goal, f: function () { save.ms[st] = t.idx + 1; reward(t.reward, S.verb + ' ' + t.goal + ' ' + S.noun); } }]));
     });
   } else if (shopTab === 'land') {
-    addHtml(box, '<div class="item" style="border:0"><small>The farm is shared. Three fields are open to everyone; more land is bought once and then belongs to the whole farm, so friends can work it too. You have ' + ownedCount() + ' of ' + W.FIELDS.length + ' fields.</small></div>');
+    const mine = myFieldCount(), nl = nextLand();
+    addHtml(box, '<div class="item" style="border:0"><small>Every player works their own fields; other people can look but not touch. You own ' + mine + ' of ' + W.FIELDS.length + (nl ? '. Your next field costs $' + nl.cost.toLocaleString() + ' (level ' + nl.level + ').' : '.') + ' Animals are the one thing shared by everyone on the farm.</small></div>');
     W.FIELDS.forEach(function (F, f) {
-      const sale = C.FIELD_SALE[f], own = fieldUnlocked(f), by = ownedFields[f] && ownedFields[f].n;
-      if (!sale) { box.appendChild(row('🌾 <b>Field ' + (f + 1) + '</b> <small>240 tiles · open from the start</small>', [])); return; }
-      const lock = l < sale.level;
-      box.appendChild(row('🏞️ <b>Field ' + (f + 1) + '</b> · <b style="color:#fde68a">$' + sale.cost.toLocaleString() + '</b> <small>' + (own ? 'owned' + (by ? ' (bought by ' + WW.esc(by) + ')' : '') : (lock ? 'Unlocks at level ' + sale.level + ' · ' : '') + '240 more tiles') + '</small>',
-        [{ t: own ? '✅ Owned' : lock ? '🔒 Lv ' + sale.level : 'Buy $' + sale.cost.toLocaleString(), off: own || lock || !can || save.coins < sale.cost, f: function () {
-          if (save.coins < sale.cost) return;
-          roomRef.child('fields/' + f).transaction(function (cur) { return cur ? undefined : { by: me.uid, n: myName, t: nowMs() }; }, function (e, ok) { if (ok) { setCoins(-sale.cost); say('You bought Field ' + (f + 1) + '! The whole farm can use it.'); } else say('Someone just bought that field.'); });
+      const o = ownedFields[f];
+      if (o) { box.appendChild(row((isMine(f) ? '🌾' : '👤') + ' <b>Field ' + (f + 1) + '</b> <small>' + (isMine(f) ? 'yours' : 'owned by ' + WW.esc(o.n || 'a friend')) + ' · 240 tiles</small>', [])); return; }
+      const lock = !nl || l < nl.level, cost = nl ? nl.cost : 0;
+      box.appendChild(row('🏞️ <b>Field ' + (f + 1) + '</b> · <b style="color:#fde68a">' + (nl ? '$' + nl.cost.toLocaleString() : 'n/a') + '</b> <small>' + (nl && l < nl.level ? 'Unlocks at level ' + nl.level + ' · ' : '') + 'for sale · 240 tiles</small>',
+        [{ t: !nl ? 'All yours' : l < nl.level ? '🔒 Lv ' + nl.level : 'Buy $' + cost.toLocaleString(), off: lock || !can || save.coins < cost, f: function () {
+          if (!nl || save.coins < cost) return;
+          roomRef.child('fields/' + f).transaction(function (cur) { return cur ? undefined : { uid: me.uid, n: myName, t: nowMs() }; }, function (e, ok) { if (ok) { setCoins(-cost); say('You bought Field ' + (f + 1) + '!'); } else say('Someone just bought that field.'); });
         } }]));
     });
   } else if (shopTab === 'upgrades') {
@@ -309,7 +353,7 @@ function renderShop() {
   }
   commitShop(tabs, 'shopTabs'); commitShop(box, 'shopItems');
 }
-function sell(id, n, quiet) { n = Math.min(n, save.bag[id] || 0); if (n < 1) return; const p = C.priceOf(id, today()) * n; addItem(id, -n); stat('sell', n); setCoins(p); if (!quiet) say('Sold ' + n + ' ' + C.GOODS[id].name.toLowerCase() + ' for $' + p + ''); }
+function sell(id, n, quiet) { n = Math.min(n, save.bag[id] || 0); if (n < 1) return; const p = C.priceOf(id, today()) * n; addItem(id, -n); stat('sell', n); setCoins(p); if (C.XP_PRODUCT[id] !== undefined) pushLedger({ k: 'sale', amt: p, item: C.GOODS[id].name.toLowerCase(), qty: n }); if (!quiet) say('Sold ' + n + ' ' + C.GOODS[id].name.toLowerCase() + ' for $' + p + ''); }
 function openShop(tab) { if (tab) shopTab = tab; renderShop(); $('shop').style.display = 'flex'; }
 $('shopClose').onclick = function () { $('shop').style.display = 'none'; };
 $('bagBtn').onclick = function () { openShop('sell'); }; $('missionsBtn').onclick = function () { openShop('missions'); };
@@ -328,7 +372,7 @@ function claimable() {
   Object.keys(C.STATS).forEach(function (st) { if (!C.statUnlocked(st, lv)) return; const t = nextTier(st); if (t && (save.stats[st] || 0) >= t.goal) any = true; });
   return any;
 }
-function reward(r, label) { setCoins(r.coins); addXp(r.xp); say('📜 ' + label + ' complete! +$' + r.coins + ' · +' + r.xp + ' xp'); }
+function reward(r, label) { setCoins(r.coins); say('📜 ' + label + ' complete! +$' + r.coins); }   // missions pay coins only: XP comes from harvesting and animals
 
 // ------------------------------------------------------------ toolbar
 const TOOLS = [{ id: 'hoe', label: '⛏️ Plow', color: 0x8a6a4a }, { id: 'water', label: '💧 Water', color: 0x4aa3ff }, { id: 'harvest', label: '🧺 Harvest', color: 0xf2c200 }, { id: 'seed', label: '🌱 Plant', color: 0x6abf4b }];
@@ -377,7 +421,7 @@ $('useBtn').addEventListener('pointerdown', function (e) { e.preventDefault(); u
 const facingTile = () => tileAt(player.x + Math.sin(player.ry) * 1.9, player.z + Math.cos(player.ry) * 1.9);
 function toolLabel() { return tool === 'seed' ? 'Plant' : TOOLS.filter(function (t) { return t.id === tool; })[0].label.replace(/^\S+ /, ''); }
 function tileInfo(i) {
-  const f = W.fieldOf(i), sale = C.FIELD_SALE[f]; if (!fieldUnlocked(f)) return 'Field ' + (f + 1) + ' is for sale: $' + sale.cost.toLocaleString() + ' (level ' + sale.level + ') at the barn';
+  const f = W.fieldOf(i), o = ownedFields[f]; if (!o) { const nl = nextLand(); return 'Field ' + (f + 1) + ' is for sale' + (nl ? ': $' + nl.cost.toLocaleString() + ' for you (level ' + nl.level + ') at the barn' : ''); } if (!isMine(f)) return (o.n || 'Another farmer') + '\u2019s field (look, don\u2019t touch)';
   const t = tiles[i]; if (!t) return 'Grass'; if (t.k === 't') return 'Plowed soil'; const c = C.CROPS[t.c], p = progress(t);
   return c.icon + ' ' + c.name + ' — ' + (!t.w ? 'waiting for water or rain' : p >= 1 ? 'ready to harvest!' : Math.round(p * 100) + '% · ' + C.fmtTime(c.grow * (1 - p)) + ' left');
 }
@@ -385,7 +429,7 @@ function context() {
   if (player.driving) return { kind: 'exit', text: 'Exit tractor (E)', info: toolLabel() + ' · ' + swath() + ' tiles wide' + (tool === 'seed' ? ' · ' + mixText() : '') };
   const id = nearestReadyAnimal(); if (id) return { kind: 'collect', id: id, text: 'Collect ' + C.ANIMALS[animals[id].t].prod + ' (E)' };
   if (nearShop()) return { kind: 'shop', text: 'Open the barn (E)', info: 'Buy seeds · sell goods · orders · upgrades' };
-  if (tractorState.holder === null || tractorState.holder === me.uid) { const tx = tractorState.holder === me.uid ? tractorLocal.x : tractorState.x, tz = tractorState.holder === me.uid ? tractorLocal.z : tractorState.z; if (Math.hypot(player.x - tx, player.z - tz) < 4) return { kind: 'drive', text: 'Drive tractor (E)' }; }
+  if (Math.hypot(player.x - tractorState.x, player.z - tractorState.z) < 4) return { kind: 'drive', text: 'Drive your tractor (E)' };
   const i = facingTile(); if (i >= 0) return { kind: 'tile', i: i, text: toolLabel() + ' (E)', info: tool === 'seed' ? mixText() + ' · ' + tileInfo(i) : tileInfo(i) };
   return null;
 }
@@ -395,11 +439,11 @@ function useAction() {
   else if (c.kind === 'shop') openShop('seeds');
   else if (c.kind === 'tile') actTile(c.i, false);
   else if (c.kind === 'drive') {
-    roomRef.child('tractor').transaction(function (t) { t = t || {}; return (!t.holder || t.holder === me.uid) ? { holder: me.uid, x: t.x === undefined ? W.TRACTOR_HOME.x : t.x, z: t.z === undefined ? W.TRACTOR_HOME.z : t.z, ry: t.ry || 0 } : undefined; },
-      function (e, ok) { if (ok) { player.driving = true; tractorLocal.x = tractorState.x; tractorLocal.z = tractorState.z; tractorLocal.ry = tractorState.ry; tractorLocal.speed = 0; player.x = tractorLocal.x; player.z = tractorLocal.z; roomRef.child('tractor/holder').onDisconnect().remove(); say('Tractor: your tool works on ' + swath() + ' tiles at once. W/S drive, A/D steer.'); applyImplement(); } else say('Someone else is driving.'); });
+    player.driving = true; tractorLocal.x = tractorState.x; tractorLocal.z = tractorState.z; tractorLocal.ry = tractorState.ry; tractorLocal.speed = 0; player.x = tractorLocal.x; player.z = tractorLocal.z;
+    say('Tractor: your tool works on ' + swath() + ' tiles at once. W/S drive, A/D steer.'); applyImplement();
   } else if (c.kind === 'exit') {
     player.driving = false; tractorLocal.speed = 0; player.x = tractorLocal.x + Math.cos(tractorLocal.ry) * 2.8; player.z = tractorLocal.z - Math.sin(tractorLocal.ry) * 2.8;
-    roomRef.child('tractor').set({ holder: null, x: +tractorLocal.x.toFixed(2), z: +tractorLocal.z.toFixed(2), ry: +tractorLocal.ry.toFixed(3) });
+    tractorState = { x: +tractorLocal.x.toFixed(2), z: +tractorLocal.z.toFixed(2), ry: +tractorLocal.ry.toFixed(3) }; roomRef.child('tractors/' + me.uid).set(tractorState);
   }
 }
 
@@ -431,15 +475,24 @@ function dropBadge(mesh) { const d = mesh.userData.domBadge; if (d) d.remove(); 
 // ------------------------------------------------------------ other players
 const remote = {};
 function avatarFor(u) { return avatars[u] || ''; }
+function peersText() {
+  const dot = function (hex) { return '<span style="display:inline-block;width:.7em;height:.7em;border-radius:50%;background:' + (hex || '#94a3b8') + ';margin-right:3px"></span>'; };
+  const list = [dot(myColor) + '<b>' + WW.esc(myName) + '</b> Lv ' + level()]; const now = nowMs();
+  Object.keys(players).forEach(function (u) { const p = players[u]; if (me && u === me.uid) return; if (now - (p.t || 0) > 45000) return; list.push(dot(colors[u]) + '<b>' + WW.esc(p.n || 'Friend') + '</b> Lv ' + (p.lv || 1)); });
+  return list.join(' &nbsp;·&nbsp; ');
+}
+function renderPeers() { const el = $('peers'); if (!el) return; el.style.display = isMP ? '' : 'none'; if (isMP) { const h = peersText(); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = '👥 ' + h; } } }
 function syncRemotes() {
   const now = nowMs();
   Object.keys(players).forEach(function (u) {
     if (me && u === me.uid) return; const p = players[u]; if (now - (p.t || 0) > 45000) return; let r = remote[u];
-    if (!r) { const m = W.makeFarmer(p.h || .3), lab = W.makeLabel(p.n || 'Friend', '#bae6fd'); lab.position.y = 4.5; m.add(lab); scene.add(m); r = remote[u] = { mesh: m }; m.position.set(p.x, 0, p.z); }
-    r.tx = p.x; r.tz = p.z; r.try = p.r || 0; r.driving = !!p.v; giveAvatar(r.mesh, avatarFor(u), p.n);
+    if (!r) { const m = W.makeFarmer(p.h || .3), lab = W.makeLabel(p.n || 'Friend', '#bae6fd'); lab.position.y = 4.5; m.add(lab); scene.add(m); r = remote[u] = { mesh: m, tractor: null, tcol: null }; m.position.set(p.x, 0, p.z); }
+    r.tx = p.x; r.tz = p.z; r.try = p.r || 0; r.driving = !!p.v; r.px = p.tx; r.pz = p.tz; r.pr = p.tr || 0; giveAvatar(r.mesh, avatarFor(u), p.n);
+    const col = colors[u] || '';
+    if (!r.tractor || r.tcol !== col) { if (r.tractor) scene.remove(r.tractor); r.tcol = col; r.tractor = W.makeTractor(col ? parseInt(col.slice(1), 16) : undefined); scene.add(r.tractor); const t = r.tractor; t.position.set(r.driving ? p.x : (p.tx === undefined ? p.x : p.tx), 0, r.driving ? p.z : (p.tz === undefined ? p.z : p.tz)); }
   });
-  Object.keys(remote).forEach(function (u) { const p = players[u]; if (!p || now - (p.t || 0) > 45000) { dropBadge(remote[u].mesh); scene.remove(remote[u].mesh); delete remote[u]; } });
-  $('count').textContent = Math.max(1, Object.keys(remote).length + 1);
+  Object.keys(remote).forEach(function (u) { const p = players[u]; if (!p || now - (p.t || 0) > 45000) { dropBadge(remote[u].mesh); scene.remove(remote[u].mesh); if (remote[u].tractor) scene.remove(remote[u].tractor); delete remote[u]; } });
+  $('count').textContent = Math.max(1, Object.keys(remote).length + 1); renderPeers();
 }
 function updateRemotes(dt) {
   Object.keys(remote).forEach(function (u) {
@@ -447,9 +500,13 @@ function updateRemotes(dt) {
     m.position.x += dx * Math.min(1, dt * 10); m.position.z += dz * Math.min(1, dt * 10);
     let da = r.try - m.rotation.y; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI; m.rotation.y += da * Math.min(1, dt * 10);
     m.visible = !r.driving; W.animateFarmer(m, d * 10 > .3 ? 4 : 0, dt);
+    if (r.tractor) {   // their own tractor: under them while they drive, otherwise parked where they left it
+      const tx = r.driving ? m.position.x : (r.px === undefined ? m.position.x : r.px), tz = r.driving ? m.position.z : (r.pz === undefined ? m.position.z : r.pz);
+      r.tractor.position.x += (tx - r.tractor.position.x) * Math.min(1, dt * 10); r.tractor.position.z += (tz - r.tractor.position.z) * Math.min(1, dt * 10);
+      r.tractor.rotation.y = r.driving ? m.rotation.y : r.pr;
+    }
   });
 }
-function remoteDriver() { const now = nowMs(), u = Object.keys(players).filter(function (u) { return players[u].v && u !== (me && me.uid) && now - (players[u].t || 0) < 45000; })[0]; return u ? remote[u] : null; }
 
 // ------------------------------------------------------------ main loop
 let last = performance.now(), lastSent = 0, lastBeat = 0, lastTrk = 0, camX = 0, camZ = 0, slow = 0;
@@ -468,9 +525,7 @@ function loop(ts) {
     let da = Math.atan2(dx, dz) - player.ry; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI; player.ry += da * Math.min(1, dt * 14); player.speed = sp;
   } else player.speed = 0;
   farmer.visible = !player.driving; farmer.position.set(player.x, 0, player.z); farmer.rotation.y = player.ry; W.animateFarmer(farmer, player.speed, dt);
-  const rd = remoteDriver();
   if (player.driving) { tractor.position.set(tractorLocal.x, 0, tractorLocal.z); tractor.rotation.y = tractorLocal.ry; }
-  else if (rd) { tractor.position.set(rd.mesh.position.x, 0, rd.mesh.position.z); tractor.rotation.y = rd.mesh.rotation.y; }
   else { tractor.position.set(tractorState.x, 0, tractorState.z); tractor.rotation.y = tractorState.ry || 0; }
   const spin = (player.driving ? tractorLocal.speed : 0) * dt / .9; tractor.userData.wheels.forEach(function (w) { w.rotation.x += spin; });
   world.clouds.position.x += dt * .6; if (world.clouds.position.x > 140) world.clouds.position.x = -140;
@@ -484,59 +539,75 @@ function loop(ts) {
   $('useBtn').textContent = c ? (c.kind === 'tile' ? 'Use' : c.kind === 'exit' ? 'Exit' : c.kind === 'drive' ? 'Drive' : c.kind === 'shop' ? 'Barn' : 'Collect') : 'Use';
   if (c && c.kind === 'tile') { const p = tilePos(c.i); pointer.position.set(p.x, .26, p.z); pointer.visible = true; } else pointer.visible = false;
   updateDomBadges(); updateRain(dt, isRaining()); updateSky(); updateAnimals(dt); updateRemotes(dt);
-  slow += dt; if (slow > .5) { slow = 0; refreshField(); }
+  slow += dt; if (slow > .5) { slow = 0; refreshField(); renderPeers(); }
   const now = performance.now();
-  if (roomRef && me && now - lastSent > 100 && (player.speed > .1 || now - lastBeat > 8000)) { lastSent = lastBeat = now; roomRef.child('players/' + me.uid).set({ n: myName, x: +player.x.toFixed(2), z: +player.z.toFixed(2), r: +player.ry.toFixed(2), v: player.driving ? 1 : 0, h: +myHue.toFixed(2), t: firebase.database.ServerValue.TIMESTAMP }); }
-  if (player.driving && now - lastTrk > 1500) { lastTrk = now; roomRef.child('tractor').set({ holder: me.uid, x: +tractorLocal.x.toFixed(2), z: +tractorLocal.z.toFixed(2), ry: +tractorLocal.ry.toFixed(3) }); }
+  if (roomRef && me && now - lastSent > 100 && (player.speed > .1 || now - lastBeat > 8000)) { lastSent = lastBeat = now; roomRef.child('players/' + me.uid).set({ n: myName, x: +player.x.toFixed(2), z: +player.z.toFixed(2), r: +player.ry.toFixed(2), v: player.driving ? 1 : 0, h: +myHue.toFixed(2), lv: level(), tx: +(player.driving ? tractorLocal.x : tractorState.x).toFixed(1), tz: +(player.driving ? tractorLocal.z : tractorState.z).toFixed(1), tr: +(player.driving ? tractorLocal.ry : tractorState.ry).toFixed(2), t: firebase.database.ServerValue.TIMESTAMP }); }
+  if (player.driving && now - lastTrk > 1500) { lastTrk = now; roomRef.child('tractors/' + me.uid).set({ x: +tractorLocal.x.toFixed(2), z: +tractorLocal.z.toFixed(2), ry: +tractorLocal.ry.toFixed(3) }); }
   renderer.render(scene, camera); requestAnimationFrame(loop);
 }
 
 // ------------------------------------------------------------ start / join
 $('shareBtn').onclick = function () {
-  if (WW.mode !== 'cloud' || !cloudCode) { say('Sign in from the hub to get a code friends can use.'); return; }
-  const url = location.origin + location.pathname + '?room=' + cloudCode;
-  if (navigator.share) navigator.share({ title: 'Join my farm in Neighborly Acre', text: 'Farm code ' + cloudCode, url: url }).catch(function () {});
-  else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { say('Invite link copied!'); }); else say('Share this code: ' + cloudCode);
+  if (WW.mode !== 'cloud') { say('Sign in from the games hub to play with friends.'); return; }
+  if (!isMP) { say('This is your private solo farm. Open the games hub and tap Host multiplayer to play with friends.'); return; }
+  const url = location.origin + location.pathname + '?mp=' + hostCode;
+  if (navigator.share) navigator.share({ title: 'Join my farm in Neighborly Acre', text: 'Farm code ' + hostCode, url: url }).catch(function () {});
+  else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { say('Invite link copied!'); }); else say('Share this code: ' + hostCode);
 };
+const hexOk = v => typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v.trim());
 async function begin(user, myCode) {
-  const roomCode = (qs.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, ''), code = roomCode || (user ? myCode : null);
+  // ?mp=CODE (or the older ?room=CODE) joins the multiplayer farm of that host. No code = your private solo farm.
+  hostCode = (qs.get('mp') || qs.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); isMP = !!hostCode; saveKey = isMP ? 'farm_mp_' + hostCode : 'farm';
+  let hostName = '';
   if (user) {
     // Signed in: always Firebase, never the device. If Firebase refuses, say so instead of quietly saving locally.
-    if (!code) { gate('Could not find your friend code. Open the hub once, then try again.', { back: true }); return; }
+    if (!myCode) { gate('Could not find your friend code. Open the games hub once, then try again.', { back: true }); return; }
+    const roomId = isMP ? 'MP-' + hostCode : myCode;
     try {
-      roomRef = WW.roomRef('farm', code); WW.mode = 'cloud'; const meta = (await roomRef.child('meta').once('value')).val();
-      if (!meta) { if (code === myCode) await roomRef.child('meta').set({ host: (user.displayName || 'Farmer').split(' ')[0], created: firebase.database.ServerValue.TIMESTAMP }); else { gate('Farm ' + code + ' not found. Ask your friend to open their farm once first.', { back: true }); return; } }
-      me = user; cloudCode = code; $('roomLabel').textContent = (code === myCode ? 'My farm' : 'Friend’s farm') + ' · ' + code;
+      roomRef = WW.roomRef('farm', roomId); WW.mode = 'cloud'; let meta = (await roomRef.child('meta').once('value')).val();
+      if (!meta) { if (!isMP || hostCode === myCode) { meta = { host: (user.displayName || 'Farmer').split(' ')[0], created: firebase.database.ServerValue.TIMESTAMP }; await roomRef.child('meta').set(meta); } else { gate('Multiplayer farm ' + hostCode + ' not found. Ask your friend to host it from the games hub first.', { back: true }); return; } }
+      hostName = meta.host || ''; me = user; cloudCode = hostCode || myCode;
+      $('roomLabel').textContent = isMP ? 'Multiplayer · ' + (hostName ? hostName + '\u2019s farm' : hostCode) : 'Solo farm';
     } catch (e) { console.warn(e); gate('Your online farm could not be opened (' + (e.code || e.message || 'permission denied') + '). The game database rules need to be published in Firebase — nothing is saved to this device while you are signed in.', { back: true }); return; }
   } else {
-    if (roomCode) { gate('Sign in to join a friend’s farm.', { signIn: true }); return; }
+    if (isMP) { gate('Sign in to join a multiplayer farm.', { signIn: true }); return; }
     WW.useLocal(); roomRef = WW.roomRef('farm', 'solo'); me = { uid: 'local' }; $('roomLabel').textContent = 'Guest · this device';
   }
   $('gate').style.display = 'none'; myName = ((user && user.displayName) || 'Farmer').split(' ')[0].slice(0, 12);
   try {
-    const s = await WW.loadSave('farm');
+    const s = await WW.loadSave(saveKey);   // solo and every multiplayer farm each have their own progress, starting fresh
     if (s) { save.coins = s.coins | 0; save.xp = s.xp | 0; save.seeds = s.seeds || { wheat: 0 }; save.bag = s.bag || {}; save.up = s.up || {}; save.orders = s.orders || { day: -1, done: [] }; save.harvested = s.harvested | 0;
       // legacy saves (before levels) kept only coins
-      if (s.xp === undefined && s.seeds === undefined) { save.seeds = { wheat: 30, carrot: 30 }; } save.skip = s.skip || {}; save.stats = s.stats || {}; save.daily = s.daily || { day: -1, base: {}, done: [] }; save.ms = s.ms || {}; }
+      if (s.xp === undefined && s.seeds === undefined) { save.seeds = { wheat: 30, carrot: 30 }; } save.skip = s.skip || {}; save.stats = s.stats || {}; save.daily = s.daily || { day: -1, base: {}, done: [] }; save.ms = s.ms || {}; if (s.ledKey) save.ledKey = s.ledKey; }
     normalizeSave();
   } catch (e) { console.warn(e); gate('Your saved progress could not be loaded (' + (e.code || e.message) + '). Nothing was changed.', { back: true }); return; }
-  if (user) { try { myAvatar = (await WW.db.ref('users/' + WW.emailKey(user.email) + '/avatar_url').once('value')).val() || user.photoURL || ''; } catch (e) { myAvatar = user.photoURL || ''; } }
+  if (user) {
+    try { myAvatar = (await WW.db.ref('users/' + WW.emailKey(user.email) + '/avatar_url').once('value')).val() || user.photoURL || ''; } catch (e) { myAvatar = user.photoURL || ''; }
+    try { const pc = (await WW.db.ref('users/' + WW.emailKey(user.email) + '/primary_color').once('value')).val(); if (hexOk(pc)) myColor = pc.trim(); } catch (e) {}
+  }
   if (myAvatar) { giveAvatar(farmer, myAvatar, myName); roomRef.child('avatars/' + me.uid).set(myAvatar); }
+  if (myColor) { paintTractor(parseInt(myColor.slice(1), 16)); roomRef.child('colors/' + me.uid).set(myColor); }
+  // fields first (so we know which one is ours), then everything else
+  ownedFields = (await roomRef.child('fields').once('value')).val() || {}; await autoClaim();
+  try { const t = (await roomRef.child('tractors/' + me.uid).once('value')).val(); if (t && t.x !== undefined) tractorState = { x: t.x, z: t.z, ry: t.ry || 0 }; else { const ff = firstMyField(), pk = W.parkFor(ff < 0 ? 0 : ff); tractorState = { x: pk.x, z: pk.z, ry: pk.ry }; roomRef.child('tractors/' + me.uid).set(tractorState); } } catch (e) {}
+  const ff0 = firstMyField(); if (ff0 >= 0) { const p0 = W.tilePos(ff0 * C.FIELD_TILES + 10); player.x = p0.x; player.z = W.FIELDS[ff0].z0 - 2; }
   normalizeSave(); hud(); buildSeedBar(); applyImplement();
   roomRef.child('avatars').on('value', function (snap) { avatars = snap.val() || {}; syncRemotes(); });
+  roomRef.child('colors').on('value', function (snap) { colors = snap.val() || {}; syncRemotes(); });
   roomRef.child('tiles').on('value', function (snap) { const v = snap.val() || {}; tiles = {}; Object.keys(v).forEach(function (k) { tiles[+k] = v[k]; }); refreshField(); });
   roomRef.child('fields').on('value', function (snap) { ownedFields = snap.val() || {}; updateFieldVisuals(); });
   roomRef.child('animals').on('value', function (snap) { animals = snap.val() || {}; syncAnimals(); });
-  roomRef.child('tractor').on('value', function (snap) { tractorState = Object.assign({ holder: null, x: W.TRACTOR_HOME.x, z: W.TRACTOR_HOME.z, ry: W.TRACTOR_HOME.ry }, snap.val() || {}); if (tractorState.holder === undefined) tractorState.holder = null; });
   roomRef.child('players').on('value', function (snap) { players = snap.val() || {}; syncRemotes(); });
+  if (isMP) roomRef.child('ledger').on('value', function (snap) { applyLedger(snap.val()); });
+  updateFieldVisuals(); renderPeers();
   setInterval(syncRemotes, 5000); setInterval(rainTick, 3000); setInterval(function () { if ($('shop').style.display === 'flex') renderShop(); }, 2000);
   roomRef.child('players/' + me.uid).onDisconnect().remove();
-  // let friends see on the games hub that someone is on this farm (and join with one tap)
-  if (WW.mode === 'cloud' && WW.publishPlaying) {
-    const announce = function () { WW.publishPlaying({ game: 'farm', title: 'Neighborly Acre', room: cloudCode, status: 'Level ' + level() + ' · ' + $('count').textContent + ' on the farm', open: 1 }); };
+  // let friends see on the games hub that someone is on this multiplayer farm (and join with one tap)
+  if (isMP && WW.mode === 'cloud' && WW.publishPlaying) {
+    const announce = function () { WW.publishPlaying({ game: 'farm', title: 'Neighborly Acre', room: hostCode, status: 'Level ' + level() + ' · ' + $('count').textContent + ' on the farm', open: 1 }); };
     announce(); setInterval(announce, 60000); window.addEventListener('pagehide', function () { WW.clearPlaying && WW.clearPlaying(); });
   }
-  say(WW.mode === 'cloud' ? 'Share your code so friends can drop in any time. Pick a tool, face a tile, press E.' : 'Welcome! Face grass, pick Plow, press E. Then Plant. Sign in from the hub for online saves and friends.');
+  say(isMP ? 'Multiplayer farm: you start fresh here. Work your own field; the animals are shared with everyone.' : (WW.mode === 'cloud' ? 'Your solo farm. Host a multiplayer farm from the games hub to play with friends.' : 'Welcome! Face grass, pick Plow, press E. Then Plant. Sign in from the hub for online saves and friends.'));
   requestAnimationFrame(loop);
 }
 let started = false, startedAsUser = false;
@@ -545,4 +616,4 @@ WW.onReady(function (user, code) {
   started = true; startedAsUser = !!user;
   begin(user, code).catch(function (e) { console.error(e); gate('Could not start: ' + (e.message || e), { back: true }); });
 });
-window.__farm = { player: player, tractorLocal: tractorLocal, setTool: setTool, save: save, openShop: openShop, rainTick: rainTick, get tiles() { return tiles; }, get animals() { return animals; }, useAction: useAction, setSkip: function (id, v) { if (v) save.skip[id] = 1; else delete save.skip[id]; buildSeedBar(); }, cropForTile: cropForTile, plantables: plantables, get yaw() { return yaw; }, setCam: function (y, p, d) { yaw = y; pitch = p; dist = d; lastDragAt = performance.now() + 60000; }, refreshField: refreshField, ownedFields: function () { return ownedFields; }, get avatars() { return avatars; }, get avatarOn() { return !!farmer.userData.avatar && !!farmer.userData.badge; }, faceCamera: function () { player.ry = yaw; } };
+window.__farm = { isMP: function () { return isMP; }, applyLedger: applyLedger, get colors() { return colors; }, myFieldCount: myFieldCount, ownerOf: ownerOf, get tractorState() { return tractorState; }, renderPeers: renderPeers, level: level, tractorColor: function () { return tractor.children[0].material.color.getHex(); }, actTile: actTile, player: player, tractorLocal: tractorLocal, setTool: setTool, save: save, openShop: openShop, rainTick: rainTick, get tiles() { return tiles; }, get animals() { return animals; }, useAction: useAction, setSkip: function (id, v) { if (v) save.skip[id] = 1; else delete save.skip[id]; buildSeedBar(); }, cropForTile: cropForTile, plantables: plantables, get yaw() { return yaw; }, setCam: function (y, p, d) { yaw = y; pitch = p; dist = d; lastDragAt = performance.now() + 60000; }, refreshField: refreshField, ownedFields: function () { return ownedFields; }, get avatars() { return avatars; }, get avatarOn() { return !!farmer.userData.avatar && !!farmer.userData.badge; }, faceCamera: function () { player.ry = yaw; } };

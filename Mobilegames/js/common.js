@@ -141,10 +141,10 @@
   };
 
   // ---- "now playing" status shown to friends (users/{emailKey}/now_playing)
-  function playRef() { return (WW.mode === 'cloud' && WW.user && WW.user.email) ? db.ref('users/' + WW.emailKey(WW.user.email) + '/now_playing') : null; }
+  function playRef() { return (WW.mode === 'cloud' && WW.user && WW.user.email) ? db.ref('users/' + (WW.playKey || WW.emailKey(WW.user.email)) + '/now_playing') : null; }
   WW.publishPlaying = function (info) {
     var r = playRef(); if (!r) return;
-    try { r.onDisconnect().remove(); r.set(Object.assign({ platform: 'mobile' }, info, { t: firebase.database.ServerValue.TIMESTAMP })).catch(function () {}); } catch (e) {}
+    try { r.onDisconnect().remove(); r.set(Object.assign({ platform: 'mobile' }, info, { t: firebase.database.ServerValue.TIMESTAMP })).then(function () { WW.presenceError = null; }).catch(function (e) { WW.presenceError = e; console.warn('now_playing write failed (friends will not see you playing):', e && (e.code || e.message)); }); } catch (e) { WW.presenceError = e; }
   };
   WW.clearPlaying = function () { var r = playRef(); if (r) r.remove().catch(function () {}); };
 
@@ -194,10 +194,10 @@
     await Promise.all(Object.keys(friends).map(async function (fk) {
       try {
         var fo = friends[fk] || {}, code = fo.friend_code || fk, uk = (await db.ref('friend_codes/' + code).once('value')).val();
-        if (typeof uk !== 'string') return;
+        if (typeof uk !== 'string') { out.push({ code: code, name: fo.username || code, avatar: fo.avatar_url || '', plays: [], note: 'not found' }); return; }
         var prof = (await db.ref('users/' + uk).once('value')).val() || {};
         var scope = prof.tracking_scope || 'friends';
-        if (scope === 'private') return;
+        if (scope === 'private') { out.push({ code: code, name: fo.username || prof.username || code, avatar: prof.avatar_url || fo.avatar_url || '', plays: [], note: 'private' }); return; }
         var item = { code: code, name: fo.username || prof.username || prof.display_name || code, avatar: prof.avatar_url || fo.avatar_url || '', plays: [] };
         var np = prof.now_playing;
         if (np && np.t && now - np.t < 150000) item.plays.push({ kind: 'mobile', game: np.game, title: np.title, status: np.status || '', room: np.room, open: np.open | 0 });
@@ -222,6 +222,7 @@
     auth.onAuthStateChanged(async function (user) {
       WW.user = user || null; WW.friendCode = null;
       if (user) { try { WW.friendCode = await WW.ensureFriendCode(user); } catch (e) { console.error(e); } }
+      if (user && WW.friendCode) { try { var pk = (await db.ref('friend_codes/' + WW.friendCode).once('value')).val(); WW.playKey = typeof pk === 'string' ? pk : null; } catch (e) { WW.playKey = null; } }   // friends read us at the key our friend code points to
       if (user) await WW.loadAvatar(user);
       cb(WW.user, WW.friendCode);
     });
