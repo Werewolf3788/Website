@@ -64,7 +64,7 @@
     <div id="actions" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
     <div id="emotes"></div>
     <details id="hist"><summary>📜 Win / loss history</summary><div id="histBody" style="margin-top:8px"></div></details>
-    <div class="muted" id="rules" style="margin-top:10px">Roll a 1 or 6 to bring a peg out. A 6 gives another roll. Land on a rival to send it home. Fill all four slots of your home lane to win.<br><br><b>Controls:</b> tap the die, flick it, shake your phone or press Space to roll. Tap or drag a glowing peg onto a dashed spot (or tap the spot, or press 1-4) to move. Use the emoji row to react.</div>
+    <div class="muted" id="rules" style="margin-top:10px">Roll a 1 or 6 to bring a peg out. A 6 gives another roll. Land on a rival to send it home. Fill all four slots of your home lane to win.<br><br><b>Controls:</b> tap the die, flick it, shake your phone or press Space to roll. Tap or drag a glowing peg onto a dashed spot (or tap the spot, or press 1-4) to move. Use the emoji row to react.<br><br>A table only runs while at least one human is playing: if the last person leaves, the game ends. If someone leaves while others stay, a bot takes their seat. A game only counts toward your record if you played it from the first move to the last.</div>
   </div>
 </div>
 <div id="gate"><div id="gateText">Sign in to play</div><button class="go" id="gateBtn">Sign in with Google</button><button id="soloBtn">Play solo instead</button></div>
@@ -369,31 +369,81 @@
 
   // ---------- lobby actions
   function firstName() { return (myName || 'Player'); }
+
+  // ---- who counts as "in the game": a table only runs while a human is playing it
+  function otherHumansPresent() {
+    if (WW.mode !== 'cloud' || !S) return false;
+    return seated(S).some(function (p) { var st = seatOf(S, p); return st && !st.bot && st.uid !== me.uid && !!players[st.uid]; });
+  }
+  function toBot(s, slot) { s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true }; }
+  function humanCount(s) { return seated(s).filter(function (p) { var st = seatOf(s, p); return st && !st.bot; }).length; }
+  function markStarted(s) { seated(s).forEach(function (p) { var st = seatOf(s, p); if (st && !st.bot) st.f = s.gid; }); }
+  // Jumping into a table nobody else is playing restarts it; otherwise you take over a bot's seat in the running game.
   function sit(slot) {
+    var restart = !!S && S.status !== 'lobby' && !otherHumansPresent();
     mutate(function (s) {
       var cur = seatOf(s, slot); if (cur && !cur.bot) return false;
       for (var i = 0; i < 4; i++) { var o = seatOf(s, i); if (o && !o.bot && o.uid === me.uid) return false; }
       if (!s.seats) s.seats = {};
-      s.seats[slot] = { uid: me.uid, name: firstName(), bot: false, avatar: WW.avatar || '' };
+      var others = seated(s).filter(function (p) { var st = seatOf(s, p); return st && !st.bot; }).length;
+      s.seats[slot] = { uid: me.uid, name: firstName(), bot: false, avatar: WW.avatar || '', f: 0 };
+      if (!others) s.hostUid = me.uid;
+      if (restart && s.status !== 'lobby') {
+        for (var j = 0; j < 4; j++) { var oo = seatOf(s, j); if (oo && !oo.bot && oo.uid !== me.uid) toBot(s, j); }
+        s.hostUid = me.uid; beginGame(s);
+      }
     });
   }
+  // Leaving hands your seat to a bot. If you were the last human the game ends and the table empties.
   function leave(slot) {
+    autoSeatTried = true;
     mutate(function (s) {
       var cur = seatOf(s, slot); if (!cur || cur.bot || cur.uid !== me.uid) return false;
-      if (s.status === 'lobby') delete s.seats[slot]; else s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true };
+      if (s.status === 'lobby') delete s.seats[slot]; else toBot(s, slot);
+      if (!humanCount(s)) { if (s.status !== 'lobby') resetToLobby(s); s.seats = {}; }
     });
+  }
+  var reaping = false;
+  function reapAbsent() {
+    var s = S; if (!s || WW.mode !== 'cloud' || s.status === 'lobby' || reaping || !me || !isDriver()) return;
+    var act = null;
+    for (var i = 0; i < 4 && !act; i++) {
+      var st = seatOf(s, i); if (!st || st.bot || st.uid === me.uid) continue;
+      var here = !!players[st.uid];
+      if (here && st.gone) act = { k: 'back', i: i };
+      else if (!here && !st.gone) act = { k: 'gone', i: i };
+      else if (!here && st.gone && WW.now() - st.gone > 180000) act = { k: 'bot', i: i };
+    }
+    if (!act) return;
+    reaping = true; setTimeout(function () { reaping = false; }, 4000);
+    mutate(function (s2) {
+      var st2 = seatOf(s2, act.i); if (!st2 || st2.bot) return false;
+      if (act.k === 'back') delete st2.gone; else if (act.k === 'gone') st2.gone = WW.now(); else toBot(s2, act.i);
+    });
+  }
+  setInterval(reapAbsent, 10000);
+  var staleChecked = false;
+  function checkStale() {
+    if (staleChecked || !S) return; staleChecked = true;
+    setTimeout(function () {
+      if (WW.mode !== 'cloud' || !S || S.status !== 'playing' || mySeat() < 0 || WW.now() - (S.t || 0) < 600000 || otherHumansPresent()) return;
+      mutate(function (s) {
+        if (s.status !== 'playing') return false;
+        for (var j = 0; j < 4; j++) { var o = seatOf(s, j); if (o && !o.bot && o.uid !== me.uid) toBot(s, j); }
+        resetToLobby(s); s.msg = 'The last game ended while everyone was away.';
+      });
+    }, 4000);
   }
   function addBot(slot) { mutate(function (s) { if (s.status !== 'lobby' || seatOf(s, slot) || s.hostUid !== me.uid) return false; if (!s.seats) s.seats = {}; s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true }; }); }
   function fillBots() { mutate(function (s) { if (s.status !== 'lobby' || s.hostUid !== me.uid) return false; if (!s.seats) s.seats = {}; for (var i = 0; i < 4; i++) if (!seatOf(s, i)) s.seats[i] = { uid: 'bot' + i, name: NAMES[i] + ' Bot', bot: true }; }); }
   function removeBot(slot) { mutate(function (s) { var c = seatOf(s, slot); if (s.status !== 'lobby' || !c || !c.bot || s.hostUid !== me.uid) return false; delete s.seats[slot]; }); }
-  function startGame() {
-    mutate(function (s) {
-      if (s.status !== 'lobby' || s.hostUid !== me.uid || seated(s).length < 2) return false;
-      s.pegs = {}; seated(s).forEach(function (p) { s.pegs[p] = [-1, -1, -1, -1]; });
-      s.status = 'playing'; s.turn = seated(s)[0]; s.roll = 0; s.winner = -1; s.gid = (s.gid | 0) + 1; s.lr = 0; s.msg = 'Game on! ' + NAMES[s.turn] + ' rolls first.';
-    });
+  function resetToLobby(s) { s.status = 'lobby'; s.pegs = {}; s.roll = 0; s.winner = -1; s.msg = ''; }
+  function beginGame(s) {
+    s.pegs = {}; seated(s).forEach(function (p) { s.pegs[p] = [-1, -1, -1, -1]; });
+    s.status = 'playing'; s.turn = seated(s)[0]; s.roll = 0; s.winner = -1; s.gid = (s.gid | 0) + 1; s.lr = 0; s.msg = 'Game on! ' + NAMES[s.turn] + ' rolls first.'; markStarted(s);
   }
-  function rematch() { mutate(function (s) { if (s.status !== 'done' || s.hostUid !== me.uid) return false; s.status = 'lobby'; s.pegs = {}; s.roll = 0; s.winner = -1; s.msg = ''; }); }
+  function startGame() { mutate(function (s) { if (s.status !== 'lobby' || s.hostUid !== me.uid || seated(s).length < 2) return false; beginGame(s); }); }
+  function rematch() { mutate(function (s) { if (s.status !== 'done' || s.hostUid !== me.uid) return false; resetToLobby(s); }); }
 
   // ---------- drawing
   var pegEls = [];
@@ -488,6 +538,7 @@
         h += '<div class="seat">' + dot(p) + '<span class="nm muted">' + NAMES[p] + ' - empty</span>' + btn + '</div>';
       } else {
         var tag = q.bot ? ' 🤖' : (q.uid === me.uid ? ' (you)' : '');
+        if (!q.bot && q.uid === me.uid && s.status === 'playing' && (q.f | 0) !== (s.gid | 0)) tag += ' · joined late, not counted';
         if (q.bot && ms < 0) btn += '<button data-a="sit" data-p="' + p + '">' + (s.status === 'lobby' ? 'Take seat' : 'Jump in') + '</button>';
         if (q.bot && s.status === 'lobby' && isHost()) btn += ' <button data-a="rm" data-p="' + p + '">Remove</button>';
         if (!q.bot && q.uid === me.uid) btn += '<button data-a="leave" data-p="' + p + '">Leave</button>';
@@ -509,7 +560,7 @@
     var b = e.target.closest ? e.target.closest('button[data-a]') : null; if (!b || b.disabled) return;
     var a = b.dataset.a, p = +b.dataset.p;
     if (a === 'sit') sit(p); else if (a === 'bot') addBot(p); else if (a === 'rm') removeBot(p);
-    else if (a === 'leave') leave(p); else if (a === 'start') startGame(); else if (a === 'fill') fillBots(); else if (a === 'again') rematch();
+    else if (a === 'leave') { if (!S || S.status !== 'playing' || confirm('Leave this game? If you are the last player the game ends, and this game will not count toward your record.')) leave(p); } else if (a === 'start') startGame(); else if (a === 'fill') fillBots(); else if (a === 'again') rematch();
   });
   $('shareBtn').onclick = function () {
     if (WW.mode !== 'cloud' || !cloudCode) { say('Sign in from the hub to get a code friends can use.'); return; }
@@ -546,6 +597,7 @@
   async function recordStats(s) {
     var ms = mySeat();
     if (s.status !== 'done' || ms < 0) return;
+    var mst = seatOf(s, ms); if (!mst || mst.bot || mst.uid !== me.uid || mst.f !== s.gid) return; // only players who played from the first move to the last get credit
     var key = 'wahoo_' + (cloudCode || 'solo') + '_' + s.gid; if (statKey === key) return; statKey = key;
     var opp = [], win = null;
     seated(s).forEach(function (p) { var st = seatOf(s, p), o = { n: st.name, b: !!st.bot }; if (!st.bot) o.u = st.uid; if (p === s.winner) win = o; if (p !== ms) opp.push(o); });
@@ -610,7 +662,7 @@
         for (var i = 0; i < 4; i++) { var st = seatOf(S, i); if (!st) { sit(i); break; } }
       }
       if (S.status === 'playing' && mySeat() < 0 && !autoSeatTried) { autoSeatTried = true; say('Game in progress - tap a bot seat to jump in.'); }
-      render(); tick(); recordStats(S); publishSoon();
+      autoSeatTried = true; checkStale(); render(); tick(); recordStats(S); publishSoon();
     });
   }
 
