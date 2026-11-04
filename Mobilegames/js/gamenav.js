@@ -1,13 +1,13 @@
-// Shared "Games" menu for every game page (copy lives in Claude-Test/js and Mobilegames/js; keep them identical).
+// Shared "Games" menu for every game page (lives in Mobilegames/js).
 // Adds a menu to the button with id="gamesBtn" so players can jump to any other game or hub at any time.
 (function () {
   var m = location.pathname.match(/^(.*\/)(Claude-Test|Mobilegames)\//), root = m ? m[1] : '/';
   var GAMES = [
-    { n: 'Neighborly Acre', i: '🌾', d: '3D co-op farm: crops, animals, tractor', u: 'Claude-Test/farm.html', k: 'farm' },
+    { n: 'Neighborly Acre', i: '🌾', d: '3D co-op farm: crops, animals, tractor', u: 'Mobilegames/farm.html', k: 'farm' },
     { n: 'Wahoo', i: '🎲', d: 'Race your pegs around the board', u: 'Mobilegames/wahoo.html', k: 'wahoo' },
     { n: 'Property Tycoon', i: '🏙️', d: 'Buy, trade and build properties', u: 'Mobilegames/tycoon.html', k: 'tycoon' }
   ];
-  var HUBS = [{ n: 'Farm hub', u: 'Claude-Test/' }, { n: 'Board games hub', u: 'Mobilegames/' }, { n: 'Main site', u: '' }];
+  var HUBS = [{ n: 'All games hub', u: 'Mobilegames/' }, { n: 'Main site', u: '' }];
   var ov = document.createElement('div');
   ov.style.cssText = 'position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:12px;font-family:system-ui,sans-serif;-webkit-user-select:none;user-select:none';
   var box = document.createElement('div');

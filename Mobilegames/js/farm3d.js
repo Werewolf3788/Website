@@ -215,6 +215,7 @@ function collect(id) {
 // ------------------------------------------------------------ barn: seeds / sell / kitchen / animals / orders / upgrades
 let shopTab = 'seeds';
 // only touch the page when the menu content really changed (a redraw between mouse-down and mouse-up would swallow a click)
+function addHtml(box, html) { box.insertAdjacentHTML('beforeend', html); }   // never use innerHTML += here: it rebuilds the buttons already added and silently drops their click handlers
 function commitShop(n, id) { const cur = $(id); if (cur.innerHTML !== n.innerHTML) { cur.innerHTML = ''; while (n.firstChild) cur.appendChild(n.firstChild); } }
 const TABS = [['seeds', '🌱 Seeds'], ['sell', '💰 Sell'], ['kitchen', '🍳 Kitchen'], ['animals', '🐔 Animals'], ['orders', '📋 Orders'], ['missions', '📜 Missions'], ['upgrades', '🚜 Tractor']];
 const nearShop = () => Math.hypot(player.x - W.SHOP_POS.x, player.z - W.SHOP_POS.z) < 6;
@@ -225,17 +226,17 @@ function renderShop() {
   const tabs = document.createElement('div');
   TABS.forEach(function (t) { const b = document.createElement('button'); b.textContent = t[1]; b.className = t[0] === shopTab ? 'sel' : ''; b.onclick = function () { shopTab = t[0]; renderShop(); }; tabs.appendChild(b); });
   const box = document.createElement('div'), l = level(), d = today(); box.innerHTML = '<div class="item" style="border:0;padding-top:0"><div><b style="color:#fde68a">$' + save.coins + '</b> · Level <b>' + l + '</b></div></div>';
-  if (!nearShop() && shopTab !== 'seeds' && shopTab !== 'missions') box.innerHTML += '<div class="item" style="border:0;color:#fbbf24">Walk to the barn door to trade. You can still look around.</div>';
+  if (!nearShop() && shopTab !== 'seeds' && shopTab !== 'missions') addHtml(box, '<div class="item" style="border:0;color:#fbbf24">Walk to the barn door to trade. You can still look around.</div>');
   const can = nearShop();
   if (shopTab === 'seeds') {
-    box.innerHTML += '<div class="item" style="border:0"><small>One pack plants many tiles. A field pack covers the whole field. Every kind of seed you own is spread evenly across the field: one kind = all of it, two = half and half, three = thirds.</small></div>';
+    addHtml(box, '<div class="item" style="border:0"><small>One pack plants many tiles. A field pack covers the whole field. Every kind of seed you own is spread evenly across the field: one kind = all of it, two = half and half, three = thirds.</small></div>');
     C.CROP_IDS.forEach(function (id) {
       const c = C.CROPS[id], lock = l < c.level, price = C.priceOf(id, d);
       box.appendChild(row(c.icon + ' <b>' + c.name + '</b> <small>' + (lock ? 'Unlocks at level ' + c.level : 'sells ~$' + price + ' each · ' + c.grow / 60000 + ' min to grow · you have ' + (save.seeds[id] || 0) + ' seeds') + '</small>',
         lock ? [{ t: '🔒 Lv ' + c.level, off: true, f: function () {} }] : C.PACKS.map(function (n) { const cost = C.packPrice(id, n); return { t: (n === C.FIELD_TILES ? 'Field ' : '×') + n + ' · $' + cost + '', off: !can || save.coins < cost, f: function () { if (save.coins < cost) return; setCoins(-cost); save.seeds[id] = (save.seeds[id] || 0) + n; hud(); queueSave(); buildSeedBar(); say('Bought ' + n + ' ' + c.name.toLowerCase() + ' seeds.'); } }; })));
     });
   } else if (shopTab === 'sell') {
-    const ids = Object.keys(save.bag); if (!ids.length) box.innerHTML += '<div class="item"><div>Your bag is empty. Harvest crops and collect eggs, milk and wool.</div></div>';
+    const ids = Object.keys(save.bag); if (!ids.length) addHtml(box, '<div class="item"><div>Your bag is empty. Harvest crops and collect eggs, milk and wool.</div></div>');
     let total = 0; ids.forEach(function (id) { total += (save.bag[id] || 0) * C.priceOf(id, d); });
     ids.forEach(function (id) {
       const g = C.GOODS[id], n = save.bag[id], p = C.priceOf(id, d), base = g.sell, arrow = p > base ? '▲' : p < base ? '▼' : '';
@@ -251,7 +252,7 @@ function renderShop() {
     });
   } else if (shopTab === 'animals') {
     const c = counts();
-    box.innerHTML += '<div class="item" style="border:0"><small>Animals give a product every few minutes. Collect it when the icon floats over them: +' + Object.keys(C.XP_PRODUCT).map(function (k) { return C.XP_PRODUCT[k] + ' xp per ' + k; }).join(', ') + '.</small></div>';
+    addHtml(box, '<div class="item" style="border:0"><small>Animals give a product every few minutes. Collect it when the icon floats over them: +' + Object.keys(C.XP_PRODUCT).map(function (k) { return C.XP_PRODUCT[k] + ' xp per ' + k; }).join(', ') + '.</small></div>');
     Object.keys(C.ANIMALS).forEach(function (k) {
       const a = C.ANIMALS[k], lock = l < a.level, sells = C.priceOf(a.prod, d), perHour = Math.round(3600000 / a.every * sells);
       box.appendChild(row(a.icon + ' <b>' + a.name + '</b> · <b style="color:#fde68a">$' + a.cost + '</b> <small>' + (lock ? 'Unlocks at level ' + a.level + ' · ' : '') + 'you own ' + c[k] + '/' + a.max + ' · gives ' + a.prod + ' every ' + a.every / 60000 + ' min · ' + a.prod + ' sells ~$' + sells + ' (about $' + perHour + '/hour each) · +' + C.XP_PRODUCT[a.prod] + ' xp each</small>',
@@ -264,16 +265,16 @@ function renderShop() {
       box.appendChild(row('📋 <b>' + o.qty + '× ' + g.name + '</b> ' + g.icon + ' <small>reward $' + o.reward + ' + ' + o.xp + ' xp · you have ' + (save.bag[o.item] || 0) + '</small>',
         [{ t: done ? '✅ Done' : 'Deliver', off: done || !have || !can, f: function () { addItem(o.item, -o.qty); setCoins(o.reward); stat('orders'); addXp(o.xp); save.orders.done[k] = true; say('Order complete! +$' + o.reward + ''); } }]));
     });
-    box.innerHTML += '<div class="item" style="border:0"><small>New orders arrive every day (UTC midnight). Big orders are where a tractor really pays off.</small></div>';
+    addHtml(box, '<div class="item" style="border:0"><small>New orders arrive every day (UTC midnight). Big orders are where a tractor really pays off.</small></div>');
   } else if (shopTab === 'missions') {
     const lv = level(), daily = ensureDaily();
-    box.innerHTML += '<div class="item" style="border:0"><small>XP: harvest +' + C.XP_HARVEST + ' · egg +' + C.XP_PRODUCT.egg + ' · wool +' + C.XP_PRODUCT.wool + ' · milk +' + C.XP_PRODUCT.milk + '. Missions pay extra XP and coins. Levels: 25 xp to reach level 2, then 50, 75 ... up to level ' + C.MAX_LEVEL + '.</small></div><div class="item" style="border:0;padding:4px 0"><b>Today\u2019s missions</b> <small>(reset at midnight)</small></div>';
+    addHtml(box, '<div class="item" style="border:0"><small>XP: harvest +' + C.XP_HARVEST + ' · egg +' + C.XP_PRODUCT.egg + ' · wool +' + C.XP_PRODUCT.wool + ' · milk +' + C.XP_PRODUCT.milk + '. Missions pay extra XP and coins. Levels: 25 xp to reach level 2, then 50, 75 ... up to level ' + C.MAX_LEVEL + '.</small></div><div class="item" style="border:0;padding:4px 0"><b>Today\u2019s missions</b> <small>(reset at midnight)</small></div>');
     daily.forEach(function (m, k) {
       const p = Math.min(m.goal, dailyProgress(m)), ready = p >= m.goal, done = save.daily.done[k];
       box.appendChild(row(C.STATS[m.stat].icon + ' <b>' + m.text + '</b> <small>' + p + '/' + m.goal + ' · reward +' + m.xp + ' xp and $' + m.coins + '</small>',
         [{ t: done ? '✅ Claimed' : ready ? 'Claim' : p + '/' + m.goal, off: done || !ready, f: function () { save.daily.done[k] = true; reward({ xp: m.xp, coins: m.coins }, m.text); } }]));
     });
-    box.innerHTML += '<div class="item" style="border:0;padding:10px 0 4px"><b>Milestones</b> <small>(these never expire)</small></div>';
+    addHtml(box, '<div class="item" style="border:0;padding:10px 0 4px"><b>Milestones</b> <small>(these never expire)</small></div>');
     Object.keys(C.STATS).forEach(function (st) {
       if (!C.statUnlocked(st, lv)) return; const t = nextTier(st), S = C.STATS[st], have = save.stats[st] || 0; if (!t) { box.appendChild(row(S.icon + ' <b>' + S.verb + ' ' + S.noun + '</b> <small>All milestones done!</small>', [])); return; }
       box.appendChild(row(S.icon + ' <b>' + S.verb + ' ' + t.goal + ' ' + S.noun + '</b> <small>' + Math.min(have, t.goal) + '/' + t.goal + ' · reward +' + t.reward.xp + ' xp and $' + t.reward.coins + '</small>',
@@ -285,7 +286,7 @@ function renderShop() {
       box.appendChild(row('🚜 <b>' + u.name + '</b> <small>' + u.desc + (lock ? ' · unlocks at level ' + u.level : '') + '</small>',
         [{ t: has ? '✅ Owned' : lock ? '🔒 Lv ' + u.level : '$' + u.cost, off: has || lock || !can || save.coins < u.cost, f: function () { setCoins(-u.cost); save.up[k] = 1; say(u.name + ' installed!'); applyImplement(); queueSave(); } }]));
     });
-    box.innerHTML += '<div class="item" style="border:0"><small>Drive the tractor over your field: it plows, plants, waters or harvests ' + swath() + ' tiles at once, whichever tool you have selected.</small></div>';
+    addHtml(box, '<div class="item" style="border:0"><small>Drive the tractor over your field: it plows, plants, waters or harvests ' + swath() + ' tiles at once, whichever tool you have selected.</small></div>');
   }
   commitShop(tabs, 'shopTabs'); commitShop(box, 'shopItems');
 }
@@ -483,13 +484,13 @@ async function begin(user, myCode) {
     // Signed in: always Firebase, never the device. If Firebase refuses, say so instead of quietly saving locally.
     if (!code) { gate('Could not find your friend code. Open the hub once, then try again.', { back: true }); return; }
     try {
-      roomRef = WW.roomRef(code); WW.mode = 'cloud'; const meta = (await roomRef.child('meta').once('value')).val();
+      roomRef = WW.roomRef('farm', code); WW.mode = 'cloud'; const meta = (await roomRef.child('meta').once('value')).val();
       if (!meta) { if (code === myCode) await roomRef.child('meta').set({ host: (user.displayName || 'Farmer').split(' ')[0], created: firebase.database.ServerValue.TIMESTAMP }); else { gate('Farm ' + code + ' not found. Ask your friend to open their farm once first.', { back: true }); return; } }
       me = user; cloudCode = code; $('roomLabel').textContent = (code === myCode ? 'My farm' : 'Friend’s farm') + ' · ' + code;
     } catch (e) { console.warn(e); gate('Your online farm could not be opened (' + (e.code || e.message || 'permission denied') + '). The game database rules need to be published in Firebase — nothing is saved to this device while you are signed in.', { back: true }); return; }
   } else {
     if (roomCode) { gate('Sign in to join a friend’s farm.', { signIn: true }); return; }
-    WW.useLocal(); roomRef = WW.roomRef('solo'); me = { uid: 'local' }; $('roomLabel').textContent = 'Guest · this device';
+    WW.useLocal(); roomRef = WW.roomRef('farm', 'solo'); me = { uid: 'local' }; $('roomLabel').textContent = 'Guest · this device';
   }
   $('gate').style.display = 'none'; myName = ((user && user.displayName) || 'Farmer').split(' ')[0].slice(0, 12);
   try {
@@ -509,6 +510,11 @@ async function begin(user, myCode) {
   roomRef.child('players').on('value', function (snap) { players = snap.val() || {}; syncRemotes(); });
   setInterval(syncRemotes, 5000); setInterval(rainTick, 3000); setInterval(function () { if ($('shop').style.display === 'flex') renderShop(); }, 2000);
   roomRef.child('players/' + me.uid).onDisconnect().remove();
+  // let friends see on the games hub that someone is on this farm (and join with one tap)
+  if (WW.mode === 'cloud' && WW.publishPlaying) {
+    const announce = function () { WW.publishPlaying({ game: 'farm', title: 'Neighborly Acre', room: cloudCode, status: 'Level ' + level() + ' · ' + $('count').textContent + ' on the farm', open: 1 }); };
+    announce(); setInterval(announce, 60000); window.addEventListener('pagehide', function () { WW.clearPlaying && WW.clearPlaying(); });
+  }
   say(WW.mode === 'cloud' ? 'Share your code so friends can drop in any time. Pick a tool, face a tile, press E.' : 'Welcome! Face grass, pick Plow, press E. Then Plant. Sign in from the hub for online saves and friends.');
   requestAnimationFrame(loop);
 }

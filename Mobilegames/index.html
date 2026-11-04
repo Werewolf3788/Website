@@ -6,7 +6,7 @@
 (function(){var p=location.pathname.replace(/\/index(\.html)?$/,'').replace(/\/$/,'')+'/';document.write('<base href="'+p+'">');})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
-<title>Werewolf Board Games</title>
+<title>Werewolf Mobile Games</title>
 <style>
   *{box-sizing:border-box} body{margin:0;font-family:system-ui,sans-serif;background:#0f172a;color:#e2e8f0;padding:16px;max-width:560px;margin:0 auto}
   h1{font-size:1.5rem;margin:8px 0} .card{background:#1e293b;border-radius:14px;padding:16px;margin:12px 0}
@@ -18,8 +18,15 @@
 </style>
 </head>
 <body>
-<h1>🎲 Werewolf Board Games</h1>
-<p class="muted">Classic table games for phones and computers. Play solo against bots any time, or sign in and share your code so friends can join your table.</p>
+<h1>🎮 Werewolf Mobile Games</h1>
+<p class="muted">Games for phones and computers. Play solo any time, or sign in and share your friend code so friends can join you.</p>
+
+<div class="card">
+  <h2 style="margin:0 0 4px">🌾 Neighborly Acre</h2>
+  <div class="muted">A 3D co-op farm: crops, animals, a tractor, missions and levels. Play solo any time; friends can drop in with your code.</div>
+  <div class="row"><button id="playFarm">Play</button></div>
+  <div class="row"><input id="joinCodeFarm" maxlength="8" placeholder="FRIEND'S CODE"><button id="joinFarm" class="alt">Join</button></div>
+</div>
 
 <div class="card">
   <h2 style="margin:0 0 4px">🎯 Wahoo</h2>
@@ -52,7 +59,6 @@
 </div>
 <div class="card"><details id="hist"><summary style="cursor:pointer;font-weight:700">📜 Win / loss history</summary><div id="histBody" style="margin-top:8px" class="muted">Sign in or play a game to build your record.</div></details></div>
 <div class="card soon"><h2 style="margin:0 0 4px">🚗 Road of Life</h2><div class="muted">Coming after that — careers, money and a spinner.</div></div>
-<div class="card"><h2 style="margin:0 0 4px">🌾 Neighborly Acre</h2><div class="muted">A 3D co-op farm with a tractor, crops and animals.</div><div class="row"><button class="alt" onclick="location.href='../Claude-Test/'">Open the farm</button></div></div>
 <p class="muted"><a href="../" style="color:#94a3b8">Back to the main site</a></p>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -69,6 +75,12 @@
     var c = $('joinCode').value.trim().toUpperCase();
     if (c.length < 4) { $('msg').textContent = 'Enter your friend’s code.'; return; }
     location.href = 'wahoo.html?room=' + encodeURIComponent(c);
+  };
+  $('playFarm').onclick = function () { location.href = 'farm.html'; };
+  $('joinFarm').onclick = function () {
+    var c = $('joinCodeFarm').value.trim().toUpperCase();
+    if (c.length < 4) { $('msg').textContent = 'Enter your friend\u2019s code.'; return; }
+    location.href = 'farm.html?room=' + encodeURIComponent(c);
   };
   $('playTy').onclick = function () { location.href = 'tycoon.html'; };
   $('joinTy').onclick = function () {
