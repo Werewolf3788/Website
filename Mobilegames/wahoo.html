@@ -16,7 +16,13 @@
   #main{display:grid;grid-template-columns:1fr;gap:10px;padding:10px;max-width:1000px;margin:0 auto}
   @media(min-width:860px){#main{grid-template-columns:minmax(0,640px) 1fr;align-items:start}}
   #boardWrap{width:100%;max-width:640px;margin:0 auto;touch-action:manipulation}
-  svg{display:block;width:100%;height:auto;border-radius:14px;background:#0b1220}
+  svg{display:block;width:100%;height:auto;border-radius:14px;background:#0b1220;touch-action:none}
+  .ghost{cursor:pointer;animation:pulse .9s infinite;transform-box:fill-box;transform-origin:center}
+  #die.throw{animation:throw .55s ease-out}
+  @keyframes throw{0%{transform:translateY(0) rotate(0)}35%{transform:translateY(-26px) rotate(260deg)}70%{transform:translateY(0) rotate(560deg)}85%{transform:translateY(-6px) rotate(700deg)}100%{transform:translateY(0) rotate(720deg)}}
+  #emotes{display:flex;gap:6px;margin-top:10px} #emotes button{flex:1;padding:8px 0;font-size:1.2rem;background:#334155}
+  .emo{font-size:1.3rem;animation:pop .35s ease-out}
+  @keyframes pop{0%{transform:scale(.3)}70%{transform:scale(1.4)}100%{transform:scale(1)}}
   .peg{transition:transform .32s ease-in-out}
   .peg .ring{display:none;fill:none;stroke:#fff;stroke-width:.08}
   .peg.can{cursor:pointer} .peg.can .ring{display:block;animation:pulse .9s infinite}
@@ -44,7 +50,7 @@
 <div id="top">
   <span>🎲 <b id="roomLabel">Wahoo</b> · 👥 <b id="count">1</b></span>
   <span>🏆 <b id="wins">0</b></span>
-  <span><button id="shareBtn">Invite</button> · <a href="index.html">Hub</a></span>
+  <span><button id="snd" title="Sound">🔊</button> · <button id="shareBtn">Invite</button> · <a href="index.html">Hub</a></span>
 </div>
 <div id="main">
   <div id="boardWrap"><svg id="board" viewBox="0 0 15 15"></svg></div>
@@ -54,7 +60,8 @@
     <div id="dieRow"><button id="die" aria-label="Roll the die"></button><div id="msg"></div></div>
     <div id="seats"></div>
     <div id="actions" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
-    <div class="muted" id="rules" style="margin-top:10px">Roll a 1 or 6 to bring a peg out. A 6 gives another roll. Land on a rival to send it home. Fill all four slots of your home lane to win.</div>
+    <div id="emotes"></div>
+    <div class="muted" id="rules" style="margin-top:10px">Roll a 1 or 6 to bring a peg out. A 6 gives another roll. Land on a rival to send it home. Fill all four slots of your home lane to win.<br><br><b>Controls:</b> tap the die, flick it, shake your phone or press Space to roll. Tap or drag a glowing peg onto a dashed spot (or tap the spot, or press 1-4) to move. Use the emoji row to react.</div>
   </div>
 </div>
 <div id="gate"><div id="gateText">Sign in to play</div><button class="go" id="gateBtn">Sign in with Google</button><button id="soloBtn">Play solo instead</button></div>
@@ -206,17 +213,97 @@
     $('die').innerHTML = h;
   }
   function spinThen(cb) {
-    if (rolling) return; rolling = true; var n = 0;
+    if (rolling) return; rolling = true; var n = 0; $('die').classList.remove('throw'); void $('die').offsetWidth; $('die').classList.add('throw');
     var iv = setInterval(function () {
       drawDie(1 + Math.floor(Math.random() * 6));
       if (++n >= 7) { clearInterval(iv); rolling = false; cb(1 + Math.floor(Math.random() * 6)); }
     }, 70);
   }
-  $('die').onclick = function () {
+  function tryRoll() {
     if (!S || S.status !== 'playing' || S.roll || rolling) return;
     var st = seatOf(S, S.turn); if (!st || st.bot || st.uid !== me.uid) return;
     spinThen(actRoll);
-  };
+  }
+  var dieStart = null, dieSwipe = 0, dragEnd = 0, drag = null, shakeOn = false, lastShake = 0;
+  $('die').onclick = function () { if (Date.now() - dieSwipe < 400) return; tryRoll(); };
+  $('die').addEventListener('pointerdown', function (e) { dieStart = [e.clientX, e.clientY]; });
+  function svgPt(e) { var svg = $('board'), pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; var m = pt.matrixTransform(svg.getScreenCTM().inverse()); return [m.x, m.y]; }
+  window.addEventListener('pointermove', function (e) {
+    if (!drag) return;
+    if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 8) return;
+    drag.moved = true; drag.g.style.transition = 'none';
+    var pt = svgPt(e); drag.g.style.transform = 'translate(' + pt[0] + 'px,' + pt[1] + 'px)';
+  });
+  window.addEventListener('pointerup', function (e) {
+    if (dieStart) { var d = Math.hypot(e.clientX - dieStart[0], e.clientY - dieStart[1]); dieStart = null; if (d > 35) { dieSwipe = Date.now(); tryRoll(); } }
+    if (!drag) return;
+    var dr = drag; drag = null; dr.g.style.transition = ''; if (!dr.moved) return;
+    dragEnd = Date.now();
+    var pt = svgPt(e), hit = false;
+    if (S && S.roll) legal(S, S.turn, S.roll).forEach(function (m) { if (m.i === dr.i) { var xy = pegXY(S.turn, m.to, m.i); if (Math.hypot(pt[0] - xy[0], pt[1] - xy[1]) < 1.4) hit = true; } });
+    if (hit) actMove(dr.i); else render();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.repeat) return;
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); tryRoll(); }
+    else if (/^[1-4]$/.test(e.key) && S && S.status === 'playing' && S.roll && mySeat() === S.turn) {
+      var i = +e.key - 1; if (legal(S, S.turn, S.roll).some(function (m) { return m.i === i; })) actMove(i);
+    }
+  });
+  function enableShake() {
+    if (shakeOn) return; shakeOn = true;
+    function attach() {
+      window.addEventListener('devicemotion', function (e) {
+        var a = e.accelerationIncludingGravity; if (!a) return;
+        var m = Math.abs(a.x || 0) + Math.abs(a.y || 0) + Math.abs(a.z || 0);
+        if (m > 38 && Date.now() - lastShake > 1500) { lastShake = Date.now(); tryRoll(); }
+      });
+    }
+    if (window.DeviceMotionEvent && DeviceMotionEvent.requestPermission) DeviceMotionEvent.requestPermission().then(function (r) { if (r === 'granted') attach(); }).catch(function () {});
+    else if (window.DeviceMotionEvent) attach();
+  }
+  document.addEventListener('pointerup', enableShake, { once: true });
+
+  // ---------- sound, vibration, emotes
+  var EMOS = ['👍', '😂', '😮', '😡', '🎉'], emotes = {}, emoSeen = {}, roomRefG = null, lastEmo = 0, ac = null;
+  var muted = false; try { muted = localStorage.getItem('wh_mute') === '1'; } catch (e) {}
+  $('snd').textContent = muted ? '🔇' : '🔊';
+  $('snd').onclick = function () { muted = !muted; try { localStorage.setItem('wh_mute', muted ? '1' : '0'); } catch (e) {} $('snd').textContent = muted ? '🔇' : '🔊'; };
+  function tone(f, d, t0, type, vol) {
+    if (muted) return;
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      var o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + (t0 || 0);
+      o.type = type || 'sine'; o.frequency.value = f; g.gain.setValueAtTime(vol || .12, t); g.gain.exponentialRampToValueAtTime(.001, t + d);
+      o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d);
+    } catch (e) {}
+  }
+  function sfx(k) {
+    if (k === 'roll') for (var i = 0; i < 5; i++) tone(300 + Math.random() * 300, .05, i * .06, 'square', .05);
+    else if (k === 'step') tone(520, .08, 0, 'triangle');
+    else if (k === 'out') { tone(440, .08); tone(660, .1, .08); }
+    else if (k === 'bump') { tone(180, .18, 0, 'sawtooth', .14); tone(120, .25, .08, 'sawtooth', .12); }
+    else if (k === 'win') [523, 659, 784, 1047].forEach(function (f, j) { tone(f, .2, j * .12, 'triangle', .15); });
+    else if (k === 'pop') tone(880, .07, 0, 'sine', .1);
+    else if (k === 'turn') tone(660, .06, 0, 'sine', .08);
+  }
+  function buzz(p) { if (!muted && navigator.vibrate) try { navigator.vibrate(p); } catch (e) {} }
+  function events(a, b) {
+    if (b.status === 'done' && a.status !== 'done') { sfx('win'); buzz([80, 60, 80]); return; }
+    if (!a.roll && b.roll) sfx('roll');
+    else if (a.roll && !b.roll) {
+      var m = b.msg || '';
+      if (/sent/.test(m)) { sfx('bump'); buzz(120); } else if (/brought/.test(m)) sfx('out'); else if (!/no move/.test(m)) sfx('step');
+    }
+    var ms = mySeat();
+    if (ms >= 0 && b.status === 'playing' && b.turn === ms && !b.roll && (a.turn !== ms || a.roll)) { sfx('turn'); buzz(40); }
+  }
+  function emoOf(p) { var e = emotes && emotes[p]; return (e && WW.now() - (e.t || 0) < 4000) ? ' <span class="emo">' + e.e + '</span>' : ''; }
+  $('emotes').addEventListener('click', function (ev) {
+    var b = ev.target.closest ? ev.target.closest('button[data-e]') : null, ms = mySeat();
+    if (!b || ms < 0 || !roomRefG || Date.now() - lastEmo < 800) return;
+    lastEmo = Date.now(); roomRefG.child('emotes/' + ms).set({ e: b.dataset.e, t: firebase.database.ServerValue.TIMESTAMP });
+  });
 
   // drives bots, away players, forced passes and single-choice moves
   function tick() {
@@ -285,21 +372,30 @@
     for (p = 0; p < 4; p++) LANE[p].forEach(function (c) { h += '<rect x="' + c[0] + '" y="' + c[1] + '" width="1" height="1" fill="' + COLORS[p] + '" opacity=".6" stroke="#64748b" stroke-width=".04"/>'; });
     [[5,7,0],[7,5,1],[9,7,2],[7,9,3]].forEach(function (d) { h += '<rect x="' + d[0] + '" y="' + d[1] + '" width="1" height="1" fill="' + LIGHT[d[2]] + '" stroke="#64748b" stroke-width=".04"/>'; });
     h += '<polygon points="6,6 6,9 7.5,7.5" fill="' + COLORS[0] + '"/><polygon points="6,6 9,6 7.5,7.5" fill="' + COLORS[1] + '"/><polygon points="9,6 9,9 7.5,7.5" fill="' + COLORS[2] + '"/><polygon points="6,9 9,9 7.5,7.5" fill="' + COLORS[3] + '"/>';
-    h += '<g id="pegs"></g>';
+    h += '<g id="pegs"></g><g id="ghosts"></g>';
     $('board').innerHTML = h;
     var NS = 'http://www.w3.org/2000/svg', layer = $('pegs');
     for (p = 0; p < 4; p++) {
       pegEls[p] = [];
       for (i = 0; i < 4; i++) {
         var g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'peg'); g.dataset.i = i; g.dataset.p = p;
-        g.innerHTML = '<circle class="ring" r=".5"/><circle r=".36" fill="' + COLORS[p] + '" stroke="#fff" stroke-width=".09"/><circle r=".14" fill="#fff" opacity=".55"/><circle class="hit" r=".6" fill="transparent"/>';
+        g.innerHTML = '<circle class="ring" r=".5"/><circle r=".36" fill="' + COLORS[p] + '" stroke="#fff" stroke-width=".09"/><text y=".17" text-anchor="middle" font-size=".5" font-weight="700" fill="#fff" stroke="#0007" stroke-width=".03" pointer-events="none">' + (i + 1) + '</text><circle class="hit" r=".6" fill="transparent"/>';
         var xy = pegXY(p, -1, i); g.style.transform = 'translate(' + xy[0] + 'px,' + xy[1] + 'px)';
         layer.appendChild(g); pegEls[p][i] = g;
       }
     }
     layer.addEventListener('click', function (e) {
+      if (Date.now() - dragEnd < 400) return;
       var g = e.target.closest ? e.target.closest('.peg') : null;
       if (g && g.classList.contains('can')) actMove(+g.dataset.i);
+    });
+    $('ghosts').addEventListener('click', function (e) {
+      var g = e.target.closest ? e.target.closest('.ghost') : null;
+      if (g) actMove(+g.dataset.i);
+    });
+    layer.addEventListener('pointerdown', function (e) {
+      var g = e.target.closest ? e.target.closest('.peg') : null;
+      if (g && g.classList.contains('can')) drag = { g: g, i: +g.dataset.i, x: e.clientX, y: e.clientY, moved: false };
     });
   }
 
@@ -319,6 +415,12 @@
         g.classList.toggle('can', p === s.turn && !!canMove[i]);
       }
     }
+    var gh = '';
+    if (s.status === 'playing' && s.roll && ms === s.turn) legal(s, s.turn, s.roll).forEach(function (m) {
+      var xy = pegXY(s.turn, m.to, m.i);
+      gh += '<circle class="ghost" data-i="' + m.i + '" cx="' + xy[0] + '" cy="' + xy[1] + '" r=".42" fill="' + COLORS[s.turn] + '" fill-opacity=".35" stroke="#fff" stroke-width=".07" stroke-dasharray=".18 .12"/>';
+    });
+    $('ghosts').innerHTML = gh;
     // dice + turn
     var shown = s.roll || s.lr || 0; if (!rolling) drawDie(shown);
     $('die').disabled = !myTurn; $('die').classList.toggle('ready', myTurn);
@@ -346,7 +448,7 @@
         if (q.bot && ms < 0) btn += '<button data-a="sit" data-p="' + p + '">' + (s.status === 'lobby' ? 'Take seat' : 'Jump in') + '</button>';
         if (q.bot && s.status === 'lobby' && isHost()) btn += ' <button data-a="rm" data-p="' + p + '">Remove</button>';
         if (!q.bot && q.uid === me.uid) btn += '<button data-a="leave" data-p="' + p + '">Leave</button>';
-        h += '<div class="seat' + (s.status === 'playing' && s.turn === p ? ' cur' : '') + '">' + dot(p) + '<span class="nm">' + q.name + tag + (s.status !== 'lobby' ? ' · ' + homeN + '/4 home' : '') + '</span>' + btn + '</div>';
+        h += '<div class="seat' + (s.status === 'playing' && s.turn === p ? ' cur' : '') + '">' + dot(p) + '<span class="nm">' + q.name + tag + (s.status !== 'lobby' ? ' · ' + homeN + '/4 home' : '') + '</span>' + emoOf(p) + btn + '</div>';
       }
     }
     $('seats').innerHTML = h;
@@ -356,6 +458,8 @@
     if (s.status === 'done' && isHost()) a += '<button class="go" data-a="again">Play again</button>';
     if (s.status === 'done' && !isHost()) a += '<span class="muted">Waiting for the host to set up the next game.</span>';
     $('actions').innerHTML = a;
+    var eh = ''; if (ms >= 0) EMOS.forEach(function (x) { eh += '<button data-e="' + x + '">' + x + '</button>'; });
+    if ($('emotes').dataset.on !== String(ms >= 0)) { $('emotes').innerHTML = eh; $('emotes').dataset.on = String(ms >= 0); }
     var cnt = WW.mode === 'cloud' ? Object.keys(players).length : 1; $('count').textContent = cnt || 1;
   }
   $('panel').addEventListener('click', function (e) {
@@ -403,7 +507,12 @@
     myName = ((user && user.displayName) || 'You').split(' ')[0].slice(0, 12);
     var sv = await WW.loadSave('wahoo'); if (sv) { wins = sv.wins | 0; $('wins').textContent = wins; }
     buildBoard();
-    stateRef = ref.child('state');
+    stateRef = ref.child('state'); roomRefG = ref;
+    ref.child('emotes').on('value', function (snap) {
+      emotes = snap.val() || {};
+      Object.keys(emotes).forEach(function (k) { var e = emotes[k]; if (e && emoSeen[k] !== e.t) { if (emoSeen[k] !== undefined) sfx('pop'); emoSeen[k] = e.t; } });
+      render(); setTimeout(render, 4200);
+    });
     var isOwner = WW.mode !== 'cloud' || roomId === code;
     if (isOwner) {
       await stateRef.transaction(function (cur) {
@@ -419,7 +528,8 @@
       beat(); setInterval(beat, 20000);
     }
     stateRef.on('value', function (snap) {
-      S = snap.val();
+      var prev = S; S = snap.val();
+      if (S && prev && prev.rid !== S.rid) events(prev, S);
       if (!S) { gate('This table is not open yet. Ask the host to open it first.', false); return; }
       $('gate').style.display = 'none';
       if (!autoSeatTried && mySeat() < 0 && S.status === 'lobby') {
