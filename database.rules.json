@@ -3,68 +3,33 @@
     ".read": false,
     ".write": false,
 
-    "utm_links": {
-      ".read": true,
-      ".write": "auth != null"
-    },
-    "movies_guide": {
-      ".read": true,
-      ".write": "auth != null"
-    },
-    "music_releases": {
-      ".read": true,
-      ".write": "auth != null"
-    },
+    "utm_links":      { ".read": true, ".write": "auth != null" },
+    "movies_guide":   { ".read": true, ".write": "auth != null" },
+    "music_releases": { ".read": true, ".write": "auth != null" },
 
-    "games": {
-      ".read": true,
-      ".write": "auth != null"
-    },
-    "games_catalog": {
-      ".read": true,
-      ".write": "auth != null"
-    },
+    "games":          { ".read": true, ".write": "auth != null" },
+    "games_catalog":  { ".read": true, ".write": "auth != null" },
 
-    "psn": {
-      ".read": true,
-      ".write": "auth != null"
-    },
-    "steam_users": {
-      ".read": true,
-      ".write": "auth != null"
-    },
-    "steam_games": {
-      ".read": true,
-      ".write": "auth != null"
-    },
-    "steam_vanity": {
-      ".read": "auth != null",
-      ".write": "auth != null"
-    },
+    "psn":            { ".read": true, ".write": "auth != null" },
+    "steam_users":    { ".read": true, ".write": "auth != null" },
+    "steam_games":    { ".read": true, ".write": "auth != null" },
+    "steam_vanity":   { ".read": "auth != null", ".write": "auth != null" },
 
     "users": {
       "$k": {
         ".read": "auth != null",
         ".write": "auth != null && ($k === auth.uid || (auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
-        "username": {
-          ".validate": "newData.isString() && newData.val().length <= 32"
-        },
-        "primary_color": {
-          ".validate": "newData.isString() && newData.val().matches(/^#[0-9a-fA-F]{6}$/)"
-        },
-        "secondary_color": {
-          ".validate": "newData.isString() && newData.val().matches(/^#[0-9a-fA-F]{6}$/)"
-        }
+        "username":        { ".validate": "newData.isString() && newData.val().length <= 32" },
+        "primary_color":   { ".validate": "newData.isString() && newData.val().matches(/^#[0-9a-fA-F]{6}$/)" },
+        "secondary_color": { ".validate": "newData.isString() && newData.val().matches(/^#[0-9a-fA-F]{6}$/)" }
       }
     },
 
     "user_secrets": {
       "$k": {
-        ".read": "auth != null && ($k === auth.uid || (auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
+        ".read":  "auth != null && ($k === auth.uid || (auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
         ".write": "auth != null && ($k === auth.uid || (auth.token.email != null && $k === auth.token.email.toLowerCase().replace('.','_').replace('@','_at_')))",
-        "psn_npsso": {
-          ".validate": "newData.isString() && (newData.val() === '' || newData.val().matches(/^[A-Za-z0-9]{64}$/))"
-        }
+        "psn_npsso": { ".validate": "newData.isString() && (newData.val() === '' || newData.val().matches(/^[A-Za-z0-9]{64}$/))" }
       }
     },
 
@@ -93,10 +58,10 @@
     },
 
     "game_rooms": {
-      "farm": {
+      "$game": {
         "$code": {
-          ".read": "auth != null",
-          ".write": "auth != null"
+          ".read": "auth != null && $game.matches(/^[a-z0-9_-]{2,24}$/)",
+          ".write": "auth != null && $game.matches(/^[a-z0-9_-]{2,24}$/)"
         }
       }
     },

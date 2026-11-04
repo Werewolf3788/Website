@@ -10,7 +10,7 @@ Browser games that run on Android, iOS and desktop. Sign in with Google (same Fi
 - Sniper and Open World are planned next.
 
 ## One-time setup
-Paste the two blocks from `database.rules.addition.json` into the Realtime Database rules (the games are denied until then), and make sure the site's domain is under Authentication > Settings > Authorized domains.
+Publish the repo's root `database.rules.json` in Firebase Console > Realtime Database > Rules (the games are denied until then; `game_rooms/$game/$code` covers the farm, Wahoo and future games), and make sure the site's domain is under Authentication > Settings > Authorized domains.
 
 ## Notes
 - Time of day follows the player's device clock; rain is shared by everyone (a pure function of time, so crops are also watered retroactively).
