@@ -329,6 +329,31 @@ function useAction() {
   }
 }
 
+// ------------------------------------------------------------ avatar fallback: a normal <img> badge that follows the head on screen
+const domBadges = [];
+function giveAvatar(mesh, url, label) {
+  if (!url) return; const u = mesh.userData;
+  u.onAvatarFail = function (bad) {
+    if (u.domBadge) { if (u.domBadge.src === bad) return; u.domBadge.remove(); }
+    const el = document.createElement('img'); el.src = bad; el.referrerPolicy = 'no-referrer'; el.title = label || '';
+    el.style.cssText = 'position:fixed;z-index:4;width:44px;height:44px;border-radius:50%;border:3px solid #fff;object-fit:cover;pointer-events:none;display:none;transform:translate(-50%,-100%)';
+    el.onerror = function () { el.remove(); }; document.body.appendChild(el); u.domBadge = el; domBadges.push({ mesh: mesh, el: el });
+  };
+  W.setAvatar(mesh, url);
+}
+const _v = new THREE.Vector3();
+function updateDomBadges() {
+  for (let i = domBadges.length - 1; i >= 0; i--) {
+    const b = domBadges[i]; if (!b.el.isConnected) { domBadges.splice(i, 1); continue; }
+    if (!b.mesh.visible || !b.mesh.parent) { b.el.style.display = 'none'; continue; }
+    _v.set(b.mesh.position.x, 3.5, b.mesh.position.z).project(camera);
+    if (_v.z > 1) { b.el.style.display = 'none'; continue; }
+    const dd = camera.position.distanceTo(b.mesh.position), px = Math.max(26, Math.min(56, 520 / dd));
+    b.el.style.width = b.el.style.height = px + 'px'; b.el.style.left = ((_v.x + 1) / 2 * window.innerWidth) + 'px'; b.el.style.top = ((1 - _v.y) / 2 * window.innerHeight) + 'px'; b.el.style.display = 'block';
+  }
+}
+function dropBadge(mesh) { const d = mesh.userData.domBadge; if (d) d.remove(); }
+
 // ------------------------------------------------------------ other players
 const remote = {};
 function avatarFor(u) { return avatars[u] || ''; }
@@ -337,9 +362,9 @@ function syncRemotes() {
   Object.keys(players).forEach(function (u) {
     if (me && u === me.uid) return; const p = players[u]; if (now - (p.t || 0) > 45000) return; let r = remote[u];
     if (!r) { const m = W.makeFarmer(p.h || .3), lab = W.makeLabel(p.n || 'Friend', '#bae6fd'); lab.position.y = 4.5; m.add(lab); scene.add(m); r = remote[u] = { mesh: m }; m.position.set(p.x, 0, p.z); }
-    r.tx = p.x; r.tz = p.z; r.try = p.r || 0; r.driving = !!p.v; W.setAvatar(r.mesh, avatarFor(u));
+    r.tx = p.x; r.tz = p.z; r.try = p.r || 0; r.driving = !!p.v; giveAvatar(r.mesh, avatarFor(u), p.n);
   });
-  Object.keys(remote).forEach(function (u) { const p = players[u]; if (!p || now - (p.t || 0) > 45000) { scene.remove(remote[u].mesh); delete remote[u]; } });
+  Object.keys(remote).forEach(function (u) { const p = players[u]; if (!p || now - (p.t || 0) > 45000) { dropBadge(remote[u].mesh); scene.remove(remote[u].mesh); delete remote[u]; } });
   $('count').textContent = Math.max(1, Object.keys(remote).length + 1);
 }
 function updateRemotes(dt) {
@@ -384,7 +409,7 @@ function loop(ts) {
   const c = me && context(); $('prompt').innerHTML = c ? '<span>' + c.text + (c.info ? '<small>' + c.info + '</small>' : '') + '</span>' : '';
   $('useBtn').textContent = c ? (c.kind === 'tile' ? 'Use' : c.kind === 'exit' ? 'Exit' : c.kind === 'drive' ? 'Drive' : c.kind === 'shop' ? 'Barn' : 'Collect') : 'Use';
   if (c && c.kind === 'tile') { const p = tilePos(c.i); pointer.position.set(p.x, .26, p.z); pointer.visible = true; } else pointer.visible = false;
-  updateRain(dt, isRaining()); updateSky(); updateAnimals(dt); updateRemotes(dt);
+  updateDomBadges(); updateRain(dt, isRaining()); updateSky(); updateAnimals(dt); updateRemotes(dt);
   slow += dt; if (slow > .5) { slow = 0; refreshField(); }
   const now = performance.now();
   if (roomRef && me && now - lastSent > 100 && (player.speed > .1 || now - lastBeat > 8000)) { lastSent = lastBeat = now; roomRef.child('players/' + me.uid).set({ n: myName, x: +player.x.toFixed(2), z: +player.z.toFixed(2), r: +player.ry.toFixed(2), v: player.driving ? 1 : 0, h: +myHue.toFixed(2), t: firebase.database.ServerValue.TIMESTAMP }); }
@@ -421,7 +446,7 @@ async function begin(user, myCode) {
       if (s.xp === undefined && s.seeds === undefined) { save.seeds = { wheat: 30, carrot: 30 }; } save.skip = s.skip || {}; }
   } catch (e) { console.warn(e); gate('Your saved progress could not be loaded (' + (e.code || e.message) + '). Nothing was changed.', { back: true }); return; }
   if (user) { try { myAvatar = (await WW.db.ref('users/' + WW.emailKey(user.email) + '/avatar_url').once('value')).val() || user.photoURL || ''; } catch (e) { myAvatar = user.photoURL || ''; } }
-  if (myAvatar) { W.setAvatar(farmer, myAvatar); roomRef.child('avatars/' + me.uid).set(myAvatar); }
+  if (myAvatar) { giveAvatar(farmer, myAvatar, myName); roomRef.child('avatars/' + me.uid).set(myAvatar); }
   hud(); buildSeedBar(); applyImplement();
   roomRef.child('avatars').on('value', function (snap) { avatars = snap.val() || {}; syncRemotes(); });
   roomRef.child('tiles').on('value', function (snap) { const v = snap.val() || {}; tiles = {}; Object.keys(v).forEach(function (k) { tiles[+k] = v[k]; }); refreshField(); });

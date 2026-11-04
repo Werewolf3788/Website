@@ -137,7 +137,7 @@ export function setAvatar(g, url) {
       const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true })); sp.scale.set(1.05, 1.05, 1); sp.position.set(0, 3.45, 0); sp.renderOrder = 9; g.add(sp); u.badge = sp;
     } catch (e) { /* tainted or unreadable image: keep the plain face */ }
   };
-  img.onerror = function () {}; img.src = url;
+  img.onerror = function () { if (u.onAvatarFail) u.onAvatarFail(url); }; img.src = url;   // blocked by the image host's CORS rules -> caller shows a plain image badge instead
 }
 export function animateFarmer(g, speed, dt) {
   const u = g.userData; u.phase += speed * dt * 1.7; const a = Math.sin(u.phase) * Math.min(1, speed / 3) * .8;
