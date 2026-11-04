@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>Wahoo</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;min-height:100%;background:#0f172a;color:#e2e8f0;font-family:system-ui,sans-serif;overscroll-behavior:none}
+  button{font:inherit;border:0;border-radius:10px;padding:10px 14px;background:#334155;color:#e2e8f0;cursor:pointer}
+  button.go{background:#22c55e;color:#04210f;font-weight:700} button:disabled{opacity:.4;cursor:default}
+  #top{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;font-size:.85rem;background:#1e293b}
+  #top b{color:#fff} #top a,#top button{color:#94a3b8;text-decoration:none;background:none;padding:0}
+  #main{display:grid;grid-template-columns:1fr;gap:10px;padding:10px;max-width:1000px;margin:0 auto}
+  @media(min-width:860px){#main{grid-template-columns:minmax(0,640px) 1fr;align-items:start}}
+  #boardWrap{width:100%;max-width:640px;margin:0 auto;touch-action:manipulation}
+  svg{display:block;width:100%;height:auto;border-radius:14px;background:#0b1220}
+  .peg{transition:transform .32s ease-in-out}
+  .peg .ring{display:none;fill:none;stroke:#fff;stroke-width:.08}
+  .peg.can{cursor:pointer} .peg.can .ring{display:block;animation:pulse .9s infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(1.25)}}
+  .peg .ring{transform-box:fill-box;transform-origin:center}
+  #panel{background:#1e293b;border-radius:14px;padding:12px}
+  #turn{font-weight:700;display:flex;align-items:center;gap:8px;min-height:1.6em}
+  .dot{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid #fff;flex:none}
+  #dieRow{display:flex;align-items:center;gap:14px;margin:10px 0}
+  #die{width:78px;height:78px;border-radius:16px;background:#f8fafc;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:10px;gap:3px;border:0;flex:none;box-shadow:0 3px 0 #94a3b8}
+  #die i{border-radius:50%;background:transparent} #die i.on{background:#0f172a}
+  #die:disabled{opacity:1;box-shadow:none} #die.ready{box-shadow:0 0 0 4px #22c55e,0 3px 0 #16a34a;animation:pulse2 1s infinite}
+  @keyframes pulse2{50%{box-shadow:0 0 0 7px rgba(34,197,94,.45),0 3px 0 #16a34a}}
+  #msg{color:#fbbf24;font-size:.9rem;min-height:1.3em}
+  .seat{display:flex;align-items:center;gap:8px;padding:8px 6px;border-radius:10px;font-size:.92rem}
+  .seat.cur{background:#0f172a;outline:2px solid #475569}
+  .seat .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .seat button{padding:6px 10px;font-size:.8rem}
+  .muted{color:#94a3b8;font-size:.8rem}
+  #banner{background:#14532d;border-radius:10px;padding:10px;margin-bottom:8px;text-align:center;font-weight:700}
+  #gate{position:fixed;inset:0;background:#0f172a;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:20px;z-index:9}
+</style>
+</head>
+<body>
+<div id="top">
+  <span>🎲 <b id="roomLabel">Wahoo</b> · 👥 <b id="count">1</b></span>
+  <span>🏆 <b id="wins">0</b></span>
+  <span><button id="shareBtn">Invite</button> · <a href="index.html">Hub</a></span>
+</div>
+<div id="main">
+  <div id="boardWrap"><svg id="board" viewBox="0 0 15 15"></svg></div>
+  <div id="panel">
+    <div id="banner" style="display:none"></div>
+    <div id="turn"></div>
+    <div id="dieRow"><button id="die" aria-label="Roll the die"></button><div id="msg"></div></div>
+    <div id="seats"></div>
+    <div id="actions" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
+    <div class="muted" id="rules" style="margin-top:10px">Roll a 1 or 6 to bring a peg out. A 6 gives another roll. Land on a rival to send it home. Fill all four slots of your home lane to win.</div>
+  </div>
+</div>
+<div id="gate"><div id="gateText">Sign in to play</div><button class="go" id="gateBtn">Sign in with Google</button><button id="soloBtn">Play solo instead</button></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="js/common.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var qs = new URLSearchParams(location.search);
+  var roomCode = (qs.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  var COLORS = ['#ef4444', '#22c55e', '#eab308', '#3b82f6'];
+  var LIGHT = ['#fecaca', '#bbf7d0', '#fef08a', '#bfdbfe'];
+  var NAMES = ['Red', 'Green', 'Yellow', 'Blue'];
+
+  // ---------- board geometry (15x15 cross board, 52-cell loop, 4-cell home lane per colour)
+  var TRACK = (function () {
+    var t = [], c, r; function add(a, b) { t.push([a, b]); }
+    for (c = 1; c <= 5; c++) add(c, 6);
+    for (r = 5; r >= 0; r--) add(6, r);
+    add(7, 0); add(8, 0);
+    for (r = 1; r <= 5; r++) add(8, r);
+    for (c = 9; c <= 14; c++) add(c, 6);
+    add(14, 7); add(14, 8);
+    for (c = 13; c >= 9; c--) add(c, 8);
+    for (r = 9; r <= 14; r++) add(8, r);
+    add(7, 14); add(6, 14);
+    for (r = 13; r >= 9; r--) add(6, r);
+    for (c = 5; c >= 0; c--) add(c, 8);
+    add(0, 7); add(0, 6);
+    return t;
+  })();
+  var START = [0, 13, 26, 39];
+  var LANE = [[[1,7],[2,7],[3,7],[4,7]], [[7,1],[7,2],[7,3],[7,4]], [[13,7],[12,7],[11,7],[10,7]], [[7,13],[7,12],[7,11],[7,10]]];
+  var CORNER = [[0, 0], [9, 0], [9, 9], [0, 9]];
+  var SLOT = [[2, 2], [4, 2], [2, 4], [4, 4]];
+  var PIPS = { 0: [], 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
+  // peg progress: -1 in base, 0..50 on the loop, 51..54 home lane
+  function cellIdx(p, prog) { return (START[p] + prog) % 52; }
+  function pegXY(p, prog, i) {
+    var c;
+    if (prog < 0) return [CORNER[p][0] + SLOT[i][0], CORNER[p][1] + SLOT[i][1]];
+    c = prog <= 50 ? TRACK[cellIdx(p, prog)] : LANE[p][prog - 51];
+    return [c[0] + 0.5, c[1] + 0.5];
+  }
+
+  // ---------- rules (pure functions on the shared state object)
+  function seatOf(s, i) { return (s.seats && s.seats[i]) || null; }
+  function pegsOf(s, p) { var v = s.pegs && s.pegs[p]; return v ? [+v[0], +v[1], +v[2], +v[3]] : [-1, -1, -1, -1]; }
+  function seated(s) { var a = []; for (var i = 0; i < 4; i++) if (seatOf(s, i)) a.push(i); return a; }
+  function legal(s, p, roll) {
+    var pg = pegsOf(s, p), out = [], i, k, to, bad;
+    for (i = 0; i < 4; i++) {
+      var a = pg[i];
+      if (a === -1) { if ((roll === 1 || roll === 6) && pg.indexOf(0) === -1) out.push({ i: i, to: 0 }); continue; }
+      to = a + roll; if (to > 54) continue;
+      bad = false;
+      for (k = a + 1; k <= to; k++) if (k >= 51 && pg.indexOf(k) > -1) { bad = true; break; }
+      if (!bad && to <= 50 && pg.indexOf(to) > -1) bad = true;
+      if (!bad) out.push({ i: i, to: to });
+    }
+    return out;
+  }
+  function advanceTurn(s, again) {
+    if (again) return;
+    for (var k = 1; k <= 4; k++) { var n = (s.turn + k) % 4; if (seatOf(s, n)) { s.turn = n; return; } }
+  }
+  function doMove(s, i) {
+    var p = s.turn, roll = s.roll, m = null;
+    legal(s, p, roll).forEach(function (x) { if (x.i === i) m = x; });
+    if (!m) return false;
+    if (!s.pegs) s.pegs = {};
+    var pg = pegsOf(s, p), msg = NAMES[p] + ' moved ' + roll;
+    if (pg[i] === -1) msg = NAMES[p] + ' brought a peg out';
+    pg[i] = m.to;
+    if (m.to <= 50) {
+      var cell = cellIdx(p, m.to);
+      seated(s).forEach(function (q) {
+        if (q === p) return;
+        var pq = pegsOf(s, q), hit = false;
+        pq.forEach(function (v, j) { if (v >= 0 && v <= 50 && cellIdx(q, v) === cell) { pq[j] = -1; hit = true; } });
+        if (hit) { s.pegs[q] = pq; msg = NAMES[p] + ' sent ' + NAMES[q] + ' home!'; }
+      });
+    } else if (m.to >= 51) msg = NAMES[p] + ' reached the home lane';
+    s.pegs[p] = pg; s.lr = roll; s.lp = p; s.msg = msg; s.roll = 0;
+    if (pg.every(function (v) { return v >= 51; })) { s.status = 'done'; s.winner = p; s.msg = NAMES[p] + ' wins!'; }
+    else advanceTurn(s, roll === 6);
+    return true;
+  }
+  function doPass(s) {
+    if (!s.roll || legal(s, s.turn, s.roll).length) return false;
+    s.lr = s.roll; s.lp = s.turn; s.msg = NAMES[s.turn] + ' rolled ' + s.roll + ' - no move';
+    var six = s.roll === 6; s.roll = 0; advanceTurn(s, six); return true;
+  }
+  function botPick(s, L) {
+    var p = s.turn, pg = pegsOf(s, p), best = L[0].i, bs = -1e9;
+    L.forEach(function (m) {
+      var sc = Math.random() * 3, a = pg[m.i];
+      if (m.to >= 51) sc += 60 + m.to;
+      else {
+        if (m.to === 0) sc += 45;
+        var cell = cellIdx(p, m.to);
+        seated(s).forEach(function (q) { if (q !== p) pegsOf(s, q).forEach(function (v) { if (v >= 0 && v <= 50 && cellIdx(q, v) === cell) sc += 100; }); });
+        if (a >= 0) sc += (m.to - a) * 0.2 + a * 0.1;
+      }
+      if (sc > bs) { bs = sc; best = m.i; }
+    });
+    return best;
+  }
+
+  // ---------- session
+  var me = null, myName = 'Player', cloudCode = null, myCode = null, stateRef = null, presenceRef = null;
+  var S = null, players = {}, rolling = false, acted = { k: '', t: 0 }, autoSeatTried = false, statKey = '', wins = 0;
+
+  function say(t) { $('msg').textContent = t || ''; }
+  function gate(text, showBtn) { $('gateText').textContent = text; $('gateBtn').style.display = showBtn ? '' : 'none'; $('gate').style.display = 'flex'; }
+  WW.onError = function (m) { say(m); gate(m, true); };
+  $('gateBtn').onclick = function () { WW.signIn(); };
+  $('soloBtn').onclick = function () { location.href = 'wahoo.html'; };
+
+  function mySeat() { if (!S || !me) return -1; for (var i = 0; i < 4; i++) { var st = seatOf(S, i); if (st && !st.bot && st.uid === me.uid) return i; } return -1; }
+  function isHost() { return !!S && !!me && S.hostUid === me.uid; }
+  function isDriver() {
+    if (WW.mode !== 'cloud') return true;
+    if (!S) return false;
+    if (players[S.hostUid]) return S.hostUid === me.uid;
+    var ids = Object.keys(players).sort(); return ids.length ? ids[0] === me.uid : true;
+  }
+
+  function mutate(fn) {
+    stateRef.transaction(function (cur) {
+      if (!cur) return cur;
+      var s = JSON.parse(JSON.stringify(cur));
+      if (fn(s) === false) return;
+      s.rid = (s.rid | 0) + 1; s.t = firebase.database.ServerValue.TIMESTAMP;
+      return s;
+    });
+  }
+  function actorOk(s) { var st = seatOf(s, s.turn); if (!st) return false; return (!st.bot && st.uid === me.uid) || isDriver(); }
+  function actRoll(v) { mutate(function (s) { if (s.status !== 'playing' || s.roll || !actorOk(s)) return false; s.roll = v; }); }
+  function actMove(i) { mutate(function (s) { if (s.status !== 'playing' || !s.roll || !actorOk(s)) return false; return doMove(s, i); }); }
+  function actPass() { mutate(function (s) { if (s.status !== 'playing' || !actorOk(s)) return false; return doPass(s); }); }
+
+  function drawDie(v) {
+    var h = '', on = PIPS[v] || [];
+    for (var i = 0; i < 9; i++) h += '<i' + (on.indexOf(i) > -1 ? ' class="on"' : '') + '></i>';
+    $('die').innerHTML = h;
+  }
+  function spinThen(cb) {
+    if (rolling) return; rolling = true; var n = 0;
+    var iv = setInterval(function () {
+      drawDie(1 + Math.floor(Math.random() * 6));
+      if (++n >= 7) { clearInterval(iv); rolling = false; cb(1 + Math.floor(Math.random() * 6)); }
+    }, 70);
+  }
+  $('die').onclick = function () {
+    if (!S || S.status !== 'playing' || S.roll || rolling) return;
+    var st = seatOf(S, S.turn); if (!st || st.bot || st.uid !== me.uid) return;
+    spinThen(actRoll);
+  };
+
+  // drives bots, away players, forced passes and single-choice moves
+  function tick() {
+    var s = S; if (!s || s.status !== 'playing' || rolling) return;
+    var st = seatOf(s, s.turn); if (!st) return;
+    var mine = !st.bot && st.uid === me.uid, auto = false;
+    if (!mine) {
+      if (!isDriver()) return;
+      var away = WW.mode === 'cloud' && !st.bot && !players[st.uid];
+      var idle = WW.now() - (s.t || 0) > 60000;
+      auto = st.bot || away || idle;
+      if (!auto) return;
+    }
+    var key = s.rid + ':' + s.turn + ':' + s.roll, now = Date.now();
+    if (acted.k === key && now - acted.t < 4000) return;
+    var L = s.roll ? legal(s, s.turn, s.roll) : [];
+    function mark() { acted = { k: key, t: now }; }
+    if (!s.roll) { if (auto) { mark(); setTimeout(function () { spinThen(actRoll); }, st.bot ? 800 : 300); } return; }
+    if (!L.length) { mark(); setTimeout(actPass, 1100); return; }
+    if (L.length === 1) { mark(); setTimeout(function () { actMove(L[0].i); }, mine ? 650 : 900); return; }
+    if (auto) { mark(); setTimeout(function () { actMove(botPick(s, L)); }, 1000); }
+  }
+  setInterval(tick, 2000);
+
+  // ---------- lobby actions
+  function firstName() { return (myName || 'Player'); }
+  function sit(slot) {
+    mutate(function (s) {
+      var cur = seatOf(s, slot); if (cur && !cur.bot) return false;
+      for (var i = 0; i < 4; i++) { var o = seatOf(s, i); if (o && !o.bot && o.uid === me.uid) return false; }
+      if (!s.seats) s.seats = {};
+      s.seats[slot] = { uid: me.uid, name: firstName(), bot: false };
+    });
+  }
+  function leave(slot) {
+    mutate(function (s) {
+      var cur = seatOf(s, slot); if (!cur || cur.bot || cur.uid !== me.uid) return false;
+      if (s.status === 'lobby') delete s.seats[slot]; else s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true };
+    });
+  }
+  function addBot(slot) { mutate(function (s) { if (s.status !== 'lobby' || seatOf(s, slot) || s.hostUid !== me.uid) return false; if (!s.seats) s.seats = {}; s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true }; }); }
+  function fillBots() { mutate(function (s) { if (s.status !== 'lobby' || s.hostUid !== me.uid) return false; if (!s.seats) s.seats = {}; for (var i = 0; i < 4; i++) if (!seatOf(s, i)) s.seats[i] = { uid: 'bot' + i, name: NAMES[i] + ' Bot', bot: true }; }); }
+  function removeBot(slot) { mutate(function (s) { var c = seatOf(s, slot); if (s.status !== 'lobby' || !c || !c.bot || s.hostUid !== me.uid) return false; delete s.seats[slot]; }); }
+  function startGame() {
+    mutate(function (s) {
+      if (s.status !== 'lobby' || s.hostUid !== me.uid || seated(s).length < 2) return false;
+      s.pegs = {}; seated(s).forEach(function (p) { s.pegs[p] = [-1, -1, -1, -1]; });
+      s.status = 'playing'; s.turn = seated(s)[0]; s.roll = 0; s.winner = -1; s.gid = (s.gid | 0) + 1; s.lr = 0; s.msg = 'Game on! ' + NAMES[s.turn] + ' rolls first.';
+    });
+  }
+  function rematch() { mutate(function (s) { if (s.status !== 'done' || s.hostUid !== me.uid) return false; s.status = 'lobby'; s.pegs = {}; s.roll = 0; s.winner = -1; s.msg = ''; }); }
+
+  // ---------- drawing
+  var pegEls = [];
+  function buildBoard() {
+    var h = '<rect width="15" height="15" fill="#0b1220"/>', p, i;
+    for (p = 0; p < 4; p++) {
+      var o = CORNER[p];
+      h += '<rect x="' + o[0] + '" y="' + o[1] + '" width="6" height="6" rx=".5" fill="' + COLORS[p] + '"/><rect x="' + (o[0] + .6) + '" y="' + (o[1] + .6) + '" width="4.8" height="4.8" rx=".4" fill="' + LIGHT[p] + '"/>';
+      SLOT.forEach(function (sl) { h += '<circle cx="' + (o[0] + sl[0]) + '" cy="' + (o[1] + sl[1]) + '" r=".55" fill="#fff" opacity=".7"/>'; });
+    }
+    TRACK.forEach(function (c, k) {
+      var fill = '#f1f5f9'; for (var q = 0; q < 4; q++) if (START[q] === k) fill = COLORS[q];
+      h += '<rect x="' + c[0] + '" y="' + c[1] + '" width="1" height="1" fill="' + fill + '" stroke="#64748b" stroke-width=".04"/>';
+    });
+    for (p = 0; p < 4; p++) LANE[p].forEach(function (c) { h += '<rect x="' + c[0] + '" y="' + c[1] + '" width="1" height="1" fill="' + COLORS[p] + '" opacity=".6" stroke="#64748b" stroke-width=".04"/>'; });
+    [[5,7,0],[7,5,1],[9,7,2],[7,9,3]].forEach(function (d) { h += '<rect x="' + d[0] + '" y="' + d[1] + '" width="1" height="1" fill="' + LIGHT[d[2]] + '" stroke="#64748b" stroke-width=".04"/>'; });
+    h += '<polygon points="6,6 6,9 7.5,7.5" fill="' + COLORS[0] + '"/><polygon points="6,6 9,6 7.5,7.5" fill="' + COLORS[1] + '"/><polygon points="9,6 9,9 7.5,7.5" fill="' + COLORS[2] + '"/><polygon points="6,9 9,9 7.5,7.5" fill="' + COLORS[3] + '"/>';
+    h += '<g id="pegs"></g>';
+    $('board').innerHTML = h;
+    var NS = 'http://www.w3.org/2000/svg', layer = $('pegs');
+    for (p = 0; p < 4; p++) {
+      pegEls[p] = [];
+      for (i = 0; i < 4; i++) {
+        var g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'peg'); g.dataset.i = i; g.dataset.p = p;
+        g.innerHTML = '<circle class="ring" r=".5"/><circle r=".36" fill="' + COLORS[p] + '" stroke="#fff" stroke-width=".09"/><circle r=".14" fill="#fff" opacity=".55"/><circle class="hit" r=".6" fill="transparent"/>';
+        var xy = pegXY(p, -1, i); g.style.transform = 'translate(' + xy[0] + 'px,' + xy[1] + 'px)';
+        layer.appendChild(g); pegEls[p][i] = g;
+      }
+    }
+    layer.addEventListener('click', function (e) {
+      var g = e.target.closest ? e.target.closest('.peg') : null;
+      if (g && g.classList.contains('can')) actMove(+g.dataset.i);
+    });
+  }
+
+  function dot(p) { return '<span class="dot" style="background:' + COLORS[p] + '"></span>'; }
+  function render() {
+    var s = S; if (!s) return;
+    var ms = mySeat(), myTurn = s.status === 'playing' && ms === s.turn && !s.roll;
+    var canMove = {};
+    if (s.status === 'playing' && s.roll && ms === s.turn) legal(s, s.turn, s.roll).forEach(function (m) { canMove[m.i] = 1; });
+    var p, i;
+    for (p = 0; p < 4; p++) {
+      var st = seatOf(s, p), pg = pegsOf(s, p);
+      for (i = 0; i < 4; i++) {
+        var g = pegEls[p][i];
+        g.style.display = st ? '' : 'none';
+        var xy = pegXY(p, pg[i], i); g.style.transform = 'translate(' + xy[0] + 'px,' + xy[1] + 'px)';
+        g.classList.toggle('can', p === s.turn && !!canMove[i]);
+      }
+    }
+    // dice + turn
+    var shown = s.roll || s.lr || 0; if (!rolling) drawDie(shown);
+    $('die').disabled = !myTurn; $('die').classList.toggle('ready', myTurn);
+    if (s.status === 'playing') {
+      var cs = seatOf(s, s.turn);
+      $('turn').innerHTML = dot(s.turn) + (ms === s.turn ? 'Your turn' : (cs ? cs.name : NAMES[s.turn]) + '’s turn');
+      if (myTurn) say('Tap the die to roll.');
+      else if (ms === s.turn && s.roll && Object.keys(canMove).length > 1) say('Tap a glowing peg to move it.');
+      else say(s.msg || '');
+    } else if (s.status === 'lobby') { $('turn').textContent = 'Get ready'; say('Pick your seat, add bots or invite friends, then start.'); }
+    else { $('turn').innerHTML = dot(s.winner) + NAMES[s.winner] + ' won'; say(''); }
+    var ban = $('banner');
+    if (s.status === 'done') { ban.style.display = ''; var w = seatOf(s, s.winner); ban.textContent = '🎉 ' + (w ? w.name : NAMES[s.winner]) + ' (' + NAMES[s.winner] + ') wins!'; } else ban.style.display = 'none';
+    // seats
+    var h = '';
+    for (p = 0; p < 4; p++) {
+      var q = seatOf(s, p), btn = '';
+      var homeN = pegsOf(s, p).filter(function (v) { return v >= 51; }).length;
+      if (!q) {
+        if (ms < 0) btn += '<button data-a="sit" data-p="' + p + '">Sit here</button>';
+        if (s.status === 'lobby' && isHost()) btn += ' <button data-a="bot" data-p="' + p + '">+ Bot</button>';
+        h += '<div class="seat">' + dot(p) + '<span class="nm muted">' + NAMES[p] + ' - empty</span>' + btn + '</div>';
+      } else {
+        var tag = q.bot ? ' 🤖' : (q.uid === me.uid ? ' (you)' : '');
+        if (q.bot && ms < 0) btn += '<button data-a="sit" data-p="' + p + '">' + (s.status === 'lobby' ? 'Take seat' : 'Jump in') + '</button>';
+        if (q.bot && s.status === 'lobby' && isHost()) btn += ' <button data-a="rm" data-p="' + p + '">Remove</button>';
+        if (!q.bot && q.uid === me.uid) btn += '<button data-a="leave" data-p="' + p + '">Leave</button>';
+        h += '<div class="seat' + (s.status === 'playing' && s.turn === p ? ' cur' : '') + '">' + dot(p) + '<span class="nm">' + q.name + tag + (s.status !== 'lobby' ? ' · ' + homeN + '/4 home' : '') + '</span>' + btn + '</div>';
+      }
+    }
+    $('seats').innerHTML = h;
+    var a = '';
+    if (s.status === 'lobby' && isHost()) a += '<button class="go" data-a="start"' + (seated(s).length < 2 ? ' disabled' : '') + '>Start game</button> <button data-a="fill">Fill with bots</button>';
+    if (s.status === 'lobby' && !isHost()) a += '<span class="muted">Waiting for the host to start.</span>';
+    if (s.status === 'done' && isHost()) a += '<button class="go" data-a="again">Play again</button>';
+    if (s.status === 'done' && !isHost()) a += '<span class="muted">Waiting for the host to set up the next game.</span>';
+    $('actions').innerHTML = a;
+    var cnt = WW.mode === 'cloud' ? Object.keys(players).length : 1; $('count').textContent = cnt || 1;
+  }
+  $('panel').addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('button[data-a]') : null; if (!b || b.disabled) return;
+    var a = b.dataset.a, p = +b.dataset.p;
+    if (a === 'sit') sit(p); else if (a === 'bot') addBot(p); else if (a === 'rm') removeBot(p);
+    else if (a === 'leave') leave(p); else if (a === 'start') startGame(); else if (a === 'fill') fillBots(); else if (a === 'again') rematch();
+  });
+  $('shareBtn').onclick = function () {
+    if (WW.mode !== 'cloud' || !cloudCode) { say('Sign in from the hub to get a code friends can use.'); return; }
+    var url = location.origin + location.pathname + '?room=' + cloudCode;
+    if (navigator.share) navigator.share({ title: 'Join my Wahoo game', text: 'Wahoo room ' + cloudCode, url: url }).catch(function () {});
+    else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { say('Invite link copied!'); });
+    else say('Share this code: ' + cloudCode);
+  };
+
+  async function recordStats(s) {
+    if (s.status !== 'done' || mySeat() < 0) return;
+    var key = (cloudCode || 'solo') + ':' + s.gid; if (statKey === key) return; statKey = key;
+    var sv = (await WW.loadSave('wahoo')) || {}; if (sv.last === key) return;
+    sv.played = (sv.played | 0) + 1; if (s.winner === mySeat()) sv.wins = (sv.wins | 0) + 1; sv.last = key;
+    wins = sv.wins | 0; $('wins').textContent = wins; WW.writeSave('wahoo', sv);
+  }
+
+  async function begin(user, code) {
+    myCode = code;
+    var roomId = roomCode || (user ? code : null), ref = null;
+    if (user && roomId) {
+      try {
+        ref = WW.roomRef('wahoo', roomId);
+        var meta = (await ref.child('meta').once('value')).val();
+        if (!meta) {
+          if (roomId === code) await ref.child('meta').set({ host: (user.displayName || 'Player').split(' ')[0], created: firebase.database.ServerValue.TIMESTAMP });
+          else { gate('Room ' + roomId + ' not found. Ask your friend to open Wahoo once first.', false); return; }
+        }
+        me = user; cloudCode = roomId; WW.mode = 'cloud';
+        $('roomLabel').textContent = (roomId === code ? 'My table' : 'Friend’s table') + ' · ' + roomId;
+      } catch (e) {
+        if (roomCode && roomCode !== code) { gate('Could not reach that table online yet (the game database rules still need to be added). Try solo for now.', false); return; }
+        console.warn(e); user = null; ref = null; say('Online tables are not switched on yet, so you are playing solo on this device.');
+      }
+    } else if (roomCode) { gate('Sign in to join a friend’s table.', true); return; }
+    if (!ref || WW.mode !== 'cloud') { WW.useLocal(); ref = WW.roomRef('wahoo', 'solo'); me = { uid: 'local' }; $('roomLabel').textContent = 'Solo · this device'; }
+    $('gate').style.display = 'none';
+    myName = ((user && user.displayName) || 'You').split(' ')[0].slice(0, 12);
+    var sv = await WW.loadSave('wahoo'); if (sv) { wins = sv.wins | 0; $('wins').textContent = wins; }
+    buildBoard();
+    stateRef = ref.child('state');
+    var isOwner = WW.mode !== 'cloud' || roomId === code;
+    if (isOwner) {
+      await stateRef.transaction(function (cur) {
+        if (cur) return cur;
+        return { status: 'lobby', hostUid: me.uid, seats: (function () { var o = {}; o[0] = { uid: me.uid, name: myName, bot: false }; return o; })(), turn: 0, roll: 0, winner: -1, rid: 1, gid: 0, lr: 0, msg: '', t: firebase.database.ServerValue.TIMESTAMP };
+      });
+    }
+    if (WW.mode === 'cloud') {
+      ref.child('players').on('value', function (snap) { players = snap.val() || {}; render(); });
+      presenceRef = ref.child('players/' + me.uid);
+      presenceRef.onDisconnect().remove();
+      var beat = function () { presenceRef.set({ n: myName, t: firebase.database.ServerValue.TIMESTAMP }); };
+      beat(); setInterval(beat, 20000);
+    }
+    stateRef.on('value', function (snap) {
+      S = snap.val();
+      if (!S) { gate('This table is not open yet. Ask the host to open it first.', false); return; }
+      $('gate').style.display = 'none';
+      if (!autoSeatTried && mySeat() < 0 && S.status === 'lobby') {
+        autoSeatTried = true;
+        for (var i = 0; i < 4; i++) { var st = seatOf(S, i); if (!st) { sit(i); break; } }
+      }
+      if (S.status === 'playing' && mySeat() < 0 && !autoSeatTried) { autoSeatTried = true; say('Game in progress - tap a bot seat to jump in.'); }
+      render(); tick(); recordStats(S);
+    });
+  }
+
+  var started = false, startedAsUser = false;
+  WW.onReady(function (user, code) {
+    if (started) { if (!!user !== startedAsUser) location.reload(); return; }
+    started = true; startedAsUser = !!user;
+    $('gateBtn').style.display = 'none';
+    begin(user, code).catch(function (e) { console.error(e); gate('Could not start: ' + (e.message || e), false); });
+  });
+})();
+</script>
+</body>
+</html>

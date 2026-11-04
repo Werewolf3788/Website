@@ -1,0 +1,11 @@
+{
+  "_comment": "Add the \"wahoo\" block inside the existing \"game_rooms\" object of database.rules.json (next to \"farm\"), then publish in Firebase Console > Realtime Database > Rules. games_saves is already covered by the Claude-Test addition.",
+  "game_rooms": {
+    "wahoo": {
+      "$code": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    }
+  }
+}
