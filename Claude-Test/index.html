@@ -14,7 +14,7 @@
   button{background:#22c55e;color:#04210f;font-weight:700;cursor:pointer} button.alt{background:#334155;color:#e2e8f0}
   button:disabled{opacity:.4} input{background:#0f172a;color:#fff;border:1px solid #334155;text-transform:uppercase;letter-spacing:2px;width:100%}
   .row{display:flex;gap:8px;margin-top:10px} .code{font-size:1.4rem;letter-spacing:3px;color:#fff;font-weight:800}
-  .soon{opacity:.55}
+  .soon{opacity:.55} .fr{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-top:1px solid #334155} .fr b{color:#fff} .fr small{display:block;color:#94a3b8}
 </style>
 </head>
 <body>
@@ -28,6 +28,12 @@
   <div class="muted" id="playNote" style="margin-top:6px">Playing as a guest: progress saves on this device only.</div>
   <div class="row"><input id="joinCode" maxlength="8" placeholder="FRIEND'S CODE"><button id="joinBtn" class="alt">Join</button></div>
   <div class="muted" id="msg" style="margin-top:8px;color:#fbbf24"></div>
+</div>
+
+<div class="card" id="friendsCard" style="display:none">
+  <h2 style="margin:0 0 4px">👥 Friends' farms</h2>
+  <div class="muted">If a friend is playing you can jump into their farm, or just start your own.</div>
+  <div id="friendList" style="margin-top:8px" class="muted">Loading…</div>
 </div>
 
 <div class="card" id="authCard">
@@ -58,11 +64,42 @@
     if (c.length < 4) { $('msg').textContent = 'Enter your friend\u2019s code.'; return; }
     location.href = 'farm.html?room=' + encodeURIComponent(c);
   };
+  var friendTimer = null;
+  function esc(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : String(t); return d.innerHTML; }
+  async function loadFriends(user) {
+    var box = $('friendList');
+    try {
+      var snap = await WW.db.ref('users/' + WW.emailKey(user.email) + '/friends').once('value'), fr = snap.val() || {}, keys = Object.keys(fr);
+      if (!keys.length) { box.innerHTML = 'No friends linked yet. Add friend codes in the Game Tracker and they will show up here.'; return; }
+      var rows = await Promise.all(keys.map(async function (k) {
+        var f = fr[k] || {}, code = f.friend_code || k, name = f.username || code, info = { code: code, name: name, meta: null, online: [] };
+        try {
+          var m = await WW.db.ref('game_rooms/farm/' + code + '/meta').once('value'); info.meta = m.val();
+          if (info.meta) { var p = (await WW.db.ref('game_rooms/farm/' + code + '/players').once('value')).val() || {}, now = WW.now();
+            Object.keys(p).forEach(function (u) { if (now - (p[u].t || 0) < 45000) info.online.push(p[u].n || 'Friend'); }); }
+        } catch (e) { info.err = true; }
+        return info;
+      }));
+      if (rows.some(function (r) { return r.err; })) { box.innerHTML = 'Friend farms are not switched on yet (the game database rules still need to be published in Firebase).'; return; }
+      rows.sort(function (a, b) { return b.online.length - a.online.length; });
+      box.innerHTML = '';
+      rows.forEach(function (r) {
+        var d = document.createElement('div'); d.className = 'fr';
+        var status = !r.meta ? '⚪ no farm yet' : r.online.length ? '🟢 ' + r.online.length + ' playing now (' + esc(r.online.join(', ')) + ')' : '⚪ not playing right now';
+        d.innerHTML = '<div><b>' + esc(r.name) + '</b><small>' + status + '</small></div>';
+        if (r.meta) { var b = document.createElement('button'); b.className = r.online.length ? '' : 'alt'; b.textContent = r.online.length ? 'Join' : 'Visit'; b.onclick = function () { location.href = 'farm.html?room=' + encodeURIComponent(r.code); }; d.appendChild(b); }
+        box.appendChild(d);
+      });
+    } catch (e) { box.innerHTML = 'Could not load friends (' + esc(e.code || e.message) + ').'; }
+  }
   WW.onReady(function (user, code) {
     $('signedOut').style.display = user ? 'none' : '';
     $('signedIn').style.display = user ? '' : 'none';
-    $('playNote').textContent = user ? 'Your farm is saved online and friends can join with your code.' : 'Playing as a guest: progress saves on this device only.';
-    if (user) { $('who').textContent = user.displayName || user.email; $('myCode').textContent = code || '--------'; }
+    $('friendsCard').style.display = user ? '' : 'none';
+    $('playBtn').textContent = user ? 'Play on my farm' : 'Play as guest';
+    $('playNote').textContent = user ? 'Saved online under your account (never on this device). Friends can join with your code.' : 'Playing as a guest: progress saves on this device only.';
+    clearInterval(friendTimer);
+    if (user) { $('who').textContent = user.displayName || user.email; $('myCode').textContent = code || '--------'; loadFriends(user); friendTimer = setInterval(function () { loadFriends(user); }, 15000); }
   });
 </script>
 </body>

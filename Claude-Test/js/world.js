@@ -1,7 +1,7 @@
 // Neighborly Acre: 3D world builders (scenery, farmer, tractor, crops, animals). Uses the local three.js bundle.
 import * as THREE from './three.min.js';
 
-export const TILE = 2, COLS = 12, ROWS = 8, FX0 = -12, FZ0 = 2;       // field: 12x8 tiles of 2 units
+export const TILE = 2, COLS = 20, ROWS = 12, FX0 = -20, FZ0 = 2;      // field: 20x12 tiles of 2 units (big enough to need a tractor)
 export const CHICKEN_PEN = { x0: 29, x1: 39, z0: 5, z1: 13 };
 export const COW_PASTURE = { x0: -43, x1: -29, z0: 5, z1: 19 };
 export const SHOP_POS = { x: 22, z: -2.5 };
@@ -94,7 +94,7 @@ export function buildWorld(scene) {
   fence(scene, COW_PASTURE.x0 - 1, COW_PASTURE.z0 - 1, COW_PASTURE.x1 + 1, COW_PASTURE.z1 + 1, 'e');
   const coop = new THREE.Group(); coop.position.set(37.5, 0, 12); scene.add(coop); box(coop, 3, 2, 2.4, 0xd9b26f, 0, 1, 0); const cr = new THREE.Mesh(new THREE.ConeGeometry(2.5, 1.2, 4), mat(0x8a3b2d)); cr.rotation.y = Math.PI / 4; cr.position.y = 2.6; cr.scale.z = .8; coop.add(cr);
   // trees (seeded, away from play areas)
-  const r = rng(42), keep = (x, z) => !(x > -17 && x < 17 && z > -9 && z < 24) && !(x > 26 && x < 44 && z > 1 && z < 17) && !(x < -26 && x > -48 && z > 1 && z < 23) && !(Math.abs(x + 24) < 8 && Math.abs(z + 8) < 8) && !(Math.abs(x - 24) < 12 && Math.abs(z + 9) < 10);
+  const r = rng(42), keep = (x, z) => !(x > -25 && x < 25 && z > -9 && z < 32) && !(x > 26 && x < 44 && z > 1 && z < 17) && !(x < -26 && x > -48 && z > 1 && z < 23) && !(Math.abs(x + 24) < 8 && Math.abs(z + 8) < 8) && !(Math.abs(x - 24) < 12 && Math.abs(z + 9) < 10);
   let n = 0; while (n < 110) { const x = (r() - .5) * 170, z = (r() - .5) * 170; if (keep(x, z)) { tree(scene, x, z, r); n++; } }
   // clouds
   W.clouds = new THREE.Group(); const cm = new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true, opacity: .9 });
@@ -139,31 +139,53 @@ export function makeTractor() {
 }
 export function setImplement(tractor, color) { tractor.userData.impl.material = mat(color); }
 
-// ---- crops
-const stem = new THREE.CylinderGeometry(.03, .045, 1, 6), leaf = new THREE.ConeGeometry(.14, .55, 6);
-export function makeCrop(type, r) {
-  const g = new THREE.Group(), inner = new THREE.Group(); g.add(inner); const rnd = r || Math.random;
-  g.userData = { inner: inner, bloom: [] };
-  if (type === 'wheat') {
-    for (let i = 0; i < 9; i++) { const s = new THREE.Mesh(stem, mat(0x7bb04a)); s.scale.y = 1.1; s.position.set((rnd() - .5) * 1.5, .55, (rnd() - .5) * 1.5); inner.add(s);
-      const h = new THREE.Mesh(new THREE.CylinderGeometry(.06, .05, .3, 6), mat(0xe6c84a)); h.position.set(s.position.x, 1.2, s.position.z); h.visible = false; inner.add(h); g.userData.bloom.push(h); }
-  } else if (type === 'carrot') {
-    for (let i = 0; i < 6; i++) { const l = new THREE.Mesh(leaf, mat(0x3fae49)); l.position.set((rnd() - .5) * 1.3, .3, (rnd() - .5) * 1.3); l.rotation.z = (rnd() - .5) * .5; inner.add(l);
-      const c = new THREE.Mesh(new THREE.ConeGeometry(.12, .4, 7), mat(0xf08a24)); c.rotation.x = Math.PI; c.position.set(l.position.x, .08, l.position.z); c.visible = false; inner.add(c); g.userData.bloom.push(c); }
-  } else {
-    for (let i = 0; i < 4; i++) { const x = (i % 2 - .5) * .9, z = (Math.floor(i / 2) - .5) * .9; const s = new THREE.Mesh(stem, mat(0x4f9a3a)); s.scale.set(2, 2.6, 2); s.position.set(x, 1.3, z); inner.add(s);
-      const lf = new THREE.Mesh(new THREE.BoxGeometry(.7, .05, .18), mat(0x3d8a30)); lf.position.set(x + .3, 1.6, z); lf.rotation.z = .4; inner.add(lf);
-      const cob = new THREE.Mesh(new THREE.CylinderGeometry(.11, .09, .5, 8), mat(0xf2d21b)); cob.position.set(x + .15, 1.5, z); cob.visible = false; inner.add(cob); g.userData.bloom.push(cob); }
-  }
-  inner.traverse(o => { if (o.isMesh) o.castShadow = true; });
-  return g;
+// ---- crops: one InstancedMesh per crop type (growing part + ripe part) so a 240-tile field costs ~20 draw calls
+function part(geo, color, x, y, z, sx, sy, sz, rx, rz) {
+  const g = geo.clone().toNonIndexed(); g.deleteAttribute('uv');
+  g.applyMatrix4(new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(rx || 0, 0, rz || 0)), new THREE.Vector3(sx || 1, sy || 1, sz || 1)));
+  const c = new THREE.Color(color), n = g.attributes.position.count, arr = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) { arr[i * 3] = c.r; arr[i * 3 + 1] = c.g; arr[i * 3 + 2] = c.b; }
+  g.setAttribute('color', new THREE.BufferAttribute(arr, 3)); return g;
 }
-export function growCrop(g, p, watered) {
-  const ready = p >= 1; g.userData.inner.scale.set(1, watered ? .18 + .82 * p : .12, 1);
-  g.userData.bloom.forEach(b => { b.visible = ready; });
+const G = { stem: new THREE.CylinderGeometry(.03, .045, 1, 5), cone: new THREE.ConeGeometry(.14, 1, 6), sph: new THREE.SphereGeometry(1, 8, 6), box: new THREE.BoxGeometry(1, 1, 1), cyl: new THREE.CylinderGeometry(1, 1, 1, 8) };
+function J(r, w) { return (r() - .5) * w; }
+const BUILD = {
+  wheat(r) { const a = [], b = []; for (let i = 0; i < 11; i++) { const x = J(r, 1.6), z = J(r, 1.6); a.push(part(G.stem, 0x86b84f, x, .6, z, 1, 1.2, 1, J(r, .2), J(r, .2))); b.push(part(G.cyl, 0xe6c84a, x, 1.3, z, .06, .38, .06)); } return [a, b]; },
+  carrot(r) { const a = [], b = []; for (let i = 0; i < 8; i++) { const x = J(r, 1.5), z = J(r, 1.5); a.push(part(G.cone, 0x3fae49, x, .3, z, 1, .6, 1, J(r, .5), J(r, .5))); b.push(part(G.cone, 0xf08a24, x, .05, z, .9, .4, .9, Math.PI, 0)); } return [a, b]; },
+  corn(r) { const a = [], b = []; for (let i = 0; i < 4; i++) { const x = (i % 2 - .5) * .95, z = (Math.floor(i / 2) - .5) * .95; a.push(part(G.stem, 0x4f9a3a, x, 1.3, z, 2, 2.6, 2)); a.push(part(G.box, 0x3d8a30, x + .32, 1.7, z, .7, .05, .18, 0, .4)); a.push(part(G.box, 0x3d8a30, x - .32, 1.2, z, .7, .05, .18, 0, -.4)); b.push(part(G.cyl, 0xf2d21b, x + .16, 1.5, z, .11, .5, .11)); } return [a, b]; },
+  potato(r) { const a = [], b = []; for (let i = 0; i < 6; i++) { const x = J(r, 1.4), z = J(r, 1.4); a.push(part(G.sph, 0x4f9a3a, x, .25, z, .34, .24, .34)); } for (let i = 0; i < 8; i++) b.push(part(G.sph, 0xb8895a, J(r, 1.5), .06, J(r, 1.5), .16, .11, .16)); return [a, b]; },
+  cabbage(r) { const a = [], b = []; for (let i = 0; i < 3; i++) { const x = (i - 1) * .6, z = J(r, .5); a.push(part(G.sph, 0x58b04a, x, .35, z, .5, .38, .5)); b.push(part(G.sph, 0x9ed67a, x, .5, z, .36, .3, .36)); } return [a, b]; },
+  strawberry(r) { const a = [], b = []; for (let i = 0; i < 6; i++) a.push(part(G.sph, 0x3f9a46, J(r, 1.5), .16, J(r, 1.5), .3, .14, .3)); for (let i = 0; i < 9; i++) b.push(part(G.sph, 0xe0314b, J(r, 1.5), .17, J(r, 1.5), .09, .1, .09)); return [a, b]; },
+  tomato(r) { const a = [], b = []; for (let i = 0; i < 4; i++) { const x = (i % 2 - .5) * .95, z = (Math.floor(i / 2) - .5) * .95; a.push(part(G.stem, 0x5aa04a, x, .65, z, 1.4, 1.3, 1.4)); a.push(part(G.sph, 0x3f9a46, x, .9, z, .35, .25, .35)); for (let k = 0; k < 2; k++) b.push(part(G.sph, 0xe53935, x + J(r, .4), .5 + k * .35, z + J(r, .4), .14, .14, .14)); } return [a, b]; },
+  sunflower(r) { const a = [], b = []; for (let i = 0; i < 3; i++) { const x = (i - 1) * .6, z = J(r, .5); a.push(part(G.stem, 0x5a9e3a, x, 1.1, z, 2.2, 2.2, 2.2)); a.push(part(G.box, 0x3d8a30, x + .3, .9, z, .6, .05, .22, 0, .4)); b.push(part(G.cyl, 0xf6c615, x, 2.3, z, .42, .06, .42)); b.push(part(G.cyl, 0x5a3a1a, x, 2.34, z, .24, .06, .24)); } return [a, b]; },
+  pumpkin(r) { const a = [], b = []; a.push(part(G.stem, 0x4f8a3a, 0, .1, 0, 1.4, .1, 1.4, 0, Math.PI / 2)); for (let i = 0; i < 4; i++) a.push(part(G.box, 0x3d8a30, J(r, 1.4), .2, J(r, 1.4), .5, .05, .4)); for (let i = 0; i < 2; i++) b.push(part(G.sph, 0xf08a1f, (i - .5) * .9, .38, J(r, .5), .45, .36, .45)); return [a, b]; }
+};
+export function makeCropField(scene, N) {
+  const mat = new THREE.MeshLambertMaterial({ vertexColors: true }), ZERO = new THREE.Matrix4().makeScale(0, 0, 0), kinds = {}, tmp = new THREE.Matrix4(), q = new THREE.Quaternion(), one = new THREE.Vector3(1, 1, 1);
+  let seed = 11; Object.keys(BUILD).forEach(function (id) {
+    seed += 7; const r = rng(seed), parts = BUILD[id](r), g = mergeGeoms(parts[0]), rg = mergeGeoms(parts[1]);
+    const gm = new THREE.InstancedMesh(g, mat, N), rm = new THREE.InstancedMesh(rg, mat, N);
+    [gm, rm].forEach(function (m) { m.instanceMatrix.setUsage(THREE.DynamicDrawUsage); m.frustumCulled = false; for (let i = 0; i < N; i++) m.setMatrixAt(i, ZERO); scene.add(m); });
+    kinds[id] = { gm: gm, rm: rm };
+  });
+  const soil = new THREE.InstancedMesh(new THREE.BoxGeometry(TILE - .12, .22, TILE - .12), new THREE.MeshLambertMaterial({ color: 0xffffff }), N);
+  soil.receiveShadow = true; soil.frustumCulled = false; soil.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  const DRY = new THREE.Color(0x7a5230), WET = new THREE.Color(0x4a2e17);
+  for (let i = 0; i < N; i++) { soil.setMatrixAt(i, ZERO); soil.setColorAt(i, DRY); } scene.add(soil);
+  return {
+    // wet: 0 dry, 1 wet; type null = bare soil; scale = growth 0..1 ; ripe bool
+    set: function (i, x, z, hasSoil, wet, type, scale, ripe) {
+      if (!hasSoil) { soil.setMatrixAt(i, ZERO); } else { tmp.makeTranslation(x, .11, z); soil.setMatrixAt(i, tmp); soil.setColorAt(i, wet ? WET : DRY); }
+      Object.keys(kinds).forEach(function (id) {
+        const k = kinds[id];
+        if (id === type) { tmp.compose(new THREE.Vector3(x, .2, z), q, new THREE.Vector3(1, scale, 1)); k.gm.setMatrixAt(i, tmp); if (ripe) { tmp.compose(new THREE.Vector3(x, .2, z), q, one); k.rm.setMatrixAt(i, tmp); } else k.rm.setMatrixAt(i, ZERO); }
+        else { k.gm.setMatrixAt(i, ZERO); k.rm.setMatrixAt(i, ZERO); }
+      });
+    },
+    commit: function () { soil.instanceMatrix.needsUpdate = true; if (soil.instanceColor) soil.instanceColor.needsUpdate = true; Object.keys(kinds).forEach(function (id) { kinds[id].gm.instanceMatrix.needsUpdate = true; kinds[id].rm.instanceMatrix.needsUpdate = true; }); }
+  };
 }
-export const soilDry = mat(0x7a5230), soilWet = mat(0x4a2e17);
-export const soilGeo = new THREE.BoxGeometry(TILE - .12, .22, TILE - .12);
+function mergeGeoms(list) { return THREE.mergeGeometries(list, false); }
 
 // ---- animals
 export function makeAnimal(type) {
@@ -171,15 +193,19 @@ export function makeAnimal(type) {
   if (type === 'chicken') {
     sph(g, .38, 0xffffff, 0, .55, 0, 1, .9, 1.25); sph(g, .2, 0xffffff, 0, .98, .42); box(g, .1, .12, .05, 0xf2a900, 0, .95, .62); box(g, .06, .14, .22, 0xd62828, 0, 1.15, .42);
     box(g, .08, .35, .08, 0xf2a900, -.15, .18, 0); box(g, .08, .35, .08, 0xf2a900, .15, .18, 0); g.userData.speed = 1.1;
+  } else if (type === 'sheep') {
+    sph(g, .62, 0xf2efe6, 0, 1.05, 0, 1, .85, 1.35); for (const [x, z] of [[-.35, .5], [.35, .5], [-.35, -.5], [.35, -.5], [0, 0]]) sph(g, .38, 0xf7f5ee, x, 1.35, z);
+    box(g, .42, .5, .5, 0x3a3a3a, 0, 1.25, 1.0); box(g, .12, .22, .12, 0x2a2a2a, -.27, 1.52, .95); box(g, .12, .22, .12, 0x2a2a2a, .27, 1.52, .95);
+    for (const x of [-.3, .3]) for (const z of [-.5, .5]) box(g, .14, .6, .14, 0x3a3a3a, x, .3, z); g.userData.speed = .8;
   } else {
     box(g, 1.3, 1.1, 2.2, 0xf4f4f4, 0, 1.45, 0); box(g, .5, .5, .4, 0x222222, .35, 1.7, .3).scale.set(1, 1, 1); box(g, .6, .5, .5, 0x222222, -.3, 1.45, -.5);
     box(g, .75, .8, .8, 0xf4f4f4, 0, 1.75, 1.5); box(g, .5, .35, .3, 0xf2b6b6, 0, 1.55, 1.95); box(g, .1, .25, .1, 0xe8e0c8, -.3, 2.25, 1.4); box(g, .1, .25, .1, 0xe8e0c8, .3, 2.25, 1.4);
     for (const x of [-.45, .45]) for (const z of [-.8, .8]) box(g, .22, .95, .22, 0xf4f4f4, x, .48, z);
     g.userData.speed = .7;
   }
-  const icon = new THREE.Mesh(type === 'chicken' ? new THREE.SphereGeometry(.22, 10, 8) : new THREE.BoxGeometry(.4, .45, .4), new THREE.MeshBasicMaterial({ color: type === 'chicken' ? 0xfff6e0 : 0x9fd8ff }));
+  const icon = new THREE.Mesh(type === 'chicken' ? new THREE.SphereGeometry(.22, 10, 8) : new THREE.BoxGeometry(.4, .45, .4), new THREE.MeshBasicMaterial({ color: type === 'chicken' ? 0xfff6e0 : (type === 'sheep' ? 0xf0e6ff : 0x9fd8ff) }));
   if (type === 'chicken') icon.scale.set(.8, 1.1, .8);
-  icon.position.y = type === 'chicken' ? 2 : 3.3; icon.visible = false; g.add(icon); g.userData.icon = icon;
+  icon.position.y = type === 'chicken' ? 2 : (type === 'sheep' ? 2.4 : 3.3); icon.visible = false; g.add(icon); g.userData.icon = icon;
   return g;
 }
 export { THREE };

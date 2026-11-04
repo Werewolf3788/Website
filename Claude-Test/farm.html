@@ -11,40 +11,46 @@
   html,body{margin:0;height:100%;background:#0b1220;color:#e2e8f0;font-family:system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
   canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
   .hud{position:fixed;z-index:5}
-  #top{top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;font-size:.85rem;background:linear-gradient(#0009,#0000);text-shadow:0 1px 3px #000}
-  #top a,#top button{color:#e2e8f0;text-decoration:none;background:none;border:0;font:inherit;padding:0;cursor:pointer}
-  #toast{top:46px;left:0;right:0;text-align:center;color:#fde68a;font-size:.9rem;text-shadow:0 1px 3px #000;pointer-events:none;min-height:1.3em;padding:0 12px}
-  #prompt{bottom:128px;left:0;right:0;text-align:center;pointer-events:none}
-  #prompt span{background:#000a;color:#fff;padding:6px 12px;border-radius:999px;font-size:.9rem;display:inline-block}
-  #bar{bottom:0;left:0;right:0;display:flex;gap:6px;padding:8px;justify-content:center;flex-wrap:wrap;background:linear-gradient(#0000,#000a)}
-  #bar button{background:#1e293bcc;color:#e2e8f0;border:2px solid transparent;border-radius:12px;padding:9px 11px;font:inherit;font-size:.85rem;cursor:pointer}
-  #bar button.sel{border-color:#22c55e;background:#14532dcc}
-  #joy{left:18px;bottom:96px;width:120px;height:120px;border-radius:50%;background:#ffffff22;border:2px solid #ffffff44;touch-action:none;display:none}
+  #top{top:0;left:0;right:0;padding:6px 12px;font-size:.82rem;background:linear-gradient(#000a,#0000);text-shadow:0 1px 3px #000}
+  #top .r{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;line-height:1.5}
+  #top a,#top button{color:#e2e8f0;text-decoration:none;background:none;border:0;font:inherit;padding:0 2px;cursor:pointer}
+  #toast{top:58px;left:0;right:0;text-align:center;color:#fde68a;font-size:.9rem;text-shadow:0 1px 3px #000;pointer-events:none;min-height:1.3em;padding:0 12px}
+  #prompt{bottom:170px;left:0;right:0;text-align:center;pointer-events:none}
+  #prompt span{background:#000a;color:#fff;padding:5px 12px;border-radius:14px;font-size:.88rem;display:inline-block;margin:2px}
+  #prompt small{display:block;color:#cbd5e1;font-size:.78rem}
+  #bars{bottom:0;left:0;right:0;background:linear-gradient(#0000,#000b);padding:6px 8px 8px}
+  .row{display:flex;gap:6px;justify-content:center;flex-wrap:nowrap;overflow-x:auto;padding:2px 0;scrollbar-width:none}
+  .row::-webkit-scrollbar{display:none}
+  .row button{flex:0 0 auto;background:#1e293bcc;color:#e2e8f0;border:2px solid transparent;border-radius:12px;padding:8px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+  .row button.sel{border-color:#22c55e;background:#14532dcc} .row button.lock{opacity:.45}
+  #joy{left:18px;bottom:150px;width:120px;height:120px;border-radius:50%;background:#ffffff22;border:2px solid #ffffff44;touch-action:none;display:none}
   #knob{position:absolute;left:40px;top:40px;width:40px;height:40px;border-radius:50%;background:#ffffff88}
-  #useBtn{right:18px;bottom:104px;width:96px;height:96px;border-radius:50%;border:0;background:#22c55ecc;color:#04210f;font-weight:800;font-size:1rem;display:none;touch-action:none}
-  body.touch #joy,body.touch #useBtn{display:block} body.touch #useBtn{display:block}
+  #useBtn{right:18px;bottom:158px;width:92px;height:92px;border-radius:50%;border:0;background:#22c55ecc;color:#04210f;font-weight:800;font-size:1rem;display:none;touch-action:none}
+  body.touch #joy,body.touch #useBtn{display:block}
   #shop{inset:0;display:none;align-items:center;justify-content:center;background:#000a;z-index:20}
-  #shop .box{background:#1e293b;border-radius:16px;padding:16px;width:min(92vw,380px)}
-  #shop h2{margin:0 0 8px} #shop .item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid #334155}
-  #shop button{background:#22c55e;color:#04210f;font-weight:700;border:0;border-radius:10px;padding:9px 14px;font:inherit;cursor:pointer} #shop button:disabled{opacity:.4}
-  #shop button.close{background:#334155;color:#e2e8f0;margin-top:10px;width:100%}
-  #gate{position:fixed;inset:0;z-index:30;background:#0f172a;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:20px}
+  #shop .box{background:#1e293b;border-radius:16px;padding:14px;width:min(96vw,460px);max-height:88vh;display:flex;flex-direction:column}
+  #shop h2{margin:0 0 8px;font-size:1.1rem} #shopTabs{display:flex;gap:4px;overflow-x:auto;margin-bottom:8px;scrollbar-width:none}
+  #shopTabs button{flex:0 0 auto;background:#334155;color:#e2e8f0;border:0;border-radius:9px;padding:7px 10px;font:inherit;font-size:.8rem;cursor:pointer} #shopTabs button.sel{background:#22c55e;color:#04210f;font-weight:700}
+  #shopItems{overflow-y:auto;flex:1} .item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-top:1px solid #334155;font-size:.85rem}
+  .item small{color:#94a3b8;display:block} .item .btns{display:flex;gap:5px;flex:0 0 auto}
+  #shop button.b{background:#22c55e;color:#04210f;font-weight:700;border:0;border-radius:9px;padding:7px 10px;font:inherit;font-size:.8rem;cursor:pointer} #shop button.b:disabled{opacity:.35;cursor:default}
+  #shop button.close{background:#334155;color:#e2e8f0;border:0;border-radius:10px;padding:10px;margin-top:10px;width:100%;font:inherit;cursor:pointer}
+  #gate{position:fixed;inset:0;z-index:30;background:#0f172a;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:24px}
   #gate button{background:#22c55e;color:#04210f;font-weight:700;border:0;border-radius:10px;padding:12px 18px;font:inherit;cursor:pointer}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
 <div id="top" class="hud">
-  <span>🌾 <b id="roomLabel">Neighborly Acre</b> · 👥 <b id="count">1</b> · ☀️ <span id="clock">--:--</span></span>
-  <span>🪙 <b id="coins">0</b></span>
-  <span><button id="shareBtn">Invite</button> · <a href="index.html">Hub</a></span>
+  <div class="r"><span>🌾 <b id="roomLabel">Neighborly Acre</b> · 👥 <b id="count">1</b></span><span>🪙 <b id="coins">0</b></span><span><button id="bagBtn">🎒 Bag</button> <button id="shareBtn">Invite</button> · <a href="index.html">Hub</a></span></div>
+  <div class="r"><span>⭐ Lv <b id="lvl">1</b> <small id="xpTxt"></small></span><span id="wx">--</span><span id="cropInfo"></span></div>
 </div>
 <div id="toast" class="hud"></div>
 <div id="prompt" class="hud"></div>
 <div id="joy" class="hud"><div id="knob"></div></div>
 <button id="useBtn" class="hud">Use</button>
-<div id="bar" class="hud"></div>
-<div id="shop" class="hud"><div class="box"><h2>🏪 Barn Shop</h2><div id="shopItems"></div><button class="close" id="shopClose">Close</button></div></div>
+<div id="bars" class="hud"><div class="row" id="seedBar"></div><div class="row" id="bar"></div></div>
+<div id="shop" class="hud"><div class="box"><h2>🏪 Barn</h2><div id="shopTabs"></div><div id="shopItems"></div><button class="close" id="shopClose">Close</button></div></div>
 <div id="gate"><div id="gateText">Sign in to play</div><button id="gateBtn" style="display:none">Sign in with Google</button><button id="soloBtn" style="background:#334155;color:#e2e8f0">Play solo instead</button></div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
