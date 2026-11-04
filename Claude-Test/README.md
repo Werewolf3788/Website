@@ -14,6 +14,7 @@ Browser games that run on Android, iOS and desktop. Sign in with Google (same Fi
 Publish the repo's root `database.rules.json` in Firebase Console > Realtime Database > Rules (the games are denied until then; `game_rooms/$game/$code` covers the farm, Wahoo and future games), and make sure the site's domain is under Authentication > Settings > Authorized domains.
 
 ## Notes
-- Time of day follows the player's device clock; rain is shared by everyone (a pure function of time, so crops are also watered retroactively).
+- Time of day follows the player's device clock. Rain is shared by everyone: two random 3–6 minute showers every hour (one per half hour, so a crop never waits an hour for rain), computed from the time so crops are also watered retroactively.
+- XP: harvest +5, egg +1, wool +2, milk +3. Level 1→2 needs 25 xp, then 50, 75, … up to level 50. Missions (3 daily + milestone ladders) pay bonus XP and coins; level-ups pay `25 × level` coins.
 - Signed-in players save only to Firebase; guests save to this device.
 - Debug URL params: `?time=14.5` (hour), `?weather=rain|clear`.

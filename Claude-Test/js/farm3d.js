@@ -12,7 +12,7 @@ const FORCE_WX = qs.get('weather');                                       // deb
 let me = null, myName = 'Farmer', myHue = Math.random(), roomRef = null, cloudCode = null;
 let tiles = {}, players = {}, animals = {}, tractorState = { holder: null, x: W.TRACTOR_HOME.x, z: W.TRACTOR_HOME.z, ry: W.TRACTOR_HOME.ry };
 let tool = 'hoe', saveTimer = null, toastTimer = null, lastDragAt = 0, avatars = {}, myAvatar = '';
-const save = { coins: 100, xp: 0, seeds: { wheat: 30, carrot: 30 }, bag: {}, up: {}, skip: {}, orders: { day: -1, done: [] }, harvested: 0 };
+const save = { coins: 100, xp: 0, seeds: { wheat: 30, carrot: 30 }, bag: {}, up: {}, skip: {}, orders: { day: -1, done: [] }, harvested: 0, stats: {}, daily: { day: -1, base: {}, done: [] }, ms: {} };
 const player = { x: 0, z: -1, ry: 0, speed: 0, driving: false };
 const tractorLocal = { x: W.TRACTOR_HOME.x, z: W.TRACTOR_HOME.z, ry: W.TRACTOR_HOME.ry, speed: 0 };
 const level = () => C.levelFromXp(save.xp);
@@ -111,10 +111,20 @@ function queueSave() { clearTimeout(saveTimer); saveTimer = setTimeout(flushSave
 document.addEventListener('visibilitychange', function () { if (document.hidden) flushSave(); }); window.addEventListener('pagehide', flushSave);
 function setCoins(d) { save.coins = Math.max(0, save.coins + d); hud(); queueSave(); }
 function addItem(id, n) { save.bag[id] = (save.bag[id] || 0) + n; if (save.bag[id] <= 0) delete save.bag[id]; queueSave(); }
-function addXp(n) { const old = level(); save.xp += n; if (level() > old) { say('🎉 Level ' + level() + '! New crops, animals or upgrades may be unlocked.'); buildSeedBar(); } hud(); queueSave(); }
+function addXp(n) {
+  const old = level(); save.xp += n; const now = level();
+  if (now > old) {
+    let bonus = 0, unlocked = [];
+    for (let l = old + 1; l <= now; l++) { bonus += C.levelUpCoins(l); unlocked = unlocked.concat(C.unlocksAt(l)); }
+    save.coins += bonus; say('🎉 Level ' + now + '! +$' + bonus + (unlocked.length ? ' · Unlocked: ' + unlocked.join(', ') : '')); buildSeedBar();
+  }
+  hud(); queueSave();
+}
+function stat(k, n) { save.stats[k] = (save.stats[k] || 0) + (n || 1); }
 function hud() {
-  $('coins').textContent = save.coins; const l = level(), lo = C.xpForLevel(l), hi = C.xpForLevel(l + 1);
-  $('lvl').textContent = l; $('xpTxt').textContent = (save.xp - lo) + '/' + (hi - lo) + ' xp';
+  $('coins').textContent = save.coins; const l = level();
+  $('lvl').textContent = l; $('xpTxt').textContent = l >= C.MAX_LEVEL ? 'MAX LEVEL' : (save.xp - C.xpForLevel(l)) + '/' + C.xpToNext(l) + ' xp';
+  const badge = claimable() ? ' •' : ''; if ($('missionsBtn')) $('missionsBtn').textContent = '📜 Missions' + badge;
 }
 let burst = 0, burstT = null;
 function harvestedToast(crop) { burst++; clearTimeout(burstT); burstT = setTimeout(function () { say('🧺 Harvested ' + burst + ' · in your bag (sell at the barn)'); burst = 0; }, 500); }
@@ -141,14 +151,14 @@ function actTile(i, quiet) {
   } else if (tool === 'harvest') {
     if (!cur || cur.k !== 'c') { if (!quiet) say('Nothing to harvest.'); return; }
     ref.transaction(function (c) { return (c && c.k === 'c' && progress(c) >= 1) ? { k: 't' } : undefined; }, function (err, ok) {
-      if (ok) { addItem(cur.c, 1); save.harvested++; addXp(C.cropXp(cur.c)); if (quiet) harvestedToast(cur.c); else say('Harvested ' + C.CROPS[cur.c].name.toLowerCase() + '! In your bag.'); }
+      if (ok) { addItem(cur.c, 1); save.harvested++; stat('harvest'); addXp(C.XP_HARVEST); if (quiet) harvestedToast(cur.c); else say('Harvested ' + C.CROPS[cur.c].name.toLowerCase() + '! In your bag.'); }
       else if (!quiet) say('Not ready yet (' + C.fmtTime(C.CROPS[cur.c].grow * (1 - progress(cur))) + ' left' + (cur.w ? '' : ', needs water') + ').');
     });
   } else if (tool === 'seed') {
     if (!cur || cur.k !== 't') { if (!quiet) say(cur ? 'Something is already growing there.' : 'Plow the soil first.'); return; }
     const pick = cropForTile(i);
     if (!pick) { if (!quiet || !outWarn()) say('No seeds to plant. Buy a pack at the barn (or switch a seed back on).'); return; }
-    save.seeds[pick]--; hud(); queueSave(); buildSeedBar(); ref.set({ k: 'c', c: pick, p: now, w: 0 });
+    save.seeds[pick]--; stat('plant'); hud(); queueSave(); buildSeedBar(); ref.set({ k: 'c', c: pick, p: now, w: 0 });
   }
 }
 let lastOut = 0; function outWarn() { const n = performance.now(); if (n - lastOut < 4000) return true; lastOut = n; return false; }
@@ -190,22 +200,24 @@ function nearestReadyAnimal() {
 function collect(id) {
   const a = animals[id]; if (!a) return; const def = C.ANIMALS[a.t];
   roomRef.child('animals/' + id + '/r').transaction(function (r) { return nowMs() >= (r || 0) ? nowMs() + def.every : undefined; }, function (e, ok) {
-    if (ok) { addItem(def.prod, 1); addXp(Math.max(1, Math.round(C.GOODS[def.prod].sell / 3))); say(C.GOODS[def.prod].icon + ' Collected ' + def.prod + ' — in your bag.'); } else say('Not ready yet.');
+    if (ok) { addItem(def.prod, 1); stat(def.prod); addXp(C.XP_PRODUCT[def.prod]); say(C.GOODS[def.prod].icon + ' Collected ' + def.prod + ' — in your bag.'); } else say('Not ready yet.');
   });
 }
 
 // ------------------------------------------------------------ barn: seeds / sell / kitchen / animals / orders / upgrades
 let shopTab = 'seeds';
-const TABS = [['seeds', '🌱 Seeds'], ['sell', '💰 Sell'], ['kitchen', '🍳 Kitchen'], ['animals', '🐔 Animals'], ['orders', '📋 Orders'], ['upgrades', '🚜 Tractor']];
+// only touch the page when the menu content really changed (a redraw between mouse-down and mouse-up would swallow a click)
+function commitShop(n, id) { const cur = $(id); if (cur.innerHTML !== n.innerHTML) { cur.innerHTML = ''; while (n.firstChild) cur.appendChild(n.firstChild); } }
+const TABS = [['seeds', '🌱 Seeds'], ['sell', '💰 Sell'], ['kitchen', '🍳 Kitchen'], ['animals', '🐔 Animals'], ['orders', '📋 Orders'], ['missions', '📜 Missions'], ['upgrades', '🚜 Tractor']];
 const nearShop = () => Math.hypot(player.x - W.SHOP_POS.x, player.z - W.SHOP_POS.z) < 6;
 const today = () => C.dayNumber(nowMs());
 function counts() { const c = {}; Object.keys(C.ANIMALS).forEach(function (k) { c[k] = 0; }); Object.keys(animals).forEach(function (id) { if (c[animals[id].t] !== undefined) c[animals[id].t]++; }); return c; }
 function row(html, buttons) { const r = document.createElement('div'); r.className = 'item'; r.innerHTML = '<div>' + html + '</div>'; const b = document.createElement('div'); b.className = 'btns'; (buttons || []).forEach(function (x) { const el = document.createElement('button'); el.className = 'b'; el.textContent = x.t; el.disabled = !!x.off; el.onclick = function () { x.f(); renderShop(); }; b.appendChild(el); }); r.appendChild(b); return r; }
 function renderShop() {
-  const tabs = $('shopTabs'); tabs.innerHTML = '';
+  const tabs = document.createElement('div');
   TABS.forEach(function (t) { const b = document.createElement('button'); b.textContent = t[1]; b.className = t[0] === shopTab ? 'sel' : ''; b.onclick = function () { shopTab = t[0]; renderShop(); }; tabs.appendChild(b); });
-  const box = $('shopItems'), l = level(), d = today(); box.innerHTML = '<div class="item" style="border:0;padding-top:0"><div><b style="color:#fde68a">$' + save.coins + '</b> · Level <b>' + l + '</b></div></div>';
-  if (!nearShop() && shopTab !== 'seeds') box.innerHTML += '<div class="item" style="border:0;color:#fbbf24">Walk to the barn door to trade. You can still look around.</div>';
+  const box = document.createElement('div'), l = level(), d = today(); box.innerHTML = '<div class="item" style="border:0;padding-top:0"><div><b style="color:#fde68a">$' + save.coins + '</b> · Level <b>' + l + '</b></div></div>';
+  if (!nearShop() && shopTab !== 'seeds' && shopTab !== 'missions') box.innerHTML += '<div class="item" style="border:0;color:#fbbf24">Walk to the barn door to trade. You can still look around.</div>';
   const can = nearShop();
   if (shopTab === 'seeds') {
     box.innerHTML += '<div class="item" style="border:0"><small>One pack plants many tiles. A field pack covers the whole field. Every kind of seed you own is spread evenly across the field: one kind = all of it, two = half and half, three = thirds.</small></div>';
@@ -227,23 +239,38 @@ function renderShop() {
       const g = C.GOODS[r.id], lock = l < r.level, have = Object.keys(r.needs).every(function (k) { return (save.bag[k] || 0) >= r.needs[k]; });
       const need = Object.keys(r.needs).map(function (k) { return r.needs[k] + '× ' + C.GOODS[k].icon + ' (' + (save.bag[k] || 0) + ')'; }).join(' + ');
       box.appendChild(row(g.icon + ' <b>' + g.name + '</b> <small>' + (lock ? 'Unlocks at level ' + r.level : need + ' · worth ~$' + C.priceOf(r.id, d) + '') + '</small>',
-        [{ t: lock ? '🔒' : 'Make', off: lock || !have || !can, f: function () { Object.keys(r.needs).forEach(function (k) { addItem(k, -r.needs[k]); }); addItem(r.id, 1); addXp(5); say('Made ' + g.name.toLowerCase() + '!'); } }]));
+        [{ t: lock ? '🔒' : 'Make', off: lock || !have || !can, f: function () { Object.keys(r.needs).forEach(function (k) { addItem(k, -r.needs[k]); }); addItem(r.id, 1); say('Made ' + g.name.toLowerCase() + '!'); } }]));
     });
   } else if (shopTab === 'animals') {
     const c = counts();
+    box.innerHTML += '<div class="item" style="border:0"><small>Animals give a product every few minutes. Collect it when the icon floats over them: +' + Object.keys(C.XP_PRODUCT).map(function (k) { return C.XP_PRODUCT[k] + ' xp per ' + k; }).join(', ') + '.</small></div>';
     Object.keys(C.ANIMALS).forEach(function (k) {
-      const a = C.ANIMALS[k], lock = l < a.level;
-      box.appendChild(row(a.icon + ' <b>' + a.name + '</b> (' + c[k] + '/' + a.max + ') <small>' + (lock ? 'Unlocks at level ' + a.level : 'gives ' + a.prod + ' every ' + a.every / 60000 + ' min') + '</small>',
-        [{ t: lock ? '🔒 Lv ' + a.level : '$' + a.cost, off: lock || !can || c[k] >= a.max || save.coins < a.cost, f: function () { if (save.coins < a.cost || counts()[k] >= a.max) return; setCoins(-a.cost); roomRef.child('animals/' + Date.now().toString(36) + Math.floor(Math.random() * 99)).set({ t: k, r: nowMs() + a.every }); say('Bought a ' + a.name.toLowerCase() + '!'); } }]));
+      const a = C.ANIMALS[k], lock = l < a.level, sells = C.priceOf(a.prod, d), perHour = Math.round(3600000 / a.every * sells);
+      box.appendChild(row(a.icon + ' <b>' + a.name + '</b> · <b style="color:#fde68a">$' + a.cost + '</b> <small>' + (lock ? 'Unlocks at level ' + a.level + ' · ' : '') + 'you own ' + c[k] + '/' + a.max + ' · gives ' + a.prod + ' every ' + a.every / 60000 + ' min · ' + a.prod + ' sells ~$' + sells + ' (about $' + perHour + '/hour each) · +' + C.XP_PRODUCT[a.prod] + ' xp each</small>',
+        [{ t: lock ? '🔒 Lv ' + a.level : 'Buy $' + a.cost, off: lock || !can || c[k] >= a.max || save.coins < a.cost, f: function () { if (save.coins < a.cost || counts()[k] >= a.max) return; setCoins(-a.cost); roomRef.child('animals/' + Date.now().toString(36) + Math.floor(Math.random() * 99)).set({ t: k, r: nowMs() + a.every }); say('Bought a ' + a.name.toLowerCase() + '!'); } }]));
     });
   } else if (shopTab === 'orders') {
     if (save.orders.day !== d) { save.orders = { day: d, done: [] }; queueSave(); }
     C.ordersFor(d, l).forEach(function (o, k) {
       const g = C.GOODS[o.item], done = save.orders.done[k], have = (save.bag[o.item] || 0) >= o.qty;
       box.appendChild(row('📋 <b>' + o.qty + '× ' + g.name + '</b> ' + g.icon + ' <small>reward $' + o.reward + ' + ' + o.xp + ' xp · you have ' + (save.bag[o.item] || 0) + '</small>',
-        [{ t: done ? '✅ Done' : 'Deliver', off: done || !have || !can, f: function () { addItem(o.item, -o.qty); setCoins(o.reward); addXp(o.xp); save.orders.done[k] = true; say('Order complete! +$' + o.reward + ''); } }]));
+        [{ t: done ? '✅ Done' : 'Deliver', off: done || !have || !can, f: function () { addItem(o.item, -o.qty); setCoins(o.reward); stat('orders'); addXp(o.xp); save.orders.done[k] = true; say('Order complete! +$' + o.reward + ''); } }]));
     });
     box.innerHTML += '<div class="item" style="border:0"><small>New orders arrive every day (UTC midnight). Big orders are where a tractor really pays off.</small></div>';
+  } else if (shopTab === 'missions') {
+    const lv = level(), daily = ensureDaily();
+    box.innerHTML += '<div class="item" style="border:0"><small>XP: harvest +' + C.XP_HARVEST + ' · egg +' + C.XP_PRODUCT.egg + ' · wool +' + C.XP_PRODUCT.wool + ' · milk +' + C.XP_PRODUCT.milk + '. Missions pay extra XP and coins. Levels: 25 xp to reach level 2, then 50, 75 ... up to level ' + C.MAX_LEVEL + '.</small></div><div class="item" style="border:0;padding:4px 0"><b>Today\u2019s missions</b> <small>(reset at midnight)</small></div>';
+    daily.forEach(function (m, k) {
+      const p = Math.min(m.goal, dailyProgress(m)), ready = p >= m.goal, done = save.daily.done[k];
+      box.appendChild(row(C.STATS[m.stat].icon + ' <b>' + m.text + '</b> <small>' + p + '/' + m.goal + ' · reward +' + m.xp + ' xp and $' + m.coins + '</small>',
+        [{ t: done ? '✅ Claimed' : ready ? 'Claim' : p + '/' + m.goal, off: done || !ready, f: function () { save.daily.done[k] = true; reward({ xp: m.xp, coins: m.coins }, m.text); } }]));
+    });
+    box.innerHTML += '<div class="item" style="border:0;padding:10px 0 4px"><b>Milestones</b> <small>(these never expire)</small></div>';
+    Object.keys(C.STATS).forEach(function (st) {
+      if (!C.statUnlocked(st, lv)) return; const t = nextTier(st), S = C.STATS[st], have = save.stats[st] || 0; if (!t) { box.appendChild(row(S.icon + ' <b>' + S.verb + ' ' + S.noun + '</b> <small>All milestones done!</small>', [])); return; }
+      box.appendChild(row(S.icon + ' <b>' + S.verb + ' ' + t.goal + ' ' + S.noun + '</b> <small>' + Math.min(have, t.goal) + '/' + t.goal + ' · reward +' + t.reward.xp + ' xp and $' + t.reward.coins + '</small>',
+        [{ t: have >= t.goal ? 'Claim' : Math.min(have, t.goal) + '/' + t.goal, off: have < t.goal, f: function () { save.ms[st] = t.idx + 1; reward(t.reward, S.verb + ' ' + t.goal + ' ' + S.noun); } }]));
+    });
   } else if (shopTab === 'upgrades') {
     Object.keys(C.UPGRADES).forEach(function (k) {
       const u = C.UPGRADES[k], has = save.up[k], lock = l < u.level;
@@ -252,11 +279,28 @@ function renderShop() {
     });
     box.innerHTML += '<div class="item" style="border:0"><small>Drive the tractor over your field: it plows, plants, waters or harvests ' + swath() + ' tiles at once, whichever tool you have selected.</small></div>';
   }
+  commitShop(tabs, 'shopTabs'); commitShop(box, 'shopItems');
 }
-function sell(id, n, quiet) { n = Math.min(n, save.bag[id] || 0); if (n < 1) return; const p = C.priceOf(id, today()) * n; addItem(id, -n); setCoins(p); addXp(Math.round(n / 2)); if (!quiet) say('Sold ' + n + ' ' + C.GOODS[id].name.toLowerCase() + ' for $' + p + ''); }
+function sell(id, n, quiet) { n = Math.min(n, save.bag[id] || 0); if (n < 1) return; const p = C.priceOf(id, today()) * n; addItem(id, -n); stat('sell', n); setCoins(p); if (!quiet) say('Sold ' + n + ' ' + C.GOODS[id].name.toLowerCase() + ' for $' + p + ''); }
 function openShop(tab) { if (tab) shopTab = tab; renderShop(); $('shop').style.display = 'flex'; }
 $('shopClose').onclick = function () { $('shop').style.display = 'none'; };
-$('bagBtn').onclick = function () { openShop('sell'); };
+$('bagBtn').onclick = function () { openShop('sell'); }; $('missionsBtn').onclick = function () { openShop('missions'); };
+
+// ------------------------------------------------------------ missions: daily goals + milestone ladders (FarmVille style)
+function ensureDaily() {
+  const key = C.localDayKey(new Date());
+  if (save.daily.day !== key || !save.daily.list) { save.daily = { day: key, base: Object.assign({}, save.stats), done: [], list: C.dailyMissions(key, level()) }; queueSave(); }   // the list is fixed for the whole day
+  return save.daily.list;
+}
+function dailyProgress(m) { return Math.max(0, (save.stats[m.stat] || 0) - ((save.daily.base || {})[m.stat] || 0)); }
+function nextTier(stat) { const done = save.ms[stat] || 0, goal = C.LADDER[done]; return goal ? { goal: goal, idx: done, reward: C.tierReward(goal) } : null; }
+function claimable() {
+  const lv = level(); let any = false;
+  ensureDaily().forEach(function (m, k) { if (!save.daily.done[k] && dailyProgress(m) >= m.goal) any = true; });
+  Object.keys(C.STATS).forEach(function (st) { if (!C.statUnlocked(st, lv)) return; const t = nextTier(st); if (t && (save.stats[st] || 0) >= t.goal) any = true; });
+  return any;
+}
+function reward(r, label) { setCoins(r.coins); addXp(r.xp); say('📜 ' + label + ' complete! +$' + r.coins + ' · +' + r.xp + ' xp'); }
 
 // ------------------------------------------------------------ toolbar
 const TOOLS = [{ id: 'hoe', label: '⛏️ Plow', color: 0x8a6a4a }, { id: 'water', label: '💧 Water', color: 0x4aa3ff }, { id: 'harvest', label: '🧺 Harvest', color: 0xf2c200 }, { id: 'seed', label: '🌱 Plant', color: 0x6abf4b }];
@@ -283,6 +327,7 @@ window.addEventListener('keydown', function (e) {
   if (e.target && /input|textarea/i.test(e.target.tagName)) return; const k = e.key.toLowerCase();
   if (k >= '1' && k <= '4') { setTool(TOOLS[+k - 1].id); return; }
   if (k === 'b') { openShop('sell'); return; }
+  if (k === 'm') { openShop('missions'); return; }
   if (k === 'e' || k === ' ') { e.preventDefault(); if (!e.repeat) useAction(); return; }
   if (k === 'escape') $('shop').style.display = 'none';
   keys[k] = true; if (k.indexOf('arrow') === 0) e.preventDefault();
@@ -443,7 +488,7 @@ async function begin(user, myCode) {
     const s = await WW.loadSave('farm');
     if (s) { save.coins = s.coins | 0; save.xp = s.xp | 0; save.seeds = s.seeds || { wheat: 0 }; save.bag = s.bag || {}; save.up = s.up || {}; save.orders = s.orders || { day: -1, done: [] }; save.harvested = s.harvested | 0;
       // legacy saves (before levels) kept only coins
-      if (s.xp === undefined && s.seeds === undefined) { save.seeds = { wheat: 30, carrot: 30 }; } save.skip = s.skip || {}; }
+      if (s.xp === undefined && s.seeds === undefined) { save.seeds = { wheat: 30, carrot: 30 }; } save.skip = s.skip || {}; save.stats = s.stats || {}; save.daily = s.daily || { day: -1, base: {}, done: [] }; save.ms = s.ms || {}; }
   } catch (e) { console.warn(e); gate('Your saved progress could not be loaded (' + (e.code || e.message) + '). Nothing was changed.', { back: true }); return; }
   if (user) { try { myAvatar = (await WW.db.ref('users/' + WW.emailKey(user.email) + '/avatar_url').once('value')).val() || user.photoURL || ''; } catch (e) { myAvatar = user.photoURL || ''; } }
   if (myAvatar) { giveAvatar(farmer, myAvatar, myName); roomRef.child('avatars/' + me.uid).set(myAvatar); }
