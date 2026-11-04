@@ -85,6 +85,22 @@
       }
     },
 
+    "games_saves": {
+      "$uid": {
+        ".read": "auth != null && $uid === auth.uid",
+        ".write": "auth != null && $uid === auth.uid"
+      }
+    },
+
+    "game_rooms": {
+      "farm": {
+        "$code": {
+          ".read": "auth != null",
+          ".write": "auth != null"
+        }
+      }
+    },
+
     "push_subscriptions": {
       "$id": {
         ".write": "$id.matches(/^[0-9a-f]{32}$/)",

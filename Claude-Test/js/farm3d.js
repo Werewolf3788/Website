@@ -28,7 +28,7 @@ if (matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window) document
 const canvas = $('c');
 let renderer;
 try { renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true }); } catch (e) { gate('Your browser could not start 3D graphics (WebGL). Try updating it or another browser.', false); throw e; }
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap;
 const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 1, .3, 400);
 scene.fog = new THREE.Fog(0x9ad0f0, 70, 190);
 const hemi = new THREE.HemisphereLight(0xcfe8ff, 0x4a6a3a, .9); scene.add(hemi);
