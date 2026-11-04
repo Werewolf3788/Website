@@ -21,7 +21,8 @@
   #die.throw{animation:throw .55s ease-out}
   @keyframes throw{0%{transform:translateY(0) rotate(0)}35%{transform:translateY(-26px) rotate(260deg)}70%{transform:translateY(0) rotate(560deg)}85%{transform:translateY(-6px) rotate(700deg)}100%{transform:translateY(0) rotate(720deg)}}
   #emotes{display:flex;gap:6px;margin-top:10px} #emotes button{flex:1;padding:8px 0;font-size:1.2rem;background:#334155}
-  .emo{font-size:1.3rem;animation:pop .35s ease-out}
+  .emo{font-size:1.3rem;animation:pop .35s ease-out;transform-box:fill-box;transform-origin:center}
+  .emoB{animation:pop .35s ease-out;transform-box:fill-box;transform-origin:center}
   @keyframes pop{0%{transform:scale(.3)}70%{transform:scale(1.4)}100%{transform:scale(1)}}
   .peg{transition:transform .32s ease-in-out}
   .peg .ring{display:none;fill:none;stroke:#fff;stroke-width:.08}
@@ -302,7 +303,9 @@
   $('emotes').addEventListener('click', function (ev) {
     var b = ev.target.closest ? ev.target.closest('button[data-e]') : null, ms = mySeat();
     if (!b || ms < 0 || !roomRefG || Date.now() - lastEmo < 800) return;
-    lastEmo = Date.now(); roomRefG.child('emotes/' + ms).set({ e: b.dataset.e, t: firebase.database.ServerValue.TIMESTAMP });
+    lastEmo = Date.now();
+    emotes = emotes || {}; emotes[ms] = { e: b.dataset.e, t: WW.now() }; render(); setTimeout(render, 4200);
+    roomRefG.child('emotes/' + ms).set({ e: b.dataset.e, t: firebase.database.ServerValue.TIMESTAMP }).catch(function (err) { say('Reaction could not be sent: ' + ((err && err.message) || err)); });
   });
 
   // drives bots, away players, forced passes and single-choice moves
@@ -372,7 +375,7 @@
     for (p = 0; p < 4; p++) LANE[p].forEach(function (c) { h += '<rect x="' + c[0] + '" y="' + c[1] + '" width="1" height="1" fill="' + COLORS[p] + '" opacity=".6" stroke="#64748b" stroke-width=".04"/>'; });
     [[5,7,0],[7,5,1],[9,7,2],[7,9,3]].forEach(function (d) { h += '<rect x="' + d[0] + '" y="' + d[1] + '" width="1" height="1" fill="' + LIGHT[d[2]] + '" stroke="#64748b" stroke-width=".04"/>'; });
     h += '<polygon points="6,6 6,9 7.5,7.5" fill="' + COLORS[0] + '"/><polygon points="6,6 9,6 7.5,7.5" fill="' + COLORS[1] + '"/><polygon points="9,6 9,9 7.5,7.5" fill="' + COLORS[2] + '"/><polygon points="6,9 9,9 7.5,7.5" fill="' + COLORS[3] + '"/>';
-    h += '<g id="pegs"></g><g id="ghosts"></g>';
+    h += '<g id="pegs"></g><g id="ghosts"></g><g id="emoLayer" pointer-events="none"></g>';
     $('board').innerHTML = h;
     var NS = 'http://www.w3.org/2000/svg', layer = $('pegs');
     for (p = 0; p < 4; p++) {
@@ -421,6 +424,9 @@
       gh += '<circle class="ghost" data-i="' + m.i + '" cx="' + xy[0] + '" cy="' + xy[1] + '" r=".42" fill="' + COLORS[s.turn] + '" fill-opacity=".35" stroke="#fff" stroke-width=".07" stroke-dasharray=".18 .12"/>';
     });
     $('ghosts').innerHTML = gh;
+    var eo = '';
+    for (p = 0; p < 4; p++) { var em = emotes && emotes[p]; if (em && seatOf(s, p) && WW.now() - (em.t || 0) < 4000) eo += '<text class="emoB" x="' + (CORNER[p][0] + 3) + '" y="' + (CORNER[p][1] + 3) + '" text-anchor="middle" dominant-baseline="central" font-size="2.6">' + em.e + '</text>'; }
+    $('emoLayer').innerHTML = eo;
     // dice + turn
     var shown = s.roll || s.lr || 0; if (!rolling) drawDie(shown);
     $('die').disabled = !myTurn; $('die').classList.toggle('ready', myTurn);
