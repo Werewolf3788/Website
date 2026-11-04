@@ -85,7 +85,7 @@
     <div id="emotes"></div>
     <details id="hist"><summary>📜 Win / loss history</summary><div id="histBody" style="margin-top:8px"></div></details>
     <div id="log"></div>
-    <div class="muted" style="margin-top:10px">Everyone starts with $1,000 and collects $200 every time you pass or land on Start. Taxes, fines and bail go into the Free Parking pot, and whoever lands on Free Parking collects it. Buy what you land on, collect rent, and build up to 4 houses and then an apartment once you own a whole colour. Doubles roll again; three doubles go to jail. Rents rise by 25% every 6 rounds in long games. Last player standing wins. Tap the dice, shake your phone or press Space to roll.</div>
+    <div class="muted" style="margin-top:10px">Everyone starts with $1,500 and collects $200 every time you pass or land on Start. Taxes, fines and bail go into the Free Parking pot, and whoever lands on Free Parking collects it. Buy what you land on, collect rent, and build up to 4 houses and then an apartment once you own a whole colour. Doubles roll again; three doubles go to jail. Rents rise by 25% every 4 rounds in long games. Last player standing wins. Tap the dice, shake your phone or press Space to roll.</div>
   </div>
 </div>
 <div id="gate"><div id="gateText">Sign in to play</div><button class="go" id="gateBtn">Sign in with Google</button><button id="soloBtn">Play solo instead</button></div>
@@ -164,7 +164,7 @@
   }
   function countOwned(s, p, t) { var n = 0; SP.forEach(function (sp, i) { if (sp.t === t && ownerOf(s, i) === p) n++; }); return n; }
   function ownsSet(s, p, g) { return group(g).every(function (j) { return ownerOf(s, j) === p; }); }
-  function rentMult(s) { return 1 + 0.25 * Math.floor((s.rd | 0) / 6); }
+  function rentMult(s) { return 1 + 0.25 * Math.floor((s.rd | 0) / 4); }
   function rentOf(s, i, sum) {
     var sp = SP[i], o = ownerOf(s, i), base, h;
     if (sp.t === 'rail') base = RAIL_RENT[Math.min(3, countOwned(s, o, 'rail') - 1)];
@@ -301,7 +301,7 @@
   }
   function startState(s) {
     s.pl = {}; s.own = {}; s.hs = {};
-    seated(s).forEach(function (p) { s.pl[p] = { pos: 0, cash: 1000, jail: 0, bankrupt: false }; });
+    seated(s).forEach(function (p) { s.pl[p] = { pos: 0, cash: 1500, jail: 0, bankrupt: false }; });
     s.status = 'playing'; s.turn = seated(s)[0]; s.phase = 'roll'; s.dice = [0, 0]; s.dc = 0; s.again = false; s.pend = -1; s.winner = -1; s.rd = 0; s.pot = 0;
     s.gid = (s.gid | 0) + 1; s.log = []; addLog(s, 'Game on! ' + NAMES[s.turn] + ' goes first.');
   }
