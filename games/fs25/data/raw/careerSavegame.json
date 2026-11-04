@@ -7,8 +7,8 @@
    "creationDate": "2026-08-30",
    "mapId": "FS25_The_Rural_Farmlands_Of_Ohio.mountain",
    "mapTitle": "The Rural Farmlands Of Ohio",
-   "saveDateFormatted": "2026-11-03",
-   "saveDate": "2026-11-03",
+   "saveDateFormatted": "2026-11-04",
+   "saveDate": "2026-11-04",
    "initialMoney": 1000000,
    "initialLoan": 0,
    "economicDifficulty": "NORMAL",
@@ -63,8 +63,8 @@
    "shownHints": null
   },
   "statistics": {
-   "money": 2191641587,
-   "playTime": 89146.554688
+   "money": 2191715264,
+   "playTime": 89311.046875
   },
   "mapsSplitShapeFileIds": {
    "count": 1,
@@ -73,7 +73,7 @@
    }
   },
   "slotSystem": {
-   "slotUsage": 2176
+   "slotUsage": 2180
   },
   "mod": [
    {
@@ -100,9 +100,9 @@
    {
     "modName": "FS25_WindTurbinePackage",
     "title": "Wind Turbine Package",
-    "version": "1.2.0.0",
+    "version": "1.3.0.0",
     "required": false,
-    "fileHash": "70b48f9622d1c6c56ad71cd9324509a9"
+    "fileHash": "652bbf96190e06b4efcc21533a15277e"
    },
    {
     "modName": "FS25_ASM_ChristmasCutouts",
@@ -226,16 +226,16 @@
    {
     "modName": "FS25_palletSilo",
     "title": "Pallet Silo With Autoload Trailers",
-    "version": "1.2.0.0",
+    "version": "1.3.0.0",
     "required": false,
-    "fileHash": "3f5cb9ec73c1cfd123f3a67aa2f9a32a"
+    "fileHash": "635ec8987a15b12b396757615984233c"
    },
    {
     "modName": "FS25_colossusPack",
     "title": "Lizard Colossus Pack",
-    "version": "2.0.0.0",
+    "version": "2.1.0.0",
     "required": false,
-    "fileHash": "13e3daf62192ea7f00069652e6c1802b"
+    "fileHash": "2556b4fcebe53ab12bcd0ed0995ed1dc"
    },
    {
     "modName": "FS25_AdditionalFilltypes",

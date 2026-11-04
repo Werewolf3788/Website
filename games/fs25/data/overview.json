@@ -2,12 +2,18 @@
  "game": "Farming Simulator 25",
  "key": "fs25",
  "sync": {
-  "mode": "light",
-  "active": false,
-  "reason": "gameStats.xml: 0 online",
+  "mode": "full",
+  "active": true,
+  "reason": "gameStats.xml: 1 online",
   "players": {
-   "online": 0,
-   "names": [],
+   "online": 1,
+   "names": [
+    {
+     "name": "wildhorse_spirit",
+     "isAdmin": false,
+     "uptimeMin": 14
+    }
+   ],
    "capacity": 6,
    "source": "gameStats"
   },
@@ -15,9 +21,9 @@
   "serverVersion": "1.25.1.0",
   "saveDir": "/profile/savegame3",
   "saveAgeMin": null,
-  "lastCheck": "2026-11-04T02:40:10Z",
-  "lastChange": "2026-11-04T02:40:10Z",
-  "lastFull": "2026-11-02T11:15:07Z",
+  "lastCheck": "2026-11-04T05:38:41Z",
+  "lastChange": "2026-11-04T05:38:41Z",
+  "lastFull": "2026-11-04T05:38:41Z",
   "lastLight": "2026-11-04T02:40:10Z",
   "files": [
    "careerSavegame",
@@ -50,8 +56,17 @@
   ],
   "changedFiles": [
    "careerSavegame.xml",
+   "economy.xml",
    "environment.xml",
+   "farms.xml",
+   "handTools.xml",
+   "items.xml",
+   "missions.xml",
+   "placeables.xml",
+   "players.xml",
    "precisionFarming.xml",
+   "sales.xml",
+   "vehicles.xml",
    "gameStats.xml"
   ]
  },
@@ -88,9 +103,9 @@
   "helpersActive": 1,
   "placeables": 146,
   "animals": 0,
-  "openContracts": 12,
+  "openContracts": 9,
   "bales": 11,
-  "usedForSale": 17,
+  "usedForSale": 2,
   "collectibles": "8/50",
   "mods": 69,
   "precisionFarming": true
@@ -99,21 +114,21 @@
   "savegameName": "Keep Rolling rollin rollin",
   "mapTitle": "The Rural Farmlands Of Ohio",
   "mapId": "FS25_The_Rural_Farmlands_Of_Ohio.mountain",
-  "saveDate": "2026-11-03",
+  "saveDate": "2026-11-04",
   "creationDate": "2026-08-30",
   "economicDifficulty": "NORMAL",
   "timeScale": 1.0,
   "autoSaveInterval": 15.0,
-  "money": 2191641587,
-  "playTimeHours": 1485.8,
-  "slotUsage": 2176,
+  "money": 2191715264,
+  "playTimeHours": 1488.5,
+  "slotUsage": 2180,
   "settings": {
    "savegameName": "Keep Rolling rollin rollin",
    "creationDate": "2026-08-30",
    "mapId": "FS25_The_Rural_Farmlands_Of_Ohio.mountain",
    "mapTitle": "The Rural Farmlands Of Ohio",
-   "saveDateFormatted": "2026-11-03",
-   "saveDate": "2026-11-03",
+   "saveDateFormatted": "2026-11-04",
+   "saveDate": "2026-11-04",
    "initialMoney": 1000000,
    "initialLoan": 0,
    "economicDifficulty": "NORMAL",
@@ -169,18 +184,11 @@
   "month": "September",
   "season": "Autumn",
   "year": 5,
-  "time": "07:48",
-  "minutesSinceRain": 380,
+  "time": "10:32",
+  "minutesSinceRain": 544,
   "groundWetness": 0.0,
   "snowHeight": 0.0,
   "forecast": [
-   {
-    "type": "CLOUDY",
-    "season": "AUTUMN",
-    "startDay": 82,
-    "startTime": "01:00",
-    "durationH": 7.0
-   },
    {
     "type": "SUN",
     "season": "AUTUMN",
@@ -341,6 +349,13 @@
     "startDay": 88,
     "startTime": "13:00",
     "durationH": 4.0
+   },
+   {
+    "type": "SUN",
+    "season": "WINTER",
+    "startDay": 88,
+    "startTime": "17:00",
+    "durationH": 6.0
    }
   ]
  },
@@ -350,10 +365,18 @@
   "version": "1.25.1.0",
   "mapName": "The Rural Farmlands Of Ohio",
   "mapSize": 2048,
-  "time": "07:51",
+  "time": "10:32",
   "capacity": 6,
-  "numUsed": 0,
-  "players": [],
+  "numUsed": 1,
+  "players": [
+   {
+    "name": "wildhorse_spirit",
+    "isAdmin": false,
+    "uptimeMin": 14,
+    "x": null,
+    "z": null
+   }
+  ],
   "mods": [
    {
     "name": "FS25_precisionFarming",
@@ -461,7 +484,7 @@
     "name": "FS25_colossusPack",
     "title": "Lizard Colossus Pack",
     "author": "ChrisS and RileyS",
-    "version": "2.0.0.0"
+    "version": "2.1.0.0"
    },
    {
     "name": "FS25_Deck",
@@ -629,7 +652,7 @@
     "name": "FS25_palletSilo",
     "title": "Pallet Silo With Autoload Trailers",
     "author": "ChrisS and RileyS",
-    "version": "1.2.0.0"
+    "version": "1.3.0.0"
    },
    {
     "name": "FS25_PlaceableGasStationPump",
@@ -749,7 +772,7 @@
     "name": "FS25_WindTurbinePackage",
     "title": "Wind Turbine Package",
     "author": "Razak",
-    "version": "1.2.0.0"
+    "version": "1.3.0.0"
    },
    {
     "name": "FS25_Wood_autoload",
@@ -831,10 +854,6 @@
    },
    {
     "name": "FS25_LizardComboTrailer",
-    "isDlc": false
-   },
-   {
-    "name": "FS25_ML_StLawrence",
     "isDlc": false
    },
    {
@@ -1092,8 +1111,8 @@
    "name": "Invisible Roller",
    "category": "ROLLERS",
    "type": "roller",
-   "x": 384.790649,
-   "z": 673.612671,
+   "x": 384.79129,
+   "z": 673.614624,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1119,8 +1138,8 @@
    "name": "Seeds",
    "category": "BIGBAGPALLETS",
    "type": "pallet",
-   "x": 572.831177,
-   "z": 649.534851,
+   "x": 572.831116,
+   "z": 649.534729,
    "fills": [
     {
      "type": "SEEDS",
@@ -1135,8 +1154,8 @@
    "name": "Invisible Roller",
    "category": "ROLLERS",
    "type": "roller",
-   "x": 731.38269,
-   "z": -158.900772,
+   "x": 731.381958,
+   "z": -158.89975,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1146,8 +1165,8 @@
    "name": "Seeds",
    "category": "BIGBAGPALLETS",
    "type": "pallet",
-   "x": 572.832031,
-   "z": 657.539917,
+   "x": 572.83197,
+   "z": 657.540161,
    "fills": [
     {
      "type": "SEEDS",
@@ -1162,8 +1181,8 @@
    "name": "Invisible Roller",
    "category": "ROLLERS",
    "type": "roller",
-   "x": -116.81929,
-   "z": -625.654053,
+   "x": -116.818405,
+   "z": -625.65448,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1174,7 +1193,7 @@
    "category": "CARS",
    "type": "woodTruck",
    "x": 535.535645,
-   "z": 682.571045,
+   "z": 682.570984,
    "fills": [
     {
      "type": "DIESEL",
@@ -1209,7 +1228,7 @@
    "name": "Colossus Ultimate Pro Bale",
    "category": "BALERSSQUARE",
    "type": "FS25_colossusPack.balerAI",
-   "x": 517.147888,
+   "x": 517.148071,
    "z": 926.765198,
    "fills": [
     {
@@ -1229,8 +1248,8 @@
    "name": "Colossus FLM 726",
    "category": "FERTILIZERSPREADERS",
    "type": "spreader",
-   "x": 507.462952,
-   "z": 602.23822,
+   "x": 507.459351,
+   "z": 602.242004,
    "fills": [
     {
      "type": "LIME",
@@ -1246,7 +1265,7 @@
    "category": "FERTILIZERSPREADERS",
    "type": "spreader",
    "x": 744.166931,
-   "z": 133.076035,
+   "z": 133.076111,
    "fills": [
     {
      "type": "LIME",
@@ -1261,8 +1280,8 @@
    "name": "Colossus FLM 726",
    "category": "FERTILIZERSPREADERS",
    "type": "spreader",
-   "x": 15.823771,
-   "z": -606.543579,
+   "x": 15.823265,
+   "z": -606.545227,
    "fills": [
     {
      "type": "LIME",
@@ -1277,8 +1296,8 @@
    "name": "Colossus FLM 726",
    "category": "FERTILIZERSPREADERS",
    "type": "spreader",
-   "x": 469.366974,
-   "z": 655.614746,
+   "x": 469.366913,
+   "z": 655.614868,
    "fills": [
     {
      "type": "FERTILIZER",
@@ -1293,8 +1312,8 @@
    "name": "Colossus FLM 726",
    "category": "FERTILIZERSPREADERS",
    "type": "spreader",
-   "x": -191.835068,
-   "z": -705.145935,
+   "x": -191.838287,
+   "z": -705.1474,
    "fills": [
     {
      "type": "FERTILIZER",
@@ -1309,8 +1328,8 @@
    "name": "Titan Header",
    "category": "CUTTERS",
    "type": "cutter",
-   "x": 503.337158,
-   "z": 919.557007,
+   "x": 503.318573,
+   "z": 919.561157,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1320,8 +1339,8 @@
    "name": "Titan Header",
    "category": "CUTTERS",
    "type": "cutter",
-   "x": 739.024048,
-   "z": 475.524567,
+   "x": 739.058167,
+   "z": 475.606323,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1331,8 +1350,8 @@
    "name": "6R Series (230-250)",
    "category": "TRACTORSM",
    "type": "tractor",
-   "x": -469.067932,
-   "z": -703.111877,
+   "x": -469.065918,
+   "z": -703.113037,
    "fills": [
     {
      "type": "DIESEL",
@@ -1348,14 +1367,15 @@
     }
    ],
    "isAIActive": false,
-   "controller": null
+   "controller": null,
+   "savedId": "vehicle86a8443b5763b0694f26e8068696383c"
   },
   {
    "name": "Roadrunner+",
    "category": "TRUCKS",
    "type": "FS25_RoadrunnerPlus.roadrunnerTruck",
-   "x": 515.409973,
-   "z": 596.884216,
+   "x": 515.408936,
+   "z": 596.885559,
    "fills": [
     {
      "type": "DIESEL",
@@ -1374,7 +1394,7 @@
    "name": "Roadrunner+",
    "category": "TRUCKS",
    "type": "FS25_RoadrunnerPlus.roadrunnerTruck",
-   "x": 493.4841,
+   "x": 493.483948,
    "z": 842.180908,
    "fills": [
     {
@@ -1395,7 +1415,7 @@
    "category": "TRUCKS",
    "type": "FS25_RoadrunnerPlus.roadrunnerTruck",
    "x": 497.500885,
-   "z": 842.007385,
+   "z": 842.007202,
    "fills": [
     {
      "type": "DIESEL",
@@ -1414,8 +1434,8 @@
    "name": "53' Dropdeck Trailer Autoload Bales",
    "category": "TRAILERS",
    "type": "trailer",
-   "x": 775.751892,
-   "z": 453.169006,
+   "x": 775.752014,
+   "z": 453.168945,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1425,8 +1445,8 @@
    "name": "53' Dropdeck Trailer Autoload Bales",
    "category": "TRAILERS",
    "type": "FS25_DropdeckTrailer53Ft_Auto.manureBarrelBelts",
-   "x": 721.147644,
-   "z": 570.5849,
+   "x": 721.149658,
+   "z": 570.570557,
    "fills": [
     {
      "type": "DIGESTATE",
@@ -1441,12 +1461,12 @@
    "name": "Steiger Series",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": 902.189209,
-   "z": 557.027588,
+   "x": 842.808411,
+   "z": 567.033447,
    "fills": [
     {
      "type": "DIESEL",
-     "level": 1928.0
+     "level": 1927.0
     },
     {
      "type": "DEF",
@@ -1454,7 +1474,7 @@
     },
     {
      "type": "AIR",
-     "level": 4000.0
+     "level": 3753.5
     }
    ],
    "isAIActive": false,
@@ -1465,7 +1485,7 @@
    "name": "Steiger Series",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": 517.631653,
+   "x": 517.631592,
    "z": 837.61969,
    "fills": [
     {
@@ -1489,8 +1509,8 @@
    "name": "Steiger Series",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": 512.823486,
-   "z": 821.421631,
+   "x": 512.823425,
+   "z": 821.42157,
    "fills": [
     {
      "type": "DIESEL",
@@ -1524,8 +1544,8 @@
    "name": "Magnum Series",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": -76.801628,
-   "z": 710.396423,
+   "x": -76.800308,
+   "z": 710.397217,
    "fills": [
     {
      "type": "DIESEL",
@@ -1541,14 +1561,15 @@
     }
    ],
    "isAIActive": false,
-   "controller": null
+   "controller": null,
+   "savedId": "vehicle2fb474f3f7a34e648287e9bff2369fc9"
   },
   {
    "name": "Magnum Series",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": 384.784973,
-   "z": 669.428833,
+   "x": 384.782745,
+   "z": 669.429443,
    "fills": [
     {
      "type": "DIESEL",
@@ -1571,8 +1592,8 @@
    "name": "Case IH Magnum 340 - 400 Series Special Edition FL",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": 729.380859,
-   "z": 143.355362,
+   "x": 729.380981,
+   "z": 143.354248,
    "fills": [
     {
      "type": "DIESEL",
@@ -1592,15 +1613,15 @@
     }
    ],
    "isAIActive": false,
-   "controller": null,
+   "controller": "wildhorse_spirit",
    "savedId": "vehicle44d163c7ede2b8de8e776bcfde327dca"
   },
   {
    "name": "Tree-B-Gone",
    "category": "FORESTRYMISC",
    "type": "FS25_TreeBGone.treeBGone",
-   "x": 448.826019,
-   "z": 685.706055,
+   "x": 448.826141,
+   "z": 685.705994,
    "fills": [
     {
      "type": "WOODCHIPS",
@@ -1631,8 +1652,8 @@
    "name": "1775NT Multi-planter",
    "category": "PLANTERS",
    "type": "sowingMachine",
-   "x": -469.037628,
-   "z": -695.546326,
+   "x": -469.034637,
+   "z": -695.543823,
    "fills": [
     {
      "type": "SEEDS",
@@ -1640,14 +1661,15 @@
     }
    ],
    "isAIActive": false,
-   "controller": null
+   "controller": null,
+   "savedId": "vehicle24e455f91b2688636b1a6c336410fd07"
   },
   {
    "name": "1775NT Multi-planter",
    "category": "PLANTERS",
    "type": "sowingMachine",
-   "x": -76.394844,
-   "z": 702.164124,
+   "x": -76.397202,
+   "z": 702.163269,
    "fills": [
     {
      "type": "SEEDS",
@@ -1655,7 +1677,8 @@
     }
    ],
    "isAIActive": false,
-   "controller": null
+   "controller": null,
+   "savedId": "vehicle12e6719009530a3519a8a40ec1c9ade3"
   },
   {
    "name": "RTV-XG850 SIDEKICK",
@@ -1677,8 +1700,8 @@
    "name": "8R Series",
    "category": "TRACTORSL",
    "type": "tractor",
-   "x": 15.803861,
-   "z": -613.340698,
+   "x": 15.803072,
+   "z": -613.340759,
    "fills": [
     {
      "type": "DIESEL",
@@ -1701,8 +1724,8 @@
    "name": "Vegetable Header",
    "category": "VEGETABLEHARVESTERS",
    "type": "cutter",
-   "x": 481.997192,
-   "z": 934.054565,
+   "x": 481.997223,
+   "z": 934.05481,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1712,8 +1735,8 @@
    "name": "Colossus 8000 Root Harvester",
    "category": "BEETHARVESTERS",
    "type": "combineDrivable",
-   "x": 481.099976,
-   "z": 925.878845,
+   "x": 481.100006,
+   "z": 925.879028,
    "fills": [
     {
      "type": "DIESEL",
@@ -1752,8 +1775,8 @@
    "name": "Colossus Quick Mow",
    "category": "MOWERS",
    "type": "mower",
-   "x": 448.964966,
-   "z": 681.460876,
+   "x": 448.966034,
+   "z": 681.461121,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1763,8 +1786,8 @@
    "name": "Colossus Quick Mow",
    "category": "MOWERS",
    "type": "mower",
-   "x": 757.687683,
-   "z": 251.730362,
+   "x": 757.689087,
+   "z": 251.725372,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1774,8 +1797,8 @@
    "name": "Colossus 73DD3-R",
    "category": "TEDDERS",
    "type": "tedder",
-   "x": 520.532104,
-   "z": 921.953552,
+   "x": 520.532471,
+   "z": 921.953735,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1785,7 +1808,7 @@
    "name": "TOP 1403 C",
    "category": "WINDROWERS",
    "type": "windrower",
-   "x": 524.276123,
+   "x": 524.275818,
    "z": 927.859131,
    "fills": [],
    "isAIActive": false,
@@ -1796,8 +1819,8 @@
    "name": "Citan 15001-C",
    "category": "SEEDERS",
    "type": "fertilizingSowingMachine",
-   "x": 899.266052,
-   "z": 574.24115,
+   "x": 938.95874,
+   "z": 560.50354,
    "fills": [
     {
      "type": "SEEDS",
@@ -1809,14 +1832,15 @@
     }
    ],
    "isAIActive": false,
-   "controller": null
+   "controller": null,
+   "savedId": "vehicle228d70bdda64e44e5bd46fe5792fea8c"
   },
   {
    "name": "4905 Multi-Fruit Planter",
    "category": "PLANTERS",
    "type": "fertilizingSowingMachine",
-   "x": 456.721588,
-   "z": -281.118835,
+   "x": 456.714813,
+   "z": -281.13205,
    "fills": [
     {
      "type": "SEEDS",
@@ -1828,14 +1852,15 @@
     }
    ],
    "isAIActive": false,
-   "controller": null
+   "controller": null,
+   "savedId": "vehiclef4183b7da2810433de8b22b6e06d2e2c"
   },
   {
    "name": "40' Flatbed Autoloading Bale Trailer",
    "category": "TRAILERS",
    "type": "trailer",
-   "x": 493.157349,
-   "z": 831.807556,
+   "x": 493.157501,
+   "z": 831.805969,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1846,7 +1871,7 @@
    "category": "TRAILERS",
    "type": "FS25_LizardComboTrailer.baleAutoLoad",
    "x": 497.815033,
-   "z": 829.903259,
+   "z": 829.901611,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1867,8 +1892,8 @@
    "name": "Colossus Liqui-Trans 5508",
    "category": "BARRELS",
    "type": "waterTrailer",
-   "x": 489.957245,
-   "z": 834.420715,
+   "x": 489.957001,
+   "z": 834.421631,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -1894,8 +1919,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 106.571007,
-   "z": -397.56897,
+   "x": 106.571045,
+   "z": -397.569,
    "fills": [
     {
      "type": "FLOUR",
@@ -1910,8 +1935,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 107.412018,
-   "z": -396.449005,
+   "x": 107.412003,
+   "z": -396.448975,
    "fills": [
     {
      "type": "FLOUR",
@@ -1926,8 +1951,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 107.407951,
-   "z": -396.448975,
+   "x": 107.407898,
+   "z": -396.449127,
    "fills": [
     {
      "type": "FLOUR",
@@ -1942,8 +1967,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 108.252014,
-   "z": -395.324005,
+   "x": 108.252075,
+   "z": -395.323883,
    "fills": [
     {
      "type": "FLOUR",
@@ -1958,8 +1983,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 108.251114,
-   "z": -395.321228,
+   "x": 108.250977,
+   "z": -395.320435,
    "fills": [
     {
      "type": "FLOUR",
@@ -1974,7 +1999,7 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 109.092018,
+   "x": 109.09201,
    "z": -394.208008,
    "fills": [
     {
@@ -1990,8 +2015,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 109.090179,
-   "z": -394.211945,
+   "x": 109.089859,
+   "z": -394.212006,
    "fills": [
     {
      "type": "FLOUR",
@@ -2006,7 +2031,7 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 109.931999,
+   "x": 109.931992,
    "z": -393.091003,
    "fills": [
     {
@@ -2022,8 +2047,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 109.931976,
-   "z": -393.089081,
+   "x": 109.932076,
+   "z": -393.088959,
    "fills": [
     {
      "type": "FLOUR",
@@ -2038,8 +2063,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 110.772949,
-   "z": -391.974304,
+   "x": 110.773048,
+   "z": -391.974152,
    "fills": [
     {
      "type": "FLOUR",
@@ -2054,8 +2079,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 110.772568,
-   "z": -391.970062,
+   "x": 110.772156,
+   "z": -391.967926,
    "fills": [
     {
      "type": "FLOUR",
@@ -2071,7 +2096,7 @@
    "category": "PALLETS",
    "type": "pallet",
    "x": 111.612984,
-   "z": -390.850983,
+   "z": -390.851013,
    "fills": [
     {
      "type": "FLOUR",
@@ -2086,8 +2111,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 111.613998,
-   "z": -390.849976,
+   "x": 111.614059,
+   "z": -390.850006,
    "fills": [
     {
      "type": "FLOUR",
@@ -2102,8 +2127,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 112.452965,
-   "z": -389.72998,
+   "x": 112.452774,
+   "z": -389.729797,
    "fills": [
     {
      "type": "FLOUR",
@@ -2118,8 +2143,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 112.454102,
-   "z": -389.733185,
+   "x": 112.453796,
+   "z": -389.733307,
    "fills": [
     {
      "type": "FLOUR",
@@ -2135,7 +2160,7 @@
    "category": "PALLETS",
    "type": "pallet",
    "x": 113.295021,
-   "z": -388.610992,
+   "z": -388.611023,
    "fills": [
     {
      "type": "FLOUR",
@@ -2150,8 +2175,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 113.295982,
-   "z": -388.605957,
+   "x": 113.296082,
+   "z": -388.605682,
    "fills": [
     {
      "type": "FLOUR",
@@ -2166,7 +2191,7 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 114.134018,
+   "x": 114.134003,
    "z": -387.492035,
    "fills": [
     {
@@ -2182,8 +2207,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 114.131889,
-   "z": -387.491943,
+   "x": 114.131432,
+   "z": -387.492432,
    "fills": [
     {
      "type": "FLOUR",
@@ -2198,8 +2223,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 104.970039,
-   "z": -396.367859,
+   "x": 104.969978,
+   "z": -396.368164,
    "fills": [
     {
      "type": "FLOUR",
@@ -2214,8 +2239,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 104.971123,
-   "z": -396.369019,
+   "x": 104.970871,
+   "z": -396.36911,
    "fills": [
     {
      "type": "FLOUR",
@@ -2230,8 +2255,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 105.810944,
-   "z": -395.254395,
+   "x": 105.810966,
+   "z": -395.254211,
    "fills": [
     {
      "type": "FLOUR",
@@ -2246,8 +2271,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 105.811768,
-   "z": -395.256195,
+   "x": 105.812057,
+   "z": -395.256287,
    "fills": [
     {
      "type": "FLOUR",
@@ -2262,7 +2287,7 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 106.650955,
+   "x": 106.65094,
    "z": -394.127991,
    "fills": [
     {
@@ -2278,8 +2303,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 106.652863,
-   "z": -394.128784,
+   "x": 106.652931,
+   "z": -394.128876,
    "fills": [
     {
      "type": "FLOUR",
@@ -2294,8 +2319,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 107.491936,
-   "z": -393.007996,
+   "x": 107.492004,
+   "z": -393.007965,
    "fills": [
     {
      "type": "FLOUR",
@@ -2310,8 +2335,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 107.492065,
-   "z": -393.01001,
+   "x": 107.492012,
+   "z": -393.010132,
    "fills": [
     {
      "type": "FLOUR",
@@ -2326,8 +2351,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 108.333031,
-   "z": -391.887787,
+   "x": 108.333069,
+   "z": -391.887848,
    "fills": [
     {
      "type": "FLOUR",
@@ -2342,8 +2367,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 108.334984,
-   "z": -391.887085,
+   "x": 108.335091,
+   "z": -391.886444,
    "fills": [
     {
      "type": "FLOUR",
@@ -2358,8 +2383,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 109.173088,
-   "z": -390.769897,
+   "x": 109.172989,
+   "z": -390.770111,
    "fills": [
     {
      "type": "FLOUR",
@@ -2374,8 +2399,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 109.1717,
-   "z": -390.772003,
+   "x": 109.171913,
+   "z": -390.772217,
    "fills": [
     {
      "type": "FLOUR",
@@ -2390,8 +2415,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 110.01297,
-   "z": -389.644623,
+   "x": 110.013023,
+   "z": -389.644897,
    "fills": [
     {
      "type": "FLOUR",
@@ -2406,8 +2431,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 110.013672,
-   "z": -389.650696,
+   "x": 110.013763,
+   "z": -389.650177,
    "fills": [
     {
      "type": "FLOUR",
@@ -2422,8 +2447,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 110.854019,
-   "z": -388.530151,
+   "x": 110.853996,
+   "z": -388.529999,
    "fills": [
     {
      "type": "FLOUR",
@@ -2438,8 +2463,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 110.857155,
-   "z": -388.531189,
+   "x": 110.856873,
+   "z": -388.530731,
    "fills": [
     {
      "type": "FLOUR",
@@ -2454,8 +2479,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 111.696991,
-   "z": -387.408875,
+   "x": 111.69706,
+   "z": -387.409088,
    "fills": [
     {
      "type": "FLOUR",
@@ -2470,8 +2495,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 111.695801,
-   "z": -387.414429,
+   "x": 111.695259,
+   "z": -387.414398,
    "fills": [
     {
      "type": "FLOUR",
@@ -2486,7 +2511,7 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 112.534966,
+   "x": 112.535034,
    "z": -386.292084,
    "fills": [
     {
@@ -2502,8 +2527,8 @@
    "name": "Flour Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 112.535904,
-   "z": -386.295135,
+   "x": 112.53614,
+   "z": -386.295074,
    "fills": [
     {
      "type": "FLOUR",
@@ -2518,8 +2543,8 @@
    "name": "Colossus 9000 Harvester",
    "category": "HARVESTERS",
    "type": "combineDrivable",
-   "x": 752.645203,
-   "z": 472.562988,
+   "x": 752.642944,
+   "z": 472.563812,
    "fills": [
     {
      "type": "DIESEL",
@@ -2538,7 +2563,7 @@
    "name": "Colossus 9000 Harvester",
    "category": "HARVESTERS",
    "type": "combineDrivable",
-   "x": 497.541992,
+   "x": 497.542023,
    "z": 933.727051,
    "fills": [
     {
@@ -2558,8 +2583,8 @@
    "name": "Colossus 9000 Harvester",
    "category": "HARVESTERS",
    "type": "combineDrivable",
-   "x": 504.621033,
-   "z": 933.605164,
+   "x": 504.621063,
+   "z": 933.605225,
    "fills": [
     {
      "type": "DIESEL",
@@ -2578,8 +2603,8 @@
    "name": "Series 8 TTV",
    "category": "TRACTORSM",
    "type": "tractor",
-   "x": 900.186646,
-   "z": 565.645569,
+   "x": 931.266296,
+   "z": 565.899902,
    "fills": [
     {
      "type": "DIESEL",
@@ -2601,8 +2626,8 @@
    "name": "Series 8 TTV",
    "category": "TRACTORSM",
    "type": "tractor",
-   "x": 449.744843,
-   "z": -277.247681,
+   "x": 449.748016,
+   "z": -277.249847,
    "fills": [
     {
      "type": "DIESEL",
@@ -2618,7 +2643,8 @@
     }
    ],
    "isAIActive": false,
-   "controller": null
+   "controller": null,
+   "savedId": "vehicleaf43c475eb24a627dd360815b3270414"
   },
   {
    "name": "Profi Liner",
@@ -2635,8 +2661,8 @@
    "name": "Titan Super Collect 533",
    "category": "LOADERWAGONS",
    "type": "forageWagon",
-   "x": 752.225769,
-   "z": 236.638046,
+   "x": 752.226257,
+   "z": 236.637589,
    "fills": [
     {
      "type": "GRASS_WINDROW",
@@ -2707,7 +2733,7 @@
    "name": "Tomatoes Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 645.848877,
+   "x": 645.848999,
    "z": 860.432068,
    "fills": [
     {
@@ -2739,7 +2765,7 @@
    "name": "Napa Cabbage Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 643.048889,
+   "x": 643.049011,
    "z": 860.482971,
    "fills": [
     {
@@ -2755,7 +2781,7 @@
    "name": "Spring Onion Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 641.648865,
+   "x": 641.648987,
    "z": 860.508057,
    "fills": [
     {
@@ -2771,7 +2797,7 @@
    "name": "TRIUS",
    "category": "MISC",
    "type": "trailer",
-   "x": 450.679016,
+   "x": 450.678955,
    "z": 671.955994,
    "fills": [],
    "isAIActive": false,
@@ -2782,8 +2808,8 @@
    "name": "ARION 570-530",
    "category": "TRACTORSS",
    "type": "tractor",
-   "x": 734.53833,
-   "z": -159.943802,
+   "x": 734.539734,
+   "z": -159.944107,
    "fills": [
     {
      "type": "DIESEL",
@@ -2822,8 +2848,8 @@
    "name": "N60-45",
    "category": "CUTTERTRAILERS",
    "type": "dynamicMountAttacherTrailer",
-   "x": 497.212372,
-   "z": 920.867615,
+   "x": 497.232086,
+   "z": 920.867126,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -2833,8 +2859,8 @@
    "name": "Titan Corn Header",
    "category": "CORNHEADERS",
    "type": "cutter",
-   "x": 497.152039,
-   "z": 918.838989,
+   "x": 497.177948,
+   "z": 918.838196,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -2844,8 +2870,8 @@
    "name": "Titan Corn Header",
    "category": "CORNHEADERS",
    "type": "cutter",
-   "x": 813.347534,
-   "z": 466.962982,
+   "x": 813.348267,
+   "z": 466.963043,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -2855,7 +2881,7 @@
    "name": "Puma Series",
    "category": "TRACTORSM",
    "type": "tractor",
-   "x": 469.176178,
+   "x": 469.176117,
    "z": 649.683044,
    "fills": [
     {
@@ -2879,8 +2905,8 @@
    "name": "Puma Series",
    "category": "TRACTORSM",
    "type": "tractor",
-   "x": -119.413109,
-   "z": -628.084595,
+   "x": -119.412926,
+   "z": -628.085266,
    "fills": [
     {
      "type": "DIESEL",
@@ -2903,8 +2929,8 @@
    "name": "Cake Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 315.800903,
-   "z": 475.987091,
+   "x": 315.800934,
+   "z": 475.987,
    "fills": [
     {
      "type": "CAKE",
@@ -2919,8 +2945,8 @@
    "name": "Cake Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 315.452057,
-   "z": 477.339386,
+   "x": 315.45224,
+   "z": 477.338715,
    "fills": [
     {
      "type": "CAKE",
@@ -2935,8 +2961,8 @@
    "name": "Cake Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 315.102997,
-   "z": 478.697968,
+   "x": 315.103027,
+   "z": 478.697998,
    "fills": [
     {
      "type": "CAKE",
@@ -2951,7 +2977,7 @@
    "name": "Cake Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 314.754028,
+   "x": 314.754059,
    "z": 480.053986,
    "fills": [
     {
@@ -2967,8 +2993,8 @@
    "name": "Cake Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 314.403992,
-   "z": 481.409973,
+   "x": 314.404053,
+   "z": 481.409912,
    "fills": [
     {
      "type": "CAKE",
@@ -2983,8 +3009,8 @@
    "name": "Cake Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 317.254028,
-   "z": 476.359924,
+   "x": 317.254089,
+   "z": 476.359833,
    "fills": [
     {
      "type": "CAKE",
@@ -2999,8 +3025,8 @@
    "name": "Cake Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 316.90274,
-   "z": 477.717377,
+   "x": 316.902405,
+   "z": 477.717438,
    "fills": [
     {
      "type": "CAKE",
@@ -3031,8 +3057,8 @@
    "name": "Cake Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 316.204376,
-   "z": 480.425201,
+   "x": 316.203522,
+   "z": 480.424347,
    "fills": [
     {
      "type": "CAKE",
@@ -3047,8 +3073,8 @@
    "name": "Cake Pallet",
    "category": "PALLETS",
    "type": "pallet",
-   "x": 315.856903,
-   "z": 481.783875,
+   "x": 315.856781,
+   "z": 481.783752,
    "fills": [
     {
      "type": "CAKE",
@@ -3063,8 +3089,8 @@
    "name": "Puma Series",
    "category": "TRACTORSM",
    "type": "tractor",
-   "x": -186.116547,
-   "z": -703.560669,
+   "x": -186.117111,
+   "z": -703.560486,
    "fills": [
     {
      "type": "DIESEL",
@@ -3087,8 +3113,8 @@
    "name": "ST820 MultiFunction",
    "category": "CULTIVATORS",
    "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
-   "x": 903.031982,
-   "z": 547.776611,
+   "x": 851.919434,
+   "z": 565.233643,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -3099,7 +3125,7 @@
    "category": "CULTIVATORS",
    "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
    "x": 512.556946,
-   "z": 812.158752,
+   "z": 812.158569,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -3110,7 +3136,7 @@
    "category": "CULTIVATORS",
    "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
    "x": 516.706665,
-   "z": 828.370056,
+   "z": 828.370117,
    "fills": [],
    "isAIActive": false,
    "controller": null,
@@ -3207,14 +3233,28 @@
    {
     "name": "6R Series (230-250)",
     "category": "TRACTORSM",
-    "farmId": null,
+    "farmId": 2,
     "x": -469.1,
     "z": -703.1,
     "isAIActive": false,
     "controller": null,
-    "fuel": null,
+    "fuel": {
+     "type": "DIESEL",
+     "level": 433.0
+    },
     "fills": [],
-    "attached": [],
+    "attached": [
+     {
+      "name": "1775NT Multi-planter",
+      "category": "PLANTERS",
+      "fills": [
+       {
+        "type": "SEEDS",
+        "level": 16163.9
+       }
+      ]
+     }
+    ],
     "attachedTo": null,
     "nearField": 18
    },
@@ -3329,13 +3369,13 @@
     "name": "Steiger Series",
     "category": "TRACTORSL",
     "farmId": 1,
-    "x": 902.2,
-    "z": 557.0,
+    "x": 842.8,
+    "z": 567.0,
     "isAIActive": false,
     "controller": null,
     "fuel": {
      "type": "DIESEL",
-     "level": 1928.0
+     "level": 1927.0
     },
     "fills": [],
     "attached": [
@@ -3397,14 +3437,28 @@
    {
     "name": "Magnum Series",
     "category": "TRACTORSL",
-    "farmId": null,
+    "farmId": 2,
     "x": -76.8,
     "z": 710.4,
     "isAIActive": false,
     "controller": null,
-    "fuel": null,
+    "fuel": {
+     "type": "DIESEL",
+     "level": 615.0
+    },
     "fills": [],
-    "attached": [],
+    "attached": [
+     {
+      "name": "1775NT Multi-planter",
+      "category": "PLANTERS",
+      "fills": [
+       {
+        "type": "SEEDS",
+        "level": 25000.0
+       }
+      ]
+     }
+    ],
     "attachedTo": null,
     "nearField": 30
    },
@@ -3438,7 +3492,7 @@
     "x": 729.4,
     "z": 143.4,
     "isAIActive": false,
-    "controller": null,
+    "controller": "wildhorse_spirit",
     "fuel": {
      "type": "DIESEL",
      "level": 535.9
@@ -3490,44 +3544,6 @@
     "attached": [],
     "attachedTo": null,
     "nearField": 42
-   },
-   {
-    "name": "1775NT Multi-planter",
-    "category": "PLANTERS",
-    "farmId": null,
-    "x": -469.0,
-    "z": -695.5,
-    "isAIActive": false,
-    "controller": null,
-    "fuel": null,
-    "fills": [
-     {
-      "type": "SEEDS",
-      "level": 16163.9
-     }
-    ],
-    "attached": [],
-    "attachedTo": null,
-    "nearField": 18
-   },
-   {
-    "name": "1775NT Multi-planter",
-    "category": "PLANTERS",
-    "farmId": null,
-    "x": -76.4,
-    "z": 702.2,
-    "isAIActive": false,
-    "controller": null,
-    "fuel": null,
-    "fills": [
-     {
-      "type": "SEEDS",
-      "level": 25000.0
-     }
-    ],
-    "attached": [],
-    "attachedTo": null,
-    "nearField": 30
    },
    {
     "name": "RTV-XG850 SIDEKICK",
@@ -3679,9 +3695,9 @@
    {
     "name": "Citan 15001-C",
     "category": "SEEDERS",
-    "farmId": null,
-    "x": 899.3,
-    "z": 574.2,
+    "farmId": 1,
+    "x": 939.0,
+    "z": 560.5,
     "isAIActive": false,
     "controller": null,
     "fuel": null,
@@ -3696,31 +3712,8 @@
      }
     ],
     "attached": [],
-    "attachedTo": null,
+    "attachedTo": "Series 8",
     "nearField": 39
-   },
-   {
-    "name": "4905 Multi-Fruit Planter",
-    "category": "PLANTERS",
-    "farmId": null,
-    "x": 456.7,
-    "z": -281.1,
-    "isAIActive": false,
-    "controller": null,
-    "fuel": null,
-    "fills": [
-     {
-      "type": "SEEDS",
-      "level": 149989.2
-     },
-     {
-      "type": "LIQUIDFERTILIZER",
-      "level": 74923.9
-     }
-    ],
-    "attached": [],
-    "attachedTo": null,
-    "nearField": 44
    },
    {
     "name": "Titan Trailer",
@@ -3823,8 +3816,8 @@
     "name": "Series 8 TTV",
     "category": "TRACTORSM",
     "farmId": null,
-    "x": 900.2,
-    "z": 565.6,
+    "x": 931.3,
+    "z": 565.9,
     "isAIActive": true,
     "controller": null,
     "fuel": null,
@@ -3836,14 +3829,32 @@
    {
     "name": "Series 8 TTV",
     "category": "TRACTORSM",
-    "farmId": null,
+    "farmId": 1,
     "x": 449.7,
     "z": -277.2,
     "isAIActive": false,
     "controller": null,
-    "fuel": null,
+    "fuel": {
+     "type": "DIESEL",
+     "level": 495.0
+    },
     "fills": [],
-    "attached": [],
+    "attached": [
+     {
+      "name": "4905 Multi-Fruit Planter",
+      "category": "PLANTERS",
+      "fills": [
+       {
+        "type": "SEEDS",
+        "level": 149989.2
+       },
+       {
+        "type": "LIQUIDFERTILIZER",
+        "level": 74923.9
+       }
+      ]
+     }
+    ],
     "attachedTo": null,
     "nearField": 44
    },
@@ -4190,38 +4201,28 @@
     "count": 1,
     "level": 20000.0,
     "farmId": 1,
+    "x": 397.5,
+    "z": -498.3,
+    "nearField": 46
+   },
+   {
+    "name": "Bale",
+    "fillType": "COTTON",
+    "count": 1,
+    "level": 20000.0,
+    "farmId": 1,
+    "x": 896.5,
+    "z": -917.0,
+    "nearField": 45
+   },
+   {
+    "name": "Bale",
+    "fillType": "COTTON",
+    "count": 1,
+    "level": 20000.0,
+    "farmId": 1,
     "x": 611.6,
     "z": -736.4,
-    "nearField": 45
-   },
-   {
-    "name": "Bale",
-    "fillType": "COTTON",
-    "count": 1,
-    "level": 20000.0,
-    "farmId": 1,
-    "x": 724.3,
-    "z": -899.3,
-    "nearField": 45
-   },
-   {
-    "name": "Round bale",
-    "fillType": "STRAW",
-    "count": 2,
-    "level": 10000.0,
-    "farmId": 1,
-    "x": -0.2,
-    "z": 2.0,
-    "nearField": 13
-   },
-   {
-    "name": "Bale",
-    "fillType": "COTTON",
-    "count": 1,
-    "level": 20000.0,
-    "farmId": 1,
-    "x": 763.6,
-    "z": -683.8,
     "nearField": 45
    },
    {
@@ -4240,8 +4241,8 @@
     "count": 1,
     "level": 20000.0,
     "farmId": 1,
-    "x": 896.5,
-    "z": -917.0,
+    "x": 763.6,
+    "z": -683.8,
     "nearField": 45
    },
    {
@@ -4250,19 +4251,9 @@
     "count": 1,
     "level": 20000.0,
     "farmId": 1,
-    "x": 584.0,
-    "z": -543.7,
+    "x": 724.3,
+    "z": -899.3,
     "nearField": 45
-   },
-   {
-    "name": "Bale",
-    "fillType": "COTTON",
-    "count": 1,
-    "level": 20000.0,
-    "farmId": 1,
-    "x": 397.5,
-    "z": -498.3,
-    "nearField": 46
    },
    {
     "name": "Bale",
@@ -4283,16 +4274,43 @@
     "x": 704.3,
     "z": -549.0,
     "nearField": 45
+   },
+   {
+    "name": "Round bale",
+    "fillType": "STRAW",
+    "count": 2,
+    "level": 10000.0,
+    "farmId": 1,
+    "x": -0.2,
+    "z": 2.0,
+    "nearField": 13
+   },
+   {
+    "name": "Bale",
+    "fillType": "COTTON",
+    "count": 1,
+    "level": 20000.0,
+    "farmId": 1,
+    "x": 584.0,
+    "z": -543.7,
+    "nearField": 45
    }
   ]
  },
  "working": [
   {
+   "name": "Case IH Magnum 340 - 400 Series Special Edition FL",
+   "controller": "wildhorse_spirit",
+   "isAIActive": false,
+   "x": 729.380981,
+   "z": 143.354248
+  },
+  {
    "name": "Series 8 TTV",
    "controller": null,
    "isAIActive": true,
-   "x": 900.186646,
-   "z": 565.645569
+   "x": 931.266296,
+   "z": 565.899902
   }
  ],
  "stock": [
@@ -4352,7 +4370,7 @@
    "id": 1,
    "name": "My farm",
    "color": 1,
-   "money": 1249595648.0,
+   "money": 1249879936.0,
    "loan": 0.0,
    "players": [
     {
@@ -4368,22 +4386,22 @@
    ],
    "contractingFor": [],
    "stats": {
-    "traveledDistance": 202.449615,
-    "fuelUsage": 9128.289062,
-    "seedUsage": 4953.410645,
-    "sprayUsage": 401809.03125,
-    "workedHectares": 520.716492,
+    "traveledDistance": 202.509842,
+    "fuelUsage": 10029.185547,
+    "seedUsage": 5304.14502,
+    "sprayUsage": 401846.75,
+    "workedHectares": 526.69751,
     "cultivatedHectares": 315.371063,
-    "sownHectares": 51.421127,
-    "sprayedHectares": 128.51181,
+    "sownHectares": 57.402203,
+    "sprayedHectares": 128.570511,
     "threshedHectares": 38.535526,
     "plowedHectares": 320.510895,
     "harvestedGrapes": 0.0,
     "harvestedOlives": 0.0,
-    "workedTime": 564.290955,
+    "workedTime": 1900.515625,
     "cultivatedTime": 144.904099,
-    "sownTime": 127.987518,
-    "sprayedTime": 360.753632,
+    "sownTime": 162.598495,
+    "sprayedTime": 430.003937,
     "threshedTime": 40.543503,
     "plowedTime": 108.872925,
     "baleCount": 175,
@@ -4396,8 +4414,8 @@
     "breedWaterBuffaloCount": 0,
     "missionCount": 9,
     "revenue": 0.0,
-    "expenses": 148822.5625,
-    "playTime": 86821.90625,
+    "expenses": 150575.28125,
+    "playTime": 89311.046875,
     "plantedTreeCount": 0,
     "cutTreeCount": 40,
     "woodTonsSold": 0.0,
@@ -4408,7 +4426,7 @@
     "horseJumpCount": 0,
     "soldCottonBales": 0,
     "wrappedBales": 82,
-    "tractorDistance": 161.312592,
+    "tractorDistance": 161.372818,
     "carDistance": 0.0,
     "truckDistance": 41.137005,
     "horseDistance": 0.0
@@ -4416,8 +4434,91 @@
    "finances": [
     {
      "day": 0,
-     "income": 4339525,
-     "expenses": -2865744,
+     "income": 75556,
+     "expenses": -13576,
+     "items": [
+      {
+       "key": "propertyIncome",
+       "label": "Property income",
+       "value": 75556
+      },
+      {
+       "key": "wagePayment",
+       "label": "Helper wages",
+       "value": -13256
+      },
+      {
+       "key": "purchaseFuel",
+       "label": "Fuel",
+       "value": -309
+      },
+      {
+       "key": "purchaseFertilizer",
+       "label": "Fertilizer",
+       "value": -8
+      },
+      {
+       "key": "purchaseSeeds",
+       "label": "Seeds",
+       "value": -3
+      }
+     ]
+    },
+    {
+     "day": 1,
+     "income": 513025,
+     "expenses": -1843,
+     "items": [
+      {
+       "key": "propertyIncome",
+       "label": "Property income",
+       "value": 513025
+      },
+      {
+       "key": "propertyMaintenance",
+       "label": "Maintenance",
+       "value": -1843
+      }
+     ]
+    },
+    {
+     "day": 2,
+     "income": 514151,
+     "expenses": -1849,
+     "items": [
+      {
+       "key": "propertyIncome",
+       "label": "Property income",
+       "value": 514151
+      },
+      {
+       "key": "propertyMaintenance",
+       "label": "Maintenance",
+       "value": -1849
+      }
+     ]
+    },
+    {
+     "day": 3,
+     "income": 514151,
+     "expenses": -1855,
+     "items": [
+      {
+       "key": "propertyIncome",
+       "label": "Property income",
+       "value": 514151
+      },
+      {
+       "key": "propertyMaintenance",
+       "label": "Maintenance",
+       "value": -1855
+      }
+     ]
+    },
+    {
+     "day": 4,
+     "income": 4603832,
+     "expenses": -2907893,
      "items": [
       {
        "key": "newVehiclesCost",
@@ -4445,14 +4546,14 @@
        "value": -603288
       },
       {
+       "key": "propertyIncome",
+       "label": "Property income",
+       "value": 433372
+      },
+      {
        "key": "soldProducts",
        "label": "Products",
        "value": 273864
-      },
-      {
-       "key": "propertyIncome",
-       "label": "Property income",
-       "value": 169065
       },
       {
        "key": "harvestIncome",
@@ -4470,82 +4571,14 @@
        "value": -58840
       },
       {
-       "key": "purchaseFertilizer",
-       "label": "Fertilizer",
-       "value": -10914
-      },
-      {
        "key": "wagePayment",
        "label": "Helper wages",
-       "value": -8470
-      }
-     ]
-    },
-    {
-     "day": 1,
-     "income": 531122,
-     "expenses": -1838,
-     "items": [
-      {
-       "key": "propertyIncome",
-       "label": "Property income",
-       "value": 531122
+       "value": -48419
       },
       {
-       "key": "propertyMaintenance",
-       "label": "Maintenance",
-       "value": -1838
-      }
-     ]
-    },
-    {
-     "day": 2,
-     "income": 513025,
-     "expenses": -1843,
-     "items": [
-      {
-       "key": "propertyIncome",
-       "label": "Property income",
-       "value": 513025
-      },
-      {
-       "key": "propertyMaintenance",
-       "label": "Maintenance",
-       "value": -1843
-      }
-     ]
-    },
-    {
-     "day": 3,
-     "income": 514151,
-     "expenses": -1849,
-     "items": [
-      {
-       "key": "propertyIncome",
-       "label": "Property income",
-       "value": 514151
-      },
-      {
-       "key": "propertyMaintenance",
-       "label": "Maintenance",
-       "value": -1849
-      }
-     ]
-    },
-    {
-     "day": 4,
-     "income": 514151,
-     "expenses": -1855,
-     "items": [
-      {
-       "key": "propertyIncome",
-       "label": "Property income",
-       "value": 514151
-      },
-      {
-       "key": "propertyMaintenance",
-       "label": "Maintenance",
-       "value": -1855
+       "key": "purchaseFertilizer",
+       "label": "Fertilizer",
+       "value": -10951
       }
      ]
     }
@@ -4555,7 +4588,7 @@
    "id": 2,
    "name": "Dumbace",
    "color": 7,
-   "money": 941580544.0,
+   "money": 941835392.0,
    "loan": 0.0,
    "players": [
     {
@@ -4574,20 +4607,20 @@
    ],
    "stats": {
     "traveledDistance": 659.752625,
-    "fuelUsage": 10483.689453,
-    "seedUsage": 35652.78125,
+    "fuelUsage": 11224.899414,
+    "seedUsage": 37060.167969,
     "sprayUsage": 798813.3125,
-    "workedHectares": 1684.322388,
+    "workedHectares": 1704.804565,
     "cultivatedHectares": 431.002655,
-    "sownHectares": 290.901184,
+    "sownHectares": 311.383423,
     "sprayedHectares": 437.203918,
     "threshedHectares": 195.363358,
     "plowedHectares": 487.403259,
     "harvestedGrapes": 0.0,
     "harvestedOlives": 0.0,
-    "workedTime": 2906.165771,
+    "workedTime": 3112.269043,
     "cultivatedTime": 577.956604,
-    "sownTime": 641.169189,
+    "sownTime": 802.305847,
     "sprayedTime": 331.427063,
     "threshedTime": 251.126816,
     "plowedTime": 264.916595,
@@ -4601,8 +4634,8 @@
     "breedWaterBuffaloCount": 0,
     "missionCount": 6,
     "revenue": 0.0,
-    "expenses": 573476.5,
-    "playTime": 86821.882812,
+    "expenses": 576120.5,
+    "playTime": 89311.023438,
     "plantedTreeCount": 0,
     "cutTreeCount": 128,
     "woodTonsSold": 0.0,
@@ -4621,8 +4654,91 @@
    "finances": [
     {
      "day": 0,
-     "income": 2197869,
-     "expenses": -1352428,
+     "income": 161944,
+     "expenses": -283,
+     "items": [
+      {
+       "key": "propertyIncome",
+       "label": "Property income",
+       "value": 161944
+      },
+      {
+       "key": "productionCosts",
+       "label": "Production costs",
+       "value": -283
+      }
+     ]
+    },
+    {
+     "day": 1,
+     "income": 567161,
+     "expenses": -4076,
+     "items": [
+      {
+       "key": "propertyIncome",
+       "label": "Property income",
+       "value": 567161
+      },
+      {
+       "key": "propertyMaintenance",
+       "label": "Maintenance",
+       "value": -2812
+      },
+      {
+       "key": "productionCosts",
+       "label": "Production costs",
+       "value": -1264
+      }
+     ]
+    },
+    {
+     "day": 2,
+     "income": 553369,
+     "expenses": -4121,
+     "items": [
+      {
+       "key": "propertyIncome",
+       "label": "Property income",
+       "value": 553369
+      },
+      {
+       "key": "propertyMaintenance",
+       "label": "Maintenance",
+       "value": -2821
+      },
+      {
+       "key": "productionCosts",
+       "label": "Production costs",
+       "value": -1300
+      }
+     ]
+    },
+    {
+     "day": 3,
+     "income": 449795,
+     "expenses": -4131,
+     "items": [
+      {
+       "key": "propertyIncome",
+       "label": "Property income",
+       "value": 449795
+      },
+      {
+       "key": "propertyMaintenance",
+       "label": "Maintenance",
+       "value": -2831
+      },
+      {
+       "key": "productionCosts",
+       "label": "Production costs",
+       "value": -1300
+      }
+     ]
+    },
+    {
+     "day": 4,
+     "income": 2301687,
+     "expenses": -1363059,
      "items": [
       {
        "key": "harvestIncome",
@@ -4642,7 +4758,7 @@
       {
        "key": "propertyIncome",
        "label": "Property income",
-       "value": 245367
+       "value": 349185
       },
       {
        "key": "purchaseFertilizer",
@@ -4667,110 +4783,22 @@
       {
        "key": "wagePayment",
        "label": "Helper wages",
-       "value": -14888
+       "value": -19236
       },
       {
        "key": "purchaseSeeds",
        "label": "Seeds",
-       "value": -8814
+       "value": -10370
       },
       {
        "key": "purchaseFuel",
        "label": "Fuel",
-       "value": -2541
-      },
-      {
-       "key": "productionCosts",
-       "label": "Production costs",
-       "value": -473
-      }
-     ]
-    },
-    {
-     "day": 1,
-     "income": 542651,
-     "expenses": -4127,
-     "items": [
-      {
-       "key": "propertyIncome",
-       "label": "Property income",
-       "value": 542651
+       "value": -3629
       },
       {
        "key": "propertyMaintenance",
        "label": "Maintenance",
-       "value": -2802
-      },
-      {
-       "key": "productionCosts",
-       "label": "Production costs",
-       "value": -1325
-      }
-     ]
-    },
-    {
-     "day": 2,
-     "income": 567161,
-     "expenses": -4076,
-     "items": [
-      {
-       "key": "propertyIncome",
-       "label": "Property income",
-       "value": 567161
-      },
-      {
-       "key": "propertyMaintenance",
-       "label": "Maintenance",
-       "value": -2812
-      },
-      {
-       "key": "productionCosts",
-       "label": "Production costs",
-       "value": -1264
-      }
-     ]
-    },
-    {
-     "day": 3,
-     "income": 553369,
-     "expenses": -4121,
-     "items": [
-      {
-       "key": "propertyIncome",
-       "label": "Property income",
-       "value": 553369
-      },
-      {
-       "key": "propertyMaintenance",
-       "label": "Maintenance",
-       "value": -2821
-      },
-      {
-       "key": "productionCosts",
-       "label": "Production costs",
-       "value": -1300
-      }
-     ]
-    },
-    {
-     "day": 4,
-     "income": 449795,
-     "expenses": -4131,
-     "items": [
-      {
-       "key": "propertyIncome",
-       "label": "Property income",
-       "value": 449795
-      },
-      {
-       "key": "propertyMaintenance",
-       "label": "Maintenance",
-       "value": -2831
-      },
-      {
-       "key": "productionCosts",
-       "label": "Production costs",
-       "value": -1300
+       "value": -2841
       }
      ]
     }
@@ -6374,7 +6402,7 @@
    "filename": "$moddir$FS25_kinzeMultiFruitPlanterPack/invisibleRoller.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 22.0,
+   "age": 23.0,
    "price": 4050.0,
    "propertyState": "OWNED",
    "operatingHours": 4.7,
@@ -6401,7 +6429,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/bigBagPallet/base/bigBagPallet_seeds.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 22.0,
+   "age": 23.0,
    "price": 1260.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -6431,7 +6459,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/bigBagPallet/base/bigBagPallet_seeds.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 22.0,
+   "age": 23.0,
    "price": 1260.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -6461,7 +6489,7 @@
    "filename": "$moddir$FS25_kinzeMultiFruitPlanterPack/invisibleRoller.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 17.0,
+   "age": 18.0,
    "price": 4050.0,
    "propertyState": "OWNED",
    "operatingHours": 2.2,
@@ -6488,7 +6516,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/bigBagPallet/base/bigBagPallet_seeds.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 17.0,
+   "age": 18.0,
    "price": 1260.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -6518,7 +6546,7 @@
    "filename": "$moddir$FS25_kinzeMultiFruitPlanterPack/invisibleRoller.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 6.0,
+   "age": 7.0,
    "price": 4050.0,
    "propertyState": "OWNED",
    "operatingHours": 1.8,
@@ -6545,7 +6573,7 @@
    "filename": "$moddir$FS25_Rangler_Unlimited_4x4/xml/Rangler_Unlimited.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 48.0,
+   "age": 49.0,
    "price": 200250.0,
    "propertyState": "OWNED",
    "operatingHours": 0.8,
@@ -6573,7 +6601,7 @@
    "filename": "$moddir$FS25_colossusPack/tools/baler/colossusBalerUnreal.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 48.0,
+   "age": 49.0,
    "price": 112800.0,
    "propertyState": "OWNED",
    "operatingHours": 2.0,
@@ -6603,7 +6631,7 @@
    "filename": "$moddir$FS25_colossusPack/tools/baler/colossusBalerUnreal.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 28.0,
+   "age": 29.0,
    "price": 113300.0,
    "propertyState": "OWNED",
    "operatingHours": 1.6,
@@ -6633,7 +6661,7 @@
    "filename": "$moddir$FS25_colossusPack/tools/fert/fertSpreadUnreal.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 48.0,
+   "age": 49.0,
    "price": 20000.0,
    "propertyState": "OWNED",
    "operatingHours": 3.9,
@@ -6665,7 +6693,7 @@
    "filename": "$moddir$FS25_colossusPack/tools/fert/fertSpreadUnreal.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 48.0,
+   "age": 49.0,
    "price": 21000.0,
    "propertyState": "OWNED",
    "operatingHours": 2.8,
@@ -6695,7 +6723,7 @@
    "filename": "$moddir$FS25_colossusPack/tools/fert/fertSpreadUnreal.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 47.0,
+   "age": 48.0,
    "price": 21500.0,
    "propertyState": "OWNED",
    "operatingHours": 6.0,
@@ -6727,7 +6755,7 @@
    "filename": "$moddir$FS25_colossusPack/tools/fert/fertSpreadUnreal.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 6.0,
+   "age": 7.0,
    "price": 22000.0,
    "propertyState": "OWNED",
    "operatingHours": 2.6,
@@ -6752,6 +6780,38 @@
    "implements": []
   },
   {
+   "id": "vehicle8057d65ee576410de92a43a7ccf245a6",
+   "name": "Colossus FLM 726",
+   "category": "FERTILIZERSPREADERS",
+   "brand": "colossusPack",
+   "filename": "$moddir$FS25_colossusPack/tools/fert/fertSpreadUnreal.xml",
+   "kind": "vehicle",
+   "farmId": 2,
+   "age": 1.0,
+   "price": 21500.0,
+   "propertyState": "OWNED",
+   "operatingHours": 0.4,
+   "damage": 0.9,
+   "wear": 2.5,
+   "fuel": null,
+   "fills": [
+    {
+     "type": "FERTILIZER",
+     "level": 100000.0
+    }
+   ],
+   "x": -191.8,
+   "z": -705.1,
+   "isAIActive": false,
+   "controller": null,
+   "isMod": true,
+   "liveIndex": 13,
+   "attachedIds": [],
+   "attachedTo": "vehicle93c348e5ea879aa871514f949f0d8937",
+   "attachedToName": "Puma Series",
+   "implements": []
+  },
+  {
    "id": "vehicle4a87bc95973ed9d8505d9df53f7e5dc7",
    "name": "Titan Header",
    "category": "CUTTERS",
@@ -6759,7 +6819,7 @@
    "filename": "$moddir$FS25_colossusPack/colossus9000/headers/titanHeaderUnreal.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 6.0,
+   "age": 7.0,
    "price": 77982.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -6767,8 +6827,8 @@
    "wear": 0.1,
    "fuel": null,
    "fills": [],
-   "x": 503.4,
-   "z": 919.5,
+   "x": 503.3,
+   "z": 919.6,
    "isAIActive": false,
    "controller": null,
    "isMod": true,
@@ -6786,7 +6846,7 @@
    "filename": "$moddir$FS25_colossusPack/colossus9000/headers/titanHeaderUnreal.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 0.0,
+   "age": 1.0,
    "price": 77650.0,
    "propertyState": "OWNED",
    "operatingHours": 0.1,
@@ -6794,8 +6854,8 @@
    "wear": 0.5,
    "fuel": null,
    "fills": [],
-   "x": 738.6,
-   "z": 473.8,
+   "x": 739.1,
+   "z": 475.6,
    "isAIActive": false,
    "controller": null,
    "isMod": true,
@@ -6807,34 +6867,34 @@
   },
   {
    "id": "vehicle86a8443b5763b0694f26e8068696383c",
-   "name": "Series 6Rextra Large",
-   "category": null,
+   "name": "6R Series (230-250)",
+   "category": "TRACTORSM",
    "brand": "JOHNDEERE",
    "filename": "data/vehicles/johnDeere/series6R/series6RExtraLarge.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 48.0,
+   "age": 49.0,
    "price": 312450.0,
    "propertyState": "OWNED",
-   "operatingHours": 13.9,
-   "damage": 7.4,
-   "wear": 9.5,
+   "operatingHours": 16.6,
+   "damage": 19.5,
+   "wear": 26.1,
    "fuel": {
     "type": "DIESEL",
     "level": 433.0
    },
    "fills": [],
-   "x": -217.2,
-   "z": -650.6,
+   "x": -469.1,
+   "z": -703.1,
    "isAIActive": false,
    "controller": null,
    "isMod": false,
-   "liveIndex": null,
+   "liveIndex": 16,
    "attachedIds": [
     "vehicle24e455f91b2688636b1a6c336410fd07"
    ],
    "implements": [
-    "Planter 1775Nt"
+    "1775NT Multi-planter"
    ]
   },
   {
@@ -6845,7 +6905,7 @@
    "filename": "$moddir$FS25_RoadrunnerPlus/RoadrunnerPlus.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 48.0,
+   "age": 49.0,
    "price": 157200.0,
    "propertyState": "OWNED",
    "operatingHours": 3.0,
@@ -6877,7 +6937,7 @@
    "filename": "$moddir$FS25_RoadrunnerPlus/RoadrunnerPlus.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 21.0,
+   "age": 22.0,
    "price": 158900.0,
    "propertyState": "OWNED",
    "operatingHours": 4.1,
@@ -6909,7 +6969,7 @@
    "filename": "$moddir$FS25_RoadrunnerPlus/RoadrunnerPlus.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 17.0,
+   "age": 18.0,
    "price": 158400.0,
    "propertyState": "OWNED",
    "operatingHours": 0.1,
@@ -6941,7 +7001,7 @@
    "filename": "$moddir$FS25_DropdeckTrailer53Ft_Auto/dropDeckTrailer_Auto.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 48.0,
+   "age": 49.0,
    "price": 125800.0,
    "propertyState": "OWNED",
    "operatingHours": 0.8,
@@ -6966,7 +7026,7 @@
    "filename": "$moddir$FS25_DropdeckTrailer53Ft_Auto/dropDeckTrailer_Auto.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 47.0,
+   "age": 48.0,
    "price": 79000.0,
    "propertyState": "OWNED",
    "operatingHours": 0.7,
@@ -6996,19 +7056,19 @@
    "filename": "data/vehicles/caseIH/quadtrac715/quadtrac715.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 47.0,
+   "age": 48.0,
    "price": 769800.0,
    "propertyState": "OWNED",
    "operatingHours": 4.2,
-   "damage": 11.1,
+   "damage": 11.2,
    "wear": 20.2,
    "fuel": {
     "type": "DIESEL",
-    "level": 1928.0
+    "level": 1927.0
    },
    "fills": [],
-   "x": 902.2,
-   "z": 557.0,
+   "x": 842.8,
+   "z": 567.0,
    "isAIActive": false,
    "controller": null,
    "isMod": false,
@@ -7028,7 +7088,7 @@
    "filename": "data/vehicles/caseIH/quadtrac715/quadtrac715.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 22.0,
+   "age": 23.0,
    "price": 769800.0,
    "propertyState": "OWNED",
    "operatingHours": 12.2,
@@ -7060,7 +7120,7 @@
    "filename": "data/vehicles/caseIH/quadtrac715/quadtrac715.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 14.0,
+   "age": 15.0,
    "price": 769800.0,
    "propertyState": "OWNED",
    "operatingHours": 4.7,
@@ -7092,7 +7152,7 @@
    "filename": "$moddir$FS25_precisionFarming/vehicles/fritzmeier/isariaScout/isariaScout.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 47.0,
+   "age": 48.0,
    "price": 17000.0,
    "propertyState": "OWNED",
    "operatingHours": 0.1,
@@ -7113,34 +7173,34 @@
   },
   {
    "id": "vehicle2fb474f3f7a34e648287e9bff2369fc9",
-   "name": "Magnum T4B",
-   "category": null,
+   "name": "Magnum Series",
+   "category": "TRACTORSL",
    "brand": "CASEIH",
    "filename": "data/vehicles/caseIH/magnumT4B/magnumT4B.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 47.0,
+   "age": 48.0,
    "price": 385950.0,
    "propertyState": "OWNED",
-   "operatingHours": 22.3,
-   "damage": 24.6,
-   "wear": 25.4,
+   "operatingHours": 23.1,
+   "damage": 28.9,
+   "wear": 30.0,
    "fuel": {
     "type": "DIESEL",
     "level": 615.0
    },
    "fills": [],
-   "x": 108.9,
-   "z": 604.2,
+   "x": -76.8,
+   "z": 710.4,
    "isAIActive": false,
    "controller": null,
    "isMod": false,
-   "liveIndex": null,
+   "liveIndex": 26,
    "attachedIds": [
     "vehicle12e6719009530a3519a8a40ec1c9ade3"
    ],
    "implements": [
-    "Planter 1775Nt"
+    "1775NT Multi-planter"
    ]
   },
   {
@@ -7151,7 +7211,7 @@
    "filename": "data/vehicles/caseIH/magnumT4B/magnumT4B.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 22.0,
+   "age": 23.0,
    "price": 397450.0,
    "propertyState": "OWNED",
    "operatingHours": 4.7,
@@ -7183,7 +7243,7 @@
    "filename": "$moddir$FS25_CaseIH_340_400TSE_FL/magnumSpecialEdition_FL.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 47.0,
+   "age": 48.0,
    "price": 450000.0,
    "propertyState": "OWNED",
    "operatingHours": 5.8,
@@ -7202,7 +7262,7 @@
    "x": 729.4,
    "z": 143.4,
    "isAIActive": false,
-   "controller": null,
+   "controller": "wildhorse_spirit",
    "isMod": true,
    "liveIndex": 28,
    "attachedIds": [],
@@ -7216,7 +7276,7 @@
    "filename": "$moddir$FS25_TreeBGone/treeBGone.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 47.0,
+   "age": 48.0,
    "price": 42000.0,
    "propertyState": "OWNED",
    "operatingHours": 4.5,
@@ -7246,7 +7306,7 @@
    "filename": "$moddir$FS25_TreeBGone/treeBGone.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 0.0,
+   "age": 1.0,
    "price": 42000.0,
    "propertyState": "OWNED",
    "operatingHours": 0.2,
@@ -7270,18 +7330,18 @@
   },
   {
    "id": "vehicle24e455f91b2688636b1a6c336410fd07",
-   "name": "Planter 1775Nt",
-   "category": null,
+   "name": "1775NT Multi-planter",
+   "category": "PLANTERS",
    "brand": "Lizard1775NT multiplanter",
    "filename": "$moddir$FS25_Lizard1775NT_multiplanter/planter1775NT.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 47.0,
+   "age": 48.0,
    "price": 146250.0,
    "propertyState": "OWNED",
-   "operatingHours": 21.3,
-   "damage": 8.7,
-   "wear": 20.0,
+   "operatingHours": 23.9,
+   "damage": 23.8,
+   "wear": 61.0,
    "fuel": null,
    "fills": [
     {
@@ -7289,31 +7349,31 @@
      "level": 16163.9
     }
    ],
-   "x": -217.1,
-   "z": -643.1,
+   "x": -469.0,
+   "z": -695.5,
    "isAIActive": false,
    "controller": null,
    "isMod": true,
-   "liveIndex": null,
+   "liveIndex": 31,
    "attachedIds": [],
    "attachedTo": "vehicle86a8443b5763b0694f26e8068696383c",
-   "attachedToName": "Series 6Rextra Large",
+   "attachedToName": "6R Series (230-250)",
    "implements": []
   },
   {
    "id": "vehicle12e6719009530a3519a8a40ec1c9ade3",
-   "name": "Planter 1775Nt",
-   "category": null,
+   "name": "1775NT Multi-planter",
+   "category": "PLANTERS",
    "brand": "Lizard1775NT multiplanter",
    "filename": "$moddir$FS25_Lizard1775NT_multiplanter/planter1775NT.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 40.0,
+   "age": 41.0,
    "price": 144500.0,
    "propertyState": "OWNED",
-   "operatingHours": 11.1,
-   "damage": 16.1,
-   "wear": 59.6,
+   "operatingHours": 11.8,
+   "damage": 19.2,
+   "wear": 69.6,
    "fuel": null,
    "fills": [
     {
@@ -7321,15 +7381,15 @@
      "level": 25000.0
     }
    ],
-   "x": 109.3,
-   "z": 595.8,
+   "x": -76.4,
+   "z": 702.2,
    "isAIActive": false,
    "controller": null,
    "isMod": true,
-   "liveIndex": null,
+   "liveIndex": 32,
    "attachedIds": [],
    "attachedTo": "vehicle2fb474f3f7a34e648287e9bff2369fc9",
-   "attachedToName": "Magnum T4B",
+   "attachedToName": "Magnum Series",
    "implements": []
   },
   {
@@ -7340,7 +7400,7 @@
    "filename": "data/vehicles/kubota/rtvxG850/rtvxg850.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 47.0,
+   "age": 48.0,
    "price": 14600.0,
    "propertyState": "OWNED",
    "operatingHours": 0.1,
@@ -7372,7 +7432,7 @@
    "filename": "data/vehicles/johnDeere/series8R/series8R.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 47.0,
+   "age": 48.0,
    "price": 388950.0,
    "propertyState": "OWNED",
    "operatingHours": 10.0,
@@ -7404,7 +7464,7 @@
    "filename": "$moddir$FS25_colossusPack/colossus8000/attachers/vegetableHeaderUnreal.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 40.0,
+   "age": 41.0,
    "price": 43600.0,
    "propertyState": "OWNED",
    "operatingHours": 1.5,
@@ -7431,7 +7491,7 @@
    "filename": "$moddir$FS25_colossusPack/colossus8000/colossus8000.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 40.0,
+   "age": 41.0,
    "price": 364000.0,
    "propertyState": "OWNED",
    "operatingHours": 1.5,
@@ -7463,7 +7523,7 @@
    "filename": "data/vehicles/kubota/svl972/svl972.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 40.0,
+   "age": 41.0,
    "price": 77000.0,
    "propertyState": "OWNED",
    "operatingHours": 0.1,
@@ -7491,7 +7551,7 @@
    "filename": "$moddir$FS25_colossusPack/tools/frontMower/colossusFrontMowerUnreal.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 28.0,
+   "age": 29.0,
    "price": 13050.0,
    "propertyState": "OWNED",
    "operatingHours": 0.4,
@@ -7516,7 +7576,7 @@
    "filename": "$moddir$FS25_colossusPack/tools/frontMower/colossusFrontMowerUnreal.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 17.0,
+   "age": 18.0,
    "price": 10050.0,
    "propertyState": "OWNED",
    "operatingHours": 5.2,
@@ -7541,7 +7601,7 @@
    "filename": "$moddir$FS25_colossusPack/tools/tedder/tedderUnreal.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 28.0,
+   "age": 29.0,
    "price": 40550.0,
    "propertyState": "OWNED",
    "operatingHours": 0.5,
@@ -7566,7 +7626,7 @@
    "filename": "data/vehicles/poettinger/top1403/top1403.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 28.0,
+   "age": 29.0,
    "price": 95150.0,
    "propertyState": "OWNED",
    "operatingHours": 4.1,
@@ -7585,18 +7645,18 @@
   },
   {
    "id": "vehicle228d70bdda64e44e5bd46fe5792fea8c",
-   "name": "Citan 15001C",
-   "category": null,
+   "name": "Citan 15001-C",
+   "category": "SEEDERS",
    "brand": "AMAZONE",
    "filename": "data/vehicles/amazone/citan15001C/citan15001C.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 22.0,
+   "age": 23.0,
    "price": 206500.0,
    "propertyState": "OWNED",
-   "operatingHours": 1.8,
-   "damage": 3.9,
-   "wear": 22.7,
+   "operatingHours": 43.3,
+   "damage": 4.2,
+   "wear": 23.1,
    "fuel": null,
    "fills": [
     {
@@ -7608,12 +7668,12 @@
      "level": 4800.0
     }
    ],
-   "x": 894.9,
-   "z": 614.8,
+   "x": 940.8,
+   "z": 559.2,
    "isAIActive": false,
    "controller": null,
    "isMod": false,
-   "liveIndex": null,
+   "liveIndex": 42,
    "attachedIds": [],
    "attachedTo": "vehicle88b935bc4a6dac3eb8ea372e4efeb4a3",
    "attachedToName": "Series 8",
@@ -7621,18 +7681,18 @@
   },
   {
    "id": "vehiclef4183b7da2810433de8b22b6e06d2e2c",
-   "name": "4900Multi Fruit",
-   "category": null,
+   "name": "4905 Multi-Fruit Planter",
+   "category": "PLANTERS",
    "brand": "kinzeMultiFruitPlanterPack",
    "filename": "$moddir$FS25_kinzeMultiFruitPlanterPack/4900MultiFruit.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 22.0,
+   "age": 23.0,
    "price": 177600.0,
    "propertyState": "OWNED",
-   "operatingHours": 3.8,
-   "damage": 8.0,
-   "wear": 34.8,
+   "operatingHours": 4.6,
+   "damage": 10.1,
+   "wear": 47.9,
    "fuel": null,
    "fills": [
     {
@@ -7644,15 +7704,15 @@
      "level": 74923.9
     }
    ],
-   "x": 807.6,
-   "z": -349.9,
+   "x": 456.7,
+   "z": -281.1,
    "isAIActive": false,
    "controller": null,
    "isMod": true,
-   "liveIndex": null,
+   "liveIndex": 43,
    "attachedIds": [],
    "attachedTo": "vehicleaf43c475eb24a627dd360815b3270414",
-   "attachedToName": "Series 8",
+   "attachedToName": "Series 8 TTV",
    "implements": []
   },
   {
@@ -7663,7 +7723,7 @@
    "filename": "$moddir$FS25_LizardComboTrailer/lizardComboTrailer.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 21.0,
+   "age": 22.0,
    "price": 69700.0,
    "propertyState": "OWNED",
    "operatingHours": 3.7,
@@ -7690,7 +7750,7 @@
    "filename": "$moddir$FS25_LizardComboTrailer/lizardComboTrailer.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 17.0,
+   "age": 18.0,
    "price": 30150.0,
    "propertyState": "OWNED",
    "operatingHours": 0.1,
@@ -7717,7 +7777,7 @@
    "filename": "$moddir$FS25_colossusPack/trailers/titanTrailer/titanTrailer.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 21.0,
+   "age": 22.0,
    "price": 20350.0,
    "propertyState": "OWNED",
    "operatingHours": 0.5,
@@ -7742,7 +7802,7 @@
    "filename": "$moddir$FS25_colossusPack/trailers/liquid/liquidTrailer.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 21.0,
+   "age": 22.0,
    "price": 15532.0,
    "propertyState": "OWNED",
    "operatingHours": 1.2,
@@ -7767,7 +7827,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 21.0,
+   "age": 22.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -7797,7 +7857,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 21.0,
+   "age": 22.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -7827,7 +7887,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 21.0,
+   "age": 22.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -7857,7 +7917,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 21.0,
+   "age": 22.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -7887,7 +7947,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 21.0,
+   "age": 22.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -7917,7 +7977,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 20.0,
+   "age": 21.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -7947,7 +8007,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 20.0,
+   "age": 21.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -7977,7 +8037,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 20.0,
+   "age": 21.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8007,7 +8067,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 20.0,
+   "age": 21.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8037,7 +8097,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 20.0,
+   "age": 21.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8067,7 +8127,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 20.0,
+   "age": 21.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8097,7 +8157,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 20.0,
+   "age": 21.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8127,7 +8187,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 20.0,
+   "age": 21.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8157,7 +8217,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 20.0,
+   "age": 21.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8187,7 +8247,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 20.0,
+   "age": 21.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8217,7 +8277,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 20.0,
+   "age": 21.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8247,7 +8307,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 20.0,
+   "age": 21.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8277,7 +8337,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 19.0,
+   "age": 20.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8307,7 +8367,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 19.0,
+   "age": 20.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8337,7 +8397,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 19.0,
+   "age": 20.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8367,7 +8427,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 19.0,
+   "age": 20.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8397,7 +8457,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 19.0,
+   "age": 20.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8427,7 +8487,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 19.0,
+   "age": 20.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8457,7 +8517,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 19.0,
+   "age": 20.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8487,7 +8547,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 19.0,
+   "age": 20.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8517,7 +8577,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 19.0,
+   "age": 20.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8547,7 +8607,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 19.0,
+   "age": 20.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8577,7 +8637,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 19.0,
+   "age": 20.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8607,7 +8667,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 19.0,
+   "age": 20.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8637,7 +8697,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 18.0,
+   "age": 19.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8667,7 +8727,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 18.0,
+   "age": 19.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8697,7 +8757,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 18.0,
+   "age": 19.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8727,7 +8787,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 18.0,
+   "age": 19.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8757,7 +8817,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 18.0,
+   "age": 19.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8787,7 +8847,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 18.0,
+   "age": 19.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8817,7 +8877,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 18.0,
+   "age": 19.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8847,7 +8907,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 18.0,
+   "age": 19.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8877,7 +8937,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 18.0,
+   "age": 19.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8907,7 +8967,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 18.0,
+   "age": 19.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8937,7 +8997,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/flourBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 18.0,
+   "age": 19.0,
    "price": 690.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -8967,7 +9027,7 @@
    "filename": "$moddir$FS25_colossusPack/colossus9000/colossus9000.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 17.0,
+   "age": 18.0,
    "price": 314000.0,
    "propertyState": "OWNED",
    "operatingHours": 0.9,
@@ -8999,7 +9059,7 @@
    "filename": "$moddir$FS25_colossusPack/colossus9000/colossus9000.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 6.0,
+   "age": 7.0,
    "price": 619500.0,
    "propertyState": "OWNED",
    "operatingHours": 0.6,
@@ -9031,7 +9091,7 @@
    "filename": "$moddir$FS25_colossusPack/colossus9000/colossus9000.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 6.0,
+   "age": 7.0,
    "price": 619500.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -9063,19 +9123,19 @@
    "filename": "data/vehicles/deutzFahr/series8/series8.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 17.0,
+   "age": 18.0,
    "price": 292450.0,
    "propertyState": "OWNED",
-   "operatingHours": 7.5,
-   "damage": 21.0,
-   "wear": 20.4,
+   "operatingHours": 49.0,
+   "damage": 100.0,
+   "wear": 20.6,
    "fuel": {
     "type": "DIESEL",
     "level": 213.9
    },
    "fills": [],
-   "x": 895.9,
-   "z": 606.2,
+   "x": 934.1,
+   "z": 564.5,
    "isAIActive": false,
    "controller": null,
    "isMod": false,
@@ -9084,7 +9144,39 @@
     "vehicle228d70bdda64e44e5bd46fe5792fea8c"
    ],
    "implements": [
-    "Citan 15001C"
+    "Citan 15001-C"
+   ]
+  },
+  {
+   "id": "vehicleaf43c475eb24a627dd360815b3270414",
+   "name": "Series 8 TTV",
+   "category": "TRACTORSM",
+   "brand": "DEUTZFAHR",
+   "filename": "data/vehicles/deutzFahr/series8/series8.xml",
+   "kind": "vehicle",
+   "farmId": 1,
+   "age": 1.0,
+   "price": 293450.0,
+   "propertyState": "OWNED",
+   "operatingHours": 3.1,
+   "damage": 7.6,
+   "wear": 15.1,
+   "fuel": {
+    "type": "DIESEL",
+    "level": 495.0
+   },
+   "fills": [],
+   "x": 449.7,
+   "z": -277.2,
+   "isAIActive": false,
+   "controller": null,
+   "isMod": false,
+   "liveIndex": 92,
+   "attachedIds": [
+    "vehiclef4183b7da2810433de8b22b6e06d2e2c"
+   ],
+   "implements": [
+    "4905 Multi-Fruit Planter"
    ]
   },
   {
@@ -9095,7 +9187,7 @@
    "filename": "$moddir$FS25_palletSilo/profiLinerPalletSilo.xml",
    "kind": "pallet",
    "farmId": 1,
-   "age": 17.0,
+   "age": 18.0,
    "price": 20500.0,
    "propertyState": "OWNED",
    "operatingHours": 0.7,
@@ -9113,38 +9205,6 @@
    "implements": []
   },
   {
-   "id": "vehicleaf43c475eb24a627dd360815b3270414",
-   "name": "Series 8",
-   "category": null,
-   "brand": "DEUTZFAHR",
-   "filename": "data/vehicles/deutzFahr/series8/series8.xml",
-   "kind": "vehicle",
-   "farmId": 1,
-   "age": 0.0,
-   "price": 293450.0,
-   "propertyState": "OWNED",
-   "operatingHours": 2.4,
-   "damage": 5.6,
-   "wear": 10.4,
-   "fuel": {
-    "type": "DIESEL",
-    "level": 495.0
-   },
-   "fills": [],
-   "x": 800.7,
-   "z": -346.1,
-   "isAIActive": false,
-   "controller": null,
-   "isMod": false,
-   "liveIndex": null,
-   "attachedIds": [
-    "vehiclef4183b7da2810433de8b22b6e06d2e2c"
-   ],
-   "implements": [
-    "4900Multi Fruit"
-   ]
-  },
-  {
    "id": "vehicle577532af6f01ac57cf8f9fa245123b90",
    "name": "Titan Super Collect 533",
    "category": "LOADERWAGONS",
@@ -9152,7 +9212,7 @@
    "filename": "$moddir$FS25_colossusPack/trailers/titanForageTrailer/superCollectUnreal.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 17.0,
+   "age": 18.0,
    "price": 117450.0,
    "propertyState": "OWNED",
    "operatingHours": 4.9,
@@ -9182,7 +9242,7 @@
    "filename": "$moddir$FS25_colossusPack/colossus7000/colossus7000Unreal.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 17.0,
+   "age": 18.0,
    "price": 387100.0,
    "propertyState": "OWNED",
    "operatingHours": 0.3,
@@ -9215,7 +9275,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/garlicBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 16.0,
+   "age": 17.0,
    "price": 580.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -9245,7 +9305,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/strawberriesBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 16.0,
+   "age": 17.0,
    "price": 450.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -9275,7 +9335,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/tomatoesBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 16.0,
+   "age": 17.0,
    "price": 500.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -9305,7 +9365,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/lettuceBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 16.0,
+   "age": 17.0,
    "price": 600.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -9335,7 +9395,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/napaCabbageBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 16.0,
+   "age": 17.0,
    "price": 550.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -9365,7 +9425,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/springOnionBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 16.0,
+   "age": 17.0,
    "price": 450.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -9395,7 +9455,7 @@
    "filename": "$moddir$FS25_palletSilo/triusPalletSilo.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 14.0,
+   "age": 15.0,
    "price": 5300.0,
    "propertyState": "OWNED",
    "operatingHours": 1.6,
@@ -9420,7 +9480,7 @@
    "filename": "data/vehicles/claas/arion550/arion550.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 12.0,
+   "age": 13.0,
    "price": 191450.0,
    "propertyState": "OWNED",
    "operatingHours": 1.6,
@@ -9452,7 +9512,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/sugarBoxPallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 6.0,
+   "age": 7.0,
    "price": 500.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -9482,7 +9542,7 @@
    "filename": "$moddir$FS25_colossusPack/colossus9000/headers/n60_45colossusHookup.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 6.0,
+   "age": 7.0,
    "price": 16000.0,
    "propertyState": "OWNED",
    "operatingHours": 0.1,
@@ -9509,7 +9569,7 @@
    "filename": "$moddir$FS25_colossusPack/colossus9000/headers/titanCornHeaderUnreal.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 6.0,
+   "age": 7.0,
    "price": 77650.0,
    "propertyState": "OWNED",
    "operatingHours": 0.4,
@@ -9517,7 +9577,7 @@
    "wear": 3.2,
    "fuel": null,
    "fills": [],
-   "x": 497.1,
+   "x": 497.2,
    "z": 918.8,
    "isAIActive": false,
    "controller": null,
@@ -9534,7 +9594,7 @@
    "filename": "$moddir$FS25_colossusPack/colossus9000/headers/titanCornHeaderUnreal.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 17.0,
+   "age": 18.0,
    "price": 77650.0,
    "propertyState": "OWNED",
    "operatingHours": 0.8,
@@ -9559,7 +9619,7 @@
    "filename": "data/vehicles/caseIH/puma/puma.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 6.0,
+   "age": 7.0,
    "price": 296150.0,
    "propertyState": "OWNED",
    "operatingHours": 2.6,
@@ -9591,7 +9651,7 @@
    "filename": "data/vehicles/caseIH/puma/puma.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 0.0,
+   "age": 1.0,
    "price": 295150.0,
    "propertyState": "OWNED",
    "operatingHours": 0.9,
@@ -9623,7 +9683,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/cakePallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 6.0,
+   "age": 7.0,
    "price": 3300.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -9653,7 +9713,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/cakePallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 5.0,
+   "age": 6.0,
    "price": 3300.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -9683,7 +9743,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/cakePallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 5.0,
+   "age": 6.0,
    "price": 3300.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -9713,7 +9773,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/cakePallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 4.0,
+   "age": 5.0,
    "price": 3300.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -9743,7 +9803,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/cakePallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 4.0,
+   "age": 5.0,
    "price": 3300.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -9773,7 +9833,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/cakePallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 3.0,
+   "age": 4.0,
    "price": 3300.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -9803,7 +9863,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/cakePallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 3.0,
+   "age": 4.0,
    "price": 3300.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -9833,7 +9893,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/cakePallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 2.0,
+   "age": 3.0,
    "price": 3300.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -9863,7 +9923,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/cakePallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 2.0,
+   "age": 3.0,
    "price": 3300.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -9893,7 +9953,7 @@
    "filename": "$moddir$FS25_zLiftablePalletsBales/xml/pallets/base/cakePallet.xml",
    "kind": "pallet",
    "farmId": 2,
-   "age": 1.0,
+   "age": 2.0,
    "price": 3300.0,
    "propertyState": "OWNED",
    "operatingHours": 0.0,
@@ -9916,6 +9976,38 @@
    "implements": []
   },
   {
+   "id": "vehicle93c348e5ea879aa871514f949f0d8937",
+   "name": "Puma Series",
+   "category": "TRACTORSM",
+   "brand": "CASEIH",
+   "filename": "data/vehicles/caseIH/puma/puma.xml",
+   "kind": "vehicle",
+   "farmId": 2,
+   "age": 1.0,
+   "price": 295150.0,
+   "propertyState": "OWNED",
+   "operatingHours": 0.4,
+   "damage": 0.9,
+   "wear": 2.3,
+   "fuel": {
+    "type": "DIESEL",
+    "level": 385.0
+   },
+   "fills": [],
+   "x": -186.1,
+   "z": -703.6,
+   "isAIActive": false,
+   "controller": null,
+   "isMod": false,
+   "liveIndex": 120,
+   "attachedIds": [
+    "vehicle8057d65ee576410de92a43a7ccf245a6"
+   ],
+   "implements": [
+    "Colossus FLM 726"
+   ]
+  },
+  {
    "id": "vehicle744c9ec3f4da34af185c27195a5620f7",
    "name": "ST820 MultiFunction",
    "category": "CULTIVATORS",
@@ -9923,16 +10015,16 @@
    "filename": "$moddir$FS25_Flexicoil_ST820_MultiFunction/xml/ST_820.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 0.0,
+   "age": 1.0,
    "price": 197000.0,
    "propertyState": "OWNED",
-   "operatingHours": 2.7,
-   "damage": 1.0,
+   "operatingHours": 2.8,
+   "damage": 1.1,
    "wear": 9.1,
    "fuel": null,
    "fills": [],
-   "x": 903.0,
-   "z": 547.8,
+   "x": 851.9,
+   "z": 565.2,
    "isAIActive": false,
    "controller": null,
    "isMod": true,
@@ -9950,7 +10042,7 @@
    "filename": "$moddir$FS25_Flexicoil_ST820_MultiFunction/xml/ST_820.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 0.0,
+   "age": 1.0,
    "price": 197000.0,
    "propertyState": "OWNED",
    "operatingHours": 1.4,
@@ -9977,7 +10069,7 @@
    "filename": "$moddir$FS25_Flexicoil_ST820_MultiFunction/xml/ST_820.xml",
    "kind": "vehicle",
    "farmId": 2,
-   "age": 0.0,
+   "age": 1.0,
    "price": 197000.0,
    "propertyState": "OWNED",
    "operatingHours": 0.7,
@@ -10004,7 +10096,7 @@
    "filename": "$moddir$FS25_Flexicoil_ST820_MultiFunction/xml/ST_820.xml",
    "kind": "vehicle",
    "farmId": 1,
-   "age": 0.0,
+   "age": 1.0,
    "price": 197000.0,
    "propertyState": "OWNED",
    "operatingHours": 0.4,
@@ -10020,70 +10112,6 @@
    "liveIndex": 124,
    "attachedIds": [],
    "implements": []
-  },
-  {
-   "id": "vehicle8057d65ee576410de92a43a7ccf245a6",
-   "name": "Colossus FLM 726",
-   "category": "FERTILIZERSPREADERS",
-   "brand": "colossusPack",
-   "filename": "$moddir$FS25_colossusPack/tools/fert/fertSpreadUnreal.xml",
-   "kind": "vehicle",
-   "farmId": 2,
-   "age": 0.0,
-   "price": 21500.0,
-   "propertyState": "OWNED",
-   "operatingHours": 0.4,
-   "damage": 0.9,
-   "wear": 2.5,
-   "fuel": null,
-   "fills": [
-    {
-     "type": "FERTILIZER",
-     "level": 100000.0
-    }
-   ],
-   "x": -191.8,
-   "z": -705.1,
-   "isAIActive": false,
-   "controller": null,
-   "isMod": true,
-   "liveIndex": 13,
-   "attachedIds": [],
-   "attachedTo": "vehicle93c348e5ea879aa871514f949f0d8937",
-   "attachedToName": "Puma Series",
-   "implements": []
-  },
-  {
-   "id": "vehicle93c348e5ea879aa871514f949f0d8937",
-   "name": "Puma Series",
-   "category": "TRACTORSM",
-   "brand": "CASEIH",
-   "filename": "data/vehicles/caseIH/puma/puma.xml",
-   "kind": "vehicle",
-   "farmId": 2,
-   "age": 0.0,
-   "price": 295150.0,
-   "propertyState": "OWNED",
-   "operatingHours": 0.4,
-   "damage": 0.9,
-   "wear": 2.3,
-   "fuel": {
-    "type": "DIESEL",
-    "level": 385.0
-   },
-   "fills": [],
-   "x": -186.1,
-   "z": -703.6,
-   "isAIActive": false,
-   "controller": null,
-   "isMod": false,
-   "liveIndex": 120,
-   "attachedIds": [
-    "vehicle8057d65ee576410de92a43a7ccf245a6"
-   ],
-   "implements": [
-    "Colossus FLM 726"
-   ]
   }
  ],
  "placeables": [
@@ -10125,7 +10153,7 @@
    "filename": "",
    "farmId": 1,
    "price": 2000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": true,
    "productions": [],
@@ -10157,7 +10185,7 @@
    "filename": "",
    "farmId": 2,
    "price": 210000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "productionPoint"
    ],
@@ -10207,51 +10235,51 @@
    "storage": [
     {
      "type": "MILK",
-     "level": 277380.9
+     "level": 275721.4
     },
     {
      "type": "GOATMILK",
-     "level": 191941.9
+     "level": 191350.8
     },
     {
      "type": "BUFFALOMILK",
-     "level": 171183.0
+     "level": 170903.0
     },
     {
      "type": "SUGAR",
-     "level": 123031.2
+     "level": 122813.4
     },
     {
      "type": "BUTTER",
-     "level": 17040.3
+     "level": 18261.6
     },
     {
      "type": "GOATCHEESE",
-     "level": 6785.7
+     "level": 7283.6
     },
     {
      "type": "CHEESE",
-     "level": 4665.2
+     "level": 5007.5
     },
     {
      "type": "BUFFALOMILK_BOTTLED",
-     "level": 4241.1
+     "level": 4552.3
     },
     {
      "type": "GOATMILK_BOTTLED",
-     "level": 4241.1
+     "level": 4552.2
     },
     {
      "type": "CHOCOLATE",
-     "level": 2968.8
+     "level": 3186.6
     },
     {
      "type": "MILK_BOTTLED",
-     "level": 2653.7
+     "level": 3034.9
     },
     {
      "type": "BUFFALOMOZZARELLA",
-     "level": 1696.4
+     "level": 1820.9
     }
    ],
    "animals": 0,
@@ -10265,7 +10293,7 @@
    "filename": "",
    "farmId": 2,
    "price": 150000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "productionPoint"
    ],
@@ -10291,11 +10319,11 @@
    "storage": [
     {
      "type": "FLOUR",
-     "level": 106125.4
+     "level": 105793.5
     },
     {
      "type": "RICEFLOUR",
-     "level": 88364.5
+     "level": 88115.6
     },
     {
      "type": "BREAD",
@@ -10303,27 +10331,27 @@
     },
     {
      "type": "BUTTER",
-     "level": 14999.1
+     "level": 14991.3
     },
     {
      "type": "MILK_BOTTLED",
-     "level": 14999.1
+     "level": 14991.3
     },
     {
      "type": "STRAWBERRY",
-     "level": 10301.5
+     "level": 9637.7
     },
     {
      "type": "SUGAR",
-     "level": 10301.2
+     "level": 9637.4
     },
     {
      "type": "EGG",
-     "level": 10300.0
+     "level": 9636.2
     },
     {
      "type": "CAKE",
-     "level": 2439.9
+     "level": 4182.4
     }
    ],
    "animals": 0,
@@ -10353,7 +10381,7 @@
    "filename": "",
    "farmId": 2,
    "price": 240000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "productionPoint"
    ],
@@ -10376,7 +10404,7 @@
    "filename": "",
    "farmId": 0,
    "price": 288000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "productionPoint"
    ],
@@ -10434,35 +10462,35 @@
     },
     {
      "type": "RICE",
-     "level": 88630.3
+     "level": 83029.6
     },
     {
      "type": "RICELONGGRAIN",
-     "level": 80717.2
+     "level": 71382.7
     },
     {
      "type": "WINTERWHEAT",
-     "level": 77503.9
+     "level": 66613.7
     },
     {
      "type": "WHEAT",
-     "level": 77503.5
+     "level": 66613.3
     },
     {
      "type": "WINTERBARLEY",
-     "level": 74290.2
+     "level": 61844.3
     },
     {
      "type": "BARLEY",
-     "level": 74289.4
+     "level": 61843.4
     },
     {
      "type": "OAT",
-     "level": 67861.9
+     "level": 52304.5
     },
     {
      "type": "TRITICALE",
-     "level": 45226.7
+     "level": 32780.8
     },
     {
      "type": "RICEFLOUR",
@@ -10480,7 +10508,7 @@
    "filename": "",
    "farmId": 0,
    "price": 0.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "sellingStation"
    ],
@@ -10498,7 +10526,7 @@
    "filename": "",
    "farmId": 0,
    "price": 0.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "sellingStation"
    ],
@@ -10516,7 +10544,7 @@
    "filename": "",
    "farmId": 0,
    "price": 180000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "sellingStation"
    ],
@@ -10534,7 +10562,7 @@
    "filename": "",
    "farmId": 0,
    "price": 0.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "sellingStation"
    ],
@@ -10552,7 +10580,7 @@
    "filename": "",
    "farmId": 0,
    "price": 0.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": true,
    "productions": [],
@@ -10568,7 +10596,7 @@
    "filename": "",
    "farmId": 0,
    "price": 0.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": true,
    "productions": [],
@@ -10584,7 +10612,7 @@
    "filename": "",
    "farmId": 0,
    "price": 0.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "sellingStation"
    ],
@@ -10602,7 +10630,7 @@
    "filename": "",
    "farmId": 0,
    "price": 0.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "sellingStation"
    ],
@@ -10620,7 +10648,7 @@
    "filename": "",
    "farmId": 0,
    "price": 0.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "sellingStation"
    ],
@@ -10638,7 +10666,7 @@
    "filename": "",
    "farmId": 0,
    "price": 0.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": true,
    "productions": [],
@@ -10654,7 +10682,7 @@
    "filename": "",
    "farmId": 15,
    "price": 420000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -10704,7 +10732,7 @@
    "filename": "",
    "farmId": 1,
    "price": 80000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -10722,7 +10750,7 @@
    "filename": "",
    "farmId": 1,
    "price": 85000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": true,
    "productions": [],
@@ -10738,7 +10766,7 @@
    "filename": "",
    "farmId": 1,
    "price": 175000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "farmhouse"
    ],
@@ -10756,7 +10784,7 @@
    "filename": "",
    "farmId": 2,
    "price": 245000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "farmhouse"
    ],
@@ -10806,7 +10834,7 @@
    "filename": "",
    "farmId": 15,
    "price": 235000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "farmhouse"
    ],
@@ -10824,7 +10852,7 @@
    "filename": "$moddir$FS25_USpack2/carGarage.xml",
    "farmId": 15,
    "price": 10000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -10840,7 +10868,7 @@
    "filename": "$moddir$FS25_USpack2/shed1.xml",
    "farmId": 15,
    "price": 15000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -10856,7 +10884,7 @@
    "filename": "$moddir$FS25_USpack2/shed1.xml",
    "farmId": 15,
    "price": 15000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -10872,7 +10900,7 @@
    "filename": "$moddir$FS25_USpack1/wideSlide.xml",
    "farmId": 2,
    "price": 35000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -10888,7 +10916,7 @@
    "filename": "$moddir$FS25_USpack1/wideSlide.xml",
    "farmId": 2,
    "price": 35000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -10904,7 +10932,7 @@
    "filename": "$moddir$FS25_USpack1/wideSlide.xml",
    "farmId": 2,
    "price": 35000.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -10920,7 +10948,7 @@
    "filename": "data/placeables/meridian/flatBottomBin3608/flatBottomBin3608.xml",
    "farmId": 2,
    "price": 72000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -10938,7 +10966,7 @@
    "filename": "data/placeables/meridian/flatBottomBin3608/flatBottomBin3608.xml",
    "farmId": 2,
    "price": 72000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -10956,7 +10984,7 @@
    "filename": "data/placeables/meridian/flatBottomBin3608/flatBottomBin3608.xml",
    "farmId": 2,
    "price": 72000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -10974,7 +11002,7 @@
    "filename": "data/placeables/meridian/flatBottomBin3608/flatBottomBin3608.xml",
    "farmId": 2,
    "price": 72000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -10992,7 +11020,7 @@
    "filename": "$moddir$FS25_OldSkoolPack/barn1.xml",
    "farmId": 15,
    "price": 45000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11008,7 +11036,7 @@
    "filename": "$moddir$FS25_OldSkoolPack/americanshed.xml",
    "farmId": 15,
    "price": 45000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11024,7 +11052,7 @@
    "filename": "$moddir$FS25_FlagOldBarn/basicGarage.xml",
    "farmId": 15,
    "price": 10000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11040,7 +11068,7 @@
    "filename": "$moddir$FS25_OldSkoolPack/uBarn.xml",
    "farmId": 2,
    "price": 55000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11056,7 +11084,7 @@
    "filename": "$moddir$FS25_OldSkoolPack/carport.xml",
    "farmId": 2,
    "price": 15000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11072,7 +11100,7 @@
    "filename": "data/placeables/brandless/floodLights/level04/floodLight04.xml",
    "farmId": 1,
    "price": 1000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11088,7 +11116,7 @@
    "filename": "data/placeables/brandless/floodLights/level04/floodLight04.xml",
    "farmId": 1,
    "price": 1000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11104,7 +11132,7 @@
    "filename": "data/placeables/brandless/floodLights/level04/floodLight04.xml",
    "farmId": 1,
    "price": 1000.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11120,7 +11148,7 @@
    "filename": "data/placeables/brandless/floodLights/level04/floodLight04.xml",
    "farmId": 1,
    "price": 1000.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11136,7 +11164,7 @@
    "filename": "data/placeables/brandless/floodLights/level04/floodLight04.xml",
    "farmId": 1,
    "price": 1000.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11152,7 +11180,7 @@
    "filename": "data/placeables/brandless/floodLights/level04/floodLight04.xml",
    "farmId": 1,
    "price": 1000.0,
-   "age": 22.0,
+   "age": 23.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11168,7 +11196,7 @@
    "filename": "data/placeables/brandless/floodLights/level04/floodLight04.xml",
    "farmId": 1,
    "price": 1000.0,
-   "age": 22.0,
+   "age": 23.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11184,7 +11212,7 @@
    "filename": "data/placeables/brandless/floodLights/level04/floodLight04.xml",
    "farmId": 1,
    "price": 1000.0,
-   "age": 22.0,
+   "age": 23.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11200,7 +11228,7 @@
    "filename": "data/placeables/brandless/floodLights/level04/floodLight04.xml",
    "farmId": 1,
    "price": 1000.0,
-   "age": 22.0,
+   "age": 23.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11216,7 +11244,7 @@
    "filename": "data/placeables/brandless/floodLights/level04/floodLight04.xml",
    "farmId": 1,
    "price": 1000.0,
-   "age": 0.0,
+   "age": 1.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11232,7 +11260,7 @@
    "filename": "data/placeables/agi/flatBottomBin3605/flatBottomBin3605.xml",
    "farmId": 15,
    "price": 42000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -11250,7 +11278,7 @@
    "filename": "data/placeables/agi/flatBottomBin3605/flatBottomBin3605.xml",
    "farmId": 15,
    "price": 42000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -11268,7 +11296,7 @@
    "filename": "data/placeables/agi/flatBottomBin3605/flatBottomBin3605.xml",
    "farmId": 15,
    "price": 42000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -11286,7 +11314,7 @@
    "filename": "$moddir$FS25_USpack2/wideSlide.xml",
    "farmId": 15,
    "price": 55000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11302,7 +11330,7 @@
    "filename": "$moddir$FS25_USpack2/barn1.xml",
    "farmId": 15,
    "price": 25000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11318,7 +11346,7 @@
    "filename": "data/placeables/brandless/dieselTanks/level02/dieselTanksLevel02.xml",
    "farmId": 15,
    "price": 10500.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -11336,7 +11364,7 @@
    "filename": "data/placeables/meridian/fertilizerBins1620/fertilizerBins1620.xml",
    "farmId": 15,
    "price": 23500.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -11354,7 +11382,7 @@
    "filename": "data/placeables/meridian/fertilizerBins1620/fertilizerBins1620.xml",
    "farmId": 15,
    "price": 23500.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -11372,7 +11400,7 @@
    "filename": "data/placeables/meridian/fertilizerBins1620/fertilizerBins1620.xml",
    "farmId": 2,
    "price": 23500.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -11390,7 +11418,7 @@
    "filename": "data/placeables/meridian/fertilizerBins1620/fertilizerBins1620.xml",
    "farmId": 1,
    "price": 23500.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -11408,7 +11436,7 @@
    "filename": "data/placeables/unia/karma/karma16/karma16.xml",
    "farmId": 15,
    "price": 16000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -11426,7 +11454,7 @@
    "filename": "data/placeables/unia/karma/karma16/karma16.xml",
    "farmId": 2,
    "price": 16000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -11444,7 +11472,7 @@
    "filename": "data/placeables/brandless/limeStation/limeStationPlaceable.xml",
    "farmId": 2,
    "price": 26500.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -11462,7 +11490,7 @@
    "filename": "data/placeables/brandless/limeStation/limeStationPlaceable.xml",
    "farmId": 15,
    "price": 26500.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -11480,7 +11508,7 @@
    "filename": "data/placeables/brandless/dieselTanks/level01/dieselTanksLevel01.xml",
    "farmId": 15,
    "price": 5300.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -11498,7 +11526,7 @@
    "filename": "data/placeables/brandless/dieselTanks/level01/dieselTanksLevel01.xml",
    "farmId": 1,
    "price": 5300.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -11516,7 +11544,7 @@
    "filename": "data/placeables/brandless/limeStation/limeStationPlaceable.xml",
    "farmId": 1,
    "price": 26500.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "silo"
    ],
@@ -11534,7 +11562,7 @@
    "filename": "data/placeables/mapUS/trailerHouse/trailerHouse.xml",
    "farmId": 1,
    "price": 55000.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "farmhouse"
    ],
@@ -11552,7 +11580,7 @@
    "filename": "$moddir$FS25_WindTurbinePack/WT_big.xml",
    "farmId": 1,
    "price": 1500000.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "windTurbine"
    ],
@@ -11570,7 +11598,7 @@
    "filename": "$moddir$FS25_WindTurbinePack/WT_big.xml",
    "farmId": 1,
    "price": 1500000.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "windTurbine"
    ],
@@ -11588,7 +11616,7 @@
    "filename": "$moddir$FS25_WindTurbinePack/WT_big.xml",
    "farmId": 1,
    "price": 1500000.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "windTurbine"
    ],
@@ -11606,7 +11634,7 @@
    "filename": "$moddir$FS25_WindTurbinePackage/WKA_169.xml",
    "farmId": 2,
    "price": 3500000.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "windTurbine"
    ],
@@ -11624,7 +11652,7 @@
    "filename": "$moddir$FS25_WindTurbinePackage/WKA_169.xml",
    "farmId": 2,
    "price": 3500000.0,
-   "age": 11.0,
+   "age": 12.0,
    "kinds": [
     "windTurbine"
    ],
@@ -11642,7 +11670,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level02/electricityGenerator02.xml",
    "farmId": 2,
    "price": 93500.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "solarPanels"
    ],
@@ -11660,7 +11688,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level02/electricityGenerator02.xml",
    "farmId": 2,
    "price": 93500.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "solarPanels"
    ],
@@ -11678,7 +11706,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level02/electricityGenerator02.xml",
    "farmId": 2,
    "price": 93500.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "solarPanels"
    ],
@@ -11696,7 +11724,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level02/electricityGenerator02.xml",
    "farmId": 2,
    "price": 93500.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "solarPanels"
    ],
@@ -11714,7 +11742,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level02/electricityGenerator02.xml",
    "farmId": 2,
    "price": 93500.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "solarPanels"
    ],
@@ -11732,7 +11760,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level02/electricityGenerator02.xml",
    "farmId": 2,
    "price": 93500.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "solarPanels"
    ],
@@ -11750,7 +11778,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level02/electricityGenerator02.xml",
    "farmId": 2,
    "price": 93500.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "solarPanels"
    ],
@@ -11768,7 +11796,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level02/electricityGenerator02.xml",
    "farmId": 2,
    "price": 93500.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "solarPanels"
    ],
@@ -11786,7 +11814,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level02/electricityGenerator02.xml",
    "farmId": 2,
    "price": 93500.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "solarPanels"
    ],
@@ -11804,7 +11832,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level02/electricityGenerator02.xml",
    "farmId": 2,
    "price": 93500.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "solarPanels"
    ],
@@ -11822,7 +11850,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level02/electricityGenerator02.xml",
    "farmId": 2,
    "price": 93500.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "solarPanels"
    ],
@@ -11840,7 +11868,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level02/electricityGenerator02.xml",
    "farmId": 2,
    "price": 93500.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "solarPanels"
    ],
@@ -11858,7 +11886,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level03/electricityGenerator03.xml",
    "farmId": 2,
    "price": 11400.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11874,7 +11902,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level03/electricityGenerator03.xml",
    "farmId": 2,
    "price": 11400.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11890,7 +11918,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level03/electricityGenerator03.xml",
    "farmId": 2,
    "price": 11400.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11906,7 +11934,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level03/electricityGenerator03.xml",
    "farmId": 2,
    "price": 11400.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11922,7 +11950,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level03/electricityGenerator03.xml",
    "farmId": 2,
    "price": 11400.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11938,7 +11966,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level03/electricityGenerator03.xml",
    "farmId": 2,
    "price": 11400.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11954,7 +11982,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level03/electricityGenerator03.xml",
    "farmId": 2,
    "price": 11400.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11970,7 +11998,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level03/electricityGenerator03.xml",
    "farmId": 2,
    "price": 11400.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -11986,7 +12014,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level01/electricityGenerator01.xml",
    "farmId": 2,
    "price": 7800.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12002,7 +12030,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level01/electricityGenerator01.xml",
    "farmId": 2,
    "price": 7800.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12018,7 +12046,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level01/electricityGenerator01.xml",
    "farmId": 2,
    "price": 7800.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12034,7 +12062,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level01/electricityGenerator01.xml",
    "farmId": 2,
    "price": 7800.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12050,7 +12078,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level01/electricityGenerator01.xml",
    "farmId": 2,
    "price": 7800.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12066,7 +12094,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level01/electricityGenerator01.xml",
    "farmId": 2,
    "price": 7800.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12082,7 +12110,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level01/electricityGenerator01.xml",
    "farmId": 2,
    "price": 7800.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12098,7 +12126,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level01/electricityGenerator01.xml",
    "farmId": 2,
    "price": 7800.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12114,7 +12142,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level01/electricityGenerator01.xml",
    "farmId": 2,
    "price": 7800.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12130,7 +12158,7 @@
    "filename": "data/placeables/brandless/electricityGenerators/level01/electricityGenerator01.xml",
    "farmId": 2,
    "price": 7800.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12146,7 +12174,7 @@
    "filename": "data/placeables/brandless/waterTanks/level01/waterTankLevel01.xml",
    "farmId": 2,
    "price": 2100.0,
-   "age": 40.0,
+   "age": 41.0,
    "kinds": [
     "siloExtension"
    ],
@@ -12164,7 +12192,7 @@
    "filename": "data/placeables/brandless/waterTanks/level01/waterTankLevel01.xml",
    "farmId": 2,
    "price": 2100.0,
-   "age": 40.0,
+   "age": 41.0,
    "kinds": [
     "siloExtension"
    ],
@@ -12182,7 +12210,7 @@
    "filename": "data/placeables/brandless/waterTanks/level01/waterTankLevel01.xml",
    "farmId": 2,
    "price": 2100.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [
     "siloExtension"
    ],
@@ -12200,7 +12228,7 @@
    "filename": "data/placeables/brandless/waterTanks/level01/waterTankLevel01.xml",
    "farmId": 2,
    "price": 2100.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [
     "siloExtension"
    ],
@@ -12218,7 +12246,7 @@
    "filename": "data/placeables/brandless/waterTanks/level01/waterTankLevel01.xml",
    "farmId": 2,
    "price": 2100.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [
     "siloExtension"
    ],
@@ -12236,7 +12264,7 @@
    "filename": "data/placeables/brandless/waterTanks/level01/waterTankLevel01.xml",
    "farmId": 2,
    "price": 2100.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [
     "siloExtension"
    ],
@@ -12254,7 +12282,7 @@
    "filename": "data/placeables/rudolfHormann/garageSolarPanels/garageSolarPanels.xml",
    "farmId": 2,
    "price": 152500.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12270,7 +12298,7 @@
    "filename": "data/placeables/rudolfHormann/garageSolarPanels/garageSolarPanels.xml",
    "farmId": 2,
    "price": 152500.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12286,7 +12314,7 @@
    "filename": "data/placeables/rudolfHormann/garageSolarPanels/garageSolarPanels.xml",
    "farmId": 2,
    "price": 152500.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12302,7 +12330,7 @@
    "filename": "data/placeables/rudolfHormann/garageSolarPanels/garageSolarPanels.xml",
    "farmId": 2,
    "price": 152500.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12318,7 +12346,7 @@
    "filename": "data/placeables/rudolfHormann/garageSolarPanels/garageSolarPanels.xml",
    "farmId": 2,
    "price": 152500.0,
-   "age": 40.0,
+   "age": 41.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12329,204 +12357,12 @@
    "isMod": false
   },
   {
-   "id": "placeable9b7ee2afc7c783d19546d8ad967b0d57",
-   "name": "Flood Light 05",
-   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
-   "farmId": 2,
-   "price": 1500.0,
-   "age": 40.0,
-   "kinds": [],
-   "isPreplaced": false,
-   "productions": [],
-   "storage": [],
-   "animals": 0,
-   "x": 434.2,
-   "z": 614.0,
-   "isMod": false
-  },
-  {
-   "id": "placeable5f3ba4aac27959c61d40e908560acbd3",
-   "name": "Flood Light 05",
-   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
-   "farmId": 2,
-   "price": 1500.0,
-   "age": 40.0,
-   "kinds": [],
-   "isPreplaced": false,
-   "productions": [],
-   "storage": [],
-   "animals": 0,
-   "x": 403.6,
-   "z": 613.0,
-   "isMod": false
-  },
-  {
-   "id": "placeablee9eec345b1214373c376f0369166a17d",
-   "name": "Flood Light 05",
-   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
-   "farmId": 2,
-   "price": 1500.0,
-   "age": 40.0,
-   "kinds": [],
-   "isPreplaced": false,
-   "productions": [],
-   "storage": [],
-   "animals": 0,
-   "x": 603.4,
-   "z": 646.3,
-   "isMod": false
-  },
-  {
-   "id": "placeablefb9e5ed9ed86070de5285c3eb2b04981",
-   "name": "Flood Light 05",
-   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
-   "farmId": 2,
-   "price": 1500.0,
-   "age": 40.0,
-   "kinds": [],
-   "isPreplaced": false,
-   "productions": [],
-   "storage": [],
-   "animals": 0,
-   "x": 648.5,
-   "z": 936.8,
-   "isMod": false
-  },
-  {
-   "id": "placeablecde5be6d97d223aa763441ae3bfb47ee",
-   "name": "Flood Light 05",
-   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
-   "farmId": 2,
-   "price": 1500.0,
-   "age": 40.0,
-   "kinds": [],
-   "isPreplaced": false,
-   "productions": [],
-   "storage": [],
-   "animals": 0,
-   "x": 556.5,
-   "z": 958.9,
-   "isMod": false
-  },
-  {
-   "id": "placeable9ebf9f1bc42c006c8df3a5d517797ff3",
-   "name": "Flood Light 05",
-   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
-   "farmId": 2,
-   "price": 1500.0,
-   "age": 40.0,
-   "kinds": [],
-   "isPreplaced": false,
-   "productions": [],
-   "storage": [],
-   "animals": 0,
-   "x": 446.2,
-   "z": 981.2,
-   "isMod": false
-  },
-  {
-   "id": "placeable846f131f041f6652f2e366dcd46d9d62",
-   "name": "Flood Light 05",
-   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
-   "farmId": 2,
-   "price": 1500.0,
-   "age": 40.0,
-   "kinds": [],
-   "isPreplaced": false,
-   "productions": [],
-   "storage": [],
-   "animals": 0,
-   "x": 450.6,
-   "z": 885.3,
-   "isMod": false
-  },
-  {
-   "id": "placeable3c02ad62f69dc9f9507cdc1ae6d7e991",
-   "name": "Flood Light 05",
-   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
-   "farmId": 2,
-   "price": 1500.0,
-   "age": 40.0,
-   "kinds": [],
-   "isPreplaced": false,
-   "productions": [],
-   "storage": [],
-   "animals": 0,
-   "x": 653.2,
-   "z": 887.8,
-   "isMod": false
-  },
-  {
-   "id": "placeable17fe10ed5e184784bd667430a3568b46",
-   "name": "Flood Light 05",
-   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
-   "farmId": 2,
-   "price": 1500.0,
-   "age": 40.0,
-   "kinds": [],
-   "isPreplaced": false,
-   "productions": [],
-   "storage": [],
-   "animals": 0,
-   "x": 655.3,
-   "z": 780.7,
-   "isMod": false
-  },
-  {
-   "id": "placeable6c53f3a0faf887e94d3947a0bbbfef73",
-   "name": "Flood Light 05",
-   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
-   "farmId": 2,
-   "price": 1500.0,
-   "age": 40.0,
-   "kinds": [],
-   "isPreplaced": false,
-   "productions": [],
-   "storage": [],
-   "animals": 0,
-   "x": 652.9,
-   "z": 877.6,
-   "isMod": false
-  },
-  {
-   "id": "placeable6f196c7d0a003f61988541060ecce903",
-   "name": "Flood Light 05",
-   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
-   "farmId": 2,
-   "price": 1500.0,
-   "age": 40.0,
-   "kinds": [],
-   "isPreplaced": false,
-   "productions": [],
-   "storage": [],
-   "animals": 0,
-   "x": 659.0,
-   "z": 649.1,
-   "isMod": false
-  },
-  {
-   "id": "placeablee35f3f890e2e3117958264c206ac658d",
-   "name": "Flood Light 05",
-   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
-   "farmId": 2,
-   "price": 1500.0,
-   "age": 40.0,
-   "kinds": [],
-   "isPreplaced": false,
-   "productions": [],
-   "storage": [],
-   "animals": 0,
-   "x": 446.5,
-   "z": 698.7,
-   "isMod": false
-  },
-  {
    "id": "placeablefc9b2072c9d80c471f4aa721e260f7cc",
    "name": "Garage Solar Panels",
    "filename": "data/placeables/rudolfHormann/garageSolarPanels/garageSolarPanels.xml",
    "farmId": 2,
    "price": 152500.0,
-   "age": 28.0,
+   "age": 29.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12542,7 +12378,7 @@
    "filename": "data/placeables/rudolfHormann/garageSolarPanels/garageSolarPanels.xml",
    "farmId": 1,
    "price": 152500.0,
-   "age": 22.0,
+   "age": 23.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12553,12 +12389,204 @@
    "isMod": false
   },
   {
+   "id": "placeable9b7ee2afc7c783d19546d8ad967b0d57",
+   "name": "Flood Light 05",
+   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
+   "farmId": 2,
+   "price": 1500.0,
+   "age": 41.0,
+   "kinds": [],
+   "isPreplaced": false,
+   "productions": [],
+   "storage": [],
+   "animals": 0,
+   "x": 434.2,
+   "z": 614.0,
+   "isMod": false
+  },
+  {
+   "id": "placeable5f3ba4aac27959c61d40e908560acbd3",
+   "name": "Flood Light 05",
+   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
+   "farmId": 2,
+   "price": 1500.0,
+   "age": 41.0,
+   "kinds": [],
+   "isPreplaced": false,
+   "productions": [],
+   "storage": [],
+   "animals": 0,
+   "x": 403.6,
+   "z": 613.0,
+   "isMod": false
+  },
+  {
+   "id": "placeablee9eec345b1214373c376f0369166a17d",
+   "name": "Flood Light 05",
+   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
+   "farmId": 2,
+   "price": 1500.0,
+   "age": 41.0,
+   "kinds": [],
+   "isPreplaced": false,
+   "productions": [],
+   "storage": [],
+   "animals": 0,
+   "x": 603.4,
+   "z": 646.3,
+   "isMod": false
+  },
+  {
+   "id": "placeablefb9e5ed9ed86070de5285c3eb2b04981",
+   "name": "Flood Light 05",
+   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
+   "farmId": 2,
+   "price": 1500.0,
+   "age": 41.0,
+   "kinds": [],
+   "isPreplaced": false,
+   "productions": [],
+   "storage": [],
+   "animals": 0,
+   "x": 648.5,
+   "z": 936.8,
+   "isMod": false
+  },
+  {
+   "id": "placeablecde5be6d97d223aa763441ae3bfb47ee",
+   "name": "Flood Light 05",
+   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
+   "farmId": 2,
+   "price": 1500.0,
+   "age": 41.0,
+   "kinds": [],
+   "isPreplaced": false,
+   "productions": [],
+   "storage": [],
+   "animals": 0,
+   "x": 556.5,
+   "z": 958.9,
+   "isMod": false
+  },
+  {
+   "id": "placeable9ebf9f1bc42c006c8df3a5d517797ff3",
+   "name": "Flood Light 05",
+   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
+   "farmId": 2,
+   "price": 1500.0,
+   "age": 41.0,
+   "kinds": [],
+   "isPreplaced": false,
+   "productions": [],
+   "storage": [],
+   "animals": 0,
+   "x": 446.2,
+   "z": 981.2,
+   "isMod": false
+  },
+  {
+   "id": "placeable846f131f041f6652f2e366dcd46d9d62",
+   "name": "Flood Light 05",
+   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
+   "farmId": 2,
+   "price": 1500.0,
+   "age": 41.0,
+   "kinds": [],
+   "isPreplaced": false,
+   "productions": [],
+   "storage": [],
+   "animals": 0,
+   "x": 450.6,
+   "z": 885.3,
+   "isMod": false
+  },
+  {
+   "id": "placeable3c02ad62f69dc9f9507cdc1ae6d7e991",
+   "name": "Flood Light 05",
+   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
+   "farmId": 2,
+   "price": 1500.0,
+   "age": 41.0,
+   "kinds": [],
+   "isPreplaced": false,
+   "productions": [],
+   "storage": [],
+   "animals": 0,
+   "x": 653.2,
+   "z": 887.8,
+   "isMod": false
+  },
+  {
+   "id": "placeable17fe10ed5e184784bd667430a3568b46",
+   "name": "Flood Light 05",
+   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
+   "farmId": 2,
+   "price": 1500.0,
+   "age": 41.0,
+   "kinds": [],
+   "isPreplaced": false,
+   "productions": [],
+   "storage": [],
+   "animals": 0,
+   "x": 655.3,
+   "z": 780.7,
+   "isMod": false
+  },
+  {
+   "id": "placeable6c53f3a0faf887e94d3947a0bbbfef73",
+   "name": "Flood Light 05",
+   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
+   "farmId": 2,
+   "price": 1500.0,
+   "age": 41.0,
+   "kinds": [],
+   "isPreplaced": false,
+   "productions": [],
+   "storage": [],
+   "animals": 0,
+   "x": 652.9,
+   "z": 877.6,
+   "isMod": false
+  },
+  {
+   "id": "placeable6f196c7d0a003f61988541060ecce903",
+   "name": "Flood Light 05",
+   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
+   "farmId": 2,
+   "price": 1500.0,
+   "age": 41.0,
+   "kinds": [],
+   "isPreplaced": false,
+   "productions": [],
+   "storage": [],
+   "animals": 0,
+   "x": 659.0,
+   "z": 649.1,
+   "isMod": false
+  },
+  {
+   "id": "placeablee35f3f890e2e3117958264c206ac658d",
+   "name": "Flood Light 05",
+   "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
+   "farmId": 2,
+   "price": 1500.0,
+   "age": 41.0,
+   "kinds": [],
+   "isPreplaced": false,
+   "productions": [],
+   "storage": [],
+   "animals": 0,
+   "x": 446.5,
+   "z": 698.7,
+   "isMod": false
+  },
+  {
    "id": "placeablecddbd2d95e4712db203fa9bb831bc5aa",
    "name": "Flood Light 05",
    "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
    "farmId": 2,
    "price": 1500.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12574,7 +12602,7 @@
    "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
    "farmId": 2,
    "price": 1500.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12590,7 +12618,7 @@
    "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
    "farmId": 2,
    "price": 1500.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12606,7 +12634,7 @@
    "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
    "farmId": 2,
    "price": 1500.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12622,7 +12650,7 @@
    "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
    "farmId": 2,
    "price": 1500.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12638,7 +12666,7 @@
    "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
    "farmId": 2,
    "price": 1500.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12654,7 +12682,7 @@
    "filename": "data/placeables/brandless/floodLights/level05/floodLight05.xml",
    "farmId": 2,
    "price": 1500.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12670,7 +12698,7 @@
    "filename": "data/placeables/brandless/decoration/statues/gardenFigureEagle02.xml",
    "farmId": 1,
    "price": 50.0,
-   "age": 22.0,
+   "age": 23.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12686,7 +12714,7 @@
    "filename": "data/placeables/brandless/decoration/boats/sailingMotorBoat.xml",
    "farmId": 2,
    "price": 2500.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12702,7 +12730,7 @@
    "filename": "data/placeables/pesslInstruments/imetosIMT300/imetosIMT300.xml",
    "farmId": 1,
    "price": 4200.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12718,7 +12746,7 @@
    "filename": "data/placeables/brandless/decoration/statues/gardenGrill.xml",
    "farmId": 2,
    "price": 30.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12734,7 +12762,7 @@
    "filename": "data/placeables/brandless/decoration/statues/gardenFigureEagle01.xml",
    "farmId": 2,
    "price": 50.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12750,7 +12778,7 @@
    "filename": "data/placeables/brandless/decoration/statues/gardenFigureEagle01.xml",
    "farmId": 2,
    "price": 50.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12766,7 +12794,7 @@
    "filename": "data/placeables/brandless/decoration/wagons/farmWagonOld.xml",
    "farmId": 2,
    "price": 250.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12782,7 +12810,7 @@
    "filename": "data/placeables/brandless/decoration/gardenWells/gardenWell02.xml",
    "farmId": 2,
    "price": 50.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12798,7 +12826,7 @@
    "filename": "data/placeables/brandless/decoration/garbageContainers/barrel01.xml",
    "farmId": 2,
    "price": 10.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12814,7 +12842,7 @@
    "filename": "data/placeables/brandless/decoration/garbageContainers/trashCan01.xml",
    "farmId": 2,
    "price": 10.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12830,7 +12858,7 @@
    "filename": "data/placeables/brandless/decoration/benches/gardenSwing.xml",
    "farmId": 2,
    "price": 100.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12846,7 +12874,7 @@
    "filename": "data/placeables/brandless/decoration/benches/rockingChair.xml",
    "farmId": 2,
    "price": 30.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12862,7 +12890,7 @@
    "filename": "data/placeables/brandless/fences/US/fence02/fence02.xml",
    "farmId": 0,
    "price": 150.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12878,7 +12906,7 @@
    "filename": "data/placeables/brandless/lightsResidential/level04/lightResidential04.xml",
    "farmId": 2,
    "price": 800.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12894,7 +12922,7 @@
    "filename": "data/placeables/brandless/lightsResidential/level04/lightResidential04.xml",
    "farmId": 2,
    "price": 800.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12910,7 +12938,7 @@
    "filename": "data/placeables/brandless/lightsResidential/level04/lightResidential04.xml",
    "farmId": 2,
    "price": 800.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12926,7 +12954,7 @@
    "filename": "data/placeables/brandless/decoration/benches/chessTable.xml",
    "farmId": 2,
    "price": 100.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12942,7 +12970,7 @@
    "filename": "data/placeables/brandless/decoration/benches/oldTable.xml",
    "farmId": 2,
    "price": 50.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12958,7 +12986,7 @@
    "filename": "data/placeables/brandless/decoration/clothesLines/clotheslines02.xml",
    "farmId": 2,
    "price": 20.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12974,7 +13002,7 @@
    "filename": "data/placeables/brandless/decoration/clothesLines/clotheslines02.xml",
    "farmId": 2,
    "price": 20.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -12990,7 +13018,7 @@
    "filename": "data/placeables/brandless/decoration/flowerPots/flowerPot03.xml",
    "farmId": 2,
    "price": 20.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -13006,7 +13034,7 @@
    "filename": "data/placeables/brandless/decoration/playGround/gardenTireSwing.xml",
    "farmId": 2,
    "price": 100.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -13022,7 +13050,7 @@
    "filename": "data/placeables/brandless/decoration/playGround/gardenTireSwing.xml",
    "farmId": 2,
    "price": 100.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -13038,7 +13066,7 @@
    "filename": "data/placeables/brandless/decoration/playGround/outsidePool01.xml",
    "farmId": 2,
    "price": 250.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -13054,7 +13082,7 @@
    "filename": "data/placeables/brandless/animalHusbandries/doghouse/doghouse.xml",
    "farmId": 2,
    "price": 2500.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -13070,7 +13098,7 @@
    "filename": "data/placeables/meridian/fuelTank25000L/fuelTank25000L.xml",
    "farmId": 2,
    "price": 26500.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "silo"
    ],
@@ -13093,7 +13121,7 @@
    "filename": "$moddir$FS25_naturalWaterRiversAndPondsPack/xml/naturalWaterRiverStraightM.xml",
    "farmId": 1,
    "price": 3000.0,
-   "age": 14.0,
+   "age": 15.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -13109,7 +13137,7 @@
    "filename": "$moddir$FS25_naturalWaterRiversAndPondsPack/xml/naturalWaterRiverStraightM.xml",
    "farmId": 1,
    "price": 3000.0,
-   "age": 14.0,
+   "age": 15.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -13125,7 +13153,7 @@
    "filename": "$moddir$FS25_naturalWaterRiversAndPondsPack/xml/naturalWaterRiverStraightM.xml",
    "farmId": 1,
    "price": 3000.0,
-   "age": 14.0,
+   "age": 15.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -13141,7 +13169,7 @@
    "filename": "$moddir$FS25_naturalWaterRiversAndPondsPack/xml/naturalWaterRiverStraightL.xml",
    "farmId": 1,
    "price": 4500.0,
-   "age": 14.0,
+   "age": 15.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -13157,7 +13185,7 @@
    "filename": "$moddir$FS25_naturalWaterRiversAndPondsPack/xml/naturalWaterRiverStraightL.xml",
    "farmId": 1,
    "price": 4500.0,
-   "age": 14.0,
+   "age": 15.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -13173,7 +13201,7 @@
    "filename": "$moddir$FS25_sellEverything/sellEverythingXL.xml",
    "farmId": 2,
    "price": 1000.0,
-   "age": 40.0,
+   "age": 41.0,
    "kinds": [
     "sellingStation"
    ],
@@ -13191,7 +13219,7 @@
    "filename": "$moddir$FS25_sellEverything/sellEverythingXL.xml",
    "farmId": 2,
    "price": 1000.0,
-   "age": 14.0,
+   "age": 15.0,
    "kinds": [
     "sellingStation"
    ],
@@ -13209,7 +13237,7 @@
    "filename": "$moddir$FS25_sellEverything/sellEverythingXL.xml",
    "farmId": 2,
    "price": 1000.0,
-   "age": 14.0,
+   "age": 15.0,
    "kinds": [
     "sellingStation"
    ],
@@ -13227,7 +13255,7 @@
    "filename": "$moddir$FS25_USpack2/house.xml",
    "farmId": 15,
    "price": 85000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [
     "farmhouse"
    ],
@@ -13245,7 +13273,7 @@
    "filename": "$moddir$FS25_USpack1/shop.xml",
    "farmId": 2,
    "price": 95000.0,
-   "age": 14.0,
+   "age": 15.0,
    "kinds": [
     "silo"
    ],
@@ -13268,7 +13296,7 @@
    "filename": "$moddir$FS25_Deck/deck.xml",
    "farmId": 15,
    "price": 500.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -13284,7 +13312,7 @@
    "filename": "$moddir$FS25_Deck/deck.xml",
    "farmId": 2,
    "price": 500.0,
-   "age": 17.0,
+   "age": 18.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -13300,7 +13328,7 @@
    "filename": "data/placeables/mapUS/stable01/stable01.xml",
    "farmId": 15,
    "price": 10000.0,
-   "age": 48.0,
+   "age": 49.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -13316,7 +13344,7 @@
    "filename": "data/placeables/rudolfHormann/garageBigService/garageBigService.xml",
    "farmId": 2,
    "price": 374500.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -13332,7 +13360,7 @@
    "filename": "$moddir$FS25_Multifruit_Buying_Station/xmls/multipurposestation.xml",
    "farmId": 2,
    "price": 25500.0,
-   "age": 40.0,
+   "age": 41.0,
    "kinds": [
     "sellingStation"
    ],
@@ -13350,7 +13378,7 @@
    "filename": "$moddir$FS25_Multifruit_Buying_Station/xmls/multifruitstation_real.xml",
    "farmId": 1,
    "price": 2500.0,
-   "age": 22.0,
+   "age": 23.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -13366,7 +13394,7 @@
    "filename": "$moddir$FS25_Multifruit_Buying_Station/xmls/multipurposestation.xml",
    "farmId": 2,
    "price": 25500.0,
-   "age": 14.0,
+   "age": 15.0,
    "kinds": [
     "sellingStation"
    ],
@@ -13384,7 +13412,7 @@
    "filename": "$moddir$FS25_Multifruit_Buying_Station/xmls/multipurposestation.xml",
    "farmId": 2,
    "price": 25500.0,
-   "age": 14.0,
+   "age": 15.0,
    "kinds": [
     "sellingStation"
    ],
@@ -13402,7 +13430,7 @@
    "filename": "data/placeables/mapUS/farmHouse03/farmHouse03.xml",
    "farmId": 2,
    "price": 375000.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "farmhouse"
    ],
@@ -13420,7 +13448,7 @@
    "filename": "data/placeables/brandless/greenhouses/greenHouseGlass/greenHouseGlassLarge.xml",
    "farmId": 2,
    "price": 54000.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "productionPoint"
    ],
@@ -13496,7 +13524,7 @@
    "filename": "data/placeables/brandless/greenhouses/greenHouseGlass/greenHouseGlassLarge.xml",
    "farmId": 2,
    "price": 54000.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "productionPoint"
    ],
@@ -13572,7 +13600,7 @@
    "filename": "data/placeables/brandless/greenhouses/greenHouseGlass/greenHouseGlassLarge.xml",
    "farmId": 2,
    "price": 54000.0,
-   "age": 47.0,
+   "age": 48.0,
    "kinds": [
     "productionPoint"
    ],
@@ -13644,7 +13672,7 @@
    "filename": "$moddir$FS25_Shed_Storage_And_Shed/Shed_Storage.xml",
    "farmId": 1,
    "price": 49000.0,
-   "age": 14.0,
+   "age": 15.0,
    "kinds": [],
    "isPreplaced": false,
    "productions": [],
@@ -13679,8 +13707,8 @@
      "LATE_SPRING": 476,
      "EARLY_SUMMER": 429,
      "MID_SUMMER": 406,
-     "LATE_SUMMER": 409,
-     "EARLY_AUTUMN": 505,
+     "LATE_SUMMER": 432,
+     "EARLY_AUTUMN": 436,
      "MID_AUTUMN": 546,
      "LATE_AUTUMN": 576,
      "EARLY_WINTER": 611,
@@ -13697,8 +13725,8 @@
      "LATE_SPRING": 442,
      "EARLY_SUMMER": 401,
      "MID_SUMMER": 377,
-     "LATE_SUMMER": 380,
-     "EARLY_AUTUMN": 467,
+     "LATE_SUMMER": 406,
+     "EARLY_AUTUMN": 409,
      "MID_AUTUMN": 504,
      "LATE_AUTUMN": 529,
      "EARLY_WINTER": 570,
@@ -13715,8 +13743,8 @@
      "LATE_SPRING": 749,
      "EARLY_SUMMER": 674,
      "MID_SUMMER": 659,
-     "LATE_SUMMER": 658,
-     "EARLY_AUTUMN": 795,
+     "LATE_SUMMER": 687,
+     "EARLY_AUTUMN": 694,
      "MID_AUTUMN": 861,
      "LATE_AUTUMN": 914,
      "EARLY_WINTER": 962,
@@ -13733,8 +13761,8 @@
      "LATE_SPRING": 762,
      "EARLY_SUMMER": 725,
      "MID_SUMMER": 779,
-     "LATE_SUMMER": 786,
-     "EARLY_AUTUMN": 971,
+     "LATE_SUMMER": 888,
+     "EARLY_AUTUMN": 900,
      "MID_AUTUMN": 1021,
      "LATE_AUTUMN": 1085,
      "EARLY_WINTER": 972,
@@ -13751,8 +13779,8 @@
      "LATE_SPRING": 551,
      "EARLY_SUMMER": 510,
      "MID_SUMMER": 514,
-     "LATE_SUMMER": 519,
-     "EARLY_AUTUMN": 618,
+     "LATE_SUMMER": 557,
+     "EARLY_AUTUMN": 562,
      "MID_AUTUMN": 701,
      "LATE_AUTUMN": 749,
      "EARLY_WINTER": 796,
@@ -13769,8 +13797,8 @@
      "LATE_SPRING": 884,
      "EARLY_SUMMER": 947,
      "MID_SUMMER": 986,
-     "LATE_SUMMER": 1011,
-     "EARLY_AUTUMN": 1119,
+     "LATE_SUMMER": 1108,
+     "EARLY_AUTUMN": 1118,
      "MID_AUTUMN": 1071,
      "LATE_AUTUMN": 653,
      "EARLY_WINTER": 743,
@@ -13787,8 +13815,8 @@
      "LATE_SPRING": 1650,
      "EARLY_SUMMER": 1853,
      "MID_SUMMER": 1322,
-     "LATE_SUMMER": 1257,
-     "EARLY_AUTUMN": 951,
+     "LATE_SUMMER": 1020,
+     "EARLY_AUTUMN": 998,
      "MID_AUTUMN": 888,
      "LATE_AUTUMN": 1023,
      "EARLY_WINTER": 849,
@@ -13805,8 +13833,8 @@
      "LATE_SPRING": 665,
      "EARLY_SUMMER": 755,
      "MID_SUMMER": 567,
-     "LATE_SUMMER": 547,
-     "EARLY_AUTUMN": 401,
+     "LATE_SUMMER": 514,
+     "EARLY_AUTUMN": 505,
      "MID_AUTUMN": 354,
      "LATE_AUTUMN": 536,
      "EARLY_WINTER": 775,
@@ -13823,8 +13851,8 @@
      "LATE_SPRING": 334,
      "EARLY_SUMMER": 351,
      "MID_SUMMER": 349,
-     "LATE_SUMMER": 351,
-     "EARLY_AUTUMN": 367,
+     "LATE_SUMMER": 347,
+     "EARLY_AUTUMN": 350,
      "MID_AUTUMN": 385,
      "LATE_AUTUMN": 399,
      "EARLY_WINTER": 387,
@@ -13842,7 +13870,7 @@
      "EARLY_SUMMER": 254,
      "MID_SUMMER": 257,
      "LATE_SUMMER": 258,
-     "EARLY_AUTUMN": 271,
+     "EARLY_AUTUMN": 259,
      "MID_AUTUMN": 279,
      "LATE_AUTUMN": 292,
      "EARLY_WINTER": 281,
@@ -13859,8 +13887,8 @@
      "LATE_SPRING": 166,
      "EARLY_SUMMER": 174,
      "MID_SUMMER": 182,
-     "LATE_SUMMER": 181,
-     "EARLY_AUTUMN": 182,
+     "LATE_SUMMER": 184,
+     "EARLY_AUTUMN": 184,
      "MID_AUTUMN": 193,
      "LATE_AUTUMN": 204,
      "EARLY_WINTER": 211,
@@ -13877,8 +13905,8 @@
      "LATE_SPRING": 181,
      "EARLY_SUMMER": 190,
      "MID_SUMMER": 201,
-     "LATE_SUMMER": 201,
-     "EARLY_AUTUMN": 201,
+     "LATE_SUMMER": 199,
+     "EARLY_AUTUMN": 199,
      "MID_AUTUMN": 210,
      "LATE_AUTUMN": 219,
      "EARLY_WINTER": 232,
@@ -13895,8 +13923,8 @@
      "LATE_SPRING": 180,
      "EARLY_SUMMER": 191,
      "MID_SUMMER": 198,
-     "LATE_SUMMER": 199,
-     "EARLY_AUTUMN": 200,
+     "LATE_SUMMER": 204,
+     "EARLY_AUTUMN": 203,
      "MID_AUTUMN": 210,
      "LATE_AUTUMN": 220,
      "EARLY_WINTER": 229,
@@ -13913,8 +13941,8 @@
      "LATE_SPRING": 1905,
      "EARLY_SUMMER": 1730,
      "MID_SUMMER": 1683,
-     "LATE_SUMMER": 1669,
-     "EARLY_AUTUMN": 1925,
+     "LATE_SUMMER": 1658,
+     "EARLY_AUTUMN": 1660,
      "MID_AUTUMN": 1948,
      "LATE_AUTUMN": 1964,
      "EARLY_WINTER": 1845,
@@ -13931,8 +13959,8 @@
      "LATE_SPRING": 666,
      "EARLY_SUMMER": 692,
      "MID_SUMMER": 692,
-     "LATE_SUMMER": 691,
-     "EARLY_AUTUMN": 689,
+     "LATE_SUMMER": 689,
+     "EARLY_AUTUMN": 694,
      "MID_AUTUMN": 668,
      "LATE_AUTUMN": 675,
      "EARLY_WINTER": 634,
@@ -13949,8 +13977,8 @@
      "LATE_SPRING": 1405,
      "EARLY_SUMMER": 1440,
      "MID_SUMMER": 1440,
-     "LATE_SUMMER": 1435,
-     "EARLY_AUTUMN": 1431,
+     "LATE_SUMMER": 1462,
+     "EARLY_AUTUMN": 1463,
      "MID_AUTUMN": 1403,
      "LATE_AUTUMN": 1383,
      "EARLY_WINTER": 1347,
@@ -13967,8 +13995,8 @@
      "LATE_SPRING": 598,
      "EARLY_SUMMER": 590,
      "MID_SUMMER": 615,
-     "LATE_SUMMER": 618,
-     "EARLY_AUTUMN": 624,
+     "LATE_SUMMER": 616,
+     "EARLY_AUTUMN": 616,
      "MID_AUTUMN": 613,
      "LATE_AUTUMN": 597,
      "EARLY_WINTER": 594,
@@ -13985,8 +14013,8 @@
      "LATE_SPRING": 598,
      "EARLY_SUMMER": 586,
      "MID_SUMMER": 595,
-     "LATE_SUMMER": 588,
-     "EARLY_AUTUMN": 611,
+     "LATE_SUMMER": 591,
+     "EARLY_AUTUMN": 596,
      "MID_AUTUMN": 640,
      "LATE_AUTUMN": 650,
      "EARLY_WINTER": 629,
@@ -14003,8 +14031,8 @@
      "LATE_SPRING": 281,
      "EARLY_SUMMER": 278,
      "MID_SUMMER": 293,
-     "LATE_SUMMER": 286,
-     "EARLY_AUTUMN": 288,
+     "LATE_SUMMER": 288,
+     "EARLY_AUTUMN": 286,
      "MID_AUTUMN": 283,
      "LATE_AUTUMN": 285,
      "EARLY_WINTER": 279,
@@ -14022,7 +14050,7 @@
      "EARLY_SUMMER": 189,
      "MID_SUMMER": 187,
      "LATE_SUMMER": 187,
-     "EARLY_AUTUMN": 186,
+     "EARLY_AUTUMN": 188,
      "MID_AUTUMN": 182,
      "LATE_AUTUMN": 180,
      "EARLY_WINTER": 172,
@@ -14039,8 +14067,8 @@
      "LATE_SPRING": 997,
      "EARLY_SUMMER": 1002,
      "MID_SUMMER": 1005,
-     "LATE_SUMMER": 1011,
-     "EARLY_AUTUMN": 1006,
+     "LATE_SUMMER": 1004,
+     "EARLY_AUTUMN": 1005,
      "MID_AUTUMN": 1002,
      "LATE_AUTUMN": 1002,
      "EARLY_WINTER": 995,
@@ -14057,8 +14085,8 @@
      "LATE_SPRING": 196,
      "EARLY_SUMMER": 169,
      "MID_SUMMER": 167,
-     "LATE_SUMMER": 174,
-     "EARLY_AUTUMN": 254,
+     "LATE_SUMMER": 199,
+     "EARLY_AUTUMN": 205,
      "MID_AUTUMN": 368,
      "LATE_AUTUMN": 459,
      "EARLY_WINTER": 539,
@@ -14075,8 +14103,8 @@
      "LATE_SPRING": 212,
      "EARLY_SUMMER": 222,
      "MID_SUMMER": 222,
-     "LATE_SUMMER": 222,
-     "EARLY_AUTUMN": 233,
+     "LATE_SUMMER": 221,
+     "EARLY_AUTUMN": 223,
      "MID_AUTUMN": 244,
      "LATE_AUTUMN": 255,
      "EARLY_WINTER": 244,
@@ -14093,8 +14121,8 @@
      "LATE_SPRING": 122,
      "EARLY_SUMMER": 121,
      "MID_SUMMER": 120,
-     "LATE_SUMMER": 121,
-     "EARLY_AUTUMN": 123,
+     "LATE_SUMMER": 122,
+     "EARLY_AUTUMN": 122,
      "MID_AUTUMN": 121,
      "LATE_AUTUMN": 121,
      "EARLY_WINTER": 121,
@@ -14147,8 +14175,8 @@
      "LATE_SPRING": 42,
      "EARLY_SUMMER": 40,
      "MID_SUMMER": 40,
-     "LATE_SUMMER": 41,
-     "EARLY_AUTUMN": 44,
+     "LATE_SUMMER": 42,
+     "EARLY_AUTUMN": 42,
      "MID_AUTUMN": 47,
      "LATE_AUTUMN": 48,
      "EARLY_WINTER": 49,
@@ -14183,8 +14211,8 @@
      "LATE_SPRING": 52,
      "EARLY_SUMMER": 50,
      "MID_SUMMER": 51,
-     "LATE_SUMMER": 50,
-     "EARLY_AUTUMN": 56,
+     "LATE_SUMMER": 53,
+     "EARLY_AUTUMN": 53,
      "MID_AUTUMN": 59,
      "LATE_AUTUMN": 60,
      "EARLY_WINTER": 62,
@@ -14201,8 +14229,8 @@
      "LATE_SPRING": 39,
      "EARLY_SUMMER": 35,
      "MID_SUMMER": 33,
-     "LATE_SUMMER": 33,
-     "EARLY_AUTUMN": 41,
+     "LATE_SUMMER": 36,
+     "EARLY_AUTUMN": 36,
      "MID_AUTUMN": 44,
      "LATE_AUTUMN": 46,
      "EARLY_WINTER": 49,
@@ -14309,8 +14337,8 @@
      "LATE_SPRING": 826,
      "EARLY_SUMMER": 774,
      "MID_SUMMER": 704,
-     "LATE_SUMMER": 688,
-     "EARLY_AUTUMN": 561,
+     "LATE_SUMMER": 660,
+     "EARLY_AUTUMN": 649,
      "MID_AUTUMN": 636,
      "LATE_AUTUMN": 659,
      "EARLY_WINTER": 715,
@@ -14327,8 +14355,8 @@
      "LATE_SPRING": 906,
      "EARLY_SUMMER": 826,
      "MID_SUMMER": 766,
-     "LATE_SUMMER": 754,
-     "EARLY_AUTUMN": 647,
+     "LATE_SUMMER": 705,
+     "EARLY_AUTUMN": 696,
      "MID_AUTUMN": 571,
      "LATE_AUTUMN": 635,
      "EARLY_WINTER": 660,
@@ -14345,8 +14373,8 @@
      "LATE_SPRING": 626,
      "EARLY_SUMMER": 654,
      "MID_SUMMER": 677,
-     "LATE_SUMMER": 675,
-     "EARLY_AUTUMN": 767,
+     "LATE_SUMMER": 705,
+     "EARLY_AUTUMN": 721,
      "MID_AUTUMN": 698,
      "LATE_AUTUMN": 661,
      "EARLY_WINTER": 749,
@@ -14363,8 +14391,8 @@
      "LATE_SPRING": 2544,
      "EARLY_SUMMER": 2649,
      "MID_SUMMER": 2697,
-     "LATE_SUMMER": 2702,
-     "EARLY_AUTUMN": 3014,
+     "LATE_SUMMER": 2957,
+     "EARLY_AUTUMN": 2981,
      "MID_AUTUMN": 2776,
      "LATE_AUTUMN": 2732,
      "EARLY_WINTER": 3019,
@@ -14381,8 +14409,8 @@
      "LATE_SPRING": 3121,
      "EARLY_SUMMER": 3318,
      "MID_SUMMER": 3345,
-     "LATE_SUMMER": 3400,
-     "EARLY_AUTUMN": 3842,
+     "LATE_SUMMER": 3605,
+     "EARLY_AUTUMN": 3605,
      "MID_AUTUMN": 3404,
      "LATE_AUTUMN": 3317,
      "EARLY_WINTER": 3842,
@@ -14399,8 +14427,8 @@
      "LATE_SPRING": 1121,
      "EARLY_SUMMER": 934,
      "MID_SUMMER": 849,
-     "LATE_SUMMER": 837,
-     "EARLY_AUTUMN": 718,
+     "LATE_SUMMER": 774,
+     "EARLY_AUTUMN": 758,
      "MID_AUTUMN": 796,
      "LATE_AUTUMN": 885,
      "EARLY_WINTER": 866,
@@ -14417,8 +14445,8 @@
      "LATE_SPRING": 1243,
      "EARLY_SUMMER": 1236,
      "MID_SUMMER": 1054,
-     "LATE_SUMMER": 1050,
-     "EARLY_AUTUMN": 1165,
+     "LATE_SUMMER": 1044,
+     "EARLY_AUTUMN": 1050,
      "MID_AUTUMN": 1389,
      "LATE_AUTUMN": 1364,
      "EARLY_WINTER": 1201,
@@ -14435,8 +14463,8 @@
      "LATE_SPRING": 700,
      "EARLY_SUMMER": 747,
      "MID_SUMMER": 772,
-     "LATE_SUMMER": 780,
-     "EARLY_AUTUMN": 781,
+     "LATE_SUMMER": 815,
+     "EARLY_AUTUMN": 815,
      "MID_AUTUMN": 771,
      "LATE_AUTUMN": 750,
      "EARLY_WINTER": 700,
@@ -14453,8 +14481,8 @@
      "LATE_SPRING": 997,
      "EARLY_SUMMER": 950,
      "MID_SUMMER": 928,
-     "LATE_SUMMER": 923,
-     "EARLY_AUTUMN": 938,
+     "LATE_SUMMER": 901,
+     "EARLY_AUTUMN": 907,
      "MID_AUTUMN": 976,
      "LATE_AUTUMN": 1001,
      "EARLY_WINTER": 1024,
@@ -14471,8 +14499,8 @@
      "LATE_SPRING": 988,
      "EARLY_SUMMER": 923,
      "MID_SUMMER": 980,
-     "LATE_SUMMER": 971,
-     "EARLY_AUTUMN": 883,
+     "LATE_SUMMER": 900,
+     "EARLY_AUTUMN": 897,
      "MID_AUTUMN": 979,
      "LATE_AUTUMN": 1000,
      "EARLY_WINTER": 1067,
@@ -14489,8 +14517,8 @@
      "LATE_SPRING": 497,
      "EARLY_SUMMER": 474,
      "MID_SUMMER": 491,
-     "LATE_SUMMER": 486,
-     "EARLY_AUTUMN": 451,
+     "LATE_SUMMER": 458,
+     "EARLY_AUTUMN": 455,
      "MID_AUTUMN": 492,
      "LATE_AUTUMN": 505,
      "EARLY_WINTER": 539,
@@ -14507,8 +14535,8 @@
      "LATE_SPRING": 441,
      "EARLY_SUMMER": 421,
      "MID_SUMMER": 439,
-     "LATE_SUMMER": 433,
-     "EARLY_AUTUMN": 404,
+     "LATE_SUMMER": 418,
+     "EARLY_AUTUMN": 413,
      "MID_AUTUMN": 443,
      "LATE_AUTUMN": 454,
      "EARLY_WINTER": 485,
@@ -14525,8 +14553,8 @@
      "LATE_SPRING": 447,
      "EARLY_SUMMER": 419,
      "MID_SUMMER": 443,
-     "LATE_SUMMER": 442,
-     "EARLY_AUTUMN": 405,
+     "LATE_SUMMER": 417,
+     "EARLY_AUTUMN": 414,
      "MID_AUTUMN": 445,
      "LATE_AUTUMN": 451,
      "EARLY_WINTER": 487,
@@ -14543,8 +14571,8 @@
      "LATE_SPRING": 349,
      "EARLY_SUMMER": 332,
      "MID_SUMMER": 349,
-     "LATE_SUMMER": 345,
-     "EARLY_AUTUMN": 313,
+     "LATE_SUMMER": 322,
+     "EARLY_AUTUMN": 321,
      "MID_AUTUMN": 342,
      "LATE_AUTUMN": 354,
      "EARLY_WINTER": 376,
@@ -14561,8 +14589,8 @@
      "LATE_SPRING": 445,
      "EARLY_SUMMER": 418,
      "MID_SUMMER": 444,
-     "LATE_SUMMER": 437,
-     "EARLY_AUTUMN": 403,
+     "LATE_SUMMER": 409,
+     "EARLY_AUTUMN": 406,
      "MID_AUTUMN": 441,
      "LATE_AUTUMN": 455,
      "EARLY_WINTER": 487,
@@ -14579,8 +14607,8 @@
      "LATE_SPRING": 452,
      "EARLY_SUMMER": 431,
      "MID_SUMMER": 446,
-     "LATE_SUMMER": 442,
-     "EARLY_AUTUMN": 402,
+     "LATE_SUMMER": 414,
+     "EARLY_AUTUMN": 409,
      "MID_AUTUMN": 433,
      "LATE_AUTUMN": 460,
      "EARLY_WINTER": 487,
@@ -14597,8 +14625,8 @@
      "LATE_SPRING": 418,
      "EARLY_SUMMER": 393,
      "MID_SUMMER": 413,
-     "LATE_SUMMER": 412,
-     "EARLY_AUTUMN": 376,
+     "LATE_SUMMER": 388,
+     "EARLY_AUTUMN": 387,
      "MID_AUTUMN": 413,
      "LATE_AUTUMN": 421,
      "EARLY_WINTER": 455,
@@ -14615,8 +14643,8 @@
      "LATE_SPRING": 863,
      "EARLY_SUMMER": 811,
      "MID_SUMMER": 855,
-     "LATE_SUMMER": 849,
-     "EARLY_AUTUMN": 774,
+     "LATE_SUMMER": 788,
+     "EARLY_AUTUMN": 787,
      "MID_AUTUMN": 863,
      "LATE_AUTUMN": 887,
      "EARLY_WINTER": 925,
@@ -14633,8 +14661,8 @@
      "LATE_SPRING": 1358,
      "EARLY_SUMMER": 1420,
      "MID_SUMMER": 1340,
-     "LATE_SUMMER": 1336,
-     "EARLY_AUTUMN": 1265,
+     "LATE_SUMMER": 1322,
+     "EARLY_AUTUMN": 1320,
      "MID_AUTUMN": 1239,
      "LATE_AUTUMN": 1209,
      "EARLY_WINTER": 1181,
@@ -14651,8 +14679,8 @@
      "LATE_SPRING": 1965,
      "EARLY_SUMMER": 1933,
      "MID_SUMMER": 1931,
-     "LATE_SUMMER": 1947,
-     "EARLY_AUTUMN": 1934,
+     "LATE_SUMMER": 1931,
+     "EARLY_AUTUMN": 1940,
      "MID_AUTUMN": 1922,
      "LATE_AUTUMN": 1943,
      "EARLY_WINTER": 1955,
@@ -14669,8 +14697,8 @@
      "LATE_SPRING": 2901,
      "EARLY_SUMMER": 2927,
      "MID_SUMMER": 2932,
-     "LATE_SUMMER": 2904,
-     "EARLY_AUTUMN": 2918,
+     "LATE_SUMMER": 2927,
+     "EARLY_AUTUMN": 2915,
      "MID_AUTUMN": 2881,
      "LATE_AUTUMN": 2894,
      "EARLY_WINTER": 2948,
@@ -14687,8 +14715,8 @@
      "LATE_SPRING": 4960,
      "EARLY_SUMMER": 4974,
      "MID_SUMMER": 4946,
-     "LATE_SUMMER": 4965,
-     "EARLY_AUTUMN": 4926,
+     "LATE_SUMMER": 4957,
+     "EARLY_AUTUMN": 4935,
      "MID_AUTUMN": 5007,
      "LATE_AUTUMN": 4927,
      "EARLY_WINTER": 4989,
@@ -14705,8 +14733,8 @@
      "LATE_SPRING": 645,
      "EARLY_SUMMER": 589,
      "MID_SUMMER": 554,
-     "LATE_SUMMER": 556,
-     "EARLY_AUTUMN": 693,
+     "LATE_SUMMER": 595,
+     "EARLY_AUTUMN": 603,
      "MID_AUTUMN": 748,
      "LATE_AUTUMN": 783,
      "EARLY_WINTER": 845,
@@ -14723,8 +14751,8 @@
      "LATE_SPRING": 860,
      "EARLY_SUMMER": 778,
      "MID_SUMMER": 735,
-     "LATE_SUMMER": 738,
-     "EARLY_AUTUMN": 893,
+     "LATE_SUMMER": 786,
+     "EARLY_AUTUMN": 793,
      "MID_AUTUMN": 977,
      "LATE_AUTUMN": 1023,
      "EARLY_WINTER": 1102,
@@ -14741,8 +14769,8 @@
      "LATE_SPRING": 1580,
      "EARLY_SUMMER": 1429,
      "MID_SUMMER": 1361,
-     "LATE_SUMMER": 1352,
-     "EARLY_AUTUMN": 1630,
+     "LATE_SUMMER": 1436,
+     "EARLY_AUTUMN": 1450,
      "MID_AUTUMN": 1791,
      "LATE_AUTUMN": 1857,
      "EARLY_WINTER": 2014,
@@ -14759,8 +14787,8 @@
      "LATE_SPRING": 2971,
      "EARLY_SUMMER": 3156,
      "MID_SUMMER": 3098,
-     "LATE_SUMMER": 3149,
-     "EARLY_AUTUMN": 3622,
+     "LATE_SUMMER": 3397,
+     "EARLY_AUTUMN": 3421,
      "MID_AUTUMN": 3232,
      "LATE_AUTUMN": 3151,
      "EARLY_WINTER": 3569,
@@ -14777,8 +14805,8 @@
      "LATE_SPRING": 519,
      "EARLY_SUMMER": 551,
      "MID_SUMMER": 548,
-     "LATE_SUMMER": 552,
-     "EARLY_AUTUMN": 630,
+     "LATE_SUMMER": 607,
+     "EARLY_AUTUMN": 609,
      "MID_AUTUMN": 570,
      "LATE_AUTUMN": 555,
      "EARLY_WINTER": 635,
@@ -14795,8 +14823,8 @@
      "LATE_SPRING": 1911,
      "EARLY_SUMMER": 2007,
      "MID_SUMMER": 2018,
-     "LATE_SUMMER": 2026,
-     "EARLY_AUTUMN": 2278,
+     "LATE_SUMMER": 2181,
+     "EARLY_AUTUMN": 2190,
      "MID_AUTUMN": 2067,
      "LATE_AUTUMN": 2005,
      "EARLY_WINTER": 2275,
@@ -14813,8 +14841,8 @@
      "LATE_SPRING": 2247,
      "EARLY_SUMMER": 2380,
      "MID_SUMMER": 2386,
-     "LATE_SUMMER": 2412,
-     "EARLY_AUTUMN": 2727,
+     "LATE_SUMMER": 2553,
+     "EARLY_AUTUMN": 2589,
      "MID_AUTUMN": 2414,
      "LATE_AUTUMN": 2390,
      "EARLY_WINTER": 2751,
@@ -14831,8 +14859,8 @@
      "LATE_SPRING": 1003,
      "EARLY_SUMMER": 1075,
      "MID_SUMMER": 1055,
-     "LATE_SUMMER": 1078,
-     "EARLY_AUTUMN": 1218,
+     "LATE_SUMMER": 1134,
+     "EARLY_AUTUMN": 1148,
      "MID_AUTUMN": 1101,
      "LATE_AUTUMN": 1075,
      "EARLY_WINTER": 1212,
@@ -14849,8 +14877,8 @@
      "LATE_SPRING": 1628,
      "EARLY_SUMMER": 1691,
      "MID_SUMMER": 1707,
-     "LATE_SUMMER": 1737,
-     "EARLY_AUTUMN": 1984,
+     "LATE_SUMMER": 1865,
+     "EARLY_AUTUMN": 1876,
      "MID_AUTUMN": 1742,
      "LATE_AUTUMN": 1731,
      "EARLY_WINTER": 1951,
@@ -14867,8 +14895,8 @@
      "LATE_SPRING": 6712,
      "EARLY_SUMMER": 7097,
      "MID_SUMMER": 7112,
-     "LATE_SUMMER": 7177,
-     "EARLY_AUTUMN": 8198,
+     "LATE_SUMMER": 7726,
+     "EARLY_AUTUMN": 7764,
      "MID_AUTUMN": 7450,
      "LATE_AUTUMN": 7158,
      "EARLY_WINTER": 8079,
@@ -14885,8 +14913,8 @@
      "LATE_SPRING": 1574,
      "EARLY_SUMMER": 1674,
      "MID_SUMMER": 1652,
-     "LATE_SUMMER": 1686,
-     "EARLY_AUTUMN": 1918,
+     "LATE_SUMMER": 1786,
+     "EARLY_AUTUMN": 1811,
      "MID_AUTUMN": 1711,
      "LATE_AUTUMN": 1686,
      "EARLY_WINTER": 1885,
@@ -14903,8 +14931,8 @@
      "LATE_SPRING": 2156,
      "EARLY_SUMMER": 1876,
      "MID_SUMMER": 1806,
-     "LATE_SUMMER": 1830,
-     "EARLY_AUTUMN": 1825,
+     "LATE_SUMMER": 1882,
+     "EARLY_AUTUMN": 1879,
      "MID_AUTUMN": 1914,
      "LATE_AUTUMN": 2016,
      "EARLY_WINTER": 2088,
@@ -14921,8 +14949,8 @@
      "LATE_SPRING": 1503,
      "EARLY_SUMMER": 1490,
      "MID_SUMMER": 1505,
-     "LATE_SUMMER": 1500,
-     "EARLY_AUTUMN": 1511,
+     "LATE_SUMMER": 1491,
+     "EARLY_AUTUMN": 1495,
      "MID_AUTUMN": 1508,
      "LATE_AUTUMN": 1501,
      "EARLY_WINTER": 1491,
@@ -14939,8 +14967,8 @@
      "LATE_SPRING": 1544,
      "EARLY_SUMMER": 1557,
      "MID_SUMMER": 1564,
-     "LATE_SUMMER": 1551,
-     "EARLY_AUTUMN": 1562,
+     "LATE_SUMMER": 1560,
+     "EARLY_AUTUMN": 1556,
      "MID_AUTUMN": 1569,
      "LATE_AUTUMN": 1558,
      "EARLY_WINTER": 1541,
@@ -14957,8 +14985,8 @@
      "LATE_SPRING": 646,
      "EARLY_SUMMER": 657,
      "MID_SUMMER": 663,
-     "LATE_SUMMER": 653,
-     "EARLY_AUTUMN": 657,
+     "LATE_SUMMER": 645,
+     "EARLY_AUTUMN": 643,
      "MID_AUTUMN": 651,
      "LATE_AUTUMN": 642,
      "EARLY_WINTER": 648,
@@ -14975,8 +15003,8 @@
      "LATE_SPRING": 573,
      "EARLY_SUMMER": 583,
      "MID_SUMMER": 580,
-     "LATE_SUMMER": 580,
-     "EARLY_AUTUMN": 577,
+     "LATE_SUMMER": 581,
+     "EARLY_AUTUMN": 580,
      "MID_AUTUMN": 580,
      "LATE_AUTUMN": 577,
      "EARLY_WINTER": 579,
@@ -14993,8 +15021,8 @@
      "LATE_SPRING": 583,
      "EARLY_SUMMER": 577,
      "MID_SUMMER": 577,
-     "LATE_SUMMER": 581,
-     "EARLY_AUTUMN": 586,
+     "LATE_SUMMER": 580,
+     "EARLY_AUTUMN": 578,
      "MID_AUTUMN": 577,
      "LATE_AUTUMN": 578,
      "EARLY_WINTER": 584,
@@ -15011,8 +15039,8 @@
      "LATE_SPRING": 563,
      "EARLY_SUMMER": 564,
      "MID_SUMMER": 559,
-     "LATE_SUMMER": 560,
-     "EARLY_AUTUMN": 561,
+     "LATE_SUMMER": 556,
+     "EARLY_AUTUMN": 557,
      "MID_AUTUMN": 563,
      "LATE_AUTUMN": 567,
      "EARLY_WINTER": 559,
@@ -15029,8 +15057,8 @@
      "LATE_SPRING": 1558,
      "EARLY_SUMMER": 1554,
      "MID_SUMMER": 1542,
-     "LATE_SUMMER": 1555,
-     "EARLY_AUTUMN": 1553,
+     "LATE_SUMMER": 1548,
+     "EARLY_AUTUMN": 1540,
      "MID_AUTUMN": 1545,
      "LATE_AUTUMN": 1549,
      "EARLY_WINTER": 1542,
@@ -15047,8 +15075,8 @@
      "LATE_SPRING": 932,
      "EARLY_SUMMER": 944,
      "MID_SUMMER": 939,
-     "LATE_SUMMER": 945,
-     "EARLY_AUTUMN": 943,
+     "LATE_SUMMER": 944,
+     "EARLY_AUTUMN": 948,
      "MID_AUTUMN": 944,
      "LATE_AUTUMN": 942,
      "EARLY_WINTER": 944,
@@ -15065,8 +15093,8 @@
      "LATE_SPRING": 874,
      "EARLY_SUMMER": 886,
      "MID_SUMMER": 884,
-     "LATE_SUMMER": 884,
-     "EARLY_AUTUMN": 888,
+     "LATE_SUMMER": 871,
+     "EARLY_AUTUMN": 875,
      "MID_AUTUMN": 883,
      "LATE_AUTUMN": 881,
      "EARLY_WINTER": 886,
@@ -15083,8 +15111,8 @@
      "LATE_SPRING": 876,
      "EARLY_SUMMER": 883,
      "MID_SUMMER": 875,
-     "LATE_SUMMER": 872,
-     "EARLY_AUTUMN": 894,
+     "LATE_SUMMER": 879,
+     "EARLY_AUTUMN": 872,
      "MID_AUTUMN": 878,
      "LATE_AUTUMN": 881,
      "EARLY_WINTER": 877,
@@ -15101,8 +15129,8 @@
      "LATE_SPRING": 850,
      "EARLY_SUMMER": 837,
      "MID_SUMMER": 857,
-     "LATE_SUMMER": 853,
-     "EARLY_AUTUMN": 830,
+     "LATE_SUMMER": 852,
+     "EARLY_AUTUMN": 852,
      "MID_AUTUMN": 844,
      "LATE_AUTUMN": 836,
      "EARLY_WINTER": 846,
@@ -15119,8 +15147,8 @@
      "LATE_SPRING": 1238,
      "EARLY_SUMMER": 1239,
      "MID_SUMMER": 1243,
-     "LATE_SUMMER": 1246,
-     "EARLY_AUTUMN": 1255,
+     "LATE_SUMMER": 1259,
+     "EARLY_AUTUMN": 1252,
      "MID_AUTUMN": 1238,
      "LATE_AUTUMN": 1256,
      "EARLY_WINTER": 1255,
@@ -15137,8 +15165,8 @@
      "LATE_SPRING": 4758,
      "EARLY_SUMMER": 3950,
      "MID_SUMMER": 3666,
-     "LATE_SUMMER": 3565,
-     "EARLY_AUTUMN": 3093,
+     "LATE_SUMMER": 3254,
+     "EARLY_AUTUMN": 3223,
      "MID_AUTUMN": 3367,
      "LATE_AUTUMN": 3850,
      "EARLY_WINTER": 3697,
@@ -15155,8 +15183,8 @@
      "LATE_SPRING": 10195,
      "EARLY_SUMMER": 8345,
      "MID_SUMMER": 7840,
-     "LATE_SUMMER": 7666,
-     "EARLY_AUTUMN": 6492,
+     "LATE_SUMMER": 6808,
+     "EARLY_AUTUMN": 6758,
      "MID_AUTUMN": 7218,
      "LATE_AUTUMN": 8060,
      "EARLY_WINTER": 7863,
@@ -15173,8 +15201,8 @@
      "LATE_SPRING": 507,
      "EARLY_SUMMER": 531,
      "MID_SUMMER": 518,
-     "LATE_SUMMER": 520,
-     "EARLY_AUTUMN": 525,
+     "LATE_SUMMER": 527,
+     "EARLY_AUTUMN": 528,
      "MID_AUTUMN": 514,
      "LATE_AUTUMN": 505,
      "EARLY_WINTER": 488,
@@ -15191,8 +15219,8 @@
      "LATE_SPRING": 3815,
      "EARLY_SUMMER": 3607,
      "MID_SUMMER": 3897,
-     "LATE_SUMMER": 3845,
-     "EARLY_AUTUMN": 3882,
+     "LATE_SUMMER": 3472,
+     "EARLY_AUTUMN": 3469,
      "MID_AUTUMN": 3725,
      "LATE_AUTUMN": 3758,
      "EARLY_WINTER": 3895,
@@ -15209,8 +15237,8 @@
      "LATE_SPRING": 2051,
      "EARLY_SUMMER": 2148,
      "MID_SUMMER": 1999,
-     "LATE_SUMMER": 2014,
-     "EARLY_AUTUMN": 1869,
+     "LATE_SUMMER": 1959,
+     "EARLY_AUTUMN": 1949,
      "MID_AUTUMN": 1848,
      "LATE_AUTUMN": 1824,
      "EARLY_WINTER": 1763,
@@ -15227,8 +15255,8 @@
      "LATE_SPRING": 2928,
      "EARLY_SUMMER": 2905,
      "MID_SUMMER": 2888,
-     "LATE_SUMMER": 2899,
-     "EARLY_AUTUMN": 2918,
+     "LATE_SUMMER": 2877,
+     "EARLY_AUTUMN": 2889,
      "MID_AUTUMN": 2897,
      "LATE_AUTUMN": 2894,
      "EARLY_WINTER": 2926,
@@ -15245,8 +15273,8 @@
      "LATE_SPRING": 3188,
      "EARLY_SUMMER": 3208,
      "MID_SUMMER": 3202,
-     "LATE_SUMMER": 3174,
-     "EARLY_AUTUMN": 3196,
+     "LATE_SUMMER": 3203,
+     "EARLY_AUTUMN": 3200,
      "MID_AUTUMN": 3202,
      "LATE_AUTUMN": 3202,
      "EARLY_WINTER": 3191,
@@ -15317,8 +15345,8 @@
      "LATE_SPRING": 1557,
      "EARLY_SUMMER": 1676,
      "MID_SUMMER": 1760,
-     "LATE_SUMMER": 1790,
-     "EARLY_AUTUMN": 1983,
+     "LATE_SUMMER": 1955,
+     "EARLY_AUTUMN": 1961,
      "MID_AUTUMN": 1883,
      "LATE_AUTUMN": 1179,
      "EARLY_WINTER": 1300,
@@ -15335,8 +15363,8 @@
      "LATE_SPRING": 1388,
      "EARLY_SUMMER": 1319,
      "MID_SUMMER": 1418,
-     "LATE_SUMMER": 1446,
-     "EARLY_AUTUMN": 1784,
+     "LATE_SUMMER": 1619,
+     "EARLY_AUTUMN": 1633,
      "MID_AUTUMN": 1871,
      "LATE_AUTUMN": 1973,
      "EARLY_WINTER": 1769,
@@ -15353,8 +15381,8 @@
      "LATE_SPRING": 2931,
      "EARLY_SUMMER": 2705,
      "MID_SUMMER": 2516,
-     "LATE_SUMMER": 2498,
-     "EARLY_AUTUMN": 2114,
+     "LATE_SUMMER": 2281,
+     "EARLY_AUTUMN": 2264,
      "MID_AUTUMN": 1829,
      "LATE_AUTUMN": 2047,
      "EARLY_WINTER": 2128,
@@ -15371,8 +15399,8 @@
      "LATE_SPRING": 2118,
      "EARLY_SUMMER": 1922,
      "MID_SUMMER": 1822,
-     "LATE_SUMMER": 1797,
-     "EARLY_AUTUMN": 1538,
+     "LATE_SUMMER": 1669,
+     "EARLY_AUTUMN": 1642,
      "MID_AUTUMN": 1336,
      "LATE_AUTUMN": 1519,
      "EARLY_WINTER": 1580,
@@ -15389,8 +15417,8 @@
      "LATE_SPRING": 1593,
      "EARLY_SUMMER": 1522,
      "MID_SUMMER": 1623,
-     "LATE_SUMMER": 1645,
-     "EARLY_AUTUMN": 1809,
+     "LATE_SUMMER": 1812,
+     "EARLY_AUTUMN": 1811,
      "MID_AUTUMN": 1725,
      "LATE_AUTUMN": 1544,
      "EARLY_WINTER": 1472,
@@ -15407,8 +15435,8 @@
      "LATE_SPRING": 1646,
      "EARLY_SUMMER": 1557,
      "MID_SUMMER": 1618,
-     "LATE_SUMMER": 1645,
-     "EARLY_AUTUMN": 1735,
+     "LATE_SUMMER": 1688,
+     "EARLY_AUTUMN": 1688,
      "MID_AUTUMN": 1782,
      "LATE_AUTUMN": 1686,
      "EARLY_WINTER": 1581,
@@ -15425,8 +15453,8 @@
      "LATE_SPRING": 1053,
      "EARLY_SUMMER": 1055,
      "MID_SUMMER": 1043,
-     "LATE_SUMMER": 1042,
-     "EARLY_AUTUMN": 1044,
+     "LATE_SUMMER": 1054,
+     "EARLY_AUTUMN": 1051,
      "MID_AUTUMN": 1042,
      "LATE_AUTUMN": 1044,
      "EARLY_WINTER": 1040,
@@ -15443,8 +15471,8 @@
      "LATE_SPRING": 1792,
      "EARLY_SUMMER": 1790,
      "MID_SUMMER": 1792,
-     "LATE_SUMMER": 1795,
-     "EARLY_AUTUMN": 1796,
+     "LATE_SUMMER": 1807,
+     "EARLY_AUTUMN": 1809,
      "MID_AUTUMN": 1777,
      "LATE_AUTUMN": 1772,
      "EARLY_WINTER": 1778,
@@ -15461,8 +15489,8 @@
      "LATE_SPRING": 1732,
      "EARLY_SUMMER": 1712,
      "MID_SUMMER": 1704,
-     "LATE_SUMMER": 1702,
-     "EARLY_AUTUMN": 1705,
+     "LATE_SUMMER": 1727,
+     "EARLY_AUTUMN": 1726,
      "MID_AUTUMN": 1715,
      "LATE_AUTUMN": 1686,
      "EARLY_WINTER": 1714,
@@ -15479,8 +15507,8 @@
      "LATE_SPRING": 1295,
      "EARLY_SUMMER": 1270,
      "MID_SUMMER": 1288,
-     "LATE_SUMMER": 1297,
-     "EARLY_AUTUMN": 1300,
+     "LATE_SUMMER": 1288,
+     "EARLY_AUTUMN": 1289,
      "MID_AUTUMN": 1296,
      "LATE_AUTUMN": 1277,
      "EARLY_WINTER": 1278,
@@ -15497,8 +15525,8 @@
      "LATE_SPRING": 1589,
      "EARLY_SUMMER": 1594,
      "MID_SUMMER": 1597,
-     "LATE_SUMMER": 1583,
-     "EARLY_AUTUMN": 1570,
+     "LATE_SUMMER": 1557,
+     "EARLY_AUTUMN": 1559,
      "MID_AUTUMN": 1568,
      "LATE_AUTUMN": 1601,
      "EARLY_WINTER": 1579,
@@ -15515,8 +15543,8 @@
      "LATE_SPRING": 4940,
      "EARLY_SUMMER": 5075,
      "MID_SUMMER": 5094,
-     "LATE_SUMMER": 5077,
-     "EARLY_AUTUMN": 5026,
+     "LATE_SUMMER": 5035,
+     "EARLY_AUTUMN": 5025,
      "MID_AUTUMN": 5023,
      "LATE_AUTUMN": 5002,
      "EARLY_WINTER": 5088,
@@ -15533,8 +15561,8 @@
      "LATE_SPRING": 2618,
      "EARLY_SUMMER": 2578,
      "MID_SUMMER": 2557,
-     "LATE_SUMMER": 2552,
-     "EARLY_AUTUMN": 2591,
+     "LATE_SUMMER": 2607,
+     "EARLY_AUTUMN": 2599,
      "MID_AUTUMN": 2583,
      "LATE_AUTUMN": 2565,
      "EARLY_WINTER": 2614,
@@ -15551,8 +15579,8 @@
      "LATE_SPRING": 1568,
      "EARLY_SUMMER": 1591,
      "MID_SUMMER": 1589,
-     "LATE_SUMMER": 1578,
-     "EARLY_AUTUMN": 1596,
+     "LATE_SUMMER": 1590,
+     "EARLY_AUTUMN": 1582,
      "MID_AUTUMN": 1598,
      "LATE_AUTUMN": 1588,
      "EARLY_WINTER": 1584,
@@ -15569,8 +15597,8 @@
      "LATE_SPRING": 779,
      "EARLY_SUMMER": 775,
      "MID_SUMMER": 775,
-     "LATE_SUMMER": 779,
-     "EARLY_AUTUMN": 780,
+     "LATE_SUMMER": 775,
+     "EARLY_AUTUMN": 778,
      "MID_AUTUMN": 778,
      "LATE_AUTUMN": 778,
      "EARLY_WINTER": 776,
@@ -15587,8 +15615,8 @@
      "LATE_SPRING": 1889,
      "EARLY_SUMMER": 1882,
      "MID_SUMMER": 1890,
-     "LATE_SUMMER": 1895,
-     "EARLY_AUTUMN": 1877,
+     "LATE_SUMMER": 1883,
+     "EARLY_AUTUMN": 1875,
      "MID_AUTUMN": 1871,
      "LATE_AUTUMN": 1875,
      "EARLY_WINTER": 1877,
@@ -15605,8 +15633,8 @@
      "LATE_SPRING": 1471,
      "EARLY_SUMMER": 1460,
      "MID_SUMMER": 1475,
-     "LATE_SUMMER": 1464,
-     "EARLY_AUTUMN": 1484,
+     "LATE_SUMMER": 1461,
+     "EARLY_AUTUMN": 1459,
      "MID_AUTUMN": 1462,
      "LATE_AUTUMN": 1458,
      "EARLY_WINTER": 1474,
@@ -15623,8 +15651,8 @@
      "LATE_SPRING": 2724,
      "EARLY_SUMMER": 2779,
      "MID_SUMMER": 2737,
-     "LATE_SUMMER": 2744,
-     "EARLY_AUTUMN": 2733,
+     "LATE_SUMMER": 2695,
+     "EARLY_AUTUMN": 2721,
      "MID_AUTUMN": 2709,
      "LATE_AUTUMN": 2753,
      "EARLY_WINTER": 2728,
@@ -15641,8 +15669,8 @@
      "LATE_SPRING": 739,
      "EARLY_SUMMER": 667,
      "MID_SUMMER": 632,
-     "LATE_SUMMER": 636,
-     "EARLY_AUTUMN": 761,
+     "LATE_SUMMER": 656,
+     "EARLY_AUTUMN": 658,
      "MID_AUTUMN": 854,
      "LATE_AUTUMN": 891,
      "EARLY_WINTER": 934,
@@ -15677,8 +15705,8 @@
      "LATE_SPRING": 30,
      "EARLY_SUMMER": 30,
      "MID_SUMMER": 29,
-     "LATE_SUMMER": 29,
-     "EARLY_AUTUMN": 33,
+     "LATE_SUMMER": 31,
+     "EARLY_AUTUMN": 31,
      "MID_AUTUMN": 35,
      "LATE_AUTUMN": 36,
      "EARLY_WINTER": 37,
@@ -15695,8 +15723,8 @@
      "LATE_SPRING": 30,
      "EARLY_SUMMER": 29,
      "MID_SUMMER": 29,
-     "LATE_SUMMER": 29,
-     "EARLY_AUTUMN": 32,
+     "LATE_SUMMER": 30,
+     "EARLY_AUTUMN": 30,
      "MID_AUTUMN": 35,
      "LATE_AUTUMN": 35,
      "EARLY_WINTER": 37,
@@ -15714,7 +15742,7 @@
      "EARLY_SUMMER": 29,
      "MID_SUMMER": 29,
      "LATE_SUMMER": 30,
-     "EARLY_AUTUMN": 33,
+     "EARLY_AUTUMN": 31,
      "MID_AUTUMN": 35,
      "LATE_AUTUMN": 36,
      "EARLY_WINTER": 37,
@@ -15731,8 +15759,8 @@
      "LATE_SPRING": 123,
      "EARLY_SUMMER": 124,
      "MID_SUMMER": 124,
-     "LATE_SUMMER": 124,
-     "EARLY_AUTUMN": 124,
+     "LATE_SUMMER": 125,
+     "EARLY_AUTUMN": 125,
      "MID_AUTUMN": 124,
      "LATE_AUTUMN": 124,
      "EARLY_WINTER": 124,
@@ -15750,7 +15778,7 @@
      "EARLY_SUMMER": 39,
      "MID_SUMMER": 39,
      "LATE_SUMMER": 39,
-     "EARLY_AUTUMN": 39,
+     "EARLY_AUTUMN": 38,
      "MID_AUTUMN": 39,
      "LATE_AUTUMN": 38,
      "EARLY_WINTER": 39,
@@ -15767,8 +15795,8 @@
      "LATE_SPRING": 101,
      "EARLY_SUMMER": 104,
      "MID_SUMMER": 110,
-     "LATE_SUMMER": 111,
-     "EARLY_AUTUMN": 109,
+     "LATE_SUMMER": 116,
+     "EARLY_AUTUMN": 116,
      "MID_AUTUMN": 110,
      "LATE_AUTUMN": 105,
      "EARLY_WINTER": 100,
@@ -15785,8 +15813,8 @@
      "LATE_SPRING": 40,
      "EARLY_SUMMER": 42,
      "MID_SUMMER": 40,
-     "LATE_SUMMER": 40,
-     "EARLY_AUTUMN": 44,
+     "LATE_SUMMER": 39,
+     "EARLY_AUTUMN": 39,
      "MID_AUTUMN": 45,
      "LATE_AUTUMN": 46,
      "EARLY_WINTER": 47,
@@ -15803,8 +15831,8 @@
      "LATE_SPRING": 99,
      "EARLY_SUMMER": 98,
      "MID_SUMMER": 100,
-     "LATE_SUMMER": 101,
-     "EARLY_AUTUMN": 99,
+     "LATE_SUMMER": 99,
+     "EARLY_AUTUMN": 101,
      "MID_AUTUMN": 99,
      "LATE_AUTUMN": 99,
      "EARLY_WINTER": 102,
@@ -15875,8 +15903,8 @@
      "LATE_SPRING": 1502,
      "EARLY_SUMMER": 1485,
      "MID_SUMMER": 1521,
-     "LATE_SUMMER": 1501,
-     "EARLY_AUTUMN": 1506,
+     "LATE_SUMMER": 1499,
+     "EARLY_AUTUMN": 1496,
      "MID_AUTUMN": 1480,
      "LATE_AUTUMN": 1493,
      "EARLY_WINTER": 1490,
@@ -15893,8 +15921,8 @@
      "LATE_SPRING": 896,
      "EARLY_SUMMER": 893,
      "MID_SUMMER": 904,
-     "LATE_SUMMER": 909,
-     "EARLY_AUTUMN": 894,
+     "LATE_SUMMER": 908,
+     "EARLY_AUTUMN": 904,
      "MID_AUTUMN": 903,
      "LATE_AUTUMN": 879,
      "EARLY_WINTER": 911,
@@ -15929,8 +15957,8 @@
      "LATE_SPRING": 348,
      "EARLY_SUMMER": 351,
      "MID_SUMMER": 352,
-     "LATE_SUMMER": 352,
-     "EARLY_AUTUMN": 349,
+     "LATE_SUMMER": 350,
+     "EARLY_AUTUMN": 347,
      "MID_AUTUMN": 350,
      "LATE_AUTUMN": 345,
      "EARLY_WINTER": 349,
@@ -15947,8 +15975,8 @@
      "LATE_SPRING": 446,
      "EARLY_SUMMER": 447,
      "MID_SUMMER": 456,
-     "LATE_SUMMER": 453,
-     "EARLY_AUTUMN": 454,
+     "LATE_SUMMER": 454,
+     "EARLY_AUTUMN": 456,
      "MID_AUTUMN": 459,
      "LATE_AUTUMN": 451,
      "EARLY_WINTER": 457,
@@ -16181,8 +16209,8 @@
      "LATE_SPRING": 999,
      "EARLY_SUMMER": 1008,
      "MID_SUMMER": 1011,
-     "LATE_SUMMER": 998,
-     "EARLY_AUTUMN": 980,
+     "LATE_SUMMER": 1009,
+     "EARLY_AUTUMN": 995,
      "MID_AUTUMN": 987,
      "LATE_AUTUMN": 1022,
      "EARLY_WINTER": 980,
@@ -16199,8 +16227,8 @@
      "LATE_SPRING": 1011,
      "EARLY_SUMMER": 993,
      "MID_SUMMER": 999,
-     "LATE_SUMMER": 1015,
-     "EARLY_AUTUMN": 1007,
+     "LATE_SUMMER": 1012,
+     "EARLY_AUTUMN": 1005,
      "MID_AUTUMN": 1005,
      "LATE_AUTUMN": 993,
      "EARLY_WINTER": 1013,
@@ -16217,8 +16245,8 @@
      "LATE_SPRING": 1002,
      "EARLY_SUMMER": 987,
      "MID_SUMMER": 998,
-     "LATE_SUMMER": 1010,
-     "EARLY_AUTUMN": 1015,
+     "LATE_SUMMER": 990,
+     "EARLY_AUTUMN": 1000,
      "MID_AUTUMN": 989,
      "LATE_AUTUMN": 1006,
      "EARLY_WINTER": 1010,
@@ -16235,8 +16263,8 @@
      "LATE_SPRING": 3361,
      "EARLY_SUMMER": 3301,
      "MID_SUMMER": 3310,
-     "LATE_SUMMER": 3318,
-     "EARLY_AUTUMN": 3329,
+     "LATE_SUMMER": 3337,
+     "EARLY_AUTUMN": 3345,
      "MID_AUTUMN": 3309,
      "LATE_AUTUMN": 3332,
      "EARLY_WINTER": 3348,
@@ -16253,8 +16281,8 @@
      "LATE_SPRING": 1610,
      "EARLY_SUMMER": 1569,
      "MID_SUMMER": 1584,
-     "LATE_SUMMER": 1594,
-     "EARLY_AUTUMN": 1566,
+     "LATE_SUMMER": 1597,
+     "EARLY_AUTUMN": 1601,
      "MID_AUTUMN": 1615,
      "LATE_AUTUMN": 1588,
      "EARLY_WINTER": 1625,
@@ -16271,8 +16299,8 @@
      "LATE_SPRING": 1190,
      "EARLY_SUMMER": 1210,
      "MID_SUMMER": 1199,
-     "LATE_SUMMER": 1203,
-     "EARLY_AUTUMN": 1191,
+     "LATE_SUMMER": 1180,
+     "EARLY_AUTUMN": 1189,
      "MID_AUTUMN": 1184,
      "LATE_AUTUMN": 1214,
      "EARLY_WINTER": 1202,
@@ -16289,8 +16317,8 @@
      "LATE_SPRING": 1387,
      "EARLY_SUMMER": 1407,
      "MID_SUMMER": 1400,
-     "LATE_SUMMER": 1405,
-     "EARLY_AUTUMN": 1396,
+     "LATE_SUMMER": 1390,
+     "EARLY_AUTUMN": 1382,
      "MID_AUTUMN": 1400,
      "LATE_AUTUMN": 1381,
      "EARLY_WINTER": 1413,
@@ -16325,8 +16353,8 @@
      "LATE_SPRING": 223,
      "EARLY_SUMMER": 225,
      "MID_SUMMER": 228,
-     "LATE_SUMMER": 225,
-     "EARLY_AUTUMN": 226,
+     "LATE_SUMMER": 227,
+     "EARLY_AUTUMN": 227,
      "MID_AUTUMN": 227,
      "LATE_AUTUMN": 224,
      "EARLY_WINTER": 225,
@@ -16343,8 +16371,8 @@
      "LATE_SPRING": 1208,
      "EARLY_SUMMER": 1200,
      "MID_SUMMER": 1178,
-     "LATE_SUMMER": 1209,
-     "EARLY_AUTUMN": 1214,
+     "LATE_SUMMER": 1202,
+     "EARLY_AUTUMN": 1211,
      "MID_AUTUMN": 1206,
      "LATE_AUTUMN": 1182,
      "EARLY_WINTER": 1197,
@@ -16379,8 +16407,8 @@
      "LATE_SPRING": 1214,
      "EARLY_SUMMER": 1194,
      "MID_SUMMER": 1205,
-     "LATE_SUMMER": 1206,
-     "EARLY_AUTUMN": 1184,
+     "LATE_SUMMER": 1199,
+     "EARLY_AUTUMN": 1206,
      "MID_AUTUMN": 1196,
      "LATE_AUTUMN": 1191,
      "EARLY_WINTER": 1193,
@@ -16559,8 +16587,8 @@
      "LATE_SPRING": 4969083,
      "EARLY_SUMMER": 5042281,
      "MID_SUMMER": 4941869,
-     "LATE_SUMMER": 4887921,
-     "EARLY_AUTUMN": 4947120,
+     "LATE_SUMMER": 5083908,
+     "EARLY_AUTUMN": 5020152,
      "MID_AUTUMN": 5069448,
      "LATE_AUTUMN": 5073377,
      "EARLY_WINTER": 5057716,
@@ -16577,8 +16605,8 @@
      "LATE_SPRING": 5009606,
      "EARLY_SUMMER": 5131740,
      "MID_SUMMER": 4861970,
-     "LATE_SUMMER": 4978751,
-     "EARLY_AUTUMN": 5076188,
+     "LATE_SUMMER": 4922196,
+     "EARLY_AUTUMN": 4958093,
      "MID_AUTUMN": 4974112,
      "LATE_AUTUMN": 5100563,
      "EARLY_WINTER": 5018232,
@@ -16595,8 +16623,8 @@
      "LATE_SPRING": 5038080,
      "EARLY_SUMMER": 4986887,
      "MID_SUMMER": 4905097,
-     "LATE_SUMMER": 4926616,
-     "EARLY_AUTUMN": 4963640,
+     "LATE_SUMMER": 5074846,
+     "EARLY_AUTUMN": 5094107,
      "MID_AUTUMN": 4981952,
      "LATE_AUTUMN": 5001741,
      "EARLY_WINTER": 4980404,
@@ -16613,8 +16641,8 @@
      "LATE_SPRING": 5022647,
      "EARLY_SUMMER": 5044206,
      "MID_SUMMER": 4907929,
-     "LATE_SUMMER": 4945315,
-     "EARLY_AUTUMN": 4956229,
+     "LATE_SUMMER": 5042799,
+     "EARLY_AUTUMN": 5043334,
      "MID_AUTUMN": 5044682,
      "LATE_AUTUMN": 4988771,
      "EARLY_WINTER": 4978979,
@@ -16685,8 +16713,8 @@
      "LATE_SPRING": 3985615,
      "EARLY_SUMMER": 4005430,
      "MID_SUMMER": 3971796,
-     "LATE_SUMMER": 4004942,
-     "EARLY_AUTUMN": 3982873,
+     "LATE_SUMMER": 3982058,
+     "EARLY_AUTUMN": 4002106,
      "MID_AUTUMN": 4013265,
      "LATE_AUTUMN": 4011375,
      "EARLY_WINTER": 4088340,
@@ -16703,8 +16731,8 @@
      "LATE_SPRING": 4004351,
      "EARLY_SUMMER": 4004806,
      "MID_SUMMER": 4035878,
-     "LATE_SUMMER": 4050290,
-     "EARLY_AUTUMN": 3995349,
+     "LATE_SUMMER": 4052192,
+     "EARLY_AUTUMN": 3996711,
      "MID_AUTUMN": 4001278,
      "LATE_AUTUMN": 3976561,
      "EARLY_WINTER": 3977297,
@@ -16721,8 +16749,8 @@
      "LATE_SPRING": 4030057,
      "EARLY_SUMMER": 3985958,
      "MID_SUMMER": 3936197,
-     "LATE_SUMMER": 3977909,
-     "EARLY_AUTUMN": 3948713,
+     "LATE_SUMMER": 3929753,
+     "EARLY_AUTUMN": 3932662,
      "MID_AUTUMN": 4016252,
      "LATE_AUTUMN": 3985548,
      "EARLY_WINTER": 4030614,
@@ -16739,8 +16767,8 @@
      "LATE_SPRING": 4063591,
      "EARLY_SUMMER": 4009271,
      "MID_SUMMER": 3963782,
-     "LATE_SUMMER": 3966839,
-     "EARLY_AUTUMN": 3884571,
+     "LATE_SUMMER": 4030369,
+     "EARLY_AUTUMN": 4020991,
      "MID_AUTUMN": 3918540,
      "LATE_AUTUMN": 4040330,
      "EARLY_WINTER": 4007799,
@@ -16757,8 +16785,8 @@
      "LATE_SPRING": 3010975,
      "EARLY_SUMMER": 2996756,
      "MID_SUMMER": 2977207,
-     "LATE_SUMMER": 2974521,
-     "EARLY_AUTUMN": 3011803,
+     "LATE_SUMMER": 2990825,
+     "EARLY_AUTUMN": 2975136,
      "MID_AUTUMN": 3027671,
      "LATE_AUTUMN": 2980297,
      "EARLY_WINTER": 3035469,
@@ -16775,8 +16803,8 @@
      "LATE_SPRING": 2968216,
      "EARLY_SUMMER": 2957261,
      "MID_SUMMER": 2964720,
-     "LATE_SUMMER": 2979219,
-     "EARLY_AUTUMN": 3102916,
+     "LATE_SUMMER": 3034285,
+     "EARLY_AUTUMN": 3040219,
      "MID_AUTUMN": 2999194,
      "LATE_AUTUMN": 3001088,
      "EARLY_WINTER": 3028654,
@@ -16793,8 +16821,8 @@
      "LATE_SPRING": 3028393,
      "EARLY_SUMMER": 3021108,
      "MID_SUMMER": 3005620,
-     "LATE_SUMMER": 3051301,
-     "EARLY_AUTUMN": 3019812,
+     "LATE_SUMMER": 2998923,
+     "EARLY_AUTUMN": 3002908,
      "MID_AUTUMN": 3062799,
      "LATE_AUTUMN": 3017169,
      "EARLY_WINTER": 2926051,
@@ -16883,8 +16911,8 @@
      "LATE_SPRING": 213,
      "EARLY_SUMMER": 191,
      "MID_SUMMER": 182,
-     "LATE_SUMMER": 182,
-     "EARLY_AUTUMN": 223,
+     "LATE_SUMMER": 194,
+     "EARLY_AUTUMN": 196,
      "MID_AUTUMN": 244,
      "LATE_AUTUMN": 252,
      "EARLY_WINTER": 273,
@@ -16901,8 +16929,8 @@
      "LATE_SPRING": 216,
      "EARLY_SUMMER": 194,
      "MID_SUMMER": 186,
-     "LATE_SUMMER": 187,
-     "EARLY_AUTUMN": 228,
+     "LATE_SUMMER": 197,
+     "EARLY_AUTUMN": 199,
      "MID_AUTUMN": 246,
      "LATE_AUTUMN": 259,
      "EARLY_WINTER": 277,
@@ -16919,8 +16947,8 @@
      "LATE_SPRING": 318,
      "EARLY_SUMMER": 286,
      "MID_SUMMER": 274,
-     "LATE_SUMMER": 273,
-     "EARLY_AUTUMN": 337,
+     "LATE_SUMMER": 289,
+     "EARLY_AUTUMN": 290,
      "MID_AUTUMN": 365,
      "LATE_AUTUMN": 378,
      "EARLY_WINTER": 410,
@@ -17099,8 +17127,8 @@
      "LATE_SPRING": 42,
      "EARLY_SUMMER": 41,
      "MID_SUMMER": 41,
-     "LATE_SUMMER": 40,
-     "EARLY_AUTUMN": 44,
+     "LATE_SUMMER": 42,
+     "EARLY_AUTUMN": 42,
      "MID_AUTUMN": 47,
      "LATE_AUTUMN": 49,
      "EARLY_WINTER": 50,
@@ -17117,8 +17145,8 @@
      "LATE_SPRING": 139,
      "EARLY_SUMMER": 158,
      "MID_SUMMER": 120,
-     "LATE_SUMMER": 116,
-     "EARLY_AUTUMN": 85,
+     "LATE_SUMMER": 106,
+     "EARLY_AUTUMN": 105,
      "MID_AUTUMN": 74,
      "LATE_AUTUMN": 111,
      "EARLY_WINTER": 162,
@@ -17135,8 +17163,8 @@
      "LATE_SPRING": 52,
      "EARLY_SUMMER": 50,
      "MID_SUMMER": 51,
-     "LATE_SUMMER": 51,
-     "EARLY_AUTUMN": 55,
+     "LATE_SUMMER": 52,
+     "EARLY_AUTUMN": 52,
      "MID_AUTUMN": 59,
      "LATE_AUTUMN": 61,
      "EARLY_WINTER": 61,
@@ -17189,8 +17217,8 @@
      "LATE_SPRING": 42,
      "EARLY_SUMMER": 41,
      "MID_SUMMER": 40,
-     "LATE_SUMMER": 40,
-     "EARLY_AUTUMN": 44,
+     "LATE_SUMMER": 42,
+     "EARLY_AUTUMN": 42,
      "MID_AUTUMN": 47,
      "LATE_AUTUMN": 48,
      "EARLY_WINTER": 50,
@@ -17207,8 +17235,8 @@
      "LATE_SPRING": 138,
      "EARLY_SUMMER": 160,
      "MID_SUMMER": 118,
-     "LATE_SUMMER": 115,
-     "EARLY_AUTUMN": 85,
+     "LATE_SUMMER": 106,
+     "EARLY_AUTUMN": 104,
      "MID_AUTUMN": 74,
      "LATE_AUTUMN": 113,
      "EARLY_WINTER": 161,
@@ -17225,8 +17253,8 @@
      "LATE_SPRING": 52,
      "EARLY_SUMMER": 50,
      "MID_SUMMER": 50,
-     "LATE_SUMMER": 50,
-     "EARLY_AUTUMN": 55,
+     "LATE_SUMMER": 52,
+     "EARLY_AUTUMN": 53,
      "MID_AUTUMN": 59,
      "LATE_AUTUMN": 60,
      "EARLY_WINTER": 62,
@@ -17243,8 +17271,8 @@
      "LATE_SPRING": 318,
      "EARLY_SUMMER": 287,
      "MID_SUMMER": 273,
-     "LATE_SUMMER": 274,
-     "EARLY_AUTUMN": 333,
+     "LATE_SUMMER": 289,
+     "EARLY_AUTUMN": 294,
      "MID_AUTUMN": 365,
      "LATE_AUTUMN": 381,
      "EARLY_WINTER": 410,
@@ -17261,8 +17289,8 @@
      "LATE_SPRING": 292,
      "EARLY_SUMMER": 264,
      "MID_SUMMER": 254,
-     "LATE_SUMMER": 253,
-     "EARLY_AUTUMN": 312,
+     "LATE_SUMMER": 269,
+     "EARLY_AUTUMN": 271,
      "MID_AUTUMN": 336,
      "LATE_AUTUMN": 354,
      "EARLY_WINTER": 381,
@@ -17333,8 +17361,8 @@
      "LATE_SPRING": 232,
      "EARLY_SUMMER": 224,
      "MID_SUMMER": 224,
-     "LATE_SUMMER": 224,
-     "EARLY_AUTUMN": 246,
+     "LATE_SUMMER": 244,
+     "EARLY_AUTUMN": 238,
      "MID_AUTUMN": 265,
      "LATE_AUTUMN": 274,
      "EARLY_WINTER": 285,
@@ -17351,8 +17379,8 @@
      "LATE_SPRING": 179,
      "EARLY_SUMMER": 164,
      "MID_SUMMER": 163,
-     "LATE_SUMMER": 164,
-     "EARLY_AUTUMN": 182,
+     "LATE_SUMMER": 173,
+     "EARLY_AUTUMN": 174,
      "MID_AUTUMN": 193,
      "LATE_AUTUMN": 201,
      "EARLY_WINTER": 207,
@@ -17369,8 +17397,8 @@
      "LATE_SPRING": 51,
      "EARLY_SUMMER": 49,
      "MID_SUMMER": 52,
-     "LATE_SUMMER": 52,
-     "EARLY_AUTUMN": 48,
+     "LATE_SUMMER": 51,
+     "EARLY_AUTUMN": 51,
      "MID_AUTUMN": 50,
      "LATE_AUTUMN": 49,
      "EARLY_WINTER": 49,
@@ -17388,7 +17416,7 @@
      "EARLY_SUMMER": 49,
      "MID_SUMMER": 50,
      "LATE_SUMMER": 50,
-     "EARLY_AUTUMN": 52,
+     "EARLY_AUTUMN": 50,
      "MID_AUTUMN": 49,
      "LATE_AUTUMN": 52,
      "EARLY_WINTER": 50,
@@ -17405,8 +17433,8 @@
      "LATE_SPRING": 44,
      "EARLY_SUMMER": 43,
      "MID_SUMMER": 45,
-     "LATE_SUMMER": 45,
-     "EARLY_AUTUMN": 46,
+     "LATE_SUMMER": 44,
+     "EARLY_AUTUMN": 45,
      "MID_AUTUMN": 44,
      "LATE_AUTUMN": 45,
      "EARLY_WINTER": 46,
@@ -17423,8 +17451,8 @@
      "LATE_SPRING": 43,
      "EARLY_SUMMER": 42,
      "MID_SUMMER": 43,
-     "LATE_SUMMER": 43,
-     "EARLY_AUTUMN": 43,
+     "LATE_SUMMER": 42,
+     "EARLY_AUTUMN": 42,
      "MID_AUTUMN": 42,
      "LATE_AUTUMN": 43,
      "EARLY_WINTER": 44,
@@ -17441,7 +17469,7 @@
      "LATE_SPRING": 20,
      "EARLY_SUMMER": 20,
      "MID_SUMMER": 19,
-     "LATE_SUMMER": 19,
+     "LATE_SUMMER": 20,
      "EARLY_AUTUMN": 20,
      "MID_AUTUMN": 20,
      "LATE_AUTUMN": 20,
@@ -17459,8 +17487,8 @@
      "LATE_SPRING": 54,
      "EARLY_SUMMER": 52,
      "MID_SUMMER": 54,
-     "LATE_SUMMER": 55,
-     "EARLY_AUTUMN": 55,
+     "LATE_SUMMER": 57,
+     "EARLY_AUTUMN": 57,
      "MID_AUTUMN": 52,
      "LATE_AUTUMN": 53,
      "EARLY_WINTER": 51,
@@ -17477,8 +17505,8 @@
      "LATE_SPRING": 59,
      "EARLY_SUMMER": 57,
      "MID_SUMMER": 60,
-     "LATE_SUMMER": 61,
-     "EARLY_AUTUMN": 60,
+     "LATE_SUMMER": 62,
+     "EARLY_AUTUMN": 62,
      "MID_AUTUMN": 57,
      "LATE_AUTUMN": 58,
      "EARLY_WINTER": 56,
@@ -17495,8 +17523,8 @@
      "LATE_SPRING": 66,
      "EARLY_SUMMER": 63,
      "MID_SUMMER": 62,
-     "LATE_SUMMER": 62,
-     "EARLY_AUTUMN": 63,
+     "LATE_SUMMER": 64,
+     "EARLY_AUTUMN": 64,
      "MID_AUTUMN": 66,
      "LATE_AUTUMN": 67,
      "EARLY_WINTER": 63,
@@ -17513,8 +17541,8 @@
      "LATE_SPRING": 66,
      "EARLY_SUMMER": 71,
      "MID_SUMMER": 66,
-     "LATE_SUMMER": 67,
-     "EARLY_AUTUMN": 72,
+     "LATE_SUMMER": 71,
+     "EARLY_AUTUMN": 71,
      "MID_AUTUMN": 71,
      "LATE_AUTUMN": 70,
      "EARLY_WINTER": 68,
@@ -17531,8 +17559,8 @@
      "LATE_SPRING": 62,
      "EARLY_SUMMER": 67,
      "MID_SUMMER": 64,
-     "LATE_SUMMER": 65,
-     "EARLY_AUTUMN": 69,
+     "LATE_SUMMER": 68,
+     "EARLY_AUTUMN": 68,
      "MID_AUTUMN": 67,
      "LATE_AUTUMN": 65,
      "EARLY_WINTER": 65,
@@ -17549,7 +17577,7 @@
      "LATE_SPRING": 55,
      "EARLY_SUMMER": 58,
      "MID_SUMMER": 57,
-     "LATE_SUMMER": 57,
+     "LATE_SUMMER": 60,
      "EARLY_AUTUMN": 60,
      "MID_AUTUMN": 59,
      "LATE_AUTUMN": 59,
@@ -17567,7 +17595,7 @@
      "LATE_SPRING": 72,
      "EARLY_SUMMER": 78,
      "MID_SUMMER": 74,
-     "LATE_SUMMER": 75,
+     "LATE_SUMMER": 78,
      "EARLY_AUTUMN": 78,
      "MID_AUTUMN": 77,
      "LATE_AUTUMN": 76,
@@ -17585,7 +17613,7 @@
      "LATE_SPRING": 54,
      "EARLY_SUMMER": 58,
      "MID_SUMMER": 56,
-     "LATE_SUMMER": 55,
+     "LATE_SUMMER": 58,
      "EARLY_AUTUMN": 58,
      "MID_AUTUMN": 57,
      "LATE_AUTUMN": 56,
@@ -17603,8 +17631,8 @@
      "LATE_SPRING": 364,
      "EARLY_SUMMER": 373,
      "MID_SUMMER": 385,
-     "LATE_SUMMER": 379,
-     "EARLY_AUTUMN": 402,
+     "LATE_SUMMER": 357,
+     "EARLY_AUTUMN": 358,
      "MID_AUTUMN": 394,
      "LATE_AUTUMN": 419,
      "EARLY_WINTER": 417,
@@ -17635,16 +17663,28 @@
    {
     "fillType": "HAY_PELLETS",
     "station": "Farmers Market",
-    "multiplier": 1.3,
-    "startDay": 81,
-    "startHour": 10,
-    "durationH": 18,
+    "multiplier": 1.2,
+    "startDay": 87,
+    "startHour": 8,
+    "durationH": 6,
     "isRunning": false,
     "isValid": true
    }
   ]
  },
  "missions": [
+  {
+   "type": "deadwood",
+   "status": "CREATED",
+   "finishState": "NONE",
+   "fruit": null,
+   "reward": 750,
+   "completion": 0.0,
+   "farmId": null,
+   "fieldId": null,
+   "endDay": 82,
+   "deliverTo": null
+  },
   {
    "type": "sow",
    "status": "CREATED",
@@ -17653,116 +17693,8 @@
    "reward": 0,
    "completion": 0.0,
    "farmId": null,
-   "fieldId": 19,
-   "endDay": 81,
-   "deliverTo": null
-  },
-  {
-   "type": "harvest",
-   "status": "CREATED",
-   "finishState": "NONE",
-   "fruit": "CANOLA",
-   "reward": 0,
-   "completion": 0.0,
-   "farmId": null,
-   "fieldId": 16,
-   "endDay": 81,
-   "deliverTo": "Grain Elevator Triggers"
-  },
-  {
-   "type": "harvest",
-   "status": "CREATED",
-   "finishState": "NONE",
-   "fruit": "POTATO",
-   "reward": 0,
-   "completion": 0.0,
-   "farmId": null,
-   "fieldId": 11,
-   "endDay": 81,
-   "deliverTo": "Placeable 7F 5F 56Fdc 7Fcd 228B 80348554D 4Cda 8F"
-  },
-  {
-   "type": "harvest",
-   "status": "CREATED",
-   "finishState": "NONE",
-   "fruit": "SUGARBEET",
-   "reward": 0,
-   "completion": 0.0,
-   "farmId": null,
-   "fieldId": 4,
-   "endDay": 81,
-   "deliverTo": "Placeable 7F 5F 56Fdc 7Fcd 228B 80348554D 4Cda 8F"
-  },
-  {
-   "type": "harvest",
-   "status": "CREATED",
-   "finishState": "NONE",
-   "fruit": "SUGARBEET",
-   "reward": 0,
-   "completion": 0.0,
-   "farmId": null,
    "fieldId": 24,
-   "endDay": 81,
-   "deliverTo": "Placeable 7F 5F 56Fdc 7Fcd 228B 80348554D 4Cda 8F"
-  },
-  {
-   "type": "harvest",
-   "status": "CREATED",
-   "finishState": "NONE",
-   "fruit": "BEETROOT",
-   "reward": 0,
-   "completion": 0.0,
-   "farmId": null,
-   "fieldId": 25,
-   "endDay": 81,
-   "deliverTo": "Grocery Store"
-  },
-  {
-   "type": "plow",
-   "status": "CREATED",
-   "finishState": "NONE",
-   "fruit": null,
-   "reward": 0,
-   "completion": 0.0,
-   "farmId": null,
-   "fieldId": 17,
-   "endDay": 81,
-   "deliverTo": null
-  },
-  {
-   "type": "plow",
-   "status": "CREATED",
-   "finishState": "NONE",
-   "fruit": null,
-   "reward": 0,
-   "completion": 0.0,
-   "farmId": null,
-   "fieldId": 26,
-   "endDay": 81,
-   "deliverTo": null
-  },
-  {
-   "type": "cultivate",
-   "status": "CREATED",
-   "finishState": "NONE",
-   "fruit": null,
-   "reward": 0,
-   "completion": 0.0,
-   "farmId": null,
-   "fieldId": 5,
-   "endDay": 81,
-   "deliverTo": null
-  },
-  {
-   "type": "cultivate",
-   "status": "CREATED",
-   "finishState": "NONE",
-   "fruit": null,
-   "reward": 0,
-   "completion": 0.0,
-   "farmId": null,
-   "fieldId": 28,
-   "endDay": 81,
+   "endDay": 83,
    "deliverTo": null
   },
   {
@@ -17774,19 +17706,79 @@
    "completion": 0.0,
    "farmId": null,
    "fieldId": 46,
-   "endDay": 81,
+   "endDay": 83,
    "deliverTo": null
   },
   {
-   "type": "deadwood",
+   "type": "bale",
+   "status": "CREATED",
+   "finishState": "NONE",
+   "fruit": "OAT",
+   "reward": 0,
+   "completion": 0.0,
+   "farmId": null,
+   "fieldId": 14,
+   "endDay": 83,
+   "deliverTo": null
+  },
+  {
+   "type": "harvest",
+   "status": "CREATED",
+   "finishState": "NONE",
+   "fruit": "CANOLA",
+   "reward": 0,
+   "completion": 0.0,
+   "farmId": null,
+   "fieldId": 16,
+   "endDay": 83,
+   "deliverTo": "Placeablef 7Ffed 8Fe 0791D 301Ac 08E 2E 879Bd 104"
+  },
+  {
+   "type": "harvest",
+   "status": "CREATED",
+   "finishState": "NONE",
+   "fruit": "BEETROOT",
+   "reward": 0,
+   "completion": 0.0,
+   "farmId": null,
+   "fieldId": 25,
+   "endDay": 83,
+   "deliverTo": "Placeable 7Bc 8257E 490B 3A 92E 83Ae 083Efc 18463"
+  },
+  {
+   "type": "harvest",
+   "status": "CREATED",
+   "finishState": "NONE",
+   "fruit": "POTATO",
+   "reward": 0,
+   "completion": 0.0,
+   "farmId": null,
+   "fieldId": 11,
+   "endDay": 83,
+   "deliverTo": "Farmers Market"
+  },
+  {
+   "type": "cultivate",
    "status": "CREATED",
    "finishState": "NONE",
    "fruit": null,
-   "reward": 750,
+   "reward": 0,
    "completion": 0.0,
    "farmId": null,
-   "fieldId": null,
-   "endDay": 82,
+   "fieldId": 27,
+   "endDay": 83,
+   "deliverTo": null
+  },
+  {
+   "type": "plow",
+   "status": "CREATED",
+   "finishState": "NONE",
+   "fruit": null,
+   "reward": 0,
+   "completion": 0.0,
+   "farmId": null,
+   "fieldId": 26,
+   "endDay": 83,
    "deliverTo": null
   },
   {
@@ -17804,191 +17796,26 @@
  ],
  "sales": [
   {
-   "name": "Bale Master",
-   "brand": "colossusPack",
-   "price": 3580,
-   "age": 17,
-   "hours": 609.7,
-   "damage": 1.3,
-   "wear": 0.2,
-   "daysLeft": 16,
-   "isMod": true
-  },
-  {
-   "name": "Series M8",
-   "brand": "KUBOTA",
-   "price": 6037,
-   "age": 48,
-   "hours": 614.4,
-   "damage": 18.7,
-   "wear": 18.8,
-   "daysLeft": 27,
-   "isMod": false
-  },
-  {
-   "name": "X Disc 620Trailer",
-   "brand": "KRONE",
-   "price": 6970,
-   "age": 14,
-   "hours": 9.4,
-   "damage": 27.5,
-   "wear": 83.5,
-   "daysLeft": 25,
-   "isMod": false
-  },
-  {
-   "name": "Fert Spread Unreal",
-   "brand": "colossusPack",
-   "price": 13774,
-   "age": 48,
-   "hours": 10.5,
-   "damage": 0.2,
-   "wear": 0.1,
-   "daysLeft": 23,
-   "isMod": true
-  },
-  {
-   "name": "Titan Trailer",
-   "brand": "colossusPack",
-   "price": 15197,
-   "age": 21,
-   "hours": 0.8,
-   "damage": 0.4,
-   "wear": 0.5,
-   "daysLeft": 25,
-   "isMod": true
-  },
-  {
-   "name": "Kuhn Axis 402",
-   "brand": "KuhnAxis402",
-   "price": 15209,
-   "age": 14,
-   "hours": 11.9,
-   "damage": 1.2,
-   "wear": 3.8,
+   "name": "Pwo 24",
+   "brand": "baleAutoloadPack",
+   "price": 16754,
+   "age": 7,
+   "hours": 5.9,
+   "damage": 42.6,
+   "wear": 29.3,
    "daysLeft": 26,
    "isMod": true
   },
   {
-   "name": "Lizard Trailer Tandem",
-   "brand": "lizardTardis",
-   "price": 17085,
-   "age": 15,
-   "hours": 13.6,
-   "damage": 29.1,
-   "wear": 29.2,
-   "daysLeft": 30,
-   "isMod": true
-  },
-  {
-   "name": "Servo T6000Plus",
-   "brand": "POETTINGER",
-   "price": 22027,
-   "age": 21,
-   "hours": 25.4,
-   "damage": 55.0,
-   "wear": 51.4,
-   "daysLeft": 26,
-   "isMod": false
-  },
-  {
-   "name": "Hp 20",
-   "brand": "KRAMPE",
-   "price": 33660,
-   "age": 0,
-   "hours": 0.0,
-   "damage": 0.0,
-   "wear": 0.0,
-   "daysLeft": 18,
-   "isMod": false
-  },
-  {
-   "name": "Timber Trailer 3A Autoload",
-   "brand": "Wood_autoload",
-   "price": 70125,
-   "age": 0,
-   "hours": 0.0,
-   "damage": 0.0,
-   "wear": 0.0,
-   "daysLeft": 23,
-   "isMod": true
-  },
-  {
-   "name": "St 820",
-   "brand": "Flexicoil_ST820_MultiFunction",
-   "price": 100035,
-   "age": 47,
-   "hours": 14.3,
-   "damage": 8.8,
-   "wear": 34.3,
-   "daysLeft": 36,
-   "isMod": true
-  },
-  {
-   "name": "Series M8",
-   "brand": "KUBOTA",
-   "price": 108623,
-   "age": 48,
-   "hours": 15.7,
-   "damage": 45.2,
-   "wear": 3.1,
+   "name": "Lizard Sm 72",
+   "brand": "Lizard_SM72_SM82",
+   "price": 27206,
+   "age": 36,
+   "hours": 26.4,
+   "damage": 52.5,
+   "wear": 58.4,
    "daysLeft": 19,
-   "isMod": false
-  },
-  {
-   "name": "Series 6Rextra Large",
-   "brand": "JOHNDEERE",
-   "price": 188568,
-   "age": 40,
-   "hours": 12.1,
-   "damage": 8.3,
-   "wear": 10.9,
-   "daysLeft": 29,
-   "isMod": false
-  },
-  {
-   "name": "Series 6Rextra Large",
-   "brand": "JOHNDEERE",
-   "price": 203346,
-   "age": 40,
-   "hours": 10.0,
-   "damage": 1.4,
-   "wear": 1.9,
-   "daysLeft": 30,
-   "isMod": false
-  },
-  {
-   "name": "Feller Buncher 843L",
-   "brand": "JOHNDEERE",
-   "price": 290290,
-   "age": 0,
-   "hours": 0.1,
-   "damage": 0.1,
-   "wear": 0.0,
-   "daysLeft": 25,
-   "isMod": false
-  },
-  {
-   "name": "Feller Buncher 843L",
-   "brand": "JOHNDEERE",
-   "price": 290317,
-   "age": 0,
-   "hours": 0.0,
-   "damage": 0.0,
-   "wear": 0.0,
-   "daysLeft": 32,
-   "isMod": false
-  },
-  {
-   "name": "Harvester 1270G",
-   "brand": "JOHNDEERE",
-   "price": 421115,
-   "age": 0,
-   "hours": 0.1,
-   "damage": 0.3,
-   "wear": 0.0,
-   "daysLeft": 31,
-   "isMod": false
+   "isMod": true
   }
  ],
  "items": [
@@ -18490,8 +18317,8 @@
      "yieldBestPrice": 102304.9,
      "numSoilSamples": 54.0,
      "soilSampleCosts": 9450.0,
-     "usedFuel": 519.1,
-     "vehicleCosts": 1142.1,
+     "usedFuel": 519.2,
+     "vehicleCosts": 1142.7,
      "helperCosts": 4876.6,
      "subsidies": 0.0,
      "usedLimeRegular": 27575.4,
@@ -18511,8 +18338,8 @@
      "yieldBestPrice": 69884.0,
      "numSoilSamples": 18.0,
      "soilSampleCosts": 3150.0,
-     "usedFuel": 199.0,
-     "vehicleCosts": 546.1,
+     "usedFuel": 199.1,
+     "vehicleCosts": 546.7,
      "helperCosts": 1070.6,
      "subsidies": 0.0,
      "usedLimeRegular": 13532.4,
@@ -18570,44 +18397,44 @@
     "farmlandId": 39,
     "totalCounter": {
      "usedLime": 15338.6,
-     "usedMineralFertilizer": 16084.3,
+     "usedMineralFertilizer": 16084.8,
      "usedLiquidFertilizer": 0.0,
      "usedManure": 0.0,
      "usedLiquidManure": 166126.9,
-     "usedSeeds": 1362.2,
+     "usedSeeds": 1364.4,
      "usedHerbicide": 0.0,
      "yield": 3323074.5,
      "yieldBestPrice": 276647.9,
      "numSoilSamples": 174.0,
      "soilSampleCosts": 30450.0,
-     "usedFuel": 1425.2,
-     "vehicleCosts": 26686.5,
-     "helperCosts": 57079.9,
+     "usedFuel": 1478.4,
+     "vehicleCosts": 26705.1,
+     "helperCosts": 60534.2,
      "subsidies": 0.0,
      "usedLimeRegular": 31162.0,
-     "usedMineralFertilizerRegular": 18230.8,
-     "usedSeedsRegular": 1784.4,
+     "usedMineralFertilizerRegular": 18240.5,
+     "usedSeedsRegular": 1786.1,
      "yieldRegular": 3312869.5
     },
     "periodCounter": {
      "usedLime": 0.0,
-     "usedMineralFertilizer": 10196.8,
+     "usedMineralFertilizer": 10197.3,
      "usedLiquidFertilizer": 0.0,
      "usedManure": 0.0,
      "usedLiquidManure": 0.0,
-     "usedSeeds": 646.3,
+     "usedSeeds": 648.5,
      "usedHerbicide": 0.0,
      "yield": 1781938.9,
      "yieldBestPrice": 150074.7,
      "numSoilSamples": 58.0,
      "soilSampleCosts": 10150.0,
-     "usedFuel": 1037.7,
-     "vehicleCosts": 25656.9,
-     "helperCosts": 51582.2,
+     "usedFuel": 1091.0,
+     "vehicleCosts": 25675.4,
+     "helperCosts": 55036.5,
      "subsidies": 0.0,
      "usedLimeRegular": 0.0,
-     "usedMineralFertilizerRegular": 8292.9,
-     "usedSeedsRegular": 469.8,
+     "usedMineralFertilizerRegular": 8302.5,
+     "usedSeedsRegular": 471.5,
      "yieldRegular": 1780032.2
     }
    },
@@ -20273,7 +20100,7 @@
    }
   },
   "tramlineFarmlands": [
-   3,
+   17,
    20,
    5,
    4,
@@ -20283,14 +20110,14 @@
    24,
    11,
    18,
-   27,
-   30,
-   17,
+   16,
+   14,
+   3,
    25,
    26,
    46,
-   14,
-   16
+   30,
+   27
   ]
  },
  "farmColors": {
