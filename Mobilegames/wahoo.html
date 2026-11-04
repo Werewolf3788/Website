@@ -180,6 +180,7 @@
 
   // ---------- session
   var me = null, myName = 'Player', cloudCode = null, myCode = null, stateRef = null, presenceRef = null;
+  var beat = null;
   var S = null, players = {}, rolling = false, acted = { k: '', t: 0 }, autoSeatTried = false, statKey = '', wins = 0;
 
   function say(t) { $('msg').textContent = t || ''; }
@@ -190,11 +191,30 @@
 
   function mySeat() { if (!S || !me) return -1; for (var i = 0; i < 4; i++) { var st = seatOf(S, i); if (st && !st.bot && st.uid === me.uid) return i; } return -1; }
   function isHost() { return !!S && !!me && S.hostUid === me.uid; }
+  // A table only runs while a seated human is really here (tab visible and touched in the last 5 minutes).
+  var lastAct = Date.now(), wasPaused = false;
+  function iAmActive() { return !document.hidden && Date.now() - lastAct < 300000; }
+  function onActivity() { var was = !iAmActive(); lastAct = Date.now(); if (was || wasPaused) { wasPaused = false; if (typeof beat === 'function') beat(); if (S) { render(); tick(); } } }
+  ['pointerdown', 'keydown', 'touchstart', 'mousemove'].forEach(function (ev) { document.addEventListener(ev, onActivity, { passive: true }); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) onActivity(); else if (typeof beat === 'function') beat(); });
+  function activeIds() {
+    var ids = [];
+    Object.keys(players).forEach(function (u) { var e = players[u]; if (me && u === me.uid) return; if (e && e.a && WW.now() - (e.t || 0) < 90000) ids.push(u); });
+    if (me && iAmActive()) ids.push(me.uid);
+    return ids.sort();
+  }
+  function isPaused(s) {
+    if (!s || s.status !== 'playing') return false;
+    if (WW.mode !== 'cloud') return !iAmActive();
+    var act = activeIds();
+    return !seated(s).some(function (p) { var st = seatOf(s, p); return st && !st.bot && act.indexOf(st.uid) > -1; });
+  }
   function isDriver() {
     if (WW.mode !== 'cloud') return true;
     if (!S) return false;
-    if (players[S.hostUid]) return S.hostUid === me.uid;
-    var ids = Object.keys(players).sort(); return ids.length ? ids[0] === me.uid : true;
+    var ids = activeIds(); if (!ids.length) return false;
+    if (ids.indexOf(S.hostUid) > -1) return S.hostUid === me.uid;
+    return ids[0] === me.uid;
   }
 
   function mutate(fn) {
@@ -314,6 +334,7 @@
   // drives bots, away players, forced passes and single-choice moves
   function tick() {
     var s = S; if (!s || s.status !== 'playing' || rolling) return;
+    if (isPaused(s)) { wasPaused = true; $('msg').textContent = '⏸ Paused - waiting for a player to come back. Tap anywhere to resume.'; return; }
     var st = seatOf(s, s.turn); if (!st) return;
     var mine = !st.bot && st.uid === me.uid, auto = false;
     if (!mine) {
@@ -563,7 +584,7 @@
       ref.child('players').on('value', function (snap) { players = snap.val() || {}; render(); });
       presenceRef = ref.child('players/' + me.uid);
       presenceRef.onDisconnect().remove();
-      var beat = function () { presenceRef.set({ n: myName, t: firebase.database.ServerValue.TIMESTAMP }); };
+      beat = function () { presenceRef.set({ n: myName, a: iAmActive() ? 1 : 0, t: firebase.database.ServerValue.TIMESTAMP }); };
       beat(); setInterval(beat, 20000);
     }
     stateRef.on('value', function (snap) {
