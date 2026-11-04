@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>(function(){var p=location.pathname.replace(/[^\/]*$/,'');document.write('<base href="'+p+'">');})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>Property Tycoon</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;min-height:100%;background:#0f172a;color:#e2e8f0;font-family:system-ui,sans-serif;overscroll-behavior:none}
+  button{font:inherit;border:0;border-radius:10px;padding:10px 14px;background:#334155;color:#e2e8f0;cursor:pointer}
+  button.go{background:#22c55e;color:#04210f;font-weight:700} button:disabled{opacity:.4;cursor:default}
+  #top{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;font-size:.85rem;background:#1e293b}
+  #top b{color:#fff} #top a,#top button{color:#94a3b8;text-decoration:none;background:none;padding:0}
+  #main{display:grid;grid-template-columns:1fr;gap:10px;padding:10px;max-width:1000px;margin:0 auto}
+  @media(min-width:860px){#main{grid-template-columns:minmax(0,640px) 1fr;align-items:start}}
+  #boardWrap{width:100%;max-width:640px;margin:0 auto}
+  svg{display:block;width:100%;height:auto;border-radius:12px;background:#0b1220}
+  svg text{font-family:system-ui,sans-serif;pointer-events:none}
+  .tok{transition:transform .35s ease-in-out}
+  #panel{background:#1e293b;border-radius:14px;padding:12px}
+  #turn{font-weight:700;display:flex;align-items:center;gap:8px;min-height:1.6em}
+  .dot{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid #fff;flex:none}
+  #dice{display:flex;align-items:center;gap:10px;margin:10px 0}
+  .die{width:58px;height:58px;border-radius:13px;background:#f8fafc;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:8px;gap:2px;border:0;flex:none;box-shadow:0 3px 0 #94a3b8}
+  .die i{border-radius:50%;background:transparent} .die i.on{background:#0f172a}
+  .die.throw{animation:throw .55s ease-out}
+  @keyframes throw{0%{transform:translateY(0) rotate(0)}35%{transform:translateY(-22px) rotate(260deg)}70%{transform:translateY(0) rotate(560deg)}100%{transform:translateY(0) rotate(720deg)}}
+  #msg{color:#fbbf24;font-size:.9rem;min-height:1.3em;flex:1}
+  #acts{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+  #buildList button{display:block;width:100%;text-align:left;margin:4px 0}
+  .seat{display:flex;align-items:center;gap:8px;padding:7px 6px;border-radius:10px;font-size:.9rem}
+  .seat.cur{background:#0f172a;outline:2px solid #475569} .seat.out{opacity:.45;text-decoration:line-through}
+  .seat .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .seat button{padding:6px 10px;font-size:.8rem}
+  .muted{color:#94a3b8;font-size:.8rem}
+  #banner{background:#14532d;border-radius:10px;padding:10px;margin-bottom:8px;text-align:center;font-weight:700}
+  #info{background:#0f172a;border-radius:10px;padding:10px;margin-top:10px;font-size:.85rem;line-height:1.5}
+  #log{margin-top:10px;font-size:.8rem;color:#94a3b8;line-height:1.5}
+  #log div:last-child{color:#e2e8f0}
+  #emotes{display:flex;gap:6px;margin-top:10px} #emotes button{flex:1;padding:8px 0;font-size:1.2rem}
+  .emo{font-size:1.3rem;animation:pop .35s ease-out}
+  .emoB{animation:pop .35s ease-out;transform-box:fill-box;transform-origin:center}
+  @keyframes pop{0%{transform:scale(.3)}70%{transform:scale(1.4)}100%{transform:scale(1)}}
+  #gate{position:fixed;inset:0;background:#0f172a;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:20px;z-index:9}
+</style>
+</head>
+<body>
+<div id="top">
+  <span>🏙️ <b id="roomLabel">Property Tycoon</b> · 👥 <b id="count">1</b></span>
+  <span>🏆 <b id="wins">0</b></span>
+  <span><button id="snd" title="Sound">🔊</button> · <button id="shareBtn">Invite</button> · <a href="index.html">Hub</a></span>
+</div>
+<div id="main">
+  <div id="boardWrap"><svg id="board" viewBox="0 0 110 110"></svg></div>
+  <div id="panel">
+    <div id="banner" style="display:none"></div>
+    <div id="turn"></div>
+    <div id="dice"><button class="die" id="d1" aria-label="Roll"></button><button class="die" id="d2" aria-label="Roll"></button><div id="msg"></div></div>
+    <div id="acts"></div>
+    <div id="buildList"></div>
+    <div id="seats"></div>
+    <div id="lobbyActs" style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap"></div>
+    <div id="emotes"></div>
+    <div id="info" class="muted">Tap any space on the board to see its details.</div>
+    <div id="log"></div>
+    <div class="muted" style="margin-top:10px">Everyone starts with $1,000 and collects $200 passing Start. Buy what you land on, collect rent, and build up to 3 houses once you own a whole colour. Doubles roll again; three doubles go to jail. Rents rise by 25% every 3 rounds so games always finish. Last player standing wins. Tap the dice, shake your phone or press Space to roll.</div>
+  </div>
+</div>
+<div id="gate"><div id="gateText">Sign in to play</div><button class="go" id="gateBtn">Sign in with Google</button><button id="soloBtn">Play solo instead</button></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="js/common.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var qs = new URLSearchParams(location.search);
+  var roomCode = (qs.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  var COLORS = ['#ef4444', '#22c55e', '#eab308', '#3b82f6'];
+  var NAMES = ['Red', 'Green', 'Yellow', 'Blue'];
+  var PIPS = { 0: [], 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
+
+  // ---------- board data (all names and cards are original)
+  function P(n, c, g, p, r) { return { t: 'prop', n: n, c: c, g: g, p: p, r: r }; }
+  var BR = '#92400e', SK = '#38bdf8', PK = '#ec4899', OR = '#f97316', RD = '#dc2626', YL = '#facc15', GR = '#16a34a', BL = '#1d4ed8';
+  var SP = [
+    { t: 'go', n: 'Start (collect $200)', i: '➡️' },
+    P('Maple Lane', BR, 'brown', 60, 2), { t: 'chest', n: 'Community Fund', i: '📦' }, P('Birch Street', BR, 'brown', 60, 4),
+    { t: 'tax', n: 'Income Tax', p: 200, i: '💸' }, { t: 'rail', n: 'North Station', p: 200, i: '🚉' },
+    P('Lakeview Road', SK, 'sky', 100, 6), { t: 'chance', n: 'Surprise', i: '❓' }, P('Harbor Street', SK, 'sky', 100, 6), P('Pier Avenue', SK, 'sky', 120, 8),
+    { t: 'jail', n: 'Jail (just visiting)', i: '🔒' },
+    P('Orchard Way', PK, 'pink', 140, 10), { t: 'util', n: 'Power Company', p: 150, i: '💡' }, P('Cherry Street', PK, 'pink', 140, 10), P('Plum Avenue', PK, 'pink', 160, 12),
+    { t: 'rail', n: 'East Station', p: 200, i: '🚉' },
+    P('Sunset Boulevard', OR, 'orange', 180, 14), { t: 'chest', n: 'Community Fund', i: '📦' }, P('Dawn Drive', OR, 'orange', 180, 14), P('Amber Road', OR, 'orange', 200, 16),
+    { t: 'park', n: 'Free Parking', i: '🅿️' },
+    P('Ruby Court', RD, 'red', 220, 18), { t: 'chance', n: 'Surprise', i: '❓' }, P('Garnet Street', RD, 'red', 220, 18), P('Crimson Plaza', RD, 'red', 240, 20),
+    { t: 'rail', n: 'South Station', p: 200, i: '🚉' },
+    P('Gold Avenue', YL, 'yellow', 260, 22), P('Sunny Street', YL, 'yellow', 260, 22), { t: 'util', n: 'Water Works', p: 150, i: '🚰' }, P('Lemon Lane', YL, 'yellow', 280, 24),
+    { t: 'gotojail', n: 'Go to Jail', i: '🚔' },
+    P('Pine Boulevard', GR, 'green', 300, 26), P('Cedar Street', GR, 'green', 300, 26), { t: 'chest', n: 'Community Fund', i: '📦' }, P('Spruce Avenue', GR, 'green', 320, 28),
+    { t: 'rail', n: 'West Station', p: 200, i: '🚉' }, { t: 'chance', n: 'Surprise', i: '❓' },
+    P('Skyline Drive', BL, 'blue', 350, 35), { t: 'tax', n: 'Luxury Tax', p: 100, i: '💎' }, P('Royal Park', BL, 'blue', 400, 50)
+  ];
+  var HMULT = [1, 3, 6, 10];
+  var SURPRISE = [
+    { k: 'move', to: 0, x: 'Advance to Start and collect $200.' }, { k: 'move', to: 5, x: 'Take a trip to North Station.' },
+    { k: 'move', to: 39, x: 'Advance to Royal Park.' }, { k: 'gain', v: 50, x: 'The bank pays you a $50 dividend.' },
+    { k: 'back', x: 'Go back 3 spaces.' }, { k: 'jail', x: 'Go directly to jail.' },
+    { k: 'pay', v: 15, x: 'Pay a $15 speeding fine.' }, { k: 'move', to: 11, x: 'Advance to Orchard Way.' },
+    { k: 'gain', v: 150, x: 'Your investment pays $150.' }, { k: 'payall', v: 25, x: 'Pay each player $25.' },
+    { k: 'move', to: 26, x: 'Advance to Gold Avenue.' }, { k: 'pay', v: 40, x: 'Street repairs cost you $40.' }
+  ];
+  var FUND = [
+    { k: 'gain', v: 200, x: 'Bank error in your favour. Collect $200.' }, { k: 'pay', v: 50, x: 'Doctor’s fee. Pay $50.' },
+    { k: 'gain', v: 50, x: 'You sell old stock. Collect $50.' }, { k: 'collect', v: 10, x: 'Birthday! Collect $10 from every player.' },
+    { k: 'gain', v: 20, x: 'Tax refund. Collect $20.' }, { k: 'pay', v: 100, x: 'Hospital bill. Pay $100.' },
+    { k: 'gain', v: 100, x: 'You inherit $100.' }, { k: 'pay', v: 50, x: 'School fees. Pay $50.' },
+    { k: 'gain', v: 25, x: 'Second prize in a contest. Collect $25.' }, { k: 'jail', x: 'Go directly to jail.' },
+    { k: 'gain', v: 100, x: 'Holiday fund matures. Collect $100.' }, { k: 'pay', v: 30, x: 'Pay $30 for car repairs.' }
+  ];
+  function cellRC(i) { if (i <= 10) return [10 - i, 10]; if (i <= 20) return [0, 20 - i]; if (i <= 30) return [i - 20, 0]; return [10, i - 30]; }
+  function group(g) { var a = []; SP.forEach(function (s, i) { if (s.g === g) a.push(i); }); return a; }
+
+  // ---------- rules (pure functions on the shared state object)
+  function seatOf(s, i) { return (s.seats && s.seats[i]) || null; }
+  function seated(s) { var a = []; for (var i = 0; i < 4; i++) if (seatOf(s, i)) a.push(i); return a; }
+  function plOf(s, p) { return s.pl && s.pl[p]; }
+  function alive(s) { return seated(s).filter(function (p) { var q = plOf(s, p); return q && !q.bankrupt; }); }
+  function ownerOf(s, i) { var o = s.own && s.own[i]; return (o === undefined || o === null) ? -1 : +o; }
+  function housesOf(s, i) { return (s.hs && s.hs[i]) | 0; }
+  function addLog(s, m) { s.log = (s.log || []).slice(-5); s.log.push(m); s.msg = m; }
+  function norm(s) {
+    ['own', 'hs', 'pl', 'seats'].forEach(function (k) {
+      var v = s[k]; if (!v) { s[k] = {}; return; }
+      if (Array.isArray(v)) { var o = {}; v.forEach(function (x, i) { if (x !== null && x !== undefined) o[i] = x; }); s[k] = o; }
+    });
+    if (!s.log) s.log = [];
+  }
+  function countOwned(s, p, t) { var n = 0; SP.forEach(function (sp, i) { if (sp.t === t && ownerOf(s, i) === p) n++; }); return n; }
+  function ownsSet(s, p, g) { return group(g).every(function (j) { return ownerOf(s, j) === p; }); }
+  function rentMult(s) { return 1 + 0.25 * Math.floor((s.rd | 0) / 3); }
+  function rentOf(s, i, sum) {
+    var sp = SP[i], o = ownerOf(s, i), base, h;
+    if (sp.t === 'rail') base = 25 * Math.pow(2, countOwned(s, o, 'rail') - 1);
+    else if (sp.t === 'util') base = (countOwned(s, o, 'util') === 2 ? 10 : 4) * sum;
+    else { h = housesOf(s, i); base = h > 0 ? sp.r * HMULT[h] : sp.r * (ownsSet(s, o, sp.g) ? 2 : 1); }
+    return Math.round(base * rentMult(s));
+  }
+  function sellHouses(s, p, target) {
+    var q = plOf(s, p);
+    while (q.cash < target) {
+      var best = -1, bh = 0;
+      SP.forEach(function (sp, i) { if (ownerOf(s, i) === p && housesOf(s, i) > bh) { bh = housesOf(s, i); best = i; } });
+      if (best < 0) return;
+      s.hs[best] = bh - 1; if (!s.hs[best]) delete s.hs[best];
+      q.cash += Math.floor(SP[best].p / 4);
+    }
+  }
+  function checkWin(s) {
+    var a = alive(s);
+    if (a.length <= 1 && s.status === 'playing') { s.status = 'done'; s.winner = a.length ? a[0] : s.turn; addLog(s, NAMES[s.winner] + ' wins the game!'); }
+  }
+  function pay(s, from, to, amt) {
+    var f = plOf(s, from);
+    if (f.cash < amt) sellHouses(s, from, amt);
+    if (f.cash >= amt) { f.cash -= amt; if (to >= 0) plOf(s, to).cash += amt; return true; }
+    if (to >= 0) plOf(s, to).cash += f.cash;
+    f.cash = 0; f.bankrupt = true;
+    SP.forEach(function (sp, i) {
+      if (ownerOf(s, i) === from) { if (to >= 0) s.own[i] = to; else delete s.own[i]; delete s.hs[i]; }
+    });
+    addLog(s, NAMES[from] + ' is bankrupt!');
+    checkWin(s);
+    return false;
+  }
+  function advance(s) {
+    var old = s.turn;
+    for (var k = 1; k <= 4; k++) { var n = (s.turn + k) % 4; var q = plOf(s, n); if (seatOf(s, n) && q && !q.bankrupt) { s.turn = n; break; } }
+    if (s.turn <= old) s.rd = (s.rd | 0) + 1;
+    s.phase = 'roll'; s.dc = 0; s.again = false; s.pend = -1;
+  }
+  function fin(s) {
+    if (s.status === 'done') return;
+    var q = plOf(s, s.turn);
+    if (q.bankrupt) { advance(s); return; }
+    s.pend = -1; s.phase = (s.again && q.jail === 0) ? 'roll' : 'end';
+  }
+  function toJail(s, p) { var q = plOf(s, p); q.pos = 10; q.jail = 1; s.again = false; addLog(s, NAMES[p] + ' goes to jail.'); }
+  function moveBy(s, p, sum, cr) {
+    var q = plOf(s, p), np = (q.pos + sum) % 40;
+    if (np < q.pos) { q.cash += 200; addLog(s, NAMES[p] + ' passes Start: +$200'); }
+    q.pos = np; land(s, p, sum, cr, false);
+  }
+  function land(s, p, sum, cr, nocard) {
+    var q = plOf(s, p), sp = SP[q.pos], nm = NAMES[p];
+    if (sp.t === 'prop' || sp.t === 'rail' || sp.t === 'util') {
+      var o = ownerOf(s, q.pos);
+      if (o < 0) {
+        if (q.cash >= sp.p) { s.phase = 'buy'; s.pend = q.pos; addLog(s, nm + ' landed on ' + sp.n + ' ($' + sp.p + ').'); }
+        else addLog(s, nm + ' landed on ' + sp.n + ' but cannot afford it.');
+      } else if (o !== p) { var r = rentOf(s, q.pos, sum); addLog(s, nm + ' pays $' + r + ' rent to ' + NAMES[o] + ' (' + sp.n + ').'); pay(s, p, o, r); }
+      else addLog(s, nm + ' is at home on ' + sp.n + '.');
+    } else if (sp.t === 'tax') { addLog(s, nm + ' pays $' + sp.p + ' ' + sp.n + '.'); pay(s, p, -1, sp.p); }
+    else if (sp.t === 'gotojail') toJail(s, p);
+    else if ((sp.t === 'chance' || sp.t === 'chest') && !nocard) {
+      var deck = sp.t === 'chance' ? SURPRISE : FUND, c = deck[cr % 12];
+      addLog(s, nm + ' - ' + (sp.t === 'chance' ? 'Surprise: ' : 'Community Fund: ') + c.x);
+      if (c.k === 'gain') q.cash += c.v;
+      else if (c.k === 'pay') pay(s, p, -1, c.v);
+      else if (c.k === 'jail') toJail(s, p);
+      else if (c.k === 'move') { if (c.to < q.pos) { q.cash += 200; } q.pos = c.to; land(s, p, 7, cr, true); }
+      else if (c.k === 'back') { q.pos = (q.pos + 37) % 40; land(s, p, 7, cr, true); }
+      else if (c.k === 'collect') alive(s).forEach(function (o2) { if (o2 !== p) { var amt = Math.min(c.v, plOf(s, o2).cash); plOf(s, o2).cash -= amt; q.cash += amt; } });
+      else if (c.k === 'payall') alive(s).forEach(function (o2) { if (o2 !== p && !q.bankrupt) pay(s, p, o2, c.v); });
+    }
+  }
+  function doRoll(s, r1, r2, cr) {
+    var p = s.turn, q = plOf(s, p), dbl = r1 === r2, sum = r1 + r2;
+    s.dice = [r1, r2]; s.again = false;
+    if (q.jail > 0) {
+      if (dbl) { q.jail = 0; addLog(s, NAMES[p] + ' rolled doubles and leaves jail.'); }
+      else {
+        q.jail++;
+        if (q.jail > 3) { q.jail = 0; addLog(s, NAMES[p] + ' pays $50 to leave jail.'); if (!pay(s, p, -1, 50)) { fin(s); return true; } }
+        else { addLog(s, NAMES[p] + ' rolled ' + sum + ' and stays in jail.'); s.phase = 'end'; return true; }
+      }
+    } else if (dbl) {
+      s.dc = (s.dc | 0) + 1;
+      if (s.dc >= 3) { s.dc = 0; addLog(s, NAMES[p] + ' rolled three doubles!'); toJail(s, p); s.phase = 'end'; return true; }
+      s.again = true;
+    } else s.dc = 0;
+    moveBy(s, p, sum, cr);
+    if (s.status === 'done') return true;
+    if (s.phase !== 'buy') fin(s);
+    return true;
+  }
+  function doBuy(s) {
+    var p = s.turn, q = plOf(s, p), sp = SP[s.pend];
+    if (s.phase !== 'buy' || !sp || q.cash < sp.p) return false;
+    q.cash -= sp.p; s.own[s.pend] = p; addLog(s, NAMES[p] + ' bought ' + sp.n + ' for $' + sp.p + '.'); fin(s); return true;
+  }
+  function doPass(s) { if (s.phase !== 'buy') return false; addLog(s, NAMES[s.turn] + ' passed on ' + SP[s.pend].n + '.'); fin(s); return true; }
+  function doEnd(s) { if (s.phase !== 'end') return false; advance(s); return true; }
+  function doBail(s) {
+    var q = plOf(s, s.turn); if (s.phase !== 'roll' || q.jail < 1 || q.cash < 50) return false;
+    q.cash -= 50; q.jail = 0; addLog(s, NAMES[s.turn] + ' pays $50 bail.'); return true;
+  }
+  function canBuild(s, p, i) {
+    var sp = SP[i], q = plOf(s, p); if (sp.t !== 'prop' || ownerOf(s, i) !== p || !ownsSet(s, p, sp.g)) return false;
+    var h = housesOf(s, i); if (h >= 3) return false;
+    var mn = Math.min.apply(null, group(sp.g).map(function (j) { return housesOf(s, j); }));
+    return h <= mn && q.cash >= Math.floor(sp.p / 2);
+  }
+  function buildable(s, p) { var a = []; for (var i = 0; i < 40; i++) if (canBuild(s, p, i)) a.push(i); return a; }
+  function doBuild(s, i) {
+    var p = s.turn; if ((s.phase !== 'roll' && s.phase !== 'end') || !canBuild(s, p, i)) return false;
+    var c = Math.floor(SP[i].p / 2); plOf(s, p).cash -= c; s.hs[i] = housesOf(s, i) + 1; addLog(s, NAMES[p] + ' built a house on ' + SP[i].n + ' ($' + c + ').'); return true;
+  }
+  function botAct(s) {
+    var p = s.turn, q = plOf(s, p), b;
+    if (s.phase === 'buy') { var sp = SP[s.pend]; return { k: (q.cash - sp.p >= 50) ? 'buy' : 'pass' }; }
+    b = buildable(s, p).filter(function (i) { return q.cash - Math.floor(SP[i].p / 2) >= 250; });
+    if (s.phase === 'roll') {
+      if (q.jail > 0 && q.cash >= 400) return { k: 'bail' };
+      if (b.length) return { k: 'build', i: b[0] };
+      return { k: 'roll' };
+    }
+    if (b.length) return { k: 'build', i: b[0] };
+    return { k: 'end' };
+  }
+  function startState(s) {
+    s.pl = {}; s.own = {}; s.hs = {};
+    seated(s).forEach(function (p) { s.pl[p] = { pos: 0, cash: 1000, jail: 0, bankrupt: false }; });
+    s.status = 'playing'; s.turn = seated(s)[0]; s.phase = 'roll'; s.dice = [0, 0]; s.dc = 0; s.again = false; s.pend = -1; s.winner = -1; s.rd = 0;
+    s.gid = (s.gid | 0) + 1; s.log = []; addLog(s, 'Game on! ' + NAMES[s.turn] + ' goes first.');
+  }
+
+  // ---------- session
+  var me = null, myName = 'Player', cloudCode = null, stateRef = null, presenceRef = null, roomRefG = null;
+  var S = null, players = {}, rolling = false, acted = { k: '', t: 0 }, autoSeatTried = false, statKey = '', wins = 0, sel = -1, showBuild = false;
+  var emotes = {}, emoSeen = {}, lastEmo = 0, ac = null, shakeOn = false, lastShake = 0;
+  var EMOS = ['👍', '😂', '😮', '😡', '🎉'];
+
+  function say(t) { $('msg').textContent = t || ''; }
+  function gate(text, showBtn) { $('gateText').textContent = text; $('gateBtn').style.display = showBtn ? '' : 'none'; $('gate').style.display = 'flex'; }
+  WW.onError = function (m) { say(m); gate(m, true); };
+  $('gateBtn').onclick = function () { WW.signIn(); };
+  $('soloBtn').onclick = function () { location.href = 'tycoon.html'; };
+
+  function mySeat() { if (!S || !me) return -1; for (var i = 0; i < 4; i++) { var st = seatOf(S, i); if (st && !st.bot && st.uid === me.uid) return i; } return -1; }
+  function isHost() { return !!S && !!me && S.hostUid === me.uid; }
+  function isDriver() {
+    if (WW.mode !== 'cloud') return true;
+    if (!S) return false;
+    if (players[S.hostUid]) return S.hostUid === me.uid;
+    var ids = Object.keys(players).sort(); return ids.length ? ids[0] === me.uid : true;
+  }
+  function mutate(fn) {
+    stateRef.transaction(function (cur) {
+      if (!cur) return cur;
+      var s = JSON.parse(JSON.stringify(cur)); norm(s);
+      if (fn(s) === false) return;
+      s.rid = (s.rid | 0) + 1; s.t = firebase.database.ServerValue.TIMESTAMP;
+      return s;
+    });
+  }
+  function actorOk(s) { var st = seatOf(s, s.turn); if (!st) return false; return (!st.bot && st.uid === me.uid) || isDriver(); }
+  function turnAct(fn) { mutate(function (s) { if (s.status !== 'playing' || !actorOk(s)) return false; return fn(s); }); }
+  function actRoll(r1, r2, cr) { turnAct(function (s) { if (s.phase !== 'roll') return false; return doRoll(s, r1, r2, cr); }); }
+  function actBuy() { turnAct(doBuy); } function actPass() { turnAct(doPass); } function actEnd() { turnAct(doEnd); }
+  function actBail() { turnAct(doBail); } function actBuild(i) { turnAct(function (s) { return doBuild(s, i); }); }
+
+  // ---------- dice, sound
+  function drawDie(el, v) { var h = '', on = PIPS[v] || []; for (var i = 0; i < 9; i++) h += '<i' + (on.indexOf(i) > -1 ? ' class="on"' : '') + '></i>'; el.innerHTML = h; }
+  function spinThen(cb) {
+    if (rolling) return; rolling = true; var n = 0;
+    ['d1', 'd2'].forEach(function (id) { var e = $(id); e.classList.remove('throw'); void e.offsetWidth; e.classList.add('throw'); });
+    var iv = setInterval(function () {
+      drawDie($('d1'), 1 + Math.floor(Math.random() * 6)); drawDie($('d2'), 1 + Math.floor(Math.random() * 6));
+      if (++n >= 7) { clearInterval(iv); rolling = false; cb(1 + Math.floor(Math.random() * 6), 1 + Math.floor(Math.random() * 6), Math.floor(Math.random() * 1200)); }
+    }, 70);
+  }
+  function tryRoll() {
+    if (!S || S.status !== 'playing' || S.phase !== 'roll' || rolling) return;
+    var st = seatOf(S, S.turn); if (!st || st.bot || st.uid !== me.uid) return;
+    spinThen(actRoll);
+  }
+  $('d1').onclick = $('d2').onclick = tryRoll;
+  document.addEventListener('keydown', function (e) { if (!e.repeat && (e.key === ' ' || e.key === 'Enter') && e.target.tagName !== 'BUTTON') { e.preventDefault(); tryRoll(); } });
+  function enableShake() {
+    if (shakeOn) return; shakeOn = true;
+    function attach() { window.addEventListener('devicemotion', function (e) { var a = e.accelerationIncludingGravity; if (!a) return; var m = Math.abs(a.x || 0) + Math.abs(a.y || 0) + Math.abs(a.z || 0); if (m > 38 && Date.now() - lastShake > 1500) { lastShake = Date.now(); tryRoll(); } }); }
+    if (window.DeviceMotionEvent && DeviceMotionEvent.requestPermission) DeviceMotionEvent.requestPermission().then(function (r) { if (r === 'granted') attach(); }).catch(function () {});
+    else if (window.DeviceMotionEvent) attach();
+  }
+  document.addEventListener('pointerup', enableShake, { once: true });
+  var muted = false; try { muted = localStorage.getItem('wh_mute') === '1'; } catch (e) {}
+  $('snd').textContent = muted ? '🔇' : '🔊';
+  $('snd').onclick = function () { muted = !muted; try { localStorage.setItem('wh_mute', muted ? '1' : '0'); } catch (e) {} $('snd').textContent = muted ? '🔇' : '🔊'; };
+  function tone(f, d, t0, type, vol) {
+    if (muted) return;
+    try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); var o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + (t0 || 0);
+      o.type = type || 'sine'; o.frequency.value = f; g.gain.setValueAtTime(vol || .12, t); g.gain.exponentialRampToValueAtTime(.001, t + d); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d); } catch (e) {}
+  }
+  function sfx(k) {
+    if (k === 'roll') for (var i = 0; i < 5; i++) tone(300 + Math.random() * 300, .05, i * .06, 'square', .05);
+    else if (k === 'coin') { tone(880, .08); tone(1175, .12, .08); }
+    else if (k === 'pay') { tone(220, .15, 0, 'sawtooth', .1); tone(160, .2, .1, 'sawtooth', .1); }
+    else if (k === 'win') [523, 659, 784, 1047].forEach(function (f, j) { tone(f, .2, j * .12, 'triangle', .15); });
+    else if (k === 'pop') tone(880, .07, 0, 'sine', .1);
+    else if (k === 'turn') tone(660, .06, 0, 'sine', .08);
+  }
+  function buzz(p) { if (!muted && navigator.vibrate) try { navigator.vibrate(p); } catch (e) {} }
+  function events(a, b) {
+    if (b.status === 'done' && a.status !== 'done') { sfx('win'); buzz([80, 60, 80]); return; }
+    if (a.phase === 'roll' && b.phase !== 'roll' && b.dice && (a.dice || [])[0] !== b.dice[0]) sfx('roll');
+    var ms = mySeat();
+    if (ms >= 0 && a.pl && b.pl && a.pl[ms] && b.pl[ms]) {
+      var d = b.pl[ms].cash - a.pl[ms].cash; if (d <= -20) { sfx('pay'); buzz(80); } else if (d >= 20) sfx('coin');
+    }
+    if (ms >= 0 && b.status === 'playing' && b.turn === ms && b.phase === 'roll' && (a.turn !== ms || a.phase !== 'roll')) { sfx('turn'); buzz(40); }
+  }
+
+  // ---------- bots, away players, auto-end
+  function perform(a) {
+    if (a.k === 'roll') spinThen(actRoll); else if (a.k === 'buy') actBuy(); else if (a.k === 'pass') actPass();
+    else if (a.k === 'end') actEnd(); else if (a.k === 'bail') actBail(); else if (a.k === 'build') actBuild(a.i);
+  }
+  function tick() {
+    var s = S; if (!s || s.status !== 'playing' || rolling) return;
+    var st = seatOf(s, s.turn); if (!st) return;
+    var mine = !st.bot && st.uid === me.uid, auto = false;
+    if (!mine) {
+      if (!isDriver()) return;
+      var away = WW.mode === 'cloud' && !st.bot && !players[st.uid], idle = WW.now() - (s.t || 0) > 90000;
+      auto = st.bot || away || idle; if (!auto) return;
+    }
+    var key = s.rid + ':' + s.turn + ':' + s.phase, now = Date.now();
+    if (acted.k === key && now - acted.t < 4000) return;
+    function mark() { acted = { k: key, t: now }; }
+    if (mine) { if (s.phase === 'end' && !buildable(s, s.turn).length) { mark(); setTimeout(actEnd, 1400); } return; }
+    var a = botAct(s); mark(); setTimeout(function () { perform(a); }, a.k === 'roll' ? 800 : 1000);
+  }
+  setInterval(tick, 2000);
+
+  // ---------- lobby actions
+  function sit(slot) { mutate(function (s) {
+    var cur = seatOf(s, slot); if (cur && !cur.bot) return false;
+    for (var i = 0; i < 4; i++) { var o = seatOf(s, i); if (o && !o.bot && o.uid === me.uid) return false; }
+    s.seats[slot] = { uid: me.uid, name: myName, bot: false }; }); }
+  function leave(slot) { mutate(function (s) {
+    var cur = seatOf(s, slot); if (!cur || cur.bot || cur.uid !== me.uid) return false;
+    if (s.status === 'lobby') delete s.seats[slot]; else s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true }; }); }
+  function addBot(slot) { mutate(function (s) { if (s.status !== 'lobby' || seatOf(s, slot) || s.hostUid !== me.uid) return false; s.seats[slot] = { uid: 'bot' + slot, name: NAMES[slot] + ' Bot', bot: true }; }); }
+  function fillBots() { mutate(function (s) { if (s.status !== 'lobby' || s.hostUid !== me.uid) return false; for (var i = 0; i < 4; i++) if (!seatOf(s, i)) s.seats[i] = { uid: 'bot' + i, name: NAMES[i] + ' Bot', bot: true }; }); }
+  function removeBot(slot) { mutate(function (s) { var c = seatOf(s, slot); if (s.status !== 'lobby' || !c || !c.bot || s.hostUid !== me.uid) return false; delete s.seats[slot]; }); }
+  function startGame() { mutate(function (s) { if (s.status !== 'lobby' || s.hostUid !== me.uid || seated(s).length < 2) return false; startState(s); }); }
+  function rematch() { mutate(function (s) { if (s.status !== 'done' || s.hostUid !== me.uid) return false; s.status = 'lobby'; s.pl = {}; s.own = {}; s.hs = {}; s.winner = -1; s.log = []; s.msg = ''; }); }
+
+  // ---------- drawing
+  var tokEls = [];
+  function cellStatic(i) {
+    var sp = SP[i], rc = cellRC(i), x = rc[0] * 10, y = rc[1] * 10, corner = (i % 10 === 0);
+    var fill = '#f1f5f9'; if (i === 0) fill = '#bbf7d0'; else if (i === 10) fill = '#fed7aa'; else if (i === 20) fill = '#fef08a'; else if (i === 30) fill = '#fecaca';
+    var h = '<g data-c="' + i + '" style="cursor:pointer"><rect x="' + x + '" y="' + y + '" width="10" height="10" fill="' + fill + '" stroke="#475569" stroke-width=".25"/>';
+    if (sp.t === 'prop') {
+      var bx = x, by = y, bw = 10, bh = 2.8;
+      if (rc[1] === 10) { by = y; } else if (rc[1] === 0) { by = y + 7.2; } else if (rc[0] === 0) { bx = x + 7.2; bw = 2.8; bh = 10; by = y; } else { bw = 2.8; bh = 10; }
+      h += '<rect x="' + bx + '" y="' + by + '" width="' + bw + '" height="' + bh + '" fill="' + sp.c + '" stroke="#0f172a" stroke-width=".15"/>';
+    }
+    if (sp.i) h += '<text x="' + (x + 5) + '" y="' + (y + (corner ? 6.6 : 5.4)) + '" text-anchor="middle" font-size="' + (corner ? 5.5 : 3.8) + '">' + sp.i + '</text>';
+    if (sp.p) h += '<text x="' + (x + 5) + '" y="' + (y + (sp.t === 'prop' ? 7 : 9)) + '" text-anchor="middle" font-size="2.4" font-weight="700" fill="#0f172a">$' + sp.p + '</text>';
+    return h + '</g>';
+  }
+  function buildBoard() {
+    var h = '<rect width="110" height="110" fill="#0b1220"/><rect x="10" y="10" width="90" height="90" fill="#134e4a"/>';
+    for (var i = 0; i < 40; i++) h += cellStatic(i);
+    h += '<text x="55" y="48" text-anchor="middle" font-size="7.5" font-weight="800" fill="#fde68a">PROPERTY</text><text x="55" y="58" text-anchor="middle" font-size="7.5" font-weight="800" fill="#fde68a">TYCOON</text>';
+    h += '<g id="dyn"></g><g id="toks"></g><g id="emoLayer"></g><g id="selLayer"></g>';
+    $('board').innerHTML = h;
+    var NS = 'http://www.w3.org/2000/svg';
+    for (var p = 0; p < 4; p++) {
+      var g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'tok');
+      g.innerHTML = '<circle r="2" fill="' + COLORS[p] + '" stroke="#fff" stroke-width=".5"/><text y=".85" text-anchor="middle" font-size="2.4" font-weight="800" fill="#fff" stroke="#0007" stroke-width=".1">' + (p + 1) + '</text>';
+      g.style.display = 'none'; $('toks').appendChild(g); tokEls[p] = g;
+    }
+    $('board').addEventListener('click', function (e) {
+      var c = e.target.closest ? e.target.closest('[data-c]') : null; if (!c) return;
+      sel = +c.dataset.c; renderInfo();
+    });
+  }
+  var OFF = [[-2.3, -2.3], [2.3, -2.3], [-2.3, 2.3], [2.3, 2.3]];
+  function dyn(s) {
+    var h = '';
+    for (var i = 0; i < 40; i++) {
+      var sp = SP[i]; if (!sp.p) continue;
+      var o = ownerOf(s, i), rc = cellRC(i), x = rc[0] * 10, y = rc[1] * 10;
+      if (o >= 0) {
+        var sx = x, sy = y, sw = 10, sh = 1.5;
+        if (rc[1] === 10) sy = y + 8.5; else if (rc[1] === 0) sy = y; else if (rc[0] === 0) { sx = x; sw = 1.5; sh = 10; } else { sx = x + 8.5; sw = 1.5; sh = 10; }
+        h += '<rect x="' + sx + '" y="' + sy + '" width="' + sw + '" height="' + sh + '" fill="' + COLORS[o] + '"/>';
+        var n = housesOf(s, i);
+        for (var k = 0; k < n; k++) {
+          var hx, hy;
+          if (rc[1] === 10) { hx = x + 2 + k * 2.4; hy = y + .5; } else if (rc[1] === 0) { hx = x + 2 + k * 2.4; hy = y + 7.7; } else if (rc[0] === 0) { hx = x + 7.5; hy = y + 2 + k * 2.4; } else { hx = x + .5; hy = y + 2 + k * 2.4; }
+          h += '<rect x="' + hx + '" y="' + hy + '" width="1.8" height="1.8" rx=".3" fill="#f8fafc" stroke="#0f172a" stroke-width=".15"/>';
+        }
+      }
+    }
+    return h;
+  }
+  function dot(p) { return '<span class="dot" style="background:' + COLORS[p] + '"></span>'; }
+  function emoOf(p) { var e = emotes && emotes[p]; return (e && WW.now() - (e.t || 0) < 4000) ? ' <span class="emo">' + e.e + '</span>' : ''; }
+  function money(n) { return '$' + n; }
+
+  function renderInfo() {
+    if (sel < 0 || !S) return;
+    var sp = SP[sel], h = '<b>' + sp.n + '</b>', o = S.pl ? ownerOf(S, sel) : -1;
+    if (sp.t === 'prop') {
+      h += ' · price $' + sp.p + '<br>Rent $' + sp.r + ' (double with the full colour set)<br>Houses cost $' + Math.floor(sp.p / 2) + ' each. Rent with 1/2/3 houses: $' + sp.r * 3 + ' / $' + sp.r * 6 + ' / $' + sp.r * 10;
+      if (o >= 0) h += '<br>Owner: ' + dot(o) + NAMES[o] + ' · houses: ' + housesOf(S, sel);
+    } else if (sp.t === 'rail') { h += ' · price $200<br>Rent $25, doubling for each station the owner has (max $200).'; if (o >= 0) h += '<br>Owner: ' + dot(o) + NAMES[o]; }
+    else if (sp.t === 'util') { h += ' · price $150<br>Rent is 4x the dice roll, or 10x if the owner has both utilities.'; if (o >= 0) h += '<br>Owner: ' + dot(o) + NAMES[o]; }
+    else if (sp.t === 'tax') h += '<br>Pay $' + sp.p + ' to the bank.';
+    else if (sp.t === 'go') h += '<br>Collect $200 every time you pass or land here.';
+    else if (sp.t === 'jail') h += '<br>Just visiting, unless you were sent here. In jail: roll doubles, pay $50, or wait 3 turns.';
+    else if (sp.t === 'gotojail') h += '<br>Go directly to jail.';
+    else if (sp.t === 'park') h += '<br>A free rest. Nothing happens.';
+    else h += '<br>Draw a card.';
+    $('info').innerHTML = h;
+    $('selLayer').innerHTML = (function () { var rc = cellRC(sel); return '<rect x="' + (rc[0] * 10 + .2) + '" y="' + (rc[1] * 10 + .2) + '" width="9.6" height="9.6" fill="none" stroke="#fff" stroke-width=".6" stroke-dasharray="1.2 .8"/>'; })();
+  }
+
+  function render() {
+    var s = S; if (!s) return;
+    var ms = mySeat(), playing = s.status === 'playing', myTurn = playing && ms === s.turn, p, i;
+    for (p = 0; p < 4; p++) {
+      var q = plOf(s, p), g = tokEls[p];
+      if (!playing && s.status !== 'done' || !q || q.bankrupt || !seatOf(s, p)) { g.style.display = 'none'; continue; }
+      g.style.display = ''; var rc = cellRC(q.pos);
+      g.style.transform = 'translate(' + (rc[0] * 10 + 5 + OFF[p][0]) + 'px,' + (rc[1] * 10 + 5 + OFF[p][1]) + 'px)';
+    }
+    $('dyn').innerHTML = s.pl ? dyn(s) : '';
+    var eo = '', best = null;
+    for (p = 0; p < 4; p++) { var em = emotes && emotes[p]; if (em && seatOf(s, p) && WW.now() - (em.t || 0) < 4000 && (!best || em.t > best.t)) best = { e: em.e, t: em.t, p: p }; }
+    if (best) eo = '<circle cx="42" cy="67" r="2.2" fill="' + COLORS[best.p] + '" stroke="#fff" stroke-width=".5"/><text class="emoB" x="55" y="69" text-anchor="middle" dominant-baseline="central" font-size="11">' + best.e + '</text>';
+    $('emoLayer').innerHTML = eo;
+    if (!rolling) { drawDie($('d1'), s.dice ? s.dice[0] : 0); drawDie($('d2'), s.dice ? s.dice[1] : 0); }
+    var q0 = playing ? plOf(s, s.turn) : null, cs = seatOf(s, s.turn);
+    if (playing) { $('turn').innerHTML = dot(s.turn) + (myTurn ? 'Your turn' : (cs ? cs.name : NAMES[s.turn]) + '’s turn'); say(s.msg || ''); }
+    else if (s.status === 'lobby') { $('turn').textContent = 'Get ready'; say('Pick your seat, add bots or invite friends, then start.'); }
+    else { $('turn').innerHTML = dot(s.winner) + NAMES[s.winner] + ' won'; say(s.msg || ''); }
+    var ban = $('banner');
+    if (s.status === 'done') { ban.style.display = ''; var w = seatOf(s, s.winner); ban.textContent = '🎉 ' + (w ? w.name : NAMES[s.winner]) + ' (' + NAMES[s.winner] + ') wins!'; } else ban.style.display = 'none';
+    // actions
+    var a = '', bl = '';
+    if (myTurn) {
+      var can = buildable(s, s.turn);
+      if (s.phase === 'roll') { a += '<button class="go" data-a="roll">🎲 Roll dice</button>'; if (q0.jail > 0 && q0.cash >= 50) a += '<button data-a="bail">Pay $50 bail</button>'; }
+      else if (s.phase === 'buy') { var sp = SP[s.pend]; a += '<button class="go" data-a="buy">Buy ' + sp.n + ' · $' + sp.p + '</button><button data-a="pass">Pass</button>'; }
+      else if (s.phase === 'end') a += '<button class="go" data-a="end">End turn</button>';
+      if (can.length && (s.phase === 'roll' || s.phase === 'end')) a += '<button data-a="togglebuild">🏠 Build (' + can.length + ')</button>';
+      if (showBuild && can.length && (s.phase === 'roll' || s.phase === 'end')) can.forEach(function (j) { bl += '<button data-a="build" data-i="' + j + '">' + SP[j].n + ' · +1 house · $' + Math.floor(SP[j].p / 2) + '</button>'; });
+    } else if (playing) a = '<span class="muted">Waiting for ' + (cs ? cs.name : NAMES[s.turn]) + '…</span>';
+    $('acts').innerHTML = a; $('buildList').innerHTML = bl;
+    // seats
+    var h = '';
+    for (p = 0; p < 4; p++) {
+      var st = seatOf(s, p), btn = '', pq = plOf(s, p);
+      if (!st) {
+        if (ms < 0) btn += '<button data-a="sit" data-p="' + p + '">Sit here</button>';
+        if (s.status === 'lobby' && isHost()) btn += ' <button data-a="bot" data-p="' + p + '">+ Bot</button>';
+        h += '<div class="seat">' + dot(p) + '<span class="nm muted">' + NAMES[p] + ' - empty</span>' + btn + '</div>';
+      } else {
+        var tag = st.bot ? ' 🤖' : (st.uid === me.uid ? ' (you)' : '');
+        if (st.bot && ms < 0) btn += '<button data-a="sit" data-p="' + p + '">' + (s.status === 'lobby' ? 'Take seat' : 'Jump in') + '</button>';
+        if (st.bot && s.status === 'lobby' && isHost()) btn += ' <button data-a="rm" data-p="' + p + '">Remove</button>';
+        if (!st.bot && st.uid === me.uid) btn += '<button data-a="leave" data-p="' + p + '">Leave</button>';
+        var info = '';
+        if (s.status !== 'lobby' && pq) { var np = 0; for (i = 0; i < 40; i++) if (ownerOf(s, i) === p) np++; info = pq.bankrupt ? ' · out' : ' · ' + money(pq.cash) + ' · 🏠' + np + (pq.jail ? ' · 🔒' : ''); }
+        h += '<div class="seat' + (playing && s.turn === p ? ' cur' : '') + (pq && pq.bankrupt ? ' out' : '') + '">' + dot(p) + '<span class="nm">' + st.name + tag + info + '</span>' + emoOf(p) + btn + '</div>';
+      }
+    }
+    $('seats').innerHTML = h;
+    var la = '';
+    if (s.status === 'lobby' && isHost()) la += '<button class="go" data-a="start"' + (seated(s).length < 2 ? ' disabled' : '') + '>Start game</button> <button data-a="fill">Fill with bots</button>';
+    if (s.status === 'lobby' && !isHost()) la += '<span class="muted">Waiting for the host to start.</span>';
+    if (s.status === 'done' && isHost()) la += '<button class="go" data-a="again">Play again</button>';
+    if (s.status === 'done' && !isHost()) la += '<span class="muted">Waiting for the host to set up the next game.</span>';
+    $('lobbyActs').innerHTML = la;
+    var eh = ''; if (ms >= 0) EMOS.forEach(function (x) { eh += '<button data-e="' + x + '">' + x + '</button>'; });
+    if ($('emotes').dataset.on !== String(ms >= 0)) { $('emotes').innerHTML = eh; $('emotes').dataset.on = String(ms >= 0); }
+    $('log').innerHTML = (s.log || []).map(function (m) { return '<div>' + m + '</div>'; }).join('');
+    $('count').textContent = (WW.mode === 'cloud' ? Object.keys(players).length : 1) || 1;
+    renderInfo();
+  }
+
+  $('panel').addEventListener('click', function (e) {
+    var eb = e.target.closest ? e.target.closest('button[data-e]') : null;
+    if (eb) {
+      var ms = mySeat(); if (ms < 0 || !roomRefG || Date.now() - lastEmo < 800) return;
+      lastEmo = Date.now(); emotes = emotes || {}; emotes[ms] = { e: eb.dataset.e, t: WW.now() }; render(); setTimeout(render, 4200);
+      roomRefG.child('emotes/' + ms).set({ e: eb.dataset.e, t: firebase.database.ServerValue.TIMESTAMP }).catch(function (err) { say('Reaction could not be sent: ' + ((err && err.message) || err)); });
+      return;
+    }
+    var b = e.target.closest ? e.target.closest('button[data-a]') : null; if (!b || b.disabled) return;
+    var a = b.dataset.a, p = +b.dataset.p;
+    if (a === 'sit') sit(p); else if (a === 'bot') addBot(p); else if (a === 'rm') removeBot(p); else if (a === 'leave') leave(p);
+    else if (a === 'start') startGame(); else if (a === 'fill') fillBots(); else if (a === 'again') rematch();
+    else if (a === 'roll') tryRoll(); else if (a === 'buy') actBuy(); else if (a === 'pass') actPass(); else if (a === 'end') actEnd(); else if (a === 'bail') actBail();
+    else if (a === 'togglebuild') { showBuild = !showBuild; render(); } else if (a === 'build') actBuild(+b.dataset.i);
+  });
+  $('shareBtn').onclick = function () {
+    if (WW.mode !== 'cloud' || !cloudCode) { say('Sign in from the hub to get a code friends can use.'); return; }
+    var url = location.origin + location.pathname + '?room=' + cloudCode;
+    if (navigator.share) navigator.share({ title: 'Join my Property Tycoon game', text: 'Table ' + cloudCode, url: url }).catch(function () {});
+    else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { say('Invite link copied!'); });
+    else say('Share this code: ' + cloudCode);
+  };
+
+  async function recordStats(s) {
+    if (s.status !== 'done' || mySeat() < 0) return;
+    var key = (cloudCode || 'solo') + ':' + s.gid; if (statKey === key) return; statKey = key;
+    var sv = (await WW.loadSave('tycoon')) || {}; if (sv.last === key) return;
+    sv.played = (sv.played | 0) + 1; if (s.winner === mySeat()) sv.wins = (sv.wins | 0) + 1; sv.last = key;
+    wins = sv.wins | 0; $('wins').textContent = wins; WW.writeSave('tycoon', sv);
+  }
+
+  async function begin(user, code) {
+    var roomId = roomCode || (user ? code : null), ref = null;
+    if (user && roomId) {
+      try {
+        ref = WW.roomRef('tycoon', roomId);
+        var meta = (await ref.child('meta').once('value')).val();
+        if (!meta) {
+          if (roomId === code) await ref.child('meta').set({ host: (user.displayName || 'Player').split(' ')[0], created: firebase.database.ServerValue.TIMESTAMP });
+          else { gate('Table ' + roomId + ' not found. Ask your friend to open Property Tycoon once first.', false); return; }
+        }
+        me = user; cloudCode = roomId; WW.mode = 'cloud';
+        $('roomLabel').textContent = (roomId === code ? 'My table' : 'Friend’s table') + ' · ' + roomId;
+      } catch (e) {
+        if (roomCode && roomCode !== code) { gate('Could not reach that table online yet (the game database rules still need to be added). Try solo for now.', false); return; }
+        console.warn(e); user = null; ref = null; say('Online tables are not switched on yet, so you are playing solo on this device.');
+      }
+    } else if (roomCode) { gate('Sign in to join a friend’s table.', true); return; }
+    if (!ref || WW.mode !== 'cloud') { WW.useLocal(); ref = WW.roomRef('tycoon', 'solo'); me = { uid: 'local' }; $('roomLabel').textContent = 'Solo · this device'; }
+    $('gate').style.display = 'none';
+    myName = ((user && user.displayName) || 'You').split(' ')[0].slice(0, 12);
+    var sv = await WW.loadSave('tycoon'); if (sv) { wins = sv.wins | 0; $('wins').textContent = wins; }
+    buildBoard();
+    stateRef = ref.child('state'); roomRefG = ref;
+    var isOwner = WW.mode !== 'cloud' || roomId === code;
+    if (isOwner) {
+      await stateRef.transaction(function (cur) {
+        if (cur) return cur;
+        var o = {}; o[0] = { uid: me.uid, name: myName, bot: false };
+        return { status: 'lobby', hostUid: me.uid, seats: o, turn: 0, phase: 'roll', winner: -1, rid: 1, gid: 0, msg: '', t: firebase.database.ServerValue.TIMESTAMP };
+      });
+    }
+    if (WW.mode === 'cloud') {
+      ref.child('players').on('value', function (snap) { players = snap.val() || {}; render(); });
+      presenceRef = ref.child('players/' + me.uid); presenceRef.onDisconnect().remove();
+      var beat = function () { presenceRef.set({ n: myName, t: firebase.database.ServerValue.TIMESTAMP }); };
+      beat(); setInterval(beat, 20000);
+    }
+    ref.child('emotes').on('value', function (snap) {
+      emotes = snap.val() || {};
+      Object.keys(emotes).forEach(function (k) { var e = emotes[k]; if (e && emoSeen[k] !== e.t) { if (emoSeen[k] !== undefined) sfx('pop'); emoSeen[k] = e.t; } });
+      render(); setTimeout(render, 4200);
+    });
+    stateRef.on('value', function (snap) {
+      var prev = S; S = snap.val();
+      if (S && prev && prev.rid !== S.rid) events(prev, S);
+      if (!S) { gate('This table is not open yet. Ask the host to open it first.', false); return; }
+      $('gate').style.display = 'none';
+      if (!autoSeatTried && mySeat() < 0 && S.status === 'lobby') {
+        autoSeatTried = true;
+        for (var i = 0; i < 4; i++) { if (!seatOf(S, i)) { sit(i); break; } }
+      }
+      if (S.status === 'playing' && mySeat() < 0 && !autoSeatTried) { autoSeatTried = true; say('Game in progress - tap a bot seat to jump in.'); }
+      render(); tick(); recordStats(S);
+    });
+  }
+
+  var started = false, startedAsUser = false;
+  WW.onReady(function (user, code) {
+    if (started) { if (!!user !== startedAsUser) location.reload(); return; }
+    started = true; startedAsUser = !!user;
+    $('gateBtn').style.display = 'none';
+    begin(user, code).catch(function (e) { console.error(e); gate('Could not start: ' + (e.message || e), false); });
+  });
+})();
+</script>
+</body>
+</html>

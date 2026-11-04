@@ -40,7 +40,12 @@
   </div>
 </div>
 
-<div class="card soon"><h2 style="margin:0 0 4px">🏙️ Property Tycoon</h2><div class="muted">Coming next — buy, rent and trade your way around the board.</div></div>
+<div class="card">
+  <h2 style="margin:0 0 4px">🏙️ Property Tycoon</h2>
+  <div class="muted">2 to 4 players. Buy streets, stations and utilities, collect rent, build houses and bankrupt your rivals. Bots fill empty seats.</div>
+  <div class="row"><button id="playTy">Play</button></div>
+  <div class="row"><input id="joinCodeTy" maxlength="8" placeholder="FRIEND'S CODE"><button id="joinTy" class="alt">Join</button></div>
+</div>
 <div class="card soon"><h2 style="margin:0 0 4px">🚗 Road of Life</h2><div class="muted">Coming after that — careers, money and a spinner.</div></div>
 <p class="muted"><a href="../" style="color:#94a3b8">Back to the main site</a></p>
 
@@ -58,6 +63,12 @@
     var c = $('joinCode').value.trim().toUpperCase();
     if (c.length < 4) { $('msg').textContent = 'Enter your friend’s code.'; return; }
     location.href = 'wahoo.html?room=' + encodeURIComponent(c);
+  };
+  $('playTy').onclick = function () { location.href = 'tycoon.html'; };
+  $('joinTy').onclick = function () {
+    var c = $('joinCodeTy').value.trim().toUpperCase();
+    if (c.length < 4) { $('msg').textContent = 'Enter your friend\u2019s code.'; return; }
+    location.href = 'tycoon.html?room=' + encodeURIComponent(c);
   };
   WW.onReady(function (user, code) {
     $('signedOut').style.display = user ? 'none' : '';
