@@ -6,6 +6,7 @@ Browser games that run on Android, iOS and desktop. Sign in with Google (same Fi
 - `farm.html` – Neighborly Acre, a co-op farm (stage 1). Works solo as a guest (saves on the device) or signed in (saves online, friends can join anytime). Shared farm lives at `game_rooms/farm/{friendCode}`; each player's coins save to `games_saves/{uid}/farm`.
 - `js/config.js` – game rules: 9 crops + levels, animals, recipes, upgrades, deterministic rain, real-clock sky, orders
 - `js/farm3d.js` + `js/world.js` – the 3D game (three.js bundle in `js/three.min.js`, no CDN needed)
+- `js/gamenav.js` – shared ☰ Games menu (the same file is also in `Mobilegames/js/`; add new games to its `GAMES` list in both copies)
 - `js/common.js` – Firebase init, login, friend codes, saves
 - Sniper and Open World are planned next.
 

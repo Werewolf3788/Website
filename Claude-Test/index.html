@@ -46,6 +46,8 @@
   </div>
 </div>
 
+<div class="card"><h2 style="margin:0 0 4px">🎲 Board games</h2><div class="muted">Wahoo and Property Tycoon, solo against bots or online with friends.</div><div class="row"><button class="alt" onclick="location.href='../Mobilegames/'">Open board games</button></div></div>
+
 <div class="card soon"><h2 style="margin:0 0 4px">🎯 Sniper Missions</h2><div class="muted">Coming next — top-down co-op missions.</div></div>
 <div class="card soon"><h2 style="margin:0 0 4px">🏝️ Open World</h2><div class="muted">Coming after that — a small co-op island to explore.</div></div>
 
@@ -85,7 +87,7 @@
       box.innerHTML = '';
       rows.forEach(function (r) {
         var d = document.createElement('div'); d.className = 'fr';
-        var status = !r.meta ? '⚪ no farm yet' : r.online.length ? '🟢 ' + r.online.length + ' playing now (' + esc(r.online.join(', ')) + ')' : '⚪ not playing right now';
+        var status = !r.meta ? '⚪ no farm yet' : r.online.length ? '<span style="color:#22c55e">●</span> ' + r.online.length + ' playing now (' + esc(r.online.join(', ')) + ')' : '⚪ not playing right now';
         d.innerHTML = '<div><b>' + esc(r.name) + '</b><small>' + status + '</small></div>';
         if (r.meta) { var b = document.createElement('button'); b.className = r.online.length ? '' : 'alt'; b.textContent = r.online.length ? 'Join' : 'Visit'; b.onclick = function () { location.href = 'farm.html?room=' + encodeURIComponent(r.code); }; d.appendChild(b); }
         box.appendChild(d);

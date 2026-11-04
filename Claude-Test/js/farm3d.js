@@ -204,29 +204,29 @@ function row(html, buttons) { const r = document.createElement('div'); r.classNa
 function renderShop() {
   const tabs = $('shopTabs'); tabs.innerHTML = '';
   TABS.forEach(function (t) { const b = document.createElement('button'); b.textContent = t[1]; b.className = t[0] === shopTab ? 'sel' : ''; b.onclick = function () { shopTab = t[0]; renderShop(); }; tabs.appendChild(b); });
-  const box = $('shopItems'), l = level(), d = today(); box.innerHTML = '<div class="item" style="border:0;padding-top:0"><div>🪙 <b>' + save.coins + '</b> · Level <b>' + l + '</b></div></div>';
+  const box = $('shopItems'), l = level(), d = today(); box.innerHTML = '<div class="item" style="border:0;padding-top:0"><div><b style="color:#fde68a">$' + save.coins + '</b> · Level <b>' + l + '</b></div></div>';
   if (!nearShop() && shopTab !== 'seeds') box.innerHTML += '<div class="item" style="border:0;color:#fbbf24">Walk to the barn door to trade. You can still look around.</div>';
   const can = nearShop();
   if (shopTab === 'seeds') {
     box.innerHTML += '<div class="item" style="border:0"><small>One pack plants many tiles. A field pack covers the whole field. Every kind of seed you own is spread evenly across the field: one kind = all of it, two = half and half, three = thirds.</small></div>';
     C.CROP_IDS.forEach(function (id) {
       const c = C.CROPS[id], lock = l < c.level, price = C.priceOf(id, d);
-      box.appendChild(row(c.icon + ' <b>' + c.name + '</b> <small>' + (lock ? 'Unlocks at level ' + c.level : 'sells ~' + price + '🪙 each · ' + c.grow / 60000 + ' min to grow · you have ' + (save.seeds[id] || 0) + ' seeds') + '</small>',
-        lock ? [{ t: '🔒 Lv ' + c.level, off: true, f: function () {} }] : C.PACKS.map(function (n) { const cost = C.packPrice(id, n); return { t: (n === C.FIELD_TILES ? 'Field ' : '×') + n + ' · ' + cost + '🪙', off: !can || save.coins < cost, f: function () { if (save.coins < cost) return; setCoins(-cost); save.seeds[id] = (save.seeds[id] || 0) + n; hud(); queueSave(); buildSeedBar(); say('Bought ' + n + ' ' + c.name.toLowerCase() + ' seeds.'); } }; })));
+      box.appendChild(row(c.icon + ' <b>' + c.name + '</b> <small>' + (lock ? 'Unlocks at level ' + c.level : 'sells ~$' + price + ' each · ' + c.grow / 60000 + ' min to grow · you have ' + (save.seeds[id] || 0) + ' seeds') + '</small>',
+        lock ? [{ t: '🔒 Lv ' + c.level, off: true, f: function () {} }] : C.PACKS.map(function (n) { const cost = C.packPrice(id, n); return { t: (n === C.FIELD_TILES ? 'Field ' : '×') + n + ' · $' + cost + '', off: !can || save.coins < cost, f: function () { if (save.coins < cost) return; setCoins(-cost); save.seeds[id] = (save.seeds[id] || 0) + n; hud(); queueSave(); buildSeedBar(); say('Bought ' + n + ' ' + c.name.toLowerCase() + ' seeds.'); } }; })));
     });
   } else if (shopTab === 'sell') {
     const ids = Object.keys(save.bag); if (!ids.length) box.innerHTML += '<div class="item"><div>Your bag is empty. Harvest crops and collect eggs, milk and wool.</div></div>';
     let total = 0; ids.forEach(function (id) { total += (save.bag[id] || 0) * C.priceOf(id, d); });
     ids.forEach(function (id) {
       const g = C.GOODS[id], n = save.bag[id], p = C.priceOf(id, d), base = g.sell, arrow = p > base ? '▲' : p < base ? '▼' : '';
-      box.appendChild(row(g.icon + ' <b>' + g.name + '</b> ×' + n + ' <small>today ' + p + '🪙 each ' + arrow + '</small>', [{ t: 'Sell 1', off: !can, f: function () { sell(id, 1); } }, { t: 'Sell all', off: !can, f: function () { sell(id, n); } }]));
+      box.appendChild(row(g.icon + ' <b>' + g.name + '</b> ×' + n + ' <small>today $' + p + ' each ' + arrow + '</small>', [{ t: 'Sell 1', off: !can, f: function () { sell(id, 1); } }, { t: 'Sell all', off: !can, f: function () { sell(id, n); } }]));
     });
-    if (ids.length) box.appendChild(row('<b>Sell everything</b> <small>' + total + '🪙 total</small>', [{ t: 'Sell all', off: !can, f: function () { ids.slice().forEach(function (id) { sell(id, save.bag[id], true); }); say('Sold everything for ' + total + ' 🪙'); } }]));
+    if (ids.length) box.appendChild(row('<b>Sell everything</b> <small>$' + total + ' total</small>', [{ t: 'Sell all', off: !can, f: function () { ids.slice().forEach(function (id) { sell(id, save.bag[id], true); }); say('Sold everything for $' + total + ''); } }]));
   } else if (shopTab === 'kitchen') {
     C.RECIPES.forEach(function (r) {
       const g = C.GOODS[r.id], lock = l < r.level, have = Object.keys(r.needs).every(function (k) { return (save.bag[k] || 0) >= r.needs[k]; });
       const need = Object.keys(r.needs).map(function (k) { return r.needs[k] + '× ' + C.GOODS[k].icon + ' (' + (save.bag[k] || 0) + ')'; }).join(' + ');
-      box.appendChild(row(g.icon + ' <b>' + g.name + '</b> <small>' + (lock ? 'Unlocks at level ' + r.level : need + ' · worth ~' + C.priceOf(r.id, d) + '🪙') + '</small>',
+      box.appendChild(row(g.icon + ' <b>' + g.name + '</b> <small>' + (lock ? 'Unlocks at level ' + r.level : need + ' · worth ~$' + C.priceOf(r.id, d) + '') + '</small>',
         [{ t: lock ? '🔒' : 'Make', off: lock || !have || !can, f: function () { Object.keys(r.needs).forEach(function (k) { addItem(k, -r.needs[k]); }); addItem(r.id, 1); addXp(5); say('Made ' + g.name.toLowerCase() + '!'); } }]));
     });
   } else if (shopTab === 'animals') {
@@ -234,26 +234,26 @@ function renderShop() {
     Object.keys(C.ANIMALS).forEach(function (k) {
       const a = C.ANIMALS[k], lock = l < a.level;
       box.appendChild(row(a.icon + ' <b>' + a.name + '</b> (' + c[k] + '/' + a.max + ') <small>' + (lock ? 'Unlocks at level ' + a.level : 'gives ' + a.prod + ' every ' + a.every / 60000 + ' min') + '</small>',
-        [{ t: lock ? '🔒 Lv ' + a.level : a.cost + ' 🪙', off: lock || !can || c[k] >= a.max || save.coins < a.cost, f: function () { if (save.coins < a.cost || counts()[k] >= a.max) return; setCoins(-a.cost); roomRef.child('animals/' + Date.now().toString(36) + Math.floor(Math.random() * 99)).set({ t: k, r: nowMs() + a.every }); say('Bought a ' + a.name.toLowerCase() + '!'); } }]));
+        [{ t: lock ? '🔒 Lv ' + a.level : '$' + a.cost, off: lock || !can || c[k] >= a.max || save.coins < a.cost, f: function () { if (save.coins < a.cost || counts()[k] >= a.max) return; setCoins(-a.cost); roomRef.child('animals/' + Date.now().toString(36) + Math.floor(Math.random() * 99)).set({ t: k, r: nowMs() + a.every }); say('Bought a ' + a.name.toLowerCase() + '!'); } }]));
     });
   } else if (shopTab === 'orders') {
     if (save.orders.day !== d) { save.orders = { day: d, done: [] }; queueSave(); }
     C.ordersFor(d, l).forEach(function (o, k) {
       const g = C.GOODS[o.item], done = save.orders.done[k], have = (save.bag[o.item] || 0) >= o.qty;
-      box.appendChild(row('📋 <b>' + o.qty + '× ' + g.name + '</b> ' + g.icon + ' <small>reward ' + o.reward + '🪙 + ' + o.xp + ' xp · you have ' + (save.bag[o.item] || 0) + '</small>',
-        [{ t: done ? '✅ Done' : 'Deliver', off: done || !have || !can, f: function () { addItem(o.item, -o.qty); setCoins(o.reward); addXp(o.xp); save.orders.done[k] = true; say('Order complete! +' + o.reward + ' 🪙'); } }]));
+      box.appendChild(row('📋 <b>' + o.qty + '× ' + g.name + '</b> ' + g.icon + ' <small>reward $' + o.reward + ' + ' + o.xp + ' xp · you have ' + (save.bag[o.item] || 0) + '</small>',
+        [{ t: done ? '✅ Done' : 'Deliver', off: done || !have || !can, f: function () { addItem(o.item, -o.qty); setCoins(o.reward); addXp(o.xp); save.orders.done[k] = true; say('Order complete! +$' + o.reward + ''); } }]));
     });
     box.innerHTML += '<div class="item" style="border:0"><small>New orders arrive every day (UTC midnight). Big orders are where a tractor really pays off.</small></div>';
   } else if (shopTab === 'upgrades') {
     Object.keys(C.UPGRADES).forEach(function (k) {
       const u = C.UPGRADES[k], has = save.up[k], lock = l < u.level;
       box.appendChild(row('🚜 <b>' + u.name + '</b> <small>' + u.desc + (lock ? ' · unlocks at level ' + u.level : '') + '</small>',
-        [{ t: has ? '✅ Owned' : lock ? '🔒 Lv ' + u.level : u.cost + ' 🪙', off: has || lock || !can || save.coins < u.cost, f: function () { setCoins(-u.cost); save.up[k] = 1; say(u.name + ' installed!'); applyImplement(); queueSave(); } }]));
+        [{ t: has ? '✅ Owned' : lock ? '🔒 Lv ' + u.level : '$' + u.cost, off: has || lock || !can || save.coins < u.cost, f: function () { setCoins(-u.cost); save.up[k] = 1; say(u.name + ' installed!'); applyImplement(); queueSave(); } }]));
     });
     box.innerHTML += '<div class="item" style="border:0"><small>Drive the tractor over your field: it plows, plants, waters or harvests ' + swath() + ' tiles at once, whichever tool you have selected.</small></div>';
   }
 }
-function sell(id, n, quiet) { n = Math.min(n, save.bag[id] || 0); if (n < 1) return; const p = C.priceOf(id, today()) * n; addItem(id, -n); setCoins(p); addXp(Math.round(n / 2)); if (!quiet) say('Sold ' + n + ' ' + C.GOODS[id].name.toLowerCase() + ' for ' + p + ' 🪙'); }
+function sell(id, n, quiet) { n = Math.min(n, save.bag[id] || 0); if (n < 1) return; const p = C.priceOf(id, today()) * n; addItem(id, -n); setCoins(p); addXp(Math.round(n / 2)); if (!quiet) say('Sold ' + n + ' ' + C.GOODS[id].name.toLowerCase() + ' for $' + p + ''); }
 function openShop(tab) { if (tab) shopTab = tab; renderShop(); $('shop').style.display = 'flex'; }
 $('shopClose').onclick = function () { $('shop').style.display = 'none'; };
 $('bagBtn').onclick = function () { openShop('sell'); };
