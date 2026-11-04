@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>Co-op Farm</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+  html,body{margin:0;height:100%;background:#0f172a;color:#e2e8f0;font-family:system-ui,sans-serif;overscroll-behavior:none}
+  #top{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;font-size:.85rem;background:#1e293b}
+  #top b{color:#fff} #top a,#top button{color:#94a3b8;text-decoration:none}
+  #wrap{display:flex;justify-content:center;background:#0b1220}
+  canvas{display:block;touch-action:none}
+  #bar{display:flex;flex-wrap:wrap;gap:6px;padding:8px;justify-content:center;background:#1e293b}
+  #bar button{background:#334155;color:#e2e8f0;border:2px solid transparent;border-radius:10px;padding:10px 12px;font:inherit;font-size:.85rem}
+  #bar button.sel{border-color:#22c55e;background:#14532d}
+  #msg{text-align:center;color:#fbbf24;font-size:.85rem;min-height:1.3em;padding:2px}
+  #gate{position:fixed;inset:0;background:#0f172a;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:20px}
+  #gate button{background:#22c55e;color:#04210f;font-weight:700;border:0;border-radius:10px;padding:12px 18px;font:inherit}
+</style>
+</head>
+<body>
+<div id="top">
+  <span>🌾 Room <b id="room">-</b> · 👥 <b id="count">1</b></span>
+  <span>🪙 <b id="coins">0</b></span>
+  <span><button id="shareBtn" style="background:none;border:0;font:inherit">Invite</button> · <a href="index.html">Hub</a></span>
+</div>
+<div id="wrap"><canvas id="c"></canvas></div>
+<div id="msg"></div>
+<div id="bar"></div>
+<div id="gate"><div id="gateText">Sign in to play</div><button id="gateBtn">Sign in with Google</button></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="js/common.js"></script>
+<script>
+(function () {
+  var COLS = 14, ROWS = 10;
+  var CROPS = {
+    wheat:  { grow: 60000, cost: 5, sell: 12, color: '#e6c84a', icon: '🌾' },
+    carrot: { grow: 45000, cost: 4, sell: 10, color: '#f08a24', icon: '🥕' },
+    corn:   { grow: 90000, cost: 8, sell: 22, color: '#f2d21b', icon: '🌽' }
+  };
+  var TOOLS = [
+    { id: 'hoe', label: '⛏️ Hoe' }, { id: 'water', label: '💧 Water' }, { id: 'harvest', label: '🧺 Harvest' },
+    { id: 'wheat', label: '🌾 Wheat 5' }, { id: 'carrot', label: '🥕 Carrot 4' }, { id: 'corn', label: '🌽 Corn 8' }
+  ];
+  var $ = function (id) { return document.getElementById(id); };
+  var qs = new URLSearchParams(location.search);
+  var roomCode = (qs.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  var canvas = $('c'), ctx = canvas.getContext('2d'), T = 40;
+  var tiles = {}, players = {}, me = null, myName = 'Farmer', tool = 'hoe';
+  var pos = { x: 1, y: 1 }, target = null, pending = null, lastSent = 0, lastBeat = 0;
+  var save = { coins: 30, harvested: 0 }, saveTimer = null, roomRef = null;
+
+  function say(t) { $('msg').textContent = t || ''; }
+  function gate(text, showBtn) { $('gateText').textContent = text; $('gateBtn').style.display = showBtn ? '' : 'none'; $('gate').style.display = 'flex'; }
+  $('gateBtn').onclick = function () { WW.signIn(); };
+  $('room').textContent = roomCode || '-';
+
+  // ---- toolbar
+  var bar = $('bar');
+  TOOLS.forEach(function (t) {
+    var b = document.createElement('button'); b.textContent = t.label; b.dataset.id = t.id;
+    b.onclick = function () { tool = t.id; refreshBar(); };
+    bar.appendChild(b);
+  });
+  function refreshBar() { [].forEach.call(bar.children, function (b) { b.classList.toggle('sel', b.dataset.id === tool); }); }
+  refreshBar();
+
+  // ---- helpers
+  function idx(x, y) { return y * COLS + x; }
+  function progress(t) {
+    if (!t || t.k !== 'c' || !t.w) return 0;
+    return Math.min(1, (WW.now() - t.w) / CROPS[t.c].grow);
+  }
+  function setCoins(delta) {
+    save.coins = Math.max(0, save.coins + delta); $('coins').textContent = save.coins;
+    clearTimeout(saveTimer); saveTimer = setTimeout(flushSave, 1500);
+  }
+  function flushSave() { clearTimeout(saveTimer); if (me) WW.writeSave('farm', { coins: save.coins, harvested: save.harvested }); }
+  document.addEventListener('visibilitychange', function () { if (document.hidden) flushSave(); });
+  window.addEventListener('pagehide', flushSave);
+
+  // ---- actions (run when the player reaches the tapped tile)
+  function act(x, y) {
+    var i = idx(x, y), cur = tiles[i], ref = roomRef.child('tiles/' + i);
+    if (tool === 'hoe') {
+      if (!cur) ref.set({ k: 't' });
+      else if (cur.k === 't') ref.remove();
+      else say('Harvest or clear the crop first.');
+    } else if (tool === 'water') {
+      if (cur && cur.k === 'c' && !cur.w) ref.child('w').set(WW.now());
+      else say(cur && cur.k === 'c' ? 'Already watered.' : 'Nothing to water here.');
+    } else if (tool === 'harvest') {
+      ref.transaction(function (c) {
+        return (c && c.k === 'c' && progress(c) >= 1) ? { k: 't' } : undefined;
+      }, function (err, committed, snap) {
+        if (committed) {
+          var sell = CROPS[(cur && cur.c) || 'wheat'].sell;
+          setCoins(sell); save.harvested++;
+          say('Harvested! +' + sell + ' 🪙');
+        } else say(cur && cur.k === 'c' ? 'Not ready yet.' : 'Nothing to harvest.');
+      });
+    } else if (CROPS[tool]) {
+      if (!cur || cur.k !== 't') { say('Till the soil with the hoe first.'); return; }
+      if (save.coins < CROPS[tool].cost) { say('Not enough coins.'); return; }
+      setCoins(-CROPS[tool].cost); ref.set({ k: 'c', c: tool, w: 0 });
+    }
+  }
+
+  // ---- input
+  canvas.addEventListener('pointerdown', function (e) {
+    if (!me) return;
+    var r = canvas.getBoundingClientRect();
+    var tx = Math.floor((e.clientX - r.left) / T), ty = Math.floor((e.clientY - r.top) / T);
+    if (tx < 0 || ty < 0 || tx >= COLS || ty >= ROWS) return;
+    var i = idx(tx, ty), t = tiles[i];
+    pending = { x: tx, y: ty, crop: t && t.c };
+    target = { x: tx, y: ty }; say('');
+  });
+
+  // ---- render + loop
+  function resize() {
+    T = Math.max(20, Math.min(56, Math.floor(window.innerWidth / COLS)));
+    canvas.width = T * COLS; canvas.height = T * ROWS;
+  }
+  window.addEventListener('resize', resize); resize();
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (var y = 0; y < ROWS; y++) for (var x = 0; x < COLS; x++) {
+      var t = tiles[idx(x, y)], px = x * T, py = y * T;
+      ctx.fillStyle = (x + y) % 2 ? '#3f8f3f' : '#47994a'; // grass
+      if (t) ctx.fillStyle = (t.k === 'c' && t.w) ? '#5b3a1e' : '#7a5230'; // watered soil is darker
+      ctx.fillRect(px, py, T, T);
+      if (t && t.k === 'c') {
+        var p = progress(t), c = CROPS[t.c];
+        if (!t.w) { ctx.fillStyle = '#d6d3d1'; ctx.beginPath(); ctx.arc(px + T / 2, py + T / 2, T * 0.08, 0, 7); ctx.fill(); }
+        else if (p >= 1) { ctx.font = Math.floor(T * 0.7) + 'px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(c.icon, px + T / 2, py + T / 2); }
+        else { ctx.fillStyle = '#4ade80'; var h = T * (0.15 + 0.55 * p); ctx.fillRect(px + T * 0.45, py + T * 0.85 - h, T * 0.1, h);
+               ctx.beginPath(); ctx.arc(px + T / 2, py + T * 0.85 - h, T * (0.08 + 0.12 * p), 0, 7); ctx.fill(); }
+      }
+    }
+    var now = WW.now();
+    Object.keys(players).forEach(function (u) {
+      var p = players[u]; if (u === (me && me.uid) || now - (p.t || 0) > 45000) return;
+      avatar(p.x, p.y, p.n, '#38bdf8');
+    });
+    if (me) avatar(pos.x, pos.y, myName, '#f97316');
+    if (target) { ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 2; ctx.strokeRect(target.x * T + 2, target.y * T + 2, T - 4, T - 4); }
+  }
+  function avatar(x, y, name, color) {
+    var cx = x * T + T / 2, cy = y * T + T / 2;
+    ctx.fillStyle = color; ctx.beginPath(); ctx.arc(cx, cy, T * 0.3, 0, 7); ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold ' + Math.max(10, T * 0.25) + 'px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+    ctx.fillText(name, cx, cy - T * 0.34);
+  }
+
+  var last = performance.now();
+  function loop(ts) {
+    var dt = Math.min(0.1, (ts - last) / 1000); last = ts;
+    if (me && target) {
+      var dx = target.x - pos.x, dy = target.y - pos.y, d = Math.hypot(dx, dy);
+      if (d < 0.95 && pending) { var p = pending; pending = null; act(p.x, p.y); }
+      if (d > 0.05) { var s = Math.min(d, 5 * dt); pos.x += dx / d * s; pos.y += dy / d * s; }
+      else target = null;
+    }
+    if (me && roomRef) {
+      var n = Date.now();
+      if (n - lastSent > 150 && (target || n - lastBeat > 8000)) {
+        lastSent = n; lastBeat = n;
+        roomRef.child('players/' + me.uid).set({ n: myName, x: +pos.x.toFixed(2), y: +pos.y.toFixed(2), t: firebase.database.ServerValue.TIMESTAMP });
+      }
+    }
+    draw(); requestAnimationFrame(loop);
+  }
+
+  // ---- join room
+  $('shareBtn').onclick = function () {
+    var url = location.origin + location.pathname + '?room=' + roomCode;
+    if (navigator.share) navigator.share({ title: 'Join my farm', text: 'Farm code ' + roomCode, url: url }).catch(function () {});
+    else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { say('Invite link copied!'); });
+  };
+
+  async function enter(user, myCode) {
+    me = user; myName = (user.displayName || 'Farmer').split(' ')[0].slice(0, 12);
+    if (!roomCode) { gate('No room code. Go back to the hub.', false); return; }
+    roomRef = WW.db.ref('game_rooms/farm/' + roomCode);
+    var meta = (await roomRef.child('meta').once('value')).val();
+    if (!meta) {
+      if (roomCode === myCode) await roomRef.child('meta').set({ host: myName, created: firebase.database.ServerValue.TIMESTAMP });
+      else { gate('Room ' + roomCode + ' not found. Ask your friend to open their farm first.', false); return; }
+    }
+    $('gate').style.display = 'none';
+    var s = await WW.loadSave('farm'); if (s) { save.coins = s.coins | 0; save.harvested = s.harvested | 0; }
+    $('coins').textContent = save.coins;
+    roomRef.child('tiles').on('value', function (snap) { tiles = {}; var v = snap.val() || {}; Object.keys(v).forEach(function (k) { tiles[+k] = v[k]; }); });
+    roomRef.child('players').on('value', function (snap) {
+      players = snap.val() || {};
+      var now = WW.now(); $('count').textContent = Object.keys(players).filter(function (u) { return now - (players[u].t || 0) < 45000; }).length || 1;
+    });
+    var mine = roomRef.child('players/' + user.uid);
+    mine.onDisconnect().remove();
+    mine.set({ n: myName, x: pos.x, y: pos.y, t: firebase.database.ServerValue.TIMESTAMP });
+    say('Tap a tile to walk there and use the selected tool. Start with the hoe!');
+    requestAnimationFrame(loop);
+  }
+
+  var started = false;
+  WW.onReady(function (user, code) {
+    if (!user) { gate('Sign in to play', true); return; }
+    if (started) return; started = true;
+    enter(user, code).catch(function (e) { console.error(e); gate('Could not join: ' + (e.message || e), false); });
+  });
+})();
+</script>
+</body>
+</html>
