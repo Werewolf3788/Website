@@ -229,6 +229,52 @@
    "field": {
     "id": 26
    }
+  },
+  "deadwoodMission": {
+   "uniqueId": "mission129c592e190d0e4741b1591566c51d36",
+   "status": "CREATED",
+   "finishState": "NONE",
+   "spotIndex": 11,
+   "info": {
+    "reward": 750,
+    "reimbursement": 0.0,
+    "completion": 0.0
+   },
+   "vehicles": {
+    "spawned": false,
+    "group": 2
+   },
+   "endDate": {
+    "endDay": 84,
+    "endDayTime": 64800000
+   },
+   "originalTree": [
+    {
+     "splitShapePart1": 1,
+     "splitShapePart2": 5328,
+     "splitShapePart3": 0
+    },
+    {
+     "splitShapePart1": 1,
+     "splitShapePart2": 5344,
+     "splitShapePart3": 0
+    },
+    {
+     "splitShapePart1": 1,
+     "splitShapePart2": 5480,
+     "splitShapePart3": 0
+    },
+    {
+     "splitShapePart1": 1,
+     "splitShapePart2": 5412,
+     "splitShapePart3": 0
+    },
+    {
+     "splitShapePart1": 1,
+     "splitShapePart2": 5319,
+     "splitShapePart3": 0
+    }
+   ]
   }
  }
 }

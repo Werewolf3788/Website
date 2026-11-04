@@ -6,7 +6,7 @@
   "mapSize": 2048,
   "mapName": "The Rural Farmlands Of Ohio",
   "name": "OneLIVIDMAN and werewolf 618",
-  "dayTime": 43662926,
+  "dayTime": 46358912,
   "Slots": {
    "capacity": 6,
    "numUsed": 1,
@@ -14,7 +14,7 @@
     {
      "isUsed": true,
      "isAdmin": true,
-     "uptime": 110,
+     "uptime": 155,
      "#text": "wildhorse_spirit"
     },
     {
@@ -1301,8 +1301,8 @@
      "category": "BIGBAGPALLETS",
      "type": "pallet",
      "x": 572.831116,
-     "y": 34.12492,
-     "z": 649.534729,
+     "y": 34.124599,
+     "z": 649.534973,
      "fillTypes": "SEEDS",
      "fillLevels": 1000.0
     },
@@ -1310,9 +1310,9 @@
      "name": "Invisible Roller",
      "category": "ROLLERS",
      "type": "roller",
-     "x": 693.08783,
-     "y": 28.954071,
-     "z": -45.249874
+     "x": 693.085571,
+     "y": 28.678499,
+     "z": -45.250149
     },
     {
      "name": "Seeds",
@@ -1367,9 +1367,9 @@
      "name": "Colossus FLM 726",
      "category": "FERTILIZERSPREADERS",
      "type": "spreader",
-     "x": 563.226868,
-     "y": 33.96875,
-     "z": 650.519531,
+     "x": 941.700867,
+     "y": 62.652027,
+     "z": 856.986877,
      "fillTypes": "LIME",
      "fillLevels": 99691.938
     },
@@ -1377,11 +1377,11 @@
      "name": "Colossus FLM 726",
      "category": "FERTILIZERSPREADERS",
      "type": "spreader",
-     "x": 744.166931,
-     "y": 26.138985,
-     "z": 133.076202,
-     "fillTypes": "LIME",
-     "fillLevels": 59489.707
+     "x": 883.290039,
+     "y": 21.015059,
+     "z": -73.887474,
+     "fillTypes": "FERTILIZER",
+     "fillLevels": 99992.375
     },
     {
      "name": "Colossus FLM 726",
@@ -1425,9 +1425,9 @@
      "name": "Titan Header",
      "category": "CUTTERS",
      "type": "cutter",
-     "x": 739.136475,
-     "y": 34.729877,
-     "z": 475.759216
+     "x": 739.157043,
+     "y": 34.732128,
+     "z": 475.79953
     },
     {
      "name": "6R Series (230-250)",
@@ -1444,11 +1444,11 @@
      "name": "Roadrunner+",
      "category": "TRUCKS",
      "type": "FS25_RoadrunnerPlus.roadrunnerTruck",
-     "x": 353.239502,
-     "y": 34.097584,
-     "z": -255.941574,
+     "x": 941.586914,
+     "y": 61.292046,
+     "z": 847.496704,
      "fillTypes": "DIESEL AIR",
-     "fillLevels": "773.951 3130.986",
+     "fillLevels": "769.949 3076.463",
      "isAIActive": false
     },
     {
@@ -1497,12 +1497,11 @@
      "name": "Steiger Series",
      "category": "TRACTORSL",
      "type": "tractor",
-     "x": 443.575378,
-     "y": 33.069145,
-     "z": -232.357101,
-     "controller": "wildhorse_spirit",
+     "x": 761.089172,
+     "y": 24.692766,
+     "z": 183.695801,
      "fillTypes": "DIESEL DEF AIR",
-     "fillLevels": "1883.946 313.999 2398.074",
+     "fillLevels": "1863.941 310.999 2823.669",
      "isAIActive": false
     },
     {
@@ -1558,17 +1557,6 @@
      "isAIActive": false
     },
     {
-     "name": "Case IH Magnum 340 - 400 Series Special Edition FL",
-     "category": "TRACTORSL",
-     "type": "tractor",
-     "x": 729.381836,
-     "y": 26.423388,
-     "z": 143.353027,
-     "fillTypes": "DIESEL DEF AIR LIQUIDFERTILIZER",
-     "fillLevels": "535.938 99.000 1532.717 25000.000",
-     "isAIActive": false
-    },
-    {
      "name": "Tree-B-Gone",
      "category": "FORESTRYMISC",
      "type": "FS25_TreeBGone.treeBGone",
@@ -1577,16 +1565,6 @@
      "z": 685.705994,
      "fillTypes": "WOODCHIPS",
      "fillLevels": 2373812.25
-    },
-    {
-     "name": "Tree-B-Gone",
-     "category": "FORESTRYMISC",
-     "type": "FS25_TreeBGone.treeBGone",
-     "x": 664.653076,
-     "y": 36.380371,
-     "z": 312.213989,
-     "fillTypes": "WOODCHIPS",
-     "fillLevels": 97695.18
     },
     {
      "name": "1775NT Multi-planter",
@@ -1669,14 +1647,6 @@
      "z": 681.461121
     },
     {
-     "name": "Colossus Quick Mow",
-     "category": "MOWERS",
-     "type": "mower",
-     "x": 757.786743,
-     "y": 27.101875,
-     "z": 251.686935
-    },
-    {
      "name": "Colossus 73DD3-R",
      "category": "TEDDERS",
      "type": "tedder",
@@ -1696,9 +1666,9 @@
      "name": "Citan 15001-C",
      "category": "SEEDERS",
      "type": "fertilizingSowingMachine",
-     "x": 661.999634,
-     "y": 29.800795,
-     "z": 919.872742,
+     "x": 656.281799,
+     "y": 29.989685,
+     "z": 908.117188,
      "fillTypes": "SEEDS FERTILIZER",
      "fillLevels": "3000.000 4800.000"
     },
@@ -1706,9 +1676,9 @@
      "name": "4905 Multi-Fruit Planter",
      "category": "PLANTERS",
      "type": "fertilizingSowingMachine",
-     "x": 712.310974,
-     "y": 21.306803,
-     "z": -664.946838,
+     "x": 582.978638,
+     "y": 31.768145,
+     "z": -53.374062,
      "fillTypes": "SEEDS LIQUIDFERTILIZER",
      "fillLevels": "149989.156 74923.930"
     },
@@ -2156,9 +2126,9 @@
      "name": "Colossus 9000 Harvester",
      "category": "HARVESTERS",
      "type": "combineDrivable",
-     "x": 752.642944,
-     "y": 34.349819,
-     "z": 472.563812,
+     "x": 752.642883,
+     "y": 34.349823,
+     "z": 472.563843,
      "fillTypes": "UNKNOWN DIESEL DEF",
      "fillLevels": "0.000 1365.818 163.000",
      "isAIActive": false
@@ -2184,38 +2154,6 @@
      "fillTypes": "UNKNOWN DIESEL DEF",
      "fillLevels": "0.000 1492.995 163.000",
      "isAIActive": false
-    },
-    {
-     "name": "Series 8 TTV",
-     "category": "TRACTORSM",
-     "type": "tractor",
-     "x": 658.608215,
-     "y": 29.968622,
-     "z": 912.401917,
-     "fillTypes": "DIESEL DEF AIR",
-     "fillLevels": "211.904 34.000 2284.192",
-     "isAIActive": false
-    },
-    {
-     "name": "Series 8 TTV",
-     "category": "TRACTORSM",
-     "type": "tractor",
-     "x": 704.210449,
-     "y": 22.007078,
-     "z": -660.54834,
-     "fillTypes": "DIESEL DEF AIR",
-     "fillLevels": "493.998 35.000 3000.000",
-     "isAIActive": true
-    },
-    {
-     "name": "Profi Liner",
-     "category": "TRAILERSSEMI",
-     "type": "trailer",
-     "x": 734.403809,
-     "y": 34.030495,
-     "z": 457.446014,
-     "fillTypes": "UNKNOWN UNKNOWN UNKNOWN MILK_BOTTLED",
-     "fillLevels": "0.000 0.000 0.000 0.000"
     },
     {
      "name": "Titan Super Collect 533",
@@ -2307,17 +2245,6 @@
      "z": 671.955994,
      "fillTypes": "UNKNOWN",
      "fillLevels": 0.0
-    },
-    {
-     "name": "ARION 570-530",
-     "category": "TRACTORSS",
-     "type": "tractor",
-     "x": 689.823181,
-     "y": 28.820864,
-     "z": -44.399956,
-     "fillTypes": "DIESEL DEF AIR",
-     "fillLevels": "235.998 16.000 3900.079",
-     "isAIActive": false
     },
     {
      "name": "Sugar Pallet",
@@ -2492,9 +2419,9 @@
      "name": "ST820 MultiFunction",
      "category": "CULTIVATORS",
      "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
-     "x": 440.798035,
-     "y": 33.201675,
-     "z": -241.219467
+     "x": 753.458923,
+     "y": 25.156668,
+     "z": 188.956451
     },
     {
      "name": "ST820 MultiFunction",
@@ -2517,18 +2444,51 @@
      "category": "CULTIVATORS",
      "type": "FS25_Flexicoil_ST820_MultiFunction.flexicoil",
      "x": 734.57605,
-     "y": 26.911364,
+     "y": 26.911251,
      "z": 166.548004
     },
     {
      "name": "53' Dropdeck Trailer Autoload Bales",
      "category": "TRAILERS",
      "type": "FS25_DropdeckTrailer53Ft_Auto.baleAutoLoad",
-     "x": 365.008362,
-     "y": 34.434868,
-     "z": -253.523651,
+     "x": 365.00824,
+     "y": 34.446148,
+     "z": -253.523117,
      "fillTypes": "UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN UNKNOWN",
      "fillLevels": "0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000"
+    },
+    {
+     "name": "6R Series (230-250)",
+     "category": "TRACTORSM",
+     "type": "tractor",
+     "x": 878.985291,
+     "y": 20.458103,
+     "z": -70.036209,
+     "fillTypes": "DIESEL DEF AIR",
+     "fillLevels": "467.999 25.000 3702.981",
+     "isAIActive": false
+    },
+    {
+     "name": "MF 9S",
+     "category": "TRACTORSL",
+     "type": "tractor",
+     "x": -49.27203,
+     "y": 20.394161,
+     "z": -643.420227,
+     "controller": "wildhorse_spirit",
+     "fillTypes": "DIESEL DEF AIR",
+     "fillLevels": "659.000 68.000 2508.834",
+     "isAIActive": false
+    },
+    {
+     "name": "MF 2370 Ultra HD",
+     "category": "BALERSSQUARE",
+     "type": "baler",
+     "x": -42.476707,
+     "y": 20.554693,
+     "z": -640.331177,
+     "fillTypes": "UNKNOWN BALE_TWINE",
+     "fillLevels": "0.000 26.000"
     }
    ]
   }

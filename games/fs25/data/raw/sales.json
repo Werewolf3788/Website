@@ -50,6 +50,302 @@
       "id": 3
      }
     ]
+   },
+   {
+    "timeLeft": 37,
+    "isGenerated": false,
+    "xmlFilename": "D:/home/sid_2065238/farmingSim_2025/profile/mods/FS25_CaseIH_340_400TSE_FL/magnumSpecialEdition_FL.xml",
+    "age": 48,
+    "price": 269059,
+    "damage": 0.101936,
+    "wear": 0.086232,
+    "operatingTime": 21755.861328,
+    "boughtConfiguration": [
+     {
+      "name": "fillUnit",
+      "id": 1
+     },
+     {
+      "name": "fillUnit",
+      "id": 3
+     },
+     {
+      "name": "designColor4",
+      "id": 1
+     },
+     {
+      "name": "designColor",
+      "id": 1
+     },
+     {
+      "name": "designColor5",
+      "id": 1
+     },
+     {
+      "name": "designColor3",
+      "id": 1
+     },
+     {
+      "name": "attacherJoint",
+      "id": 1
+     },
+     {
+      "name": "rimColor",
+      "id": 1
+     },
+     {
+      "name": "frontloader",
+      "id": 1
+     },
+     {
+      "name": "frontloader",
+      "id": 2
+     },
+     {
+      "name": "designColor2",
+      "id": 1
+     },
+     {
+      "name": "motor",
+      "id": 1
+     },
+     {
+      "name": "motor",
+      "id": 8
+     },
+     {
+      "name": "baseColor",
+      "id": 1
+     },
+     {
+      "name": "designColor6",
+      "id": 1
+     },
+     {
+      "name": "design",
+      "id": 1
+     },
+     {
+      "name": "design",
+      "id": 3
+     },
+     {
+      "name": "design2",
+      "id": 1
+     },
+     {
+      "name": "design5",
+      "id": 1
+     },
+     {
+      "name": "design5",
+      "id": 5
+     },
+     {
+      "name": "design4",
+      "id": 1
+     },
+     {
+      "name": "design4",
+      "id": 2
+     },
+     {
+      "name": "design3",
+      "id": 1
+     },
+     {
+      "name": "wheel",
+      "id": "DEFAULT_TRELLEBORG_TM1000"
+     },
+     {
+      "name": "wheel",
+      "id": "CRAWLER_3M_BROAD_TRELLEBORG_TM1000"
+     }
+    ]
+   },
+   {
+    "timeLeft": 20,
+    "isGenerated": false,
+    "xmlFilename": "data/vehicles/deutzFahr/series8/series8.xml",
+    "age": 1,
+    "price": 242775,
+    "damage": 0.103634,
+    "wear": 0.198169,
+    "operatingTime": 14899.175781,
+    "boughtConfiguration": [
+     {
+      "name": "fillUnit",
+      "id": 1
+     },
+     {
+      "name": "design",
+      "id": 1
+     },
+     {
+      "name": "design",
+      "id": 2
+     },
+     {
+      "name": "designColor",
+      "id": 1
+     },
+     {
+      "name": "designColor",
+      "id": 5
+     },
+     {
+      "name": "rimColor",
+      "id": 1
+     },
+     {
+      "name": "cropSensor",
+      "id": 1
+     },
+     {
+      "name": "cropSensor",
+      "id": 2
+     },
+     {
+      "name": "motor",
+      "id": 1
+     },
+     {
+      "name": "wheel",
+      "id": "MEDIUM_BKT_agrimaxFactor"
+     },
+     {
+      "name": "wheel",
+      "id": "BROAD_WEIGHTS_BKT_agrimaxForce"
+     }
+    ]
+   },
+   {
+    "timeLeft": 34,
+    "isGenerated": false,
+    "xmlFilename": "D:/home/sid_2065238/farmingSim_2025/profile/mods/FS25_palletSilo/profiLinerPalletSilo.xml",
+    "age": 18,
+    "price": 15562,
+    "damage": 0.009508,
+    "wear": 0.008518,
+    "operatingTime": 2697.081787,
+    "boughtConfiguration": [
+     {
+      "name": "fillUnit",
+      "id": 1
+     },
+     {
+      "name": "fillUnit",
+      "id": 5
+     },
+     {
+      "name": "wheel",
+      "id": "CONTINENTAL_DEFAULT"
+     },
+     {
+      "name": "wheel",
+      "id": "LIZARD_DEFAULT"
+     },
+     {
+      "name": "designColor2",
+      "id": 1
+     },
+     {
+      "name": "trailer",
+      "id": 1
+     },
+     {
+      "name": "trailer",
+      "id": 3
+     },
+     {
+      "name": "design",
+      "id": 1
+     },
+     {
+      "name": "design",
+      "id": 3
+     },
+     {
+      "name": "designColor",
+      "id": 2
+     },
+     {
+      "name": "folding",
+      "id": 1
+     },
+     {
+      "name": "fillVolume",
+      "id": 1
+     },
+     {
+      "name": "designColor3",
+      "id": 1
+     },
+     {
+      "name": "cover",
+      "id": 1
+     },
+     {
+      "name": "design2",
+      "id": 1
+     },
+     {
+      "name": "dischargeable",
+      "id": 1
+     },
+     {
+      "name": "dischargeable",
+      "id": 5
+     },
+     {
+      "name": "tensionBelts",
+      "id": 1
+     },
+     {
+      "name": "rimColor",
+      "id": 62
+     }
+    ]
+   },
+   {
+    "timeLeft": 24,
+    "isGenerated": false,
+    "xmlFilename": "D:/home/sid_2065238/farmingSim_2025/profile/mods/FS25_TreeBGone/treeBGone.xml",
+    "age": 1,
+    "price": 37244,
+    "damage": 0.004348,
+    "wear": 0.047529,
+    "operatingTime": 884.207581,
+    "boughtConfiguration": [
+     {
+      "name": "beaconLight",
+      "id": 1
+     },
+     {
+      "name": "designColor3",
+      "id": 61
+     },
+     {
+      "name": "designColor",
+      "id": 13
+     },
+     {
+      "name": "designColor2",
+      "id": 76
+     },
+     {
+      "name": "designColor4",
+      "id": 13
+     },
+     {
+      "name": "fillUnit",
+      "id": 1
+     },
+     {
+      "name": "baseColor",
+      "id": 15
+     }
+    ]
    }
   ]
  }

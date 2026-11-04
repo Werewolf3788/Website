@@ -124,7 +124,7 @@
     "component": {
      "index": 1,
      "position": "572.831 34.125 649.535",
-     "rotation": "1.97 1.60 3.56"
+     "rotation": "1.70 1.61 3.39"
     },
     "configuration": {
      "name": "fillUnit",
@@ -154,10 +154,12 @@
     "farmId": 1,
     "propertyState": "OWNED",
     "operatingTime": 7797.891602,
+    "selectedObjectIndex": 1,
+    "subSelectedObjectIndex": 1,
     "component": {
      "index": 1,
-     "position": "693.088 28.954 -45.250",
-     "rotation": "12.95 -74.85 -13.71"
+     "position": "693.086 28.678 -45.250",
+     "rotation": "24.68 -74.74 -14.15"
     },
     "configuration": [
      {
@@ -203,9 +205,9 @@
      }
     },
     "wearable": {
-     "damage": 0.013304,
+     "damage": 0.013331,
      "wearNode": {
-      "amount": 0.16254
+      "amount": 0.162543
      }
     },
     "attachable": {
@@ -1194,13 +1196,11 @@
     "price": 20000.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 14023.15918,
-    "selectedObjectIndex": 1,
-    "subSelectedObjectIndex": 1,
+    "operatingTime": 14966.753906,
     "component": {
      "index": 1,
-     "position": "563.227 33.969 650.520",
-     "rotation": "1.63 -0.31 3.30"
+     "position": "927.755 68.803 929.697",
+     "rotation": "-172.42 44.29 -167.43"
     },
     "configuration": [
      {
@@ -1316,9 +1316,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.067624,
+     "damage": 0.075208,
      "wearNode": {
-      "amount": 0.160193
+      "amount": 0.181161
      }
     },
     "wheels": {
@@ -1362,13 +1362,13 @@
     "price": 21000.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 10219.436523,
+    "operatingTime": 10987.010742,
     "selectedObjectIndex": 1,
     "subSelectedObjectIndex": 1,
     "component": {
      "index": 1,
-     "position": "744.167 26.139 133.076",
-     "rotation": "-0.26 -55.64 -0.85"
+     "position": "885.043 21.534 -126.586",
+     "rotation": "179.46 52.67 179.49"
     },
     "configuration": [
      {
@@ -1489,9 +1489,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.059999,
+     "damage": 0.062777,
      "wearNode": {
-      "amount": 0.110393
+      "amount": 0.115517
      }
     },
     "wheels": {
@@ -1510,8 +1510,8 @@
     "fillUnit": {
      "unit": {
       "index": 1,
-      "fillType": "LIME",
-      "fillLevel": 59489.707031
+      "fillType": "FERTILIZER",
+      "fillLevel": 99992.375
      }
     },
     "cover": {
@@ -2419,33 +2419,33 @@
     "component": [
      {
       "index": 1,
-      "position": "739.136 34.730 475.759",
-      "rotation": "-23.23 24.27 2.00"
+      "position": "739.157 34.732 475.800",
+      "rotation": "-23.23 24.75 2.01"
      },
      {
       "index": 2,
-      "position": "744.011 35.756 473.598",
-      "rotation": "-23.29 24.27 2.04"
+      "position": "744.013 35.756 473.597",
+      "rotation": "-23.32 24.75 2.02"
      },
      {
       "index": 3,
-      "position": "734.241 35.413 478.007",
-      "rotation": "-23.28 24.27 1.99"
+      "position": "734.281 35.417 478.087",
+      "rotation": "-23.36 24.75 1.97"
      },
      {
       "index": 4,
-      "position": "738.721 35.336 474.886",
-      "rotation": "-18.25 24.27 2.00"
+      "position": "738.734 35.337 474.930",
+      "rotation": "-18.29 24.75 2.01"
      },
      {
       "index": 5,
-      "position": "743.599 34.888 473.374",
-      "rotation": "-174.09 83.16 -171.84"
+      "position": "743.600 34.888 473.377",
+      "rotation": "-174.02 83.13 -171.67"
      },
      {
       "index": 6,
-      "position": "745.059 34.777 473.202",
-      "rotation": "-174.76 83.16 -171.76"
+      "position": "745.059 34.778 473.205",
+      "rotation": "-174.58 83.12 -171.59"
      }
     ],
     "configuration": [
@@ -2633,7 +2633,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.002735,
+     "damage": 0.002748,
      "wearNode": {
       "amount": 0.004509
      }
@@ -2950,13 +2950,13 @@
     "price": 157200.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 11713.006836,
+    "operatingTime": 12738.503906,
     "selectedObjectIndex": 2,
     "subSelectedObjectIndex": 1,
     "component": {
      "index": 1,
-     "position": "353.240 34.098 -255.942",
-     "rotation": "-134.78 -86.92 134.91"
+     "position": "934.596 68.629 922.984",
+     "rotation": "-172.39 44.89 -167.23"
     },
     "configuration": [
      {
@@ -3228,9 +3228,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.08328,
+     "damage": 0.091278,
      "wearNode": {
-      "amount": 0.072599
+      "amount": 0.088812
      }
     },
     "cylindered": {
@@ -3239,7 +3239,7 @@
        "translation": 0.0
       },
       {
-       "translation": 0.0
+       "translation": -0.001127
       },
       {
        "translation": 0.0
@@ -3291,22 +3291,161 @@
       {
        "index": 1,
        "fillType": "DIESEL",
-       "fillLevel": 773.951355
+       "fillLevel": 769.949036
       },
       {
        "index": 2,
        "fillType": "AIR",
-       "fillLevel": 3130.986084
+       "fillLevel": 2811.088867
       }
      ]
     },
     "drivable": {
      "cruiseControl": 160,
      "cruiseControlReverse": 30,
-     "odometerMilage": 51.095627
+     "odometerMilage": 56.879574
     },
     "aiFieldWorker": {
-     "isActive": false
+     "isActive": true,
+     "strategyFieldCourse": {
+      "lastPosition": "932.2413330078125 925.3077392578125",
+      "field": {
+       "boundary": {
+        "positions": "974.25 519.25 978.75 591.75 964.25 681.25 974.75 720.75 995.75 770.75 997.25 787.25 988.75 815.25 976.25 835.25 962.75 864.75 963.25 924.25 955.75 933.75 941.25 944.75 935.25 955.25 933.25 969.25 922.25 975.25 901.25 977.25 850.25 970.25 792.25 966.25 768.75 961.75 746.25 952.25 693.75 936.75 685.75 928.25 683.25 917.75 681.75 759.25 682.75 695.25 687.75 648.25 691.75 643.25 704.25 638.25 744.25 631.25 772.25 620.25 806.75 603.75 816.75 601.75 870.75 570.75 880.75 561.25 891.25 544.75 892.25 533.75 907.75 509.75 915.25 508.25 966.25 511.25 974.25 519.25"
+       }
+      },
+      "fieldCourseSettings": {
+       "implementWidth": 42.0,
+       "numHeadlands": 1,
+       "headlandsFirst": false,
+       "skipNumLines": 0,
+       "workHeadlands": true,
+       "workDirection": -1.0,
+       "workDirectionForceStraightLines": false,
+       "workInitialSegment": false,
+       "minTurnRadius": 7.500568,
+       "initialTurnRadiusFactor": 1.0,
+       "canTurnBackward": false,
+       "allowStraightReversing": true,
+       "isVineyardTool": false,
+       "isVineyardRowTool": false,
+       "headlandTailAvoidance": false,
+       "rowSpacing": 0.0,
+       "rowSnapAngle": 0.0,
+       "rowOffset": 0.0,
+       "cornerCutOutSupported": false,
+       "toolFrontOffset": -13.143091,
+       "toolBackOffset": -13.393091,
+       "hasStaticTools": true,
+       "toolFullOverlap": false,
+       "toolFullOverlapInside": false,
+       "segmentExtendedToBoundary": false,
+       "segmentHeadlandReverseLines": false,
+       "segmentMinOffset": 0.0,
+       "segmentMinLength": 0.0,
+       "sideOffset": 0.0,
+       "variableSideOffset": false,
+       "sideOffsetHeadlandAlternate": false,
+       "headlandForcedDirection": 1.0,
+       "segmentSplitAngle": 25.0,
+       "segmentSplitDistance": 10.0,
+       "segmentValidityCheckOffset": 0.0,
+       "toolAlwaysActive": false,
+       "toolStraighteningSegmentLength": 26.786182,
+       "toolStraighteningAlwaysActive": false,
+       "agentFrontOffset": 4.159,
+       "agentBackOffset": 5.841,
+       "agentHeight": 4.0
+      },
+      "segments": {
+       "segment": [
+        {
+         "segmentId": 1,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 2,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 3,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 4,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 5,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 6,
+         "used": true,
+         "lineGroupIndex": 1
+        },
+        {
+         "segmentId": 7,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 8,
+         "used": false,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 9,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 10,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 11,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 12,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 13,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 14,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        },
+        {
+         "segmentId": 15,
+         "used": true,
+         "isHeadlandSegment": true,
+         "headlandIndex": 1
+        }
+       ]
+      }
+     }
     },
     "aiJobVehicle": {
      "isAIStartAllowed": true,
@@ -3314,13 +3453,14 @@
       "type": "FIELDWORK",
       "parameter": [
        {
-        "name": "vehicle"
+        "name": "vehicle",
+        "vehicleUniqueId": "vehiclea4acc96e62b080cab23b15d1c0718b3b"
        },
        {
         "name": "positionAngle",
-        "x": 720.93689,
-        "z": 408.699982,
-        "angle": 5.201081
+        "x": 689.444275,
+        "z": 655.196411,
+        "angle": 1.867502
        }
       ]
      }
@@ -3338,9 +3478,9 @@
     "attacherJoints": {
      "comboDirection": -1,
      "attachedImplement": {
-      "jointIndex": 1,
+      "jointIndex": 2,
       "moveDown": false,
-      "attachedVehicleUniqueId": "vehicle8a78034a830bedfb381003b595c901f8",
+      "attachedVehicleUniqueId": "vehiclef727023846f36e4be2392032980d7489",
       "inputJointIndex": 1
      }
     },
@@ -4701,39 +4841,39 @@
     "price": 769800.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 20530.013672,
+    "operatingTime": 22136.705078,
     "selectedObjectIndex": 1,
     "subSelectedObjectIndex": 1,
     "component": [
      {
       "index": 1,
-      "position": "443.575 33.069 -232.357",
-      "rotation": "-0.45 17.43 -1.35"
+      "position": "761.089 24.693 183.696",
+      "rotation": "179.25 50.69 177.35"
      },
      {
       "index": 2,
-      "position": "443.572 33.069 -232.356",
-      "rotation": "-0.54 17.43 -1.67"
+      "position": "761.086 24.693 183.692",
+      "rotation": "178.74 50.69 176.69"
      },
      {
       "index": 3,
-      "position": "445.236 34.182 -230.899",
-      "rotation": "-0.45 17.43 -1.35"
+      "position": "761.882 25.819 181.641",
+      "rotation": "179.08 50.69 177.34"
      },
      {
       "index": 4,
-      "position": "443.095 34.233 -230.227",
-      "rotation": "-0.36 17.43 -1.35"
+      "position": "763.301 25.753 183.377",
+      "rotation": "179.30 50.69 177.34"
      },
      {
       "index": 5,
-      "position": "444.065 34.174 -234.633",
-      "rotation": "-0.62 17.42 -1.67"
+      "position": "758.857 25.917 184.122",
+      "rotation": "178.93 50.69 176.66"
      },
      {
       "index": 6,
-      "position": "441.925 34.236 -233.961",
-      "rotation": "-0.53 17.43 -1.66"
+      "position": "760.276 25.834 185.858",
+      "rotation": "178.93 50.68 176.67"
      }
     ],
     "configuration": [
@@ -4853,9 +4993,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.156169,
+     "damage": 0.170351,
      "wearNode": {
-      "amount": 0.259326
+      "amount": 0.259925
      }
     },
     "wheels": {
@@ -4885,24 +5025,24 @@
       {
        "index": 1,
        "fillType": "DIESEL",
-       "fillLevel": 1886.946045
+       "fillLevel": 1863.94104
       },
       {
        "index": 2,
        "fillType": "DEF",
-       "fillLevel": 314.999481
+       "fillLevel": 310.999023
       },
       {
        "index": 3,
        "fillType": "AIR",
-       "fillLevel": 2398.073975
+       "fillLevel": 2823.669434
       }
      ]
     },
     "drivable": {
      "cruiseControl": 40,
      "cruiseControlReverse": 15,
-     "odometerMilage": 67.323639
+     "odometerMilage": 67.872406
     },
     "aiFieldWorker": {
      "isActive": false,
@@ -6227,288 +6367,6 @@
     }
    },
    {
-    "modName": "FS25_CaseIH_340_400TSE_FL",
-    "filename": "$moddir$FS25_CaseIH_340_400TSE_FL/magnumSpecialEdition_FL.xml",
-    "uniqueId": "vehicle44d163c7ede2b8de8e776bcfde327dca",
-    "age": 48.0,
-    "price": 450000.0,
-    "farmId": 1,
-    "propertyState": "OWNED",
-    "operatingTime": 20967.505859,
-    "selectedObjectIndex": 1,
-    "subSelectedObjectIndex": 1,
-    "component": [
-     {
-      "index": 1,
-      "position": "729.382 26.423 143.353",
-      "rotation": "-2.57 -42.03 -3.10"
-     },
-     {
-      "index": 2,
-      "position": "728.603 27.367 144.273",
-      "rotation": "-2.67 -42.03 -2.94"
-     }
-    ],
-    "configuration": [
-     {
-      "name": "fillUnit",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "fillUnit",
-      "id": 3,
-      "isActive": true
-     },
-     {
-      "name": "designColor4",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "designColor",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "designColor5",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "designColor3",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "attacherJoint",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "rimColor",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "frontloader",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "frontloader",
-      "id": 2,
-      "isActive": true
-     },
-     {
-      "name": "designColor2",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "motor",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "motor",
-      "id": 8,
-      "isActive": true
-     },
-     {
-      "name": "baseColor",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "designColor6",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "design",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "design",
-      "id": 3,
-      "isActive": true
-     },
-     {
-      "name": "design2",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "design5",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "design5",
-      "id": 5,
-      "isActive": true
-     },
-     {
-      "name": "design4",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "design4",
-      "id": 2,
-      "isActive": true
-     },
-     {
-      "name": "design3",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "wheel",
-      "id": "DEFAULT_TRELLEBORG_TM1000",
-      "isActive": false
-     },
-     {
-      "name": "wheel",
-      "id": "CRAWLER_3M_BROAD_TRELLEBORG_TM1000",
-      "isActive": true
-     }
-    ],
-    "washable": {
-     "dirtNode": [
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      }
-     ]
-    },
-    "wearable": {
-     "damage": 0.09763,
-     "wearNode": {
-      "amount": 0.086237
-     }
-    },
-    "wheels": {
-     "lastConfigId": "CRAWLER_3M_BROAD_TRELLEBORG_TM1000"
-    },
-    "enterable": {
-     "activeCameraIndex": 1,
-     "isTabbable": true,
-     "isLeavingAllowed": true,
-     "camera": [
-      {
-       "rotation": "-19.50 180.00 0.00",
-       "translation": "0.000 0.000 8.100",
-       "zoom": 8.10001,
-       "fovY": 54.432205
-      },
-      {
-       "rotation": "-18.00 180.00 0.00",
-       "translation": "0.000 2.565 -1.221",
-       "zoom": 2.84113,
-       "fovY": 60.0
-      }
-     ]
-    },
-    "fillUnit": {
-     "unit": [
-      {
-       "index": 1,
-       "fillType": "DIESEL",
-       "fillLevel": 535.937683
-      },
-      {
-       "index": 2,
-       "fillType": "DEF",
-       "fillLevel": 99.0
-      },
-      {
-       "index": 3,
-       "fillType": "AIR",
-       "fillLevel": 1532.717407
-      },
-      {
-       "index": 4,
-       "fillType": "LIQUIDFERTILIZER",
-       "fillLevel": 25000.0
-      }
-     ]
-    },
-    "drivable": {
-     "cruiseControl": 43,
-     "cruiseControlReverse": 32,
-     "odometerMilage": 51.139763
-    },
-    "aiFieldWorker": {
-     "isActive": false
-    },
-    "aiJobVehicle": {
-     "isAIStartAllowed": true,
-     "lastJob": {
-      "type": "FIELDWORK",
-      "parameter": [
-       {
-        "name": "vehicle"
-       },
-       {
-        "name": "positionAngle",
-        "x": 893.697998,
-        "z": 463.390564,
-        "angle": 2.356194
-       }
-      ]
-     }
-    },
-    "aiAutomaticSteering": {
-     "courseWasActive": true,
-     "isOnField": false
-    },
-    "aiModeSelection": {
-     "currentMode": "WORKER"
-    },
-    "attacherJoints": {
-     "comboDirection": -1
-    }
-   },
-   {
     "modName": "FS25_TreeBGone",
     "filename": "$moddir$FS25_TreeBGone/treeBGone.xml",
     "uniqueId": "vehicle745dd7979b39c18e1662b8db7440ded5",
@@ -6584,91 +6442,6 @@
       "index": 1,
       "fillType": "WOODCHIPS",
       "fillLevel": 2373812.25
-     }
-    },
-    "dischargeable": {
-     "isAllowed": true
-    },
-    "pipe": {
-     "isStateChangeAllowed": true
-    }
-   },
-   {
-    "modName": "FS25_TreeBGone",
-    "filename": "$moddir$FS25_TreeBGone/treeBGone.xml",
-    "uniqueId": "vehicle2d841779dfcabc12318817742a908234",
-    "age": 1.0,
-    "price": 42000.0,
-    "farmId": 1,
-    "propertyState": "OWNED",
-    "operatingTime": 884.207581,
-    "selectedObjectIndex": 1,
-    "subSelectedObjectIndex": 1,
-    "component": {
-     "index": 1,
-     "position": "664.653 36.380 312.214",
-     "rotation": "-0.11 55.70 0.00"
-    },
-    "configuration": [
-     {
-      "name": "beaconLight",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "designColor3",
-      "id": 61,
-      "isActive": true
-     },
-     {
-      "name": "designColor",
-      "id": 13,
-      "isActive": true
-     },
-     {
-      "name": "designColor2",
-      "id": 76,
-      "isActive": true
-     },
-     {
-      "name": "designColor4",
-      "id": 13,
-      "isActive": true
-     },
-     {
-      "name": "fillUnit",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "baseColor",
-      "id": 15,
-      "isActive": true
-     }
-    ],
-    "washable": {
-     "dirtNode": {
-      "amount": 0.0,
-      "wetness": 0.0
-     }
-    },
-    "wearable": {
-     "damage": 0.004348,
-     "wearNode": {
-      "amount": 0.047529
-     }
-    },
-    "attachable": {
-     "isDetachingBlocked": false
-    },
-    "attacherJoints": {
-     "comboDirection": -1
-    },
-    "fillUnit": {
-     "unit": {
-      "index": 1,
-      "fillType": "WOODCHIPS",
-      "fillLevel": 97695.179688
      }
     },
     "dischargeable": {
@@ -8283,131 +8056,6 @@
    },
    {
     "modName": "FS25_colossusPack",
-    "filename": "$moddir$FS25_colossusPack/tools/frontMower/colossusFrontMowerUnreal.xml",
-    "uniqueId": "vehiclea3b06d67482bdbe4a4912ed681e0ad3c",
-    "age": 18.0,
-    "price": 10050.0,
-    "farmId": 1,
-    "propertyState": "OWNED",
-    "operatingTime": 18647.445312,
-    "selectedObjectIndex": 1,
-    "subSelectedObjectIndex": 1,
-    "component": [
-     {
-      "index": 1,
-      "position": "757.787 27.102 251.687",
-      "rotation": "6.84 20.74 3.97"
-     },
-     {
-      "index": 2,
-      "position": "757.776 27.738 251.832",
-      "rotation": "3.87 19.81 -4.62"
-     }
-    ],
-    "configuration": [
-     {
-      "name": "workMode",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "designColor2",
-      "id": 3,
-      "isActive": true
-     },
-     {
-      "name": "designColor",
-      "id": 2,
-      "isActive": true
-     },
-     {
-      "name": "folding",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "design12",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "designColor3",
-      "id": 2,
-      "isActive": true
-     },
-     {
-      "name": "design2",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "design16",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "design16",
-      "id": 4,
-      "isActive": true
-     },
-     {
-      "name": "design6",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "design6",
-      "id": 8,
-      "isActive": true
-     },
-     {
-      "name": "design7",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "design7",
-      "id": 4,
-      "isActive": true
-     },
-     {
-      "name": "baseColor",
-      "id": 1,
-      "isActive": true
-     }
-    ],
-    "washable": {
-     "dirtNode": {
-      "amount": 0.0,
-      "wetness": 0.0
-     }
-    },
-    "wearable": {
-     "damage": 0.083997,
-     "wearNode": {
-      "amount": 0.289175
-     }
-    },
-    "attachable": {
-     "lowerAnimTime": 1.0,
-     "isDetachingBlocked": false
-    },
-    "attacherJoints": {
-     "comboDirection": -1
-    },
-    "foldable": {
-     "foldAnimTime": 0.0,
-     "isAllowed": true
-    },
-    "fruitExtraObjects": {
-     "lastFruitType": "UNKNOWN"
-    },
-    "workMode": {
-     "state": 1
-    }
-   },
-   {
-    "modName": "FS25_colossusPack",
     "filename": "$moddir$FS25_colossusPack/tools/tedder/tedderUnreal.xml",
     "uniqueId": "vehicle0383af8769f0c71e0ffad91628bf932d",
     "age": 29.0,
@@ -8799,27 +8447,29 @@
     "price": 206500.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 158793.3125,
+    "operatingTime": 158798.484375,
+    "selectedObjectIndex": 1,
+    "subSelectedObjectIndex": 1,
     "component": [
      {
       "index": 1,
-      "position": "662.000 29.801 919.873",
-      "rotation": "177.18 -38.54 -175.98"
+      "position": "656.282 29.990 908.117",
+      "rotation": "177.25 -27.63 -176.73"
      },
      {
       "index": 2,
-      "position": "658.575 30.468 915.230",
-      "rotation": "174.91 0.36 -177.82"
+      "position": "653.536 30.710 902.957",
+      "rotation": "178.09 -27.63 -176.73"
      },
      {
       "index": 3,
-      "position": "661.585 32.106 920.930",
-      "rotation": "-93.52 51.37 179.52"
+      "position": "655.701 32.290 909.105",
+      "rotation": "-95.23 62.25 177.36"
      },
      {
       "index": 4,
-      "position": "662.921 32.200 919.863",
-      "rotation": "93.52 -51.37 -0.48"
+      "position": "657.215 32.377 908.311",
+      "rotation": "95.23 -62.25 -2.64"
      }
     ],
     "configuration": [
@@ -8912,9 +8562,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.114743,
+     "damage": 0.114944,
      "wearNode": {
-      "amount": 0.345663
+      "amount": 0.345706
      }
     },
     "wheels": {
@@ -8966,37 +8616,39 @@
     "price": 177600.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 18826.072266,
+    "operatingTime": 20178.134766,
+    "selectedObjectIndex": 1,
+    "subSelectedObjectIndex": 1,
     "component": [
      {
       "index": 1,
-      "position": "875.692 8.286 -814.802",
-      "rotation": "178.38 62.05 179.47"
+      "position": "582.978 31.768 -53.373",
+      "rotation": "2.12 47.43 0.38"
      },
      {
       "index": 2,
-      "position": "878.732 9.206 -816.410",
-      "rotation": "178.59 62.05 179.71"
+      "position": "588.909 32.362 -47.921",
+      "rotation": "2.25 47.42 0.56"
      },
      {
       "index": 3,
-      "position": "871.043 9.250 -819.180",
-      "rotation": "176.92 62.02 177.85"
+      "position": "586.779 32.573 -51.148",
+      "rotation": "1.94 -42.54 -2.51"
      },
      {
       "index": 4,
-      "position": "876.719 9.135 -808.485",
-      "rotation": "177.56 62.03 178.56"
+      "position": "585.689 32.556 -49.614",
+      "rotation": "178.01 42.54 177.49"
      },
      {
       "index": 5,
-      "position": "871.025 10.530 -820.440",
-      "rotation": "-178.39 -62.06 -0.46"
+      "position": "587.240 33.779 -49.900",
+      "rotation": "-2.65 42.50 176.44"
      },
      {
       "index": 6,
-      "position": "877.771 10.381 -807.731",
-      "rotation": "-176.04 -61.98 -3.14"
+      "position": "586.964 33.768 -49.253",
+      "rotation": "-177.30 -42.51 -3.57"
      }
     ],
     "configuration": [
@@ -9171,9 +8823,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.120209,
+     "damage": 0.131659,
      "wearNode": {
-      "amount": 0.554172
+      "amount": 0.613684
      }
     },
     "licensePlates": {
@@ -9193,7 +8845,7 @@
      "comboDirection": -1
     },
     "foldable": {
-     "foldAnimTime": 0.1,
+     "foldAnimTime": 1.0,
      "isAllowed": true
     },
     "fillUnit": {
@@ -9217,7 +8869,7 @@
      "state": 0
     },
     "sowingMachine": {
-     "selectedSeedFruitType": "WINTERWHEAT",
+     "selectedSeedFruitType": "SORGHUM",
      "allowsSeedChanging": true
     },
     "FS25_precisionFarming": {
@@ -11827,12 +11479,12 @@
      {
       "index": 1,
       "position": "752.643 34.350 472.564",
-      "rotation": "-179.31 87.58 -179.49"
+      "rotation": "-179.31 87.58 -179.48"
      },
      {
       "index": 2,
       "position": "750.474 35.138 472.655",
-      "rotation": "-179.45 87.58 -179.61"
+      "rotation": "-179.44 87.58 -179.61"
      }
     ],
     "configuration": [
@@ -11997,7 +11649,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.022337,
+     "damage": 0.022351,
      "wearNode": {
       "amount": 0.127438
      }
@@ -12843,1164 +12495,6 @@
     "pipe": {
      "state": 1,
      "isStateChangeAllowed": true
-    }
-   },
-   {
-    "filename": "data/vehicles/deutzFahr/series8/series8.xml",
-    "uniqueId": "vehicle88b935bc4a6dac3eb8ea372e4efeb4a3",
-    "age": 18.0,
-    "price": 292450.0,
-    "farmId": 1,
-    "propertyState": "OWNED",
-    "operatingTime": 179515.28125,
-    "selectedObjectIndex": 1,
-    "subSelectedObjectIndex": 1,
-    "component": [
-     {
-      "index": 1,
-      "position": "658.608 29.969 912.402",
-      "rotation": "175.65 0.28 -177.81"
-     },
-     {
-      "index": 2,
-      "position": "658.583 30.814 910.970",
-      "rotation": "175.67 0.28 -177.79"
-     }
-    ],
-    "configuration": [
-     {
-      "name": "fillUnit",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "design",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "design",
-      "id": 2,
-      "isActive": true
-     },
-     {
-      "name": "designColor",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "designColor",
-      "id": 4,
-      "isActive": true
-     },
-     {
-      "name": "rimColor",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "cropSensor",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "cropSensor",
-      "id": 2,
-      "isActive": true
-     },
-     {
-      "name": "motor",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "wheel",
-      "id": "MEDIUM_BKT_agrimaxFactor",
-      "isActive": false
-     },
-     {
-      "name": "wheel",
-      "id": "MEDIUM_WEIGHTS_BKT_agrimaxFactor",
-      "isActive": true
-     }
-    ],
-    "washable": {
-     "dirtNode": [
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      }
-     ]
-    },
-    "wearable": {
-     "damage": 1.0,
-     "wearNode": {
-      "amount": 0.256241
-     }
-    },
-    "licensePlates": {
-     "variation": 1,
-     "characters": "788BAC___",
-     "colorIndex": 1,
-     "placementIndex": 2
-    },
-    "wheels": {
-     "lastConfigId": "MEDIUM_WEIGHTS_BKT_agrimaxFactor"
-    },
-    "enterable": {
-     "activeCameraIndex": 1,
-     "isTabbable": true,
-     "isLeavingAllowed": true,
-     "camera": [
-      {
-       "rotation": "-20.00 180.00 0.00",
-       "translation": "0.000 0.000 6.950",
-       "zoom": 6.95001,
-       "fovY": 54.432205
-      },
-      {
-       "rotation": "-18.00 180.00 0.00",
-       "translation": "0.000 2.950 -1.050",
-       "zoom": 3.131304,
-       "fovY": 60.0
-      }
-     ]
-    },
-    "fillUnit": {
-     "unit": [
-      {
-       "index": 1,
-       "fillType": "DIESEL",
-       "fillLevel": 211.903549
-      },
-      {
-       "index": 2,
-       "fillType": "DEF",
-       "fillLevel": 33.999992
-      },
-      {
-       "index": 3,
-       "fillType": "AIR",
-       "fillLevel": 2284.192139
-      }
-     ]
-    },
-    "drivable": {
-     "cruiseControl": 63,
-     "cruiseControlReverse": 33,
-     "odometerMilage": 101.417122
-    },
-    "aiFieldWorker": {
-     "isActive": false,
-     "strategyFieldCourse": {
-      "lastPosition": "933.611328125 960.4799194335938",
-      "field": {
-       "boundary": {
-        "positions": "974.25 519.25 978.75 591.75 964.25 681.25 974.75 720.75 995.75 770.75 997.25 787.25 988.75 815.25 976.25 835.25 962.75 864.75 963.25 924.25 955.75 933.75 941.25 944.75 935.25 955.25 933.25 969.25 922.25 975.25 901.25 977.25 846.25 969.75 791.75 966.25 769.25 961.75 742.75 951.25 694.25 936.75 685.75 928.25 683.25 917.75 681.75 759.25 682.75 695.25 687.75 648.25 691.75 643.25 704.25 638.25 744.25 631.25 772.25 620.25 806.75 603.75 816.75 601.75 870.75 570.75 880.75 561.25 891.25 544.75 892.25 533.75 907.75 509.75 915.25 508.25 966.25 511.25 974.25 519.25"
-       }
-      },
-      "fieldCourseSettings": {
-       "implementWidth": 15.0,
-       "numHeadlands": 2,
-       "headlandsFirst": false,
-       "skipNumLines": 0,
-       "workHeadlands": true,
-       "workDirection": -1.0,
-       "workDirectionForceStraightLines": false,
-       "workInitialSegment": false,
-       "minTurnRadius": 8.930809,
-       "initialTurnRadiusFactor": 1.0,
-       "canTurnBackward": false,
-       "allowStraightReversing": true,
-       "isVineyardTool": false,
-       "isVineyardRowTool": false,
-       "headlandTailAvoidance": false,
-       "rowSpacing": 0.0,
-       "rowSnapAngle": 0.0,
-       "rowOffset": 0.0,
-       "cornerCutOutSupported": false,
-       "toolFrontOffset": -12.028254,
-       "toolBackOffset": -12.278254,
-       "hasStaticTools": false,
-       "toolFullOverlap": false,
-       "toolFullOverlapInside": false,
-       "segmentExtendedToBoundary": false,
-       "segmentHeadlandReverseLines": false,
-       "segmentMinOffset": 0.0,
-       "segmentMinLength": 0.0,
-       "sideOffset": 0.0,
-       "variableSideOffset": false,
-       "sideOffsetHeadlandAlternate": false,
-       "headlandForcedDirection": 1.0,
-       "segmentSplitAngle": 45.0,
-       "segmentSplitDistance": 10.0,
-       "segmentValidityCheckOffset": 0.0,
-       "toolAlwaysActive": false,
-       "toolStraighteningSegmentLength": 24.556507,
-       "toolStraighteningAlwaysActive": false,
-       "agentFrontOffset": 3.88861,
-       "agentBackOffset": 1.06139,
-       "agentHeight": 3.55
-      },
-      "segments": {
-       "segment": [
-        {
-         "segmentId": 1,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 2,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 3,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 4,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 5,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 6,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 7,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 8,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 9,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 10,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 11,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 12,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 12,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 12,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 13,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 14,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 15,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 16,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 17,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 18,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 19,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 20,
-         "used": false,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 21,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 2
-        },
-        {
-         "segmentId": 22,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 2
-        },
-        {
-         "segmentId": 23,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 2
-        },
-        {
-         "segmentId": 24,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 2
-        },
-        {
-         "segmentId": 25,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 2
-        }
-       ]
-      }
-     }
-    },
-    "aiJobVehicle": {
-     "isAIStartAllowed": true,
-     "lastJob": {
-      "type": "FIELDWORK",
-      "parameter": [
-       {
-        "name": "vehicle",
-        "vehicleUniqueId": "vehicle88b935bc4a6dac3eb8ea372e4efeb4a3"
-       },
-       {
-        "name": "positionAngle",
-        "x": 900.186157,
-        "z": 565.645264,
-        "angle": 3.033849
-       }
-      ]
-     }
-    },
-    "aiAutomaticSteering": {
-     "courseWasActive": true,
-     "isOnField": false
-    },
-    "aiModeSelection": {
-     "currentMode": "WORKER"
-    },
-    "attacherJoints": {
-     "comboDirection": -1,
-     "attachedImplement": {
-      "jointIndex": 1,
-      "moveDown": false,
-      "attachedVehicleUniqueId": "vehicle228d70bdda64e44e5bd46fe5792fea8c",
-      "inputJointIndex": 1
-     }
-    }
-   },
-   {
-    "filename": "data/vehicles/deutzFahr/series8/series8.xml",
-    "uniqueId": "vehicleaf43c475eb24a627dd360815b3270414",
-    "age": 1.0,
-    "price": 293450.0,
-    "farmId": 1,
-    "propertyState": "OWNED",
-    "operatingTime": 13547.113281,
-    "selectedObjectIndex": 1,
-    "subSelectedObjectIndex": 1,
-    "component": [
-     {
-      "index": 1,
-      "position": "882.586 7.966 -818.786",
-      "rotation": "178.38 54.80 178.28"
-     },
-     {
-      "index": 2,
-      "position": "883.810 8.762 -819.632",
-      "rotation": "178.33 54.80 178.21"
-     }
-    ],
-    "configuration": [
-     {
-      "name": "fillUnit",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "design",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "design",
-      "id": 2,
-      "isActive": true
-     },
-     {
-      "name": "designColor",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "designColor",
-      "id": 5,
-      "isActive": true
-     },
-     {
-      "name": "rimColor",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "cropSensor",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "cropSensor",
-      "id": 2,
-      "isActive": true
-     },
-     {
-      "name": "motor",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "wheel",
-      "id": "MEDIUM_BKT_agrimaxFactor",
-      "isActive": false
-     },
-     {
-      "name": "wheel",
-      "id": "BROAD_WEIGHTS_BKT_agrimaxForce",
-      "isActive": true
-     }
-    ],
-    "washable": {
-     "dirtNode": [
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      }
-     ]
-    },
-    "wearable": {
-     "damage": 0.093179,
-     "wearNode": {
-      "amount": 0.187762
-     }
-    },
-    "licensePlates": {
-     "variation": 1,
-     "characters": "010MED___",
-     "colorIndex": 1,
-     "placementIndex": 1
-    },
-    "wheels": {
-     "lastConfigId": "BROAD_WEIGHTS_BKT_agrimaxForce"
-    },
-    "enterable": {
-     "activeCameraIndex": 1,
-     "isTabbable": true,
-     "isLeavingAllowed": true,
-     "camera": [
-      {
-       "rotation": "-20.00 180.00 0.00",
-       "translation": "0.000 0.000 6.950",
-       "zoom": 6.95001,
-       "fovY": 54.432205
-      },
-      {
-       "rotation": "-18.00 180.00 0.00",
-       "translation": "0.000 2.950 -1.050",
-       "zoom": 3.131304,
-       "fovY": 60.0
-      }
-     ]
-    },
-    "fillUnit": {
-     "unit": [
-      {
-       "index": 1,
-       "fillType": "DIESEL",
-       "fillLevel": 493.997528
-      },
-      {
-       "index": 2,
-       "fillType": "DEF",
-       "fillLevel": 35.0
-      },
-      {
-       "index": 3,
-       "fillType": "AIR",
-       "fillLevel": 2024.995361
-      }
-     ]
-    },
-    "drivable": {
-     "cruiseControl": 63,
-     "cruiseControlReverse": 33,
-     "odometerMilage": 41.112511
-    },
-    "aiFieldWorker": {
-     "isActive": true,
-     "strategyFieldCourse": {
-      "lastPosition": "881.4059448242188 -817.9537963867188",
-      "field": {
-       "boundary": {
-        "positions": "551.25 -961.75 649.75 -955.25 680.25 -951.75 701.25 -954.75 731.25 -955.75 847.75 -945.25 903.75 -932.25 921.25 -931.75 942.25 -934.75 958.75 -933.25 969.25 -923.75 973.75 -909.25 969.25 -899.75 939.75 -877.75 925.75 -865.25 898.25 -832.25 887.75 -812.25 883.25 -785.75 883.75 -762.25 886.75 -750.25 913.75 -682.25 923.25 -648.75 926.75 -639.25 946.75 -609.25 946.25 -603.75 940.75 -594.25 441.75 -323.25 434.75 -323.25 430.25 -329.25 421.25 -389.25 409.75 -407.75 398.75 -417.75 365.75 -439.75 327.25 -462.25 323.25 -470.25 323.25 -473.75 330.75 -482.25 601.25 -662.75 605.75 -668.75 607.25 -681.25 599.75 -699.75 532.25 -941.25 537.75 -955.25 551.25 -961.75"
-       }
-      },
-      "fieldCourseSettings": {
-       "implementWidth": 18.0,
-       "numHeadlands": 1,
-       "headlandsFirst": true,
-       "skipNumLines": 0,
-       "workHeadlands": true,
-       "workDirection": -0.994838,
-       "workDirectionForceStraightLines": false,
-       "workInitialSegment": false,
-       "minTurnRadius": 4.590634,
-       "initialTurnRadiusFactor": 1.0,
-       "canTurnBackward": false,
-       "allowStraightReversing": true,
-       "isVineyardTool": false,
-       "isVineyardRowTool": false,
-       "headlandTailAvoidance": false,
-       "rowSpacing": 0.0,
-       "rowSnapAngle": 0.0,
-       "rowOffset": 0.0,
-       "cornerCutOutSupported": false,
-       "toolFrontOffset": -8.68124,
-       "toolBackOffset": -9.348982,
-       "hasStaticTools": true,
-       "toolFullOverlap": false,
-       "toolFullOverlapInside": false,
-       "segmentExtendedToBoundary": false,
-       "segmentHeadlandReverseLines": false,
-       "segmentMinOffset": 0.0,
-       "segmentMinLength": 0.0,
-       "sideOffset": 0.0,
-       "variableSideOffset": false,
-       "sideOffsetHeadlandAlternate": false,
-       "headlandForcedDirection": 1.0,
-       "segmentSplitAngle": 25.0,
-       "segmentSplitDistance": 10.0,
-       "segmentValidityCheckOffset": 0.0,
-       "toolAlwaysActive": false,
-       "toolStraighteningSegmentLength": 18.697964,
-       "toolStraighteningAlwaysActive": false,
-       "agentFrontOffset": 3.88861,
-       "agentBackOffset": 1.06139,
-       "agentHeight": 3.35
-      },
-      "segments": {
-       "segment": [
-        {
-         "segmentId": 1,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 2,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 3,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 4,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 5,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 6,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 7,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 8,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 9,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 10,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 11,
-         "used": false,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 12,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 13,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 14,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 15,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 16,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 17,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 18,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 19,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 20,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 21,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 22,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 23,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 24,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 25,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 26,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 27,
-         "used": true,
-         "lineGroupIndex": 1
-        },
-        {
-         "segmentId": 28,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 28,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 28,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 30,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 30,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 35,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 35,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 36,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 37,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 38,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 39,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 40,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        },
-        {
-         "segmentId": 41,
-         "used": true,
-         "isHeadlandSegment": true,
-         "headlandIndex": 1
-        }
-       ]
-      }
-     }
-    },
-    "aiJobVehicle": {
-     "isAIStartAllowed": true,
-     "lastJob": {
-      "type": "FIELDWORK",
-      "parameter": [
-       {
-        "name": "vehicle",
-        "vehicleUniqueId": "vehicleaf43c475eb24a627dd360815b3270414"
-       },
-       {
-        "name": "positionAngle",
-        "x": 711.195007,
-        "z": -924.809998,
-        "angle": 2.75762
-       }
-      ]
-     }
-    },
-    "aiAutomaticSteering": {
-     "courseWasActive": true,
-     "isOnField": false
-    },
-    "aiModeSelection": {
-     "currentMode": "WORKER",
-     "settings": {
-      "worker": {
-       "implementWidth": 180.0,
-       "numHeadlands": 1,
-       "workDirection": -57,
-       "workHeadlands": true,
-       "headlandFirst": true,
-       "skipNumLines": 0
-      },
-      "steering_assist": {
-       "implementWidth": 180.0,
-       "numHeadlands": 1,
-       "workDirection": -57,
-       "sideOffset": 0.0,
-       "showLines": true,
-       "cruiseControl": false
-      }
-     }
-    },
-    "attacherJoints": {
-     "comboDirection": -1,
-     "attachedImplement": {
-      "jointIndex": 3,
-      "moveDown": false,
-      "attachedVehicleUniqueId": "vehiclef4183b7da2810433de8b22b6e06d2e2c",
-      "inputJointIndex": 1
-     }
-    }
-   },
-   {
-    "modName": "FS25_palletSilo",
-    "filename": "$moddir$FS25_palletSilo/profiLinerPalletSilo.xml",
-    "uniqueId": "vehicle4321929016f396038bff57ceb5774d20",
-    "age": 18.0,
-    "price": 20500.0,
-    "farmId": 1,
-    "propertyState": "OWNED",
-    "operatingTime": 2697.081787,
-    "selectedObjectIndex": 1,
-    "subSelectedObjectIndex": 1,
-    "component": {
-     "index": 1,
-     "position": "734.404 34.030 457.446",
-     "rotation": "-1.66 -38.38 1.64"
-    },
-    "configuration": [
-     {
-      "name": "fillUnit",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "fillUnit",
-      "id": 5,
-      "isActive": true
-     },
-     {
-      "name": "wheel",
-      "id": "CONTINENTAL_DEFAULT",
-      "isActive": false
-     },
-     {
-      "name": "wheel",
-      "id": "LIZARD_DEFAULT",
-      "isActive": true
-     },
-     {
-      "name": "designColor2",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "trailer",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "trailer",
-      "id": 3,
-      "isActive": true
-     },
-     {
-      "name": "design",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "design",
-      "id": 3,
-      "isActive": true
-     },
-     {
-      "name": "designColor",
-      "id": 2,
-      "isActive": true
-     },
-     {
-      "name": "folding",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "fillVolume",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "designColor3",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "cover",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "design2",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "dischargeable",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "dischargeable",
-      "id": 5,
-      "isActive": true
-     },
-     {
-      "name": "tensionBelts",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "rimColor",
-      "id": 62,
-      "isActive": true
-     }
-    ],
-    "washable": {
-     "dirtNode": [
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      }
-     ]
-    },
-    "wearable": {
-     "damage": 0.009508,
-     "wearNode": {
-      "amount": 0.008518
-     }
-    },
-    "licensePlates": {
-     "variation": 1,
-     "characters": "788BAC___",
-     "colorIndex": 1,
-     "placementIndex": 2
-    },
-    "wheels": {
-     "lastConfigId": "LIZARD_DEFAULT"
-    },
-    "attachable": {
-     "isDetachingBlocked": false
-    },
-    "attacherJoints": {
-     "comboDirection": -1
-    },
-    "foldable": {
-     "foldAnimTime": 1.0,
-     "isAllowed": true
-    },
-    "fillUnit": {
-     "unit": [
-      {
-       "index": 1,
-       "fillType": "UNKNOWN",
-       "fillLevel": 0.0
-      },
-      {
-       "index": 2,
-       "fillType": "UNKNOWN",
-       "fillLevel": 0.0
-      },
-      {
-       "index": 3,
-       "fillType": "UNKNOWN",
-       "fillLevel": 0.0
-      },
-      {
-       "index": 4,
-       "fillType": "MILK_BOTTLED",
-       "fillLevel": 0.000366
-      }
-     ]
-    },
-    "cover": {
-     "state": 2
-    },
-    "dischargeable": {
-     "isAllowed": true
-    },
-    "trailer": {
-     "tipSideIndex": 1,
-     "doorState": false,
-     "tipAnimationTime": 0.0,
-     "tipState": 0
     }
    },
    {
@@ -15061,232 +13555,6 @@
      "doorState": false,
      "tipAnimationTime": 0.0,
      "tipState": 0
-    }
-   },
-   {
-    "filename": "data/vehicles/claas/arion550/arion550.xml",
-    "uniqueId": "vehicle2e4c4b3eee0112c90fe6598afb8f26a4",
-    "age": 13.0,
-    "price": 191450.0,
-    "farmId": 1,
-    "propertyState": "OWNED",
-    "operatingTime": 5758.852051,
-    "selectedObjectIndex": 1,
-    "subSelectedObjectIndex": 1,
-    "component": [
-     {
-      "index": 1,
-      "position": "689.823 28.821 -44.400",
-      "rotation": "8.12 -74.85 -13.71"
-     },
-     {
-      "index": 2,
-      "position": "688.813 29.796 -44.072",
-      "rotation": "8.03 -74.86 -13.61"
-     }
-    ],
-    "configuration": [
-     {
-      "name": "fillUnit",
-      "id": 1,
-      "isActive": true
-     },
-     {
-      "name": "frontloader",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "frontloader",
-      "id": 2,
-      "isActive": true
-     },
-     {
-      "name": "cropSensor",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "cropSensor",
-      "id": 2,
-      "isActive": true
-     },
-     {
-      "name": "motor",
-      "id": 1,
-      "isActive": false
-     },
-     {
-      "name": "motor",
-      "id": 3,
-      "isActive": true
-     },
-     {
-      "name": "wheel",
-      "id": "DEFAULT_TRELLEBORG_TM700",
-      "isActive": false
-     },
-     {
-      "name": "wheel",
-      "id": "BROAD_WEIGHTS_TRELLEBORG_TM1000",
-      "isActive": true
-     }
-    ],
-    "washable": {
-     "dirtNode": [
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0,
-       "snowScale": 0.0
-      },
-      {
-       "amount": 0.0,
-       "wetness": 0.0
-      }
-     ]
-    },
-    "wearable": {
-     "damage": 0.037852,
-     "wearNode": {
-      "amount": 0.025382
-     }
-    },
-    "licensePlates": {
-     "variation": 2,
-     "characters": "ROLLER-01",
-     "colorIndex": 1,
-     "placementIndex": 1
-    },
-    "wheels": {
-     "lastConfigId": "BROAD_WEIGHTS_TRELLEBORG_TM1000"
-    },
-    "enterable": {
-     "activeCameraIndex": 1,
-     "isTabbable": true,
-     "isLeavingAllowed": true,
-     "camera": [
-      {
-       "rotation": "-20.00 180.00 0.00",
-       "translation": "0.000 0.000 6.500",
-       "zoom": 6.50001,
-       "fovY": 54.432205
-      },
-      {
-       "rotation": "-20.00 180.00 0.00",
-       "translation": "0.000 2.888 -0.884",
-       "zoom": 3.020293,
-       "fovY": 60.0
-      }
-     ]
-    },
-    "fillUnit": {
-     "unit": [
-      {
-       "index": 1,
-       "fillType": "DIESEL",
-       "fillLevel": 235.998474
-      },
-      {
-       "index": 2,
-       "fillType": "DEF",
-       "fillLevel": 16.0
-      },
-      {
-       "index": 3,
-       "fillType": "AIR",
-       "fillLevel": 3900.079102
-      }
-     ]
-    },
-    "drivable": {
-     "cruiseControl": 53,
-     "cruiseControlReverse": 22,
-     "odometerMilage": 9.925426
-    },
-    "aiFieldWorker": {
-     "isActive": false
-    },
-    "aiJobVehicle": {
-     "isAIStartAllowed": true,
-     "lastJob": {
-      "type": "FIELDWORK",
-      "parameter": [
-       {
-        "name": "vehicle"
-       },
-       {
-        "name": "positionAngle",
-        "x": 733.499146,
-        "z": -159.24762,
-        "angle": 1.867502
-       }
-      ]
-     }
-    },
-    "aiAutomaticSteering": {
-     "courseWasActive": true,
-     "isOnField": false
-    },
-    "aiModeSelection": {
-     "currentMode": "WORKER",
-     "settings": {
-      "worker": {
-       "implementWidth": 499.0,
-       "numHeadlands": 1,
-       "workDirection": -57,
-       "workHeadlands": true,
-       "headlandFirst": true,
-       "skipNumLines": 0
-      },
-      "steering_assist": {
-       "implementWidth": 499.0,
-       "numHeadlands": 1,
-       "workDirection": -57,
-       "sideOffset": 0.0,
-       "showLines": true,
-       "cruiseControl": false
-      }
-     }
-    },
-    "attacherJoints": {
-     "comboDirection": -1,
-     "attachedImplement": {
-      "jointIndex": 1,
-      "moveDown": false,
-      "attachedVehicleUniqueId": "vehicled547108e46c692608001840cf2aeb511",
-      "inputJointIndex": 2
-     }
     }
    },
    {
@@ -16805,42 +15073,42 @@
     "price": 197000.0,
     "farmId": 1,
     "propertyState": "OWNED",
-    "operatingTime": 15166.933594,
+    "operatingTime": 16773.623047,
     "component": [
      {
       "index": 1,
-      "position": "440.798 33.202 -241.219",
-      "rotation": "1.99 17.37 -1.67"
+      "position": "753.459 25.157 188.956",
+      "rotation": "-177.48 58.03 177.18"
      },
      {
       "index": 2,
-      "position": "443.584 35.803 -241.772",
-      "rotation": "16.69 5.33 64.35"
+      "position": "752.396 27.891 186.461",
+      "rotation": "124.75 21.86 98.64"
      },
      {
       "index": 3,
-      "position": "443.732 37.441 -241.742",
-      "rotation": "0.73 -17.49 169.08"
+      "position": "752.494 29.530 186.351",
+      "rotation": "163.82 -56.58 13.31"
      },
      {
       "index": 4,
-      "position": "442.015 36.037 -241.739",
-      "rotation": "-17.45 1.43 -94.02"
+      "position": "752.836 28.062 187.978",
+      "rotation": "-121.98 -2.92 -94.06"
      },
      {
       "index": 5,
-      "position": "438.336 35.956 -240.130",
-      "rotation": "-15.13 8.88 -68.67"
+      "position": "755.305 27.748 191.128",
+      "rotation": "-124.09 19.30 -108.43"
      },
      {
       "index": 6,
-      "position": "438.320 37.599 -240.048",
-      "rotation": "-4.77 -16.84 -172.44"
+      "position": "755.494 29.381 191.161",
+      "rotation": "-168.57 -57.36 -19.37"
      },
      {
       "index": 7,
-      "position": "439.655 36.105 -241.000",
-      "rotation": "17.31 -2.52 89.43"
+      "position": "754.145 27.996 190.075",
+      "rotation": "121.91 -0.14 84.02"
      }
     ],
     "configuration": [
@@ -17067,9 +15335,9 @@
      ]
     },
     "wearable": {
-     "damage": 0.015642,
+     "damage": 0.015754,
      "wearNode": {
-      "amount": 0.136133
+      "amount": 0.13625
      }
     },
     "wheels": {
@@ -17723,32 +15991,32 @@
      {
       "index": 2,
       "position": "736.607 29.340 164.355",
-      "rotation": "53.77 20.30 67.99"
+      "rotation": "53.77 20.31 67.99"
      },
      {
       "index": 3,
       "position": "736.878 30.960 164.279",
-      "rotation": "13.14 -55.31 156.37"
+      "rotation": "13.22 -55.30 156.28"
      },
      {
       "index": 4,
-      "position": "735.433 29.678 165.367",
-      "rotation": "-56.33 -1.60 -98.87"
+      "position": "735.433 29.679 165.367",
+      "rotation": "-56.33 -1.63 -98.87"
      },
      {
       "index": 5,
       "position": "733.587 29.770 168.933",
-      "rotation": "-53.84 20.02 -83.68"
+      "rotation": "-53.84 20.00 -83.69"
      },
      {
       "index": 6,
-      "position": "733.765 31.403 168.999",
-      "rotation": "-12.62 -55.37 -172.56"
+      "position": "733.764 31.403 168.999",
+      "rotation": "-12.66 -55.37 -172.49"
      },
      {
       "index": 7,
-      "position": "734.074 29.870 167.426",
-      "rotation": "56.30 -1.33 83.08"
+      "position": "734.074 29.872 167.425",
+      "rotation": "56.31 -1.35 83.11"
      }
     ],
     "configuration": [
@@ -18006,10 +16274,12 @@
     "farmId": 1,
     "propertyState": "OWNED",
     "operatingTime": 901.250427,
+    "selectedObjectIndex": 1,
+    "subSelectedObjectIndex": 1,
     "component": {
      "index": 1,
-     "position": "365.008 34.435 -253.524",
-     "rotation": "-165.28 -73.62 167.17"
+     "position": "365.008 34.446 -253.523",
+     "rotation": "-168.13 -73.80 169.99"
     },
     "configuration": [
      {
@@ -18208,7 +16478,7 @@
      ]
     },
     "wearable": {
-     "damage": 0.002501,
+     "damage": 0.002512,
      "wearNode": {
       "amount": 0.004408
      }
@@ -18354,6 +16624,219 @@
     "baleLoader": {
      "isInWorkPosition": true,
      "baleTypeIndex": 11
+    }
+   },
+   {
+    "filename": "data/vehicles/johnDeere/series6R/series6RExtraLarge.xml",
+    "uniqueId": "vehicleab660171541b67b67e5b1a7d19fc262d",
+    "age": 0.0,
+    "price": 300450.0,
+    "farmId": 1,
+    "propertyState": "OWNED",
+    "operatingTime": 47.868088,
+    "selectedObjectIndex": 1,
+    "subSelectedObjectIndex": 1,
+    "component": [
+     {
+      "index": 1,
+      "position": "887.872 21.036 -122.751",
+      "rotation": "178.48 30.28 178.86"
+     },
+     {
+      "index": 2,
+      "position": "888.588 21.943 -123.947",
+      "rotation": "178.54 30.28 178.99"
+     }
+    ],
+    "configuration": [
+     {
+      "name": "fillUnit",
+      "id": 1,
+      "isActive": true
+     },
+     {
+      "name": "frontloader",
+      "id": 1,
+      "isActive": false
+     },
+     {
+      "name": "frontloader",
+      "id": 2,
+      "isActive": true
+     },
+     {
+      "name": "motor",
+      "id": 1,
+      "isActive": false
+     },
+     {
+      "name": "motor",
+      "id": 2,
+      "isActive": true
+     },
+     {
+      "name": "design",
+      "id": 1,
+      "isActive": false
+     },
+     {
+      "name": "design",
+      "id": 2,
+      "isActive": true
+     },
+     {
+      "name": "design2",
+      "id": 1,
+      "isActive": true
+     },
+     {
+      "name": "cropSensor",
+      "id": 1,
+      "isActive": false
+     },
+     {
+      "name": "cropSensor",
+      "id": 2,
+      "isActive": true
+     },
+     {
+      "name": "attacherJoint",
+      "id": 7,
+      "isActive": true
+     },
+     {
+      "name": "design3",
+      "id": 1,
+      "isActive": false
+     },
+     {
+      "name": "design3",
+      "id": 2,
+      "isActive": true
+     },
+     {
+      "name": "wheel",
+      "id": "DEFAULT_TRELLEBORG_TM1000",
+      "isActive": true
+     }
+    ],
+    "washable": {
+     "dirtNode": [
+      {
+       "amount": 0.0,
+       "wetness": 0.0
+      },
+      {
+       "amount": 0.0,
+       "wetness": 0.0,
+       "snowScale": 0.0
+      },
+      {
+       "amount": 0.0,
+       "wetness": 0.0
+      },
+      {
+       "amount": 0.0,
+       "wetness": 0.0,
+       "snowScale": 0.0
+      },
+      {
+       "amount": 0.0,
+       "wetness": 0.0
+      },
+      {
+       "amount": 0.0,
+       "wetness": 0.0,
+       "snowScale": 0.0
+      },
+      {
+       "amount": 0.0,
+       "wetness": 0.0
+      },
+      {
+       "amount": 0.0,
+       "wetness": 0.0,
+       "snowScale": 0.0
+      },
+      {
+       "amount": 0.0,
+       "wetness": 0.0
+      }
+     ]
+    },
+    "wearable": {
+     "damage": 0.000312,
+     "wearNode": {
+      "amount": 0.000639
+     }
+    },
+    "licensePlates": {
+     "variation": 1,
+     "characters": "010MED___",
+     "colorIndex": 1,
+     "placementIndex": 1
+    },
+    "wheels": {
+     "lastConfigId": "DEFAULT_TRELLEBORG_TM1000"
+    },
+    "enterable": {
+     "activeCameraIndex": 1,
+     "isTabbable": true,
+     "isLeavingAllowed": true,
+     "camera": [
+      {
+       "rotation": "-20.00 180.00 0.00",
+       "translation": "0.000 0.000 7.000",
+       "zoom": 7.00001,
+       "fovY": 54.432205
+      },
+      {
+       "rotation": "-18.00 180.00 0.00",
+       "translation": "0.000 3.000 -0.900",
+       "zoom": 3.132102,
+       "fovY": 60.0
+      }
+     ]
+    },
+    "fillUnit": {
+     "unit": [
+      {
+       "index": 1,
+       "fillType": "DIESEL",
+       "fillLevel": 468.999634
+      },
+      {
+       "index": 2,
+       "fillType": "DEF",
+       "fillLevel": 25.0
+      },
+      {
+       "index": 3,
+       "fillType": "AIR",
+       "fillLevel": 4000.0
+      }
+     ]
+    },
+    "drivable": {
+     "cruiseControl": 53,
+     "cruiseControlReverse": 22,
+     "odometerMilage": 0.613045
+    },
+    "aiFieldWorker": {
+     "isActive": false
+    },
+    "aiJobVehicle": {
+     "isAIStartAllowed": true
+    },
+    "aiAutomaticSteering": {
+     "courseWasActive": true,
+     "isOnField": false
+    },
+    "aiModeSelection": {
+     "currentMode": "WORKER"
+    },
+    "attacherJoints": {
+     "comboDirection": -1
     }
    }
   ]
