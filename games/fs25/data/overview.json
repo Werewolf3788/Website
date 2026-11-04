@@ -15,10 +15,10 @@
   "serverVersion": "1.25.1.0",
   "saveDir": "/profile/savegame3",
   "saveAgeMin": null,
-  "lastCheck": "2026-11-04T17:48:21Z",
-  "lastChange": "2026-11-04T17:48:21Z",
+  "lastCheck": "2026-11-04T22:55:15Z",
+  "lastChange": "2026-11-04T22:55:15Z",
   "lastFull": "2026-11-04T07:59:29Z",
-  "lastLight": "2026-11-04T17:48:21Z",
+  "lastLight": "2026-11-04T22:55:15Z",
   "files": [
    "careerSavegame",
    "collectibles",
@@ -51,6 +51,8 @@
   "changedFiles": [
    "careerSavegame.xml",
    "environment.xml",
+   "fields.xml",
+   "precisionFarming.xml",
    "gameStats.xml"
   ]
  },
@@ -103,8 +105,8 @@
   "economicDifficulty": "NORMAL",
   "timeScale": 1.0,
   "autoSaveInterval": 15.0,
-  "money": 2192807928,
-  "playTimeHours": 1500.3,
+  "money": 2192975140,
+  "playTimeHours": 1505.5,
   "slotUsage": 2127,
   "settings": {
    "savegameName": "Keep Rolling rollin rollin",
@@ -160,16 +162,16 @@
   }
  },
  "environment": {
-  "day": 55,
-  "monotonicDay": 82,
+  "day": 56,
+  "monotonicDay": 83,
   "daysPerPeriod": 1,
   "dayInPeriod": 1,
-  "period": "EARLY_AUTUMN",
-  "month": "September",
+  "period": "MID_AUTUMN",
+  "month": "October",
   "season": "Autumn",
   "year": 5,
-  "time": "22:17",
-  "minutesSinceRain": 1249,
+  "time": "03:32",
+  "minutesSinceRain": 1564,
   "groundWetness": 0.0,
   "snowHeight": 0.0,
   "forecast": [
@@ -349,7 +351,7 @@
   "version": "1.25.1.0",
   "mapName": "The Rural Farmlands Of Ohio",
   "mapSize": 2048,
-  "time": "22:30",
+  "time": "03:35",
   "capacity": 6,
   "numUsed": 0,
   "players": [],
@@ -5174,8 +5176,8 @@
    "fruit": "COTTON",
    "plannedFruit": "FALLOW",
    "status": "growing",
-   "growthState": 6,
-   "lastGrowthState": 5,
+   "growthState": 7,
+   "lastGrowthState": 6,
    "groundType": "SOWN",
    "sprayType": "NONE",
    "sprayLevel": 2,
@@ -5233,17 +5235,17 @@
    "farmId": 0,
    "isOwned": false,
    "fruit": "UNKNOWN",
-   "plannedFruit": "FALLOW",
+   "plannedFruit": "SUGARBEET",
    "status": "empty",
    "growthState": 0,
    "lastGrowthState": 0,
    "groundType": "CULTIVATED",
-   "sprayType": "NONE",
+   "sprayType": "LIME",
    "sprayLevel": 2,
-   "limeLevel": 0,
+   "limeLevel": 3,
    "plowLevel": 1,
    "fertilizerPercent": 100,
-   "limePercent": 0,
+   "limePercent": 100,
    "rollerLevel": 0,
    "stubbleShredLevel": 0,
    "weedState": 0,
@@ -5254,8 +5256,7 @@
    "x": -210.545044,
    "z": -952.606873,
    "needs": [
-    "sow",
-    "lime"
+    "sow"
    ],
    "grew": false
   },
@@ -5448,17 +5449,17 @@
    "farmId": 0,
    "isOwned": false,
    "fruit": "UNKNOWN",
-   "plannedFruit": "FALLOW",
+   "plannedFruit": "SOYBEAN",
    "status": "empty",
    "growthState": 0,
    "lastGrowthState": 0,
    "groundType": "CULTIVATED",
-   "sprayType": "NONE",
+   "sprayType": "LIME",
    "sprayLevel": 2,
-   "limeLevel": 0,
+   "limeLevel": 3,
    "plowLevel": 0,
    "fertilizerPercent": 100,
-   "limePercent": 0,
+   "limePercent": 100,
    "rollerLevel": 0,
    "stubbleShredLevel": 0,
    "weedState": 0,
@@ -5469,8 +5470,7 @@
    "x": -893.394714,
    "z": -645.013184,
    "needs": [
-    "sow",
-    "lime"
+    "sow"
    ],
    "grew": false
   },
@@ -5511,8 +5511,8 @@
    "fruit": "WHEAT",
    "plannedFruit": "FALLOW",
    "status": "growing",
-   "growthState": 1,
-   "lastGrowthState": 0,
+   "growthState": 2,
+   "lastGrowthState": 1,
    "groundType": "SOWN",
    "sprayType": "NONE",
    "sprayLevel": 1,
@@ -5543,8 +5543,8 @@
    "fruit": "COTTON",
    "plannedFruit": "FALLOW",
    "status": "growing",
-   "growthState": 3,
-   "lastGrowthState": 2,
+   "growthState": 4,
+   "lastGrowthState": 3,
    "groundType": "SOWN",
    "sprayType": "NONE",
    "sprayLevel": 2,
@@ -5663,12 +5663,12 @@
    "id": 24,
    "farmId": 0,
    "isOwned": false,
-   "fruit": "UNKNOWN",
-   "plannedFruit": "WHEAT",
-   "status": "empty",
-   "growthState": 0,
+   "fruit": "WHEAT",
+   "plannedFruit": "FALLOW",
+   "status": "growing",
+   "growthState": 1,
    "lastGrowthState": 0,
-   "groundType": "PLOWED",
+   "groundType": "SOWN",
    "sprayType": "NONE",
    "sprayLevel": 2,
    "limeLevel": 2,
@@ -5685,9 +5685,9 @@
    "x": -482.53244,
    "z": 671.811279,
    "needs": [
-    "sow"
+    "roll"
    ],
-   "grew": false
+   "grew": true
   },
   {
    "id": 25,
@@ -5696,15 +5696,15 @@
    "fruit": "BEETROOT",
    "plannedFruit": "FALLOW",
    "status": "ready",
-   "growthState": 5,
+   "growthState": 7,
    "lastGrowthState": 5,
    "groundType": "HARVEST_READY_OTHER",
    "sprayType": "NONE",
    "sprayLevel": 2,
-   "limeLevel": 2,
+   "limeLevel": 1,
    "plowLevel": 0,
    "fertilizerPercent": 100,
-   "limePercent": 67,
+   "limePercent": 33,
    "rollerLevel": 0,
    "stubbleShredLevel": 0,
    "weedState": 0,
@@ -5717,18 +5717,18 @@
    "needs": [
     "harvest"
    ],
-   "grew": false
+   "grew": true
   },
   {
    "id": 26,
    "farmId": 0,
    "isOwned": false,
-   "fruit": "PARSNIP",
+   "fruit": "UNKNOWN",
    "plannedFruit": "FALLOW",
-   "status": "ready",
-   "growthState": 7,
-   "lastGrowthState": 7,
-   "groundType": "HARVEST_READY_OTHER",
+   "status": "empty",
+   "growthState": 0,
+   "lastGrowthState": 0,
+   "groundType": "CULTIVATED",
    "sprayType": "NONE",
    "sprayLevel": 2,
    "limeLevel": 0,
@@ -5745,7 +5745,7 @@
    "x": -547.498169,
    "z": 588.270081,
    "needs": [
-    "harvest",
+    "sow",
     "lime"
    ],
    "grew": false
@@ -5757,8 +5757,8 @@
    "fruit": "MEADOW",
    "plannedFruit": "FALLOW",
    "status": "grass",
-   "growthState": 9,
-   "lastGrowthState": 7,
+   "growthState": 4,
+   "lastGrowthState": 9,
    "groundType": "GRASS",
    "sprayType": "NONE",
    "sprayLevel": 2,
@@ -5787,8 +5787,8 @@
    "fruit": "ALFALFA",
    "plannedFruit": "FALLOW",
    "status": "grass",
-   "growthState": 3,
-   "lastGrowthState": 8,
+   "growthState": 4,
+   "lastGrowthState": 3,
    "groundType": "GRASS",
    "sprayType": "NONE",
    "sprayLevel": 2,
@@ -5816,10 +5816,10 @@
    "isOwned": false,
    "fruit": "BEETROOT",
    "plannedFruit": "FALLOW",
-   "status": "growing",
-   "growthState": 4,
-   "lastGrowthState": 3,
-   "groundType": "SOWN",
+   "status": "ready",
+   "growthState": 5,
+   "lastGrowthState": 4,
+   "groundType": "HARVEST_READY_OTHER",
    "sprayType": "NONE",
    "sprayLevel": 2,
    "limeLevel": 2,
@@ -5836,7 +5836,7 @@
    "x": -663.669739,
    "z": 843.705994,
    "needs": [
-    "roll"
+    "harvest"
    ],
    "grew": true
   },
@@ -18575,18 +18575,18 @@
     "nitrogen": {
      "harvestedArea": 2.6806,
      "nOffsetSum": -0.01273,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 2.6806,
      "phOffsetSum": -0.005703,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 2680.600098,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
     },
     "soilSample": {
      "samplePercentage": 0.0
@@ -18685,21 +18685,21 @@
     "nitrogen": {
      "harvestedArea": 2.317,
      "nOffsetSum": -0.016296,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 2.317,
      "phOffsetSum": -0.001013,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 0.0,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
     },
     "soilSample": {
-     "samplePercentage": -1.0
+     "samplePercentage": 0.0
     },
     "tillage": {}
    },
@@ -18729,12 +18729,12 @@
     "nitrogen": {
      "harvestedArea": 981.025024,
      "nOffsetSum": -0.042842,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 981.025024,
      "phOffsetSum": -3.389114,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 0.0,
@@ -18757,18 +18757,18 @@
     "nitrogen": {
      "harvestedArea": 8.4117,
      "nOffsetSum": -0.048148,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 8.4117,
      "phOffsetSum": -0.024295,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 8411.700195,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
     },
     "soilSample": {
      "samplePercentage": 1.0
@@ -18951,18 +18951,18 @@
     "nitrogen": {
      "harvestedArea": 3.2599,
      "nOffsetSum": -7.6e-05,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 3.2599,
      "phOffsetSum": -0.009528,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 3259.900146,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
     },
     "soilSample": {
      "samplePercentage": 1.0
@@ -19173,12 +19173,12 @@
     "nitrogen": {
      "harvestedArea": 445.269989,
      "nOffsetSum": -0.525384,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 445.269989,
      "phOffsetSum": -1.543994,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 0.0,
@@ -19201,18 +19201,21 @@
     "nitrogen": {
      "harvestedArea": 0.867,
      "nOffsetSum": -0.009201,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 0.867,
      "phOffsetSum": -0.005202,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 867.0,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
+    },
+    "soilSample": {
+     "samplePercentage": 0.0
     },
     "tillage": {}
    },
@@ -19220,18 +19223,21 @@
     "nitrogen": {
      "harvestedArea": 1.9116,
      "nOffsetSum": -0.01106,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 1.9116,
      "phOffsetSum": -0.011609,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 1911.599976,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
+    },
+    "soilSample": {
+     "samplePercentage": 0.0
     },
     "tillage": {}
    },
@@ -19261,12 +19267,12 @@
     "nitrogen": {
      "harvestedArea": 206.069,
      "nOffsetSum": -0.124036,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 206.069,
      "phOffsetSum": -0.660944,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 0.0,
@@ -19289,18 +19295,18 @@
     "nitrogen": {
      "harvestedArea": 145.394608,
      "nOffsetSum": 0.325431,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 147.4776,
      "phOffsetSum": -0.559689,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 13294.599609,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
     },
     "soilSample": {
      "samplePercentage": 1.0
@@ -19317,18 +19323,18 @@
     "nitrogen": {
      "harvestedArea": 25.2644,
      "nOffsetSum": -0.16282,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 25.2644,
      "phOffsetSum": -0.09291,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 25264.400391,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
     },
     "soilSample": {
      "samplePercentage": 1.0
@@ -19345,12 +19351,12 @@
     "nitrogen": {
      "harvestedArea": 437.897003,
      "nOffsetSum": -4.222269,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 437.897003,
      "phOffsetSum": -1.810291,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 54951.25,
@@ -19373,18 +19379,18 @@
     "nitrogen": {
      "harvestedArea": 29.887899,
      "nOffsetSum": -0.284247,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 29.887899,
      "phOffsetSum": -0.099808,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 29887.900391,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
     },
     "soilSample": {
      "samplePercentage": 0.0
@@ -19416,18 +19422,18 @@
     "nitrogen": {
      "harvestedArea": 2.4215,
      "nOffsetSum": -0.007295,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 2.4215,
      "phOffsetSum": -0.007001,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 2421.5,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
     },
     "soilSample": {
      "samplePercentage": 1.0
@@ -19616,18 +19622,18 @@
     "nitrogen": {
      "harvestedArea": 19.868999,
      "nOffsetSum": -0.207008,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 19.868999,
      "phOffsetSum": -0.091884,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 19869.0,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
     },
     "soilSample": {
      "samplePercentage": 0.0
@@ -19638,18 +19644,18 @@
     "nitrogen": {
      "harvestedArea": 3.2971,
      "nOffsetSum": -0.041523,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 3.2971,
      "phOffsetSum": -0.024742,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 3297.100098,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
     },
     "soilSample": {
      "samplePercentage": 0.0
@@ -19660,18 +19666,21 @@
     "nitrogen": {
      "harvestedArea": 1.323,
      "nOffsetSum": -0.015684,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 1.323,
      "phOffsetSum": -0.009113,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 1323.0,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
+    },
+    "soilSample": {
+     "samplePercentage": 0.0
     },
     "tillage": {}
    },
@@ -19679,18 +19688,21 @@
     "nitrogen": {
      "harvestedArea": 1.278,
      "nOffsetSum": -0.012792,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 1.278,
      "phOffsetSum": -0.007866,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 1278.0,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
+    },
+    "soilSample": {
+     "samplePercentage": 0.0
     },
     "tillage": {}
    },
@@ -19698,18 +19710,21 @@
     "nitrogen": {
      "harvestedArea": 0.92,
      "nOffsetSum": -0.00976,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 0.92,
      "phOffsetSum": -0.00552,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 920.0,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
+    },
+    "soilSample": {
+     "samplePercentage": 0.0
     },
     "tillage": {}
    },
@@ -19717,18 +19732,21 @@
     "nitrogen": {
      "harvestedArea": 0.302,
      "nOffsetSum": -0.003032,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 0.302,
      "phOffsetSum": -0.001812,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 302.0,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
+    },
+    "soilSample": {
+     "samplePercentage": 0.0
     },
     "tillage": {}
    },
@@ -19736,18 +19754,21 @@
     "nitrogen": {
      "harvestedArea": 0.007,
      "nOffsetSum": -7.2e-05,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 0.007,
      "phOffsetSum": -4.2e-05,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 7.0,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
+    },
+    "soilSample": {
+     "samplePercentage": 0.0
     },
     "tillage": {}
    },
@@ -19755,18 +19776,21 @@
     "nitrogen": {
      "harvestedArea": 0.557,
      "nOffsetSum": -0.005686,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 0.557,
      "phOffsetSum": -0.003383,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 557.0,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
+    },
+    "soilSample": {
+     "samplePercentage": 0.0
     },
     "tillage": {}
    },
@@ -19774,18 +19798,21 @@
     "nitrogen": {
      "harvestedArea": 0.808,
      "nOffsetSum": -0.00982,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 0.808,
      "phOffsetSum": -0.005656,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 808.0,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
+    },
+    "soilSample": {
+     "samplePercentage": 0.0
     },
     "tillage": {}
    },
@@ -19793,18 +19820,18 @@
     "nitrogen": {
      "harvestedArea": 3.38,
      "nOffsetSum": -0.015849,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 3.38,
      "phOffsetSum": -0.005005,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 3380.0,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
     },
     "soilSample": {
      "samplePercentage": 0.0
@@ -19815,18 +19842,21 @@
     "nitrogen": {
      "harvestedArea": 1.6073,
      "nOffsetSum": -0.011987,
-     "pendingReset": false
+     "pendingReset": true
     },
     "ph": {
      "harvestedArea": 1.6073,
      "phOffsetSum": -0.009897,
-     "pendingReset": false
+     "pendingReset": true
     },
     "herbicide": {
      "spotSpray": 1607.300049,
      "fullSpray": 0.0,
      "mechanical": 0.0,
-     "pendingReset": false
+     "pendingReset": true
+    },
+    "soilSample": {
+     "samplePercentage": 0.0
     },
     "tillage": {}
    }

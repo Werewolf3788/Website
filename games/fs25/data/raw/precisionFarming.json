@@ -3881,7 +3881,7 @@
       "farmlandId": 2,
       "harvestedArea": 2.6806,
       "nOffsetSum": -0.01273,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 3,
@@ -3911,7 +3911,7 @@
       "farmlandId": 8,
       "harvestedArea": 2.317,
       "nOffsetSum": -0.016296,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 11,
@@ -3923,13 +3923,13 @@
       "farmlandId": 12,
       "harvestedArea": 981.025024,
       "nOffsetSum": -0.042842,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 13,
       "harvestedArea": 8.4117,
       "nOffsetSum": -0.048148,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 14,
@@ -3977,7 +3977,7 @@
       "farmlandId": 22,
       "harvestedArea": 3.2599,
       "nOffsetSum": -7.6e-05,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 23,
@@ -4031,19 +4031,19 @@
       "farmlandId": 32,
       "harvestedArea": 445.269989,
       "nOffsetSum": -0.525384,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 33,
       "harvestedArea": 0.867,
       "nOffsetSum": -0.009201,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 34,
       "harvestedArea": 1.9116,
       "nOffsetSum": -0.01106,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 35,
@@ -4055,31 +4055,31 @@
       "farmlandId": 36,
       "harvestedArea": 206.069,
       "nOffsetSum": -0.124036,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 37,
       "harvestedArea": 145.394608,
       "nOffsetSum": 0.325431,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 38,
       "harvestedArea": 25.2644,
       "nOffsetSum": -0.16282,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 39,
       "harvestedArea": 437.897003,
       "nOffsetSum": -4.222269,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 40,
       "harvestedArea": 29.887899,
       "nOffsetSum": -0.284247,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 41,
@@ -4091,7 +4091,7 @@
       "farmlandId": 42,
       "harvestedArea": 2.4215,
       "nOffsetSum": -0.007295,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 43,
@@ -4139,67 +4139,67 @@
       "farmlandId": 57,
       "harvestedArea": 19.868999,
       "nOffsetSum": -0.207008,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 58,
       "harvestedArea": 3.2971,
       "nOffsetSum": -0.041523,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 59,
       "harvestedArea": 1.323,
       "nOffsetSum": -0.015684,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 60,
       "harvestedArea": 1.278,
       "nOffsetSum": -0.012792,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 61,
       "harvestedArea": 0.92,
       "nOffsetSum": -0.00976,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 62,
       "harvestedArea": 0.302,
       "nOffsetSum": -0.003032,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 63,
       "harvestedArea": 0.007,
       "nOffsetSum": -7.2e-05,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 64,
       "harvestedArea": 0.557,
       "nOffsetSum": -0.005686,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 65,
       "harvestedArea": 0.808,
       "nOffsetSum": -0.00982,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 66,
       "harvestedArea": 3.38,
       "nOffsetSum": -0.015849,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 68,
       "harvestedArea": 1.6073,
       "nOffsetSum": -0.011987,
-      "pendingReset": false
+      "pendingReset": true
      }
     ]
    },
@@ -4209,7 +4209,7 @@
       "farmlandId": 2,
       "harvestedArea": 2.6806,
       "phOffsetSum": -0.005703,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 3,
@@ -4239,7 +4239,7 @@
       "farmlandId": 8,
       "harvestedArea": 2.317,
       "phOffsetSum": -0.001013,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 11,
@@ -4251,13 +4251,13 @@
       "farmlandId": 12,
       "harvestedArea": 981.025024,
       "phOffsetSum": -3.389114,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 13,
       "harvestedArea": 8.4117,
       "phOffsetSum": -0.024295,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 14,
@@ -4305,7 +4305,7 @@
       "farmlandId": 22,
       "harvestedArea": 3.2599,
       "phOffsetSum": -0.009528,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 23,
@@ -4359,19 +4359,19 @@
       "farmlandId": 32,
       "harvestedArea": 445.269989,
       "phOffsetSum": -1.543994,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 33,
       "harvestedArea": 0.867,
       "phOffsetSum": -0.005202,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 34,
       "harvestedArea": 1.9116,
       "phOffsetSum": -0.011609,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 35,
@@ -4383,31 +4383,31 @@
       "farmlandId": 36,
       "harvestedArea": 206.069,
       "phOffsetSum": -0.660944,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 37,
       "harvestedArea": 147.4776,
       "phOffsetSum": -0.559689,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 38,
       "harvestedArea": 25.2644,
       "phOffsetSum": -0.09291,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 39,
       "harvestedArea": 437.897003,
       "phOffsetSum": -1.810291,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 40,
       "harvestedArea": 29.887899,
       "phOffsetSum": -0.099808,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 41,
@@ -4419,7 +4419,7 @@
       "farmlandId": 42,
       "harvestedArea": 2.4215,
       "phOffsetSum": -0.007001,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 43,
@@ -4467,67 +4467,67 @@
       "farmlandId": 57,
       "harvestedArea": 19.868999,
       "phOffsetSum": -0.091884,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 58,
       "harvestedArea": 3.2971,
       "phOffsetSum": -0.024742,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 59,
       "harvestedArea": 1.323,
       "phOffsetSum": -0.009113,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 60,
       "harvestedArea": 1.278,
       "phOffsetSum": -0.007866,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 61,
       "harvestedArea": 0.92,
       "phOffsetSum": -0.00552,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 62,
       "harvestedArea": 0.302,
       "phOffsetSum": -0.001812,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 63,
       "harvestedArea": 0.007,
       "phOffsetSum": -4.2e-05,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 64,
       "harvestedArea": 0.557,
       "phOffsetSum": -0.003383,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 65,
       "harvestedArea": 0.808,
       "phOffsetSum": -0.005656,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 66,
       "harvestedArea": 3.38,
       "phOffsetSum": -0.005005,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 68,
       "harvestedArea": 1.6073,
       "phOffsetSum": -0.009897,
-      "pendingReset": false
+      "pendingReset": true
      }
     ]
    },
@@ -4538,7 +4538,7 @@
       "spotSpray": 2680.600098,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 3,
@@ -4573,7 +4573,7 @@
       "spotSpray": 0.0,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 11,
@@ -4594,7 +4594,7 @@
       "spotSpray": 8411.700195,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 14,
@@ -4650,7 +4650,7 @@
       "spotSpray": 3259.900146,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 23,
@@ -4720,14 +4720,14 @@
       "spotSpray": 867.0,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 34,
       "spotSpray": 1911.599976,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 35,
@@ -4748,14 +4748,14 @@
       "spotSpray": 13294.599609,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 38,
       "spotSpray": 25264.400391,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 39,
@@ -4769,7 +4769,7 @@
       "spotSpray": 29887.900391,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 41,
@@ -4783,7 +4783,7 @@
       "spotSpray": 2421.5,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 43,
@@ -4839,77 +4839,77 @@
       "spotSpray": 19869.0,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 58,
       "spotSpray": 3297.100098,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 59,
       "spotSpray": 1323.0,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 60,
       "spotSpray": 1278.0,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 61,
       "spotSpray": 920.0,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 62,
       "spotSpray": 302.0,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 63,
       "spotSpray": 7.0,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 64,
       "spotSpray": 557.0,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 65,
       "spotSpray": 808.0,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 66,
       "spotSpray": 3380.0,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      },
      {
       "farmlandId": 68,
       "spotSpray": 1607.300049,
       "fullSpray": 0.0,
       "mechanical": 0.0,
-      "pendingReset": false
+      "pendingReset": true
      }
     ]
    },
@@ -4937,7 +4937,7 @@
      },
      {
       "farmlandId": 8,
-      "samplePercentage": -1.0
+      "samplePercentage": 0.0
      },
      {
       "farmlandId": 11,
@@ -5020,6 +5020,14 @@
       "samplePercentage": 1.0
      },
      {
+      "farmlandId": 33,
+      "samplePercentage": 0.0
+     },
+     {
+      "farmlandId": 34,
+      "samplePercentage": 0.0
+     },
+     {
       "farmlandId": 35,
       "samplePercentage": 0.0
      },
@@ -5088,7 +5096,39 @@
       "samplePercentage": 0.0
      },
      {
+      "farmlandId": 59,
+      "samplePercentage": 0.0
+     },
+     {
+      "farmlandId": 60,
+      "samplePercentage": 0.0
+     },
+     {
+      "farmlandId": 61,
+      "samplePercentage": 0.0
+     },
+     {
+      "farmlandId": 62,
+      "samplePercentage": 0.0
+     },
+     {
+      "farmlandId": 63,
+      "samplePercentage": 0.0
+     },
+     {
+      "farmlandId": 64,
+      "samplePercentage": 0.0
+     },
+     {
+      "farmlandId": 65,
+      "samplePercentage": 0.0
+     },
+     {
       "farmlandId": 66,
+      "samplePercentage": 0.0
+     },
+     {
+      "farmlandId": 68,
       "samplePercentage": 0.0
      }
     ]
@@ -5353,15 +5393,15 @@
      },
      {
       "farmlandId": 36,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 43,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 60,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 54,
@@ -5369,7 +5409,7 @@
      },
      {
       "farmlandId": 33,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 41,
@@ -5377,11 +5417,11 @@
      },
      {
       "farmlandId": 12,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 63,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 23,
@@ -5389,19 +5429,19 @@
      },
      {
       "farmlandId": 57,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 34,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 38,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 65,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 35,
@@ -5421,27 +5461,27 @@
      },
      {
       "farmlandId": 62,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 2,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 59,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 22,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 66,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 58,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 3,
@@ -5453,23 +5493,23 @@
      },
      {
       "farmlandId": 64,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 8,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 40,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 37,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 61,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 45,
@@ -5477,23 +5517,23 @@
      },
      {
       "farmlandId": 42,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 39,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 32,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 13,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 68,
-      "state": 2
+      "state": 0
      },
      {
       "farmlandId": 55,
