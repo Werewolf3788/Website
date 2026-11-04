@@ -14,20 +14,25 @@
   #top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 8px;padding:8px 10px;font-size:.85rem;background:#1e293b}
   #top span{white-space:nowrap} #top b{color:#fff} #top a,#top button{color:#94a3b8;text-decoration:none;background:none;padding:0}
   #main{display:grid;grid-template-columns:1fr;gap:10px;padding:10px;max-width:1000px;margin:0 auto}
-  @media(min-width:860px){#main{grid-template-columns:minmax(0,640px) 1fr;align-items:start}}
+  /* wide screens: board + property cards on the left, dice and seats stacked on the right (as before) */
+  @media(min-width:860px){
+    #main{grid-template-columns:minmax(0,640px) 1fr;grid-template-areas:"board play" "board panel" "deeds panel";align-items:start}
+    #left{display:contents} #boardWrap{grid-area:board} #play{grid-area:play;margin-top:0} #deeds{grid-area:deeds} #panel{grid-area:panel}
+  }
   #boardWrap{width:100%}
   #board{display:block;width:100%;height:auto;border-radius:12px;background:#0b1220}
   #board text{font-family:system-ui,sans-serif;pointer-events:none}
   .tok{transition:transform .35s ease-in-out}
-  #panel{background:#1e293b;border-radius:14px;padding:12px}
+  #panel,#play{background:#1e293b;border-radius:14px;padding:12px}
+  #play{margin-top:10px}
   #turn{font-weight:700;display:flex;align-items:center;gap:8px;min-height:1.6em}
-  #dice{display:flex;align-items:center;gap:10px;margin:10px 0}
+  #dice{display:flex;align-items:center;gap:10px;margin:10px 0;min-height:58px}
   .die{width:58px;height:58px;border-radius:13px;background:#f8fafc;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:8px;gap:2px;border:0;flex:none;box-shadow:0 3px 0 #94a3b8}
   .die i{border-radius:50%;background:transparent} .die i.on{background:#0f172a}
   .die.throw{animation:throw .55s ease-out}
   @keyframes throw{0%{transform:translateY(0) rotate(0)}35%{transform:translateY(-22px) rotate(260deg)}70%{transform:translateY(0) rotate(560deg)}100%{transform:translateY(0) rotate(720deg)}}
-  #msg{color:#fbbf24;font-size:.9rem;min-height:1.3em;flex:1}
-  #acts{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+  #msg{color:#fbbf24;font-size:.9rem;line-height:1.25;max-height:58px;overflow:hidden;flex:1}
+  #acts{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0;min-height:44px;align-items:center}
   #buildList button{display:block;width:100%;text-align:left;margin:4px 0}
   .seat{display:flex;align-items:center;gap:8px;padding:7px 6px;border-radius:10px;font-size:.9rem}
   .seat.cur{background:#0f172a;outline:2px solid #475569} .seat.out{opacity:.45;text-decoration:line-through}
@@ -68,6 +73,13 @@
 <div id="main">
   <div id="left">
     <div id="boardWrap"><svg id="board" viewBox="0 0 110 110"></svg></div>
+    <div id="play">
+      <div id="banner" style="display:none"></div>
+      <div id="turn"></div>
+      <div id="dice"><button class="die" id="d1" aria-label="Roll"></button><button class="die" id="d2" aria-label="Roll"></button><div id="msg"></div></div>
+      <div id="acts"></div>
+      <div id="buildList"></div>
+    </div>
     <div id="deeds">
       <div id="landed"></div>
       <div class="muted" style="margin-top:10px">Owned properties · tap a card to find it on the board</div>
@@ -75,11 +87,6 @@
     </div>
   </div>
   <div id="panel">
-    <div id="banner" style="display:none"></div>
-    <div id="turn"></div>
-    <div id="dice"><button class="die" id="d1" aria-label="Roll"></button><button class="die" id="d2" aria-label="Roll"></button><div id="msg"></div></div>
-    <div id="acts"></div>
-    <div id="buildList"></div>
     <div id="seats"></div>
     <div id="lobbyActs" style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap"></div>
     <div id="emotes"></div>
@@ -333,7 +340,7 @@
   // Never rebuild the screen while a finger or mouse button is down, or the button being pressed disappears and the click is lost.
   var pressing = false, renderPending = false, pressTimer = null;
   document.addEventListener('pointerdown', function (e) {
-    if (e.target.closest && e.target.closest('#panel, #deeds, #board')) { pressing = true; clearTimeout(pressTimer); pressTimer = setTimeout(function () { pressing = false; }, 3000); }
+    if (e.target.closest && e.target.closest('#panel, #play, #deeds, #board')) { pressing = true; clearTimeout(pressTimer); pressTimer = setTimeout(function () { pressing = false; }, 3000); }
   }, true);
   function endPress() { if (!pressing) return; setTimeout(function () { pressing = false; if (renderPending) { renderPending = false; render(); } }, 80); }
   document.addEventListener('pointerup', endPress, true); document.addEventListener('pointercancel', endPress, true);
