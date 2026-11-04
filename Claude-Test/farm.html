@@ -7,267 +7,50 @@
 <meta name="theme-color" content="#0f172a">
 <title>Neighborly Acre</title>
 <style>
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
-  html,body{margin:0;height:100%;background:#0f172a;color:#e2e8f0;font-family:system-ui,sans-serif;overscroll-behavior:none}
-  #top{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;font-size:.85rem;background:#1e293b}
-  #top b{color:#fff} #top a,#top button{color:#94a3b8;text-decoration:none}
-  #wrap{display:flex;justify-content:center;background:#0b1220}
-  canvas{display:block;touch-action:none}
-  #bar{display:flex;flex-wrap:wrap;gap:6px;padding:8px;justify-content:center;background:#1e293b}
-  #bar button{background:#334155;color:#e2e8f0;border:2px solid transparent;border-radius:10px;padding:10px 12px;font:inherit;font-size:.85rem}
-  #bar button.sel{border-color:#22c55e;background:#14532d}
-  #msg{text-align:center;color:#fbbf24;font-size:.85rem;min-height:1.3em;padding:2px}
-  #gate{position:fixed;inset:0;background:#0f172a;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:20px}
-  #gate button{background:#22c55e;color:#04210f;font-weight:700;border:0;border-radius:10px;padding:12px 18px;font:inherit}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+  html,body{margin:0;height:100%;background:#0b1220;color:#e2e8f0;font-family:system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
+  canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+  .hud{position:fixed;z-index:5}
+  #top{top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;font-size:.85rem;background:linear-gradient(#0009,#0000);text-shadow:0 1px 3px #000}
+  #top a,#top button{color:#e2e8f0;text-decoration:none;background:none;border:0;font:inherit;padding:0;cursor:pointer}
+  #toast{top:46px;left:0;right:0;text-align:center;color:#fde68a;font-size:.9rem;text-shadow:0 1px 3px #000;pointer-events:none;min-height:1.3em;padding:0 12px}
+  #prompt{bottom:128px;left:0;right:0;text-align:center;pointer-events:none}
+  #prompt span{background:#000a;color:#fff;padding:6px 12px;border-radius:999px;font-size:.9rem;display:inline-block}
+  #bar{bottom:0;left:0;right:0;display:flex;gap:6px;padding:8px;justify-content:center;flex-wrap:wrap;background:linear-gradient(#0000,#000a)}
+  #bar button{background:#1e293bcc;color:#e2e8f0;border:2px solid transparent;border-radius:12px;padding:9px 11px;font:inherit;font-size:.85rem;cursor:pointer}
+  #bar button.sel{border-color:#22c55e;background:#14532dcc}
+  #joy{left:18px;bottom:96px;width:120px;height:120px;border-radius:50%;background:#ffffff22;border:2px solid #ffffff44;touch-action:none;display:none}
+  #knob{position:absolute;left:40px;top:40px;width:40px;height:40px;border-radius:50%;background:#ffffff88}
+  #useBtn{right:18px;bottom:104px;width:96px;height:96px;border-radius:50%;border:0;background:#22c55ecc;color:#04210f;font-weight:800;font-size:1rem;display:none;touch-action:none}
+  body.touch #joy,body.touch #useBtn{display:block} body.touch #useBtn{display:block}
+  #shop{inset:0;display:none;align-items:center;justify-content:center;background:#000a;z-index:20}
+  #shop .box{background:#1e293b;border-radius:16px;padding:16px;width:min(92vw,380px)}
+  #shop h2{margin:0 0 8px} #shop .item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid #334155}
+  #shop button{background:#22c55e;color:#04210f;font-weight:700;border:0;border-radius:10px;padding:9px 14px;font:inherit;cursor:pointer} #shop button:disabled{opacity:.4}
+  #shop button.close{background:#334155;color:#e2e8f0;margin-top:10px;width:100%}
+  #gate{position:fixed;inset:0;z-index:30;background:#0f172a;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:20px}
+  #gate button{background:#22c55e;color:#04210f;font-weight:700;border:0;border-radius:10px;padding:12px 18px;font:inherit;cursor:pointer}
 </style>
 </head>
 <body>
-<div id="top">
-  <span>🌾 <b id="roomLabel">Neighborly Acre</b> · 👥 <b id="count">1</b></span>
+<canvas id="c"></canvas>
+<div id="top" class="hud">
+  <span>🌾 <b id="roomLabel">Neighborly Acre</b> · 👥 <b id="count">1</b> · ☀️ <span id="clock">--:--</span></span>
   <span>🪙 <b id="coins">0</b></span>
-  <span><button id="shareBtn" style="background:none;border:0;font:inherit;padding:0">Invite</button> · <a href="index.html">Hub</a></span>
+  <span><button id="shareBtn">Invite</button> · <a href="index.html">Hub</a></span>
 </div>
-<div id="wrap"><canvas id="c"></canvas></div>
-<div id="msg"></div>
-<div id="hint" style="text-align:center;color:#64748b;font-size:.75rem;padding-bottom:4px">Tap a tile to walk there · or use arrow keys / WASD, then Space or E · keys 1-6 pick tools</div>
-<div id="bar"></div>
-<div id="gate"><div id="gateText">Sign in to play</div><button id="gateBtn">Sign in with Google</button><button id="soloBtn" style="background:#334155;color:#e2e8f0">Play solo instead</button></div>
+<div id="toast" class="hud"></div>
+<div id="prompt" class="hud"></div>
+<div id="joy" class="hud"><div id="knob"></div></div>
+<button id="useBtn" class="hud">Use</button>
+<div id="bar" class="hud"></div>
+<div id="shop" class="hud"><div class="box"><h2>🏪 Barn Shop</h2><div id="shopItems"></div><button class="close" id="shopClose">Close</button></div></div>
+<div id="gate"><div id="gateText">Sign in to play</div><button id="gateBtn" style="display:none">Sign in with Google</button><button id="soloBtn" style="background:#334155;color:#e2e8f0">Play solo instead</button></div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="js/common.js"></script>
-<script>
-(function () {
-  var COLS = 14, ROWS = 10;
-  var CROPS = {
-    wheat:  { grow: 60000, cost: 5, sell: 12, color: '#e6c84a', icon: '🌾' },
-    carrot: { grow: 45000, cost: 4, sell: 10, color: '#f08a24', icon: '🥕' },
-    corn:   { grow: 90000, cost: 8, sell: 22, color: '#f2d21b', icon: '🌽' }
-  };
-  var TOOLS = [
-    { id: 'hoe', label: '⛏️ Hoe' }, { id: 'water', label: '💧 Water' }, { id: 'harvest', label: '🧺 Harvest' },
-    { id: 'wheat', label: '🌾 Wheat 5' }, { id: 'carrot', label: '🥕 Carrot 4' }, { id: 'corn', label: '🌽 Corn 8' }
-  ];
-  var $ = function (id) { return document.getElementById(id); };
-  var qs = new URLSearchParams(location.search);
-  var roomCode = (qs.get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-  var canvas = $('c'), ctx = canvas.getContext('2d'), T = 40;
-  var tiles = {}, players = {}, me = null, myName = 'Farmer', tool = 'hoe';
-  var pos = { x: 1, y: 1 }, target = null, pending = null, lastSent = 0, lastBeat = 0;
-  var save = { coins: 30, harvested: 0 }, saveTimer = null, roomRef = null;
-
-  function say(t) { $('msg').textContent = t || ''; }
-  function gate(text, showBtn) { $('gateText').textContent = text; $('gateBtn').style.display = showBtn ? '' : 'none'; $('gate').style.display = 'flex'; }
-  WW.onError = function (m) { say(m); gate(m, true); };
-  $('gateBtn').onclick = function () { WW.signIn(); };
-  $('soloBtn').onclick = function () { location.href = 'farm.html'; };
-
-  // ---- toolbar
-  var bar = $('bar');
-  TOOLS.forEach(function (t) {
-    var b = document.createElement('button'); b.textContent = t.label; b.dataset.id = t.id;
-    b.onclick = function () { tool = t.id; refreshBar(); };
-    bar.appendChild(b);
-  });
-  function refreshBar() { [].forEach.call(bar.children, function (b) { b.classList.toggle('sel', b.dataset.id === tool); }); }
-  refreshBar();
-
-  // ---- helpers
-  function idx(x, y) { return y * COLS + x; }
-  function progress(t) {
-    if (!t || t.k !== 'c' || !t.w) return 0;
-    return Math.min(1, (WW.now() - t.w) / CROPS[t.c].grow);
-  }
-  function setCoins(delta) {
-    save.coins = Math.max(0, save.coins + delta); $('coins').textContent = save.coins;
-    clearTimeout(saveTimer); saveTimer = setTimeout(flushSave, 1500);
-  }
-  function flushSave() { clearTimeout(saveTimer); if (me) WW.writeSave('farm', { coins: save.coins, harvested: save.harvested }); }
-  document.addEventListener('visibilitychange', function () { if (document.hidden) flushSave(); });
-  window.addEventListener('pagehide', flushSave);
-
-  // ---- actions (run when the player reaches the tapped tile)
-  function act(x, y) {
-    var i = idx(x, y), cur = tiles[i], ref = roomRef.child('tiles/' + i);
-    if (tool === 'hoe') {
-      if (!cur) ref.set({ k: 't' });
-      else if (cur.k === 't') ref.remove();
-      else say('Harvest or clear the crop first.');
-    } else if (tool === 'water') {
-      if (cur && cur.k === 'c' && !cur.w) ref.child('w').set(WW.now());
-      else say(cur && cur.k === 'c' ? 'Already watered.' : 'Nothing to water here.');
-    } else if (tool === 'harvest') {
-      ref.transaction(function (c) {
-        return (c && c.k === 'c' && progress(c) >= 1) ? { k: 't' } : undefined;
-      }, function (err, committed, snap) {
-        if (committed) {
-          var sell = CROPS[(cur && cur.c) || 'wheat'].sell;
-          setCoins(sell); save.harvested++;
-          say('Harvested! +' + sell + ' 🪙');
-        } else say(cur && cur.k === 'c' ? 'Not ready yet.' : 'Nothing to harvest.');
-      });
-    } else if (CROPS[tool]) {
-      if (!cur || cur.k !== 't') { say('Till the soil with the hoe first.'); return; }
-      if (save.coins < CROPS[tool].cost) { say('Not enough coins.'); return; }
-      setCoins(-CROPS[tool].cost); ref.set({ k: 'c', c: tool, w: 0 });
-    }
-  }
-
-  // ---- input
-  canvas.addEventListener('pointerdown', function (e) {
-    if (!me) return;
-    var r = canvas.getBoundingClientRect();
-    var tx = Math.floor((e.clientX - r.left) / T), ty = Math.floor((e.clientY - r.top) / T);
-    if (tx < 0 || ty < 0 || tx >= COLS || ty >= ROWS) return;
-    var i = idx(tx, ty), t = tiles[i];
-    pending = { x: tx, y: ty, crop: t && t.c };
-    target = { x: tx, y: ty }; say('');
-  });
-
-  // ---- keyboard (desktop)
-  var keys = {}, face = { x: 0, y: 1 };
-  window.addEventListener('keydown', function (e) {
-    var k = e.key.toLowerCase();
-    if (/^[1-6]$/.test(k)) { tool = TOOLS[+k - 1].id; refreshBar(); return; }
-    if (k === ' ' || k === 'e') { e.preventDefault(); if (me) { var fx = Math.round(pos.x) + face.x, fy = Math.round(pos.y) + face.y;
-      if (fx >= 0 && fy >= 0 && fx < COLS && fy < ROWS) act(fx, fy); } return; }
-    if (['arrowup','arrowdown','arrowleft','arrowright','w','a','s','d'].indexOf(k) >= 0) { e.preventDefault(); keys[k] = true; target = null; pending = null; }
-  });
-  window.addEventListener('keyup', function (e) { delete keys[e.key.toLowerCase()]; });
-  function keyMove(dt) {
-    var dx = (keys.arrowright || keys.d ? 1 : 0) - (keys.arrowleft || keys.a ? 1 : 0);
-    var dy = (keys.arrowdown || keys.s ? 1 : 0) - (keys.arrowup || keys.w ? 1 : 0);
-    if (!dx && !dy) return;
-    if (Math.abs(dx) >= Math.abs(dy) && dx) face = { x: dx, y: 0 }; else face = { x: 0, y: dy };
-    var m = Math.hypot(dx, dy);
-    pos.x = Math.max(0, Math.min(COLS - 1, pos.x + dx / m * 5 * dt));
-    pos.y = Math.max(0, Math.min(ROWS - 1, pos.y + dy / m * 5 * dt));
-    moved = true;
-  }
-  var moved = false;
-
-  // ---- render + loop
-  function resize() {
-    var availH = window.innerHeight - 170; // top bar + toolbar + hints
-    T = Math.max(20, Math.min(72, Math.floor(window.innerWidth / COLS), Math.floor(availH / ROWS)));
-    canvas.width = T * COLS; canvas.height = T * ROWS;
-  }
-  window.addEventListener('resize', resize); resize();
-
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (var y = 0; y < ROWS; y++) for (var x = 0; x < COLS; x++) {
-      var t = tiles[idx(x, y)], px = x * T, py = y * T;
-      ctx.fillStyle = (x + y) % 2 ? '#3f8f3f' : '#47994a'; // grass
-      if (t) ctx.fillStyle = (t.k === 'c' && t.w) ? '#5b3a1e' : '#7a5230'; // watered soil is darker
-      ctx.fillRect(px, py, T, T);
-      if (t && t.k === 'c') {
-        var p = progress(t), c = CROPS[t.c];
-        if (!t.w) { ctx.fillStyle = '#d6d3d1'; ctx.beginPath(); ctx.arc(px + T / 2, py + T / 2, T * 0.08, 0, 7); ctx.fill(); }
-        else if (p >= 1) { ctx.font = Math.floor(T * 0.7) + 'px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(c.icon, px + T / 2, py + T / 2); }
-        else { ctx.fillStyle = '#4ade80'; var h = T * (0.15 + 0.55 * p); ctx.fillRect(px + T * 0.45, py + T * 0.85 - h, T * 0.1, h);
-               ctx.beginPath(); ctx.arc(px + T / 2, py + T * 0.85 - h, T * (0.08 + 0.12 * p), 0, 7); ctx.fill(); }
-      }
-    }
-    var now = WW.now();
-    Object.keys(players).forEach(function (u) {
-      var p = players[u]; if (u === (me && me.uid) || now - (p.t || 0) > 45000) return;
-      avatar(p.x, p.y, p.n, '#38bdf8');
-    });
-    if (me) avatar(pos.x, pos.y, myName, '#f97316');
-    if (me && !target) { var fx = Math.round(pos.x) + face.x, fy = Math.round(pos.y) + face.y;
-      if (fx >= 0 && fy >= 0 && fx < COLS && fy < ROWS) { ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 2; ctx.strokeRect(fx * T + 3, fy * T + 3, T - 6, T - 6); } }
-    if (target) { ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 2; ctx.strokeRect(target.x * T + 2, target.y * T + 2, T - 4, T - 4); }
-  }
-  function avatar(x, y, name, color) {
-    var cx = x * T + T / 2, cy = y * T + T / 2;
-    ctx.fillStyle = color; ctx.beginPath(); ctx.arc(cx, cy, T * 0.3, 0, 7); ctx.fill();
-    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
-    ctx.fillStyle = '#fff'; ctx.font = 'bold ' + Math.max(10, T * 0.25) + 'px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
-    ctx.fillText(name, cx, cy - T * 0.34);
-  }
-
-  var last = performance.now();
-  function loop(ts) {
-    var dt = Math.min(0.1, (ts - last) / 1000); last = ts;
-    keyMove(dt);
-    if (me && target) {
-      var dx = target.x - pos.x, dy = target.y - pos.y, d = Math.hypot(dx, dy);
-      if (d < 0.95 && pending) { var p = pending; pending = null; act(p.x, p.y); }
-      if (d > 0.05) { var s = Math.min(d, 5 * dt); pos.x += dx / d * s; pos.y += dy / d * s; }
-      else target = null;
-    }
-    if (me && roomRef) {
-      var n = Date.now();
-      if (n - lastSent > 150 && (target || moved || n - lastBeat > 8000)) { moved = false;
-        lastSent = n; lastBeat = n;
-        roomRef.child('players/' + me.uid).set({ n: myName, x: +pos.x.toFixed(2), y: +pos.y.toFixed(2), t: firebase.database.ServerValue.TIMESTAMP });
-      }
-    }
-    draw(); requestAnimationFrame(loop);
-  }
-
-  // ---- start / join
-  var cloudCode = null;
-  $('shareBtn').onclick = function () {
-    if (WW.mode !== 'cloud' || !cloudCode) { say('Sign in from the hub to get a code friends can use.'); return; }
-    var url = location.origin + location.pathname + '?room=' + cloudCode;
-    if (navigator.share) navigator.share({ title: 'Join my farm in Neighborly Acre', text: 'Farm code ' + cloudCode, url: url }).catch(function () {});
-    else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { say('Invite link copied!'); });
-    else say('Share this code: ' + cloudCode);
-  };
-
-  async function begin(user, myCode) {
-    // Decide the farm: ?room=CODE joins a friend; no room = your own farm (online if signed in, else this device).
-    var code = roomCode || (user ? myCode : null);
-    if (user && code) {
-      try {
-        roomRef = WW.roomRef(code);
-        var meta = (await roomRef.child('meta').once('value')).val();
-        if (!meta) {
-          if (code === myCode) await roomRef.child('meta').set({ host: (user.displayName || 'Farmer').split(' ')[0], created: firebase.database.ServerValue.TIMESTAMP });
-          else { gate('Farm ' + code + ' not found. Ask your friend to open their farm once first.', false); $('gateBtn').style.display = 'none'; return; }
-        }
-        me = user; cloudCode = code; WW.mode = 'cloud';
-        $('roomLabel').textContent = (code === myCode ? 'My farm' : 'Friend\u2019s farm') + ' · ' + code;
-      } catch (e) {
-        if (roomCode && roomCode !== myCode) { gate('Could not reach that farm online yet (the game database rules still need to be added). Try solo for now.', false); return; }
-        console.warn(e); user = null; roomRef = null;
-        say('Online farms are not switched on yet, so you are playing solo on this device.');
-      }
-    } else if (roomCode) {
-      gate('Sign in to join a friend\u2019s farm.', true); return;
-    }
-    if (!roomRef || WW.mode !== 'cloud') {
-      WW.useLocal(); roomRef = WW.roomRef('solo'); me = { uid: 'local' };
-      $('roomLabel').textContent = 'Solo · this device';
-      if (!roomRef) return;
-    }
-    $('gate').style.display = 'none';
-    myName = ((user && user.displayName) || 'Farmer').split(' ')[0].slice(0, 12);
-    var s = await WW.loadSave('farm'); if (s) { save.coins = s.coins | 0; save.harvested = s.harvested | 0; }
-    $('coins').textContent = save.coins;
-    roomRef.child('tiles').on('value', function (snap) { tiles = {}; var v = snap.val() || {}; Object.keys(v).forEach(function (k) { tiles[+k] = v[k]; }); });
-    roomRef.child('players').on('value', function (snap) {
-      players = snap.val() || {};
-      var now = WW.now(); $('count').textContent = Object.keys(players).filter(function (u) { return now - (players[u].t || 0) < 45000; }).length || 1;
-    });
-    var mine = roomRef.child('players/' + me.uid);
-    mine.onDisconnect().remove();
-    mine.set({ n: myName, x: pos.x, y: pos.y, t: firebase.database.ServerValue.TIMESTAMP });
-    say(WW.mode === 'cloud' ? 'Share your code from the hub so friends can join any time.' : 'Pick the hoe and tap a tile to start. Sign in from the hub for online saves and friends.');
-    requestAnimationFrame(loop);
-  }
-
-  var started = false, startedAsUser = false;
-  WW.onReady(function (user, code) {
-    if (started) { if (!!user !== startedAsUser) location.reload(); return; }
-    started = true; startedAsUser = !!user;
-    $('gateBtn').style.display = 'none';
-    begin(user, code).catch(function (e) { console.error(e); gate('Could not start: ' + (e.message || e), false); });
-  });
-})();
-</script>
+<script type="module" src="js/farm3d.js"></script>
 </body>
 </html>
