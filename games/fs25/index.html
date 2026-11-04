@@ -196,7 +196,9 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     <div class="hud">
       <span class="pill" id="pStatus"><span class="dot"></span><span>Loading</span></span>
       <span class="pill" id="pDate"><i class="fa-regular fa-calendar"></i><span>--</span></span>
-      <span class="pill" id="pClock" style="color:var(--sky)"><i class="fa-regular fa-clock"></i><span>--:--</span></span>
+      <span class="pill" id="pClock" style="color:var(--sky)" title="In-game time"><i class="fa-regular fa-clock"></i><span>--:--</span></span>
+      <span class="pill" id="pNyc" title="Real time, New York"><i class="fa-solid fa-earth-americas"></i><span>--</span></span>
+      <span class="pill" id="pExpiry" title="Server rental ends Nov 24, 2026 8:36:41 PM New York time"><i class="fa-solid fa-hourglass-half"></i><span>--</span></span>
       <span class="pill" id="pSync"><i class="fa-solid fa-satellite-dish"></i><span>--</span></span>
     </div>
   </header>
@@ -1051,6 +1053,29 @@ details summary{cursor:pointer;color:var(--muted);font:700 11px var(--mono);text
     } catch (e) { /* no Steam name */ }
     window.FS25.setViewer({ names, label: d.username || d.psn_username || u.displayName || "" });
   });
+</script>
+<script>
+/* New York clock + server rental countdown (independent of the data feed) */
+(function () {
+  const EXPIRES = Date.parse('2026-11-25T01:36:41Z'); // Nov 24 2026 8:36:41 PM America/New_York (EST)
+  const fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', weekday: 'short', hour: 'numeric', minute: '2-digit', second: '2-digit', timeZoneName: 'short' });
+  const nyc = document.getElementById('pNyc'), exp = document.getElementById('pExpiry');
+  if (!nyc || !exp) return;
+  function tick() {
+    const now = Date.now();
+    nyc.querySelector('span').textContent = fmt.format(now);
+    let ms = EXPIRES - now;
+    const span = exp.querySelector('span');
+    if (ms <= 0) { span.textContent = 'Server rental ended'; exp.style.color = '#ef4444'; return; }
+    const d = Math.floor(ms / 864e5); ms -= d * 864e5;
+    const h = Math.floor(ms / 36e5); ms -= h * 36e5;
+    const m = Math.floor(ms / 6e4); ms -= m * 6e4;
+    const sec = Math.floor(ms / 1e3);
+    span.textContent = 'Offline in ' + d + 'd ' + String(h).padStart(2, '0') + 'h ' + String(m).padStart(2, '0') + 'm ' + String(sec).padStart(2, '0') + 's';
+    exp.style.color = d < 7 ? '#ef4444' : d < 30 ? '#f5a623' : '';
+  }
+  tick(); setInterval(tick, 1000);
+})();
 </script>
 </body>
 </html>
