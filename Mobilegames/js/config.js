@@ -31,7 +31,11 @@ export const CROP_IDS = Object.keys(CROPS);
 
 // ---- seed packs: one purchase covers many tiles (a field pack covers the whole 20x12 field)
 export const FIELD_TILES = 240;
-export const PACKS = [20, 60, 240];
+export const PACKS = [20, 60, 240, 480, 720, 1440];
+export function packLabel(n) { return n >= 240 && n % 240 === 0 ? (n / 240) + ' field' + (n > 240 ? 's' : '') : '×' + n; }
+// land: the top row of three fields is open from the start; the other three are bought at the barn (shared by everyone on the farm)
+export const FREE_FIELDS = [0, 1, 2];
+export const FIELD_SALE = { 3: { cost: 2000, level: 10 }, 4: { cost: 5000, level: 20 }, 5: { cost: 10000, level: 30 } };
 export function packPrice(id, n) { return Math.max(1, Math.round(CROPS[id].seed * n * (n >= 240 ? .8 : n >= 60 ? .9 : 1))); }
 
 // ---- animals (every = real minutes between products)

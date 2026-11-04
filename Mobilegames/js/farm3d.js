@@ -3,7 +3,7 @@
 import * as W from './world.js';
 import * as C from './config.js';
 const THREE = W.THREE, WW = window.WW, $ = id => document.getElementById(id);
-const NT = W.COLS * W.ROWS;
+const NT = W.NT;
 const qs = new URLSearchParams(location.search);
 const FORCE_HOUR = qs.get('time') !== null ? +qs.get('time') : null;      // debug: ?time=14.5
 const FORCE_WX = qs.get('weather');                                       // debug: ?weather=rain | clear
@@ -78,22 +78,26 @@ function updateSky() {
 }
 
 // ------------------------------------------------------------ tiles / crops
-const tilePos = i => ({ x: W.FX0 + (i % W.COLS) * W.TILE + W.TILE / 2, z: W.FZ0 + Math.floor(i / W.COLS) * W.TILE + W.TILE / 2 });
-function tileAt(x, z) { const cx = Math.floor((x - W.FX0) / W.TILE), cz = Math.floor((z - W.FZ0) / W.TILE); return (cx < 0 || cz < 0 || cx >= W.COLS || cz >= W.ROWS) ? -1 : cz * W.COLS + cx; }
+const tilePos = W.tilePos, tileAt = W.tileAt;
+// land: three fields are open, three are bought at the barn; owned fields live in the room (shared by everyone)
+let ownedFields = {};
+const fieldUnlocked = f => C.FREE_FIELDS.indexOf(f) >= 0 || !!ownedFields[f];
+function updateFieldVisuals() { world.fields.forEach(function (F, f) { const sale = C.FIELD_SALE[f]; F.setLocked(!fieldUnlocked(f), sale ? 'FOR SALE $' + sale.cost.toLocaleString() + ' · level ' + sale.level : ''); }); }
 function progress(t, now) { return (!t || t.k !== 'c' || !t.w) ? 0 : Math.min(1, ((now || nowMs()) - t.w) / C.CROPS[t.c].grow); }
+let drawn = {};
 function refreshField() {
-  const now = nowMs(); let growing = 0, ready = 0, dry = 0, next = Infinity;
-  for (let i = 0; i < NT; i++) {
-    const t = tiles[i], p = tilePos(i);
-    if (!t) { field.set(i, p.x, p.z, false); continue; }
-    if (t.k === 't') { field.set(i, p.x, p.z, true, false, null); continue; }
+  const now = nowMs(); let growing = 0, ready = 0, dry = 0, next = Infinity; const seen = {};
+  Object.keys(tiles).forEach(function (k) {
+    const i = +k, t = tiles[i], p = tilePos(i); if (!t || !p) return; seen[i] = 1;
+    if (t.k === 't') { field.set(i, p.x, p.z, true, false, null); return; }
     const pr = progress(t, now), wet = !!t.w;
     field.set(i, p.x, p.z, true, wet, t.c, wet ? .18 + .82 * pr : .12, pr >= 1);
     if (!wet) dry++; else if (pr >= 1) ready++; else { growing++; next = Math.min(next, C.CROPS[t.c].grow * (1 - pr)); }
-  }
-  field.commit();
+  });
+  Object.keys(drawn).forEach(function (k) { if (!seen[k]) { const p = tilePos(+k); field.set(+k, p.x, p.z, false); } });
+  drawn = seen; field.commit();
   const bits = []; if (growing) bits.push('🌱' + growing); if (ready) bits.push('✅' + ready); if (dry) bits.push('💧' + dry);
-  $('cropInfo').textContent = bits.length ? bits.join(' ') + (next < Infinity ? ' · next ' + C.fmtTime(next) : '') : 'Field empty';
+  $('cropInfo').textContent = bits.length ? bits.join(' ') + (next < Infinity ? ' · next ' + C.fmtTime(next) : '') : 'Fields empty';
 }
 // rain waters every dry crop (also retroactively, if it rained while nobody was online)
 function rainTick() {
@@ -140,13 +144,15 @@ function harvestedToast(crop) { burst++; clearTimeout(burstT); burstT = setTimeo
 // ------------------------------------------------------------ planting mix: seeds you own are spread evenly across the field
 //   1 kind of seed -> the whole field, 2 kinds -> 50/50, 3 kinds -> thirds ... (split by column bands)
 function plantables() { return C.CROP_IDS.filter(function (id) { return level() >= C.CROPS[id].level && (save.seeds[id] || 0) > 0 && !save.skip[id]; }); }
-function cropForTile(i) { const list = plantables(); if (!list.length) return null; const col = i % W.COLS, row = Math.floor(i / W.COLS), k = col * W.ROWS + row; return list[Math.min(list.length - 1, Math.floor(k * list.length / NT))]; }   // column-major order: exact 1/n shares
+function cropForTile(i) { const list = plantables(); if (!list.length) return null; const li = i % C.FIELD_TILES, col = li % W.COLS, row = Math.floor(li / W.COLS), k = col * W.ROWS + row; return list[Math.min(list.length - 1, Math.floor(k * list.length / C.FIELD_TILES))]; }   // every field is split evenly (column-major)
 function mixText() { const l = plantables(); return l.length ? 'Planting mix: ' + l.map(function (id) { return C.CROPS[id].icon + Math.round(100 / l.length) + '%'; }).join(' ') : 'No seeds selected, buy a pack at the barn'; }
 
 // ------------------------------------------------------------ tile actions (on foot, or automatically from the tractor)
 let clearConfirm = { i: -1, until: 0 };
 function actTile(i, quiet) {
-  if (i < 0 || !roomRef) return; const cur = tiles[i], ref = roomRef.child('tiles/' + i), now = nowMs();
+  if (i < 0 || !roomRef) return;
+  if (!fieldUnlocked(W.fieldOf(i))) { if (!quiet) say('This land is for sale. Buy it at the barn (Land tab).'); return; }
+  const cur = tiles[i], ref = roomRef.child('tiles/' + i), now = nowMs();
   if (tool === 'hoe') {
     if (!cur) ref.set({ k: 't' });
     else if (!quiet) {
@@ -215,9 +221,10 @@ function collect(id) {
 // ------------------------------------------------------------ barn: seeds / sell / kitchen / animals / orders / upgrades
 let shopTab = 'seeds';
 // only touch the page when the menu content really changed (a redraw between mouse-down and mouse-up would swallow a click)
+function ownedCount() { let n = 0; for (let f = 0; f < W.FIELDS.length; f++) if (fieldUnlocked(f)) n++; return n; }
 function addHtml(box, html) { box.insertAdjacentHTML('beforeend', html); }   // never use innerHTML += here: it rebuilds the buttons already added and silently drops their click handlers
 function commitShop(n, id) { const cur = $(id); if (cur.innerHTML !== n.innerHTML) { cur.innerHTML = ''; while (n.firstChild) cur.appendChild(n.firstChild); } }
-const TABS = [['seeds', '🌱 Seeds'], ['sell', '💰 Sell'], ['kitchen', '🍳 Kitchen'], ['animals', '🐔 Animals'], ['orders', '📋 Orders'], ['missions', '📜 Missions'], ['upgrades', '🚜 Tractor']];
+const TABS = [['seeds', '🌱 Seeds'], ['sell', '💰 Sell'], ['kitchen', '🍳 Kitchen'], ['animals', '🐔 Animals'], ['orders', '📋 Orders'], ['missions', '📜 Missions'], ['land', '🏞️ Land'], ['upgrades', '🚜 Tractor']];
 const nearShop = () => Math.hypot(player.x - W.SHOP_POS.x, player.z - W.SHOP_POS.z) < 6;
 const today = () => C.dayNumber(nowMs());
 function counts() { const c = {}; Object.keys(C.ANIMALS).forEach(function (k) { c[k] = 0; }); Object.keys(animals).forEach(function (id) { if (c[animals[id].t] !== undefined) c[animals[id].t]++; }); return c; }
@@ -229,11 +236,11 @@ function renderShop() {
   if (!nearShop() && shopTab !== 'seeds' && shopTab !== 'missions') addHtml(box, '<div class="item" style="border:0;color:#fbbf24">Walk to the barn door to trade. You can still look around.</div>');
   const can = nearShop();
   if (shopTab === 'seeds') {
-    addHtml(box, '<div class="item" style="border:0"><small>One pack plants many tiles. A field pack covers the whole field. Every kind of seed you own is spread evenly across the field: one kind = all of it, two = half and half, three = thirds.</small></div>');
+    addHtml(box, '<div class="item" style="border:0"><small>One pack plants many tiles. A one-field pack covers a whole field. Every kind of seed you own is spread evenly across each field: one kind = all of it, two = half and half, three = thirds.</small></div>');
     C.CROP_IDS.forEach(function (id) {
       const c = C.CROPS[id], lock = l < c.level, price = C.priceOf(id, d);
       box.appendChild(row(c.icon + ' <b>' + c.name + '</b> <small>' + (lock ? 'Unlocks at level ' + c.level : 'sells ~$' + price + ' each · ' + c.grow / 60000 + ' min to grow · you have ' + (save.seeds[id] || 0) + ' seeds') + '</small>',
-        lock ? [{ t: '🔒 Lv ' + c.level, off: true, f: function () {} }] : C.PACKS.map(function (n) { const cost = C.packPrice(id, n); return { t: (n === C.FIELD_TILES ? 'Field ' : '×') + n + ' · $' + cost + '', off: !can || save.coins < cost, f: function () { if (save.coins < cost) return; setCoins(-cost); save.seeds[id] = (save.seeds[id] || 0) + n; hud(); queueSave(); buildSeedBar(); say('Bought ' + n + ' ' + c.name.toLowerCase() + ' seeds.'); } }; })));
+        lock ? [{ t: '🔒 Lv ' + c.level, off: true, f: function () {} }] : C.PACKS.filter(function (n) { return n <= Math.max(C.FIELD_TILES, ownedCount() * C.FIELD_TILES); }).map(function (n) { const cost = C.packPrice(id, n); return { t: C.packLabel(n) + ' · $' + cost, off: !can || save.coins < cost, f: function () { if (save.coins < cost) return; setCoins(-cost); save.seeds[id] = (save.seeds[id] || 0) + n; hud(); queueSave(); buildSeedBar(); say('Bought ' + n + ' ' + c.name.toLowerCase() + ' seeds.'); } }; })));
     });
   } else if (shopTab === 'sell') {
     const ids = Object.keys(save.bag); if (!ids.length) addHtml(box, '<div class="item"><div>Your bag is empty. Harvest crops and collect eggs, milk and wool.</div></div>');
@@ -279,6 +286,18 @@ function renderShop() {
       if (!C.statUnlocked(st, lv)) return; const t = nextTier(st), S = C.STATS[st], have = save.stats[st] || 0; if (!t) { box.appendChild(row(S.icon + ' <b>' + S.verb + ' ' + S.noun + '</b> <small>All milestones done!</small>', [])); return; }
       box.appendChild(row(S.icon + ' <b>' + S.verb + ' ' + t.goal + ' ' + S.noun + '</b> <small>' + Math.min(have, t.goal) + '/' + t.goal + ' · reward +' + t.reward.xp + ' xp and $' + t.reward.coins + '</small>',
         [{ t: have >= t.goal ? 'Claim' : Math.min(have, t.goal) + '/' + t.goal, off: have < t.goal, f: function () { save.ms[st] = t.idx + 1; reward(t.reward, S.verb + ' ' + t.goal + ' ' + S.noun); } }]));
+    });
+  } else if (shopTab === 'land') {
+    addHtml(box, '<div class="item" style="border:0"><small>The farm is shared. Three fields are open to everyone; more land is bought once and then belongs to the whole farm, so friends can work it too. You have ' + ownedCount() + ' of ' + W.FIELDS.length + ' fields.</small></div>');
+    W.FIELDS.forEach(function (F, f) {
+      const sale = C.FIELD_SALE[f], own = fieldUnlocked(f), by = ownedFields[f] && ownedFields[f].n;
+      if (!sale) { box.appendChild(row('🌾 <b>Field ' + (f + 1) + '</b> <small>240 tiles · open from the start</small>', [])); return; }
+      const lock = l < sale.level;
+      box.appendChild(row('🏞️ <b>Field ' + (f + 1) + '</b> · <b style="color:#fde68a">$' + sale.cost.toLocaleString() + '</b> <small>' + (own ? 'owned' + (by ? ' (bought by ' + WW.esc(by) + ')' : '') : (lock ? 'Unlocks at level ' + sale.level + ' · ' : '') + '240 more tiles') + '</small>',
+        [{ t: own ? '✅ Owned' : lock ? '🔒 Lv ' + sale.level : 'Buy $' + sale.cost.toLocaleString(), off: own || lock || !can || save.coins < sale.cost, f: function () {
+          if (save.coins < sale.cost) return;
+          roomRef.child('fields/' + f).transaction(function (cur) { return cur ? undefined : { by: me.uid, n: myName, t: nowMs() }; }, function (e, ok) { if (ok) { setCoins(-sale.cost); say('You bought Field ' + (f + 1) + '! The whole farm can use it.'); } else say('Someone just bought that field.'); });
+        } }]));
     });
   } else if (shopTab === 'upgrades') {
     Object.keys(C.UPGRADES).forEach(function (k) {
@@ -358,6 +377,7 @@ $('useBtn').addEventListener('pointerdown', function (e) { e.preventDefault(); u
 const facingTile = () => tileAt(player.x + Math.sin(player.ry) * 1.9, player.z + Math.cos(player.ry) * 1.9);
 function toolLabel() { return tool === 'seed' ? 'Plant' : TOOLS.filter(function (t) { return t.id === tool; })[0].label.replace(/^\S+ /, ''); }
 function tileInfo(i) {
+  const f = W.fieldOf(i), sale = C.FIELD_SALE[f]; if (!fieldUnlocked(f)) return 'Field ' + (f + 1) + ' is for sale: $' + sale.cost.toLocaleString() + ' (level ' + sale.level + ') at the barn';
   const t = tiles[i]; if (!t) return 'Grass'; if (t.k === 't') return 'Plowed soil'; const c = C.CROPS[t.c], p = progress(t);
   return c.icon + ' ' + c.name + ' — ' + (!t.w ? 'waiting for water or rain' : p >= 1 ? 'ready to harvest!' : Math.round(p * 100) + '% · ' + C.fmtTime(c.grow * (1 - p)) + ' left');
 }
@@ -505,6 +525,7 @@ async function begin(user, myCode) {
   normalizeSave(); hud(); buildSeedBar(); applyImplement();
   roomRef.child('avatars').on('value', function (snap) { avatars = snap.val() || {}; syncRemotes(); });
   roomRef.child('tiles').on('value', function (snap) { const v = snap.val() || {}; tiles = {}; Object.keys(v).forEach(function (k) { tiles[+k] = v[k]; }); refreshField(); });
+  roomRef.child('fields').on('value', function (snap) { ownedFields = snap.val() || {}; updateFieldVisuals(); });
   roomRef.child('animals').on('value', function (snap) { animals = snap.val() || {}; syncAnimals(); });
   roomRef.child('tractor').on('value', function (snap) { tractorState = Object.assign({ holder: null, x: W.TRACTOR_HOME.x, z: W.TRACTOR_HOME.z, ry: W.TRACTOR_HOME.ry }, snap.val() || {}); if (tractorState.holder === undefined) tractorState.holder = null; });
   roomRef.child('players').on('value', function (snap) { players = snap.val() || {}; syncRemotes(); });
@@ -524,4 +545,4 @@ WW.onReady(function (user, code) {
   started = true; startedAsUser = !!user;
   begin(user, code).catch(function (e) { console.error(e); gate('Could not start: ' + (e.message || e), { back: true }); });
 });
-window.__farm = { player: player, tractorLocal: tractorLocal, setTool: setTool, save: save, openShop: openShop, rainTick: rainTick, get tiles() { return tiles; }, get animals() { return animals; }, useAction: useAction, setSkip: function (id, v) { if (v) save.skip[id] = 1; else delete save.skip[id]; buildSeedBar(); }, cropForTile: cropForTile, plantables: plantables, get yaw() { return yaw; }, get avatars() { return avatars; }, get avatarOn() { return !!farmer.userData.avatar && !!farmer.userData.badge; }, faceCamera: function () { player.ry = yaw; } };
+window.__farm = { player: player, tractorLocal: tractorLocal, setTool: setTool, save: save, openShop: openShop, rainTick: rainTick, get tiles() { return tiles; }, get animals() { return animals; }, useAction: useAction, setSkip: function (id, v) { if (v) save.skip[id] = 1; else delete save.skip[id]; buildSeedBar(); }, cropForTile: cropForTile, plantables: plantables, get yaw() { return yaw; }, setCam: function (y, p, d) { yaw = y; pitch = p; dist = d; lastDragAt = performance.now() + 60000; }, refreshField: refreshField, ownedFields: function () { return ownedFields; }, get avatars() { return avatars; }, get avatarOn() { return !!farmer.userData.avatar && !!farmer.userData.badge; }, faceCamera: function () { player.ry = yaw; } };
