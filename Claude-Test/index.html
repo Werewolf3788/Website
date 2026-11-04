@@ -17,23 +17,25 @@
 </head>
 <body>
 <h1>🐺 Werewolf Game Hub</h1>
-<p class="muted">Play together on any phone or computer. Sign in once, share your friend code, and your progress saves automatically.</p>
+<p class="muted">Works on phones and computers. Play on your own any time. Sign in if you want your farm saved online and open to friends.</p>
 
-<div class="card" id="authCard">
-  <div id="signedOut"><button id="signInBtn">Sign in with Google</button></div>
-  <div id="signedIn" style="display:none">
-    <div class="muted">Signed in as <span id="who"></span> · <a href="#" id="signOutLink" style="color:#94a3b8">sign out</a></div>
-    <div class="muted" style="margin-top:8px">Your friend code (also your farm room code)</div>
-    <div class="code" id="myCode">--------</div>
-  </div>
+<div class="card">
+  <h2 style="margin:0 0 4px">🌾 Neighborly Acre</h2>
+  <div class="muted">A cozy farm you can run solo. Friends can drop in to help whenever you share your code.</div>
+  <div class="row"><button id="playBtn">Play</button></div>
+  <div class="muted" id="playNote" style="margin-top:6px">Playing as a guest: progress saves on this device only.</div>
+  <div class="row"><input id="joinCode" maxlength="8" placeholder="FRIEND'S CODE"><button id="joinBtn" class="alt">Join</button></div>
+  <div class="muted" id="msg" style="margin-top:8px;color:#fbbf24"></div>
 </div>
 
-<div class="card" id="farmCard">
-  <h2 style="margin:0 0 4px">🌾 Co-op Farm</h2>
-  <div class="muted">Plant, water and harvest together on one shared farm.</div>
-  <div class="row"><button id="hostBtn" disabled>Open my farm</button></div>
-  <div class="row"><input id="joinCode" maxlength="8" placeholder="FRIEND CODE"><button id="joinBtn" class="alt" disabled>Join</button></div>
-  <div class="muted" id="msg" style="margin-top:8px"></div>
+<div class="card" id="authCard">
+  <div id="signedOut"><button id="signInBtn" class="alt">Sign in with Google</button>
+    <div class="muted" style="margin-top:6px">Optional. Saves online and gives you a friend code so others can join your farm.</div></div>
+  <div id="signedIn" style="display:none">
+    <div class="muted">Signed in as <span id="who"></span> · <a href="#" id="signOutLink" style="color:#94a3b8">sign out</a></div>
+    <div class="muted" style="margin-top:8px">Your friend code (share it so friends can join your farm)</div>
+    <div class="code" id="myCode">--------</div>
+  </div>
 </div>
 
 <div class="card soon"><h2 style="margin:0 0 4px">🎯 Sniper Missions</h2><div class="muted">Coming next — top-down co-op missions.</div></div>
@@ -45,18 +47,19 @@
 <script src="js/common.js"></script>
 <script>
   var $ = function (id) { return document.getElementById(id); };
+  WW.onError = function (m) { $('msg').textContent = m; };
   $('signInBtn').onclick = WW.signIn;
   $('signOutLink').onclick = function (e) { e.preventDefault(); WW.signOut(); };
-  $('hostBtn').onclick = function () { location.href = 'farm.html?room=' + WW.friendCode; };
+  $('playBtn').onclick = function () { location.href = 'farm.html'; };
   $('joinBtn').onclick = function () {
     var c = $('joinCode').value.trim().toUpperCase();
-    if (c.length < 4) { $('msg').textContent = 'Enter your friend’s code.'; return; }
+    if (c.length < 4) { $('msg').textContent = 'Enter your friend\u2019s code.'; return; }
     location.href = 'farm.html?room=' + encodeURIComponent(c);
   };
   WW.onReady(function (user, code) {
     $('signedOut').style.display = user ? 'none' : '';
     $('signedIn').style.display = user ? '' : 'none';
-    $('hostBtn').disabled = $('joinBtn').disabled = !(user && code);
+    $('playNote').textContent = user ? 'Your farm is saved online and friends can join with your code.' : 'Playing as a guest: progress saves on this device only.';
     if (user) { $('who').textContent = user.displayName || user.email; $('myCode').textContent = code || '--------'; }
   });
 </script>

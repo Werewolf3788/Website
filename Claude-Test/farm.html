@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
-<title>Co-op Farm</title>
+<title>Neighborly Acre</title>
 <style>
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
   html,body{margin:0;height:100%;background:#0f172a;color:#e2e8f0;font-family:system-ui,sans-serif;overscroll-behavior:none}
@@ -22,14 +22,15 @@
 </head>
 <body>
 <div id="top">
-  <span>🌾 Room <b id="room">-</b> · 👥 <b id="count">1</b></span>
+  <span>🌾 <b id="roomLabel">Neighborly Acre</b> · 👥 <b id="count">1</b></span>
   <span>🪙 <b id="coins">0</b></span>
-  <span><button id="shareBtn" style="background:none;border:0;font:inherit">Invite</button> · <a href="index.html">Hub</a></span>
+  <span><button id="shareBtn" style="background:none;border:0;font:inherit;padding:0">Invite</button> · <a href="index.html">Hub</a></span>
 </div>
 <div id="wrap"><canvas id="c"></canvas></div>
 <div id="msg"></div>
+<div id="hint" style="text-align:center;color:#64748b;font-size:.75rem;padding-bottom:4px">Tap a tile to walk there · or use arrow keys / WASD, then Space or E · keys 1-6 pick tools</div>
 <div id="bar"></div>
-<div id="gate"><div id="gateText">Sign in to play</div><button id="gateBtn">Sign in with Google</button></div>
+<div id="gate"><div id="gateText">Sign in to play</div><button id="gateBtn">Sign in with Google</button><button id="soloBtn" style="background:#334155;color:#e2e8f0">Play solo instead</button></div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -57,8 +58,9 @@
 
   function say(t) { $('msg').textContent = t || ''; }
   function gate(text, showBtn) { $('gateText').textContent = text; $('gateBtn').style.display = showBtn ? '' : 'none'; $('gate').style.display = 'flex'; }
+  WW.onError = function (m) { say(m); gate(m, true); };
   $('gateBtn').onclick = function () { WW.signIn(); };
-  $('room').textContent = roomCode || '-';
+  $('soloBtn').onclick = function () { location.href = 'farm.html'; };
 
   // ---- toolbar
   var bar = $('bar');
@@ -122,9 +124,32 @@
     target = { x: tx, y: ty }; say('');
   });
 
+  // ---- keyboard (desktop)
+  var keys = {}, face = { x: 0, y: 1 };
+  window.addEventListener('keydown', function (e) {
+    var k = e.key.toLowerCase();
+    if (/^[1-6]$/.test(k)) { tool = TOOLS[+k - 1].id; refreshBar(); return; }
+    if (k === ' ' || k === 'e') { e.preventDefault(); if (me) { var fx = Math.round(pos.x) + face.x, fy = Math.round(pos.y) + face.y;
+      if (fx >= 0 && fy >= 0 && fx < COLS && fy < ROWS) act(fx, fy); } return; }
+    if (['arrowup','arrowdown','arrowleft','arrowright','w','a','s','d'].indexOf(k) >= 0) { e.preventDefault(); keys[k] = true; target = null; pending = null; }
+  });
+  window.addEventListener('keyup', function (e) { delete keys[e.key.toLowerCase()]; });
+  function keyMove(dt) {
+    var dx = (keys.arrowright || keys.d ? 1 : 0) - (keys.arrowleft || keys.a ? 1 : 0);
+    var dy = (keys.arrowdown || keys.s ? 1 : 0) - (keys.arrowup || keys.w ? 1 : 0);
+    if (!dx && !dy) return;
+    if (Math.abs(dx) >= Math.abs(dy) && dx) face = { x: dx, y: 0 }; else face = { x: 0, y: dy };
+    var m = Math.hypot(dx, dy);
+    pos.x = Math.max(0, Math.min(COLS - 1, pos.x + dx / m * 5 * dt));
+    pos.y = Math.max(0, Math.min(ROWS - 1, pos.y + dy / m * 5 * dt));
+    moved = true;
+  }
+  var moved = false;
+
   // ---- render + loop
   function resize() {
-    T = Math.max(20, Math.min(56, Math.floor(window.innerWidth / COLS)));
+    var availH = window.innerHeight - 170; // top bar + toolbar + hints
+    T = Math.max(20, Math.min(72, Math.floor(window.innerWidth / COLS), Math.floor(availH / ROWS)));
     canvas.width = T * COLS; canvas.height = T * ROWS;
   }
   window.addEventListener('resize', resize); resize();
@@ -150,6 +175,8 @@
       avatar(p.x, p.y, p.n, '#38bdf8');
     });
     if (me) avatar(pos.x, pos.y, myName, '#f97316');
+    if (me && !target) { var fx = Math.round(pos.x) + face.x, fy = Math.round(pos.y) + face.y;
+      if (fx >= 0 && fy >= 0 && fx < COLS && fy < ROWS) { ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 2; ctx.strokeRect(fx * T + 3, fy * T + 3, T - 6, T - 6); } }
     if (target) { ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 2; ctx.strokeRect(target.x * T + 2, target.y * T + 2, T - 4, T - 4); }
   }
   function avatar(x, y, name, color) {
@@ -163,6 +190,7 @@
   var last = performance.now();
   function loop(ts) {
     var dt = Math.min(0.1, (ts - last) / 1000); last = ts;
+    keyMove(dt);
     if (me && target) {
       var dx = target.x - pos.x, dy = target.y - pos.y, d = Math.hypot(dx, dy);
       if (d < 0.95 && pending) { var p = pending; pending = null; act(p.x, p.y); }
@@ -171,7 +199,7 @@
     }
     if (me && roomRef) {
       var n = Date.now();
-      if (n - lastSent > 150 && (target || n - lastBeat > 8000)) {
+      if (n - lastSent > 150 && (target || moved || n - lastBeat > 8000)) { moved = false;
         lastSent = n; lastBeat = n;
         roomRef.child('players/' + me.uid).set({ n: myName, x: +pos.x.toFixed(2), y: +pos.y.toFixed(2), t: firebase.database.ServerValue.TIMESTAMP });
       }
@@ -179,23 +207,44 @@
     draw(); requestAnimationFrame(loop);
   }
 
-  // ---- join room
+  // ---- start / join
+  var cloudCode = null;
   $('shareBtn').onclick = function () {
-    var url = location.origin + location.pathname + '?room=' + roomCode;
-    if (navigator.share) navigator.share({ title: 'Join my farm', text: 'Farm code ' + roomCode, url: url }).catch(function () {});
+    if (WW.mode !== 'cloud' || !cloudCode) { say('Sign in from the hub to get a code friends can use.'); return; }
+    var url = location.origin + location.pathname + '?room=' + cloudCode;
+    if (navigator.share) navigator.share({ title: 'Join my farm in Neighborly Acre', text: 'Farm code ' + cloudCode, url: url }).catch(function () {});
     else if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { say('Invite link copied!'); });
+    else say('Share this code: ' + cloudCode);
   };
 
-  async function enter(user, myCode) {
-    me = user; myName = (user.displayName || 'Farmer').split(' ')[0].slice(0, 12);
-    if (!roomCode) { gate('No room code. Go back to the hub.', false); return; }
-    roomRef = WW.db.ref('game_rooms/farm/' + roomCode);
-    var meta = (await roomRef.child('meta').once('value')).val();
-    if (!meta) {
-      if (roomCode === myCode) await roomRef.child('meta').set({ host: myName, created: firebase.database.ServerValue.TIMESTAMP });
-      else { gate('Room ' + roomCode + ' not found. Ask your friend to open their farm first.', false); return; }
+  async function begin(user, myCode) {
+    // Decide the farm: ?room=CODE joins a friend; no room = your own farm (online if signed in, else this device).
+    var code = roomCode || (user ? myCode : null);
+    if (user && code) {
+      try {
+        roomRef = WW.roomRef(code);
+        var meta = (await roomRef.child('meta').once('value')).val();
+        if (!meta) {
+          if (code === myCode) await roomRef.child('meta').set({ host: (user.displayName || 'Farmer').split(' ')[0], created: firebase.database.ServerValue.TIMESTAMP });
+          else { gate('Farm ' + code + ' not found. Ask your friend to open their farm once first.', false); $('gateBtn').style.display = 'none'; return; }
+        }
+        me = user; cloudCode = code; WW.mode = 'cloud';
+        $('roomLabel').textContent = (code === myCode ? 'My farm' : 'Friend\u2019s farm') + ' · ' + code;
+      } catch (e) {
+        if (roomCode && roomCode !== myCode) { gate('Could not reach that farm online yet (the game database rules still need to be added). Try solo for now.', false); return; }
+        console.warn(e); user = null; roomRef = null;
+        say('Online farms are not switched on yet, so you are playing solo on this device.');
+      }
+    } else if (roomCode) {
+      gate('Sign in to join a friend\u2019s farm.', true); return;
+    }
+    if (!roomRef || WW.mode !== 'cloud') {
+      WW.useLocal(); roomRef = WW.roomRef('solo'); me = { uid: 'local' };
+      $('roomLabel').textContent = 'Solo · this device';
+      if (!roomRef) return;
     }
     $('gate').style.display = 'none';
+    myName = ((user && user.displayName) || 'Farmer').split(' ')[0].slice(0, 12);
     var s = await WW.loadSave('farm'); if (s) { save.coins = s.coins | 0; save.harvested = s.harvested | 0; }
     $('coins').textContent = save.coins;
     roomRef.child('tiles').on('value', function (snap) { tiles = {}; var v = snap.val() || {}; Object.keys(v).forEach(function (k) { tiles[+k] = v[k]; }); });
@@ -203,18 +252,19 @@
       players = snap.val() || {};
       var now = WW.now(); $('count').textContent = Object.keys(players).filter(function (u) { return now - (players[u].t || 0) < 45000; }).length || 1;
     });
-    var mine = roomRef.child('players/' + user.uid);
+    var mine = roomRef.child('players/' + me.uid);
     mine.onDisconnect().remove();
     mine.set({ n: myName, x: pos.x, y: pos.y, t: firebase.database.ServerValue.TIMESTAMP });
-    say('Tap a tile to walk there and use the selected tool. Start with the hoe!');
+    say(WW.mode === 'cloud' ? 'Share your code from the hub so friends can join any time.' : 'Pick the hoe and tap a tile to start. Sign in from the hub for online saves and friends.');
     requestAnimationFrame(loop);
   }
 
-  var started = false;
+  var started = false, startedAsUser = false;
   WW.onReady(function (user, code) {
-    if (!user) { gate('Sign in to play', true); return; }
-    if (started) return; started = true;
-    enter(user, code).catch(function (e) { console.error(e); gate('Could not join: ' + (e.message || e), false); });
+    if (started) { if (!!user !== startedAsUser) location.reload(); return; }
+    started = true; startedAsUser = !!user;
+    $('gateBtn').style.display = 'none';
+    begin(user, code).catch(function (e) { console.error(e); gate('Could not start: ' + (e.message || e), false); });
   });
 })();
 </script>
