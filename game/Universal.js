@@ -1099,9 +1099,22 @@ window.appState.syncFriendsProgress = async function() {
                     });
                 } catch (e) {}
             }
+            // Live "playing now": the mobile board games (joinable), plus PlayStation / Steam when the site has it.
+            const nowPlays = [];
+            try {
+                const np = profile.now_playing;
+                if (np && np.t && Date.now() - Number(np.t) < 150000 && /^[a-z0-9_-]+$/.test(String(np.game || ''))) nowPlays.push({ kind: 'mobile', game: np.game, title: np.title || np.game, status: np.status || '', room: np.room || '', open: Number(np.open) || 0 });
+                if (psnTag) {
+                    const ps = (await rtdb.ref(`/psn/gamertags/${psnTag}`).once('value')).val();
+                    if (ps && (ps.online === true || ps.online === 'true') && ps.currentGame && String(ps.currentGame).toLowerCase() !== 'idle') nowPlays.push({ kind: 'console', platform: ps.displayPlatform || ps.platform || 'PlayStation', title: ps.currentGame, status: ps.gameStatus || '' });
+                }
+                let sid = String(profile.steam_id || '').trim();
+                if (sid && !/^7656119\d{10}$/.test(sid)) { const vn = (await rtdb.ref(`/steam_vanity/${sid.toLowerCase()}`).once('value')).val(); sid = typeof vn === 'string' ? vn : ''; }
+                if (sid) { const sp = (await rtdb.ref(`/steam_users/${sid}/profile`).once('value')).val(); if (sp && sp.currentGame) nowPlays.push({ kind: 'console', platform: 'Steam', title: sp.currentGame, status: '' }); }
+            } catch (e) {}
             const { done, ribbons, medalProg } = friendDoneSet(save && save.data, psnEarned);
             const rank = psnRank || (save && save.data && save.data.campaignRank) || null;
-            return { code, userKey, name, avatar, plats, platform: save ? save.platform : (plats[0] || ''), hasSave: !!save, psnTag, psnCount: psnEarned.length, done, ribbons, medalProg, rank, save: save && save.data };
+            return { code, userKey, name, avatar, nowPlays, plats, platform: save ? save.platform : (plats[0] || ''), hasSave: !!save, psnTag, psnCount: psnEarned.length, done, ribbons, medalProg, rank, save: save && save.data };
         }));
         if (token !== friendSyncToken) return;
         this.friendsProgress = results;
@@ -1117,6 +1130,16 @@ function friendBadge(f, extra, notDone) {
     const first = String(f.name || '').trim().split(/\s+/)[0];
     return `<span class="fm-chip" title="${escapeHtml(f.name)}${extra ? ' — ' + escapeHtml(extra) : ' has this'}">${f.avatar ? `<img src="${toSecureUrl(f.avatar)}" alt="" onerror="this.remove()">` : `<b>${escapeHtml(friendInitials(f.name))}</b>`}${notDone ? '' : '✓ '}${escapeHtml(first)}${extra ? ` <i>${escapeHtml(extra)}</i>` : ''}</span>`;
 }
+function liveBlock(list) {
+    const live = list.filter(f => f.nowPlays && f.nowPlays.length);
+    if (!live.length) return '';
+    return '<div style="font-size:0.72rem;font-weight:900;color:#22c55e;margin:2px 0 6px;letter-spacing:.06em;">● PLAYING NOW</div>' + live.map(f => {
+        const lines = f.nowPlays.map(p => p.kind === 'mobile'
+            ? `<div style="display:flex;align-items:center;gap:8px;margin-top:4px;"><div style="flex:1;min-width:0;font-size:0.8rem;color:#e2e8f0;">🎲 <b>${escapeHtml(p.title)}</b><div style="font-size:0.7rem;color:#94a3b8;">${escapeHtml(p.status)}</div></div>${p.room ? `<a class="pack-btn" style="text-decoration:none;" target="_blank" rel="noopener" href="/Mobilegames/${escapeHtml(p.game)}.html?room=${encodeURIComponent(p.room)}">${p.open ? 'Join' : 'Watch'}</a>` : ''}</div>`
+            : `<div style="margin-top:4px;font-size:0.8rem;color:#e2e8f0;">🎮 <b>${escapeHtml(p.title)}</b> <span style="color:#94a3b8;">on ${escapeHtml(p.platform)}${p.status ? ' · ' + escapeHtml(p.status) : ''}</span></div>`).join('');
+        return `<div class="squad-card" style="border-left:3px solid #22c55e;">${f.avatar ? `<img src="${toSecureUrl(f.avatar)}" class="squad-av" onerror="this.style.display='none'">` : `<div class="squad-av squad-ini">${escapeHtml(friendInitials(f.name))}</div>`}<div style="flex:1;min-width:0;"><div style="font-weight:900;color:#fff;font-size:0.95rem;">${escapeHtml(f.name)}</div>${lines}</div></div>`;
+    }).join('');
+}
 function renderSquadRoster() {
     const el = document.getElementById('friendsRosterContainer'); if (!el) return;
     const list = toArr(appState.friendsProgress);
@@ -1124,7 +1147,7 @@ function renderSquadRoster() {
     const total = cards.filter(c => c.getAttribute('data-type') !== 'ribbon').length;
     const data = appState.gameData || {};
     const hunting = !isMissionSchema(data) && Array.isArray(data.species);
-    el.innerHTML = list.map(f => {
+    el.innerHTML = liveBlock(list) + list.map(f => {
         const doneHere = cards.filter(c => c.getAttribute('data-type') !== 'ribbon' && f.done.has(c.getAttribute('data-id'))).length;
         const trophies = cards.filter(c => c.getAttribute('data-type') === 'trophy');
         const tDone = trophies.filter(c => f.done.has(c.getAttribute('data-id'))).length;

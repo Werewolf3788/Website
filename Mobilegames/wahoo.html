@@ -11,12 +11,12 @@
   html,body{margin:0;min-height:100%;background:#0f172a;color:#e2e8f0;font-family:system-ui,sans-serif;overscroll-behavior:none}
   button{font:inherit;border:0;border-radius:10px;padding:10px 14px;background:#334155;color:#e2e8f0;cursor:pointer}
   button.go{background:#22c55e;color:#04210f;font-weight:700} button:disabled{opacity:.4;cursor:default}
-  #top{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;font-size:.85rem;background:#1e293b}
-  #top b{color:#fff} #top a,#top button{color:#94a3b8;text-decoration:none;background:none;padding:0}
+  #top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 8px;padding:8px 10px;font-size:.85rem;background:#1e293b}
+  #top span{white-space:nowrap} #top b{color:#fff} #top a,#top button{color:#94a3b8;text-decoration:none;background:none;padding:0}
   #main{display:grid;grid-template-columns:1fr;gap:10px;padding:10px;max-width:1000px;margin:0 auto}
   @media(min-width:860px){#main{grid-template-columns:minmax(0,640px) 1fr;align-items:start}}
   #boardWrap{width:100%;max-width:640px;margin:0 auto;touch-action:manipulation}
-  svg{display:block;width:100%;height:auto;border-radius:14px;background:#0b1220;touch-action:none}
+  #board{display:block;width:100%;height:auto;border-radius:14px;background:#0b1220;touch-action:none}
   .ghost{cursor:pointer;animation:pulse .9s infinite;transform-box:fill-box;transform-origin:center}
   #die.throw{animation:throw .55s ease-out}
   @keyframes throw{0%{transform:translateY(0) rotate(0)}35%{transform:translateY(-26px) rotate(260deg)}70%{transform:translateY(0) rotate(560deg)}85%{transform:translateY(-6px) rotate(700deg)}100%{transform:translateY(0) rotate(720deg)}}
@@ -43,6 +43,7 @@
   .seat .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .seat button{padding:6px 10px;font-size:.8rem}
   .muted{color:#94a3b8;font-size:.8rem}
+  details#hist{margin-top:10px;background:#0f172a;border-radius:10px;padding:8px 10px} details#hist summary{cursor:pointer;font-weight:700}
   #banner{background:#14532d;border-radius:10px;padding:10px;margin-bottom:8px;text-align:center;font-weight:700}
   #gate{position:fixed;inset:0;background:#0f172a;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:20px;z-index:9}
 </style>
@@ -62,6 +63,7 @@
     <div id="seats"></div>
     <div id="actions" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
     <div id="emotes"></div>
+    <details id="hist"><summary>📜 Win / loss history</summary><div id="histBody" style="margin-top:8px"></div></details>
     <div class="muted" id="rules" style="margin-top:10px">Roll a 1 or 6 to bring a peg out. A 6 gives another roll. Land on a rival to send it home. Fill all four slots of your home lane to win.<br><br><b>Controls:</b> tap the die, flick it, shake your phone or press Space to roll. Tap or drag a glowing peg onto a dashed spot (or tap the spot, or press 1-4) to move. Use the emoji row to react.</div>
   </div>
 </div>
@@ -339,7 +341,7 @@
       var cur = seatOf(s, slot); if (cur && !cur.bot) return false;
       for (var i = 0; i < 4; i++) { var o = seatOf(s, i); if (o && !o.bot && o.uid === me.uid) return false; }
       if (!s.seats) s.seats = {};
-      s.seats[slot] = { uid: me.uid, name: firstName(), bot: false };
+      s.seats[slot] = { uid: me.uid, name: firstName(), bot: false, avatar: WW.avatar || '' };
     });
   }
   function leave(slot) {
@@ -383,7 +385,7 @@
       pegEls[p] = [];
       for (i = 0; i < 4; i++) {
         var g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'peg'); g.dataset.i = i; g.dataset.p = p;
-        g.innerHTML = '<circle class="ring" r=".5"/><circle r=".36" fill="' + COLORS[p] + '" stroke="#fff" stroke-width=".09"/><text y=".17" text-anchor="middle" font-size=".5" font-weight="700" fill="#fff" stroke="#0007" stroke-width=".03" pointer-events="none">' + (i + 1) + '</text><circle class="hit" r=".6" fill="transparent"/>';
+        g.innerHTML = '<circle class="ring" r=".5"/>' + WW.shape(p, .36, COLORS[p], '#fff', .09) + '<text y="' + (p === 1 ? .3 : .17) + '" text-anchor="middle" font-size=".5" font-weight="700" fill="#fff" stroke="#0007" stroke-width=".03" pointer-events="none">' + (i + 1) + '</text><circle class="hit" r=".6" fill="transparent"/>';
         var xy = pegXY(p, -1, i); g.style.transform = 'translate(' + xy[0] + 'px,' + xy[1] + 'px)';
         layer.appendChild(g); pegEls[p][i] = g;
       }
@@ -403,7 +405,7 @@
     });
   }
 
-  function dot(p) { return '<span class="dot" style="background:' + COLORS[p] + '"></span>'; }
+  function dot(p) { return WW.shapeIcon(p, 16, COLORS[p]); }
   function render() {
     var s = S; if (!s) return;
     var ms = mySeat(), myTurn = s.status === 'playing' && ms === s.turn && !s.roll;
@@ -455,7 +457,7 @@
         if (q.bot && ms < 0) btn += '<button data-a="sit" data-p="' + p + '">' + (s.status === 'lobby' ? 'Take seat' : 'Jump in') + '</button>';
         if (q.bot && s.status === 'lobby' && isHost()) btn += ' <button data-a="rm" data-p="' + p + '">Remove</button>';
         if (!q.bot && q.uid === me.uid) btn += '<button data-a="leave" data-p="' + p + '">Leave</button>';
-        h += '<div class="seat' + (s.status === 'playing' && s.turn === p ? ' cur' : '') + '">' + dot(p) + '<span class="nm">' + q.name + tag + (s.status !== 'lobby' ? ' · ' + homeN + '/4 home' : '') + '</span>' + emoOf(p) + btn + '</div>';
+        h += '<div class="seat' + (s.status === 'playing' && s.turn === p ? ' cur' : '') + '">' + dot(p) + (q.bot ? '' : WW.avatarHtml(q.avatar, q.name, 22)) + '<span class="nm">' + q.name + tag + (s.status !== 'lobby' ? ' · ' + homeN + '/4 home' : '') + '</span>' + emoOf(p) + btn + '</div>';
       }
     }
     $('seats').innerHTML = h;
@@ -483,12 +485,42 @@
     else say('Share this code: ' + cloudCode);
   };
 
+  var pubTimer = null;
+  function seatCounts(s) {
+    var humans = 0, bots = 0, open = 0;
+    for (var i = 0; i < 4; i++) { var st = seatOf(s, i); if (!st) open++; else if (st.bot) { bots++; open++; } else humans++; }
+    return { humans: humans, bots: bots, open: open };
+  }
+  function statusText(s) {
+    var c = seatCounts(s), ms = mySeat();
+    var people = c.humans + ' player' + (c.humans === 1 ? '' : 's') + (c.bots ? ' + ' + c.bots + ' bot' + (c.bots === 1 ? '' : 's') : '');
+    var tail = c.open ? ' · ' + c.open + ' open seat' + (c.open === 1 ? '' : 's') : ' · table full';
+    if (s.status === 'playing' && ms >= 0) { var n = pegsOf(s, ms).filter(function (v) { return v >= 51; }).length; return n + '/4 pegs home · ' + people + tail; }
+    return (s.status === 'done' ? 'Game over' : 'Lobby') + ' · ' + people + tail;
+  }
+  function publish() {
+    if (!S || mySeat() < 0 || WW.mode !== 'cloud') return;
+    WW.publishPlaying({ game: 'wahoo', title: 'Wahoo', room: cloudCode, status: statusText(S), open: seatCounts(S).open });
+  }
+  function publishSoon() { clearTimeout(pubTimer); pubTimer = setTimeout(publish, 1500); }
+  setInterval(publish, 30000);
+  function refreshHistory() {
+    if (!$('hist').open) return;
+    WW.loadHistory().then(function (l) { $('histBody').innerHTML = WW.historyHtml(l, 'wahoo'); });
+  }
+  $('hist').addEventListener('toggle', refreshHistory);
   async function recordStats(s) {
-    if (s.status !== 'done' || mySeat() < 0) return;
-    var key = (cloudCode || 'solo') + ':' + s.gid; if (statKey === key) return; statKey = key;
-    var sv = (await WW.loadSave('wahoo')) || {}; if (sv.last === key) return;
-    sv.played = (sv.played | 0) + 1; if (s.winner === mySeat()) sv.wins = (sv.wins | 0) + 1; sv.last = key;
+    var ms = mySeat();
+    if (s.status !== 'done' || ms < 0) return;
+    var key = 'wahoo_' + (cloudCode || 'solo') + '_' + s.gid; if (statKey === key) return; statKey = key;
+    var opp = [], win = null;
+    seated(s).forEach(function (p) { var st = seatOf(s, p), o = { n: st.name, b: !!st.bot }; if (!st.bot) o.u = st.uid; if (p === s.winner) win = o; if (p !== ms) opp.push(o); });
+    var added = await WW.recordResult(key, { game: 'wahoo', title: 'Wahoo', room: cloudCode || 'solo', result: s.winner === ms ? 'win' : 'loss', opp: opp, winner: win });
+    if (!added) return;
+    var sv = (await WW.loadSave('wahoo')) || {};
+    sv.played = (sv.played | 0) + 1; if (s.winner === ms) sv.wins = (sv.wins | 0) + 1;
     wins = sv.wins | 0; $('wins').textContent = wins; WW.writeSave('wahoo', sv);
+    refreshHistory();
   }
 
   async function begin(user, code) {
@@ -524,7 +556,7 @@
     if (isOwner) {
       await stateRef.transaction(function (cur) {
         if (cur) return cur;
-        return { status: 'lobby', hostUid: me.uid, seats: (function () { var o = {}; o[0] = { uid: me.uid, name: myName, bot: false }; return o; })(), turn: 0, roll: 0, winner: -1, rid: 1, gid: 0, lr: 0, msg: '', t: firebase.database.ServerValue.TIMESTAMP };
+        return { status: 'lobby', hostUid: me.uid, seats: (function () { var o = {}; o[0] = { uid: me.uid, name: myName, bot: false, avatar: WW.avatar || '' }; return o; })(), turn: 0, roll: 0, winner: -1, rid: 1, gid: 0, lr: 0, msg: '', t: firebase.database.ServerValue.TIMESTAMP };
       });
     }
     if (WW.mode === 'cloud') {
@@ -544,7 +576,7 @@
         for (var i = 0; i < 4; i++) { var st = seatOf(S, i); if (!st) { sit(i); break; } }
       }
       if (S.status === 'playing' && mySeat() < 0 && !autoSeatTried) { autoSeatTried = true; say('Game in progress - tap a bot seat to jump in.'); }
-      render(); tick(); recordStats(S);
+      render(); tick(); recordStats(S); publishSoon();
     });
   }
 

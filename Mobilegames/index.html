@@ -46,6 +46,11 @@
   <div class="row"><button id="playTy">Play</button></div>
   <div class="row"><input id="joinCodeTy" maxlength="8" placeholder="FRIEND'S CODE"><button id="joinTy" class="alt">Join</button></div>
 </div>
+<div class="card" id="nowCard" style="display:none">
+  <h2 style="margin:0 0 6px;font-size:1.1rem">🟢 Friends playing now</h2>
+  <div id="nowList" class="muted">Loading…</div>
+</div>
+<div class="card"><details id="hist"><summary style="cursor:pointer;font-weight:700">📜 Win / loss history</summary><div id="histBody" style="margin-top:8px" class="muted">Sign in or play a game to build your record.</div></details></div>
 <div class="card soon"><h2 style="margin:0 0 4px">🚗 Road of Life</h2><div class="muted">Coming after that — careers, money and a spinner.</div></div>
 <div class="card"><h2 style="margin:0 0 4px">🌾 Neighborly Acre</h2><div class="muted">A 3D co-op farm with a tractor, crops and animals.</div><div class="row"><button class="alt" onclick="location.href='../Claude-Test/'">Open the farm</button></div></div>
 <p class="muted"><a href="../" style="color:#94a3b8">Back to the main site</a></p>
@@ -71,11 +76,35 @@
     if (c.length < 4) { $('msg').textContent = 'Enter your friend\u2019s code.'; return; }
     location.href = 'tycoon.html?room=' + encodeURIComponent(c);
   };
+  function refreshHist() { if (!$('hist').open) return; WW.loadHistory().then(function (l) { $('histBody').innerHTML = WW.historyHtml(l); }); }
+  $('hist').addEventListener('toggle', refreshHist);
+  var nowTimer = null;
+  function loadNow() {
+    if (!WW.user) return;
+    WW.loadFriendsNow().then(function (list) {
+      $('nowCard').style.display = '';
+      var rows = '';
+      list.forEach(function (f) {
+        if (!f.plays.length) return;
+        var lines = f.plays.map(function (p) {
+          if (p.kind === 'mobile') {
+            var join = p.room ? '<a href="' + WW.esc(p.game) + '.html?room=' + encodeURIComponent(p.room) + '" style="background:#22c55e;color:#04210f;font-weight:700;border-radius:8px;padding:6px 12px;text-decoration:none;white-space:nowrap">' + (p.open ? 'Join' : 'Watch') + '</a>' : '';
+            return '<div style="display:flex;align-items:center;gap:8px;margin-top:4px"><div style="flex:1;min-width:0">🎲 <b>' + WW.esc(p.title) + '</b><div class="muted">' + WW.esc(p.status) + '</div></div>' + join + '</div>';
+          }
+          return '<div style="margin-top:4px">🎮 <b>' + WW.esc(p.title) + '</b> <span class="muted">on ' + WW.esc(p.platform) + (p.status ? ' · ' + WW.esc(p.status) : '') + '</span></div>';
+        }).join('');
+        rows += '<div style="padding:8px 0;border-top:1px solid #334155"><div style="display:flex;align-items:center;gap:8px;color:#fff;font-weight:700">' + WW.avatarHtml(f.avatar, f.name, 26) + WW.esc(f.name) + '</div>' + lines + '</div>';
+      });
+      $('nowList').innerHTML = rows || 'No friends are playing right now.';
+    }).catch(function (e) { $('nowList').textContent = 'Could not load friends right now.'; });
+  }
   WW.onReady(function (user, code) {
+    clearInterval(nowTimer); if (user) { loadNow(); nowTimer = setInterval(loadNow, 30000); } else $('nowCard').style.display = 'none';
+    refreshHist();
     $('signedOut').style.display = user ? 'none' : '';
     $('signedIn').style.display = user ? '' : 'none';
     $('playNote').textContent = user ? 'Your table is saved online and friends can join with your code.' : 'Playing as a guest: games save on this device only.';
-    if (user) { $('who').textContent = user.displayName || user.email; $('myCode').textContent = code || '--------'; }
+    if (user) { $('who').innerHTML = WW.avatarHtml(WW.avatar, user.displayName || user.email, 20) + ' ' + WW.esc(user.displayName || user.email); $('myCode').textContent = code || '--------'; }
   });
 </script>
 </body>
