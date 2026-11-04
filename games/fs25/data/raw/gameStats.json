@@ -6,7 +6,7 @@
   "mapSize": 2048,
   "mapName": "The Rural Farmlands Of Ohio",
   "name": "OneLIVIDMAN and werewolf 618",
-  "dayTime": 52859461,
+  "dayTime": 81000461,
   "Slots": {
    "capacity": 6,
    "numUsed": 0,
@@ -1549,7 +1549,7 @@
      "category": "MISC",
      "type": "FS25_precisionFarming.soilSampler",
      "x": 538.413086,
-     "y": 31.904057,
+     "y": 31.904064,
      "z": 681.436401
     },
     {
@@ -1609,7 +1609,7 @@
      "category": "CARS",
      "type": "carFillable",
      "x": 537.924011,
-     "y": 31.734982,
+     "y": 31.735008,
      "z": 679.385071,
      "fillTypes": "UNKNOWN DIESEL",
      "fillLevels": "0.000 33.000",
@@ -1650,8 +1650,8 @@
      "category": "SKIDSTEERVEHICLES",
      "type": "teleHandler",
      "x": 539.881958,
-     "y": 31.769167,
-     "z": 682.776855,
+     "y": 31.769228,
+     "z": 682.776917,
      "fillTypes": "DIESEL DEF",
      "fillLevels": "109.000 13.000",
      "isAIActive": false
