@@ -120,6 +120,14 @@ function addXp(n) {
   }
   hud(); queueSave();
 }
+// Firebase drops empty lists/objects and turns sparse arrays into objects, so repair everything we loaded
+function arr(x) { if (Array.isArray(x)) return x; const out = []; if (x && typeof x === 'object') Object.keys(x).forEach(function (k) { out[+k] = x[k]; }); return out; }
+function normalizeSave() {
+  save.seeds = save.seeds || {}; save.bag = save.bag || {}; save.up = save.up || {}; save.skip = save.skip || {}; save.stats = save.stats || {}; save.ms = save.ms || {};
+  save.orders = save.orders || { day: -1, done: [] }; save.orders.done = arr(save.orders.done);
+  save.daily = save.daily || { day: -1, base: {}, done: [] }; save.daily.base = save.daily.base || {}; save.daily.done = arr(save.daily.done);
+  if (save.daily.list) { save.daily.list = arr(save.daily.list).filter(Boolean); if (!save.daily.list.length) delete save.daily.list; }
+}
 function stat(k, n) { save.stats[k] = (save.stats[k] || 0) + (n || 1); }
 function hud() {
   $('coins').textContent = save.coins; const l = level();
@@ -489,10 +497,11 @@ async function begin(user, myCode) {
     if (s) { save.coins = s.coins | 0; save.xp = s.xp | 0; save.seeds = s.seeds || { wheat: 0 }; save.bag = s.bag || {}; save.up = s.up || {}; save.orders = s.orders || { day: -1, done: [] }; save.harvested = s.harvested | 0;
       // legacy saves (before levels) kept only coins
       if (s.xp === undefined && s.seeds === undefined) { save.seeds = { wheat: 30, carrot: 30 }; } save.skip = s.skip || {}; save.stats = s.stats || {}; save.daily = s.daily || { day: -1, base: {}, done: [] }; save.ms = s.ms || {}; }
+    normalizeSave();
   } catch (e) { console.warn(e); gate('Your saved progress could not be loaded (' + (e.code || e.message) + '). Nothing was changed.', { back: true }); return; }
   if (user) { try { myAvatar = (await WW.db.ref('users/' + WW.emailKey(user.email) + '/avatar_url').once('value')).val() || user.photoURL || ''; } catch (e) { myAvatar = user.photoURL || ''; } }
   if (myAvatar) { giveAvatar(farmer, myAvatar, myName); roomRef.child('avatars/' + me.uid).set(myAvatar); }
-  hud(); buildSeedBar(); applyImplement();
+  normalizeSave(); hud(); buildSeedBar(); applyImplement();
   roomRef.child('avatars').on('value', function (snap) { avatars = snap.val() || {}; syncRemotes(); });
   roomRef.child('tiles').on('value', function (snap) { const v = snap.val() || {}; tiles = {}; Object.keys(v).forEach(function (k) { tiles[+k] = v[k]; }); refreshField(); });
   roomRef.child('animals').on('value', function (snap) { animals = snap.val() || {}; syncAnimals(); });
