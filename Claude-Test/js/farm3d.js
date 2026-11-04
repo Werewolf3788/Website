@@ -11,8 +11,8 @@ const FORCE_WX = qs.get('weather');                                       // deb
 // ------------------------------------------------------------ state
 let me = null, myName = 'Farmer', myHue = Math.random(), roomRef = null, cloudCode = null;
 let tiles = {}, players = {}, animals = {}, tractorState = { holder: null, x: W.TRACTOR_HOME.x, z: W.TRACTOR_HOME.z, ry: W.TRACTOR_HOME.ry };
-let tool = 'hoe', seedSel = 'wheat', saveTimer = null, toastTimer = null;
-const save = { coins: 100, xp: 0, seeds: { wheat: 10, carrot: 10 }, bag: {}, up: {}, orders: { day: -1, done: [] }, harvested: 0 };
+let tool = 'hoe', saveTimer = null, toastTimer = null, lastDragAt = 0, avatars = {}, myAvatar = '';
+const save = { coins: 100, xp: 0, seeds: { wheat: 30, carrot: 30 }, bag: {}, up: {}, skip: {}, orders: { day: -1, done: [] }, harvested: 0 };
 const player = { x: 0, z: -1, ry: 0, speed: 0, driving: false };
 const tractorLocal = { x: W.TRACTOR_HOME.x, z: W.TRACTOR_HOME.z, ry: W.TRACTOR_HOME.ry, speed: 0 };
 const level = () => C.levelFromXp(save.xp);
@@ -115,10 +115,15 @@ function addXp(n) { const old = level(); save.xp += n; if (level() > old) { say(
 function hud() {
   $('coins').textContent = save.coins; const l = level(), lo = C.xpForLevel(l), hi = C.xpForLevel(l + 1);
   $('lvl').textContent = l; $('xpTxt').textContent = (save.xp - lo) + '/' + (hi - lo) + ' xp';
-  [].forEach.call($('seedBar').children, function (b) { const id = b.dataset.id; if (id) b.firstChild.nodeValue = C.CROPS[id].icon + ' ×' + (save.seeds[id] || 0) + ' '; });
 }
 let burst = 0, burstT = null;
 function harvestedToast(crop) { burst++; clearTimeout(burstT); burstT = setTimeout(function () { say('🧺 Harvested ' + burst + ' · in your bag (sell at the barn)'); burst = 0; }, 500); }
+
+// ------------------------------------------------------------ planting mix: seeds you own are spread evenly across the field
+//   1 kind of seed -> the whole field, 2 kinds -> 50/50, 3 kinds -> thirds ... (split by column bands)
+function plantables() { return C.CROP_IDS.filter(function (id) { return level() >= C.CROPS[id].level && (save.seeds[id] || 0) > 0 && !save.skip[id]; }); }
+function cropForTile(i) { const list = plantables(); if (!list.length) return null; const col = i % W.COLS, row = Math.floor(i / W.COLS), k = col * W.ROWS + row; return list[Math.min(list.length - 1, Math.floor(k * list.length / NT))]; }   // column-major order: exact 1/n shares
+function mixText() { const l = plantables(); return l.length ? 'Planting mix: ' + l.map(function (id) { return C.CROPS[id].icon + Math.round(100 / l.length) + '%'; }).join(' ') : 'No seeds selected, buy a pack at the barn'; }
 
 // ------------------------------------------------------------ tile actions (on foot, or automatically from the tractor)
 let clearConfirm = { i: -1, until: 0 };
@@ -141,8 +146,9 @@ function actTile(i, quiet) {
     });
   } else if (tool === 'seed') {
     if (!cur || cur.k !== 't') { if (!quiet) say(cur ? 'Something is already growing there.' : 'Plow the soil first.'); return; }
-    if ((save.seeds[seedSel] || 0) < 1) { if (!quiet || !outWarn()) say('Out of ' + C.CROPS[seedSel].name.toLowerCase() + ' seeds. Buy more at the barn.'); return; }
-    save.seeds[seedSel]--; hud(); queueSave(); ref.set({ k: 'c', c: seedSel, p: now, w: 0 });
+    const pick = cropForTile(i);
+    if (!pick) { if (!quiet || !outWarn()) say('No seeds to plant. Buy a pack at the barn (or switch a seed back on).'); return; }
+    save.seeds[pick]--; hud(); queueSave(); buildSeedBar(); ref.set({ k: 'c', c: pick, p: now, w: 0 });
   }
 }
 let lastOut = 0; function outWarn() { const n = performance.now(); if (n - lastOut < 4000) return true; lastOut = n; return false; }
@@ -202,10 +208,11 @@ function renderShop() {
   if (!nearShop() && shopTab !== 'seeds') box.innerHTML += '<div class="item" style="border:0;color:#fbbf24">Walk to the barn door to trade. You can still look around.</div>';
   const can = nearShop();
   if (shopTab === 'seeds') {
+    box.innerHTML += '<div class="item" style="border:0"><small>One pack plants many tiles. A field pack covers the whole field. Every kind of seed you own is spread evenly across the field: one kind = all of it, two = half and half, three = thirds.</small></div>';
     C.CROP_IDS.forEach(function (id) {
       const c = C.CROPS[id], lock = l < c.level, price = C.priceOf(id, d);
-      box.appendChild(row(c.icon + ' <b>' + c.name + '</b> <small>' + (lock ? 'Unlocks at level ' + c.level : 'seed ' + c.seed + '🪙 · sells ~' + price + '🪙 · ' + c.grow / 60000 + ' min to grow · you have ' + (save.seeds[id] || 0)) + '</small>',
-        lock ? [{ t: '🔒 Lv ' + c.level, off: true, f: function () {} }] : [1, 5, 10].map(function (n) { return { t: '+' + n, off: !can || save.coins < c.seed * n, f: function () { if (save.coins < c.seed * n) return; setCoins(-c.seed * n); save.seeds[id] = (save.seeds[id] || 0) + n; hud(); queueSave(); buildSeedBar(); } }; })));
+      box.appendChild(row(c.icon + ' <b>' + c.name + '</b> <small>' + (lock ? 'Unlocks at level ' + c.level : 'sells ~' + price + '🪙 each · ' + c.grow / 60000 + ' min to grow · you have ' + (save.seeds[id] || 0) + ' seeds') + '</small>',
+        lock ? [{ t: '🔒 Lv ' + c.level, off: true, f: function () {} }] : C.PACKS.map(function (n) { const cost = C.packPrice(id, n); return { t: (n === C.FIELD_TILES ? 'Field ' : '×') + n + ' · ' + cost + '🪙', off: !can || save.coins < cost, f: function () { if (save.coins < cost) return; setCoins(-cost); save.seeds[id] = (save.seeds[id] || 0) + n; hud(); queueSave(); buildSeedBar(); say('Bought ' + n + ' ' + c.name.toLowerCase() + ' seeds.'); } }; })));
     });
   } else if (shopTab === 'sell') {
     const ids = Object.keys(save.bag); if (!ids.length) box.innerHTML += '<div class="item"><div>Your bag is empty. Harvest crops and collect eggs, milk and wool.</div></div>';
@@ -256,26 +263,25 @@ const TOOLS = [{ id: 'hoe', label: '⛏️ Plow', color: 0x8a6a4a }, { id: 'wate
 const bar = $('bar'), seedBar = $('seedBar');
 TOOLS.forEach(function (t) { const b = document.createElement('button'); b.textContent = t.label; b.dataset.id = t.id; b.onclick = function () { setTool(t.id); }; bar.appendChild(b); });
 function applyImplement() {
-  const t = TOOLS.filter(function (x) { return x.id === tool; })[0]; W.setImplement(tractor, tool === 'seed' ? C.CROPS[seedSel] && 0x6abf4b : t.color); tractor.userData.impl.scale.x = swath() / 3;
+  const t = TOOLS.filter(function (x) { return x.id === tool; })[0]; W.setImplement(tractor, t.color); tractor.userData.impl.scale.x = swath() / 3;
 }
 function setTool(id) { tool = id; [].forEach.call(bar.children, function (b) { b.classList.toggle('sel', b.dataset.id === id); }); seedBar.style.display = id === 'seed' ? '' : 'none'; applyImplement(); }
 function buildSeedBar() {
-  seedBar.innerHTML = '';
+  seedBar.innerHTML = ''; const mix = document.createElement('span'); mix.className = 'mix'; mix.textContent = mixText(); seedBar.appendChild(mix);
   C.CROP_IDS.forEach(function (id) {
-    const c = C.CROPS[id], lock = level() < c.level, b = document.createElement('button'); b.dataset.id = id; b.className = (lock ? 'lock ' : '') + (id === seedSel ? 'sel' : '');
-    b.appendChild(document.createTextNode(c.icon + ' ×' + (save.seeds[id] || 0) + ' ')); if (lock) b.appendChild(document.createTextNode('🔒' + c.level));
-    b.onclick = function () { if (lock) { say(c.name + ' unlocks at level ' + c.level + '.'); return; } seedSel = id; buildSeedBar(); };
+    const c = C.CROPS[id], lock = level() < c.level, n = save.seeds[id] || 0, on = !lock && n > 0 && !save.skip[id], b = document.createElement('button'); b.dataset.id = id;
+    b.className = (lock || n === 0 ? 'lock ' : '') + (on ? 'sel' : ''); b.textContent = c.icon + ' ×' + n + (lock ? ' 🔒' + c.level : '');
+    b.onclick = function () { if (lock) { say(c.name + ' unlocks at level ' + c.level + '.'); return; } if (n === 0) { say('No ' + c.name.toLowerCase() + ' seeds. Buy a pack at the barn.'); return; } save.skip[id] = save.skip[id] ? 0 : 1; if (!save.skip[id]) delete save.skip[id]; queueSave(); buildSeedBar(); };
     seedBar.appendChild(b);
   });
 }
-function cycleSeed() { const ids = C.CROP_IDS.filter(function (id) { return level() >= C.CROPS[id].level; }); seedSel = ids[(ids.indexOf(seedSel) + 1) % ids.length]; buildSeedBar(); }
 setTool('hoe'); buildSeedBar();
 
 // ------------------------------------------------------------ input
 const keys = {}; let yaw = Math.PI, pitch = .42, dist = 10, joy = { x: 0, y: 0 };
 window.addEventListener('keydown', function (e) {
   if (e.target && /input|textarea/i.test(e.target.tagName)) return; const k = e.key.toLowerCase();
-  if (k >= '1' && k <= '4') { if (k === '4' && tool === 'seed') cycleSeed(); setTool(TOOLS[+k - 1].id); return; }
+  if (k >= '1' && k <= '4') { setTool(TOOLS[+k - 1].id); return; }
   if (k === 'b') { openShop('sell'); return; }
   if (k === 'e' || k === ' ') { e.preventDefault(); if (!e.repeat) useAction(); return; }
   if (k === 'escape') $('shop').style.display = 'none';
@@ -284,7 +290,7 @@ window.addEventListener('keydown', function (e) {
 window.addEventListener('keyup', function (e) { delete keys[e.key.toLowerCase()]; });
 let drag = null;
 canvas.addEventListener('pointerdown', function (e) { drag = { id: e.pointerId, x: e.clientX, y: e.clientY }; canvas.setPointerCapture(e.pointerId); });
-canvas.addEventListener('pointermove', function (e) { if (!drag || drag.id !== e.pointerId) return; yaw -= (e.clientX - drag.x) * .006; pitch = Math.max(.12, Math.min(1.2, pitch + (e.clientY - drag.y) * .004)); drag.x = e.clientX; drag.y = e.clientY; });
+canvas.addEventListener('pointermove', function (e) { if (!drag || drag.id !== e.pointerId) return; lastDragAt = performance.now(); yaw -= (e.clientX - drag.x) * .006; pitch = Math.max(.12, Math.min(1.2, pitch + (e.clientY - drag.y) * .004)); drag.x = e.clientX; drag.y = e.clientY; });
 canvas.addEventListener('pointerup', function () { drag = null; }); canvas.addEventListener('pointercancel', function () { drag = null; });
 canvas.addEventListener('wheel', function (e) { dist = Math.max(5, Math.min(24, dist + e.deltaY * .01)); }, { passive: true });
 const joyEl = $('joy'), knob = $('knob'); let joyId = null;
@@ -296,17 +302,17 @@ $('useBtn').addEventListener('pointerdown', function (e) { e.preventDefault(); u
 
 // ------------------------------------------------------------ interaction
 const facingTile = () => tileAt(player.x + Math.sin(player.ry) * 1.9, player.z + Math.cos(player.ry) * 1.9);
-function toolLabel() { return tool === 'seed' ? 'Plant ' + C.CROPS[seedSel].name.toLowerCase() : TOOLS.filter(function (t) { return t.id === tool; })[0].label.replace(/^\S+ /, ''); }
+function toolLabel() { return tool === 'seed' ? 'Plant' : TOOLS.filter(function (t) { return t.id === tool; })[0].label.replace(/^\S+ /, ''); }
 function tileInfo(i) {
   const t = tiles[i]; if (!t) return 'Grass'; if (t.k === 't') return 'Plowed soil'; const c = C.CROPS[t.c], p = progress(t);
   return c.icon + ' ' + c.name + ' — ' + (!t.w ? 'waiting for water or rain' : p >= 1 ? 'ready to harvest!' : Math.round(p * 100) + '% · ' + C.fmtTime(c.grow * (1 - p)) + ' left');
 }
 function context() {
-  if (player.driving) return { kind: 'exit', text: 'Exit tractor (E)', info: toolLabel() + ' · ' + swath() + ' tiles wide' };
+  if (player.driving) return { kind: 'exit', text: 'Exit tractor (E)', info: toolLabel() + ' · ' + swath() + ' tiles wide' + (tool === 'seed' ? ' · ' + mixText() : '') };
   const id = nearestReadyAnimal(); if (id) return { kind: 'collect', id: id, text: 'Collect ' + C.ANIMALS[animals[id].t].prod + ' (E)' };
   if (nearShop()) return { kind: 'shop', text: 'Open the barn (E)', info: 'Buy seeds · sell goods · orders · upgrades' };
   if (tractorState.holder === null || tractorState.holder === me.uid) { const tx = tractorState.holder === me.uid ? tractorLocal.x : tractorState.x, tz = tractorState.holder === me.uid ? tractorLocal.z : tractorState.z; if (Math.hypot(player.x - tx, player.z - tz) < 4) return { kind: 'drive', text: 'Drive tractor (E)' }; }
-  const i = facingTile(); if (i >= 0) return { kind: 'tile', i: i, text: toolLabel() + ' (E)', info: tileInfo(i) };
+  const i = facingTile(); if (i >= 0) return { kind: 'tile', i: i, text: toolLabel() + ' (E)', info: tool === 'seed' ? mixText() + ' · ' + tileInfo(i) : tileInfo(i) };
   return null;
 }
 function useAction() {
@@ -325,12 +331,13 @@ function useAction() {
 
 // ------------------------------------------------------------ other players
 const remote = {};
+function avatarFor(u) { return avatars[u] || ''; }
 function syncRemotes() {
   const now = nowMs();
   Object.keys(players).forEach(function (u) {
     if (me && u === me.uid) return; const p = players[u]; if (now - (p.t || 0) > 45000) return; let r = remote[u];
-    if (!r) { const m = W.makeFarmer(p.h || .3), lab = W.makeLabel(p.n || 'Friend', '#bae6fd'); lab.position.y = 3.4; m.add(lab); scene.add(m); r = remote[u] = { mesh: m }; m.position.set(p.x, 0, p.z); }
-    r.tx = p.x; r.tz = p.z; r.try = p.r || 0; r.driving = !!p.v;
+    if (!r) { const m = W.makeFarmer(p.h || .3), lab = W.makeLabel(p.n || 'Friend', '#bae6fd'); lab.position.y = 4.5; m.add(lab); scene.add(m); r = remote[u] = { mesh: m }; m.position.set(p.x, 0, p.z); }
+    r.tx = p.x; r.tz = p.z; r.try = p.r || 0; r.driving = !!p.v; W.setAvatar(r.mesh, avatarFor(u));
   });
   Object.keys(remote).forEach(function (u) { const p = players[u]; if (!p || now - (p.t || 0) > 45000) { scene.remove(remote[u].mesh); delete remote[u]; } });
   $('count').textContent = Math.max(1, Object.keys(remote).length + 1);
@@ -368,6 +375,9 @@ function loop(ts) {
   else { tractor.position.set(tractorState.x, 0, tractorState.z); tractor.rotation.y = tractorState.ry || 0; }
   const spin = (player.driving ? tractorLocal.speed : 0) * dt / .9; tractor.userData.wheels.forEach(function (w) { w.rotation.x += spin; });
   world.clouds.position.x += dt * .6; if (world.clouds.position.x > 140) world.clouds.position.x = -140;
+  // chase camera: swing behind the farmer (or tractor) whenever they move forward or sideways; dragging overrides for a moment
+  const heading = (player.driving ? Math.abs(tractorLocal.speed) > .4 : (player.speed > .5 && (iz > .1 || Math.abs(ix) > .35)));
+  if (heading && performance.now() - lastDragAt > 1200) { let da = player.ry + Math.PI - yaw; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI; yaw += da * Math.min(1, dt * (player.driving ? 4 : 2.4)); }
   const ty = player.driving ? 2.2 : 1.7, d = player.driving ? dist * 1.3 : dist;
   camX += (player.x - camX) * Math.min(1, dt * 8); camZ += (player.z - camZ) * Math.min(1, dt * 8);
   camera.position.set(camX + Math.sin(yaw) * Math.cos(pitch) * d, ty + Math.sin(pitch) * d, camZ + Math.cos(yaw) * Math.cos(pitch) * d); camera.lookAt(camX, ty, camZ);
@@ -408,9 +418,12 @@ async function begin(user, myCode) {
     const s = await WW.loadSave('farm');
     if (s) { save.coins = s.coins | 0; save.xp = s.xp | 0; save.seeds = s.seeds || { wheat: 0 }; save.bag = s.bag || {}; save.up = s.up || {}; save.orders = s.orders || { day: -1, done: [] }; save.harvested = s.harvested | 0;
       // legacy saves (before levels) kept only coins
-      if (s.xp === undefined && s.seeds === undefined) { save.seeds = { wheat: 10, carrot: 10 }; } }
+      if (s.xp === undefined && s.seeds === undefined) { save.seeds = { wheat: 30, carrot: 30 }; } save.skip = s.skip || {}; }
   } catch (e) { console.warn(e); gate('Your saved progress could not be loaded (' + (e.code || e.message) + '). Nothing was changed.', { back: true }); return; }
+  if (user) { try { myAvatar = (await WW.db.ref('users/' + WW.emailKey(user.email) + '/avatar_url').once('value')).val() || user.photoURL || ''; } catch (e) { myAvatar = user.photoURL || ''; } }
+  if (myAvatar) { W.setAvatar(farmer, myAvatar); roomRef.child('avatars/' + me.uid).set(myAvatar); }
   hud(); buildSeedBar(); applyImplement();
+  roomRef.child('avatars').on('value', function (snap) { avatars = snap.val() || {}; syncRemotes(); });
   roomRef.child('tiles').on('value', function (snap) { const v = snap.val() || {}; tiles = {}; Object.keys(v).forEach(function (k) { tiles[+k] = v[k]; }); refreshField(); });
   roomRef.child('animals').on('value', function (snap) { animals = snap.val() || {}; syncAnimals(); });
   roomRef.child('tractor').on('value', function (snap) { tractorState = Object.assign({ holder: null, x: W.TRACTOR_HOME.x, z: W.TRACTOR_HOME.z, ry: W.TRACTOR_HOME.ry }, snap.val() || {}); if (tractorState.holder === undefined) tractorState.holder = null; });
@@ -426,4 +439,4 @@ WW.onReady(function (user, code) {
   started = true; startedAsUser = !!user;
   begin(user, code).catch(function (e) { console.error(e); gate('Could not start: ' + (e.message || e), { back: true }); });
 });
-window.__farm = { player: player, tractorLocal: tractorLocal, setTool: setTool, save: save, openShop: openShop, rainTick: rainTick, get tiles() { return tiles; }, get animals() { return animals; }, useAction: useAction, setSeed: function (s) { seedSel = s; buildSeedBar(); } };
+window.__farm = { player: player, tractorLocal: tractorLocal, setTool: setTool, save: save, openShop: openShop, rainTick: rainTick, get tiles() { return tiles; }, get animals() { return animals; }, useAction: useAction, setSkip: function (id, v) { if (v) save.skip[id] = 1; else delete save.skip[id]; buildSeedBar(); }, cropForTile: cropForTile, plantables: plantables, get yaw() { return yaw; }, get avatars() { return avatars; }, get avatarOn() { return !!farmer.userData.avatar && !!farmer.userData.badge; }, faceCamera: function () { player.ry = yaw; } };

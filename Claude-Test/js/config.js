@@ -4,17 +4,22 @@ const MIN = 60000, HOUR = 3600000, DAY = 86400000;
 
 // ---- crops (grow = real minutes of growth after the crop is watered)
 export const CROPS = {
-  wheat:      { name: 'Wheat',      icon: '🌾', level: 1, grow: 4 * MIN,  seed: 4,  sell: 9 },
-  carrot:     { name: 'Carrot',     icon: '🥕', level: 1, grow: 3 * MIN,  seed: 3,  sell: 7 },
-  corn:       { name: 'Corn',       icon: '🌽', level: 2, grow: 6 * MIN,  seed: 6,  sell: 16 },
-  potato:     { name: 'Potato',     icon: '🥔', level: 2, grow: 5 * MIN,  seed: 5,  sell: 12 },
-  cabbage:    { name: 'Cabbage',    icon: '🥬', level: 3, grow: 7 * MIN,  seed: 8,  sell: 20 },
-  strawberry: { name: 'Strawberry', icon: '🍓', level: 3, grow: 6 * MIN,  seed: 10, sell: 26 },
-  tomato:     { name: 'Tomato',     icon: '🍅', level: 4, grow: 9 * MIN,  seed: 12, sell: 34 },
-  sunflower:  { name: 'Sunflower',  icon: '🌻', level: 5, grow: 10 * MIN, seed: 14, sell: 40 },
-  pumpkin:    { name: 'Pumpkin',    icon: '🎃', level: 6, grow: 15 * MIN, seed: 20, sell: 70 }
+  wheat:      { name: 'Wheat',      icon: '🌾', level: 1, grow: 4 * MIN,  seed: 2,  sell: 9 },
+  carrot:     { name: 'Carrot',     icon: '🥕', level: 1, grow: 3 * MIN,  seed: 1,  sell: 7 },
+  corn:       { name: 'Corn',       icon: '🌽', level: 2, grow: 6 * MIN,  seed: 3,  sell: 16 },
+  potato:     { name: 'Potato',     icon: '🥔', level: 2, grow: 5 * MIN,  seed: 2,  sell: 12 },
+  cabbage:    { name: 'Cabbage',    icon: '🥬', level: 3, grow: 7 * MIN,  seed: 4,  sell: 20 },
+  strawberry: { name: 'Strawberry', icon: '🍓', level: 3, grow: 6 * MIN,  seed: 5, sell: 26 },
+  tomato:     { name: 'Tomato',     icon: '🍅', level: 4, grow: 9 * MIN,  seed: 7, sell: 34 },
+  sunflower:  { name: 'Sunflower',  icon: '🌻', level: 5, grow: 10 * MIN, seed: 8, sell: 40 },
+  pumpkin:    { name: 'Pumpkin',    icon: '🎃', level: 6, grow: 15 * MIN, seed: 14, sell: 70 }
 };
 export const CROP_IDS = Object.keys(CROPS);
+
+// ---- seed packs: one purchase covers many tiles (a field pack covers the whole 20x12 field)
+export const FIELD_TILES = 240;
+export const PACKS = [20, 60, 240];
+export function packPrice(id, n) { return Math.max(1, Math.round(CROPS[id].seed * n * (n >= 240 ? .8 : n >= 60 ? .9 : 1))); }
 
 // ---- animals (every = real minutes between products)
 export const ANIMALS = {

@@ -15,22 +15,22 @@
   #top .r{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;line-height:1.5}
   #top a,#top button{color:#e2e8f0;text-decoration:none;background:none;border:0;font:inherit;padding:0 2px;cursor:pointer}
   #toast{top:58px;left:0;right:0;text-align:center;color:#fde68a;font-size:.9rem;text-shadow:0 1px 3px #000;pointer-events:none;min-height:1.3em;padding:0 12px}
-  #prompt{bottom:170px;left:0;right:0;text-align:center;pointer-events:none}
+  #prompt{bottom:calc(var(--bh,120px) + 8px);left:0;right:0;text-align:center;pointer-events:none}
   #prompt span{background:#000a;color:#fff;padding:5px 12px;border-radius:14px;font-size:.88rem;display:inline-block;margin:2px}
   #prompt small{display:block;color:#cbd5e1;font-size:.78rem}
   #bars{bottom:0;left:0;right:0;background:linear-gradient(#0000,#000b);padding:6px 8px 8px}
-  .row{display:flex;gap:6px;justify-content:center;flex-wrap:nowrap;overflow-x:auto;padding:2px 0;scrollbar-width:none}
-  .row::-webkit-scrollbar{display:none}
-  .row button{flex:0 0 auto;background:#1e293bcc;color:#e2e8f0;border:2px solid transparent;border-radius:12px;padding:8px 10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap}
+  .row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;padding:2px 0}
+  #seedBar .mix{align-self:center;font-size:.78rem;color:#cbd5e1;padding:0 6px;text-shadow:0 1px 3px #000}
+  .row button{flex:0 0 auto;background:#1e293bcc;color:#e2e8f0;border:2px solid transparent;border-radius:12px;padding:7px 9px;font:inherit;font-size:.8rem;cursor:pointer;white-space:nowrap}
   .row button.sel{border-color:#22c55e;background:#14532dcc} .row button.lock{opacity:.45}
-  #joy{left:18px;bottom:150px;width:120px;height:120px;border-radius:50%;background:#ffffff22;border:2px solid #ffffff44;touch-action:none;display:none}
+  #joy{left:18px;bottom:calc(var(--bh,120px) + 10px);width:120px;height:120px;border-radius:50%;background:#ffffff22;border:2px solid #ffffff44;touch-action:none;display:none}
   #knob{position:absolute;left:40px;top:40px;width:40px;height:40px;border-radius:50%;background:#ffffff88}
-  #useBtn{right:18px;bottom:158px;width:92px;height:92px;border-radius:50%;border:0;background:#22c55ecc;color:#04210f;font-weight:800;font-size:1rem;display:none;touch-action:none}
+  #useBtn{right:18px;bottom:calc(var(--bh,120px) + 14px);width:92px;height:92px;border-radius:50%;border:0;background:#22c55ecc;color:#04210f;font-weight:800;font-size:1rem;display:none;touch-action:none}
   body.touch #joy,body.touch #useBtn{display:block}
   #shop{inset:0;display:none;align-items:center;justify-content:center;background:#000a;z-index:20}
   #shop .box{background:#1e293b;border-radius:16px;padding:14px;width:min(96vw,460px);max-height:88vh;display:flex;flex-direction:column}
-  #shop h2{margin:0 0 8px;font-size:1.1rem} #shopTabs{display:flex;gap:4px;overflow-x:auto;margin-bottom:8px;scrollbar-width:none}
-  #shopTabs button{flex:0 0 auto;background:#334155;color:#e2e8f0;border:0;border-radius:9px;padding:7px 10px;font:inherit;font-size:.8rem;cursor:pointer} #shopTabs button.sel{background:#22c55e;color:#04210f;font-weight:700}
+  #shop h2{margin:0 0 8px;font-size:1.1rem} #shopTabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+  #shopTabs button{flex:1 1 auto;background:#334155;color:#e2e8f0;border:0;border-radius:9px;padding:7px 10px;font:inherit;font-size:.8rem;cursor:pointer} #shopTabs button.sel{background:#22c55e;color:#04210f;font-weight:700}
   #shopItems{overflow-y:auto;flex:1} .item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-top:1px solid #334155;font-size:.85rem}
   .item small{color:#94a3b8;display:block} .item .btns{display:flex;gap:5px;flex:0 0 auto}
   #shop button.b{background:#22c55e;color:#04210f;font-weight:700;border:0;border-radius:9px;padding:7px 10px;font:inherit;font-size:.8rem;cursor:pointer} #shop button.b:disabled{opacity:.35;cursor:default}
@@ -53,6 +53,7 @@
 <div id="shop" class="hud"><div class="box"><h2>🏪 Barn</h2><div id="shopTabs"></div><div id="shopItems"></div><button class="close" id="shopClose">Close</button></div></div>
 <div id="gate"><div id="gateText">Sign in to play</div><button id="gateBtn" style="display:none">Sign in with Google</button><button id="soloBtn" style="background:#334155;color:#e2e8f0">Play solo instead</button></div>
 
+<script>if(window.ResizeObserver){addEventListener('DOMContentLoaded',function(){new ResizeObserver(function(){document.documentElement.style.setProperty('--bh',document.getElementById('bars').offsetHeight+'px')}).observe(document.getElementById('bars'))})}</script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>

@@ -115,8 +115,29 @@ export function makeFarmer(hue) {
   box(legL, .3, 1.1, .32, 0x3b4a6b, 0, -.55, 0); box(legR, .3, 1.1, .32, 0x3b4a6b, 0, -.55, 0);
   box(armL, .22, .8, .26, shirt, 0, -.38, 0); box(armR, .22, .8, .26, shirt, 0, -.38, 0);
   g.add(legL, legR, armL, armR);
-  g.userData = { legL: legL, legR: legR, armL: armL, armR: armR, phase: 0 };
+  g.userData = { legL: legL, legR: legR, armL: armL, armR: armR, phase: 0, head: head, avatar: null, avatarUrl: null };
   return g;
+}
+// puts a round profile picture on the front of the farmer's head (silently skipped if the image host blocks it)
+export function setAvatar(g, url) {
+  const u = g.userData; if (!url || u.avatarUrl === url) return; u.avatarUrl = url;
+  const img = new Image(); img.crossOrigin = 'anonymous';
+  img.onload = function () {
+    try {
+      const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+      x.beginPath(); x.arc(64, 64, 62, 0, Math.PI * 2); x.clip();
+      const s = Math.min(img.width, img.height); x.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 128, 128);
+      x.lineWidth = 6; x.strokeStyle = '#ffffff'; x.beginPath(); x.arc(64, 64, 61, 0, Math.PI * 2); x.stroke();
+      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+      if (u.avatar) { u.head.remove(u.avatar); }
+      const m = new THREE.Mesh(new THREE.CircleGeometry(.3, 24), new THREE.MeshBasicMaterial({ map: t, transparent: true, polygonOffset: true, polygonOffsetFactor: -2 }));
+      m.position.set(0, 0, .325); u.head.add(m); u.avatar = m;
+      // a round badge floating above the head, readable from any angle (you see your own picture from behind)
+      if (u.badge) u.badge.parent.remove(u.badge);
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true })); sp.scale.set(1.05, 1.05, 1); sp.position.set(0, 3.45, 0); sp.renderOrder = 9; g.add(sp); u.badge = sp;
+    } catch (e) { /* tainted or unreadable image: keep the plain face */ }
+  };
+  img.onerror = function () {}; img.src = url;
 }
 export function animateFarmer(g, speed, dt) {
   const u = g.userData; u.phase += speed * dt * 1.7; const a = Math.sin(u.phase) * Math.min(1, speed / 3) * .8;
