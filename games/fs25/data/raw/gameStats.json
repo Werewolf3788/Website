@@ -6,7 +6,7 @@
   "mapSize": 2048,
   "mapName": "The Rural Farmlands Of Ohio",
   "name": "OneLIVIDMAN and werewolf 618",
-  "dayTime": 82933728,
+  "dayTime": 15358528,
   "Slots": {
    "capacity": 6,
    "numUsed": 0,
@@ -2464,27 +2464,6 @@
      "x": 734.57605,
      "y": 26.911253,
      "z": 166.548004
-    },
-    {
-     "name": "MF 9S",
-     "category": "TRACTORSL",
-     "type": "tractor",
-     "x": -88.64489,
-     "y": 21.401304,
-     "z": -811.875732,
-     "fillTypes": "DIESEL DEF AIR",
-     "fillLevels": "503.923 68.000 2876.117",
-     "isAIActive": false
-    },
-    {
-     "name": "MF 2370 Ultra HD",
-     "category": "BALERSSQUARE",
-     "type": "baler",
-     "x": -88.618309,
-     "y": 20.936266,
-     "z": -819.650391,
-     "fillTypes": "STRAW BALE_TWINE",
-     "fillLevels": "4070.592 26.000"
     }
    ]
   }
