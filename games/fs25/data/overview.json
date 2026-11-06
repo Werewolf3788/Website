@@ -15,10 +15,10 @@
   "serverVersion": "1.25.1.0",
   "saveDir": "/profile/savegame3",
   "saveAgeMin": null,
-  "lastCheck": "2026-11-06T13:10:42Z",
-  "lastChange": "2026-11-06T13:10:42Z",
+  "lastCheck": "2026-11-06T19:57:57Z",
+  "lastChange": "2026-11-06T19:57:57Z",
   "lastFull": "2026-11-04T07:59:29Z",
-  "lastLight": "2026-11-06T13:10:42Z",
+  "lastLight": "2026-11-06T19:57:57Z",
   "files": [
    "careerSavegame",
    "collectibles",
@@ -51,7 +51,6 @@
   "changedFiles": [
    "careerSavegame.xml",
    "environment.xml",
-   "precisionFarming.xml",
    "gameStats.xml"
   ]
  },
@@ -104,8 +103,8 @@
   "economicDifficulty": "NORMAL",
   "timeScale": 1.0,
   "autoSaveInterval": 15.0,
-  "money": 2194611502,
-  "playTimeHours": 1543.3,
+  "money": 2194845302,
+  "playTimeHours": 1550.0,
   "slotUsage": 2127,
   "settings": {
    "savegameName": "Keep Rolling rollin rollin",
@@ -161,26 +160,19 @@
   }
  },
  "environment": {
-  "day": 57,
-  "monotonicDay": 84,
+  "day": 58,
+  "monotonicDay": 85,
   "daysPerPeriod": 1,
   "dayInPeriod": 1,
-  "period": "LATE_AUTUMN",
-  "month": "November",
-  "season": "Autumn",
+  "period": "EARLY_WINTER",
+  "month": "December",
+  "season": "Winter",
   "year": 5,
-  "time": "17:16",
-  "minutesSinceRain": 1622,
+  "time": "00:02",
+  "minutesSinceRain": 2027,
   "groundWetness": 0.0,
   "snowHeight": 0.0,
   "forecast": [
-   {
-    "type": "CLOUDY",
-    "season": "AUTUMN",
-    "startDay": 84,
-    "startTime": "12:00",
-    "durationH": 8.0
-   },
    {
     "type": "SUN",
     "season": "AUTUMN",
@@ -341,6 +333,13 @@
     "startDay": 90,
     "startTime": "18:00",
     "durationH": 4.0
+   },
+   {
+    "type": "SUN",
+    "season": "WINTER",
+    "startDay": 90,
+    "startTime": "22:00",
+    "durationH": 10.0
    }
   ]
  },
@@ -350,7 +349,7 @@
   "version": "1.25.1.0",
   "mapName": "The Rural Farmlands Of Ohio",
   "mapSize": 2048,
-  "time": "17:23",
+  "time": "00:08",
   "capacity": 6,
   "numUsed": 0,
   "players": [],
@@ -1540,8 +1539,8 @@
    "name": "SCOUT",
    "category": "MISC",
    "type": "FS25_precisionFarming.soilSampler",
-   "x": 538.413086,
-   "z": 681.436218,
+   "x": 538.413025,
+   "z": 681.435791,
    "fills": [],
    "isAIActive": false,
    "controller": null,

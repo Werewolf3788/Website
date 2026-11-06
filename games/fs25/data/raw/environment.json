@@ -1,9 +1,9 @@
 {
  "environment": {
-  "dayTime": 1036.913208,
-  "currentDay": 57,
-  "currentMonotonicDay": 84,
-  "realHourTimer": 2597800,
+  "dayTime": 2.003253,
+  "currentDay": 58,
+  "currentMonotonicDay": 85,
+  "realHourTimer": 3492400,
   "daysPerPeriod": 1,
   "lighting": {
    "toneMapping": {
@@ -15,17 +15,9 @@
    }
   },
   "weather": {
-   "timeSinceLastRain": 1622,
+   "timeSinceLastRain": 2027,
    "forecast": {
     "instance": [
-     {
-      "typeName": "CLOUDY",
-      "season": "AUTUMN",
-      "variationIndex": 3,
-      "startDay": 84,
-      "startDayTime": 43200000,
-      "duration": 28800000
-     },
      {
       "typeName": "SUN",
       "season": "AUTUMN",
@@ -277,10 +269,26 @@
     ]
    },
    "fog": {
-    "alpha": 1.0,
+    "alpha": 0.033333,
     "visibilityAlpha": 0.0,
     "duration": 3600000.0,
     "target": {
+     "groundFog": {
+      "coverageEdge0": 0.106289,
+      "coverageEdge1": 0.857939,
+      "extraHeight": 12.286362,
+      "groundLevelDensity": 0.046346,
+      "minValleyDepth": 6.213878,
+      "startDayTimeMinutes": 192,
+      "endDayTimeMinutes": 597,
+      "weatherTypes": "SUN CLOUDY"
+     },
+     "heightFog": {
+      "maxHeight": 427.240692,
+      "groundLevelDensity": 0.069088
+     }
+    },
+    "last": {
      "groundFog": {
       "coverageEdge0": 0.243898,
       "coverageEdge1": 0.976611,
@@ -294,22 +302,6 @@
      "heightFog": {
       "maxHeight": 429.728088,
       "groundLevelDensity": 0.06625
-     }
-    },
-    "last": {
-     "groundFog": {
-      "coverageEdge0": 0.26406,
-      "coverageEdge1": 0.643722,
-      "extraHeight": 7.100855,
-      "groundLevelDensity": 0.219346,
-      "minValleyDepth": 5.427485,
-      "startDayTimeMinutes": 228,
-      "endDayTimeMinutes": 578,
-      "weatherTypes": "SUN CLOUDY"
-     },
-     "heightFog": {
-      "maxHeight": 593.357727,
-      "groundLevelDensity": 0.153123
      }
     }
    },
@@ -330,6 +322,9 @@
   "snow": {
    "physicalHeight": 0.0,
    "height": 0.0
+  },
+  "growth": {
+   "currentPeriod": 9
   }
  }
 }
