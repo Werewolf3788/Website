@@ -6,7 +6,7 @@
   "mapSize": 2048,
   "mapName": "The Rural Farmlands Of Ohio",
   "name": "OneLIVIDMAN and werewolf 618",
-  "dayTime": 527195,
+  "dayTime": 14884795,
   "Slots": {
    "capacity": 6,
    "numUsed": 0,
@@ -1549,8 +1549,8 @@
      "category": "MISC",
      "type": "FS25_precisionFarming.soilSampler",
      "x": 538.413025,
-     "y": 31.904175,
-     "z": 681.435791
+     "y": 31.904243,
+     "z": 681.435547
     },
     {
      "name": "Magnum Series",
@@ -1609,7 +1609,7 @@
      "category": "CARS",
      "type": "carFillable",
      "x": 537.924011,
-     "y": 31.735317,
+     "y": 31.735447,
      "z": 679.385071,
      "fillTypes": "UNKNOWN DIESEL",
      "fillLevels": "0.000 33.000",

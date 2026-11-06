@@ -1,9 +1,9 @@
 {
  "environment": {
-  "dayTime": 2.003253,
+  "dayTime": 242.05658,
   "currentDay": 58,
   "currentMonotonicDay": 85,
-  "realHourTimer": 3492400,
+  "realHourTimer": 3489200,
   "daysPerPeriod": 1,
   "lighting": {
    "toneMapping": {
@@ -15,17 +15,9 @@
    }
   },
   "weather": {
-   "timeSinceLastRain": 2027,
+   "timeSinceLastRain": 2267,
    "forecast": {
     "instance": [
-     {
-      "typeName": "SUN",
-      "season": "AUTUMN",
-      "variationIndex": 1,
-      "startDay": 84,
-      "startDayTime": 72000000,
-      "duration": 28800000
-     },
      {
       "typeName": "SUN",
       "season": "AUTUMN",
@@ -265,12 +257,36 @@
       "startDay": 93,
       "startDayTime": 3600000,
       "duration": 32400000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "SUMMER",
+      "variationIndex": 2,
+      "startDay": 93,
+      "startDayTime": 36000000,
+      "duration": 36000000
+     },
+     {
+      "typeName": "CLOUDY",
+      "season": "SUMMER",
+      "variationIndex": 1,
+      "startDay": 93,
+      "startDayTime": 72000000,
+      "duration": 14400000
+     },
+     {
+      "typeName": "SUN",
+      "season": "AUTUMN",
+      "variationIndex": 2,
+      "startDay": 94,
+      "startDayTime": 0,
+      "duration": 25200000
      }
     ]
    },
    "fog": {
-    "alpha": 0.033333,
-    "visibilityAlpha": 0.0,
+    "alpha": 1.0,
+    "visibilityAlpha": 1.0,
     "duration": 3600000.0,
     "target": {
      "groundFog": {
@@ -322,9 +338,6 @@
   "snow": {
    "physicalHeight": 0.0,
    "height": 0.0
-  },
-  "growth": {
-   "currentPeriod": 9
   }
  }
 }
