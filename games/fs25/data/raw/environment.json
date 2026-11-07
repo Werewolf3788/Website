@@ -1,9 +1,9 @@
 {
  "environment": {
-  "dayTime": 542.12323,
+  "dayTime": 931.784363,
   "currentDay": 58,
   "currentMonotonicDay": 85,
-  "realHourTimer": 3485200,
+  "realHourTimer": 1705600,
   "daysPerPeriod": 1,
   "lighting": {
    "toneMapping": {
@@ -15,25 +15,9 @@
    }
   },
   "weather": {
-   "timeSinceLastRain": 2567,
+   "timeSinceLastRain": 65,
    "forecast": {
     "instance": [
-     {
-      "typeName": "SUN",
-      "season": "AUTUMN",
-      "variationIndex": 3,
-      "startDay": 85,
-      "startDayTime": 14400000,
-      "duration": 28800000
-     },
-     {
-      "typeName": "RAIN",
-      "season": "AUTUMN",
-      "variationIndex": 2,
-      "startDay": 85,
-      "startDayTime": 43200000,
-      "duration": 7200000
-     },
      {
       "typeName": "CLOUDY",
       "season": "AUTUMN",
@@ -286,7 +270,7 @@
    },
    "fog": {
     "alpha": 1.0,
-    "visibilityAlpha": 1.0,
+    "visibilityAlpha": 0.0,
     "duration": 3600000.0,
     "target": {
      "groundFog": {
