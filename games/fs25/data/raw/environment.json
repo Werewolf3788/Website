@@ -1,9 +1,9 @@
 {
  "environment": {
-  "dayTime": 31.904352,
+  "dayTime": 226.947693,
   "currentDay": 59,
   "currentMonotonicDay": 86,
-  "realHourTimer": 1698400,
+  "realHourTimer": 795800,
   "daysPerPeriod": 1,
   "lighting": {
    "toneMapping": {
@@ -15,7 +15,7 @@
    }
   },
   "weather": {
-   "timeSinceLastRain": 605,
+   "timeSinceLastRain": 800,
    "forecast": {
     "instance": [
      {
@@ -301,8 +301,8 @@
     ]
    },
    "fog": {
-    "alpha": 0.531722,
-    "visibilityAlpha": 0.0,
+    "alpha": 1.0,
+    "visibilityAlpha": 1.0,
     "duration": 3600000.0,
     "target": {
      "groundFog": {
