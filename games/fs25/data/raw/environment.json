@@ -1,9 +1,9 @@
 {
  "environment": {
-  "dayTime": 226.947693,
+  "dayTime": 572.024353,
   "currentDay": 59,
   "currentMonotonicDay": 86,
-  "realHourTimer": 795800,
+  "realHourTimer": 1691200,
   "daysPerPeriod": 1,
   "lighting": {
    "toneMapping": {
@@ -15,7 +15,7 @@
    }
   },
   "weather": {
-   "timeSinceLastRain": 800,
+   "timeSinceLastRain": 1145,
    "forecast": {
     "instance": [
      {
