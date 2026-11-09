@@ -30,15 +30,78 @@
     "Tower Hamlets"
   ],
   "metrics": [
-    { "id": "metric_1", "icon": "💎", "label": "Tech Points", "current": 0, "total": 130, "step": 1 },
-    { "id": "metric_2", "icon": "🏺", "label": "Relics", "current": 0, "total": 50, "step": 1 },
-    { "id": "metric_3", "icon": "🎭", "label": "Mask Boxes", "current": 0, "total": 38, "step": 1 },
-    { "id": "metric_4", "icon": "🎧", "label": "Audio Logs", "current": 0, "total": 53, "step": 1 },
-    { "id": "metric_5", "icon": "📄", "label": "Text Files / Data Points", "current": 0, "total": 194, "step": 1 },
-    { "id": "metric_6", "icon": "🎨", "label": "Paste-Ups", "current": 0, "total": 47, "step": 1 },
-    { "id": "metric_7", "icon": "🍺", "label": "Pub / Drink Locations", "current": 0, "total": 26, "step": 1 },
-    { "id": "metric_8", "icon": "🎯", "label": "Darts Locations", "current": 0, "total": 21, "step": 1 },
-    { "id": "metric_9", "icon": "⚽", "label": "Kick-Up Locations", "current": 0, "total": 21, "step": 1 }
+    {
+      "id": "metric_1",
+      "icon": "💎",
+      "label": "Tech Points",
+      "current": 0,
+      "total": 130,
+      "step": 1
+    },
+    {
+      "id": "metric_2",
+      "icon": "🏺",
+      "label": "Relics",
+      "current": 0,
+      "total": 50,
+      "step": 1
+    },
+    {
+      "id": "metric_3",
+      "icon": "🎭",
+      "label": "Mask Boxes",
+      "current": 0,
+      "total": 38,
+      "step": 1
+    },
+    {
+      "id": "metric_4",
+      "icon": "🎧",
+      "label": "Audio Logs",
+      "current": 0,
+      "total": 53,
+      "step": 1
+    },
+    {
+      "id": "metric_5",
+      "icon": "📄",
+      "label": "Text Files / Data Points",
+      "current": 0,
+      "total": 194,
+      "step": 1
+    },
+    {
+      "id": "metric_6",
+      "icon": "🎨",
+      "label": "Paste-Ups",
+      "current": 0,
+      "total": 47,
+      "step": 1
+    },
+    {
+      "id": "metric_7",
+      "icon": "🍺",
+      "label": "Pub / Drink Locations",
+      "current": 0,
+      "total": 26,
+      "step": 1
+    },
+    {
+      "id": "metric_8",
+      "icon": "🎯",
+      "label": "Darts Locations",
+      "current": 0,
+      "total": 21,
+      "step": 1
+    },
+    {
+      "id": "metric_9",
+      "icon": "⚽",
+      "label": "Kick-Up Locations",
+      "current": 0,
+      "total": 21,
+      "step": 1
+    }
   ],
   "categories": {},
   "trophies": [],
@@ -56,10 +119,354 @@
       "quest_name": "",
       "quest_giver": "",
       "quest_giver_location": "",
-      "total_count": 50,
+      "total_count": 49,
       "region": "London-wide",
       "description": "Historical or pop-culture artifacts hidden around the city. Collecting 15 unlocks the 'Magpie' trophy/achievement. Many are also tied to story progress.",
-      "items": []
+      "items": [
+        {
+          "id": "relic_camden_01",
+          "name": "17th Century Medical Saw (fragment)",
+          "region": "Camden",
+          "location": "The British Museum",
+          "guide": "On a shelf directly from the main entrance. Sneak in through the open balcony at the side entrance, or fly a cargo drone in (gets you detected)."
+        },
+        {
+          "id": "relic_camden_02",
+          "name": "Egyptian Artifact",
+          "region": "Camden",
+          "location": "St. Pancras International",
+          "guide": "In a warehouse on the terminal's lower level. Take the key from the guard patrolling the upper level, then download it using surveillance cameras."
+        },
+        {
+          "id": "relic_camden_03",
+          "name": "Scooter Headlamp (fragment)",
+          "region": "Camden",
+          "location": "Camden Market",
+          "guide": "In a guarded part of the market, in the medical room near the storage room, on a shelf against the wall. Use a Spiderbot."
+        },
+        {
+          "id": "relic_camden_04",
+          "name": "Bartmann Jug (fragment)",
+          "region": "Camden",
+          "location": "ETO Bank Construction Site",
+          "guide": "Go to the penultimate construction level and use the lifter to reach a small shelf. A Spiderbot is the safest way to get it."
+        },
+        {
+          "id": "relic_camden_05",
+          "name": "17th Century Medical Saw (fragment, 2nd)",
+          "region": "Camden",
+          "location": "Ministry of Civic Management",
+          "guide": "Use the air duct in the side corridor (guard patrols it) and send the Spiderbot in to a small storage room."
+        },
+        {
+          "id": "relic_camden_06",
+          "name": "Prototype (Optik 0.1) (fragment)",
+          "region": "Camden",
+          "location": "Senate House Library",
+          "guide": "Behind a locked door. Move the parked vehicles, then set the nodes so the blue line connects to the node behind the gate to open the lock."
+        },
+        {
+          "id": "relic_camden_07",
+          "name": "1984 (fragment)",
+          "region": "Camden",
+          "location": "British Library",
+          "guide": "Under a bench in the central gardens. Use a cargo drone to reach it."
+        },
+        {
+          "id": "relic_lambeth_01",
+          "name": "17th-Century Medical Saw (fragment)",
+          "region": "Lambeth",
+          "location": "Kennington Park",
+          "guide": "On scaffolding in a restricted area of the park. Reach it by drone and drop a spiderbot onto the relic."
+        },
+        {
+          "id": "relic_lambeth_02",
+          "name": "Masquerade Ball Prop (fragment)",
+          "region": "Lambeth",
+          "location": "British Theatre",
+          "guide": "On the building's roof. Use the cargo drone to reach it."
+        },
+        {
+          "id": "relic_lambeth_03",
+          "name": "Scooter Headlamp (fragment)",
+          "region": "Lambeth",
+          "location": "Dorrel Hand Car Wash",
+          "guide": "In a container in the central part of the building. Only a spiderbot can access the container."
+        },
+        {
+          "id": "relic_lambeth_04",
+          "name": "Mobile Phone (fragment)",
+          "region": "Lambeth",
+          "location": "Kennington Gas Tank",
+          "guide": "On a fenced balcony of a small building next to the structure."
+        },
+        {
+          "id": "relic_lambeth_05",
+          "name": "DedSec Bracelet (fragment)",
+          "region": "Lambeth",
+          "location": "E-TREE",
+          "guide": "On the building's roof. Fly there with a drone."
+        },
+        {
+          "id": "relic_lambeth_06",
+          "name": "Radio Londres Microphone (fragment)",
+          "region": "Lambeth",
+          "location": "Lambeth Palace",
+          "guide": "In the tower, under the floor. Deploy a spiderbot and enter the hole in the corner."
+        },
+        {
+          "id": "relic_lambeth_07",
+          "name": "Bartmann Jug (fragment)",
+          "region": "Lambeth",
+          "location": "UK Fibrecomm Centre",
+          "guide": "In a closed tunnel. Deploy a spiderbot, climb the side shelf, and double-jump to reach it."
+        },
+        {
+          "id": "relic_lambeth_08",
+          "name": "1984 (fragment)",
+          "region": "Lambeth",
+          "location": "European Processing Centre",
+          "guide": "Reach the complex gardens and enter the ventilation shaft. It leads to a locked room with another vent — follow it to the relic."
+        },
+        {
+          "id": "relic_lambeth_09",
+          "name": "Platform Shoe (fragment)",
+          "region": "Lambeth",
+          "location": "The Stage",
+          "guide": "In a locked room on the building's roof. Access the nearby terminal to unlock the room."
+        },
+        {
+          "id": "relic_lambeth_10",
+          "name": "British Abolition Medallion (fragment)",
+          "region": "Lambeth",
+          "location": "Waterloo Bridge",
+          "guide": "Underneath the renovated bridge support. Deploy a spiderbot at the top of the scaffolding."
+        },
+        {
+          "id": "relic_lambeth_11",
+          "name": "Bartmann Jug (fragment, 2nd)",
+          "region": "Lambeth",
+          "location": "Golden Jubilee Bridge",
+          "guide": "On the outside of the railway bridge. Walk there and jump the fence, or use a drone."
+        },
+        {
+          "id": "relic_islington_hackney_01",
+          "name": "Platform Shoe (fragment)",
+          "region": "Islington & Hackney",
+          "location": "Seam Nightclub",
+          "guide": "Use the cargo drone to reach the building's roof, then jump up and collect the relic."
+        },
+        {
+          "id": "relic_islington_hackney_02",
+          "name": "Scooter Headlamp (fragment)",
+          "region": "Islington & Hackney",
+          "location": "Saint John's Gate",
+          "guide": "Use the cargo drone to reach the roof."
+        },
+        {
+          "id": "relic_islington_hackney_03",
+          "name": "Radio Londres Microphone (fragment)",
+          "region": "Islington & Hackney",
+          "location": "Orchestra hall, Old Street",
+          "guide": "Use the cargo drone to reach the roof, then jump up and collect the relic."
+        },
+        {
+          "id": "relic_islington_hackney_04",
+          "name": "Bartmann Jug (fragment)",
+          "region": "Islington & Hackney",
+          "location": "The Hackney Baths",
+          "guide": "Guarded restricted area. Enter the small building to the right of the entrance, throw a Spiderbot through the hole at the top, collect the relic, then leave the restricted area."
+        },
+        {
+          "id": "relic_city_of_westminster_01",
+          "name": "Relic",
+          "region": "City of Westminster",
+          "location": "Regalia Theatre",
+          "guide": "On the roof above the main entrance, hidden behind the sign. Reach it with a drone or by using a lift at the building's corner."
+        },
+        {
+          "id": "relic_city_of_westminster_02",
+          "name": "Platform Shoe (fragment)",
+          "region": "City of Westminster",
+          "location": "Vauxhall Bridge",
+          "guide": "Under the bridge, beside one of the supporting columns."
+        },
+        {
+          "id": "relic_city_of_westminster_03",
+          "name": "Mobile Phone (fragment)",
+          "region": "City of Westminster",
+          "location": "Lambeth Bridge",
+          "guide": "Under the bridge, next to a closed room with Tech Points. Requires the spiderbot."
+        },
+        {
+          "id": "relic_city_of_westminster_04",
+          "name": "Floppy Disk",
+          "region": "City of Westminster",
+          "location": "Safe house",
+          "guide": "In a safe house you unlock right after the prologue."
+        },
+        {
+          "id": "relic_city_of_westminster_05",
+          "name": "Relic",
+          "region": "City of Westminster",
+          "location": "St. James's Square",
+          "guide": "In the bushes by one of the facility's gates."
+        },
+        {
+          "id": "relic_city_of_westminster_06",
+          "name": "DedSec Bracelet (fragment)",
+          "region": "City of Westminster",
+          "location": "Horse Guards Parade",
+          "guide": "On the roof, under the surface. Use the spiderbot to enter a nearby ventilation shaft."
+        },
+        {
+          "id": "relic_city_of_westminster_07",
+          "name": "Relic",
+          "region": "City of Westminster",
+          "location": "National Gallery",
+          "guide": "On the roof. Fly a drone there."
+        },
+        {
+          "id": "relic_city_of_westminster_08",
+          "name": "Fake DedSec Business Card",
+          "region": "City of Westminster",
+          "location": "Stanford Theatre",
+          "guide": "In a side street, in a fence with banners. Jump over the fence to find it (restricted area)."
+        },
+        {
+          "id": "relic_city_of_westminster_09",
+          "name": "Relic",
+          "region": "City of Westminster",
+          "location": "Throne's Felts",
+          "guide": "On the roof of a small outhouse. Fly a drone up and drop the spiderbot (restricted area)."
+        },
+        {
+          "id": "relic_city_of_westminster_10",
+          "name": "Relic",
+          "region": "City of Westminster",
+          "location": "Duck Island Cottage",
+          "guide": "Behind the cottage, past a barbed-wire fence. Use a drone or the spiderbot."
+        },
+        {
+          "id": "relic_city_of_london_01",
+          "name": "DedSec Bracelet (fragment)",
+          "region": "City of London",
+          "location": "Bank of England",
+          "guide": "On the first floor, inside a closed room. You need the spiderbot, and the ventilation shaft has traps."
+        },
+        {
+          "id": "relic_city_of_london_02",
+          "name": "Prototype (Optik 0.1) (fragment)",
+          "region": "City of London",
+          "location": "Finsbury Circus Gardens",
+          "guide": "Beneath the stage. You need the spiderbot to reach it."
+        },
+        {
+          "id": "relic_city_of_london_03",
+          "name": "TOAN Conference Pass",
+          "region": "City of London",
+          "location": "Toan Attack Site",
+          "guide": "Deploy the spiderbot, go through the hole to the underground car park, and break through a hole in its southern wall. The pass is in the room beyond."
+        },
+        {
+          "id": "relic_city_of_london_04",
+          "name": "Mobile Phone (fragment)",
+          "region": "City of London",
+          "location": "London Wall",
+          "guide": "Inside the hedges around an oval structure in the park. Reaching it requires the spiderbot."
+        },
+        {
+          "id": "relic_city_of_london_05",
+          "name": "Mobile Phone (fragment, 2nd)",
+          "region": "City of London",
+          "location": "Guildhall",
+          "guide": "In a rooftop room. Find a hole in the floor and use the spiderbot to get through."
+        },
+        {
+          "id": "relic_city_of_london_06",
+          "name": "DedSec Bracelet (fragment, 2nd)",
+          "region": "City of London",
+          "location": "Holborn Viaduct",
+          "guide": "On scaffolding under the overpass. Deploy the spiderbot to reach it."
+        },
+        {
+          "id": "relic_tower_hamlets_01",
+          "name": "Prototype (Optik 0.1) (fragment)",
+          "region": "Tower Hamlets",
+          "location": "Albion Drone Facility",
+          "guide": "Under the stairs. Hack the forklift to break the wall."
+        },
+        {
+          "id": "relic_tower_hamlets_02",
+          "name": "Bartmann Jug (fragment)",
+          "region": "Tower Hamlets",
+          "location": "Albion Station Wapping",
+          "guide": "On the roof of the complex."
+        },
+        {
+          "id": "relic_tower_hamlets_03",
+          "name": "Masquerade Ball Prop (fragment)",
+          "region": "Tower Hamlets",
+          "location": "East London Mosque",
+          "guide": "On the rooftop."
+        },
+        {
+          "id": "relic_tower_hamlets_04",
+          "name": "Scooter Headlamp (fragment)",
+          "region": "Tower Hamlets",
+          "location": "Fenchurch Place",
+          "guide": "In the alcove between the front and main part of the building. Reach it with a drone."
+        },
+        {
+          "id": "relic_tower_hamlets_05",
+          "name": "Radio Londres Microphone (fragment)",
+          "region": "Tower Hamlets",
+          "location": "Tower of London",
+          "guide": "On the roof, next to the drone summoning point."
+        },
+        {
+          "id": "relic_nine_elms_01",
+          "name": "Cocaine Vial",
+          "region": "Nine Elms",
+          "location": "Nine Elms docks",
+          "guide": "Heavily guarded area — hide your character and switch to a spiderbot. Move forward along the left side; behind one of the objects is a ventilation duct. Open the vent and crawl to the end, where a suitcase holds the vial."
+        },
+        {
+          "id": "relic_southwark_01",
+          "name": "Masquerade Ball Prop (fragment)",
+          "region": "Southwark",
+          "location": "Bankside Playhouse",
+          "guide": "On the rooftop. Reach it by drone."
+        },
+        {
+          "id": "relic_southwark_02",
+          "name": "17th Century Medical Saw (fragment)",
+          "region": "Southwark",
+          "location": "Southwark Cathedral",
+          "guide": "In the courtyard. A hole in the wall lets you bring in the Spiderbot to collect it."
+        },
+        {
+          "id": "relic_southwark_03",
+          "name": "1984 (fragment)",
+          "region": "Southwark",
+          "location": "Tidis Advanced Technologies",
+          "guide": "In a locked room on the upper floor. Get the key from the adjoining room."
+        },
+        {
+          "id": "relic_southwark_04",
+          "name": "Masquerade Ball Prop (fragment, 2nd)",
+          "region": "Southwark",
+          "location": "Queen's Walk",
+          "guide": "In the bushes right by the river."
+        },
+        {
+          "id": "relic_southwark_05",
+          "name": "Radio Londres Microphone (fragment)",
+          "region": "Southwark",
+          "location": "Civil Aviation Traffic Office",
+          "guide": "On the roof. Reach it by drone."
+        }
+      ]
     },
     "mask_boxes": {
       "quest_name": "",
@@ -103,8 +510,156 @@
       "quest_giver_location": "",
       "total_count": 26,
       "region": "London-wide",
-      "description": "Local pubs where you can take part in the 'Get Pissed' drinking activity.",
-      "items": []
+      "description": "Local pubs where you can take part in the 'Get Pissed' drinking activity. 21 of the 26 are the same pubs that also have Darts (listed below); the other 5 are drink-only spots not yet logged here — add them as you find them.",
+      "items": [
+        {
+          "id": "pub_city_of_westminster_01",
+          "name": "The Earl's Fortune",
+          "region": "City of Westminster",
+          "location": "The Earl's Fortune",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_city_of_westminster_02",
+          "name": "The Martlet's Nest",
+          "region": "City of Westminster",
+          "location": "The Martlet's Nest",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_city_of_westminster_03",
+          "name": "The Winter Lion Pub",
+          "region": "City of Westminster",
+          "location": "The Winter Lion Pub",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_city_of_westminster_04",
+          "name": "The Golden Rivet",
+          "region": "City of Westminster",
+          "location": "The Golden Rivet",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_city_of_westminster_05",
+          "name": "Seven Dials",
+          "region": "City of Westminster",
+          "location": "Seven Dials",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_city_of_westminster_06",
+          "name": "Of Songs & Barley",
+          "region": "City of Westminster",
+          "location": "Of Songs & Barley",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_camden_01",
+          "name": "The Earl's Fortune",
+          "region": "Camden",
+          "location": "The Earl's Fortune",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_city_of_london_01",
+          "name": "The Earl's Fortune",
+          "region": "City of London",
+          "location": "The Earl's Fortune",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_islington_hackney_01",
+          "name": "FoodTown",
+          "region": "Islington & Hackney",
+          "location": "FoodTown",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_islington_hackney_02",
+          "name": "World Of Tomorrow",
+          "region": "Islington & Hackney",
+          "location": "World Of Tomorrow",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_islington_hackney_03",
+          "name": "The Golden Rivet",
+          "region": "Islington & Hackney",
+          "location": "The Golden Rivet",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_tower_hamlets_01",
+          "name": "The Drowning Post",
+          "region": "Tower Hamlets",
+          "location": "The Drowning Post",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_southwark_01",
+          "name": "The Earl's Fortune",
+          "region": "Southwark",
+          "location": "The Earl's Fortune",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_southwark_02",
+          "name": "The Three Hawker Boys",
+          "region": "Southwark",
+          "location": "The Three Hawker Boys",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_southwark_03",
+          "name": "The Martlet's Nest",
+          "region": "Southwark",
+          "location": "The Martlet's Nest",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_lambeth_01",
+          "name": "The Xcess",
+          "region": "Lambeth",
+          "location": "The Xcess",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_lambeth_02",
+          "name": "The Golden Rivet",
+          "region": "Lambeth",
+          "location": "The Golden Rivet",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_lambeth_03",
+          "name": "European Processing Centre",
+          "region": "Lambeth",
+          "location": "European Processing Centre",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_lambeth_04",
+          "name": "Boxtown",
+          "region": "Lambeth",
+          "location": "Boxtown",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_lambeth_05",
+          "name": "The Golden Rivet (2nd location)",
+          "region": "Lambeth",
+          "location": "The Golden Rivet (2nd location)",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        },
+        {
+          "id": "pub_nine_elms_01",
+          "name": "The Martlet's Nest",
+          "region": "Nine Elms",
+          "location": "The Martlet's Nest",
+          "guide": "Order a drink. Do all 26 as the same operative for the 'Bottom's Up' trophy."
+        }
+      ]
     },
     "darts": {
       "quest_name": "",
@@ -113,7 +668,155 @@
       "total_count": 21,
       "region": "London-wide",
       "description": "Pubs featuring a playable game of darts.",
-      "items": []
+      "items": [
+        {
+          "id": "darts_city_of_westminster_01",
+          "name": "The Earl's Fortune",
+          "region": "City of Westminster",
+          "location": "The Earl's Fortune",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_city_of_westminster_02",
+          "name": "The Martlet's Nest",
+          "region": "City of Westminster",
+          "location": "The Martlet's Nest",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_city_of_westminster_03",
+          "name": "The Winter Lion Pub",
+          "region": "City of Westminster",
+          "location": "The Winter Lion Pub",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_city_of_westminster_04",
+          "name": "The Golden Rivet",
+          "region": "City of Westminster",
+          "location": "The Golden Rivet",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_city_of_westminster_05",
+          "name": "Seven Dials",
+          "region": "City of Westminster",
+          "location": "Seven Dials",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_city_of_westminster_06",
+          "name": "Of Songs & Barley",
+          "region": "City of Westminster",
+          "location": "Of Songs & Barley",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_camden_01",
+          "name": "The Earl's Fortune",
+          "region": "Camden",
+          "location": "The Earl's Fortune",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_city_of_london_01",
+          "name": "The Earl's Fortune",
+          "region": "City of London",
+          "location": "The Earl's Fortune",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_islington_hackney_01",
+          "name": "FoodTown",
+          "region": "Islington & Hackney",
+          "location": "FoodTown",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_islington_hackney_02",
+          "name": "World Of Tomorrow",
+          "region": "Islington & Hackney",
+          "location": "World Of Tomorrow",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_islington_hackney_03",
+          "name": "The Golden Rivet",
+          "region": "Islington & Hackney",
+          "location": "The Golden Rivet",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_tower_hamlets_01",
+          "name": "The Drowning Post",
+          "region": "Tower Hamlets",
+          "location": "The Drowning Post",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_southwark_01",
+          "name": "The Earl's Fortune",
+          "region": "Southwark",
+          "location": "The Earl's Fortune",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_southwark_02",
+          "name": "The Three Hawker Boys",
+          "region": "Southwark",
+          "location": "The Three Hawker Boys",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_southwark_03",
+          "name": "The Martlet's Nest",
+          "region": "Southwark",
+          "location": "The Martlet's Nest",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_lambeth_01",
+          "name": "The Xcess",
+          "region": "Lambeth",
+          "location": "The Xcess",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_lambeth_02",
+          "name": "The Golden Rivet",
+          "region": "Lambeth",
+          "location": "The Golden Rivet",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_lambeth_03",
+          "name": "European Processing Centre",
+          "region": "Lambeth",
+          "location": "European Processing Centre",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_lambeth_04",
+          "name": "Boxtown",
+          "region": "Lambeth",
+          "location": "Boxtown",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_lambeth_05",
+          "name": "The Golden Rivet (2nd location)",
+          "region": "Lambeth",
+          "location": "The Golden Rivet (2nd location)",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        },
+        {
+          "id": "darts_nine_elms_01",
+          "name": "The Martlet's Nest",
+          "region": "Nine Elms",
+          "location": "The Martlet's Nest",
+          "guide": "Head inside and play a solo round of darts. Do all 21 as the same operative for the 'Bullseye' trophy."
+        }
+      ]
     },
     "kick_up": {
       "quest_name": "",
@@ -122,7 +825,155 @@
       "total_count": 21,
       "region": "London-wide",
       "description": "Street football / soccer kick-up mini-game spots.",
-      "items": []
+      "items": [
+        {
+          "id": "kickup_01",
+          "name": "Bricklayers Arms",
+          "region": "",
+          "location": "Bricklayers Arms",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_02",
+          "name": "Broken Studio",
+          "region": "",
+          "location": "Broken Studio",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_03",
+          "name": "County Hall",
+          "region": "",
+          "location": "County Hall",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_04",
+          "name": "Duck Island Cottage",
+          "region": "",
+          "location": "Duck Island Cottage",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_05",
+          "name": "European Processing Centre",
+          "region": "",
+          "location": "European Processing Centre",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_06",
+          "name": "Furzton Tower Block",
+          "region": "",
+          "location": "Furzton Tower Block",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_07",
+          "name": "Guildhall",
+          "region": "",
+          "location": "Guildhall",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_08",
+          "name": "Inspire Towers",
+          "region": "",
+          "location": "Inspire Towers",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_09",
+          "name": "Kennington Park",
+          "region": "",
+          "location": "Kennington Park",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_10",
+          "name": "Lambeth Palace",
+          "region": "",
+          "location": "Lambeth Palace",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_11",
+          "name": "Leicester Square",
+          "region": "",
+          "location": "Leicester Square",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_12",
+          "name": "Limehouse Garden",
+          "region": "",
+          "location": "Limehouse Garden",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_13",
+          "name": "London Bridge",
+          "region": "",
+          "location": "London Bridge",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_14",
+          "name": "Parliament Square Gardens",
+          "region": "",
+          "location": "Parliament Square Gardens",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_15",
+          "name": "Potters Fields Park",
+          "region": "",
+          "location": "Potters Fields Park",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_16",
+          "name": "Russell Square",
+          "region": "",
+          "location": "Russell Square",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_17",
+          "name": "St Paul's Cathedral",
+          "region": "",
+          "location": "St Paul's Cathedral",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_18",
+          "name": "The Battersea",
+          "region": "",
+          "location": "The Battersea",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_19",
+          "name": "Tidis Park",
+          "region": "",
+          "location": "Tidis Park",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_20",
+          "name": "Victoria Embankment Gardens",
+          "region": "",
+          "location": "Victoria Embankment Gardens",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        },
+        {
+          "id": "kickup_21",
+          "name": "Wellington Arch",
+          "region": "",
+          "location": "Wellington Arch",
+          "guide": "Interact with the football and keep it in the air using the on-screen prompts."
+        }
+      ]
     }
   },
   "tips": [
