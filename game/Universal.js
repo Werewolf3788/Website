@@ -1687,7 +1687,10 @@ function buildItemCard(o) {
 // ---------------------------------------------------------------------------
 const COLLECT_WORDS = [
     [/personal letters?/i, 'personal_letters'], [/classified documents?/i, 'classified_documents'],
-    [/hidden items?/i, 'hidden_items'], [/dead-?eye targets?|stone eagles?/i, 'stone_eagles'], [/workbench(es)?/i, 'workbenches']
+    [/hidden items?/i, 'hidden_items'], [/dead-?eye targets?|stone eagles?/i, 'stone_eagles'], [/workbench(es)?/i, 'workbenches'],
+    [/darts? location/i, 'darts'], [/drink location/i, 'pubs'], [/paste.?up/i, 'paste_ups'],
+    [/audio logs?/i, 'audio_logs'], [/\brelics?\b/i, 'relics'], [/tech points?/i, 'tech_points'],
+    [/mask box(es)?/i, 'mask_boxes'], [/text files?|data points?/i, 'text_files']
 ];
 const xnorm = (t) => String(t || '').replace(/&/g, ' and ').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
 let trophyLinkCache = { data: null, links: {} };
@@ -1722,7 +1725,7 @@ function trophyLinks(data) {
             if (ob) { L.objective = ob.text; L.mission = L.mission || k; break; }
         }
         const raw = String(t.description || '');
-        for (const [re, cat] of COLLECT_WORDS) { if (re.test(raw) && /collect|destroy|interact|find/i.test(raw)) { L.collect = cat; const n = raw.replace(/,/g, '').match(/\d+/); if (n) L.collectTarget = Number(n[0]); break; } }
+        for (const [re, cat] of COLLECT_WORDS) { if (re.test(raw) && /collect|destroy|interact|find|complete|drink|play/i.test(raw)) { L.collect = cat; const n = raw.replace(/,/g, '').match(/\d+/); if (n) L.collectTarget = Number(n[0]); break; } }
         const rk = raw.match(/reach rank (\d+)/i); if (rk) L.rank = Number(rk[1]);
         if (Array.isArray(data.species)) {
             const sp = data.species.find(x => x && x.name && d.includes(xnorm(x.name)));
@@ -1737,7 +1740,7 @@ function trophyLinks(data) {
 function collectibleCount(cat) {
     let got = 0, total = 0;
     Object.entries(appState.collectibles || {}).forEach(([g, grp]) => {
-        if (!g.endsWith('__' + cat)) return;
+        if (g !== cat && !g.endsWith('__' + cat)) return;
         Object.values((grp && grp.items) || {}).forEach(it => { total++; if (it && it.collected) got++; });
     });
     return { got, total };
@@ -3063,29 +3066,7 @@ function renderUniversalCompanion(data) {
             </div>
             <div class="section-content">
                 <div class="trophy-grid">
-                    ${trophyEntries.map(([tKey, t]) => {
-                        const tIcon = toSecureUrl(t.icon || '');
-                        const tType = (t.rank || 'Bronze').toUpperCase();
-                        let badgeClass = 'rank-bronze';
-                        if (tType.includes('PLATINUM')) badgeClass = 'rank-platinum';
-                        else if (tType.includes('GOLD')) badgeClass = 'rank-gold';
-                        else if (tType.includes('SILVER')) badgeClass = 'rank-silver';
-
-                        return `
-                        <div class="trophy-card game-item-card" data-id="${tKey}" data-type="trophy">
-                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                                <div style="display:flex; gap:10px; align-items:center;">
-                                    ${tIcon ? `<img src="${tIcon}" style="width:40px; height:40px; border-radius:6px; object-fit:cover;" onerror="this.style.display='none'">` : ''}
-                                    <div>
-                                        <span class="trophy-rank ${badgeClass}">${escapeHtml(tType)}</span>
-                                        <h3 style="color:#fff; font-size:0.95rem; margin-top:2px;">${escapeHtml(t.name)}</h3>
-                                    </div>
-                                </div>
-                                <button type="button" class="check-btn" onclick="appState.toggleItem('${tKey}', 'trophy')" aria-label="Toggle Trophy"></button>
-                            </div>
-                            <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.4;">${escapeHtml(t.description)}</p>
-                        </div>`;
-                    }).join('')}
+                    ${trophyEntries.map(([tKey]) => trophyCardFor(tKey)).join('')}
                 </div>
             </div>
         </section>`;
