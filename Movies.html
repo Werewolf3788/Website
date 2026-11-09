@@ -123,7 +123,7 @@
   --display:'Bebas Neue','Inter',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;overflow-x:clip}
+html{-webkit-text-size-adjust:100%;overflow-x:clip}
 body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.5;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
@@ -149,7 +149,7 @@ body.no-scroll{overflow:hidden}
 .sb-item .ph{width:28px;height:28px;border-radius:6px;background:#22222c;display:grid;place-items:center;font-size:12px;color:var(--dim)}
 
 /* ---------- App top bar ---------- */
-#topbar{position:sticky;top:0;z-index:60;height:var(--top-h);display:flex;align-items:center;gap:20px;padding:0 var(--pad);background:linear-gradient(180deg,rgba(11,11,15,.96),rgba(11,11,15,.82));backdrop-filter:saturate(160%) blur(14px);-webkit-backdrop-filter:saturate(160%) blur(14px);border-bottom:1px solid rgba(255,255,255,.05)}
+#topbar{position:sticky;top:0;z-index:60;height:var(--top-h);display:flex;align-items:center;gap:20px;padding:0 var(--pad);background:linear-gradient(180deg,rgba(11,11,15,.98),rgba(11,11,15,.94));border-bottom:1px solid rgba(255,255,255,.05);transform:translateZ(0)}
 .brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .brand img{width:36px;height:36px;border-radius:9px;object-fit:cover;box-shadow:0 0 0 1px rgba(255,255,255,.08)}
 .brand b{font-family:var(--display);font-size:27px;letter-spacing:1.5px;line-height:1;font-weight:400}
@@ -179,8 +179,8 @@ body.no-scroll{overflow:hidden}
 #install-btn{display:none}
 
 /* ---------- Hero ---------- */
-#hero{position:relative;min-height:min(78vh,720px);display:flex;align-items:flex-end;overflow:hidden;isolation:isolate}
-.hero-bg{position:absolute;inset:-40px;background-size:cover;background-position:center 25%;filter:blur(28px) saturate(130%) brightness(.55);transform:scale(1.1);z-index:-2;transition:background-image .6s}
+#hero{position:relative;min-height:min(78vh,720px);display:flex;align-items:flex-end;overflow:hidden;isolation:isolate;contain:paint}
+.hero-bg{position:absolute;inset:-40px;background-size:cover;background-position:center 25%;filter:blur(28px) saturate(130%) brightness(.55);transform:scale(1.1) translateZ(0);will-change:transform;z-index:-2}
 #hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(11,11,15,.97) 0%,rgba(11,11,15,.75) 45%,rgba(11,11,15,.25) 100%),linear-gradient(0deg,var(--bg) 0%,transparent 40%)}
 .hero-inner{width:100%;padding:72px var(--pad) 56px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:48px;align-items:end}
 .hero-kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
@@ -212,13 +212,15 @@ body.no-scroll{overflow:hidden}
 /* ---------- Rows ---------- */
 main{padding-bottom:40px}
 .section{margin-top:34px}
+.section[data-list]{content-visibility:auto;contain-intrinsic-size:auto 330px}
+.section[data-list="Full library"]{content-visibility:visible}
 .row-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 var(--pad);margin-bottom:12px}
 .row-head h2{font-size:clamp(18px,1.6vw,22px);font-weight:800;letter-spacing:-.2px}
 .row-head h2 small{color:var(--dim);font-weight:600;font-size:13px;margin-left:8px}
 .row-head a{color:var(--muted);font-weight:600;font-size:13px;white-space:nowrap}
 .row-head a:hover{color:var(--text)}
 .row-wrap{position:relative}
-.row{display:grid;grid-auto-flow:column;grid-auto-columns:clamp(128px,13.2vw,200px);gap:14px;overflow-x:auto;padding:6px var(--pad) 14px;scroll-snap-type:x mandatory;scroll-padding:0 var(--pad);scrollbar-width:none;overscroll-behavior-x:contain}
+.row{display:grid;grid-auto-flow:column;grid-auto-columns:clamp(128px,13.2vw,200px);gap:14px;overflow-x:auto;padding:6px var(--pad) 14px;scroll-snap-type:x proximity;scroll-padding:0 var(--pad);scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
 .row::-webkit-scrollbar{display:none}
 .row>*{scroll-snap-align:start}
 .row-arrow{position:absolute;top:6px;bottom:14px;width:calc(var(--pad) - 4px);min-width:36px;display:grid;place-items:center;z-index:5;opacity:0;transition:opacity .2s;background:linear-gradient(90deg,var(--bg),transparent)}
@@ -229,12 +231,12 @@ main{padding-bottom:40px}
 
 /* ---------- Poster card ---------- */
 .card{position:relative;display:block;border-radius:var(--radius);outline-offset:3px}
-.card .pw{position:relative;aspect-ratio:2/3;border-radius:var(--radius);overflow:hidden;background:linear-gradient(135deg,#1c1c25,#121218);box-shadow:0 0 0 1px rgba(255,255,255,.06);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
+.card .pw{position:relative;aspect-ratio:2/3;border-radius:var(--radius);overflow:hidden;contain:layout paint;background:linear-gradient(135deg,#1c1c25,#121218);box-shadow:0 0 0 1px rgba(255,255,255,.06);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
 .card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s}
 .card img.ld{opacity:1}
 .card .noimg{position:absolute;inset:0;display:grid;place-items:center;padding:14px;text-align:center;font-family:var(--display);font-size:22px;color:#55556a;line-height:1}
 .card .badges{position:absolute;top:8px;left:8px;right:8px;display:flex;flex-wrap:wrap;gap:4px;pointer-events:none}
-.bdg{font-size:10px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;padding:3px 6px;border-radius:4px;background:rgba(0,0,0,.72);color:#fff;backdrop-filter:blur(4px)}
+.bdg{font-size:10px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;padding:3px 6px;border-radius:4px;background:rgba(0,0,0,.78);color:#fff}
 .bdg.new{background:var(--red)}
 .bdg.today{background:var(--green);color:#002b14}
 .bdg.ma{background:#00aeef}
@@ -280,7 +282,7 @@ main{padding-bottom:40px}
 /* ---------- Detail view ---------- */
 .modal{position:fixed;inset:0;z-index:100;display:none}
 .modal.open{display:block}
-.modal .scrim{position:absolute;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);animation:fade .2s}
+.modal .scrim{position:absolute;inset:0;background:rgba(0,0,0,.8);animation:fade .2s}
 @keyframes fade{from{opacity:0}}
 @keyframes rise{from{opacity:0;transform:translateY(24px)}}
 .detail{position:relative;margin:5vh auto;width:min(1080px,94vw);max-height:90vh;overflow:auto;background:var(--bg2);border-radius:18px;box-shadow:0 40px 100px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.07);animation:rise .28s cubic-bezier(.2,.8,.2,1);overscroll-behavior:contain}
@@ -377,7 +379,7 @@ footer .fl{display:flex;flex-wrap:wrap;gap:18px}
   #menu-btn{display:none}
   .top-actions{gap:2px}
   body{padding-bottom:calc(var(--tab-h) + var(--safe-b))}
-  #tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:70;height:calc(var(--tab-h) + var(--safe-b));padding-bottom:var(--safe-b);background:rgba(13,13,18,.94);backdrop-filter:saturate(160%) blur(16px);-webkit-backdrop-filter:saturate(160%) blur(16px);border-top:1px solid rgba(255,255,255,.07)}
+  #tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:70;height:calc(var(--tab-h) + var(--safe-b));padding-bottom:var(--safe-b);background:rgba(13,13,18,.98);border-top:1px solid rgba(255,255,255,.07);transform:translateZ(0)}
   #tabbar a,#tabbar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10.5px;font-weight:600;color:var(--dim)}
   #tabbar svg{width:23px;height:23px}
   #tabbar .active{color:var(--text)}
@@ -860,6 +862,7 @@ function filtered(opts = {}) {
 }
 
 /* ---------------- rendering ---------------- */
+const thumb = (u, w) => (u || '').replace(/(image\.tmdb\.org\/t\/p\/)(?:original|w\d+)\//, '$1' + w + '/');
 const titleUrl = m => '?t=' + encodeURIComponent(m.id || m.key);
 function storeDots(m) { return STORES.filter(s => hasStore(m, s.key)).map(s => `<i style="background:${s.color}" title="${esc(s.label)}"></i>`).join(''); }
 function card(m) {
@@ -871,7 +874,7 @@ function card(m) {
   if (m.ytFree) b.push('<span class="bdg free">Free</span>');
   const sub = [m.year, m.isTV ? 'TV' : m.runtime].filter(Boolean).join(' · ');
   return `<a class="card" href="${titleUrl(m)}" data-key="${esc(m.key)}" aria-label="${esc(m.title + (m.year ? ' (' + m.year + ')' : ''))}">
-    <div class="pw"><div class="noimg">${esc(m.title)}</div>${m.poster ? `<img src="${esc(m.poster)}" alt="" loading="lazy" decoding="async" onload="this.classList.add('ld')" onerror="this.remove()">` : ''}
+    <div class="pw"><div class="noimg">${esc(m.title)}</div>${m.poster ? `<img src="${esc(thumb(m.poster, 'w342'))}" alt="" width="200" height="300" loading="lazy" decoding="async" onload="this.classList.add('ld')" onerror="this.remove()">` : ''}
       <div class="badges">${b.join('')}</div>
       <div class="ov">${esc([m.rating, m.genres[0]].filter(Boolean).join(' · '))}<div class="stores">${storeDots(m)}</div></div></div>
     <div class="ct notranslate" translate="no">${esc(m.title)}</div><div class="cs">${esc(sub)}</div></a>`;
@@ -899,7 +902,7 @@ function qs(over) {
 let heroList = [], heroIdx = 0, heroTimer = null;
 function heroHtml(m) {
   const meta = [m.rating ? `<span class="chip-rating">${esc(m.rating)}</span>` : '', m.year, m.runtime, m.genres.slice(0, 2).join(', ')].filter(Boolean);
-  return `<div class="hero-bg" style="background-image:url('${esc(m.poster || CFG.fallbackImg)}')"></div>
+  return `<div class="hero-bg" style="background-image:url('${esc(thumb(m.poster, 'w300') || CFG.fallbackImg)}')"></div>
   <div class="hero-inner"><div>
     <div class="hero-kicker">${m.isToday ? 'Added today' : 'Recently added'}${m.isTV ? ' · TV' : ''}</div>
     <h1 class="hero-title notranslate" translate="no">${esc(m.title)}</h1>
@@ -944,7 +947,7 @@ function viewHome() {
   const topGenres = Object.keys(genreCount).filter(g => genreCount[g] >= 4).sort((a, b) => genreCount[b] - genreCount[a]).slice(0, 14);
   const colls = {}; base.forEach(m => { if (m.collection) (colls[m.collection] = colls[m.collection] || []).push(m); });
   const collKeys = seededShuffle(Object.keys(colls).filter(k => colls[k].length > 1), day).slice(0, 30);
-  const collHtml = collKeys.map(k => { const p = colls[k].find(x => x.poster); return `<a class="coll" href="${qs({ view: 'browse', collection: k })}">${p ? `<img src="${esc(p.poster)}" alt="" loading="lazy">` : ''}<div><b>${esc(k)}</b><small>${colls[k].length} titles</small></div></a>`; }).join('');
+  const collHtml = collKeys.map(k => { const p = colls[k].find(x => x.poster); return `<a class="coll" href="${qs({ view: 'browse', collection: k })}">${p ? `<img src="${esc(thumb(p.poster, 'w342'))}" alt="" width="200" height="300" loading="lazy" decoding="async">` : ''}<div><b>${esc(k)}</b><small>${colls[k].length} titles</small></div></a>`; }).join('');
   const st = state.store ? STORE[state.store].label : '';
   const R = (title, list, more, opts = {}) => list.length ? rowSection(title, list, more, opts) : '';
 
