@@ -3091,6 +3091,33 @@ function renderUniversalCompanion(data) {
         </section>`;
     }
 
+    // Legacy top-level `collectibles` schema (Far Cry 5, Watch Dogs: Legion, etc.):
+    // data.collectibles[cKey] -> { items: [...] } was hydrated into appState.collectibles[cKey].items
+    // but never actually rendered as cards until now — this is what was missing.
+    const collectibleGroups = Object.entries(appState.collectibles || {}).filter(([, grp]) => grp && grp.items && Object.keys(grp.items).length);
+    if (collectibleGroups.length > 0) {
+        collectibleGroups.forEach(([cKey, grp]) => {
+            const items = Object.entries(grp.items || {});
+            html += `
+            <section class="category-section">
+                <div class="category-header" onclick="this.parentElement.classList.toggle('section-collapsed')">
+                    <h2>🗂️ ${escapeHtml(humanize(cKey))} (${items.length})</h2>
+                    <span>▾</span>
+                </div>
+                <div class="section-content">
+                    <div class="trophy-grid">
+                        ${items.map(([id, it]) => buildItemCard({
+                            id, type: 'collectible', group: cKey,
+                            badge: it.region || humanize(cKey), badgeClass: 'rank-silver',
+                            title: it.name || id, sub: it.location || '',
+                            body: it.guide || '', img: it.image_url
+                        })).join('')}
+                    </div>
+                </div>
+            </section>`;
+        });
+    }
+
     container.innerHTML = html;
     appState.applyStateToUI();
 }
