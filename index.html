@@ -2268,7 +2268,19 @@
         const cinIsUrl = (s) => /^(https?:)?\/\//i.test(String(s || '').trim()) || /(apple|amazon|amzn|google|fandango|vudu|youtu|justwatch|moviesanywhere)\./i.test(String(s || ''));
         const cinNormUrl = (s) => { s = String(s || '').trim(); return /^(https?:)?\/\//i.test(s) ? s : 'https://' + s; };
 
-        function buildCinemaFromCsv(text) {
+        function headerImdbTotal(header) {
+  // The sheet header carries the IMDb total next to the "IMDB-ID (C) [manual update]" label
+  const num = v => { v = String(v == null ? '' : v).replace(/\(\s*c\s*\)|\[[^\]]*\]/gi, ' ').replace(/[,\s]/g, ''); const m = v.match(/(\d+)$/); return m && /^\d+$/.test(String(v).replace(/^.*?(\d+)$/, '$1')) ? +m[1] : null; };
+  for (let c = 0; c < header.length; c++) {
+    const t = String(header[c] == null ? '' : header[c]);
+    if (!/imdb/i.test(t)) continue;
+    const stripped = t.replace(/imdb[-\s]*id/i, '').replace(/\(\s*c\s*\)|\[[^\]]*\]/gi, '').replace(/[|:=\-–]/g, ' ').trim();
+    const same = stripped.match(/(\d[\d,]*)\s*$/); if (same) return +same[1].replace(/,/g, '');
+    for (const j of [c + 1, c + 2, c - 1]) { const v = String(header[j] == null ? '' : header[j]).replace(/[,\s|]/g, ''); if (/^\d+$/.test(v)) return +v; }
+  }
+  return null;
+}
+function buildCinemaFromCsv(text) {
             const rows = parseCinemaCsv(text);
             if (rows.length < 2) return null;
 
@@ -2343,7 +2355,7 @@
             }
 
             // Primary count = distinct IMDb titles (column A), falling back to the sheet header total / counted rows
-            const titleCount = imdbIds.size || (nums[0] ?? rowCount);
+            const titleCount = headerImdbTotal(header) ?? (imdbIds.size || (nums[0] ?? rowCount));
             return { slides, titleCount, tvTally };
         }
 
